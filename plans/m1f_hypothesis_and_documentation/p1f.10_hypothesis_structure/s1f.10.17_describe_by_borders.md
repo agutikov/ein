@@ -1,7 +1,7 @@
 # S1f.10.17 — Describe by borders
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-16, on the user's ruling of Q-M1f.311 that day. Stopped after T2, *no* for describe on the corpus; **resumed the same day on the user's ruling on the measurement**: T3 as ruled, running. [§ Record](#record-2026-11-16).
+**Status:** planned 2026-11-16, on the user's ruling of Q-M1f.311 that day. Stopped after T2, *no* for describe on the corpus; resumed the same day on the user's ruling on the measurement, and **T3 to T5 done as ruled**: describe and `--count` take the tree and the classes by default and the state route on `--describe-route states`. [§ Record](#record-2026-11-16).
 **Depends on:** [S1f.10.3](s1f.10.3_the_restricted_join.md) (the memory `known_dead`, L8),
 [S1f.10.5](s1f.10.5_ordering.md) (the tree's order), [S1f.10.14](s1f.10.14_exactly_one_spent.md) (L9; Q-M1f.311's
 numbers), [S1f.10.13](s1f.10.13_the_price_list.md) (the rule for *go*).
@@ -235,9 +235,10 @@ border route's is the cube's.
 #### What was built to measure, and what takes it
 
 The borders past the state route's reach cannot be simulated from its nodes (on SEND and `zebra2-minus-15.ein` it
-never finishes), so **T2 runs the route's own code, unwired** ([§ Defaults taken](#defaults-taken)):
+never finishes), so **T2 runs the route's own code, unwired** ([§ Defaults taken](#defaults-taken)). It is at
+`580e79fc`, and T3 as ruled renamed and cut it (`tree_classes.rs`, the global border removed):
 
-- [`ein-infer/src/borders.rs`](../../../ein.rs/crates/ein-infer/src/borders.rs), the border route: `R`'s states by
+- `ein-infer/src/borders.rs`, the border route: `R`'s states by
   `tree::find` with no `N` (the tree, then every state of `R` extended), root's one-up extensions for the candidates
   dead alone, each state's class by dualise and advance inside `2^s`, and `N` with the maximal alive sets by dualise
   and advance over `H`; each transversal closed under what the run knows first (`known_closure`: the closure of
@@ -249,13 +250,12 @@ never finishes), so **T2 runs the route's own code, unwired** ([§ Defaults take
   cache (`owed_of`, `root_node`, `cores_after`), `KnownDead::is_empty`, and the tree's search opened to the crate
   (`St::path_bits`, `Search::order_took`).
 - **Taken by no question**: `explore::describe_by(…, Route::Borders)` and the example below alone call it; `run`
-  is as it was. [`ein-infer/tests/borders.rs`](../../../ein.rs/crates/ein-infer/tests/borders.rs), two tests per
+  is as it was. `ein-infer/tests/borders.rs`, two tests per
   commit on seven programs (4.5 s): the border route's description is the state route's, `N` taken and not, and
   the cube's where the oracle reaches. Probed on the final tree and reverted: a maximal line read as *at most two
   alive extensions* and a class's transversal taken for a generator one candidate short both fail both tests; a
   maximal line read as *at most one* passes, no state of the seven having exactly one alive extension.
-- [`price_list --borders`](../../../ein.rs/crates/ein-infer/examples/price_list.rs), in
-  [`examples/shared/borders.rs`](../../../ein.rs/crates/ein-infer/examples/shared/borders.rs): per program, describe
+- `price_list --borders`, in `examples/shared/borders.rs`: per program, describe
   and `--count` by both routes at the default budget with the options `ein solve` gives them (describe takes `N`,
   `--count` does not, no core), the work of each border and their sizes, the two descriptions compared where both
   finish and the border route's against the cube within `--region-limit`, the global borders' sizes off the state
@@ -264,6 +264,7 @@ never finishes), so **T2 runs the route's own code, unwired** ([§ Defaults take
 #### The command
 
 ```sh
+git checkout 580e79fc   # the measured code; T3 removed the global border and the mode
 cargo build --manifest-path ein.rs/Cargo.toml --release -p ein-infer --example price_list
 EIN_TEST_JOBS=8 utils/bench_env.sh --cores P:8 ein.rs/target/release/examples/price_list --borders \
     --out build/s1f.10.17 > build/s1f.10.17/borders.out 2> build/s1f.10.17/borders.env
@@ -453,3 +454,177 @@ route, as it asks a second question where the first leaves a claim undecided.
 8. The pages: `read_out.md` (the `route`, `N`, `exhausted` rows, the partial forms, the stderr note),
    `finding_r.md` § 6, `configuration.md`, `implementation.md`, `answer_dump.md` where a key's words change,
    `AGENTS.md`'s command block.
+
+### T3 as ruled: the two routes, built
+
+**What describe does now.** On a monotone program whose root is alive, `explore::run` asks `tree_classes::branches`
+whether root owes an instance L5 or L9 licenses, off root's fixpoint and the obligation pass's table, with no node.
+Where it does and `Options::describe_route` is `Tree` (the default; `ein solve --describe-route tree`), describe and
+`--count` take **the tree and the classes** (`ein_infer::tree_classes`): `R`'s states by `tree::find` with no `N`,
+root's one-up extensions for the candidates dead alone, each state's class by dualise and advance inside `2^s`. Where
+it does not, or under `--describe-route states`, they take **the state route** as it was. A flagged program, a dead
+root and every mode are as they were. `Answer::describe_alt` names the other route where there is one, which a
+stopped run's note reads.
+
+**What the tree and the classes say they did not compute** (`described::of_tree_classes`):
+
+- **`N`**: `nogoods_skipped`, the members met the candidates dead alone. Where ⊤ is in `R` it is empty and known, and
+  where every state the run met was extended by every candidate it is read off the states as the state route reads
+  it, no node asked: the duality, not the dualisation T2 measured. The `N` row says *not computed by the tree and the
+  classes — ≥ k minimal dead sets, the candidates dead alone; --describe-route states computes N*; the summary's
+  `region.nogoods` is `null`; `nogoods.json` holds the members met; `--trace`'s heading says what they are.
+- **An empty `R`'s owing frontier**: `frontier_skipped`, the members met the owing states extended by every candidate
+  with no alive extension. The listing says so, lists them, and prints no `(region (owing …))`; the summary's
+  `region.frontier` is `null`; a region claim over an empty `R` is not checked (`read_out::check_claim`), and `ein
+  test` asks the describing question again with `--describe-route states` where that left the program's solve claim
+  unchecked (`ein-cli/src/test.rs`; the row's route is `describe --describe-route states`).
+- **A stopped run** (`described::TreePartial`): the part it stopped in. In `R`'s states: a lower bound, the maximal line
+  those met with every extension dead. In the singles: every state of `R`, the maximal line exact. In the classes:
+  the same and the commitments of the states whose class was found, `k_c` a lower bound counting one for each other.
+  A query over all of `R` or its maximal line is exact past `R`'s states.
+
+**The warning, by default.** A describe or `--count` the budget stops writes, on stderr, `note: FILE: partial —` with
+the forecast, what was established, what was not, and the options. The state route's:
+
+```text
+note: examples/zebra2-minus-15.ein: partial — the state route stopped before the states of 3 candidates at
+--region-budget 1048576: their 12 289 extensions project 921 675 facts on top of the 545 596 spent. Established:
+every alive state of up to 2 candidates, R's 32 met among them; not established: R's other states, k_c, the lines,
+the shape and N. --region-budget 1 467 271 or more takes the next layer; --describe-route tree finds R's states by
+the obligation tree and their classes, and not N
+```
+
+and the tree and the classes':
+
+```text
+note: examples/zebra2-minus-15.ein: partial — the tree and the classes stopped in the classes, those of 18 of R's 32
+states found at --region-budget 1048576: the next step projects 93 facts on top of the 1 048 538 spent. Established:
+R's 32 states, every one, its maximal line, and the commitments of 18 of them; not established: k_c, the minimal line
+and the shape; N is not computed by this route. A larger --region-budget takes more steps; --describe-route states
+visits every alive state and computes N
+```
+
+(Each one line on stderr; wrapped here.) The `exhausted` row says the same in short. `note:` and not `warning:`:
+the read-out's stderr has no `warning:` line and every partial run's line is a `note:`
+([`read_out.md` § 10](../../../docs/kernel/inference/read_out.md#10-stderr)).
+
+**What was removed**: T2's global border (`borders::global`, `Global`, `Met`, `known_dead`, the `global_*` and
+`maximal_alive` counters), `Route::Borders` (now `Route::TreeClasses`, with the words *the tree and the classes*),
+`explore::BorderWork` (now `TreeWork`, the three parts' work), `price_list --borders` (now `--describe-routes`).
+
+### T4: what holds it
+
+| test | what it holds |
+|---|---|
+| `ein-infer/tests/tree_classes.rs`' `every_field_both_routes_compute_is_one_on_the_corpus` | on every corpus program and register witness, monotone with an alive root, both routes forced: every field both compute is the same (`Described::differences`; where one computed `N` or the frontier and the other did not, the members met are members), `N` asked and not; where the state route stops and the tree does not, what it met of `R` is the tree's. Per commit without the `slow` entries; with them under `EIN_CORPUS_SLOW=1` on the nightly and `--dev-host` (`nightly.yml`, `run_tests.sh`): 150 s on four P-core threads at `EIN_TEST_JOBS=4` (`utils/bench_env.sh --cores PT:4`, load average 20), one step, no shard |
+| `…both_routes_are_the_oracle_where_it_reaches` | each route forced against the cube on every such program within `--region-limit` |
+| `…the_default_takes_the_tree_where_it_branches` | the route `explore::run` takes, and `describe_alt`, both ways |
+| `…a_stopped_run_says_what_it_established_and_no_more` | the tree and the classes at budgets 1 to 2^11 on six programs: every state listed in `R`, `k_c` no more than the whole, no minimal line, no shape, `N` not as if computed; past `R`'s states, every state, the maximal line and each class found the whole run's; past the singles, the candidates dead alone. It stops in `R`'s states and in the classes among them |
+| `ein-infer/tests/explore.rs`' `every_mode_is_the_oracle` | describe and `--count` by the default and by `--describe-route states`, every cell against the cube; `N` and the frontier where computed, their members met where not |
+| `…a_description_asked_without_n_is_the_description_less_n` | as before, the tree and the classes computing no `N` asked or not |
+| `ein-infer/tests/claim_routes.rs`' `a_region_claim_the_tree_leaves_is_decided_by_the_state_route` | every program's region claim within the oracle's limit: the default's word where it decides is the oracle's; where it does not, `R` is empty, the frontier not computed, and the state route's word is the oracle's (three programs need it) |
+| `ein-cli/tests/lever_invariance.rs`' `the_describe_route_moves_no_part_of_r` | through the binary, describe and `--count` under both values on every program not `slow`: every key of `region` that is `R`'s the same where both exhausted, `nogoods` and `frontier` where both wrote one, every claim's outcome but one over a frontier the tree did not compute |
+| `ein-infer/tests/unheld.rs` | describe and `--count` with L9 and without: one `R`, the route moving with L9 (it decides whether the tree branches on two programs) |
+| `ein-cli/tests/answer_round_trip.rs`, `route_invariance.rs`, `read_out_reference.rs`, `read_out_examples.rs`, `config_reference.rs`, `help_surface.rs`, `wrong_answers.rs`, `register_region.rs` | as they were, on the default; a register row that records `N` asks `--describe-route states` |
+
+**Agreement on the corpus** (`price_list --describe-routes`, below): every field both routes compute is the same on
+the 163 programs both finish, and each route's description is the cube's on the 142 within `--region-limit`.
+
+### What the default costs, against the state route
+
+```sh
+cargo build --manifest-path ein.rs/Cargo.toml --release -p ein-infer --example price_list
+mkdir -p build/s1f.10.17/t3
+EIN_TEST_JOBS=8 utils/bench_env.sh --cores P:8 ein.rs/target/release/examples/price_list --describe-routes \
+    --out build/s1f.10.17/t3 > build/s1f.10.17/t3/routes.out 2> build/s1f.10.17/t3.env
+```
+
+2026-11-16 15:38, `40ecb75d`, eight P-cores, on AC, load average 9 (other work on the machine): its files under the
+untracked `build/s1f.10.17/t3/describe/`. **Taken twice**, the counts one digest with the walls left out (`jq -c -S
+'del(.describe.default.wall, .describe.states.wall, .count.default.wall, .count.states.wall)' routes.jsonl | md5sum`:
+`f77675e19484ea9d75b83e78f3a878a5`, this run and one on the tree before the last fixes to the read-out).
+
+Over the 173 programs that search and that the static check calls monotone with an alive root, saturations · facts
+beyond root; `--count`'s columns are describe's to the saturation, neither route spending a node on `N`:
+
+| | the state route | the default | programs on the tree and the classes | lower | higher by more than a tenth |
+|---|---:|---:|---:|---:|---:|
+| describe | 1 234 652 · 10 286 374 | **605 068 · 8 828 073** | 37 | 19 | 6 |
+| `--count` | 1 234 652 · 10 286 374 | **605 068 · 8 828 073** | 37 | 19 | 6 |
+
+**The six higher** (both questions): `zebra2-minus-15.ein` and its `-obligations` twin, 7 261 · 545 818 stopped →
+11 192 · 1 048 538 stopped in the classes (R's 32 states exact, 18 classes); `lattice/07_two_pairs_two_tables.ein`
+177 · 448 → 149 · 556 (facts); `binary_logic/not_equivalent.ein` 30 · 197 → 27 · 248 (facts);
+`binary_logic/truth_table.ein` 30 · 179 → 39 · 450; `tests/stdlib/bool/inputs/01_in_drives.ein` 11 · 38 → 13 · 62.
+Every other program of the 37 is lower or the same; the other 136 take the state route as before.
+
+| program | the state route | the default |
+|---|---|---|
+| `beyond_arith/send_more_money.ein`, `…_written.ein` | 336 101 · 1 422 943, **stopped**, no state of R met | **18 127 · 222 055, one state**, `k_c` = 1, both lines; `N` not computed |
+| `zebra2-minus-15.ein`, `…-obligations.ein` | 7 261 · 545 818, **stopped**, ≥ 32 states | 11 192 · 1 048 538, **stopped in the classes**: 32 states exact, 18 classes, `k_c` ≥ 138 621 243 |
+| `zebra2.ein`, `zebra2-obligations.ein` | 263 · 22 503 | 120 · 8 786 |
+| `zebra.ein` | 314 · 55 346 | 120 · 17 428 |
+| `beyond_arith/cryptarithm.ein` | 417 · 1 301 | 141 · 747 |
+| `beyond_arith/equation_two_unknowns.ein` | 1 466 · 60 223 | 1 191 · 64 546 |
+| `lattice/06_friends_tables_everyone_sits.ein` | 345 · 969 | 207 · 881 |
+
+`N` is not computed on 26 of the 37, and the owing frontier on three (`equation_no_solution.ein`,
+`binary_logic/equivalent.ein`, `binary_logic/unsatisfiable.ein`, whose region claims `ein test` then decides by the
+state route, and `ein solve` leaves not checked with the option named).
+
+### The forecasts' accuracy
+
+Each step a route takes is projected before it is taken, its nodes times the facts per node so far, and the step's
+facts are read off the run's watch (`shared/describe_routes.rs`' `forecasts`); over every step of every cell of each
+route, both questions:
+
+| route | steps | facts projected | facts spent | spent ÷ projected, per step: p10 · median · p90 · max | steps spending more than twice / less than half |
+|---|---:|---:|---:|---|---:|
+| the state route, a layer a step | 2 428 | 22 668 218 | 32 935 562 | 0.0 · 1.5 · 3.0 · 166 | 590 / 638 |
+| the tree and the classes, 1, 2, 4, … nodes a step | 76 080 | 4 896 762 | 5 290 932 | 1.03 · 1.07 · 1.45 · 88 | 470 / 650 |
+
+So the tree's forecast is good step by step (its steps are small and its nodes alike), and the state route's is
+rough: a layer's nodes grow with its states' size, so it spends half again what it projects at the median and up to
+three times at the ninetieth percentile, and a layer of dead extensions known with no fact spends none. The note
+quotes the projection as the run makes it and calls it that; `--region-budget N` with `N` the spent and projected
+facts takes the state route's next layer only where the forecast holds, which the record above says it often does
+not. Neither forecast reaches past the step: no route knows the cost of the whole run before it.
+
+### Defaults taken (T3 to T5)
+
+1. **The option's name, `--describe-route tree|states`**, the main session's example; the user's to change.
+2. **Where the tree has nothing to branch on, the default takes the state route** and names it: `∅` in `R`, no
+   licensed instance, no candidate. The tree's walk is the state route's there (T2: equal work on every such program
+   both finish), so the `route` row, `N` and every golden of those 136 programs stay as they were. `branches` reads the
+   obligation pass's table a second time, off root's fixpoint, before any node.
+3. **`N` is read off the states where the run met every alive state** (every state met extended by every candidate),
+   as the state route reads it, and is empty and known where ⊤ is in `R`; the dualisation over `H` is removed, as
+   ruled. The frontier likewise.
+4. **`note:`, not `warning:`**, for the forecast: the read-out's convention for a partial run, by default and not only
+   under `-v`; the modes' stopped runs are as they were.
+5. **The state route's note proposes `--region-budget` at the spent and projected facts**, which takes its next layer
+   where the forecast holds; the tree's proposes *a larger* budget, its next step being a node or a few.
+6. **`ein solve` does not fall back** to the state route for a region claim over an uncomputed frontier: it says not
+   checked, with the option; `ein test` falls back, as ruled.
+7. **A register row that records `N`** runs its describe with `--describe-route states` (`wrong_answers.rs`); the
+   register's `[case.region]` route vocabulary gains `tree and classes`, four rows re-banked to it.
+8. **A query over all of `R` or the maximal line is exact past `R`'s states** on a stopped tree run, which lets a
+   claim be decided where `R`'s states are whole and `k_c` is not.
+9. `cost_ms` and the slow set are **not re-taken**: the machine was loaded (load average 9 to 20) throughout. The
+   slow set's per-commit check passes; `utils/corpus_cost.py` on an idle machine would show SEND's cells cheaper.
+
+### What moved
+
+Named in `94bb05cc`'s message, with the filter: the shape golden's lines of the 37 programs that take the tree and
+the classes (`cores[describe]`, `region-lattice`, `region-trace`, `read-out[describe]`), `read-out[describe]` of 11
+whose describe the sweep's budget stops (the note), `states` of 4 (the sweep's budget stops them otherwise);
+`read_out_examples.md`; `help_shape.txt`; four register rows' route word; three test literals. Not moved: any
+answer, any mode's line, `corpus_exits.txt`, the traces, `README.md` and the guide (their transcripts are
+`--single`'s).
+
+### What is not done
+
+- The machine was not idle: no wall here is a measurement, and `cost_ms` and the slow set were not re-taken.
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the main session's, on the batch.
+
+**Findings outside the stage's scope**: none; K-30 stays the last.
