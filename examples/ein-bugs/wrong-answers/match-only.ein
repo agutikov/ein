@@ -1,24 +1,22 @@
 ;;; A name written **only in a rule's `:match`** never became a candidate —
-;;; M1e2 **W15**, register row `W15/match-only` (`corpus/wrong_answers.toml`),
-;;; fixed by S1e2.2.14 (2026-11-04). Banked from S1e2.2.4's residue probe
-;;; of the same day.
+;;; **W15**, register row `W15/match-only` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; W4's program (`../alive-set-fresh-name.ein`) with its `spawn` rule replaced
 ;;; by `reach-z`, which names `Z` in its `:match` and not in its `:assert`.
-;;; `Z` is in no fact and in no `:assert`, so it was neither in the KB's names
-;;; nor in what S1e2.2.4 seeded the blind enumerator with (a rule's `:assert`
-;;; constants), and the candidates were `q` over `A` and `B` alone.
+;;; `Z` is in no fact and in no `:assert`: an enumerator that takes its objects
+;;; from the KB's names and from a rule's `:assert` constants proposes `q` over
+;;; `A` and `B` alone.
 ;;;
 ;;;   `no-a` / `no-b` refute every `q` that points at A or at B.
 ;;;   `reach-z` says what reaching Z means; the query asks it.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `solution_semantics.md` § 1.2: a name is *a constant the program mentions,
-;;; in a fact or in a rule*, and the user ruled on 2026-11-04 that this is
-;;; meant literally (Q-M1e2.9 (a)): a constant anywhere in a rule, `:match`
+;;; A name is *a constant the program writes*, in a fact or anywhere in a rule
+;;; (`docs/ein/reasoning/kb-evolution/solution-semantics.md` § 1.2; Q-M1e2.9):
+;;; a constant anywhere in a rule, its `:match`
 ;;; included, is a name of the program and so a candidate object. So H is the
 ;;; six `q` candidates over A, B and Z, four of them dead alone, and
 ;;; `{(q A Z), (q B Z)}` saturates to a consistent, quiescent state (`reach-z`
@@ -28,12 +26,14 @@
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.14 H was 2 candidates, `(q A B)` and `(q B A)`, both dead
-;;; alone, and R was `{∅}`: root itself, one state (`ein solve FILE` at
-;;; `b63a8738`, 2026-11-04). Since then the blind enumerator's objects are
+;;; At `b63a8738` (`ein solve FILE`), H was 2 candidates, `(q A B)` and
+;;; `(q B A)`, both dead alone, and R was `{∅}`: root itself, one state.
+;;; The blind enumerator's objects are
 ;;; every name of the program (`invariant::program_names`), `Z` among them,
 ;;; and this file answers its control's R, which the `:expect` below states.
 ;;; The register row `W15/match-only` is fixed.
+;;;
+;;;
 
 (relation p T T :why "p holds of {?1} and {?2}")
 (relation q T T :why "q holds of {?1} and {?2}")
@@ -59,7 +59,7 @@
 (solve
   :no-hypothesis (p good)
   ;; `q` is named, so this closes `q`: exactly these positive `q` facts —
-  ;; the -declared control's R, which this file answers since S1e2.2.14.
+  ;; the -declared control's R, which this file answers too.
   :expect (region
             ;; state 1 of 4 — ∅, root itself · minimal
             (model)

@@ -1,5 +1,5 @@
-;;; `open` written as a trace step's name loads — M1f **W71**, register row
-;;; `W71/trace-step`, filed by S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;; `open` written as a trace step's name loads — **W71**, register row
+;;; `W71/trace-step`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -8,7 +8,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
-;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; and is written nowhere else (Q-M1f.66):
 ;;; here it is written as a trace step's name, so the program is refused at the
 ;;; parse, at the `open`, and every command exits 1 (`ein test`: 2).
 ;;;
@@ -16,7 +16,7 @@
 ;;;
 ;;; At `f62e34e1`, release: the program loads, and R is 4 states, exit 0 on
 ;;; every command.
-;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+;;; The engine refuses it at the parse.
 
 (relation a Thing :why "{?1} is an a")
 (relation p Thing :why "{?1} is a p")

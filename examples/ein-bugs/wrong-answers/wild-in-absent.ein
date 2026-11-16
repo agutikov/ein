@@ -1,6 +1,6 @@
-;;; An `(absent …)` over a pattern with a wildcard `_` always holds — M1e2
+;;; An `(absent …)` over a pattern with a wildcard `_` always holds —
 ;;; **W20**, register row `W20/wild-in-absent` (`corpus/wrong_answers.toml`),
-;;; found by S1e2.2.20 (2026-11-05) probing the case's mechanism.
+;;; the case's mechanism under `absent`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,21 +10,21 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `_` in a rule's pattern matches any value, so `(absent (holds _))` asks
-;;; whether there is no `holds` fact of one argument, and `(holds a)` is one:
-;;; `z` never fires. The blind enumerator proposes `(hit a)`, so R is `∅` and
-;;; `{(hit a)}`, no state holding `(hit z)`. It is the answer of
-;;; `wild-in-absent-twin.ein`, this file with `_` written as `?any`.
+;;; A bare `_` is reserved and names nothing (Q-M1e2.22), so the program is
+;;; refused at the parse, at the `_`, on every command. Written `?any`, a
+;;; variable the rule reads nowhere else (`wild-in-absent-twin.ein`),
+;;; `(absent (holds ?any))` asks whether there is no `holds` fact, and
+;;; `(holds a)` is one: `z` never fires, and R is `∅` and `{(hit a)}`.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.20 `z` fired: `_` was an opaque slot that matched nothing,
-;;; so the pattern under `absent` found no fact and the `absent` always held.
-;;; A conclusion the program refutes was in every state: root held `(hit z)`,
-;;; and R was `{(hit z)}` and `{(hit a), (hit z)}` (`ein solve FILE` at
-;;; `c73a0796`, release and debug; every mode and `ein oracle` the same).
-;;; Since then `_` matches any value, `z` never fires, and the program answers
-;;; its twin's R.
+;;; At `c73a0796`, release and debug (every mode and `ein oracle` the same),
+;;; `z` fired: `_` was an opaque slot that matched nothing, so the pattern
+;;; under `absent` found no fact and the `absent` always held. A conclusion
+;;; the program refutes was in every state: root held `(hit z)`, and R was
+;;; `{(hit z)}` and `{(hit a), (hit z)}` (`ein solve FILE`). Today the parse
+;;; refuses the `_`.
+;;;
 
 (relation holds Node) (relation hit Node)
 (holds a)

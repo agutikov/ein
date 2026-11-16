@@ -1,36 +1,36 @@
-;;; A string written in a rule's `:match` never matches — M1e2 **W18**,
-;;; register row `W18/str-in-match` (`corpus/wrong_answers.toml`), banked by
-;;; S1e2.2.18 (2026-11-04) from S1e2.2.16's parked note, where it was
-;;; `build/s1e2.2.16/textkey/str-in-match.ein`.
+;;; A string written in a rule's `:match` never matches — **W18**,
+;;; register row `W18/str-in-match` (`corpus/wrong_answers.toml`).
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; Four `holds` facts: the int `1`, the string `"1"`, the atom `a` and the
-;;; string `"b"`. The loader holds a string written as a fact's argument as
-;;; the symbol it names (`syntax.md`'s `STRING` row), so `(holds "b")` is
-;;; the fact `(holds b)`, and `(holds "1")` holds the symbol `1`, a value
-;;; apart from the int. Three rules match one `holds` fact each: `s` writes
-;;; the string `"1"`, `t` the atom `b`, `u` the int `1`. `t` and `u` are the
-;;; controls.
+;;; Four `holds` facts, over the names `1` and `a` and the strings `"1"`
+;;; and `"b"`. Three rules match one `holds` fact each: `s` writes the
+;;; string `"1"`, `t` the name `b`, `u` the name `1`. `t` and `u` are
+;;; the controls.
+;;;
+;;;
+;;;
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A string in a rule means what it means in a fact, so `s` matches
-;;; `(holds "1")` as `t` matches `(holds "b")`: root derives `(hit s)`,
-;;; `(hit t)` and `(hit u)`. The blind enumerator proposes `(hit 1)`,
-;;; `(hit a)` and `(hit b)`, nothing refutes, so R is their eight subsets,
-;;; and every state holds the three `hit` facts root derives.
+;;; A string is natural-language text, never a value (Q-M1e2.23), written
+;;; only after `:why`, `:source` or `:goal-text`: the program is refused at
+;;; the parse, at its first string, on every command.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.18 `t` and `u` fired and `s` never did: the rule compiler
-;;; did not lower a string, so in a `:match` it was an opaque slot that
-;;; matched nothing (`compile.rs`' `slot`). R was the eight subsets, and no
-;;; state held `(hit s)`: `ein solve FILE --minimal` at `ff023413` printed
-;;; root's state as `(model (hit t) (hit u))`, the summary's
-;;; `root.facts_by_relation.hit` 2, in a release build and a debug one.
-;;; Since then the compiler lowers a string as the loader does, the symbol it
-;;; names, and root's state is `(model (hit s) (hit t) (hit u))`.
+;;;
+;;; ── What the engine answered, and what it answers ──────────────────────
+;;;
+;;; At `ff023413`, in a release build and a debug one, `t` and `u` fired and
+;;; `s` never did: the rule compiler did not lower a string, so in a
+;;; `:match` it was an opaque slot that matched nothing (`compile.rs`'
+;;; `slot`). R was the eight subsets, and no state held `(hit s)`: `ein solve
+;;; FILE --minimal` printed root's state as `(model (hit t) (hit u))`, the
+;;; summary's `root.facts_by_relation.hit` 2. Today the program is refused
+;;; at the parse: *unexpected `"1"`: a string*.
+;;;
 
 (relation holds Node) (relation hit Node)
 (holds 1) (holds "1") (holds a) (holds "b")

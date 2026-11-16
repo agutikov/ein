@@ -1,9 +1,6 @@
 ;;; A relation parameter its activator binds to a nested fact reads nothing,
-;;; in silence — M1e2 **W24**, register row `W24/nested-fact-activator`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.24 (2026-11-05) from its
-;;; step 1's probe `build/s1e2.2.24/shapes/n-var-param-nested-activator.ein`
-;;; (the program unchanged), ruled by the user on 2026-11-05 (Q-M1e2.18
-;;; (iv)(a)).
+;;; in silence — **W24**, register row `W24/nested-fact-activator`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -14,23 +11,26 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; A relation is named by a symbol, and a nested fact binds no parameter.
-;;; The user ruled that an activator binding a relation parameter to a nested
-;;; fact is refused at load where it is written, as one binding it to an
-;;; integer is (S1e2.2.4), and by the compiler where a rule derives it
-;;; through a variable. Every command that loads this program exits 1 (`ein
-;;; test`: 2).
+;;; An activator binding a relation parameter to a nested fact is refused at
+;;; load where it is written (Q-M1e2.18), and so is a rule that could derive
+;;; one through a variable (Q-M1f.1). Every command that loads this program
+;;; exits 1 (`ein test`: 2).
+;;;
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.24 the program loaded, and the inner pattern was an opaque
-;;; slot (the parameter unbound), which matched nothing, so `r` never fired:
-;;; root held no `hit`, exit 0, in silence; the same pattern at the top
-;;; level, `(?R b)`, stopped compilation with a `CompileError` in the Python
-;;; IR's spelling (`ein saturate --dump FILE` and `ein solve FILE` at
-;;; `f8c10730`, release and debug). Since then the loader refuses it: *kb
+;;; At `f8c10730` (`ein saturate --dump FILE` and `ein solve FILE`, release
+;;; and debug) the program loaded, and the inner pattern was an opaque slot
+;;; (the parameter unbound), which matched nothing, so `r` never fired: root
+;;; held no `hit`, exit 0, in silence; the same pattern at the top level,
+;;; `(?R b)`, stopped compilation with a `CompileError` in the Python IR's
+;;; spelling. The loader refuses it: *kb
 ;;; load error: rule 'r': its parameter ?R names a relation, and (r (a b))
 ;;; binds it to the fact (a b) — a relation is named by a symbol, not a
 ;;; fact*.
+;;;
+;;;
+;;;
 
 (relation box Node :why "{?1} is in a box") (relation c Node :why "c holds of {?1}") (relation hit Node :why "{?1} is hit") (relation a Node :why "a holds of {?1}") (relation rel Node :why "rel holds of {?1}") (relation item Node :why "{?1} is an item")
 (box (a b)) (box (c (a b))) (not (a b)) (rel a) (item i)

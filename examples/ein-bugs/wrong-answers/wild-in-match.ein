@@ -1,7 +1,7 @@
-;;; A wildcard `_` in a rule's `:match` matches nothing — M1e2 **W20**,
-;;; register row `W20/wild-in-match` (`corpus/wrong_answers.toml`), banked by
-;;; S1e2.2.20 (2026-11-05) from S1e2.2.18's parked note, ruled by the user on
-;;; 2026-11-04; a bare `_` is reserved and refused today (Q-M1e2.22).
+;;; A wildcard `_` in a rule's `:match` matches nothing — **W20**,
+;;; register row `W20/wild-in-match` (`corpus/wrong_answers.toml`); a bare
+;;; `_` is reserved and refused (Q-M1e2.22).
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,21 +10,21 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `_` in a rule's pattern matches any value (`syntax.md`'s token table,
-;;; *head / arg wildcard in patterns*, and the user's ruling), so `w` fires on
-;;; `(holds a)` and root holds `(hit w)`. The blind enumerator proposes
-;;; `(hit a)`, so R is two states, `{(hit w)}` and `{(hit a), (hit w)}`. It
-;;; is the answer of `wild-in-match-twin.ein`, this file with `_` written as
-;;; a variable the rule reads nowhere else.
+;;; A bare `_` is reserved and refused wherever it is written (Q-M1e2.22):
+;;; the program is refused at the parse, at the `_`, on every command. With
+;;; `_` written as a variable the rule reads nowhere else
+;;; (`wild-in-match-twin.ein`), `w` fires on `(holds a)` and root holds
+;;; `(hit w)`; the blind enumerator proposes `(hit a)`, so R is two states,
+;;; `{(hit w)}` and `{(hit a), (hit w)}`.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.20 `w` never fired: the rule compiler lowered `_` as an
-;;; opaque slot, which unifies with nothing (`compile.rs`' `slot`). Root held
-;;; no `hit`, and R was `∅` and `{(hit a)}`, no state holding `(hit w)` (`ein
-;;; solve FILE` at `c73a0796`, release and debug; every mode and `ein oracle`
-;;; the same). Since then `_` is a slot that matches any value and binds
-;;; nothing, and the program answers its twin's R.
+;;; At `c73a0796`, release and debug (every mode and `ein oracle` the same),
+;;; `w` never fired: the rule compiler lowered `_` as an opaque slot, which
+;;; unifies with nothing (`compile.rs`' `slot`). Root held no `hit`, and R
+;;; was `∅` and `{(hit a)}`, no state holding `(hit w)` (`ein solve FILE`).
+;;; Today the parse refuses the `_`.
+;;;
 
 (relation holds Node) (relation hit Node)
 (holds a)

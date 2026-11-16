@@ -1,8 +1,8 @@
-;;; *forbid* misses a refutation whose activator chain first appears at a
-;;; node — M1e2 **W17**, register row `W17/forbid-chain-1`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.17 (2026-11-04) from
-;;; S1e2.2.16's parked note, where it was
-;;; `build/s1e2.2.16/extra/node-chain-sym.ein`.
+;;; *forbid* misses a refutation whose activator chain first appears at a node —
+;;; **W17**, register row `W17/forbid-chain-1` (`corpus/wrong_answers.toml`).
+;;;
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -14,29 +14,29 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `{(p a)}` dies, its `(false)` resting through two activators on
-;;; `(absent (p2 a))`, and `{(p a), (p2 a)}` lives: a dead hole. `p2` is a
-;;; relation a commitment can extend, so this is *forbid* with F2's *via,
-;;; per activator* (the user's rulings of 2026-11-02 and 2026-11-04): the
-;;; program is refused at every command that takes the universe, as
+;;; `{(p a)}` dies, its `(false)` resting through two activators on `(absent (p2
+;;; a))`, and `{(p a), (p2 a)}` lives: a dead hole. `p2` is a relation a
+;;; commitment can extend, so this is *forbid*, through an activator (Q-M1e2.5):
+;;; the program is refused at every command that takes the universe, as
 ;;; `forbid-chain-0.ein`, the same chain one link shorter, is.
+;;;
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.17 it loaded: R three states, ∅, {(p2 a)} and
-;;; {(p a), (p2 a)}, the one dead hole {(p a)}, exit 0, in every mode and
-;;; `ein oracle` (`ein solve FILE` at `3efd3f5f`). *forbid* read a rule with
-;;; parameters root has no plan of from its pattern only when its activator
-;;; relation was in D, and D's closure follows reads, not activators: `q`'s
-;;; is (root's plan of `mk` writes it), `r2`'s is not (only `q`'s plan, which
-;;; root never compiled, writes it), so `r2` was never read, and the
-;;; read-out's status line named no site: *exercised, by* and an empty list.
-;;; Since then *forbid* reads such a rule whenever its activator relation is
-;;; in D⁺, D followed through the rules root has no plan of, and every
-;;; question about a commitment exits 1: `rule 'r2': concludes (false) from
-;;; its activator, which rule 'q' derives resting on (absent …) over p2`.
-;;; Studied past the refusal, the status names `q`, the activator site the
-;;; chain runs through. `forbid-chain-2.ein` is the chain one link longer.
+;;; At `3efd3f5f` it loaded: R three states, ∅, {(p2 a)} and {(p a), (p2 a)},
+;;; the one dead hole {(p a)}, exit 0, in every mode and `ein oracle` (`ein
+;;; solve FILE` at `3efd3f5f`). *forbid* read a rule with parameters root has no
+;;; plan of from its pattern only when its activator relation was in D, and D's
+;;; closure follows reads, not activators: `q`'s is (root's plan of `mk` writes
+;;; it), `r2`'s is not (only `q`'s plan, which root never compiled, writes it),
+;;; so `r2` was never read, and the read-out's status line named no site:
+;;; *exercised, by* and an empty list. Now *forbid* reads such a rule whenever
+;;; its activator relation is in D⁺, D followed through the rules root has no
+;;; plan of, and every question about a commitment exits 1: `rule 'r2':
+;;; concludes (false) from its activator, which rule 'q' derives resting on
+;;; (absent …) over p2`. Studied past the refusal, the status names `q`, the
+;;; activator site the chain runs through. `forbid-chain-2.ein` is the chain one
+;;; link longer.
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q T :why "q holds of {?1}") (relation r2 T :why "r2 holds of {?1}")
 

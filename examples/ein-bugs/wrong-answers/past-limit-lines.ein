@@ -1,9 +1,9 @@
-;;; The line modes past `--region-limit` — M1e2 **W27**, register rows
+;;; The line modes past `--region-limit` — **W27**, register rows
 ;;; `W27/past-limit-lines-minimal` and `W27/past-limit-lines-maximal`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.26 (2026-11-05) on the
-;;; user's ruling of that day (Q-M1e2.19): the smallest program the static
-;;; check flags whose cube is past the default limit of 16, so a bare `ein
-;;; solve` and its two line modes stop there with every member of R met.
+;;; (`corpus/wrong_answers.toml`), under Q-M1e2.19: the smallest program the
+;;; static check flags whose cube is past the default limit of 16, so a bare
+;;; `ein solve` and its two line modes stop there with every member of R
+;;; met.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,7 +12,7 @@
 ;;; seat on a broken chair is dead. 17 candidates, the 16 seats and the one
 ;;; meal. The obligation's trigger reads `is-a`, which a commitment changes
 ;;; (`seated-dines`), so the static check flags the program and R is the
-;;; cube's, every node a fork of root (F21's D2).
+;;; cube's, every node a fork of root.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -28,17 +28,17 @@
 ;;; first, so the minimal line is certified {∅}; the maximal line needs the
 ;;; whole cube. That is what describe (`ein solve FILE`) says.
 ;;;
-;;; ── What the engine answered, and answers ──────────────────────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.26, `ein solve FILE --minimal` labelled all three members
-;;; met `· minimal`, and `--maximal` all three `· maximal`, ∅ among them
-;;; (`minimal line 3 states (a lower bound: the run stopped first)`), release
-;;; and debug, at `d05d7c83`: past the limit `explore::flagged` asked the
-;;; cube for every member and labelled each with the mode's line. Since its
-;;; fix (`c21f93fc`) a line mode answers from describe's description:
-;;; `--minimal` lists ∅ and counts the other two members met, and every
+;;; At `d05d7c83`, release and debug, `ein solve FILE --minimal` labelled all
+;;; three members met `· minimal`, and `--maximal` all three `· maximal`, ∅
+;;; among them (`minimal line 3 states (a lower bound: the run stopped
+;;; first)`): past the limit `explore::flagged` asked the cube for every
+;;; member and labelled each with the mode's line. Today a line mode answers
+;;; from describe's description: `--minimal` lists ∅, certified, and every
 ;;; `--maximal` question lists none, the maximal line not known, and counts
-;;; all three (Q-M1e2.19).
+;;; the three members met (Q-M1e2.19).
+;;;
 
 (import std.algebra :symbols (total-owed))
 

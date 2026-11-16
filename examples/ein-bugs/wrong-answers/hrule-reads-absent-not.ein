@@ -1,6 +1,6 @@
-;;; An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build —
-;;; M1f **W85**, register row `W85/hrule-reads-absent-not`, filed by S1f.7.2 (T1f.7.2.2,
-;;; 2026-11-11).
+;;; An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build
+;;; — **W85**, register row `W85/hrule-reads-absent-not`.
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -16,11 +16,11 @@
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
-;;; At `55aadd0b`, release: this R, exit 0, and the claim holds. A build with debug
-;;; assertions stopped where `ein solve` took H, exit 101: *an hrule reads `not`,
-;;; which hypgen's kill cache writes mid-enumeration* (`hrule.rs`'s `debug_assert!`),
-;;; on every solve question, `ein oracle` and `ein test`.
-;;; One answer from both builds since S1f.7.2 (T1f.7.2.3).
+;;; At `55aadd0b`, release: this R, exit 0, and the claim holds. A build with
+;;; debug assertions stopped where `ein solve` took H, exit 101: *an hrule reads
+;;; `not`, which hypgen's kill cache writes mid-enumeration* (`hrule.rs`'s
+;;; `debug_assert!`), on every solve question, `ein oracle` and `ein test`. Now
+;;; one answer from both builds.
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

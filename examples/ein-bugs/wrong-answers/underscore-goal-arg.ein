@@ -1,7 +1,7 @@
-;;; A bare `_` in a query's goal is accepted, and answered — M1f **W29**,
-;;; register row `W29/goal-arg` (`corpus/wrong_answers.toml`), banked by
-;;; S1f.5.0 (2026-11-08) from S1f.5.1's case, filed `open` and owned by
-;;; S1f.5.1, on the user's ruling of 2026-11-06 (Q-M1e2.22).
+;;; A bare `_` in a query's goal is accepted, and answered — **W29**,
+;;; register row `W29/goal-arg` (`corpus/wrong_answers.toml`), under
+;;; Q-M1e2.22.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -13,13 +13,13 @@
 ;;; refused at load, with a line naming the place: every command that reads it
 ;;; exits 1 (`ein test`: 2).
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; The program loads, R is {∅}, and the query is answered: one projection
-;;; class, *the goal holds: it has no variable*, and the read-out suggests
-;;; `:expect (model (holds _))`, which the loader refuses: *`_` is a
-;;; wildcard; an expectation is an answer, not a pattern* (`ein solve FILE` at
-;;; `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+;;; At `ec004a48` (the engine `916d97ac`'s), release and debug alike: the
+;;; program loaded, R was {∅}, and the query was answered: one projection
+;;; class, *the goal holds: it has no variable*, and the read-out suggested
+;;; `:expect (model (holds _))`, which the loader refused (`ein solve FILE`).
+;;; Today the parse refuses the `_`.
 
 (relation holds T)
 (holds a)

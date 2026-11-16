@@ -1,6 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)` —
-;;; M1f **W84**, register row `W84/not-name-concluded`, filed by S1f.7.4 (T1f.7.4.2,
-;;; 2026-11-11).
+;;; **W84**, register row `W84/not-name-concluded`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -21,7 +20,8 @@
 ;;; conclusion. R is {∅}, exit 0 on every command, and the state file `ein solve
 ;;; --dump-answer` writes holds `(not Ann)` and does not reload, *unexpected `Ann`: a
 ;;; name*.
-;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

@@ -1,9 +1,9 @@
 ;;; A goal's `neq` with a free variable holds with nothing bound, and a claim
-;;; naming `neq` is refused — M1f **W55**, register row `W55/goal-neq-free`
-;;; (`corpus/wrong_answers.toml`), filed by S1f.5.7 (T1f.5.7.1, 2026-11-09)
-;;; from its case (the inventory of 2026-11-06's S-18, its probe
-;;; `goal_guard.ein` with the claim its answer states), `open` and owned by
-;;; S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26).
+;;; naming `neq` is refused — **W55**, register row `W55/goal-neq-free`
+;;; (`corpus/wrong_answers.toml`); `eq` and `neq` are relations (Q-M1e2.26).
+;;;
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; Two candidates, each refuted in ONE firing — the control for
-;;; `forced-2-two.ein` (M1e2 **W1**, register row `W1/forced-2-two`).
+;;; `forced-2-two.ein` (**W1**, register row `W1/forced-2-two`).
 ;;;
 ;;; The two files have the same objects, the same candidates and the same
 ;;; logical content: every `(q ?x)` is refuted. They differ only in how many
@@ -11,13 +11,13 @@
 ;;; Root is consistent and every hypothesis dies with it, so root is the one
 ;;; solution (Q-M1e.6, clause 3): **`Solution`, k = 1, a model with no `q`.**
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine answered before `fbcae3b2` ─────────────────────────────
 ;;;
-;;; `Solution` k = 1 — right. The pre-branch lookahead sees each death (one
-;;; firing is what it simulates), caches `(not (q one))` and `(not (q two))`,
-;;; `alive` is empty, and root is recorded.
+;;; `Solution` k = 1 — right. The pre-branch lookahead saw each death (one
+;;; firing is what it simulated), cached `(not (q one))` and `(not (q two))`,
+;;; `alive` was empty, and root was recorded.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;; Now R is {∅}, root alone (`ein solve FILE`).
 (relation thing T :why "{?1} is a thing")
 (relation q T :why "q holds of {?1}")
 (thing one) (thing two)

@@ -1,21 +1,21 @@
-;;; The control of `guard-only-second.ein` — M1e2 **W25**, register row
-;;; `W25/guard-only-second`'s control, banked by S1e2.2.25 (2026-11-05) from
-;;; the inventory of 2026-11-05's probe `guard_only_first.ein`.
+;;; The control of `guard-only-second.ein` — **W25**, register row
+;;; `W25/guard-only-second`'s control.
 ;;;
-;;; Until M1f S1f.5.15 it was the witness with the two refuting rules'
-;;; priorities swapped (`early` at 300, `w` at 10), so that `w`, the
-;;; premise-less derivation from the activator `(w a)`, fired first, was
-;;; `(false)`'s primary, and the search saw it. Since S1f.5.15 no rule has a
-;;; priority: the agenda is FIFO, the written and arrival order (the user's
-;;; ruling of 2026-11-08 on Q-M1f.6), and the witness with its priorities
-;;; taken out *is* the witness, reporting W25's wrong core. So the control
-;;; now gets its order from its rules: `early` reads `(pp ?x)`, which `mk-pp`
-;;; derives from `(p ?x)`, so when `(p a)` is committed `mk` and `mk-pp`
-;;; queue first, `mk` derives `w`'s activator `(w a)`, `w`'s candidate queues
-;;; before `(pp a)` exists, and `w` fires before `early`. `(pp a)`'s closure is
-;;; `(p a)`, so `early`'s derivation rests on what it did. N `{(p a)}`'s core is
-;;; `(p a)`, the activator's own support, which is the witness's right answer
-;;; (`ein solve FILE --dump-answer DIR`, 2026-11-08).
+;;;
+;;; Its point is that `w`, the premise-less derivation from the activator `(w
+;;; a)`, fires first, is `(false)`'s primary, and the search sees it. No rule
+;;; has a priority: `early` and `w` both conclude `(false)`, and the agenda
+;;; fires them in the written and arrival order (Q-M1f.313), so the control gets
+;;; its order from its rules: `early` reads `(pp ?x)`, which `mk-pp` derives
+;;; from `(p ?x)`, so when `(p a)` is committed `mk` and `mk-pp` queue first,
+;;; `mk` derives `w`'s activator `(w a)`, `w`'s candidate queues before `(pp a)`
+;;; exists, and `w` fires before `early`. `(pp a)`'s closure is `(p a)`, so
+;;; `early`'s derivation rests on what it did. N `{(p a)}`'s core is `(p a)`,
+;;; the activator's own support, which is the witness's right answer (`ein solve
+;;; FILE --dump-answer DIR`'s `nogoods.json`).
+;;;
+;;;
+;;;
 
 (relation seed T :why "{?1} is a seed")
 (relation p    T :why "{?1} is p")

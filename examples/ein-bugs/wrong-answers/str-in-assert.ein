@@ -1,32 +1,32 @@
-;;; A string written in a rule's `:assert` stops the run — M1e2 **W18**,
-;;; register row `W18/str-in-assert` (`corpus/wrong_answers.toml`), banked
-;;; by S1e2.2.18 (2026-11-04) from S1e2.2.16's parked note, where it was
-;;; `build/s1e2.2.16/textkey/str-in-assert.ein`.
+;;; A string written in a rule's `:assert` stops the run — **W18**,
+;;; register row `W18/str-in-assert` (`corpus/wrong_answers.toml`).
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; Two `holds` facts, the int `1` and the atom `a`, and one rule that tags
+;;; Two `holds` facts, over the names `1` and `a`, and one rule that tags
 ;;; each with the string `"lbl"`.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A string in a rule means what it means in a fact, the symbol it names,
-;;; so root derives `(tag 1 lbl)` and `(tag a lbl)`. `lbl` is a name of the
-;;; program, a constant a rule's `:assert` writes (Q-M1e2.9 (a)), so the
-;;; blind enumerator proposes facts about it: R is four states over
-;;; `(holds lbl)` and `(tag lbl a)`, root's holding the two `tag` facts. It
-;;; is the answer of this file with `"lbl"` written `lbl`.
+;;; A string is natural-language text, never a value (Q-M1e2.23), written
+;;; only after `:why`, `:source` or `:goal-text`: the program is refused at
+;;; the parse, at its first string, on every command.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Nothing, until S1e2.2.18: every command that saturates stopped at `s`'s
-;;; first firing, exit 1, because the rule compiler did not lower a string,
-;;; and an opaque slot in an `:assert` has no value to store. `ein saturate
-;;; FILE` ended with `TypeError: an unrecognised `:assert` slot has no value
-;;; to store`, and `ein solve` and `ein oracle` printed the message alone, at
-;;; `ff023413`, in a release build and a debug one. Since then the compiler
-;;; lowers a string as the loader does, `lbl` is a name of the program, and
-;;; every command answers the twin's R, exit 0.
+;;;
+;;;
+;;; ── What the engine answered, and what it answers ──────────────────────
+;;;
+;;; At `ff023413`, in a release build and a debug one, every command that
+;;; saturates stopped at `s`'s first firing, exit 1, because the rule
+;;; compiler did not lower a string, and an opaque slot in an `:assert` has
+;;; no value to store. `ein saturate FILE` ended with `TypeError: an
+;;; unrecognised `:assert` slot has no value to store`, and `ein solve` and
+;;; `ein oracle` printed the message alone. Today the program is refused at
+;;; the parse: *unexpected `"lbl"`: a string*.
+;;;
 
 (relation holds Node) (relation tag Node Node)
 (holds 1) (holds a)

@@ -1,7 +1,7 @@
 ;;; The twin of `written-rule-leaves-core.ein`: the same program with `(paid Ann)` written without a
 ;;; `:rule` —
-;;; M1f **W87**, register row `W87/written-rule-leaves-core`'s twin, filed by S1f.7.9 (T1f.7.9.2,
-;;; 2026-11-11).
+;;; **W87**, register row `W87/written-rule-leaves-core`'s twin.
+;;;
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

@@ -1,8 +1,5 @@
-;;; A premise that is not a form is dropped, in silence — M1e2 **W24**,
-;;; register row `W24/bare-premise` (`corpus/wrong_answers.toml`), banked by
-;;; S1e2.2.24 (2026-11-05) from the inventory of 2026-11-05's W-13 (its probe
-;;; `bare_premise.ein`, the program unchanged), ruled by the user on
-;;; 2026-11-05.
+;;; A premise that is not a form is dropped, in silence — **W24**,
+;;; register row `W24/bare-premise` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -14,23 +11,26 @@
 ;;;
 ;;; A premise is a pattern `(relation argument …)`, a guard, an `(absent
 ;;; …)`, or an `(and …)` or `(or …)` of premises; `_` and `foo` are none.
-;;; The user ruled that such a premise is refused at load, as a range and a
-;;; head `_` are, with a line in Ein's spelling naming the rule and the
-;;; clause. Every command that loads the program exits 1 (`ein test`: 2).
+;;; Such a premise is refused, as a range and a bare `_` are (Q-M1e2.24,
+;;; Q-M1e2.22). Every command that loads the program exits 1 (`ein test`: 2).
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; Until S1e2.2.24 the program loaded, and the rule compiler dropped each
+;;; The program loaded, and the rule compiler dropped each
 ;;; such premise (`compile.rs`' `premise`, whose `_ => return Ok(())` arm
 ;;; took it), so each rule fired as if it were not written: `a` and `c` with
 ;;; no premise at all, and `b` on `(hit ?y)` alone. Root derived `(r1 z)`,
 ;;; `(r2 w)` and `(r3 z)`, exit 0, with no word of the premises (`ein saturate --dump
 ;;; FILE` and `ein solve FILE` at `32736ac8`, release and debug; every mode
-;;; and `ein oracle` the same). Since S1e2.2.24 the loader refuses it: *kb
-;;; load error: rule 'a': its :match is _, and _ is no premise — a premise is
-;;; a pattern (relation argument …), a guard (eq a b) or (neq a b), an
-;;; (absent …), or an (and …) or (or …) of premises*, and a line for `b` and
-;;; for `c`.
+;;; and `ein oracle` the same). The engine now refuses the program at the
+;;; parse, on every command: at each `_`, which is reserved, and at `foo`, a
+;;; name where a premise is written.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation hit Node) (relation r1 Node) (relation r2 Node) (relation r3 Node)
 (hit w)

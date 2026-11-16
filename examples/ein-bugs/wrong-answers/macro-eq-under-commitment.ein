@@ -1,7 +1,6 @@
 ;;; A macro whose body writes `eq` with one argument, called in a rule only a
 ;;; commitment activates: some commands answer and the others stop —
-;;; M1f **W66**, register row `W66/macro-eq-under-commitment`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W66**, register row `W66/macro-eq-under-commitment`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -24,7 +23,8 @@
 ;;; compiling `r`; `ein solve` (describe), `--maximal`, `--count`, `oracle`, `test`
 ;;; and `render lattice` stopped at the commitment that compiles it, exit 1, on
 ;;; the compiler's line.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

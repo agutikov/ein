@@ -6,9 +6,9 @@
 ;;; colour, has a house, so root owes nothing. An obligation activated at root
 ;;; takes the ladder's second rung, and a discharged state under it proposes
 ;;; nothing and is complete: no candidate, and R is {∅}, one state. `near`,
-;;; which nothing owes, is the read-out's `outside` row. This is the answer
-;;; with the rung chosen by an obligation activated, as it was with the rung
-;;; chosen by an obligation rule loaded: the ruling does not move it.
+;;; which nothing owes, is the read-out's `outside` row. The answer is the
+;;; same whether the rung is chosen by an obligation activated or by an
+;;; obligation rule loaded.
 
 (import std.algebra :symbols (total-owed))
 (relation at Color House :why "{?1} is at {?2}")

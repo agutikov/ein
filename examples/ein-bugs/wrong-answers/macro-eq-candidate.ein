@@ -1,7 +1,6 @@
 ;;; A macro whose body writes `eq` with one argument, called as an hrule's
 ;;; conclusion: the hypothesis layer proposes `(eq k)`, and a state holds it —
-;;; M1f **W68**, register row `W68/macro-eq-candidate`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W68**, register row `W68/macro-eq-candidate`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release: every command answered, exit 0. H was `{(eq k)}`,
 ;;; and R two states, the second holding `(eq k)` (`ein solve --maximal`): the
 ;;; conclusion was executed by the hypothesis layer.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

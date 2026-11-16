@@ -1,8 +1,8 @@
-;;; The twin of `wild-in-hrule.ein` — M1e2 **W20**, banked by S1e2.2.20
-;;; (2026-11-05): the same program with the wildcard `_` written as `?any`, a
-;;; variable the hrule reads nowhere else. Its answer is the witness's right
-;;; one: the hrule proposes `(tag a)`, and R is `∅` and `{(tag a)}` (`ein
-;;; solve FILE` at `c73a0796`, release and debug).
+;;; The twin of `wild-in-hrule.ein` — **W20**: the same program with the
+;;; wildcard `_` written as `?any`, a variable the hrule reads nowhere else.
+;;; The hrule proposes `(tag a)`, and R is `∅` and `{(tag a)}` (`ein solve
+;;; FILE`): the answer the witness's `_` was read as meaning, where the
+;;; witness itself is refused at the parse (Q-M1e2.22).
 
 (relation holds Node Node :why "{?1} holds {?2}") (relation tag Node :why "{?1} is tagged")
 (holds a b)

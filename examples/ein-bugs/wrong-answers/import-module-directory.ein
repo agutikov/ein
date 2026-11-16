@@ -1,6 +1,6 @@
 ;;; An imported module that exists and is a directory is reported as missing —
-;;; M1f **W74**, register rows `W74/directory-*`, filed by S1f.5.22
-;;; (T1f.5.22.2, 2026-11-10), from the close review's finding 2.
+;;; **W74**, register rows `W74/directory-*`.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,12 +10,12 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; An imported module is read as the program a command is given is read (the
-;;; user's instruction of 2026-11-10, on the close review's finding 2: a
-;;; module that is not UTF-8 was reported *not found … (None)*): a path that
-;;; exists and cannot be read as text is refused with the read's line, naming
-;;; the module's own path, never as missing and never with `None`. Every
+;;; An imported module is read as the program a command is given is read : a
+;;; path that exists and cannot be read as text is refused with the read's line,
+;;; naming the module's own path, never as missing and never with `None`. Every
 ;;; command that reads the program exits 1 (`ein test`: 2).
+;;;
+;;;
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;

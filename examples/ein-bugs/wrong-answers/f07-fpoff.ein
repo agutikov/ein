@@ -1,30 +1,30 @@
-;;; `examples/features/07_unstratifiable.ein` with the forced-positive cascade
-;;; OFF — M1e2 **W8**'s twin, contested. Register row `W8/features-07`, as a
-;;; twin.
+;;; A twin of `examples/features/07_unstratifiable.ein` under **W8**,
+;;; contested. Register row `W8/features-07`, as a twin.
 ;;;
-;;; Below this header the program is `features/07` plus `(config
-;;; :enable-forced-positive false)` and nothing else; that file's header is the
-;;; argument. It says `{p, q}` *"is not a model of this program under any
-;;; reading"* — and the engine records exactly `{(p one), (q one)}`:
+;;; Below this header the program is `features/07`'s and nothing else: Ein has
+;;; no flag that turns a forced-positive cascade off, and that file's header is
+;;; the argument. It says `{p, q}` *"is not a model of this program under any
+;;; reading"* — and the state the engine reaches holds both:
 ;;;
-;;;   features/07   Solution k = 1, `{(p one), (q one)}` — root derives
-;;;                 `(p one)`, the rung's one candidate `(q one)` is a
-;;;                 singleton, and the cascade writes it into root.
-;;;   this file     the same state, reached by entering `(q one)` in a fork
-;;;                 instead: `(p one)`, derived under `(absent (q one))`,
-;;;                 survives the commitment that falsifies its guard.
+;;;   ∅             root, which derives `(p one)` under `(absent (q one))`.
+;;;   {(q one)}     a fork of root: `(p one)`, derived under `(absent (q one))`,
+;;;                 survives the commitment that falsifies its guard (the
+;;;                 read-out's `stale` row), so the state is `{(p one), (q one)}`.
 ;;;
-;;; So the cascade is not the cause, and the case is not W2's. Which answer is
-;;; right is not decided, a node being a fork of root, an assumption on a flagged program (Q-M1e2.2): under *guards are premises* the commitment
-;;; withdraws `(p one)` and the one model is `{(q one)}`; under *refuse what
-;;; cannot be stratified* this program — `p ← ¬q, q ← ¬p` — is a load error;
-;;; under *append-only* today's answer qualifies.
+;;; Which answer is right is not decided, a node being a fork of root, an
+;;; assumption on a flagged program (Q-M1e2.2): under *guards are premises* the
+;;; commitment withdraws `(p one)` and the one model is `{(q one)}`; under
+;;; *refuse what cannot be stratified* this program — `p ← ¬q, q ← ¬p` — is a
+;;; load error; under *append-only* today's answer qualifies.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
 ;;;
-;;; **Since M1e2 S1e2.1a.5 the program is `features/07`'s.** The switch retired
-;;; `:enable-forced-positive`, so the `(config …)` line above is gone; R never
-;;; read it, and is the one it was.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 (relation thing Thing :why "{?1} is a thing")
 (relation p Thing :why "{?1} is p")
 (relation q Thing :why "{?1} is q")

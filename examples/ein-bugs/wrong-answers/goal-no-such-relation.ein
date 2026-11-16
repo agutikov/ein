@@ -1,7 +1,7 @@
 ;;; A query's `:goal` over a relation the program names nowhere else loads, and
-;;; has no row —
-;;; M1f **W78**, register row `W78/goal-no-such-relation`, filed by S1f.7.11 (T1f.7.11.2,
-;;; 2026-11-11).
+;;; has no row — **W78**, register row `W78/goal-no-such-relation`.
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -16,10 +16,10 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `73a0c17d`, release: the program loads, and every state reports *the goal has no
-;;; row: undetermined here*, exit 0 on every command, as a goal over `paid` does
-;;; in a state that holds no `paid` fact.
-;;; Refused at load since S1f.7.11 (T1f.7.11.3).
+;;; At `73a0c17d`, release: the program loads, and every state reports *the goal
+;;; has no row: undetermined here*, exit 0 on every command, as a goal over
+;;; `paid` does in a state that holds no `paid` fact. Now refused at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

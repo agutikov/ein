@@ -1,15 +1,15 @@
-;;; A boundary of M1e2 **W19** (`corpus/wrong_answers.toml`, S1e2.2.19,
-;;; 2026-11-04): the activator is a fact the program states, a declaration.
+;;; A boundary of **W19** (`corpus/wrong_answers.toml`): the activator is a
+;;; fact the program states, a declaration.
 ;;;
 ;;; `(r2 a)` is given, so root compiles the plan of `r2`, which concludes
 ;;; `(false)` from the commitment `(p a)`. R is two states, ∅ and {(p2 a)};
 ;;; N is {(p a)}, and its core is `(p a)` (`ein solve FILE --dump-answer DIR`
-;;; at `a41eb76e`), which names the commitment and, with the plan root
-;;; compiled from the declaration, derives `(false)`. Whether the core also
-;;; names the declaration, `(p a) (r2 a)`, was Q-M1e2.12's first reading,
-;;; *every activator*; under the other two it does not move. The user ruled
-;;; (c) on 2026-11-04, root's activators are the program's, and S1e2.2.19's
-;;; fix left this core where it was.
+;;; at `a41eb76e`, and today), which names the commitment and, with the plan
+;;; root compiled from the declaration, derives `(false)`. The core does not
+;;; also name the declaration, `(p a) (r2 a)`: root's activators are the
+;;; program's, and no core follows them (Q-M1e2.12). Under the reading
+;;; *every activator* it would.
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation r2 T :why "r2 holds of {?1}, which activates rule r2 for {?1}")
 

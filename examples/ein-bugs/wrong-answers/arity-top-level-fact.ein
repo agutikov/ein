@@ -1,8 +1,6 @@
 ;;; A fact written with another count of arguments than its relation declares
 ;;; loads, and is stored beside the facts of the declared count —
-;;; M1f **W89**, register row `W89/top-level-fact` (`corpus/wrong_answers.toml`),
-;;; filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that
-;;; day on question 3 of P1f.6's `questions.md`, *"(a)"*.
+;;; **W89**, register row `W89/top-level-fact` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,7 +19,9 @@
 ;;; At `f9a6fd1d`, release: the program loads, root holds `(likes Ann Tea)`
 ;;; and `(likes Bob)`, and the goal has the one row of Ann, exit 0 on every
 ;;; command, with no word about Bob.
-;;; Refused at load since S1f.6.23 (T1f.6.23.3).
+;;; The engine refuses it at load (Q-M1f.315), on every command.
+;;;
+;;;
 
 (relation likes Person Drink :why "{?1} likes {?2}")
 

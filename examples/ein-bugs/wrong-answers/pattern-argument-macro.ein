@@ -1,6 +1,6 @@
 ;;; A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires —
-;;; M1f **W83**, register row `W83/pattern-argument-macro`, filed by S1f.7.3 (T1f.7.3.2,
-;;; 2026-11-11).
+;;; **W83**, register row `W83/pattern-argument-macro`.
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -17,7 +17,7 @@
 ;;;
 ;;; At `52e05fc1`, release: the program loads; the expanded pattern matches nothing, so the
 ;;; rule derives `(welcome Ann)` and `(welcome Bob)`, exit 0 on every command.
-;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+;;; Today it is refused at load, at the macro's body, on every command.
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

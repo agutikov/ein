@@ -1,7 +1,6 @@
 ;;; A macro whose body is its parameter, called as a conclusion in a rule only a
 ;;; commitment activates: `ein saturate` answers and describe stops at the firing —
-;;; M1f **W69**, register row `W69/macro-bare-conclusion-under-commitment`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W69**, register row `W69/macro-bare-conclusion-under-commitment`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,7 +20,8 @@
 ;;; --minimal`, `--single`, `-n 1` and `render kb` answered, exit 0; `ein solve`
 ;;; (describe), `--maximal`, `--count`, `oracle`, `test` and `render lattice`
 ;;; stopped where `r` fires, exit 1, on the firing's line.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

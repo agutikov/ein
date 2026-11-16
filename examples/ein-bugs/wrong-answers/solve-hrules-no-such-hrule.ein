@@ -1,7 +1,7 @@
 ;;; A `(solve :hrules …)` list that names an hrule the program does not declare
 ;;; loads, and proposes nothing —
-;;; M1f **W76**, register row `W76/hrules-name`, filed by S1f.7.8 (T1f.7.8.2,
-;;; 2026-11-11).
+;;; **W76**, register row `W76/hrules-name`.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,7 +21,7 @@
 ;;; At `63f1e569`, release: The program loads. No activator reaches `guess`, so H is
 ;;; empty and R is {∅}, with no word that `gues` names no hrule, exit 0 on every
 ;;; command.
-;;; Refused at load since S1f.7.8 (T1f.7.8.3).
+;;; Today it is refused at load, at the `gues`, on every command.
 
 (relation at Color House :why "{?1} is at {?2}")
 (rule functional (?R)

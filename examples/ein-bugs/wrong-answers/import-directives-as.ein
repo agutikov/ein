@@ -1,7 +1,7 @@
-;;; A qualified import brings the module's query, lattice and configuration
-;;; — M1f **W90**, register row `W90/import-directives-as`
-;;; (`corpus/wrong_answers.toml`), filed by S1f.6.25 (T1f.6.25.2, 2026-11-13)
-;;; from E-8 of P1f.6's `findings.md`.
+;;; A qualified import brings the module's query, lattice and configuration —
+;;; **W90**, register row `W90/import-directives-as`
+;;; (`corpus/wrong_answers.toml`); no import brings them (Q-M1f.215).
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -20,12 +20,12 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `5e5685b7`, release: the module's `(solve :hypothesis-relations ())`
-;;; came with the import, so there was no candidate and R was {∅}, one state;
-;;; the read-out answered the module's query, renamed, `(m.is-a ?x Drink)`,
-;;; *Tea is a drink*; and `--dump-config` showed the module's flag. A flat
-;;; import of the same module brought none of the three.
-;;; The answer above by hand since S1f.6.25 (T1f.6.25.2).
+;;; At `5e5685b7`, release: the module's `(solve :hypothesis-relations ())` came
+;;; with the import, so there was no candidate and R was {∅}, one state; the
+;;; read-out answered the module's query, renamed, `(m.is-a ?x Drink)`, *Tea is
+;;; a drink*; and `--dump-config` showed the module's flag. A flat import of the
+;;; same module brought none of the three. Now the answer above by hand.
+;;;
 
 (import import-directives-module :as m)
 

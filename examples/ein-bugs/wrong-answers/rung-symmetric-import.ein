@@ -24,7 +24,7 @@
 ;;; ladder's second rung, which owed nothing and proposed nothing. The
 ;;; read-out named `near` as outside the universe and said nothing of
 ;;; `likes`, which no rule concludes and no query asks about. The second rung
-;;; is taken where an obligation is activated at root now, and the answer is
+;;; is taken today where an obligation is activated at root, and the answer is
 ;;; the one above.
 
 (import std.algebra :symbols (symmetric))

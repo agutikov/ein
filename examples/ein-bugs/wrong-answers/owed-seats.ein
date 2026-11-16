@@ -1,5 +1,5 @@
-;;; Two owed families on one relation — M1e2 **W5**: the obligations rung
-;;; records a strict superset of a model, chosen by name order, at **default
+;;; Two owed families on one relation — **W5**: the obligations rung
+;;; recorded a strict superset of a model, chosen by name order, at **default
 ;;; flags**. Register row `W5/owed-seats` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
@@ -15,32 +15,32 @@
 ;;; Q-M1e2.1's reading:
 ;;;
 ;;;   minimal  k = 2 — a requirement is discharged by a witness, a complete
-;;;            node leaves the frontier (`lattice_semantics::a_layer_that_
-;;;            yields_complete_models_stops_descending`), and a second witness
-;;;            is `functional`'s question, not `total`'s. Not taken; it is
-;;;            R's minimal line, which `ein solve --minimal` answers.
+;;;            node leaves the frontier, and a second witness is
+;;;            `functional`'s question, not `total`'s. Not taken; it is R's
+;;;            minimal line, which `ein solve --minimal` answers.
 ;;;   literal  k = 7 — every seating that owes nothing: the two matchings,
-;;;            the four triples and all four facts. **Ruled 2026-11-01**:
-;;;            k = |R|, Q-M1e2.7's (a); a bare `ein solve` answers it.
+;;;            the four triples and all four facts. **It holds**: k = |R|
+;;;            (Q-M1e2.1, Q-M1e2.7); a bare `ein solve` answers it.
 ;;;
 ;;; **Never 3**, and never a set that changes when a constant is renamed.
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────────
 ;;;
 ;;;   lattice  Ambiguity k = 3, `exhausted = true`: the two matchings and
 ;;;            `{(seats Ann C1), (seats Ann C2), (seats Bob C1)}` — a superset
-;;;            of a recorded model. `apriori.rs` says every (k−1)-subset of a
-;;;            joined candidate is in `a_prev` *by construction*; the prefix
-;;;            join guarantees only the two parents, so a superset of a node
-;;;            that left the frontier as complete is joined anyway — and only
-;;;            the supersets the name-sorted join happens to build.
+;;;            of a recorded model. `apriori.rs` said every (k−1)-subset of a
+;;;            joined candidate was in `a_prev` *by construction*; the prefix
+;;;            join guaranteed only the two parents, so a superset of a node
+;;;            that left the frontier as complete was joined anyway — and only
+;;;            the supersets the name-sorted join happened to build.
 ;;;   tree     (`EIN_TRAVERSAL=tree`) k = 6, a lower bound: the matchings and
 ;;;            all four triples.
 ;;;
 ;;; `owed-seats-renamed.ein` is this file with Ann renamed Zed and nothing
-;;; else; its third model is a *different* triple.
+;;; else; its third model was a *different* triple. Both rows are the walk's
+;;; two traversals; a bare `ein solve` answers the seven states in both files.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;;
 (import std.algebra :symbols (total-owed surjective-owed))
 (relation is-a   T T :why "{?1} is a {?2}")
 (relation seats  Guest Chair :why "{?1} sits on {?2}")

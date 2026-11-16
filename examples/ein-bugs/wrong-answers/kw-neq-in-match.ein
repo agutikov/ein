@@ -1,7 +1,7 @@
-;;; A rule's `:match` reads a name that starts with `neq` as a guard — M1e2
-;;; **W22**, register row `W22/kw-neq-in-match` (`corpus/wrong_answers.toml`),
-;;; banked by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on
-;;; the user's ruling of that day; a reserved word is a keyword only as a whole token (Q-M1e2.17).
+;;; A rule's `:match` reads a name that starts with `neq` as a guard — **W22**,
+;;; register row `W22/kw-neq-in-match` (`corpus/wrong_answers.toml`): a reserved
+;;; word is a keyword only as a whole token (Q-M1e2.17).
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────
 ;;;
@@ -19,15 +19,15 @@
 ;;;
 ;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
-;;; this program answered wrong. The parser read the premise `(neqw ?x)` as
-;;; the guard `(neq w ?x)`, which bound nothing, so every command that
-;;; saturated stopped at `r`, exit 1, with *unbound var ?x in :assert —
-;;; bindings: {}* (`ein saturate`: prefixed `KeyError:`). (`ein solve FILE` at
-;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
-;;; Since then a keyword is a whole word, at the boundary `grammar.md` § 1
-;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
-;;; answers its twin's R.
+;;; At `35186bc0` the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the premise `(neqw ?x)` as the
+;;; guard `(neq w ?x)`, which bound nothing, so every command that saturated
+;;; stopped at `r`, exit 1, with *unbound var ?x in :assert — bindings: {}*
+;;; (`ein saturate`: prefixed `KeyError:`). (`ein solve FILE` at `35186bc0`,
+;;; release and debug; every mode and `ein oracle` the same.) A keyword is a
+;;; whole word now, at the boundary `grammar.md` § 1 states (Q-M1e2.17), and the
+;;; program answers its twin's R.
+;;;
 
 (relation p Node :why "p holds of {?1}") (relation neqw Node :why "neqw holds of {?1}") (relation hit Node :why "{?1} is hit")
 (p a) (neqw b)

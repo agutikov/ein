@@ -1,5 +1,5 @@
-;;; One candidate, refuted in TWO firings — M1e2 **W2**, the forced-positive
-;;; cascade refuting a consistent program, at **default flags**. Register row
+;;; One candidate, refuted in TWO firings — **W2**, the forced-positive cascade
+;;; refuting a consistent program, at **default flags**. Register row
 ;;; `W2/forced-2` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
@@ -14,7 +14,7 @@
 ;;; there is dies. Root is the solution (Q-M1e.6, clause 3): **`Solution`,
 ;;; k = 1, a model with no `q` fact.**
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine answered before `fbcae3b2` ─────────────────────────────
 ;;;
 ;;;   solutions (k)   0
 ;;;   verdict         No solution — the constraints are contradictory
@@ -22,22 +22,22 @@
 ;;;   exhausted        true
 ;;;   enterings        0
 ;;;
-;;; The lookahead cannot see a two-firing death, so `alive = {(q one)}`, a
-;;; singleton, and `promote_forced_positives` writes `(q one)` into **root**
-;;; with a premise-less `<forced-positive>` provenance. Root is then
-;;; contradictory, `root_dead` refutes the run, and the refutation is
-;;; certified with no fact behind it. No commitment was ever entered.
+;;; The lookahead could not see a two-firing death, so `alive = {(q one)}`, a
+;;; singleton, and `promote_forced_positives` wrote `(q one)` into **root** with
+;;; a premise-less `<forced-positive>` provenance. Root was then contradictory,
+;;; `root_dead` refuted the run, and the refutation was certified with no fact
+;;; behind it. No commitment was ever entered.
 ;;;
 ;;; ── Twins ─────────────────────────────────────────────────────────────────
 ;;;
-;;; `forced-2-off.ein` was this file plus `(config :enable-forced-positive
-;;; false)`: the cascade off, the walk still answered `Contradiction` — then
-;;; through W1 at layer 0, with a 1-fact core. M1e2 S1e2.1a.5 retired the flag,
-;;; and the twin is this program since. Fixing W2 alone falls through into W1,
-;;; which is why P1e2.2 orders S1e2.2.1 first. `forced-1.ein` is the
+;;; `forced-2-off.ein` is this program, the twin that turned the cascade off:
+;;; there the walk still answered `Contradiction`, through W1 at layer 0, with a
+;;; 1-fact core, so fixing W2 alone fell through into W1. `forced-1.ein` is the
 ;;; one-firing twin, right at default flags and wrong the same way under `-L`.
+;;; Now R is {∅}, root alone (`ein solve FILE`).
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;;
+;;;
 (relation thing T :why "{?1} is a thing")
 (relation q T :why "q holds of {?1}")
 (relation bad T :why "{?1} is bad")

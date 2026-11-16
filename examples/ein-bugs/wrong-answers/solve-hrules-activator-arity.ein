@@ -1,7 +1,7 @@
 ;;; A `(solve :hrules …)` activator that gives its hrule another number of
 ;;; arguments loads, and proposes nothing —
-;;; M1f **W76**, register row `W76/hrules-activator-arity`, filed by S1f.7.8 (T1f.7.8.2,
-;;; 2026-11-11).
+;;; **W76**, register row `W76/hrules-activator-arity`.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -20,7 +20,7 @@
 ;;;
 ;;; At `63f1e569`, release: The program loads. The activator is skipped, so H is
 ;;; empty and R is {∅}, exit 0 on every command.
-;;; Refused at load since S1f.7.8 (T1f.7.8.3).
+;;; Today it is refused at load, at the activator, on every command.
 
 (relation at Color House :why "{?1} is at {?2}")
 (rule functional (?R)

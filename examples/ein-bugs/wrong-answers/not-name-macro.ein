@@ -1,6 +1,5 @@
 ;;; A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)` —
-;;; M1f **W84**, register row `W84/not-name-macro`, filed by S1f.7.4 (T1f.7.4.2,
-;;; 2026-11-11).
+;;; **W84**, register row `W84/not-name-macro`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -10,14 +9,15 @@
 ;;; ── The answer, by hand ───────────────────────────────────────────────────
 ;;;
 ;;; The expansion is `(not ?g)`, with `?g` bound where `(paid Ann)` holds a name:
-;;; refused at load, at the call's argument, one line, on every command. S1f.5.24
-;;; refuses `(neg Ann)`, the name written (W68).
+;;; refused at load, at the call's argument, one line, on every command. `(neg Ann)`,
+;;; the name written, is refused too (W68).
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
 ;;; At `55aadd0b`, release: the program loads and the rule stores `(not Ann :rule deny)`;
 ;;; R is {∅}, exit 0 on every command.
-;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

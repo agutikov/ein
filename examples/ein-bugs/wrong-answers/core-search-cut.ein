@@ -1,7 +1,5 @@
-;;; A core search cut at its budget prints its core as the smallest — M1e2
-;;; **W23**, register row `W23/core-search-cut` (`corpus/wrong_answers.toml`),
-;;; banked by S1e2.2.23 (2026-11-05) from the inventory of 2026-11-05's F2
-;;; (`plans/m1e2_correctness/inventory_2026-11-05/findings/F2_core_cut.ein`).
+;;; A core search cut at its budget prints its core as the smallest —
+;;; **W23**, register row `W23/core-search-cut` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -22,14 +20,13 @@
 ;;; smallest first, and `(A k)`'s 256 are all of size 8, so which 64 it keeps
 ;;; is the tie-break's and the all-`y` one is not among them. The core it
 ;;; reports is the smallest union of a kept `(A k)` environment with `(B k)`'s,
-;;; ten facts. The user ruled on 2026-11-05 that the core search
-;;; keeps its budget and **says the core was cut**; the exact core past the
-;;; budget is F22's. So the right answer is that core, qualified as cut.
+;;; ten facts. The core search keeps its budget and **says the core was
+;;; cut**; it does not compute the exact core past the budget. So the right
+;;; answer is that core, qualified as cut.
 ;;;
-;;; ── What the engine answered, and what holds since ─────────────────────
+;;; ── What the engine answered, and what holds ───────────────────────────
 ;;;
-;;; Until S1e2.2.23, at `e2a3263e` (S1e2.2.21's search, S1e2.2.22's parser),
-;;; release and debug: R empty, exit 0, and root's core `(x1 k) (x2 k)
+;;; At `e2a3263e`, release and debug: R empty, exit 0, and root's core `(x1 k) (x2 k)
 ;;; (y1 k) … (y8 k)`, ten facts, refuted by `clash`, with nothing to say the
 ;;; search was cut, on every surface that prints it: the read-out's `unsat
 ;;; core` rows, `--json-summary`'s `region.core`, `--dump-answer`'s
@@ -37,11 +34,14 @@
 ;;; `--events`' `enter` line, `--trace`'s N, and `ein oracle --dump`'s
 ;;; `region.json` and `region.md` and `ein render region` drawing it. The
 ;;; search knew it was cut (`explain::Explanation::exhausted` was false), and
-;;; `region.rs` dropped it. Since S1e2.2.23's fix the same ten facts are
+;;; `region.rs` dropped it. The same ten facts are now
 ;;; printed, and every surface says the search was cut at its 64 environments
 ;;; per fact: the read-out's `core search` row, *cut at its budget of 64
 ;;; environments per fact: a smaller core may exist*, and `core_status:
 ;;; "cut-environments"` beside the core in every JSON, in either build.
+;;;
+;;;
+;;;
 
 (relation x1 T :why "x1 holds of {?1}") (relation y1 T :why "y1 holds of {?1}") (relation p1 T :why "p1 holds of {?1}") (relation x2 T :why "x2 holds of {?1}") (relation y2 T :why "y2 holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation x3 T :why "x3 holds of {?1}") (relation y3 T :why "y3 holds of {?1}") (relation p3 T :why "p3 holds of {?1}") (relation x4 T :why "x4 holds of {?1}") (relation y4 T :why "y4 holds of {?1}") (relation p4 T :why "p4 holds of {?1}") (relation x5 T :why "x5 holds of {?1}") (relation y5 T :why "y5 holds of {?1}") (relation p5 T :why "p5 holds of {?1}") (relation x6 T :why "x6 holds of {?1}") (relation y6 T :why "y6 holds of {?1}") (relation p6 T :why "p6 holds of {?1}") (relation x7 T :why "x7 holds of {?1}") (relation y7 T :why "y7 holds of {?1}") (relation p7 T :why "p7 holds of {?1}") (relation x8 T :why "x8 holds of {?1}") (relation y8 T :why "y8 holds of {?1}") (relation p8 T :why "p8 holds of {?1}") (relation A T :why "A holds of {?1}") (relation B T :why "B holds of {?1}")
 (x1 k) (y1 k) (x2 k) (y2 k) (x3 k) (y3 k) (x4 k) (y4 k) (x5 k) (y5 k) (x6 k) (y6 k) (x7 k) (y7 k) (x8 k) (y8 k)

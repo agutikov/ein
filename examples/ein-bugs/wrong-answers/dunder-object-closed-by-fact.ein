@@ -5,8 +5,8 @@
 ;;; digit)`, and not derived by a rule. Nothing else differs. A written fact
 ;;; registers its head as a relation of the program, and a relation is no
 ;;; object: ten candidates, `(total 0)` to `(total 9)`, and R the whole cube,
-;;; 1 024 states, which is the witness's right answer, and since the fix the
-;;; witness's answer. One closure stated two ways is one closure.
+;;; 1 024 states, which is the witness's right answer, and the witness's
+;;; answer too. One closure stated two ways is one closure.
 
 (relation digit Digit :why "{?1} is a digit")
 (digit 0) (digit 1) (digit 2) (digit 3) (digit 4)

@@ -1,7 +1,7 @@
 ;;; A query's `:goal` whose `(absent …)` is over a relation the program names
-;;; nowhere else loads, and holds of everything —
-;;; M1f **W78**, register row `W78/goal-absent-no-such-relation`, filed by S1f.7.11 (T1f.7.11.2,
-;;; 2026-11-11).
+;;; nowhere else loads, and holds of everything — **W78**, register row
+;;; `W78/goal-absent-no-such-relation`.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -17,10 +17,10 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `73a0c17d`, release: the program loads, and the goal has two rows, `?g = Ann` and
-;;; `?g = Bob`: Ann, who has paid, is answered as one who has not, exit 0 on every
-;;; command.
-;;; Refused at load since S1f.7.11 (T1f.7.11.3).
+;;; At `73a0c17d`, release: the program loads, and the goal has two rows, `?g =
+;;; Ann` and `?g = Bob`: Ann, who has paid, is answered as one who has not, exit
+;;; 0 on every command. Now refused at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

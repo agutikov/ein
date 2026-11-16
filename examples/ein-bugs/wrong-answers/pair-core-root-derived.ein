@@ -1,7 +1,7 @@
 ;;; A pair contradiction's core names only its positive side, where that side
-;;; is a fact root derives — M1e2 **W21**, register row
-;;; `W21/pair-core-root-derived` (`corpus/wrong_answers.toml`), banked by
-;;; S1e2.2.21 (2026-11-05), the witness's mechanism one derivation deeper.
+;;; is a fact root derives — **W21**, register row
+;;; `W21/pair-core-root-derived` (`corpus/wrong_answers.toml`):
+;;; `pair-core-root-given.ein`'s mechanism, one derivation deeper.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -16,13 +16,13 @@
 ;;; `(q a) (seed a)`, which names the commitment. `(seed a)` alone is
 ;;; root's, and root is alive.
 ;;;
-;;; ── What the engine answered, and what holds since ─────────────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.21, R as above, exit 0; and N's core `(seed a)` alone,
-;;; refuted by `mk` and `neg`, on every surface that reports it (`ein solve
-;;; FILE --dump-answer DIR` at `cdcc3994`, release and debug): the positive
-;;; side's frontier. Since S1e2.2.21's fix, `(q a) (seed a)`, in either
-;;; build.
+;;; At `cdcc3994` (`ein solve FILE --dump-answer DIR`, release and debug): R
+;;; as above, exit 0; and N's core `(seed a)` alone, refuted by `mk` and
+;;; `neg`, on every surface that reports it: the positive side's frontier.
+;;; Today N's core is `(q a) (seed a)`, in either build.
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}")
 

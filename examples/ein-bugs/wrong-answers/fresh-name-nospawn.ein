@@ -1,10 +1,10 @@
-;;; `alive-set-fresh-name.ein` without its `spawn` rule — M1e2 **W1** at layer
-;;; 0 under `lookahead false`, and the proof that the banked file's refutation
-;;; is not W4's alone. Register row `W1/fresh-name-nospawn`
+;;; `alive-set-fresh-name.ein` without its `spawn` rule — **W1** at layer 0
+;;; under `lookahead false`, and the proof that the banked file's refutation is
+;;; not W4's alone. Register row `W1/fresh-name-nospawn`
 ;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; Below this header the program is `../alive-set-fresh-name.ein` with the
-;;; `spawn` rule deleted: no rule asserts a fresh name, so the M1 alive-set
+;;; `spawn` rule deleted: no rule asserts a fresh name, so the alive-set
 ;;; invariant holds and Q-M1e.21 has nothing to say about this file.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────────
@@ -22,17 +22,17 @@
 ;;;
 ;;; — the banked file's answer then, with no fresh name in sight. With the
 ;;; lookahead off each singleton was entered and died at layer 1, and `phase2`
-;;; broke on the empty layer without asking whether root was now complete.
-;;; Since M1e2 S1e2.1a.5's switch the answer is the region, R = {∅}, root
-;;; itself, which `:expect` states. The banked file's R moved again at
-;;; S1e2.2.4, which seeded the candidates with `spawn`'s `Z`; with no `spawn`
-;;; here, nothing does.
+;;; broke on the empty layer without asking whether root was now complete. Now
+;;; the answer is the region, R = {∅}, root itself, which `:expect` states. The
+;;; banked file's candidates are seeded with `spawn`'s `Z`; with no `spawn`
+;;; here, nothing seeds them.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;;
+;;;
 
-;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; The walk's `lookahead false` was a `(config …)` flag, which no route reads:
+;; Ein has no such flag, and a program that sets it is refused at load.
+;;
 
 (relation p T T :why "p holds of {?1} and {?2}")
 (relation q T T :why "q holds of {?1} and {?2}")

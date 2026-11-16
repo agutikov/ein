@@ -1,8 +1,7 @@
 ;;; A `num9` number of eight digits loads, and the request that holds it is
 ;;; answered by silence —
-;;; M1f **W89**, register row `W89/num9-eight-digits`
-;;; (`corpus/wrong_answers.toml`), filed by S1f.6.23 (T1f.6.23.2, 2026-11-12);
-;;; the case E-2 of P1f.6's `findings.md` was first met on.
+;;; **W89**, register row `W89/num9-eight-digits`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,7 +20,8 @@
 ;;; At `f9a6fd1d`, release: the program loads, the wide rule matches no
 ;;; request, nothing is derived, not a sum and not an overflow, and the goal
 ;;; has no row, exit 0 on every command, with no word.
-;;; Refused at load since S1f.6.23 (T1f.6.23.3).
+;;; The engine refuses it at load (Q-M1f.315), on every command.
+;;;
 
 (import std.math.num9 :symbols (arith9 add9 num9 sum9-of))
 

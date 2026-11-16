@@ -1,7 +1,5 @@
-;;; The eight `y` facts alone derive `(false)` — the control of M1e2 **W23**,
-;;; register row `W23/core-search-cut` (`corpus/wrong_answers.toml`), banked
-;;; by S1e2.2.23 (2026-11-05) from the inventory of 2026-11-05's F2
-;;; (`plans/m1e2_correctness/inventory_2026-11-05/findings/F2_core_cut_control.ein`).
+;;; The eight `y` facts alone derive `(false)` — the control of **W23**,
+;;; register row `W23/core-search-cut` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -22,14 +20,16 @@
 ;;; reports a core of nine or ten facts where `(y1 k) … (y8 k)` is still the
 ;;; smallest: 9 of the cube's 256 nodes, which `ein oracle --dump` writes.
 ;;;
-;;; ── What the engine answered, and what holds since ─────────────────────
+;;; ── What the engine answered, and what holds ───────────────────────────
 ;;;
 ;;; At `e2a3263e`, release and debug: R empty, exit 0, root's core the eight
-;;; `y` facts. Until S1e2.2.23, `ein oracle --dump`'s `region.json` gave the
-;;; nine cut nodes cores of nine and ten facts with nothing to say they were
-;;; cut; since its fix each says `core_status: "cut-environments"`, and the
-;;; drawn table *core search cut at its budget of 64 environments per fact*,
-;;; and root's says `within-budget`, in either build.
+;;; `y` facts; `ein oracle --dump`'s `region.json` gave the nine cut nodes
+;;; cores of nine and ten facts with nothing to say they were cut. Each now
+;;; says `core_status: "cut-environments"`, and the drawn table *core search
+;;; cut at its budget of 64 environments per fact*, and root's says
+;;; `within-budget`, in either build.
+;;;
+;;;
 
 (relation x1 T :why "x1 holds of {?1}") (relation y1 T :why "y1 holds of {?1}") (relation p1 T :why "p1 holds of {?1}") (relation x2 T :why "x2 holds of {?1}") (relation y2 T :why "y2 holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation x3 T :why "x3 holds of {?1}") (relation y3 T :why "y3 holds of {?1}") (relation p3 T :why "p3 holds of {?1}") (relation x4 T :why "x4 holds of {?1}") (relation y4 T :why "y4 holds of {?1}") (relation p4 T :why "p4 holds of {?1}") (relation x5 T :why "x5 holds of {?1}") (relation y5 T :why "y5 holds of {?1}") (relation p5 T :why "p5 holds of {?1}") (relation x6 T :why "x6 holds of {?1}") (relation y6 T :why "y6 holds of {?1}") (relation p6 T :why "p6 holds of {?1}") (relation x7 T :why "x7 holds of {?1}") (relation y7 T :why "y7 holds of {?1}") (relation p7 T :why "p7 holds of {?1}") (relation x8 T :why "x8 holds of {?1}") (relation y8 T :why "y8 holds of {?1}") (relation p8 T :why "p8 holds of {?1}") (relation A T :why "A holds of {?1}") (relation B T :why "B holds of {?1}")
 (y1 k) (y2 k) (y3 k) (y4 k) (y5 k) (y6 k) (y7 k) (y8 k)

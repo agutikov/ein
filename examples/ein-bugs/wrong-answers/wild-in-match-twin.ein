@@ -1,9 +1,9 @@
-;;; The twin of `wild-in-match.ein` — M1e2 **W20**, banked by S1e2.2.20
-;;; (2026-11-05): the same program with the wildcard `_` written as `?any`, a
-;;; variable the rule reads nowhere else. Its answer is the witness's right
-;;; one: `w` fires on `(holds a)`, root holds `(hit w)`, and R is
-;;; `{(hit w)}` and `{(hit a), (hit w)}` (`ein solve FILE` at `c73a0796`,
-;;; release and debug).
+;;; The twin of `wild-in-match.ein` — **W20**: the same program with the
+;;; wildcard `_` written as `?any`, a variable the rule reads nowhere else.
+;;; `w` fires on `(holds a)`, root holds `(hit w)`, and R is `{(hit w)}` and
+;;; `{(hit a), (hit w)}` (`ein solve FILE`): the answer the witness's `_`
+;;; was read as meaning, where the witness itself is refused at the parse
+;;; (Q-M1e2.22).
 
 (relation holds Node :why "{?1} holds") (relation hit Node :why "{?1} is hit")
 (holds a)

@@ -1,40 +1,33 @@
-;;; `exhausted = true` over a relation the rung never hypothesises — M1e2
-;;; **W6**, contested. Register row `W6/uncovered`
-;;; (`corpus/wrong_answers.toml`).
+;;; `exhausted = true` over a relation the rung never hypothesises — **W6**.
+;;; Register row `W6/uncovered` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; Below this header the program is the witness of
 ;;; `docs/ein/reasoning/kb-evolution/satisfiability.md` § 5: a relation
 ;;; no obligation owes and no rule closes, outside the universe.
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine said ───────────────────────────────────────────────────
 ;;;
 ;;;   Ambiguity k = 3, `exhausted = true`; none of the three mentions `knows`.
 ;;;
-;;; That was the walk's answer, until M1e2 S1e2.1a.5's switch (2026-10-18).
+;;; That was the engine's answer as banked; the answer below is today's.
 ;;;
 ;;; The obligations rung proposes what discharges `seats`'s two families and
 ;;; nothing else, so `knows` — owed by nobody and not closed, because a rule
 ;;; concludes it — is never a hypothesis, and the `rung` event says
 ;;; `uncovered = 2`. Adding `(knows Ann Bob)` (the twin `uncovered-knows.ein`)
-;;; gives three further consistent states, each with `(knows Bob Ann)`.
-;;; (The third of the three models is W5's superset; that is `owed-seats.ein`'s
-;;; case, not this one.)
+;;; gives the same seven states, each holding `(knows Ann Bob)` and
+;;; `(knows Bob Ann)`: consistent states of this program too, which no
+;;; candidate of it reaches.
 ;;;
-;;; ── The answer, by hand: a reading ─────────────────────────────────────────
+;;; ── The answer, by hand ────────────────────────────────────────────────────
 ;;;
-;;; Q-M1e2.3. Relative to `alive₀` — Q-M1e.6's second clarification — the
+;;; Q-M1e2.3: R is over the universe as the ladder scopes it (what the
+;;; obligations owe), so `exhausted = true` is true of R, and the read-out
+;;; names what the universe leaves out. Relative to the universe the
 ;;; certification is right by definition; as a claim about the *program* it
-;;; is not, and the M1d record calls it *"a claim stated without the qualifier
-;;; that licenses it"*. Three answers: **scoped, and the read-out names the
-;;; scope** (recommended), **uncertified unless covered**, or **open-world,
-;;; not wrong**.
+;;; is not, without the qualifier that licenses it, which the read-out states.
 ;;;
-;;; **Ruled 2026-11-03** by the user: *scoped, and the read-out says so*. R is
-;;; over the universe as the ladder scopes it (what the obligations owe), so
-;;; `exhausted = true` is true of R, and the read-out is to state that `knows`
-;;; is outside it, which M1e2 S1e2.2.8 builds.
-;;;
-;;; ── Since M1e2 S1e2.2.8 (2026-11-04) ───────────────────────────────────────
+;;; ── What the engine answers ────────────────────────────────────────────────
 ;;;
 ;;; `ein solve` answers R, seven states over the four `seats` candidates,
 ;;; exhausted, the minimal line the two matchings and the maximal all four
@@ -45,9 +38,16 @@
 ;;;             only what the program states and saturation derives
 ;;;
 ;;; `is-a` is not named: no rule concludes it and the goal does not ask about
-;;; it. The register's row is fixed.
+;;; it.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 (import std.algebra :symbols (total-owed surjective-owed))
 
 (relation is-a   T T         :why "{?1} is a {?2}")

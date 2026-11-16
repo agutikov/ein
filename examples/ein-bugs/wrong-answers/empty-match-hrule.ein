@@ -1,7 +1,5 @@
-;;; An hrule whose `:match` is `()` proposes nothing — M1f **W31**, register
-;;; row `W31/empty-match-hrule` (`corpus/wrong_answers.toml`), banked by
-;;; S1f.5.0 (2026-11-08) from S1f.5.9's case (P1f.5's F12), filed `open` and
-;;; owned by S1f.5.9, on the user's ruling of 2026-11-07 on F12.
+;;; An hrule whose `:match` is `()` proposed nothing — **W31**, register
+;;; row `W31/empty-match-hrule` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,22 +8,24 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; An hrule's empty `:match` fires as a rule's does (the user, 2026-11-07:
-;;; *"2 same"*), so it proposes `(q b)`, as `:match (p ?x)` would: H is one
-;;; candidate, nothing refutes it, and R is ∅ and `{(q b)}`.
+;;; An hrule's empty `:match` fires as a rule's does (Q-M1e2.36), so it
+;;; proposes `(q b)`, as `:match (p ?x)` would: H is one candidate, nothing
+;;; refutes it, and R is ∅ and `{(q b)}`.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; The hrule proposed nothing: *no candidate: R is {∅} or empty, decided by
+;;; root alone*, and R was {∅}, exit 0 (`ein solve FILE` and `ein oracle FILE`
+;;; at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; The hrule proposes nothing: *no candidate: R is {∅} or empty, decided by
-;;; root alone*, and R is {∅}, exit 0 (`ein solve FILE` and `ein oracle FILE`
-;;; at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+;;; An hrule's `:match ()` matches once, so `h` proposes `(q b)`: H is one
+;;; candidate and R is ∅ and `{(q b)}`, the answer above by hand. The
+;;; register's `now` is that answer; the section above is the record of the
+;;; one it replaced.
 ;;;
-;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
 ;;;
-;;; An hrule's `:match ()` matches once since T1f.5.9.2 (2026-11-09), so `h`
-;;; proposes `(q b)`: H is one candidate and R is ∅ and `{(q b)}`, the answer
-;;; above by hand. The register's `now` is that answer; the section above is
-;;; the record of the one it replaced.
 
 (relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}")
 (p a)

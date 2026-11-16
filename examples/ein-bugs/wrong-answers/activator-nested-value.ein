@@ -1,10 +1,6 @@
 ;;; An activator that binds a value parameter to a nested fact leaves the
-;;; parameter unbound — M1f **W33**, register row `W33/activator-nested-value`
-;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
-;;; S1f.5.5's census (§ Findings outside the grammar; its probe
-;;; `activator_nested_value.ein`, the program unchanged), filed `open` and
-;;; owned by S1f.5.18, on the user's ruling of 2026-11-08 on the census
-;;; (*"Q3 - as recommended"*).
+;;; parameter unbound — **W33**, register row `W33/activator-nested-value`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -18,14 +14,18 @@
 ;;; is a value as any other: `?y` is `(f a)`, so `act` matches `(p (f a))`
 ;;; alone and root holds `(hit (f a))` and no other `hit`.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The compiler skips a nested fact when it seeds a rule's parameters (*a
-;;; nested Fact does not bind*), so `?y` is left free and `act` fires on every
-;;; `p`: root holds `(hit a)`, `(hit b)` and `(hit (f a))`, H is empty and R is
+;;; The compiler skipped a nested fact when it seeded a rule's parameters (*a
+;;; nested Fact does not bind*), so `?y` was left free and `act` fired on every
+;;; `p`: root held `(hit a)`, `(hit b)` and `(hit (f a))`, H was empty and R
 ;;; {∅}, exit 0 (`ein saturate FILE --dump`, `ein solve FILE` and `ein oracle
 ;;; FILE` at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
 ;;; W24 refused the same activator only where the parameter names a relation.
+;;;
+;;;
+;;;
+;;;
 
 ;; An activator binds a rule's parameter, used as an argument, to a nested fact.
 (relation p T :why "p holds of {?1}") (relation hit T :why "{?1} is a hit")

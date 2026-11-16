@@ -1,10 +1,10 @@
-;;; A guard on a variable no premise before it binds read nothing, in
-;;; silence — M1e2 **W24**, register row `W24/guard-before-binder`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.24 (2026-11-05) from its
-;;; step 1's probe `build/s1e2.2.24/shapes/g-order-rule.ein` (the program
-;;; unchanged), ruled by the user on 2026-11-05 (Q-M1e2.18 (ii)(a)); restated
-;;; by M1f S1f.5.7 on the user's ruling of 2026-11-07 (Q-M1e2.26, *premises
-;;; should follow the same rule*), which supersedes it.
+;;; A guard on a variable no premise before it binds read nothing, in silence —
+;;; **W24**, register row `W24/guard-before-binder`
+;;; (`corpus/wrong_answers.toml`); a conjunction means the same in any order of
+;;; its conjuncts (Q-M1e2.26).
+;;;
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,14 +21,14 @@
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.24 the program loaded, and each guard compared `?x`, not yet
+;;; At `f8c10730` the program loaded, and each guard compared `?x`, not yet
 ;;; bound, as a null, equal to no value: `e` never fired, and `n` fired for
-;;; every `?x`, `a` included: four `hit-neq` facts and no `hit-eq`, exit 0,
-;;; with no word of the order (`ein saturate --dump FILE`, `ein solve FILE`
-;;; at `f8c10730`). From S1e2.2.24 to M1f S1f.5.7 the loader refused it,
-;;; naming the variable (Q-M1e2.18 (ii)(a)), every command exiting 1 (`ein
-;;; test`: 2). Since S1f.5.7's T1f.5.7.3 (`6841faff`, 2026-11-09) it loads and
+;;; every `?x`, `a` included: four `hit-neq` facts and no `hit-eq`, exit 0, with
+;;; no word of the order (`ein saturate --dump FILE`, `ein solve FILE` at
+;;; `f8c10730`). After it, and before `6841faff`, the loader refused it, naming
+;;; the variable, every command exiting 1 (`ein test`: 2). Now it loads and
 ;;; answers as above, which the register's row holds (`wrong_answers.rs`).
+;;;
 ;;;
 
 (relation p Node :why "p holds of {?1}") (relation q Node :why "q holds of {?1}") (relation f Node :why "f holds of {?1}") (relation hit-eq Node :why "hit-eq holds of {?1}") (relation hit-neq Node :why "hit-neq holds of {?1}")

@@ -1,29 +1,29 @@
-;;; An `(absent …)` over a string always holds — M1e2 **W18**, register row
-;;; `W18/str-in-absent` (`corpus/wrong_answers.toml`), found by S1e2.2.18
-;;; (2026-11-04) probing the case's mechanism.
+;;; An `(absent …)` over a string always holds — **W18**, register row
+;;; `W18/str-in-absent` (`corpus/wrong_answers.toml`), the case's mechanism
+;;; under `absent`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; Two `holds` facts, the atom `a` and the string `"b"`, which the loader
-;;; holds as the symbol `b`. `z` concludes `(hit z)` while `a` holds and
-;;; `"b"` does not.
+;;; Two `holds` facts, one over the atom `a` and one over the string `"b"`.
+;;; `z` concludes `(hit z)` while `(holds a)` holds and `(holds "b")` does
+;;; not.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A string in a rule means what it means in a fact, so `(absent (holds
-;;; "b"))` asks after the fact `(holds b)`, which the program states: `z`
-;;; never fires. The blind enumerator proposes `(hit a)` and `(hit b)`, so R
-;;; is four states and none holds `(hit z)`. It is the answer of this file
-;;; with `"b"` written `b` in its rule.
+;;; A string is natural-language text, never a value (Q-M1e2.23), written
+;;; only after `:why`, `:source` or `:goal-text`: the program is refused at
+;;; the parse, at its first string, on every command.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.18 `z` fired: the rule compiler did not lower a string, so
-;;; the pattern under `absent` was an opaque slot that matched nothing, and
-;;; its `absent` always held. A conclusion the program refutes was in every
-;;; state: `ein solve FILE --minimal` at `ff023413` printed root's state as
-;;; `(model (hit z))`, in a release build and a debug one. Since then the
-;;; compiler lowers a string as the loader does, and no state holds `(hit z)`.
+;;;
+;;; ── What the engine answered, and what it answers ──────────────────────
+;;;
+;;; At `ff023413`, in a release build and a debug one, `z` fired: the rule
+;;; compiler did not lower a string, so the pattern under `absent` was an
+;;; opaque slot that matched nothing, and its `absent` always held. A
+;;; conclusion the program refutes was in every state: `ein solve FILE
+;;; --minimal` printed root's state as `(model (hit z))`. Today the program is
+;;; refused at the parse: *unexpected `"b"`: a string*.
 
 (relation holds Node) (relation hit Node)
 (holds a) (holds "b")

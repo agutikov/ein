@@ -1,7 +1,7 @@
-;;; A `std.macro` macro called in a query's `:goal` without its import loads, and
-;;; the goal has no row —
-;;; M1f **W77**, register row `W77/goal-macro-unimported`, filed by S1f.7.5 (T1f.7.5.2,
-;;; 2026-11-11).
+;;; A `std.macro` macro called in a query's `:goal` without its import loads,
+;;; and the goal has no row — **W77**, register row `W77/goal-macro-unimported`.
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -16,10 +16,10 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `73a0c17d`, release: the program loads, `(unknown (paid ?g))` is read as a pattern
-;;; over a relation `unknown`, and the goal has no row in any state, with no word
-;;; of the import, exit 0 on every command.
-;;; Refused at load since S1f.7.5 (T1f.7.5.3).
+;;; At `73a0c17d`, release: the program loads, `(unknown (paid ?g))` is read as
+;;; a pattern over a relation `unknown`, and the goal has no row in any state,
+;;; with no word of the import, exit 0 on every command. Now refused at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

@@ -1,8 +1,8 @@
 ;;; A module that states what a program states: a query, a lattice and a
-;;; configuration — M1f **W90** (`corpus/wrong_answers.toml`), S1f.6.25
-;;; (2026-11-13). The `import-directives-*` witnesses import it qualified.
-;;; A program of its own as well: no candidate, R {∅}, and its query has one
-;;; row, *Tea is a drink*.
+;;; configuration — **W90** (`corpus/wrong_answers.toml`). The
+;;; `import-directives-*` witnesses import it qualified. A program of its own as
+;;; well: no candidate, R {∅}, and its query has one row, *Tea is a drink*.
+;;;
 
 (relation is-a Thing Type :why "{?1} is a {?2}")
 

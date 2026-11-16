@@ -1,7 +1,7 @@
-;;; A keyword pair in a query's goal is dropped, and the claim holds — M1f
-;;; **W32**, register row `W32/kwpair-in-goal` (`corpus/wrong_answers.toml`),
-;;; banked by S1f.5.0 (2026-11-08) from S1f.5.11's case, filed `open` and
-;;; owned by S1f.5.11, on the user's ruling of 2026-11-07 (Q-M1e2.28).
+;;; A keyword pair in a query's goal is dropped, and the claim holds — **W32**,
+;;; register row `W32/kwpair-in-goal` (`corpus/wrong_answers.toml`); each form
+;;; takes a closed list of keywords (Q-M1e2.28).
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

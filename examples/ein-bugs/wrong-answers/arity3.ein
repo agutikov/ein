@@ -1,30 +1,23 @@
-;;; The blind rung never proposes an arity-3 fact, and the run is certified
-;;; anyway — M1e2 **W6**'s second witness, contested. Register row
+;;; The blind rung never proposes an arity-3 fact, and the run was certified
+;;; anyway — **W6**'s second witness. Register row
 ;;; `W6/arity3` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; The goal is `(r3 ?x ?y ?z)`. `hypgen`'s `fill_slot` documents that arity ≥ 3
 ;;; is unenumerated, so the rung proposes the two `r2` facts it can build and
-;;; nothing over `r3`:
+;;; nothing over `r3`. The engine answered
 ;;;
 ;;;   Solution k = 1, `{(r2 A B), (r2 B A)}`, `exhausted = true`
 ;;;
-;;; — certified, over a goal relation no commitment ever touched. (`-H` says
-;;; *0 candidates* while the run enters three; that disagreement is the
-;;; inventory's S4, a surface, not this case.)
+;;; — certified, over a goal relation no commitment ever touched.
 ;;;
-;;; The right answer is Q-M1e2.3's reading, as for `uncovered.ein`: relative
-;;; to `alive₀` the certification holds by definition, as a claim about the
-;;; program it does not. Recommended: the certification names its scope —
-;;; here, that `r3` was never hypothesised.
+;;; The right answer is Q-M1e2.3's: R is over the universe as the blind rung
+;;; builds it (arity 3 unenumerated), so `exhausted = true` is true of R, and
+;;; the read-out names what the universe leaves out, here the goal relation
+;;; `r3`.
 ;;;
-;;; **Ruled 2026-11-03** by the user: *scoped, and the read-out says so*. R is
-;;; over the universe as the blind rung builds it (arity 3 unenumerated), so
-;;; `exhausted = true` is true of R, and the read-out is to state that the
-;;; goal relation `r3` is outside it, which M1e2 S1e2.2.8 builds.
-;;;
-;;; **Since M1e2 S1e2.2.8 (2026-11-04)** `ein solve` answers R, four states
-;;; over the two `r2` candidates, exhausted, and every question names what
-;;; the universe leaves out, under `universe`:
+;;; `ein solve` answers R, four states over the two `r2` candidates,
+;;; exhausted, and every question names what the universe leaves out, under
+;;; `universe`:
 ;;;
 ;;;   outside   r3 — no candidate: it has arity 3, and the blind enumerator
 ;;;             proposes arity 1 and 2 only. R holds of it only what the
@@ -33,7 +26,14 @@
 ;;; `is-a` is not named: the program scopes it out itself. The register's
 ;;; row is fixed.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 (relation is-a T T :why "{?1} is a {?2}")
 (relation r3 T T T :why "r3 holds of {?1}, {?2} and {?3}")
 (relation r2 T T :why "r2 holds of {?1} and {?2}")

@@ -23,8 +23,8 @@
 ;;; A node resumes root's saturation, whose mirror was seeded at root with
 ;;; nothing marked. The mark a commitment brought `close-symmetric` to derive
 ;;; never offered `near`'s facts to the mirror, so no node held `(near b a)`
-;;; and none was dead: R was the whole cube, four states. The answer is the
-;;; one above now.
+;;; and none was dead: R was the whole cube, four states. Today the answer
+;;; is the one above.
 
 (relation near Thing Thing :why "{?1} is near {?2}")
 (relation close Thing :why "{?1} is close")

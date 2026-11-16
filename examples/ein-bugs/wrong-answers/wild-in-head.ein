@@ -1,7 +1,6 @@
 ;;; A wildcard `_` as a pattern's relation head stopped the run with a Python
-;;; spelling — M1e2 **W20**, register row `W20/wild-in-head`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.20 (2026-11-05) from the
-;;; user's ruling of 2026-11-04.
+;;; spelling — **W20**, register row `W20/wild-in-head`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,26 +11,27 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; A relation is named by a name or by a parameter its activator binds
-;;; (Q29), and `_` stands for an argument: the user ruled on 2026-11-05 that
-;;; a wildcard written as a relation is refused at load, as a range is
-;;; (a bare `_` is refused, Q-M1e2.22), with a line in Ein's spelling naming the rule and the
-;;; slot. Every command that loads the program exits 1 (`ein test`: 2). Until
-;;; that ruling the right answer was `wild-in-head-twin.ein`'s, `(_ a)`
-;;; matching every fact of one argument `a`; a fresh head
-;;; variable is no twin, since M1 refuses `(?r a)` with no parameter `?r` as
-;;; it refused `_`.
+;;; (Q29), and a bare `_` is reserved and refused wherever it is written
+;;; (Q-M1e2.22): the program is refused at the parse, at the `_`, and every
+;;; command that reads it exits 1 (`ein test`: 2). `wild-in-head-twin.ein`
+;;; writes the head out as the disjunction over the relations a fact of one
+;;; argument `a` can belong to; a fresh head variable is no twin, since
+;;; `(?r a)` with no parameter `?r` is refused at load as `_` is.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.20 every command that compiled the rule exited 1: `ein
-;;; saturate` with `ein.inference.compile.CompileError: unbound relation head
-;;; ?Wildcard() in a premise of `SForm(head=Wildcard(), args=(Atom(name='a'),))`
-;;; — M1 matches relations per activator (Q29), …`, and `ein solve` and `ein
-;;; oracle` with the message alone, the Python IR's spelling of the pattern
-;;; (`ein solve FILE` at `c73a0796`, release and debug). Since then the loader
-;;; refuses it: *kb load error: rule 'w': its :match writes (_ a) with the
-;;; wildcard _ as its relation — a relation is named by a name or by a
-;;; parameter its activator binds, and _ stands for an argument*.
+;;; At `c73a0796`, release and debug, every command that compiled the rule
+;;; exited 1: `ein saturate` with a Python `CompileError`, *unbound relation
+;;; head ?Wildcard() in a premise of `SForm(head=Wildcard(),
+;;; args=(Atom(name='a'),))`* …, and `ein solve` and `ein oracle` with the
+;;; message alone, the Python IR's spelling of the pattern. Today the parse
+;;; refuses the `_`: *unexpected `_`: _ (reserved)*.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation holds Node) (relation hit Node)
 (holds a)

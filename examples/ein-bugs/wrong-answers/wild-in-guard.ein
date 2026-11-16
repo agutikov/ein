@@ -1,8 +1,6 @@
-;;; `_` in a guard reads nothing, in silence — M1e2 **W24**, register row
-;;; `W24/wild-in-guard` (`corpus/wrong_answers.toml`), banked by S1e2.2.24
-;;; (2026-11-05) from the inventory of 2026-11-05's W-12 (its probe
-;;; `wild_in_guard.ein`, the program unchanged), ruled by the user on
-;;; 2026-11-05; a bare `_` is reserved and refused (Q-M1e2.22).
+;;; `_` in a guard reads nothing, in silence — **W24**, register row
+;;; `W24/wild-in-guard` (`corpus/wrong_answers.toml`); a bare `_` is
+;;; reserved and refused (Q-M1e2.22).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -11,24 +9,26 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A guard compares two values, and `_` names none: it stands for an
-;;; argument of a pattern (`syntax.md`'s `WILDCARD` row). The user ruled
-;;; that such a guard is refused at load, as a range and a head `_` are, with
-;;; a line in Ein's spelling naming the rule and the clause. Every command
-;;; that loads the program exits 1 (`ein test`: 2).
+;;; A guard compares two values, and `_` names none. A bare `_` is reserved
+;;; and refused wherever it is written (Q-M1e2.22): the program is refused at
+;;; the parse, at the first `_`, and every command that reads it exits 1
+;;; (`ein test`: 2).
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.24 the program loaded, and each guard compared `_` as a raw
-;;; IR node, which is equal to no value and to another `_`: `(eq ?x _)` never
-;;; held, `(neq ?x _)` always did, and `(eq _ _)` held. Root derived `(hit-neq
-;;; a)` and `(hit-both a)` and no `hit-eq`, exit 0, with no word of the
-;;; wildcard
-;;; (`ein saturate --dump FILE` and `ein solve FILE` at `32736ac8`, release
-;;; and debug; every mode and `ein oracle` the same). Since S1e2.2.24 the
-;;; loader refuses it: *kb load error: rule 'e': its :match writes (eq ?x _),
-;;; and _ names no value — a guard compares two values, and _ stands for an
-;;; argument of a pattern*, and the same line for `n` and `b`.
+;;; At `32736ac8`, release and debug (every mode and `ein oracle` the same),
+;;; the program loaded, and each guard compared `_` as a raw IR node, which
+;;; is equal to no value and to another `_`: `(eq ?x _)` never held,
+;;; `(neq ?x _)` always did, and `(eq _ _)` held. Root derived `(hit-neq a)`
+;;; and `(hit-both a)` and no `hit-eq`, exit 0, with no word of the wildcard
+;;; (`ein saturate --dump FILE`, `ein solve FILE`). Today the parse refuses
+;;; the `_`: *unexpected `_`: _ (reserved)*.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation p Node) (relation hit-eq Node) (relation hit-neq Node) (relation hit-both Node)
 (p a)

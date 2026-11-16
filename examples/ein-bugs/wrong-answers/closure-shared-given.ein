@@ -1,10 +1,7 @@
-;;; The closure estimate counts a shared given twice — M1e2 **W10**,
+;;; The closure estimate counts a shared given twice — **W10**,
 ;;; register row `W10/closure-shared-given` (`corpus/wrong_answers.toml`),
-;;; banked by S1e2.2.25 (2026-11-05) for the inventory of 2026-11-05's W-10,
-;;; which had no witness, and filed `open`, deferred to F22 on the user's
-;;; ruling of that day. Its control is
-;;; `closure-shared-given-control.ein`, the same program with two `x-cd`
-;;; derivations fewer.
+;;; `open`. Its control is `closure-shared-given-control.ein`, the same
+;;; program with two `x-cd` derivations fewer.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -15,21 +12,24 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; Root is dead. Its core is the smallest frontier over every derivation
-;;; (`glossary.md` § Smallest contradiction frontier): `x-uv`'s rests on
-;;; `(g K)` alone, so the core is `(g K)`, as the control reports and as a
-;;; store with no alternatives cap does (`MAX_ALT_JUSTIFICATIONS = 1 000 000`,
-;;; a scratch build at `94c75204`).
+;;; (`docs/ein/user/reference/glossary.md` § Core, the smallest contradiction
+;;; frontier): `x-uv`'s rests on `(g K)` alone, so the core is `(g K)`, as the
+;;; control reports and as a store with no alternatives cap does
+;;; (`MAX_ALT_JUSTIFICATIONS = 1 000 000`, a scratch build at `94c75204`).
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
 ;;; `(x K)`'s primary and its 32 alternatives are `x-cd`'s first 33, so its
 ;;; list is full when `x-uv` arrives, with as many premises as the list's
 ;;; longest, and refused. Beside a full list the store keeps the arrival with
-;;; the smallest closure estimate (M1e2 S1e2.2.11), and the
+;;; the smallest closure estimate (Q-M1e2.11), and the
 ;;; estimate is a sum over the premises: `(u K)` 1 and `(v K)` 1, so 2, the
 ;;; given `(g K)` counted twice, which does not lower `x-cd`'s 2. So `x-uv` is
 ;;; dropped, and the core is `(c C01) (d C01)` (`ein solve FILE`, release and
-;;; debug, at `94c75204`). Owned by F22: no per-fact estimate is exact.
+;;; debug, at `94c75204`, and today). No per-fact estimate is exact.
+;;;
+;;;
+;;;
 
 (relation c T :why "c holds of {?1}") (relation d T :why "d holds of {?1}") (relation g T :why "g holds of {?1}") (relation u T :why "u holds of {?1}") (relation v T :why "v holds of {?1}") (relation x T :why "x holds of {?1}")
 (c C01) (d C01) (c C02) (d C02) (c C03) (d C03) (c C04) (d C04) (c C05) (d C05) (c C06) (d C06)

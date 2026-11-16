@@ -1,7 +1,7 @@
 ;;; A region claim that lists a fact of a relation only a rule's `:assert` derives
 ;;; is refused —
-;;; M1f **W78**, register row `W78/solve-claim-derived-relation`, filed by S1f.7.11 (T1f.7.11.2,
-;;; 2026-11-11).
+;;; **W78**, register row `W78/solve-claim-derived-relation`.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -17,8 +17,8 @@
 ;;;
 ;;; At `73a0c17d`, release: refused at load, *(solve … :expect …) names admitted, which
 ;;; no declaration or fact makes a relation*, exit 1 on every command.
-;;; A claim's relation is a relation of the program since S1f.7.11 (T1f.7.11.3):
-;;; the claim loads and holds.
+;;; Today a claim's relation is a relation of the program: the claim loads and
+;;; holds.
 
 (relation paid Guest :why "{?1} has paid")
 (rule welcome ()

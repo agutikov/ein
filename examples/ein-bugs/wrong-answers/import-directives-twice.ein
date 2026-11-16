@@ -1,7 +1,7 @@
 ;;; Two qualified imports of a module that states a lattice are refused —
-;;; M1f **W90**, register row `W90/import-directives-twice`
-;;; (`corpus/wrong_answers.toml`), filed by S1f.6.25 (T1f.6.25.2, 2026-11-13)
-;;; from E-8 of P1f.6's `findings.md`.
+;;; **W90**, register row `W90/import-directives-twice`
+;;; (`corpus/wrong_answers.toml`); no import brings a module's `(solve …)`
+;;; (Q-M1f.215).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -16,10 +16,10 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `5e5685b7`, release: refused at load on every command, *2 (solve …)
-;;; forms — a program states its lattice once*, exit 1 (`ein test`: 2): each
-;;; import brought the module's `(solve …)`, and the program wrote neither.
-;;; The answer above by hand since S1f.6.25 (T1f.6.25.2).
+;;; At `5e5685b7`, release: refused at load on every command, *2 (solve …) forms
+;;; — a program states its lattice once*, exit 1 (`ein test`: 2): each import
+;;; brought the module's `(solve …)`, and the program wrote neither. Now the
+;;; answer above by hand.
 
 (import import-directives-module :as m)
 (import import-directives-module :as k)

@@ -1,17 +1,17 @@
 ;;; The **control** for [`oblig-stdlib-total-owed.ein`](oblig-stdlib-total-owed.ein)
-;;; — that file plus one fact, `(is-a Z Food)` — M1e2 W14 (S1e2.2.15). Banked
-;;; from S1e2.2.4's residue probe of 2026-11-04.
+;;; — that file plus one fact, `(is-a Z Food)` — case W14 of the register.
 ;;;
-;;; Until S1e2.2.15 the obligations rung built H here, and with `(is-a Z
-;;; Food)` at root `total-owed`'s `(is-a ?b Food)` scan found Z: H was
-;;; `(likes Ann Soup)` and `(likes Ann Z)`, and R one state, `{(likes Ann Z)}`
-;;; (`ein solve FILE` at `338b5892`, 2026-11-04). Flagged as its witness is,
-;;; an `obligation-trigger` site on `is-a`, with no hole in its cube. `is-a`
-;;; is in D here too, and the user ruled on 2026-11-04 that a guard over a
-;;; relation in D declines the rung (Q-M1e2.10 (a)): the untyped blind
+;;; With `(is-a Z Food)` at root `total-owed`'s `(is-a ?b Food)` scan would
+;;; find Z: H `(likes Ann Soup)` and `(likes Ann Z)`, and R one state,
+;;; `{(likes Ann Z)}`. Flagged as its witness is, an `obligation-trigger` site
+;;; on `is-a`, with no hole in its cube. `is-a` is in D here too, and a guard
+;;; over a relation in D declines the rung (Q-M1e2.10): the untyped blind
 ;;; enumerator builds H, six candidates, and R is sixteen states, `(likes Ann
 ;;; Z)` with any subset of the four whose subject is not a Person, which the
 ;;; `:expect` below states and its witness answers.
+;;;
+;;;
+;;;
 
 (import std.algebra :symbols (total-owed))
 

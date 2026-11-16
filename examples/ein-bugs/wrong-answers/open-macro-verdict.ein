@@ -1,6 +1,6 @@
 ;;; a macro's body writes `open`, the verdict, and a rule's `:assert` calls it:
-;;; an obligation through a macro loads — M1f **W72**, register row
-;;; `W72/macro-verdict`, filed by S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;; an obligation through a macro loads — **W72**, register row
+;;; `W72/macro-verdict`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,7 +10,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
-;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; and is written nowhere else (Q-M1f.66):
 ;;; here it is written as a macro's body, so the program is refused at the
 ;;; parse, at the `open`, and every command exits 1 (`ein test`: 2). A macro's
 ;;; body is no rule's `:assert`, so the grammar refuses `open` in it, called or
@@ -21,7 +21,7 @@
 ;;; At `f62e34e1`, release: the program loads, `r` is an obligation, every alive
 ;;; node owes a `likes` partner for `k`, and R is empty, exit 0 on every
 ;;; command.
-;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+;;; The engine refuses it at the parse.
 
 (relation a Thing :why "{?1} is an a")
 (relation p Thing :why "{?1} is a p")

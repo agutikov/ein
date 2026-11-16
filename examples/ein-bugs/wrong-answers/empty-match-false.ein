@@ -1,7 +1,5 @@
-;;; A rule whose `:match` is `()` never fires — M1f **W31**, register row
-;;; `W31/empty-match-false` (`corpus/wrong_answers.toml`), banked by S1f.5.0
-;;; (2026-11-08) from S1f.5.9's case (P1f.5's F12), filed `open` and owned by
-;;; S1f.5.9, on the user's ruling of 2026-11-07 on F12.
+;;; A rule whose `:match` is `()` never fired — **W31**, register row
+;;; `W31/empty-match-false` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -9,24 +7,26 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; An empty conjunction is true, so the rule fires once (the user,
-;;; 2026-11-07: *"1 fire"*): root is dead and R is empty. Its core is `[]`,
-;;; the empty set (Q-M1e2.27), and `refuted by` names `r`.
+;;; An empty conjunction is true, so the rule fires once (Q-M1e2.36): root is
+;;; dead and R is empty. Its core is `[]`, the empty set (Q-M1e2.27), and
+;;; `refuted by` names `r`.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The rule loads and never fires (`ein saturate FILE --dump`): root is
-;;; alive, ∅ is in R and R is two states, ∅ and `{(p a)}`, exit 0 (`ein solve
+;;; The rule loaded and never fired (`ein saturate FILE --dump`): root was
+;;; alive, ∅ in R and R two states, ∅ and `{(p a)}`, exit 0 (`ein solve
 ;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
 ;;; release and debug alike).
 ;;;
-;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; `:match ()` is the empty conjunction since T1f.5.9.2 (2026-11-09), so `r`
-;;; fires once at root and concludes `(false)`: root is dead and R is empty,
-;;; root's core `[]`, the first empty core in Ein, printed `∅`, and `refuted
-;;; by` `r`, the answer above by hand. The register's `now` is that answer;
-;;; the section above is the record of the one it replaced.
+;;; `:match ()` is the empty conjunction, so `r` fires once at root and
+;;; concludes `(false)`: root is dead and R is empty, root's core `[]`,
+;;; printed `∅` (Q-M1f.48), and `refuted by` `r`, the answer above by hand.
+;;; The register's `now` is that answer; the section above is the record of
+;;; the one it replaced.
+;;;
+;;;
 
 (relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}")
 (q a)

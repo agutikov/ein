@@ -24,7 +24,7 @@
 ;;;
 ;;; No candidate, and R {∅}, one state: the second rung was taken wherever an
 ;;; obligation rule was loaded, and with nothing owed it proposed nothing. It
-;;; is taken where an obligation is activated at root now, and the answer is
+;;; is taken today where an obligation is activated at root, and the answer is
 ;;; the one above.
 
 (import std.algebra :symbols (total-owed))

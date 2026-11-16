@@ -1,7 +1,7 @@
-;;; A flat import of a library of facts brings none of its facts — M1f
-;;; **W88**, register row `W88/import-facts-flat`
-;;; (`corpus/wrong_answers.toml`), filed by S1f.6.11 (T1f.6.11.2, 2026-11-11)
-;;; on the user's ruling of that day, *"importing facts is mandatory"*.
+;;; A flat import of a library of facts brings none of its facts — **W88**,
+;;; register row `W88/import-facts-flat` (`corpus/wrong_answers.toml`):
+;;; importing facts is mandatory.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,21 +12,21 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A listed name selects the module's declaration of it and every top-level
-;;; fact whose relation it is (S1f.6.11's point (a)), so root holds the
-;;; library's two `is-a` facts, as it would had they been written here, and
-;;; the goal has two rows: *Tea is a drink* and *Milk is a drink*. The
-;;; library's `likes` facts and its rule `liquids` are not listed and nothing
-;;; kept names them, so they stay behind.
+;;; An import brings its module whole, every fact with it (Q-M1f.247), so root
+;;; holds the library's two `is-a` facts, as it would had they been written
+;;; here, and the goal has two rows: *Tea is a drink* and *Milk is a drink*. The
+;;; library's `likes` facts and its rule `liquids` come with it, and the goal
+;;; reads none of them.
+;;;
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `7f574423`, release: the program loads with the declaration and no
-;;; fact, in silence, and the read-out says *the goal has no row: undetermined
-;;; here*, exit 0, on every command that answers a goal; `ein saturate --dump`
-;;; lists no `is-a` fact. `(import import-facts-library :as o)` kept the two
-;;; facts, renamed `(o.is-a …)`.
-;;; The answer above by hand since S1f.6.11 (T1f.6.11.3).
+;;; At `7f574423`, release: the program loads with the declaration and no fact,
+;;; in silence, and the read-out says *the goal has no row: undetermined here*,
+;;; exit 0, on every command that answers a goal; `ein saturate --dump` lists no
+;;; `is-a` fact. `(import import-facts-library :as o)` kept the two facts,
+;;; renamed `(o.is-a …)`. Now the answer above by hand.
+;;;
 
 (import import-facts-library :symbols (is-a))
 

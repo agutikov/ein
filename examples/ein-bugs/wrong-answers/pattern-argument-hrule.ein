@@ -1,6 +1,6 @@
 ;;; An hrule's premise `(says (or …))` loads and proposes nothing —
-;;; M1f **W83**, register row `W83/pattern-argument-hrule`, filed by S1f.7.3 (T1f.7.3.2,
-;;; 2026-11-11).
+;;; **W83**, register row `W83/pattern-argument-hrule`.
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -17,7 +17,7 @@
 ;;;
 ;;; At `52e05fc1`, release: the program loads; the hrule's premise matches nothing, H is
 ;;; empty and R is {∅}, exit 0 on every command.
-;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+;;; Today it is refused at load, at the pattern, on every command.
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

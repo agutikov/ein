@@ -1,6 +1,5 @@
 ;;; An imported `std.macro` macro written as a fact is stored as a fact of its name —
-;;; M1f **W86**, register row `W86/macro-call-stdlib-fact`, filed by S1f.7.12 (T1f.7.12.2,
-;;; 2026-11-11).
+;;; **W86**, register row `W86/macro-call-stdlib-fact`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;
@@ -18,7 +17,8 @@
 ;;; At `91b12be8`, release: the program loads; `(unknown (paid Bob))` is stored, a fact of an
 ;;; auto-vivified relation `unknown`, which no premise can read. R is {∅}, exit 0 on every
 ;;; command.
-;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+;;; The engine refuses it at load.
+;;;
 
 (import std.macro :symbols (unknown))
 (relation paid Guest :why "{?1} has paid")

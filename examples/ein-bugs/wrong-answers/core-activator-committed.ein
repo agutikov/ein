@@ -1,8 +1,7 @@
 ;;; A dead node's core leaves out the activator its refutation rests on, where
-;;; the activator is the commitment itself — M1e2 **W19**, register row
-;;; `W19/core-activator-committed` (`corpus/wrong_answers.toml`), banked by
-;;; S1e2.2.19 (2026-11-04), found by probing `forbid-chain-no-absent.ein`'s
-;;; mechanism.
+;;; the activator is the commitment itself — **W19**, register row
+;;; `W19/core-activator-committed` (`corpus/wrong_answers.toml`), found by
+;;; probing `forbid-chain-no-absent.ein`'s mechanism.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -17,20 +16,21 @@
 ;;; plan was compiled from: the core is `(r2 a) (seed a)`, which names the
 ;;; commitment. `(seed a)` alone is root's, and root is alive.
 ;;;
-;;; ── What the engine answered, and what holds since ─────────────────────
+;;; ── What the engine answered, and what holds ───────────────────────────
 ;;;
-;;; Until S1e2.2.19, R as above, exit 0; and N's core `(seed a)` alone, by
+;;; R as above, exit 0; and N's core `(seed a)` alone, by
 ;;; `r2`, in `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s
 ;;; `nodes.json`, `--events`' `enter` line, `--trace` and `ein oracle
 ;;; --dump` (`ein solve FILE --dump-answer DIR` at `a41eb76e`, release and
 ;;; debug). A derivation recorded the premises its plan matched, not the
 ;;; activator the plan was compiled from, so the core search never reached
-;;; the commitment. Which
-;;; activators a core follows was Q-M1e2.12, S1e2.2.19's question: read as
-;;; the stage file's narrower reading is worded, *only an activator that is
-;;; itself derived*, this one, a commitment, would still be left out. The
-;;; user ruled (c) on 2026-11-04, an activator a node derives or commits, and
-;;; since S1e2.2.19's fix N's core is `(r2 a) (seed a)`, in either build.
+;;; the commitment. A core follows an activator a node derives or commits
+;;; (Q-M1e2.12), so N's core is `(r2 a) (seed a)`, in either build; the
+;;; narrower reading, *only an activator that is itself derived*, would
+;;; still leave this one, a commitment, out.
+;;;
+;;;
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation r2 T :why "r2 holds of {?1}, which activates rule r2 for {?1}") (relation p2 T :why "p2 holds of {?1}")
 
