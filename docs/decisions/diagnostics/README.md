@@ -3,6 +3,7 @@
 What a refusal prints: where its line places the fault, how it words it, and the notes under it.
 
 - [Q-M1a.3](Q-M1a.3-a-parse-error-names-its-position-and-its-token.md) — A parse error names its position and its token, then its notes and repairs
+- [Q-M1a.6](Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md) — A loader message about a top-level form names no position
 - [Q-M1f.15](Q-M1f.15-a-position-in-a-container-names-its-stored.md) — A position in a container names its stored program
 - [Q-M1f.38](Q-M1f.38-a-refusals-line-names-the-fault-then-what.md) — A refusal's line names the fault, then what to write
 - [Q-M1f.45](Q-M1f.45-the-parse-error-at-and-or-or-carries-a-note.md) — The parse error at `(and)` or `(or)` carries a note naming the rule and the clause

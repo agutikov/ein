@@ -14,6 +14,7 @@ shapes the parser and the loader refuse.
 - [Q-M1c.1](Q-M1c.1-a-query-states-the-answer-it-expects-with-expect.md) — A query states the answer it expects with `:expect`
 - [Q-M1c.2](Q-M1c.2-an-expectation-is-ground-and-naming-a-relation.md) — An expectation is ground, and naming a relation closes it
 - [Q-M1d.7](Q-M1d.7-a-rule-is-a-sentence-about-the-state-it-fires.md) — A rule is a sentence about the state it fires in
+- [Q-M1e.10](Q-M1e.10-two-inert-config-flags-are-refused.md) — Two inert config flags are refused
 - [Q-M1e.18](Q-M1e.18-eq-neq-and-absent-are-read-only-at-their-own.md) — `eq`, `neq` and `absent` are read only at their own arity
 - [Q-M1e2.5](Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md) — A refutation may not rest on an `absent` a commitment can still fill
 - [Q-M1e2.9](Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md) — A program's names are the constants its facts and rules write
@@ -24,6 +25,8 @@ shapes the parser and the loader refuse.
 - [Q-M1e2.24](Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md) — Ein has no numbers and no ranges
 - [Q-M1e2.26](Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md) — `eq` and `neq` are the relations of equality and non-equality
 - [Q-M1e2.28](Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md) — Each form takes a closed list of keywords
+- [Q-M1e2.36](Q-M1e2.36-an-empty-match-is-true-and-fires-once.md) — An empty `:match` is true and fires once
+- [Q-M1e2.37](Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md) — A conclusion's variable is bound by every way of satisfying the `:match`
 - [Q-M1f.1](Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md) — A rule that could derive an activator binding a relation parameter to a fact is refused at load
 - [Q-M1f.7](Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md) — The dunders are never bound, and the writeback names never written
 - [Q-M1f.11](Q-M1f.11-a-template-may-not-refer-to-a-variable-whose.md) — A template may not refer to a variable whose name holds `}`

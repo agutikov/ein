@@ -2,11 +2,15 @@
 
 Decisions on the `ein` commands: their options, their exit codes, and the views they render.
 
+- [Q21](Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md) — Every form has a fixed DOT shape, and its layout is free
 - [Q-M1a.13](Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md) — The CLI's behaviour is fixed, and its help's layout is clap's
 - [Q-M1a.22](Q-M1a.22-a-containers-solve-is-its-sources-byte-for-byte.md) — A container's solve is its source's, byte for byte
 - [Q-M1e.17](Q-M1e.17-g-0-logs-no-node-line-and-a-negative-is-refused.md) — `-g 0` logs no node line, and a negative is refused
 - [Q-M1e.20](Q-M1e.20-every-renderer-has-a-command-that-reaches-it.md) — Every renderer has a command that reaches it
+- [Q-M1e.22](Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md) — A failed artefact write keeps the run's exit code
 - [Q-M1e.24](Q-M1e.24-n-takes-a-count-of-one-or-more.md) — `-n` takes a count of one or more
+- [Q-M1e2.33](Q-M1e2.33-every-answer-exits-0.md) — Every answer exits 0
+- [Q-M1e2.35](Q-M1e2.35-the-default-region-budget-is-2-20-facts.md) — The default region budget is 2^20 facts
 - [Q-M1f.17](Q-M1f.17-a-view-of-a-container-draws-the-program-it.md) — A view of a container draws the program it stores
 - [Q-M1f.27](Q-M1f.27-a-containers-answer-directory-writes-the-program.md) — A container's answer directory writes the program it stores
 - [Q-M1f.62](Q-M1f.62-no-require-why-loads-a-program-without-a-why.md) — `--no-require-why` loads a program without a `:why`
@@ -17,4 +21,3 @@ Decisions on the `ein` commands: their options, their exit codes, and the views 
 - [Q-M1f.257](Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md) — Under `--no-search`, a claim not checked moves no exit code
 - [Q-M1f.258](Q-M1f.258-ein-solve-and-ein-test-take-no-search-and-ein.md) — `ein solve` and `ein test` take `--no-search`, and `ein oracle` refuses it
 - [Q-M1f.309](Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md) — `ein render h-space` shows the hypothesis space, and `ein show hyps` lists it
-- [Q21](Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md) — Every form has a fixed DOT shape, and its layout is free

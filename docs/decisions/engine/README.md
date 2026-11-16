@@ -2,8 +2,13 @@
 
 Decisions on `ein.rs` as built: the parser, the compiler's invariants, the store and its provenance, the `.einb` container, the agenda, and determinism.
 
+- [Q2](Q2-ein-hands-no-problem-to-an-external-solver.md) — Ein hands no problem to an external solver
+- [Q18](Q18-provenance-is-per-fact-an-or-of-derivations-over.md) — Provenance is per fact, an OR of derivations over premises
+- [Q29](Q29-a-rule-compiles-once-per-activator.md) — A rule compiles once per activator
 - [Q-M1a.7](Q-M1a.7-a-job-count-moves-nothing-a-run-prints.md) — A job count moves nothing a run prints
 - [Q-M1a.18](Q-M1a.18-a-node-resumes-roots-saturation.md) — A node resumes root's saturation
+- [Q-M1a.23](Q-M1a.23-ein-has-no-binding-for-another-language.md) — Ein has no binding for another language
+- [Q-M1e.14](Q-M1e.14-a-jobs-sweep-compares-what-a-job-count-reaches.md) — A `--jobs` sweep compares what a job count reaches
 - [Q-M1e.16](Q-M1e.16-a-firings-identity-keys-on-every-activator.md) — A firing's identity keys on every activator argument
 - [Q-M1e.23](Q-M1e.23-a-routes-workers-share-nothing-they-write.md) — A route's workers share nothing they write
 - [Q-M1e2.25](Q-M1e2.25-the-parser-is-generated-from-the-grammar.md) — The parser is generated from the grammar, and its recovery is deterministic
@@ -20,6 +25,3 @@ Decisions on `ein.rs` as built: the parser, the compiler's invariants, the store
 - [Q-M1f.173](Q-M1f.173-the-register-file-stays-256-wide.md) — The register file stays 256 wide
 - [Q-M1f.185](Q-M1f.185-a-state-file-nested-past-the-parsers-limit-does.md) — A state file nested past the parser's limit does not load again
 - [Q-M1f.313](Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md) — The agenda fires first what leads to `(false)`
-- [Q2](Q2-ein-hands-no-problem-to-an-external-solver.md) — Ein hands no problem to an external solver
-- [Q18](Q18-provenance-is-per-fact-an-or-of-derivations-over.md) — Provenance is per fact, an OR of derivations over premises
-- [Q29](Q29-a-rule-compiles-once-per-activator.md) — A rule compiles once per activator

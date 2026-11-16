@@ -2,9 +2,11 @@
 
 Decisions on what `ein solve` and `ein test` print: the read-out's rows and words, the JSON, the state files and the trace.
 
+- [Q20](Q20-the-trace-is-in-the-engines-order-and-reorder.md) — The trace is in the engine's order, and `--reorder` groups it by entity
 - [Q-M1d.5](Q-M1d.5-the-read-out-lists-the-states-each-count.md) — The read-out lists the states, each count qualified, and the key is a form on request
 - [Q-M1e2.21](Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md) — `refuted by` names the first recorded derivation the core supports
 - [Q-M1e2.27](Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md) — In Ein's JSON, `[]` is the empty set and `null` no object
+- [Q-M1e2.34](Q-M1e2.34-stdouts-listings-share-100-lines-and-a-dump.md) — Stdout's listings share 100 lines, and a dump holds them whole
 - [Q-M1f.12](Q-M1f.12-natural-language-text-reaches-a-fixed-set.md) — Natural-language text reaches a fixed set of surfaces, byte for byte
 - [Q-M1f.18](Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md) — The read-out's `(model …)` is the claim form, and `-P` prints the model
 - [Q-M1f.19](Q-M1f.19-a-texts-line-break-on-the-read-out-continues-at.md) — A text's line break on the read-out continues at the text's column
@@ -27,4 +29,3 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.255](Q-M1f.255-ein-solve-no-search-prints-root-and-an-r-row.md) — `ein solve --no-search` prints root, and an `R` row that says it was not searched
 - [Q-M1f.259](Q-M1f.259-under-no-search-the-summary-states-no-region.md) — Under `--no-search` the summary states no region, and root's standing is in `root`
 - [Q-M1f.340](Q-M1f.340-every-name-is-a-json-string.md) — Every name is a JSON string
-- [Q20](Q20-the-trace-is-in-the-engines-order-and-reorder.md) — The trace is in the engine's order, and `--reorder` groups it by entity
