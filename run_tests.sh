@@ -67,7 +67,10 @@
 #                                 anchors the first time it ran over the whole
 #                                 tree rather than over `docs/kernel/` — 251 of
 #                                 them in one milestone record that had moved
-#                                 out of `plans/` (M1e S1e.3.8, `DO-M2`)
+#                                 out of `plans/` (M1e S1e.3.8, `DO-M2`); 15
+#                                 more when it read the links of Rust comments
+#                                 and the bare paths of `.ein` comments and
+#                                 `corpus.toml` too
 #   cargo fmt --all --check       three files were unformatted the first time
 #                                 it ran, all three from M1c's `:expect` work
 #   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four
@@ -748,16 +751,13 @@ if [[ "${CHECKS}" == 1 ]]; then
     step "utils/check_hashmap_iteration.py"
     python3 "${SCRIPT_DIR}/utils/check_hashmap_iteration.py"
 
-    # M1e S1e.3.8, `DO-M2`. Not scoped to `docs/kernel/`, which `doc_audit.py`
-    # defaults to and S1e.2.2 had already swept: a relative link resolves or it
-    # does not wherever it is written, and 251 of the 264 broken ones this
-    # first found were in `docs/history/m1d_satisfiability/` — a milestone
-    # record moved out of `plans/` with its links still pointing at the tree it
-    # left. 280 pages, 0.29 s.
+    # Every tracked file that refers to another: each `.md`'s links, the links
+    # in a Rust comment, and the bare paths in a `.ein` comment and in
+    # `corpus/corpus.toml`. Not scoped to `docs/kernel/`, which `doc_audit.py`
+    # defaults to: a relative link resolves or it does not wherever it is
+    # written, and a page that moves takes every reference to it along.
     step "utils/doc_audit.py --links --check"
-    python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check \
-        docs plans README.md AGENTS.md corpus/README.md tests/README.md \
-        examples/README.md stdlib/README.md utils/README.md c/README.md
+    python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check --tracked
 
     step "cargo fmt --all --check"
     if ! cargo fmt --manifest-path "${MANIFEST}" --all --check; then

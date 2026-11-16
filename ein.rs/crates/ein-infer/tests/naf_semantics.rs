@@ -1044,7 +1044,7 @@ fn boundary_lines(src: &str) -> (u32, usize, usize) {
 /// **A parked candidate is not re-judged when an unrelated relation grows** —
 /// M1e S1e.3.6 T7, the review's `TE-M7`.
 ///
-/// [S1a.3.4](../../../../docs/history/m1a_rust/README.md#s1a34--the-saturator)'s
+/// [S1a.3.4](../../../../docs/history/m1a_rust/README.md#s1a34--the-naf-boundary)'s
 /// per-candidate watch stamp became a per-round epoch: `refresh_epochs` takes
 /// the watched extents once and stamps the guard *sets* whose world moved, and
 /// a candidate is stale exactly when its set's epoch is past the epoch it was

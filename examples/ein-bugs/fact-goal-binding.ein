@@ -9,7 +9,7 @@
 ;;;     "goal_bindings": [{"x": "(u0 o1)", "y": "o2"}]
 ;;;
 ;;; A crash here, with no summary written, is not a semantics anyone wants
-;;; to preserve. `binding_value` (`ein-render/src/dump/answer.rs`) keeps an
+;;; to preserve. The JSON summary keeps an
 ;;; int a JSON number and writes every other binding through the same
 ;;; `sexpr_value` as the `facts` list beside it.
 ;;;

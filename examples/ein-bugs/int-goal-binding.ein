@@ -14,7 +14,7 @@
 ;;; (`Json::BigInt`) rather than clamping to i64 — `-2` and
 ;;; `99999999999999999999999` both round-trip.
 ;;;
-;;; Fixed 2026-08-20 in ein.rs (`ein-render/src/dump/answer.rs::binding_value`).
+;;; Fixed 2026-08-20 in ein.rs, in the JSON summary's writer of a binding.
 ;;; This file is the regression: `solve --json-summary` must agree.
 ;;;
 ;;; **Since M1f S1f.5.5's swap there is no INT**: a run of digits is a name

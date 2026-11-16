@@ -3,7 +3,7 @@
 ;;;
 ;;; `(total-owed likes is-a)`: Ann owes a Food, and each food is refuted
 ;;; outright. The answer by hand is **`Open — owes 1`** (the user's ruling of
-;;; 2026-08-25, `tests/stdlib/closure/03_closed_and_owing.ein`), and the engine
+;;; 2026-08-25, the stdlib test `03_closed_and_owing.ein`), and the engine
 ;;; says exactly that: the lookahead kills both alternatives before layer 1,
 ;;; `alive` is empty, and root is recorded as an open state.
 ;;;

@@ -170,12 +170,13 @@ python3 utils/doc_audit.py --identifiers -k inference/
 
 **Checks 3 and 4 are in the gate since M1e S1e.3.8**, which is `DO-M2`'s
 answer, and they are scoped to the **whole tree** rather than to this one — a
-relative link resolves or it does not wherever it is written:
+relative link resolves or it does not wherever it is written. Every tracked
+file that refers to another is read: each `.md`'s links, the links in a Rust
+comment, and the bare paths in a `.ein` comment and in `corpus/corpus.toml`:
 
 ```sh
-python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md \
-    corpus/README.md tests/README.md examples/README.md stdlib/README.md \
-    utils/README.md c/README.md
+python3 utils/doc_audit.py --links --check --tracked
+python3 utils/doc_audit.py --inbound --tracked --target docs/kernel/   # what a page's move rewrites
 ```
 
 That is a step of `./run_tests.sh` and of `per-commit.yml`, diffed by

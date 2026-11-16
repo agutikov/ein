@@ -184,7 +184,7 @@
 ;;; subtraction with no borrow, `0`, and a comparison with nothing yet
 ;;; decided, `eq`: those are the values a caller writes, and the test holds
 ;;; every caller to them. An addition's carry in is the caller's, `0` for X +
-;;; Y, or a bit: `examples/binary_arithmetic/conv.ein` doubles a number and
+;;; Y, or a bit: `std.math.convert` doubles a number and
 ;;; adds a bit in one walk, `(add-walk TAG X X BIT z)`. The
 ;;; TAG is the caller's, a fact of a relation of its own, `(cnt K M)` in
 ;;; `examples/beyond_arith/casting_out_nines.ein`; one of this module's own
