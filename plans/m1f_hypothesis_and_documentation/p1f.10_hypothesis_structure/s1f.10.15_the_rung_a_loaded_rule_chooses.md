@@ -641,3 +641,141 @@ print("raw %d emitted %d skipped %s" % (h["raw"], h["emitted"], skips or "none")
 - `./run_tests.sh` was not run, by instruction. Run: `cargo fmt --all --check`, `cargo clippy --workspace
   --all-targets -- -D warnings` (both as `run_tests.sh` runs them), `python3 utils/check_hashmap_iteration.py`
   and `python3 utils/doc_audit.py --links --check`.
+
+## Task 4's inventory (2026-11-16), taken before the ladder changed
+
+**What moves under (b), every corpus program, listed before the switch is committed.** Two release binaries, on AC:
+`build/s15t4/base/ein`, `cargo build --release -p ein-cli` at `a79eea49` (`master`), and `build/s15t4/b/ein`, the
+same tree with the switch applied (the second rung where an obligation is activated at root, read by the function
+`mechanisms.rs` reads; the diff is kept as `build/s15t4/fix_v1.diff`), built and then taken off the tree again. Both
+were run over every `corpus/corpus.toml` entry, 874, from the repo root, by `inventory.py` below: `ein solve FILE -H
+--json-summary s.json --events e.jsonl` (stdout, stderr, exit, the summary, the event stream hashed), and `ein test
+FILE` on the 358 entries that declare a `test` run, compared again with the run's seconds masked. The shape golden
+was re-banked on the same change, `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test
+id_order_invariance`, every line, and diffed against `master`'s; `python3 utils/read_out_examples.py --check --bin
+build/s15t4/b/ein` was run against the page.
+
+**41 programs change rung, 1 changes H, none changes R**, which is what
+[Q-M1f.308](../open_questions.md#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) said of (b):
+
+| programs | rung | H | R | read-out (`ein solve` stdout) | summary | narration |
+|---|---|---|---|---|---|---|
+| `examples/features/09_adjacent_via_same_house.ein` | second (`obligations`, nothing owed) → blind | 0 → **82**, all dead alone | empty, root dead, both | **three rows**: `universe` *no candidate …* → *82 candidates, 82 dead alone*; `outside pet-loc — no candidate: no obligation owes it …` goes; `relation names adjacent-via-bwd, adjacent-via-fwd — relations only a rule concludes, and 44 candidates of colour-loc, pet-loc name one as an object …` comes | `region` (the universe), `root.hypgen` | the `rung` event goes; the 82 `hyp` lines and the nodes they open come |
+| 32: `examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein`, `examples/features/10_expect.ein`, `tests/region/06_false.ein`, `tests/stdlib/algebra/01_copiers.ein`, `tests/stdlib/algebra/02_compose.ein`, `tests/stdlib/algebra/03_boolean.ein`, `tests/stdlib/algebra/04_extensive.ein`, `tests/stdlib/algebra/05_tag_lemmas.ein`, `tests/stdlib/algebra/06_equational.ein`, `tests/stdlib/algebra/07_schroder.ein`, `tests/stdlib/algebra/08_checks_satisfied.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `tests/stdlib/algebra/10_antisymmetric_violated.ein`, `tests/stdlib/algebra/11_asymmetric_violated.ein`, `tests/stdlib/algebra/12_connex_violated.ein`, `tests/stdlib/algebra/13_empty_violated.ein`, `tests/stdlib/algebra/14_functional_violated.ein`, `tests/stdlib/algebra/15_injective_violated.ein`, `tests/stdlib/algebra/18_totality_open_world.ein`, `tests/stdlib/algebra/19_total_violated.ein`, `tests/stdlib/algebra/20_surjective_violated.ein`, `tests/stdlib/algebra/21_transitive.ein`, `tests/stdlib/algebra/22_symmetric_negative.ein`, `tests/stdlib/algebra/27_converse_welltyped_either_way.ein`, `tests/stdlib/bijection/04_typecheck_arg0_violated.ein`, `tests/stdlib/bijection/05_typecheck_arg1_violated.ein`, `tests/stdlib/closure/01_infer_closure.ein`, `tests/stdlib/closure/02_closed_and_satisfied.ein`, `tests/stdlib/slots/05_no_room.ein`, `tests/stdlib/slots/06_no_fill.ein`, `tests/stdlib/typing/01_reflexive.ein`, `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` | second → blind | 0, both | the same | the same, byte for byte | `root.hypgen.pre_candidate` alone: the blind enumerator runs and counts the relations its lists take out (`no_hypothesis_relation`) | the `rung` event goes, and the event numbers after it shift by one; at `--events-level verbose`, which the golden's `hyp` ops read, the `hypskip` lines come |
+| 8: `stdlib/{algebra,bijection,closure,slots,typing}.ein`, `tests/stdlib/algebra/16_converse_illtyped_dom.ein`, `17_converse_illtyped_ran.ein`, `tests/stdlib/typing/02_type_hierarchy_converse.ein` | second → blind | 0, both | the same | the same | the same | the `rung` event goes |
+
+Nothing else moved: no other program's stdout, stderr, exit code, summary or event stream; no `ein test` read-out of
+the 358 (no `:expect` moves, and no exit code: `corpus_exits.txt` does not move); and
+[`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) is the binary's page as it is
+(`--check` exits 0; `tests/stdlib/algebra/09_irreflexive_violated.ein`, its X7 and X18, is among the 40 whose
+read-out does not move).
+
+**The goldens that move**, and nothing else:
+
+- **`ein-render/tests/golden/corpus_shapes.md5`: 94 lines.** `hyp` and `hyp+closed` on each of the 41 programs, 82
+  lines, the generator's narration (the `rung` event and its counters); and 12 more on `features/09`:
+  `read-out[describe]`, `read-out[maximal]`, `read-out[minimal]`, `read-out[single]`, `read-out[n2]`,
+  `region-trace`, `cores[describe]`, `cores[maximal]`, `cores[minimal]`, `cores[single]`, `cores[n2]` and
+  `oracle`. Not `naf`, which reads `hypgen::eligible_relations`, on any program; not `states` or `region-lattice`
+  on `features/09`, whose R is empty under both. Re-banked with the change: `build/s15t4/corpus_shapes_b.md5`.
+- `corpus_exits.txt`, `read_out_examples.md`, every `:expect`, the register's existing rows: **none**.
+- The witnesses task 4 files (below) are new programs: their lines are added by the rows commit and move in the
+  fixing commit, and are not on this list.
+
+`inventory.py`, as run (`python3 build/s15t4/inventory.py build/s15t4/base/ein build/s15t4/b/ein build/s15t4/inv
+--jobs 8 > build/s15t4/inventory.tsv`; `build/` is not tracked):
+
+```python
+#!/usr/bin/env python3
+"""S1f.10.15 T4's inventory: every corpus program under two binaries.
+
+    python3 build/s15t4/inventory.py BASE_BIN NEW_BIN OUT_DIR [--jobs N]
+
+For every `corpus/corpus.toml` entry, run from the repo root:
+
+    ein solve FILE -H --json-summary s.json --events e.jsonl     (stdout, stderr, exit)
+    ein test FILE                                                 (where the entry declares `test`)
+
+under both binaries, and print one tab-separated line per program on which
+anything differs: which of stdout / exit / stderr / summary / events / test
+moved, and the summary's H, R and rung on each side. The events stream's
+`run` line is compared less its `argv` and `file`, which name the scratch
+paths. Nothing else is normalised.
+"""
+import hashlib, json, os, subprocess, sys, tomllib
+from concurrent.futures import ThreadPoolExecutor
+
+base, new, out = sys.argv[1], sys.argv[2], sys.argv[3]
+jobs = int(sys.argv[sys.argv.index("--jobs") + 1]) if "--jobs" in sys.argv else 12
+repo = os.getcwd()
+entries = tomllib.load(open("corpus/corpus.toml", "rb"))["entry"]
+
+
+def run(binary, tag, e):
+    name = e["path"].replace("/", ".")
+    d = os.path.join(out, tag, name)
+    os.makedirs(d, exist_ok=True)
+    s, ev = os.path.join(d, "s.json"), os.path.join(d, "e.jsonl")
+    for f in (s, ev):
+        if os.path.exists(f):
+            os.remove(f)
+    p = subprocess.run([binary, "solve", e["path"], "-H", "--json-summary", s, "--events", ev],
+                       capture_output=True, text=True, timeout=900)
+    summary = json.load(open(s)) if os.path.exists(s) else None
+    # The stream is hashed line by line and deleted: on the zebra family it
+    # runs to gigabytes. The `rung` lines are kept, which `brief` reads.
+    h, rungs = hashlib.sha256(), []
+    if os.path.exists(ev):
+        with open(ev, "rb") as fh:
+            for line in fh:
+                if line.startswith(b'{"e": "run"'):
+                    o = json.loads(line)
+                    o.pop("argv", None)
+                    o.pop("file", None)
+                    line = json.dumps(o).encode()
+                elif line.startswith(b'{"e": "rung"'):
+                    rungs.append(json.loads(line))
+                h.update(line)
+        os.remove(ev)
+    events = (h.hexdigest(), rungs)
+    test = None
+    if "test" in e.get("runs", []):
+        t = subprocess.run([binary, "test", e["path"]], capture_output=True, text=True, timeout=900)
+        test = (t.returncode, t.stdout, t.stderr)
+    return dict(stdout=p.stdout, stderr=p.stderr, exit=p.returncode, summary=summary,
+                events=events, test=test)
+
+
+def brief(r):
+    sm = r["summary"]
+    if sm is None:
+        return "no summary, exit %d: %s" % (r["exit"], (r["stderr"].splitlines() or [""])[0][:90])
+    g = sm["region"]
+    rung = [o.get("mode") for o in r["events"][1]]
+    h = sm["root"]["hypgen"]
+    return "H %s k_s %s k_c %s rung-events %s" % (h.get("emitted"), g.get("k_s"), g.get("k_c"),
+                                                   ",".join(rung[:1]) + ("x%d" % len(rung) if rung else "none"))
+
+
+def one(e):
+    a, b = run(base, "base", e), run(new, "new", e)
+    moved = [k for k in ("stdout", "exit", "stderr", "summary", "events", "test") if a[k] != b[k]]
+    if not moved:
+        return None
+    region = []
+    if a["summary"] and b["summary"]:
+        for k in ("region", "verdict", "queries", "claim"):
+            if a["summary"].get(k) != b["summary"].get(k):
+                region.append(k)
+        if a["summary"]["root"]["hypgen"] != b["summary"]["root"]["hypgen"]:
+            region.append("root.hypgen")
+    return "\t".join([e["path"], ",".join(moved), "summary:" + (",".join(region) or "-"),
+                      "base: " + brief(a), "new: " + brief(b)])
+
+
+with ThreadPoolExecutor(jobs) as pool:
+    for line in pool.map(one, entries):
+        if line:
+            print(line, flush=True)
+print("# %d entries compared" % len(entries))
+```
