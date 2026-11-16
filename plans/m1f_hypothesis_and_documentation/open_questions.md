@@ -314,7 +314,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **ruled 2026-11-16**: the user, asked back since the question had a recommendation and no default: *"308 (b) ok"*. **(b)**, the second rung where an obligation is activated at root. **Built 2026-11-16** by [S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)'s task 4: the register's W97, three rows, filed and fixed, the re-plan's probe refused at load; 41 corpus programs change rung, `features/09` changes H, no R moves |
 | [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth. **Renamed 2026-11-16** on the user's instruction: `ein render h-space FILE`, and `ein show hyps FILE` lists H as Ein facts |
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
-| [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **put 2026-11-16 by S1f.10.14's T4, not ruled, to be shown at the phase's close**: default (a), describe as it is; not acted on; [S1f.10.14](p1f.10_hypothesis_structure/s1f.10.14_exactly_one_spent.md#t4-describe-as-a-question-with-numbers--q-m1f311-put) |
+| [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, a describe that visits each predicate's borders instead of every alive state, an option the main session put that day; the user: *"YES! … lets pick this variant"*. Built by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md) |
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **put 2026-11-16 by S1f.10.16's T2, not ruled, to be shown at the phase's close**: default (b), `hyp` re-pointed at H's pass and `hyp+closed` removed; not acted on, both ops as they were; [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
@@ -6583,6 +6583,30 @@ merged states are read from.
 
 **The default named: (a)**, which the plan's framing gives: describe's route is M1e2's decision, which the phase
 reports on and does not reopen by itself. **Not acted on.**
+
+**A fifth option, put by the main session on 2026-11-16 in answer to the user's questions** (*"how describe could
+work the same way as --single but when there are potentially R contains many nodes?"*, then *"what is more
+generic approach, independent from k_c = k_s?"*):
+
+- **(e) A describe that visits each predicate's borders instead of every alive state.** Every quantity describe
+  reports is a border of a monotone predicate over the cube, or a count over one:
+  - R's **states** are the exhausted tree's leaves and the alive states above them (L5, L2, L3), as `-n N` lists
+    them;
+  - **`k_c`** is `Σ |class(s)|` over R's states, where `class(s) = { C ⊆ s : cl(C) = s }` is an up-set inside
+    `2^s`: its count follows from its border, the maximal closed proper subsets of `s`
+    (`|class(s)| = 2^|s| − |⋃_j 2^{m_j}|`), found by saturating subsets of `s` only, by dualize and advance with
+    `cl` as the oracle;
+  - the **minimal line** is the alive minimal discharged sets, the border of *discharged* against the maximal
+    owing states;
+  - **N** is the minimal dead sets, the border of *alive*.
+
+  Each border is found at a cost polynomial in its size and its dual's (quasi-polynomial at worst), not in the
+  number of alive states. On `send_more_money.ein`, where no rule writes `val`, every class has one member, found
+  in eight saturations. The global borders' sizes, the maximal owing states and N, were not measured.
+
+**Ruled 2026-11-16: (e).** The user: *"YES! a describe that visits each predicate's borders instead of every alive
+state - lets pick this variant"*. Built by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md),
+which measures the borders against the state route before it builds, by the price list's rule.
 
 ### Q-M1f.312 — What the shape golden's `hyp` and `hyp+closed` ops digest
 

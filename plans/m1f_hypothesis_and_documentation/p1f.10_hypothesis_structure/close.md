@@ -1,6 +1,8 @@
 # P1f.10 — the close, prepared (2026-11-16)
 
-**Phase:** [P1f.10](README.md). Prepared 2026-11-16, once every stage was merged. It follows the pattern of
+**Phase:** [P1f.10](README.md). Prepared 2026-11-16, once every stage was merged. **The user ruled Q-M1f.311 the
+same day, option (e), which adds [S1f.10.17](s1f.10.17_describe_by_borders.md), describe by borders: the close waits
+for it, and this page is completed when it is merged.** It follows the pattern of
 [P1f.6's close](../p1f.6_calculator/close.md): where the phase stands, what each track delivered, the acceptance
 re-taken, the defaults, the findings, and what is left for the user. It proposes no `docs/history/` record: this
 directory stays where it is. [`state.md`](state.md), written at the pause, is folded in here and is kept only as the
@@ -113,7 +115,12 @@ flipped in its fixing commit.
 
 ## The gate
 
-*(filled in when the runner-like container's gate and nightly on the batch's last commit finish)*
+On `f089cc24`, every stage merged: `utils/ci_container.sh`, the gate in the runner's image, **green**;
+`utils/ci_container.sh --nightly` **red** at `deep-corpus-shards 4/4`'s `answer_round_trip`, a floor a shard's eighth
+held only by the way the corpus dealt it (seventeen programs, fourteen states, every state file reloading). The
+floor is fixed as `979c0966`, and all four shards and the per-commit run are green here. The nightly stopped there,
+so its later steps have not run on part 2; S1f.10.17 changes a route, so the container's gate and nightly run once
+more on the batch's last commit after it.
 
 ## The defaults
 
@@ -156,15 +163,9 @@ user's to confirm**:
 ## What the user is asked
 
 1. **[Q-M1f.311](../open_questions.md#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead)**,
-   *should a describe that the budget would stop answer what the tree can reach instead?* On
-   `send_more_money.ein` a describe stops after 336 101 saturations, 98 % of them on alive owing states, where
-   `--single` proves one state in 18 030. Options:
-   - **(a)** as it is;
-   - **(b)** answer R's states by the tree where describe would stop;
-   - **(c)** both, the tree's states beside the lower bounds;
-   - **(d)** say so in the read-out and spend nothing.
-
-   **Default (a).**
+   *should a describe that the budget would stop answer what the tree can reach instead?* **Ruled 2026-11-16: (e)**,
+   a describe that visits each predicate's borders instead of every alive state; built by
+   [S1f.10.17](s1f.10.17_describe_by_borders.md).
 2. **[Q-M1f.312](../open_questions.md#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest)**, *what the
    shape golden's `hyp` and `hyp+closed` ops digest*: today the walk's generator, which no command runs. Options:
    - **(a)** keep both;

@@ -1,8 +1,8 @@
 # P1f.10 — The structure of the hypothesis set
 
-**The close, prepared: [`close.md`](close.md)** (2026-11-16): every stage merged, what each track delivered, the
-acceptance re-taken, the defaults, the findings and what the user is asked. [`state.md`](state.md) is the record of
-the pause.
+**The close, prepared: [`close.md`](close.md)** (2026-11-16), and reopened the same day by the user's ruling of
+Q-M1f.311, which adds [S1f.10.17](s1f.10.17_describe_by_borders.md), describe by borders. [`state.md`](state.md) is the
+record of the pause.
 **Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands.
 [S1f.10.1](s1f.10.1_exclusion_census.md#record-2026-11-15) ran that day, and
 [S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-stopped-at-the-control) stopped at its control: on I-Z2 no declared row or
@@ -336,6 +336,7 @@ group forms. Every stage reports it, and S1f.10.11 is where its triple has to ap
 | [S1f.10.5](s1f.10.5_ordering.md) | R | The order on the obligation tree | I-SENDW banked; an order that is a function of the structure; `--single` on I-SENDW decided within the default budget; the read-out says what order a run took; **ran to its end, 2026-11-16**: the tree branches on the owed instance closest to closing a coupling read off the whole node, I-SENDW is *Solution* in 18 030 saturations, the same work as I-SEND, E-29 closed; the minimal line, whole and under `--single`, keeps the written order, *no* by the price list's rule |
 | [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | Exactly one, spent: branching nothing licenses yet | the instances L5 does not license, licensed by an argument the oracle holds, or a written *no* per kind; **ran to its end, 2026-11-16**: the implied witness a *no* (`lattice/13_witness_of_two.ein`), licence L9, a witness no node can hold, built for the tree's eight questions (`06_friends_tables_everyone_sits.ein --single` 207 → 61 saturations), what a program would have to state in the bundle, and describe put as Q-M1f.311 |
 | [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | What the walk left in the generator | `generate_one_branch`, `most-constrained`, the lookahead's reach and the stale module headers each deleted or kept with its reader named; **ran to its end, 2026-11-16**: the unread pieces deleted, the lookahead and `emit_closed` kept for the `hyp` ops, those ops put as Q-M1f.312, no golden moved |
+| [S1f.10.17](s1f.10.17_describe_by_borders.md) | R | Describe by borders | Q-M1f.311 (e), the user's ruling of 2026-11-16: describe visits each predicate's borders instead of every alive state, measured against the state route before it is built |
 | [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) | — | ~~Why the tree wins, and the flag~~ | **dropped at the re-plan**: its three subjects were deleted with the walk |
 | [S1f.10.8](s1f.10.8_refutation_under_absent.md) | — | ~~May a refutation rest on an `absent`?~~ | **closed**: ruled *forbid* and built in M1e2 |
 
