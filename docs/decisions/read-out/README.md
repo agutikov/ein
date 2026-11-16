@@ -1,4 +1,4 @@
-# The read-out
+# Decisions: the read-out
 
 Decisions on what `ein solve` and `ein test` print: the read-out's rows and words, the JSON, the state files and the trace.
 

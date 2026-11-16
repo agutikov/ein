@@ -1,4 +1,4 @@
-# The command line
+# Decisions: the command line
 
 Decisions on the `ein` commands: their options, their exit codes, and the views they render.
 

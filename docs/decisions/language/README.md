@@ -1,4 +1,4 @@
-# The language
+# Decisions: the language
 
 What Ein is written in and what a program may say: names and values, forms and keywords, rules and macros, and the
 shapes the parser and the loader refuse.

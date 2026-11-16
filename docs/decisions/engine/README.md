@@ -1,4 +1,4 @@
-# The engine
+# Decisions: the engine
 
 Decisions on `ein.rs` as built: the parser, the compiler's invariants, the store and its provenance, the `.einb` container, the agenda, and determinism.
 

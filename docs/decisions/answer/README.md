@@ -1,4 +1,4 @@
-# The answer
+# Decisions: the answer
 
 Decisions on the answer: the region R, a dead node's core, how a claim is decided, and which question a command asks of R.
 

@@ -1,4 +1,4 @@
-# Hypotheses
+# Decisions: hypotheses
 
 Decisions on hypotheses: hrules, obligations, the generation ladder, the hypothesis mechanisms and the set H they generate.
 

@@ -1,4 +1,4 @@
-# Imports
+# Decisions: imports
 
 How a program uses a module: full names and short names, what an import brings, where a module is found, and how a
 name prints.

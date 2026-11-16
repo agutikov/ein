@@ -1,4 +1,4 @@
-# Diagnostics
+# Decisions: diagnostics
 
 What a refusal prints: where its line places the fault, how it words it, and the notes under it.
 
