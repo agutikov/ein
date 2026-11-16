@@ -1,15 +1,10 @@
-//! **The engine's five names are reserved** — M1f S1f.5.5's T1f.5.5.11, on the
-//! user's ruling of 2026-11-08 on the T9 review stop (*"they are also reserved
-//! names"*) and on Q-M1f.7 (b), *"Never bound"*.
+//! **The engine's five names are reserved** (Q-M1f.7: the dunders are never
+//! bound).
 //!
 //! | name | where a program may write it | what holds it |
 //! |---|---|---|
 //! | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | nowhere: they are the rule names the engine writes for a conclusion no rule drew, with no meaning a program can give them | the grammar's `WRITEBACK` token, which no production takes |
 //! | `__closed__`, `__symmetric__` | wherever a name is **used**, as a relation or as a value (`(imply1 functional __closed__)`), and nowhere a name is **bound**: a declared relation, a rule's, an hrule's or a macro's name, an import's `:as` | `ein_core::RESERVED`, the loader's *shadows a reserved kernel name* |
-//!
-//! Until the swap (T1f.5.5.4) every program here was also read by the
-//! hand-written parser, which refused each writeback name at its `<` and fed
-//! the loader the same dunders, and held to the same answer.
 //!
 //! ```text
 //! cargo test -p ein-ir --test engine_names
@@ -139,14 +134,13 @@ fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
     }
 }
 
-/// **T9's probe, refused at its three writeback names** (`build/s1f.5.5/t9/
-/// probes/engine-names.ein`, written at T1f.5.5.9 for T8's leftover, the
-/// program unchanged). It declares a relation named `<forced-positive>`,
+/// **A probe, refused at its three writeback names**. It declares a
+/// relation named `<forced-positive>`,
 /// names two rules after the other two, and asks for both dunders' behaviour as
-/// the relation of a fact, which every reading of the ruling keeps legal. The
+/// the relation of a fact, which Q-M1f.7 keeps legal. The
 /// parser reports every error recovery reaches: one at each place a writeback
-/// name is written, and none on the dunders' lines. The hand-written parser
-/// stopped at the first `<`, at 5:11, until the swap.
+/// name is written, and none on the dunders' lines, not only the first `<`,
+/// at 5:11.
 #[test]
 fn t9s_probe_is_refused_at_its_three_writeback_names() {
     let probe = ";; S1f.5.5 T9 probe for T8's leftover: the engine's writeback rule names and the
@@ -192,7 +186,7 @@ fn t9s_probe_is_refused_at_its_three_writeback_names() {
     );
 }
 
-/// **A dunder is refused wherever a program binds it** (Q-M1f.7 (b)): a
+/// **A dunder is refused wherever a program binds it** (Q-M1f.7): a
 /// declared relation, a rule's, an hrule's or a macro's name, and an import's
 /// `:as`, each dunder in each, with the loader's line.
 #[test]
@@ -236,7 +230,7 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
     }
 }
 
-/// **A dunder is legal wherever a program uses it** (Q-M1f.7 (b)): as the
+/// **A dunder is legal wherever a program uses it** (Q-M1f.7): as the
 /// relation of a fact, a nested fact, a premise, a conclusion, a goal and a
 /// claim's fact, and as a value: an argument, `std.algebra`'s documented
 /// `(imply1 functional __closed__)`, a `:no-hypothesis` list and a fact's

@@ -1,22 +1,16 @@
-//! The parser — M1f S1f.5.5's, generated from `src/ein.l` and `src/ein.y`
-//! (T1f.5.5.3), and since the swap (T1f.5.5.4) the only one.
+//! The parser, generated from `src/ein.l` and `src/ein.y` (Q-M1e2.25).
 //!
 //! | claim | test |
 //! |---|---|
-//! | a refused file's report is the same twice in one process (F11) | [`a_report_is_the_same_twice`] |
-//! | a report cut at the step budget says so (F11) | [`a_report_cut_at_the_budget_says_so`] |
-//! | a macro carries its `:why` (the user, 2026-11-08) | [`a_macro_carries_its_why`] |
-//! | no name the loader makes up is a name a program can write (T1f.5.5.8) | [`no_name_the_loader_makes_up_is_a_name`] |
-//! | a program at the nesting limit parses and goes through the dumper, macro expansion and the loader on a test thread; one past it is refused with a line (F10) | [`the_nesting_limit`] |
-//! | `ein.l`'s one skip rule and its start condition give the parser the tokens T4's `ein.l` did (T1f.5.5.12) | [`the_lexer_gives_the_tokens_t4s_did`] |
-//! | a string's escapes are S1f.5.2's ruling's, and a `\u{…}` reads exactly the Unicode scalar values (T1f.5.2.5, W38) | [`a_strings_escapes_are_the_rulings`] |
+//! | a refused file's report is the same twice in one process | [`a_report_is_the_same_twice`] |
+//! | a report cut at the step budget says so | [`a_report_cut_at_the_budget_says_so`] |
+//! | a macro carries its `:why` (Q-M1f.59) | [`a_macro_carries_its_why`] |
+//! | no name the loader makes up is a name a program can write (Q-M1f.339) | [`no_name_the_loader_makes_up_is_a_name`] |
+//! | a program at the nesting limit parses and goes through the dumper, macro expansion and the loader on a test thread; one past it is refused with a line | [`the_nesting_limit`] |
+//! | `ein.l`'s one skip rule and its start condition give the parser the tokens its plain form does | [`the_lexer_gives_the_tokens_t4s_did`] |
+//! | a string's escapes are the decided ones, and a `\u{…}` reads exactly the Unicode scalar values (Q-M1e2.23, W38) | [`a_strings_escapes_are_the_rulings`] |
 //!
-//! Until the swap this file also held the generated parser to the
-//! hand-written one, tree for tree on every corpus file both accepted, and
-//! banked every file where they differed (`the_builder_holds_on_the_corpus`,
-//! `golden/generated_parser_corpus.txt`); T1f.5.5.9 attributed each of those
-//! to a ruling before the hand-written parser went, and both went with it.
-//! The fuzzer's half of F11 is in `fuzz_properties.rs`.
+//! The fuzzer's half of the same-report claim is in `fuzz_properties.rs`.
 
 use std::path::{Path, PathBuf};
 
@@ -25,7 +19,7 @@ use ein_ir::Ast;
 use ein_ir::grammar::{self, NESTING_LIMIT, RECOVERY_STEP_BUDGET};
 
 /// Every `.ein` under the four corpus roots, relative to the repo, sorted:
-/// `examples/`, `stdlib/`, `tests/` and `corpus/`, the census's set.
+/// `examples/`, `stdlib/`, `tests/` and `corpus/`.
 fn corpus() -> Vec<(String, PathBuf)> {
     let root = repo_root();
     let mut out = Vec::new();
@@ -43,9 +37,9 @@ fn corpus() -> Vec<(String, PathBuf)> {
     out
 }
 
-/// Every input whose report the F11 tests compare: each corpus file the
-/// generated parser refuses, then `n` seeded mutants of the corpus
-/// (`ein_corpus::mutants`, the census's generator).
+/// Every input whose report the same-report tests compare: each corpus file
+/// the generated parser refuses, then `n` seeded mutants of the corpus
+/// (`ein_corpus::mutants`).
 fn refused_inputs(n: usize) -> Vec<(String, String)> {
     let mut out = Vec::new();
     for (rel, path) in corpus() {
@@ -65,7 +59,7 @@ fn refused_inputs(n: usize) -> Vec<(String, String)> {
     out
 }
 
-/// **A refused file's report is the same twice, in one process** (F11).
+/// **A refused file's report is the same twice, in one process**.
 ///
 /// `lrpar` 0.15 ranked repairs of equal length in a `HashSet`'s order, and
 /// every `HashSet` of a process draws its own hash keys, so two parses of one
@@ -75,7 +69,7 @@ fn refused_inputs(n: usize) -> Vec<(String, String)> {
 /// repairs in the order the search found them and counts search steps. Each
 /// input here is parsed twice and the two reports compared byte for byte:
 /// every corpus file the generated parser refuses, and 1 000 seeded mutants.
-/// With the ranking unpatched it fails (the T3 record says on how many).
+/// With the ranking unpatched it fails.
 #[test]
 fn a_report_is_the_same_twice() {
     let inputs = refused_inputs(1000);
@@ -115,13 +109,13 @@ fn a_report_is_the_same_twice() {
     assert!(cut >= 1, "no input was cut at the budget");
 }
 
-/// **A report cut at the step budget says so** (F11).
+/// **A report cut at the step budget says so**.
 ///
 /// `golden/recovery_cut.ein` is two mistakes recovery repairs and then a
 /// comment whose second line lost its semicolons, so that its prose reads as
 /// tokens: the search for a repair there runs past [`RECOVERY_STEP_BUDGET`]
-/// (it needs 73 234 steps, re-taken with the vendored constant raised; the
-/// T3 record). Unpatched, `lrpar` gave such an error no repairs, which reads
+/// (it needs 73 234 steps, re-taken with the vendored constant raised).
+/// Unpatched, `lrpar` gives such an error no repairs, which reads
 /// as *no repair exists*; the report says where recovery stopped instead,
 /// after its last error, and lists nothing past it.
 #[test]
@@ -146,11 +140,11 @@ fn a_report_cut_at_the_budget_says_so() {
     }
 }
 
-/// **The end of the input is where the text ends** (M1f S1f.5.5,
-/// T1f.5.5.13): an input that stops while a form is open is refused at its
-/// last character's end, whatever whitespace or comment follows the last
-/// token. `lrpar` makes its end-of-input lexeme at the end of the last token,
-/// which the report used until then, so `(p a` and a newline said `1:5`.
+/// **The end of the input is where the text ends**: an input that stops
+/// while a form is open is refused at its last character's end, whatever
+/// whitespace or comment follows the last token. `lrpar` makes its
+/// end-of-input lexeme at the end of the last token, which the report does not
+/// use, or `(p a` and a newline would say `1:5`.
 #[test]
 fn the_end_of_input_is_where_the_text_ends() {
     for (text, at) in [
@@ -168,13 +162,11 @@ fn the_end_of_input_is_where_the_text_ends() {
     }
 }
 
-/// **A macro carries its `:why`**, as a relation and a rule do: the user's
-/// ruling of 2026-11-08, that every form an NL template can go on takes one.
-/// The parser reads `:why "…"` once after a macro's body and the macro reader
-/// keeps it (`Macro::why`); until the swap the hand-written parser, the
-/// shipped one, refused it. Whether a program must write one is the loader's
-/// decision, required by default since S1f.5.14's T1f.5.14.7 and turned off
-/// by `--no-require-why`.
+/// **A macro carries its `:why`**, as a relation and a rule do: every form
+/// an NL template can go on takes one (Q-M1f.59). The parser reads
+/// `:why "…"` once after a macro's body and the macro reader keeps it
+/// (`Macro::why`). Whether a program must write one is the loader's decision,
+/// required by default and turned off by `--no-require-why` (Q-M1f.62).
 #[test]
 fn a_macro_carries_its_why() {
     let with = "(macro owns (?p ?x) (has ?p ?x) :why \"{?p} owns {?x}\")\n(has a b)";
@@ -226,16 +218,15 @@ fn why_text(body: &str) -> Result<String, grammar::ParseError> {
     Ok(text)
 }
 
-/// **A string's escapes are the ruling's, and a `\u{…}` reads exactly the
-/// Unicode scalar values** (S1f.5.2's T1f.5.2.5, W38).
+/// **A string's escapes are the decided ones, and a `\u{…}` reads exactly
+/// the Unicode scalar values** (W38).
 ///
-/// S1f.5.2's ruling (the user, 2026-11-06: *"strings literals are unicode with
-/// reasonable escape symbols"*) gives a string `\n \t \r \" \\` and `\u{…}`, one
-/// to six hex digits naming that code point, and refuses any other escape at
-/// the parse. A code point that names no character, one past 10FFFF or a
-/// surrogate (D800 to DFFF), is no escape either: until T1f.5.2.5 `ein.l`'s
-/// `TEXT` took any six digits and the parser read such an escape as U+FFFD,
-/// in silence. Held over every boundary of the scalar values in every width
+/// A string is Unicode text with the escapes `\n \t \r \" \\` and `\u{…}`,
+/// one to six hex digits naming that code point (Q-M1e2.23), and any other
+/// escape is refused at the parse. A code point that names no character, one
+/// past 10FFFF or a surrogate (D800 to DFFF), is no escape either: `ein.l`'s
+/// `TEXT` takes only a scalar value's digits, so no such escape is read as
+/// U+FFFD in silence. Held over every boundary of the scalar values in every width
 /// from its shortest to seven digits, in both cases, and over every 257th
 /// value up to 11FFFF in its shortest and its six-digit spelling: each reads as
 /// its character where it names one in six digits or fewer, and is refused
@@ -310,16 +301,16 @@ fn a_strings_escapes_are_the_rulings() {
     );
 }
 
-/// **No name the loader makes up is a name a program can write** (T1f.5.5.8,
-/// Q-M1f.339).
+/// **No name the loader makes up is a name a program can write**
+/// (Q-M1f.339).
 ///
 /// The parser, the loader and the engine name what a program writes no name
 /// for: the empty form `()`, a nested form whose head is not a name, a
 /// parameter list, a fact's `:using` list and a query's goal
 /// (`ein_core::text::INTERNAL_NAMES`). None is one `NAME` of the lexer, and
-/// the parser refuses each where a name goes. The spellings they had until
-/// then, `@empty`, `<nested>`, `@params`, `@list` and `<query>`, are each one
-/// `NAME` under the name rule, which is why they moved.
+/// the parser refuses each where a name goes. `@empty`, `<nested>`,
+/// `@params`, `@list` and `<query>` are each one `NAME` under the name rule,
+/// so none of them is one of the loader's names.
 #[test]
 fn no_name_the_loader_makes_up_is_a_name() {
     for name in ein_core::text::INTERNAL_NAMES {
@@ -364,16 +355,14 @@ fn p_argument(terms: &mut ein_core::Terms, text: &str) -> ein_core::Value {
 }
 
 /// **`(p ())` and `(p (@empty))` are two facts, and so are `(p (_ a))` and
-/// `(p (<nested> a))`** (T1f.5.5.8): the twins S1f.5.4's step 1 found on a
-/// prototype that read the name rule with today's parser, where each pair
-/// stored one fact ([its finding](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#the-finding-two-synthetic-names-become-spellable)).
+/// `(p (<nested> a))`**: under the name rule each pair's second member is a
+/// name a program can write, and a loader whose made-up names were spelt so
+/// would store each pair as one fact.
 ///
 /// The grammar refuses `()` and `_` as a fact's argument (a fact holds names
 /// and facts), so the loader's names are made by no fact a program writes,
 /// and `(p (@empty))` and `(p (<nested> a))` load as the names they spell.
-/// Until the swap (T1f.5.5.4) the hand-written parser read the first of each
-/// pair into the same interner, and the two were held apart there. The
-/// generated parser's own twin is `ein-infer/tests/rule_semantics.rs`'
+/// The generated parser's own twin is `ein-infer/tests/rule_semantics.rs`'
 /// `an_empty_conclusion_and_one_named_at_empty_are_two_facts`, and the two
 /// places below read a written name as the parser's.
 #[test]
@@ -404,9 +393,8 @@ fn the_loaders_names_and_the_names_a_program_writes_are_two() {
     }
 
     // The dumper prints a synthetic head's form without its head, and a
-    // pattern's relations leave out the synthetic heads: until T1f.5.5.8 the
-    // first read any head with a leading `@` as one, and the second `@empty`
-    // and `@params` as written.
+    // pattern's relations leave out the synthetic heads: neither reads a head
+    // with a leading `@`, `@empty` or `@params`, as written, as one.
     let text = "(@params b)\n(rule r () :match (and (@empty ?x) (@params ?x)) :assert (q ?x) :why \"q {?x}\")\n";
     let mut ast = Ast::new();
     let forms = grammar::parse(&mut ast, text, Some("heads.ein")).expect("it parses");
@@ -439,10 +427,10 @@ fn nested(depth: usize) -> String {
     )
 }
 
-/// **The nesting limit** (F10).
+/// **The nesting limit**.
 ///
-/// `ein solve` on a fact nested 100 000 deep aborted with a stack overflow
-/// (2026-11-07), because what reads the tree after the parse recurses. At
+/// What reads the tree after the parse recurses, so a fact nested 100 000
+/// deep would abort `ein solve` with a stack overflow were it read. At
 /// [`NESTING_LIMIT`] the generated parser builds the tree, and the dumper,
 /// macro expansion (through the loader, which expands the rule's call) and
 /// the loader read it on this test's own thread, a debug build's 2 MiB test
@@ -504,10 +492,10 @@ fn relative(p: &Path) -> String {
         .into_owned()
 }
 
-/// `ein.l`'s skip rule as it ships, and the three rules it replaced at
-/// T1f.5.5.12, each as `ein.l` writes it, without a start condition. The
-/// whitespace in both is ASCII's since M1f S1f.5.22 (W73), where it was
-/// `\s`, Unicode's: the two lexers this test compares read one class.
+/// `ein.l`'s skip rule as it ships, and the three plain rules it stands
+/// for, each as `ein.l` writes it, without a start condition. The whitespace
+/// in both is ASCII's, never `\s`, Unicode's (W73): the two lexers this test
+/// compares read one class.
 const SKIP_RULE: &str =
     r"<INITIAL,AFTER_WORD>([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;";
 const THREE_SKIP_RULES: &str =
@@ -515,10 +503,10 @@ const THREE_SKIP_RULES: &str =
 
 type LexerDef = lrlex::LRNonStreamingLexerDef<lrlex::DefaultLexerTypes<u32>>;
 
-/// `ein.l` as T1f.5.5.4 shipped it, from `ein.l` as it ships: the skip rule
-/// split back into the three it replaced, and the start condition
-/// `AFTER_WORD` taken out, its declaration, the states a rule is tried in and
-/// the state a rule enters.
+/// `ein.l`'s plain form, from `ein.l` as it ships: the skip rule split into
+/// the three it stands for, and the start condition `AFTER_WORD` taken out,
+/// its declaration, the states a rule is tried in and the state a rule
+/// enters.
 fn as_t4_wrote_it(shipped: &str) -> String {
     let (mut out, mut entered, mut tried) = (Vec::new(), 0, 0);
     for line in shipped.lines() {
@@ -568,15 +556,15 @@ fn tokens(def: &LexerDef, text: &str) -> Vec<(String, usize, usize)> {
         .collect()
 }
 
-/// **The lexer gives the parser the tokens T4's did** (T1f.5.5.12).
+/// **The lexer gives the parser the tokens its plain form does**.
 ///
 /// lrlex runs the regex of every rule the current start condition allows at
-/// every position, and T1f.5.5.12 cut what it runs twice in `ein.l`: whitespace,
-/// `;` comments and `#| … |#` comments are one rule where they were three, so
-/// a run of them is one position; and after any token but a paren, the
-/// exclusive state `AFTER_WORD` tries only `(`, `)` and that rule, the only
-/// three that can match there. The tokens the parser receives must not move.
-/// Each input is lexed by `ein.l` as it ships and by `ein.l` as T4 wrote it
+/// every position, and `ein.l` cuts what it runs twice: whitespace, `;`
+/// comments and `#| … |#` comments are one rule, not three, so a run of them
+/// is one position; and after any token but a paren, the exclusive state
+/// `AFTER_WORD` tries only `(`, `)` and that rule, the only three that can
+/// match there. The tokens the parser receives must be the plain form's.
+/// Each input is lexed by `ein.l` as it ships and by its plain form
 /// ([`as_t4_wrote_it`]), both read at run time through `lrlex` (`build.rs`
 /// compiles the same text with the same flags), and the two streams are
 /// compared, kind and span, lexing errors included: every `.ein` under
