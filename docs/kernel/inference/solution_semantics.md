@@ -259,6 +259,27 @@ under the blind enumerator, and on 11 once the stage typed C1's witnesses,
 `branching/06` and `/07` (T1e2.2.10.2, `build/s1e2.2.10/variants.py`,
 2026-11-04).
 
+**A relation's name bound as an object, the read-out names as well**
+(§ 1.2: a relation only a rule concludes is in no registry, so its name is an
+object). Where a program derives `(liquid Tea)` by a rule, declares `liquid`
+nowhere and leaves `(relation tasty Thing)` open, `(tasty liquid)` is a
+candidate and a state of R may hold it. The candidate stays, R is right for
+the program as written, and declaring the relation takes its name out of H.
+Where the blind enumerator built H and a candidate names the head of a fact
+root's fixpoint holds, or a relation a rule's `:assert` names
+([`ein_infer::relation_names`](../../../ein.rs/crates/ein-infer/src/relation_names.rs)),
+every question prints a `relation names` row under `universe`, *liquid — a
+relation only a rule concludes, and 1 candidate of tasty names it as an
+object: no file declares it or writes a fact of it*; the summary carries it as
+`root.hypgen.relation_names_as_objects` and `ein oracle --dump` in `region.md`
+and `region.json`, each written only where there is one. It decides nothing:
+H, R, every count and every exit code are what they are without it. A
+relation a rule writes through a parameter, `(?Q ?r)`, is named only where
+root holds a fact of it, and a kernel dunder never is, being no object.
+`ein-cli/tests/relation_names_row.rs` holds the row on every question, and
+the corpus's one program that prints it,
+`examples/features/01_not_and_absent.ein`.
+
 ### 1.5 Commitment, node, state
 
 A **commitment** C is a subset of H. Seen as a point of the lattice, it is a

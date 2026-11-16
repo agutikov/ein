@@ -12750,12 +12750,12 @@ e3d50675f1616e67        6L  examples/features/01_not_and_absent.ein::dot[constra
 9c56baf6545a553c       26L  examples/features/01_not_and_absent.ein::dot[kb-no-types]
 263fb30449166275       25L  examples/features/01_not_and_absent.ein::dot[kb-no-instances]
 464b26b93796b705       30L  examples/features/01_not_and_absent.ein::dot[kb-since]
-373c3fdbbff7b91f      117L  examples/features/01_not_and_absent.ein::read-out[describe]
-50f867bcf542365b       30L  examples/features/01_not_and_absent.ein::read-out[maximal]
-c2e4d50b45082055       32L  examples/features/01_not_and_absent.ein::read-out[minimal]
-caf8a9ea976216e6       35L  examples/features/01_not_and_absent.ein::read-out[single]
-d0aa32e1ff18c5e5       35L  examples/features/01_not_and_absent.ein::read-out[n2]
-e9adcd932371ad85      144L  examples/features/01_not_and_absent.ein::region-trace
+0ee286dcb6709295      118L  examples/features/01_not_and_absent.ein::read-out[describe]
+7fc00e8facbd2643       31L  examples/features/01_not_and_absent.ein::read-out[maximal]
+e412c6af156777aa       33L  examples/features/01_not_and_absent.ein::read-out[minimal]
+a7f991e2da07a77c       36L  examples/features/01_not_and_absent.ein::read-out[single]
+de330fad7211ce95       36L  examples/features/01_not_and_absent.ein::read-out[n2]
+877a028e6a78b773      145L  examples/features/01_not_and_absent.ein::region-trace
 b11b7636698d2dc5    15538L  examples/features/01_not_and_absent.ein::states
 cc566fd89407dac5     2885L  examples/features/01_not_and_absent.ein::region-lattice
 2a7bad76dd44fb7e    42157L  examples/features/01_not_and_absent.ein::cores[describe]
@@ -12763,7 +12763,7 @@ cc566fd89407dac5     2885L  examples/features/01_not_and_absent.ein::region-latt
 9bb77a28b6026e00      115L  examples/features/01_not_and_absent.ein::cores[minimal]
 265f039bd149a4ac      155L  examples/features/01_not_and_absent.ein::cores[single]
 d51a98809e9f031d      155L  examples/features/01_not_and_absent.ein::cores[n2]
-3a24de1d369638ac      191L  examples/features/01_not_and_absent.ein::oracle
+f2214baf5ed47d85      203L  examples/features/01_not_and_absent.ein::oracle
 d635f9efded60e5a       59L  examples/features/02_star_in_identifiers.ein::load
 8267a1e0a22fa288       37L  examples/features/02_star_in_identifiers.ein::saturate
 6f5dd2cb3b721384       14L  examples/features/02_star_in_identifiers.ein::plan

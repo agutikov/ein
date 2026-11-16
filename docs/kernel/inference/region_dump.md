@@ -80,6 +80,12 @@ the candidates' relations and how many there are
 the read-out's `types` row does, and `region.json` carries it as
 `types_as_objects`.
 
+**A relation's name bound as an object** is named the same way: where the
+blind enumerator built the list and a candidate names a relation only a rule
+concludes, `region.md` says it as `**Relation names as objects**`, as the
+read-out's `relation names` row does, and `region.json` carries it as
+`relation_names_as_objects`, a key written only then.
+
 **A node** is root's fixpoint with the commitment's facts written in and the
 saturation resumed to quiescence. It is never stopped at the first
 contradiction, so a dead node's debts are its fixpoint's. None of the search's
@@ -122,6 +128,9 @@ S1e2.2.8: one `{relation, arity, why}` per relation outside the universe,
 `--json-summary`'s `root.hypgen.outside`, `[]` when none), `types_as_objects`
 (since S1e2.2.10: `{objects, relations, candidates}`, `--json-summary`'s
 `root.hypgen.types_as_objects`, the lists empty and the count 0 when none),
+`relation_names_as_objects` (written only where the blind enumerator bound a
+relation's name as an object: `{objects, relations, candidates}`,
+`--json-summary`'s `root.hypgen.relation_names_as_objects`),
 `monotonicity`
 (below), then
 either `region` with `refused: null`, or `region: null` with `refused`

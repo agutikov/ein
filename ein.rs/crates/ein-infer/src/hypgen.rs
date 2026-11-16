@@ -802,7 +802,7 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 ///
 /// A relation's name is an object only where the registry does not hold it:
 /// the head of a fact that only a rule concludes. Such a candidate stays, and
-/// the read-out names it.
+/// [`crate::relation_names`] names it for the read-out.
 ///
 /// Soundness does not depend on this set being tight, only tractability:
 /// type-wrong candidates that survive die downstream against the puzzle's own

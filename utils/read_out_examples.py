@@ -406,6 +406,10 @@ add("""## X15 — `features/01_not_and_absent.ein`: the warning past four rows
 A flagged program past `--region-limit` whose nodes hold thousands of stale facts: stdout names four `stale` nodes,
 then one `…` row counts the rest and names what writes them, so the warning stays bounded on its own and takes none of
 the listings' 100 lines.
+
+Under `universe`, the `relation names` row: the rule `see-stored-neg` concludes `explicitly-dislikes` facts, no file
+declares the relation or writes a fact of it, so its name is an object of the blind enumerator and a candidate can name
+it. The candidates stay in H, and the row counts them.
 """)
 add(block(["examples/features/01_not_and_absent.ein"]))
 
