@@ -27,8 +27,7 @@
 ;;; ── The answer, by hand: a reading ─────────────────────────────────────────
 ;;;
 ;;; Does a guard's `absent` premise bind the state the search ends in? Ein
-;;; does not decide it: a node is a fork of root, an assumption on a program
-;;; the check flags (Q-M1e2.2). The readings:
+;;; does not decide it: a node is a fork of root, an assumption on a program the check flags (Q-M1e2.2). The readings:
 ;;;
 ;;;   guards are premises   committing `(q one)` withdraws `(p one)`, the
 ;;;                         clash never fires, `{(q one)}` is alive, and root

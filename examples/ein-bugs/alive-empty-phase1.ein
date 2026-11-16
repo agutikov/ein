@@ -40,6 +40,7 @@
 ;; `p` because the recorded model contained no `p` fact at all. `(false)` names
 ;; nothing, so the goal is back on the question the file is about; an answer
 ;; with an empty goal extent is a claim like any other (Q-M1e.13).
+;;
 
 (relation is-a T T :why "{?1} is a {?2}")
 (relation p T :why "p holds of {?1}")

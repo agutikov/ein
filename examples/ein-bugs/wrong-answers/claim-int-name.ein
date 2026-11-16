@@ -2,8 +2,7 @@
 ;;; — M1e2 **W28**, register row `W28/claim-int-name`
 ;;; (`corpus/wrong_answers.toml`), banked by S1e2.3.8 (2026-11-06) from its
 ;;; step 1's probe (`plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_probes/`),
-;;; on the user's ruling of that day: a claim compares values, not their
-;;; printed text.
+;;; on the user's ruling of that day: a claim compares values, not their printed text.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

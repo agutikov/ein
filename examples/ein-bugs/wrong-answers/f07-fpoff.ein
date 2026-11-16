@@ -15,8 +15,7 @@
 ;;;                 survives the commitment that falsifies its guard.
 ;;;
 ;;; So the cascade is not the cause, and the case is not W2's. Which answer is
-;;; right is not decided, a node being a fork of root, an assumption on a
-;;; flagged program (Q-M1e2.2): under *guards are premises* the commitment
+;;; right is not decided, a node being a fork of root, an assumption on a flagged program (Q-M1e2.2): under *guards are premises* the commitment
 ;;; withdraws `(p one)` and the one model is `{(q one)}`; under *refuse what
 ;;; cannot be stratified* this program — `p ← ¬q, q ← ¬p` — is a load error;
 ;;; under *append-only* today's answer qualifies.

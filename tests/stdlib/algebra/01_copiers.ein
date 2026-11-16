@@ -32,8 +32,7 @@
 ;;; A copier that leaked into it would show up as a surplus `(p-untouched A B)`.
 ;;;
 ;;; (A relation with no fact is said empty by a query over it that claims
-;;; `(model)`, Q-M1c.6; this scope claim is written with one edge instead, so
-;;; that the region claim closes it.)
+;;; `(model)`, Q-M1c.6; this scope claim is written with one edge instead, so that the region claim closes it.)
 
 (import std.algebra :symbols (converse imply1 imply2-fwd imply2-reverse includes))
 

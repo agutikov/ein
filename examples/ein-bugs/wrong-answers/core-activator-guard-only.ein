@@ -24,6 +24,7 @@
 ;;; FILE --dump-answer DIR` at `a41eb76e`, release and debug): a dead node
 ;;; with a 0-fact core, which a census of root cores had said no region
 ;;; run reports. The derivation of `(false)` records no premise, so the
+;;;
 ;;; core search read it as an engine write, derivable from nothing. Since
 ;;; S1e2.2.19's fix the same day, on the user's ruling on Q-M1e2.12, (c), a
 ;;; firing records the activator its plan was compiled from, and the core

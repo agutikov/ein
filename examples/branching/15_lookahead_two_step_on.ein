@@ -55,6 +55,8 @@
 ;;; The answer is the region R (Q-M1e2.7), every alive state: its two maximal
 ;;; states are {(p A)} and {(p B), (p C)}, the k = 2 derived by hand above.
 ;;; The `:expect` lists R, and no lever moves it.
+;;;
+;;;
 
 ;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
 ;; when the user retired the flag: no route reads it, and a program that sets

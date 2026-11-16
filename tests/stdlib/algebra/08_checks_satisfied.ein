@@ -45,8 +45,7 @@
 ;;;
 ;;; `nothing` is the one relation here the region claim does not mention:
 ;;; naming a relation closes it, and there is no fact of it to name; a query
-;;; over it claiming `(model)` would say it is empty (Q-M1c.6). What stands in
-;;; for that clause here is the verdict: had
+;;; over it claiming `(model)` would say it is empty (Q-M1c.6). What stands in for that clause here is the verdict: had
 ;;; `empty` fired, this file would be `(false)` and no `(model …)` would match.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────

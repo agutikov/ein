@@ -1,8 +1,7 @@
 ;;; The solve form's claim about the int `1` held of a state holding the name
 ;;; `"1"` — M1e2 **W28**, register row `W28/claim-int-name-solve`
 ;;; (`corpus/wrong_answers.toml`), banked by S1e2.3.8 (2026-11-06) beside
-;;; `claim-int-name.ein`, on the user's ruling of that day: a claim compares
-;;; values, not their printed text.
+;;; `claim-int-name.ein`, on the user's ruling: a claim compares values, not their printed text.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

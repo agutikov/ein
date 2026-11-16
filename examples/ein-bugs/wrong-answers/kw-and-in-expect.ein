@@ -1,8 +1,7 @@
 ;;; A query's `:expect` splits a name that starts with `and` — M1e2 **W22**,
 ;;; register row `W22/kw-and-in-expect` (`corpus/wrong_answers.toml`), banked
 ;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
-;;; user's ruling of that day; a reserved word is a keyword only as a
-;;; whole token (Q-M1e2.17).
+;;; user's ruling of that day; a reserved word is a keyword only as a whole token (Q-M1e2.17).
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────
 ;;;

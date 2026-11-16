@@ -43,8 +43,7 @@
 ;;;
 ;;; The goal is `is-a` rather than `p`, because the model the walk reached
 ;;; contained no `p` fact at all. An answer with an empty goal extent is a
-;;; claim like any other, `(model)` the class of a state where the goal has
-;;; no row (Q-M1e.13); the goal stays as it was written.
+;;; claim like any other, `(model)` the class of a state where the goal has no row (Q-M1e.13); the goal stays as it was written.
 ;;;
 ;;; ── The user's reading, 2026-08-28 ─────────────────────────────────────
 ;;;

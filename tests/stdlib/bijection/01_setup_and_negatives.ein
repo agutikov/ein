@@ -38,6 +38,9 @@
 ;;; the rest, which exist only after saturation. A claim may name a relation
 ;;; only a rule derives, by the short name the import lists (Q-M1c.7); this
 ;;; file states their effect instead: `functional-negative` and
+;;;
+;;;
+;;;
 ;;; `injective-negative` have no other activator, so a `bijective-setup` that
 ;;; dropped one of them leaves this file with two negatives instead of four.
 ;;;
