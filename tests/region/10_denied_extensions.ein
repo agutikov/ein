@@ -1,0 +1,50 @@
+;;; WHAT A STATE DENIES IS NOT SATURATED — three guests, three chairs.
+;;;
+;;; A seating stores what it excludes: `one-chair` and `one-guest` each
+;;; conclude a stored negation, so the state that seats Ann on C1 denies her
+;;; the two other chairs and denies C1 to the two other guests. On a monotone
+;;; program the node above a state by a candidate it denies holds the fact
+;;; beside its negation and is dead, so no route saturates it: of the 18 pairs
+;;; of seatings that exclude each other, none is a saturation here.
+;;;
+;;; Every guest owes a chair (`total-owed`), so R is the six seatings of all
+;;; three, which the claim lists. How many extensions each question of `ein
+;;; solve` knew dead by a denial, and the saturations that left it, are pinned
+;;; by `ein-infer/tests/known_dead.rs`: a route that stops reading what a
+;;; state denies answers the same and fails there.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T          :why "{?1} is a {?2}")
+(relation seats Guest Chair  :why "{?1} sits on {?2}")
+
+(is-a Ann Guest) (is-a Bob Guest) (is-a Cid Guest)
+(is-a C1 Chair)  (is-a C2 Chair)  (is-a C3 Chair)
+
+(total-owed seats is-a)
+
+(rule one-chair ()
+  :match  (and (seats ?g ?c) (is-a ?d Chair) (neq ?c ?d))
+  :assert (not (seats ?g ?d))
+  :why    "{?g} sits on {?c}, so not on {?d}")
+(rule one-guest ()
+  :match  (and (seats ?g ?c) (is-a ?h Guest) (neq ?g ?h))
+  :assert (not (seats ?h ?c))
+  :why    "{?g} sits on {?c}, so {?h} does not")
+
+(hrule guess ()
+  :match  (and (is-a ?g Guest) (is-a ?c Chair))
+  :assert (seats ?g ?c)
+  :why    "guess that {?g} sits on {?c}")
+
+(solve
+  :hrules (guess))
+
+(query
+  :goal   (seats ?who ?where)
+  :expect (or (model (seats Ann C1) (seats Bob C2) (seats Cid C3))
+              (model (seats Ann C1) (seats Bob C3) (seats Cid C2))
+              (model (seats Ann C2) (seats Bob C1) (seats Cid C3))
+              (model (seats Ann C2) (seats Bob C3) (seats Cid C1))
+              (model (seats Ann C3) (seats Bob C1) (seats Cid C2))
+              (model (seats Ann C3) (seats Bob C2) (seats Cid C1))))

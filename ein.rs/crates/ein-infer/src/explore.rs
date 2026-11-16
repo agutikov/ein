@@ -22,6 +22,12 @@
 //!   proves for the program's class. A program the check flags gets none but
 //!   the cube, so its modes are exact up to `--region-limit` and partial past
 //!   it.
+//! - **What is known dead is one memory.** Before a route on a monotone
+//!   program saturates a set it asks [`crate::known_dead`] whether a set
+//!   known dead lies inside it: one a saturation found dead (L1), or the set
+//!   of a state met and a candidate its own fixpoint denies (L8). The state
+//!   route and the modes' routes ask the same memory and write to it, and
+//!   neither keeps another.
 //! - **A budget stops work and never changes an answer.** A stopped run says
 //!   what it established — members found, a line's members found, a verdict
 //!   reached — with [`Answer::exhausted`] false, and no more.
@@ -281,6 +287,11 @@ pub enum Licence {
     Exhaustive,
     /// L7: every node of the cube, nothing skipped.
     TheCube,
+    /// L8: what a state denies is dead above it — an alive state whose own
+    /// fixpoint stores `(not b)` has a dead extension by `b`, known without
+    /// its saturation, and L1 closes that set upward
+    /// ([`crate::known_dead`]). Named when an answer rested on a denial.
+    Denied,
 }
 
 impl Licence {
@@ -293,6 +304,7 @@ impl Licence {
             Licence::LocalLines => "L4 the lines are local",
             Licence::Exhaustive => "L5 an owed instance's alternatives are exhaustive",
             Licence::TheCube => "L7 the cube",
+            Licence::Denied => "L8 what a state denies is dead above it",
         }
     }
 }
@@ -419,6 +431,15 @@ pub struct Answer {
     pub saturations: u64,
     /// Facts beyond root, summed over them — what the budget counts.
     pub facts: u64,
+    /// The sets the answer took for dead on a denial: each `S ∪ {b}`, `S` an
+    /// alive state whose fixpoint denies the candidate `b`, that the route
+    /// knew dead with no saturation, itself or inside a larger set
+    /// ([`crate::known_dead`], L8). On the state route, the extensions it did
+    /// not saturate for one. Zero on a flagged program, whose routes skip
+    /// nothing, and where no state met denies a candidate the route asks
+    /// about. No surface prints it; the `route` row names L8 where it is not
+    /// zero.
+    pub denials: u64,
     pub wall: Duration,
     /// On a program the static check flags, what the detector found: the
     /// status, the stale facts of every node the run computed and, once the
@@ -633,6 +654,10 @@ pub(crate) struct Seen {
     /// The instances of L5's table it owes ([`crate::region::NodeOut::owed`]),
     /// when the run carries one.
     pub(crate) owed: Box<[u32]>,
+    /// The candidates an alive node's fixpoint denies
+    /// ([`crate::region::NodeOut::denied`]); empty for a dead node, whose
+    /// denials no route reads.
+    pub(crate) denied: Box<[u32]>,
 }
 
 impl Seen {
@@ -654,6 +679,8 @@ pub(crate) struct Found {
     pub(crate) members: u64,
     /// The route that answered, when it is not the one the caller names.
     pub(crate) route: Option<Route>,
+    /// [`Answer::denials`].
+    pub(crate) denials: u64,
 }
 
 /// The prepared program, the node function, and the work done.
@@ -911,6 +938,7 @@ impl<'a> Space<'a> {
             stopped: found.stopped,
             saturations: self.saturations,
             facts: self.spent,
+            denials: found.denials,
             wall: Duration::ZERO,
             warning,
             root: self.root_stats,
@@ -1016,6 +1044,11 @@ impl<'a> Space<'a> {
                     class,
                     closure: o.closure.into_boxed_slice(),
                     owed: o.owed.into_boxed_slice(),
+                    denied: if o.dead {
+                        Box::default()
+                    } else {
+                        o.denied.into_boxed_slice()
+                    },
                 },
             );
         }
@@ -1023,6 +1056,12 @@ impl<'a> Space<'a> {
             self.events.watch_step(&step);
         }
         Ok(Ok(sets.iter().map(|s| self.seen[s].clone()).collect()))
+    }
+
+    /// The node of `set`, where this run has computed it: read, never
+    /// computed here.
+    pub(crate) fn known(&self, set: &[u32]) -> Option<&Seen> {
+        self.seen.get(set)
     }
 
     /// `{a, b}` or `∅`, in candidate order.
@@ -1627,6 +1666,7 @@ fn describe_route_1(
         stopped,
         saturations,
         facts,
+        denials: 0,
         wall: Duration::ZERO,
         warning,
         root: root_stats,
@@ -1747,6 +1787,10 @@ fn describe_states(
         // node above ∅ is discharged.
         licences.insert(1, Licence::DischargedUpward);
     }
+    if s.denied > 0 {
+        // Some extension was known dead by its state's denial.
+        licences.push(Licence::Denied);
+    }
     let set_of = |i: u32| s.states[i as usize].closure.clone();
     let shape = d.exhausted.then(|| Shape {
         empty_in_r: !s.root.dead && s.root.owes == 0,
@@ -1797,6 +1841,7 @@ fn describe_states(
         stopped,
         saturations: s.saturations(),
         facts: s.facts(),
+        denials: s.denied,
         wall: Duration::ZERO,
         warning: None,
         root: root_stats,
@@ -2107,6 +2152,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         stopped: None,
         saturations: 1u64 << n,
         facts,
+        denials: 0,
         wall: Duration::ZERO,
         warning: r.warning,
         candidates: r.candidates,

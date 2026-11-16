@@ -255,6 +255,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus: coupling, held to N and to R on the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test coupling -- the_coupling_is_held_to_n_and_to_r
 
+    nightly_step "deep-corpus: known_dead, with the denials and from deaths alone on the slow entries too"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test known_dead -- every_question_answers_alike_with_the_denials_and_from_deaths_alone
+
     nightly_step "deep-corpus: structure_invariance, the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test structure_invariance
 
@@ -469,6 +472,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus: coupling, held to N and to R on the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test coupling -- the_coupling_is_held_to_n_and_to_r
+
+    dev_host_step "deep-corpus: known_dead, with the denials and from deaths alone on the slow entries too"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test known_dead -- every_question_answers_alike_with_the_denials_and_from_deaths_alone
 
     dev_host_step "deep-corpus: structure_invariance, the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test structure_invariance

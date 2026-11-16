@@ -6,8 +6,15 @@
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example price_list -- \
-//!     [--out DIR] [--no-nodes] [--all] [FILE…]
+//!     [--out DIR] [--no-nodes] [--all] [--deaths-alone] [FILE…]
 //! ```
+//!
+//! `--deaths-alone` asks every question with the routes' memory of what is
+//! dead learning from deaths alone (`ein_infer::known_dead::from_deaths_alone`):
+//! the work without what a state denies, and each way priced on those nodes.
+//! Without it the routes read the denials, and the `denials` way prices what
+//! is left of them: the nodes a denial would still remove were the set asked
+//! about first closed under the closures the run holds.
 //!
 //! Every corpus file and register witness that loads and **searches**, or
 //! the `FILE`s given (`--all` keeps those that do not search too). For each
@@ -1193,11 +1200,22 @@ fn corpus_md(programs: &[Program], verdicts: &BTreeMap<(usize, usize), Verdict>)
 }
 
 fn main() {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let alone = args.iter().any(|a| a == "--deaths-alone");
+    let rest: Vec<String> = args.into_iter().filter(|a| a != "--deaths-alone").collect();
+    if alone {
+        ein_infer::known_dead::from_deaths_alone(|| run(rest));
+    } else {
+        run(rest);
+    }
+}
+
+fn run(args: Vec<String>) {
     let mut out = repo_root().join("build/structure");
     let mut nodes = true;
     let mut all = false;
     let mut files: Vec<PathBuf> = Vec::new();
-    let mut args = std::env::args().skip(1);
+    let mut args = args.into_iter();
     while let Some(a) = args.next() {
         match a.as_str() {
             "--out" => out = PathBuf::from(args.next().expect("--out DIR")),

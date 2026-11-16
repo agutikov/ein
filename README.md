@@ -178,10 +178,10 @@ solve · examples/zebra2.ein --single
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
-  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
-  work              45 saturations · 7 582 facts beyond root
+  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  work              9 saturations · 892 facts beyond root
 
-  ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (nation-loc Ukrainian House-2)}
+  ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (nation-loc Spaniard House-4)}
   (model (color-loc Blue House-2) (color-loc Green House-5)
          (color-loc Ivory House-4) (color-loc Red House-3)
          (color-loc Yellow House-1) (drink-loc Coffee House-5)
@@ -212,7 +212,9 @@ Every word of that answer comes from the **puzzle**, not the engine: the
 variables, and `--single` decides that R holds no other state, which is what
 makes the answer *the* answer. A bare `ein solve examples/zebra2.ein` describes
 all of R since M1e2 S1e2.1c.2, by the state route, and it is the same one state:
-374 saturations, 0.54 s at `-j 1` (release build, 2026-11-03). Until then it
+263 saturations (its `work` row, 2026-11-16; 374 and 0.54 s at `-j 1` in a
+release build on 2026-11-03, before a route read what a state denies). Until
+M1e2 S1e2.1c.2 it
 stopped at the default `--region-budget` before it had proved there is no
 other (3.6 s, 2026-10-18). `-n 1` prints it in 30 ms without the proof.
 

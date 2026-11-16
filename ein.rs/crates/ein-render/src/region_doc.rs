@@ -642,6 +642,12 @@ pub enum Unvisited {
     /// A node the run visited is dead and below it: licence L1, *dead is
     /// upward-closed*, says this one is dead too. The node is that dead one.
     AboveDead(u64),
+    /// An alive node the run visited denies one of this node's facts and lies
+    /// below it: licence L8, *what a state denies is dead above it*, says the
+    /// set of that state and the fact is dead, and L1 this node with it. The
+    /// state, and that set. Read on a program the static check calls
+    /// monotone, the only kind a run spends the licence on.
+    Denied(u64, u64),
     /// The run stopped before it: `-n`, `--single`, a budget, a deadline.
     Stopped,
     /// Neither: the question asked did not need it.
@@ -652,6 +658,7 @@ impl Unvisited {
     pub fn as_str(self) -> &'static str {
         match self {
             Unvisited::AboveDead(_) => "above a dead node",
+            Unvisited::Denied(..) => "above a state's denial",
             Unvisited::Stopped => "the run stopped first",
             Unvisited::NotNeeded => "not needed",
         }
@@ -729,6 +736,9 @@ pub struct Overlay {
     pub unsound: Vec<(u64, u64)>,
     /// Unvisited nodes above a dead node the run visited.
     pub above_dead: usize,
+    /// Unvisited nodes above no dead node the run visited and above a set a
+    /// state it visited denies.
+    pub above_denied: usize,
     /// Nodes where the run's reading and the cube's disagree.
     pub disagree: Vec<u64>,
     /// Reported states with a fact that is not a coordinate.
@@ -912,6 +922,7 @@ impl Overlay {
         // node the run visited below each unvisited one.
         let mut unsound = Vec::new();
         let mut above_dead = 0;
+        let mut above_denied = 0;
         if run.visited {
             let mut below: Vec<Option<u64>> = vec![None; size];
             for m in 0..size {
@@ -930,6 +941,41 @@ impl Overlay {
                 }
                 below[m] = best;
             }
+            // And what licence L8 would say is dead, on a monotone program:
+            // the smallest set of a visited alive node and a fact it denies
+            // below each node, with that node. The cube's own `excluded` is
+            // what the node denies.
+            let mut denied: Vec<Option<(u64, u64)>> = vec![None; size];
+            let smaller = |d: (u64, u64), x: Option<(u64, u64)>| {
+                x.is_none_or(|x| (d.0.count_ones(), d.0, d.1) < (x.0.count_ones(), x.0, x.1))
+            };
+            if r.monotone {
+                for v in &run.visits {
+                    let Some(s) = v.at else {
+                        continue;
+                    };
+                    if v.kind == "dead" {
+                        continue;
+                    }
+                    let excluded = cube.nodes[s as usize].excluded;
+                    for b in (0..r.n).filter(|b| excluded >> b & 1 == 1 && s >> b & 1 == 0) {
+                        let set = s | 1 << b;
+                        if smaller((set, s), denied[set as usize]) {
+                            denied[set as usize] = Some((set, s));
+                        }
+                    }
+                }
+                for m in 0..size {
+                    for b in 0..r.n {
+                        if m >> b & 1 == 1
+                            && let Some(d) = denied[m ^ 1 << b]
+                            && smaller(d, denied[m])
+                        {
+                            denied[m] = Some(d);
+                        }
+                    }
+                }
+            }
             let mut order: Vec<u64> = (0..size as u64).collect();
             order.sort_by_key(|m| (m.count_ones(), *m));
             let mut seen: FxHashSet<u64> = FxHashSet::default();
@@ -938,16 +984,27 @@ impl Overlay {
                 if mark.visited.is_some() {
                     continue;
                 }
-                mark.unvisited = Some(match below[m as usize] {
-                    Some(d) => {
+                mark.unvisited = Some(match (below[m as usize], denied[m as usize]) {
+                    (Some(d), _) => {
                         above_dead += 1;
                         if cube.nodes[m as usize].status & DEAD == 0 && seen.insert(d) {
                             unsound.push((d, m));
                         }
                         Unvisited::AboveDead(d)
                     }
-                    None if !run.exhausted => Unvisited::Stopped,
-                    None => Unvisited::NotNeeded,
+                    (None, Some((set, state))) => {
+                        above_denied += 1;
+                        if cube.nodes[m as usize].status & DEAD == 0 && mark.disagrees.is_none() {
+                            mark.disagrees = Some(format!(
+                                "{} denies a fact of it, so licence L8 calls it dead; the cube \
+                                 says it is alive",
+                                r.name(state)
+                            ));
+                        }
+                        Unvisited::Denied(state, set)
+                    }
+                    (None, None) if !run.exhausted => Unvisited::Stopped,
+                    (None, None) => Unvisited::NotNeeded,
                 });
             }
         }
@@ -966,6 +1023,7 @@ impl Overlay {
             spurious,
             unsound,
             above_dead,
+            above_denied,
             disagree,
             outside,
         }

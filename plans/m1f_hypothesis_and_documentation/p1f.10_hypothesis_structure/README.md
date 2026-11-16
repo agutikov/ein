@@ -50,6 +50,11 @@ on; what they found outside their scope is in [`findings.md`](findings.md).
 user's ruling of that day on Q-M1f.307, (A) by the static reading: the obligations rung proposes at root what a
 debt a commitment can bring would, `W26/oblig-derived-activator` is fixed, and Q-M1e.11 is ruled; **it is the
 phase's one exception so far to *no answer changes***, the witness's answer alone, by its register row.
+[S1f.10.3](s1f.10.3_the_restricted_join.md#record-2026-11-16) ran on 2026-11-16, the first stage of track R to
+change a route: every route on a monotone program asks one memory of what is known dead, which now holds what a
+state's own fixpoint denies (licence L8), so `zebra2.ein --single` is 9 saturations where it was 45, its describe
+263 where it was 374 and `zebra2-minus-15.ein --maximal` 104 where it was 2 346, with R the oracle's in every mode;
+the pair of a death is still *go* for describe, `--count` and `--minimal` on top of it and is not built.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.

@@ -38,7 +38,13 @@ The nodes are read through the route's watch
 on the committing thread, so the files are the same at every `-j`
 (`ein-cli/tests/region_modes.rs::the_lattice_dump_is_every_node_visited`). Each
 node's firings are `--events`', which narrates every node visited, and the
-directory does not hold a second copy. Past its directory the flag is
+directory does not hold a second copy. **A node is visited when the node
+function computed it.** A set a route knew dead without it, one that holds a
+set it had seen die (L1) or the set of a state and a candidate that state's
+fixpoint denies (L8), is not saturated, so it is not in the files and has no
+`enter` line; `visited` is the `work` row's saturations. Which of the cube's
+nodes a run left for either reason is what the drawing below says, node by
+node. Past its directory the flag is
 additive: stdout, stderr and the exit code are those of the run without it.
 The writer is [`ein_render::dump::region_lattice`](../../../ein.rs/crates/ein-render/src/dump/region_lattice.rs).
 `ein render region CUBE --visited DIR` draws the nodes on the oracle's cube,

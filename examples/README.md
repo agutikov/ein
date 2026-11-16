@@ -130,6 +130,7 @@ ein-cli/tests/embedding.rs
 ein-cli/tests/models_grid.rs
 ein-cli/tests/region_dump.rs
 ein-cli/tests/render_doors.rs
+ein-cli/tests/structure_view.rs
 ein-corpus/benches/engine.rs
 ein-einb/tests/corruption.rs
 ein-einb/tests/invalidation.rs
@@ -139,6 +140,7 @@ ein-infer/tests/coupling.rs
 ein-infer/tests/cover.rs
 ein-infer/tests/exactly_one.rs
 ein-infer/tests/explain_semantics.rs
+ein-infer/tests/known_dead.rs
 ein-infer/tests/naf_semantics.rs
 ein-infer/tests/obligation_reports.rs
 ein-infer/tests/obligation_rung.rs
@@ -153,6 +155,7 @@ ein-infer/tests/worker_view.rs
 ein-ir/tests/dump_goldens.rs
 ein-ir/tests/imports_semantics.rs
 ein-ir/tests/kb_semantics.rs
+ein-render/tests/dot_wellformed.rs
 ein-render/tests/golden_dot.rs
 ein-render/tests/idea08_acceptance.rs
 ein-render/tests/presentation_semantics.rs

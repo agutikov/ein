@@ -23,12 +23,24 @@
 //! plus a candidate of `T`, and each alive because it lies under `T` (dead is
 //! upward-closed).
 //!
-//! Three things keep it from saturating what it already knows:
+//! Four things keep it from saturating what it already knows. The first two
+//! are one memory, [`crate::known_dead`], which the modes' routes ask too:
 //!
 //! - **A dead extension prunes its supersets (L1).** When `S ∪ {b}` is dead,
 //!   every later `S' ∪ {b}` with `S ⊆ S'` is dead without a visit. States are
 //!   taken by size, so every state under `S'` has been extended before `S'`
 //!   is, and the dead extensions it would inherit are all known.
+//! - **What a state denies is dead above it (L8).** When `S`'s own fixpoint
+//!   stores `(not b)`, the node of `S ∪ {b}` holds `b` beside its negation:
+//!   it is dead, and is not saturated. The route keeps it as a dead node it
+//!   met ([`Dead::denied`]), so everything read off the dead nodes, `N`'s
+//!   members a partial run met and the candidates dead alone among them, is
+//!   what it was; and the set prunes its supersets by L1 as a saturated one
+//!   does. The same holds through a closure: the node of `S ∪ {b}` holds
+//!   every state `cl(P ∪ {b})` met for a state `P` one edge under `S`, and is
+//!   dead when one of those and `S`, or two of those, meet in a candidate one
+//!   holds and the other denies (`denied_through`). The argument is
+//!   [`crate::known_dead`]'s.
 //! - **A commitment that is already a state is not saturated again.** When
 //!   `S ∪ {b}` is the closure of a state met before, `cl(S ∪ {b})` is that
 //!   state (L3).
@@ -37,12 +49,15 @@
 //!
 //! ### What it checks of the theorem on the way
 //!
-//! The route rests on L1–L3, so it declines ([`Declined::Contradicted`]) when
-//! a node it computes contradicts them: a state of `R` with an alive, owing
-//! extension (discharged is not upward-closed), a fixpoint that does not hold
-//! its parent's candidates (a fork only adds), or two states with one closure
-//! (L3). The oracle holds the route on every monotone cube it enumerates
-//! (`ein-infer/tests/region.rs`).
+//! The route rests on L1–L3 and L8, so it declines
+//! ([`Declined::Contradicted`]) when a node it computes contradicts them: a
+//! state of `R` with an alive, owing extension (discharged is not
+//! upward-closed), a fixpoint that does not hold its parent's candidates (a
+//! fork only adds), two states with one closure (L3), an alive state that
+//! holds a set known dead (L1, L8), or a denied extension that is a state
+//! already met alive (L8). The oracle holds the route on every monotone cube
+//! it enumerates (`ein-infer/tests/region.rs`), and
+//! `ein-infer/tests/known_dead.rs` holds it to itself with the denials unread.
 //!
 //! ### Where N and E come from — a decision taken without a ruling
 //!
@@ -81,12 +96,13 @@ use std::time::{Duration, Instant};
 
 use ein_core::{FactId, Kb, Terms};
 use ein_ir::Ast;
-use rustc_hash::FxHashMap;
+use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::count::Count;
 use crate::downset::{Declined, Layer, Options};
 use crate::error::SolveError;
 use crate::events::Events;
+use crate::known_dead::KnownDead;
 use crate::monotone::Monotonicity;
 use crate::region::{
     AfterWalk, Axes, Candidate, Cost, NodeOut, Prepared, fan_out, pool_of, prepare,
@@ -120,6 +136,9 @@ pub struct State {
     /// Its closure was read as an extension's (L3), and counted in
     /// [`Self::met`].
     pub closure_met: bool,
+    /// The candidates its own fixpoint denies, each a dead extension the
+    /// route does not saturate (L8, [`crate::known_dead`]).
+    pub denied: Bits,
 }
 
 impl State {
@@ -133,10 +152,17 @@ impl State {
     }
 }
 
-/// A dead node the route saturated: root, or an extension `S ∪ {b}`.
+/// A dead node the route met: root, or an extension `S ∪ {b}`, saturated,
+/// or known dead by `S`'s denial of `b` with no saturation
+/// ([`Self::denied`]).
 #[derive(Clone, Debug)]
 pub struct Dead {
     pub set: Box<[u32]>,
+    /// Known dead by its state's denial (L8) and not saturated: it has no
+    /// core, no debts counted and no sources. A surface that prints its core
+    /// takes it after the walk, as it does for a member of `N` the walk read
+    /// off the states ([`crate::region::Cores::nogoods`]).
+    pub denied: bool,
     pub owes: u32,
     pub core: Vec<String>,
     /// What the core's search established; `None` where none was taken.
@@ -174,7 +200,8 @@ pub struct StateRoute {
     pub root: Root,
     /// Every alive state met, in the order met. Root's is the first.
     pub states: Vec<State>,
-    /// Every dead node saturated, in the order saturated.
+    /// Every dead node met, in the order met: each saturated, or known dead
+    /// by its state's denial ([`Dead::denied`]).
     pub dead: Vec<Dead>,
     /// Per layer: root's, then one per state size extended. `visited` counts
     /// the saturations, so an extension pruned (L1) or already a state (L3)
@@ -183,8 +210,13 @@ pub struct StateRoute {
     /// The state size each layer extended — `None` for root's.
     pub layer_size: Vec<Option<usize>>,
     pub layer_wall: Vec<Duration>,
-    /// Extensions known dead without a visit (L1), summed.
+    /// Extensions known dead without a visit because a set known dead lies
+    /// inside them (L1), summed.
     pub pruned: u64,
+    /// The sets known dead without a visit by a denial of their own state's
+    /// (L8), each once: each is in [`Self::dead`], and is a saturation the
+    /// route would otherwise have spent.
+    pub denied: u64,
     /// Extensions that were a state's closure already (L3), summed.
     pub known: u64,
     /// `None` when every alive state was extended.
@@ -304,6 +336,7 @@ pub(crate) fn compute_resumable(
         layer_size: Vec::new(),
         layer_wall: Vec::new(),
         pruned: 0,
+        denied: 0,
         known: 0,
         declined: None,
         complete_up_to: None,
@@ -330,8 +363,14 @@ pub(crate) fn compute_resumable(
     // two are one key (L3), and a second state on one closure declines.
     let mut by_state: FxHashMap<Box<[FactId]>, u32> = FxHashMap::default();
     let mut by_closure: FxHashMap<Box<[u32]>, u32> = FxHashMap::default();
-    // Per candidate `b`, the states `S` whose extension `S ∪ {b}` is dead.
-    let mut dead_under: Vec<Vec<Bits>> = vec![Vec::new(); n];
+    // The sets known dead: what a saturation found dead and what a state's
+    // own fixpoint denies.
+    let mut known_dead = KnownDead::new(n);
+    // The states one edge below each state, and whether any state met denies
+    // a candidate: what an extension is closed under before it is asked
+    // (`denied_through`).
+    let mut parents: FxHashMap<u32, Vec<u32>> = FxHashMap::default();
+    let mut any_denied = false;
     // States met and not yet extended, by size.
     let mut pending: std::collections::BTreeMap<usize, Vec<u32>> = Default::default();
 
@@ -389,6 +428,7 @@ pub(crate) fn compute_resumable(
             stats.dead = 1;
             out.dead.push(Dead {
                 set: Box::default(),
+                denied: false,
                 owes: o.owes,
                 core: o.node.core,
                 core_status: o.node.core_status,
@@ -418,7 +458,9 @@ pub(crate) fn compute_resumable(
                 extended: false,
                 met: 1,
                 closure_met: false,
+                denied: Bits::of(n, &o.denied),
             });
+            any_denied |= !o.denied.is_empty();
         }
         events.watch_step(&crate::events::Stepped {
             layer: Some(0),
@@ -446,36 +488,80 @@ pub(crate) fn compute_resumable(
         });
         let layer = out.layers.len();
 
-        // The layer's extensions: pruned by L1, read off a known state by
-        // L3, or saturated once per distinct set.
+        // The layer's extensions: pruned by L1, known dead by the state's
+        // own denial (L8), read off a known state by L3, or saturated once
+        // per distinct set. Every state under this layer's was extended
+        // before, so what a smaller state denies is in the memory already
+        // and prunes here by L1.
         let mut fresh: Vec<Box<[u32]>> = Vec::new();
         let mut owners: Vec<Vec<(u32, u32)>> = Vec::new();
         let mut at: FxHashMap<Box<[u32]>, usize> = FxHashMap::default();
         let mut known: Vec<(u32, u32)> = Vec::new();
         let mut pruned = 0u64;
+        // The sets a state of this layer denies, each once, and the pairs of
+        // a state and a candidate that said so.
+        let mut denied: Vec<Box<[u32]>> = Vec::new();
+        let mut denied_sets: FxHashSet<Box<[u32]>> = FxHashSet::default();
+        let mut own: FxHashSet<(u32, u32)> = FxHashSet::default();
+        let mut contradicted: Option<u32> = None;
+        for &s in &layer_states {
+            let st = &out.states[s as usize];
+            for b in st.denied.iter() {
+                if st.bits.contains(b) || !known_dead.denies(&st.bits, b) {
+                    continue;
+                }
+                // The denial is the answer, and is spent as one.
+                known_dead.extension(&st.bits, b);
+                own.insert((s, b));
+                let set = with(&st.closure, b);
+                if by_closure.contains_key(&set) {
+                    // A state met alive on a set its subset denies.
+                    contradicted = Some(s);
+                }
+                if denied_sets.insert(set.clone()) {
+                    denied.push(set);
+                }
+            }
+        }
         for &s in &layer_states {
             let st = &out.states[s as usize];
             for b in 0..n as u32 {
-                if st.bits.contains(b) {
+                if st.bits.contains(b) || own.contains(&(s, b)) {
                     continue;
                 }
-                if dead_under[b as usize].iter().any(|d| d.is_subset(&st.bits)) {
+                if known_dead.extension(&st.bits, b) {
                     pruned += 1;
                     continue;
                 }
                 let set = with(&st.closure, b);
+                if denied_sets.contains(&set) {
+                    // The set another state of the layer denies, reached
+                    // from this one: known under this state too.
+                    known_dead.denied_again(&st.bits, b);
+                    pruned += 1;
+                    continue;
+                }
                 if let Some(&t) = by_closure.get(&set) {
                     known.push((s, t));
                     continue;
                 }
-                match at.get(&set) {
-                    Some(&i) => owners[i].push((s, b)),
-                    None => {
-                        at.insert(set.clone(), fresh.len());
-                        fresh.push(set);
-                        owners.push(vec![(s, b)]);
+                if let Some(&i) = at.get(&set) {
+                    owners[i].push((s, b));
+                    continue;
+                }
+                let below = parents.get(&s).map_or(&[][..], Vec::as_slice);
+                if any_denied && denied_through(st, b, below, &out.states, &out.reached) {
+                    // Dead by a denial of a state the set's node holds: a
+                    // dead node met, as the state's own denial makes one.
+                    if known_dead.denied_through(&st.bits, b) {
+                        denied_sets.insert(set.clone());
+                        denied.push(set);
+                        continue;
                     }
                 }
+                at.insert(set.clone(), fresh.len());
+                fresh.push(set);
+                owners.push(vec![(s, b)]);
             }
         }
 
@@ -497,6 +583,21 @@ pub(crate) fn compute_resumable(
             out.stopped_size = Some(size);
             break;
         }
+        if let Some(s) = contradicted {
+            out.declined = Some(Declined::Contradicted { from: s, to: s });
+            break;
+        }
+        // The denied extensions are dead nodes met, as a saturated one is.
+        out.denied += denied.len() as u64;
+        out.dead.extend(denied.into_iter().map(|set| Dead {
+            set,
+            denied: true,
+            owes: 0,
+            core: Vec::new(),
+            core_status: None,
+            refuted_by: Vec::new(),
+            sources: Vec::new(),
+        }));
 
         let t_layer = Instant::now();
         let mut stats = Layer::default();
@@ -514,7 +615,9 @@ pub(crate) fn compute_resumable(
             if out.states[s as usize].in_r() && !out.states[t as usize].in_r() {
                 out.declined = Some(Declined::Contradicted { from: s, to: t });
             }
-            push_child(&mut out.states[s as usize], t);
+            if push_child(&mut out.states[s as usize], t) {
+                parents.entry(t).or_default().push(s);
+            }
         }
         for (chunk, chunk_owners) in fresh.chunks(BATCH).zip(owners.chunks(BATCH)) {
             let sets: Vec<Vec<FactId>> = chunk
@@ -538,10 +641,11 @@ pub(crate) fn compute_resumable(
                 if o.dead {
                     stats.dead += 1;
                     for &(s, b) in pairs {
-                        dead_under[b as usize].push(out.states[s as usize].bits.clone());
+                        known_dead.died(out.states[s as usize].bits.clone(), b);
                     }
                     out.dead.push(Dead {
                         set: set.clone(),
+                        denied: false,
                         owes: o.owes,
                         core: o.node.core,
                         core_status: o.node.core_status,
@@ -579,6 +683,12 @@ pub(crate) fn compute_resumable(
                             out.declined = Some(Declined::Contradicted { from: u, to: t });
                             break;
                         }
+                        if known_dead.inside_of_alive(&bits) {
+                            // An alive state on a set known dead: L1 or L8
+                            // fails.
+                            out.declined = Some(Declined::Contradicted { from: t, to: t });
+                            break;
+                        }
                         by_state.insert(o.state, t);
                         by_closure.insert(closure.clone(), t);
                         out.reached.insert(closure.clone(), t);
@@ -594,7 +704,9 @@ pub(crate) fn compute_resumable(
                             extended: false,
                             met: 0,
                             closure_met: false,
+                            denied: Bits::of(n, &o.denied),
                         });
+                        any_denied |= !o.denied.is_empty();
                         t
                     }
                 };
@@ -606,7 +718,9 @@ pub(crate) fn compute_resumable(
                     if out.states[s as usize].in_r() && !out.states[t as usize].in_r() {
                         out.declined = Some(Declined::Contradicted { from: s, to: t });
                     }
-                    push_child(&mut out.states[s as usize], t);
+                    if push_child(&mut out.states[s as usize], t) {
+                        parents.entry(t).or_default().push(s);
+                    }
                 }
             }
             if out.declined.is_some() {
@@ -677,10 +791,45 @@ pub(crate) fn compute_resumable(
     ))
 }
 
-fn push_child(s: &mut State, t: u32) {
-    if !s.children.contains(&t) {
-        s.children.push(t);
+/// Record the edge from `s` up to `t`; whether it is new.
+fn push_child(s: &mut State, t: u32) -> bool {
+    if s.children.contains(&t) {
+        return false;
     }
+    s.children.push(t);
+    true
+}
+
+/// Whether `S ∪ {b}` holds a denial once it is closed under what the run
+/// knows: `st` is `S`, and `parents` the states one edge below it.
+///
+/// The node of `S ∪ {b}` holds the fixpoint of every commitment inside it
+/// (a monotone state), so it holds every state `U = cl(P ∪ {b})` the run met
+/// for a state `P` under `S`, and the parents' are the largest of them. It is
+/// dead when two of the states it holds, `S` and such a `U` or two such `U`,
+/// meet in a candidate one holds and the other denies: the fact is beside
+/// its negation (L8, through L3).
+fn denied_through(
+    st: &State,
+    b: u32,
+    parents: &[u32],
+    states: &[State],
+    reached: &FxHashMap<Box<[u32]>, u32>,
+) -> bool {
+    let mut held: Option<Bits> = None;
+    let mut denied: Option<Bits> = None;
+    for &p in parents {
+        let Some(&u) = reached.get(&with(&states[p as usize].closure, b)) else {
+            continue;
+        };
+        let u = &states[u as usize];
+        if st.denied.intersects(&u.bits) || u.denied.intersects(&st.bits) {
+            return true;
+        }
+        held = Some(held.map_or_else(|| u.bits.clone(), |h| h.or(&u.bits)));
+        denied = Some(denied.map_or_else(|| u.denied.clone(), |d| d.or(&u.denied)));
+    }
+    matches!((held, denied), (Some(h), Some(d)) if d.intersects(&h))
 }
 
 fn emit_layer(events: &mut Events, layer: usize, stats: &Layer) {

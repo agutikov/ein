@@ -1047,7 +1047,9 @@ fn the_monotone_question_is_about_the_program() {
 /// `--dump-lattice` are taken. What its counts are is held to describe's and
 /// the oracle's elsewhere (`read_out.rs`, `explore.rs`, `lever_invariance.rs`).
 /// Since M1e2 S1e2.2.10 the block carries `universe`'s `types` row: `pets.ein`'s
-/// blind enumerator binds `Pet`, a type, as an object.
+/// blind enumerator binds `Pet`, a type, as an object. Its `route` row names
+/// L8 and its `work` row is twelve saturations short of the draft's: the
+/// twelve extensions a state of `pets` denies are no longer saturated.
 #[test]
 fn the_count_question_is_describes_counts() {
     let pets = "examples/saturation/type-exclusivity/pets.ein";
@@ -1069,8 +1071,9 @@ fn the_count_question_is_describes_counts() {
              co-located, is-a name it as an object: the blind enumerator is untyped, and no \
              signature names it\n\
              \x20 route             the state route, every alive state once — L1 dead is \
-             upward-closed · L3 a commitment's state is its closure's · L4 the lines are local\n\
-             \x20 work              11 351 saturations · 76 743 facts beyond root · 14 layers\n"
+             upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · \
+             L8 what a state denies is dead above it\n\
+             \x20 work              11 339 saturations · 76 683 facts beyond root · 14 layers\n"
         )
     );
     // `-y` reads no state under `--count` either: its row says what checking

@@ -44,6 +44,7 @@ were.
 | `05_empty.ein` | `(region)`: R empty, either kind |
 | `06_false.ein` | `(false)`: every node dead |
 | `07_cube.ein` | a flagged program, checked against the cube |
+| `10_denied_extensions.ein` | a query's classes over R, on a bijection whose rules store what a seating excludes: the fixture of *what a state denies is not saturated* (`ein-infer/tests/known_dead.rs`) |
 
 Every claim here holds. Their false twins, and the claims a route cannot
 check, are `ein-infer/tests/claim_semantics.rs`. Corpus group `positive`,

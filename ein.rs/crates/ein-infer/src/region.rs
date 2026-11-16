@@ -1086,6 +1086,12 @@ pub(crate) struct NodeOut {
     pub state: Box<[FactId]>,
     /// The candidates its fixpoint holds, as bit indices.
     pub closure: Vec<u32>,
+    /// The candidates its fixpoint **denies**, as bit indices: those whose
+    /// `(not b)` it stores. On a monotone program an alive node's denial of
+    /// `b` makes every node above it that holds `b` dead
+    /// ([`crate::known_dead`], L8). At any `n`, where [`Node::excluded`] is a
+    /// mask.
+    pub denied: Vec<u32>,
     /// [`Self::state`] rendered, only under [`Axes::keep_states`].
     pub delta: Vec<String>,
     /// The node's own narration, when the axes narrate: its saturation's and
@@ -1767,6 +1773,7 @@ fn node_in_region(
         .collect();
     let masks = axes.candidates.len() < 64;
     let mut closure: Vec<u32> = Vec::new();
+    let mut denied: Vec<u32> = Vec::new();
     for (b, &c) in axes.candidates.iter().enumerate() {
         if fork.contains(c) {
             closure.push(b as u32);
@@ -1774,8 +1781,11 @@ fn node_in_region(
                 node.closure |= 1 << b;
             }
         }
-        if masks && fork.is_negated(c) {
-            node.excluded |= 1 << b;
+        if fork.is_negated(c) {
+            denied.push(b as u32);
+            if masks {
+                node.excluded |= 1 << b;
+            }
         }
     }
     let stale = match &axes.stale {
@@ -1808,6 +1818,7 @@ fn node_in_region(
         },
         state: delta.into_boxed_slice(),
         closure,
+        denied,
         events: axes.narration.map(|_| ev),
         stale,
         owed,
