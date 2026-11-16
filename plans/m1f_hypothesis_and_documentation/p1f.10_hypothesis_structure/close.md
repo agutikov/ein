@@ -141,8 +141,10 @@ On `bb3579d1`: the container gate ran `lever_invariance` for over 45 minutes on 
 cause was the library taking every dead node's core by default (fixed, `a9b3c9e4`). On `f7f7494c`: the gate failed
 on `alive_invariant`'s list, which the two `examples/beliefs` programs should have joined (`604b0e55`), and the
 nightly on `first_contradiction`'s per-shard floor of cores (`661f8739`). The whole workspace and every sharded
-nightly sweep, each of its four shards, are green here on `661f8739`. **The last run**: *(the container gate and
-nightly on `661f8739`, filled in when they finish)*.
+nightly sweep, each of its four shards, are green here on `661f8739`. **The last run, on `661f8739`**:
+`utils/ci_container.sh`, the gate in the runner's image, **green** (15 min); `utils/ci_container.sh --nightly`, every
+step of the nightly in the runner's image, **green** (27 min, 81 steps). GitHub's per-commit run on `f7f7494c` had
+failed on the same `alive_invariant` list; the fix is the user's to push.
 
 ## The defaults
 
@@ -223,3 +225,12 @@ are a program and a setting, every question of one unit run in turn.
    **Default (b).**
 3. **The findings' dispositions** above.
 4. **The part-2 defaults** above, each standing until revised.
+
+## The close (2026-11-16)
+
+**P1f.10 is closed.** Every stage is merged; every question the phase put (Q-M1f.306 to .313) is ruled, each ruling
+in the user's words in [`open_questions.md`](../open_questions.md) with a *Built* paragraph; the findings are closed
+or owned (above, and [`findings.md`](findings.md)); part 2's defaults are accepted; the gate and the nightly are
+green in the runner's image on `661f8739`. [`state.md`](state.md) is kept as the record of the pause and is no
+longer where the phase stands. **Next: [P1f.20](../p1f.20_docs_refactor/README.md)**, the documentation tree (the
+user's ruling of 2026-11-15).

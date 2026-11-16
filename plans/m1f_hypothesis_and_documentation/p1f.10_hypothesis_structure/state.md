@@ -1,5 +1,8 @@
 # P1f.10 — where the phase stands
 
+**The phase closed on 2026-11-16: [`close.md`](close.md) is where it stands.** This page is kept as the record of
+the pause and of the work after it.
+
 **Written 2026-11-16, at a pause the user asked for** (*"pause after current agents finish, write down the phase
 state somewhere in it's plans"*). This page is the place to resume from. It is a snapshot: the stage files hold
 the records, [`findings.md`](findings.md) what was found outside a stage's scope, and

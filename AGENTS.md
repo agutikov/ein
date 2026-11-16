@@ -275,12 +275,13 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  P1f.5, P1f.7 and P1f.6 (the calculator,
+  P1f.5, P1f.7, P1f.6 (the calculator,
   [its close](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md))
-  are closed. **P1f.10, the structure of the hypothesis set, is next**:
-  [its README](plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md)
-  has the stages. P1f.20, the documentation tree, follows it (the user's
-  ruling of 2026-11-15).
+  and P1f.10 (the structure of the hypothesis set,
+  [its close](plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/close.md))
+  are closed. **P1f.20, the documentation tree, is next**:
+  [its README](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)
+  (the user's ruling of 2026-11-15).
 - **What waits for the user**: milestone-wide questions, with every default
   taken, are
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)

@@ -1,8 +1,7 @@
 # P1f.10 — The structure of the hypothesis set
 
-**The close, prepared: [`close.md`](close.md)** (2026-11-16), and reopened the same day by the user's ruling of
-Q-M1f.311, which adds [S1f.10.17](s1f.10.17_describe_by_borders.md), describe by borders. [`state.md`](state.md) is the
-record of the pause.
+**Closed 2026-11-16: [`close.md`](close.md)**, with every stage merged, every question ruled and the gate and nightly
+green in the runner's image. [`state.md`](state.md) is the record of the pause.
 **Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands.
 [S1f.10.1](s1f.10.1_exclusion_census.md#record-2026-11-15) ran that day, and
 [S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-stopped-at-the-control) stopped at its control: on I-Z2 no declared row or
