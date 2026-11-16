@@ -277,9 +277,9 @@ def program(spec: dict) -> str:
     nm = lambda m: "{" + ",".join(name_of(m, cands)) + "}" if m else "∅"
     lst = lambda ms: ", ".join(nm(m) for m in ms) or "none"
 
-    out = [f";;; {spec['name']} — a program written for its region, by utils/region_synth.py",
-           ";;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:",
-           f";;;   python3 utils/region_synth.py --example {spec['name']} --out <this file>",
+    out = [f";;; {spec['name']} — a program written for its region by the region synthesizer,",
+           ";;; from the region-spec below. Generated, not edited by hand: a change is",
+           ";;; made to the spec, and the file is written again from it.",
            ";;;"]
     for line in spec.get("about", "").split("\n"):
         out.append(f";;; {line}".rstrip())
@@ -432,7 +432,7 @@ def solution(path: Path, out: Path, bin: str) -> list[Path]:
 EXAMPLES: dict[str, dict] = {
     "three_components": {
         "name": "three_components",
-        "about": ("The user's shape of 2026-10-15: R in three separate components — one\n"
+        "about": ("The user's shape: R in three separate components — one\n"
                   "monotone (a 2-dimensional sub-cube over C), one with a one-node hole (as\n"
                   "ein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each\n"
                   "component is picked by one of C, F, G, which exclude each other; a node\n"
@@ -444,7 +444,7 @@ EXAMPLES: dict[str, dict] = {
     },
     "trivial_line": {
         "name": "trivial_line",
-        "about": ("Q-M1e2.7 (f): obligations and nothing else. Root owes one of A, B; past that\n"
+        "about": ("Obligations and nothing else (Q-M1e2.7). Root owes one of A, B; past that\n"
                   "nothing is refuted, so the maximal line is the whole candidate set, n facts\n"
                   "down — the line the user called trivial — and the minimal line is {A}, {B}."),
         "candidates": "ABCDE",
@@ -453,7 +453,7 @@ EXAMPLES: dict[str, dict] = {
     },
     "local_not_global": {
         "name": "local_not_global",
-        "about": ("The lines, decided locally and globally (M1e2 S1e2.1b.6): A and B come\n"
+        "about": ("The lines, decided locally and globally: A and B come\n"
                   "together or not at all, as lattice/06_friends_tables' groups do. Either\n"
                   "alone owes the other, so ∅ and {A,B} are in R with a hole on each side.\n"
                   "Every edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls\n"
@@ -464,7 +464,7 @@ EXAMPLES: dict[str, dict] = {
     },
     "maximal_not_top": {
         "name": "maximal_not_top",
-        "about": ("Q-M1e2.7 (f)'s non-monotone half (M1e2 S1e2.1b.6): obligations and nothing\n"
+        "about": ("trivial_line's non-monotone side (Q-M1e2.7): obligations and nothing\n"
                   "dead, and still the maximal line is not the whole candidate set. Root owes\n"
                   "A; C triggers a debt nothing pays. So R is [A … AB], its maximal line is\n"
                   "{A,B}, and the top owes. With obligations only and no trigger that grows,\n"
@@ -475,7 +475,7 @@ EXAMPLES: dict[str, dict] = {
     },
     "one_model_per_component": {
         "name": "one_model_per_component",
-        "about": ("Q-M1e2.7 (i): a well-posed puzzle's shape. Exactly one of A, B, C, D, any\n"
+        "about": ("A well-posed puzzle's shape (Q-M1e2.7). Exactly one of A, B, C, D, any\n"
                   "two exclude each other, none owes: R is four isolated nodes, each its own\n"
                   "component and each on both lines. An Ambiguity of four, component by\n"
                   "component."),
@@ -485,7 +485,7 @@ EXAMPLES: dict[str, dict] = {
     },
     "merged_states": {
         "name": "merged_states",
-        "about": ("Q-M1e2.7 (e): saturation moves nodes. A brings B and C brings D, so a\n"
+        "about": ("Saturation moves nodes (Q-M1e2.7). A brings B and C brings D, so a\n"
                   "commitment and its closure are one state; R is everything holding A or C\n"
                   "and not both, so its minimal line {A}, {C} is two transient nodes whose\n"
                   "saturation lands on {A,B} and {C,D}."),

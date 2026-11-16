@@ -1,8 +1,8 @@
-;;; trivial_line — a program written for its region, by utils/region_synth.py
-;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
-;;;   python3 utils/region_synth.py --example trivial_line --out <this file>
+;;; trivial_line — a program written for its region by the region synthesizer,
+;;; from the region-spec below. Generated, not edited by hand: a change is
+;;; made to the spec, and the file is written again from it.
 ;;;
-;;; Q-M1e2.7 (f): obligations and nothing else. Root owes one of A, B; past that
+;;; Obligations and nothing else (Q-M1e2.7). Root owes one of A, B; past that
 ;;; nothing is refuted, so the maximal line is the whole candidate set, n facts
 ;;; down — the line the user called trivial — and the minimal line is {A}, {B}.
 ;;;
@@ -16,7 +16,7 @@
 ;;;
 ;;; 0 dead rule(s), 1 obligation rule(s), from the target's prime implicants.
 ;;;
-;;; region-spec: {"name":"trivial_line","about":"Q-M1e2.7 (f): obligations and nothing else. Root owes one of A, B; past that\nnothing is refuted, so the maximal line is the whole candidate set, n facts\ndown — the line the user called trivial — and the minimal line is {A}, {B}.","candidates":"ABCDE","R":[["A","ABCDE"],["B","ABCDE"]],"owing":[["","CDE"]]}
+;;; region-spec: {"name":"trivial_line","about":"Obligations and nothing else (Q-M1e2.7). Root owes one of A, B; past that\nnothing is refuted, so the maximal line is the whole candidate set, n facts\ndown — the line the user called trivial — and the minimal line is {A}, {B}.","candidates":"ABCDE","R":[["A","ABCDE"],["B","ABCDE"]],"owing":[["","CDE"]]}
 ;;; region-status: oRRRoRRRoRRRoRRRoRRRoRRRoRRRoRRR
 
 (relation h T :why "h holds of {?1}")
