@@ -13,8 +13,7 @@ dist/
 /dump/
 /dumps/
 
-# Machine-specific bench artifact (the tables in docs/kernel/inference/
-# features.md are the committed record; regenerate with utils/feature_matrix.py)
+# Machine-specific bench artifact of utils/feature_matrix.py (no committed record).
 utils/feature_matrix_results.json
 
 # ── M1a (the Rust engine) ─────────────────────────────────────────
@@ -30,10 +29,8 @@ ein.rs/target-fd/
 # property, with a note — and a settled one becomes a `regression` entry with
 # a name.
 corpus/out/
-# Bench and profile artefacts (S1a.6.1): raw JSON + perf data, machine-specific
-# and per-run. The committed record is the tables in
-# docs/history/m1a_rust/measurements/baseline.md — the same split
-# utils/feature_matrix_results.json uses. NOT wiped between runs: the next
+# Bench and profile artefacts: raw JSON + perf data, machine-specific and
+# per-run. NOT wiped between runs: the next
 # re-measure wants a diff, not a fresh start.
 ein.rs/bench-out/
 ein.rs/target-*

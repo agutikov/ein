@@ -147,7 +147,7 @@ state as text, 19 800 facts of up to 19 800 levels, which is E-24 and not a limi
 [Q-M1f.185](../open_questions.md#q-m1f185--a-state-file-nested-past-the-parsers-limit).
 
 - **(a) Say it on the page and leave it.** Done by this stage, since it is true whatever is ruled:
-  [`stdlib/README.md` § How long a number may be](../../../stdlib/README.md#how-long-a-number-may-be-m1f-s1f69)
+  [`stdlib/README.md` § How long a number may be](../../../stdlib/README.md#how-long-a-number-may-be)
   and the header of `stdlib/arith.ein` state the two limits, the table by operation, and that every answer is
   right and printed past them. It costs nothing at run time. What it leaves: a state file that is written and
   cannot be read, with nothing said when it is written; `answer_round_trip.rs` holds every corpus program's
@@ -261,7 +261,7 @@ stays in words throughout, a chain whose intermediate numbers are never converte
 it would be measured against, 4 988 896 firings for 998 digits by 998. S1f.6.10 asks for it if it asks for long
 numbers; nothing here measures it.
 
-**The pages:** [`stdlib/README.md` § How long a number may be](../../../stdlib/README.md#how-long-a-number-may-be-m1f-s1f69),
+**The pages:** [`stdlib/README.md` § How long a number may be](../../../stdlib/README.md#how-long-a-number-may-be),
 new, with the table by operation and the cost table; the header of `stdlib/arith.ein`, a paragraph, *How long a
 number may be* (a comment: the module's rules, relations and facts are byte for byte what they were, and
 `MANIFEST.sha256` moves with the file's digest); `std.rat`'s section, which now links to it; [`findings.md`](findings.md),

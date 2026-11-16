@@ -228,7 +228,7 @@ program's claim. No rule of either module routes a request to the other.
 
 ## T6 record, 2026-11-11: the page, the examples, and what moved
 
-**The page** is [`stdlib/README.md` § `std.num9`](../../../stdlib/README.md#stdmathnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613),
+**The page** is [`stdlib/README.md` § `std.num9`](../../../stdlib/README.md#stdmathnum9-nine-digits-in-one-fact-and-wide-rules),
 with § When to use which module: the batch table above as the evidence, where the plan named round 3's. What it
 says that the plan did not expect: **`std.num9` wins at volume and loses on one request.** It is five to seven
 times `std.arith` on a batch of sums or differences and 1.4 times on quotients, level on products; but a program
