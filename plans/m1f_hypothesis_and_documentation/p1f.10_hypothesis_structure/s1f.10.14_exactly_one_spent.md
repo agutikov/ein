@@ -1,9 +1,11 @@
 # S1f.10.14 — Exactly one, spent: branching nothing licenses yet
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-15, at the re-plan. **Running** (2026-11-16): T1 written, a *no*, its witness banked
-([§ Record](#record-2026-11-16)). The phase's most speculative stage, and the one most likely to end in a written
-*no*.
+**Status:** planned 2026-11-15, at the re-plan. **Ran to its end, 2026-11-16** ([§ Record](#record-2026-11-16)):
+place 1 is a written *no* as planned, its witness `examples/lattice/13_witness_of_two.ein` banked, and a narrower
+licence, **L9**, *a fact nothing proposes and nothing writes is in no state*, built for the eight questions the
+tree answers by the price list's rule; place 2's advice is in the bundle; place 3 is put to the user as
+Q-M1f.311, not acted on.
 **Depends on:** [S1f.10.4](s1f.10.4_bounded_groups.md) (which groups are *exactly one*, and which owed
 instances L5 does not license); [S1f.10.13](s1f.10.13_the_price_list.md) (the *alive and owing* share per
 question).
@@ -68,8 +70,9 @@ Three places where the engine has an *exactly one* it does not spend, in rising 
 
 ## Record (2026-11-16)
 
-Taken over from an earlier agent stopped when its session ended, from what it left on disk (§ What was taken
-over, below, once the stage closes).
+Taken over from an earlier agent stopped when its session ended, from what it left on disk
+([§ What was taken over](#what-was-taken-over)). The worktree over `a79eea49` (`master` merged in, the draft
+carried across it); every number is a count unless it is called a wall.
 
 ### T1: the implied witness — *no*
 
@@ -163,7 +166,7 @@ taken over):
    which ends the branch where it owes. On the corpus that is six programs under `tests/` whose lattice is root
    alone (`:no-search`), where it changes no work and moves the `route` row of four modes from the state route
    to *the obligation tree … L5 … L9*, and with it `read_out_examples.md`'s X6; the default that changes the
-   fewest surfaces (§ Defaults taken, once the stage closes).
+   fewest surfaces ([§ Defaults taken](#defaults-taken)).
 6. The draft's header named tests that did not exist; they are written (below).
 
 **The census** (`ein-infer/tests/unheld.rs`, `l9_licenses_where_nothing_writes_the_witness_relation`, over every
@@ -227,3 +230,198 @@ and is not here is a stop.
 - Not moving: `README.md`'s and `docs/guide/04_solving_the_whole_puzzle.md`'s transcripts and
   `docs/api/rust.md`'s block (`zebra2.ein`, no instance L9 licenses), `ein-render/tests/golden/trace_*.md`,
   `ein-cli/tests/region_modes.rs`, every `cost_ms` and the slow set.
+
+### L9, as built
+
+As decided above, committed apart from the list (`fc86f98e`): [`ein_infer::unheld`](../../../ein.rs/crates/ein-infer/src/unheld.rs)
+(the argument in its header; `Unwritten`, `breach`, the refusal, the two switches), `oblgen::Instance::unheld`
+and `Alternatives::with_l9`, `Space::route_alternatives` for the tree alone, the check in the node function and
+at the whole node, `Licence::Unheld` and its label, `tree.rs`'s header (§ L9, a witness no node can hold),
+[`read_out.md`](../../../docs/kernel/inference/read_out.md)'s `route` row, the module's row in
+[`implementation.md`](../../../docs/kernel/inference/implementation.md), the fixture
+[`examples/lattice/14_seats_nothing_proposes.ein`](../../../examples/lattice/14_seats_nothing_proposes.ein) with its
+corpus entry and catalogue line, and [`ein-infer/tests/unheld.rs`](../../../ein.rs/crates/ein-infer/tests/unheld.rs):
+
+| test | what it holds |
+|---|---|
+| `l9_licenses_where_nothing_writes_the_witness_relation` | the census above, over every corpus program and register witness, each instance's L5 reason, the list whole (so none of `zebra.ein`'s 18, which the test does not name: it would join the puzzle's world anchors); `13_witness_of_two.ein`'s one debt not L9's |
+| `l9_is_the_oracle_on_every_monotone_program_it_reaches` | on `14_seats_nothing_proposes.ein`'s cube, all 4 096 nodes: none holds a fact of `sits` beyond root's that is no candidate; at every alive state each instance L9 licenses is owed exactly when none of its alternatives is in it; every member of R above a state owing one holds an alternative (62 owed instances read) |
+| `every_question_answers_alike_with_l9_and_without` | the ten questions on the two programs, with and without (`unheld::without`): one verdict, one `exhausted`, the same part of R listed whole, every listed state in describe's R; describe and `--count` field for field; L9 named only with it; each of the eight tree questions lower in both units over the two |
+| `a_node_that_breaks_the_premise_refuses_the_run` | a program whose rule writes a witness of its debt: L9 does not license it and every question answers, R three states; under `unheld::trusting` it is licensed with its candidate alone, and `--maximal` and `--single` refuse at the first node that holds the written witness, `L9: a node holds (fed Ann Stew)` |
+
+`explore.rs` holds every mode to the oracle on `14_seats_nothing_proposes.ein`'s cube with the rest of the corpus,
+no expectation edited. **The goldens that moved are the list's, and no other**: `corpus_shapes.md5`'s eight
+tree-mode lines of `06_…everyone_sits` and the fixture's new lines, `corpus_exits.txt`'s new cells.
+
+### T3: a group nothing owes — what a program would have to state, and what it would cost
+
+No engine work: nothing is synthesised, and each copy is a program a person wrote the lines into. For each
+program [S1f.10.4](s1f.10.4_bounded_groups.md#t3-where-the-must-is-missing) named where *exactly one* is not
+derived, the lines that state the *must* and every question of `ein solve` on the program and on the copy, the
+built engine, the default budget (`build/structure/s14/probes.sh`, then `must.py`, 2026-11-16; the copies under
+`build/structure/s14/p/`, the read-outs under `out/`, the table `must.json`). Saturations, before → after:
+
+| program | groups nothing owes | the lines | R | describe | `--count` | `--single` | `-n 1` | `--minimal` | `--maximal` |
+|---|---:|---|---|---:|---:|---:|---:|---:|---:|
+| I-Z1 `zebra.ein` | 18 | `slot-owed-fill`'s debt with its witness value first (S1f.10.4's `fill_mirrored.lines`) | **the same**: 1 state, 261 982 commitments | 314 → 314 | 314 → 314 | 9 → 13 | 5 → 5 | 318 → 318 | 9 → 13 |
+| `lattice/07_two_pairs_two_tables.ein` | 4 | `(surjective-owed sits is-a)` | **the same**: 8 states | 177 → 177 | 177 → 177 | 44 → 63 | 41 → 36 | 233 → 221 | 101 → 132 |
+| I-SEND `beyond_arith/send_more_money.ein` | 10 | `(surjective-owed val is-a)` | **another, empty**: *Solution* → *Open* by `--single` | 336 101 → 336 101, stopped both | the same | 18 030 → 48 807 | 15 855 → 45 137 | 205 166 → 110 840, stopped both | 18 030 → 48 807 |
+| `beyond_arith/cryptarithm.ein` | 10 | `(surjective-owed val is-a)` | **another, empty**: 1 state → none | 417 → 417 | 417 → 417 | 119 → 13 | 102 → 13 | 436 → 423 | 128 → 13 |
+| I-B06 `branching/06_lookahead_on.ein` | 10 | every colour and house owes a kind (S1f.10.4's `typed_owed.lines`) | **another, and not by the *must***: 2 states, 4 commitments → `{∅}` | 133 → 1 | 133 → 1 | 8 → 1 | 1 → 1 | 1 → 1 | 258 → 1 |
+| `zebra2-hints.ein` | 26 | `total-owed` and `surjective-owed` of each of its five `*-loc` | **another**: 6 states, 8 316 commitments → 1 state, 8 188 | 62 → 62 | 62 → 62 | 4 → 3 | 1 → 2 | 1 → 64 | 84 → 3 |
+| `domain_elim/b_branch.ein` | 2 | `total-owed` and `surjective-owed` of `color-loc` | **another**: 2 states → 1 | 8 → 8 | 8 → 8 | 2 → 8 | 1 → 2 | 1 → 8 | 14 → 10 |
+
+**What it says to a program's author**, three kinds:
+
+- **Where the *must* is true of the puzzle and follows from what is enforced** (I-Z1 and `07`, S1f.10.4's
+  route 1, a grid whose other family is owed whole), stating it leaves R as it is and **does not pay**: describe
+  and `--count` take the state route, which reads no debt to choose by, and the tree, with more licensed debts
+  to branch on, is dearer under `--single` (9 → 13, 44 → 63) and `07`'s `--maximal` (101 → 132), a little cheaper
+  under `07`'s `-n 1` and `--minimal`. *Exactly one* that a count already gives is not worth a line.
+- **Where the program declares the property and owes nothing** (`zebra2-hints.ein`, `b_branch.ein`: `bijective`,
+  whose `total` half is a refutation over stored negatives, not a debt), stating the debts **changes R**, to the
+  one full assignment from six and two states that each leave a value or a house without a partner. That is
+  S1f.10.4's route 2 shown: the declaration was never a *must*, and the debts are what the author meant if the
+  full assignment is the answer meant. The work moves both ways, `--maximal` 84 → 3 and `--minimal` 1 → 64 on
+  `zebra2-hints`.
+- **Where the *must* is false** (I-SEND, `cryptarithm`, more digits than letters) R becomes empty, and where it is
+  paid at root (I-B06) the ladder moves to the second rung and H is empty (K-11). Neither is advice to state
+  anything; they are why nothing here is stated by the engine.
+
+**In the bundle**: `utils/structure_bundle.py` reads `build/structure/s14/must.json` (a required input, as
+every other), writes a page *Where exactly one is missing* (`bundle/must.html`, a table of every program and
+every question and one table a program, each with its JSON beside it) linked from the index, and a section
+*What it would have to state* on the page of each program the file names. Checked on a subset written under the
+worktree (`python3 utils/structure_bundle.py --bin ein.rs/target/gate/ein examples/zebra.ein
+examples/domain_elim/b_branch.ein examples/lattice/07_two_pairs_two_tables.ein`, then `--check`: 28 pages,
+126 tables each with its JSON, 0 errors), the inputs copied from the main tree's `build/structure/` and
+`build/s1f.10.{9,6,15}/census/`. **The main tree's `build/structure/s14/` does not exist**: before the bundle is
+built there again, `probes.sh` and `must.py` are run there (or the worktree's `build/structure/s14/` copied in).
+
+### T4: describe, as a question with numbers — Q-M1f.311, put
+
+**Nothing is built**, and describe's route is as it was. Describe takes the state route: every alive state once,
+its one-up extensions saturated, the owing ones among them. The read-out divides by what it is read from
+(`states.rs` § Where N and E come from, `read_out.md` § 2):
+
+- **read off every alive state, the owing ones among them**: `k_c`, counted over each state's alive states below
+  it (`f(T) = 2^|T| − Σ f(S)`); the merged states and their minimal commitments; the minimal line, `E`'s alive
+  members, as the minimal generators of R's states; `N`, the minimal transversals of the maximal alive states'
+  complements, a maximal alive state being owing as often as not; and the shape, components and sub-cubes, over
+  R's commitments;
+- **read off R's states alone**: `k_s`, the states listed, the maximal line (a state of R whose every one-up
+  extension is dead), and a query's classes over R. The obligation tree reaches these without the owing states
+  its branches skip (L5, L9): `-n N` lists every state of R once its leaves run out (L2), `--maximal` the line,
+  `--single` whether R is one state.
+
+**The numbers**, re-taken on this stage's engine (`build/s14/t4/t4.sh`, then `tally.py`, 2026-11-16, the gate
+profile, the default budget; describe's nodes by kind from `--dump-lattice`'s `nodes.json`), saturations · facts
+beyond root:
+
+| program | describe | of it, alive owing | in R | dead | the tree: `--maximal` | `--single` | `-n 1` | `--minimal` |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| I-SEND `beyond_arith/send_more_money.ein` | 336 101 · 1 422 943, **stopped**, 0 states met | **330 329 · 1 376 430** (98.3 %) | 0 | 5 772 | 18 030, the line whole: 1 state | 18 030, *Solution*: R is one state | 15 855 | 205 166, stopped |
+| I-SENDW `…_written.ein` | the same, **stopped** | the same | 0 | 5 772 | 18 030, 1 state | 18 030, *Solution* | 17 542 | 131 134, stopped |
+| I-Z2M `zebra2-minus-15.ein` | 7 261 · 545 818, **stopped**, ≥ 32 states | **5 530 · 270 526** (76.2 %) | 865 | 866 | 108, the line whole: 32 states | 39, *Ambiguity* | 35 | 13 102, stopped |
+| its `-obligations` twin | the same | the same | 865 | 866 | 108 | 39 | 35 | 13 102, stopped |
+| `lattice/06_friends_tables_everyone_sits.ein` | 345 · 969 | 269 · 726 (78.0 %) | 8 | 68 | 123 | 61 | 56 | 427 |
+| `lattice/07_two_pairs_two_tables.ein` | 177 · 448 | 105 · 224 (59.3 %) | 8 | 64 | 101 | 44 | 41 | 233 |
+| `beyond_arith/cryptarithm.ein` | 417 · 1 301 | 192 · 357 (46.0 %) | 1 | 224 | 128 | 119 | 102 | 436 |
+| I-Z1 `zebra.ein` | 314 · 55 346 | 139 · 9 332 (44.3 %) | 81 | 94 | 9 | 9 | 5 | 318 |
+| I-Z2 `zebra2.ein` | 263 · 22 503 | 103 · 3 589 (39.2 %) | 81 | 79 | 7 | 7 | 5 | 267 |
+| `beyond_arith/equation_two_unknowns.ein` | 1 466 · 60 223 | 331 · 630 (22.6 %) | 3 | 1 132 | 1 165 | 524 | 521 | 1 466 |
+| `saturation/square-bwd/floors.ein` | 85 574 · 994 221, **stopped** | 0 | 85 574 | 0 | 11 | 2 | 1 | 1 |
+
+And **`-n 1000000` on I-Z2M lists every state of R, 32, exhausted, in 104 saturations and 10 944 facts**, where
+describe is stopped after 7 261 saturations with `k_s` a lower bound and the maximal line *not reached*. On I-SEND
+`--single`'s *Solution* is all of R, one state, in 18 030, where describe is stopped after 336 101 having met none.
+
+Over the corpus, S1f.10.13's price list (188 programs, before L8 and the order, so describe's cells are larger
+there than above): describe's alive owing share is **343 323 of 1 350 675 saturations, 25.4 %**; the three
+monotone cells the budget stopped, I-SEND and the I-Z2M pair, are 341 389 of it, and over the monotone cells no
+budget stopped it is 1 625 of 28 540. **So the question bears on four programs today**, the three and I-SENDW
+(banked since): monotone, describe stopped by the budget, almost all of it on alive owing states, and the tree
+reaching every state of R for a twentieth of describe's work or less (5.4 % on I-SEND, 1.4 % on I-Z2M). Six more describes the budget stops,
+`saturation/square-*/`, meet no owing state and already decide R as the whole cube (L1, L2); seven more are
+flagged programs past the cube's limit, where no tree runs. Where describe finishes, its owing share runs from
+a fifth to four fifths and is what `k_c`, `N`, the minimal line and the merged states are read from.
+
+**Put to the user as [Q-M1f.311](../open_questions.md#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead)**,
+the next free id: *should a describe that the budget would stop answer what the tree can reach instead?*, with
+four options and the default the plan's framing gives, (a), describe as it is. **Not acted on**: to be shown at
+the phase's close.
+
+### What was taken over
+
+The earlier agent left, uncommitted over `037b7f55`, five files changed and two new (`unheld.rs` and
+`13_witness_of_two.ein`; copies in the main tree's `build/p1f10/stopped/`), and no test, no record and no
+commit. Carried across `master`'s `a8fa30d3` with no conflict. **Kept**: the witness, its header's last paragraph
+corrected (it named a test file that did not exist, and said the tree branches root, where every mode takes the
+state route); L9's idea and its two switches; `oblgen`'s scan past L5's first refusal (`Instance::unheld`,
+`Unheld`, `with_l9`, `by_l9`), which leaves L5's verdict and reason as they were; `Licence::Unheld`;
+`NodeOut::unheld` and the refusal in `Space::eval`; the tree's flag that names L9. **Changed**: the six items of
+[§ L9](#l9-a-narrower-licence-checked-and-priced--go-for-the-trees-eight-questions). **Added**: the check at the
+whole node, `tests/unheld.rs`, the fixture, the docs, T1's test, T3 and T4.
+
+### Defaults taken
+
+Each the user's to revise.
+
+1. **L9 was decided at all.** The plan builds T2 only if T1 holds; L9 is not T2 but a narrower claim the T1
+   witness leaves standing, and it was held to the stage's *What it must not do* and the price list's rule before
+   it was built.
+2. **An instance with no candidate among its witnesses is not L9's**: the fewest surfaces. Licensed, it would end
+   a branch where it is owed; on the corpus it occurs only on six `tests/` programs whose lattice is root alone,
+   where it moves four `route` rows each and `read_out_examples.md`'s X6 and no work.
+3. **Only the tree's route takes L9.** The structure's readers (`structure::node_coupling`, `Space::owed`, the
+   census, `ein render h-space`) read L5's table as before; the tree's coupled order reads the route's table, so an
+   instance L9 licenses is a question there.
+4. **The premise is read wider than the argument needs**: every plan but an hrule's counts as a writer, every
+   kernel relation as written, and a plan that writes `__symmetric__` makes every relation written.
+5. **The rule as S1f.10.13's defaults read it**, both units; the check's cost is no saturation and no fact; the
+   corpus totals were not re-taken, since every other program's route table is L5's as read (the census holds
+   it), so each total falls by the two programs' difference.
+6. **The fixture entered the corpus with the licence**, so its golden lines are new in the commit that built L9,
+   not moved by it; and T1's test sits in `tests/region.rs` beside L5's, committed before L9.
+7. **T3's programs**: S1f.10.4's three of route 3, its two declared-and-unowed programs, and the two its census
+   paired with them (`07` beside I-Z1 for route 1, `cryptarithm.ein` beside I-SEND); the lines are S1f.10.4's
+   where it wrote them, and `total-owed` with `surjective-owed` where it named them. `must.json` is a required
+   input of the bundle, as every other.
+8. **T4's numbers re-taken on eleven programs**, the corpus share quoted from S1f.10.13's census; Q-M1f.311's
+   default (a) from the plan's framing.
+9. **No slow half and no nightly step**: `unheld.rs` reads two programs per commit.
+
+### Verification
+
+In the worktree, the gate profile, on the tree as committed but for this record (the last Rust edit is
+`tests/unheld.rs` dropping a reference to the Zebra puzzle, after the first `ein-cli` run below):
+
+- `cargo test --profile gate -p ein-infer`, whole: 54 binaries, 554 tests, green (on `fc86f98e`'s code), and
+  `--test unheld` again after its last edit, green.
+- `-p ein-render`, whole: green. `-p ein-cli`, whole: green on the second run, 406 tests. The first stopped at
+  `world_anchors`: `tests/unheld.rs` named `examples/zebra.ein`, which made it one of the puzzle's world anchors;
+  the reference was dropped (the census's list being whole already says it) rather than the anchor list
+  re-banked.
+- `EIN_CORPUS_SLOW=1`, once each: `explore` (104 s), `known_dead` (206 s), `order` (208 s), `corpus_cores`
+  (117 s), `-p ein-render --test id_order_invariance` (65 s): green. No slow half was added.
+- `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`,
+  `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`: clean.
+- `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md corpus/README.md tests/README.md
+  examples/README.md stdlib/README.md utils/README.md c/README.md`: 0 findings;
+  `python3 -m py_compile utils/structure_bundle.py`; `python3 utils/check_hashmap_iteration.py`: ok;
+  `python3 utils/read_out_examples.py --check`: clean; `utils/structure_bundle.py --check` on the subset: 0
+  errors.
+- Not run, as the stage was told: `./run_tests.sh`, the nightly, `utils/ci_container.sh`. The walls above were
+  taken with other runs on the machine and are not measurements.
+
+### What is not done
+
+- **T2 as planned**, the implied witness: T1 is *no*. `zebra.ein`'s `slot-owed-fill` debts stay unlicensed, by
+  any licence here: their witness relation is written.
+- **Q-M1f.311** is put and not ruled; nothing is built for it.
+- **The main tree's `build/structure/s14/`** does not exist; the worktree's holds T3's copies, read-outs and
+  `must.json`, and T4's runs are under the worktree's `build/s14/t4/`.
+- No wall was taken: the check's time is a scan of one relation's facts per node, not measured.
+- The gate, the nightly and the runner's container were not run (the main session's, on the batch).
+
+**Findings outside the stage's scope**: none; K-28 stays the last.

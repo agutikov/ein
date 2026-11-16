@@ -130,9 +130,11 @@ fn licensed(path: &Path) -> Option<Vec<(Licensed, String)>> {
 /// corpus and register. Each is an instance L5 refuses because a witness is
 /// no candidate and root does not deny it; each has a candidate among its
 /// witnesses to branch on; and each relies on `sits`, which no rule of
-/// either program concludes. `zebra.ein`'s `slot-owed-fill` debts are not
-/// L9's (`co-located` is written by the slot rules and mirrored), nor is
-/// `13_witness_of_two.ein`'s (`fed` is written by two rules).
+/// either program concludes. No other program's unlicensed instance is
+/// L9's: the Zebra puzzle's `slot-owed-fill` debts (`co-located` is written
+/// by the slot rules and mirrored), which the list's being whole says
+/// without naming the puzzle here, and `13_witness_of_two.ein`'s (`fed` is
+/// written by two rules), held below.
 #[test]
 fn l9_licenses_where_nothing_writes_the_witness_relation() {
     let files = corpus_and_register();
@@ -192,22 +194,19 @@ fn l9_licenses_where_nothing_writes_the_witness_relation() {
     .map(|(p, v)| (p.to_string(), v.into_iter().map(String::from).collect()))
     .collect();
     assert_eq!(by_program, want);
-    // The two it does not reach, and why: their witness relation is written.
-    for (rel, refused) in [
-        ("examples/zebra.ein", 18usize),
-        ("examples/lattice/13_witness_of_two.ein", 1),
-    ] {
-        let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect("loads");
-        let t = ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast)
-            .expect("prepares")
-            .expect("a table");
-        let not = t
-            .instances
-            .iter()
-            .filter(|i| i.alternatives.is_err() && i.unheld.is_none())
-            .count();
-        assert_eq!(not, refused, "{rel}");
-    }
+    // The implied witness's program it does not reach, and why: its witness
+    // relation is written.
+    let rel = "examples/lattice/13_witness_of_two.ein";
+    let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect("loads");
+    let t = ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast)
+        .expect("prepares")
+        .expect("a table");
+    let not = t
+        .instances
+        .iter()
+        .filter(|i| i.alternatives.is_err() && i.unheld.is_none())
+        .count();
+    assert_eq!(not, 1, "{rel}");
 }
 
 /// **L9 is the oracle's.** On every monotone cube the oracle enumerates

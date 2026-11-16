@@ -314,6 +314,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **ruled 2026-11-16**: the user, asked back since the question had a recommendation and no default: *"308 (b) ok"*. **(b)**, the second rung where an obligation is activated at root. Built by S1f.10.15's task 4 |
 | [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth. **Renamed 2026-11-16** on the user's instruction: `ein render h-space FILE`, and `ein show hyps FILE` lists H as Ein facts |
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
+| [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **put 2026-11-16 by S1f.10.14's T4, not ruled, to be shown at the phase's close**: default (a), describe as it is; not acted on; [S1f.10.14](p1f.10_hypothesis_structure/s1f.10.14_exactly_one_spent.md#t4-describe-as-a-question-with-numbers--q-m1f311-put) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6513,3 +6514,55 @@ What part 1 found outside its stages' scope is [`findings.md`](p1f.10_hypothesis
 H9-n, H6-n and H15-n. **Stands until revised.**
 
 **Accepted 2026-11-16.** The user, shown the stop: *"all defaults ok"*.
+
+### Q-M1f.311 — A describe the budget would stop: answer what the tree can reach instead?
+
+**Raised** 2026-11-16 by [S1f.10.14](p1f.10_hypothesis_structure/s1f.10.14_exactly_one_spent.md#t4-describe-as-a-question-with-numbers--q-m1f311-put)'s
+T4, the third place the stage file names where the engine has an *exactly one* it does not spend: describe takes
+the state route and never the obligation tree. **Put, not ruled, to be shown at the phase's close**; nothing is
+built for it, and describe's route, M1e2's decision, is as it was.
+
+**What describe reads, and from what.** The state route visits every alive state once and saturates its one-up
+extensions, the owing states among them. `k_c`, the merged states, the minimal line (`E`'s alive members, as the
+minimal generators of R's states), `N` (the minimal transversals of the maximal alive states' complements) and
+the shape are read off every alive state ([`states.rs`](../../ein.rs/crates/ein-infer/src/states.rs) § Where N
+and E come from). `k_s`, the states listed, the maximal line and a query's classes need R's states alone, and the
+obligation tree reaches those without the owing states its branches skip (L5 and L9): `-n N` lists every state of
+R once its leaves run out, `--maximal` the line, `--single` whether R is one state.
+
+**The numbers** (re-taken 2026-11-16 on S1f.10.14's engine, the default budget; the stage's table has eleven
+programs). Four monotone programs have a describe the budget stops, and on each nearly all of it is alive owing
+states while the tree reaches every state of R:
+
+| program | describe | of it, alive owing | what the tree reaches |
+|---|---:|---:|---|
+| `beyond_arith/send_more_money.ein` | 336 101 saturations, stopped, no state met | 330 329 (98.3 %) | `--single`: *Solution*, R is one state, in 18 030; `--maximal` the same |
+| `beyond_arith/send_more_money_written.ein` | the same | the same | the same, 18 030 |
+| `zebra2-minus-15.ein` | 7 261, stopped, `k_s` ≥ 32, the maximal line not reached | 5 530 (76.2 %) | `-n 1000000`: all of R, 32 states, exhausted, in 104; `--maximal` the 32 in 108 |
+| `zebra2-minus-15-obligations.ein` | the same | the same | the same |
+
+Over the corpus, the price list's census (S1f.10.13, 188 programs, before L8 and the order): describe's alive
+owing share is 343 323 of 1 350 675 saturations, 25.4 %, and 341 389 of it is the three of these four it had. Six
+more describes the budget stops (`saturation/square-*/`) meet no owing state and decide R as the whole cube
+already; seven are flagged programs past the cube's limit, where no tree runs. Where describe finishes, its
+owing share runs from a fifth to four fifths of its work, and that is what `k_c`, `N`, the minimal line and the
+merged states are read from.
+
+**The options.**
+
+- **(a) As it is.** Describe takes the state route; a run the budget stops says what it met, every count a lower
+  bound, and a reader who wants R's states asks `-n N`, `--maximal` or `--single`, which take the tree. No surface
+  moves.
+- **(b) Where the budget would stop describe, answer R's states by the tree.** `k_s`, the states listed, the
+  maximal line and a query's classes exact; `k_c`, the merged states, `N`, the minimal line and the shape said
+  not computed. Describe projects a layer's cost before it saturates the layer, so it knows where it would stop;
+  this changes describe's route, a decision of M1e2's, and a describe that stopped late says less of `N` than it
+  does today.
+- **(c) Both.** Describe as it is, and where the budget stopped it, the tree's states of R beside the lower
+  bounds, in one run: R's states exact at the tree's cost on top (104 saturations on `zebra2-minus-15.ein`, 18 030
+  on SEND), `k_c` and `N` still lower bounds.
+- **(d) Say so, and nothing more.** Where describe is stopped on a program the tree can branch, the read-out names
+  the question that would list R's states, and spends nothing.
+
+**The default named: (a)**, which the plan's framing gives: describe's route is M1e2's decision, which the phase
+reports on and does not reopen by itself. **Not acted on.**
