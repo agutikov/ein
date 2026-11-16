@@ -1958,6 +1958,32 @@ pub(crate) fn order_key(terms: &Terms, id: FactId) -> String {
     }
 }
 
+/// A dead fixpoint's core as a node reports one: its facts as sorted text,
+/// the search's status, and the rules it rests on (`refuted by`). `None`
+/// where `fork` holds no contradiction. For a node a route computes beside
+/// the node function, so that what a surface prints of it is what it prints
+/// of every dead node.
+pub(crate) fn core_of_fixpoint(
+    fork: &Kb,
+    terms: &Terms,
+) -> Option<(Vec<String>, crate::explain::CoreStatus, Vec<String>)> {
+    let contradictions = crate::contradiction::detect(fork, terms);
+    if contradictions.is_empty() {
+        return None;
+    }
+    let e = crate::explain::contradiction_frontier(
+        fork,
+        terms,
+        &contradictions,
+        &crate::explain::ExplanationBudget::default(),
+    );
+    Some((
+        sorted_text(terms, &e.frontier),
+        crate::explain::CoreStatus::of(&e),
+        rules_of(terms, &e.steps),
+    ))
+}
+
 fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {
     let mut v: Vec<String> = facts.iter().map(|&f| sexpr(terms, f)).collect();
     v.sort();

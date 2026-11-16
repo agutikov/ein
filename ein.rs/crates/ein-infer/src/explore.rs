@@ -889,11 +889,22 @@ impl<'a> Space<'a> {
     /// node visited like any other for whatever watches the run. Its facts
     /// are those of the node saturated to quiescence, where the cache's
     /// nodes stop at their first contradiction.
-    pub(crate) fn charge_whole_node(&mut self, facts: u64) {
+    ///
+    /// `core` is the node's core where the run is narrated
+    /// ([`Self::narrated`]), and a surface that lists the nodes a run visited
+    /// prints it as it prints every dead node's.
+    pub(crate) fn charge_whole_node(
+        &mut self,
+        facts: u64,
+        core: Option<&(Vec<String>, crate::explain::CoreStatus, Vec<String>)>,
+    ) {
         self.saturations += 1;
         self.spent += facts;
-        let narrated = self.events.on() || self.events.watching();
-        if narrated {
+        if self.narrated() {
+            let (core_facts, core_status, refuted_by): (&[String], _, &[String]) = match core {
+                Some((c, s, r)) => (c, Some(*s), r),
+                None => (&[], None, &[]),
+            };
             let mut commitment: Vec<String> =
                 self.candidates.iter().map(|c| c.text.clone()).collect();
             commitment.sort();
@@ -903,9 +914,9 @@ impl<'a> Space<'a> {
                     kind: "dead",
                     owes: 0,
                     owed: &[],
-                    core: &[],
-                    core_status: None,
-                    refuted_by: &[],
+                    core: core_facts,
+                    core_status,
+                    refuted_by,
                     closure: &[],
                     facts,
                 });
@@ -916,8 +927,18 @@ impl<'a> Space<'a> {
                     l.owned_strs("commitment", commitment);
                     l.str("kind", "dead");
                     l.num("owes", 0);
-                    l.json("core", "null");
-                    l.json("core_status", "null");
+                    // As the node function writes a dead node's: `null`
+                    // where no core was taken, `[]` the empty set.
+                    match core_status {
+                        Some(c) => {
+                            l.strs("core", core_facts.iter().map(String::as_str));
+                            l.str("core_status", &c.word());
+                        }
+                        None => {
+                            l.json("core", "null");
+                            l.json("core_status", "null");
+                        }
+                    }
                 });
             }
         }
@@ -929,6 +950,13 @@ impl<'a> Space<'a> {
             r: 0,
             facts,
         });
+    }
+
+    /// Whether anything reads the nodes this run visits: the event stream or
+    /// a watch (`--dump-lattice`, `-v`). Where it is, a node a route computes
+    /// beside the cache takes its core as the node function's nodes do.
+    pub(crate) fn narrated(&self) -> bool {
+        self.events.on() || self.events.watching()
     }
 
     /// How many new fixpoints the budget still affords, by [`Self::afford`]'s

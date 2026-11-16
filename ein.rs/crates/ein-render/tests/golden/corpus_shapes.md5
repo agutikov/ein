@@ -1223,10 +1223,10 @@ af9f0d0cd9169fd1     5546L  examples/beyond_arith/send_more_money.ein::region-tr
 d41d8cd98f00b204        0L  examples/beyond_arith/send_more_money.ein::states
 9d6f7cae065792b8        7L  examples/beyond_arith/send_more_money.ein::region-lattice
 a052e43545e3f33a    89298L  examples/beyond_arith/send_more_money.ein::cores[describe]
-d7a3ca84a56bb42b    80406L  examples/beyond_arith/send_more_money.ein::cores[maximal]
+a46db6329dc09efd    80411L  examples/beyond_arith/send_more_money.ein::cores[maximal]
 30f8a5c67301f6ea    76349L  examples/beyond_arith/send_more_money.ein::cores[minimal]
-901e2f6f4ff8c3e9    80406L  examples/beyond_arith/send_more_money.ein::cores[single]
-6bc4e5232980e784    75847L  examples/beyond_arith/send_more_money.ein::cores[n2]
+aaab2131f3012118    80411L  examples/beyond_arith/send_more_money.ein::cores[single]
+aaf547160d3f41a3    75852L  examples/beyond_arith/send_more_money.ein::cores[n2]
 58a9ca3f1051d334      249L  examples/beyond_arith/send_more_money.ein::oracle
 50b6f535873f5f79     3978L  examples/beyond_arith/send_more_money_written.ein::load
 8be6e3cc177d50ca       24L  examples/beyond_arith/send_more_money_written.ein::saturate
@@ -1264,10 +1264,10 @@ dbf451fe8b48aa51     9686L  examples/beyond_arith/send_more_money_written.ein::d
 d41d8cd98f00b204        0L  examples/beyond_arith/send_more_money_written.ein::states
 8054df3e10cdd63e        7L  examples/beyond_arith/send_more_money_written.ein::region-lattice
 dc92a685724bc331    89298L  examples/beyond_arith/send_more_money_written.ein::cores[describe]
-9167efd2334d1244    80406L  examples/beyond_arith/send_more_money_written.ein::cores[maximal]
+80f6134d6835aeda    80411L  examples/beyond_arith/send_more_money_written.ein::cores[maximal]
 7b1678bd6465522b    86047L  examples/beyond_arith/send_more_money_written.ein::cores[minimal]
-e889b34cf9fe9e7d    80406L  examples/beyond_arith/send_more_money_written.ein::cores[single]
-e33d1cddc9a900ef    92154L  examples/beyond_arith/send_more_money_written.ein::cores[n2]
+e9c5b102c31eda88    80411L  examples/beyond_arith/send_more_money_written.ein::cores[single]
+a283cb673bb51b83    92159L  examples/beyond_arith/send_more_money_written.ein::cores[n2]
 1a5c62fa031467a7      249L  examples/beyond_arith/send_more_money_written.ein::oracle
 02e51dcf65788fd4     3779L  examples/beyond_arith/tables_backwards.ein::load
 42006549baa966c4      181L  examples/beyond_arith/tables_backwards.ein::saturate

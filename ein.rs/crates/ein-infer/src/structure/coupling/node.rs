@@ -97,6 +97,13 @@ pub struct NodeCoupling {
     pub node_stopped: Option<NodeStop>,
     /// What the module's bounds cut of the reading.
     pub cut: Cut,
+    /// **The node's core**, where it is dead and the run that read it is
+    /// narrated: its facts, the search's status and the rules it rests on,
+    /// as every dead node a route visits reports them, so that a surface
+    /// listing the nodes a run visited prints this one as it prints the
+    /// others. `None` elsewhere: a core is taken only where a surface prints
+    /// one.
+    pub core: Option<(Vec<String>, crate::explain::CoreStatus, Vec<String>)>,
 }
 
 impl NodeCoupling {
@@ -175,6 +182,7 @@ pub(crate) fn node_coupling_in(
         node: None,
         node_stopped: None,
         cut: Cut::default(),
+        core: None,
     };
     if sp.root_is_dead() {
         out.node_stopped = Some(NodeStop::RootDead);
@@ -194,13 +202,19 @@ pub(crate) fn node_coupling_in(
             .enumerate()
             .map(|(b, c)| (c.fact, b as u32))
             .collect();
+        let narrated = sp.narrated();
         let (root_kb, _, _) = sp.parts();
         let read = sp.supported_within(
             &committed,
             NODE_APPLICATIONS,
             max_facts - n as u64,
             |kb: &Kb, terms: &mut Terms, firings| {
-                Graph::of(root_kb, kb, terms, firings, &facts, None)
+                let core = if narrated {
+                    crate::region::core_of_fixpoint(kb, terms)
+                } else {
+                    None
+                };
+                (Graph::of(root_kb, kb, terms, firings, &facts, None), core)
             },
         )?;
         match read {
@@ -216,8 +230,11 @@ pub(crate) fn node_coupling_in(
                     ..NodeWork::default()
                 });
             }
-            Ok(mut g) => {
+            Ok((mut g, core)) => {
                 out.dead = g.work.contradictions > 0;
+                if out.dead {
+                    out.core = core;
+                }
                 // The pairs: a contradiction one application concludes from
                 // two candidates. Counted, and read for no edge.
                 let mut pairs: BTreeSet<(u32, u32)> = BTreeSet::new();

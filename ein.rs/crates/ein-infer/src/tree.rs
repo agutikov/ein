@@ -798,7 +798,7 @@ impl Search {
             return Ok(false);
         }
         if c.dead {
-            sp.charge_whole_node(derived);
+            sp.charge_whole_node(derived, c.core.as_ref());
             // ⊤ is dead, and the run knows it: it is not saturated a second
             // time should a route ask.
             let top: Vec<u32> = (0..self.n as u32).collect();
