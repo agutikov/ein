@@ -578,3 +578,144 @@ for q in Q:
                 saving += 1
     print(f"- {q}: {with_dead} cells with a dead node, {saving} where the FIFO stop saves firings")
 ```
+
+## T4: the inventory, before anything moved (2026-11-16)
+
+Committed before the code and before any golden moved. Base `f70552d5` (master), S1f.10.17 not merged on this
+branch; its border route is no question's route, so nothing here reads it. The stop is built under FIFO; **the agenda
+is not touched** (Q-M1f.313 is the user's): the stop is a setting of a built saturator
+(`Saturator::stop_at_first_contradiction`), an agenda is read when one is built, and the two share no code.
+
+### Where the stop goes, and where it does not
+
+- **In the node function, `region::node_in_region`, through `fan_out`, where the axes say so**
+  (`Axes::stopping_at_first_contradiction`), for every node but root's (its commitment is empty). Two places set it,
+  both on a monotone program alone: the modes' routes (`explore::Space::stopping_dead_nodes`, called where
+  `run_with` opens the tree's space; a flagged program's space is the cube's and is not stopped) and the state route
+  (`states::compute_resumable`, which declines a flagged program before it builds its axes). `cores_after` reads
+  with `Axes::after_walk`, a clone, so a node taken after the walk stops where the walk's does.
+- **Not stopped**: root's node; every node of a flagged program (the detector reads each fixpoint); the oracle
+  (`region::compute_prepared` builds its own axes); route 1 (`downset.rs`, in production only on a flagged program
+  whose root is dead, and held node for node to the oracle with its `OWING` bit by `region.rs`'
+  `route_1_is_the_oracle`); **a space a reader of the structure opens** (`structure::with_space`, `ein render
+  h-space`); the whole node the tree's order reads (`Nodes::with_fixpoint_supported_within`); every reader of
+  `region::Nodes`; `claim.rs`' `fixpoints`.
+- **The internal switch**: `region::to_quiescence(f)`, a thread-local read when a route builds its axes, as
+  `known_dead::from_deaths_alone` is; no `(config …)` field, option or `EIN_*` name reaches it, and
+  `config_reference.rs` gains no row. `ein-infer/examples/early_stop.rs` asks its routes under it, so it measures
+  against the quiescent routes as it did.
+
+### Two readings of *What T4 would need* that the built route departs from, and why
+
+1. **A core is taken over the node's fixpoint, not over the stop.** Where a surface prints a core (`--dump-lattice`,
+   `--events`, `--dump-answer`'s `nogoods.json`, `--trace`), the stopped saturation goes on from where it stopped,
+   silently, firing what it would have fired, and the core is taken there; everything else the node reports is
+   read at the stop first. Built first as the record had it (the core over the stopped node), three things failed
+   that the record did not list: `corpus/wrong_answers.toml`'s register, whose rows hold N's cores as answers (the
+   **fixed** rows `W21/typed-blind-solve` and `W21/blind-enumeration` no longer answered their right answers: e.g.
+   `(seats Ann Sortal)`'s core became `(seats Ann C1) (seats Ann Sortal)`, the minimal core over every derivation
+   lost because the stop records fewer; and the open `W10/fork-delta-order` and `W10/second-preparation` moved);
+   `corpus_cores.rs`' `no_core_is_printed_unqualified_from_a_cut_search`, which holds a printed core to the core
+   search over the node function's fixpoint; and `ein solve`'s N agreeing with `ein oracle`'s, which W21's fix
+   states. Over the fixpoint, every core is what it was: the register, `corpus_cores` and N's cores do not move.
+   The core's cost, the rest of the node's saturation and the search, is counted in no `work` row, as the
+   search's never was.
+2. **The structure's readers keep the whole node.** Built as the record had it (every `Space::eval` stopped), the
+   theory's check (`structure.rs`, `theory_share.rs`' `the_readings_agree_on_the_declared_control`) found a dead
+   check node holding a fact the program's dead node did not, both stopped at different points: it reads a dead
+   node's facts, `beyond`. And the pair layer's budget scenarios (`coupling.rs`'
+   `a_layer_that_read_its_singles_has_its_holders_read`, `h_space_view.rs`' `a_layer_read_whole_has_its_holders_read`
+   and the page's read-out) moved. The structure is no question's route, so its spaces are not stopped and
+   `ein render h-space` prints what it printed.
+
+### The goldens and contracts that move, by name
+
+- **`ein-render/tests/golden/corpus_shapes.md5`**: 351 lines over 43 programs, every one monotone (`ein solve FILE
+  --no-search`'s `lattice` row), and only these ops: `read-out[q]` and `cores[q]` for the same questions `q` per
+  program (the `work` row; the `region` block's work, and `nodes.json`'s dead nodes' `facts`, `owes`, `owed` and
+  `closure`), `region-trace` where `describe` moved (the trace prints describe's read-out), and `region-lattice` on
+  three programs whose describe reaches further at the sweep's budget of 2¹⁴ facts. No `states`, `oracle`, `plan`,
+  `saturate`, `hyp`, `explain`, `dot[…]` or `ir[…]` line moves, and no line of a flagged program.
+
+  | program | `read-out[q]`, `cores[q]` | also |
+  |---|---|---|
+  | `examples/beyond_arith/cryptarithm.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/beyond_arith/equation_by_search.ein` | maximal |  |
+  | `examples/beyond_arith/equation_two_unknowns.ein` | describe | region-trace |
+  | `examples/beyond_arith/send_more_money.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/beyond_arith/send_more_money_written.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/equivalent.ein` | describe minimal | region-trace |
+  | `examples/binary_logic/knights.ein` | describe maximal minimal | region-trace |
+  | `examples/binary_logic/not_equivalent.ein` | describe maximal minimal | region-trace |
+  | `examples/binary_logic/satisfiable.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/synthesis.ein` | describe maximal | region-trace |
+  | `examples/binary_logic/truth_table.ein` | describe maximal minimal | region-trace |
+  | `examples/binary_logic/unsatisfiable.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/branching/01_saturate_only.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/02_one_dead_one_alive.ein` | describe maximal | region-trace |
+  | `examples/branching/03_five_hyps_one_alive.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/04_two_levels.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/05_mini_zebra.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/06_lookahead_on.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/07_lookahead_off.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/08_hypothesis_relation_whitelist.ein` | describe maximal | region-trace |
+  | `examples/branching/09_hrule.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/10_kill_cache_on.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/11_kill_cache_off.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/12_typed_blind_solve.ein` | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/forall-core-elim.ein` | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/oblig-derived-domain.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/oblig-fresh-name.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/lattice/synth/merged_states.ein` | describe maximal | region-trace |
+  | `examples/saturation/type-exclusivity/colors.ein` | maximal |  |
+  | `examples/saturation/type-exclusivity/nationalities.ein` | maximal |  |
+  | `examples/saturation/type-exclusivity/pets.ein` | describe maximal | region-trace |
+  | `examples/word_problems/boxes13.ein` | describe maximal | region-trace |
+  | `examples/zebra.ein` | describe maximal minimal n2 single | region-lattice region-trace |
+  | `examples/zebra2-hints.ein` | describe maximal n2 single | region-trace |
+  | `examples/zebra2-minus-15-obligations.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/zebra2-minus-15.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/zebra2-obligations.ein` | describe maximal minimal n2 single | region-lattice region-trace |
+  | `examples/zebra2.ein` | describe maximal minimal n2 single | region-lattice region-trace |
+  | `tests/region/02_merged_single.ein` | describe maximal | region-trace |
+  | `tests/stdlib/bijection/06_blind_enumeration.ein` | describe maximal n2 single | region-trace |
+  | `tests/stdlib/bool/inputs/01_in_drives.ein` | describe maximal minimal | region-trace |
+  | `tests/stdlib/bool/inputs/02_required.ein` | describe maximal minimal n2 single | region-trace |
+
+  The **reach at 2¹⁴** is the budget-stopped cells' reach in this golden: `zebra2.ein` and `zebra2-obligations.ein`
+  describe exhaust where they stopped before layer 3, and `zebra.ein` describe is complete up to states of two
+  candidates where it was one.
+- **`docs/kernel/inference/read_out_examples.md`**, regenerated by `python3 utils/read_out_examples.py --bin
+  ein.rs/target/gate/ein`: five `work` rows, X1's `13 saturations · 60` → `45 facts`, X5's `18 saturations · 46` →
+  `45`, and X10's, zebra2's describe `263 saturations · 22 503` → `11 576` (twice) and its `--single` `7 · 666` →
+  `278`.
+- **`ein-render/tests/golden/trace_{ambiguous,one-hypothesis,two-level}.md`**: their `work` rows (608 → 328, 1 048 →
+  536, 794 → 656 facts; saturations the same). `trace_{dead,owing,unconditional}.md` do not move.
+- **The transcripts**: `README.md`'s and `docs/guide/04_solving_the_whole_puzzle.md`'s `ein solve examples/zebra2.ein
+  --single`, its `work` row, `7 saturations · 666 facts` → `278` (`guide_transcripts.rs`).
+- **`examples/README.md`'s anchor list** gains `ein-infer/tests/first_contradiction.rs`, which names the two zebra
+  puzzles (`world_anchors.rs`).
+- **`ein-cli/tests/einb_cli.rs`' `a_container_saved_again_is_the_container`**, a contract, not a golden: a container
+  saved `--saturate` prints its source's read-out but for the facts its `work` row counts (`examples/zebra2.ein`:
+  11 266 against 11 576, the same 263 saturations). Root's derivations are in the container before root's
+  saturation runs, so it compiles the plans in another order, a node's FIFO order follows the plan list, and the
+  place of a dead node's first contradiction follows the order. `kb.rs`' `cmd_save` already calls such a container
+  *a different starting point*; a container saved with the default, the loaded KB, stays byte-identical (the test
+  beside it, four programs). The test now masks that one number for the saturated save, a default (§ Defaults
+  taken), the user's to revise; past the budget such a container can also spend otherwise
+  (`zebra2-minus-15.ein`'s describe: 427 887 facts spent against the source's 426 729, the same layer reached).
+- **Not moving**: `docs/api/rust.md` and `embedding.rs` (they print saturations, 7); `corpus/wrong_answers.toml`;
+  `corpus_cores.rs`; every member of N's core (`nogoods.json`, `--trace`); the oracle's dumps;
+  `docs/kernel/inference/hypothesis_space.md`'s read-out; `corpus_exits.txt`; `cost_ms` and the slow set, **not
+  re-taken**: the machine was not idle (other agents' load average 3 to 10), so `utils/corpus_cost.py` was not run.
+- **Prose that quotes the moved numbers**: `finding_r.md` § 7's SEND row (18 030 → 18 031 saturations) and three
+  `corpus/corpus.toml` notes (`cryptarithm.ein`, `send_more_money.ein`, `send_more_money_written.ein`: 18 031
+  saturations, 173 415 facts, the couplings read at saturation 722 where it was 712).
+- **What a dead node reports, on the surfaces that list visited nodes**: `--dump-lattice`'s `nodes.json` and
+  `nodes.md` (`facts`, `owes`, `owed`, `closure` at the stop; `core`, `core_status`, `refuted_by` over the
+  fixpoint), `--events`' node lines (`fire` up to the firing that makes the contradiction, `owe` read at the stop,
+  `enter`'s `owes` at the stop and its core over the fixpoint), `-v` and `--layer-progress`' step facts. No golden
+  pins them beyond `corpus_shapes.md5`'s `cores[q]`.
+- **The nightly**: a sharded step for the new sweep's slow half (`deep-corpus-shards`, four shards), in
+  `.github/workflows/nightly.yml` and `run_tests.sh`'s `--nightly` and `--dev-host` copies (`nightly_steps.rs`).
