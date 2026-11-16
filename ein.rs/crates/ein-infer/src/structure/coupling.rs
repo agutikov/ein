@@ -7,12 +7,16 @@ use ein_core::{FactId, Kb, Terms};
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use super::{
-    Bits, Cover, Loaded, Mark, Options, Reading, Theory, TheoryOptions, small_kb, theory_in,
-    with_space,
+    Bits, Cover, ExactlyOne, Loaded, Mark, Options, Reading, Theory, TheoryOptions, small_kb,
+    theory_in, with_space,
 };
+use crate::compile::SharedMemo;
 use crate::error::SolveError;
+use crate::events::Events;
 use crate::explore::Space;
+use crate::mechanisms::Mechanisms;
 use crate::region::{Candidate, Supported};
+use crate::saturator::Session;
 
 /// **The bound on the whole node's saturation**, in rule applications,
 /// redundant ones among them. A constant of the module and no lever. A node
@@ -1657,5 +1661,86 @@ pub fn theory_coupled(
             _ => None,
         };
         Ok((t, coupled))
+    })
+}
+
+/// How [`whole`] is asked.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct WholeOptions {
+    /// The budget, the jobs and the deadline of root's layer and of the
+    /// small KB's, each read at it, as [`TheoryOptions::layer`].
+    pub layer: Options,
+    /// Read the support of every pair root excludes ([`super::Support`]).
+    pub supports: bool,
+}
+
+/// What [`Whole`] holds past the theory's share, where the small KB has a
+/// layer: the three objects read against it.
+#[derive(Clone, Debug)]
+pub struct Parts {
+    pub cover: Cover,
+    pub exactly_one: ExactlyOne,
+    pub coupling: Coupling,
+}
+
+/// **Every object of the structure, of one reading of root**: the theory's
+/// share with root's pair layer and the small KB's, and over the same space
+/// the cover, *exactly one* and the coupling under the reading the owner
+/// takes ([`CouplingReading::Node`], which keeps the edges one application
+/// back beside its own). Each layer is read once.
+#[derive(Clone, Debug)]
+pub struct Whole {
+    pub theory: Theory,
+    /// `None` where the small KB has no layer ([`Theory::small`] says why):
+    /// the program then has no groups and no questions by this reading.
+    pub parts: Option<Parts>,
+    /// **What the program declares, beside**: the hypothesis mechanisms
+    /// ([`crate::mechanisms::read`]) at root's fixpoint, after the reading
+    /// and of the same root. The message where a plan does not compile.
+    /// Nothing above is read from them.
+    pub declared: Result<Mechanisms, String>,
+}
+
+/// [`Whole`], of `root`, a **freshly loaded, unsaturated** program nothing
+/// else will use: [`theory_coupled`] with root's pairs asked and no check,
+/// [`ExactlyOne::of`] the cover it found and what root owes, and the
+/// mechanisms read of the root it left. For a reader that wants the whole
+/// structure of one program and pays each pair layer once.
+pub fn whole(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &ein_ir::Ast,
+    opts: &WholeOptions,
+) -> Result<Whole, SolveError> {
+    let asked = TheoryOptions {
+        layer: opts.layer,
+        root_pairs: true,
+        supports: opts.supports,
+        check: false,
+    };
+    let (theory, coupled) = theory_coupled(root, terms, ast, &asked, CouplingReading::Node)?;
+    let parts = coupled.map(|(cover, coupling)| {
+        let exactly_one = ExactlyOne::of(&cover, theory.owed.clone());
+        Parts {
+            cover,
+            exactly_one,
+            coupling,
+        }
+    });
+    let declared = {
+        let mut off = Events::off();
+        let mut s = Session {
+            kb: root,
+            terms,
+            ast,
+            events: &mut off,
+            memo: SharedMemo::default(),
+        };
+        crate::mechanisms::read(&mut s).map_err(|e| e.to_string())
+    };
+    Ok(Whole {
+        theory,
+        parts,
+        declared,
     })
 }

@@ -28,6 +28,7 @@ pub mod rules;
 pub mod sentence;
 pub mod shape;
 pub mod slice;
+pub mod structure;
 pub mod trace;
 
 pub use constraints::render_constraints;

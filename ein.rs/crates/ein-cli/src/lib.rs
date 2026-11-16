@@ -130,6 +130,20 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     a.get_one::<i64>("region-budget").map(|&b| b as u64),
                     &common::load_options(a),
                 ),
+                Some(("structure", a)) => render::cmd_structure(
+                    &render::StructureArgs {
+                        file: &file(a),
+                        view: a
+                            .get_one::<String>("view")
+                            .map(String::as_str)
+                            .unwrap_or("summary"),
+                        dump: a.get_one::<String>("dump").map(String::as_str),
+                        supports: a.get_flag("supports"),
+                        budget: a.get_one::<i64>("region-budget").map(|&b| b as u64),
+                        jobs: solve::resolve_jobs(*a.get_one::<i64>("jobs").unwrap_or(&1)),
+                    },
+                    &common::load_options(a),
+                ),
                 _ => 2,
             }
         }

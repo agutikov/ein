@@ -14,14 +14,18 @@
 //! the debts, licensed or not. Each is a
 //! statement about nodes of
 //! the program's lattice, so two things that are not the program must not
-//! move it:
+//! move it. **And what `ein render structure` writes of it is held with
+//! it**: the document, `structure.json`, and the four graphs' DOT, spelled by
+//! `ein_render::structure` from the same reading, by the one call the view
+//! makes ([`ein_infer::structure::whole`]):
 //!
 //! 1. **the id order.** A program is read twice: once as loaded, and once
 //!    into a `Terms` whose names and facts are the first run's own, interned
 //!    again in a shuffled order (`id_permutation`, the determinism sweeps'
 //!    own instrument). The universe is in rendered-text order in both, so
 //!    every list is compared **as it is**, place for place, the work and the
-//!    enumeration's steps among it;
+//!    enumeration's steps among it, and the document and the graphs byte for
+//!    byte;
 //! 2. **the import form.** A program that imports is read as written, with
 //!    every selective import whole, and with every one `:as` an alias
 //!    (`import_forms`, the answer's own instrument). A candidate's text
@@ -31,7 +35,11 @@
 //!    enumeration's steps follow the order and are not compared. Few corpus
 //!    programs propose facts of an imported relation beside facts of their
 //!    own, so the corpus's forms respell candidates and seldom reorder a
-//!    universe; a program written here does, and is held the same way.
+//!    universe; a program written here does, and is held the same way. The
+//!    document names a group, a question and an instance by its place, which
+//!    follows the universe's order, so it is compared where a form leaves
+//!    that order as it was: every string with its prefixes taken off, and
+//!    every list of strings as a set.
 //!
 //! Over every corpus file and register witness that **searches**, whose
 //! describe saturates more than root (`corpus_ops`' `searches`, the same
@@ -60,10 +68,11 @@ use std::path::{Path, PathBuf};
 use ein_core::Terms;
 use ein_corpus::repo_root;
 use ein_infer::structure::{
-    self, Cliques, Coupling, CouplingReading, Cover, ExactlyOne, Owing, PairLayer, Question,
-    Theory, TheoryOptions, WitnessIs,
+    self, Cliques, Coupling, Cover, ExactlyOne, Owing, PairLayer, Question, Theory, WholeOptions,
+    WitnessIs,
 };
 use ein_ir::{Ast, load, parse};
+use ein_render::structure as shown;
 
 fn rel_of(p: &Path) -> String {
     p.strip_prefix(repo_root())
@@ -106,12 +115,22 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
     files
 }
 
+/// The name every reading's document and graphs carry: a program is read
+/// from its own path and from a scratch directory, and the path is no part
+/// of its structure.
+const PROGRAM: &str = "program.ein";
+
 /// One reading of a program's structure, and the terms it left.
 struct Read {
     theory: Theory,
     cover: Cover,
     exact: ExactlyOne,
     coupling: Coupling,
+    /// `structure.json`, as `ein render structure` writes it of this
+    /// reading.
+    document: String,
+    /// Its four graphs, as DOT.
+    graphs: Vec<String>,
     terms: Terms,
 }
 
@@ -122,25 +141,32 @@ fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result
     let mut ast = Ast::new();
     let forms = parse(&mut ast, text, name.to_str()).ok()?;
     let mut kb = load(&mut ast, &mut terms, &forms, Some(base)).ok()?;
-    let read = structure::theory_coupled(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &TheoryOptions::default(),
-        CouplingReading::Node,
-    );
+    let asked = WholeOptions::default();
+    let read = structure::whole(&mut kb, &mut terms, &ast, &asked);
     Some(match read {
         Err(e) => Err(e.to_string()),
-        Ok((theory, coupled)) => match (theory.exactly_one(), coupled) {
-            (Some((cover, exact)), Some((_, coupling))) => Ok(Read {
-                theory,
-                cover,
-                exact,
-                coupling,
-                terms,
-            }),
-            _ => Err(format!("the small KB has no layer: {:?}", theory.small)),
-        },
+        Ok(w) => {
+            let inputs = shown::Inputs {
+                program: PROGRAM,
+                budget: asked.layer.budget,
+                supports: asked.supports,
+            };
+            let graphs = shown::graphs(&w, PROGRAM);
+            let document = shown::document(&w, &terms, &inputs, &graphs);
+            let graphs = graphs.into_iter().map(|g| g.dot).collect();
+            match w.parts {
+                Some(p) => Ok(Read {
+                    theory: w.theory,
+                    cover: p.cover,
+                    exact: p.exactly_one,
+                    coupling: p.coupling,
+                    document,
+                    graphs,
+                    terms,
+                }),
+                None => Err(format!("the small KB has no layer: {:?}", w.theory.small)),
+            }
+        }
     })
 }
 
@@ -285,7 +311,65 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
                 )
             )
         }),
+        ("the view's structure.json", r.document.clone()),
+        ("the view's graphs", r.graphs.join("\n")),
     ]
+}
+
+/// **The document with what an import form may respell taken out**: every
+/// string through `strip`, and every list of strings sorted, since a list
+/// of names is in the order of their texts.
+fn document_as_sets(document: &str, strip: &dyn Fn(&str) -> String) -> serde_json::Value {
+    use serde_json::Value;
+    fn walk(v: Value, strip: &dyn Fn(&str) -> String) -> Value {
+        match v {
+            // A name after `=` or inside backticks starts a name too.
+            Value::String(s) => Value::String(strip(&s.replace('=', " = ").replace('`', " ` "))),
+            Value::Array(items) => {
+                let mut items: Vec<Value> = items.into_iter().map(|x| walk(x, strip)).collect();
+                if items.iter().all(Value::is_string) {
+                    items.sort_by(|a, b| a.as_str().cmp(&b.as_str()));
+                }
+                Value::Array(items)
+            }
+            Value::Object(m) => {
+                Value::Object(m.into_iter().map(|(k, x)| (k, walk(x, strip))).collect())
+            }
+            other => other,
+        }
+    }
+    walk(
+        serde_json::from_str(document).expect("structure.json is JSON"),
+        strip,
+    )
+}
+
+/// Where two documents first differ, as a path with the two values.
+fn document_difference(a: &serde_json::Value, b: &serde_json::Value, at: &str) -> Option<String> {
+    use serde_json::Value;
+    match (a, b) {
+        (Value::Object(x), Value::Object(y)) => {
+            let keys: BTreeSet<&String> = x.keys().chain(y.keys()).collect();
+            keys.into_iter().find_map(|k| match (x.get(k), y.get(k)) {
+                (Some(p), Some(q)) => document_difference(p, q, &format!("{at}.{k}")),
+                _ => Some(format!("{at}.{k}: in one document only")),
+            })
+        }
+        (Value::Array(x), Value::Array(y)) if x.len() == y.len() => x
+            .iter()
+            .zip(y)
+            .enumerate()
+            .find_map(|(k, (p, q))| document_difference(p, q, &format!("{at}[{k}]"))),
+        (p, q) if p == q => None,
+        (p, q) => {
+            let cut = |v: &Value| v.to_string().chars().take(240).collect::<String>();
+            Some(format!(
+                "{at}:\n    one:   {}\n    other: {}",
+                cut(p),
+                cut(q)
+            ))
+        }
+    }
 }
 
 /// One layer as sets of texts, each through `name`.
@@ -674,6 +758,9 @@ struct Held {
     /// in which the universe's order is another.
     respelled: usize,
     reordered: usize,
+    /// Forms whose document was compared with the program's as written:
+    /// those that leave the universe's order as it was.
+    documents: usize,
 }
 
 fn counts(out: &mut Held, r: &Read) {
@@ -775,7 +862,20 @@ fn held_under_imports(rel: &str, text: &str, path: &Path, written: &Result<Read,
                 };
                 let as_written = |s: &str| s.to_string();
                 out.respelled += usize::from(order(a, &as_written) != order(b, &as_written));
-                out.reordered += usize::from(order(a, &strip) != order(b, &strip));
+                let reordered = order(a, &strip) != order(b, &strip);
+                out.reordered += usize::from(reordered);
+                // The document's places follow the universe's order.
+                if !reordered {
+                    out.documents += 1;
+                    let one = document_as_sets(&a.document, &strip);
+                    let other = document_as_sets(&b.document, &strip);
+                    if let Some(d) = document_difference(&one, &other, "structure.json") {
+                        out.failures.push(format!(
+                            "{rel}: the document of the program as written and of its form \
+                             {mode} differ, at {d}"
+                        ));
+                    }
+                }
                 let (a, b) = (as_sets(a, &strip), as_sets(b, &strip));
                 if let Some(d) = difference(&a, &b) {
                     out.failures.push(format!(
@@ -876,10 +976,12 @@ fn the_structure_is_the_same_under_every_import_form() {
     let (mut importing, mut forms, mut with_pairs, mut with_groups) = (0usize, 0, 0, 0);
     let (mut groups, mut cliques) = (0usize, 0usize);
     let (mut respelled, mut reordered, mut reordered_with_groups) = (0usize, 0usize, 0usize);
+    let mut documents = 0usize;
     for h in sweep().iter().filter_map(|(_, h)| h.as_ref()) {
         failures.extend(h.failures.iter().map(String::as_str));
         importing += 1;
         forms += h.forms;
+        documents += h.documents;
         respelled += h.respelled;
         reordered += h.reordered;
         reordered_with_groups += usize::from(h.reordered > 0 && h.groups > 1);
@@ -899,7 +1001,14 @@ fn the_structure_is_the_same_under_every_import_form() {
          forms compared, {with_pairs} with an excluded pair, {with_groups} with a group \
          ({groups} groups, {cliques} cliques of root's graph); a candidate is written \
          otherwise in {respelled} forms and the universe's order is another in {reordered}, \
-         {reordered_with_groups} programs with two groups or more among them"
+         {reordered_with_groups} programs with two groups or more among them; the view's \
+         document compared in {documents} forms"
+    );
+    // The document is compared in every form that leaves the universe's
+    // order, which is nearly all of them.
+    assert!(
+        documents + reordered >= forms && documents >= 80,
+        "only {documents} documents compared, of {forms} forms"
     );
     // Every program in both forms, and not vacuous.
     assert_eq!(forms, 2 * importing);
@@ -1021,6 +1130,8 @@ fn a_form_that_reorders_the_universe_moves_no_set() {
                 cover: r.cover.clone(),
                 exact: r.exact.clone(),
                 coupling: r.coupling.clone(),
+                document: r.document.clone(),
+                graphs: r.graphs.clone(),
                 terms: Terms::new(),
             };
             cut.cover.groups.truncate(2);
@@ -1062,6 +1173,8 @@ fn a_structure_that_moves_is_caught() {
         cover: r.cover.clone(),
         exact: r.exact.clone(),
         coupling: r.coupling.clone(),
+        document: r.document.clone(),
+        graphs: r.graphs.clone(),
         terms: Terms::new(),
     };
     moved.cover.member_of.swap(0, 1);
@@ -1125,4 +1238,49 @@ fn a_structure_that_moves_is_caught() {
     let renamed = |s: &str| s.replace("color-loc", "m.color-loc");
     let d = difference(&as_sets(&r, &plain), &as_sets(&r, &renamed)).expect("a difference");
     assert!(d.starts_with("the candidates"), "{d}");
+
+    // The view's document, held the same two ways. Place for place it is
+    // its bytes, so one candidate's mark moved is a difference.
+    let marked = r.document.replacen("\"alive alone\"", "\"dead alone\"", 1);
+    assert_ne!(
+        marked, r.document,
+        "the document marks a candidate alive alone"
+    );
+    moved.coupling = r.coupling.clone();
+    moved.document = marked.clone();
+    let d = difference(&said, &as_it_is(&moved)).expect("a difference");
+    assert!(d.starts_with("the view's structure.json"), "{d}");
+    // As sets it is the same with itself, and says where it is not.
+    let whole = document_as_sets(&r.document, &plain);
+    assert_eq!(document_difference(&whole, &whole, "structure.json"), None);
+    let d = document_difference(&whole, &document_as_sets(&marked, &plain), "structure.json")
+        .expect("a difference");
+    assert!(d.starts_with("structure.json.candidates[0].at_root"), "{d}");
+    // A name that keeps its prefix is a difference, and none once the
+    // prefix is taken off: the comparison passes for the strip and not for
+    // want of looking.
+    let respelled = r.document.replace("color-loc", "m.color-loc");
+    assert!(
+        document_difference(
+            &whole,
+            &document_as_sets(&respelled, &plain),
+            "structure.json"
+        )
+        .is_some()
+    );
+    let prefix = [vec!['m']];
+    let strip = |s: &str| import_forms::strip(s, &prefix);
+    assert_eq!(
+        document_difference(
+            &document_as_sets(&r.document, &strip),
+            &document_as_sets(&respelled, &strip),
+            "structure.json"
+        ),
+        None
+    );
+    // And a graph's DOT moved is a difference too.
+    moved.document = r.document.clone();
+    moved.graphs[0].push_str("// moved\n");
+    let d = difference(&said, &as_it_is(&moved)).expect("a difference");
+    assert!(d.starts_with("the view's graphs"), "{d}");
 }

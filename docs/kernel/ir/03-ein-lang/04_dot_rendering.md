@@ -425,6 +425,26 @@ facts. Each node's tooltip names the ones it is in. A sub-cube's outline is its
 R → R edges: sub-cubes overlap whenever two share a node, which they do on
 W1's own `branching/15`, so a cluster per sub-cube cannot be drawn.
 
+## Structure rendering — the hypothesis set
+
+`ein render structure FILE` draws the structure of a program's hypothesis set
+as four **undirected** graphs, one a `--view`: `exclusion`, the pairs of
+candidates that exclude each other, the theory's and the puzzle's in two
+strokes; `cover`, the groups and their members, the grids among them;
+`coupling`, the questions' hypergraph; and `one-step`, the same over the edges
+read one application back. `--dump DIR` writes all four beside
+`structure.json`.
+
+```sh
+ein render structure examples/zebra2.ein --view cover | dot -Tsvg > cover.svg
+```
+
+They use none of the shapes above. In `exclusion` a candidate is a box; in
+`cover` a group is a box and a candidate an oval; in the two hypergraphs a
+question is a box and an edge of three questions or more a point. What each
+object is, what each stroke means and what the document holds is
+[`inference/structure.md`](../../inference/structure.md).
+
 ## Markdown trace (S1.6.4)
 
 The capstone output — what makes Ein *not just a solver* (idea 08)

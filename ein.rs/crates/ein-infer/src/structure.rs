@@ -410,8 +410,8 @@ mod coupling;
 pub(crate) use coupling::coupling_in;
 pub use coupling::{
     COUPLING_FLAGGED, Coupling, CouplingOptions, CouplingReading, Cut as CouplingCut, DESCRIPTIONS,
-    Debt, Edge, EdgeKind, NODE_APPLICATIONS, NodeStop, NodeTies, NodeWork, PairTies, Question,
-    ROUNDS, Tie, TieKind, WAYS, coupling, theory_coupled,
+    Debt, Edge, EdgeKind, NODE_APPLICATIONS, NodeStop, NodeTies, NodeWork, PairTies, Parts,
+    Question, ROUNDS, Tie, TieKind, WAYS, Whole, WholeOptions, coupling, theory_coupled, whole,
 };
 
 /// The largest step, as the routes'.
@@ -1042,7 +1042,7 @@ impl Stated<'_> {
 }
 
 /// The relation `fact` is of, through a negation.
-fn subject(terms: &Terms, fact: FactId) -> Symbol {
+pub fn subject(terms: &Terms, fact: FactId) -> Symbol {
     let (rel, args) = terms.fact(fact);
     if rel == terms.kernel.not
         && let Some(inner) = args.first().and_then(|a| a.as_fact())
@@ -1054,7 +1054,7 @@ fn subject(terms: &Terms, fact: FactId) -> Symbol {
 
 /// Every name among `fact`'s arguments, at any depth, appended to `out`
 /// where it does not hold it.
-fn names_of(terms: &Terms, fact: FactId, out: &mut Vec<Symbol>) {
+pub fn names_of(terms: &Terms, fact: FactId, out: &mut Vec<Symbol>) {
     for &a in terms.fact(fact).1 {
         if let Some(s) = a.as_sym() {
             if !out.contains(&s) {

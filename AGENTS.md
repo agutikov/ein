@@ -23,6 +23,9 @@ constrained-reasoning research.
   the answer as a region R;
   [`inference/read_out.md`](docs/kernel/inference/read_out.md), every row
   `ein solve` prints and what it counts;
+  [`inference/structure.md`](docs/kernel/inference/structure.md), the
+  structure of the hypothesis set, each object defined, and
+  `structure.json`;
   [`configuration.md`](docs/kernel/configuration.md), the `(config …)` flags,
   the CLI options and the `EIN_*` names, each with a *does it change the
   answer* column;
@@ -211,7 +214,8 @@ constrained-reasoning research.
   design/12 §2 permits `unsafe` in; the other audited `unsafe` is
   `ein-cli/src/main.rs`'s one `libc::signal(SIGPIPE, SIG_DFL)`, so a closed
   stdout ends `ein` as it ends `cat`), `ein-render` (DOT views, the read-out,
-  the region trace, the answer and lattice dumps, the JSON summary) and
+  the region trace, the answer and lattice dumps, the JSON summary, the
+  structure's document and graphs) and
   `ein-cli`. They stack linearly up to `ein-infer` and fork there —
   `ein-einb` and `ein-render` are siblings above it, and `ein-cli` depends on
   both. `ein-cli` fronts **five** subcommands — `ein
@@ -489,6 +493,7 @@ ein render region DIR [--visited D] [--answer D] [--view …]  # M1e2: an oracle
 ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
+ein render structure FILE [--view …] [--dump DIR] [--supports]   # the structure of H: a read-out, a graph as DOT, or structure.json; `ein solve` computes none of it
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)

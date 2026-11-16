@@ -1,7 +1,7 @@
 # S1f.10.12 — The structure shown, and its surface
 
 **Phase:** [P1f.10](README.md), track S (the structure)
-**Status:** T1, the bundle, ran on 2026-11-16 ([its record](#record-2026-11-16-the-bundle)). **T2 is the phase's one stop, pending**: the message and the four questions are the main session's. T3 and T4 wait for the ruling; no surface is designed or built.
+**Status:** T1, the bundle, ran on 2026-11-16 ([its record](#record-2026-11-16-the-bundle)). T2, the stop, is the main session's: the surface was ruled (a), a view of `ein render`, on 2026-11-16 ([Q-M1f.309](../open_questions.md#q-m1f309--how-ein-shows-a-programs-structure)). **T3, the view, and T4, the page, ran on 2026-11-16** in a worktree, on that ruling ([their record](#record-2026-11-16-the-surface-and-the-page)): `ein render structure FILE` and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md). **Not run there, and owed before the batch is done**: `./run_tests.sh`, `utils/ci_container.sh`, which a DOT writer's change makes part of done, and the wall of the two nightly steps that grew, which was not measured.
 **Depends on:** for its bundle, [S1f.10.1](s1f.10.1_exclusion_census.md), [S1f.10.2](s1f.10.2_groups.md),
 [S1f.10.10](s1f.10.10_the_theorys_share.md), [S1f.10.4](s1f.10.4_bounded_groups.md),
 [S1f.10.11](s1f.10.11_coupling.md); for its stop, also [S1f.10.13](s1f.10.13_the_price_list.md) and tasks 1 to
@@ -274,3 +274,266 @@ Each the user's or the main session's to revise.
 - `./run_tests.sh` was not run: the gate is the batch's. The Rust change is a field of an example's JSON.
 - The bundle was read by a headless browser's screenshots and by `--check`, not in a browser by hand.
 - T2, T3 and T4.
+
+## Record (2026-11-16): the surface and the page
+
+T3 and T4 ran, on the ruling of [Q-M1f.309](../open_questions.md#q-m1f309--how-ein-shows-a-programs-structure),
+(a), and on [Q-M1f.310](../open_questions.md#q-m1f310--p1f10-part-1-the-defaults-taken)'s defaults as they stand:
+the owner module is built on, and no object is defined anew. In a worktree, on a branch of its own, over
+`a3c719bf`. No answer, route or line of `ein solve` moved. rustc 1.97.1.
+
+**Read this first.** Three things below are not verified, and one finding bears on how far the owner's own
+`Coupling::complete()` can be trusted:
+
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh` were not run, by instruction. **A DOT writer changed,
+  so `utils/ci_container.sh` is part of done and is owed.**
+- **No wall was measured.** The machine ran the main tree's nightly throughout (load average 53 on 32 threads when
+  looked at, a second `explore` test binary and an `ein` beside this worktree's). So whether the two nightly steps
+  that grew stay within five minutes on four P-core threads at `EIN_TEST_JOBS=4` is **not known**. Costs below are
+  saturations and facts, which were observed.
+- The view's supports were exercised on two programs, and its `.einb` door and `--jobs` on one each.
+- [K-17](findings.md): a pair layer read whole can leave the witnesses' holders unread, the unlicensed debts then
+  drop out of the coupling, and `Coupling::complete()` stays true. The view does not rely on it.
+
+### The command
+
+```sh
+ein render structure FILE [--view summary|exclusion|cover|coupling|one-step|json] [--dump DIR]
+                          [--supports] [--region-budget FACTS] [-j JOBS] [--no-require-why]
+```
+
+- **stdout holds the view asked.** `summary`, the default, is a read-out: a row an object, what it cost, what each
+  graph holds, and every sentence of what was stopped, cut or left unread. `exclusion`, `cover`, `coupling` and
+  `one-step` are one undirected graph as DOT. `json` is the document.
+- **`--dump DIR` also writes** `structure.json`, `exclusion.dot`, `cover.dot`, `coupling.dot` and
+  `coupling_one_step.dot`. stdout and stderr are the same with it. The directory is made before the work.
+- **No SVG**: no `ein render` view draws one, and the view adds no Graphviz dependency to a path that had none.
+- **Exit codes**: every structure exits 0, whole or not. A program the loader refuses, or the engine refuses to
+  read, exits 1; a path `--dump` cannot make exits 1 before the work; a usage error exits 2.
+- A `.ein` and a `.einb` alike, through `common::load_program`.
+
+### What was built
+
+| where | what |
+|---|---|
+| `ein-infer/src/structure/coupling.rs` | **one entry added to the owner**, `whole` (`Whole`, `Parts`, `WholeOptions`): `theory_coupled` with root's pairs asked and no check, `ExactlyOne::of` the cover it found, and `mechanisms::read` of the root it left. Each pair layer is read once. No object is defined in it |
+| `ein-infer/src/structure.rs` | `subject` and `names_of` made `pub`, so that a label is read by the owner's function and not by a copy |
+| `ein-render/src/structure.rs`, new | the spelling, and no computation: five `*_lists`, the lists of one object each; `coupling_dot`; the exclusion graph and the cover; `unread` and `says`; `json`, `document`; `summary` |
+| `ein-render/src/read_out.rs` | `plural` made `pub(crate)`. Nothing it prints moved (`read_out_reference`) |
+| `ein-cli/src/{cmdline,lib,render}.rs` | the subcommand and `cmd_structure` |
+| `ein-infer/examples/pair_layer.rs` | calls the library for every list it writes and for `coupling.dot`; 2 611 lines to 2 238 |
+
+**`ein-render` and `ein-cli` hold no second definition of a group, a grid, a question or an edge.** What they
+compute of their own is joins and labels: a candidate's row of `candidates` joins the owner's lists by place; a
+question's name is the pattern of its members' texts; a grid's `relations` are read off its members' texts by the
+owner's `subject`; and `declared.relations[].stated_of_it` lists the facts the small KB keeps that name a
+relation, by the owner's `names_of`.
+
+### What moved out of the example, and the check
+
+The example now takes from `ein_render::structure`: `stopped`, `pairs_lists`, `theory_lists`, `cover_lists`,
+`exactly_one_lists`, `coupling_lists`, `question_members`, `question_name`, `question_open` (and `pattern`
+through them) and `coupling_dot`. The library builds `ein_render::dump::Json`; the example converts it to
+`serde_json` and keeps its own writer, which sorts keys, and adds the keys only the census has (`program`,
+`counts`, `declared`, `owed`, `owed_instances`). What stays in the example: the census line's counts, the Markdown
+twins, `theory.ein`, the alternative rules, the routes, and `declared_beside`, which still reads the mechanisms by
+a second load of its own.
+
+**The check**, on the six instances with the census's flags, `--routes --check --readings`: the binary built at
+`a3c719bf` before any change against the final one.
+
+| | |
+|---|---|
+| files written | 66 by each |
+| the same bytes | 60: every `.md`, `.dot`, `.ein`, and every JSON but six |
+| the same as JSON with every `wall` blanked | 6, the six `coupling.json`, whose `counts.wall` is a clock |
+| differ | 0 |
+| the six census lines, walls aside | the same |
+
+Taken twice, after the first rewiring and again on the final build, with the one result. The comparing script
+and both outputs were scratch and are not in the tree; the commands are the census's own, with `--out` elsewhere.
+
+### `structure.json`
+
+Schema `ein-structure/1`. Field by field it is [`docs/kernel/inference/structure.md` § `structure.json`](../../../docs/kernel/inference/structure.md#structurejson).
+In outline:
+
+| key | holds |
+|---|---|
+| `schema`, `program`, `asked` | the header: what was asked, `region_budget` and `supports` |
+| `n`, `rung`, `monotone`, `root_dead` | H's size, the rung that built it, the static verdict |
+| `whole`, `unread`, `says`, `domain` | whether anything was stopped, cut or left unread, a sentence each; what makes a structure small or empty; a flagged program's three sentences |
+| `cost` | each object's saturations and facts: root's layer, the small KB's, the supports, the clique calls, the whole node, and the sum |
+| `graphs` | each graph's file, nodes and lines |
+| `candidates` | **H listed**: each candidate's mark, what it implies and is equivalent to, its pairs by stroke, its groups, whether one is owed, its questions, its component in each set |
+| `pairs` | root's pair layer, every list |
+| `theory` | every stated fact with what the small KB does with it, the theory's pairs, each pair root excludes with whether it is the theory's and its support, and the small KB's pair layer whole |
+| `cover` | the groups with their open members, the marks, the components, the theory's pairs alive at root, root's cliques |
+| `exactly_one` | every owed instance with its witnesses and its standing, the owed groups, the unlicensed instances, the grids, the components that are no grid |
+| `coupling` | the questions **by place and by name**, the ties, the edges of both readings with their kind, the debts with `licensed`, both sets of components |
+| `declared` | the mechanisms at root's fixpoint, and for each relation a candidate is of the kept statements that name it |
+
+**It holds no clock and no job count.**
+
+### Tests in the gate, and what each holds
+
+| test | holds | its limit |
+|---|---|---|
+| `ein-cli/tests/structure_view.rs`, new, 13 tests | the document held to the owner's own values, list for list, on the six instances; on I-Z2 five grids, five bijections, 36 owed groups, each of the five relations with `(bijective R)` among what is stated of it; `--dump`; a stopped layer; a refused reading (K-17); a flagged program; no candidate; a dead root; `--supports`; `--jobs`; a `.einb`; a refused program; the page's read-out; the page's keys | the binary's document is compared with the library's on five instances, I-Z2M being read once, in process. `--jobs` is one program at one count. The `.einb` is one program. A write that fails after the run is not tested |
+| `ein-infer/tests/structure_invariance.rs`, extended | **the document and the four graphs' DOT, byte for byte, under a permuted id space**, on every corpus program that searches, 175 per commit; the document under the two other import forms, every string with its prefixes off and every list of strings as a set, in 92 of 94 forms; and that each comparison fails when it should | the two forms that reorder the universe are not compared as documents: a place follows the order. The owner's sets are compared there as before. The graphs are not compared under import forms |
+| `ein-render/tests/dot_wellformed.rs`, one test added | Graphviz draws every graph of every program that searches, 652 graphs of 164 programs per commit and 744 of 188 under `EIN_CORPUS_SLOW=1`; **every structure read is whole at the default budget**; every pair root excludes is drawn by one stroke; a graph's stated lines are its strokes | 4 graphs per commit and 8 in the nightly are past 1 000 lines and are not laid out, each named |
+| `ein-cli/tests/render_doors.rs` | the four graph views through the door, and the refusal | |
+| `ein-cli/tests/config_reference.rs` | twelve commands take `--no-require-why`; the page's counts are the golden's | |
+| `ein-cli/tests/help_surface.rs` | the golden, with the command | |
+
+**On I-Z2 the five declared bijections are shown as found, and what is stated of each relation is shown beside,
+with no stdlib relation named in `ein-render`.** The view lists, for each relation a candidate is of, the facts
+the small KB keeps that name it; on `zebra2.ein` that list holds `(bijective R)` for each of the five. Which name
+means *bijective* is the test's to know.
+
+**The 1 000-line rule is followed and not weakened.** `SKIPPING`, the directories, is as it was. The structure's
+graphs have a list of their own, `STRUCTURE_SKIPPING`, exact by program and view: I-Z2M's and its obligations
+twin's exclusion graph (1 428 lines) and edges one application back (1 274), and both hypergraphs of
+`count-past-2-64.ein` (2 080) and `count-past-2-128.ein` (8 515). `dot_wellformed`'s `edges` counts arrows, and
+these graphs are undirected, so the new test counts strokes.
+
+Run and green, each read from its own result line and not from an exit status: `-p ein-render`, every target;
+`-p ein-cli` `structure_view`, `render_doors`, `config_reference`, `gate_steps`, `nightly_steps`, `help_surface`,
+`read_out_reference`, `lever_invariance`; `-p ein-infer` `structure_invariance`, `cover`, `coupling`,
+`exactly_one`, `pair_layer`, `theory_share`, `explore`, `claim_routes`. `lever_invariance`, `explore`,
+`claim_routes` and `read_out_reference` were not edited.
+
+**On which sources.** `structure_view`, `render_doors`, `config_reference`, `help_surface`,
+`structure_invariance` and the new `dot_wellformed` test, in both tiers, were run again on the final sources. The
+others ran earlier in the session, before the last edits to `ein-render/src/structure.rs`, which were two
+sentences of `unread` and a comment: `ein-render`'s other targets, `lever_invariance`, `read_out_reference`,
+`gate_steps` and `nightly_steps` call none of that module, and `ein-infer`'s sources did not change after its
+targets ran. **No one run covered the whole set at once**: the gate does that.
+
+`cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`,
+`utils/check_hashmap_iteration.py` and `utils/doc_audit.py --links --check` with the gate's list: each exit 0 on
+the final sources. `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`: exit 0 twice, and a third run
+after the last wording edits printed no warning. Clippy and rustdoc each finished in seconds, which was checked
+and not assumed: clippy reports findings in the new module when asked for `clippy::pedantic`, and rustdoc's
+pages for `structure::whole` and `ein_render::structure` are rewritten by a run.
+
+### What it costs
+
+In saturations and facts, each printed by a command. **No wall is given: none was measured.**
+
+| | saturations | facts |
+|---|---:|---|
+| one structure of I-Z2, `ein render structure examples/zebra2.ein` | 465 + 1 597 + 1 | 68 385 beyond root; 32 086 beyond the small KB's root |
+| … with `--supports` | 327 more | |
+| a describe of I-Z2, `ein solve examples/zebra2.ein` | 374 | 42 705 beyond root |
+| **per commit**, the sweep added to `dot_wellformed`: 164 programs | 33 045 + 62 929 + 150 | 108 906; 186 260 |
+| **in the nightly**, the same under `EIN_CORPUS_SLOW=1`: 188 programs | 49 015 + 82 589 + 173 | 1 389 866; 513 855 |
+
+The last two are the test's own line (`cargo test … -p ein-render --test dot_wellformed --
+graphviz_accepts_the_structure --nocapture`), and the nightly's agree with S1f.10.13's table to the unit. Beside
+the engine's work that test puts 652 graphs, 744 in the nightly, through `dot`.
+
+- **`structure_invariance` reads no program more than it did.** It reads each through `whole` in place of
+  `theory_coupled`, which adds one `mechanisms::read` a reading, and spells the document and the graphs of each.
+- **`structure_view` is new per-commit work**: the six instances once in process and five of them once more
+  through the binary, and about fifty more runs of the view, counted by reading the file and not by an
+  instrument: some eight of them on `zebra.ein`, some ten on `zebra2.ein`, the rest on small programs or
+  refused.
+- **Walls seen under load, and not measurements**: `structure_view` reported 10 to 29 s over its runs,
+  `structure_invariance` 13 to 35 s, the new `dot_wellformed` test 7 to 10 s per commit and 27 to 41 s with the
+  slow entries. The spread within one test is the load's.
+
+### Goldens
+
+- **`ein-cli/tests/golden/help_shape.txt` moved**: nine lines added, the command, its six options and its
+  positional. Re-banked with `EIN_BLESS=1`.
+- **`ein-render/tests/golden/corpus_shapes.md5` did not move**, and `id_order_invariance` is green against it as
+  it was: the structure is not an op of the digest sweep.
+- No other golden moved.
+
+### The page
+
+[`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md): each object as built, the
+domain, what it costs, how to see it with `structure.json` field by field, and what each reading does not tell.
+
+- **Its read-out is the binary's**: the block is held byte for byte by `the_pages_read_out_is_the_binarys`, so
+  every figure in it is taken again per commit.
+- **Its other figures each carry a command**: the corpus's totals, printed by the `dot_wellformed` test; I-Z2's
+  327 supports of which 7 are cut, by the view with `--supports`. The bounds are named by constant, with the grep
+  that prints them.
+- **Its keys are held one way**: every key six documents of six kinds hold is named in the page. A key the writer
+  has for a case none of them reaches is in the page by reading the writer and is held by nothing.
+- It names no stage, no path into `plans/`, no date and no finding. **One decision id is in a code comment**,
+  `Q-M1f.309` in `cmdline.rs`. And the new command's `--help` shows `(M1f T1f.5.14.7)`, through the shared
+  `--no-require-why` builder, as the eleven others do.
+- Registered as *current*: `docs/kernel/README.md`, 47 pages; `inference/README.md`'s tree; two rows of
+  `implementation.md`; a section of `04_dot_rendering.md`; `configuration.md`'s counts, a class of § 3.3 with
+  *does it change the answer: no*, and § 3.4's list. `docs/guide/` and `docs/api/` list no view and were not
+  touched.
+- Of the six checks of *Keeping this true*: links and section citations, 0 findings; identifiers, 0 unresolved on
+  the page, by a report that is a heuristic and no gate; the page is in one state. **Every command the page shows
+  was run but one as shown**: the census's `pair_layer … --theory --routes > rows.jsonl` was run on one program
+  with `--out` elsewhere, to check the three fields the page names, and not over the corpus.
+
+### What was got wrong on the way, and what it shows
+
+The sentence the view prints where the witnesses' holders were not read was wrong twice before it was right, and
+each time a run beside it said so.
+
+1. It first said *a layer's singles were not read*. The same run reported no single left.
+2. It then said *root's layer having stopped first*. One fact under what root's layer spends, the layer is whole.
+3. It now says the layer had spent its budget, whether or not it read every pair, and does not say it stopped.
+   `a_whole_layer_with_its_holders_refused_is_not_called_whole` holds that wording.
+
+So the `unread` sentences are worth reading against the fields beside them. The sentence for a cut support was
+checked the same way, against `CoreStatus`'s own words. And a claim that one DOT need not lay out alike twice was
+taken off the page: six `fdp` layouts of the view's coupling graph of `zebra.ein` gave one digest, so K-15 was
+not reproduced on the view's graphs. Nothing holds a picture either way.
+
+### Defaults taken
+
+Each the user's or the main session's to revise.
+
+1. **stdout is one view, and the default is the read-out**, not DOT. Every other `ein render` view prints DOT by
+   default; this one has four graphs and a document, and one stream cannot hold them. `ein render region --view
+   table` is the precedent for a view that is not DOT. `--dump DIR` follows `ein oracle --dump`: additive.
+2. **`--supports` is off by default**, against *nearest to what the bundle showed*: the bundle labelled every
+   pair of the puzzle. A support is a saturation and a search a pair. No `--check`: the check is the census's.
+3. **What a program declares**: the mechanisms as the engine reads them, and the kept statements that name each
+   relation. `(bijective R)` is read by no name in the engine.
+4. **`whole` is the view's own**: nothing stopped by a budget, nothing cut by a bound, no reading refused. It is
+   not `Coupling::complete()`, which K-17 shows true where debts are missing. A dead root and a program with no
+   candidate alive alone are `says`, and no cut.
+5. **The structure is not in the digest golden.** Its bytes are held under a permuted id space by
+   `structure_invariance`, on the readings that test already makes. **Decided without a measured comparison**:
+   what an op of the digest sweep would cost per commit was not taken.
+6. **`dot_wellformed`'s sweep**: per commit the programs that search outside `tests/`, the `slow` entries aside;
+   the rest in the nightly step that test already is.
+7. **`structure_view` reads I-Z2M once.**
+8. **The graphs**: the exclusion graph's strokes and fills are the bundle's; a statement's label is its place in
+   `theory.stated`; the cover is groups as boxes and members as ovals, a component a cluster, which the bundle drew
+   as HTML tables; the hypergraph is the census's `coupling.dot` with each question's place in its label
+   ([K-14](findings.md)).
+9. **`lines`** is the document's word for a graph's strokes: an edge of five questions draws five.
+10. **The owner gained `whole`** and two functions became public.
+11. **The cut-support sentence counts a cut support as unread**, so `--supports` makes I-Z2 not whole.
+
+### Findings
+
+[K-17](findings.md), above. Not fixed.
+
+### Not done, and not verified
+
+- `./run_tests.sh`, `./run_tests.sh --nightly`, `utils/ci_container.sh`: not run.
+- **Any wall**, and so the five-minute bound of the two nightly steps that grew, `dot_wellformed` and
+  `structure_invariance`.
+- **`utils/structure_bundle.py` is as it was**, and reads the census's files. To read the view instead it would
+  need: `structure.json`'s five objects mapped to the five files it loads, which they are but for `program`;
+  `cover.declared`, `cover.owed` and `owed_instances`, which are the census's tallies and are not in the
+  document; the supports' checks, which the view never asks; the counts of the three other readings; and the
+  routes and the price list, which are other examples'. Not tried.
+- The example's `declared_beside` and the owner's `whole` each read the mechanisms.
+- `--supports` on a program larger than I-Z2; a `--dump` write that fails after the run; `--jobs` past one
+  program and one count; the document under an import form that reorders the universe.
+- The worktree was at `dbedc535` and not at `a3c719bf` as briefed. The branch was fast-forwarded to `a3c719bf`
+  before any work; `master` was not touched.

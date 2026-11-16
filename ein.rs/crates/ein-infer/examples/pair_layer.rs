@@ -205,9 +205,11 @@ use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_infer::region::Cores;
 use ein_infer::structure::{
     self, Cliques, Coupling, CouplingOptions, CouplingReading, Cover, Deaths, ExactlyOne, Mark,
-    NotAGrid, Origin, Owing, PairLayer, Question, Stated, Theory, Verdict, WitnessIs,
+    Origin, Owing, PairLayer, Question, Stated, Theory, Verdict, WitnessIs,
 };
 use ein_ir::{Ast, load, parse};
+use ein_render::dump::Json;
+use ein_render::structure as shown;
 use rustc_hash::FxHashSet;
 use serde_json::{Value, json};
 
@@ -226,16 +228,24 @@ fn loaded(path: &Path) -> Option<(ein_core::Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-fn stopped(s: &Option<Stopped>) -> Value {
-    match s {
-        None => Value::Null,
-        Some(Stopped::Budget { spent, projected }) => {
-            json!({"why": "budget", "spent": spent, "projected": projected})
-        }
-        Some(Stopped::Limit { n, limit }) => json!({"why": "limit", "n": n, "limit": limit}),
-        Some(Stopped::Deadline) => json!({"why": "deadline"}),
-        Some(Stopped::NoSearch) => json!({"why": "no-search"}),
+/// One of the owner's values as `ein-render` spells it, for this file's
+/// writer: the lists of each object are `ein_render::structure`'s, the same
+/// `ein render structure` writes, and `serde_json` sorts their keys.
+fn v(j: Json) -> Value {
+    match j {
+        Json::Null => Value::Null,
+        Json::Bool(b) => Value::Bool(b),
+        Json::Int(n) => json!(n),
+        Json::BigInt(text) => json!(text),
+        Json::Float(f) => json!(f),
+        Json::Str(s) => Value::String(s),
+        Json::Array(items) => Value::Array(items.into_iter().map(v).collect()),
+        Json::Object(pairs) => Value::Object(pairs.into_iter().map(|(k, x)| (k, v(x))).collect()),
     }
+}
+
+fn stopped(s: &Option<Stopped>) -> Value {
+    v(shown::stopped(s))
 }
 
 /// One question about `R`, asked of the program loaded again: its work, and
@@ -276,41 +286,9 @@ fn searches(path: &Path) -> bool {
 
 /// The lists, as rendered text.
 fn lists(rel: &str, l: &PairLayer) -> Value {
-    let one = |v: &[u32]| -> Vec<&str> { v.iter().map(|&b| l.text(b)).collect() };
-    let two = |v: &[(u32, u32)]| -> Vec<[&str; 2]> {
-        v.iter().map(|&(a, b)| [l.text(a), l.text(b)]).collect()
-    };
-    json!({
-        "program": rel,
-        "n": l.n(),
-        "monotone": l.monotone,
-        "domain": l.domain(),
-        "root_dead": l.root_dead,
-        "complete": l.complete(),
-        "stopped": stopped(&l.stopped),
-        "singles_left": l.singles_left,
-        "pairs": {
-            "all": l.pairs.all,
-            "dead_member": l.pairs.dead_member,
-            "implied": l.pairs.implied,
-            "saturated": l.pairs.saturated,
-            "left": l.pairs.left,
-        },
-        "work": {"saturations": l.work.saturations, "facts": l.work.facts},
-        "candidates": l.candidates.iter().map(|c| c.text.as_str()).collect::<Vec<_>>(),
-        "at_root": one(&l.at_root),
-        "dead_alone": one(&l.dead_alone),
-        "implies": two(&l.implies),
-        "equivalent": l.equivalent.iter().map(|c| one(c)).collect::<Vec<_>>(),
-        "excluded": two(&l.excluded),
-        "interacting": two(&l.interacting),
-        "against_l1": two(&l.against_l1),
-        "against_l3": l
-            .against_l3
-            .iter()
-            .map(|&(a, b, dead)| json!({"pair": [l.text(a), l.text(b)], "dead": dead}))
-            .collect::<Vec<_>>(),
-    })
+    let mut lists = v(shown::pairs_lists(l));
+    lists["program"] = json!(rel);
+    lists
 }
 
 fn main() {
@@ -882,8 +860,6 @@ fn theory_row(
     (rule, opts): (Rule, &structure::Options),
 ) -> Value {
     let l = &t.root;
-    let text = |b: u32| l.text(b);
-    let pair = |&(a, b): &(u32, u32)| [l.text(a), l.text(b)];
     let of_theory = t.of_the_theory();
     let root_dead = Deaths::of(l);
 
@@ -1055,52 +1031,8 @@ fn theory_row(
         .count();
 
     // The lists, raw.
-    let statement = |k: u32| {
-        let s = &t.stated[k as usize];
-        match &s.source {
-            Some(src) => format!("{} :source {src:?}", s.text),
-            None => s.text.clone(),
-        }
-    };
-    let lists = json!({
-        "program": rel,
-        "small_kb": {
-            "kept": kept,
-            "dropped": dropped,
-            "by_clause": clauses.iter().map(|((c, k), n)| json!({"clause": c, "kept": k, "facts": n})).collect::<Vec<_>>(),
-            "error": t.small.as_ref().err(),
-        },
-        "stated": t.stated.iter().map(|s| json!({
-            "fact": s.text,
-            "source": s.source,
-            "origin": s.origin.as_str(),
-            "kept": s.kept,
-            "clause": s.clause,
-            "read_absent": s.read_absent,
-        })).collect::<Vec<_>>(),
-        "theory_dead_alone": t.small.as_ref().map_or(Vec::new(), |s| s.dead_alone.iter().map(|&b| text(b)).collect()),
-        "theory_excluded": t.excluded().iter().map(pair).collect::<Vec<_>>(),
-        "against_root": {
-            "singles": t.against_root.singles.iter().map(|&b| text(b)).collect::<Vec<_>>(),
-            "pairs": t.against_root.pairs.iter().map(pair).collect::<Vec<_>>(),
-        },
-        "small_beyond_root": t.small_beyond_root,
-        "root_excluded": l.excluded.iter().enumerate().map(|(k, p)| {
-            let support = t.supports.get(k).map(|s| json!({
-                "read": s.read,
-                "status": s.status.map(|c| c.word()),
-                "dropped": s.stated.iter().filter(|&&k| !t.stated[k as usize].kept).map(|&k| statement(k)).collect::<Vec<_>>(),
-                "kept": s.stated.iter().filter(|&&k| t.stated[k as usize].kept).map(|&k| statement(k)).collect::<Vec<_>>(),
-                "commitments": s.commitments.iter().map(|&b| text(b)).collect::<Vec<_>>(),
-                "other": s.other,
-                "rules": s.rules,
-                "check": s.check.as_ref().map(|c| json!({
-                    "dead": c.dead, "root_dead": c.root_dead, "beyond": c.beyond, "unread": c.unread,
-                })),
-            }));
-            json!({"pair": pair(p), "of_the_theory": of_theory[k], "support": support})
-        }).collect::<Vec<_>>(),
-    });
+    let mut lists = v(shown::theory_lists(t));
+    lists["program"] = json!(rel);
     let file = dir.join("theory.json");
     let raw = serde_json::to_string_pretty(&lists).expect("JSON");
     std::fs::write(&file, raw + "\n").expect("theory.json");
@@ -1503,38 +1435,6 @@ fn coupled(
     Ok((cover, c, t.elapsed().as_secs_f64()))
 }
 
-/// The members of a set of candidates as one pattern, where they differ in
-/// one word: `(val D *)`. Otherwise its first member and how many there
-/// are.
-fn pattern(texts: &[&str]) -> String {
-    let words: Vec<Vec<&str>> = texts
-        .iter()
-        .map(|t| t.split_whitespace().collect())
-        .collect();
-    let Some(first) = words.first() else {
-        return "(none)".to_string();
-    };
-    if texts.len() == 1 {
-        return texts[0].to_string();
-    }
-    if words.iter().all(|w| w.len() == first.len()) {
-        let differ: Vec<usize> = (0..first.len())
-            .filter(|&k| words.iter().any(|w| w[k] != first[k]))
-            .collect();
-        if let [k] = differ[..] {
-            let mut out: Vec<String> = first.iter().map(|w| w.to_string()).collect();
-            let (open, close) = (first[k].starts_with('('), first[k].ends_with(')'));
-            out[k] = format!(
-                "{}*{}",
-                if open { "(" } else { "" },
-                if close { ")" } else { "" }
-            );
-            return out.join(" ");
-        }
-    }
-    format!("{} … ×{}", texts[0], texts.len())
-}
-
 /// The coupling, of one program: `coupling.json`, raw, `coupling.md`, the
 /// same as tables, and `coupling.dot`, the questions' hypergraph drawn, an
 /// edge of two questions a line and an edge of more a point joined to
@@ -1641,70 +1541,13 @@ fn coupling_row(
     }
 
     // The files.
-    let members = |q: u32| -> Vec<u32> {
-        match c.questions[q as usize] {
-            Question::Group(g) => cover.members(g).to_vec(),
-            Question::Alone(b) => vec![b],
-        }
-    };
-    let name = |q: u32| -> String {
-        let m = members(q);
-        pattern(&m.iter().map(|&b| c.text(b)).collect::<Vec<_>>())
-    };
-    let open = |q: u32| -> usize {
-        members(q)
-            .iter()
-            .filter(|&&b| cover.marks[b as usize] == Mark::AliveAlone)
-            .count()
-    };
+    let members = |q: u32| shown::question_members(&c, &cover, q);
+    let name = |q: u32| shown::question_name(&c, &cover, q);
+    let open = |q: u32| shown::question_open(&c, &cover, q);
     let texts = |v: &[u32]| -> Vec<&str> { v.iter().map(|&b| c.text(b)).collect() };
-    let edges_raw = |edges: &[structure::Edge]| -> Vec<Value> {
-        edges.iter().map(|e| json!({
-            "questions": e.questions.iter().map(|&q| name(q)).collect::<Vec<_>>(),
-            "question_ids": e.questions,
-            "kind": e.kind().as_str(),
-            "pairs": {"excludes": e.pairs.excludes, "implies": e.pairs.implies, "interacts": e.pairs.interacts},
-            "node": {"conflicts": e.node.conflicts, "derivations": e.node.derivations, "implications": e.node.implications},
-            "debts": e.debts.iter().map(|&d| c.debts[d as usize].instance.as_str()).collect::<Vec<_>>(),
-            "stated": e.stated.iter().map(|&(k, n)| json!([c.reasons[k as usize], n])).collect::<Vec<_>>(),
-        })).collect()
-    };
-    let raw = json!({
-        "program": rel,
-        "reading": c.reading.as_str(),
-        "complete": c.complete(),
-        "domain": c.domain(),
-        "questions": (0..c.questions.len() as u32).map(|q| json!({
-            "is": match c.questions[q as usize] {
-                Question::Group(_) => "a group",
-                Question::Alone(_) => "a candidate in no group",
-            },
-            "name": name(q),
-            "open": open(q),
-            "members": members(q).iter().map(|&b| json!([c.text(b), cover.marks[b as usize].as_str()])).collect::<Vec<_>>(),
-        })).collect::<Vec<_>>(),
-        "ties": c.ties.iter().map(|t| json!({
-            "pair": [c.text(t.pair.0), c.text(t.pair.1)],
-            "kind": t.kind.as_str(),
-            "stated": t.stated.as_ref().map(|s| s.iter().map(|&k| c.reasons[k as usize].as_str()).collect::<Vec<_>>()),
-        })).collect::<Vec<_>>(),
-        "edges": edges_raw(&c.edges),
-        "edges_one_step_back": c.one_step.as_deref().map(edges_raw),
-        "components": c.components.iter().map(|k| texts(k)).collect::<Vec<_>>(),
-        "conflict_components": c.conflict_components.iter().map(|k| texts(k)).collect::<Vec<_>>(),
-        "debts": c.debts.iter().map(|d| json!({
-            "rule": d.rule,
-            "instance": d.instance,
-            "licensed": d.licensed,
-            "payers": texts(&d.payers),
-            "questions": d.questions.iter().map(|&q| name(q)).collect::<Vec<_>>(),
-            "question_ids": d.questions,
-        })).collect::<Vec<_>>(),
-        "debts_across_conflict_components": c.debts_across(),
-        "unlicensed_instances": c.unlicensed,
-        "committed": texts(&c.committed),
-        "counts": row,
-    });
+    let mut raw = v(shown::coupling_lists(&c, &cover));
+    raw["program"] = json!(rel);
+    raw["counts"] = row.clone();
     let text = serde_json::to_string_pretty(&raw).expect("JSON");
     std::fs::write(dir.join("coupling.json"), text + "\n").expect("coupling.json");
 
@@ -1863,60 +1706,7 @@ fn coupling_row(
     }
     std::fs::write(dir.join("coupling.md"), md).expect("coupling.md");
 
-    let quoted = |s: &str| s.replace('\\', "\\\\").replace('"', "\\\"");
-    let mut dot = format!(
-        "graph coupling {{\n  label=\"{}\";\n  node [shape=box, fontsize=10];\n",
-        quoted(rel)
-    );
-    let in_an_edge: BTreeSet<u32> = c
-        .edges
-        .iter()
-        .flat_map(|e| e.questions.iter().copied())
-        .collect();
-    for q in 0..c.questions.len() as u32 {
-        dot += &format!(
-            "  q{q} [label=\"{}\\n{} open of {}\"{}];\n",
-            quoted(&name(q)),
-            open(q),
-            members(q).len(),
-            if in_an_edge.contains(&q) {
-                ""
-            } else {
-                ", color=gray, fontcolor=gray"
-            }
-        );
-    }
-    for (k, e) in c.edges.iter().enumerate() {
-        let weight = e.pairs.all() + e.node.all();
-        // A debt's edge alone is dashed, and named for its debts.
-        let (style, label) = match e.kind() {
-            structure::EdgeKind::Debt => {
-                let unlicensed = e.debts.iter().any(|&d| !c.debts[d as usize].licensed);
-                let label = format!(
-                    "owed ×{}{}",
-                    e.debts.len(),
-                    if unlicensed { ", unlicensed" } else { "" }
-                );
-                (", style=dashed", label)
-            }
-            structure::EdgeKind::Both => ("", format!("{weight}, owed ×{}", e.debts.len())),
-            structure::EdgeKind::Tie => ("", weight.to_string()),
-        };
-        if let [a, b] = e.questions[..] {
-            dot += &format!("  q{a} -- q{b} [label=\"{label}\", fontsize=8{style}];\n");
-        } else {
-            dot += &format!("  e{k} [shape=point, xlabel=\"{label}\"];\n");
-            let dashed = if style.is_empty() {
-                ""
-            } else {
-                " [style=dashed]"
-            };
-            for q in &e.questions {
-                dot += &format!("  e{k} -- q{q}{dashed};\n");
-            }
-        }
-    }
-    dot += "}\n";
+    let dot = shown::coupling_dot(rel, &c, &cover, &c.edges, false);
     std::fs::write(dir.join("coupling.dot"), dot).expect("coupling.dot");
 
     row["files"] = json!(["coupling.json", "coupling.md", "coupling.dot"]);
@@ -1929,19 +1719,17 @@ fn coupling_row(
 /// reader and for the comparison with what a program declares by name; the
 /// owner reads none.
 fn exactly_one_row(rel: &str, dir: &Path, c: &Cover, x: &ExactlyOne, terms: &Terms) -> Value {
-    let one = |v: &[u32]| -> Vec<&str> { v.iter().map(|&b| c.text(b)).collect() };
-    let relation_of = |b: u32| -> String {
-        let (r, args) = terms.fact(c.candidates[b as usize].fact);
-        let r = match args.first().and_then(|a| a.as_fact()) {
-            Some(inner) if r == terms.kernel.not => terms.fact(inner).0,
-            _ => r,
-        };
-        terms.sym(r).to_string()
-    };
     let open = |g: u32| c.open(g).count();
     let table = x.owed.table();
 
-    // The instances.
+    // The lists, raw: the owner's values as `ein render structure` writes
+    // them.
+    let mut raw = v(shown::exactly_one_lists(c, x, terms));
+    raw["program"] = json!(rel);
+    let rows = |key: &str| raw[key].as_array().cloned().unwrap_or_default();
+    let (grid_rows, not_grids) = (rows("grids"), rows("components_that_are_no_grid"));
+
+    // The instances, counted.
     let mut unlicensed_why: BTreeMap<String, usize> = BTreeMap::new();
     let (mut about_a_group, mut unknown, mut unproposed, mut brought) = (0usize, 0usize, 0u32, 0);
     let (mut all_brought, mut none_unproposed, mut some_not_brought) = (0usize, 0usize, 0usize);
@@ -1949,99 +1737,43 @@ fn exactly_one_row(rel: &str, dir: &Path, c: &Cover, x: &ExactlyOne, terms: &Ter
     // bringers of which are all dead alone at root, and those nothing
     // brings in the small KB either.
     let (mut bringers_dead, mut brought_nowhere) = (0usize, 0usize);
-    let mut instances: Vec<Value> = Vec::new();
     for (k, (i, owing)) in table.iter().zip(&x.owing).enumerate() {
-        let witnesses = match &i.witnesses {
-            Err(why) => json!({"unknown": why}),
-            Ok(ws) => json!(
-                ws.iter()
-                    .map(|w| json!({
-                        "fact": w.text,
-                        "is": w.is.as_str(),
-                        "held_at_root_by": one(&w.held_at_root),
-                        "held_in_the_theory_by": one(&w.held_in_theory),
-                    }))
-                    .collect::<Vec<_>>()
-            ),
+        let (Err(why), Owing::Unlicensed { about, .. }) = (&i.alternatives, owing) else {
+            continue;
         };
-        let mut row = json!({
-            "instance": i.text,
-            "rule": i.rule,
-            "standing": owing.as_str(),
-            "licensed": i.alternatives.is_ok(),
-            "witnesses_denied_at_root": i.witnesses.as_ref().ok().map(|ws| {
-                ws.iter().filter(|w| w.is == WitnessIs::Denied).count()
-            }),
-            "witnesses": witnesses,
-        });
-        match (&i.alternatives, owing) {
-            (Ok(alts), _) => {
-                row["alternatives"] = json!(one(alts));
-                match owing {
-                    Owing::Group(g) => row["group"] = json!(g),
-                    Owing::Inside(groups) => row["inside"] = json!(groups),
-                    Owing::NotExcluding { alive, holds } => {
-                        row["pairs_the_theory_does_not_exclude"] = json!(alive);
-                        row["holds_groups"] = json!(holds);
-                    }
-                    _ => {}
+        *unlicensed_why.entry(kind_of(why)).or_default() += 1;
+        about_a_group += usize::from(about.is_some());
+        for w in i.witnesses.iter().flatten() {
+            if w.is == WitnessIs::Unproposed && w.held_at_root.is_empty() {
+                if w.held_in_theory.is_empty() {
+                    brought_nowhere += 1;
+                } else if w
+                    .held_in_theory
+                    .iter()
+                    .all(|&b| c.marks[b as usize] == Mark::DeadAlone)
+                {
+                    bringers_dead += 1;
                 }
             }
-            (Err(why), Owing::Unlicensed { payers, about }) => {
-                *unlicensed_why.entry(kind_of(why)).or_default() += 1;
-                row["why"] = json!(why);
-                row["pay_by_the_theory_alone"] = json!(payers.as_ref().map(|p| one(p)));
-                row["about_group"] = json!(about);
-                about_a_group += usize::from(about.is_some());
-                for w in i.witnesses.iter().flatten() {
-                    if w.is == WitnessIs::Unproposed && w.held_at_root.is_empty() {
-                        if w.held_in_theory.is_empty() {
-                            brought_nowhere += 1;
-                        } else if w
-                            .held_in_theory
-                            .iter()
-                            .all(|&b| c.marks[b as usize] == Mark::DeadAlone)
-                        {
-                            bringers_dead += 1;
-                        }
-                    }
-                }
-                match x.brought(k as u32) {
-                    None => unknown += 1,
-                    Some((all, by)) => {
-                        row["witnesses_no_candidate_and_not_denied"] = json!(all);
-                        row["of_them_brought_by_a_candidate_at_root"] = json!(by);
-                        unproposed += all;
-                        brought += by;
-                        if all == 0 {
-                            none_unproposed += 1;
-                        } else if all == by {
-                            all_brought += 1;
-                        } else {
-                            some_not_brought += 1;
-                        }
-                    }
-                }
-            }
-            (Err(_), _) => unreachable!("an unlicensed instance stands as one"),
         }
-        instances.push(row);
+        match x.brought(k as u32) {
+            None => unknown += 1,
+            Some((all, by)) => {
+                unproposed += all;
+                brought += by;
+                if all == 0 {
+                    none_unproposed += 1;
+                } else if all == by {
+                    all_brought += 1;
+                } else {
+                    some_not_brought += 1;
+                }
+            }
+        }
     }
 
-    // The groups, each with who owes it.
+    // The groups nothing owes, counted.
     let grid_of = |g: u32| x.grids.of_group[g as usize];
-    let groups: Vec<Value> = (0..c.groups.len() as u32)
-        .map(|g| {
-            json!({
-                "group": g,
-                "members": one(c.members(g)),
-                "open": c.open(g).map(|b| c.text(b)).collect::<Vec<_>>(),
-                "owed_by": x.owed_by[g as usize].iter().map(|&k| &table[k as usize].text).collect::<Vec<_>>(),
-                "an_unlicensed_instance_is_about_it": x.about[g as usize].iter().map(|&k| &table[k as usize].text).collect::<Vec<_>>(),
-                "grid": grid_of(g).map(|(grid, family)| json!({"grid": grid, "family": family})),
-            })
-        })
-        .collect();
     let unowed = x.unowed();
     let unowed_open = unowed.iter().filter(|&&g| open(g) > 0).count();
     let unowed_about = unowed
@@ -2049,49 +1781,17 @@ fn exactly_one_row(rel: &str, dir: &Path, c: &Cover, x: &ExactlyOne, terms: &Ter
         .filter(|&&g| !x.about[g as usize].is_empty())
         .count();
 
-    // The grids.
-    let members_of = |component: u32| &c.components[component as usize];
-    let relations_of =
-        |members: &[u32]| -> BTreeSet<String> { members.iter().map(|&b| relation_of(b)).collect() };
-    let mut kinds: BTreeMap<&'static str, usize> = BTreeMap::new();
-    let mut grid_rows: Vec<Value> = Vec::new();
+    // The grids, counted.
+    let mut kinds: BTreeMap<String, usize> = BTreeMap::new();
     let mut grid_counts: Vec<Value> = Vec::new();
-    for (k, g) in x.grids.grids.iter().enumerate() {
+    for (k, row) in grid_rows.iter().enumerate() {
         let share = x.share(k as u32);
-        let members = members_of(g.component);
-        let kind = if x.is_bijection(k as u32) {
-            "a bijection: every group owed"
-        } else if share.iter().all(|s| s.owed == s.groups) {
-            "every group owed, and the families differ in number"
-        } else if share.iter().any(|s| s.owed == s.groups) {
-            "one family owed whole"
-        } else if share.iter().any(|s| s.owed > 0) {
-            "owed in part"
-        } else {
-            "owed nowhere"
-        };
-        *kinds.entry(kind).or_default() += 1;
-        let family = |f: usize| {
-            json!({
-                "groups": g.families[f],
-                "owed": share[f].owed,
-                "an_unlicensed_instance_is_about": share[f].about,
-            })
-        };
-        grid_rows.push(json!({
-            "grid": k,
-            "component": g.component,
-            "members": members.len(),
-            "open": members.iter().filter(|&&b| c.marks[b as usize] == Mark::AliveAlone).count(),
-            "cells": g.families[0].len() * g.families[1].len(),
-            "relations": relations_of(members),
-            "families": [family(0), family(1)],
-            "kind": kind,
-            "bijection": x.is_bijection(k as u32),
-        }));
+        *kinds
+            .entry(row["kind"].as_str().unwrap_or("").to_string())
+            .or_default() += 1;
         grid_counts.push(json!({
-            "relations": relations_of(members),
-            "members": members.len(),
+            "relations": row["relations"],
+            "members": row["members"],
             "groups": [share[0].groups, share[1].groups],
             "owed": [share[0].owed, share[1].owed],
             "about": [share[0].about, share[1].about],
@@ -2099,53 +1799,11 @@ fn exactly_one_row(rel: &str, dir: &Path, c: &Cover, x: &ExactlyOne, terms: &Ter
         }));
     }
     let mut not_why: BTreeMap<&'static str, usize> = BTreeMap::new();
-    let not_grids: Vec<Value> = x
-        .grids
-        .not
-        .iter()
-        .map(|&(component, why)| {
-            *not_why.entry(why.as_str()).or_default() += 1;
-            let members = members_of(component);
-            let mut groups: Vec<u32> = members
-                .iter()
-                .flat_map(|&b| c.groups_of(b).iter().copied())
-                .collect();
-            groups.sort_unstable();
-            groups.dedup();
-            json!({
-                "component": component,
-                "members": members.len(),
-                "groups": groups,
-                "owed": groups.iter().filter(|&&g| x.is_owed(g)).count(),
-                "relations": relations_of(members),
-                "why": why.as_str(),
-                "detail": match why {
-                    NotAGrid::MoreThanTwo { most } => json!({"most": most}),
-                    NotAGrid::InOne { members } => json!({"members_in_one_group": members}),
-                    _ => Value::Null,
-                },
-            })
-        })
-        .collect();
+    for &(_, why) in &x.grids.not {
+        *not_why.entry(why.as_str()).or_default() += 1;
+    }
 
     let no_table = x.owed.instances.as_ref().err().map(|e| e.as_str());
-    let raw = json!({
-        "program": rel,
-        "n": c.n(),
-        "domain": c.domain(),
-        "root_owes": x.owed.root_owes,
-        "no_table": no_table,
-        "singles_read": x.owed.singles_read,
-        "theory_read": x.owed.theory_read,
-        "instances": instances,
-        "groups": groups,
-        "owed_groups": x.owed_groups(),
-        "groups_nothing_owes": unowed,
-        "owed_sets_not_a_group": x.not_groups(),
-        "unlicensed": x.unlicensed(),
-        "grids": grid_rows,
-        "components_that_are_no_grid": not_grids,
-    });
     let file = dir.join("exactly_one.json");
     let text = serde_json::to_string_pretty(&raw).expect("JSON");
     std::fs::write(&file, text + "\n").expect("exactly_one.json");
@@ -2391,7 +2049,6 @@ fn cover_row(path: &Path, rel: &str, dir: &Path, t: &Theory, terms: &Terms) -> V
         return json!({"error": t.small.as_ref().err()});
     };
     let n = c.n();
-    let one = |v: &[u32]| -> Vec<&str> { v.iter().map(|&b| c.text(b)).collect() };
     let none = c.in_no_group();
     let marked = |m: Mark| none.iter().filter(|&&b| c.marks[b as usize] == m).count();
     let killed = |b: &u32| c.killed_alone.binary_search(b).is_ok();
@@ -2403,41 +2060,11 @@ fn cover_row(path: &Path, rel: &str, dir: &Path, t: &Theory, terms: &Terms) -> V
     let (declared, owed, instances) = declared_beside(path, &c, &exact, terms);
     let exactly_one = exactly_one_row(rel, dir, &c, &exact, terms);
 
-    let raw = json!({
-        "program": rel,
-        "n": n,
-        "complete": c.complete(),
-        "monotone": c.monotone,
-        "small_monotone": c.small_monotone,
-        "domain": c.domain(),
-        "stopped": stopped(&c.stopped),
-        "bound": structure::CLIQUE_STEPS,
-        "steps": c.steps,
-        "cut": cut_of(&c.cut),
-        "candidates": (0..n as u32).map(|b| json!({
-            "candidate": c.text(b),
-            "at_root": c.marks[b as usize].as_str(),
-            "killed_by_the_theory_alone": killed(&b),
-            "groups": c.groups_of(b),
-        })).collect::<Vec<_>>(),
-        "groups": c.groups.iter().zip(&open).map(|(g, o)| json!({
-            "members": one(g),
-            "open": one(o),
-        })).collect::<Vec<_>>(),
-        "in_no_group": one(&none),
-        "components": c.components.iter().map(|x| one(x)).collect::<Vec<_>>(),
-        "pairs_alive_at_root": c.alive_at_root.as_ref().map(|v| {
-            v.iter().map(|&(a, b)| [c.text(a), c.text(b)]).collect::<Vec<_>>()
-        }),
-        "root_cliques": c.root_cliques.as_ref().map(|r| json!({
-            "steps": r.steps,
-            "cut": cut_of(&r.cut),
-            "cliques": r.cliques.iter().map(|x| one(x)).collect::<Vec<_>>(),
-        })),
-        "declared": declared,
-        "owed": owed,
-        "owed_instances": instances,
-    });
+    let mut raw = v(shown::cover_lists(&c));
+    raw["program"] = json!(rel);
+    raw["declared"] = declared.clone();
+    raw["owed"] = owed.clone();
+    raw["owed_instances"] = json!(instances);
     let file = dir.join("cover.json");
     let text = serde_json::to_string_pretty(&raw).expect("JSON");
     std::fs::write(&file, text + "\n").expect("cover.json");

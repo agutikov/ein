@@ -88,12 +88,14 @@ visible from the page itself. Triaged page by page at M1e
 added [`inference/region_dump.md`](inference/region_dump.md), 43 since
 S1e2.1b.6 added [`inference/monotonicity.md`](inference/monotonicity.md), 45
 since M1f S1f.5.16 added [`inference/read_out.md`](inference/read_out.md) and
-[`inference/read_out_examples.md`](inference/read_out_examples.md), and 46 since
+[`inference/read_out_examples.md`](inference/read_out_examples.md), 46 since
 M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)
-(`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-10), current:
+(2026-11-10), and 47 with [`inference/structure.md`](inference/structure.md),
+the structure of the hypothesis set
+(`git ls-files 'docs/kernel/*.md' | wc -l`), current:
 
 - **current** — every claim holds of the engine that ships. No banner; this is
-  the default and 43 of the 46 pages are here. What makes it checkable rather
+  the default and 44 of the 47 pages are here. What makes it checkable rather
   than aspirational is the test in [§ Keeping this
   true](#keeping-this-true) below: every code identifier the page names
   resolves in `ein.rs/crates/`, and every environment variable and CLI

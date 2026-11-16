@@ -65,6 +65,15 @@ COMMAND ein render rules
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers (M1f T1f.5.14.7)
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
+COMMAND ein render structure
+  ABOUT the structure of the program's hypothesis set, read from its own lattice with nobody declaring it: which candidates exclude each other, which of those pairs the theory makes alone, the groups (pick at most one), the owed groups and grids (exactly one), and what couples the questions (docs/kernel/inference/structure.md). Prints a read-out, or the --view asked. It reads nodes and changes no answer
+  OPTION --dump -- metavar=DIR arity=1 default=None choices=- group=- required=False help=also write the structure to DIR: structure.json and the four graphs, exclusion.dot, cover.dot, coupling.dot and coupling_one_step.dot. stdout is the same with it
+  OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads for each step's nodes, or 'auto' (default: 1). The same structure, byte for byte
+  OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers (M1f T1f.5.14.7)
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the budget of root's pair layer and of the small KB's, each: facts beyond its root, as `ein solve --region-budget`'s (default 2^20). A layer that reaches it is listed as far as it was read, and the read-out and the document say what was not
+  OPTION --supports -- metavar=- arity=0 default=False choices=- group=- required=False help=also read the support of every pair root excludes, the stated facts its death rests on: they label the puzzle's pairs and name what each tie rests on. One more saturation and a search per pair
+  OPTION --view -- metavar=VIEW arity=1 default='summary' choices=summary|exclusion|cover|coupling|one-step|json group=- required=False help=what stdout holds: 'summary' (default) a row an object, what it cost and whatever was stopped, cut or left unread; a graph as DOT, 'exclusion' the pairs that exclude, the theory's and the puzzle's in two strokes, 'cover' the groups and grids, 'coupling' the questions' hypergraph, 'one-step' its edges read one application back; or 'json', the whole of structure.json
+  POSITIONAL file required=True help=
   SUBCOMMAND saturate (delegated)
 COMMAND ein solve
   ABOUT the solution region R: describe it, or ask one question about it (--minimal, --maximal, --single, -n N, --count)
