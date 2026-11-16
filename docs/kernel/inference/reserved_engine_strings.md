@@ -65,15 +65,16 @@ carrier head must be registered here **and** excluded in
 Three `Provenance(kind="rule", …)` records name a rule that does not
 exist in any `(rule …)` form. They are written by the **search** layer
 when it writes a conclusion back to root, and they all share one shape —
-**empty `premises_raw`**. Since M1e2 S1e2.1c.5 (2026-11-03) only the third
-has a writer: the first two were the walk's and went with it, and the names
-stay reserved in `ein_core::terms::ENGINE`.
+**empty `premises_raw`**. None has a writer: the first two were the walk's
+and went with it at M1e2 S1e2.1c.5 (2026-11-03), the third with the walk's
+generator pass after it, and the names stay reserved in
+`ein_core::terms::ENGINE`.
 
 | name | written by | means |
 |---|---|---|
 | `<monotonic-unconditional>` | `solve.rs`, deleted with the walk at M1e2 S1e2.1c.5 | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
 | `<forced-positive>` | `promote_forced_positives`, deleted with the walk at M1e2 S1e2.1c.5 | a sole-surviving alive singleton promoted to a root fact |
-| `<lookahead-dies-immediately>` | [`hypgen::write_negated`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) | the lookahead kill-cache's `(not h)` |
+| `<lookahead-dies-immediately>` | `hypgen::write_negated`, deleted with the walk's generator pass and its kill cache | the lookahead kill-cache's `(not h)` |
 
 The empty premise tuple is the **contract**, not an omission: these facts
 have no fact-level premises because their real justification is
@@ -211,11 +212,11 @@ called* and so disagreed on the same input — were removed 2026-06-16.)
 **And the `Mode` enum went with them.** There is no `Mode` — no `SOLVE` /
 `GAPS` / `CONTRADICTIONS` — in
 [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs), nor anywhere
-else in `ein-infer`, and no goal-check string is branched on. The
-exactly-one-binding test is
-[`hypgen::complete`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) —
-*the generator proposes nothing at this state* — taken unconditionally, and
-the verdict is read off `k` afterwards.
+else in `ein-infer`, and no goal-check string is branched on. The walk's
+exactly-one-binding test was `hypgen::complete` — *the generator proposes
+nothing at this state* — taken unconditionally, with the verdict read off `k`
+afterwards; both went with the walk and its generator pass, and the answer is
+R, read off each node's dead and owing bits.
 
 *(Three `Mode` enums do exist in the workspace and none of them is this one:
 `ein_render::trace::Mode` — `Engine` / `Reorder`, the trace layout;
@@ -245,21 +246,20 @@ chose one, is refused at load ([`configuration.md` § 2.4](../configuration.md#2
 ## `__closed__` — engine effect
 
 The kernel trigger `(__closed__ R)` (a **dunder** name per the convention above;
-the bare `closed` is now a free userspace name) has two engine sides, both
-isolated in
-[`closed.rs`](../../../ein.rs/crates/ein-infer/src/closed.rs)
+the bare `closed` is now a free userspace name) has one engine side, in
+[`hypgen.rs`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)
 (constant `CLOSED = "__closed__"`):
 
-- **Auto-inference** — `emit_closed` writes `(__closed__ R)` for every declared
-  relation no compiled rule positively asserts (`producible_relations`). The
-  walk ran it once before the initial saturation. **No route and no command
-  runs it** since M1e2
-  [S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
-  (2026-11-03): its one caller is `shape::hyp_shape_with`, the shape golden's
-  `hyp+closed` op. So a solve sees only the markers a program authors or
-  `std.closure` derives, and H holds the candidates of every other relation.
 - **Hypgen suppression** — `hypgen::closed_relations` reads the `(__closed__
   R)` facts in the KB, and the generator contributes zero candidates for R.
+  The markers are the ones a program authors or a rule derives
+  (`std.closure`'s), and H holds the candidates of every other relation.
+
+It had a second, **auto-inference**: `emit_closed` wrote `(__closed__ R)` for
+every declared relation no compiled rule positively asserts. The walk ran it
+once before the initial saturation, no route or command ran it after M1e2
+[S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
+(2026-11-03), and it is deleted with the walk's generator pass.
 
 **Genuinely kernel** (a saturation rule can neither suppress hypgen generation
 nor introspect "no rule asserts R" — see the symmetric contrast in the

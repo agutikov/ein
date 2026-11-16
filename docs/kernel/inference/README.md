@@ -19,9 +19,10 @@
 > [`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s,
 > answered by a route over the region R
 > ([`solution_semantics.md`](solution_semantics.md)). What stays of P1.5's
-> search is the generator — `hypgen.rs`, `lookahead.rs`, `oblgen.rs`,
-> `hrule.rs`, `closed.rs` — which builds the routes' universe and which two
-> `--json-summary` blocks still call.
+> search is the generator — `hypgen.rs`, `oblgen.rs`, `hrule.rs` — which
+> builds the routes' universe, once at root, and which the `--json-summary`
+> root block and its leftover probe read. The walk's own pass over it went
+> after the walk, and `lookahead.rs` and `closed.rs` with it.
 >
 > **Six sections lower down describe machinery that is gone, and each says
 > so in its own banner**: *Mid-sweep saturation + per-sibling apriori
@@ -190,7 +191,7 @@ contributes, locked by S1.21.8:
 The solver **recomputes** the alive-candidate set per-KB via
 `compute_alive`
 (`= open_hypotheses(kb)`; the walk's, deleted with it at M1e2 S1e2.1c.5,
-2026-11-03, while `hypgen::open_hypotheses` stays) — the open hypotheses are a
+2026-11-03, and `hypgen::open_hypotheses` with its generator pass after it) — the open hypotheses are a
 pure function of the closed KB. The *set* is materialised only where a set is what the caller
 needs (layer enumeration); the completeness test asks the same generator for
 its first element and stops (`solution.complete`, S1.9.E16 — 8 of 9 zebra2
@@ -444,14 +445,13 @@ interprets it yet** — `unsat_core`,
 trace's "using" line still read positive premises only, so
 [`absent_semantics.md`](absent_semantics.md) C3 stands as written.
 
-**The one guard evaluation outside the saturator.**
-[`Lookahead::dies_immediately`](../../../ein.rs/crates/ein-infer/src/lookahead.rs)
-judges a rule's guards in the world **with** the probed candidate `h`: the
-guard must find no match in `kb` *and* `h` must not create one
-([`absent_semantics.md`](absent_semantics.md)'s D3, fixed with this stage). A
-guard containing a nested absent is non-monotone and cannot be decided that
-cheaply, so the lookahead **skips that disjunct** rather than guessing — which
-only loses a kill, keeping the "never reports a live hypothesis as dead" contract.
+**The guard evaluation that judged a world it had not built.** The walk's
+one-step lookahead judged a rule's guards in the world **with** the probed
+candidate `h`: the guard had to find no match in `kb` *and* `h` must not
+create one ([`absent_semantics.md`](absent_semantics.md)'s D3, fixed with this
+stage), and it skipped a disjunct whose nested absent it could not decide
+cheaply. It is deleted with the walk's generator pass: every guard the engine
+judges is judged against a KB it holds.
 
 **What changed semantically**, all pinned in
 [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs):
@@ -495,7 +495,6 @@ splitting the watched relations into
 `declared_only` (extension fixed by the loaded facts — no rule
 produces it). The
 classification reuses [`compile::asserted_relation`](../../../ein.rs/crates/ein-infer/src/compile.rs)
-(the same test behind [`closed::producible_relations`](../../../ein.rs/crates/ein-infer/src/closed.rs))
 and its `negated_relation` dual. Because the activator-bound head var
 (`?S` in `adjacent-via-*`) is baked to a literal relation per activator,
 the split is per-activator: zebra2's `adjacent-via-fwd` is derived-NAF on
@@ -521,8 +520,8 @@ this one. `RefutationUnderAbsentWarning` fires when a rule concludes
 **hypothesis generator can still propose** — the shape on which `dead` is
 **not** upward-closed
 ([Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent):
-`{(p A)}` dies while `{(p A), (q A)}` would live, and the kill cache, the
-singleton writeback and the width-1 clause each make sure the second is
+`{(p A)}` dies while `{(p A), (q A)}` would live, and the walk's kill cache,
+singleton writeback and width-1 clause each made sure the second was
 never reached). The two questions share one walk of the guards and differ
 only in what the watched relation is classified against — rule-derived, or
 generator-proposable — and they do not overlap: a guard over a *derived*
@@ -576,7 +575,7 @@ being done, and the `warn` event kind left the schema.
 ## Hypgen pre-pruning — disjunctive-prune (S1.5a.2)
 
 The hypothesis generator
-([`hypgen::generate`](../../../ein.rs/crates/ein-infer/src/hypgen.rs))
+([`hypgen::generate_config_free`](../../../ein.rs/crates/ein-infer/src/hypgen.rs))
 emits one candidate `(?R ?A ?B)` per legal slot-fill at root
 saturation; each candidate becomes a hypothesis the solver
 might branch on. The generator's filter consults

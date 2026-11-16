@@ -177,11 +177,13 @@ Each is already enforced locally; this page is the shared reason.
 - **C6 — `absent` is world-relative.** Results must not be cached across
   worlds nor written back as facts (P5): the same ground query answers
   differently in root and in a fork.
-- **C7 — the verdict inherits the semantics.**
-  [`complete` / `open_hypotheses`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)
-  are defined via `generate_hypotheses` → filters → lookahead → matcher,
-  so the solution-node predicate — hence the model count `k`, hence the
-  verdict — is downstream of the same boundary epistemic queries.
+- **C7 — the answer inherits the semantics.** A node's dead and owing
+  bits are read off its fixpoint, and H off root's
+  ([`hypgen.rs`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)'s
+  `generate_config_free`: the ladder's filters over the saturated KB), so `R`
+  — hence every count and every claim — is downstream of the same boundary
+  epistemic queries. The walk's `complete` / `open_hypotheses`, which read
+  them through its lookahead, are deleted.
 
 ## Explicitly not provided
 
@@ -213,9 +215,9 @@ Each is already enforced locally; this page is the shared reason.
   which C3 above already says from the other direction. So the property fails
   on any program whose `(false)` or `(not …)` derivation passes an
   `(absent P)` over a relation the hypothesis generator can still propose:
-  `{(p A)}` dies, `{(p A), (q A)}` would live, and three shipped mechanisms
-  make sure the second is never reached — the lookahead kill cache, the
-  singleton writeback, and the width-1 no-good clause. Reproduced
+  `{(p A)}` dies, `{(p A), (q A)}` would live, and three mechanisms the walk
+  shipped made sure the second was never reached — the lookahead kill cache,
+  the singleton writeback, and the width-1 no-good clause. Reproduced
   ([Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)),
   banked as
   [`examples/ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein),
@@ -328,7 +330,7 @@ load. The priorities are the probes' as written; since M1f S1f.5.15 removed
 | **P3** unstratified loop | `p ← seed ∧ absent q`; `q ← p` | converges to `{p, q}` | no stable-model discipline — this program has *no* stable model |
 | **P4** mutual NAF | `p ← seed ∧ absent q`; `q ← seed ∧ absent p` (equal prio) | exactly `{p}` (first-declared wins) | no stratification check; one of two stable models picked by boundary-admission order — and why admission is one-at-a-time |
 | **P5** root vs fork | `gated ← seed ∧ absent (r A B)`; commit `{(r A B)}` | root derives `gated`; the alive fork does **not** | C6 — same ground query, different world, different answer |
-| **P6** lookahead world | `false ← (cand ?x) ∧ absent (cand ?x)`; probe `h = (cand A)` | `dies_immediately` returns **False** | D3 **fixed** — the guard is evaluated in the world that includes `h` |
+| **P6** lookahead world | `false ← (cand ?x) ∧ absent (cand ?x)`; probe `h = (cand A)` | `dies_immediately` returned **False** | D3 **fixed** — the guard was evaluated in the world that includes `h`; the lookahead is deleted, and `examples/branching/13_lookahead_naf_world.ein` is the shape as a corpus program |
 | **P7** nested `(and …)` | `ok ← seed ?x ∧ absent (and (g ?x ?y) (h ?y))`; witness for `A` only | `ok(B)` only | Definition — inner free vars are existential under the guard |
 | **P8** or-disjunct guards | `gate: (or (t1 ∧ absent r1) (t2 ∧ absent r2)) @200`; `r2 ← raw @100` | `gated` **not** derived | D5 **fixed** — guards are lifted per disjunct and paired with it by `match.run_guarded` |
 
@@ -340,18 +342,19 @@ rather than fixed there (the documentation task ran under a
 behaviour-unchanged gate). The closure/worlds split fixed both, and both
 fixes are pinned.
 
-- **D3 — lookahead world mismatch** (P6). ✅ **fixed 2026-08-17.**
-  [`Lookahead::dies_immediately`](../../../ein.rs/crates/ein-infer/src/lookahead.rs)
+- **D3 — lookahead world mismatch** (P6). ✅ **fixed 2026-08-17**, and the
+  lookahead since deleted with the walk's generator pass.
+  `Lookahead::dies_immediately`
   used to posit the candidate `h` into a positive premise while running the
   rule's guards against the KB *without* `h`, so a rule watching the
   candidate's own relation could kill a hypothesis it could never refute in
   any one world — and the default-on kill cache wrote `(not h)` back to the
-  parent, making it verdict-affecting in principle. The guard is now
-  evaluated in the world **with** `h`: it must find no match in `kb` *and*
-  `h` must not create one. A guard whose verdict cannot be decided that
+  parent, making it verdict-affecting in principle. The fix evaluated the
+  guard in the world **with** `h`: it had to find no match in `kb` *and* `h`
+  must not create one. A guard whose verdict could not be decided that
   cheaply — one containing a nested absent, which is non-monotone in the KB
-  — makes the lookahead skip the disjunct rather than guess, which only
-  loses a kill and so keeps the "never reports a live hypothesis as dead"
+  — made the lookahead skip the disjunct rather than guess, which only lost
+  a kill and so kept the "never reports a live hypothesis as dead"
   contract.
 - **D5 — or-disjunct guards skipped the re-check** (P8). ✅ **fixed
   2026-08-17.** `absents_still_pass` walked `plan.steps` only, while

@@ -2015,8 +2015,8 @@ oracle` answers, in a build with debug assertions as in a release build.
 Where an hrule reads `not`, every hrule is matched before any candidate is
 emitted (`ein_infer::hrule`'s `Hrules::candidates`), so nothing the hypothesis
 pipeline writes between two candidates is visible to the enumeration. No
-command's pipeline writes there: H is taken config-free since M1e2 S1e2.3.1,
-with the lookahead's kill cache off.
+pipeline writes there: H's pass writes nothing, and the walk's kill cache,
+the one writer there was, is deleted.
 
 **Until these stages** a rule whose `(not ?g)` met a name stored `(not Ann)`,
 which no program can write, and the state file `ein solve --dump-answer` wrote

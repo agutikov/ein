@@ -30,8 +30,9 @@
 > ([`region_dump.md`](region_dump.md)). So §§ 1–2's search layer, § 3's
 > commitment-set, no-good, record and verdict rows, O5's fail-fast fork, and
 > the *Ein today* paragraphs of O7 and O8 are the record of what M1 built. The
-> deductive layer and the generator (`hypgen`, `hrule`, `oblgen`,
-> `lookahead`) are current.
+> deductive layer and the generator (`hypgen`, `hrule`, `oblgen`) are
+> current; the walk's own pass over the generator, with its `lookahead`, its
+> kill cache and its `complete`, went after the walk.
 
 ---
 
@@ -223,7 +224,7 @@ and the normative reading of a boundary query is
 | `EqClasses` (`ein-core/kb.rs`) — **no engine code calls it** (§O4) | union-find over names (a *placeholder* — no propagation, and matching does not consult it) | disjoint-set / congruence classes / e-graph |
 | `Prov` + `DerivationDag` (`ein-core/prov.rs`, `ein-core/walks.rs`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`Kb::justifications`); `absent` records the queries that had to *fail* (recorded, not yet interpreted); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
 | `CanonicalSetId` (`apriori.rs`) | a sorted `Vec<FactId>` = one **commitment set** — the walk's, deleted with it at M1e2 S1e2.1c.5 (2026-11-03) | a CSP partial assignment / an ATMS environment / an itemset |
-| no-good clause, a `Box<[FactId]>` in `Nogoods` (`ein-core/kb.rs`, `nogoods.rs`) | a learned "this combination is dead" clause, kept subsumption-minimal; `nogoods.rs`, its learner, went with the walk at M1e2 S1e2.1c.5 (2026-11-03), and no route learns a clause | CDCL conflict clause / CSP no-good |
+| no-good clause, a `Box<[FactId]>` in `Nogoods` (`ein-core/kb.rs`, `nogoods.rs`) | a learned "this combination is dead" clause, kept subsumption-minimal; `nogoods.rs`, its learner, went with the walk at M1e2 S1e2.1c.5 (2026-11-03), and the store in `ein-core/kb.rs` after it: no route learns a clause | CDCL conflict clause / CSP no-good |
 | `SolutionRecord` / `DeadCommitment` (`solve.rs`) | a recorded model / refutation with its `state_key` and core — deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03) | model / unsat certificate |
 | `Verdict` (`verdict.rs`) | `Solution \| Ambiguity \| Contradiction \| Open` (§2 — the fourth is *owing*, not *unsat*) + optional `LatticeProof` — deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03); `--single`'s four words are `explore::Verdict`, read off R | SAT/UNSAT/MULTIPLE + certificate |
 
@@ -377,7 +378,7 @@ Datalog evaluation applied to one saturation, and it came out *faster*:
 dropping the absent-flip full-match split more than pays for the boundary
 evaluations that replace it (an exhaustive `zebra2` solve ~10.4 s → ~8.5 s;
 the acceptance gate 130 s → 91 s). **Gap:** no magic-sets / goal-direction
-(it's fully bottom-up; the `hypgen` + lookahead layer is the
+(it's fully bottom-up; the `hypgen` layer is the
 goal-direction substitute), no DRed (the append-only design means deletion
 never happens *within* a saturation — retraction is modelled by forking a
 fresh KB instead).
@@ -654,7 +655,8 @@ activity heuristic, restarts, and clause-DB minimisation. CSP adds
 
 **Ein today**, until M1e2 S1e2.1c.5 (2026-11-03) deleted the walk and with it
 `nogoods.rs`, the cascade and the singleton writeback; `lookahead.rs` and the
-kill cache stay, in the generator. Until then, a creditable CDCL-*flavoured*
+kill cache stayed in the generator until the walk's own generator pass went
+too. Until then, a creditable CDCL-*flavoured*
 set: `nogoods.rs` learns
 subsumption-**minimal** conflict clauses and prunes by the subset test
 (O7's Apriori filter); `lookahead.rs` is a **one-step (singleton-consistency /
