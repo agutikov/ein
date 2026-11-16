@@ -51,6 +51,8 @@ file it keeps its id; do not reuse a closed id.
 
 ## Q1 — What kind of graph is the IR?
 
+**Decision file:** [`docs/decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md`](../docs/decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)
+
 Per [idea 02 §Open questions](ideas/02-graph-as-formal-substrate.md)
 the candidates are: plain directed graph, typed multigraph, typed
 hypergraph (relations span >2 vars), adhesive category, e-graph on
@@ -65,6 +67,8 @@ becomes relevant (per [idea 06 row 2](ideas/06-inference-rules-completeness.md))
 The decision is finalised in M1.P1.2 S1.2.1.
 
 ## Q2 — When does the graph engine hand off?
+
+**Decision file:** [`docs/decisions/engine/Q2-ein-hands-no-problem-to-an-external-solver.md`](../docs/decisions/engine/Q2-ein-hands-no-problem-to-an-external-solver.md)
 
 [Idea 02 §When does the graph stop being enough](ideas/02-graph-as-formal-substrate.md)
 names three threshold conditions: arithmetic-dominated constraints,
@@ -84,6 +88,8 @@ solver call, and they are the honest limitations paragraph
 [M5](m5_presentation/README.md) Track A owes its readers.
 
 ## Q3 — Surface IR syntax
+
+**Decision file:** [`docs/decisions/language/Q3-ein-is-an-s-expression-language.md`](../docs/decisions/language/Q3-ein-is-an-s-expression-language.md)
 
 Decided in M1.P1.1 S1.1.1. The leading candidate is a small
 S-expression dialect with named atoms carrying most of the semantic
@@ -107,6 +113,8 @@ folder are now plain text — the stage id is the citation.
 semantics). Everything else below is closed and kept as the record.
 
 ## Q4 — Rule presentation language
+
+**Decision file:** [`docs/decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md`](../docs/decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)
 
 Per [idea 06 §Open sub-questions point 1](ideas/06-inference-rules-completeness.md).
 
@@ -144,6 +152,8 @@ required to ship. Domain-completeness is out of scope; revisit per
 problem class.
 
 ## Q6 — Symmetry breaking
+
+**Decision file:** [`docs/decisions/answer/Q6-symmetry-is-the-programs-not-the-engines.md`](../docs/decisions/answer/Q6-symmetry-is-the-programs-not-the-engines.md)
 
 Per [idea 08 §Open questions point 3](ideas/08-human-style-deductive-trace.md).
 Two paths initially considered:
@@ -184,6 +194,8 @@ ordering. Decided in P1.3 S1.3.3.
 
 ## Q16 — Universal vs per-puzzle rules
 
+**Decision file:** [`docs/decisions/stdlib/Q16-general-rule-families-are-stdlib-modules.md`](../docs/decisions/stdlib/Q16-general-rule-families-are-stdlib-modules.md)
+
 Per [idea 06 §Open sub-questions point 4](ideas/06-inference-rules-completeness.md).
 
 **Working answer**: ship with a *universal core* (composition,
@@ -201,6 +213,8 @@ mechanism for the spatial bundle; resolved on 2026-05-18 by the
 declarative answer to [Q17](#q17--spatial-relation-formalisation).
 
 ## Q17 — Spatial-relation formalisation
+
+**Decision file:** [`docs/decisions/language/Q17-spatial-structure-is-facts-and-rules-with-no.md`](../docs/decisions/language/Q17-spatial-structure-is-facts-and-rules-with-no.md)
 
 The 2021 prototype's open question
 ([idea 05 §Open question recorded in the README](ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)).
@@ -254,6 +268,8 @@ integer-arithmetic spatial encoding for Zebra.
 
 ## Q18 — Provenance granularity
 
+**Decision file:** [`docs/decisions/engine/Q18-provenance-is-per-fact-an-or-of-derivations-over.md`](../docs/decisions/engine/Q18-provenance-is-per-fact-an-or-of-derivations-over.md)
+
 Per [idea 03 §What "contradictions" specifically means](ideas/03-three-task-classes.md)
 and [idea 08](ideas/08-human-style-deductive-trace.md).
 
@@ -276,6 +292,8 @@ S1.2.3 T1.2.3.4.
 
 ## Q19 — Hypothesis branching strategy
 
+**Decision file:** [`docs/decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md`](../docs/decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)
+
 The 2021 prototype's algorithm branches whenever `solved(s)` returns
 false. Modern CDCL solvers branch only when propagation saturates.
 
@@ -285,6 +303,8 @@ still incomplete. Mirrors human walkthroughs. Decided in P1.5 S1.5.1.
 
 ## Q20 — Trace reordering
 
+**Decision file:** [`docs/decisions/read-out/Q20-the-trace-is-in-the-engines-order-and-reorder.md`](../docs/decisions/read-out/Q20-the-trace-is-in-the-engines-order-and-reorder.md)
+
 Per [idea 08 §Why this is a hard problem — Ordering](ideas/08-human-style-deductive-trace.md).
 
 **Working answer**: emit engine-order trace + a `--reorder` flag
@@ -293,6 +313,8 @@ human-template fitting to M2 (where an LLM surface generator is
 available). Decided in P1.6 S1.6.4.
 
 ## Q21 — IR ↔ DOT structural isomorphism
+
+**Decision file:** [`docs/decisions/cli/Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md`](../docs/decisions/cli/Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md)
 
 Surfaced in S1.1.1 design (2026-05-18). The EBNF ↔ railroad-diagram
 move: two surface representations of one structure. The IR is the
@@ -384,6 +406,8 @@ longer an `(ontology …)` block to split into sub-heads, so this question is
 
 ## Q23 — What carries an explicit type slot
 
+**Decision file:** [`docs/decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md`](../docs/decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)
+
 Direct question raised 2026-05-18: which entities in the data model
 have a `type` slot?
 
@@ -438,6 +462,8 @@ DSL spec; do not promote to top-level keyword. Locks when the DSL
 is written down.
 
 ## Q25 — Cardinality and ordinality rules with vars
+
+**Decision file:** [`docs/decisions/stdlib/Q25-ein-has-no-ordinal-form-an-order-is-a-relation.md`](../docs/decisions/stdlib/Q25-ein-has-no-ordinal-form-an-order-is-a-relation.md)
 
 The rule library has `global-cardinality` (`exactly-n X V N`,
 T1.3.2.8) — counting facts with a value. The user (2026-05-18)
@@ -509,6 +535,8 @@ question is the *future-proofing* corollary.
 
 ## Q27 — Relation body form
 
+**Decision file:** [`docs/decisions/language/Q27-a-relations-properties-are-facts-beside.md`](../docs/decisions/language/Q27-a-relations-properties-are-facts-beside.md)
+
 User direction (2026-05-19): two equivalent forms for declaring a
 relation along with its algebraic properties:
 
@@ -574,6 +602,8 @@ most likely choice because:
 
 ## Q29 — Pattern: walker vs cached executable program
 
+**Decision file:** [`docs/decisions/engine/Q29-a-rule-compiles-once-per-activator.md`](../docs/decisions/engine/Q29-a-rule-compiles-once-per-activator.md)
+
 Surfaced 2026-05-19 during the P1.3 review. P1.2 ships
 `kb.Pattern` as a structural lift of the rule's `:match` / `:assert`
 IR clause — `expr: IRNode` plus pre-computed metadata (variables,
@@ -632,6 +662,8 @@ Full context:
 `p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q30.
 
 ## Q31 — `:why` template substitution language
+
+**Decision file:** [`docs/decisions/language/Q31-a-why-template-refers-to-a-variable-as-var.md`](../docs/decisions/language/Q31-a-why-template-refers-to-a-variable-as-var.md)
 
 Surfaced 2026-05-19 during the P1.3 review. Zebra.ein uses
 `{?rel}` (ein-var style, `?` prefix). The original P1.3 plan used
@@ -736,6 +768,8 @@ Full context:
 `p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q33.
 
 ## Q40 — Hypothesis-rule premises
+
+**Decision file:** [`docs/decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md`](../docs/decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)
 
 Surfaced 2026-05-19 during the P1.3 review. The original P1.3
 plan's T1.3.2.5 sketched:

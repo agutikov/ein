@@ -99,6 +99,8 @@ does. The investigation ran on prototypes of the shipped `std.arith`. Source:
 
 ### 3. Should the loader refuse a fact whose count of arguments is not the one its relation declares?
 
+**Decision file:** [`docs/decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md`](../../../docs/decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)
+
 Today `(add (n z 5))`, one operand where `add` declares two, loads and is answered by silence; so does a
 `num9` number of eight digits. No rule can flag a wrong count in general, so this is the loader's or nobody's.
 It would be an engine change for every program, not the calculator alone: every form headed by a declared
@@ -119,6 +121,8 @@ Rust suites' inline programs were not scanned.
 <a id="q4"></a>
 
 ### 4. Build the recommended detection rules?
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md`](../../../docs/decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md)
 
 The set the page calls *b1*: a digit's place holding anything but a digit; a number that ends in a digit or in
 a named constant where `z` goes, `(n 1 2)`; a digit where a number goes, `(add 7 X)`; a name stated twice with
@@ -147,6 +151,8 @@ costs in proportion to its count.
 
 ### 5. A name that no `let` states: silence, or one `absent` in the theory?
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.317-a-name-no-let-states-is-flagged-as-undeclared.md`](../../../docs/decisions/stdlib/math/decimal/Q-M1f.317-a-name-no-let-states-is-flagged-as-undeclared.md)
+
 `(add foo X)` where nothing says `(let foo …)`. Saying *no `let` names it* is a negation, so it cannot be
 flagged monotonically. A misspelt constant is a likely slip. Source: malformed_numbers.md Q2.
 
@@ -162,6 +168,8 @@ flagged monotonically. A misspelt constant is a likely slip. Source: malformed_n
 <a id="q6"></a>
 
 ### 6. Should a request that no rule completes say so?
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.318-a-flag-means-malformed-and-no-flag-does-not-mean.md`](../../../docs/decisions/stdlib/math/Q-M1f.318-a-flag-means-malformed-and-no-flag-does-not-mean.md)
 
 The general form of the question above. With everything recommended here built, three things still stay
 silent: a name no `let` states, a number that ends in a name that is neither a digit nor a constant, and a
@@ -182,6 +190,8 @@ is an absence, so no monotone rule can say it. Sources: malformed_numbers.md § 
 <a id="q7"></a>
 
 ### 7. May a module reserve its names, so that a program's written facts of them are refused?
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.319-no-module-reserves-its-names.md`](../../../docs/decisions/imports/Q-M1f.319-no-module-reserves-its-names.md)
 
 A second *declaration* of any of the theory's names is refused at load already. A written *fact* is not: a
 program that writes `(done (sum (n z 2) (n z 2)) (n z 5))` gets `2 + 2 = 5`, an answer nobody computed. A
@@ -216,6 +226,8 @@ importing the theory flat may not declare. Source: malformed_numbers.md Q5; [Q-M
 <a id="q9"></a>
 
 ### 9. Does `std.num9` get the same flag?
+
+**Decision file:** [`docs/decisions/stdlib/math/num9/Q-M1f.320-std-math-num9-is-a-second-representation.md`](../../../docs/decisions/stdlib/math/num9/Q-M1f.320-std-math-num9-is-a-second-representation.md)
 
 `std.num9` is the fixed-width module, nine digits in one fact. Its malformations are a digit's place, checked
 by the same ten guards on each of nine slots, and the count of digits, which is [question 3](#q3)'s loader check and
@@ -305,6 +317,8 @@ every number is 3.3 times longer. Source:
 
 ### 13. Which of the three ways to have binary numbers?
 
+**Decision file:** [`docs/decisions/stdlib/math/binary/Q-M1f.321-binary-arithmetic-is-a-theory-of-its-own-beside.md`](../../../docs/decisions/stdlib/math/binary/Q-M1f.321-binary-arithmetic-is-a-theory-of-its-own-beside.md)
+
 - **(a) The same shape and names,** `(n (n z 1) 0)` and `(add X Y)`, over binary tables. A program picks its
   base by the tables it imports, and a number does not say its base; two bases in one program need a prefixed
   import.
@@ -346,6 +360,8 @@ The prototype's are placeholders: the shape `(b2 PREFIX BIT)`, the requests `add
 
 ### 15. Is zero the same `z` in both bases?
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.322-zero-is-one-z-in-every-base.md`](../../../docs/decisions/stdlib/math/Q-M1f.322-zero-is-one-z-in-every-base.md)
+
 In the prototype it is: `z` is zero in decimal and in binary, the one number whose numeral does not say its
 base. Source: binary_arithmetic.md Q3.
 
@@ -376,6 +392,8 @@ file a reader can follow.
 
 ### 17. Where do the decimal ⇄ binary conversions live?
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.323-conversion-between-the-bases-is-a-module.md`](../../../docs/decisions/stdlib/math/Q-M1f.323-conversion-between-the-bases-is-a-module.md)
+
 `(to-bin X)` and `(to-dec B)`, eleven rules on the prototype, each a chain of the two theories' operations;
 20 of 20 conversions agree with Python. They call the theories' internal tagged calls, which is
 [question 41](#q41). Source: binary_arithmetic.md Q5.
@@ -391,6 +409,8 @@ file a reader can follow.
 <a id="q18"></a>
 
 ### 18. Keep decimal's division by bisection, or take the simpler one?
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.324-decimal-division-is-long-division-each-digit.md`](../../../docs/decisions/stdlib/math/decimal/Q-M1f.324-decimal-division-is-long-division-each-digit.md)
 
 A by-product: the generic theory's division, which subtracts repeatedly and computes no multiples, is 20 rules
 where the shipped one is 36. Source: binary_arithmetic.md Q6.
@@ -421,6 +441,8 @@ derived from their rows, a circuit simulated by saturation, and six applications
 
 ### 19. One table for the sixteen functions, or a relation each?
 
+**Decision file:** [`docs/decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-a-value-of-one-table.md`](../../../docs/decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-a-value-of-one-table.md)
+
 - **(a) One table,** `(gate2 And 1 1 1)`: a function is a value, so one rule speaks of *any* function, and a
   search can guess which function a gate is.
 - **(b) A relation a function,** `(And 1 1 1)`: a shorter row; a rule about any function then needs an
@@ -439,6 +461,8 @@ any spelling will do. Say here if one should change; `Randn` and `Rorn` are the 
 
 ### 20. Do the property facts ship as rules or as generated facts?
 
+**Decision file:** [`docs/decisions/stdlib/bool/Q-M1f.326-the-properties-of-the-sixteen-functions-are.md`](../../../docs/decisions/stdlib/bool/Q-M1f.326-the-properties-of-the-sixteen-functions-are.md)
+
 Thirty relations such as `(commutative Xor)`, `(dual-of And Or)`, `(identity-of Or 0)` are all derived from
 the 64 rows by monotone rules, in 405 firings. Source: binary_logic.md Q3.
 
@@ -453,6 +477,8 @@ the 64 rows by monotone rules, in 405 firings. Source: binary_logic.md Q3.
 <a id="q21"></a>
 
 ### 21. Are the one-sided identity and absorbing facts wanted?
+
+**Decision file:** [`docs/decisions/stdlib/bool/Q-M1f.327-identity-and-absorbing-elements-are-derived-one.md`](../../../docs/decisions/stdlib/bool/Q-M1f.327-identity-and-absorbing-elements-are-derived-one.md)
 
 `identity-of` and `absorbing-of` as two-sided facts hold of four functions each; the left and right forms hold
 of eight each. `Andn` (*a and not b*), for one, has a right identity, 0, and no left one. Source:
@@ -488,6 +514,8 @@ binary_logic.md Q5 and § 2.
 <a id="q23"></a>
 
 ### 23. What ships from the logic stage?
+
+**Decision file:** [`docs/decisions/stdlib/bool/Q-M1f.328-boolean-functions-and-circuits-ship-as-four-std.md`](../../../docs/decisions/stdlib/bool/Q-M1f.328-boolean-functions-and-circuits-ship-as-four-std.md)
 
 Source: binary_logic.md Q8.
 
@@ -591,6 +619,8 @@ the recommendation changes those files. [question 10](#q10), on expressions, too
 
 ### 27. Does the theory work backwards from the question?
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.329-the-word-theory-works-backwards-from.md`](../../../docs/decisions/corpus/Q-M1f.329-the-word-theory-works-backwards-from.md)
+
 On the prototype nothing is computed that no question needs: an `asked` fact derives what is `wanted`, and
 that what it `needs`. It makes the plan of a two-step problem readable and an unused fact silent. It also
 means a contradiction in the facts is found only if a question reaches it. Source: word_problems.md Q2.
@@ -606,6 +636,8 @@ means a contradiction in the facts is found only if a question reaches it. Sourc
 <a id="q28"></a>
 
 ### 28. How is a missing quantity detected?
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.330-a-missing-quantity-is-a-fact-derived-by-absent.md`](../../../docs/decisions/corpus/Q-M1f.330-a-missing-quantity-is-a-fact-derived-by-absent.md)
 
 *Bob has 5, gave 2 to Alice; how many together?* Nothing says what Alice had. Source: word_problems.md Q3 and
 § 3.6.
@@ -624,6 +656,8 @@ means a contradiction in the facts is found only if a question reaches it. Sourc
 <a id="q29"></a>
 
 ### 29. How is an assumption written and reported?
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.331-an-assumption-is-a-marked-fact-and-the-answer.md`](../../../docs/decisions/corpus/Q-M1f.331-an-assumption-is-a-marked-fact-and-the-answer.md)
 
 *Assume that Alice had none.* Source: word_problems.md Q4 and § 3.5.
 
@@ -657,6 +691,8 @@ Source: word_problems.md Q5.
 
 ### 31. How is a word with two readings handled?
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.332-a-word-with-two-readings-always-has-one-chosen.md`](../../../docs/decisions/corpus/Q-M1f.332-a-word-with-two-readings-always-has-one-chosen.md)
+
 *13 apples, a box holds 3: how many boxes do they need?* 4 if only full boxes count, 5 if every apple is
 packed. The readings are hypotheses in three built forms. Source: word_problems.md Q6 and § 4.3.
 
@@ -677,6 +713,8 @@ built), or is a reading always chosen? Say which with the letter.
 <a id="q32"></a>
 
 ### 32. Is *Alice has 3 pears* also *Alice has no apples*?
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.333-what-is-not-listed-is-zero-only-where-a-problem.md`](../../../docs/decisions/corpus/Q-M1f.333-what-is-not-listed-is-zero-only-where-a-problem.md)
 
 *Bob has 5 apples, Alice has 3 pears. How many apples together?* Source: word_problems.md Q7.
 
@@ -709,6 +747,8 @@ Btw, if we add rules and ontology that restricts throwing things away and after 
 
 ### 34. Where does the word theory live, and what is it called?
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.334-the-word-theory-is-examples-not-a-module.md`](../../../docs/decisions/corpus/Q-M1f.334-the-word-theory-is-examples-not-a-module.md)
+
 Source: word_problems.md Q9 and § 8.
 
 - **(a) `examples/word_problems/`,** the modules beside their problems, named `words` (what the words mean),
@@ -724,6 +764,8 @@ were banked.
 <a id="q35"></a>
 
 ### 35. Which further readings of a word should the theory hold?
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.335-the-word-theory-holds-only-the-readings.md`](../../../docs/decisions/corpus/Q-M1f.335-the-word-theory-holds-only-the-readings.md)
 
 Not held today: *gave all* and *gave half*; *together* over everyone in the problem; *how many times more*;
 sizes and part-filled boxes; fractions of a share. Source: word_problems.md Q10 and § 8's table.
@@ -784,6 +826,8 @@ Eleven rules were enough on the prototype; three such requests took 33 firings. 
 <a id="q38"></a>
 
 ### 38. Do gcd and lcm go into `std.arith`?
+
+**Decision file:** [`docs/decisions/stdlib/math/gcd/Q-M1f.336-gcd-and-lcm-are-a-module-of-their-own-over.md`](../../../docs/decisions/stdlib/math/gcd/Q-M1f.336-gcd-and-lcm-are-a-module-of-their-own-over.md)
 
 `std.rat` computes a greatest common divisor inside itself and offers none to a program. Six rules offer gcd
 and lcm. Source: beyond_arithmetic.md Q5.

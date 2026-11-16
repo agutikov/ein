@@ -27,6 +27,8 @@ Numbers are the old file's question numbers. Figures quoted are copied from `que
 
 ### The stdlib layout: `std.math` and what goes where
 
+**Decision file:** [`docs/decisions/stdlib/Q-M1f.338-the-calculator-is-std-math-and-boolean-functions.md`](../../../docs/decisions/stdlib/Q-M1f.338-the-calculator-is-std-math-and-boolean-functions.md)
+
 Your replies to 16, 38, 42 and 52 together: *"rename arith to decimal-arith"*, *"it's time to make a std.math
 with subfolders"*, *"std.math.decimal-arith.overflow"*, *"not std.crypt, maybe std.math.arith.crypt"*. Two of
 them name the same module differently (`arith` and `decimal-arith`), and a rename moves every program, golden

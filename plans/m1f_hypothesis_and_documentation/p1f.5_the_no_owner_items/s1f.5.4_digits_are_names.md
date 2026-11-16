@@ -684,6 +684,8 @@ running nothing. Not recommended: the register kept W1's lever rows as rows, res
 
 #### Q1 — the synthetic names
 
+**Decision file:** [`docs/decisions/language/Q-M1f.339-every-name-the-loader-makes-up-starts-with.md`](../../../docs/decisions/language/Q-M1f.339-every-name-the-loader-makes-up-starts-with.md)
+
 `@empty`, `<nested>`, `@params` and `<query>` are names a program can now write
 ([the finding](#the-finding-two-synthetic-names-become-spellable)).
 
@@ -733,6 +735,8 @@ writing no state ([§ Notes](#notes)). S1f.5.5's stop puts it to the user, recom
 ([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)).
 
 #### Q4 — a name of digits in `summary.json`
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.340-every-name-is-a-json-string.md`](../../../docs/decisions/read-out/Q-M1f.340-every-name-is-a-json-string.md)
 
 `summary.json`'s query rows render a binding whose text is digits as a JSON number (`region_answer.rs`, `binding`;
 M1a S1a.6.6's regression, `ein-bugs/int-goal-binding`). With digits as names, `(p 007)` and `(p 7)`, two names, both

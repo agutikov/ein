@@ -50,6 +50,8 @@ and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user'
 
 ## Q-M1e2.1 — Is a discharged superset of a discharged state a new model?
 
+**Decision file:** [`docs/decisions/answer/Q-M1e2.1-a-discharged-superset-of-a-discharged-state-is.md`](../../docs/decisions/answer/Q-M1e2.1-a-discharged-superset-of-a-discharged-state-is.md)
+
 `examples/ein-bugs/wrong-answers/owed-seats.ein` (two guests, two chairs, `total-owed` +
 `surjective-owed`) has two matchings. Is a state that seats Ann on **both**
 chairs and Bob on one, owing nothing, a third model? *No* (**minimal**): k = 2,
@@ -81,6 +83,8 @@ is the literal **7**, the same in commitments and in states, since nothing
 there saturates onto anything else. S1e2.2.3 is re-read against it.
 
 ## Q-M1e2.2 — Does a guard's `absent` premise bind the state the search ends in?
+
+**Decision file:** [`docs/decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md`](../../docs/decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)
 
 `features/07_unstratifiable.ein` records `{(p one), (q one)}`, where `(p one)`
 was derived under `(absent (q one))`, and its own header says that set *"is not a
@@ -135,6 +139,8 @@ allows: `features/07` answers what the row records, the row stays `open`,
 reviewed `deferred`, owner F21, and the witness's header says so.
 
 ## Q-M1e2.3 — What does `exhausted` certify when the rung leaves relations uncovered?
+
+**Decision file:** [`docs/decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md`](../../docs/decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)
 
 `completeness.md` §3c's fixture is `exhausted = true` with `knows` never
 hypothesised, and `arity3.ein` likewise for an arity-3 goal. Relative to
@@ -201,6 +207,8 @@ and no member of N reports a 0-fact core but on a run stopped past
 (`lattice/06_friends_tables.ein`, 68; S1e2.2.19 § Notes).
 
 ## Q-M1e2.5 — Does S1f.10.8's ruling move here?
+
+**Decision file:** [`docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md`](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)
 
 W3 cannot be fixed until someone rules *forbid* or *respect* on a refutation
 that rests on `(absent P)` over an extendable relation, and that ruling is
@@ -346,6 +354,8 @@ what they print) and S1e2.3.6 (the nightly workflow), so this question did not
 wait for them. All three are done, and the phase closed 2026-11-03.
 
 ## Q-M1e2.7 — The answer is a region of the lattice
+
+**Decision file:** [`docs/decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md`](../../docs/decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)
 
 **A reading given 2026-10-15**, by the user, in the review of W1
 ([S1e2.1.7](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md)). It replaces
@@ -1227,6 +1237,8 @@ and option 2 is [P1e2.1c](p1e2.1c_the_region_search/README.md).
 
 ## Q-M1e2.9 — Which constants are names of the program?
 
+**Decision file:** [`docs/decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md`](../../docs/decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)
+
 Put to the user on 2026-11-04, after S1e2.2.4 seeded the blind enumerator's
 objects with every constant a rule's `:assert` names (Q-M1e.21 (b)).
 [`solution_semantics.md` § 1.2](../../docs/kernel/inference/solution_semantics.md)
@@ -1280,6 +1292,8 @@ clause is text, and not a name. The fix moves the names of two corpus
 programs, W18's `str-in-assert` and `str-in-hrule` (`lbl`), and of no other.
 
 ## Q-M1e2.10 — When the obligations rung cannot trust its domain scan, whose candidates is R over?
+
+**Decision file:** [`docs/decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md`](../../docs/decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md)
 
 Put to the user on 2026-11-04 by
 [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md)'s step 1
@@ -1359,6 +1373,8 @@ rows are fixed, each witness answering its control's R under the decline (1,
 moved (3 366 sweep runs).
 
 ## Q-M1e2.11 — Which derivations is the unsat core the smallest over, and may a config flag change it?
+
+**Decision file:** [`docs/decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md`](../../docs/decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)
 
 Put to the user on 2026-11-04 by
 [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md)'s step 1
@@ -1488,6 +1504,8 @@ beside the cap's. This ruling and the exemption are unchanged: the
 `lever_invariance` exemption still names the core alone.
 
 ## Q-M1e2.12 — Which activators does a dead node's core follow?
+
+**Decision file:** [`docs/decisions/answer/Q-M1e2.12-a-dead-nodes-core-follows-an-activator-only.md`](../../docs/decisions/answer/Q-M1e2.12-a-dead-nodes-core-follows-an-activator-only.md)
 
 Put to the user on 2026-11-04 by
 [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md)'s step 1
@@ -1743,6 +1761,8 @@ parse with S1f.5.1's note; S1f.5.5's T5 deleted the loader's line
 
 ## Q-M1e2.15 — What does a derivation through a `forall` rest on?
 
+**Decision file:** [`docs/decisions/answer/Q-M1e2.15-a-derivation-through-a-forall-rests-on-each-fact.md`](../../docs/decisions/answer/Q-M1e2.15-a-derivation-through-a-forall-rests-on-each-fact.md)
+
 Put to the user on 2026-11-05 by
 [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md)'s step 1
 ([T1e2.2.21.1](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md#task-t1e22211--a-witness-banked-w21-filed-every-core-measured)).
@@ -1889,6 +1909,8 @@ The close waits on the user's go-ahead after the inventory is re-taken.
 
 ## Q-M1e2.17 — Where does a keyword end?
 
+**Decision file:** [`docs/decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md`](../../docs/decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md)
+
 Put to the user on 2026-11-05 by
 [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md)'s step 1
 ([T1e2.2.22.1](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md#task-t1e22221--the-witnesses-banked-w22-filed-every-move-listed)).
@@ -1991,6 +2013,8 @@ stands**: a `(trace …)` holds `step` events alone since the swap, and `(trace
 `defined_behaviour.md` § 1.4 say so since S1f.5.5's T1f.5.5.7.
 
 ## Q-M1e2.18 — What else in a rule reads nothing, in silence?
+
+**Decision file:** [`docs/decisions/language/Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md`](../../docs/decisions/language/Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md)
 
 Put to the user on 2026-11-05 by
 [S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md)'s step 1
@@ -2129,6 +2153,8 @@ their restated rights, and a form that holds a variable stays refused
 defaulted).
 
 ## Q-M1e2.19 — What do `--minimal` and `--maximal` answer past the limit?
+
+**Decision file:** [`docs/decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md`](../../docs/decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md)
 
 Put to the user on 2026-11-05 by
 [S1e2.2.25](p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md)'s re-take
@@ -2310,6 +2336,8 @@ values, so a claim and a query's classes compare by value, and `(p 1)` and
 
 ## Q-M1e2.21 — Which rule does `refuted by` name where the core derives its contradiction through two?
 
+**Decision file:** [`docs/decisions/read-out/Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md`](../../docs/decisions/read-out/Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md)
+
 Put to the user on 2026-11-06 by
 [S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md)'s
 step 1
@@ -2405,6 +2433,8 @@ register row moved.
 
 ## Q-M1e2.22 — Does Ein need a wildcard?
 
+**Decision file:** [`docs/decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md`](../../docs/decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)
+
 Raised 2026-11-06 by the user, reading W-22 in
 [the no-owner inventory](inventory_2026-11-06_no_owner.md): *"what for do w need
 the wildcard? why not allow _ in any namees and replace _ with ?_w0 ?_w1
@@ -2445,6 +2475,8 @@ AST's `Wildcard` node, moving no answer (`ef5374a1`). Was **not built** until th
 which records the defaults the ruling leaves.
 
 ## Q-M1e2.23 — What is a string for?
+
+**Decision file:** [`docs/decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md`](../../docs/decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)
 
 Raised 2026-11-06 by the user, reading S-15: *"I actually don't remember when we
 started using strings as atoms - objects and relations? Where ein allows usage of
@@ -2489,6 +2521,8 @@ T1f.5.2.5), held the ruling in every place a value goes and the text on every su
 carries it (T1f.5.2.2), and retired the engine's string value arms (T1f.5.2.3).
 
 ## Q-M1e2.24 — Are there numbers in Ein?
+
+**Decision file:** [`docs/decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md`](../../docs/decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)
 
 Raised 2026-11-06 by the user, on being told G-6 covers *a range written in a fact*: *"Wait,
 what range????? `1..5` - what it is? Where did you find it in Ein?"* The agent traced it to the
@@ -2544,6 +2578,8 @@ also"*. **Not built.** `\` is never in a name. `'`, `` ` ``, `[`, `]`, `{` and `
 the agent read into *"..."* stand.
 
 ## Q-M1e2.25 — How strict is the grammar, and what holds the parser to it?
+
+**Decision file:** [`docs/decisions/engine/Q-M1e2.25-the-parser-is-generated-from-the-grammar.md`](../../docs/decisions/engine/Q-M1e2.25-the-parser-is-generated-from-the-grammar.md)
 
 Raised 2026-11-06 by the user, in this review: *"We have to revisit Ein grammer; previously when where
 using parser generators and EBNF it was easier, now seems that our hand-written parser is way too
@@ -2603,6 +2639,8 @@ fact that does not parse is refused before the run. A task of S1f.5.5,
 [T1f.5.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#task-t1f556----diff-models-compares-by-value-s-15).
 
 ## Q-M1e2.26 — Are `eq` and `neq` relations?
+
+**Decision file:** [`docs/decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md`](../../docs/decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)
 
 Raised 2026-11-07 by the user, reading the inventory's S-18: a query whose goal is a guard prints *the goal
 holds: it has no variable* for `(neq w ?y)`, and a goal that holds a guard can carry no claim that holds,
@@ -2670,6 +2708,8 @@ Q-M1f.30 to Q-M1f.34.
 
 ## Q-M1e2.27 — What do `[]` and `null` mean in Ein's JSON?
 
+**Decision file:** [`docs/decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md`](../../docs/decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)
+
 Raised 2026-11-07 by the user, reading the inventory's D-14: an owing hole is written `"core": []` beside
 `"core_status": null`, where S1e2.3.9 spells *no core* `null`, and the re-take found `ein oracle --dump` writing
 `core: []` and `refuted_by: []` on every node that is not dead
@@ -2689,6 +2729,8 @@ the corpus by `ein-cli/tests/answer_round_trip.rs`. M1e2 S1e2.3.9's `not-kept`, 
 with M1f S1f.5.12, which gives every member of N its core.
 
 ## Q-M1e2.28 — Which keywords does each form take?
+
+**Decision file:** [`docs/decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md`](../../docs/decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)
 
 Raised 2026-11-07 by the user, reading the inventory's D-15, `02_patterns.md`'s `:where` rows: *"I don't
 remember we had `:where` kvarg; we must have only fixed defined kwargs, list me all with description"*. The

@@ -177,6 +177,10 @@ def read(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
 
 
+#: The line a ledger row that is now a decision carries under its heading,
+#: pointing at its file: a pointer, not a state.
+DECISION_POINTER = "**Decision file:**"
+
 STATUS_WORDS = (
     r"ruled|re-ruled|defaulted|accepted|decided|answered|resolved|closed|confirmed|overruled|"
     r"kept|left|open|deferred|moved|superseded|absorbed|reopened|owned|done|withdrawn|"
@@ -188,6 +192,8 @@ def section_status(text: str) -> str:
     """The status sentences of a `## Q…` section with no index row."""
     out = []
     for line in text.splitlines():
+        if line.startswith(DECISION_POINTER):
+            continue
         m = re.match(r"^\s*\*\*(" + STATUS_WORDS + r")\b", line, re.I)
         if m:
             out.append(line.strip())

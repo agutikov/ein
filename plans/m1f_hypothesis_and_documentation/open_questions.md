@@ -337,6 +337,8 @@ A question raised by an M1f stage from now on gets a `Q-M1f.<n>` here.
 
 ### Q-M1f.1 — G-14: is a bad conclusion that never fires refused?
 
+**Decision file:** [`docs/decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md`](../../docs/decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)
+
 **Raised** 2026-11-08 by S1f.5.5's step 2
 ([paper grammar, Q1](p1f.5_the_no_owner_items/s1f.5.5_paper_grammar.md#q1--g-14-with-assert-checked-by-the-grammar-is-a-bad-conclusion-that-never-fires-refused)).
 With `:assert` checked by the grammar, a conclusion no fact can hold (`(q ?x :k v)`, `(q _)`, `?x`) is a
@@ -455,6 +457,8 @@ in the file, under the register's schema `/14`.
 
 ### Q-M1f.6 — The derived agenda holds the cores; the FIFO boundary does not
 
+**Decision file:** [`docs/decisions/answer/Q-M1f.6-a-core-is-an-explanation.md`](../../docs/decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)
+
 **Raised** 2026-11-08 by [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)'s T3
 ([§ T3 record](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t3-record-2026-11-08)), on Q-M1f.4 (b)'s
 instruction that whatever still moves comes back to the user. T3 derives a band per rule from its shape and, in a
@@ -509,6 +513,8 @@ this (b). Every core and `refuted by` the removal moves is named in its commit a
 (`ein-infer/tests/corpus_cores.rs`). T3's rule graph and strata stay for T4's diagnostic; nothing orders by them.
 
 ### Q-M1f.7 — Where may a program write the kernel's dunders?
+
+**Decision file:** [`docs/decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md`](../../docs/decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)
 
 **Raised** 2026-11-08 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11
 ([§ T11 record](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t11-record-2026-11-08)), before any edit. The user
@@ -578,6 +584,8 @@ them. T11 builds it.
 
 ### Q-M1f.8 — The parser's remaining cost: within grmtools, or past it?
 
+**Decision file:** [`docs/decisions/engine/Q-M1f.8-the-lexer-is-lrlexs-unpatched.md`](../../docs/decisions/engine/Q-M1f.8-the-lexer-is-lrlexs-unpatched.md)
+
 **Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12
 ([§ T12 record](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t12-record-2026-11-09)), which recovered what it
 could of the swap's cost inside grmtools: one rule for whitespace and comments and a start condition in `ein.l`,
@@ -604,6 +612,8 @@ are parked for the phase's close with the numbers above ([§ T12 record, Parked 
 close](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#parked-for-the-phase-close)).
 
 ### Q-M1f.9 — What a deleted loader line leaves behind
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.9-a-shape-the-grammar-refuses-is-a-loader.md`](../../docs/decisions/engine/Q-M1f.9-a-shape-the-grammar-refuses-is-a-loader.md)
 
 **Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5
 ([§ T5 record](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t5-record-2026-11-09)), which deleted the 55 refusal
@@ -632,6 +642,8 @@ errors (the coordinator's 13 macro and top-level probes, 2026-11-09, each a pars
 load). It is a contract of the library's API alone.
 
 ### Q-M1f.10 — The `.einb` `INTS` section, once the int kind is gone
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.10-a-einb-file-holds-no-integer-table.md`](../../docs/decisions/engine/Q-M1f.10-a-einb-file-holds-no-integer-table.md)
 
 **Raised** 2026-11-09 by [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3
 ([§ T1f.5.4.3 record](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#t1f543-record-2026-11-09)), which retired
@@ -669,6 +681,8 @@ the writer writes, a 1.2 header refused, a tagged value refused.
 
 ### Q-M1f.11 — A template reference to a variable no reference can name
 
+**Decision file:** [`docs/decisions/language/Q-M1f.11-a-template-may-not-refer-to-a-variable-whose.md`](../../docs/decisions/language/Q-M1f.11-a-template-may-not-refer-to-a-variable-whose.md)
+
 **Raised** 2026-11-08 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T9 review (§ 11) and carried
 by [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5, the fix of W37
 ([§ T1f.5.4.5 record](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#t1f545-record-2026-11-09)). A template
@@ -688,6 +702,8 @@ load says so where (b) prints a wrong sentence in silence, and (c) is the user's
 Re-opening it means (b), or (c) if the name rule changes.
 
 ### Q-M1f.12 — Which surfaces carry natural-language text
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.12-natural-language-text-reaches-a-fixed-set.md`](../../docs/decisions/read-out/Q-M1f.12-natural-language-text-reaches-a-fixed-set.md)
 
 **Raised** 2026-11-09 by [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2,
 from S1f.5.5's T9 review (its § *Unicode on every surface that carries it*), which said *which surfaces should carry
@@ -740,6 +756,8 @@ Re-opening it means (b), in F22 or before it.
 
 ### Q-M1f.14 — Which keyword-pair arms go, once no term holds one?
 
+**Decision file:** [`docs/decisions/engine/Q-M1f.14-a-keyword-pair-is-only-ever-a-forms-clause.md`](../../docs/decisions/engine/Q-M1f.14-a-keyword-pair-is-only-ever-a-forms-clause.md)
+
 **Raised** 2026-11-09 by [S1f.5.11](p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)'s T1f.5.11.2
 ([its record](p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md#t1f5112-record-2026-11-09)). Since S1f.5.5's swap
 the grammar builds a keyword pair only as a form's own clause, and no term or nested fact holds one (S1f.5.11's
@@ -766,6 +784,8 @@ where (b) would make each a panic and retire nothing the ruling names. No answer
 means (b).
 
 ### Q-M1f.15 — Where does a position in a container's stored program point?
+
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.15-a-position-in-a-container-names-its-stored.md`](../../docs/decisions/diagnostics/Q-M1f.15-a-position-in-a-container-names-its-stored.md)
 
 **Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13, the coordinator's
 item 4: a `.einb` whose stored program fails to compile at its first firing, S1f.5.5's parser probe
@@ -817,6 +837,8 @@ answer, each command a row, and holds the rest per commit. Re-opening it means (
 
 ### Q-M1f.17 — What a view that never loads reads from a container
 
+**Decision file:** [`docs/decisions/cli/Q-M1f.17-a-view-of-a-container-draws-the-program-it.md`](../../docs/decisions/cli/Q-M1f.17-a-view-of-a-container-draws-the-program-it.md)
+
 **Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13. `ein render rules`,
 `rule`, `constraints` and `program` parse a program and never load it, so `examples/broken/` draws. A container holds no
 source: its program is the resolved, import-flattened text `ein kb save` wrote, and on a program that imports, it holds
@@ -837,6 +859,8 @@ till the end of the phase"*. (a) is the agent's recommendation: it answers, and 
 holds. `program_read` holds each view's drawing of a container to the `.ein`'s on a program with no import.
 
 ### Q-M1f.18 — Which object the word *model* names on the read-out
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md`](../../docs/decisions/read-out/Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md)
 
 **Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, as its Q1: M1e's
 [Q-M1e.7](../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
@@ -859,6 +883,8 @@ head and the goldens that hold it.
 
 ### Q-M1f.19 — A text's line break on the read-out
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.19-a-texts-line-break-on-the-read-out-continues-at.md`](../../docs/decisions/read-out/Q-M1f.19-a-texts-line-break-on-the-read-out-continues-at.md)
+
 **Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, from an item S1f.5.2 handed it. A
 `:goal-text` filled for a class's row, and an obligation's `:why` under an `owing` row, print their characters raw:
 a `\n` or `\r` in one starts the text's next line at column 0, outside every row, and a class block counts each
@@ -880,6 +906,8 @@ T1f.5.16.5; re-opening it means (b).
 
 ### Q-M1f.20 — Route 2's licence: *no licence* on one row, `L7 the cube` on another
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.20-on-route-2-describe-says-no-licence-and-a-mode.md`](../../docs/decisions/read-out/Q-M1f.20-on-route-2-describe-says-no-licence-and-a-mode.md)
+
 **Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, its census. On route 2, describe's and
 `ein oracle`'s `route` row says *no licence* (`2, the cube — no licence: the static check flags the program`, `…:
 asked for by name`), where `--json-summary`'s `region.licences` is `["L7 the cube"]` and a mode's `route` row on the
@@ -898,6 +926,8 @@ till the end of the phase"*. (a) is the stage's rule: a line that misreports is 
 moves no byte of output. Re-opening it means (b) or (c), a P1e2.3-class fix.
 
 ### Q-M1f.21 — `region.stopped.layer` on two routes
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.21-region-stopped-layer-is-each-routes-own-unit.md`](../../docs/decisions/read-out/Q-M1f.21-region-stopped-layer-is-each-routes-own-unit.md)
 
 **Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, its census. When a budget stops a
 description, `region.stopped.layer` is, on route 1, the commitment size the route stopped before (the row's *route 1
@@ -944,6 +974,8 @@ both printers, at every width, and flipped both rows (`31e9c7f7`). No golden hel
 
 ### Q-M1f.23 — What the `route` row names where root decides a flagged program's minimal line
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.23-where-root-decides-a-flagged-programs-minimal.md`](../../docs/decisions/read-out/Q-M1f.23-where-root-decides-a-flagged-programs-minimal.md)
+
 **Raised** 2026-11-09 by [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s
 T1f.5.6.2. On a program the static check flags, a minimal question where ∅ is in R is decided by root's node, one
 saturation (the user's ruling of 2026-11-07 on S-16, (b)). The rule is the minimal line's definition, ∅ being below
@@ -988,6 +1020,8 @@ row's id.
 
 ### Q-M1f.25 — The state route's members of N it did not saturate: whose preparation takes their cores?
 
+**Decision file:** [`docs/decisions/answer/Q-M1f.25-every-core-a-run-prints-is-taken-against-its-one.md`](../../docs/decisions/answer/Q-M1f.25-every-core-a-run-prints-is-taken-against-its-one.md)
+
 **Raised** 2026-11-09 by [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1. The user's
 ruling on P-15, (c), takes N's cores after the walk, *each through the node function against the same snapshot*. The
 spec names the members a run met. The state route reads N off its maximal alive states and saturates few of its
@@ -1009,6 +1043,8 @@ prepared root twice; re-opening it means (b), and the 58 cores move back.
 
 ### Q-M1f.26 — `not-kept` retires, and what a member with no core prints
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.26-every-member-of-n-carries-its-core.md`](../../docs/decisions/read-out/Q-M1f.26-every-member-of-n-carries-its-core.md)
+
 **Raised** 2026-11-09 by [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1. With every
 member of N given its core after the walk, `explore.rs`'s `partial_cube`, the one writer of `CoreStatus::NotKept`, has
 nothing to write it for. A member can still carry no core where a library caller describes R without asking for N's
@@ -1023,6 +1059,8 @@ If one is left, the status stays for it alone"*), step 1 having found no other w
 enum variant and its two sentences.
 
 ### Q-M1f.27 — What program a `.einb`'s answer directory writes
+
+**Decision file:** [`docs/decisions/cli/Q-M1f.27-a-containers-answer-directory-writes-the-program.md`](../../docs/decisions/cli/Q-M1f.27-a-containers-answer-directory-writes-the-program.md)
 
 **Raised** 2026-11-09 by [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.5, which fixes
 W43: `ein solve X.einb --dump-answer DIR` writes the directory where it was refused, and every state file starts with
@@ -1071,6 +1109,8 @@ user approved with the plan. Re-opening it means (b), one row filed `fixed` with
 
 ### Q-M1f.29 — A dead root's core under `--count`
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md`](../../docs/decisions/read-out/Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md)
+
 **Raised** 2026-11-09 by [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1. On a
 program whose root is dead, `ein solve FILE --count` writes `region.root: "dead"` beside `region.core: null` and
 `region.refuted_by: null`: 39 programs of the stage's sweep (2026-11-09). A bare `ein solve` writes root's core and
@@ -1088,6 +1128,8 @@ core either. Root is dead, so its core exists.
 Re-opening it means (b), which moves `--count`'s stdout on those 39 programs.
 
 ### Q-M1f.30 — A form that holds a variable, as a guard's argument
+
+**Decision file:** [`docs/decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md`](../../docs/decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)
 
 **Raised** 2026-11-09 by [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1. The user
 ruled a nested fact answered as a guard's argument (`W24/form-in-guard`, *"yes, keep that default"*): `(eq ?x (f a))`
@@ -1111,6 +1153,8 @@ answer, and moves no program: no corpus file writes a form in a guard. (b) answe
 
 ### Q-M1f.31 — `(not (eq x y))`: a stored negation, or `(neq x y)`?
 
+**Decision file:** [`docs/decisions/language/Q-M1f.31-not-eq-x-y-is-neq-x-y-in-every-place.md`](../../docs/decisions/language/Q-M1f.31-not-eq-x-y-is-neq-x-y-in-every-place.md)
+
 **Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. The grammar takes `(not (eq a b))` wherever a stored negation goes: a
 top-level fact, a premise, a conclusion, a goal and a claim. Until S1f.5.7 each was the relation `not` over the fact
 `(eq a b)`: a premise matched a stored `(not (eq …))` and nothing else, so it never fired, and a fact or a conclusion
@@ -1130,6 +1174,8 @@ with no logical reason, which the user asked for none of (2026-11-07, G-21). W51
 
 ### Q-M1f.32 — An hrule's `eq` or `neq` instance
 
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md`](../../docs/decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)
+
 **Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. An hrule's `:assert` takes an `eq` or `neq` conclusion, and the hrule
 rung proposed every instance as a hypothesis, which a commitment stored, `(eq a b)` among them (W53).
 
@@ -1144,6 +1190,8 @@ hypothesis about the program's facts; (b) would put a state in R twice over and 
 and (c) is a restriction the user asked for none of. `W53/hrule-eq` holds (a).
 
 ### Q-M1f.33 — A written fact of `eq`
+
+**Decision file:** [`docs/decisions/language/Q-M1f.33-a-written-fact-of-eq-is-a-conclusion-with-no.md`](../../docs/decisions/language/Q-M1f.33-a-written-fact-of-eq-is-a-conclusion-with-no.md)
 
 **Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. A top-level fact's relation may be `eq` (`ein.y`'s `FactHead`), so `(eq
 a w)` loaded, and was stored as an ordinary fact, which no guard reads (W50). `(neq …)` is no fact the grammar takes.
@@ -1160,6 +1208,8 @@ program writes either, and S1f.5.5's grammar is the phase's final one. `W50/fact
 (a).
 
 ### Q-M1f.34 — Where a guard's free variable is bound, beside an `(absent …)`
+
+**Decision file:** [`docs/decisions/language/Q-M1f.34-a-guard-that-binds-its-variable-binds-it-where.md`](../../docs/decisions/language/Q-M1f.34-a-guard-that-binds-its-variable-binds-it-where.md)
 
 **Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. A premise means the same in any order of its conjuncts (the user's ruling
 of 2026-11-07), and an `(absent …)` reads the variables the premises before it bind (S1.21.8): `(and (absent (q ?x))
@@ -1242,6 +1292,8 @@ holds it. Re-opening it means (b).
 
 ### Q-M1f.38 — The refusal's line: its separator, and a disjunction
 
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md`](../../docs/decisions/diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md)
+
 **Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1. The stage file's line reads *rule 'r': its :assert writes ?y, which no
 premise or parameter binds; to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of
 every name of the program with (eq ?y ?y)*. The loader joins several lines with `; ` on one stderr line
@@ -1294,6 +1346,8 @@ property; the dev-dependency adds no edge to any shipped crate.
 
 ### Q-M1f.41 — What *can hold a fact* means, for G-14's derived activator
 
+**Decision file:** [`docs/decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md`](../../docs/decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)
+
 **Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. The user's ruling on
 [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b) refuses at load a program in which some rule
 could derive an activator binding a relation parameter to a fact, `g14/derived-activator-never.ein` among them, although
@@ -1331,6 +1385,8 @@ Re-opening it means (a), with the 32 programs rewritten, or (c), against Q-M1f.1
 
 ### Q-M1f.42 — A conclusion whose relation is a parameter
 
+**Decision file:** [`docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md`](../../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)
+
 **Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. The check of Q-M1f.41 reads a conclusion's relation as written. `(?T ?x)`
 writes into whichever relation its activator names, which no load reads off the conclusion: `(rule copy (?S ?T) :match
 (?S ?x) :assert (?T ?x))` with `(copy src mirror)` and `(src (q A B))` derives `(mirror (q A B))`, and the run stops where
@@ -1350,6 +1406,8 @@ writes into whichever relation its activator names, which no load reads off the 
 (c) would keep.
 
 ### Q-M1f.43 — `Plan::activator_args`, once a nested fact binds
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md`](../../docs/decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)
 
 **Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. With W33's fix a value parameter binds to a nested fact, so `(note edge (src
 X))` and `(note edge (src Y))` compile two plans that bind two values; the compile key and the binding key already tell
@@ -1385,6 +1443,8 @@ reading: a stop and a refusal are two answers, and so are an answer and a refusa
 
 ### Q-M1f.45 — The `(and)` refusal's line, and `(or)`
 
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.45-the-parse-error-at-and-or-or-carries-a-note.md`](../../docs/decisions/diagnostics/Q-M1f.45-the-parse-error-at-and-or-or-carries-a-note.md)
+
 **Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1. The user ruled on F12 that `(and)` stays refused, `and` taking
 arguments and `()` being the one spelling of the empty conjunction, and the stage file asks for a line that says so,
 naming the rule and the clause. Since S1f.5.5's swap the grammar refuses `(and)` (`ein.y`'s `Premises` and
@@ -1403,6 +1463,8 @@ already, so the line is the parse error's, and a note is how that error says wha
 (b) leaves the twin shape unexplained; (c) undoes a refusal the grammar holds.
 
 ### Q-M1f.46 — A relation parameter bound to `eq` at another arity
+
+**Decision file:** [`docs/decisions/language/Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md`](../../docs/decisions/language/Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md)
 
 **Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1, from the shape S1f.5.18 found and left unfiled: `(rule r (?R)
 :match (?R ?x) …)` with `(r eq)` loads, and the run stops where the activator's plan is compiled, M1e S1e.2.1's arity
@@ -1430,6 +1492,8 @@ forbids; and (c) gives `eq` a reading at one argument that the grammar refuses w
 
 ### Q-M1f.47 — A written fact of `eq` at another arity
 
+**Decision file:** [`docs/decisions/language/Q-M1f.47-a-written-fact-of-eq-at-another-arity-than-two.md`](../../docs/decisions/language/Q-M1f.47-a-written-fact-of-eq-at-another-arity-than-two.md)
+
 **Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1, beside Q-M1f.46. A top-level fact may be headed `eq` (`ein.y`'s
 `FactHead`), and Q-M1f.33 reads a written fact of `eq`, or of `(not (eq …))`, as a conclusion with no premise, checked
 and never stored; but the check reads two arguments only, so `(eq a)`, `(eq)`, `(eq a a a)` and `(not (eq a))` load and
@@ -1446,6 +1510,8 @@ shape no program writes, which the loader's line reaches as well; (c) leaves a f
 computed stored. One row, `W61/fact-eq-arity`, this stage's.
 
 ### Q-M1f.48 — How a text surface writes the empty core
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.48-a-text-surface-writes-the-empty-core.md`](../../docs/decisions/read-out/Q-M1f.48-a-text-surface-writes-the-empty-core.md)
 
 **Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2, on the
 coordinator's note of that day (S1f.5.8 landed on `master` as `c4708638`). Once `:match ()` fires, `(rule r () :match ()
@@ -1647,6 +1713,8 @@ about, and (b) has no register to split. `utils/nl_census.py`'s docstring states
 
 ### Q-M1f.57 — Which fixtures get a `:why`
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.57-every-fixture-the-loader-reads-carries-a-why.md`](../../docs/decisions/corpus/Q-M1f.57-every-fixture-the-loader-reads-carries-a-why.md)
+
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.7.
 
 - **(a) Every file the loader reads**, a fixture refused at load among them, each `:why` on its form's last line so no
@@ -1659,6 +1727,8 @@ about, and (b) has no register to split. `utils/nl_census.py`'s docstring states
 read by nothing and moves the positions its refusal prints; a record is not edited.
 
 ### Q-M1f.58 — Where a fact is rendered in English, and what it reads from
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-a-state-file.md`](../../docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-a-state-file.md)
 
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.2. The stage file's surface for a fact's sentence, the read-out's
 *rendered* answer table, went with the walk at M1e2 S1e2.1c.5; since then a relation's `:why` reaches no surface,
@@ -1678,6 +1748,8 @@ explanation, F22 makes it canonical"*) covers it.
 
 ### Q-M1f.59 — What a macro's `:why` renders
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.59-a-macros-why-documents-the-pattern-and-is.md`](../../docs/decisions/read-out/Q-M1f.59-a-macros-why-documents-the-pattern-and-is.md)
+
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.3. S1f.5.5's T3 gave a macro an optional `:why`, and since the swap
 `--require-why` asks for it. A macro is expanded at load, and no fact's justification names one.
 
@@ -1688,6 +1760,8 @@ explanation, F22 makes it canonical"*) covers it.
 own that says what the pattern meant there; (b) is a second reason for one fact.
 
 ### Q-M1f.60 — A relation nobody declares
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.60-a-fact-of-a-relation-nobody-declares-has-no.md`](../../docs/decisions/read-out/Q-M1f.60-a-fact-of-a-relation-nobody-declares-has-no.md)
 
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.3: an auto-vivified relation has no form to carry a `:why`.
 
@@ -1700,6 +1774,8 @@ the fact read declares the relation.
 
 ### Q-M1f.61 — A template per goal conjunct
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.61-a-query-has-one-goal-text-and-each-conjunct.md`](../../docs/decisions/read-out/Q-M1f.61-a-query-has-one-goal-text-and-each-conjunct.md)
+
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.3: `:goal-text` is one string for the whole query.
 
 - **(a) No change**: each conjunct's fact reads by its relation's `:why` where a surface prints it.
@@ -1709,6 +1785,8 @@ the fact read declares the relation.
 question and not a quiet addition.
 
 ### Q-M1f.62 — The option that loads a program without a `:why`, once the default is true
+
+**Decision file:** [`docs/decisions/cli/Q-M1f.62-no-require-why-loads-a-program-without-a-why.md`](../../docs/decisions/cli/Q-M1f.62-no-require-why-loads-a-program-without-a-why.md)
 
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.7. The stage file asks that a program without `:why` still load once the
 default is true.
@@ -1724,6 +1802,8 @@ option is what [Q-M1e.10](../../docs/history/m1e_review_processing/open_question
 retired. The option count stays 78.
 
 ### Q-M1f.63 — What each program generator does about `:why`
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.63-a-program-a-test-writes-carries-a-why-on-every.md`](../../docs/decisions/corpus/Q-M1f.63-a-program-a-test-writes-carries-a-why-on-every.md)
 
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.7: once the default requires a `:why`, a generator whose programs carry
 none generates programs the loader refuses.
@@ -1756,6 +1836,8 @@ none is a register row. Terse but true ones (`"{?rel} sym"`) are left.
 
 ### Q-M1f.65 — May a comment hold Unicode?
 
+**Decision file:** [`docs/decisions/language/Q-M1f.65-a-comment-may-hold-any-character.md`](../../docs/decisions/language/Q-M1f.65-a-comment-may-hold-any-character.md)
+
 **Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s census, on the
 user's ruling of that day: *"Unicode is not allowed anywhere else than inside string literals, and the error must
 say it explicitely"*. No corpus program writes a character that is not ASCII outside a string or a comment. 429 of
@@ -1773,6 +1855,8 @@ that is not ASCII; no file changes.
 
 ### Q-M1f.66 — May `open` be written as a value?
 
+**Decision file:** [`docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md`](../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)
+
 **Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T1, on the user's ruling
 of that day: *"`open` is reserved word, here it appers as what? as relation name? - then it is an error, if not -
 then explain"*. As a relation name (a fact's head, a nested fact's head, a pattern's head, a relation parameter's
@@ -1785,6 +1869,8 @@ other position words do. No corpus program writes it there.
 **Ruled 2026-11-10, (a)** (the user chose *"Refuse it"*). `open` is reserved in the plain sense.
 
 ### Q-M1f.67 — Where is a macro body that no rule could use refused?
+
+**Decision file:** [`docs/decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md`](../../docs/decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)
 
 **Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T1.
 `(macro one (?a) (eq ?a))` parses and loads, and is refused only when a rule using it is compiled. `kb save`,
@@ -1802,6 +1888,8 @@ malformed primitive. Today's compile-time refusal meets it wherever every execut
 S1f.5.24 shows and pins.
 
 ### Q-M1f.68 — What Ein does when its reader closes stdout
+
+**Decision file:** [`docs/decisions/cli/Q-M1f.68-a-closed-stdout-ends-ein-by-sigpipe.md`](../../docs/decisions/cli/Q-M1f.68-a-closed-stdout-ends-ein-by-sigpipe.md)
 
 **Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T1. Rust ignores
 `SIGPIPE`, `print!` panics on the failed write, and the run exits 101. That happens on every command that writes
@@ -1821,6 +1909,8 @@ convention (`cat`, `grep`), not an exit Ein chooses. Rust 1.97.1 has no stable o
 audited `unsafe` site beside `ein-einb`'s `cast.rs` (design/12 § 2).
 
 ### Q-M1f.69 — What the guide's pin reads in a program block
+
+**Decision file:** [`docs/decisions/docs/Q-M1f.69-a-guide-block-that-writes-an-ellipsis-is.md`](../../docs/decisions/docs/Q-M1f.69-a-guide-block-that-writes-an-ellipsis-is.md)
 
 **Raised** 2026-11-10 by [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md)'s T2. The stage says a
 `lisp` block of `docs/guide/` is a whole program or an excerpt (it writes `…`), that a whole program is loaded and
@@ -1860,6 +1950,8 @@ sentence is misled as one who copied the retired flag was.
 
 ### Q-M1f.71 — Does a view draw a program the loader refuses?
 
+**Decision file:** [`docs/decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md`](../../docs/decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md)
+
 **Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. `ein render program`, `render rules`, `render rule` and `render constraints` parse a
 program and never load it (*"Parsed, never loaded, so a program the loader refuses still draws"*, M1e2 S1e2.1.3, the
 agent's design answering Q-M1e.20), so each draws a program every other command refuses, exit 0: the close review's
@@ -1883,6 +1975,8 @@ turned around. Re-opening it means (b).
 
 ### Q-M1f.72 — The line a moved refusal prints
 
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.72-a-nested-or-a-wide-match-and-a-goals-relation.md`](../../docs/decisions/diagnostics/Q-M1f.72-a-nested-or-a-wide-match-and-a-goals-relation.md)
+
 **Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. The stage file sketches the line as `<file>:<line>:<col>: rule '<name>': <what>`,
 *as the loader's refusals since S1f.5.9, .10 and .18 print*; those print `rule '<name>': <what>`, behind the CLI's
 `kb load error: `, with no position (`examples/broken/load/derived_activator.expected`, `W57`'s `now`).
@@ -1901,6 +1995,8 @@ no position; a position on the loader's lines is D-2's question (F23), whose `Lo
 
 ### Q-M1f.73 — How the loader counts the register ceiling
 
+**Decision file:** [`docs/decisions/engine/Q-M1f.73-a-rule-binds-at-most-256-variables-counted.md`](../../docs/decisions/engine/Q-M1f.73-a-rule-binds-at-most-256-variables-counted.md)
+
 **Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. The compiler numbers a plan's variables into a register file of 256 (`MAX_REGS`):
 one for the plan, the rule's parameters and the variables its positive premises and guards write, and one per lifted
 `(absent …)`, the variables its body writes. Moving the refusal to the loader needs a count the loader can make.
@@ -1918,6 +2014,8 @@ at 257 to be refused at load. Re-opening it means (b).
 
 ### Q-M1f.74 — A nested `(or …)` a macro's expansion writes
 
+**Decision file:** [`docs/decisions/language/Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md`](../../docs/decisions/language/Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md)
+
 **Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. `(forall ?x (or (p ?x) (q ?x)) (a ?x))` and a program's `(macro either (?x) (or
 (p ?x) (q ?x)))` called inside an `(and …)` expand to a nested `(or …)`, which the compiler refuses as it refuses a
 written one. The user's ruling on Q-M1f.67 leaves a macro's malformed primitive to S1f.5.24 and allows its refusal at
@@ -1932,6 +2030,8 @@ expansion, at compile or later.
 and it leaves the compiler no nested `(or …)` to meet. Re-opening it means (b).
 
 ### Q-M1f.75 — The compiler's arms no program reaches, and D-1's and D-2's other lines
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.75-the-compilers-errors-are-a-library-callers.md`](../../docs/decisions/engine/Q-M1f.75-the-compilers-errors-are-a-library-callers.md)
 
 **Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. Three of the compiler's refusals are reached by no program and by a direct caller
 of `compile_rule`: an activator of another arity (`activators_for` drops it), a relation head its activator binds to a
@@ -2039,6 +2139,8 @@ Re-opening it means (b).
 
 ### Q-M1f.80 — Where a malformed primitive a macro's expansion writes is refused
 
+**Decision file:** [`docs/decisions/language/Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md`](../../docs/decisions/language/Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md)
+
 **Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T2. The user's ruling on Q-M1f.67 allows the refusal *"during either compilation of
 instantiation or even later"* and requires that `(eq <arg>)` is never executed. T2 found that the compile-time
 refusal met that only at root: under a commitment, in an hrule, in an obligation and in a rule no activator reaches,
@@ -2062,6 +2164,8 @@ one place before every path, and the precedent's (Q-M1f.74). Re-opening it means
 
 ### Q-M1f.81 — What a malformed primitive is
 
+**Decision file:** [`docs/decisions/language/Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md`](../../docs/decisions/language/Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md)
+
 **Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T2. The ruling names `(eq <arg>)`; the stage file names a literal head, a head
 through a parameter, and `absent` or `not` given a premise list. T2 found more shapes a macro's expansion writes
 that the grammar refuses where a rule writes them, each matched or concluded today.
@@ -2077,6 +2181,8 @@ W69), and the ruling's property is about every malformed primitive, `(eq k)` con
 means (b).
 
 ### Q-M1f.82 — The line a malformed primitive is refused with
+
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.82-a-malformed-primitive-a-macro-writes-is-refused.md`](../../docs/decisions/diagnostics/Q-M1f.82-a-malformed-primitive-a-macro-writes-is-refused.md)
 
 **Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T3. S1f.5.21 gave the compiler's line a position, the macro body's, since the form it
 names is the macro's (Q-M1f.72 (a)), and the loader's lines none.
@@ -2112,6 +2218,8 @@ pin holds all eighty. Re-opening it means (b).
 
 ### Q-M1f.84 — The compiler's arity arms and the firing's whole-conclusion line
 
+**Decision file:** [`docs/decisions/engine/Q-M1f.84-a-compiler-arm-the-loader-covers-is-an-invariant.md`](../../docs/decisions/engine/Q-M1f.84-a-compiler-arm-the-loader-covers-is-an-invariant.md)
+
 **Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T3. Once the loader refuses each shape, three lines no program reaches remain: the
 compiler's `absent` and `eq` arities and the firing's *its :assert concludes ?y, which is not a fact*.
 
@@ -2144,6 +2252,8 @@ lets P1f.5 stop growing. (c) would undo the user's ruling on finding 9. Re-openi
 
 ### Q-M1f.86 — May a macro's body write `open`?
 
+**Decision file:** [`docs/decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md`](../../docs/decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)
+
 **Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T2, on the user's
 ruling on [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value): `open` is written only as a rule's `(open)` or
 `(open ?R)` conclusion. A macro's body is a template (`ein.y`'s `Template`), whose head is any name, so until S1f.5.23
@@ -2164,6 +2274,8 @@ it stands, as it refuses `_` in a body. Re-opening it means (b).
 
 ### Q-M1f.87 — The verdict's loader lines once the grammar places `open`
 
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-the-verdict-start-where.md`](../../docs/decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-the-verdict-start-where.md)
+
 **Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T3. With `open` no
 name, five of `validate_open`'s ten lines are reached by no program: `(open …)` in a `:match`, inside a conclusion,
 beside one, with two arguments, and with an argument that is neither a variable nor a name. Five stay: `(open ?R)` whose
@@ -2181,6 +2293,8 @@ no `at None`; the deleted lines are what the grammar refuses since, and one fixt
 Re-opening it means (b).
 
 ### Q-M1f.88 — The line `open` is refused with
+
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.88-a-misplaced-open-is-a-parse-error-with-a-note.md`](../../docs/decisions/diagnostics/Q-M1f.88-a-misplaced-open-is-a-parse-error-with-a-note.md)
 
 **Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T3. The stage file
 sketches one line, *``<file>:<line>:<col>: `open` is the verdict a rule's :assert states, and is not a relation: …``*.
@@ -2244,6 +2358,8 @@ way on every command in the pin. Re-opening it means (b) or (c).
 
 ### Q-M1f.91 — A module that is a `.einb` container
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.91-an-imported-module-is-ein-text-and-a-einb.md`](../../docs/decisions/imports/Q-M1f.91-an-imported-module-is-ein-text-and-a-einb.md)
+
 **Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. Once a module is read through the program's read, a container is told from text by
 its first bytes; the program a command is given may be one, and is opened. `ein-ir`, where the resolver is, cannot open
 one: `ein-einb` stands above it.
@@ -2256,6 +2372,8 @@ one: `ein-einb` stands above it.
 one*; a module is a program's text. Re-opening it means (b).
 
 ### Q-M1f.92 — How the line quotes a character a reader cannot see
+
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.92-a-character-a-reader-cannot-see-is-quoted-as.md`](../../docs/decisions/diagnostics/Q-M1f.92-a-character-a-reader-cannot-see-is-quoted-as.md)
 
 **Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. The user's line names the character, `'<char>' (U+XXXX)`. A no-break space, a
 zero-width space, a right-to-left override or a byte-order mark written between the quotes shows nothing, or reorders
@@ -2272,6 +2390,8 @@ the line.
 
 ### Q-M1f.93 — Which path a module's read line names
 
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.93-a-modules-read-line-names-the-path-its-import.md`](../../docs/decisions/diagnostics/Q-M1f.93-a-modules-read-line-names-the-path-its-import.md)
+
 **Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. The read's line names the path it was handed. A module has two: the path the import
 resolves to, `<the importing file's directory>/<module>.ein`, which `module not found at …` names, and its canonical
 path, which its parse errors and its forms' positions name.
@@ -2284,6 +2404,8 @@ path, which its parse errors and its forms' positions name.
 that path, given to a command, prints. Re-opening it means (b).
 
 ### Q-M1f.94 — A directory's and an unreadable module's line, and a missing one's `(None)`
+
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.94-a-module-is-refused-with-the-line-its-path-gives.md`](../../docs/decisions/diagnostics/Q-M1f.94-a-module-is-refused-with-the-line-its-path-gives.md)
 
 **Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. The program's read names a directory and an unreadable file in Python's spelling,
 `IsADirectoryError: [Errno 21] Is a directory: '<path>'` and `PermissionError: [Errno 13] Permission denied:
@@ -2301,6 +2423,8 @@ are F23's (Q-M1f.75 left both there). No line of the four ways carries `None` or
 
 ### Q-M1f.95 — How many characters the refusal names
 
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.95-a-file-is-refused-at-its-first-character-that-is.md`](../../docs/decisions/diagnostics/Q-M1f.95-a-file-is-refused-at-its-first-character-that-is.md)
+
 **Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. `lrpar` lexes the whole file before it parses, and stops at the first lexing error
 (`parse_actions`), so a file is refused at its first character that is not ASCII outside a string and a comment, one
 error, where a parse error is followed by every error recovery reaches.
@@ -2313,6 +2437,8 @@ starts with was; the scan would read a string's and a comment's extent a second 
 
 ### Q-M1f.96 — A byte-order mark
 
+**Decision file:** [`docs/decisions/language/Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md`](../../docs/decisions/language/Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md)
+
 **Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T2. A file an editor saved with a byte-order mark starts with U+FEFF, which was a token
 that is not a name, `` unexpected `\u{feff}…` ``; no corpus file starts with one.
 
@@ -2323,6 +2449,8 @@ that is not a name, `` unexpected `\u{feff}…` ``; no corpus file starts with o
 comments added by Q-M1f.65 (b). Re-opening it means (b).
 
 ### Q-M1f.97 — How a test closes a run's stdout
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.97-a-test-closes-a-runs-stdout-before-the-run.md`](../../docs/decisions/corpus/Q-M1f.97-a-test-closes-a-runs-stdout-before-the-run.md)
 
 **Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. The acceptance reads a run's stdout with *a reader that closes after
 its first line*. Whether such a reader meets a write is a race: a run whose writes all land in the pipe before the
@@ -2380,6 +2508,8 @@ builds them, its smoke a `W75/solve` case per commit. Re-opening it means (b).
 
 ### Q-M1f.100 — An artefact flag that writes to a pipe whose reader has gone
 
+**Decision file:** [`docs/decisions/cli/Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md`](../../docs/decisions/cli/Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md)
+
 **Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. [`defined_behaviour.md` § 4.4](../../docs/kernel/defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35)
 rules that an artefact flag's failed write prints `error: --<flag> <path>: <os error>` and leaves the exit code
 unchanged. Its census ran `--events`, `--json-summary`, `--trace` and `--json-report` on `/dev/stdout`: under `head
@@ -2396,6 +2526,8 @@ process-wide, and flipping it per write is not thread-safe and is more `unsafe` 
 It narrows a rule § 4.4 stated, so it is shown to the user at the close. Re-opening it means (b).
 
 ### Q-M1f.101 — A closed stdout on Windows
+
+**Decision file:** [`docs/decisions/cli/Q-M1f.101-off-unix-a-closed-stdout-is-left-to-rusts.md`](../../docs/decisions/cli/Q-M1f.101-off-unix-a-closed-stdout-is-left-to-rusts.md)
 
 **Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. Windows, a release target, has no `SIGPIPE`: a write to a closed pipe there
 is an error, which a `print!` turns into the same panic, exit 101. No host here runs Windows, so no probe shows it,
@@ -2526,6 +2658,8 @@ none was until S1f.5.28 wrote this one.
 
 ### Q-M1f.108 — Route 1's *stopped before layer L*, which no `ein` run prints
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.108-route-1s-stop-at-a-layer-is-the-librarys-and-no.md`](../../docs/decisions/read-out/Q-M1f.108-route-1s-stop-at-a-layer-is-the-librarys-and-no.md)
+
 **Raised** 2026-11-10 by [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md)'s T1 (its item 4, from S1f.5.16). Describe takes route 1 only on a flagged
 program whose root is dead: route 1 reads root at layer 0, projected at one fact, which the smallest `--region-budget`
 the command takes, 1, admits, and a dead root leaves layer 1 empty, so no `ein` run stops it at the budget. The
@@ -2543,6 +2677,8 @@ printed is what S1f.5.16's reference is for. Re-opening it means (b) or (c).
 
 ### Q-M1f.109 — A text's line break in the trace's markdown
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.109-a-texts-line-break-in-the-trace-is-a-markdown.md`](../../docs/decisions/read-out/Q-M1f.109-a-texts-line-break-in-the-trace-is-a-markdown.md)
+
 **Raised** 2026-11-10 by [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md)'s T1 (its item 5, from S1f.5.16). `--trace` writes markdown, and wrote a
 text's `\n` or `\r` as it stands, which markdown reads as a soft break: a rule's `:why` in a quote, a premise's
 `:source`, a relation's statement and an owed instance each rendered as one line. Q-M1f.12 holds the trace to *the
@@ -2559,6 +2695,8 @@ of `tests/text/01_unicode.ein` and `examples/features/15_unicode_escapes.ein`. S
 bytes Q-M1f.12 holds. Re-opening it means (b) or (c).
 
 ### Q-M1f.110 — A container saved again
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.110-a-container-saved-again-is-the-same-container.md`](../../docs/decisions/engine/Q-M1f.110-a-container-saved-again-is-the-same-container.md)
 
 **Raised** 2026-11-10 by [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md)'s T1 (its item 9, from S1f.5.19's record, which recorded it and did not file
 it). `ein kb save` of a container answered as the program did, and wrote 40 bytes more a given fact each time: opening
@@ -2616,6 +2754,8 @@ and S1f.7.10 to S1f.7.12 are planned.
 
 ### Q-M1f.113 — What is a nested `(eq k j)` for: a quoted statement, or nothing a state can hold?
 
+**Decision file:** [`docs/decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md`](../../docs/decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)
+
 **Raised** 2026-11-11 by the coordinator, on [S1f.7.10](p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md)'s
 finding and the user's question of that day (what such a fact would be used for, from Ein's point of view).
 
@@ -2631,6 +2771,8 @@ treats what it finds outside its scope: fixed in place if quick, or a row of
 zebra program's answer.
 
 ### Q-M1f.114 — What a relation in a `(solve …)` list must be
+
+**Decision file:** [`docs/decisions/language/Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md`](../../docs/decisions/language/Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md)
 
 **Raised** 2026-11-11 by [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md)'s T1. The stage refuses a name in `:hypothesis-relations`, in
 `:no-hypothesis` or at an activator's relation parameter that names no relation of the program, and has to say
@@ -2653,6 +2795,8 @@ narrowed to (c) for the two relation lists once S1f.7.11 has said what *makes* a
 
 ### Q-M1f.115 — What else of an `:hrules` list is refused
 
+**Decision file:** [`docs/decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md`](../../docs/decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md)
+
 **Raised** 2026-11-11 by [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md)'s T1. Beside the list's first name, an `:hrules` list holds bare names
 after it, which the engine reads as nothing (`tests/region/01_states.ein` writes `guess` three times), and
 activators, of which one with another number of arguments than its hrule has parameters is skipped in silence, as
@@ -2668,6 +2812,8 @@ moved. That a bare name selects nothing is F25's R-3.
 
 ### Q-M1f.116 — An activator's argument that is a value
 
+**Decision file:** [`docs/decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md`](../../docs/decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)
+
 **Raised** 2026-11-11 by the [analysis of that day](p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11)
 and [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md)'s T1: `(guess (at Colour House))`, a misspelt type at a parameter that names no relation,
 gives the hrule no match and H is empty.
@@ -2681,6 +2827,8 @@ here: it is a new `Row` and a line of `read_out.md`, and is [F25](../followups/f
 R-2.
 
 ### Q-M1f.117 — A goal with a macro call: printed as written, or as expanded
+
+**Decision file:** [`docs/decisions/language/Q-M1f.117-a-macro-call-in-a-goal-is-expanded-and-the-goal.md`](../../docs/decisions/language/Q-M1f.117-a-macro-call-in-a-goal-is-expanded-and-the-goal.md)
 
 **Raised** 2026-11-11 by the [analysis of that day](p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11)
 and [S1f.7.5](p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md)'s T1. The stage file names two directions, expanding a goal's macro calls as a rule's `:match`'s are, or
@@ -2700,6 +2848,8 @@ one no claim can write.
 
 ### Q-M1f.118 — A macro call in a claim
 
+**Decision file:** [`docs/decisions/language/Q-M1f.118-a-claim-is-not-expanded-so-a-claim-headed.md`](../../docs/decisions/language/Q-M1f.118-a-claim-is-not-expanded-so-a-claim-headed.md)
+
 **Raised** 2026-11-11 by [S1f.7.5](p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md)'s T1, which the stage file asks to state for each clause of a query that holds a
 fact: `:expect (model (settled Ann))` beside a macro `settled`, and the same in a `(solve … :expect (region …))`.
 
@@ -2712,6 +2862,8 @@ fact: `:expect (model (settled Ann))` beside a macro `settled`, and the same in 
 call written as a fact is [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s.
 
 ### Q-M1f.119 — Which relations a goal may ask about
+
+**Decision file:** [`docs/decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md`](../../docs/decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)
 
 **Raised** 2026-11-11 by [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md). Its default is (a), refused at load, against (b), a warning row in the read-out.
 The stage file words (a) as *no declaration, no fact, and no rule's, hrule's or obligation's conclusion names it*;
@@ -2735,6 +2887,8 @@ relation of a pattern inside a pattern, and of a stored negation, is held to the
 
 ### Q-M1f.120 — A rule's `:match` over a relation nothing makes
 
+**Decision file:** [`docs/decisions/language/Q-M1f.120-a-rule-may-read-a-relation-nothing-makes.md`](../../docs/decisions/language/Q-M1f.120-a-rule-may-read-a-relation-nothing-makes.md)
+
 **Raised** 2026-11-11 by [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md)'s stage file: a rule whose `:match` reads a relation no declaration, fact or
 conclusion makes can never fire.
 
@@ -2746,6 +2900,8 @@ conclusion makes can never fire.
 [F25](../followups/f25_roughness_found_outside_zebra.md)'s R-6; no surface says that a rule can never fire.
 
 ### Q-M1f.121 — The line a goal's nested relation variable is refused with
+
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.121-a-goals-relation-variable-is-refused-with.md`](../../docs/decisions/diagnostics/Q-M1f.121-a-goals-relation-variable-is-refused-with.md)
 
 **Raised** 2026-11-11 by [S1f.7.1](p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md), whose acceptance says *refused on every command with the rule's line*. A rule's
 line, `rule 'r': its :match writes (?R ?x) with ?R as its relation, which no parameter binds — a relation is named
@@ -2763,6 +2919,8 @@ taken.
 
 ### Q-M1f.122 — Where `absent` still heads a form that is no premise
 
+**Decision file:** [`docs/decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md`](../../docs/decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)
+
 **Raised** 2026-11-11 by [S1f.7.7](p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md)'s T1. The stage's direction is that `FactHead`, `ArgHead` and `ConclusionHead` lose
 `absent`. Its sweep found one more place the word heads a form: a claim. A query's claim lists its projection
 classes, and the class of a goal's `(absent (q ?y))` is written `(absent (q a))`, as
@@ -2778,6 +2936,8 @@ meant negation: *the stored negation of a fact is (not …)*.
 
 ### Q-M1f.123 — `(false)` with no argument as a value
 
+**Decision file:** [`docs/decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md`](../../docs/decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)
+
 **Raised** 2026-11-11 by [S1f.7.6](p1f.7_findings_outside_scope/s1f.7.6_a_false_fact_with_an_argument.md)'s T1. `(q (false))`, `(not (false))` and a premise `(false)` load today. The value
 rule names *`false` with an argument*.
 
@@ -2788,6 +2948,8 @@ rule names *`false` with an argument*.
 it. What `(not (false))` and `(q (false))` mean is [F25](../followups/f25_roughness_found_outside_zebra.md)'s R-7.
 
 ### Q-M1f.124 — Where `(eq a b)` is still written, once it is no value
+
+**Decision file:** [`docs/decisions/language/Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md`](../../docs/decisions/language/Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md)
 
 **Raised** 2026-11-11 by [S1f.7.10](p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md)'s T1. S1f.5.7 has a written `(eq a b)` and `(not (eq a b))`, a premise and a
 conclusion of either, and a claim's, each checked. The ruling (a) refuses `eq` as a nested head. Three places sit
@@ -2801,6 +2963,8 @@ between the two: `(q (not (eq a b)))`, a fact's `:using ((eq a b))`, and a trace
 (eq a b))` stay where S1f.5.7 checks them (`ein.y`'s `EqFact` and `Negated`).
 
 ### Q-M1f.125 — A connective as a pattern's argument: the grammar or the loader
+
+**Decision file:** [`docs/decisions/language/Q-M1f.125-a-connective-as-a-patterns-argument-is-refused.md`](../../docs/decisions/language/Q-M1f.125-a-connective-as-a-patterns-argument-is-refused.md)
 
 **Raised** 2026-11-11 by [S1f.7.3](p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md)'s stage file: *if no macro call needs it, the grammar refuses the written shape at
 the parse*. T1 read why `ein.y`'s `Arg` takes a `Connective`: a macro is called as a pattern, and `std.macro`'s
@@ -2816,6 +2980,8 @@ left no fact able to hold. `(not <pattern>)` stays: a stored negation is a value
 
 ### Q-M1f.126 — A relation parameter bound to `absent`, `false` or `eq`
 
+**Decision file:** [`docs/decisions/language/Q-M1f.126-a-relation-parameter-bound-to-absent-false-or-eq.md`](../../docs/decisions/language/Q-M1f.126-a-relation-parameter-bound-to-absent-false-or-eq.md)
+
 **Raised** 2026-11-11 by the three stages' T1: with `(mk absent)` and `(rule mk (?R) :match (p ?x) :assert (?R
 ?x))` the rule stored `(absent a)`; with `(mk false)`, `(false a)`; and with `(mk eq)` and `:assert (q (?R ?x
 ?x))`, `(q (eq a a))`. The grammar reads a variable where the relation is written.
@@ -2828,6 +2994,8 @@ left no fact able to hold. `(not <pattern>)` stays: a stored negation is a value
 heads a form where a value goes too.
 
 ### Q-M1f.127 — What the loader reads to see that a negated variable can hold a name
+
+**Decision file:** [`docs/decisions/language/Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md`](../../docs/decisions/language/Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md)
 
 **Raised** 2026-11-11 by [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md)'s T1. The stage's default is a refusal at
 load *wherever the program shows that `?x` can bind a name*, and its condition was that the census find no program
@@ -2854,6 +3022,8 @@ program moved: `value_rule.rs`'s `the-negation-of-a-bound-fact` holds its declar
 
 ### Q-M1f.128 — What a firing does with the negation of a name the loader did not foresee
 
+**Decision file:** [`docs/decisions/language/Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md`](../../docs/decisions/language/Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md)
+
 **Raised** 2026-11-11 by [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md)'s T1, and
 [F25](../followups/f25_roughness_found_outside_zebra.md)'s R-1 since the user's instruction of that day. Under
 Q-M1f.127 (a) a pattern whose relation is a parameter with a derived activator is not read, so `(rule deny (?R)
@@ -2871,6 +3041,8 @@ binding only some state meets. One place builds every conclusion, `ein_infer::fi
 every command and in both builds, and the sweep of T3 moved no corpus answer. R-1 records what is left.
 
 ### Q-M1f.129 — The assertion that no hrule reads `not`: removed, or kept where the kill cache is on
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md`](../../docs/decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)
 
 **Raised** 2026-11-11 by [S1f.7.2](p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md)'s T1. The premise of `Hrules::candidates`' `debug_assert!` is
 stale for every command: H is taken config-free since M1e2 S1e2.3.1, the lookahead's kill cache off. The
@@ -2890,6 +3062,8 @@ commit, their `wrong` recording the release answer and the debug build's stop, a
 
 ### Q-M1f.130 — A macro's call as a conclusion: refused, or expanded as it is
 
+**Decision file:** [`docs/decisions/language/Q-M1f.130-a-macros-call-in-a-conclusion-is-expanded.md`](../../docs/decisions/language/Q-M1f.130-a-macros-call-in-a-conclusion-is-expanded.md)
+
 **Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. The stage file lists a rule's and an hrule's `:assert` among the sites where a
 macro's name heads a form that is not expanded, and its default (a) refuses a conclusion headed by one. T1 found the
 opposite: the loader runs the expander over `:assert` as over `:match` (`from_ir`'s `expand_pair`), so `:assert (pp
@@ -2907,6 +3081,8 @@ a rule is. The refusal's line says where a macro is called: *in a :match, an :as
 
 ### Q-M1f.131 — A relation declared under a macro's name
 
+**Decision file:** [`docs/decisions/language/Q-M1f.131-no-relation-is-declared-under-a-macros-name.md`](../../docs/decisions/language/Q-M1f.131-no-relation-is-declared-under-a-macros-name.md)
+
 **Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. `(relation pp T)` beside `(macro pp (?a) (p ?a))` loads. A premise `(pp ?x)` is
 the macro's call, so no premise reads the relation, and since the stage no fact is of it. No corpus program declares
 a relation and a macro of one name (`git ls-files '*.ein'`, 651 files, the stage's census, 2026-11-11).
@@ -2920,6 +3096,8 @@ the macro's call ([F25](../followups/f25_roughness_found_outside_zebra.md)'s R-8
 
 ### Q-M1f.132 — A `std.macro` macro the program does not import, written as a fact
 
+**Decision file:** [`docs/decisions/language/Q-M1f.132-a-std-macro-macro-the-program-does-not-import.md`](../../docs/decisions/language/Q-M1f.132-a-std-macro-macro-the-program-does-not-import.md)
+
 **Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. `(unknown (p j))` in a program that does not import `std.macro` is stored as a
 fact of a relation `unknown`. A rule's `:match` that writes `(unknown …)` without the import has been refused since
 S1.8a.f20, and a goal's since S1f.7.5, so no premise of the program can read that fact.
@@ -2932,6 +3110,8 @@ relation, so a fact of either is read by nothing. No corpus program writes one. 
 in such a program is not refused where it stands (F25's R-8).
 
 ### Q-M1f.133 — A macro's call inside a fact a claim lists, and in a fact's `:using`
+
+**Decision file:** [`docs/decisions/language/Q-M1f.133-a-macros-call-inside-a-claims-fact-or-a-using-is.md`](../../docs/decisions/language/Q-M1f.133-a-macros-call-inside-a-claims-fact-or-a-using-is.md)
 
 **Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. Q-M1f.118 has a claim headed by a macro's call refused: it names no relation.
 A call inside a listed fact, `(model (q (pp j)))`, loaded, and the claim failed against a state holding `(q (p j))`.
@@ -2988,6 +3168,8 @@ heading a fact among them, so a library's `is-a` facts land in `o.is-a` and do n
 
 ### Q-M1f.137 — Are an imported fact's constants names of the program?
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md`](../../docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)
+
 **Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (c). They were under a qualified import, and they enter the blind
 enumerator's objects: importing an ontology of n constants widens the universe of every open relation by n.
 
@@ -3000,6 +3182,8 @@ library closes its own.
 
 ### Q-M1f.138 — The provenance of an imported fact
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md`](../../docs/decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)
+
 **Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (d).
 
 - **(a) Its own**: a `:source` where the module wrote one, otherwise background, as if written in the program.
@@ -3009,6 +3193,8 @@ library closes its own.
 [F24](../followups/f24_written_provenance.md)'s, and a stamp is the same question.
 
 ### Q-M1f.139 — The same fact from two places
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md`](../../docs/decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)
 
 **Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (e); E-6 of [`findings.md`](p1f.6_calculator/findings.md). A fact stated by
 a module and by the program, or by two modules, with different `:source`s keeps its first statement, and the
@@ -3062,6 +3248,8 @@ marker listed or writes it in a rule the selection names, as the calculator's cl
 
 ### Q-M1f.143 — A fact that arrives twice through flat imports
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.143-a-modules-fact-arrives-once-however-many-imports.md`](../../docs/decisions/imports/Q-M1f.143-a-modules-fact-arrives-once-however-many-imports.md)
+
 **Raised** 2026-11-11 by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md)'s T3 and T4. A flat diamond over declarations collapses, identical ones being one.
 A fact has no name to collapse on, so a library reached by two flat paths put each of its facts in the form
 list twice. The KB is a set, so no answer differs.
@@ -3103,6 +3291,8 @@ state's `(model …)` names the candidates' relations: what the import drops is 
 generator and its oracle fail together. A machine without `python3` fails the test and says why.
 
 ### Q-M1f.146 — How `std.digits` closes its tables for a flat importer
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.146-each-digit-table-is-closed-by-a-written-fact.md`](../../docs/decisions/stdlib/math/Q-M1f.146-each-digit-table-is-closed-by-a-written-fact.md)
 
 **Raised** 2026-11-11 by [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md)'s T2. The stage file says the module closes its relations with written
 `(__closed__ R)` facts. By Q-M1f.142 such a fact comes with a selection only when `__closed__` is in the
@@ -3153,6 +3343,8 @@ named in the test's output and put to Graphviz under no layout. Nothing checks t
 
 ### Q-M1f.148 — One module for the seven tables
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.148-the-seven-digit-tables-are-one-module.md`](../../docs/decisions/stdlib/math/Q-M1f.148-the-seven-digit-tables-are-one-module.md)
+
 **Raised** 2026-11-11 by [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md)'s T4. A flat import of one table parses the whole module: 28.8 KB, about 12 ms on
 the generated parser: `ein test` of a program that imports `fa` alone takes 17.9 ms, and of a `std.macro` test
 5.8 ms (best of ten, release, 2026-11-11).
@@ -3165,6 +3357,8 @@ per request: a program that does not import the module pays nothing. (b) stays o
 arithmetic programs makes the 12 ms matter.
 
 ### Q-M1f.149 — What `(let NAME NUMBER)` does, as built
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md)
 
 **Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T2. The user ruled *"(let NAME NUMBER) is ok"*; what a request may do with a name
 is item 2 of [`design.md` § what is open](p1f.6_calculator/design.md#what-is-open-after-the-rulings), the
@@ -3210,6 +3404,8 @@ on reply 46, option (b): *"(b) - we don't need this proportional gate"*. The ste
 
 ### Q-M1f.151 — The names of the circuit's own relations
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.151-the-circuits-own-relations-are-named-with-words.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.151-the-circuits-own-relations-are-named-with-words.md)
+
 **Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T1. The stage file names `n`, `z`, `b`, `add`, `sum-of`, `let`, `done` and the tag
 `sum`. The prototype's other relations are `ak`, `sb`, `bk`.
 
@@ -3223,6 +3419,8 @@ on reply 46, option (b): *"(b) - we don't need this proportional gate"*. The ste
 should say is [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md)'s.
 
 ### Q-M1f.152 — Are `std.arith`'s rules written by hand or generated?
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.152-the-decimal-arithmetics-rules-are-written.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.152-the-decimal-arithmetics-rules-are-written.md)
 
 **Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T1. The tables are generated (the user's ruling). The prototype generated its
 rules too, since division has a rule for each of nine multiples.
@@ -3252,6 +3450,8 @@ the bound stays 1 000 edges, and a view past it is skipped where it went to the 
 
 ### Q-M1f.154 — The bounds of the harness against the integers
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.154-the-calculators-harness-is-exhaustive-to-120.md`](../../docs/decisions/corpus/Q-M1f.154-the-calculators-harness-is-exhaustive-to-120.md)
+
 **Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T3, which asks for *random operands of every length up to a stated bound*.
 
 - **(a) Exhaustive to 120, sampled to 30 digits:** every pair from 0 to 120; every pair of lengths from 0 to
@@ -3266,6 +3466,8 @@ thirtieth column is the walk at the third. S1f.6.9, on how long a number may be,
 
 ### Q-M1f.155 — Equal operands of a subtraction: two walks, one fact
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.155-equal-operands-of-a-subtraction-are-answered.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.155-equal-operands-of-a-subtraction-are-answered.md)
+
 **Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T1. The circuit subtracts both ways. When the operands are equal neither
 walk borrows, so both hand over zero.
 
@@ -3279,6 +3481,8 @@ request*, and (b) buys two firings on equal pairs with a rule that reads less pl
 
 ### Q-M1f.156 — Comparison called with a tag
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.156-comparison-is-called-with-a-tag.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.156-comparison-is-called-with-a-tag.md)
+
 **Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T1. The prototype's comparison walk carried the request's operands and
 wrote `cmp-of` when it ran out of columns.
 
@@ -3290,6 +3494,8 @@ wrote `cmp-of` when it ran out of columns.
 [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md#for-the-stages-that-follow)'s rule is that a call inside the theory starts a walk with a tag of its own.
 
 ### Q-M1f.157 — Each request looks its operands up by rules of its own
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.157-each-request-looks-its-operands-up-by-rules.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.157-each-request-looks-its-operands-up-by-rules.md)
 
 **Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T1. `add` has three rules and two tags, `add-first` and `add-second`, to look
 its two operands up. Every further request needs the same.
@@ -3303,6 +3509,8 @@ its two operands up. Every further request needs the same.
 refactoring any later stage can make with no answer moving.
 
 ### Q-M1f.158 — `cl`'s column order and the index
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.158-the-comparators-table-keeps-the-order-below-as.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.158-the-comparators-table-keeps-the-order-below-as.md)
 
 **Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T2, on E-12 of the phase's `findings.md`. The matcher keys a premise on its
 first bound argument. `cl`'s first argument is the order below, shared by 100 of its 300 rows, so a column of a
@@ -3319,6 +3527,8 @@ comparison.
 
 ### Q-M1f.159 — Multiplication called with a tag
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.159-multiplication-is-called-with-a-tag.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.159-multiplication-is-called-with-a-tag.md)
+
 **Raised** 2026-11-11 by [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md)'s T1. The prototype's multiplication carried the request's operands in
 every step and wrote `product-of` when the multiplier ran out.
 
@@ -3330,6 +3540,8 @@ every step and wrote `product-of` when the multiplier ran out.
 circuits.
 
 ### Q-M1f.160 — A zero digit of the multiplier
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.160-a-zero-digit-of-the-multiplier-is-a-row-like-any.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.160-a-zero-digit-of-the-multiplier-is-a-row-like-any.md)
 
 **Raised** 2026-11-11 by [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md)'s T1.
 
@@ -3358,6 +3570,8 @@ some 9 000 edges and takes the bounded layout 2.2 s. The suite has eighteen such
 
 ### Q-M1f.162 — The longest sampled operand of a product
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.162-a-sampled-products-operands-have-at-most-19.md`](../../docs/decisions/corpus/Q-M1f.162-a-sampled-products-operands-have-at-most-19.md)
+
 **Raised** 2026-11-11 by [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md)'s T2, on Q-M1f.154's oracle, `u128`, which holds 38 digits.
 
 - **(a) 19 digits:** a product of two has at most 38.
@@ -3366,6 +3580,8 @@ some 9 000 edges and takes the bounded layout 2.2 s. The suite has eighteen such
 **Defaulted 2026-11-11: (a),** for Q-M1f.154's reason: a length is not a boundary of the theory.
 
 ### Q-M1f.163 — Division called with a tag, and whose division by zero is flagged
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.163-a-division-by-zero-is-flagged-wherever-division.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.163-a-division-by-zero-is-flagged-wherever-division.md)
 
 **Raised** 2026-11-11 by [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md)'s T1. Division is tagged as multiplication is (Q-M1f.159): `(div-call TAG U V)`
 is answered by `(div-done TAG Q R)`. The flag the user ruled names a request, `(division-by-zero (div X Y))`,
@@ -3382,6 +3598,8 @@ what a zero denominator is where they are built.
 
 ### Q-M1f.164 — Division's families of nine rules: by hand or generated?
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.164-divisions-families-of-nine-rules-are-written.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.164-divisions-families-of-nine-rules-are-written.md)
+
 **Raised** 2026-11-11 by [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md)'s T1, on Q-M1f.152, defaulted *by hand, while a rule is not a family of nine*.
 Division has two: nine trial rules, one a multiple, and eight rules of the multiples' chain.
 
@@ -3396,6 +3614,8 @@ generator would guarantee the test holds.
 
 ### Q-M1f.165 — What search-free means of a program that divides by zero
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.165-a-program-that-divides-by-zero-is-decided.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.165-a-program-that-divides-by-zero-is-decided.md)
+
 **Raised** 2026-11-11 by [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md)'s T2. The phase's claim is *H empty, k_s 1, R {∅}* on every arithmetic program, and
 the user ruled a division by zero `(false)`: such a program's R is empty, k_s 0.
 
@@ -3408,6 +3628,8 @@ the user ruled a division by zero `(false)`: such a program's R is empty, k_s 0.
 what the ruling changed.
 
 ### Q-M1f.166 — The sizes of the generated arithmetic examples
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.166-the-generated-arithmetic-examples-are-sized-for.md`](../../docs/decisions/corpus/Q-M1f.166-the-generated-arithmetic-examples-are-sized-for.md)
 
 **Raised** 2026-11-11 by [S1f.6.15](p1f.6_calculator/s1f.6.15_load_against_calculation.md)'s T1. The plan asked for operands of some hundreds of
 digits, some thousands of requests an operation, and a chain whose answer has hundreds of digits. `ein solve`
@@ -3440,6 +3662,8 @@ a quotient of 626 by 313 at the 600 s limit, and 30 379 requests in 277.2 s at t
 
 ### Q-M1f.167 — The names of `std.num9`
 
+**Decision file:** [`docs/decisions/stdlib/math/num9/Q-M1f.167-the-names-of-std-math-num9-are-decimals-with-a-9.md`](../../docs/decisions/stdlib/math/num9/Q-M1f.167-the-names-of-std-math-num9-are-decimals-with-a-9.md)
+
 **Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T2. The plan: *its relations are its own, `add9`, `sum9-of` and so on, so that a
 program may import both modules flat; the names are the stage's to propose with examples before the module is
 written.*
@@ -3455,6 +3679,8 @@ target programs under the names; the user may rename before anything is built on
 
 ### Q-M1f.168 — Overflow and division by zero in `std.num9`
 
+**Decision file:** [`docs/decisions/stdlib/math/num9/Q-M1f.168-overflow-is-a-fact-and-no-number-and-a-division.md`](../../docs/decisions/stdlib/math/num9/Q-M1f.168-overflow-is-a-fact-and-no-number-and-a-division.md)
+
 **Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T1. The plan: overflow is a fact and no number, the design's recommendation, which
 the user did not rule; a division by zero is as in `std.arith`.
 
@@ -3468,6 +3694,8 @@ the user did not rule; a division by zero is as in `std.arith`.
 a division by zero asked for what does not exist, as ruled.
 
 ### Q-M1f.169 — Where `std.num9`'s multiples and rows live
+
+**Decision file:** [`docs/decisions/stdlib/math/num9/Q-M1f.169-a-divisions-multiples-are-computed-into.md`](../../docs/decisions/stdlib/math/num9/Q-M1f.169-a-divisions-multiples-are-computed-into.md)
 
 **Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T3, which the plan left to it: *the multiples moved into the state if that removes
 the join*. The prototype kept a divisor's multiples and a multiplier's rows as facts and joined its state with
@@ -3485,6 +3713,8 @@ them on a number: 4 000 divisions in 8.1 s.
 
 ### Q-M1f.170 — What `std.num9` reads as an operand
 
+**Decision file:** [`docs/decisions/stdlib/math/num9/Q-M1f.170-a-num9-operand-is-a-number-written-out.md`](../../docs/decisions/stdlib/math/num9/Q-M1f.170-a-num9-operand-is-a-number-written-out.md)
+
 **Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T4. `std.arith` looks an operand up, so a request may name it; round 1's `num9` did
 not.
 
@@ -3498,6 +3728,8 @@ not.
 own from the name to the request.
 
 ### Q-M1f.171 — `std.num9`'s step counter and its comparison
+
+**Decision file:** [`docs/decisions/stdlib/math/num9/Q-M1f.171-std-math-num9-counts-and-compares-with-the-digit.md`](../../docs/decisions/stdlib/math/num9/Q-M1f.171-std-math-num9-counts-and-compares-with-the-digit.md)
 
 **Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T1. The plan said the module adds its own step counter; round 2's `num9` compared
 by two subtractors.
@@ -3522,6 +3754,8 @@ width 9*. A width-2 theory is not a module of the stdlib.
 **Defaulted 2026-11-11: (a).** The plan's *one width ships*.
 
 ### Q-M1f.173 — `MAX_REGS` and the wide rules of `std.num9`
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.173-the-register-file-stays-256-wide.md`](../../docs/decisions/engine/Q-M1f.173-the-register-file-stays-256-wide.md)
 
 **Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s gate. A rule binds its variables to a register file of 256
 (`ein_infer::MAX_REGS`, the engine's one compile-time bound, S1a.3.1; refused at load past it since S1f.5.21).
@@ -3549,6 +3783,8 @@ this generator would not load.
 
 ### Q-M1f.174 — The names of `std.int`
 
+**Decision file:** [`docs/decisions/stdlib/math/int/Q-M1f.174-the-names-of-std-math-int-carry-the-prefix-int.md`](../../docs/decisions/stdlib/math/int/Q-M1f.174-the-names-of-std-math-int-carry-the-prefix-int.md)
+
 **Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1. The stage file fixes the
 pair, `(int P N)`, and no other name. `std.num9` took `std.arith`'s names with a `9`.
 
@@ -3564,6 +3800,8 @@ pair, `(int P N)`, and no other name. `std.num9` took `std.arith`'s names with a
 arities.
 
 ### Q-M1f.175 — What `std.int` reads as an operand
+
+**Decision file:** [`docs/decisions/stdlib/math/int/Q-M1f.175-an-integer-operand-is-an-integer-written-out.md`](../../docs/decisions/stdlib/math/int/Q-M1f.175-an-integer-operand-is-an-integer-written-out.md)
 
 **Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1.
 
@@ -3582,6 +3820,8 @@ pins the silence.
 
 ### Q-M1f.176 — A product of integers without a rule that looks at a sign
 
+**Decision file:** [`docs/decisions/stdlib/math/int/Q-M1f.176-a-product-of-integers-is-computed-on-the-parts.md`](../../docs/decisions/stdlib/math/int/Q-M1f.176-a-product-of-integers-is-computed-on-the-parts.md)
+
 **Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1. The stage file gives both:
 *(P1·P2 + N1·N2, P1·N2 + N1·P2). On simplified operands, only the sign rules remain.*
 
@@ -3597,6 +3837,8 @@ would be about 100 and 150. (a) has no case to get wrong and none for a mutant t
 division will need anyway (Q-M1f.179), and the product can move to it then if the cost matters.
 
 ### Q-M1f.177 — A call's tag is its request, and what an extension writes of `std.arith`'s
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.177-a-module-over-the-decimal-arithmetic-tags-each.md`](../../docs/decisions/stdlib/math/Q-M1f.177-a-module-over-the-decimal-arithmetic-tags-each.md)
 
 **Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1. Two choices about how a
 module over `std.arith` is wired, which S1f.6.8 follows.
@@ -3615,6 +3857,8 @@ program.
 
 ### Q-M1f.178 — The harness of `std.int`: a sibling file, exhaustive on one-digit parts
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.178-std-math-int-s-harness-is-a-file-of-its-own.md`](../../docs/decisions/corpus/Q-M1f.178-std-math-int-s-harness-is-a-file-of-its-own.md)
+
 **Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T3. The stage file: *every sign
 combination at the exhausting width*, written when the numbers under it had a width.
 
@@ -3627,6 +3871,8 @@ combination at the exhausting width*, written when the numbers under it had a wi
 not a `u128`.
 
 ### Q-M1f.179 — The remainder of an integer division
+
+**Decision file:** [`docs/decisions/stdlib/math/int/Q-M1f.179-integer-division-names-its-convention.md`](../../docs/decisions/stdlib/math/int/Q-M1f.179-integer-division-names-its-convention.md)
 
 **Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md), whose stage file put it to the
 user from the start. **Open: the user's, and not defaulted.** Integer division is not built until it is ruled.
@@ -3655,6 +3901,8 @@ questions 1 and 2 of the calculator's `questions.md`: *"(d)"*, and *"(a)"*, a na
 
 ### Q-M1f.180 — The names of `std.rat`
 
+**Decision file:** [`docs/decisions/stdlib/math/rat/Q-M1f.180-the-names-of-std-math-rat-carry-the-prefix-rat.md`](../../docs/decisions/stdlib/math/rat/Q-M1f.180-the-names-of-std-math-rat-carry-the-prefix-rat.md)
+
 **Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1. The stage file fixes the pair, `(rat Z D)`, and no other name.
 
 - **(a) `std.int`'s scheme, with `rat-`:** `rat-add` answered by `rat-sum-of`, `rat-sub` by `rat-diff-of`,
@@ -3670,6 +3918,8 @@ orders `gt` and `lt` could have served and would have read worse in a trace.
 
 ### Q-M1f.181 — What `std.rat` reads as an operand
 
+**Decision file:** [`docs/decisions/stdlib/math/rat/Q-M1f.181-a-rational-operand-is-a-rational-written-out.md`](../../docs/decisions/stdlib/math/rat/Q-M1f.181-a-rational-operand-is-a-rational-written-out.md)
+
 **Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1.
 
 - **(a) A rational written out, `(rat (int P N) D)`, or a name** that `std.arith`'s `(let NAME (rat (int P N) D))`
@@ -3684,6 +3934,8 @@ silence. A tower in which each kind of number is an operand of the next is the e
 (S1f.6.14).
 
 ### Q-M1f.182 — A zero denominator is `std.arith`'s division by zero
+
+**Decision file:** [`docs/decisions/stdlib/math/rat/Q-M1f.182-a-zero-denominator-is-a-division-by-zero.md`](../../docs/decisions/stdlib/math/rat/Q-M1f.182-a-zero-denominator-is-a-division-by-zero.md)
 
 **Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1. The stage file: *a zero denominator, written by a program or reached by
 dividing by a zero rational, is reported, as S1f.6.1 ruled for division by zero*: a flag, then a rule that derives
@@ -3706,6 +3958,8 @@ computed that was not asked for. The cost is as ruled for `std.arith`: root is d
 program loses its answer.
 
 ### Q-M1f.183 — Lowest terms by `std.arith`'s division, and what it costs
+
+**Decision file:** [`docs/decisions/stdlib/math/rat/Q-M1f.183-a-rational-is-reduced-only-on-request.md`](../../docs/decisions/stdlib/math/rat/Q-M1f.183-a-rational-is-reduced-only-on-request.md)
 
 **Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1 and T3.
 
@@ -3732,6 +3986,8 @@ own; 1/2 + 1/3 is 101 firings, 2/3 × 3/4 81, and 2/4 simplified 345.
 
 ### Q-M1f.184 — The harness of `std.rat`, and the sizes memory allows
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.184-std-math-rat-s-harness-exhausts-28-fractions.md`](../../docs/decisions/corpus/Q-M1f.184-std-math-rat-s-harness-exhausts-28-fractions.md)
+
 **Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T3. The stage file: *every operand pair at the exhausting width*. A request
 of two one-digit fractions is some 450 to 650 firings and a stored fact about a kilobyte (E-26), so a program of
 4 000 such requests is two gigabytes.
@@ -3746,6 +4002,8 @@ of two one-digit fractions is some 450 to 650 firings and a stored fact about a 
 work by the batches' ratio, 4 and 12, which a tolerance of 15 % still catches.
 
 ### Q-M1f.185 — A state file nested past the parser's limit
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.185-a-state-file-nested-past-the-parsers-limit-does.md`](../../docs/decisions/engine/Q-M1f.185-a-state-file-nested-past-the-parsers-limit-does.md)
 
 **Raised** 2026-11-12 by [S1f.6.9](p1f.6_calculator/s1f.6.9_width.md), whose stage file put the choice to the user
 from the start. **Open: the user's, and not defaulted.** It is E-4 of the phase's
@@ -3774,6 +4032,8 @@ probes, with their tables, are in
 
 ### Q-M1f.186 — Where the probes of S1f.6.10 are banked
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.186-what-the-calculators-tables-do-besides.md`](../../docs/decisions/corpus/Q-M1f.186-what-the-calculators-tables-do-besides.md)
+
 **Raised** 2026-11-12 by [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md). Its stage file says *banked
 under `examples/arith/`*. `ein-cli/tests/arith_search_free.rs` holds every `.ein` under that directory, at any
 depth, to the search-free claims: it imports a theory of the calculator, the universe has no candidate, R is
@@ -3787,6 +4047,8 @@ four import the tables alone.
 [`beyond_arithmetic.md`](p1f.6_calculator/beyond_arithmetic.md).
 
 ### Q-M1f.187 — Which probes of S1f.6.10 are banked, and at what size
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.187-each-program-beyond-arithmetic-is-sized-for.md`](../../docs/decisions/corpus/Q-M1f.187-each-program-beyond-arithmetic-is-sized-for.md)
 
 **Raised** 2026-11-12 by S1f.6.10. Every corpus program is solved, dumped and reloaded per commit, by a bare
 `ein solve` whatever runs it declares (`answer_round_trip.rs`, `corpus_shapes.rs`), and `ein solve` writes a
@@ -3814,6 +4076,8 @@ tracked.
 measurement another page quotes.
 
 ### Q-M1f.189 — A user's program calling `std.arith`'s tagged calls
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.189-the-decimal-arithmetics-tagged-calls-are.md`](../../docs/decisions/stdlib/math/Q-M1f.189-the-decimal-arithmetics-tagged-calls-are.md)
 
 **Raised** 2026-11-12 by S1f.6.10's probe 4. `std.arith`'s public protocol is a request fact and a result fact
 that repeats its operands. A rule that uses an answer *for a particular purpose* must then find it by its
@@ -3843,6 +4107,8 @@ answers as an interface, `std.int`'s and `std.rat`'s calls likewise, and `ein-in
 [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed).
 
 ### Q-M1f.190 — Which variants of the binary prototypes are banked where the page recommends none
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.190-each-circuit-example-takes-the-simplest-form.md`](../../docs/decisions/corpus/Q-M1f.190-each-circuit-example-takes-the-simplest-form.md)
 
 **Raised** 2026-11-12 by the banking of [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md)'s and
 [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md)'s prototypes as examples (the user, that day: *"bank binary
@@ -3887,6 +4153,8 @@ whose thirty claims hold exactly when the rules derive the generated facts, and 
 
 ### Q-M1f.192 — One table file in two example directories
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.192-a-program-that-reads-the-binary-tables-imports.md`](../../docs/decisions/stdlib/math/Q-M1f.192-a-program-that-reads-the-binary-tables-imports.md)
+
 **Raised** 2026-11-12 by the same banking. Two programs of `examples/binary_logic/` set a circuit against the
 binary full adder's table, `fa2`, which is `examples/binary_arithmetic/bits.ein`'s. A file-relative import
 resolves against the importing file's directory and below it, so the one cannot import the other's module (the
@@ -3904,6 +4172,8 @@ gates against rows typed beside them and not against the calculator's table.
 
 ### Q-M1f.193 — The sizes of the banked binary programs
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.193-the-binary-examples-are-sized-for-every-command.md`](../../docs/decisions/corpus/Q-M1f.193-the-binary-examples-are-sized-for-every-command.md)
+
 **Raised** 2026-11-12 by the same banking. Every corpus program is solved, dumped and reloaded per commit by a
 bare `ein solve`, which describes all of R and writes each state as text (E-24); describing R over n inputs as
 hypotheses is 3ⁿ + n saturations and stops at the default budget near twelve inputs
@@ -3918,6 +4188,8 @@ the conversion of 2^40 + 1, the scale runs to 24 inputs, Post's criterion over a
 three-input classes stay under `build/s1f.6.16/` and `build/s1f.6.17/`, with their numbers on the pages.
 
 ### Q-M1f.194 — Which of the word-problem prototype's programs are banked, and under what names
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.194-each-word-problem-is-one-file-written-in-one.md`](../../docs/decisions/corpus/Q-M1f.194-each-word-problem-is-one-file-written-in-one.md)
 
 **Raised** 2026-11-12 by [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md), on the user's instruction of that day: *"bank word problems into
 examples/word_problems with recommended variants"*. The prototype is 29 programs and nine modules, most of them
@@ -3937,6 +4209,8 @@ ruling that differs from a recommendation moves the banked files. Two recommende
 
 ### Q-M1f.195 — One file for the two-step problem
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.195-a-problem-that-asks-what-is-needed-imports.md`](../../docs/decisions/corpus/Q-M1f.195-a-problem-that-asks-what-is-needed-imports.md)
+
 **Raised** 2026-11-12 by S1f.6.20. The page runs *Bob has 5 apples, Alice has 7, a box holds 3* twice under the
 recommended variants: `boxes12`, with `words` alone and the model's query, and `boxes12_plain`, with
 `readings_plain` imported, to show that nothing is proposed where nothing is left over.
@@ -3951,6 +4225,8 @@ recommended variants: `boxes12`, with `words` alone and the model's query, and `
 not its division leaves a remainder, since the author does not know that before the run.
 
 ### Q-M1f.196 — The word-problem modules as corpus entries
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.196-each-module-of-the-word-theory-is-a-corpus-entry.md`](../../docs/decisions/corpus/Q-M1f.196-each-module-of-the-word-theory-is-a-corpus-entry.md)
 
 **Raised** 2026-11-12 by S1f.6.20. The completeness check wants an entry for every `.ein` under `examples/`, and
 the three modules are imported and are not problems.
@@ -3969,6 +4245,8 @@ of a rule). The banked `readings.ein` imports what it reads, `value`, `left-over
 
 ### Q-M1f.197 — What holds the banked word problems
 
+**Decision file:** [`docs/decisions/corpus/Q-M1f.197-the-corpus-holds-the-word-problems-answers.md`](../../docs/decisions/corpus/Q-M1f.197-the-corpus-holds-the-word-problems-answers.md)
+
 **Raised** 2026-11-12 by S1f.6.20. The stage's T2 lists tests of its own, the answers held to the harness's
 integers, the two-step problem's trace steps, each gap problem held to its named gap; they are written *after
 the rulings*.
@@ -3983,6 +4261,8 @@ problems' `unanswered` and `rests-on` facts among them. What no claim can state 
 and the steps of the trace, which is T2's test and waits for the rulings with it.
 
 ### Q-M1f.198 — The remainder variant of the word problems, and the gate
+
+**Decision file:** [`docs/decisions/corpus/Q-M1f.198-the-thirteen-apple-problem-is-a-corpus-program.md`](../../docs/decisions/corpus/Q-M1f.198-the-thirteen-apple-problem-is-a-corpus-program.md)
 
 **Raised** 2026-11-12 by S1f.6.20. The page's recommended form of a missing reading is `readings_plain`:
 readings as hypotheses, nothing owed, and under a supposed reading the answer is a `value`, so that a later
@@ -4038,6 +4318,8 @@ is in the stage's record with its command.
 
 ### Q-M1f.200 — The names of an integer division's results
 
+**Decision file:** [`docs/decisions/stdlib/math/int/Q-M1f.200-an-integer-divisions-result-is-named-after.md`](../../docs/decisions/stdlib/math/int/Q-M1f.200-an-integer-divisions-result-is-named-after.md)
+
 **Raised** 2026-11-12 by [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md), whose stage file names it.
 The user ruled the three requests, `int-div-euclid`, `int-div-trunc` and `int-div-floor` (reply 1 (d), the
 option's own words), and not the relations that answer them.
@@ -4055,6 +4337,8 @@ option's own words), and not the relations that answer them.
 
 ### Q-M1f.201 — What a bare `(relation R)` declares of its count
 
+**Decision file:** [`docs/decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md`](../../docs/decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)
+
 **Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md), whose T1 names it: the ruling holds a form to *the count declared*, and a
 declaration with no type atom, `(relation flag)`, is legal
 ([`01_grammar.md` § Relation](../../docs/kernel/ir/03-ein-lang/01_grammar.md#relation-declarator)): *a relation
@@ -4071,6 +4355,8 @@ program loads is used with no argument, `clash`, `marker`, `z` (`git ls-files '*
 relation a misspelt count passes.
 
 ### Q-M1f.202 — A relation written through a parameter, and the declared count
+
+**Decision file:** [`docs/decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md`](../../docs/decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)
 
 **Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md), whose T1 names it. `(rule mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a))`
 writes its relation as a variable, and `(mirror likes)` binds it.
@@ -4090,6 +4376,8 @@ declared relation at another count, `build/s1f.6.23/p/param3.ein`: E-35 of the p
 
 ### Q-M1f.203 — The kernel's own relations, and an activator's count
 
+**Decision file:** [`docs/decisions/language/Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md`](../../docs/decisions/language/Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md)
+
 **Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md), whose T1 names both. No program declares `__closed__`, `__symmetric__` or
 `relation`, each reserved, and an activator `(functional r)` is a fact headed by a rule's name, held to the
 rule's parameters and to no declaration.
@@ -4105,6 +4393,8 @@ leaves is E-34 and E-35 of the phase's [`findings.md`](p1f.6_calculator/findings
 `(sym likes extra)` activates nothing in silence, and `(__closed__ likes extra)` is stored and closes nothing.
 
 ### Q-M1f.204 — Which written places the declared count is held in
+
+**Decision file:** [`docs/decisions/language/Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md`](../../docs/decisions/language/Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md)
 
 **Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md). The ruling's *in a fact, a rule or a query* leaves four places to decide.
 
@@ -4144,6 +4434,8 @@ of `std.int` and `std.rat`, which those modules find themselves, without an iner
 
 ### Q-M1f.206 — How a fault reaches its request
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.206-an-operands-fault-travels-with-its-tag.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.206-an-operands-fault-travels-with-its-tag.md)
+
 **Raised** 2026-11-13 by S1f.6.12's build. A fault is found at an operand's tag, `(add-first X Y)`, and the
 flag names the request, `(add X Y)`. With two kinds of flag, `malformed` and `undeclared`, the
 investigation's ten rules from a tag to a request would be twenty.
@@ -4158,6 +4450,8 @@ of every program that imports the theory, and `alive_invariant.rs` lists each.
 
 ### Q-M1f.207 — What a `let` that cannot be read flags
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.207-a-let-that-cannot-be-read-is-flagged-whether.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.207-a-let-that-cannot-be-read-is-flagged-whether.md)
+
 **Raised** 2026-11-13 by S1f.6.12's build. The stage file says a detected *request* derives
 `(malformed REQUEST)`; a name stated twice and `z` or a digit as a name are faults of a `let`.
 
@@ -4170,6 +4464,8 @@ which has no row for 0. One consequence, stated in `35_let_zero.ein`: with `(let
 named constant, so every number of every request ends in one and is flagged as well.
 
 ### Q-M1f.208 — How the theory says that an operand is a name
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.208-two-guards-say-that-an-operand-is-a-name.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.208-two-guards-say-that-an-operand-is-a-name.md)
 
 **Raised** 2026-11-13 by S1f.6.12's build, on round 2's item 5 (b). The premise `(absent (let ?x ?w))`
 holds of a number too, which is a fact no `let` names, so the rule must also say that `?x` is a *name*, and
@@ -4200,6 +4496,8 @@ binary theory answers a malformed request by silence. A check of base two is two
 **Superseded 2026-11-15** at P1f.6's close, on the user's ruling of that day (*"all as you recommended"*, [`close.md` § The user's rulings](p1f.6_calculator/close.md#the-users-rulings-2026-11-15), 3): binary's numeral is `std.math.binary`'s, checked since S1f.6.16's build. The question has no subject since; the default stands as the record of what was built before.
 
 ### Q-M1f.210 — `std.int` and `std.rat`, and the flags
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md`](../../docs/decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md)
 
 **Raised** 2026-11-13 by S1f.6.12's build, T1f.6.12.9, whose task was to check the two modules and not to
 change them. **Open, shown; nothing built.**
@@ -4232,6 +4530,8 @@ with no request reading it; `std.math.int` and `std.math.rat` flag an undeclared
 the request, and a digit or a named constant in their own terms; no well-formed program's answer moved.
 
 ### Q-M1f.211 — Which fact carries the flag of a division by zero at the call
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.211-a-public-division-by-zero-holds-two-flags.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.211-a-public-division-by-zero-holds-two-flags.md)
 
 **Raised** 2026-11-13 by [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13)'s T1, as the stage file's design question. The user's
 ruling of 2026-11-12, *"(div ?x 0) must emit division-by-zero no matter where it happens"*, moves the
@@ -4289,6 +4589,8 @@ check was left out because its rules name the ten digits. No binary program's `e
 
 ### Q-M1f.214 — The *Derives* line of a firing with several conclusions
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.214-a-firings-derives-line-names-every-conclusion.md`](../../docs/decisions/read-out/Q-M1f.214-a-firings-derives-line-names-every-conclusion.md)
+
 **Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6251--e-5-done)'s T1 (E-5). The stage file says the line *lists every conclusion the
 firing stored, in the order the rule writes them*, and not how a line of several reads.
 
@@ -4303,6 +4605,8 @@ firing stored, in the order the rule writes them*, and not how a line of several
 `--reorder`'s arrow lists the same conclusions with commas, having no statements to carry.
 
 ### Q-M1f.215 — A qualified import and what a module states as a program
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.215-no-import-brings-a-modules-query-solve-config.md`](../../docs/decisions/imports/Q-M1f.215-no-import-brings-a-modules-query-solve-config.md)
 
 **Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6252--e-8-done)'s T2 (E-8). Row 59 of the phase's `questions.md` asked whether a qualified
 import bringing a module's `(query …)`, `(solve …)` and `(config …)` is a wrong answer, and was left empty.
@@ -4372,6 +4676,8 @@ calculator's `n`, which every number is built of, is not taken for a relation ru
 
 ### Q-M1f.218 — What a count past the run's reach says
 
+**Decision file:** [`docs/decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md`](../../docs/decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)
+
 **Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6255--e-22-done)'s T5 (E-22). The stage file asks: *a value that says "more than 2¹²⁸", or the count in a wider
 integer*, the first the default, *since nothing reads a count that large as a number*. T5 found that the
 bound in the error's sentence was not the bound: a total was summed into `u64`, so a program of 64 free
@@ -4393,6 +4699,8 @@ holding a signed 64-bit integer.
 the read-out printed exactly, now reads *9 223 372 036 854 775 807 or more*.
 
 ### Q-M1f.219 — A query's `(false)` on a program that only owes
+
+**Decision file:** [`docs/decisions/answer/Q-M1f.219-a-querys-false-holds-over-either-kind-of-empty-r.md`](../../docs/decisions/answer/Q-M1f.219-a-querys-false-holds-over-either-kind-of-empty-r.md)
 
 **Raised** 2026-11-13 by [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6264--e-18s-claim-asked-done)'s T4, the claim half of E-18 of the calculator's
 [`findings.md`](p1f.6_calculator/findings.md). A query's `:expect (false)` says that the query has no class,
@@ -4423,6 +4731,8 @@ unpayable debt may be called. No claim's outcome moved in S1f.6.26.
 
 ### Q-M1f.220 — The form of the rows for what root owes
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.220-what-root-owes-is-a-block-of-at-most-four-owed.md`](../../docs/decisions/read-out/Q-M1f.220-what-root-owes-is-a-block-of-at-most-four-owed.md)
+
 **Raised** 2026-11-13 by [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6261--the-rows-shown-first-done)'s T1, which shows the rows on real programs before the printer moves
 (E-19; the user's reply 30 (a) of 2026-11-12, *a read-out row for what root owes when R is not empty*). The
 stage file has *the same rows the empty case prints today, under the `∅` row*, and has the listing share
@@ -4448,6 +4758,8 @@ The label `owed`, and the two wordings of a query's row over an empty R, *R is e
 
 ### Q-M1f.221 — One question a file, and the fall-back
 
+**Decision file:** [`docs/decisions/answer/Q-M1f.221-ein-test-asks-a-file-the-least-question-that.md`](../../docs/decisions/answer/Q-M1f.221-ein-test-asks-a-file-the-least-question-that.md)
+
 **Raised** 2026-11-13 by [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done)'s T1 (E-30; the user's reply (a) of 2026-11-12 on question 39, *`ein test`
 reads the shape of each claim and runs the cheapest mode that decides it*). The reply settles that the
 runner asks a cheaper question than describe. It does not say how many runs a file with several claims
@@ -4472,6 +4784,8 @@ which no claim describe decides today is left unchecked. What it costs: a file w
 not decide is run twice, and the first run's work is not reused.
 
 ### Q-M1f.222 — A claim refuted by a state a run found
+
+**Decision file:** [`docs/decisions/answer/Q-M1f.222-under-ein-test-a-state-found-refutes-a-claim.md`](../../docs/decisions/answer/Q-M1f.222-under-ein-test-a-state-found-refutes-a-claim.md)
 
 **Raised** 2026-11-13 by the same task. Round 2's item 39 has *find up to k + 1: a (k + 1)-th refutes the
 claim*. A claim is about projection classes and a mode finds states, and several states can fall in one
@@ -4500,6 +4814,8 @@ the one switch, set by `ein test` and by nothing else; (b) is setting it under `
 
 ### Q-M1f.223 — What the surfaces of `ein test` say of the question
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.223-ein-test-says-which-question-decided-each-claim.md`](../../docs/decisions/read-out/Q-M1f.223-ein-test-says-which-question-decided-each-claim.md)
+
 **Raised** 2026-11-13 by the same task, for T3 and T4. The stage file has *`--json-report` gains the route
 each row was decided by* and *`ein test -v` says the route in a word*, and leaves the words.
 
@@ -4521,6 +4837,8 @@ each row was decided by* and *`ein test -v` says the route in a word*, and leave
 one stream, which the event protocol's one header a file does not have a place for.
 
 ### Q-M1f.224 — What a bare description pays for N
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.224-a-run-takes-n-only-where-it-prints-n.md`](../../docs/decisions/read-out/Q-M1f.224-a-run-takes-n-only-where-it-prints-n.md)
 
 **Raised** 2026-11-13 by [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6275--e-31-measured-done)'s
 T5 (E-31). On the state route `N` is the one part of an exhausted description that is not read off the states
@@ -4570,6 +4888,8 @@ one of the three that keeps what the test means on every program and ends. No pr
 computes is 100 shapes.
 
 ### Q-M1f.226 — An obligation's name in a closing rule, and `alive_invariant`'s R0
+
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-candidate-object.md`](../../docs/decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-candidate-object.md)
 
 **Raised** 2026-11-13 by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done)'s
 T5 ([E-48](p1f.6_calculator/findings.md)). The rebuilt `examples/word_problems/readings.ein` owes a reading by an
@@ -4654,6 +4974,8 @@ not run and its requests not narrowed to the end. The default (a) is what every 
 
 ### Q-M1f.228 — What the interface of the tagged calls holds beyond the seven names round 2 showed
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.228-the-interface-of-the-tagged-calls-is-what-their.md`](../../docs/decisions/stdlib/math/Q-M1f.228-the-interface-of-the-tagged-calls-is-what-their.md)
+
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done)'s
 T1. [Round 2's item 41](p1f.6_calculator/questions_round2.md#q41) showed the user seven relations, `add-walk`,
 `mul-call`, `div-call` and `cmp-walk`, answered by `done`, `div-done` and `order-is`, and the starting shape
@@ -4730,6 +5052,8 @@ whichever it is, takes before blessing.
 
 ### Q-M1f.231 — Which way the import mechanism closes the gap
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md`](../../docs/decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md)
+
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5, on the user's reply to P1f.6's question 8 (2026-11-12): *"potential
 names clash is a gap of import mechanism, plan a stage for investigation, proposals and fix"*. Today a flat
 import shares by name, which is what connects theories and what clashes; `:as` shares nothing
@@ -4753,6 +5077,8 @@ can prototype it ([§ 4](p1f.6_calculator/import_clashes.md#4-the-proposals-t4))
 The user, 2026-11-13, in conversation, quoted in full in [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names): *"flat import has to import listed symbols unrenamed, but remain (private) symbols standard way - with std.module... path"*, then the numbered answers and *"1 - yes (ii)"*. **Ruled: (h)**, which the page had not proposed: a full name per declaration, global and the same through every path, so one copy of a module; a short name an alias local to the file that lists it; a selection brings what the listed names require (the closure (ii)); a whole-module import brings everything. The fix is [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md).
 
 ### Q-M1f.232 — How a module says what it exports, and what `std.arith` exports
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.232-a-module-has-no-export-list.md`](../../docs/decisions/imports/Q-M1f.232-a-module-has-no-export-list.md)
 
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; it matters under (a) and (f) of Q-M1f.231.
 
@@ -4784,6 +5110,8 @@ The user, 2026-11-13, in conversation, quoted in full in [`import_clashes.md` §
 
 ### Q-M1f.234 — Two flat imports that export one name
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.234-one-short-name-bound-to-two-full-names-in-one.md`](../../docs/decisions/imports/Q-M1f.234-one-short-name-bound-to-two-full-names-in-one.md)
+
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; under (f). P2a, `std.arith` and `chores`, both exporting `done`.
 
 - **(i) Refused at load,** as every clash is today.
@@ -4796,6 +5124,8 @@ The user, 2026-11-13, in conversation, quoted in full in [`import_clashes.md` §
 **Ruled 2026-11-13:** *"2. if it happens in the same file - it's an error, not correct ein code, just like ordinary namespaces"*. One short name bound to two full names in one file, by two imports or by an import and the file's own declaration, is refused at load; one short name bound to one full name twice is not an error.
 
 ### Q-M1f.235 — A module in a sibling directory (E-32)
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.235-a-module-has-one-path-from-the-program-files.md`](../../docs/decisions/imports/Q-M1f.235-a-module-has-one-path-from-the-program-files.md)
 
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5 ([§ 4 (g)](p1f.6_calculator/import_clashes.md#g-a-sibling-directory-e-32)); E-32 is named in the
 proposals and ruled with them.
@@ -4812,6 +5142,8 @@ proposals and ruled with them.
 
 ### Q-M1f.236 — E-49 and E-50
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.236-a-short-name-a-file-writes-and-lists-from-no.md`](../../docs/decisions/imports/Q-M1f.236-a-short-name-a-file-writes-and-lists-from-no.md)
+
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; the two findings its probes and census filed.
 
 - **E-49,** a qualified theory's name written bare answered by silence. (i) A `note:` line on every command, as
@@ -4827,6 +5159,8 @@ proposals and ruled with them.
 
 ### Q-M1f.237 — How a name prints under (h)
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.237-a-name-prints-as-the-main-file-writes-it-else.md`](../../docs/decisions/imports/Q-M1f.237-a-name-prints-as-the-main-file-writes-it-else.md)
+
 **Raised** 2026-11-13 by the user's ruling of Q-M1f.231 ([`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names)). Under (h) a name a module declares
 is its full name, and a file may write it short. A state, a trace, a core and a read-out row print one of them.
 
@@ -4839,6 +5173,8 @@ is its full name, and a file may write it short. A state, a trace, a core and a 
 
 ### Q-M1f.238 — A full name of a module no import brings
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.238-a-full-name-of-a-module-no-import-brings-is.md`](../../docs/decisions/imports/Q-M1f.238-a-full-name-of-a-module-no-import-brings-is.md)
+
 **Raised** 2026-11-13 with Q-M1f.237. Full names are global (*"full names can call global"*); a file may write
 `std.arith.add` where no import of the program brings `std.arith`.
 
@@ -4848,6 +5184,8 @@ is its full name, and a file may write it short. A state, a trace, a core and a 
 **Defaulted 2026-11-13: (a), the user's to revise.** An import stays the one way a module enters a program.
 
 ### Q-M1f.239 — A declaration under an imported module's full name
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md`](../../docs/decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md)
 
 **Raised** 2026-11-13 with Q-M1f.237. Today a name with dots is a name, and a program may declare
 `(relation std.arith.mine …)` (the coordinator's probe `v10`, 2026-11-13).
@@ -4859,6 +5197,8 @@ is its full name, and a file may write it short. A state, a trace, a core and a 
 **Defaulted 2026-11-13: (a), the user's to revise.**
 
 ### Q-M1f.240 — Entry rules and `__closed__` lists under (h)
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md`](../../docs/decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md)
 
 **Raised** 2026-11-13 with Q-M1f.237. Under the closure (ii) a selection follows a relation to the rules that
 read or conclude it, so an entry rule that names every rule of its module (`arith`, `int-arith`, …) is no
@@ -4872,6 +5212,8 @@ moves every state of every program that imports a module.
 
 ### Q-M1f.241 — A declared short name with a dot
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.241-a-modules-declared-name-holds-no-dot.md`](../../docs/decisions/imports/Q-M1f.241-a-modules-declared-name-holds-no-dot.md)
+
 **Raised** 2026-11-13 by the user's precision of Q-M1f.235: a full name is a module's name, dotted by
 directory, and the short name, `word-theory.gaps.gaps`. A module that declared `gaps.x` in `word-theory` would
 make `word-theory.gaps.x` the full name of two declarations, its own and module `word-theory.gaps`'s `x`.
@@ -4883,6 +5225,8 @@ make `word-theory.gaps.x` the full name of two declarations, its own and module 
 **Defaulted 2026-11-13: (a), the user's to revise.**
 
 ### Q-M1f.242 — A dead or redundant hypothesis declaration
+
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md`](../../docs/decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)
 
 **Raised** 2026-11-14 by [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md), the user's simplification of 2026-11-13 on the pairs of mechanisms:
 *"no-hypothesis make no sense if there are hrules - if the conflict then it's conflict, if not - then it filters
@@ -4900,6 +5244,8 @@ nothing"*. A list beside an hrule that contradicts none of its proposals filters
 
 ### Q-M1f.243 — An obligation, read as declared or as owed
 
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md`](../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)
+
 **Raised** 2026-11-14 by S1f.6.34's census. The verdicts of O + HR, O + NH and O + C name *an owed relation*. Seven
 corpus programs list a relation their obligation can owe and root does not owe (`tests/stdlib/algebra/24`, `26`,
 `tests/stdlib/slots/01`, `08`, `10`, `12`, `examples/ein-bugs/minimal-line-stated-obligation.ein`), and two more
@@ -4916,6 +5262,8 @@ root.
 
 ### Q-M1f.244 — O + C beside an hrule
 
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md`](../../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)
+
 **Raised** 2026-11-14 by S1f.6.34's witnesses. The table qualifies O + HR and O + NH with *with no hrule*, the two
 lists filtering only rungs 2 and 3, and writes O + C without it.
 
@@ -4928,6 +5276,8 @@ lists filtering only rungs 2 and 3, and writes O + C without it.
 program is in O + C beside an hrule.
 
 ### Q-M1f.245 — Where the conflict check runs
+
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md`](../../docs/decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)
 
 **Raised** 2026-11-14 by S1f.6.34's T2. A derived closure and a derived activator exist only at root's fixpoint,
 and four commands never saturate root (`ein render program`, `rules`, `rule`, `constraints`, and `ein kb save`
@@ -4977,6 +5327,8 @@ the fan-outs written out, the added negatives, `algebra/23` and `25`'s second qu
 and the refusal's fixture stay as (a) left them.
 
 ### Q-M1f.247 — What the closure (ii) follows: a relation of any kind, or a declared one
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md`](../../docs/decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md)
 
 **Raised** 2026-11-14 by [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#t1f6351--the-examples-first-on-a-prototype-done-and-the-stop)'s T1, on its prototype of (h). The ruling: *"a listed or kept relation to
 the rules that read or conclude it"*. A relation in Ein is what `(relation …)` declares, and also the head of
@@ -5035,6 +5387,8 @@ the circuit and not its closure leaves `let` open, and *forbid* refuses the prog
 
 ### Q-M1f.249 — The answers (h) moves under the recommended reading
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.249-the-answer-does-not-depend-on-the-import-form.md`](../../docs/decisions/imports/Q-M1f.249-the-answer-does-not-depend-on-the-import-form.md)
+
 **Raised** 2026-11-14 by S1f.6.35's T1. Under Q-M1f.247 (b) and Q-M1f.248 (a), of the 514 tracked programs
 that load, R is the same on 510; the read-out byte-equal on 478 and equal once module prefixes are off on 500.
 What moves, each by the ruling and not by a defect:
@@ -5070,6 +5424,8 @@ is what holds them (`ein-cli/tests/import_invariance.rs`).
 
 ### Q-M1f.250 — A listed name a module states facts of and does not declare
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.250-a-listed-name-a-module-states-facts-of-names.md`](../../docs/decisions/imports/Q-M1f.250-a-listed-name-a-module-states-facts-of-names.md)
+
 **Raised** 2026-11-14 by S1f.6.35's T1. Today a selection may list a name the module only states facts of (*a
 relation needs no declaration*); `examples/binary_logic/equivalent.ein` lists `gate` from `full_adder`, a library
 of `gate` facts, and `require` lists `total-owed` from `inputs`, which states `(total-owed in is-a)`. Under (h)
@@ -5087,6 +5443,8 @@ bound to the relation those facts are of, as the module's own text reads it (`ex
 
 ### Q-M1f.251 — A prefixed name that names nothing the module declares
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.251-a-prefixed-name-that-names-nothing-its-module.md`](../../docs/decisions/imports/Q-M1f.251-a-prefixed-name-that-names-nothing-its-module.md)
+
 **Raised** 2026-11-14 by S1f.6.35's T1. Under `(import std.int :as i)`, `i.n`: `std.int` declares no `n`, which is
 `std.arith`'s. Likewise `std.arith.nope` beside an import of `std.arith`.
 
@@ -5097,6 +5455,8 @@ bound to the relation those facts are of, as the module's own text reads it (`ex
 revise.
 
 ### Q-M1f.252 — An empty segment or a `/` in a module's name
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.252-a-modules-name-has-no-empty-segment-and-no-slash.md`](../../docs/decisions/imports/Q-M1f.252-a-modules-name-has-no-empty-segment-and-no-slash.md)
 
 **Raised** 2026-11-14 by S1f.6.35's T1. Today `(import ..succ)` loads `succ.ein` beside the importer, the empty
 segments dropped, and `(import ../x/m)` names `/x/m.ein`, an absolute path (E-32). Under (h) a module's name is its
@@ -5110,6 +5470,8 @@ one single path"*. The user's to revise.
 
 ### Q-M1f.253 — How a name prints under `:as`
 
+**Decision file:** [`docs/decisions/imports/Q-M1f.253-under-an-alias-a-name-prints-as-the-main-file.md`](../../docs/decisions/imports/Q-M1f.253-under-an-alias-a-name-prints-as-the-main-file.md)
+
 **Raised** 2026-11-14 by S1f.6.35's T1, on Q-M1f.237's default (the main file's short name where it has one,
 the full name otherwise). Under `(import std.arith :as a)` the program writes `a.sum-of`.
 
@@ -5121,6 +5483,8 @@ the full name otherwise). Under `(import std.arith :as a)` the program writes `a
 The user's to revise.
 
 ### Q-M1f.254 — S1f.6.34's conflicts beside `(solve :no-search)`
+
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md`](../../docs/decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)
 
 **Raised** 2026-11-14 by [S1f.6.36](p1f.6_calculator/s1f.6.36_no_search.md)'s T1. Under `:no-search` no rung runs,
 so an hrule proposes nothing and a list filters nothing. The stage keeps O + NH refused (*"`:no-hypothesis` over an
@@ -5140,6 +5504,8 @@ of a declaration for every pair. No tracked program is in either case.
 
 ### Q-M1f.255 — What `ein solve --no-search` prints
 
+**Decision file:** [`docs/decisions/read-out/Q-M1f.255-ein-solve-no-search-prints-root-and-an-r-row.md`](../../docs/decisions/read-out/Q-M1f.255-ein-solve-no-search-prints-root-and-an-r-row.md)
+
 **Raised** 2026-11-14 by S1f.6.36's T1, on the user's words of that day, *"flag that disables search doesn't change R,
 it disables discovering of R. R is not an output"*.
 
@@ -5155,6 +5521,8 @@ it disables discovering of R. R is not an output"*.
 **Defaulted 2026-11-14: (a), the user's to revise.**
 
 ### Q-M1f.256 — Which claims root decides under `--no-search`
+
+**Decision file:** [`docs/decisions/answer/Q-M1f.256-under-no-search-a-claim-is-decided-as-far-as.md`](../../docs/decisions/answer/Q-M1f.256-under-no-search-a-claim-is-decided-as-far-as.md)
 
 **Raised** 2026-11-14 by S1f.6.36's T1. A claim is about R, or a part of it, and `--no-search` builds no node past
 root.
@@ -5172,6 +5540,8 @@ root.
 
 ### Q-M1f.257 — `ein test --no-search`'s exit code
 
+**Decision file:** [`docs/decisions/cli/Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md`](../../docs/decisions/cli/Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md)
+
 **Raised** 2026-11-14 by S1f.6.36's T1. `ein test` exits 1 where a claim is FAILED or NOT CHECKED; under
 `--no-search` most claims are not checked because the run was asked not to search.
 
@@ -5182,6 +5552,8 @@ root.
 **Defaulted 2026-11-14: (a), the user's to revise** (*"exit non-zero only on error"*, 2026-10-16).
 
 ### Q-M1f.258 — Which commands and options take `--no-search`
+
+**Decision file:** [`docs/decisions/cli/Q-M1f.258-ein-solve-and-ein-test-take-no-search-and-ein.md`](../../docs/decisions/cli/Q-M1f.258-ein-solve-and-ein-test-take-no-search-and-ein.md)
 
 **Raised** 2026-11-14 by S1f.6.36's T1.
 
@@ -5197,6 +5569,8 @@ root.
 **Defaulted 2026-11-14: (a), the user's to revise.**
 
 ### Q-M1f.259 — `--json-summary` under `--no-search`
+
+**Decision file:** [`docs/decisions/read-out/Q-M1f.259-under-no-search-the-summary-states-no-region.md`](../../docs/decisions/read-out/Q-M1f.259-under-no-search-the-summary-states-no-region.md)
 
 **Raised** 2026-11-14 by S1f.6.36's T1. `ein-summary/2` has one key set on every arm, and a run that states no R has
 no `region` block to hold root's standing (`region.root`, `root_owes`, `root_owed`).
@@ -5228,6 +5602,8 @@ no `region` block to hold root's standing (`region.root`, `root_owes`, `root_owe
 exactly, 71 (the prototype, 2026-11-14).
 
 ### Q-M1f.261 — The decimal theory's module name, after the user wrote `std.math.arith` in passing
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.261-the-decimal-arithmetic-is-std-math-decimal-arith.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.261-the-decimal-arithmetic-is-std-math-decimal-arith.md)
 
 **Raised** 2026-11-14 by [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-replies-re-read), re-reading
 the replies before the move. Replies 16 and 52 of 2026-11-12 say *"rename arith to decimal-arith"*, and round 2's
@@ -5266,6 +5642,8 @@ test directory the stage moved (`s1f.6.7`, `.8`, `.13`, `.16`, `.24`, `word_prob
 
 ### Q-M1f.263 — The sixteen layout rules of `std.bool.gates`, now that an import brings every rule
 
+**Decision file:** [`docs/decisions/stdlib/bool/Q-M1f.263-every-program-that-imports-std-bool-gates.md`](../../docs/decisions/stdlib/bool/Q-M1f.263-every-program-that-imports-std-bool-gates.md)
+
 **Raised** 2026-11-14 by [S1f.6.17's build](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-14-the-build).
 The plan's table says the relation-per-function layout `(And 1 1 1)` is *"derived only in a program that selects
 them"*: written before S1f.6.35, when a selection brought only what it named. Since S1f.6.35 every import brings
@@ -5285,6 +5663,8 @@ its module whole, so no import can select the sixteen rules apart from the table
 change to (b) is sixteen premises and a relation, with the tests' claims unmoved.
 
 ### Q-M1f.264 — A function's name a program writes and does not list (E-62)
+
+**Decision file:** [`docs/decisions/imports/Q-M1f.264-a-gate-functions-name-a-program-writes-and-does.md`](../../docs/decisions/imports/Q-M1f.264-a-gate-functions-name-a-program-writes-and-does.md)
 
 **Raised** 2026-11-14 by [S1f.6.17's build](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-14-the-build),
 its check of a name that is both a relation and a value (T1f.6.17.4). Each of the sixteen names is declared by
@@ -5307,6 +5687,8 @@ claims fail.
 
 ### Q-M1f.265 — The names and file shapes `std.bool`'s build chose
 
+**Decision file:** [`docs/decisions/stdlib/bool/Q-M1f.265-each-std-bool-module-is-entered-by-its-last-name.md`](../../docs/decisions/stdlib/bool/Q-M1f.265-each-std-bool-module-is-entered-by-its-last-name.md)
+
 **Raised** 2026-11-14 by [S1f.6.17's build](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-14-the-build).
 The rulings name the four modules and what each holds; these were the build's to choose:
 
@@ -5328,6 +5710,8 @@ The rulings name the four modules and what each holds; these were the build's to
 applications, held by their claims and by `ein-cli/tests/import_invariance.rs`.
 
 ### Q-M1f.266 — How a base is connected to the shared rules
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.266-a-base-is-connected-to-the-shared-rules-by-one.md`](../../docs/decisions/stdlib/math/Q-M1f.266-a-base-is-connected-to-the-shared-rules-by-one.md)
 
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14), on the user's ruling of that day: *"(a), show me the design
 first, if they can't be connected with single hand written fact, if it require ~100 facts for that - then you need
@@ -5359,6 +5743,8 @@ own and no firing; 77 shared rules and 61 parameters once S1f.6.38 had taken the
 
 ### Q-M1f.267 — The binary theory's names
 
+**Decision file:** [`docs/decisions/stdlib/math/binary/Q-M1f.267-binarys-names-carry-the-prefix-bin.md`](../../docs/decisions/stdlib/math/binary/Q-M1f.267-binarys-names-carry-the-prefix-bin.md)
+
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). Reply 14 took a word prefix, `bin-add` answered by
 `bin-sum-of`; the plan kept the shape `b2` by default and filed the question for the build.
 
@@ -5374,6 +5760,8 @@ own and no firing; 77 shared rules and 61 parameters once S1f.6.38 had taken the
 
 ### Q-M1f.268 — How far binary flags a malformed request
 
+**Decision file:** [`docs/decisions/stdlib/math/binary/Q-M1f.268-binary-flags-a-malformed-request-as-far-as.md`](../../docs/decisions/stdlib/math/binary/Q-M1f.268-binary-flags-a-malformed-request-as-far-as.md)
+
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). The plan's T1f.6.16.7 says *"the detection of malformed
 numbers as far as the shared rules bring it, and the page saying what stays silent"*. The shared rules bring all of
 S1f.6.12's check but the two rules that list the digits, `check-digit` and `operand-undeclared`.
@@ -5388,6 +5776,8 @@ right, each answered once. **Built so** 2026-11-15 by [S1f.6.16's build](p1f.6_c
 `std.math.binary`'s check where a numeral is written, the undeclared name `bin-operand-undeclared`.
 
 ### Q-M1f.269 — `division-by-zero-is-false` stays decimal's
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.269-division-by-zero-is-a-contradiction.md`](../../docs/decisions/stdlib/math/Q-M1f.269-division-by-zero-is-a-contradiction.md)
 
 **Raised** 2026-11-14 by [S1f.6.16's trial](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-14-t1f6165-the-trial-and-the-stop).
 `std.math.num9`'s closing rule names the rule, `(num9-rule division-by-zero-is-false)`, and a rule's name written as
@@ -5411,6 +5801,8 @@ program's imports are rewritten once. **Built** 2026-11-15 by [S1f.6.16's build]
 
 ### Q-M1f.270 — The connecting macro's body, written or generated
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.270-the-connecting-macros-body-is-written-by-hand.md`](../../docs/decisions/stdlib/math/Q-M1f.270-the-connecting-macros-body-is-written-by-hand.md)
+
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). The macro `positional` activates each of the module's 78 rules
 once with that rule's parameters, so its body repeats every rule's parameter list.
 
@@ -5423,6 +5815,8 @@ reply 16 wanted of `std.math.decimal-arith`; the test fails on the drift a gener
 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15): `arith_theory.rs`' `one_call_of_the_macro_connects_each_base`.
 
 ### Q-M1f.271 — What an hrule's `(and …)` conclusion proposes
+
+**Decision file:** [`docs/decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md`](../../docs/decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)
 
 **Raised** 2026-11-14 by [S1f.6.37](p1f.6_calculator/s1f.6.37_conclusion_shapes.md#record-2026-11-14)'s
 inventory of what reads a conclusion (E-65, W95). An hrule proposes facts, each a commitment of its own, and the
@@ -5443,6 +5837,8 @@ commitment states. (c) keeps the silent drop's answer.
 
 ### Q-M1f.272 — How a representation module sees a numeral, right away
 
+**Decision file:** [`docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md`](../../docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1, the design
 (`6cca4406`), on Q-M1f.210's ruling: a malformed numeral is the representation's problem, detected as soon as it is
 written. No rule-level way is *right away* (the stage's § 2).
@@ -5460,6 +5856,8 @@ defaults fine"*.
 
 ### Q-M1f.273 — Where decimal's numeral check lives
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.273-the-decimal-numeral-is-std-math-decimal-s-which.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.273-the-decimal-numeral-is-std-math-decimal-s-which.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
 
 - **(a) `std.math.decimal-arith`'s own rules,** beside `n` and `let`: no program's imports change.
@@ -5475,6 +5873,8 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 
 ### Q-M1f.274 — The numeral's flag
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
 
 - **(a) `(not-decimal NUMERAL THING)`** on the smallest `n` term at fault, `(false)` from it by
@@ -5485,6 +5885,8 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 **Defaulted 2026-11-14: (a); accepted by the user the same day** (*"other defaults fine"*).
 
 ### Q-M1f.275 — What the loader states as written
+
+**Decision file:** [`docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md`](../../docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)
 
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
 
@@ -5498,6 +5900,8 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 
 ### Q-M1f.276 — An integer's and a rational's own shape
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md`](../../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
 
 - **(a) Flagged:** int and rat flag a digit or a named constant where their own term's part goes, `(int 7 z)`,
@@ -5509,6 +5913,8 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 
 ### Q-M1f.277 — An operand of another type in int and rat
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md`](../../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
 
 - **(a) Flagged:** int and rat flag a natural where an integer goes, and an integer or a natural where a rational
@@ -5518,6 +5924,8 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 **Defaulted 2026-11-14: (b); accepted by the user the same day** (*"other defaults fine"*).
 
 ### Q-M1f.278 — How a module below `let` flags a named constant inside a numeral
+
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.278-a-named-constant-is-told-by-named-the-numeral.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.278-a-named-constant-is-told-by-named-the-numeral.md)
 
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
 build, the item [Q-M1f.273](#q-m1f273--where-decimals-numeral-check-lives)'s ruling left open: `std.math.decimal` is
@@ -5539,6 +5947,8 @@ operand did not pay.
 
 ### Q-M1f.279 — What a `written` fact is derived by, and where it shows
 
+**Decision file:** [`docs/decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md`](../../docs/decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
 T1f.6.38.2. The ruled design: a core that rests on a stated fact names the fact as written, and `written` shows where
 the declarations' mirrors show.
@@ -5555,6 +5965,8 @@ the declarations' mirrors show.
 
 ### Q-M1f.280 — A program that writes `written`
 
+**Decision file:** [`docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md`](../../docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
 T1f.6.38.2.
 
@@ -5568,6 +5980,8 @@ T1f.6.38.2.
 
 ### Q-M1f.281 — A `let` that names a digit
 
+**Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.281-a-let-that-names-a-digit-is-flagged.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.281-a-let-that-names-a-digit-is-flagged.md)
+
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
 build. Until the stage a request that named `seven`, beside `(let seven 7)`, was flagged by the check its value was
 handed to, `check-prefix-digit`; with the numeral's check moved to `std.math.decimal`, nothing read the value.
@@ -5579,6 +5993,8 @@ handed to, `check-prefix-digit`; with the numeral's check moved to `std.math.dec
 **Defaulted 2026-11-14: (a), the user's to revise.** A `let`'s value is the `let`'s to read, as `let-to-name`'s is.
 
 ### Q-M1f.282 — The flag of an integer division whose operand is at fault
+
+**Decision file:** [`docs/decisions/stdlib/math/int/Q-M1f.282-an-integer-division-with-an-operand-at-fault.md`](../../docs/decisions/stdlib/math/int/Q-M1f.282-an-integer-division-with-an-operand-at-fault.md)
 
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
 T1f.6.38.4. `std.math.int`'s three divisions share their rules under the tag `(int-first (int-div-of REQUEST) Y)`,
@@ -5593,6 +6009,8 @@ so `int-bad-first` takes an operand's fault to `(bad-request (int-div-of REQUEST
 **Defaulted 2026-11-14: (a), the user's to revise.**
 
 ### Q-M1f.283 — The two new modules' names and their place
+
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.283-zero-is-a-relation-of-no-argument-and-each.md`](../../docs/decisions/stdlib/math/Q-M1f.283-zero-is-a-relation-of-no-argument-and-each.md)
 
 **Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
 T1f.6.38.3. Defaulted as built, each the user's to revise: the entries `arith` and `decimal`, and the relations their
@@ -5799,6 +6217,8 @@ corpus sweep of § Today's 31.
 
 ### Q-M1f.295 — Binary's numeral is `std.math.binary`'s
 
+**Decision file:** [`docs/decisions/stdlib/math/binary/Q-M1f.295-the-binary-numeral-is-std-math-binary-s-which.md`](../../docs/decisions/stdlib/math/binary/Q-M1f.295-the-binary-numeral-is-std-math-binary-s-which.md)
+
 **Raised** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15). Q-M1f.210's ruling, *"malformed decimal numbers is a problem of decimal module,
 malformed binary numbers - of binary module"*, and S1f.6.38's split (a numeral's module apart from its arithmetic,
 Q-M1f.273 (b)) leave the shape of binary's representation to the build.
@@ -5825,6 +6245,8 @@ each in the script.
 
 ### Q-M1f.297 — Binary's tagged calls an interface; what `std.math.convert` reads
 
+**Decision file:** [`docs/decisions/stdlib/math/binary/Q-M1f.297-binarys-tagged-calls-are-an-interface.md`](../../docs/decisions/stdlib/math/binary/Q-M1f.297-binarys-tagged-calls-are-an-interface.md)
+
 **Raised** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15).
 
 - **Binary's tagged calls**, `(bin-add-walk TAG X Y C z)` and its ten twins of decimal's interface (S1f.6.30's T1,
@@ -5842,6 +6264,8 @@ each in the script.
 
 ### Q-M1f.298 — The two shared sentences that wrote decimal's numeral
 
+**Decision file:** [`docs/decisions/stdlib/math/Q-M1f.298-a-shared-rules-text-writes-the-bases-own-numeral.md`](../../docs/decisions/stdlib/math/Q-M1f.298-a-shared-rules-text-writes-the-bases-own-numeral.md)
+
 **Raised** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15). `operand-digit`'s and `let-to-digit`'s `:why` wrote *"the number is (n z {?x})"*,
 decimal's numeral in the text.
 
@@ -5854,6 +6278,8 @@ decimal's numeral in the text.
 digit or a bit stands for a number, a dead program's trace.
 
 ### Q-M1f.299 — gcd(0, 0)
+
+**Decision file:** [`docs/decisions/stdlib/math/gcd/Q-M1f.299-the-greatest-common-divisor-of-zero-and-zero-is.md`](../../docs/decisions/stdlib/math/gcd/Q-M1f.299-the-greatest-common-divisor-of-zero-and-zero-is.md)
 
 **Raised** 2026-11-15 by [S1f.6.32](p1f.6_calculator/s1f.6.32_gcd_and_lcm.md#record-2026-11-15) (the stage file: *gcd(0, 0) is zero by the usual convention,
 which the stage states and the harness holds*). Every number divides zero, so zero and zero have no greatest common
@@ -5870,6 +6296,8 @@ divisor in the order of size.
 
 ### Q-M1f.300 — `std.math.gcd`'s tagged call, an interface
 
+**Decision file:** [`docs/decisions/stdlib/math/gcd/Q-M1f.300-the-greatest-common-divisors-tagged-call-is.md`](../../docs/decisions/stdlib/math/gcd/Q-M1f.300-the-greatest-common-divisors-tagged-call-is.md)
+
 **Raised** 2026-11-15 by [S1f.6.32](p1f.6_calculator/s1f.6.32_gcd_and_lcm.md#record-2026-11-15). [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md) has `rat-simplify` *call* `std.math.gcd`, and a
 rule of `std.math.rat` cannot read `(gcd-of X Y G)` without joining it to its own state on a number, which the rule
 of the theory forbids. So the module has a call under the caller's tag, as `std.math.decimal-arith`'s division has.
@@ -5885,6 +6313,8 @@ of the theory forbids. So the module has a call under the caller's tag, as `std.
 of a program's own.
 
 ### Q-M1f.301 — What `gcd-call` does before Euclid's chain
+
+**Decision file:** [`docs/decisions/stdlib/math/gcd/Q-M1f.301-the-greatest-common-divisor-puts-each-number.md`](../../docs/decisions/stdlib/math/gcd/Q-M1f.301-the-greatest-common-divisor-puts-each-number.md)
 
 **Raised** 2026-11-15 by [S1f.6.32](p1f.6_calculator/s1f.6.32_gcd_and_lcm.md#record-2026-11-15). The banked example's chain and `std.math.rat`'s divide the
 operands as written: an answer that is an operand's value comes back as that operand was written, `006`, and a zero
@@ -5905,6 +6335,8 @@ fraction's terms, which `rat-simplify` hands over smaller first.
 
 ### Q-M1f.302 — What `std.math.rat`'s unreduced answer fixes, and `rat-norm` under (b)
 
+**Decision file:** [`docs/decisions/stdlib/math/rat/Q-M1f.302-an-unreduced-answer-has-its-numerator-in-normal.md`](../../docs/decisions/stdlib/math/rat/Q-M1f.302-an-unreduced-answer-has-its-numerator-in-normal.md)
+
 **Raised** 2026-11-15 by [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15). The stage file: *the operations answer unreduced: the cross products over the
 product of the denominators, as computed, with the sign in the numerator's integer in normal form and the
 denominator a natural number that is not zero; … only the common factor of numerator and denominator stays*. A
@@ -5924,6 +6356,8 @@ lowest terms*.
 interface reads it whatever it hands over.
 
 ### Q-M1f.303 — `rat-simplify` asks `std.math.gcd` the numerator first
+
+**Decision file:** [`docs/decisions/stdlib/math/rat/Q-M1f.303-lowest-terms-hands-the-numerator-to-the-greatest.md`](../../docs/decisions/stdlib/math/rat/Q-M1f.303-lowest-terms-hands-the-numerator-to-the-greatest.md)
 
 **Raised** 2026-11-15 by [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15). `rat-simplify` calls `(gcd-call TAG A D)`, A the numerator's size and D the
 denominator, as `std.math.rat`'s own chain took them until this stage. Where A is the smaller, a proper fraction,
@@ -6029,6 +6463,8 @@ phase's stop: what a group is, after S1f.10.2's control failed
 more ([S1f.10.10](p1f.10_hypothesis_structure/s1f.10.10_the_theorys_share.md#defaults-taken)).
 
 ### Q-M1f.306 — What the blind enumerator takes for an object
+
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md`](../../docs/decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)
 
 **Raised** 2026-11-15 by
 [S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s
@@ -6310,6 +6746,8 @@ and [H6-4](p1f.10_hypothesis_structure/findings.md#h6-4--hypgeneligible_relation
 
 ### Q-M1f.308 — The rung a loaded obligation rule chooses
 
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md`](../../docs/decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)
+
 **Raised** 2026-11-15 by
 [S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-15-tasks-1-to-3)'s
 tasks 1 to 3, for E-51 of the calculator's [`findings.md`](p1f.6_calculator/findings.md), which P1f.10 owns.
@@ -6447,6 +6885,8 @@ finding met, [H15-6](p1f.10_hypothesis_structure/findings.md#h15-6--register_reg
 
 ### Q-M1f.309 — How `ein` shows a program's structure
 
+**Decision file:** [`docs/decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md`](../../docs/decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)
+
 **Raised** 2026-11-16 at P1f.10's one stop, by [S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)'s second task,
 for the user's first idea of the phase: *the structure is itself a valuable piece of information for
 analysis*. Part 1 computed the structure in one owner, `ein_infer::structure`, and no command of `ein` shows
@@ -6535,6 +6975,8 @@ H9-n, H6-n and H15-n. **Stands until revised.**
 **Accepted 2026-11-16.** The user, shown the stop: *"all defaults ok"*.
 
 ### Q-M1f.311 — A describe the budget would stop: answer what the tree can reach instead?
+
+**Decision file:** [`docs/decisions/answer/Q-M1f.311-describe-takes-the-tree-and-the-classes.md`](../../docs/decisions/answer/Q-M1f.311-describe-takes-the-tree-and-the-classes.md)
 
 **Raised** 2026-11-16 by [S1f.10.14](p1f.10_hypothesis_structure/s1f.10.14_exactly_one_spent.md#t4-describe-as-a-question-with-numbers--q-m1f311-put)'s
 T4, the third place the stage file names where the engine has an *exactly one* it does not spend: describe takes
@@ -6710,6 +7152,8 @@ proposes ask H's pass, `generate_config_free`. Kept, with their readers: the wri
 `.einb` `META` layout). No answer, read-out line or event moved: no command ran any of it.
 
 ### Q-M1f.313 — May the agenda inside a route's node fire first what leads to `(false)`?
+
+**Decision file:** [`docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md`](../../docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)
 
 **Raised** 2026-11-16 by [S1f.10.19](p1f.10_hypothesis_structure/s1f.10.19_a_dead_node_stopped_early.md#t3-q-m1f313)'s
 T3, on the user's *"Maybe we can also optimize saturation in general by firing first rules that emit owed
