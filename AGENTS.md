@@ -438,6 +438,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - A change to what `ein solve` prints changes `read_out.md` in the same
   commit. A shape the grammar newly refuses gets a row in the grammar page's
   table.
+- **A file that moves takes every reference to it along**, in the commit
+  that moves it: `utils/doc_audit.py --links --check --tracked` reads each
+  `.md`'s links, the links in a Rust comment and the bare paths in a `.ein`
+  comment and in `corpus/corpus.toml`, and `--inbound --tracked --target
+  PREFIX` counts them per target.
+- **The release voice is a ratchet**: `utils/check_release_voice.py` fails
+  where a file's count of lines carrying a milestone, phase, stage or task id,
+  a path into `plans/` or a date rises above `utils/release_voice_baseline.txt`,
+  or a file not listed there has one. A decision id passes. The commit that
+  lowers a count re-banks the baseline (`--bless`).
 - **A wrong answer** is filed as an `open` row of the register, with a
   witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, in a
   commit of its own; the fix flips the row, and any `:expect` that stated the
@@ -517,6 +527,9 @@ python3 utils/review_bundle.py                               # M1e2: build/revie
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)
 python3 utils/read_out_examples.py                           # M1f S1f.5.16: the read-out reference's examples page, written from the binary
+python3 utils/doc_audit.py --inbound --tracked --target docs/kernel/   # per target file, the references a move rewrites, by referrer kind
+python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check counts; --bless re-banks its baseline
+python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ or docs/history/ reference, a date
 ```
 
 The read-out's vocabulary is
@@ -534,7 +547,7 @@ change the answer* column on every flag row, pinned by
 deleted at M1e2 S1e2.1c.5; a page that describes it is a record.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order:
-six static checks (`--tests-only` skips them and the bench smoke), then
+seven static checks (`--tests-only` skips them and the bench smoke), then
 `cargo test --profile gate --workspace`, then the bench smoke test. The tests run with
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,

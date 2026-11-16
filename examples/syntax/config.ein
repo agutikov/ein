@@ -3,7 +3,7 @@
 ;;; A `(config …)` block, which every view has to render as data rather
 ;;; than as a fact. The flag is a real one — the fixture is about the *form*,
 ;;; and an unknown flag would make the file a load-negative, which is what
-;;; `examples/broken/load/config_unknown_flag.ein` is for.
+;;; `examples/broken/config_unknown_flag.ein` is for.
 ;;;
 ;;; It set `:lattice-order-seed 3` until M1e2 S1e2.1a.5 retired that flag (an
 ;;; order lever, which no route reads), and `:warn-derived-naf true` until M1e2

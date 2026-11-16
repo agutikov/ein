@@ -2,7 +2,7 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # six static checks, the tests, their scratch check, the review-bundle smoke, the bench smoke
+#     ./run_tests.sh                 # seven static checks, the tests, their scratch check, the review-bundle smoke, the bench smoke
 #     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1: every corpus program) and 8 id seeds
 #     ./run_tests.sh --nightly       # instead of the gate: every step of .github/workflows/nightly.yml, in order
 #     ./run_tests.sh --dev-host      # instead of the gate: the nightly's steps at full budget, and the steps CI no longer runs
@@ -67,7 +67,12 @@
 #                                 anchors the first time it ran over the whole
 #                                 tree rather than over `docs/kernel/` — 251 of
 #                                 them in one milestone record that had moved
-#                                 out of `plans/` (M1e S1e.3.8, `DO-M2`)
+#                                 out of `plans/` (M1e S1e.3.8, `DO-M2`); 15
+#                                 more when it read the links of Rust comments
+#                                 and the bare paths of `.ein` comments and
+#                                 `corpus.toml` too
+#   check_release_voice.py        its own docstring's examples, the first time
+#                                 it ran; the rest of the tree is its baseline
 #   cargo fmt --all --check       three files were unformatted the first time
 #                                 it ran, all three from M1c's `:expect` work
 #   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four
@@ -80,7 +85,7 @@
 #                                 in the workflow too
 #
 # They cost about a second each warm, they run before the tests because their
-# failures are the cheapest ones to read, and `--tests-only` turns all six off
+# failures are the cheapest ones to read, and `--tests-only` turns all seven off
 # — and the bench smoke below with them, which is what
 # `gate_steps::what_tests_only_skips_is_what_the_script_guards` reads out of
 # this script rather than out of this sentence. Nothing turns them off
@@ -748,16 +753,19 @@ if [[ "${CHECKS}" == 1 ]]; then
     step "utils/check_hashmap_iteration.py"
     python3 "${SCRIPT_DIR}/utils/check_hashmap_iteration.py"
 
-    # M1e S1e.3.8, `DO-M2`. Not scoped to `docs/kernel/`, which `doc_audit.py`
-    # defaults to and S1e.2.2 had already swept: a relative link resolves or it
-    # does not wherever it is written, and 251 of the 264 broken ones this
-    # first found were in `docs/history/m1d_satisfiability/` — a milestone
-    # record moved out of `plans/` with its links still pointing at the tree it
-    # left. 280 pages, 0.29 s.
+    # Every tracked file that refers to another: each `.md`'s links, the links
+    # in a Rust comment, and the bare paths in a `.ein` comment and in
+    # `corpus/corpus.toml`. Not scoped to `docs/kernel/`, which `doc_audit.py`
+    # defaults to: a relative link resolves or it does not wherever it is
+    # written, and a page that moves takes every reference to it along.
     step "utils/doc_audit.py --links --check"
-    python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check \
-        docs plans README.md AGENTS.md corpus/README.md tests/README.md \
-        examples/README.md stdlib/README.md utils/README.md c/README.md
+    python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check --tracked
+
+    # The release voice: no milestone, phase, stage or task id, no path into
+    # `plans/` and no date where the released tree keeps its prose, held to a
+    # banked per-file baseline that may only fall.
+    step "utils/check_release_voice.py"
+    python3 "${SCRIPT_DIR}/utils/check_release_voice.py"
 
     step "cargo fmt --all --check"
     if ! cargo fmt --manifest-path "${MANIFEST}" --all --check; then
@@ -832,7 +840,7 @@ python3 "${SCRIPT_DIR}/utils/review_bundle.py" --smoke
 # which emits its `.rmeta`, and codegen'd and run here. Running only this half
 # would restore the expensive one while leaving the cheap, stricter one
 # skipped. Nor can it buy the property the finding argues for: `--tests-only`
-# would still skip six CI steps, so it is a subset either way, and the
+# would still skip seven CI steps, so it is a subset either way, and the
 # header's job is to say so rather than to stop being true. What it would cost
 # is the number that decided it — the bench builds the **release** profile,
 # which `cargo test`'s profile shares no artifacts with (the dev profile then,

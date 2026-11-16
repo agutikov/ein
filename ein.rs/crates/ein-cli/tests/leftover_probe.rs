@@ -1,8 +1,6 @@
 //! M1d S1d.3.1 — **the leftover-open probe, and the claim that it is a read.**
 //!
-//! One test in a file of its own, for
-//! [`obligation_rung_control.rs`](../../ein-infer/tests/obligation_rung_control.rs)'s
-//! reason and by its rule: `EIN_LEFTOVER` is read from the process
+//! One test in a file of its own: `EIN_LEFTOVER` is read from the process
 //! environment, so nothing that asserts the default may share a binary — or a
 //! `--test-threads` — with something that sets it. Cargo gives each
 //! `tests/*.rs` its own process; one `#[test]` inside it is the rest of the

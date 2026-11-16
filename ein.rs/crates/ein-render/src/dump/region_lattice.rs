@@ -1,5 +1,5 @@
 //! `--dump-lattice DIR` under a region mode — M1e2
-//! [T1e2.1a.5.3](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md):
+//! [T1e2.1a.5.3](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md):
 //! every node the run visited, whatever the route, in visit order.
 //!
 //! Two files, `nodes.json` (`ein-lattice/2`) and `nodes.md`, written after the

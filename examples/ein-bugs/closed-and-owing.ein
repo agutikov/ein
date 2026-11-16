@@ -5,7 +5,7 @@
 ;;; no commitment extends `r`; the user, 2026-11-13: *"obligated relation can't
 ;;; be __closed__ also"*. Every command refuses it, one line naming the
 ;;; obligation, its activator, the closure and the rule that derives it, exit 1
-;;; (`ein test`: 2). Until then it was `tests/stdlib/closure/03_closed_and_owing.ein`
+;;; (`ein test`: 2). Until then it was the stdlib test `03_closed_and_owing.ein`
 ;;; and answered R empty, `Open — owes 1`, the rung *stuck* (`declined 1`), its
 ;;; claim held: the corner below, which the language no longer has. Its twin
 ;;; `tests/stdlib/closure/02_closed_and_satisfied.ein` keeps the closure and

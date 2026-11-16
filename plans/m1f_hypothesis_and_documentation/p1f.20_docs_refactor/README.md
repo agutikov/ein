@@ -5,7 +5,8 @@
 whole at ~23.
 **Status:** created 2026-11-08 on the user's instruction: *"convert
 plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.20_docs_refactor.md into new phase
-p1f.20"*. **Not started.**
+p1f.20"*. **In progress** since 2026-11-16: [S1f.20.1](s1f.20.1_the_two_checks.md), the two checks and the
+census, is done; [S1f.20.2](s1f.20.2_the_disposition_table.md) is next.
 **Was S1f.5.20**, a stage of [P1f.5](../p1f.5_the_no_owner_items/README.md), until 2026-11-08. Since it
 was written on 2026-08-28, its § How to cut it had proposed splitting it into seven stages and left taking
 the split to the user. This phase takes it. No stage had run, so nothing shipped is renumbered:
@@ -124,6 +125,58 @@ That is **2 034 lines across 330 files carrying a development-history
 reference**. Counted the other way — by link rather than by line — the crates
 alone hold **464 doc-comment links into `docs/history/`**: 368 into
 `m1a_rust`, 69 into `m1d_satisfiability`, 27 into `m1c_external_validation`.
+
+### Re-taken 2026-11-16, by a script
+
+[S1f.20.1](s1f.20.1_the_two_checks.md) re-took the table with `python3 utils/history_census.py`, on the tree
+of the commit that banks the script; the table above stays as the 2026-08-28 starting point, whose counting
+rule was not written down. The rules are the script's docstring: **files** are the row's tracked files of its
+kind (`.md` for a docs tree, so `docs/kernel`'s 14 `.dot` and 14 `.svg` are not counted), **lines** their
+newlines; **carries an id** is a line with a milestone, phase, stage or task id by the release-voice check's
+patterns, whole lines (a `.rs` file's code and strings too), a decision id `Q-M…` not counted;
+**refers into `plans/` or `docs/history/`** is a line with a markdown link that resolves there or a path
+written into either, bare or relative; **dates** is a line with an ISO date, a column the 2026-11-15 rulings
+add. Each is given as lines and as the files with one.
+
+| tree | files | lines | carries an id | refers into `plans/` or `docs/history/` | dates |
+|---|---:|---:|---:|---:|---:|
+| `docs/kernel` | 48 | 26 661 | 2 046 lines, 45 files | 585 lines, 40 files | 581 lines, 34 files |
+| `docs/api` | 2 | 438 | 22 lines, 2 files | 12 lines, 2 files | 2 lines, 1 file |
+| `docs/guide` | 5 | 796 | 9 lines, 3 files | 0 lines, 0 files | 3 lines, 2 files |
+| `docs/install.md` | 1 | 226 | 8 lines, 1 file | 9 lines, 1 file | 2 lines, 1 file |
+| `docs/history` | 73 | 24 247 | 1 558 lines, 66 files | 1 290 lines, 51 files | 583 lines, 48 files |
+| `docs/lib` | 14 | 2 518 | 2 lines, 1 file | 5 lines, 2 files | 0 lines, 0 files |
+| `ein.rs/crates/**/*.rs` | 332 | 208 385 | 4 096 lines, 280 files | 449 lines, 186 files | 558 lines, 164 files |
+| `stdlib` + `examples` + `tests` `.ein` | 890 | 46 997 | 2 089 lines, 763 files | 34 lines, 34 files | 748 lines, 421 files |
+| `corpus/corpus.toml` | 1 | 5 400 | 763 lines, 1 file | 2 lines, 1 file | 302 lines, 1 file |
+| `examples` + `stdlib` + `utils` `README.md` | 3 | 2 248 | 212 lines, 3 files | 76 lines, 3 files | 96 lines, 3 files |
+| `AGENTS.md` | 1 | 675 | 53 lines, 1 file | 30 lines, 1 file | 7 lines, 1 file |
+| `README.md` | 1 | 741 | 97 lines, 1 file | 90 lines, 1 file | 38 lines, 1 file |
+
+**9 397 lines across 1101 files carry a milestone, phase, stage or task id**, every tree but `docs/history`.
+
+The crates' comment links into `docs/history/`: **273** — 197 into `m1a_rust`, 37 into `m1e_review_processing`, 22 into `m1d_satisfiability`, 17 into `m1c_external_validation`; 84 of them into `m1a_rust/design/`. Into `plans/`: 142.
+
+Tracked names outside `plans/` and `docs/history/` that carry an id: 0
+
+The release-voice check over its scope (its baseline): **6 743 lines in 1041 files** — shipped crates' doc comments 3 271, `.ein` comments 2 501, `corpus/corpus.toml` 765, `README.md` 152, `AGENTS.md` 54.
+
+So the tree grew since 2026-08-28 (`docs/kernel` from 12 724 lines to 26 661, the `.ein` row from 197 files to
+890 with `tests/`), and so did its history: the id column outside `docs/history` is 9 397 lines in 1 101 files
+against 2 034 in 330, under a rule that is now written down and may count more than the old one did. The
+crates' links into `docs/history/` fell from 464 to 273 (the links of every comment line, `//` too, resolved
+from the file), and they carry 142 links into `plans/`, which the old table did not count by link. No tracked name outside `plans/`
+and `docs/history/` carries an id: the test the plan named, `s1a_6_9_resumed_saturation`, is gone.
+
+**The release-voice check's first baseline is its own count over its scope** (6 743 lines in 1 041 files),
+not the census rows: it reads only a shipped crate's doc comments, a `.ein` file's comments, `AGENTS.md`
+without § Where the work is, and fails a path into `plans/` and a date beside the ids. Its per-file counts are
+`utils/release_voice_baseline.txt`; `python3 utils/check_release_voice.py --list PATH` lists the lines.
+
+**Inbound references per target**, which [S1f.20.2](s1f.20.2_the_disposition_table.md)'s table takes for each
+source page: `python3 utils/doc_audit.py --inbound --tracked --target docs/kernel/` (any prefix, repeatable),
+every reference that resolves by referrer kind (`.md`, with those from `plans/` and `docs/history/` counted
+again apart, Rust comment links, `.ein` comment paths, `corpus.toml` paths).
 
 ### The collision, stated once
 
