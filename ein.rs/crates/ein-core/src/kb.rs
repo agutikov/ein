@@ -36,7 +36,7 @@ use crate::prov::{ProvId, ProvKind};
 use crate::terms::Terms;
 use crate::value::{Tag, Value};
 use rustc_hash::{FxHashMap, FxHashSet};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 /// S1.21.7 — the per-fact cap on recorded **alternative** justifications.
 ///
@@ -421,180 +421,6 @@ fn diff_map<K: Eq + std::hash::Hash + std::fmt::Debug>(
     Ok(())
 }
 
-/// Learned no-good clauses (S1.5a.18) — path conditions that are known dead.
-///
-/// A clause is a sorted `Box<[FactId]>`; the meaning is "any branch whose path
-/// condition is a superset of this clause is dead". Emission and subsumption
-/// live with the search layer.
-///
-/// # Why sharing this across `--jobs N` workers cannot move an observable
-///
-/// **M1e S1e.1.2**, answering the review's Q1. [`Kb::branch`] hands every
-/// worker of a fanned-out layer the *same* `Arc<RwLock<Nogoods>>`, so a clause
-/// learned while the layer is in flight is visible to a worker mid-entering —
-/// in principle. The reason it is not is neither the lock nor the ordered
-/// commit "replaying" the result: it is that **nothing touches this store
-/// while a worker exists**. Every access in the shipping engine, and this is
-/// all of them:
-///
-/// | site | lock | when |
-/// |---|---|---|
-/// | `nogoods::emit_nogood` | write | from `Run::handle_dead` and `Run::integrate`, the ordered commit and the batch barrier |
-/// | `nogoods::subsumed` | read | the deferred-integration half of that same `handle_dead` |
-/// | `Run::generate_layer` | read | **one** guard, held across the whole of the next layer's candidate generation |
-/// | `Run::proof` | read | once, after the search |
-/// | [`Kb::snapshot`] | read | the archival copy a recorded model keeps |
-///
-/// Every one of those runs on the thread that runs the layer loop. (Outside
-/// the search: `.einb` load writes the store before anything forks, and
-/// `ein-infer`'s two shape instruments are single-threaded by construction.)
-/// So:
-///
-/// 1. **Every write is on the committing thread**, at a point the candidate
-///    order fixes — and `Run::fan_out` is a barrier, so that thread is blocked
-///    inside it for exactly as long as a worker exists. A worker cannot
-///    observe a clause arriving, because while it lives there is no writer.
-/// 2. **Every read is at such a point too.** The one read that genuinely runs
-///    on worker threads is `apriori::filter_reason` under `generate_layer`'s
-///    `par_iter` — and it borrows the single read guard the committing thread
-///    holds for that whole pass, the committing thread being the one blocked
-///    in the pass.
-///
-/// A worker's entering therefore never consults the store at all:
-/// `commitment::try_commitment_set` and `hypgen::complete` reach no row above.
-/// **That premise is the whole argument**, so it is checked rather than
-/// believed ([`standard_of_proof.md`] Rule 2, and its worked example is a
-/// premise exactly like this one that was written down, believed, and wrong
-/// for a year): the store is [frozen](Kb::freeze_nogoods) for the duration of
-/// every fan-out, and a write from any thread panics.
-///
-/// The evidence sits beside the argument rather than inside it —
-/// `jobs_invariance`'s 20 712 cells and
-/// `search_invariants::jobs_does_not_move_the_answer_or_a_counter`, which
-/// compares `nogoods_emitted` / `nogoods_subsumed` and every layer's
-/// `dropped_nogood`. What a sweep cannot say is *why*, and this is that.
-///
-/// [`standard_of_proof.md`]: ../../../../docs/kernel/standard_of_proof.md
-#[derive(Default, Debug)]
-pub struct Nogoods {
-    clauses: FxHashSet<Box<[FactId]>>,
-    /// Set for the duration of a fan-out — see the type's docs. Not content:
-    /// the `Clone` below drops it, and [`Kb::diff`] never looks.
-    frozen: bool,
-    /// How many times this store has been frozen — **the enforcement's own
-    /// enforcement.** A guard that stopped being taken would break nothing and
-    /// fail nothing, so a run asserts it was taken: `ein-infer`'s
-    /// `search_invariants::a_fanned_out_layer_freezes_the_clause_store`.
-    freezes: u64,
-}
-
-/// Content only. A copy of the clause set is a *new* store, and a new store is
-/// not inside anybody's fan-out, so the freeze does not travel with it — which
-/// matters because [`Kb::snapshot`] clones one per recorded model.
-impl Clone for Nogoods {
-    fn clone(&self) -> Nogoods {
-        Nogoods {
-            clauses: self.clauses.clone(),
-            frozen: false,
-            freezes: 0,
-        }
-    }
-}
-
-impl Nogoods {
-    pub fn len(&self) -> usize {
-        self.clauses.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.clauses.is_empty()
-    }
-
-    pub fn contains(&self, clause: &[FactId]) -> bool {
-        self.clauses.contains(clause)
-    }
-
-    /// Drop one clause — `set.discard`, which subsumption needs when a new
-    /// clause makes a stored superset redundant.
-    pub fn remove(&mut self, clause: &[FactId]) -> bool {
-        self.writable("remove");
-        self.clauses.remove(clause)
-    }
-
-    pub fn insert(&mut self, clause: Box<[FactId]>) -> bool {
-        self.writable("insert");
-        self.clauses.insert(clause)
-    }
-
-    /// Refuse writes until [`Nogoods::thaw`] — [`Kb::freeze_nogoods`]'s half
-    /// of the guard, and the enforcement of this type's determinism argument.
-    pub fn freeze(&mut self) {
-        self.frozen = true;
-        self.freezes += 1;
-    }
-
-    pub fn thaw(&mut self) {
-        self.frozen = false;
-    }
-
-    /// How many fan-outs this store has been frozen for — see the field.
-    pub fn freezes(&self) -> u64 {
-        self.freezes
-    }
-
-    /// **A write while a layer is fanned out is the one way `--jobs N` could
-    /// stop being the same computation**, so it fails rather than being
-    /// diagnosed later from a moved counter.
-    ///
-    /// `assert!` and not `debug_assert!`, for [`Kb::branch`]'s reason: what it
-    /// costs is a predictable branch on a path taken *hundreds* of times per
-    /// run — 354 clauses on an exhaustive `zebra2` with the singleton
-    /// writeback off, against 3 831 enterings — and what it catches is silent
-    /// everywhere else.
-    fn writable(&self, what: &str) {
-        assert!(
-            !self.frozen,
-            "no-good store: {what} while a layer is fanned out. Only the \
-             committing thread may write this store, and only between \
-             fan-outs — see `Nogoods`, and design/02 §6a"
-        );
-    }
-
-    /// The clauses, in no particular order — see the annotation below before
-    /// using this from the search layer.
-    pub fn iter(&self) -> impl Iterator<Item = &[FactId]> {
-        // Hash order, and it reaches nothing: subsumption tests it with
-        // `any`/`all`, the lattice filters supersets with it, and the proof
-        // snapshot's only observable is `learned_nogoods_count`, a count. The
-        // search layer inherits the constraint — consume this into something
-        // order-insensitive, or sort at the point of output.
-        // determinism-ok: every consumer of a no-good clause set is order-insensitive.
-        self.clauses.iter().map(|c| &**c)
-    }
-}
-
-/// The guard [`Kb::freeze_nogoods`] returns.
-///
-/// `Drop` rather than a matching `thaw` call, so an early `?` or a worker
-/// panic inside the fan-out cannot leave the store frozen for the rest of the
-/// run — which would turn one finding into every subsequent commit's panic.
-pub struct NogoodFreeze<'a> {
-    store: &'a Arc<RwLock<Nogoods>>,
-}
-
-impl Drop for NogoodFreeze<'_> {
-    fn drop(&mut self) {
-        // Poison-tolerant on purpose, and it is the only place in this file
-        // that is: the one thing that panics while this guard is alive is
-        // `Nogoods::writable`'s own assertion, and aborting during the unwind
-        // would replace the finding with a stack the reader cannot use.
-        match self.store.write() {
-            Ok(mut store) => store.thaw(),
-            Err(poisoned) => poisoned.into_inner().thaw(),
-        }
-    }
-}
-
 /// A union-find over names — the M1 placeholder, reserved for F4's e-graph.
 ///
 /// The engine fires no equality propagation, so this stays inert; it exists
@@ -765,24 +591,14 @@ pub struct Kb {
     /// delta that is already kilobytes.
     n_by_rel: FxHashMap<Symbol, u32>,
     classes: EqClasses,
-    /// Shared by reference across forks and **copied** for a snapshot, which
-    /// is archival and wants isolation.
-    ///
-    /// The sharing is what [`Kb::branch`] does with an `Arc` field and not a
-    /// requirement: **no branch ever reads this store**, and every access in
-    /// the engine is through the run's root on the committing thread. That is
-    /// the whole of why `--jobs N` is the same computation, and [`Nogoods`] is
-    /// where it is argued and enforced. (The comment here used to say live
-    /// branches read each other's clauses. They do not — M1e S1e.1.2.)
-    nogoods: Arc<RwLock<Nogoods>>,
     /// [`Kb::n_facts`] as of this KB's last saturation — the *clean* mark.
     ///
     /// M1e `CO-M1`. A state the search records is supposed to be a fixpoint,
-    /// and three of the four sites that record one hand over a KB written
-    /// **after** its last saturation: the lookahead kill cache and the
-    /// singleton writeback both put `(not h)` into a KB nobody re-runs the
-    /// rules over, and a rule reading a stored negative then has a match
-    /// nothing fires. `examples/ein-bugs/alive-empty-phase1.ein` records a
+    /// and three of the four sites the walk recorded one at handed over a KB
+    /// written **after** its last saturation: its lookahead kill cache and
+    /// its singleton writeback both put `(not h)` into a KB nobody re-ran the
+    /// rules over, and a rule reading a stored negative then had a match
+    /// nothing fired. `examples/ein-bugs/alive-empty-phase1.ein` records a
     /// state that, fed back as a program, this engine answers `Contradiction`
     /// on — in ten lines and zero enterings.
     ///
@@ -793,8 +609,8 @@ pub struct Kb {
     saturated_facts: usize,
 }
 
-/// **A copy of the KB**, as it stands: the registries and the no-good set
-/// copied, the sealed layers shared (immutable once sealed, as a fork shares
+/// **A copy of the KB**, as it stands: the registries copied, the sealed
+/// layers shared (immutable once sealed, as a fork shares
 /// them), the top layer, the indexes and the classes copied, the clean mark
 /// kept. Unlike [`Kb::fork`] and [`Kb::snapshot`] it seals nothing and adds
 /// no layer, so the copy reads, layer for layer, as the KB it was taken from,
@@ -811,9 +627,6 @@ impl Clone for Kb {
             rules_by_relation: Arc::clone(&self.rules_by_relation),
             n_by_rel: self.n_by_rel.clone(),
             classes: self.classes.clone(),
-            nogoods: Arc::new(RwLock::new(
-                self.nogoods.read().expect("no writer panicked").clone(),
-            )),
             saturated_facts: self.saturated_facts,
         }
     }
@@ -842,7 +655,6 @@ impl Kb {
             rules_by_relation: Arc::new(Registry::new()),
             n_by_rel: FxHashMap::default(),
             classes: EqClasses::new(),
-            nogoods: Arc::new(RwLock::new(Nogoods::default())),
             saturated_facts: 0,
         }
     }
@@ -863,7 +675,6 @@ impl Kb {
             rules_by_relation: Arc::new(Registry::new()),
             n_by_rel: FxHashMap::default(),
             classes: EqClasses::new(),
-            nogoods: Arc::new(RwLock::new(Nogoods::default())),
             saturated_facts: 0,
         }
     }
@@ -933,8 +744,8 @@ impl Kb {
 
     /// Branch for hypothesis exploration.
     ///
-    /// Shares the registries, the rules-by-relation index and the no-good set
-    /// by reference; copies the equality classes; and gives the branch a fresh
+    /// Shares the registries and the rules-by-relation index by reference;
+    /// copies the equality classes; and gives the branch a fresh
     /// top layer to append to. Takes `&mut self` because sealing the parent's
     /// top layer is what makes the two histories diverge — the parent's later
     /// appends land in a *new* top the child never sees.
@@ -985,20 +796,15 @@ impl Kb {
             rules_by_relation: Arc::clone(&self.rules_by_relation),
             n_by_rel: self.n_by_rel.clone(),
             classes: self.classes.clone(),
-            nogoods: Arc::clone(&self.nogoods),
             saturated_facts: self.saturated_facts,
         }
     }
 
-    /// An archival copy, for a satisfying branch that has to survive later
-    /// mutations of root. Differs from [`Kb::fork`] in one place: the no-good
-    /// set is **copied**.
+    /// An archival copy, for a state that has to survive later mutations of
+    /// the KB it was taken from: a [`Kb::fork`], whose sealed layers no later
+    /// write reaches.
     pub fn snapshot(&mut self) -> Kb {
-        let mut new = self.fork();
-        new.nogoods = Arc::new(RwLock::new(
-            self.nogoods.read().expect("no writer panicked").clone(),
-        ));
-        new
+        self.fork()
     }
 
     /// Collapse the layer stack into one — the operation design/03 §5 calls
@@ -1266,25 +1072,6 @@ impl Kb {
     /// changed and what `asking_a_question_does_not_move_the_answer` holds.
     pub fn classes(&mut self) -> &mut EqClasses {
         &mut self.classes
-    }
-
-    pub fn nogoods(&self) -> &Arc<RwLock<Nogoods>> {
-        &self.nogoods
-    }
-
-    /// Refuse every write to the no-good store until the guard drops — the
-    /// enforcement of [`Nogoods`]'s determinism argument.
-    ///
-    /// Taken across `Run::fan_out`, which is the only window in this engine in
-    /// which a thread other than the committing one exists. It is deliberately
-    /// *not* a held write lock: a lock would turn a worker's read into a
-    /// deadlock, and this has to turn a worker's **write** into a failure that
-    /// names itself.
-    pub fn freeze_nogoods(&self) -> NogoodFreeze<'_> {
-        self.nogoods.write().expect("no reader panicked").freeze();
-        NogoodFreeze {
-            store: &self.nogoods,
-        }
     }
 
     // ── Writes ─────────────────────────────────────────────────────
@@ -1890,25 +1677,7 @@ impl Kb {
     /// different `Arc` whose *contents* the fact set and the indexes already
     /// witness.
     pub fn diff(&self, other: &Kb) -> Result<(), String> {
-        self.materialise().diff(&other.materialise())?;
-        let (mine, theirs) = (
-            self.nogoods.read().expect("no writer panicked"),
-            other.nogoods.read().expect("no writer panicked"),
-        );
-        if mine.len() != theirs.len() {
-            return Err(format!(
-                "no-good counts: {} vs {}",
-                mine.len(),
-                theirs.len()
-            ));
-        }
-        // determinism-ok: a membership test per clause; no order reaches the answer.
-        for clause in mine.iter() {
-            if !theirs.contains(clause) {
-                return Err(format!("no-good clause {clause:?} is missing"));
-            }
-        }
-        Ok(())
+        self.materialise().diff(&other.materialise())
     }
 
     /// Could `fact` still take an alternative justification over
@@ -2372,82 +2141,6 @@ mod tests {
             .expect("room");
         assert_eq!(kb.facts_of(rel).count(), 1);
         assert_eq!(kb.n_facts(), 1);
-    }
-
-    #[test]
-    fn a_fork_shares_no_goods_and_a_snapshot_copies_them() {
-        let (mut terms, mut kb) = fixture();
-        let a = add(&mut kb, &mut terms, "co-located", &["Norwegian", "House-1"]);
-        let mut fork = kb.fork();
-        let snapshot = kb.snapshot();
-        kb.nogoods()
-            .write()
-            .expect("no writer panicked")
-            .insert(Box::new([a]));
-        // A branch is handed the same store, so it *could* read a clause the
-        // parent learned after the branch was taken. Nothing in the engine
-        // does — see `Nogoods` — but this is the sharing the argument there is
-        // about, and it is real.
-        assert_eq!(fork.nogoods().read().expect("ok").len(), 1);
-        // …while the archival copy is isolated.
-        assert_eq!(snapshot.nogoods().read().expect("ok").len(), 0);
-        // And a fork of a fork keeps sharing.
-        let grandchild = fork.fork();
-        assert_eq!(grandchild.nogoods().read().expect("ok").len(), 1);
-    }
-
-    /// **The freeze refuses, and says so.**
-    ///
-    /// The one thing that makes [`Nogoods`]'s determinism argument an argument
-    /// rather than a reading of the call graph, so it is tested rather than
-    /// assumed — `docs/kernel/standard_of_proof.md` Rule 2.
-    #[test]
-    #[should_panic(expected = "while a layer is fanned out")]
-    fn a_frozen_store_refuses_a_write() {
-        let (mut terms, mut kb) = fixture();
-        let a = add(&mut kb, &mut terms, "co-located", &["Norwegian", "House-1"]);
-        let _frozen = kb.freeze_nogoods();
-        kb.nogoods()
-            .write()
-            .expect("no writer panicked")
-            .insert(Box::new([a]));
-    }
-
-    /// …and thaws on the way out, even out of a panic — otherwise one finding
-    /// would become every later commit's.
-    #[test]
-    fn the_freeze_lifts_when_the_guard_drops() {
-        let (mut terms, mut kb) = fixture();
-        let a = add(&mut kb, &mut terms, "co-located", &["Norwegian", "House-1"]);
-        let branch = kb.fork();
-        {
-            let _frozen = kb.freeze_nogoods();
-            // The *branch* is frozen too: it is the same store, which is the
-            // whole reason the guard is on the store and not on the `Run` —
-            // a worker holds a branch and nothing else.
-            assert!(
-                std::panic::catch_unwind(|| {
-                    let mut store = branch.nogoods().write().expect("no writer panicked");
-                    store.insert(Box::new([a]));
-                })
-                .is_err()
-            );
-        }
-        kb.nogoods()
-            .write()
-            .unwrap_or_else(|p| p.into_inner())
-            .insert(Box::new([a]));
-        assert_eq!(
-            kb.nogoods().read().unwrap_or_else(|p| p.into_inner()).len(),
-            1
-        );
-        assert_eq!(
-            kb.nogoods()
-                .read()
-                .unwrap_or_else(|p| p.into_inner())
-                .freezes(),
-            1
-        );
     }
 
     #[test]

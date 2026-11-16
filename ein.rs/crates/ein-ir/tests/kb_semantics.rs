@@ -11,8 +11,8 @@
 //! parser.
 //!
 //! Two things it deliberately does **not** do. It never reaches into the KB's
-//! private tables — the per-relation index, the name table, the no-good store,
-//! a cached macro list: a test that poked those would pin this build rather
+//! private tables — the per-relation index, the name table, a cached macro
+//! list: a test that poked those would pin this build rather
 //! than the language, so what each of them protects is asserted through
 //! [`ein_core::shape`], the `Kb` reads, and the walks instead. And it never
 //! sets `$EIN_STDLIB`: that is driven through [`Resolver::with_stdlib`],

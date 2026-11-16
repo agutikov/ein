@@ -22,7 +22,7 @@ use ein_render::dump::json::dumps_indent;
 
 /// A sparse counter block: only the keys that fired, in sorted key order —
 /// which for both enums is discriminant order.
-fn sparse(counts: &[u64; 4], name: impl Fn(usize) -> &'static str) -> Json {
+fn sparse(counts: &[u64], name: impl Fn(usize) -> &'static str) -> Json {
     Json::Object(
         counts
             .iter()
@@ -63,13 +63,7 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
         (
             "filtered",
             sparse(&h.filtered, |i| {
-                [
-                    Drop::FactAlreadyExists,
-                    Drop::LookaheadKilled,
-                    Drop::NegatedFact,
-                    Drop::SeenInCall,
-                ][i]
-                    .as_str()
+                [Drop::FactAlreadyExists, Drop::NegatedFact, Drop::SeenInCall][i].as_str()
             }),
         ),
         (

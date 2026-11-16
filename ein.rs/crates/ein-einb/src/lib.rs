@@ -18,7 +18,7 @@
 //! (which of those facts this KB believes, in
 //! insertion order), `PROV` (the derivation records and the per-fact primary /
 //! alternative tables), `PROGRAM` (the resolved, import-flattened form list),
-//! and optionally `NOGOODS`, `SOLUTIONS`, since format 1.1 (M1e2
+//! and optionally `SOLUTIONS`, since format 1.1 (M1e2
 //! S1e2.2.11) `CLOSURE` (each derived fact's closure and smallest-closure
 //! arrival, which a full alternatives list keeps beside it), and since format
 //! 1.2 (M1e2 S1e2.2.21) `UNIVERSAL` (the facts each derivation's universals
@@ -243,10 +243,6 @@ pub fn save_to_vec(
     let kept = sections::Kept::of(kb);
     bodies.push((Kind::Prov, sections::write_prov(kb, terms, &kept)));
     bodies.push((Kind::Program, program));
-    let nogoods = sections::write_nogoods(kb);
-    if !nogoods.is_empty() {
-        bodies.push((Kind::Nogoods, nogoods));
-    }
     if let Some(s) = &opts.solutions {
         bodies.push((Kind::Solutions, solutions::write(s)));
     }
@@ -483,9 +479,6 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         &provs,
         loaded.program_arc(),
     )?;
-    if let Some(body) = found[Kind::Nogoods as usize] {
-        sections::read_nogoods(body, &kb, &maps)?;
-    }
     if let Some(body) = found[Kind::Closure as usize] {
         sections::read_closure(body, &mut kb, &maps)?;
     }

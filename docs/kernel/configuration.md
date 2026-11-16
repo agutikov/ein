@@ -197,9 +197,8 @@ the switch, and the user retired them on 2026-11-03 (§ 2.4); the fifth,
 M1e2 S1e2.1a.5's switch retired nine, S1e2.1a.6 a tenth, S1e2.1c.5 four more,
 and S1e2.2.5 a fifteenth, each refused at load with the stage and the reason below
 (`ein_core::config::RETIRED`). Their fields stay on `SolverConfig` at their
-defaults. The lookahead's and the kill cache's are read there by the walk's
-generator, `hypgen::generate`, which no command runs and the shape golden's
-`hyp` and `hyp+closed` ops do; no code reads the other thirteen. The `.einb`
+defaults, and no engine code reads any of them: the last that did, the walk's
+generator pass with its lookahead and kill cache, is deleted. The `.einb`
 container round-trips all seventeen, so its format did not move: removing a
 field is a change of its layout. A container stores its program as
 text and re-loads it on open, so one saved before a retirement whose program

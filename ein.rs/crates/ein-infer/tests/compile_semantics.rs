@@ -866,7 +866,7 @@ fn guessed_relations(text: &str) -> BTreeSet<String> {
             events: &mut events,
             memo: SharedMemo::default(),
         };
-        ein_infer::generate(&mut s, &mut stats, &mut |fact| {
+        ein_infer::hypgen::generate_config_free(&mut s, &mut stats, &mut |fact| {
             ids.push(fact);
             ControlFlow::Continue(())
         })

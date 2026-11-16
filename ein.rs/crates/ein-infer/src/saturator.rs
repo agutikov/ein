@@ -180,8 +180,8 @@ pub struct Session<'a> {
     pub events: &'a mut Events,
     /// The run's compiled plans — design/06 § Win A.
     ///
-    /// Every engine built from this session compiles into it: the saturator's,
-    /// a `lookahead` probe's, a `closed` marking's. A caller that hands the
+    /// Every engine built from this session compiles into it, the
+    /// saturator's and any other a caller builds over it. A caller that hands the
     /// *same* handle to a root saturation and to each of its forks compiles
     /// each `(rule, activator)` pair once for the whole run instead of once per
     /// fork; `SharedMemo::default()` is a private one, which is what a one-shot
@@ -464,9 +464,10 @@ pub struct Saturator {
 ///
 /// `facts` is the parent's fact set at the snapshot. It is what makes the
 /// resumed delta computable without enumerating every site that writes to root
-/// (a forced positive, a singleton `(not h)` writeback, a lookahead kill
-/// cache): the fork's delta is *whatever root has that the snapshot did not*,
-/// plus the commitment. A site added later is covered by construction.
+/// (none does today; the walk's forced positives, singleton `(not h)`
+/// writebacks and lookahead kill cache did): the fork's delta is *whatever root
+/// has that the snapshot did not*, plus the commitment. A site added later is
+/// covered by construction.
 #[derive(Clone)]
 pub struct Snapshot {
     engine: Engine,

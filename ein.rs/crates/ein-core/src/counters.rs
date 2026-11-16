@@ -232,19 +232,9 @@ pub struct Counters {
     pub flatten_facts: u64,
     /// Provenance nodes visited by a justification walk.
     pub prov_node: u64,
-    /// Hypothesis-generation passes, and how many of them were the
-    /// short-circuiting `complete()` question rather than `open_hypotheses()`
-    /// — split by caller. The two
-    /// have very different costs per call and the same cost per *candidate*,
-    /// which is the split
-    /// [S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)
-    /// exists to measure.
+    /// Hypothesis-generation passes: `hypgen::generate_config_free`'s, which
+    /// builds H at root, and `generate_blind`'s, the leftover probe's.
     pub hypgen_call: u64,
-    pub hypgen_complete: u64,
-    /// One-step lookahead simulations — `Lookahead::dies_immediately`.
-    /// The costliest candidate filter, and the reason a pass costs 14x more
-    /// with the lever on than off.
-    pub lookahead_probe: u64,
     /// Guard sub-plan queries actually **run**, and the monotone half of them.
     ///
     /// Equal to `guard_query` since
@@ -401,8 +391,6 @@ impl Counters {
             flatten_facts: 0,
             prov_node: 0,
             hypgen_call: 0,
-            hypgen_complete: 0,
-            lookahead_probe: 0,
             plan_key: 0,
             predicate_value: 0,
             guard_eval: 0,
@@ -418,7 +406,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 56] {
+    pub fn rows(&self) -> [(&'static str, u64); 54] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -464,8 +452,6 @@ impl Counters {
             ("flatten_facts", self.flatten_facts),
             ("prov_node", self.prov_node),
             ("hypgen_call", self.hypgen_call),
-            ("hypgen_complete", self.hypgen_complete),
-            ("lookahead_probe", self.lookahead_probe),
             ("plan_key", self.plan_key),
             ("predicate_value", self.predicate_value),
             ("guard_eval", self.guard_eval),
@@ -555,8 +541,6 @@ mod tests {
             flatten_facts: 1,
             prov_node: 1,
             hypgen_call: 1,
-            hypgen_complete: 1,
-            lookahead_probe: 1,
             guard_eval: 1,
             guard_eval_monotone: 1,
             parse_call: 1,

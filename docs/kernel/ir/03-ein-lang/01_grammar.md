@@ -357,7 +357,7 @@ signature's shape only, and only in these places:
 
 | signal | site | effect |
 |---|---|---|
-| signature **non-empty** | `ein-infer/hypgen.rs` (candidate enumeration), `closed.rs` (`emit_closed`) | marks a *declared domain relation* — eligible for hypothesis generation and for `__closed__` auto-inference. Property / rule-name relations (auto-vivified, empty signature) are skipped by both. |
+| signature **non-empty** | `ein-infer/hypgen.rs` (candidate enumeration) | marks a *declared domain relation* — eligible for hypothesis generation. Property / rule-name relations (auto-vivified, empty signature) are skipped. |
 | signature **length** | `ein-infer/hypgen.rs` (the slot fill) | length 1 → one candidate per focal object; length 2 → the pairwise fill; length ≥ 3 → unenumerated (the M1 arity cut noted above). |
 | signature **atoms** | `ein-infer/hypgen.rs` (`candidate_objects`) | the declared type-role names (`Attribute`, `House`, `T`, …) are subtracted from the candidate-**object** pool, so the enumerator never guesses *about* a type node. |
 

@@ -144,8 +144,8 @@ pub struct Terms {
     ///
     /// **The single signal the fan-out reads.** An entering that needed to
     /// number something cannot be finished on a worker, and the engine has a
-    /// dozen places that would have numbered it — the blind enumerator, the
-    /// lookahead kill cache, an `hrule` activator, a rule's conclusion. Rather
+    /// dozen places that would have numbered it — the blind enumerator, an
+    /// `hrule` activator, a rule's conclusion. Rather
     /// than teach each of them a new error to propagate, each stops what it is
     /// doing and this says so: whatever the entering produced afterwards is
     /// **not** the entering the sequential engine would have run, so the
@@ -288,8 +288,10 @@ pub const ENGINE: [&str; 8] = [
 /// The forced-positive cascade's promotion — a fact root writes because every
 /// other value of its slot is excluded.
 pub const FORCED_POSITIVE: &str = "<forced-positive>";
-/// The kill-cache `(not h)` a candidate that dies under one-step lookahead
-/// leaves behind.
+/// The walk's kill-cache `(not h)`, which a candidate that died under its
+/// one-step lookahead left behind. No pass writes it since that cache went;
+/// the name stays the engine's, refused wherever a program writes it (`ein.l`'s
+/// `WRITEBACK`), and interned at its place in [`ENGINE`].
 pub const LOOKAHEAD_DIES: &str = "<lookahead-dies-immediately>";
 /// The singleton writeback's `(not h)` — a layer-1 death, generalised.
 pub const MONOTONIC_UNCONDITIONAL: &str = "<monotonic-unconditional>";

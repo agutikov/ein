@@ -277,98 +277,6 @@ impl Matcher {
         }
     }
 
-    /// One disjunct, seeded at **one** named step — the lookahead's probe.
-    ///
-    /// The enumeration runs through the seed machinery `run_seeded` already
-    /// has rather than through a throwaway plan of the remaining steps, which
-    /// matters for more than tidiness: the injected fact
-    /// need not be in the KB, and here it is not — the lookahead is asking
-    /// what *would* follow from adding it.
-    ///
-    /// The caller chooses `(disjunct, at)` because it has already filtered
-    /// both — a disjunct whose guards cannot be judged pre-fork is skipped
-    /// entirely ([`crate::lookahead`]).
-    #[allow(clippy::too_many_arguments)]
-    pub fn run_seeded_at(
-        &mut self,
-        kb: &Kb,
-        terms: &Terms,
-        ast: &Ast,
-        plan: &Plan,
-        disjunct: usize,
-        at: usize,
-        fact: FactId,
-        f: Emit<'_>,
-    ) {
-        let c = Ctx {
-            kb,
-            terms,
-            ast,
-            plan,
-        };
-        let _ = self.run_disjunct(c, disjunct, Some((at, fact)), f);
-    }
-
-    /// `match._seed_steps` over a guard's sub-plan — does **`fact`** create a
-    /// match the KB alone does not have?
-    ///
-    /// [`Matcher::holds`] asks the guard of the world as it stands; this asks
-    /// it of the world plus one fact, which together are exactly "no match in
-    /// `kb` with `fact` added" for the monotone guards the lookahead has not
-    /// already excluded. Seeds at *each* sub-step on the fact's relation,
-    /// since the fact may play either role in `(R ?a ?b) ∧ (R ?b ?c)`.
-    #[allow(clippy::too_many_arguments)]
-    pub fn holds_seeded(
-        &mut self,
-        kb: &Kb,
-        terms: &Terms,
-        ast: &Ast,
-        plan: &Plan,
-        guard: &NafGuard,
-        parent: &[Value],
-        fact: FactId,
-    ) -> bool {
-        let rel = terms.facts.rel(fact);
-        let c = Ctx {
-            kb,
-            terms,
-            ast,
-            plan,
-        };
-        for (at, step) in plan.steps(guard.sub).iter().enumerate() {
-            let Step::Rel(r) = *step else { continue };
-            if r.rel != rel {
-                continue;
-            }
-            self.reset(guard.n_regs, guard.n_slots as usize, 0, 0);
-            // The scope projection, exactly as `holds` does it — and for the
-            // same reason untrailed: a guard produces no provenance.
-            for (reg, from) in guard.scope_of.iter().enumerate() {
-                if let Some(p) = from {
-                    self.regs[reg] = parent[*p as usize];
-                }
-            }
-            if !self.unify(terms, plan, r.slots, terms.facts.args(fact)) {
-                continue;
-            }
-            let mut found = false;
-            let w = Walk {
-                steps: guard.sub,
-                i: 0,
-                ordinal: 0,
-                skip: Some(at),
-            };
-            let _ = self.walk(c, w, &mut |_| {
-                found = true;
-                ControlFlow::Break(())
-            });
-            if found {
-                return true;
-            }
-        }
-        false
-    }
-
     /// [`Matcher::run_seeded`] for a guarded caller — see
     /// [`Matcher::run_guarded`].
     pub fn run_seeded_guarded(
@@ -1039,9 +947,9 @@ impl Matcher {
     // ── Register file ──────────────────────────────────────────────
 
     fn reset(&mut self, n_regs: u16, n_slots: usize, n_premises: usize, disjunct: usize) {
-        // Every entry point — `run_disjunct`, `holds`, `holds_seeded` — comes
+        // Every entry point — `run_disjunct`, `holds` — comes
         // through here exactly once, which is why `plan_run` is counted here
-        // rather than at the seven public functions that would each need it.
+        // rather than at each public function, every one of which would need it.
         ein_core::counters::bump(|c| c.plan_run += 1);
         self.n_premises = n_premises;
         self.disjunct = disjunct;

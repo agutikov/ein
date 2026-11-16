@@ -7,10 +7,9 @@
 //! hypothesis loop above it). The search is the region's: every question
 //! about `R` is [`explore`]'s, answered by a route over nodes that are root
 //! with a subset of H committed and saturated ([`region`]). P1a.4's
-//! hypothesis loop, the walk, is deleted. Its generator ([`hypgen`]) builds
-//! H by its ladder, config-free; the walk's own pass over that ladder, with
-//! the one-step [`lookahead`] and its kill cache, is run by no command and
-//! kept for the shape golden's `hyp` ops, as [`closed`]'s pass is.
+//! hypothesis loop, the walk, is deleted, and its own pass over the
+//! generator with it. The generator ([`hypgen`]) builds H by its ladder,
+//! config-free, once at root.
 //!
 //! The shape of a plan, the order of a firing sequence and the text of an
 //! error are all observable, and fixed: where no other page states one, it is
@@ -24,7 +23,6 @@
 pub mod build;
 pub mod canon;
 pub mod claim;
-pub mod closed;
 pub mod compile;
 pub mod contradiction;
 pub mod count;
@@ -43,7 +41,6 @@ pub mod hrule;
 pub mod hypgen;
 pub mod invariant;
 pub mod known_dead;
-pub mod lookahead;
 pub mod match_;
 pub mod mechanisms;
 pub mod monotone;
@@ -72,7 +69,6 @@ pub mod unheld;
 pub mod verdict;
 
 pub use canon::{state_digest, state_key};
-pub use closed::{emit_closed, producible_relations};
 pub use compile::{
     CompileError, PlanKey, PlanMemo, SharedMemo, activators_for, asserted_relation, compile_rule,
     naf_relation_refs, negated_relation, plan_key,
@@ -90,11 +86,7 @@ pub use firing::{
     ActivatorId, BindingKey, Env, FireError, Firing, build_conclusion, build_fact, fire,
 };
 pub use hrule::Hrules;
-pub use hypgen::{
-    CLOSED, Drop, HypGenStats, Skip, candidate_objects, complete, consistent, generate,
-    is_solution_node, open_hypotheses,
-};
-pub use lookahead::Lookahead;
+pub use hypgen::{CLOSED, Drop, HypGenStats, Skip, candidate_objects};
 pub use match_::{Emit, Match, Matcher};
 pub use naf_deps::{NafDep, compute_naf_map, derived_naf_warnings};
 pub use obligations::{Owed, Owes};
@@ -105,7 +97,6 @@ pub use plan::{
 pub use predicates::Pred;
 pub use saturator::{SaturateError, Saturator, Session, Snapshot};
 pub use shape::{
-    explain_shape, hyp_shape, hyp_shape_with, match_shape, naf_map, plan_shape, plan_shape_with,
-    saturate_events,
+    explain_shape, match_shape, naf_map, plan_shape, plan_shape_with, saturate_events,
 };
 pub use verdict::{goal_bindings, goal_written, query_value, solve_value};

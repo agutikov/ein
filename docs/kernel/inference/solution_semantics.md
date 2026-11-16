@@ -162,8 +162,8 @@ The **universe** H is the candidate list, and n = |H|. It replaces `alive₀`
 as the space every later definition quantifies over: the user ruled on
 2026-10-15 that no config option may change the problem's lattice
 ([configuration.md § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)),
-and `alive₀` is taken through the lookahead and after the forced-positive
-cascade (§ 6.3).
+and the walk's `alive₀` was taken through its lookahead and after the
+forced-positive cascade (§ 6.3).
 
 **H must contain every fact a model needs** (ruling (h), 2026-10-16). If it
 does not, either the program is wrong (a name it never mentions) or the engine
@@ -900,7 +900,9 @@ The rows that name `Run`, `compute_alive`, `apriori`, `commitment.rs` and
 S1e2.1c.5 (2026-11-03); they stay because § 6 cites them. A route's
 `exhausted` and `--single`'s four words are
 [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s `Answer` and
-`Verdict` since, and `hypgen::complete` has no caller on a route.
+`Verdict` since. `hypgen::complete`, `open_hypotheses` and `write_negated`
+(§ 6.2's kill cache) were the walk's generator pass, deleted after it; the
+rows and § 6 keep their names as the record.
 
 ---
 

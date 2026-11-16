@@ -436,7 +436,6 @@ fn root_saturated(rel: &str) -> (Terms, Kb) {
             events: &mut events,
             memo: SharedMemo::default(),
         };
-        ein_infer::emit_closed(&mut s).expect("the closed-world markers compile");
         let mut sat = Saturator::new(&mut s).expect("the rules compile");
         sat.saturate(&mut s, None, &mut |_| {})
             .expect("root saturation reaches its fixpoint");

@@ -235,8 +235,9 @@ open-world relations, since the same atom is usually also a *rule* name.
   guess. Arity ≥ 3 remains unenumerated — the one surviving M1 arity cut.
   (A unary relation is closed exactly as a binary one is, by a `(__closed__
   R)` the program authors or `std.closure` derives. `emit_closed`, which
-  closed every relation no rule produces, runs on no route since M1e2
-  S1e2.3.1, so a route's H holds the guesses of such a relation too.)
+  closed every relation no rule produces, ran on no route since M1e2
+  S1e2.3.1 and is deleted, so a route's H holds the guesses of such a
+  relation too.)
 - **Rendering.** The compact DOT view draws a unary fact as a labelled
   **self-loop** `a → a [label="rel"]` — the degenerate case of the binary
   collapse, with source and target the same node

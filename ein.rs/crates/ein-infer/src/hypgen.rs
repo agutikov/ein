@@ -64,8 +64,6 @@ use rustc_hash::FxHashSet;
 
 use crate::compile::CompileError;
 use crate::hrule::Hrules;
-use crate::lookahead::Lookahead;
-use crate::match_::Matcher;
 use crate::saturator::Session;
 
 /// The `(query …)` keyword restricting which relations the blind enumerator
@@ -97,14 +95,13 @@ pub fn declares_no_search(program: &ein_core::Program, ast: &Ast) -> bool {
 /// A candidate-level filter — the name it bumps in `stats.filtered`, and the
 /// `verdict` a `hyp` event carries.
 ///
-/// The discriminants are the **sorted** key order, because both readers walk
-/// them sorted: [`HypGenStats::report_lines`] and the JSON summary.
+/// The discriminants are the **sorted** key order, because the JSON summary
+/// walks them sorted.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Drop {
     FactAlreadyExists = 0,
-    LookaheadKilled = 1,
-    NegatedFact = 2,
-    SeenInCall = 3,
+    NegatedFact = 1,
+    SeenInCall = 2,
 }
 
 /// A pre-candidate skip — structural, at the relation/slot level, before any
@@ -121,7 +118,6 @@ impl Drop {
     pub fn as_str(self) -> &'static str {
         match self {
             Drop::FactAlreadyExists => "fact_already_exists",
-            Drop::LookaheadKilled => "lookahead_killed",
             Drop::NegatedFact => "negated_fact",
             Drop::SeenInCall => "seen_in_call",
         }
@@ -139,19 +135,19 @@ impl Skip {
     }
 }
 
-/// Per-filter counters for one [`generate`] call.
+/// Per-filter counters for one pass of the generator.
 ///
 /// The two per-filter tallies are dense arrays, and a **zero count means the
 /// key was never bumped**, since a bump is `+= 1`. That equivalence is what
-/// lets [`HypGenStats::report_lines`] print only the keys that were bumped.
+/// lets the JSON summary print only the keys that were bumped.
 ///
-/// Invariant: `raw == emitted + sum(filtered)`, asserted by the renderer's
-/// caller.
+/// `raw == emitted + sum(filtered)`: every candidate built is emitted or
+/// dropped by exactly one filter.
 #[derive(Clone, Default, Debug)]
 pub struct HypGenStats {
     pub raw: u64,
     pub emitted: u64,
-    pub filtered: [u64; 4],
+    pub filtered: [u64; 3],
     pub pre_candidate: [u64; 4],
     /// Which rung of the ladder this call took, and what it found owed — M1d
     /// S1d.2.5. All zeros and [`crate::oblgen::Mode::Blind`] for a program
@@ -178,110 +174,17 @@ impl HypGenStats {
     pub(crate) fn skip(&mut self, s: Skip) {
         self.pre_candidate[s as usize] += 1;
     }
-
-    /// `raw == emitted + sum(filtered)` — the invariant the stage's
-    /// acceptance names, checked rather than asserted in prose.
-    pub fn balances(&self) -> bool {
-        self.raw == self.emitted + self.filtered.iter().sum::<u64>()
-    }
-
-    /// What `--hyp-stats` prints, field widths included. Keys sorted, and
-    /// never-bumped keys omitted.
-    pub fn report_lines(&self) -> Vec<String> {
-        let mut out = vec![
-            format!("  raw                {}", self.raw),
-            format!("  emitted            {}", self.emitted),
-        ];
-        for (i, &n) in self.filtered.iter().enumerate() {
-            if n > 0 {
-                let k = DROPS[i].as_str();
-                out.push(format!("  filtered.{k:18} {n}"));
-            }
-        }
-        for (i, &n) in self.pre_candidate.iter().enumerate() {
-            if n > 0 {
-                let k = SKIPS[i].as_str();
-                out.push(format!("  pre.{k:23} {n}"));
-            }
-        }
-        // The ladder's rung, and **only** the rung this stage added: a program
-        // that reaches the blind enumerator or declares an `(hrule …)` prints
-        // what it printed before S1d.2.5, to the byte. A draft that printed it
-        // for the hrule rung too moved **206** of the corpus's 8 081 shape
-        // digests; restricting it to this stage's own rung moves 42, and those
-        // 42 are the programs the ladder is actually about.
-        use crate::oblgen::Mode;
-        let r = &self.rung;
-        if matches!(r.mode, Mode::Obligations | Mode::Stuck | Mode::Declined) {
-            out.push(format!("  rung               {}", r.mode.as_str()));
-            if r.owed > 0 || r.branches > 0 || r.declined > 0 {
-                out.push(format!("  rung.owed          {}", r.owed));
-                out.push(format!("  rung.branches      {}", r.branches));
-                out.push(format!("  rung.declined      {}", r.declined));
-            }
-            out.push(format!("  rung.uncovered     {}", r.uncovered));
-            // Only where the call read a later debt, so every other program
-            // prints what it printed.
-            if r.later_debts > 0 {
-                out.push(format!("  rung.later_debts   {}", r.later_debts));
-                out.push(format!("  rung.later_cands   {}", r.later_candidates));
-            }
-        }
-        out
-    }
 }
-
-const DROPS: [Drop; 4] = [
-    Drop::FactAlreadyExists,
-    Drop::LookaheadKilled,
-    Drop::NegatedFact,
-    Drop::SeenInCall,
-];
-const SKIPS: [Skip; 4] = [
-    Skip::ClosedRelation,
-    Skip::NoHypothesisRelation,
-    Skip::RelationNotWhitelisted,
-    Skip::SelfEdge,
-];
 
 /// `(__closed__ R)` — the kernel's closed-relation marker (S1.7.25). A closed
 /// relation contributes zero candidates; the generator does not care whether
-/// the fact was authored, auto-emitted, or derived by `std.closure`.
+/// the fact was authored or derived by a rule (`std.closure`'s).
 pub const CLOSED: &str = ein_core::terms::CLOSED;
 
 // ── The generator ──────────────────────────────────────────────────
 
-/// Yield candidate hypothesis facts in the ladder's order, calling `f` per
-/// survivor, with the two filters the program's config switches on.
-///
-/// **No command runs it.** H, the universe every route and the oracle read,
-/// is [`generate_config_free`]'s list. This is the ladder with the walk's
-/// one-step lookahead ([`Lookahead`]) and its kill cache, read from
-/// `enable_pre_branch_lookahead` and `enable_lookahead_kill_cache`; both are
-/// retired, so a program cannot set them and both are on. What runs it is the
-/// shape golden's `hyp` and `hyp+closed` ops (`crate::shape::hyp_shape_with`),
-/// which digest its narration and counters on every corpus program, with
-/// [`complete`] and [`open_hypotheses`] over it, and the tests: so it stays
-/// while those ops read it.
-///
-/// A callback rather than an iterator because the enumeration is **not pure**:
-/// with the kill cache on, a lookahead kill writes `(not h)` into the KB and
-/// later candidates in the *same call* observe it through the `negated_fact`
-/// filter. A `ControlFlow::Break` stops the walk, which is what keeps
-/// `complete`'s short-circuit (S1.9.E16) — and the feed-forward is why
-/// [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §7 refuses
-/// to parallelise this pipeline.
-pub fn generate(
-    s: &mut Session<'_>,
-    stats: &mut HypGenStats,
-    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
-) -> Result<(), CompileError> {
-    generate_with(s, stats, f, Rungs::Ladder, None)
-}
-
 /// The blind combinatorial enumerator alone, whatever the program declares,
-/// and **config-free** as [`generate_config_free`] is: no lookahead filter,
-/// no kill cache.
+/// and **config-free** as [`generate_config_free`] is.
 ///
 /// **Not a search entry point.** No route walks the ladder; this answers a
 /// question *about* a state that the ladder cannot be asked, because the rung
@@ -304,39 +207,27 @@ pub fn generate_blind(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_with(s, stats, f, Rungs::BlindOnly, Some(GenOptions::CONFIG_FREE))
+    generate_with(s, stats, f, Rungs::BlindOnly)
 }
 
-/// The **config-free** candidate list: the ladder with neither the lookahead
-/// filter nor its kill cache, whatever the program's `(config …)` says. It is
-/// the list H is built from at root's fixpoint (`region::prepare_with`), so
-/// every command and the oracle read it.
+/// Yield candidate hypothesis facts in the ladder's order, calling `f` per
+/// survivor: the **config-free** candidate list, whatever the program's
+/// `(config …)` says. It is the list H is built from at root's fixpoint
+/// (`region::prepare_with`), so every command and the oracle read it.
 ///
 /// No config option may change R, so the lattice's universe cannot be a list a
-/// switch filtered. This is the list the switches filter, and it writes
-/// nothing: with the kill cache off the call is pure apart from interning its
-/// candidates.
+/// switch filtered, and no field of the config reaches this pass. It writes
+/// nothing: the call is pure apart from interning its candidates.
+///
+/// A callback rather than an iterator because the walk can stop early: a
+/// `ControlFlow::Break` from `f` ends it, and so does an interning a lent
+/// table refuses (`Terms::refused`).
 pub fn generate_config_free(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_with(s, stats, f, Rungs::Ladder, Some(GenOptions::CONFIG_FREE))
-}
-
-/// What a call reads from the config, when the caller does not let it.
-#[derive(Clone, Copy)]
-struct GenOptions {
-    lookahead: bool,
-    kill_cache: bool,
-}
-
-impl GenOptions {
-    /// No filter a switch applies.
-    const CONFIG_FREE: GenOptions = GenOptions {
-        lookahead: false,
-        kill_cache: false,
-    };
+    generate_with(s, stats, f, Rungs::Ladder)
 }
 
 /// The rung of the ladder a program takes at a state, before any rung runs:
@@ -370,9 +261,9 @@ pub(crate) enum Rung {
 /// an activated obligation a discharged state proposes nothing and is
 /// complete, which is what *complete means discharged* has to mean.
 ///
-/// [`generate`]'s ladder and [`eligible_relations`] read this one function,
-/// so the rung a call takes and the relations the advisory calls eligible
-/// are decided once.
+/// The ladder (`generate_with`) and [`eligible_relations`] read this one
+/// function, so the rung a call takes and the relations the advisory calls
+/// eligible are decided once.
 pub(crate) fn rung(s: &mut Session<'_>) -> Result<Rung, CompileError> {
     if declares_no_search(s.kb.program(), s.ast) {
         return Ok(Rung::NoSearch);
@@ -395,18 +286,16 @@ enum Rungs {
     BlindOnly,
 }
 
-/// The ladder, with the rungs the caller is allowed to use, and the two
-/// filters `opts` names, or the program's config where it is `None`.
+/// The ladder, with the rungs the caller is allowed to use.
 ///
-/// One body for every entry point, because the setup — the lookahead, the
-/// `(query …)` relation lists, the per-call `Ctx` — is what every rung shares,
-/// and a second copy of it is a second place for the filter order to drift.
+/// One body for every entry point, because the setup — the `(query …)`
+/// relation lists, the per-call `Ctx` — is what every rung shares, and a
+/// second copy of it is a second place for the filter order to drift.
 fn generate_with(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
     rungs: Rungs,
-    opts: Option<GenOptions>,
 ) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
     // The switch, [`rung`]; the probe takes the blind enumerator whatever the
@@ -423,24 +312,9 @@ fn generate_with(
         stats.rung.mode = crate::oblgen::Mode::NoSearch;
         return Ok(());
     }
-    let cfg = s.kb.program().config.clone().unwrap_or_default();
-    let opts = opts.unwrap_or(GenOptions {
-        lookahead: cfg.enable_pre_branch_lookahead,
-        kill_cache: cfg.enable_lookahead_kill_cache,
-    });
-    // Built once per call (it compiles the rule plans, emitting `compile`
-    // events as `Engine::compile_all` does) and reused per candidate.
-    let lookahead = if opts.lookahead {
-        Some(Lookahead::new(s)?)
-    } else {
-        None
-    };
     let allowed = query_relations(s, HYPOTHESIS_RELATIONS);
     let excluded = query_relations(s, NO_HYPOTHESIS).unwrap_or_default();
     let mut ctx = Ctx {
-        lookahead,
-        kill_cache: opts.kill_cache,
-        matcher: Matcher::new(),
         seen: FxHashSet::default(),
     };
 
@@ -474,18 +348,9 @@ fn generate_with(
     }
 
     // T1a.4.1.1 — hoisted out of the per-(object, relation, slot) fill, which
-    // would otherwise re-sort the names in each. Safe because
-    // the sequence cannot change mid-call: the only mutation is
-    // `write_negated`'s `(not h)`, whose head bumps the name `not` and whose
-    // one argument is a nested fact — so no *new* argument name is indexed,
-    // and `not` itself is reserved either way.
-    //
-    // Eight corpus files write the kill cache **while the blind enumerator is
-    // running**, so the equivalence is exercised rather than argued:
-    // `branching/{01,02,03,04,06,08,12}` and `features/05`, of which
-    // `06_lookahead_on.ein` writes 130 `(not h)` facts mid-call (162 until
-    // M1e2 S1e2.2.10 typed its `co-located`). All are byte-identical through
-    // the `hyp` stream.
+    // would otherwise re-sort the names in each. Safe because the sequence
+    // cannot change mid-call: the pass writes nothing to the KB, and
+    // interning a candidate indexes no name.
     let objects = candidate_objects(s.kb, s.terms, s.ast);
     let by_count = by_participation(s.kb, s.terms, &objects);
     let relations = relation_plan(s, &allowed, &excluded);
@@ -497,11 +362,8 @@ fn generate_with(
     Ok(())
 }
 
-/// What the walk carries across candidates but not across calls.
+/// What a pass carries across candidates but not across calls.
 struct Ctx {
-    lookahead: Option<Lookahead>,
-    kill_cache: bool,
-    matcher: Matcher,
     seen: FxHashSet<FactId>,
 }
 
@@ -554,17 +416,6 @@ fn apply_filters(
         stats.bump(Drop::FactAlreadyExists);
         return Some(Drop::FactAlreadyExists);
     }
-    // lookahead_killed — one rule step, no fork. Last of the checks that can
-    // reject, because it is much the costliest.
-    if let Some(l) = ctx.lookahead.as_ref()
-        && l.dies_immediately(s, &mut ctx.matcher, fact)
-    {
-        stats.bump(Drop::LookaheadKilled);
-        if ctx.kill_cache {
-            write_negated(s, fact);
-        }
-        return Some(Drop::LookaheadKilled);
-    }
     // seen_in_call — both Alice and Bob enumerate `(r Alice Bob)`; only the
     // first is yielded.
     if !ctx.seen.insert(fact) {
@@ -572,34 +423,6 @@ fn apply_filters(
         return Some(Drop::SeenInCall);
     }
     None
-}
-
-/// Cache a lookahead-killed candidate as `(not h)`, idempotently.
-///
-/// The kill rests on the saturated KB alone — a one-step simulation, no
-/// speculative commitment — so the provenance cites **no premises**;
-/// `<lookahead-dies-immediately>` is a reserved engine string whose contract is
-/// that provenance walks ground out on it.
-fn write_negated(s: &mut Session<'_>, hypothesis: FactId) {
-    let not = s.terms.kernel.not;
-    let arg = [Value::fact(hypothesis)];
-    if s.terms
-        .probe_fact(not, &arg)
-        .is_some_and(|id| s.kb.contains(id))
-    {
-        return;
-    }
-    let rule = s.terms.kernel.lookahead_dies;
-    let prov = s
-        .terms
-        .provs
-        .push(ein_core::Prov::from_rule(rule, Box::new([]), None));
-    // A worker may not be able to number `(not h)`, and the cache feeds
-    // forward within the call — so an entering that reaches here on a lent
-    // table is one whose *later* candidates would see a different world.
-    // `Terms::refused` is set by the refusal and the fan-out discards the
-    // whole entering; skipping the write keeps that discarded run cheap.
-    let _ = s.kb.add_and_index_fact(s.terms, not, &arg, Some(prov));
 }
 
 // ── Blind enumeration ──────────────────────────────────────────────
@@ -652,10 +475,10 @@ struct RelPlan {
 
 /// The relation walk, decided once per call rather than once per focal object.
 ///
-/// Nothing it reads can change mid-call: the query keywords are fixed, and the
-/// only KB write a pass makes is the kill cache's `(not h)`, whose head is
-/// `not` and which therefore cannot add a `(__closed__ R)` fact. The three
-/// skips are tested in the order that decides which counter a skip lands in.
+/// Nothing it reads can change mid-call: the query keywords are fixed, and a
+/// pass writes nothing to the KB, so no `(__closed__ R)` fact arrives. The
+/// three skips are tested in the order that decides which counter a skip
+/// lands in.
 ///
 /// The program's relation registry is walked in **insertion order** —
 /// declaration order, which is observable right here.
@@ -949,9 +772,8 @@ pub(crate) fn scoping(
 ///   less the three scopings — `relation_plan`'s filter, read off the same
 ///   helpers so the two cannot drift.
 ///
-/// Note the closed set is the one **in the KB**, not `emit_closed`'s: no
-/// command runs that pass, so a solve sees only authored and
-/// `std.closure`-derived markers ([`crate::closed`]).
+/// The closed set is the one **in the KB**: the markers a program writes and
+/// the ones a rule derives (`std.closure`'s).
 ///
 /// **One residual, written down rather than papered over.** The obligations
 /// rung can *decline* — a bare `(open)`, a projection that will not resolve
@@ -1073,71 +895,6 @@ fn coerce_relation_names(s: &Session<'_>, value: ein_ir::NodeId) -> (FxHashSet<S
     (out, declared)
 }
 
-// ── Solution predicates ────────────────────────────────────────────
-
-/// The open set — viable, not-yet-decided hypotheses.
-///
-/// [`generate`] already yields exactly the candidates that are neither
-/// asserted nor refuted nor immediately doomed, so this is its result as a
-/// set. `open_hypotheses` and [`complete`] stay **distinct**: collapsing them
-/// is a measurable regression, not a simplification.
-///
-/// S1.7.24 — no symmetric canonicalisation: `(R a b)` and `(R b a)` are two
-/// distinct open entries even for a `(symmetric R)` relation. Correct `k` is
-/// recovered generically at the `state_key` dedup, because the *user's* rule
-/// established the equivalence.
-pub fn open_hypotheses(s: &mut Session<'_>) -> Result<FxHashSet<FactId>, CompileError> {
-    let mut open = FxHashSet::default();
-    generate(s, &mut HypGenStats::new(), &mut |fact| {
-        open.insert(fact);
-        ControlFlow::Continue(())
-    })?;
-    Ok(open)
-}
-
-/// No open hypothesis — the generator proposes nothing undecided.
-///
-/// Short-circuits (S1.9.E16): the question is emptiness, so the **first**
-/// candidate answers it. Building the whole set only to truth-test it re-ran
-/// the per-candidate pipeline — the one-step lookahead included — for every
-/// later candidate whose value was already irrelevant; measured 54 ms of a
-/// 1.7 s `zebra2` `solve(stop_after=1)`, where 8 of 9 `complete` calls are
-/// answered by candidate #1.
-pub fn complete(s: &mut Session<'_>) -> Result<bool, CompileError> {
-    complete_counted(s, &mut HypGenStats::new())
-}
-
-/// [`complete`], reporting what the short-circuit cost.
-///
-/// The short-circuit is not visible in the answer — only in how many
-/// candidates were built to reach it — so the instrument that checks it needs
-/// the stats block, and that is the only reason this is separate.
-pub fn complete_counted(
-    s: &mut Session<'_>,
-    stats: &mut HypGenStats,
-) -> Result<bool, CompileError> {
-    ein_core::counters::bump(|c| c.hypgen_complete += 1);
-    let mut any = false;
-    generate(s, stats, &mut |_| {
-        any = true;
-        ControlFlow::Break(())
-    })?;
-    Ok(!any)
-}
-
-/// No contradiction — no `(false)`, no same-layer `X ∧ ¬X`.
-pub fn consistent(kb: &Kb, terms: &Terms) -> bool {
-    !crate::contradiction::has_contradiction(kb, terms)
-}
-
-/// `consistent ∧ complete` — P1.7a's domain-agnostic definition of an answer.
-pub fn is_solution_node(s: &mut Session<'_>) -> Result<bool, CompileError> {
-    if !consistent(s.kb, s.terms) {
-        return Ok(false);
-    }
-    complete(s)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1149,32 +906,6 @@ mod tests {
         let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
         let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
         (ast, terms, kb)
-    }
-
-    /// `report_lines`' field widths and its sorted, sparse key walk — a
-    /// counter that was never bumped has no line at all.
-    #[test]
-    fn the_stats_report_omits_the_keys_that_never_fired() {
-        let mut stats = HypGenStats::new();
-        stats.raw = 9;
-        stats.emitted = 1;
-        stats.bump(Drop::LookaheadKilled);
-        stats.bump(Drop::FactAlreadyExists);
-        stats.bump(Drop::FactAlreadyExists);
-        stats.skip(Skip::SelfEdge);
-        assert_eq!(
-            stats.report_lines(),
-            [
-                "  raw                9",
-                "  emitted            1",
-                "  filtered.fact_already_exists 2",
-                "  filtered.lookahead_killed   1",
-                "  pre.self_edge               1",
-            ]
-        );
-        assert!(!stats.balances(), "1 + 3 != 9");
-        stats.raw = 4;
-        assert!(stats.balances());
     }
 
     /// The blind enumerator proposes type-blind (S1.7.23) but never proposes a
