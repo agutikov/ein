@@ -7,7 +7,7 @@
   lattice           monotone (the static check) — R is convex: no hole
   universe          51 candidates
   route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L8 what a state denies is dead above it
-  work              80 saturations · 1 048 facts beyond root
+  work              80 saturations · 536 facts beyond root
 ```
 
 ## Root — 7 steps
@@ -22,17 +22,7 @@ Derives `functional-negative(color-of)`.
 
 <dot>
 
-### Step 2 — `derive-injective-negative`
-
-> color-of injective ⟹ injective-negative active.
-
-Premises: `injective(color-of)`
-
-Derives `injective-negative(color-of)`.
-
-<dot>
-
-### Step 3 — `functional-negative`
+### Step 2 — `functional-negative`
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Green)).
 
@@ -42,13 +32,23 @@ Derives `not(color-of(H1, Green))`.
 
 <dot>
 
-### Step 4 — `functional-negative`
+### Step 3 — `functional-negative`
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Blue)).
 
 Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)`, `is-a(Blue, Color)` — from (1) H1 is Red
 
 Derives `not(color-of(H1, Blue))`.
+
+<dot>
+
+### Step 4 — `derive-injective-negative`
+
+> color-of injective ⟹ injective-negative active.
+
+Premises: `injective(color-of)`
+
+Derives `injective-negative(color-of)`.
 
 <dot>
 

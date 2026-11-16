@@ -138,10 +138,12 @@ ein-einb/tests/corruption.rs
 ein-einb/tests/invalidation.rs
 ein-einb/tests/roundtrip.rs
 ein-infer/tests/acceptance.rs
+ein-infer/tests/agenda.rs
 ein-infer/tests/coupling.rs
 ein-infer/tests/cover.rs
 ein-infer/tests/exactly_one.rs
 ein-infer/tests/explain_semantics.rs
+ein-infer/tests/first_contradiction.rs
 ein-infer/tests/known_dead.rs
 ein-infer/tests/naf_semantics.rs
 ein-infer/tests/node_coupling.rs

@@ -121,7 +121,7 @@ derivation trace. Where each piece lives (`ein-infer/src/` unless noted):
 | Pattern matcher                 | **shipped** — `compile.rs` lowers each (rule, activator) to a `JoinPlan` whose steps are **purely positive** (S1.21.8: `split_naf` lifts every `(absent …)` into `plan.naf_guards`); `match_.rs` `_run_steps` executes it, `run_guarded` tags each match with its own disjunct's guards |
 | Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); puzzle rules authored inline or imported from the [stdlib](../../../stdlib/) |
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
-| Saturation loop                 | **shipped** — FIFO (priority-banded until M1f S1f.5.15), delta-driven `saturator.rs` (P1.3 S1.3.3; semi-naive in P1.8a); **two-phase since S1.21.8** — a purely positive closure runs to quiescence, then one boundary round admits at most one parked NAF-guarded candidate and the closure re-runs |
+| Saturation loop                 | **shipped** — the agenda, the rules whose conclusion a contradiction can be made of first and FIFO within each half (FIFO alone before it, priority-banded until M1f S1f.5.15), delta-driven `saturator.rs` (P1.3 S1.3.3; semi-naive in P1.8a); **two-phase since S1.21.8** — a purely positive closure runs to quiescence, then one boundary round admits at most one parked NAF-guarded candidate and the closure re-runs |
 | Hypothesis branching            | **shipped** — `hypgen.rs` enumerates candidates; the commitment-lattice search was `solve.rs` (P1.5–P1.5b), deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03), and the search is `explore.rs`'s routes since |
 | Contradiction detection         | **shipped** — `contradiction.rs` detects (`(X, ¬X)` pairs + `(false)`); `explain.rs` → `explain.rs` explains: smallest contradiction frontier — a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS. Since M1e2 S1e2.2.21 a contradiction's facts are explained together, a pair's two sides as one AND-node (until then its positive side alone, W21), and a derivation through a `forall` rests on the facts its universal read, each at its own smallest frontier (`Prov::universal`, Q-M1e2.15 (b)); a core is taken only where a surface prints one |
 | Multi-justification provenance  | **shipped** — provenance is per *derivation*: `Fact.provenance` is the primary justification, `kb.justifications(fact)` returns every recorded one (capped per fact, shortest kept), so a fact is an OR-node over AND-nodes. Gated by `SolverConfig.record_alternative_justifications` (default on) |
@@ -181,7 +181,9 @@ contributes, locked by S1.21.8:
    The consequence rule authors feel: on a **stratified** rule set
    the order orders the work but does not decide what is derivable — the
    priority bands were advisory from here on, and went with `:priority`
-   at M1f S1f.5.15, since when the order is FIFO.
+   at M1f S1f.5.15, since when the order is FIFO, and since the agenda
+   the rules whose conclusion a contradiction can be made of first,
+   FIFO within each half. On a monotone program it decides no fixpoint.
 
 ## M1 invariant — alive-set soundness
 
@@ -347,8 +349,8 @@ alternates:
    it to `_parked` instead.
 2. **Boundary** (`_admit_from_boundary`) — at quiescence a `World` is built
    over the stalled KB, the parked candidates are judged against that
-   fixpoint in the engine's own FIFO order ((priority, FIFO) until M1f
-   S1f.5.15), and the **first**
+   fixpoint in the engine's own order, the agenda's (FIFO before it,
+   (priority, FIFO) until M1f S1f.5.15), and the **first**
    whose guards all pass is admitted back into phase 1.
 
 Repeat until a quiescence admits nothing. **One admission per round is the
@@ -729,7 +731,8 @@ ontology-level declaration per constraint; the engine fans it
 out into the negative-completion machinery automatically.
 
 **Priority discipline**, the record of what the numbers did until M1f
-S1f.5.15 removed `:priority`; since then these rules fire in FIFO order, and
+S1f.5.15 removed `:priority`; since then these rules fire in the engine's
+order (FIFO, and since the agenda what leads to `(false)` first), and
 the cores that moved are that stage's § T5 record
 (lines 117-120 of `examples/zebra2.ein` as they were):
 the negative rules sit at priority 240 — AFTER propagation
@@ -790,8 +793,8 @@ correspondence, rule for rule:
 
 The priority bands were the same (100 setup, 200 propagation, 240
 negative completion, 250 pruning + violation checks, 400 elimination), so
-the two libraries were interchangeable band-for-band, and both are FIFO
-since M1f S1f.5.15.
+the two libraries were interchangeable band-for-band, and both take the
+engine's one order since M1f S1f.5.15, the agenda's since it.
 
 Two asymmetries are worth knowing, because they are what the second
 encoding exists to expose:

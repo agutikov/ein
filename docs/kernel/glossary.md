@@ -507,10 +507,11 @@ to the variables its preceding positive premises bound
 (`NafGuard.scope`). Never a ground atom: world-relative, never
 revisited after the firing commits. There is no fire-time re-check
 (deleted, not bypassed). Not closed-world, not stratified NAF — but
-on **stratified** rule sets the result does not depend on the firing
-order (FIFO, the written and arrival order, since M1f S1f.5.15 removed
-`:priority`); on non-stratified ones it is fixed by
-boundary-admission order (see [Stratification](#stratification)).
+on a **monotone** program the result does not depend on the firing
+order (the agenda's: the rules whose conclusion a contradiction can be
+made of first, then the rest, each half in the written and arrival order);
+on others it can be fixed by boundary-admission order, which is the
+agenda's too (see [Stratification](#stratification)).
 Normative page:
 [`inference/absent_semantics.md`](inference/absent_semantics.md);
 operational how:

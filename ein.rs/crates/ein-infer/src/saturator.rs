@@ -18,33 +18,50 @@
 //!   which on `p ← absent q; q ← absent p` derives both — and `{p, q}` is not a
 //!   model of that program under any reading.
 //!
-//! Everything else stands: FIFO, the written and arrival order, via the
-//! monotone tiebreaker (no rule has a priority since M1f S1f.5.15, the user's
-//! ruling of 2026-11-08 on Q-M1f.6: *"plain FIFO, core is an explanation, F22
-//! makes it canonical"*), `seen`
-//! keyed on `(binding_key, guards)`, and `naf_dropped` structurally 0 — there
-//! is no enqueue/fire window left for a guard to go stale in.
+//! Everything else stands: the agenda below, its halves each in the written
+//! and arrival order via the monotone tiebreaker (no rule has a priority),
+//! `seen` keyed on `(binding_key, guards)`, and `naf_dropped` structurally 0 —
+//! there is no enqueue/fire window left for a guard to go stale in.
 //!
-//! ### A fail-first agenda, for a measurement
+//! ### The agenda: what leads to `(false)` first
 //!
-//! [`fail_first`] runs a closure with every saturation **built** on the
-//! calling thread ranking its candidates in two halves: those of a rule whose
-//! conclusion a contradiction can be made of first ([`FailFirst`] says which),
-//! then the rest, FIFO within each half; the boundary walks its parked
-//! candidates in the same order. M1f S1f.10.19 measures with it what such an
-//! order would save a dead node stopped at its first contradiction, which
-//! reopens Q-M1f.6's ruling and is put to the user as Q-M1f.313: no route
-//! takes it. It is no lever: no `(config …)` field, no option of `ein` and no
-//! `EIN_*` name reaches it. Not taken, a candidate's rank is its tiebreaker,
-//! as it was.
+//! Every saturation ranks its candidates in two halves, [`AGENDA`]: first
+//! those of a rule whose conclusion a contradiction can be made of, `(false)`,
+//! a stored negation `(not …)`, or a fact of a relation some plan concludes
+//! the negation of or the KB holds a negation of (either side of a pair,
+//! [`FailFirst::Pairs`], read off the compiled plans by
+//! [`crate::monotone::writes_of`]); then the rest. Within each half the order
+//! is FIFO, the written and arrival order. The boundary walks its parked
+//! candidates in the same order. Root's saturation, every node a route or the
+//! oracle computes, the whole node and every reader of a fixpoint take it, so
+//! a dead node stopped at its first contradiction (below) costs as little of
+//! its derivation as the order can make it. The order decides when a fact is
+//! derived and which derivation a fact's record keeps first, so a core, the
+//! rules beside it and the narration follow it; on a monotone program it
+//! decides no fixpoint, and no answer.
 //!
-//! [`stopping_at_first_contradiction`] is the same stage's other switch: a
-//! saturation built under it returns from [`Saturator::saturate`] at the
-//! first point its KB holds a contradiction, before any firing where the
-//! facts written before it already do and otherwise after the firing whose
-//! conclusions make one. It is how the stage reads what a dead node would
-//! report stopped there; nothing else takes it, and not taken, `saturate`
-//! runs to the fixpoint as it did.
+//! A saturation takes the agenda it is built under: [`Saturator::new`] the
+//! engine's, [`Saturator::resume`] its snapshot's, unless a switch on the
+//! calling thread says otherwise. [`fifo`] runs a closure with every
+//! saturation built on the thread in the written order alone, as before the
+//! agenda; [`fail_first`] with the given halves, `Negations` among them. They
+//! are for the test that holds every answer alike under the written order and
+//! the agenda, and for a measurement; no `(config …)` field, option of `ein`
+//! or `EIN_*` name reaches them.
+//!
+//! ### A saturation stopped at its first contradiction
+//!
+//! `Saturator::stop_at_first_contradiction` makes [`Saturator::saturate`]
+//! return at the first point its KB holds a contradiction, before any firing
+//! where the facts written before it already do and otherwise after the
+//! firing whose conclusions make one, every conclusion of that firing
+//! written; the KB is then not marked saturated. It is how a route's node on
+//! a monotone program is saturated (`crate::region`'s § What a node is), and
+//! it is no agenda: which candidate fires first is the agenda's.
+//! [`stopping_at_first_contradiction`] is the same stop as a switch on the
+//! calling thread, read when a saturation is built, for a measurement over
+//! [`crate::region::Nodes`]' readers, which no route stops. Not taken,
+//! `saturate` runs to the fixpoint.
 
 use std::cell::Cell;
 use std::cmp::Reverse;
@@ -68,51 +85,77 @@ use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 /// saturator — no plan, no matcher.
 pub const SYMMETRIC: &str = ein_core::terms::SYMMETRIC;
 
-/// Which rules a saturation built under [`fail_first`] fires first: those
-/// whose `:assert` writes, by [`crate::monotone::writes_of`]'s reading of the
-/// compiled plan, a fact a contradiction can be made of.
+/// Which rules a saturation fires first: those whose `:assert` writes, by
+/// [`crate::monotone::writes_of`]'s reading of the compiled plan, a fact a
+/// contradiction can be made of.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FailFirst {
     /// `(false)`, a stored negation `(not …)`, or a fact of a relation whose
     /// negation some plan concludes or the KB holds: either side of a pair.
+    /// The engine's agenda, [`AGENDA`].
     Pairs,
     /// `(false)` or a stored negation: the side of a pair a rule supplies
-    /// against a fact already there.
+    /// against a fact already there. A measurement's.
     Negations,
 }
 
+/// **The engine's agenda** (the module's § The agenda): the rules whose
+/// conclusion either side of a pair can be made of first, then the rest,
+/// FIFO within each half.
+pub const AGENDA: FailFirst = FailFirst::Pairs;
+
 thread_local! {
-    static FAIL_FIRST: Cell<Option<FailFirst>> = const { Cell::new(None) };
+    /// A switch's agenda on this thread: `Some(None)` the written order
+    /// alone ([`fifo`]), `Some(Some(w))` `w`'s halves ([`fail_first`]);
+    /// `None`, no switch, and a saturation takes the engine's or its
+    /// snapshot's.
+    static AGENDA_SWITCH: Cell<Option<Option<FailFirst>>> = const { Cell::new(None) };
     static STOP_FIRST: Cell<bool> = const { Cell::new(false) };
 }
 
-/// The bit a candidate's rank carries under [`fail_first`] when its rule is
-/// not among the first: above every tiebreaker a run reaches, so it sorts
-/// after every candidate that is, and leaves FIFO within each half.
+/// The bit a candidate's rank carries when its rule is not among the first:
+/// above every tiebreaker a run reaches, so it sorts after every candidate
+/// that is, and leaves FIFO within each half.
 const LATE: u64 = 1 << 62;
 
-/// Run `f` with every saturation built on this thread, by [`Saturator::new`]
-/// or [`Saturator::resume`], firing `which` rules first (the module's § A
-/// fail-first agenda). Restored when `f` returns or unwinds.
-pub fn fail_first<T>(which: FailFirst, f: impl FnOnce() -> T) -> T {
-    struct Restore(Option<FailFirst>);
+/// Run `f` with the agenda switch of this thread at `to`. Restored when `f`
+/// returns or unwinds.
+fn switching<T>(to: Option<FailFirst>, f: impl FnOnce() -> T) -> T {
+    struct Restore(Option<Option<FailFirst>>);
     impl Drop for Restore {
         fn drop(&mut self) {
-            FAIL_FIRST.with(|s| s.set(self.0));
+            AGENDA_SWITCH.with(|s| s.set(self.0));
         }
     }
-    let _restore = Restore(FAIL_FIRST.with(|s| s.replace(Some(which))));
+    let _restore = Restore(AGENDA_SWITCH.with(|s| s.replace(Some(to))));
     f()
 }
 
-/// Which [`fail_first`] is running on this thread, if one is.
+/// Run `f` with every saturation built on this thread, by [`Saturator::new`]
+/// or [`Saturator::resume`], firing `which` rules first (the module's § The
+/// agenda), whatever its snapshot's. Restored when `f` returns or unwinds.
+pub fn fail_first<T>(which: FailFirst, f: impl FnOnce() -> T) -> T {
+    switching(Some(which), f)
+}
+
+/// Run `f` with every saturation built on this thread, by [`Saturator::new`]
+/// or [`Saturator::resume`], in the written and arrival order alone, the
+/// order before the agenda (the module's § The agenda). Restored when `f`
+/// returns or unwinds.
+pub fn fifo<T>(f: impl FnOnce() -> T) -> T {
+    switching(None, f)
+}
+
+/// The agenda a saturation built now on this thread by [`Saturator::new`]
+/// takes: a switch's, else [`AGENDA`]. `None` is the written order alone.
 pub fn is_fail_first() -> Option<FailFirst> {
-    FAIL_FIRST.with(Cell::get)
+    AGENDA_SWITCH.with(Cell::get).unwrap_or(Some(AGENDA))
 }
 
 /// Run `f` with every saturation built on this thread stopping
 /// [`Saturator::saturate`] at its first contradiction (the module's § A
-/// fail-first agenda). Restored when `f` returns or unwinds.
+/// saturation stopped at its first contradiction). Restored when `f` returns
+/// or unwinds.
 pub fn stopping_at_first_contradiction<T>(f: impl FnOnce() -> T) -> T {
     struct Restore(bool);
     impl Drop for Restore {
@@ -359,14 +402,14 @@ pub struct Saturator {
     /// What the last application's universals read, where they are kept.
     last_universal: Box<[FactId]>,
     last_firing: Option<Firing>,
-    /// [`fail_first`] as it stood when this saturation was built; `None`,
-    /// the agenda is FIFO and every rank is its tiebreaker.
+    /// The agenda this saturation was built under (the module's § The
+    /// agenda); `None`, the written order alone, every rank its tiebreaker.
     fail_first: Option<FailFirst>,
     /// Under [`Self::fail_first`]: per plan, whether its rule fires first,
     /// for every plan the engine holds ([`Saturator::refresh_first`]).
     first: Vec<bool>,
     /// [`stopping_at_first_contradiction`] as it stood when this saturation
-    /// was built.
+    /// was built, or `Saturator::stop_at_first_contradiction` since.
     stop_first: bool,
 
     // ── Observables ────────────────────────────────────────────────
@@ -450,6 +493,9 @@ pub struct Snapshot {
     sym_n: usize,
     mirror_seeded: bool,
     facts: FxHashSet<FactId>,
+    /// The agenda the saturation was built under, which a resumed one takes
+    /// on whatever thread it runs (the module's § The agenda).
+    fail_first: Option<FailFirst>,
 }
 
 impl Snapshot {
@@ -556,6 +602,7 @@ impl Saturator {
             sym_n: self.sym_n,
             mirror_seeded: self.mirror_seeded,
             facts: kb.facts().collect(),
+            fail_first: self.fail_first,
         }
     }
 
@@ -628,7 +675,7 @@ impl Saturator {
             reading_universals: false,
             last_universal: Box::default(),
             last_firing: None,
-            fail_first: is_fail_first(),
+            fail_first: AGENDA_SWITCH.with(Cell::get).unwrap_or(snapshot.fail_first),
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
             naf_rounds: 0,
@@ -639,9 +686,12 @@ impl Saturator {
             guard_evals_monotone: 0,
             boundary_nanos: 0,
         };
-        if sat.fail_first.is_some() {
-            // What the snapshot holds was ranked by its tiebreaker alone:
-            // ranked again, so the order is this saturation's throughout.
+        if sat.fail_first.is_some() || snapshot.fail_first.is_some() {
+            // What the snapshot holds was ranked under its own agenda, and
+            // the KB this saturation reads can make another plan's
+            // conclusion one side of a pair: ranked again, so the order is
+            // this saturation's throughout (under the written order alone,
+            // every rank its tiebreaker).
             sat.refresh_first(s);
             let parked = std::mem::take(&mut sat.parked);
             sat.parked = parked
@@ -707,9 +757,10 @@ impl Saturator {
     /// Run to the fixpoint, handing each firing to `f`.
     ///
     /// `max_steps` is the runaway-debugging budget; `None` runs to the
-    /// fixpoint. Under [`stopping_at_first_contradiction`] it returns at the
-    /// KB's first contradiction instead, short of the fixpoint, which it then
-    /// does not mark.
+    /// fixpoint. After `Self::stop_at_first_contradiction`, or built under
+    /// [`stopping_at_first_contradiction`], it returns at the KB's first
+    /// contradiction instead, short of the fixpoint, which it then does not
+    /// mark.
     pub fn saturate(
         &mut self,
         s: &mut Session<'_>,
@@ -749,6 +800,24 @@ impl Saturator {
                 }
             }
         }
+    }
+
+    /// From here on [`Self::saturate`] returns at the KB's first
+    /// contradiction, as a saturation built under
+    /// [`stopping_at_first_contradiction`] does: how a route's node on a
+    /// monotone program is saturated (`crate::region`'s § What a node is).
+    /// Which candidate fires first is the agenda's, which this does not touch.
+    pub(crate) fn stop_at_first_contradiction(&mut self) {
+        self.stop_first = true;
+    }
+
+    /// From here on [`Self::saturate`] runs to the fixpoint, a saturation
+    /// stopped at its first contradiction going on from where it stopped,
+    /// firing for firing what it would have fired had it not stopped: how a
+    /// route's stopped node gives its core over its fixpoint
+    /// (`crate::region`'s § What a node is).
+    pub(crate) fn run_to_quiescence(&mut self) {
+        self.stop_first = false;
     }
 
     /// How many `(binding_key, guards)` pairs the dedup has seen.
@@ -1242,9 +1311,9 @@ impl Saturator {
         }
     }
 
-    /// [`LATE`] for a candidate of plan `at` under [`fail_first`] whose rule
-    /// is not among the first; 0 otherwise, and always where the switch was
-    /// not taken.
+    /// [`LATE`] for a candidate of plan `at` whose rule is not among the
+    /// agenda's first; 0 otherwise, and always under the written order alone
+    /// ([`fifo`]).
     #[inline]
     fn late(&self, at: usize) -> u64 {
         match self.fail_first {
@@ -1254,7 +1323,7 @@ impl Saturator {
         }
     }
 
-    /// Under [`fail_first`], read again which plans' rules fire first, once
+    /// Under an agenda, read again which plans' rules fire first, once
     /// the engine holds a plan this saturation has not read: a new plan's
     /// negation can make another plan's conclusion one side of a pair.
     fn refresh_first(&mut self, s: &Session<'_>) {
@@ -2120,12 +2189,12 @@ mod tests {
         assert!(sat.last_firing().is_some());
     }
 
-    /// A fail-first agenda, M1f S1f.10.19's measurement and Q-M1f.313's
-    /// question: under [`fail_first`] a rule whose conclusion a contradiction
-    /// can be made of fires before one written earlier whose conclusion is
-    /// not, the fixpoint is the same, and the switch holds only while it
-    /// runs. `Negations` puts a stored negation first; `Pairs` a positive fact
-    /// of a relation some rule denies as well.
+    /// The agenda: a rule whose conclusion a contradiction can be made of
+    /// fires before one written earlier whose conclusion is not, and the
+    /// fixpoint is the written order's. [`AGENDA`] is `Pairs`, a positive
+    /// fact of a relation some rule denies as well among the first;
+    /// `Negations` puts a stored negation first; [`fifo`] is the written
+    /// order alone. Each switch holds only while it runs.
     #[test]
     fn a_fail_first_agenda_moves_the_order_and_not_the_fixpoint() {
         let src = "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n\
@@ -2140,9 +2209,9 @@ mod tests {
             v.sort();
             v
         };
-        let (t, kb, fifo, _) = saturate(src);
+        let (t, kb, written, _) = fifo(|| saturate(src));
         assert_eq!(
-            fifo,
+            written,
             ["(q a)", "(r a)", "(not (s a))", "(not (r a))"],
             "FIFO: the written order"
         );
@@ -2160,8 +2229,13 @@ mod tests {
         );
         assert_eq!(sorted(&kb, &t), sorted(&kbn, &tn));
         assert_eq!(sorted(&kb, &t), sorted(&kbp, &tp));
-        assert_eq!(is_fail_first(), None, "restored when it returns");
-        assert_eq!(saturate(src).2, fifo, "and FIFO again after it");
+        assert_eq!(is_fail_first(), Some(AGENDA), "restored when it returns");
+        assert_eq!(saturate(src).2, pairs, "and the engine's agenda is `Pairs`");
+        assert_eq!(
+            fifo(|| saturate(src)).2,
+            written,
+            "and the written order under the switch again"
+        );
     }
 
     /// The stage's other switch: under [`stopping_at_first_contradiction`]

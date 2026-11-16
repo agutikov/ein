@@ -320,7 +320,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **A string is natural-language text**, written only after `:why`, `:source`
   or `:goal-text`, never a value. Names are ASCII.
 - `_` and `?_` are refused everywhere. Keywords are closed per form.
-  `:priority` is gone: the agenda is FIFO in written order.
+  `:priority` is gone: **the agenda fires first what leads to `(false)`** —
+  a rule concluding `(false)`, a stored negation, or a fact whose negation
+  can be concluded — then the rest, FIFO in written order within each half
+  (`saturator::AGENDA`, everywhere: root, every route's node, the oracle's,
+  every reader; [Q-M1f.313](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false)).
+  On a monotone program it decides no answer (`ein-infer/tests/agenda.rs`);
+  of a flagged one the engine claims none.
 - **`:why` is required** on every relation, rule, hrule and macro;
   `--no-require-why` loads a program without.
 - `__closed__` and `__symmetric__` are reserved and never bound, and never

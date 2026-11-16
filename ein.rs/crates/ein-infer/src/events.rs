@@ -90,7 +90,10 @@ pub struct Visited<'a> {
     pub core_status: Option<crate::explain::CoreStatus>,
     pub refuted_by: &'a [String],
     pub closure: &'a [String],
-    /// Its fixpoint's facts beyond root's.
+    /// Its fixpoint's facts beyond root's. A dead node a monotone program's
+    /// route stops at its first contradiction reports this, its debts and
+    /// its closure as far as there, and its core over its fixpoint
+    /// (`crate::region`'s § What a node is).
     pub facts: u64,
 }
 

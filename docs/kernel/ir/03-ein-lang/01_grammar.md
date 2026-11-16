@@ -530,8 +530,9 @@ is in [`02_patterns.md`](02_patterns.md). **A rule has no priority**
 since M1f [S1f.5.15](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)
 (2026-11-08, the user's ruling on Q-M1f.6: *"plain FIFO, core is an
 explanation, F22 makes it canonical"*): the saturation agenda and the
-`absent` boundary are FIFO, the order rules are written in and facts
-arrive in. Until then `:priority <INT>` ordered the agenda, lower
+`absent` boundary were FIFO, the order rules are written in and facts
+arrive in, until the agenda took the rules whose conclusion a
+contradiction can be made of first, FIFO within each half. Until then `:priority <INT>` ordered the agenda, lower
 first, which resolved [Q15](../../../../plans/open_questions.md#q15--rule-ordering)
 (rule ordering) with static per-rule numbers. A `:priority` written
 anyway is refused at the parse since S1f.5.5's swap, as every keyword a
@@ -797,8 +798,9 @@ For a rule author, three consequences:
   used to fire because its watched fact simply had not been produced
   yet no longer does.
 - **The order does not decide what is derivable.** On a stratified
-  rule set the result is order-independent; the order, FIFO since M1f
-  S1f.5.15 removed `:priority`, still orders firings (hence the trace)
+  rule set the closure's result is order-independent, and on a monotone
+  program the boundary's too; the order, the agenda's (what leads to
+  `(false)` first, FIFO within each half), still orders firings (hence the trace)
   and decides which derivation of a fact arrives first, which is what a
   core is explained from (F22 makes a core canonical). The band
   discipline zebra2 once needed for soundness — every producer of a

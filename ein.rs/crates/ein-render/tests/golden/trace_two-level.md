@@ -7,7 +7,7 @@
   lattice           monotone (the static check) — R is convex: no hole
   universe          46 candidates
   route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              141 saturations · 794 facts beyond root
+  work              141 saturations · 656 facts beyond root
 ```
 
 ## Root — 16 steps

@@ -69,7 +69,7 @@ solve · examples/branching/05_mini_zebra.ein
   universe          9 candidates, 6 dead alone
     outside         is-a — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              13 saturations · 60 facts beyond root · 4 layers
+  work              13 saturations · 45 facts beyond root · 4 layers
 
   (region
     ;; state 1 of 5 — ∅, root itself · minimal
@@ -646,7 +646,7 @@ solve · examples/lattice/synth/merged_states.ein
   lattice           monotone (the static check) — R is convex: no hole
   universe          5 candidates, 0 dead alone
   route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
-  work              18 saturations · 46 facts beyond root
+  work              18 saturations · 44 facts beyond root
 
   (region
     ;; state 1 of 8 — 2 candidates · minimal · 2 commitments, 1 minimal
@@ -1188,7 +1188,7 @@ solve · examples/zebra2.ein
   universe          56 candidates, 21 dead alone
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
-  work              120 saturations · 8 786 facts beyond root
+  work              120 saturations · 5 409 facts beyond root
 
   ;; R as one (region …) is 111 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
   ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
@@ -1280,7 +1280,7 @@ solve · examples/zebra2.ein
   universe          56 candidates, 21 dead alone
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
-  work              120 saturations · 8 786 facts beyond root
+  work              120 saturations · 5 409 facts beyond root
 
   (region
     ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
@@ -1461,7 +1461,7 @@ solve · --single examples/zebra2.ein
   universe          56 candidates
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states, branching on the owed instance with the fewest alternatives left, the first by text among equals — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
-  work              7 saturations · 666 facts beyond root
+  work              7 saturations · 278 facts beyond root
 
   ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (drink-loc Juice House-4)}
   (model (color-loc Blue House-2) (color-loc Green House-5)

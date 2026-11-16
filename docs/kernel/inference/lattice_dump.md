@@ -30,7 +30,13 @@ writes two files:
   core and rules on a node that is not dead (M1f S1f.5.8, where they were
   `[]`), its closure, and its facts beyond
   root's; then `steps`, each a route-1 layer or a mode's batch, with the index
-  of the first node it covers;
+  of the first node it covers. **A dead node on a monotone program is listed
+  as far as its first contradiction**, where the route's saturation of it
+  stops ([`finding_r.md` § 1](finding_r.md#1-a-node)): what it owes, its
+  closure and its facts are the node's there, and its core is taken over
+  its fixpoint, the saturation going on from the stop. The whole node the
+  tree's order reads, the node of every candidate, is listed to quiescence,
+  and so are an alive node, root and every node of a flagged program;
 - **`nodes.md`**, the same as one table per step.
 
 The nodes are read through the route's watch

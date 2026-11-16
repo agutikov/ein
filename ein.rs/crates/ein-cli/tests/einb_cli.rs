@@ -556,7 +556,9 @@ fn next_second() {
 /// **A container saved again is the container** (M1f S1f.5.28's item 9).
 /// `ein kb save` of a `.einb` writes the bytes the first save wrote, the
 /// loaded state and the saturated one alike, however many times, and each
-/// answers as the program it was saved from. Until S1f.5.28 each save of a
+/// answers as the program it was saved from: the loaded one prints its
+/// source's read-out byte for byte, and the saturated one, another starting
+/// point, its source's but for the facts its `work` row counts. Until S1f.5.28 each save of a
 /// save also wrote the provenance records the open had pushed and nothing
 /// referenced, the loader's for each given fact: the witness's container went
 /// 1 248 → 1 288 → 1 328 bytes, and a saturated `zebra2.einb` saved once more
@@ -608,9 +610,37 @@ fn a_container_saved_again_is_the_container() {
         let last = path(2);
         let from_container = ein(&["solve", &last]);
         assert_eq!(from_container.code, from_text.code, "{source}");
+        // A container saved saturated is another starting point (`kb.rs`'
+        // `cmd_save`): root's derivations are there before its saturation
+        // runs, which compiles the plans in another order, and a route's dead
+        // node stops at its first contradiction, whose place follows that
+        // order. So it answers as its source and may count other facts in its
+        // `work` row; its saturations are its source's.
+        let answer = |text: &str| -> String {
+            if !flags.contains(&"--saturate") {
+                return text.to_string();
+            }
+            text.lines()
+                .map(|l| match l.strip_prefix("  work ") {
+                    Some(row) => format!(
+                        "  work {}",
+                        row.split(" · ")
+                            .map(|p| if p.ends_with(" beyond root") {
+                                "<facts> facts beyond root"
+                            } else {
+                                p
+                            })
+                            .collect::<Vec<_>>()
+                            .join(" · ")
+                    ),
+                    None => l.to_string(),
+                })
+                .collect::<Vec<_>>()
+                .join("\n")
+        };
         assert_eq!(
-            normalise(&from_container.stdout, &last, source),
-            from_text.stdout,
+            answer(&normalise(&from_container.stdout, &last, source)),
+            answer(&from_text.stdout),
             "{source}: the container saved again answers otherwise"
         );
     }

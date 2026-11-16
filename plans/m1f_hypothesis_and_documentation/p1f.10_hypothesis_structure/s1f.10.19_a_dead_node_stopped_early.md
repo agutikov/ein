@@ -1,7 +1,7 @@
 # S1f.10.19 — A dead node stopped at its first contradiction
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-16, on the user's *"Yes, both"* of that day. **T1 to T3 ran 2026-11-16**: [§ Record](#record-2026-11-16-t1-to-t3). T4 waits for S1f.10.17 and, for the agenda, Q-M1f.313.
+**Status:** planned 2026-11-16, on the user's *"Yes, both"* of that day. **T1 to T3 ran 2026-11-16**: [§ Record](#record-2026-11-16-t1-to-t3). **T4 done under FIFO, 2026-11-16**: [§ Record: T4](#record-2026-11-16-t4), on two defaults the user may revise (a core over the node's fixpoint; a container saved saturated may count other facts). **The agenda built 2026-11-16**, on the user's ruling of Q-M1f.313, (c): the `pairs` half first is the engine's order everywhere, [§ Record: the agenda](#record-2026-11-16-the-agenda).
 **Depends on:** [S1f.10.13](s1f.10.13_the_price_list.md) (the rule for *go*). **Built after
 [S1f.10.17](s1f.10.17_describe_by_borders.md) is merged**, since both move every route's `work`; its measurement does
 not wait.
@@ -578,3 +578,609 @@ for q in Q:
                 saving += 1
     print(f"- {q}: {with_dead} cells with a dead node, {saving} where the FIFO stop saves firings")
 ```
+
+## T4: the inventory, before anything moved (2026-11-16)
+
+Committed before the code and before any golden moved. Base `f70552d5` (master), S1f.10.17 not merged on this
+branch; its border route is no question's route, so nothing here reads it. The stop is built under FIFO; **the agenda
+is not touched** (Q-M1f.313 is the user's): the stop is a setting of a built saturator
+(`Saturator::stop_at_first_contradiction`), an agenda is read when one is built, and the two share no code.
+
+### Where the stop goes, and where it does not
+
+- **In the node function, `region::node_in_region`, through `fan_out`, where the axes say so**
+  (`Axes::stopping_at_first_contradiction`), for every node but root's (its commitment is empty). Two places set it,
+  both on a monotone program alone: the modes' routes (`explore::Space::stopping_dead_nodes`, called where
+  `run_with` opens the tree's space; a flagged program's space is the cube's and is not stopped) and the state route
+  (`states::compute_resumable`, which declines a flagged program before it builds its axes). `cores_after` reads
+  with `Axes::after_walk`, a clone, so a node taken after the walk stops where the walk's does.
+- **Not stopped**: root's node; every node of a flagged program (the detector reads each fixpoint); the oracle
+  (`region::compute_prepared` builds its own axes); route 1 (`downset.rs`, in production only on a flagged program
+  whose root is dead, and held node for node to the oracle with its `OWING` bit by `region.rs`'
+  `route_1_is_the_oracle`); **a space a reader of the structure opens** (`structure::with_space`, `ein render
+  h-space`); the whole node the tree's order reads (`Nodes::with_fixpoint_supported_within`); every reader of
+  `region::Nodes`; `claim.rs`' `fixpoints`.
+- **The internal switch**: `region::to_quiescence(f)`, a thread-local read when a route builds its axes, as
+  `known_dead::from_deaths_alone` is; no `(config …)` field, option or `EIN_*` name reaches it, and
+  `config_reference.rs` gains no row. `ein-infer/examples/early_stop.rs` asks its routes under it, so it measures
+  against the quiescent routes as it did.
+
+### Two readings of *What T4 would need* that the built route departs from, and why
+
+1. **A core is taken over the node's fixpoint, not over the stop.** Where a surface prints a core (`--dump-lattice`,
+   `--events`, `--dump-answer`'s `nogoods.json`, `--trace`), the stopped saturation goes on from where it stopped,
+   silently, firing what it would have fired, and the core is taken there; everything else the node reports is
+   read at the stop first. Built first as the record had it (the core over the stopped node), three things failed
+   that the record did not list: `corpus/wrong_answers.toml`'s register, whose rows hold N's cores as answers (the
+   **fixed** rows `W21/typed-blind-solve` and `W21/blind-enumeration` no longer answered their right answers: e.g.
+   `(seats Ann Sortal)`'s core became `(seats Ann C1) (seats Ann Sortal)`, the minimal core over every derivation
+   lost because the stop records fewer; and the open `W10/fork-delta-order` and `W10/second-preparation` moved);
+   `corpus_cores.rs`' `no_core_is_printed_unqualified_from_a_cut_search`, which holds a printed core to the core
+   search over the node function's fixpoint; and `ein solve`'s N agreeing with `ein oracle`'s, which W21's fix
+   states. Over the fixpoint, every core is what it was: the register, `corpus_cores` and N's cores do not move.
+   The core's cost, the rest of the node's saturation and the search, is counted in no `work` row, as the
+   search's never was.
+2. **The structure's readers keep the whole node.** Built as the record had it (every `Space::eval` stopped), the
+   theory's check (`structure.rs`, `theory_share.rs`' `the_readings_agree_on_the_declared_control`) found a dead
+   check node holding a fact the program's dead node did not, both stopped at different points: it reads a dead
+   node's facts, `beyond`. And the pair layer's budget scenarios (`coupling.rs`'
+   `a_layer_that_read_its_singles_has_its_holders_read`, `h_space_view.rs`' `a_layer_read_whole_has_its_holders_read`
+   and the page's read-out) moved. The structure is no question's route, so its spaces are not stopped and
+   `ein render h-space` prints what it printed.
+
+### The goldens and contracts that move, by name
+
+- **`ein-render/tests/golden/corpus_shapes.md5`**: 351 lines over 43 programs, every one monotone (`ein solve FILE
+  --no-search`'s `lattice` row), and only these ops: `read-out[q]` and `cores[q]` for the same questions `q` per
+  program (the `work` row; the `region` block's work, and `nodes.json`'s dead nodes' `facts`, `owes`, `owed` and
+  `closure`), `region-trace` where `describe` moved (the trace prints describe's read-out), and `region-lattice` on
+  three programs whose describe reaches further at the sweep's budget of 2¹⁴ facts. No `states`, `oracle`, `plan`,
+  `saturate`, `hyp`, `explain`, `dot[…]` or `ir[…]` line moves, and no line of a flagged program.
+
+  | program | `read-out[q]`, `cores[q]` | also |
+  |---|---|---|
+  | `examples/beyond_arith/cryptarithm.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/beyond_arith/equation_by_search.ein` | maximal |  |
+  | `examples/beyond_arith/equation_two_unknowns.ein` | describe | region-trace |
+  | `examples/beyond_arith/send_more_money.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/beyond_arith/send_more_money_written.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/equivalent.ein` | describe minimal | region-trace |
+  | `examples/binary_logic/knights.ein` | describe maximal minimal | region-trace |
+  | `examples/binary_logic/not_equivalent.ein` | describe maximal minimal | region-trace |
+  | `examples/binary_logic/satisfiable.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/synthesis.ein` | describe maximal | region-trace |
+  | `examples/binary_logic/truth_table.ein` | describe maximal minimal | region-trace |
+  | `examples/binary_logic/unsatisfiable.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/branching/01_saturate_only.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/02_one_dead_one_alive.ein` | describe maximal | region-trace |
+  | `examples/branching/03_five_hyps_one_alive.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/04_two_levels.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/05_mini_zebra.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/06_lookahead_on.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/07_lookahead_off.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/08_hypothesis_relation_whitelist.ein` | describe maximal | region-trace |
+  | `examples/branching/09_hrule.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/10_kill_cache_on.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/11_kill_cache_off.ein` | describe maximal n2 single | region-trace |
+  | `examples/branching/12_typed_blind_solve.ein` | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/forall-core-elim.ein` | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/oblig-derived-domain.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/oblig-fresh-name.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/lattice/synth/merged_states.ein` | describe maximal | region-trace |
+  | `examples/saturation/type-exclusivity/colors.ein` | maximal |  |
+  | `examples/saturation/type-exclusivity/nationalities.ein` | maximal |  |
+  | `examples/saturation/type-exclusivity/pets.ein` | describe maximal | region-trace |
+  | `examples/word_problems/boxes13.ein` | describe maximal | region-trace |
+  | `examples/zebra.ein` | describe maximal minimal n2 single | region-lattice region-trace |
+  | `examples/zebra2-hints.ein` | describe maximal n2 single | region-trace |
+  | `examples/zebra2-minus-15-obligations.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/zebra2-minus-15.ein` | describe maximal minimal n2 single | region-trace |
+  | `examples/zebra2-obligations.ein` | describe maximal minimal n2 single | region-lattice region-trace |
+  | `examples/zebra2.ein` | describe maximal minimal n2 single | region-lattice region-trace |
+  | `tests/region/02_merged_single.ein` | describe maximal | region-trace |
+  | `tests/stdlib/bijection/06_blind_enumeration.ein` | describe maximal n2 single | region-trace |
+  | `tests/stdlib/bool/inputs/01_in_drives.ein` | describe maximal minimal | region-trace |
+  | `tests/stdlib/bool/inputs/02_required.ein` | describe maximal minimal n2 single | region-trace |
+
+  The **reach at 2¹⁴** is the budget-stopped cells' reach in this golden: `zebra2.ein` and `zebra2-obligations.ein`
+  describe exhaust where they stopped before layer 3, and `zebra.ein` describe is complete up to states of two
+  candidates where it was one.
+- **`docs/kernel/inference/read_out_examples.md`**, regenerated by `python3 utils/read_out_examples.py --bin
+  ein.rs/target/gate/ein`: five `work` rows, X1's `13 saturations · 60` → `45 facts`, X5's `18 saturations · 46` →
+  `45`, and X10's, zebra2's describe `263 saturations · 22 503` → `11 576` (twice) and its `--single` `7 · 666` →
+  `278`.
+- **`ein-render/tests/golden/trace_{ambiguous,one-hypothesis,two-level}.md`**: their `work` rows (608 → 328, 1 048 →
+  536, 794 → 656 facts; saturations the same). `trace_{dead,owing,unconditional}.md` do not move.
+- **The transcripts**: `README.md`'s and `docs/guide/04_solving_the_whole_puzzle.md`'s `ein solve examples/zebra2.ein
+  --single`, its `work` row, `7 saturations · 666 facts` → `278` (`guide_transcripts.rs`).
+- **`examples/README.md`'s anchor list** gains `ein-infer/tests/first_contradiction.rs`, which names the two zebra
+  puzzles (`world_anchors.rs`).
+- **`ein-cli/tests/einb_cli.rs`' `a_container_saved_again_is_the_container`**, a contract, not a golden: a container
+  saved `--saturate` prints its source's read-out but for the facts its `work` row counts (`examples/zebra2.ein`:
+  11 266 against 11 576, the same 263 saturations). Root's derivations are in the container before root's
+  saturation runs, so it compiles the plans in another order, a node's FIFO order follows the plan list, and the
+  place of a dead node's first contradiction follows the order. `kb.rs`' `cmd_save` already calls such a container
+  *a different starting point*; a container saved with the default, the loaded KB, stays byte-identical (the test
+  beside it, four programs). The test now masks that one number for the saturated save, a default (§ Defaults
+  taken), the user's to revise; past the budget such a container can also spend otherwise
+  (`zebra2-minus-15.ein`'s describe: 427 887 facts spent against the source's 426 729, the same layer reached).
+- **Not moving**: `docs/api/rust.md` and `embedding.rs` (they print saturations, 7); `corpus/wrong_answers.toml`;
+  `corpus_cores.rs`; every member of N's core (`nogoods.json`, `--trace`); the oracle's dumps;
+  `docs/kernel/inference/hypothesis_space.md`'s read-out; `corpus_exits.txt`; `cost_ms` and the slow set, **not
+  re-taken**: the machine was not idle (other agents' load average 3 to 10), so `utils/corpus_cost.py` was not run.
+- **Prose that quotes the moved numbers**: `finding_r.md` § 7's SEND row (18 030 → 18 031 saturations) and three
+  `corpus/corpus.toml` notes (`cryptarithm.ein`, `send_more_money.ein`, `send_more_money_written.ein`: 18 031
+  saturations, 173 415 facts, the couplings read at saturation 722 where it was 712).
+- **What a dead node reports, on the surfaces that list visited nodes**: `--dump-lattice`'s `nodes.json` and
+  `nodes.md` (`facts`, `owes`, `owed`, `closure` at the stop; `core`, `core_status`, `refuted_by` over the
+  fixpoint), `--events`' node lines (`fire` up to the firing that makes the contradiction, `owe` read at the stop,
+  `enter`'s `owes` at the stop and its core over the fixpoint), `-v` and `--layer-progress`' step facts. No golden
+  pins them beyond `corpus_shapes.md5`'s `cores[q]`.
+- **The nightly**: a sharded step for the new sweep's slow half (`deep-corpus-shards`, four shards), in
+  `.github/workflows/nightly.yml` and `run_tests.sh`'s `--nightly` and `--dev-host` copies (`nightly_steps.rs`).
+
+## Record (2026-11-16): T4
+
+**The stop is built under FIFO, and every golden that moved is the inventory's.** On the base `f70552d5`, the
+inventory committed first (`d92c7c8b`), then the code with its goldens and pages (`a761d181`), then this record.
+
+### Where the stop is
+
+- **`region::node_in_region`** saturates through `region::saturated`, which hands back the saturator; where the axes
+  carry the stop (`Axes::stopping_at_first_contradiction`) and the commitment is not empty, it calls
+  `Saturator::stop_at_first_contradiction`, and `saturate` returns after the firing whose conclusions make the
+  fork's first contradiction (or before any firing, where the commitment written makes one). Everything the node
+  reports is read there: its facts beyond root (`NodeOut::state`, the run's `work` and its budget), debts, closure,
+  denials, the detector's `first_rules` and `absent_premises`, L9's breach, and its narration. **Then, where a core
+  is taken, the same saturator goes on** (`Saturator::run_to_quiescence`), silently, and the core is taken over the
+  fixpoint: the same firings in the same order, so the same core, status, rules and sources as before.
+- **Set by** `explore::Space::stopping_dead_nodes` (the tree's space in `run_with`, monotone only) and
+  `states::compute_resumable` (monotone by its decline); **kept off** the oracle, root, flagged programs, route 1,
+  `structure::with_space`, the whole node and `region::Nodes`, by construction: none of them builds axes with it.
+- **The switch**: `region::to_quiescence`, a thread-local read when a route builds its axes; no lever.
+- **The agenda** is untouched: `saturator::fail_first` is read at a saturator's construction and no route takes it;
+  ruling Q-M1f.313 (b) is a `fail_first(FailFirst::Pairs, …)` around the route's node, where the stop is set.
+
+### What held, and the test that holds it
+
+**`ein-infer/tests/first_contradiction.rs`**, `every_question_answers_alike_with_the_stop_and_without`: the six
+questions on every corpus program and register witness that searches, with the stop and under `to_quiescence`,
+through `ein_corpus::pool::map`, held to the definition written in its header before the cells were read. On every
+program (`EIN_CORPUS_SLOW=1`, 202 programs, 1 212 cells, 1 038 of them monotone with root alive): no failure; a
+program the stop does not reach equal field for field, the work included; every finished describe and `--count`
+equal field for field but the work, **N with every member's core** (4 086 members) among the fields; `owing_met`
+moved on none; no listing other states; no cell stopped with the stop where it finished without; every finished
+describe the same saturations. Per commit, 188 programs, 1 128 cells, in 11 s to 26 s at 16 workers. Its slow half
+whole was 332 s on four P-core threads with four workers, its shards 166, 125, 35 and 32 s (`EIN_CORPUS_SLOW=1
+EIN_TEST_SHARD=k/4 EIN_TEST_JOBS=4 utils/bench_env.sh --cores PT:4 --require-ac cargo test … --test
+first_contradiction`, on AC, load average 2 to 3 from other agents): a step of `deep-corpus-shards`.
+
+Beside it, with no expectation edited: `explore.rs` (every mode against the oracle), `region.rs`, `claim_routes.rs`,
+`known_dead.rs`, `order.rs`, `corpus_cores.rs`, `lever_invariance.rs`, `route_invariance.rs`, `answer_round_trip.rs`
+(its `eager_cores` among them), `jobs_invariance.rs`, `import_invariance.rs`, `id_order_invariance.rs`'s permutation
+and `wrong_answers.rs`, per commit and, for the first eight named in the task, with `EIN_CORPUS_SLOW=1`
+(§ Verification).
+
+### What moved
+
+The inventory's list and nothing else: 351 lines of `corpus_shapes.md5` (the filter in § Verification), five
+`work` rows of `read_out_examples.md`, three trace goldens, the two transcripts, the anchor list, `einb_cli.rs`'
+saturated comparison, `finding_r.md` § 7's SEND row and three `corpus.toml` notes. The pages: `read_out.md`'s two
+`work` rows, `answer_dump.md`'s `facts` counter and N's cores, `lattice_dump.md`, `events.md` (the node's lines,
+the `owe` row and bullet, K-61), `finding_r.md` § 1 and § 8, `solution_semantics.md` § 1.5, `region.rs`' header
+(K-52), `explore.rs`' module header and `charge_whole_node` (K-51), `saturator.rs`' header, `events.rs`' `Visited`,
+`region_lattice.rs`' header.
+
+### The work, per question, against the record's simulation
+
+Monotone programs with root alive, every question at the default budget, a stopped cell with what it spent
+(`EIN_CORPUS_SLOW=1 cargo test … --test first_contradiction -- --nocapture`, 2026-11-16); the simulation is § T2's
+*FIFO stop* column.
+
+| question | saturations, with / without | facts without | facts with the stop | simulated |
+|---|---|---:|---:|---:|
+| describe, `--count` | 1 234 652 / 1 234 652 | 10 286 374 | 9 996 689 (2.8 % less) | 9 993 816 |
+| `--single` | 37 670 / 37 668 | 480 836 | 380 571 (20.9 % less) | 380 624 |
+| `-n 1` | 34 689 / 34 589 | 423 020 | 341 397 (19.3 % less) | 340 827 |
+| `--minimal` | 394 981 / 367 002 | 4 361 094 | 4 307 684 (1.2 % less) | 3 774 714 |
+| `--maximal` | 41 140 / 41 138 | 573 494 | 446 769 (22.1 % less) | 447 012 |
+
+Within a few hundredths of a percent of the simulation but in two places, each the record's *not simulated*:
+**`--minimal`'s four budget-stopped cells reach further** and spend their budget there (`send_more_money.ein`
+205 166 → 217 607 saturations, `send_more_money_written.ein` 131 134 → 140 834, both `zebra2-minus-15` files
+13 102 → 16 021; the same states listed), and **the coupled order reads the whole node at another moment** on the
+SENDs (below). The ten budget-stopped describes reach the same layer with the same saturations, their spend lower.
+No program does more work with the stop in facts; in saturations only where the order moved (+1 on the SENDs'
+`--single` and `--maximal`, +100 on `send_more_money_written.ein -n 1`).
+
+### The coupled order, re-measured
+
+`tree.rs`' `read_structure` reads the whole node within a share of the facts the run has derived, and the run
+derives fewer:
+
+| program, question | without the stop | with it |
+|---|---|---|
+| `send_more_money.ein --single`, `--maximal` | couplings at saturation 712; 18 030 saturations, 221 803 facts | at 722; 18 031, 173 415 |
+| `send_more_money.ein -n 1` | at 652; 15 855, 192 722 | at 652; 15 855, 151 744 |
+| `send_more_money_written.ein --single`, `--maximal` | at 712; 18 030, 221 803 | at 722; 18 031, 173 415 |
+| `send_more_money_written.ein -n 1` | at 1 872; 17 542, 199 031 | at 1 972; 17 642, 158 962 |
+
+The same verdicts and the same one state listed; the two files still take the same work to the fact under
+`--single` (`order.rs`' `the_two_sends_take_the_same_work`). Ten more saturations before the read under
+`--single`, one more in all.
+
+### Defaults taken
+
+Each the user's to revise.
+
+1. **A core is taken over the node's fixpoint**, the stopped saturation going on from the stop, where the record
+   read it over the stopped node (§ T4's inventory, *Two readings*): the register's fixed W21 rows, `corpus_cores`
+   and the oracle's agreement hold N's cores to the fixpoint's. The stop saves no work on a run that prints cores
+   (`--dump-lattice`, `--events`, `--dump-answer`, `--trace`), and that run's `work` row is still the run's
+   without them.
+2. **The structure's readers are not stopped** (`ein render h-space`, the theory's check): no question's route,
+   and the check reads a dead node's facts.
+3. **Route 1 is not stopped**: in production it runs only on a flagged program with a dead root, and its test
+   holds it to the oracle node for node, the `OWING` bit of dead nodes included.
+4. **A container saved `--saturate` may count other facts in its `work` row than its source**, and past the budget
+   spend otherwise; `einb_cli.rs`' saved-again test masks that number for the saturated save. The alternative is a
+   saturated container that reproduces its source's plan order on load, or no stop; the default container, the
+   loaded KB, stays byte-identical.
+5. **The printed rows keep their words**: the `work` row prints what it printed, and `read_out.md`,
+   `answer_dump.md` and `lattice_dump.md` define a dead node's facts on a monotone program as those to its first
+   contradiction; no surface says *stopped* beside a node.
+6. **`owing_met`** (no surface) is left out of the sweep's comparison and reported: it moved on no program.
+7. **`cost_ms` and the slow set were not re-taken**: the machine was not idle.
+
+### Verification
+
+On the final tree, each green: `cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p ein-infer -p
+ein-cli -p ein-render -p ein-corpus`; `EIN_CORPUS_SLOW=1` once for `explore`, `known_dead`, `order`,
+`corpus_cores`, `id_order_invariance`, `answer_round_trip` and `first_contradiction`; `cargo fmt --all --check`;
+`cargo clippy --workspace --all-targets -- -D warnings`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace
+--no-deps`; `python3 utils/check_hashmap_iteration.py`; `python3 utils/doc_audit.py --links --check docs plans
+README.md AGENTS.md corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md
+c/README.md`. The golden filter: `git diff -U0 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5`, every
+moved line's program monotone and its op one of `read-out[q]`, `cores[q]`, `region-trace` and `region-lattice`,
+listed by `build/t4/shapes.py` (kept under the worktree's `build/`).
+
+### Not done
+
+- The fail-first agenda (Q-M1f.313).
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the batch's.
+- `cost_ms` (default 7).
+- S1f.10.17's border route was not merged on this branch; its dead sets are no question's.
+
+## The agenda: the inventory, before anything moved (2026-11-16)
+
+On the user's ruling of Q-M1f.313 that day, **(c)**: *"non-monotone programs still out of scope, we know about
+them, can detect them, can solve them somehow, but don't claim about solution soundness, correctness or completeness
+or anything."* Built after the stop under FIFO was committed and verified (`a761d181`, `24f6b478`), and committed
+before the code and before any golden moved.
+
+### What changes
+
+- **The engine's order is the agenda with the `pairs` half first**, `saturator::AGENDA`: first the rules whose
+  conclusion a contradiction can be made of, `(false)`, a stored negation, or a fact of a relation some plan
+  concludes the negation of or the KB holds a negation of; then the rest; FIFO in the written and arrival order
+  within each half; the boundary walks its parked candidates in the same order. Not behind a switch: every
+  saturation takes it, root's, every route's node, the oracle's, the whole node, every `region::Nodes` reader,
+  `ein saturate`, the stdlib's. `Saturator::new` takes the engine's; `Saturator::resume` its snapshot's (the
+  snapshot carries it, so a node on a worker thread follows its root).
+- **The switch** that stays: `saturator::fifo(f)`, the written order alone on the calling thread, and
+  `saturator::fail_first(w, f)` for a measurement's halves; no lever reaches either.
+- **The test**: `ein-infer/tests/agenda.rs`, every question and every claim of every monotone corpus program and
+  register witness alike under the agenda and under `fifo`, its definition written in its header before the cells
+  were read; flagged programs counted and not held.
+
+### What moves, by name
+
+Taken from a run of the built order before this commit, and checked against it: every program a line below moves
+for is monotone (`ein solve FILE --no-search`'s `lattice` row), and no flagged program's rendering moves.
+
+- **`ein-render/tests/golden/corpus_shapes.md5`**: 435 lines over 125 programs, only these ops: `saturate` (root's
+  event stream, the narration: 103), `dot[kb-since]` (the KB drawn by the step that derived each fact: 85),
+  `region-trace` (root's trace and the describe's `work` row: 115), `read-out[q]` (the `work` row, and the SENDs'
+  `route` row, which says at which saturation the couplings were read: 64), `cores[q]` (the run's `work`, and the
+  `facts`, `owes` and `closure` of the dead nodes a route stops: 66), and `states` on two programs
+  (`examples/zebra.ein`, `examples/zebra2-hints.ein`: the comment beside a fact naming the rule of its first
+  derivation, on 2 and 24 lines; every fact the same, read by a probe under both orders). No `hyp`, `hyp+closed`,
+  `explain`, `explain-noalts`, `plan`, `match`, `naf`, `oracle`, `load`, `ir[…]` or other `dot[…]` line moves.
+  By program, the questions `q` and the other ops:
+
+  | program | `read-out[q]` | `cores[q]` | also |
+  |---|---|---|---|
+  | `examples/arith/div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/beyond_arith/cryptarithm.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/beyond_arith/equation_by_search.ein` | maximal | maximal |  |
+  | `examples/beyond_arith/send_more_money.ein` | maximal minimal n2 single | maximal minimal n2 single |  |
+  | `examples/beyond_arith/send_more_money_written.ein` | maximal n2 single | maximal n2 single |  |
+  | `examples/binary_arithmetic/div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/binary_logic/knights.ein` | maximal minimal | maximal minimal |  |
+  | `examples/binary_logic/not_equivalent.ein` | maximal | maximal |  |
+  | `examples/binary_logic/satisfiable.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/synthesis.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/truth_table.ein` | maximal | maximal |  |
+  | `examples/binary_logic/unsatisfiable.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/branching/08_hypothesis_relation_whitelist.ein` |  |  | region-trace saturate |
+  | `examples/branching/12_typed_blind_solve.ein` |  |  | region-trace saturate |
+  | `examples/domain_elim/ab.ein` |  |  | region-trace saturate |
+  | `examples/domain_elim/b_only.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/alive-set-fresh-name-declared.ein` | describe maximal n2 single | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/alive-set-fresh-name.ein` | describe maximal n2 single | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/alt-cap-core-reordered.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/alt-cap-core.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/fork-delta-order.ein` | describe maximal | describe maximal | region-trace |
+  | `examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/closure-shared-given-control.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/closure-shared-given.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/fresh-name-default.ein` | describe maximal n2 single | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/match-only-declared.ein` | maximal | maximal |  |
+  | `examples/ein-bugs/wrong-answers/match-only.ein` | maximal | maximal |  |
+  | `examples/ein-bugs/wrong-answers/oblig-derived-domain.ein` | maximal | maximal |  |
+  | `examples/ein-bugs/wrong-answers/or-one-key-twin.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/zebra2-bad.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/zebra2-hints.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/features/09_adjacent_via_same_house.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/features/10_expect.ein` |  |  | region-trace saturate |
+  | `examples/features/13_mixed_solution_and_open.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/lattice/synth/merged_states.ein` | describe maximal | describe maximal | region-trace |
+  | `examples/zebra.ein` |  | describe minimal | dot[kb-since] region-trace saturate states |
+  | `examples/zebra2-hints.ein` |  |  | dot[kb-since] region-trace saturate states |
+  | `examples/zebra2-minus-15-obligations.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/zebra2-minus-15.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/zebra2-obligations.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/zebra2.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/region/02_merged_single.ein` | describe maximal | describe maximal | region-trace |
+  | `tests/stdlib/algebra/22_symmetric_negative.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/bijection/01_setup_and_negatives.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/bijection/02_domain_elimination.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/bijection/03_range_elimination.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/bijection/06_blind_enumeration.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/bool/circuit/02_one_value.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/bool/inputs/01_in_drives.ein` | maximal | maximal |  |
+  | `tests/stdlib/bool/inputs/02_required.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary/03_ends_in_a_bit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary/04_ends_in_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary/05_ends_in_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/08_div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/14_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/15_let_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/16_let_bit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/18_let_to_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/19_let_to_a_bit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/20_div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/21_div_by_zero_spelt_and_named.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/22_malformed_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/23_malformed_fact_as_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/24_malformed_ends_in_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/25_malformed_ends_in_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/26_malformed_ends_in_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/27_malformed_digit_as_number.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/28_malformed_zero_digit_as_number.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/31_malformed_through_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/32_malformed_name_for_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/33_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/36_let_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/37_let_zero_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/39_div_call_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/12_div_euclid_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/13_div_trunc_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/14_div_floor_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/15_letter_in_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/16_letter_in_a_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/17_letter_in_the_second_operand.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/18_part_ends_in_a_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/23_digit_as_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/24_letter_through_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/25_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/26_let_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/29_named_constant_as_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/30_letter_in_a_division.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/31_digit_as_the_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/32_digit_zero_as_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/35_undeclared_divisor.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/num9/09_div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/10_div_by_zero_rational.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/11_zero_denominator_first.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/12_zero_denominator_second.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/13_zero_denominator_one_operand.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/14_letter_in_the_numerator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/15_letter_in_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/20_letter_through_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/21_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/24_digit_as_the_numerator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/27_digit_as_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/01_partition.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/02_negative.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/03_fill.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/04_elimination.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/05_no_room.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/06_no_fill.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/07_spatial_prune.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/08_spatial_adjacent.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein` |  |  | region-trace saturate |
+
+- **`docs/kernel/inference/read_out_examples.md`**, regenerated: X5's `work` row, `18 saturations · 45` → `44 facts`.
+- **`ein-render/tests/golden/trace_{ambiguous,one-hypothesis,unconditional}.md`**: root's steps in the agenda's
+  order (and with them the step numbers the prose cites). `trace_two-level.md`, `trace_dead.md` and
+  `trace_owing.md` do not move.
+- **`examples/README.md`'s anchor list** gains `ein-infer/tests/agenda.rs` (`world_anchors.rs`).
+- **The SENDs**: `send_more_money.ein` and `send_more_money_written.ein` under `--single` and `--maximal`, 18 031 →
+  18 032 saturations, 173 415 → 160 834 facts, the couplings read at saturation 722 → 732; `send_more_money.ein -n 1`
+  15 855 saturations either way, 151 744 → 140 324 facts, read at 652 → 722; `send_more_money_written.ein -n 1`
+  17 642 saturations, 158 962 → 147 725 facts, read at 1 972. So `finding_r.md` § 7's SEND row and three
+  `corpus/corpus.toml` notes.
+- **A gate test over a flagged program, named with why**: `ein-infer/tests/region.rs`'
+  `fact_grain_on_programs_written_to_test_it` holds each fact-grain prototype's cube to what it was written to show.
+  `even-depth` was written to show a hole the written order opens: `all-p`, written first, is admitted at the
+  boundary before `bad`, whose conclusion is `(false)`. Under the agenda `bad` goes first, its guard `(absent (done
+  W))` holds at that moment, and the node dies where it lived: no hole. The program is flagged, so the engine claims
+  nothing of its answer; the test computes these cubes under `saturator::fifo`, as written.
+- **The standing rule and pages**: `AGENTS.md`'s *the agenda is FIFO in written order*, restated in place;
+  `saturator.rs`' header; `finding_r.md` § 1 and § 8; every `docs/kernel/` page that states the order FIFO as the
+  engine's today (`inference/README.md`, `architecture_and_algorithms.md`, `absent_semantics.md`,
+  `implementation.md`, `monotonicity.md`, `events.md`, `glossary.md`, `architecture.md`, `ir/03-ein-lang/01_grammar.md`,
+  `ir/01-ein-graph/02_rules.md`; the names *the FIFO gap* and *FIFO race* of § 7 of `monotonicity.md` are a
+  phenomenon's, kept); `defined_behaviour.md` defines no order. Q-M1f.313's *Built* paragraph and index row,
+  Q-M1f.6's row.
+- **The nightly**: the new sweep's slow half, a step of `deep-corpus-shards`, in the workflow and `run_tests.sh`.
+- **Cores**, explanations the order moves (Q-M1f.6's ruling stands for them): N's cores move on 103 of the 3 804
+  members the per-commit describes take (`agenda.rs`' line), on the surfaces that print them (`nogoods.json`,
+  `--trace`, `cores[q]` above); `corpus_cores.rs` holds each still to its commitment and its contradiction.
+- **Not moving**: `corpus/wrong_answers.toml` (no open or fixed row's answer, cores among them), the README and
+  guide transcripts, `docs/api/rust.md`, `corpus_exits.txt`, every claim of the corpus (`ein test`), every lever
+  cell, the `.einb` tests, `cost_ms` (not re-taken: the machine was not idle).
+
+## Record (2026-11-16): the agenda
+
+**The agenda with the `pairs` half first is the engine's order, and every golden that moved is the agenda
+inventory's.** The inventory committed first (`bbbfe80c`), then the code with its goldens and pages (`1df62fce`),
+then this record, all after the stop under FIFO (`a761d181`, `24f6b478`), which stands as committed.
+
+### Where it is
+
+- **`saturator.rs`**: `AGENDA = FailFirst::Pairs`, read off the compiled plans by `monotone::writes_of` as T2
+  measured it; a candidate's rank is its tiebreaker with the `LATE` bit set where its rule is not among the first,
+  in the closure's queue and in the boundary's parked set alike. `Saturator::new` takes the agenda a switch on the
+  calling thread names, else `AGENDA`; `Saturator::resume` the switch's, else **its snapshot's** (`Snapshot` carries
+  it, so a node a worker thread computes follows the root the calling thread saturated). A resumed saturation
+  ranks again what its snapshot holds whenever either has an agenda.
+- **The switches**: `saturator::fifo(f)`, the written order alone, for the with/without test; `fail_first(w, f)`,
+  a measurement's halves. No lever reaches them. `ein-infer/examples/early_stop.rs` runs each program under
+  `fifo`, so its baseline is what it measured.
+- **The stop and the agenda stay two things**: the stop is `Saturator::stop_at_first_contradiction` on a built
+  saturator; the agenda is a rank. A dead node is stopped at the first contradiction the agenda's order makes.
+
+### What held
+
+**`ein-infer/tests/agenda.rs`**, `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order`:
+every corpus program and register witness, five questions (`--count` is describe's by construction) and its
+claims under the agenda and under `fifo`, held to the definition in its header, written before the cells were
+read. Under `EIN_CORPUS_SLOW=1`: **612 monotone programs, 3 060 cells, no failure**; the work moved on 60 cells; N's
+cores on 103 of 4 234 members (explanations); 29 flagged programs counted and not held; 387 programs' claims read
+under the question `ein test` asks first and the describing one, 774 readings, one outcome each; 156 s at 16
+workers. Per commit, 600 programs, 3 000 cells, 385 with claims, 19 s to 28 s. Its slow half is a step of
+`deep-corpus-shards`: 177, 116, 47 and 29 s a shard on four P-core threads with four workers (`EIN_CORPUS_SLOW=1
+EIN_TEST_SHARD=k/4 EIN_TEST_JOBS=4 utils/bench_env.sh --cores PT:4 --require-ac cargo test … --test agenda`, on
+AC, other agents loading the machine, load average 4 to 16; with six questions shard 1 took 263 s at a load of 17
+to 22, which is why `--count` is not asked again).
+
+Beside it, with no expectation edited: `explore.rs`, `region.rs` (but the one test named below), `claim_routes.rs`,
+`known_dead.rs`, `order.rs`, `corpus_cores.rs`, `first_contradiction.rs`, `lever_invariance.rs`,
+`route_invariance.rs`, `answer_round_trip.rs`, `jobs_invariance.rs`, `import_invariance.rs`, `wrong_answers.rs`,
+`stdlib_coverage.rs`, `naf_semantics.rs`, `einb_cli.rs`, and the corpus's `ein test` exits (`corpus_cli.rs`).
+
+### What moved
+
+The agenda inventory's list and nothing else: 435 lines of `corpus_shapes.md5` over 125 monotone programs (the
+same filter as T4's: every moved line's program monotone, its op one of `saturate`, `dot[kb-since]`,
+`region-trace`, `read-out[q]`, `cores[q]` and `states`), `read_out_examples.md`'s X5 row, `trace_ambiguous.md`,
+`trace_one-hypothesis.md`, `trace_unconditional.md`, the anchor list, `finding_r.md`'s SEND row and three
+`corpus.toml` notes; and **one gate test over a flagged program**, `region.rs`'
+`fact_grain_on_programs_written_to_test_it`, whose cubes are computed under `saturator::fifo`, with why in the test:
+under the agenda the prototype `even-depth` admits `bad`, whose conclusion is `(false)`, before `all-p`, and the
+hole it was written to show does not open (K-62). Pages: `AGENTS.md`'s rule; `saturator.rs`' header;
+`finding_r.md` § 1 and § 8; the kernel pages that stated the order FIFO (the inventory's list), their sentences
+that the order decides nothing on a stratified rule set now saying so of a monotone program; Q-M1f.313's index row
+and *Built* paragraph, Q-M1f.6's row.
+
+### The work, per question
+
+Monotone programs, every question at the default budget, a stopped cell with what it spent, the stop in both
+(`EIN_CORPUS_SLOW=1 cargo test … --test agenda -- --nocapture`, 2026-11-16):
+
+| question | saturations, agenda / written | facts, written order | facts, the agenda |
+|---|---|---:|---:|
+| describe, `--count` | 1 235 091 / 1 235 091 | 9 996 689 | 9 986 224 (0.1 % less) |
+| `--single` | 38 111 / 38 109 | 380 571 | 355 370 (6.6 % less) |
+| `-n 1` | 35 128 / 35 128 | 341 397 | 318 718 (6.6 % less) |
+| `--minimal` | 406 626 / 395 420 | 4 307 684 | 4 307 561 |
+| `--maximal` | 41 581 / 41 579 | 446 769 | 421 305 (5.7 % less) |
+
+The firings, which no row counts, are T2's to read (`pairs` against FIFO, both with the stop: `--single` 13 % fewer,
+`-n 1` 15 %, `--maximal` 9 %); the engine's units fall as T2's facts did, nearly all on the two SENDs. `--minimal`'s
+budget-stopped cells reach further again (`send_more_money.ein` 217 607 → 221 899 saturations,
+`send_more_money_written.ein` 140 834 → 147 748). The SENDs, both files alike: `--single` and `--maximal` 18 032
+saturations, 160 834 facts, the couplings read at saturation 732; `send_more_money.ein -n 1` 15 855 and 140 324,
+read at 722; `send_more_money_written.ein -n 1` 17 642 and 147 725, read at 1 972.
+
+### Defaults taken
+
+1. **A resumed saturation takes its snapshot's agenda**, so a switch on the calling thread reaches the nodes its
+   root's run fans out to workers.
+2. **The boundary walks its parked candidates in the agenda's order**, as T2 measured it and Q-M1f.313's (c) says.
+3. **`region.rs`' fact-grain prototypes' cubes are read in the written order**, the order they were written to
+   expose, rather than their expectations changed; the program is flagged and nothing is claimed of it.
+4. **`FailFirst::Negations` stays** as a measurement's reading.
+
+### Verification
+
+On the final tree, each green: `cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p ein-infer -p
+ein-cli -p ein-render -p ein-corpus`; `EIN_CORPUS_SLOW=1` once for `explore`, `known_dead`, `order`,
+`corpus_cores`, `id_order_invariance`, `answer_round_trip`, `first_contradiction`, `agenda` and `region`;
+`utils/check_test_scratch.py` on their scratch; `cargo fmt --all --check`; `cargo clippy --workspace --all-targets
+-- -D warnings`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`; `python3
+utils/check_hashmap_iteration.py`; `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md
+corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md c/README.md`.
+
+### Not done
+
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the batch's. The agenda moves every program's root
+  narration, so the nightly's `stdlib_mutants` census (`tests/mutation_survivors.txt`) was not re-run here.
+- `cost_ms`: not re-taken.
+- A stratum-ordered boundary, which would make a flagged program's answer independent of the order (K-62): F21's.
+
+## Record (2026-11-16): the merge with master
+
+Master at `e546ad49` (S1f.10.17 merged: describe's second route, the tree and the classes,
+`ein-infer/src/tree_classes.rs`) merged into this branch with `git merge --no-ff`, after the stop's and the agenda's
+commits, as the main session asked.
+
+- **Conflicts, resolved**: `read_out.md`'s `route` row master's and its `work` row this branch's;
+  `open_questions.md`'s Q-M1f.313, master's ruling paragraphs and index row, with this branch's *Built* paragraph
+  and a pointer to it; `corpus_shapes.md5` and `read_out_examples.md` taken from master and **re-banked on the
+  merged tree** (`EIN_BLESS=1 EIN_CORPUS_SLOW=1` for the shape golden, `utils/read_out_examples.py`), with
+  `trace_*.md`, the transcripts and the anchor list re-banked alike (they did not move again).
+- **The stop and the agenda reach the new route**: `explore::describe_tree_classes` opens its space with
+  `Space::stopping_dead_nodes`, so a dead node the tree and the classes compute on a monotone program stops at its
+  first contradiction; its nodes, as every saturation, take the agenda; the cores of N's members it holds, taken
+  after the walk by `Space::cores_after`, are over each member's fixpoint.
+- **The filter**: the merged golden against master's, 684 keys differ: 680 are on this stage's two inventories
+  (343 on the stop's, 435 on the agenda's, 98 on both), and the 4 others are keys master's own merge moved, each
+  this branch's change applied to the new route: `region-lattice` of `send_more_money.ein`,
+  `send_more_money_written.ein`, `zebra2-minus-15.ein` and `zebra2-minus-15-obligations.ein`, describe's visited
+  nodes at the sweep's budget of 2¹⁴ facts, which the new route reaches further into when its dead nodes cost less.
+  None is on none (`python3 build/t4/merge_filter.py build/t4/merge_vs_master.diff build/t4/shapes.diff
+  build/t4/agenda_shapes.diff build/t4/master_s17.diff`, the diffs under the worktree's `build/`).
+- **`finding_r.md`'s two-routes table re-taken** on the merged binary at the default budget: `zebra2.ein` 263 ·
+  11 576 by the state route and 120 · 5 409 by the tree and the classes (8 786 on master); `send_more_money.ein`
+  stopped after 336 101 · 1 417 678, and decided in 18 129 · 161 086 (18 127 · 222 055); `zebra2-minus-15.ein`
+  stopped after 7 261 · 427 984, and in the classes after 11 222 · 1 048 489, `R`'s 32 states exact, 18 classes.
+- **`agenda.rs` amended for the new route**, the one change to a definition written before its cells were read: on
+  the merged tree describe on the two SENDs takes the tree and the classes, whose coupled order reads its share of
+  the run's facts, and took 18 129 saturations under the agenda against 18 128 in the written order, the same
+  answer. A describe's saturations are held equal on the state route alone, as the tree's questions' never were.
+  Then, under `EIN_CORPUS_SLOW=1`: 612 monotone programs, 3 060 cells, no failure, the work moved on 66 cells, N's
+  cores on 3 of the 1 343 members the describes now take (the new route computes no `N`), 774 claim readings
+  alike; 73 s at 16 workers.
+- **Verified on the merged tree**: the four crates whole, and `EIN_CORPUS_SLOW=1` for `explore`, `known_dead`,
+  `order`, `corpus_cores`, `id_order_invariance`, `answer_round_trip`, `first_contradiction`, `agenda`, `region` and
+  `tree_classes`, with `fmt`, `clippy`, `rustdoc`, the determinism lint and the link audit. `cost_ms` is the main
+  session's, on an idle machine.

@@ -128,8 +128,9 @@ The two phases are
 [`Saturator::step`](../../../ein.rs/crates/ein-infer/src/saturator.rs), and it
 is one loop rather than two: `closure_step` fires purely positive matches from
 a queue until it is empty, and only then does
-`admit_from_boundary` speak. The queue is FIFO since M1f S1f.5.15 removed
-`:priority` (priority-banded until then). `Engine` is the compile cache and has no `step`
+`admit_from_boundary` speak. The queue is the agenda's, what leads to
+`(false)` first and FIFO within each half (FIFO alone before the agenda,
+priority-banded until M1f S1f.5.15 removed `:priority`). `Engine` is the compile cache and has no `step`
 (M1e `CD-M1`).
 
 ## Corollaries the engine relies on

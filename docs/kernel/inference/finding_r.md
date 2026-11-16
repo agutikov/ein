@@ -25,6 +25,15 @@ The rows `ein solve` prints about this, `route` and `work`, are
 node is a copy-on-write fork of it, read and thrown away, so nothing a node derives ever reaches root
 or another node.
 
+**`sat` fires in the engine's order, the agenda**: first the rules whose conclusion a contradiction
+can be made of, `(false)`, a stored negation, or a fact of a relation whose negation some rule
+concludes or the KB holds; then the rest; FIFO in the written and arrival order within each half.
+Root, every route's node, the oracle's and every reader saturate so. On a monotone program the order
+decides no fixpoint and no answer (`ein-infer/tests/agenda.rs` holds every question and every claim
+alike under the agenda and the written order alone); it decides when a fact is derived, so where a
+dead node stops, its narration, and which derivation a fact's record keeps first, which a core is
+explained from. Of a flagged program the engine claims no answer.
+
 **H**, the universe of candidates, is built once at root by the hypothesis ladder
 ([`solution_semantics.md`](solution_semantics.md) § 1.4). It is listed by `ein show hyps FILE` and
 its structure is described in [`hypothesis_space.md`](hypothesis_space.md).
@@ -44,6 +53,30 @@ Every route reads a node through one function, `ein_infer::region`'s node functi
 node cache of `ein_infer::explore` (`Space::eval`), so two routes cannot read one node differently.
 A node's **core**, the facts its contradiction rests on (`explain::contradiction_frontier`), is
 taken only where a surface prints it.
+
+**What a route computes of a dead node.** `st(C)` above is the definition, and the oracle computes
+it whole. On a monotone program a route's node, root's excepted, is saturated **to quiescence, or
+to its first contradiction where it is dead**:
+
+```text
+st_r(C)   = st(C)                                if st(C) holds no contradiction
+          = the fork as it stands after the firing that makes its first contradiction,
+            every conclusion of that firing written, or with C written where that
+            already makes one                                               otherwise
+dead_r(C) ⇔ st_r(C) holds a contradiction  ⇔  dead(C)          the KB only grows
+```
+
+So an alive node is computed whole, and a dead one costs only the derivation of its contradiction.
+No route reads more of a dead node than `dead(C)`: what it remembers is the set (§ 5), and a dead
+node's closure, denials and debts decide nothing. `R`, `N` and every count are therefore the
+oracle's (`ein-infer/tests/first_contradiction.rs` holds every question alike with and without the
+stop, on every corpus program that searches). What a dead node **reports** is `st_r(C)`: the
+`work` row's facts, and its debts and closure on the surfaces that list visited nodes. **Its core**,
+where a surface prints one, is taken over `st(C)`, as the oracle's is: the saturation goes on from
+the stop, firing what it would have fired, so no core depends on the stop. Not stopped: root's
+node, a flagged program's nodes (its detector reads every node's fixpoint), the oracle's, the
+structure's readers (`ein render h-space`; its theory check reads a dead node's facts), and the
+whole node the tree's order reads, whose reader needs every application.
 
 ## 2. The oracle: the cube
 
@@ -220,9 +253,9 @@ its walk is the state route's, and describe takes the state route. Where a route
 
 | program | describe, the state route | describe, the tree and the classes |
 |---|---|---|
-| `examples/zebra2.ein` | 263 saturations · 22 503 facts, `N` 366 | 120 · 8 786, `N` not computed |
-| `examples/beyond_arith/send_more_money.ein` | stopped after 336 101 · 1 422 943, no state of `R` met | **one state, 18 127 · 222 055** |
-| `examples/zebra2-minus-15.ein` | stopped after 7 261 · 545 818, ≥ 32 states | stopped in the classes after 11 192 · 1 048 538, `R`'s 32 states exact, 18 classes |
+| `examples/zebra2.ein` | 263 saturations · 11 576 facts, `N` 366 | 120 · 5 409, `N` not computed |
+| `examples/beyond_arith/send_more_money.ein` | stopped after 336 101 · 1 417 678, no state of `R` met | **one state, 18 129 · 161 086** |
+| `examples/zebra2-minus-15.ein` | stopped after 7 261 · 427 984, ≥ 32 states | stopped in the classes after 11 222 · 1 048 489, `R`'s 32 states exact, 18 classes |
 
 Each figure is the `work` row of `ein solve FILE` and `ein solve FILE --describe-route states` at the default budget.
 
@@ -272,7 +305,7 @@ can still be large. Each figure below is the `work` row of the command beside it
 |---|---:|---|---:|
 | `examples/zebra2.ein` | 56 | *Solution — R is one state*, 7 saturations | 2⁵⁶ |
 | `examples/zebra.ein` | 56 | *Solution — R is one state*, 9 saturations | 2⁵⁶ |
-| `examples/beyond_arith/send_more_money.ein` | 80 | *Solution — R is one state*, 18 030 saturations | 2⁸⁰ |
+| `examples/beyond_arith/send_more_money.ein` | 80 | *Solution — R is one state*, 18 032 saturations | 2⁸⁰ |
 
 On a flagged program none of this holds. A dead set can have an alive superset, so the only proof
 is the cube.
@@ -286,6 +319,8 @@ is the cube.
 | each claim a program states is decided alike by the question `ein test` asks, by describe and by the oracle | `ein-infer/tests/claim_routes.rs` |
 | no lever, option or flag changes `R` | `ein-cli/tests/lever_invariance.rs` |
 | a denial kills exactly where a computed node would, on every monotone cube; the run with and without the memory's denials gives one answer | `ein-infer/tests/known_dead.rs` |
+| a route's dead node stopped at its first contradiction gives every question the answer the node run to quiescence gives | `ein-infer/tests/first_contradiction.rs` |
+| the agenda gives every question and every claim the answer the written order alone gives, on every monotone program | `ein-infer/tests/agenda.rs` |
 | every order the tree can take gives the oracle's answer | `ein-infer/tests/explore.rs` (`every_order_of_the_tree_is_the_oracle`), `ein-infer/tests/order.rs` |
 
 ## Cross-references

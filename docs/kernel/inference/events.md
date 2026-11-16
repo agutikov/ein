@@ -179,14 +179,14 @@ cover row is `examples/ein-bugs/naf-upward-closure.ein`, whose `bad` rule reads
 | `e` | emitted at | payload |
 |---|---|---|
 | `compile` | `Engine::compile_for` — **miss only** | `rule`, `activator`, `n_steps`, `n_disjuncts`, `n_guards`, `asserts` |
-| `enqueue` | `Saturator::enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `tiebreaker` (the order it is queued in: FIFO since M1f S1f.5.15, which took the `priority` field out with `:priority`), `parked` |
+| `enqueue` | `Saturator::enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `tiebreaker` (the order it is queued in, which the agenda ranks within its half; the `priority` field went with `:priority` at M1f S1f.5.15), `parked` |
 | `fire` | every `Firing` yielded by `Saturator::closure_step` | `rule`, `activator`, `bindings`, `premises`, `derived`, `redundant` |
 | `mirror` | the native `__symmetric__` arg-swap write | `relation`, `src`, `derived` |
 | `park` / `retire` | `Saturator::admit_from_boundary` — the candidate waits for a later round, or is dead | `tiebreaker`, `round`, `rule`, `watched` (**the failing guard's** watch set, sorted) |
 | `admit` | `Saturator::admit_from_boundary` — the one candidate a round admits | `tiebreaker`, `round`, `rule`. **No `watched`** — nothing failed, so there is no failing guard to read a watch set off |
 | `quiesce` | closure quiescence, before the boundary speaks | `round`, `n_facts`, `n_queue`, `n_parked` |
 | `alt` | `Kb::record_justification` returns true | `fact`, `rule`, `premises` |
-| `owe` | the **post-fixpoint obligation pass**, once per quiescent KB, one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
+| `owe` | the **post-fixpoint obligation pass**, once per node as its saturation leaves it (its fixpoint, or a stopped dead node's KB: [`finding_r.md` § 1](finding_r.md#1-a-node)), one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
 
 **Three of `compile`'s six numbers are not what they are named**, and they are
 kept rather than corrected because the event is a comparison surface — a
@@ -218,11 +218,13 @@ reader of this stream should know:
   a saturation rule can never produce an `owe`. That is what makes `owe` the
   activation evidence for the obligation half of the stdlib, which is how
   `ein-infer/tests/stdlib_coverage.rs` counts it.
-- **It is emitted per quiescent KB, and only where the KB is consistent.** The
-  read-out is three states in one order — `(false)` first, then the tally — so
-  a node with a contradiction never has its debts consulted and narrates none.
-  Root's lines come first, then one group per alive entering, each before that
-  entering's `enter` line.
+- **It is emitted once per node, dead or not, when its saturation returns.**
+  A node's debts are read on a dead node too (the oracle's `OWING` bit is), so
+  a dead node narrates its `owe` lines as any node does: over its fixpoint,
+  or, a dead node a monotone program's route stops at its first contradiction,
+  over the node as far as there
+  ([`finding_r.md` § 1](finding_r.md#1-a-node)). Root's lines come first, then
+  one group per node visited, each before that node's `enter` line.
 - **Nothing it reports is stored.** An `open` conclusion is a tally on the
   search-lattice node, never a fact: contradiction survives an extension and
   openness exists to be destroyed by one, so a stored `open` would outlive its
@@ -512,7 +514,11 @@ says which:
    `hyp` per candidate and, at `verbose`, the `hypskip`s — and on a program the
    static check flags one `monotonicity` line;
 3. **every node the route visits**, in visit order whatever `-j` is: that
-   node's saturation and obligation events, then one `enter` line. A worker
+   node's saturation and obligation events, then one `enter` line. A dead node
+   on a monotone program's route narrates its saturation up to the firing that
+   makes its first contradiction, where the route stops it, and its debts
+   there; the `enter` line's core is taken over its fixpoint
+   ([`finding_r.md` § 1](finding_r.md#1-a-node)). A worker
    narrates into its own buffer and the run replays it in order, so the
    stream at `-j 4` is the stream at `-j 1` line for line;
 4. **route 1**: one `layer` line at the end of each layer, with its own

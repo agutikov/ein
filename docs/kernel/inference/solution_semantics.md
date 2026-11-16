@@ -295,7 +295,16 @@ commitments of k candidates.
 
 A node's **state** is `sat(root + C)`: root's fixpoint, forked, with C's facts
 written in and the saturation resumed to quiescence. It is never stopped at
-the first contradiction. For a monotone program, building the state from
+the first contradiction: that is the definition, and the oracle computes it
+whole. **What the routes compute** on a monotone program is the state of an
+alive node whole, and of a dead node, root's excepted, the fork only as far as
+the firing that makes its first contradiction
+([`finding_r.md` § 1](finding_r.md#1-a-node)): it is dead exactly when the
+state is, since the KB only grows, and that bit is all a route reads of a
+dead node, so R and everything read off it are the oracle's. What such a
+node reports of itself, its facts beyond root, debts and closure, is the
+node as far as that contradiction; its core, where one is printed, is the
+state's. For a monotone program, building the state from
 scratch gives the same fact set on every node of every monotone cube within
 the limit but one, banked to show the exception: an equal-priority race over
 a static read, settled at root and re-run inside a node built from scratch,
@@ -311,7 +320,7 @@ The state defined here, the fork's, is the one every route builds. Then:
 |---|---|
 | **dead** | holds `(false)` |
 | **alive** | is not dead |
-| **owing n** | has n obligation instances with no witness, § 4. Read on a dead state too |
+| **owing n** | has n obligation instances with no witness, § 4. Read on a dead state too: the oracle's whole, a route's on a monotone program as far as its first contradiction |
 | **discharged** | owes nothing |
 
 **Closure.** cl(C) is the candidates the state holds. Always C ⊆ cl(C). A
