@@ -1,7 +1,7 @@
 # S1f.10.19 — A dead node stopped at its first contradiction
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-16, on the user's *"Yes, both"* of that day. **T1 to T3 ran 2026-11-16**: [§ Record](#record-2026-11-16-t1-to-t3). **T4 done under FIFO, 2026-11-16**: [§ Record: T4](#record-2026-11-16-t4), on two defaults the user may revise (a core over the node's fixpoint; a container saved saturated may count other facts). The agenda waits for Q-M1f.313.
+**Status:** planned 2026-11-16, on the user's *"Yes, both"* of that day. **T1 to T3 ran 2026-11-16**: [§ Record](#record-2026-11-16-t1-to-t3). **T4 done under FIFO, 2026-11-16**: [§ Record: T4](#record-2026-11-16-t4), on two defaults the user may revise (a core over the node's fixpoint; a container saved saturated may count other facts). **The agenda built 2026-11-16**, on the user's ruling of Q-M1f.313, (c): the `pairs` half first is the engine's order everywhere, [§ Record: the agenda](#record-2026-11-16-the-agenda).
 **Depends on:** [S1f.10.13](s1f.10.13_the_price_list.md) (the rule for *go*). **Built after
 [S1f.10.17](s1f.10.17_describe_by_borders.md) is merged**, since both move every route's `work`; its measurement does
 not wait.
@@ -1047,3 +1047,102 @@ for is monotone (`ein solve FILE --no-search`'s `lattice` row), and no flagged p
 - **Not moving**: `corpus/wrong_answers.toml` (no open or fixed row's answer, cores among them), the README and
   guide transcripts, `docs/api/rust.md`, `corpus_exits.txt`, every claim of the corpus (`ein test`), every lever
   cell, the `.einb` tests, `cost_ms` (not re-taken: the machine was not idle).
+
+## Record (2026-11-16): the agenda
+
+**The agenda with the `pairs` half first is the engine's order, and every golden that moved is the agenda
+inventory's.** The inventory committed first (`bbbfe80c`), then the code with its goldens and pages (`1df62fce`),
+then this record, all after the stop under FIFO (`a761d181`, `24f6b478`), which stands as committed.
+
+### Where it is
+
+- **`saturator.rs`**: `AGENDA = FailFirst::Pairs`, read off the compiled plans by `monotone::writes_of` as T2
+  measured it; a candidate's rank is its tiebreaker with the `LATE` bit set where its rule is not among the first,
+  in the closure's queue and in the boundary's parked set alike. `Saturator::new` takes the agenda a switch on the
+  calling thread names, else `AGENDA`; `Saturator::resume` the switch's, else **its snapshot's** (`Snapshot` carries
+  it, so a node a worker thread computes follows the root the calling thread saturated). A resumed saturation
+  ranks again what its snapshot holds whenever either has an agenda.
+- **The switches**: `saturator::fifo(f)`, the written order alone, for the with/without test; `fail_first(w, f)`,
+  a measurement's halves. No lever reaches them. `ein-infer/examples/early_stop.rs` runs each program under
+  `fifo`, so its baseline is what it measured.
+- **The stop and the agenda stay two things**: the stop is `Saturator::stop_at_first_contradiction` on a built
+  saturator; the agenda is a rank. A dead node is stopped at the first contradiction the agenda's order makes.
+
+### What held
+
+**`ein-infer/tests/agenda.rs`**, `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order`:
+every corpus program and register witness, five questions (`--count` is describe's by construction) and its
+claims under the agenda and under `fifo`, held to the definition in its header, written before the cells were
+read. Under `EIN_CORPUS_SLOW=1`: **612 monotone programs, 3 060 cells, no failure**; the work moved on 60 cells; N's
+cores on 103 of 4 234 members (explanations); 29 flagged programs counted and not held; 387 programs' claims read
+under the question `ein test` asks first and the describing one, 774 readings, one outcome each; 156 s at 16
+workers. Per commit, 600 programs, 3 000 cells, 385 with claims, 19 s to 28 s. Its slow half is a step of
+`deep-corpus-shards`: 177, 116, 47 and 29 s a shard on four P-core threads with four workers (`EIN_CORPUS_SLOW=1
+EIN_TEST_SHARD=k/4 EIN_TEST_JOBS=4 utils/bench_env.sh --cores PT:4 --require-ac cargo test … --test agenda`, on
+AC, other agents loading the machine, load average 4 to 16; with six questions shard 1 took 263 s at a load of 17
+to 22, which is why `--count` is not asked again).
+
+Beside it, with no expectation edited: `explore.rs`, `region.rs` (but the one test named below), `claim_routes.rs`,
+`known_dead.rs`, `order.rs`, `corpus_cores.rs`, `first_contradiction.rs`, `lever_invariance.rs`,
+`route_invariance.rs`, `answer_round_trip.rs`, `jobs_invariance.rs`, `import_invariance.rs`, `wrong_answers.rs`,
+`stdlib_coverage.rs`, `naf_semantics.rs`, `einb_cli.rs`, and the corpus's `ein test` exits (`corpus_cli.rs`).
+
+### What moved
+
+The agenda inventory's list and nothing else: 435 lines of `corpus_shapes.md5` over 125 monotone programs (the
+same filter as T4's: every moved line's program monotone, its op one of `saturate`, `dot[kb-since]`,
+`region-trace`, `read-out[q]`, `cores[q]` and `states`), `read_out_examples.md`'s X5 row, `trace_ambiguous.md`,
+`trace_one-hypothesis.md`, `trace_unconditional.md`, the anchor list, `finding_r.md`'s SEND row and three
+`corpus.toml` notes; and **one gate test over a flagged program**, `region.rs`'
+`fact_grain_on_programs_written_to_test_it`, whose cubes are computed under `saturator::fifo`, with why in the test:
+under the agenda the prototype `even-depth` admits `bad`, whose conclusion is `(false)`, before `all-p`, and the
+hole it was written to show does not open (K-62). Pages: `AGENTS.md`'s rule; `saturator.rs`' header;
+`finding_r.md` § 1 and § 8; the kernel pages that stated the order FIFO (the inventory's list), their sentences
+that the order decides nothing on a stratified rule set now saying so of a monotone program; Q-M1f.313's index row
+and *Built* paragraph, Q-M1f.6's row.
+
+### The work, per question
+
+Monotone programs, every question at the default budget, a stopped cell with what it spent, the stop in both
+(`EIN_CORPUS_SLOW=1 cargo test … --test agenda -- --nocapture`, 2026-11-16):
+
+| question | saturations, agenda / written | facts, written order | facts, the agenda |
+|---|---|---:|---:|
+| describe, `--count` | 1 235 091 / 1 235 091 | 9 996 689 | 9 986 224 (0.1 % less) |
+| `--single` | 38 111 / 38 109 | 380 571 | 355 370 (6.6 % less) |
+| `-n 1` | 35 128 / 35 128 | 341 397 | 318 718 (6.6 % less) |
+| `--minimal` | 406 626 / 395 420 | 4 307 684 | 4 307 561 |
+| `--maximal` | 41 581 / 41 579 | 446 769 | 421 305 (5.7 % less) |
+
+The firings, which no row counts, are T2's to read (`pairs` against FIFO, both with the stop: `--single` 13 % fewer,
+`-n 1` 15 %, `--maximal` 9 %); the engine's units fall as T2's facts did, nearly all on the two SENDs. `--minimal`'s
+budget-stopped cells reach further again (`send_more_money.ein` 217 607 → 221 899 saturations,
+`send_more_money_written.ein` 140 834 → 147 748). The SENDs, both files alike: `--single` and `--maximal` 18 032
+saturations, 160 834 facts, the couplings read at saturation 732; `send_more_money.ein -n 1` 15 855 and 140 324,
+read at 722; `send_more_money_written.ein -n 1` 17 642 and 147 725, read at 1 972.
+
+### Defaults taken
+
+1. **A resumed saturation takes its snapshot's agenda**, so a switch on the calling thread reaches the nodes its
+   root's run fans out to workers.
+2. **The boundary walks its parked candidates in the agenda's order**, as T2 measured it and Q-M1f.313's (c) says.
+3. **`region.rs`' fact-grain prototypes' cubes are read in the written order**, the order they were written to
+   expose, rather than their expectations changed; the program is flagged and nothing is claimed of it.
+4. **`FailFirst::Negations` stays** as a measurement's reading.
+
+### Verification
+
+On the final tree, each green: `cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p ein-infer -p
+ein-cli -p ein-render -p ein-corpus`; `EIN_CORPUS_SLOW=1` once for `explore`, `known_dead`, `order`,
+`corpus_cores`, `id_order_invariance`, `answer_round_trip`, `first_contradiction`, `agenda` and `region`;
+`utils/check_test_scratch.py` on their scratch; `cargo fmt --all --check`; `cargo clippy --workspace --all-targets
+-- -D warnings`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`; `python3
+utils/check_hashmap_iteration.py`; `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md
+corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md c/README.md`.
+
+### Not done
+
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the batch's. The agenda moves every program's root
+  narration, so the nightly's `stdlib_mutants` census (`tests/mutation_survivors.txt`) was not re-run here.
+- `cost_ms`: not re-taken.
+- A stratum-ordered boundary, which would make a flagged program's answer independent of the order (K-62): F21's.
