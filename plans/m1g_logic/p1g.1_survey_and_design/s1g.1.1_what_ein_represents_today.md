@@ -35,7 +35,7 @@ rest are **to be tried**.
 | 12 | substitution of a term for a variable in a formula | a request `(subst F X T)` | to be tried; capture is the question |
 | 13 | a witness for an existential | a Skolem term as a nested fact; an obligation `(open ?R)` | possible one level (probe 5); to be tried where the term feeds its own rule |
 | 14 | equality of terms | `eq` and `neq` on nested facts as premises | to be tried; expected structural identity, no theory of equality |
-| 15 | a rule named as a value by another rule | `(rule-is modus-ponens)` read by a rule that wants the rule's premises | expected not possible: [F5](../../followups/f5_rules_as_data.md), and [`08_self_describing.md`](../../../docs/kernel/ir/03-ein-lang/08_self_describing.md) § 5 |
+| 15 | a rule named as a value by another rule | `(rule-is modus-ponens)` read by a rule that wants the rule's premises | expected not possible: [F5](../../followups/f5_rules_as_data.md), and [Rules as data](../../../docs/ein/reasoning/rule-evolution/rules-as-data.md) § 4 |
 | 16 | a universal statement about numbers | commutativity of addition for *all* numbers | expected not a fact a state can hold; [S1g.5.3](../p1g.5_peano_and_induction/s1g.5.3_induction.md) |
 
 ## The sketch for rows 2 to 4

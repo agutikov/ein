@@ -124,9 +124,8 @@ the hypothesis space and its structure, and 48 with
   `docs/history/README.md` records as having no entry — *"what survived its plan
   tree went to `docs/kernel/inference/` and `plans/followups/` at P1.22"*.
 
-Two pages also carry a *partial* banner, which is the same rule applied below
-page granularity: [`ir/03-ein-lang/08_self_describing.md`](ir/03-ein-lang/08_self_describing.md)
-marks which of its four levels are operational and which are design, and
+Some pages also carry a *partial* banner, which is the same rule applied below
+page granularity:
 [`inference/domain_elim_vs_hypothesis.md`](inference/domain_elim_vs_hypothesis.md),
 [`inference/features.md`](inference/features.md) and
 [`inference/README.md`](inference/README.md) scope their frozen measurements and

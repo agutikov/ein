@@ -370,7 +370,7 @@ implicitly in the kernel?" — **both, in different roles.** As *types* they
 exist only for userspace rules; as *structure* (present / length-2 /
 name-set) they steer hypothesis generation. No kernel site ever interprets
 an atom like `Attribute` as a type. See also
-[`08_self_describing.md` §3](08_self_describing.md) for the userspace half
+[Rules as data § 3](../../../ein/reasoning/rule-evolution/rules-as-data.md#3-what-already-describes-itself) for the userspace half
 in its own right, and
 [`06_reserved_names.md` §Not reserved](06_reserved_names.md) for why `T` is
 a convention rather than a kernel atom.
