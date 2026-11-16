@@ -57,6 +57,57 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
         *by_rel.entry(terms.sym(rel).to_string()).or_default() += 1;
     }
     let h = &stats.hypgen;
+    let mut hypgen = vec![
+        ("raw", Json::int(h.raw as i64)),
+        ("emitted", Json::int(h.emitted as i64)),
+        (
+            "filtered",
+            sparse(&h.filtered, |i| {
+                [
+                    Drop::FactAlreadyExists,
+                    Drop::LookaheadKilled,
+                    Drop::NegatedFact,
+                    Drop::SeenInCall,
+                ][i]
+                    .as_str()
+            }),
+        ),
+        (
+            "pre_candidate",
+            sparse(&h.pre_candidate, |i| {
+                [
+                    Skip::ClosedRelation,
+                    Skip::NoHypothesisRelation,
+                    Skip::RelationNotWhitelisted,
+                    Skip::SelfEdge,
+                ][i]
+                    .as_str()
+            }),
+        ),
+    ];
+    // What H holds for debts root does not owe and a commitment can bring:
+    // only where it holds a candidate for one, so every other program's
+    // block is what it was.
+    if !stats.later.is_empty() {
+        hypgen.push((
+            "later_debts",
+            ein_render::dump::region::later_json(&stats.later),
+        ));
+    }
+    hypgen.extend([
+        // What the universe leaves out (M1e2 S1e2.2.8, Q-M1e2.3 (a)):
+        // on every run, `[]` when nothing.
+        (
+            "outside",
+            ein_render::dump::region::outside_json(&stats.outside),
+        ),
+        // What the untyped rung bound as an object (M1e2 S1e2.2.10,
+        // Q-M1e.12 (a)): on every run, empty when nothing.
+        (
+            "types_as_objects",
+            ein_render::dump::region::types_json(&stats.types_as_objects),
+        ),
+    ]);
     Json::obj(vec![
         ("facts", Json::int(kb.n_facts() as i64)),
         (
@@ -81,49 +132,7 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
                 ("naf_dropped", Json::int(stats.naf[3] as i64)),
             ]),
         ),
-        (
-            "hypgen",
-            Json::obj(vec![
-                ("raw", Json::int(h.raw as i64)),
-                ("emitted", Json::int(h.emitted as i64)),
-                (
-                    "filtered",
-                    sparse(&h.filtered, |i| {
-                        [
-                            Drop::FactAlreadyExists,
-                            Drop::LookaheadKilled,
-                            Drop::NegatedFact,
-                            Drop::SeenInCall,
-                        ][i]
-                            .as_str()
-                    }),
-                ),
-                (
-                    "pre_candidate",
-                    sparse(&h.pre_candidate, |i| {
-                        [
-                            Skip::ClosedRelation,
-                            Skip::NoHypothesisRelation,
-                            Skip::RelationNotWhitelisted,
-                            Skip::SelfEdge,
-                        ][i]
-                            .as_str()
-                    }),
-                ),
-                // What the universe leaves out (M1e2 S1e2.2.8, Q-M1e2.3 (a)):
-                // on every run, `[]` when nothing.
-                (
-                    "outside",
-                    ein_render::dump::region::outside_json(&stats.outside),
-                ),
-                // What the untyped rung bound as an object (M1e2 S1e2.2.10,
-                // Q-M1e.12 (a)): on every run, empty when nothing.
-                (
-                    "types_as_objects",
-                    ein_render::dump::region::types_json(&stats.types_as_objects),
-                ),
-            ]),
-        ),
+        ("hypgen", Json::obj(hypgen)),
     ])
 }
 

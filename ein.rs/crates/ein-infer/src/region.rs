@@ -300,6 +300,12 @@ pub struct RootStats {
     /// M1e2 S1e2.2.10): the names on the right of an `is-a` that a candidate
     /// of the blind enumerator's H names.
     pub types_as_objects: crate::types_as_objects::TypesAsObjects,
+    /// The debts root does not owe and a commitment can bring for which H
+    /// holds a candidate no debt of root's proposed, each with those
+    /// candidates ([`crate::oblgen::LaterDebt`], as text): the obligations
+    /// rung's. Empty where H gained nothing, so a surface that prints it
+    /// prints what it printed on every such program.
+    pub later: Vec<crate::oblgen::LaterDebtText>,
     /// Root's own fixpoint derives `(false)` (M1f S1f.6.36: root's standing,
     /// which `--no-search` reports and every run reaches first).
     pub dead: bool,
@@ -355,6 +361,8 @@ pub enum Outcome {
         /// What the untyped rung bound as an object, as
         /// [`RootStats::types_as_objects`].
         types_as_objects: crate::types_as_objects::TypesAsObjects,
+        /// What H holds for debts root does not owe, as [`RootStats::later`].
+        later: Vec<crate::oblgen::LaterDebtText>,
     },
 }
 
@@ -433,6 +441,7 @@ pub(crate) fn compute_prepared(
             monotonicity,
             outside: root_stats.outside,
             types_as_objects: root_stats.types_as_objects,
+            later: root_stats.later,
         });
     }
     let cost_root = t_root.elapsed();
@@ -885,6 +894,16 @@ fn prepare_as(
     // plans root compiled: no event, since nothing is generated. A universe
     // the caller named was built by no rung of this root's.
     if universe.is_none() {
+        // What H gained from debts root does not owe, as text.
+        root_stats.later = root_stats
+            .hypgen
+            .later
+            .iter()
+            .filter(|l| !l.added.is_empty())
+            .map(|l| l.text(terms))
+            .collect();
+        let later: Vec<ein_core::Symbol> =
+            root_stats.hypgen.later.iter().map(|l| l.relation).collect();
         root_stats.outside = {
             let mut silent = Events::off();
             let mut s = Session {
@@ -894,7 +913,7 @@ fn prepare_as(
                 events: &mut silent,
                 memo: memo.clone(),
             };
-            crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans)?
+            crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans, &later)?
         };
         // What the untyped rung bound as an object (M1e2 S1e2.2.10): read off
         // H and root's fixpoint, no event, and nothing it decides.
@@ -1876,7 +1895,7 @@ fn sources_of(kb: &Kb, terms: &Terms, facts: &[FactId]) -> Vec<String> {
 /// the route's, so it is kept, and it is never printed: two candidates that
 /// print apart can share it (the names `x y` and `"x y"` cannot, but `1` and
 /// `"1"` would), and the generator's order is the tie-break, as it was.
-fn order_key(terms: &Terms, id: FactId) -> String {
+pub(crate) fn order_key(terms: &Terms, id: FactId) -> String {
     let (rel, args) = terms.facts.get(id);
     let inner: Vec<String> = args
         .iter()

@@ -57,6 +57,16 @@
 //! does not refuse. The error is [`crate::SolveError::Refused`], one line per
 //! refusing rule, and a load error's exit code.
 //!
+//! ### The same reading, for another reader
+//!
+//! `D⁺` and the rules it is closed under are read here once
+//! (`extendable_over`: root's saturation plans, and every rule with
+//! parameters from its pattern). The obligations rung asks the same reading a
+//! second question, `derivable_activators`: which activators of an
+//! obligation rule a commitment can derive, so that H holds what a debt root
+//! does not owe would propose ([`crate::oblgen`]). It refuses nothing, and
+//! *forbid*'s own answer does not depend on it.
+//!
 //! ### Studying the shape
 //!
 //! [`studying`] lifts the refusal on the calling thread for the duration of a
@@ -409,7 +419,13 @@ pub fn check(
     // node can compile that root never had (M1e2 S1e2.2.17, W17). Until then
     // this read `D` itself, whose closure follows root's plans only.
     let bodies = bodies_of(kb, terms, ast);
-    let extendable = extendable_over(m, &saturation, &reads, &bodies, terms);
+    let extendable = extendable_over(
+        m.dynamic.iter().copied(),
+        &saturation,
+        &reads,
+        &bodies,
+        terms,
+    );
     let in_d = |r: Rel| monotone::in_set(&extendable, r, terms);
     let odd_d = |rs: &[(Rel, u32)]| -> Option<(Rel, u32)> {
         let mut v: Vec<(Rel, u32)> = rs
@@ -612,11 +628,131 @@ pub fn extendable(
         .collect();
     let bodies = bodies_of(kb, terms, ast);
     // determinism-ok: sorted by label on the next line.
-    let mut out: Vec<Rel> = extendable_over(m, &saturation, &reads, &bodies, terms)
-        .into_iter()
-        .collect();
+    let mut out: Vec<Rel> = extendable_over(
+        m.dynamic.iter().copied(),
+        &saturation,
+        &reads,
+        &bodies,
+        terms,
+    )
+    .into_iter()
+    .collect();
     out.sort_by_key(|r| r.label(terms));
     out
+}
+
+/// One activator of an obligation rule that a commitment can derive
+/// ([`derivable_activators`]).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(crate) struct Derivable {
+    /// The obligation rule the conclusion would activate.
+    pub obligation: Symbol,
+    /// The conclusion, a form that holds no variable.
+    pub form: NodeId,
+    /// The saturation rule whose `:assert` writes it.
+    pub by: Symbol,
+}
+
+/// **The activators of an obligation rule that a commitment can derive**, by
+/// the rules as written and root's plans alone: every conclusion that holds
+/// no variable, heads an obligation rule with parameters and has as many
+/// arguments as that rule has parameters, in the `:assert` of a saturation
+/// rule that reads a relation of `D⁺` or is activated by one. In the rules'
+/// load order, and a rule's conclusions as it writes them.
+///
+/// `D⁺` is *forbid*'s, by its one reading ([`extendable_over`]): `seed`, the
+/// relations of what a commitment can add, closed under root's saturation
+/// plans and followed through the rules root has no plan of. A rule *reads a
+/// relation of `D⁺`* where a plan root compiled of it does, at any `absent`
+/// depth, and *is activated by one* where it has parameters and its own name
+/// is in `D⁺`: a node can then compile a plan of it root never had.
+///
+/// It is a reading at relation grain, and inexact both ways. **Over**: a rule
+/// that reads a relation a commitment can change need fire at no alive node.
+/// **Under**: a conclusion that writes the activator with a variable in it,
+/// a parameter of its own rule among them, is not read, whatever binds the
+/// variable. The obligations rung reads it for what a debt root does not owe
+/// would propose ([`crate::oblgen`]); it runs no saturation, interns nothing
+/// and narrates nothing.
+pub(crate) fn derivable_activators(
+    kb: &Kb,
+    terms: &Terms,
+    ast: &Ast,
+    plans: &[Arc<Plan>],
+    seed: impl IntoIterator<Item = Rel>,
+) -> Vec<Derivable> {
+    let program = kb.program();
+    // No obligation rule a fact can activate: nothing to derive, and nothing
+    // read.
+    if !program.obligations.values().any(|r| !r.params.is_empty()) {
+        return Vec::new();
+    }
+    let saturation: Vec<&Plan> = plans
+        .iter()
+        .filter(|p| program.rules.contains(p.rule))
+        .map(|p| &**p)
+        .collect();
+    let reads: Vec<Vec<(Rel, u32)>> = saturation
+        .iter()
+        .map(|p| monotone::reads_of(p, terms))
+        .collect();
+    let bodies = bodies_of(kb, terms, ast);
+    let extendable = extendable_over(seed, &saturation, &reads, &bodies, terms);
+    let in_d = |r: Rel| monotone::in_set(&extendable, r, terms);
+    // The rules a plan of root's reads `D⁺` through. Membership only: the
+    // walk below is the registry's.
+    let reading: rustc_hash::FxHashSet<Symbol> = saturation
+        .iter()
+        .zip(&reads)
+        .filter(|(_, rs)| rs.iter().any(|&(r, _)| in_d(r)))
+        .map(|(p, _)| p.rule)
+        .collect();
+    let mut out = Vec::new();
+    for rule in program.rules.values() {
+        let activated = !rule.params.is_empty() && in_d(pos(rule.name));
+        if !(activated || reading.contains(&rule.name)) {
+            continue;
+        }
+        let Some(assert) = rule.assert_.as_ref() else {
+            continue;
+        };
+        for c in ast.conjuncts(NodeId(assert.expr.0)) {
+            let Some(obligation) = ast
+                .head_name(c)
+                .and_then(|n| terms.syms.get(n))
+                .and_then(|n| program.obligations.get(n))
+            else {
+                continue;
+            };
+            if obligation.params.is_empty()
+                || ast.form_args(c).len() != obligation.params.len()
+                || !holds_no_variable(ast, c)
+            {
+                continue;
+            }
+            out.push(Derivable {
+                obligation: obligation.name,
+                form: c,
+                by: rule.name,
+            });
+        }
+    }
+    out
+}
+
+/// Does `node` spell a value: a name, or a form of names and such forms?
+fn holds_no_variable(ast: &Ast, node: NodeId) -> bool {
+    match ast.node(node) {
+        Node::Atom(_) => true,
+        Node::SForm { head, .. } => {
+            matches!(ast.node(head), Node::Atom(_))
+                && ast
+                    .form_args(node)
+                    .iter()
+                    .all(|&a| holds_no_variable(ast, a))
+        }
+        _ => false,
+    }
 }
 
 /// Every rule with parameters, with its pattern read.
@@ -629,9 +765,11 @@ fn bodies_of<'k>(kb: &'k Kb, terms: &Terms, ast: &Ast) -> Vec<(&'k Rule, Body)> 
         .collect()
 }
 
-/// `D⁺` over root's saturation plans and the rules with parameters.
+/// `D⁺` over root's saturation plans and the rules with parameters, from
+/// `seed`: the static check's `D` for *forbid*, the relations of what the
+/// obligations rung proposes for [`derivable_activators`].
 fn extendable_over(
-    m: &Monotonicity,
+    seed: impl IntoIterator<Item = Rel>,
     saturation: &[&Plan],
     reads: &[Vec<(Rel, u32)>],
     bodies: &[(&Rule, Body)],
@@ -646,7 +784,7 @@ fn extendable_over(
         .iter()
         .map(|(r, b)| (pos(r.name), b.writes.as_slice()))
         .collect();
-    monotone::through_activators(m, &plans, &open, terms)
+    monotone::through_activators(seed, &plans, &open, terms)
 }
 
 /// The refusals as [`crate::SolveError::Refused`]'s message: one line each.

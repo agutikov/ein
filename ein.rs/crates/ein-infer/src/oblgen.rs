@@ -75,6 +75,50 @@
 //! `(__closed__ R)` bind here exactly as they bind the blind enumerator, and
 //! a state owing only relations they exclude is **stuck** — reported, never
 //! silently complete.
+//!
+//! ### A debt root is not told of
+//!
+//! H is taken once, at root, and an obligation's activator is an ordinary
+//! fact: a rule can derive one at a node. That node owes what the activator's
+//! plan matches, and root, which never held the activator, proposed nothing
+//! that pays it. So **the rung also proposes what such a debt would**
+//! (Q-M1f.307 (A), by the static reading; Q-M1e.11's answer):
+//!
+//! 1. the **activators a commitment can derive** are read off the rules and
+//!    root's plans, with no saturation
+//!    ([`crate::forbid`]'s `derivable_activators`): each conclusion that
+//!    holds no variable and would activate an obligation rule, in the
+//!    `:assert` of a rule that reads a relation of `D⁺` or is activated by
+//!    one. `D⁺` is *forbid*'s, by its one reading of the rules, seeded with
+//!    the relations of the candidates the call would emit with every switch
+//!    off;
+//! 2. for each one the state does not hold, the rule's plan under it is
+//!    compiled, beside the memo, and **scanned at this state as a plan of
+//!    the state's own is**: the instances it matches here, each one's guard
+//!    with the witness step skipped;
+//! 3. a candidate that adds a relation adds it to the seed, so the two steps
+//!    are **repeated until they add nothing**.
+//!
+//! A later plan is held to every decline above together with the state's:
+//! a later debt whose guard scans a relation a commitment can change declines
+//! the call, and the blind enumerator builds H. Scoping binds it as it binds
+//! any plan. What the state owes is counted as before
+//! ([`RungReport::owed`], `branches`, `candidates`); what a later debt adds
+//! counts apart ([`RungReport::later_debts`], `later_candidates`) and is
+//! emitted after it, so a call that reads no later debt emits what it emitted,
+//! in that order, and narrates the line it narrated.
+//!
+//! **The reading is at relation grain and inexact both ways**, and both are
+//! held by name in `ein-infer/tests/later_debts.rs`. *Over*: a rule that
+//! reads what a commitment can change need fire at no alive node, and H then
+//! holds a candidate for a debt nothing owes, which R keeps wherever nothing
+//! refutes it. *Under*: an activator its rule writes with a variable is not
+//! read, and the node that derives it owes what no candidate pays. It does
+//! not reach a generator of another kind either: an hrule whose `:match`
+//! reads what a commitment can change proposes at a node what it did not at
+//! root, and the hrule rung is as it was. The program stays one the static
+//! check flags, since the activator's relation is one a commitment can
+//! change; what a node is there is not this module's.
 
 use std::ops::ControlFlow;
 use std::sync::Arc;
@@ -154,6 +198,16 @@ pub struct RungReport {
     ///
     /// [S1d.2.5]: `docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations`
     pub uncovered: u64,
+    /// Debts this state does not owe and a commitment can bring: the
+    /// activators of an obligation rule, not held here, that a rule's
+    /// `:assert` writes and the rung compiled a plan of (§ *A debt root is
+    /// not told of*). `0` on every program in which no rule that reads what a
+    /// commitment can change writes one, and then the call is what it was
+    /// without the reading.
+    pub later_debts: u64,
+    /// Candidate facts proposed for them, before the filter pipeline. Not in
+    /// [`Self::candidates`], which counts what the state owes.
+    pub later_candidates: u64,
 }
 
 /// The order the owed instances are walked in — T1d.2.5.2's measured pair.
@@ -219,11 +273,189 @@ struct Branch {
     candidates: Vec<FactId>,
 }
 
+/// What one plan matches at a state: how many instances it leaves owed and,
+/// where scoping lets the rung branch on its relation, each one's
+/// alternatives. Reading it bumps no counter and narrates nothing.
+struct Scan {
+    owed: usize,
+    branches: Vec<Branch>,
+}
+
+/// One debt root does not owe and a commitment can bring: an obligation
+/// rule's activator that root's fixpoint does not hold and a rule's `:assert`
+/// writes, with what the rung proposed for it (§ *A debt root is not told
+/// of*, the module's).
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct LaterDebt {
+    /// The obligation rule.
+    pub rule: Symbol,
+    /// The activator, a fact no state need hold.
+    pub activator: FactId,
+    /// The relation its plan owes: `(open ?R)`'s argument under the
+    /// activator.
+    pub relation: Symbol,
+    /// The saturation rules whose `:assert` writes the activator, in the
+    /// order the reading met them.
+    pub by: Vec<Symbol>,
+    /// The candidates the call emitted for it that no debt before it had
+    /// proposed, in emission order. Empty where every payment was a candidate
+    /// already, where scoping takes its relation out, or where nothing
+    /// matches its trigger at this state.
+    pub added: Vec<FactId>,
+}
+
+/// A [`LaterDebt`] as text, for the surfaces that print one.
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct LaterDebtText {
+    /// The obligation rule's name.
+    pub rule: String,
+    /// The activator, as the fact a rule would conclude.
+    pub activator: String,
+    /// The relation owed.
+    pub relation: String,
+    /// The rules that write the activator.
+    pub by: Vec<String>,
+    /// The candidates added for it, in the universe's order.
+    pub added: Vec<String>,
+}
+
+impl LaterDebt {
+    pub fn text(&self, terms: &ein_core::Terms) -> LaterDebtText {
+        let mut added: Vec<(String, String)> = self
+            .added
+            .iter()
+            .map(|&f| {
+                (
+                    crate::region::order_key(terms, f),
+                    crate::events::sexpr(terms, f),
+                )
+            })
+            .collect();
+        added.sort();
+        LaterDebtText {
+            rule: terms.sym(self.rule).to_string(),
+            activator: crate::events::sexpr(terms, self.activator),
+            relation: terms.sym(self.relation).to_string(),
+            by: self.by.iter().map(|&r| terms.sym(r).to_string()).collect(),
+            added: added.into_iter().map(|(_, text)| text).collect(),
+        }
+    }
+}
+
+/// Resolve each of `plans` and push it onto `projs`, or say why the rung
+/// declines: the first plan that names no relation, or whose witness step
+/// does not resolve under its activator.
+fn admit(
+    terms: &ein_core::Terms,
+    plans: Vec<Arc<Plan>>,
+    allowed: &Option<FxHashSet<Symbol>>,
+    excluded: &FxHashSet<Symbol>,
+    closed: &FxHashSet<Symbol>,
+    projs: &mut Vec<Proj>,
+) -> Result<(), &'static str> {
+    for plan in plans {
+        // The bare `(open)` counts and reports and names nothing, so there is
+        // no relation to branch on and no guard to read a domain out of
+        // (S1d.2.3 item 4's table: `(open)` counts, `(open ?R)` also
+        // attributes and branches). One of them in the program is enough to
+        // stop the rung claiming exhaustiveness, so the call falls through
+        // rather than silently owing something nobody proposes for.
+        if crate::obligations::open_argument(&plan, terms).is_none() {
+            return Err("a bare `(open)` names no relation to branch on");
+        }
+        let Some(mut proj) = project(&plan, terms) else {
+            // A projection that will not resolve here is one the loader could
+            // not have refused: it depends on the activator's substitution.
+            // Declining is the conservative half of the same rule C4 uses.
+            return Err("a projection did not resolve per activator");
+        };
+        proj.skip = scoping(proj.relation, allowed, excluded, closed);
+        projs.push(proj);
+    }
+    Ok(())
+}
+
+/// The instances `p` leaves owed at `s`'s state, and their alternatives.
+fn scan(s: &mut Session<'_>, p: &Proj, matcher: &mut Matcher, guards: &mut Matcher) -> Scan {
+    let mut owed: Vec<(usize, Box<[Value]>)> = Vec::new();
+    // **Deduped by bindings only where two disjuncts could collide**, which
+    // is `obligations::tally`'s rule and its reason: a register the match
+    // did not bind still holds what the previous one left there, so the raw
+    // file is not an identity, and two `(or …)` arms reaching the same
+    // bindings are one debt. Collecting the bindings costs an allocation
+    // per match, so a single-disjunct rule — which is every obligation rule
+    // in the stdlib — does not pay for a collision it cannot have.
+    let mut seen: FxHashSet<Box<[(Symbol, Value)]>> = FxHashSet::default();
+    let dedup = p.plan.disjuncts.len() > 1;
+    matcher.run(s.kb, s.terms, s.ast, &p.plan, &mut |m| {
+        if dedup && !seen.insert(m.bindings().collect::<Vec<_>>().into_boxed_slice()) {
+            return ControlFlow::Continue(());
+        }
+        owed.push((m.disjunct, m.regs().into()));
+        ControlFlow::Continue(())
+    });
+    // A guard that *holds* found the witness: that instance is discharged
+    // and owes nothing. The same predicate `obligations::tally` reads, and
+    // it is the rule's own `absent` rather than a second statement of it.
+    owed.retain(|(disjunct, regs)| {
+        let span = p.plan.disjuncts[*disjunct].guards;
+        !p.plan
+            .guards(span)
+            .iter()
+            .any(|g| guards.holds(s.kb, s.terms, s.ast, &p.plan, g, regs))
+    });
+    let mut out = Scan {
+        owed: owed.len(),
+        branches: Vec::new(),
+    };
+    if p.skip.is_some() {
+        // Scoped out: counted and not branched on.
+        return out;
+    }
+    for (disjunct, regs) in owed {
+        let (gi, at) = p.witness[disjunct];
+        let guard = &p.plan.guards(p.plan.disjuncts[disjunct].guards)[gi];
+        let Step::Rel(step) = p.plan.steps(guard.sub)[at] else {
+            continue;
+        };
+        // Two passes, because the walk borrows the tables the intern
+        // writes to — the shape `hrule::candidates` takes for the same
+        // reason.
+        let mut rows: Vec<Box<[Value]>> = Vec::new();
+        matcher.scan_without(
+            s.kb,
+            s.terms,
+            s.ast,
+            &p.plan,
+            guard,
+            &regs,
+            at,
+            &mut |sub| {
+                rows.push(sub.into());
+                ControlFlow::Continue(())
+            },
+        );
+        let mut candidates = Vec::with_capacity(rows.len());
+        for row in &rows {
+            if let Some(fact) = witness_fact(s, &p.plan, step.rel, step.slots, row) {
+                candidates.push(fact);
+            }
+        }
+        out.branches.push(Branch { candidates });
+    }
+    out
+}
+
 /// Generate from the obligations, or say why not.
 ///
 /// Returns the rung it took. `Mode::Declined` means **nothing was emitted and
 /// the caller must fall through to the blind enumerator**; every other mode
 /// means this call is the whole generation.
+///
+/// Every plan the call reads, the state's and those of the activators a
+/// commitment can derive (§ *A debt root is not told of*), is settled before
+/// the first candidate is emitted, because a decline has to come before any
+/// emission and a later plan can decline the call as one of the state's can.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn generate(
     s: &mut Session<'_>,
@@ -239,106 +471,150 @@ pub(crate) fn generate(
         return Ok(declined(s, "choice off"));
     }
     let memo = s.memo.clone();
+    let program = s.kb.program_arc();
     let plans = crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?;
-    let mut projs = Vec::with_capacity(plans.len());
-    for plan in plans {
-        // The bare `(open)` counts and reports and names nothing, so there is
-        // no relation to branch on and no guard to read a domain out of
-        // (S1d.2.3 item 4's table: `(open)` counts, `(open ?R)` also
-        // attributes and branches). One of them in the program is enough to
-        // stop the rung claiming exhaustiveness, so the call falls through
-        // rather than silently owing something nobody proposes for.
-        if crate::obligations::open_argument(&plan, s.terms).is_none() {
-            return Ok(declined(
-                s,
-                "a bare `(open)` names no relation to branch on",
-            ));
-        }
-        let Some(mut proj) = project(&plan, s.terms) else {
-            // A projection that will not resolve here is one the loader could
-            // not have refused: it depends on the activator's substitution.
-            // Declining is the conservative half of the same rule C4 uses.
-            return Ok(declined(s, "a projection did not resolve per activator"));
-        };
-        proj.skip = scoping(proj.relation, allowed, excluded, closed);
-        projs.push(proj);
+    // The plans are the memo's, as the static check's are: root's saturation
+    // compiled them into it, the activators' included, before any generation
+    // call. A plan of a later debt is compiled beside the memo, never into
+    // it: the memo holds what a state compiled, and the static check reads
+    // it as that.
+    let compiled = crate::monotone::plans_of(&memo);
+    let mut projs: Vec<Proj> = Vec::with_capacity(plans.len());
+    if let Err(reason) = admit(s.terms, plans, allowed, excluded, closed, &mut projs) {
+        return Ok(declined(s, reason));
     }
-    // C4 — the candidate set must not be able to grow underneath the branch,
-    // so no accepted obligation may scan a relation this rung proposes.
-    let owed_rels: FxHashSet<Symbol> = projs.iter().map(|p| p.relation).collect();
-    let uncovered = uncovered_relations(s, allowed, excluded, closed, &owed_rels);
-    for p in &projs {
-        if let Some(rel) = scanned_relation_in(p, &owed_rels) {
-            let rel = s.terms.sym(rel).to_string();
-            let reason = format!("an obligation scans `{rel}`, which the rung itself proposes");
-            return Ok(declined(s, &reason));
+    // `projs[..at_state]` are the plans of the activators this state holds;
+    // those past it are the later debts', one each, in `later`'s order.
+    let at_state = projs.len();
+    let mut scans: Vec<Scan> = Vec::with_capacity(projs.len());
+    let mut later: Vec<LaterDebt> = Vec::new();
+    let mut matcher = Matcher::new();
+    let mut guards = Matcher::new();
+    let uncovered = loop {
+        // C4 — the candidate set must not be able to grow underneath the
+        // branch, so no accepted obligation may scan a relation this rung
+        // proposes.
+        let owed_rels: FxHashSet<Symbol> = projs.iter().map(|p| p.relation).collect();
+        for p in &projs {
+            if let Some(rel) = scanned_relation_in(p, &owed_rels) {
+                let rel = s.terms.sym(rel).to_string();
+                let reason = format!("an obligation scans `{rel}`, which the rung itself proposes");
+                return Ok(declined(s, &reason));
+            }
         }
-    }
-    // C4 over `D` (M1e2 S1e2.2.15, W14): nor may it grow by derivation. A
-    // relation a commitment can change — `D`, seeded with what this rung
-    // proposes and closed under the saturation plans, `crate::monotone`'s one
-    // computation of it — can gain at a node a domain value root's scan never
-    // saw, and the candidate that value licenses is then in no `H`. The plans
-    // are the memo's, as the static check's are: root's saturation compiled
-    // them into it, the activators' included, before any generation call.
-    let proposed = projs
-        .iter()
-        .filter(|p| p.skip.is_none())
-        .map(|p| p.relation);
-    let dynamic =
-        crate::monotone::dynamic(s.kb, s.terms, &crate::monotone::plans_of(&memo), proposed);
-    for p in &projs {
-        if let Some(rel) = premise_reads(p, s.terms)
-            .into_iter()
-            .find(|&r| crate::monotone::in_set(&dynamic, r, s.terms))
-        {
-            let reason = format!(
-                "an obligation scans `{}`, a relation a commitment can change",
-                rel.label(s.terms)
-            );
-            return Ok(declined(s, &reason));
+        // C4 over `D` (M1e2 S1e2.2.15, W14): nor may it grow by derivation. A
+        // relation a commitment can change — `D`, seeded with what this rung
+        // proposes and closed under the saturation plans, `crate::monotone`'s
+        // one computation of it — can gain at a node a domain value root's
+        // scan never saw, and the candidate that value licenses is then in no
+        // `H`.
+        let proposed = projs
+            .iter()
+            .filter(|p| p.skip.is_none())
+            .map(|p| p.relation);
+        let dynamic = crate::monotone::dynamic(s.kb, s.terms, &compiled, proposed);
+        for p in &projs {
+            if let Some(rel) = premise_reads(p, s.terms)
+                .into_iter()
+                .find(|&r| crate::monotone::in_set(&dynamic, r, s.terms))
+            {
+                let reason = format!(
+                    "an obligation scans `{}`, a relation a commitment can change",
+                    rel.label(s.terms)
+                );
+                return Ok(declined(s, &reason));
+            }
         }
-    }
+        // The plans admitted since the last round, each scanned once, in
+        // report order: plan order, then match order.
+        for p in &projs[scans.len()..] {
+            let scan = scan(s, p, &mut matcher, &mut guards);
+            scans.push(scan);
+        }
+        // What a debt root is not told of would propose. The relations a
+        // commitment can add are those of the candidates the call would emit
+        // with every switch off, which is `H`'s pass: a fact this state
+        // neither holds nor denies.
+        let mut seed: Vec<Symbol> = Vec::new();
+        for b in scans.iter().flat_map(|scan| scan.branches.iter()) {
+            for &fact in &b.candidates {
+                let rel = s.terms.facts.get(fact).0;
+                if !seed.contains(&rel) && !s.kb.is_negated(fact) && !s.kb.contains(fact) {
+                    seed.push(rel);
+                }
+            }
+        }
+        let mut fresh: Vec<Arc<Plan>> = Vec::new();
+        for d in crate::forbid::derivable_activators(
+            s.kb,
+            s.terms,
+            s.ast,
+            &compiled,
+            seed.into_iter().map(crate::monotone::Rel::pos),
+        ) {
+            let Some(activator) = crate::compile::ground_fact(s.ast, s.terms, d.form) else {
+                continue;
+            };
+            // An activator the state holds is no later debt: its plan is
+            // among the state's own.
+            if s.kb.contains(activator) {
+                continue;
+            }
+            if let Some(known) = later.iter_mut().find(|l| l.activator == activator) {
+                if !known.by.contains(&d.by) {
+                    known.by.push(d.by);
+                }
+                continue;
+            }
+            let Some(rule) = program.obligations.get(d.obligation) else {
+                continue;
+            };
+            // A plan that does not compile under this activator proposes
+            // nothing: the node that derives the activator is where the
+            // refusal belongs, and it is made there.
+            let Ok(plan) = crate::compile::compile_rule(s.ast, s.terms, rule, Some(activator))
+            else {
+                continue;
+            };
+            let Some(relation) = crate::obligations::open_argument(&plan, s.terms) else {
+                return Ok(declined(
+                    s,
+                    "a bare `(open)` names no relation to branch on",
+                ));
+            };
+            later.push(LaterDebt {
+                rule: d.obligation,
+                activator,
+                relation,
+                by: vec![d.by],
+                added: Vec::new(),
+            });
+            fresh.push(Arc::new(plan));
+        }
+        if fresh.is_empty() {
+            break uncovered_relations(s, allowed, excluded, closed, &owed_rels);
+        }
+        // A later plan declines the call as one of the state's does: the
+        // same two tests here, and C4's two on the next round, over every
+        // plan together.
+        if let Err(reason) = admit(s.terms, fresh, allowed, excluded, closed, &mut projs) {
+            return Ok(declined(s, reason));
+        }
+    };
 
     // The owed instances, in report order: plan order, then match order.
+    // What the state owes is counted and narrated; a later debt is not owed
+    // here, and counts apart.
     let mut branches: Vec<Branch> = Vec::new();
     let mut report = RungReport {
         mode: Mode::Obligations,
         uncovered,
+        later_debts: later.len() as u64,
         ..RungReport::default()
     };
-    let mut matcher = Matcher::new();
-    let mut guards = Matcher::new();
-    let mut owed: Vec<(usize, Box<[Value]>)> = Vec::new();
-    for p in projs.iter() {
-        owed.clear();
-        // **Deduped by bindings only where two disjuncts could collide**, which
-        // is `obligations::tally`'s rule and its reason: a register the match
-        // did not bind still holds what the previous one left there, so the raw
-        // file is not an identity, and two `(or …)` arms reaching the same
-        // bindings are one debt. Collecting the bindings costs an allocation
-        // per match, so a single-disjunct rule — which is every obligation rule
-        // in the stdlib — does not pay for a collision it cannot have.
-        let mut seen: FxHashSet<Box<[(Symbol, Value)]>> = FxHashSet::default();
-        let dedup = p.plan.disjuncts.len() > 1;
-        matcher.run(s.kb, s.terms, s.ast, &p.plan, &mut |m| {
-            if dedup && !seen.insert(m.bindings().collect::<Vec<_>>().into_boxed_slice()) {
-                return ControlFlow::Continue(());
-            }
-            owed.push((m.disjunct, m.regs().into()));
-            ControlFlow::Continue(())
-        });
-        // A guard that *holds* found the witness: that instance is discharged
-        // and owes nothing. The same predicate `obligations::tally` reads, and
-        // it is the rule's own `absent` rather than a second statement of it.
-        owed.retain(|(disjunct, regs)| {
-            let span = p.plan.disjuncts[*disjunct].guards;
-            !p.plan
-                .guards(span)
-                .iter()
-                .any(|g| guards.holds(s.kb, s.terms, s.ast, &p.plan, g, regs))
-        });
-        report.owed += owed.len() as u64;
+    let mut scans = scans.into_iter();
+    for (p, scan) in projs[..at_state].iter().zip(scans.by_ref()) {
+        report.owed += scan.owed as u64;
         if let Some(skip) = p.skip {
             // Scoped out: counted, narrated and not branched on. A state whose
             // every debt lands here is the stuck one.
@@ -347,49 +623,27 @@ pub(crate) fn generate(
             // relation, which is the split `hypgen::raw_candidates` already
             // makes: the verdict is about a relation, the count is about each
             // thing that wanted one.
-            for _ in 0..owed.len() {
+            for _ in 0..scan.owed {
                 stats.skip(skip);
             }
-            report.declined += owed.len() as u64;
-            if !owed.is_empty() {
+            report.declined += scan.owed as u64;
+            if scan.owed > 0 {
                 hypskip(s, p.relation, skip);
             }
             continue;
         }
-        report.branches += owed.len() as u64;
-        for (disjunct, regs) in owed.drain(..) {
-            let (gi, at) = p.witness[disjunct];
-            let guard = &p.plan.guards(p.plan.disjuncts[disjunct].guards)[gi];
-            let Step::Rel(step) = p.plan.steps(guard.sub)[at] else {
-                continue;
-            };
-            // Two passes, because the walk borrows the tables the intern
-            // writes to — the shape `hrule::candidates` takes for the same
-            // reason.
-            let mut rows: Vec<Box<[Value]>> = Vec::new();
-            matcher.scan_without(
-                s.kb,
-                s.terms,
-                s.ast,
-                &p.plan,
-                guard,
-                &regs,
-                at,
-                &mut |sub| {
-                    rows.push(sub.into());
-                    ControlFlow::Continue(())
-                },
-            );
-            let mut candidates = Vec::with_capacity(rows.len());
-            for row in &rows {
-                if let Some(fact) = witness_fact(s, &p.plan, step.rel, step.slots, row) {
-                    candidates.push(fact);
-                }
-            }
-            report.candidates += candidates.len() as u64;
-            branches.push(Branch { candidates });
+        report.branches += scan.owed as u64;
+        for b in scan.branches {
+            report.candidates += b.candidates.len() as u64;
+            branches.push(b);
         }
     }
+    let later_branches: Vec<Vec<Branch>> = scans.map(|scan| scan.branches).collect();
+    report.later_candidates = later_branches
+        .iter()
+        .flatten()
+        .map(|b| b.candidates.len() as u64)
+        .sum();
 
     if choice == Choice::FailFirst {
         // Stable, so instances of equal width keep report order — the control
@@ -436,8 +690,28 @@ pub(crate) fn generate(
         // Owed, and nothing survived: every debt was scoped out, or every
         // candidate is already refuted. Either way the generator proposes
         // nothing and the caller would otherwise call this state complete.
+        // Judged on what the state owes alone, before a later debt's
+        // candidates are offered.
         report.mode = Mode::Stuck;
     }
+    // The later debts' candidates, after everything the state owes, so a
+    // call that reads none emits what it emitted and in that order. One
+    // instance's alternatives are an instance the state owes: `one_branch`
+    // takes none of these.
+    if !one_branch && !broke {
+        'later: for (debt, branches) in later.iter_mut().zip(&later_branches) {
+            for &fact in branches.iter().flat_map(|b| b.candidates.iter()) {
+                let emitted = stats.emitted;
+                if emit(s, stats, fact).is_break() {
+                    break 'later;
+                }
+                if stats.emitted > emitted {
+                    debt.added.push(fact);
+                }
+            }
+        }
+    }
+    stats.later = later;
     narrate(s, &report, choice);
     Ok(report)
 }
@@ -470,6 +744,7 @@ fn narrate(s: &mut Session<'_>, r: &RungReport, choice: Choice) {
     let (mode, order) = (r.mode.as_str(), choice.as_str());
     let (owed, branches, declined, candidates, uncovered) =
         (r.owed, r.branches, r.declined, r.candidates, r.uncovered);
+    let (later_debts, later_candidates) = (r.later_debts, r.later_candidates);
     s.events.emit("rung", |l| {
         l.str("mode", mode);
         l.str("reason", order);
@@ -478,6 +753,12 @@ fn narrate(s: &mut Session<'_>, r: &RungReport, choice: Choice) {
         l.num("declined", declined as i64);
         l.num("candidates", candidates as i64);
         l.num("uncovered", uncovered as i64);
+        // Optional, so `ein-events/1` stays: only where the call read a
+        // later debt.
+        if later_debts > 0 {
+            l.num("later_debts", later_debts as i64);
+            l.num("later_candidates", later_candidates as i64);
+        }
     });
 }
 

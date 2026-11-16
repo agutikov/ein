@@ -26,9 +26,10 @@
 //!    That scope is the program's own statement, and the read-out does not
 //!    repeat it (W6's `arity3.ein` scopes `is-a` out, and only `r3` is named);
 //! 3. **the rung that built H proposes none of its facts**, at relation
-//!    grain: the hrules assert no fact of it, no obligation owes it, or, for
-//!    the blind enumerator, its arity is 3 or more (`hypgen`'s `fill_slot`
-//!    enumerates arity 1 and 2).
+//!    grain: the hrules assert no fact of it, no obligation owes it (one root
+//!    owes, or one a commitment can bring, which the rung reads too:
+//!    [`crate::oblgen`]), or, for the blind enumerator, its arity is 3 or
+//!    more (`hypgen`'s `fill_slot` enumerates arity 1 and 2).
 //!
 //! Measured 2026-11-04 at `ee0b74c4` (T1e2.2.8.1): of the 234 programs of
 //! the sweep that reach H, 22 name a relation, 16 of them under the hrules.
@@ -86,12 +87,15 @@ pub struct Outside {
 
 /// The relations outside the universe, sorted by name: see the module's
 /// three clauses. `s` is root at its fixpoint with the memo its saturation
-/// compiled; `mode` is the rung the universe's generator pass took, and
-/// `plans` the memo's plans.
+/// compiled; `mode` is the rung the universe's generator pass took, `plans`
+/// the memo's plans, and `later` the relations of the debts root does not
+/// owe that the obligations rung read ([`crate::oblgen::LaterDebt`]): the
+/// rung proposes for those too, so none of them is named.
 pub(crate) fn outside(
     s: &mut Session<'_>,
     mode: Mode,
     plans: &[Arc<Plan>],
+    later: &[Symbol],
 ) -> Result<Vec<Outside>, CompileError> {
     // `(solve :no-search)` (M1f S1f.6.36) scopes every relation out, and it is
     // the program's own statement, clause 2's: nothing is named.
@@ -119,6 +123,7 @@ pub(crate) fn outside(
             crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?
                 .iter()
                 .filter_map(|p| crate::obligations::open_argument(p, s.terms))
+                .chain(later.iter().copied())
                 .collect()
         }
         Mode::Blind | Mode::Declined | Mode::NoSearch => declared

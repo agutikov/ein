@@ -278,6 +278,37 @@ pub fn compile_rule(
     Compiler::new(ast, terms).run(rule, activator)
 }
 
+/// The fact a form that holds no variable spells, interned as the loader
+/// interns a fact a file writes: a name an argument, a form a nested fact.
+/// `None` for a form with a variable, a string or a keyword in it at any
+/// depth, a form whose head is no name, or a table that cannot number a new
+/// proposition.
+///
+/// For a reader that asks what a rule's conclusion would write before any
+/// state holds it: the obligations rung, of an activator a commitment can
+/// derive ([`crate::oblgen`]).
+pub(crate) fn ground_fact(ast: &Ast, terms: &mut Terms, node: NodeId) -> Option<FactId> {
+    fn value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Option<Value> {
+        match ast.node(node) {
+            Node::Atom(s) => terms.intern_text(ast.sym(s)).ok().map(Value::sym),
+            Node::SForm { .. } => ground_fact(ast, terms, node).map(Value::fact),
+            _ => None,
+        }
+    }
+    let Node::SForm { head, args } = ast.node(node) else {
+        return None;
+    };
+    let Node::Atom(h) = ast.node(head) else {
+        return None;
+    };
+    let rel = terms.intern_text(ast.sym(h)).ok()?;
+    let mut values = Vec::new();
+    for &a in ast.args(args) {
+        values.push(value(ast, terms, a)?);
+    }
+    terms.intern_fact(rel, &values).ok()
+}
+
 /// One register space: names in allocation order, and where each is projected
 /// from when the space belongs to a guard sub-plan.
 #[derive(Default)]

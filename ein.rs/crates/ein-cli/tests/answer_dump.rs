@@ -583,8 +583,30 @@ fn every_summary_counter_is_defined_on_this_page() {
         }
     }
     fields(&summary["root"], "root", &mut keys);
+    // One key is written only where there is something to write:
+    // `root.hypgen.later_debts`, what H holds for a debt root does not owe.
+    // The puzzle has none, so the program that has one is read for it.
+    let later = tmp.join("later");
+    let r = dump(
+        "examples/ein-bugs/wrong-answers/oblig-derived-activator.ein",
+        &[],
+        &[],
+        &later,
+    );
+    assert_eq!(r.code, 0, "{}", r.err);
     assert!(
-        keys.contains("root.hypgen.emitted") && keys.contains("root.saturator.naf_rounds"),
+        !keys.contains("root.hypgen.later_debts"),
+        "a program with no later debt writes no `later_debts`"
+    );
+    fields(
+        &json(&later.with_extension("json"))["root"],
+        "root",
+        &mut keys,
+    );
+    assert!(
+        keys.contains("root.hypgen.emitted")
+            && keys.contains("root.saturator.naf_rounds")
+            && keys.contains("root.hypgen.later_debts"),
         "the root block was not walked: {keys:?}"
     );
     assert_eq!(

@@ -114,7 +114,10 @@ They are what a node *is* that its coordinates do not say.
 
 ## `region.json`
 
-`schema`, `source`, `n`, `limit`, `candidates`, `outside` (since M1e2
+`schema`, `source`, `n`, `limit`, `candidates`, `later_debts` (written only
+where H holds a candidate for a debt root does not owe: `--json-summary`'s
+`root.hypgen.later_debts`, one `{obligation, activator, relation, by, added,
+candidates}` each), `outside` (since M1e2
 S1e2.2.8: one `{relation, arity, why}` per relation outside the universe,
 `--json-summary`'s `root.hypgen.outside`, `[]` when none), `types_as_objects`
 (since S1e2.2.10: `{objects, relations, candidates}`, `--json-summary`'s

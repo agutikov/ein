@@ -221,7 +221,48 @@ ein.rs/Cargo.toml -p ein-infer --example object_census -- build/s1f.10.6/blind/d
 build/s1f.10.6/blind/declared.ein`, 2026-11-15).
 
 **Today:** not a wrong answer and nothing to fix. A ruling of (B) re-takes S1f.10.9's census by its own
-command, as H9-3 says of S1f.10.15's.
+command, as H9-3 says of S1f.10.15's. **The ruling was (A)** (2026-11-16), so neither program changes rung and
+this finding has nothing left to bear on.
+
+**H6-3 and H6-4 were met by the stage's task 4**
+([its record](s1f.10.6_obligations_under_hypothesis.md#record-2026-11-16-task-4)), 2026-11-16, on the release
+binary of the fixing commit. Neither is fixed, and no register row is filed.
+
+### H6-3 — The mechanisms check reads root's activators, so a list that takes out what a later debt owes is accepted
+
+`mechanisms::check` refuses a program in which an obligation owes a relation that `:no-hypothesis`,
+`:hypothesis-relations` or a closure takes out (O + NH, O + HR, O + C), and reads an obligation as *a plan
+root's activators compile*. An obligation whose activator only a commitment derives is not read, so the same
+list beside it loads.
+
+The witness with `drinks` in its list, `(solve :no-hypothesis (is-a drinks))`: it loads, H is
+`{(likes Ann Soup)}`, and R is empty, every alive node owing; the node that likes Soup owes a drink no commitment
+may be about. With `(total-owed drinks is-a)` also stated the program is refused at load: *solve: its
+:no-hypothesis names drinks, and obligation 'total-owed', activated by (total-owed drinks is-a) … owes drinks — an
+obligation is paid by facts of the relation it owes, so a state that owes drinks and may not be given one is
+stuck: drop drinks from the list*. Both runs are the same before task 4 and after it (`ein solve` on the two
+programs, the binary of `a3c719bf` and the fixing commit's).
+
+Since task 4 the obligations rung knows that debt: it reads the activator off `arm`, compiles its plan, and
+scopes it out by the list, as it scopes out a plan of root's, without the `hypskip` line or the *stuck* report a
+debt root owes gets. So the engine now holds, at load, the fact the check would need. **Today:** an empty R of
+the owing kind where the twin that states the activator gets a load error that says why. Not a wrong answer by
+the definitions: the program says no commitment is about `drinks`. A fix would have the check read the rung's
+later debts, which is one more reader of `forbid::derivable_activators`; whether a debt a commitment *can*
+bring refuses a program at load, at relation grain and so on the *over* case too, is a ruling.
+
+### H6-4 — `hypgen::eligible_relations` does not name a later debt's relation
+
+`eligible_relations` answers *which relations can this program's generator still propose*, for
+`naf_deps`' refutation advisory and for `structure.rs`, and on the obligations rung it is the `(open ?R)`
+arguments of the plans root's activators compile. Since task 4 the rung proposes facts of a later debt's
+relation too, and that relation is not in the set (the function's doc says so). Reading it there would mean
+running the rung's scans, which the advisory's one caller does before root has a hypothesis.
+
+**Today:** no corpus program differs: the one program with a later debt, the witness, has no `absent` for the
+advisory to read, and *forbid*, which is what refuses a refutation resting on an `absent` over a relation a
+commitment extends, reads `D` from H's own relations and so does see it. `scope::outside`, the read-out's
+`outside` row, was given the later relations in task 4 and is right.
 
 ## From S1f.10.15
 

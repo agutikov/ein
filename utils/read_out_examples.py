@@ -145,6 +145,7 @@ add("""---
 | [X17](#x17--ein-oracle-the-cubes-line) | `lattice/04_obligation_trigger_hole.ein`, `lattice/02_genuine_3set_death.ein` | 2, 3 | `ein oracle`: the read-out over the cube, and the cube's line |
 | [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
 | [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
+| [X20](#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) | `ein-bugs/wrong-answers/oblig-derived-activator.ein` | 2 | a debt root does not owe and a commitment can bring: the `later debt` row, and what H holds for it |
 """)
 
 add("""## X1 — `branching/05_mini_zebra.ein`: everything at once
@@ -463,6 +464,17 @@ X14's program under `--no-search`: the static check's rows and the strata are th
 prints them; the cube's `status` is not known, since no node past root was built.
 """)
 add(block(["--no-search", "examples/features/07_unstratifiable.ein"]))
+
+add("""## X20 — `ein-bugs/wrong-answers/oblig-derived-activator.ein`: a debt root does not owe
+
+Ann owes a Food at root. The rule `arm` concludes `(total-owed drinks is-a)`, the activator of a second obligation,
+from any `likes` fact, so the node that holds `(likes Ann Soup)` owes Ann a Drink, a debt root was never told of. The
+obligations rung reads the activator off `arm`'s `:assert` and proposes at root what would pay the debt it brings: H
+holds `(drinks Ann Tea)` beside `(likes Ann Soup)`, the `later debt` row under `universe` says which candidate is there
+for which activator, and R is the one state that pays both debts. The program is one the static check flags, the
+activator's relation being one a commitment can change, so the cube answers it.
+""")
+add(block(["examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"]))
 
 PAGE = re.sub("\x00(\\d+)\x00", lambda m: RUNS[int(m.group(1))].result(), "\n".join(S))
 POOL.shutdown()

@@ -110,7 +110,8 @@ positive, the obligations rung at its default order
 Which facts can be proposed at all is decided by:
 
 - the **generation ladder**: the program's own `(hrule …)` if it declares
-  one, else the facts that would discharge what root owes
+  one, else the facts that would discharge what root owes and what a
+  commitment can bring it to owe
   ([`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)), else the
   blind combinatorial enumerator. The middle rung reads each obligation's
   domain at root, so it **declines**, and the blind enumerator builds H, when
@@ -134,12 +135,59 @@ cascade (§ 6.3).
 does not, either the program is wrong (a name it never mentions) or the engine
 is (a candidate it never proposes, as a rule's constant was until M1e2
 S1e2.2.4, [W4](../../../corpus/wrong_answers.toml), a name only a
-`:match` or a nested fact writes until S1e2.2.14, W15, and a domain value
+`:match` or a nested fact writes until S1e2.2.14, W15, a domain value
 only a commitment derives, which the obligations rung never proposed until
-S1e2.2.15, W14).
+S1e2.2.15, W14, and the payment of a debt whose activator only a commitment
+derives, W26, below).
 The universe is defined by the generator today. A declarative definition,
 every type-correct ground atom of every hypothesisable relation, is what a
 check of the generator would be held to, and is not written yet.
+
+**On the obligations rung H holds what a debt root does not owe would
+propose** (Q-M1f.307 (A), by the static reading, which answers Q-M1e.11). H
+is taken once, at root, and an obligation's activator is an ordinary fact, so
+a rule can derive one at a node: that node owes what the activator's plan
+matches, and root, which never held the activator, proposed nothing that pays
+it. The rung therefore reads, from the rules and root's plans and with no
+saturation:
+
+1. **the activators a commitment can derive**: every conclusion that holds
+   no variable and would activate an obligation rule, in the `:assert` of a
+   rule that reads a relation of D⁺ or is activated by one. D⁺ is the
+   relations a commitment can change, D of § 1.6, followed through the rules
+   root has no plan of; *forbid* reads the same set by the same function
+   ([`forbid.rs`](../../../ein.rs/crates/ein-infer/src/forbid.rs)), and here
+   it is seeded with the relations of the rung's own candidates;
+2. for each such activator root's fixpoint does not hold, **the rung's own
+   scan, at root**: the instances the activator's plan matches there, each
+   one's guard read as the rung reads a guard of a debt root owes;
+3. a candidate that adds a relation extends D⁺, so both steps are **repeated
+   until they add nothing**.
+
+A plan read this way is held to every decline of the rung beside root's own:
+where its guard scans a relation a commitment can change, the rung declines
+and the blind enumerator builds H. The scoping `(solve …)` states binds it
+as it binds any plan. The read-out names what H holds for each such debt, a
+`later debt` row under `universe`, and the summary carries it as
+`root.hypgen.later_debts`, written only where there is one.
+
+The reading is **at relation grain and inexact both ways**, each held by
+name in `ein-infer/tests/later_debts.rs`. *Over*: a rule that reads what a
+commitment can change need fire at no alive node, and H then holds a
+candidate for a debt no node owes, which is a member of a state of R
+wherever nothing refutes it. *Under*: an activator its rule writes with a
+variable is not read, whatever binds the variable, and the node that derives
+it owes what no candidate pays. So H is not *the program with the activator
+stated*: where one food switches the second debt on and another does not, R
+holds the state that likes the other food and drinks nothing, which the
+program that states the activator does not have. The reading is the
+obligations rung's alone. An hrule proposes at root what its `:match` finds
+there, and one whose `:match` reads a relation a commitment can change
+proposes at a node what it did not at root: H does not hold that, and
+nothing flags such a program. The blind enumerator reads no state and has
+no such case. A program this reading adds a candidate to derives an
+obligation's activator from a commitment, so the static check flags it
+(§ 1.6) and the cube answers it.
 
 **What the universe leaves out, the read-out names** (Q-M1e2.3, the user's
 ruling of 2026-11-03, *scoped*). R is over H as the ladder scopes it, so

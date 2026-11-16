@@ -25,6 +25,7 @@ use ein_infer::detector::{ASSUMES, Paths, State, Status, Warning};
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Checked, Licence, Route, Stopped, Verdict, Which};
 use ein_infer::monotone::Monotonicity;
+use ein_infer::oblgen::LaterDebtText;
 use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
 use ein_infer::region::Class;
 use ein_infer::scope::{Outside, Why};
@@ -167,6 +168,8 @@ rows! {
     Paths => "paths", Block;
     /// A cycle of the rules' dependency graph through an `absent`.
     NegativeCycle => "negative cycle", Block;
+    /// A debt root does not owe, and what H holds for it.
+    LaterDebt => "later debt", Block;
     /// A relation H leaves out.
     Outside => "outside", Block;
     /// A type the blind enumerator binds as an object.
@@ -319,7 +322,7 @@ impl Row {
             ],
         ),
         ("strata", &[Row::NegativeCycle]),
-        ("universe", &[Row::Outside, Row::Types]),
+        ("universe", &[Row::LaterDebt, Row::Outside, Row::Types]),
         (
             "empty",
             &[
@@ -873,6 +876,48 @@ pub fn outside_text(outside: &[Outside]) -> Option<String> {
     ))
 }
 
+/// What H holds for one debt root does not owe, as one sentence: the
+/// activator a commitment can bring, the rules that conclude it, and the
+/// candidates that would pay it and that no debt of root's proposed. At most
+/// [`WARNING_ROWS`] of them are named unless `uncut`, the rest counted with
+/// `hint`, what writes them all. The read-out prints it as a `later debt` row
+/// under `universe`, and `ein oracle --dump`'s `region.md` under its
+/// candidate count.
+pub fn later_text(l: &LaterDebtText, uncut: bool, hint: &str) -> String {
+    let by: Vec<String> = l.by.iter().map(|r| format!("'{r}'")).collect();
+    let by = if by.len() == 1 {
+        format!("rule {} concludes", by[0])
+    } else {
+        format!("rules {} conclude", by.join(" and "))
+    };
+    let n = l.added.len();
+    let facts = if uncut || n <= WARNING_ROWS {
+        l.added.join(" ")
+    } else {
+        format!(
+            "{} … {} more: {hint} writes every one, to DIR/answer.txt",
+            l.added[..WARNING_ROWS].join(" "),
+            group((n - WARNING_ROWS) as u64)
+        )
+    };
+    format!(
+        "{} — a debt root does not owe: {by} it from what a commitment can change. H holds \
+         what would pay it, {}: {facts}",
+        l.activator,
+        plural(n as u64, "candidate", "candidates"),
+    )
+}
+
+/// The `later debt` rows under `universe`, one per debt root does not owe
+/// that H holds a candidate for: every question prints them, since every
+/// question is over the same H.
+fn later_rows(out: &mut Out, later: &[LaterDebtText]) {
+    let (uncut, hint) = (out.uncut, out.hint);
+    for l in later {
+        out.line(sub_row(Row::LaterDebt, later_text(l, uncut, hint)));
+    }
+}
+
 /// The `outside` row under `universe`, when the universe leaves a relation
 /// out: every question prints it, since every question is over the same H.
 fn outside_row(out: &mut Out, outside: &[Outside]) {
@@ -1206,6 +1251,7 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
         out.line(sub_row(Row::Bit, bit));
     }
     out.row(Row::Universe, plural(c.n as u64, "candidate", "candidates"));
+    later_rows(&mut out, &c.root.later);
     outside_row(&mut out, &c.root.outside);
     types_row(&mut out, &c.root.types_as_objects);
     out.row(
@@ -1298,6 +1344,7 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
             ),
         );
     }
+    later_rows(&mut out, &a.root.later);
     outside_row(&mut out, &a.root.outside);
     types_row(&mut out, &a.root.types_as_objects);
     out.row(Row::Route, ROOT_ROUTE);
@@ -1825,6 +1872,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             ),
         );
     }
+    later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
     types_row(out, &a.root.types_as_objects);
     let route = match (d.route, o.command) {
@@ -2055,6 +2103,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         Row::Universe,
         plural(a.n() as u64, "candidate", "candidates"),
     );
+    later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
     types_row(out, &a.root.types_as_objects);
     out.row(

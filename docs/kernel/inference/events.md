@@ -244,7 +244,7 @@ carrying it makes the heap's pop order checkable rather than inferred.
 
 | `e` | emitted at | payload |
 |---|---|---|
-| `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered` |
+| `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered`; and `later_debts`, `later_candidates` where the call read a debt the state does not owe |
 | `hyp` | each constructed hypgen candidate | `fact`, `verdict` ∈ {`emitted`, the name of the filter that dropped it} |
 | `hypskip` | a **pre-candidate** skip — *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
 | `enter` | `try_commitment_set` returns. **In a region run**, after each node's own events, in visit order | `layer`, `commitment`, `kind`, `n_firings`, `core`. **In a region run**: `layer` (the commitment's size), `commitment` (sorted), `kind` ∈ {`dead`, `owing`, `in-r`}, `owes`, `core` (a dead node's, a list; `null` on a node that is not dead, whose core does not exist: M1f S1f.5.8, where it was `[]`), `core_status` (M1e2 S1e2.2.23: `within-budget`, `cut-` and the caps the core's search stopped at, or `null` where no core was taken) |
@@ -311,6 +311,18 @@ now rests on saturation determining those relations, which only a model-set
 comparison settles, and
 [the stage record](../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
 is where the zebra family settled it.
+
+**`later_debts` and `later_candidates` are optional**, written only where
+the call read a debt the state does not owe and a commitment can bring: an
+activator of an obligation rule that the state does not hold and a rule's
+`:assert` concludes
+([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+`later_debts` counts those activators, and `later_candidates` the facts the
+rung proposed for them before the filter pipeline, each a `hyp` line after
+the last one of a debt the state owes. `owed`, `branches`, `declined` and
+`candidates` count what the state owes and none of these, so on such a call
+the `hyp` stream's `raw` is `candidates + later_candidates`. A call that read
+no such debt writes the line it always wrote.
 
 A `rung` line is emitted per **generation call**, not per node: `complete`
 asks the generator once per alive entering, so the count tracks
@@ -404,10 +416,12 @@ per node depends on activator **facts** and a fork derives facts, so
 `Run::tree_node` re-reads it at every node it expands (M1e
 [S1e.2.1](../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal)).
 An inner node cannot hand the run back to the lattice, so *decline* there means
-*expand no further*, and this line is the only report of it. No corpus program
-reaches it — today's stdlib activators are all root-asserted — and the
-regression test is owed to
-[S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md).
+*expand no further*, and this line is the only report of it. No program
+reached it before the tree was deleted. What the engine does with the case
+the re-read stood for, an obligation whose activator a node derives, it does
+where H is built: the obligations rung proposes at root what such a debt
+would, and its `rung` line counts it
+([§ `rung`](#rung--which-generator-proposed), `later_debts`).
 
 **What an accepted tree does not narrate.** Four kinds this page lists are
 absent from a tree stream, and none of them is a bug:

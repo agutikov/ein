@@ -3,7 +3,8 @@
 //! **Three** modes since M1d S1d.2.5, and the switch is a ladder: rule-driven
 //! when the puzzle declares any `(hrule …)` ([`crate::hrule`]), otherwise
 //! obligation-driven while the state owes something it may branch on
-//! ([`crate::oblgen`]), otherwise blind combinatorial. Then an eight-stage
+//! ([`crate::oblgen`], which proposes for a debt a rule can bring a
+//! commitment to owe as well), otherwise blind combinatorial. Then an eight-stage
 //! filter pipeline whose **attribution** — which counter a drop lands in — is
 //! observable through [`HypGenStats`] and through the `hyp` / `hypskip`
 //! events, and every rung feeds it: what changes between them is which
@@ -153,6 +154,12 @@ pub struct HypGenStats {
     /// config switch, so what it drops is still part of the lattice. Pushed
     /// only on a kill, so a run without the lookahead pays nothing.
     pub lookahead_killed: Vec<FactId>,
+    /// The debts the state does not owe and a commitment can bring, each with
+    /// the candidates this call emitted for it — the obligations rung's
+    /// ([`crate::oblgen::LaterDebt`]). Empty on every other rung, and on a
+    /// program in which no rule that reads what a commitment can change
+    /// writes an obligation's activator.
+    pub later: Vec<crate::oblgen::LaterDebt>,
 }
 
 impl HypGenStats {
@@ -209,6 +216,12 @@ impl HypGenStats {
                 out.push(format!("  rung.declined      {}", r.declined));
             }
             out.push(format!("  rung.uncovered     {}", r.uncovered));
+            // Only where the call read a later debt, so every other program
+            // prints what it printed.
+            if r.later_debts > 0 {
+                out.push(format!("  rung.later_debts   {}", r.later_debts));
+                out.push(format!("  rung.later_cands   {}", r.later_candidates));
+            }
         }
         out
     }
@@ -901,7 +914,12 @@ pub(crate) fn scoping(
 ///   applied — `apply_filters` does not consult them and neither does
 ///   [`Hrules`], so a puzzle that declares a generator gets what it asked for.
 /// - **obligations** propose the facts that would discharge what the state
-///   owes, so the set is the `(open ?R)` arguments, scoped by all three.
+///   owes, so the set is the `(open ?R)` arguments, scoped by all three. The
+///   rung proposes for a debt a commitment can bring too
+///   ([`crate::oblgen::LaterDebt`]), and that debt's relation is **not** in
+///   this set: which debts those are is read from the rung's own scans, and
+///   this is the advisory's cheap reading of the program's plans at the
+///   state.
 /// - otherwise the **blind** set: every declared relation with a signature,
 ///   less the three scopings — `relation_plan`'s filter, read off the same
 ///   helpers so the two cannot drift.

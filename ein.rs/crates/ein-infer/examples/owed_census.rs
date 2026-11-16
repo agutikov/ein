@@ -8,6 +8,15 @@
 //! at root. This census reads both, statically from root's plans and by the
 //! cube.
 //!
+//! **It was taken before the obligations rung read a later debt**
+//! ([`ein_infer::oblgen`], § *A debt root is not told of*), and its rows
+//! priced that reading. The generator it calls is the engine's, so H here
+//! now holds what such a debt would propose: the one corpus program its
+//! `grow` column named then, `oblig-derived-activator.ein`, has no node that
+//! proposes outside H, and what the column still finds is what the reading
+//! leaves out, an activator written with a variable or an hrule that reads
+//! what a commitment can change.
+//!
 //! ### The static half
 //!
 //! From [`ein_infer::monotone::classify`] over root's plans, with `D` the
