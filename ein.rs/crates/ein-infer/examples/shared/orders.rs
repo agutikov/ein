@@ -2,23 +2,27 @@
 //!
 //! Each order of [`orders`] is a value of [`ein_infer::order::Order`], which
 //! the tree takes for the calling thread while a question is asked
-//! ([`ein_infer::order::with`]); no route is changed to measure it. For
-//! every corpus program that searches and each of the four questions the
-//! tree answers, `--single`, `-n 1`, `--minimal` and `--maximal`, the run's
-//! saturations and facts beyond root, with **the cost of the structure the
-//! order reads in them**: the whole node is charged to the run by the tree
-//! itself, and the full structure, read before the run, is added here
-//! ([`Cell::added`]).
+//! ([`ein_infer::order::with`]), but `routes`, which is the order the
+//! routes take, `Order::of` the question, with no `order::with`. For every
+//! corpus program that searches and each question the tree answers
+//! ([`QUESTIONS`]: `--single`, `-n 1`, each line whole, and each line under
+//! `-n 1` and `--single`), the run's saturations and facts beyond root, with
+//! **the cost of the structure the order reads in them**: the whole node is
+//! charged to the run by the tree itself, and the full structure, read
+//! before the run, is added here ([`Cell::added`]).
 //!
 //! `--orders` writes one file an order, `orders/<name>.jsonl`, a line a
 //! program, so that several processes can share the orders between them;
 //! `--orders-report` reads every file of that directory and prints the
 //! tables, each order against `today` by the rule the price list states:
 //! *go* where the corpus total is lower and no program's cell is higher by
-//! more than one tenth, in saturations and in facts. A cell a budget stops
-//! under both orders spent that budget either way, on more nodes or fewer,
-//! so the total is taken over the cells not stopped both ways, and a cell
-//! an order stops where `today` finishes sinks it.
+//! more than one tenth, in saturations and in facts. It reads the rule two
+//! ways. The first table of a question takes the total over the cells not
+//! stopped both ways, a cell a budget stops under both orders having spent
+//! that budget either way, and a cell an order stops where `today` finishes
+//! sinks it. The second, *by the price list's defaults*, is the price
+//! list's own reading: every cell in the total and in the tenth, a stopped
+//! cell with what it had spent.
 
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
@@ -26,14 +30,40 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use ein_corpus::repo_root;
-use ein_infer::explore::Stopped;
+use ein_infer::explore::{Mode, Stopped};
 use ein_infer::order::{self, Blame, Choice, Given, Order, Queue, Structure};
 use serde_json::{Value, json};
 
 use super::prices::{self, Read};
 
-/// The questions the tree answers.
-const QUESTIONS: [&str; 4] = ["single", "n1", "minimal", "maximal"];
+/// The questions the tree answers: of all of `R`, `--single` and `-n 1`;
+/// each line whole; and each line under `-n 1` and `--single`.
+const QUESTIONS: [&str; 8] = [
+    "single",
+    "n1",
+    "minimal",
+    "maximal",
+    "minimal-n1",
+    "minimal-single",
+    "maximal-n1",
+    "maximal-single",
+];
+
+/// [`QUESTIONS`] as modes.
+fn questions() -> Vec<(&'static str, Mode)> {
+    use ein_infer::explore::{Ask, Which};
+    let m = |which, ask| Mode { which, ask };
+    vec![
+        ("single", m(Which::All, Ask::Single)),
+        ("n1", m(Which::All, Ask::Find(1))),
+        ("minimal", m(Which::Minimal, Ask::Describe)),
+        ("maximal", m(Which::Maximal, Ask::Describe)),
+        ("minimal-n1", m(Which::Minimal, Ask::Find(1))),
+        ("minimal-single", m(Which::Minimal, Ask::Single)),
+        ("maximal-n1", m(Which::Maximal, Ask::Find(1))),
+        ("maximal-single", m(Which::Maximal, Ask::Single)),
+    ]
+}
 
 /// The instances, by tag.
 pub const INSTANCES: [(&str, &str); 7] = [
@@ -63,7 +93,9 @@ struct Named {
     name: &'static str,
     what: &'static str,
     reads: Reads,
-    order: Order,
+    /// `None`: the order the routes take ([`Order::of`] the question), with
+    /// no [`order::with`].
+    order: Option<Order>,
 }
 
 fn order(choice: Choice, queue: Queue, structure: Structure, restarts: bool) -> Order {
@@ -93,11 +125,18 @@ fn orders() -> Vec<Named> {
         name,
         what,
         reads,
-        order,
+        order: Some(order),
     };
     use Queue::{BySize, Deepest};
     use Reads::{Full, Node, Nothing};
     vec![
+        Named {
+            name: "routes",
+            what: "the order the routes take, `Order::of` the question, with no `order::with`: \
+                   coupled/20, and under -n N written+coupled/20",
+            reads: Node,
+            order: None,
+        },
         named(
             "today",
             "fewest alternatives not known dead, the first reported among equals; by size",
@@ -471,7 +510,7 @@ pub fn run(args: Vec<String>) {
         .collect();
     let at = out.join("orders");
     std::fs::create_dir_all(&at).expect("the orders directory");
-    let qs = prices::questions();
+    let qs = questions();
     for named in orders() {
         if only
             .as_ref()
@@ -483,7 +522,7 @@ pub fn run(args: Vec<String>) {
         for (path, rel) in &files {
             let mut order = named.order.clone();
             let mut added = [0u64; 2];
-            if named.reads == Reads::Full {
+            if let (Reads::Full, Some(order)) = (named.reads, order.as_mut()) {
                 // The full structure is read of a monotone program alone, as
                 // every way of spending it is.
                 match Read::of(path) {
@@ -498,8 +537,13 @@ pub fn run(args: Vec<String>) {
                 }
             }
             let mut cells: BTreeMap<&str, Value> = BTreeMap::new();
-            for (key, _, mode) in qs.iter().filter(|q| QUESTIONS.contains(&q.0)) {
-                let asked = order::with(order.clone(), || prices::ask(path, key, *mode, None));
+            for (key, mode) in &qs {
+                let asked = match &order {
+                    Some(order) => {
+                        order::with(order.clone(), || prices::ask(path, key, *mode, None))
+                    }
+                    None => prices::ask(path, key, *mode, None),
+                };
                 let cell = match asked {
                     Ok((run, _, _)) => json!({
                         "saturations": run.saturations,
@@ -689,7 +733,7 @@ pub fn report(args: Vec<String>) {
     );
 
     // Per question: each order against today.
-    for (qi, q) in QUESTIONS.iter().enumerate() {
+    for q in QUESTIONS.iter() {
         let _ = writeln!(md, "\n## `{q}`\n");
         let Some(base) = today.get(*q) else { continue };
         let tree_cells = base.values().filter(|c| c.tree).count();
@@ -710,6 +754,55 @@ pub fn report(args: Vec<String>) {
             "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|"
         );
         let mut losers: Vec<String> = Vec::new();
+        // The rule as the price list's defaults read it: a stopped cell
+        // counts with what it had spent, in the total and in the tenth.
+        let (mut every_rows, mut every_losers): (Vec<String>, Vec<String>) =
+            (Vec::new(), Vec::new());
+        for name in &names {
+            let Some(cells) = all[*name].get(*q) else {
+                continue;
+            };
+            let (mut every, mut every_base) = ([0u64; 2], [0u64; 2]);
+            let mut over: Vec<String> = Vec::new();
+            for (path, x) in base {
+                let Some(y) = cells.get(path) else { continue };
+                for u in 0..2 {
+                    every[u] += y.with(u);
+                    every_base[u] += x.with(u);
+                }
+                if (0..2).any(|u| y.with(u) * 10 > x.with(u) * 11) {
+                    let mark = |c: &Cell| if c.stopped { ", stopped" } else { "" };
+                    over.push(format!(
+                        "`{path}` {} · {}{} → {} · {}{}",
+                        n(x.with(0)),
+                        n(x.with(1)),
+                        mark(x),
+                        n(y.with(0)),
+                        n(y.with(1)),
+                        mark(y)
+                    ));
+                }
+            }
+            let go = over.is_empty() && (0..2).all(|u| every[u] < every_base[u]);
+            let word = if *name == "today" {
+                "—"
+            } else if go {
+                "**go**"
+            } else {
+                "no"
+            };
+            every_rows.push(format!(
+                "| `{name}` | {} · {} | {} · {} | {} | {word} |",
+                n(every[0]),
+                n(every[1]),
+                n(every_base[0]),
+                n(every_base[1]),
+                over.len()
+            ));
+            if !over.is_empty() {
+                every_losers.push(format!("- `{name}`: {}", over.join("; ")));
+            }
+        }
         for name in &names {
             let Some(cells) = all[*name].get(*q) else {
                 continue;
@@ -799,6 +892,20 @@ pub fn report(args: Vec<String>) {
         for l in losers {
             let _ = writeln!(md, "{l}");
         }
+        let _ = writeln!(
+            md,
+            "\n### `{q}` by the price list's defaults\n\nEvery cell in the total and in the \
+             tenth, a cell a budget stopped with what it had spent; a *go* needs both units.\n\n\
+             | order | every cell | `today`'s | cells higher by more than a tenth | verdict |\n\
+             |---|---:|---:|---:|---|"
+        );
+        for r in every_rows {
+            let _ = writeln!(md, "{r}");
+        }
+        let _ = writeln!(md);
+        for l in every_losers {
+            let _ = writeln!(md, "{l}");
+        }
         // The instances.
         let _ = writeln!(md, "\n### The instances under `{q}`\n");
         let _ = write!(md, "| order |");
@@ -830,7 +937,7 @@ pub fn report(args: Vec<String>) {
             let _ = writeln!(md);
         }
         // The states listed.
-        if qi < 2 {
+        if !matches!(*q, "minimal" | "maximal") {
             let _ = writeln!(
                 md,
                 "\n### Programs whose listed states are others under `{q}`\n"

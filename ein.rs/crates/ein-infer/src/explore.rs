@@ -329,8 +329,8 @@ pub struct TreeOrder {
     /// than the share of the run's facts an order may spend on it.
     pub unaffordable: u32,
     /// Among instances equal in every other key the first the obligation
-    /// pass reports was taken, which is `-n N`'s last key; otherwise the
-    /// first by rendered text.
+    /// pass reports was taken, which is the last key under `-n N` and on the
+    /// minimal line; otherwise the first by rendered text.
     pub written: bool,
 }
 

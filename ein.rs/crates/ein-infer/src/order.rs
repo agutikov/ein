@@ -53,13 +53,19 @@
 //! **Which state next.** The owing state of the smallest closure, then by
 //! closure: every state of `k` candidates before any of `k + 1`.
 //!
-//! No key reads the interner's ids, and but for `-n N`'s last key none
-//! reads the order a program states its facts in.
+//! **The minimal line**, whole or under `--single`, takes
+//! [`Order::WRITTEN`] instead: keys 2 and 3, the last the first the
+//! obligation pass reports, and no coupling read. Under `-n N` it takes
+//! `-n N`'s order.
+//!
+//! No key reads the interner's ids, and but for the last key under `-n N`
+//! and on the minimal line none reads the order a program states its facts
+//! in.
 
 use std::cell::RefCell;
 use std::sync::Arc;
 
-use crate::explore::{Ask, Mode};
+use crate::explore::{Ask, Mode, Which};
 
 /// The saturations a run has made before the couplings are read: one more
 /// is then a twentieth of them at most.
@@ -187,6 +193,9 @@ impl Order {
     /// **The order the routes take for `mode`** (the module's § The order
     /// the routes take).
     pub fn of(mode: Mode) -> Order {
+        if mode.which == Which::Minimal && !matches!(mode.ask, Ask::Find(_)) {
+            return Order::WRITTEN;
+        }
         Order {
             choice: Choice::Coupled {
                 written: matches!(mode.ask, Ask::Find(_)),
@@ -228,7 +237,6 @@ pub fn chosen() -> Option<Order> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::explore::Which;
 
     #[test]
     fn with_chooses_an_order_only_while_it_runs() {
@@ -265,8 +273,9 @@ mod tests {
         );
         assert!(!single.restarts);
         // `-n N`, of all of R or of a line, keeps the reported order among
-        // equals, and nothing else differs; every other question is
-        // `--single`'s order.
+        // equals, and nothing else differs; the maximal line is `--single`'s
+        // order, and the minimal line whole or under `--single` the written
+        // one, with no coupling read.
         for which in [Which::All, Which::Minimal, Which::Maximal] {
             let find = Order::of(mode(which, Ask::Find(1)));
             assert_eq!(find.choice, coupled(true));
@@ -276,7 +285,12 @@ mod tests {
             );
             for ask in [Ask::Describe, Ask::Single] {
                 if which != Which::All || ask == Ask::Single {
-                    assert_eq!(Order::of(mode(which, ask)), single);
+                    let want = if which == Which::Minimal {
+                        Order::WRITTEN
+                    } else {
+                        single.clone()
+                    };
+                    assert_eq!(Order::of(mode(which, ask)), want);
                 }
             }
         }

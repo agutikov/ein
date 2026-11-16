@@ -578,6 +578,10 @@ more, the price of not reading the order it was declared in, less six nodes on t
 
 ### The order to be built, by the rule, per question
 
+Written before T4, from T3's tables, which read the rule over the cells not stopped both ways. What decides is
+[§ The rule as the price list reads it](#the-rule-as-the-price-list-reads-it-per-question), below: it keeps this
+table's order for six questions and sinks the minimal line.
+
 | question | *go*, of the orders that decide I-SENDW | taken | why |
 |---|---|---|---|
 | `--single` | `coupled/10`, `/20`, `/40`; `written+coupled/10`, `/20`, `/40` | **`coupled/20`** | the canonical one: I-SEND and I-SENDW the same work. Of the shares, a twentieth is the least total; a fortieth reads the node later and pays a longer first tree, 20 577 over the cells finished both ways against 19 858 |
@@ -637,6 +641,9 @@ owing state branches on one licensed instance it owes, chosen once, by three key
 3. **the first by rendered text**, the instances in the order of their alternatives; under `-n N`, of all of
    `R` or of a line, the first the obligation pass reports.
 
+**The minimal line, whole and under `--single`, then went back to the written order**, by the rule
+([below](#the-rule-as-the-price-list-reads-it-per-question)); under `-n N` it keeps `-n N`'s.
+
 The queue is as it was, the smallest closure first. **What it reads**: the state and `known_dead`, for nothing,
 as before; and [`structure::NodeCoupling`](../../../ein.rs/crates/ein-infer/src/structure/coupling/node.rs), the
 coupling read from the whole node alone, **one saturation, its facts those of every candidate committed**,
@@ -672,7 +679,7 @@ today,routes`, `build/s5/m6/`; `routes` is the order the routes take with no `or
 |---|---|---|---|---|
 | `--single` | *Solution*, 17 747 · 222 924 | *Solution*, 18 030 · 221 803 | stopped, 131 134, none listed | ***Solution*, 18 030 · 221 803** |
 | `-n 1` | 15 854 · 192 556 | 15 855 · 192 722 | stopped, none listed | 17 542 · 199 031 |
-| `--minimal` | stopped, 205 166 | stopped, 205 840 | stopped, 131 134, none listed | stopped, 205 840, its state listed |
+| `--minimal` | stopped, 205 166 | stopped, 205 840; **after the rule**, the written order's, 205 166 | stopped, 131 134, none listed | stopped, 205 840, its state listed; **after the rule**, 131 134, none listed |
 | `--maximal` | 17 754 · 223 050 | 18 030 · 221 803 | stopped, none listed | 18 030 · 221 803 |
 
 I-SEND's nodes under `--single` by the letters committed (`ein solve examples/beyond_arith/send_more_money.ein
@@ -694,6 +701,68 @@ saturations, the whole node among them):
 | all eight | 6 220 | 6 219 | and the state, in `R` |
 | the state's extensions | 26 | 26 | |
 | | **18 030** | | 17 747 by column, before |
+
+### The rule as the price list reads it, per question
+
+T3's tables read the rule as [S1f.10.3](s1f.10.3_the_restricted_join.md#defaults-taken)'s default 2 has it, over
+the cells not stopped both ways. **The rule is [S1f.10.13](s1f.10.13_the_price_list.md#defaults-taken)'s, and read
+as its own defaults read it**: every cell in the total, **a cell a budget stopped counting with what it had
+spent**, under either order (default 2); both units, a *go* needing both (default 1); and no program's cell higher
+by more than a tenth in either unit, a stopped cell compared with what it had spent. The cost of what the order
+reads is in every cell: the whole node is one of the run's saturations, with its facts, and an attempt stopped
+at its share is in the run's facts. Applied after T4, on the release example at T4
+(`price_list --orders --only today,routes,coupled/20,written+coupled/20,text,coupled/10,coupled/40`, then
+`--orders-report`, `build/s5/m6/`, 2026-11-16, a core each, on AC, the machine shared; saturations and facts are
+the numbers). The harness gained two things for it: `routes`, the order the routes take with no `order::with`, and
+**the four cells between the measured ones**, each line under `-n 1` and under `--single`, so that no question the
+tree answers takes its order by a default. 190 programs; the written order is the tree's of before T4.
+
+| question | the order T4 built for it | every cell, that order | every cell, the written order | cells higher by more than a tenth | by the rule | without I-SENDW, that order against the written | the cells finished both ways |
+|---|---|---:|---:|---:|---|---:|---:|
+| `--single` | `coupled/20` | 37 888 · 481 451 | 150 715 · 1 309 989 | 0 | **go** | 19 858 · 259 648 against 19 581 · 261 430 | the same |
+| `-n 1` | `written+coupled/20` | 34 751 · 423 553 | 148 342 · 1 272 915 | 0 | **go** | 17 209 · 224 522 against 17 208 · 224 356 | the same |
+| `--minimal` | `coupled/20` | 442 447 · 4 361 988 | 367 105 · 4 361 526 | **1**: `send_more_money_written.ein`, stopped both ways, 131 134 → 205 840 saturations for 1 048 559 facts | **no** | 236 607 · 3 313 429 against 235 971 · 3 312 967 | 4 599 · 170 630 against 4 601 · 170 994 |
+| `--maximal` | `coupled/20` | 496 917 · 2 710 048 | 609 742 · 3 537 151 | 0 | **go** | 478 887 · 2 488 245 against 478 608 · 2 488 592 | 23 295 · 352 041 against 23 016 · 352 388 |
+| `--minimal -n 1` | `written+coupled/20` | 34 891 · 424 817 | 148 475 · 1 274 109 | 0 | **go** | 17 342 · 225 716 against 17 341 · 225 550 | the same |
+| `--minimal --single` | `coupled/20` | 414 775 · 2 236 327 | 339 390 · 2 235 899 | **3**: `send_more_money_written.ein` as under `--minimal`; `zebra2-minus-15.ein` and its `-obligations` twin, 45 · 2 878 → 49 · 3 271 | **no** | 208 935 · 1 187 768 against 208 256 · 1 187 340 | 3 095 · 139 209 against 3 090 · 138 789 |
+| `--maximal -n 1` | `written+coupled/20` | 491 742 · 2 572 552 | 605 302 · 3 421 330 | 0 | **go** | 474 169 · 2 372 937 against 474 168 · 2 372 771 | 18 577 · 236 733 against 18 576 · 236 567 |
+| `--maximal --single` | `coupled/20` | 495 899 · 2 687 567 | 608 724 · 3 514 670 | 0 | **go** | 477 869 · 2 465 764 against 477 590 · 2 466 111 | 22 277 · 329 560 against 21 998 · 329 907 |
+
+**So the order ships for six questions of eight, and the minimal line, whole and under `--single`, keeps the
+order it had**: `Order::of` returns `Order::WRITTEN` there, the count and then the first the obligation pass
+reports, no coupling read; under `-n N` the minimal line takes `-n N`'s order like every line. `routes` was
+measured again after that change: on the minimal line, whole and under `--single`, it is the written order's to
+the cell, and on the six others `coupled/20`'s or `written+coupled/20`'s to the cell.
+
+**How I-SEND and I-SENDW weigh in it, plainly.** On every *go* the total is lower **because of I-SENDW alone**:
+the written order spent 131 134 saturations and 1 048 559 facts on it and answered nothing, the built order
+decides it in 18 030 and 221 803 (17 542 to 17 573 under `-n 1`), and the price list's default 2 counts the
+stopped cell with what it spent. **Without it, the corpus is a little dearer under every question that reads the
+couplings**: under `--single` 277 saturations more of 19 581, 1.4 %, and 1 782 facts fewer, which is I-SEND's
+283 more, 17 747 → 18 030, 1.6 %, less two nodes on each zebra2 file and one on each `zebra2-minus-15` file;
+under `--maximal` and `--maximal --single` 279 more and 347 facts fewer, I-SEND's 276, 17 754 → 18 030, with four
+more on each `zebra2-minus-15` file, two fewer on each zebra2 file and one fewer on
+`lattice/05_owed_seats_bounded.ein`; under `-n 1` and its two line cells one saturation and 166 facts more,
+I-SEND's, 15 854 → 15 855. No cell is higher by more than a tenth under any of the six. So the rule's *go* rests
+on one program going from not decided to decided, which is what the stage was for (E-29), at a price of 1.6 % on
+the program that was declared in the order a search could use.
+
+**What sank the minimal line, and the next way.** Under `--minimal` the built order's total is higher in both
+units, by 75 342 saturations and 462 facts, and one cell is higher by more than a tenth: I-SENDW, stopped by the
+budget both ways, 131 134 → 205 840 saturations for the same 1 048 559 facts. The written order's tree is itself
+stopped in its sixth layer, nothing listed; the built order's tree ends, lists its state, and the line's sweep of
+the owing states the tree left is what the budget stops, on more and smaller nodes. I-SEND is stopped both ways
+too, 205 166 → 205 840; the 462 facts are the four stopped cells' (the `zebra2-minus-15` pair stops at 1 047 120
+facts where it stopped at 1 046 711) less the zebra2 pair's one node each. The cells that finish are lower, 4 601 →
+4 599, and none is higher. Under `--minimal --single` the same I-SENDW cell sinks it, and with it the
+`zebra2-minus-15` pair, 45 · 2 878 → 49 · 3 271, nine per cent more nodes and fourteen per cent more facts, which
+`text` alone does as well: it is the canonical last key, not the couplings. **No order measured decides either
+SEND on the minimal line** (T3's tables: both stopped under every one of 33), because what costs there is the
+sweep, the line as the alive minimal transversals of the maximal owing states' complements, every owing state
+extended once; an order of the tree moves which nodes the budget is spent on. The next way is S1f.10.3's priced
+and not built, a death's pair or its core as a nogood that the sweep's extensions are pruned by: 9 350 of
+I-SEND's deaths under `--single` hold a letter's two digits or a digit's two letters. For the four nodes on the
+`zebra2-minus-15` pair under `--minimal --single`, K-26.
 
 ### Defaults taken
 

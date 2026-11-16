@@ -724,7 +724,7 @@ f2ab1b74809660c1       18L  examples/beyond_arith/cryptarithm.ein::dot[constrain
 8bd8ea0e6af9906d     9663L  examples/beyond_arith/cryptarithm.ein::dot[kb-since]
 ce84ec7ad745a0e6       35L  examples/beyond_arith/cryptarithm.ein::read-out[describe]
 e45cbad7e6c2bc09       23L  examples/beyond_arith/cryptarithm.ein::read-out[maximal]
-59073722d40e5d57       23L  examples/beyond_arith/cryptarithm.ein::read-out[minimal]
+0100cd9cd235d19b       23L  examples/beyond_arith/cryptarithm.ein::read-out[minimal]
 947d27143e5ea633       23L  examples/beyond_arith/cryptarithm.ein::read-out[single]
 e24a27f9a122edf7       23L  examples/beyond_arith/cryptarithm.ein::read-out[n2]
 48ccb008d5c42e4e     2142L  examples/beyond_arith/cryptarithm.ein::region-trace
@@ -732,7 +732,7 @@ e24a27f9a122edf7       23L  examples/beyond_arith/cryptarithm.ein::read-out[n2]
 752860b5f25dd6ba        8L  examples/beyond_arith/cryptarithm.ein::region-lattice
 22dc12aa05d67aca    13865L  examples/beyond_arith/cryptarithm.ein::cores[describe]
 de7c1c2652fe4146     3797L  examples/beyond_arith/cryptarithm.ein::cores[maximal]
-aba2346d1fc20ac0    10682L  examples/beyond_arith/cryptarithm.ein::cores[minimal]
+a3b8147d0aba17d8    10682L  examples/beyond_arith/cryptarithm.ein::cores[minimal]
 665360376d8804e3     3552L  examples/beyond_arith/cryptarithm.ein::cores[single]
 600a1645cde9d89f     3551L  examples/beyond_arith/cryptarithm.ein::cores[n2]
 6d9cb4e771cf822b      149L  examples/beyond_arith/cryptarithm.ein::oracle
@@ -765,7 +765,7 @@ d2c1ebe2cffe81c0     9617L  examples/beyond_arith/equation_by_search.ein::dot[kb
 b9420289f7763e92     9631L  examples/beyond_arith/equation_by_search.ein::dot[kb-since]
 165bc4151450deec       35L  examples/beyond_arith/equation_by_search.ein::read-out[describe]
 9ccef8a72311d174       23L  examples/beyond_arith/equation_by_search.ein::read-out[maximal]
-5047c5fd2f5f60dd       23L  examples/beyond_arith/equation_by_search.ein::read-out[minimal]
+dc48a96f48330d49       23L  examples/beyond_arith/equation_by_search.ein::read-out[minimal]
 f32dee77df625f3a       23L  examples/beyond_arith/equation_by_search.ein::read-out[single]
 32c3b2394641a56b       23L  examples/beyond_arith/equation_by_search.ein::read-out[n2]
 dcb951521f0b80c4     1165L  examples/beyond_arith/equation_by_search.ein::region-trace
@@ -806,7 +806,7 @@ b838cb1a44527e12     9627L  examples/beyond_arith/equation_no_solution.ein::dot[
 798725f2eeb919a5     9627L  examples/beyond_arith/equation_no_solution.ein::dot[kb-since]
 b67f09abfaeb5d9b       49L  examples/beyond_arith/equation_no_solution.ein::read-out[describe]
 ca13ffd85572cf0e       21L  examples/beyond_arith/equation_no_solution.ein::read-out[maximal]
-31c02ab8099e4bfd       21L  examples/beyond_arith/equation_no_solution.ein::read-out[minimal]
+0b82fb97a376f3fe       21L  examples/beyond_arith/equation_no_solution.ein::read-out[minimal]
 78804d5078ec565c       20L  examples/beyond_arith/equation_no_solution.ein::read-out[single]
 ae41938f55b3d1e3       20L  examples/beyond_arith/equation_no_solution.ein::read-out[n2]
 512fa9855c919502      620L  examples/beyond_arith/equation_no_solution.ein::region-trace
@@ -888,7 +888,7 @@ cf51100c9ef4de4c    10041L  examples/beyond_arith/equation_two_unknowns.ein::dot
 86ba0c8170ce9d4b    10175L  examples/beyond_arith/equation_two_unknowns.ein::dot[kb-since]
 3ae8937a236a8d2d       45L  examples/beyond_arith/equation_two_unknowns.ein::read-out[describe]
 6f0fa07760b63c10       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[maximal]
-ad30b89fd7b4cb81       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[minimal]
+29d6da36b693f0bf       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[minimal]
 eb9f6dfb6a2c7441       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[single]
 332d093f73102d6d       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[n2]
 4feb230e3f7f3edd    13953L  examples/beyond_arith/equation_two_unknowns.ein::region-trace
@@ -896,7 +896,7 @@ eb9f6dfb6a2c7441       18L  examples/beyond_arith/equation_two_unknowns.ein::rea
 f65104645a8e2f85       11L  examples/beyond_arith/equation_two_unknowns.ein::region-lattice
 9b495f06c7417c1c    69326L  examples/beyond_arith/equation_two_unknowns.ein::cores[describe]
 446e828619531dd1    11407L  examples/beyond_arith/equation_two_unknowns.ein::cores[maximal]
-f68d8589b3c68616    11406L  examples/beyond_arith/equation_two_unknowns.ein::cores[minimal]
+cd4a09e2c8b87c24    11406L  examples/beyond_arith/equation_two_unknowns.ein::cores[minimal]
 0537dde13711130e    11407L  examples/beyond_arith/equation_two_unknowns.ein::cores[single]
 7422f5cca30ec662    11406L  examples/beyond_arith/equation_two_unknowns.ein::cores[n2]
 b1356944e4c65f10      187L  examples/beyond_arith/equation_two_unknowns.ein::oracle
@@ -1216,7 +1216,7 @@ a5d6e3fcd361231d     9682L  examples/beyond_arith/send_more_money.ein::dot[kb-no
 314474a8c6f028d8     9686L  examples/beyond_arith/send_more_money.ein::dot[kb-since]
 42a49cf8d6d67f6d       32L  examples/beyond_arith/send_more_money.ein::read-out[describe]
 cd36ea7460f3ae24       18L  examples/beyond_arith/send_more_money.ein::read-out[maximal]
-5308d2f01cf9a0cf       18L  examples/beyond_arith/send_more_money.ein::read-out[minimal]
+ac73977139750c12       18L  examples/beyond_arith/send_more_money.ein::read-out[minimal]
 89a102598d7120a7       18L  examples/beyond_arith/send_more_money.ein::read-out[single]
 7517b40534197d89       18L  examples/beyond_arith/send_more_money.ein::read-out[n2]
 af9f0d0cd9169fd1     5546L  examples/beyond_arith/send_more_money.ein::region-trace
@@ -1224,7 +1224,7 @@ d41d8cd98f00b204        0L  examples/beyond_arith/send_more_money.ein::states
 9d6f7cae065792b8        7L  examples/beyond_arith/send_more_money.ein::region-lattice
 a052e43545e3f33a    89298L  examples/beyond_arith/send_more_money.ein::cores[describe]
 d7a3ca84a56bb42b    80406L  examples/beyond_arith/send_more_money.ein::cores[maximal]
-2362b9ff5c0e44b8    80405L  examples/beyond_arith/send_more_money.ein::cores[minimal]
+30f8a5c67301f6ea    76349L  examples/beyond_arith/send_more_money.ein::cores[minimal]
 901e2f6f4ff8c3e9    80406L  examples/beyond_arith/send_more_money.ein::cores[single]
 6bc4e5232980e784    75847L  examples/beyond_arith/send_more_money.ein::cores[n2]
 58a9ca3f1051d334      249L  examples/beyond_arith/send_more_money.ein::oracle
@@ -1257,7 +1257,7 @@ f2ab1b74809660c1       18L  examples/beyond_arith/send_more_money_written.ein::d
 dbf451fe8b48aa51     9686L  examples/beyond_arith/send_more_money_written.ein::dot[kb-since]
 76ac083ea8a74446       32L  examples/beyond_arith/send_more_money_written.ein::read-out[describe]
 024f3c653fd64162       18L  examples/beyond_arith/send_more_money_written.ein::read-out[maximal]
-f14d3a9a4f0cfa9a       18L  examples/beyond_arith/send_more_money_written.ein::read-out[minimal]
+9e4dd870d2c1a670       18L  examples/beyond_arith/send_more_money_written.ein::read-out[minimal]
 31ccecf19633685b       18L  examples/beyond_arith/send_more_money_written.ein::read-out[single]
 1705d21962a6a09b       18L  examples/beyond_arith/send_more_money_written.ein::read-out[n2]
 3b664ea99a44c6a5     5546L  examples/beyond_arith/send_more_money_written.ein::region-trace
@@ -1265,7 +1265,7 @@ d41d8cd98f00b204        0L  examples/beyond_arith/send_more_money_written.ein::s
 8054df3e10cdd63e        7L  examples/beyond_arith/send_more_money_written.ein::region-lattice
 dc92a685724bc331    89298L  examples/beyond_arith/send_more_money_written.ein::cores[describe]
 9167efd2334d1244    80406L  examples/beyond_arith/send_more_money_written.ein::cores[maximal]
-1edd742a48784e38    80405L  examples/beyond_arith/send_more_money_written.ein::cores[minimal]
+7b1678bd6465522b    86047L  examples/beyond_arith/send_more_money_written.ein::cores[minimal]
 e889b34cf9fe9e7d    80406L  examples/beyond_arith/send_more_money_written.ein::cores[single]
 e33d1cddc9a900ef    92154L  examples/beyond_arith/send_more_money_written.ein::cores[n2]
 1a5c62fa031467a7      249L  examples/beyond_arith/send_more_money_written.ein::oracle
@@ -1585,7 +1585,7 @@ dbb1c64c72532093      577L  examples/binary_logic/equivalent.ein::dot[kb]
 d753d29a1d3b973a      883L  examples/binary_logic/equivalent.ein::dot[kb-since]
 41902f66468eb674       53L  examples/binary_logic/equivalent.ein::read-out[describe]
 3338e4ead400c8d8       21L  examples/binary_logic/equivalent.ein::read-out[maximal]
-c88af60be0dd014d       21L  examples/binary_logic/equivalent.ein::read-out[minimal]
+9479a9ddfeec398f       21L  examples/binary_logic/equivalent.ein::read-out[minimal]
 ccf2c58f060719b1       20L  examples/binary_logic/equivalent.ein::read-out[single]
 b2b47c8fcd92f5a8       20L  examples/binary_logic/equivalent.ein::read-out[n2]
 417bbd5fb82bab9c     1571L  examples/binary_logic/equivalent.ein::region-trace
@@ -1667,7 +1667,7 @@ cd4da26b1a99bc4d      548L  examples/binary_logic/knights.ein::dot[kb-none]
 f3847b965b9ce9d9      854L  examples/binary_logic/knights.ein::dot[kb-since]
 81194c5fd17e79be       49L  examples/binary_logic/knights.ein::read-out[describe]
 0620a56e07426fac       37L  examples/binary_logic/knights.ein::read-out[maximal]
-192b054b77aa4d4b       37L  examples/binary_logic/knights.ein::read-out[minimal]
+ff48df030d7c06ab       37L  examples/binary_logic/knights.ein::read-out[minimal]
 122d564387679589       37L  examples/binary_logic/knights.ein::read-out[single]
 fcde518d31db4d51       37L  examples/binary_logic/knights.ein::read-out[n2]
 d1d14814d90372b3     1851L  examples/binary_logic/knights.ein::region-trace
@@ -1708,7 +1708,7 @@ a983e8ffbe03f60a      562L  examples/binary_logic/not_equivalent.ein::dot[kb-no-
 41b8571cffb38868      871L  examples/binary_logic/not_equivalent.ein::dot[kb-since]
 bb62e41ca48fce40       41L  examples/binary_logic/not_equivalent.ein::read-out[describe]
 694bcfc974aa8003       28L  examples/binary_logic/not_equivalent.ein::read-out[maximal]
-2ae0df965deb6a54       28L  examples/binary_logic/not_equivalent.ein::read-out[minimal]
+883918343cd2b9e4       28L  examples/binary_logic/not_equivalent.ein::read-out[minimal]
 b9aa008d6bf8c26b       28L  examples/binary_logic/not_equivalent.ein::read-out[single]
 3c448ed1f08bc9ef       28L  examples/binary_logic/not_equivalent.ein::read-out[n2]
 2097f8591ecee835     2027L  examples/binary_logic/not_equivalent.ein::region-trace
@@ -1790,7 +1790,7 @@ e0b2017cb031c2a8      554L  examples/binary_logic/satisfiable.ein::dot[kb-origin
 3184fc4633d4d794      860L  examples/binary_logic/satisfiable.ein::dot[kb-since]
 3da332eaf71e391d       35L  examples/binary_logic/satisfiable.ein::read-out[describe]
 f7f1999e4cb4ec54       23L  examples/binary_logic/satisfiable.ein::read-out[maximal]
-43d3959fe8804d9e       23L  examples/binary_logic/satisfiable.ein::read-out[minimal]
+325c4223a422d617       23L  examples/binary_logic/satisfiable.ein::read-out[minimal]
 6afca1ad2e57b2d0       23L  examples/binary_logic/satisfiable.ein::read-out[single]
 b98c4f81773a6d46       23L  examples/binary_logic/satisfiable.ein::read-out[n2]
 210662e9f483899e     1738L  examples/binary_logic/satisfiable.ein::region-trace
@@ -1954,7 +1954,7 @@ e632d1768784023e      558L  examples/binary_logic/truth_table.ein::dot[kb-no-typ
 c46d7d915cb837aa      867L  examples/binary_logic/truth_table.ein::dot[kb-since]
 c3739eb47652edab       77L  examples/binary_logic/truth_table.ein::read-out[describe]
 27f267b44e7da40b       58L  examples/binary_logic/truth_table.ein::read-out[maximal]
-db6c688bc2518f52       58L  examples/binary_logic/truth_table.ein::read-out[minimal]
+f4f9a6aa2fd31077       58L  examples/binary_logic/truth_table.ein::read-out[minimal]
 f73bad074fe1bfab       28L  examples/binary_logic/truth_table.ein::read-out[single]
 b9b6f0e7e6e86336       28L  examples/binary_logic/truth_table.ein::read-out[n2]
 8affddc36d16048d     3257L  examples/binary_logic/truth_table.ein::region-trace
@@ -1995,7 +1995,7 @@ b4b9b117687646b4      555L  examples/binary_logic/unsatisfiable.ein::dot[kb-orig
 16319dd7a0469fb2      861L  examples/binary_logic/unsatisfiable.ein::dot[kb-since]
 d9f3491aed568f3b       51L  examples/binary_logic/unsatisfiable.ein::read-out[describe]
 bed97fdc7a795190       21L  examples/binary_logic/unsatisfiable.ein::read-out[maximal]
-19b3e4492d369a99       21L  examples/binary_logic/unsatisfiable.ein::read-out[minimal]
+7593174adbd22a6d       21L  examples/binary_logic/unsatisfiable.ein::read-out[minimal]
 657096d0f4ff39f4       20L  examples/binary_logic/unsatisfiable.ein::read-out[single]
 05135a6eff74b66e       20L  examples/binary_logic/unsatisfiable.ein::read-out[n2]
 a4604f641d63754c     1560L  examples/binary_logic/unsatisfiable.ein::region-trace
@@ -11046,7 +11046,7 @@ d953e240d98e90a5        9L  examples/ein-bugs/wrong-answers/owed-seats-renamed.e
 032f1e55dd8621c4       31L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::dot[kb-since]
 490a0a37476cf4bf       78L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::read-out[describe]
 72c1f82223b88a8c       24L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::read-out[maximal]
-9d28ea91affdfd49       27L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::read-out[minimal]
+53c52150b7ddf1e3       27L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::read-out[minimal]
 77803f4324abf4dc       27L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::read-out[single]
 1d619ed2bfab202c       27L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::read-out[n2]
 2aebff13a30eaef7       69L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::region-trace
@@ -11054,7 +11054,7 @@ d953e240d98e90a5        9L  examples/ein-bugs/wrong-answers/owed-seats-renamed.e
 0780bf3bbd6bd1e7       24L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::region-lattice
 b49536d20fd6a3eb      578L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::cores[describe]
 a8734b5a51010096      225L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::cores[maximal]
-4f9bb87b658864e0      395L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::cores[minimal]
+b32ff1fff5fd145d      395L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::cores[minimal]
 39ebadb268249769      216L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::cores[single]
 8957a9e54b86cbc4      215L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::cores[n2]
 02fc563c93fbf3de      694L  examples/ein-bugs/wrong-answers/owed-seats-renamed.ein::oracle
@@ -11087,7 +11087,7 @@ a8bd2103e62354b7       31L  examples/ein-bugs/wrong-answers/owed-seats.ein::dot[
 9cedbbc9d0f7d646       31L  examples/ein-bugs/wrong-answers/owed-seats.ein::dot[kb-since]
 f629b8af776a90c7       78L  examples/ein-bugs/wrong-answers/owed-seats.ein::read-out[describe]
 c4914f9a90f2bcdd       24L  examples/ein-bugs/wrong-answers/owed-seats.ein::read-out[maximal]
-396e6a1b6772b083       27L  examples/ein-bugs/wrong-answers/owed-seats.ein::read-out[minimal]
+b2d057a8a71597f4       27L  examples/ein-bugs/wrong-answers/owed-seats.ein::read-out[minimal]
 c21921043a7183aa       27L  examples/ein-bugs/wrong-answers/owed-seats.ein::read-out[single]
 90f77202ee484270       27L  examples/ein-bugs/wrong-answers/owed-seats.ein::read-out[n2]
 2fb4a5b7e5955de0       69L  examples/ein-bugs/wrong-answers/owed-seats.ein::region-trace
@@ -11095,7 +11095,7 @@ c21921043a7183aa       27L  examples/ein-bugs/wrong-answers/owed-seats.ein::read
 3f3ac78f154cf609       24L  examples/ein-bugs/wrong-answers/owed-seats.ein::region-lattice
 02dca484d744775b      578L  examples/ein-bugs/wrong-answers/owed-seats.ein::cores[describe]
 345c598d0487c191      225L  examples/ein-bugs/wrong-answers/owed-seats.ein::cores[maximal]
-9777b2e1c34716e4      395L  examples/ein-bugs/wrong-answers/owed-seats.ein::cores[minimal]
+76b7a5f79309e060      395L  examples/ein-bugs/wrong-answers/owed-seats.ein::cores[minimal]
 b2f2ad5e5e7f3a1f      216L  examples/ein-bugs/wrong-answers/owed-seats.ein::cores[single]
 17fe8aae95675282      215L  examples/ein-bugs/wrong-answers/owed-seats.ein::cores[n2]
 bdfa0d2b5c13abb5      694L  examples/ein-bugs/wrong-answers/owed-seats.ein::oracle
@@ -11979,7 +11979,7 @@ cdb16d379ffb1e91       32L  examples/ein-bugs/wrong-answers/uncovered-knows.ein:
 5e467ef208a7120a       38L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::dot[kb-since]
 d5bce898a1b5f769       79L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::read-out[describe]
 dbf111c68c63cff1       25L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::read-out[maximal]
-a88c3bc6beb8b695       28L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::read-out[minimal]
+7b509a5478f17354       28L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::read-out[minimal]
 51b707d8e99387ed       28L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::read-out[single]
 a380fc1eb6bb977a       28L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::read-out[n2]
 3d73fe50019996da      108L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::region-trace
@@ -11987,7 +11987,7 @@ a380fc1eb6bb977a       28L  examples/ein-bugs/wrong-answers/uncovered-knows.ein:
 b5394c721b4174d1       24L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::region-lattice
 daf38bb6d1259ae2      578L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::cores[describe]
 6c0f0fa335a62dba      225L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::cores[maximal]
-08825a2ee0b125f5      395L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::cores[minimal]
+5272e49b41c76787      395L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::cores[minimal]
 1f69cb860261a1c7      216L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::cores[single]
 0fa92d62f5c54a52      215L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::cores[n2]
 d82c064493cefdda      702L  examples/ein-bugs/wrong-answers/uncovered-knows.ein::oracle
@@ -12020,7 +12020,7 @@ c32ae34858238464       33L  examples/ein-bugs/wrong-answers/uncovered.ein::dot[k
 0b09dcdd513a088f       36L  examples/ein-bugs/wrong-answers/uncovered.ein::dot[kb-since]
 566c9fc8c37d6235       79L  examples/ein-bugs/wrong-answers/uncovered.ein::read-out[describe]
 12a354b9c27af9d2       25L  examples/ein-bugs/wrong-answers/uncovered.ein::read-out[maximal]
-8798aaae643cb220       28L  examples/ein-bugs/wrong-answers/uncovered.ein::read-out[minimal]
+f1c63d1b4b8118fd       28L  examples/ein-bugs/wrong-answers/uncovered.ein::read-out[minimal]
 80be7882525f9ad3       28L  examples/ein-bugs/wrong-answers/uncovered.ein::read-out[single]
 49409f1f1f1ddc83       28L  examples/ein-bugs/wrong-answers/uncovered.ein::read-out[n2]
 41fe5979450bb019       70L  examples/ein-bugs/wrong-answers/uncovered.ein::region-trace
@@ -12028,7 +12028,7 @@ c32ae34858238464       33L  examples/ein-bugs/wrong-answers/uncovered.ein::dot[k
 0c9c3b141e8caac2       24L  examples/ein-bugs/wrong-answers/uncovered.ein::region-lattice
 6dbe61d781ec21e6      578L  examples/ein-bugs/wrong-answers/uncovered.ein::cores[describe]
 6e917ac763bc615d      225L  examples/ein-bugs/wrong-answers/uncovered.ein::cores[maximal]
-5a5ca88a5c73a6fc      395L  examples/ein-bugs/wrong-answers/uncovered.ein::cores[minimal]
+cc7c3f062a600382      395L  examples/ein-bugs/wrong-answers/uncovered.ein::cores[minimal]
 a371d5b7a7546ff5      216L  examples/ein-bugs/wrong-answers/uncovered.ein::cores[single]
 c50707037f8577d5      215L  examples/ein-bugs/wrong-answers/uncovered.ein::cores[n2]
 0ac9019a680c8162      702L  examples/ein-bugs/wrong-answers/uncovered.ein::oracle
@@ -13449,7 +13449,7 @@ a8bd2103e62354b7       31L  examples/lattice/05_owed_seats_bounded.ein::dot[kb-o
 9cedbbc9d0f7d646       31L  examples/lattice/05_owed_seats_bounded.ein::dot[kb-since]
 ad9eaf3fbe048dd8       41L  examples/lattice/05_owed_seats_bounded.ein::read-out[describe]
 7fa6d044ab5448b5       27L  examples/lattice/05_owed_seats_bounded.ein::read-out[maximal]
-8755a749ba046a4e       27L  examples/lattice/05_owed_seats_bounded.ein::read-out[minimal]
+b8994e9f61af891e       27L  examples/lattice/05_owed_seats_bounded.ein::read-out[minimal]
 379d34766a5aabe2       27L  examples/lattice/05_owed_seats_bounded.ein::read-out[single]
 f2327af0a2fc7490       27L  examples/lattice/05_owed_seats_bounded.ein::read-out[n2]
 a1edd13d4e45c105       77L  examples/lattice/05_owed_seats_bounded.ein::region-trace
@@ -13457,7 +13457,7 @@ a1edd13d4e45c105       77L  examples/lattice/05_owed_seats_bounded.ein::region-t
 41b632c54280e436       10L  examples/lattice/05_owed_seats_bounded.ein::region-lattice
 75818423d4ee3e4f      415L  examples/lattice/05_owed_seats_bounded.ein::cores[describe]
 7534f0c6915ed4ab      273L  examples/lattice/05_owed_seats_bounded.ein::cores[maximal]
-3b43b3b336913408      335L  examples/lattice/05_owed_seats_bounded.ein::cores[minimal]
+157ce49327496f9e      335L  examples/lattice/05_owed_seats_bounded.ein::cores[minimal]
 2bd5bc6bffacda57      221L  examples/lattice/05_owed_seats_bounded.ein::cores[single]
 0b25ace7c9c5ebc0      220L  examples/lattice/05_owed_seats_bounded.ein::cores[n2]
 a246aeec0aa5cdb4      776L  examples/lattice/05_owed_seats_bounded.ein::oracle
@@ -13531,7 +13531,7 @@ b273fdd0182b75ae       71L  examples/lattice/06_friends_tables_everyone_sits.ein
 79573a195dbc7f5d       86L  examples/lattice/06_friends_tables_everyone_sits.ein::dot[kb-since]
 c99eeb9055cd7ba9      118L  examples/lattice/06_friends_tables_everyone_sits.ein::read-out[describe]
 32af9ab1c70f8733       81L  examples/lattice/06_friends_tables_everyone_sits.ein::read-out[maximal]
-9778e223fe4efece       81L  examples/lattice/06_friends_tables_everyone_sits.ein::read-out[minimal]
+9689bbe573dce750       81L  examples/lattice/06_friends_tables_everyone_sits.ein::read-out[minimal]
 e7082a61ccbed7b3       33L  examples/lattice/06_friends_tables_everyone_sits.ein::read-out[single]
 31b1e26c16acf7a5       33L  examples/lattice/06_friends_tables_everyone_sits.ein::read-out[n2]
 01b78a4821f00928      690L  examples/lattice/06_friends_tables_everyone_sits.ein::region-trace
@@ -13572,7 +13572,7 @@ cc53547260f4ae11       53L  examples/lattice/07_two_pairs_two_tables.ein::dot[kb
 76bb98269acc2b06       66L  examples/lattice/07_two_pairs_two_tables.ein::dot[kb-since]
 5b947f7cf633bf36      101L  examples/lattice/07_two_pairs_two_tables.ein::read-out[describe]
 35284c1ae8b86de3       73L  examples/lattice/07_two_pairs_two_tables.ein::read-out[maximal]
-f96499fa669129b0       73L  examples/lattice/07_two_pairs_two_tables.ein::read-out[minimal]
+0b100ed572ea9cfb       73L  examples/lattice/07_two_pairs_two_tables.ein::read-out[minimal]
 0e4240de6811c628       31L  examples/lattice/07_two_pairs_two_tables.ein::read-out[single]
 14af13ed6c2b2ae9       31L  examples/lattice/07_two_pairs_two_tables.ein::read-out[n2]
 e647911763d36d2c      653L  examples/lattice/07_two_pairs_two_tables.ein::region-trace
@@ -16606,7 +16606,7 @@ a42ab883f90bc600      103L  examples/zebra.ein::dot[kb-none]
 884db35619a78055      148L  examples/zebra.ein::dot[kb-since]
 fd25f5edc53781d7       68L  examples/zebra.ein::read-out[describe]
 88ad1534ecf446f1       55L  examples/zebra.ein::read-out[maximal]
-61cd6e5853895b0f       55L  examples/zebra.ein::read-out[minimal]
+b9341bd098881ca2       55L  examples/zebra.ein::read-out[minimal]
 b1ab848fdbfe3eee       61L  examples/zebra.ein::read-out[single]
 0372b25234872416       61L  examples/zebra.ein::read-out[n2]
 8d0d00a1d80df648    34527L  examples/zebra.ein::region-trace
@@ -16614,7 +16614,7 @@ ff0530ed1e425096      611L  examples/zebra.ein::states
 c7452cf3453f7f2e       16L  examples/zebra.ein::region-lattice
 c7c7f10072f58df2     7449L  examples/zebra.ein::cores[describe]
 f257a803bacc0afc      964L  examples/zebra.ein::cores[maximal]
-6a4972bdc32aa6f5     6778L  examples/zebra.ein::cores[minimal]
+44febe7866c1d4a7     6779L  examples/zebra.ein::cores[minimal]
 37f6798a05ae9c62      930L  examples/zebra.ein::cores[single]
 aa9a89bf8d67af0b      931L  examples/zebra.ein::cores[n2]
 8e2869cf6a9c76ca      723L  examples/zebra.ein::oracle
@@ -16688,7 +16688,7 @@ b5c0ffd28f37c59c      129L  examples/zebra2-minus-15-obligations.ein::dot[kb-no-
 af53c4ed6a91f78c      281L  examples/zebra2-minus-15-obligations.ein::dot[kb-since]
 a09f507acaa0fb01       31L  examples/zebra2-minus-15-obligations.ein::read-out[describe]
 2a3585b046c10bd3      120L  examples/zebra2-minus-15-obligations.ein::read-out[maximal]
-5d48605d19b55e53      120L  examples/zebra2-minus-15-obligations.ein::read-out[minimal]
+19e1c18e4bec0277      120L  examples/zebra2-minus-15-obligations.ein::read-out[minimal]
 706c6214d72253ce       50L  examples/zebra2-minus-15-obligations.ein::read-out[single]
 c1c4a128a93e2934       50L  examples/zebra2-minus-15-obligations.ein::read-out[n2]
 e09b33b493256575     5263L  examples/zebra2-minus-15-obligations.ein::region-trace
@@ -16696,7 +16696,7 @@ d41d8cd98f00b204        0L  examples/zebra2-minus-15-obligations.ein::states
 aba48c3961006248        7L  examples/zebra2-minus-15-obligations.ein::region-lattice
 d29b1ac7ee7c9f93     6184L  examples/zebra2-minus-15-obligations.ein::cores[describe]
 1ac7615aaff8755a    11816L  examples/zebra2-minus-15-obligations.ein::cores[maximal]
-27a350ed124cbb70    12902L  examples/zebra2-minus-15-obligations.ein::cores[minimal]
+b6671bca0248f121    12430L  examples/zebra2-minus-15-obligations.ein::cores[minimal]
 ff5b1f6c1703e8fc     2793L  examples/zebra2-minus-15-obligations.ein::cores[single]
 8de42fe3b900101a     2852L  examples/zebra2-minus-15-obligations.ein::cores[n2]
 541fa42fa1831a8b     1483L  examples/zebra2-minus-15-obligations.ein::oracle
@@ -16729,7 +16729,7 @@ b5c0ffd28f37c59c      129L  examples/zebra2-minus-15.ein::dot[kb-no-instances]
 af53c4ed6a91f78c      281L  examples/zebra2-minus-15.ein::dot[kb-since]
 1074e08f72857af1       31L  examples/zebra2-minus-15.ein::read-out[describe]
 36032de673930ab3      120L  examples/zebra2-minus-15.ein::read-out[maximal]
-2f57a99c29a05546      120L  examples/zebra2-minus-15.ein::read-out[minimal]
+d65b4c44ada304f3      120L  examples/zebra2-minus-15.ein::read-out[minimal]
 b3f30962ca40fff6       50L  examples/zebra2-minus-15.ein::read-out[single]
 42cd1899415508cc       50L  examples/zebra2-minus-15.ein::read-out[n2]
 136d63b4812595b1     5263L  examples/zebra2-minus-15.ein::region-trace
@@ -16737,7 +16737,7 @@ d41d8cd98f00b204        0L  examples/zebra2-minus-15.ein::states
 c8fdd918669fbcbe        7L  examples/zebra2-minus-15.ein::region-lattice
 84a7ebe16ccfb545     6184L  examples/zebra2-minus-15.ein::cores[describe]
 a96ad741147299da    11816L  examples/zebra2-minus-15.ein::cores[maximal]
-01d9e159375243b9    12902L  examples/zebra2-minus-15.ein::cores[minimal]
+44b06aac938aeb5f    12430L  examples/zebra2-minus-15.ein::cores[minimal]
 f28f21ff20f3e88c     2793L  examples/zebra2-minus-15.ein::cores[single]
 638d775af8dad105     2852L  examples/zebra2-minus-15.ein::cores[n2]
 0a1b88ba323605c9     1483L  examples/zebra2-minus-15.ein::oracle
@@ -16770,7 +16770,7 @@ a55eb52690325eb2      166L  examples/zebra2-obligations.ein::dot[kb-origin]
 c9d4fcbedd024b69      292L  examples/zebra2-obligations.ein::dot[kb-since]
 f1d959fc20c246e6       47L  examples/zebra2-obligations.ein::read-out[describe]
 6cb7bf3687e2842d       34L  examples/zebra2-obligations.ein::read-out[maximal]
-8329f10976925dd8       34L  examples/zebra2-obligations.ein::read-out[minimal]
+dc60face5ce8e3e9       34L  examples/zebra2-obligations.ein::read-out[minimal]
 d199582df9954f5b       37L  examples/zebra2-obligations.ein::read-out[single]
 ef08f12dc542b2fb       37L  examples/zebra2-obligations.ein::read-out[n2]
 394f95007e7af0aa    13775L  examples/zebra2-obligations.ein::region-trace
@@ -16778,7 +16778,7 @@ ef08f12dc542b2fb       37L  examples/zebra2-obligations.ein::read-out[n2]
 4db11de37ef91345       33L  examples/zebra2-obligations.ein::region-lattice
 9d7ec46f440817b3    11540L  examples/zebra2-obligations.ein::cores[describe]
 223fd57eb34a7844      681L  examples/zebra2-obligations.ein::cores[maximal]
-347eef6f6e68644d    10256L  examples/zebra2-obligations.ein::cores[minimal]
+eba25897aa0580c0    10403L  examples/zebra2-obligations.ein::cores[minimal]
 7026a2269d926b68      647L  examples/zebra2-obligations.ein::cores[single]
 7b410742cdd69f63      791L  examples/zebra2-obligations.ein::cores[n2]
 4db24310188c7a99     1543L  examples/zebra2-obligations.ein::oracle
@@ -16811,7 +16811,7 @@ a55eb52690325eb2      166L  examples/zebra2.ein::dot[kb-origin]
 c9d4fcbedd024b69      292L  examples/zebra2.ein::dot[kb-since]
 423ff5ba3605a24a       47L  examples/zebra2.ein::read-out[describe]
 dd7fea2717dabcd5       34L  examples/zebra2.ein::read-out[maximal]
-ae06f64611bed340       34L  examples/zebra2.ein::read-out[minimal]
+758795514f7037e8       34L  examples/zebra2.ein::read-out[minimal]
 11d4a42a1726f2f1       37L  examples/zebra2.ein::read-out[single]
 2b41cad8aa14e8d2       37L  examples/zebra2.ein::read-out[n2]
 7484c960984e582b    13775L  examples/zebra2.ein::region-trace
@@ -16819,7 +16819,7 @@ ae06f64611bed340       34L  examples/zebra2.ein::read-out[minimal]
 e60167880ad0f65a       33L  examples/zebra2.ein::region-lattice
 b0f11fd828e8ef46    11540L  examples/zebra2.ein::cores[describe]
 d98309edfb0c1cb2      681L  examples/zebra2.ein::cores[maximal]
-7a6ded153d28de4c    10256L  examples/zebra2.ein::cores[minimal]
+4ebaec20684cae37    10403L  examples/zebra2.ein::cores[minimal]
 7ad50a4b66235d38      647L  examples/zebra2.ein::cores[single]
 c2e931a5e3ced46c      791L  examples/zebra2.ein::cores[n2]
 3235c821659efbbe     1543L  examples/zebra2.ein::oracle
@@ -18410,7 +18410,7 @@ d6ec7e2a9c6884e8        8L  tests/region/10_denied_extensions.ein::dot[constrain
 047d1d141871a71e       34L  tests/region/10_denied_extensions.ein::dot[kb-since]
 865da91f855a3b14       71L  tests/region/10_denied_extensions.ein::read-out[describe]
 0dcf3daf852403fa       54L  tests/region/10_denied_extensions.ein::read-out[maximal]
-2b1fd5e0cf300209       54L  tests/region/10_denied_extensions.ein::read-out[minimal]
+0ef58079a6d66ea6       54L  tests/region/10_denied_extensions.ein::read-out[minimal]
 be52f8c6ab07e143       30L  tests/region/10_denied_extensions.ein::read-out[single]
 9d9b46ec2cf1c69b       30L  tests/region/10_denied_extensions.ein::read-out[n2]
 09809c1f71ac4e0a     1798L  tests/region/10_denied_extensions.ein::region-trace
@@ -19927,7 +19927,7 @@ ba72f8a3be4451bc      526L  tests/stdlib/bool/inputs/01_in_drives.ein::dot[kb-no
 1a90163bd4281daf      832L  tests/stdlib/bool/inputs/01_in_drives.ein::dot[kb-since]
 172ebeb0e768e2b6       54L  tests/stdlib/bool/inputs/01_in_drives.ein::read-out[describe]
 8c8d4af949ae6b26       42L  tests/stdlib/bool/inputs/01_in_drives.ein::read-out[maximal]
-6c9444cbab233078       42L  tests/stdlib/bool/inputs/01_in_drives.ein::read-out[minimal]
+db0d846539458ae5       42L  tests/stdlib/bool/inputs/01_in_drives.ein::read-out[minimal]
 36715226ac66ed1a       32L  tests/stdlib/bool/inputs/01_in_drives.ein::read-out[single]
 960fea0149375850       32L  tests/stdlib/bool/inputs/01_in_drives.ein::read-out[n2]
 a3bc5199c826cb5a     1751L  tests/stdlib/bool/inputs/01_in_drives.ein::region-trace
@@ -19968,7 +19968,7 @@ b7393b31747de09f      531L  tests/stdlib/bool/inputs/02_required.ein::dot[kb-no-
 01e10804c7e7cfe4      840L  tests/stdlib/bool/inputs/02_required.ein::dot[kb-since]
 f7070ff2d0d13db7       36L  tests/stdlib/bool/inputs/02_required.ein::read-out[describe]
 a58a0ff72fb426aa       27L  tests/stdlib/bool/inputs/02_required.ein::read-out[maximal]
-067e4de517acb130       27L  tests/stdlib/bool/inputs/02_required.ein::read-out[minimal]
+a2ee0bb064d9e428       27L  tests/stdlib/bool/inputs/02_required.ein::read-out[minimal]
 7a8374cee6e7a4de       26L  tests/stdlib/bool/inputs/02_required.ein::read-out[single]
 e8cc3ba9f6095b18       26L  tests/stdlib/bool/inputs/02_required.ein::read-out[n2]
 9c5069a6a7e21c66     1594L  tests/stdlib/bool/inputs/02_required.ein::region-trace

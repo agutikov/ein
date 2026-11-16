@@ -256,7 +256,8 @@ The reading is the same under a permuted id space and under every import form
 facts in.
 
 **Who reads it**: the obligation tree, to choose the owed instance a state
-branches on ([`order.rs`](../../../ein.rs/crates/ein-infer/src/order.rs)). It
+branches on ([`order.rs`](../../../ein.rs/crates/ein-infer/src/order.rs)), on
+every question it answers but the minimal line whole or under `--single`. It
 reads it only when a choice is left tied, the run has saturated twenty nodes,
 and the node costs at most a twentieth of the facts the run has derived; the
 node is then one saturation of the run's `work` row and a node the run

@@ -179,9 +179,10 @@ function of the question, and no option, `(config …)` field or `EIN_*` name re
   count, so nothing after it decided a branch. *Left* is not known dead: an alternative a saturation found dead
   under the state, or one the state denies, is not counted;
 - ***…, the first by text among equals***: some choice was tied and the last key broke it, the instances taken in
-  the order of their alternatives as rendered text. Under `-n N`, of all of R or of a line, the row says ***the
-  first written***: there the last key is the order the obligation pass reports the instances in, which is the order
-  the program states its facts in;
+  the order of their alternatives as rendered text. Under `-n N`, of all of R or of a line, and on the minimal line
+  whole or under `--single`, the row says ***the first written***: there the last key is the order the obligation
+  pass reports the instances in, which is the order the program states its facts in. The minimal line, whole or
+  under `--single`, reads no coupling, so its row never says more than this;
 - ***…; no coupling read, the whole node costing more than a twentieth of the run***: the same, the run having
   tried to read the couplings and stopped, as below;
 - ***branching on the owed instance closest to closing a coupling, then the one with the fewest alternatives left,

@@ -16,11 +16,11 @@
 //! - **The two SENDs.** `send_more_money.ein` and
 //!   `send_more_money_written.ein` are one program but for the order of
 //!   eight facts (`cli_semantics.rs` holds that), and under the order the
-//!   routes take `--single` and the two lines do the same work on both, to
-//!   the saturation and the fact, and list the same states. `-n N` is the
-//!   one question whose last key is the order the obligation pass reports,
-//!   so there the two find one state by different work, and the test says
-//!   so.
+//!   routes take `--single` and the maximal line do the same work on both,
+//!   to the saturation and the fact, and list the same states. `-n N` and
+//!   the minimal line are the questions whose last key is the order the
+//!   obligation pass reports, so there the two are two runs, and the test
+//!   says so.
 //!
 //! The oracle holds every order on every cube it enumerates
 //! (`explore.rs`, `every_order_of_the_tree_is_the_oracle`); this file holds
@@ -523,22 +523,51 @@ fn every_order_gives_one_answer() {
 
 /// **The work does not read the order a program states its facts in.**
 /// The two SENDs differ in the order of eight facts and in nothing else, and
-/// under the routes' order `--single` and each line saturate the same number
-/// of nodes, derive the same number of facts and list the same states on
-/// both: `--single` answers *Solution* on each. `--minimal`, which the
-/// budget stops after some seconds on both, is read with the `slow`
-/// entries.
+/// under the routes' order `--single` and the maximal line saturate the same
+/// number of nodes, derive the same number of facts, list the same states
+/// and read the same five couplings on both: `--single` answers *Solution*
+/// on each.
 ///
-/// **What still reads the written order, and why**: `-n N`, whose last key, among instances equal in coupling and in count, is the
-/// first the obligation pass reports. It finds the one state on both, by a
-/// first tree that follows the declaration until the couplings are read,
-/// which is other work on the two files; that work is not compared.
+/// **What still reads the written order, and why.** `-n N`, whose last key,
+/// among instances equal in coupling and in count, is the first the
+/// obligation pass reports: it finds the one state on both, by a first tree
+/// that follows the declaration until the couplings are read, which is other
+/// work on the two files, and that work is not compared. And the minimal
+/// line, whole or under `--single`, which reads no coupling and takes the
+/// written order: the budget stops it on both, after some seconds, so it is
+/// read with the `slow` entries, and there the two are two runs.
 #[test]
 fn the_two_sends_take_the_same_work() {
     let slow = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
     let (send, written) = (repo_root().join(SEND), repo_root().join(SEND_WRITTEN));
+    let texts = |x: &Answer| -> Vec<Vec<String>> {
+        x.states
+            .iter()
+            .map(|s| {
+                s.closure
+                    .iter()
+                    .map(|&c| x.candidates[c as usize].text.clone())
+                    .collect()
+            })
+            .collect()
+    };
     for (flags, mode) in questions() {
-        if flags == "--minimal" && !slow {
+        if flags == "--minimal" {
+            if !slow {
+                continue;
+            }
+            // The written order on both, no coupling read, and the budget
+            // stops the line on both: what it does is the declaration's.
+            for path in [&send, &written] {
+                let a = ask(path, mode, None).expect("answers");
+                assert!(
+                    a.stopped.is_some() && !a.exhausted,
+                    "{flags}: {:?}",
+                    a.stopped
+                );
+                let order = a.order.expect("a tree's order");
+                assert!(order.written && order.couplings.is_none(), "{order:?}");
+            }
             continue;
         }
         let a = ask(&send, mode, None).expect("answers");
@@ -549,37 +578,22 @@ fn the_two_sends_take_the_same_work() {
                 (b.saturations, b.facts),
                 "{flags}: the work, by column and as written"
             );
+            assert_eq!(a.order, b.order, "{flags}: the order each run took");
         }
         assert_eq!(
             (a.verdict, a.exhausted, a.stopped.is_some()),
             (b.verdict, b.exhausted, b.stopped.is_some()),
             "{flags}"
         );
-        let texts = |x: &Answer| -> Vec<Vec<String>> {
-            x.states
-                .iter()
-                .map(|s| {
-                    s.closure
-                        .iter()
-                        .map(|&c| x.candidates[c as usize].text.clone())
-                        .collect()
-                })
-                .collect()
-        };
         assert_eq!(texts(&a), texts(&b), "{flags}: the states listed");
-        if flags != "-n 1" {
-            assert_eq!(a.order, b.order, "{flags}: the order each run took");
-        }
-        if flags != "--minimal" {
-            assert!(a.stopped.is_none(), "{flags}: {SEND} is answered");
-            assert_eq!(a.states.len(), 1, "{flags}: the one state");
-        }
+        assert!(a.stopped.is_none(), "{flags}: {SEND} is answered");
+        assert_eq!(a.states.len(), 1, "{flags}: the one state");
+        // The couplings were read, and are SEND's columns.
+        let order = a.order.expect("a tree's order");
+        assert_eq!(order.couplings.map(|c| c.0), Some(5), "{flags}: {order:?}");
         if mode.ask == Ask::Single {
             assert_eq!(a.verdict, Some(Verdict::Solution), "{SEND}");
             assert!(a.exhausted, "{SEND} is decided");
-            // The couplings were read, and are SEND's columns.
-            let order = a.order.expect("a tree's order");
-            assert_eq!(order.couplings.map(|c| c.0), Some(5), "{order:?}");
         }
     }
     // The control: under the written order the two are two runs, and the

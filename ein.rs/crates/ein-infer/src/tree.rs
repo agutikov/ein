@@ -71,12 +71,15 @@
 //! closing a coupling**, once the couplings are read off the whole node;
 //! then **the one with the fewest alternatives not known dead**, *known
 //! dead* being the memory's word, a death or a denial; then the first by
-//! rendered text, or under `-n N` the first the obligation pass reports. The couplings cost one saturation, which the run counts,
-//! and are read only when a choice is left tied, the run has saturated
-//! twenty nodes and the node costs at most a twentieth of the facts the run
-//! has derived; the choices made before are then made again, each by the
-//! counts its state had, and the tree starts again from root where one
-//! falls otherwise, keeping every node it computed (`Search::choose_again`).
+//! rendered text, or under `-n N` the first the obligation pass reports.
+//! The couplings cost one saturation, which the run counts, and are read
+//! only when a choice is left tied, the run has saturated twenty nodes and
+//! the node costs at most a twentieth of the facts the run has derived; the
+//! choices made before are then made again, each by the counts its state
+//! had, and the tree starts again from root where one falls otherwise,
+//! keeping every node it computed (`Search::choose_again`). The minimal
+//! line, whole or under `--single`, reads no coupling: the count, then the
+//! first the obligation pass reports.
 //! A state that owes no licensed instance branches on every extension,
 //! which is the state route's step and needs no licence: a member of `R`
 //! above an owing `C` is a proper superset of it. No lever reaches the
