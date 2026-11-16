@@ -1,0 +1,71 @@
+;;; 15_union_label_dead — an extension that closes no edge of the coupling, and dies.
+;;;
+;;; `flag` is derived two ways, from `(a-prop X)` alone and from `(b-prop X)` alone, and a flagged
+;;; X with `(c-prop X)` and `(d-prop X)` is forbidden. So the minimal dead sets are
+;;; {a, c, d} and {b, c, d}: a death needs a or b, never both.
+;;;
+;;; What it is the witness of: the claim that on a monotone program an alive state `S` and a
+;;; candidate `b` give an alive `S ∪ {b}` wherever no edge of the coupling read off the whole node
+;;; through `b`'s question has every one of its questions met by `S ∪ {b}`. The whole node reads a
+;;; derived fact's label as the union of the classes its ways need, so the label of `(flag X)` is
+;;; {a, b}, and the one conflict's edge is all four questions {a, b, c, d}: the death of {a, c, d}
+;;; is read as needing b as well. {c, d} is alive, {a, c, d} is dead, and no edge through a is met
+;;; by it; the derivation's edge {a, b} is not met either. Both readings of the edges say so, the
+;;; structure's (`ein render h-space`: two edges, {a, b} and {a, b, c, d}) and the one the
+;;; obligation tree reads (`structure::NodeCoupling`), and so does each one application back. A
+;;; label that is the union of its ways' classes is coarse in the direction that keeps the
+;;; components honest and makes this claim false.
+;;;
+;;; What the engine does: R is the thirteen commitments below, every set that does not hold c, d
+;;; and a flag, each its own state, the oracle's; no route reads the claim.
+;;; `ein-infer/tests/no_edge.rs` holds the counterexample to the oracle.
+
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation a-prop T   :why "a-prop holds of {?1}")
+(relation b-prop T   :why "b-prop holds of {?1}")
+(relation c-prop T   :why "c-prop holds of {?1}")
+(relation d-prop T   :why "d-prop holds of {?1}")
+(relation flag   T   :why "{?1} is flagged")
+
+(rule flag-by-a ()
+  :match  (a-prop ?x)
+  :assert (flag ?x)
+  :why    "a-prop flags {?x}")
+(rule flag-by-b ()
+  :match  (b-prop ?x)
+  :assert (flag ?x)
+  :why    "b-prop flags {?x}")
+(rule flag-c-and-d ()
+  :match  (and (flag ?x) (c-prop ?x) (d-prop ?x))
+  :assert (false)
+  :why    "a flagged {?x} with c-prop and d-prop is forbidden")
+
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
+
+(is-a Item T)
+(is-a X    Item)
+
+(solve
+  :hrules (
+    guess (a-prop Item)
+    guess (b-prop Item)
+    guess (c-prop Item)
+    guess (d-prop Item))
+  :expect (region
+            (model)
+            (model (a-prop X))
+            (model (b-prop X))
+            (model (c-prop X))
+            (model (d-prop X))
+            (model (a-prop X) (b-prop X))
+            (model (a-prop X) (c-prop X))
+            (model (a-prop X) (d-prop X))
+            (model (b-prop X) (c-prop X))
+            (model (b-prop X) (d-prop X))
+            ;; alive, and the state the counterexample extends by `(a-prop X)` or `(b-prop X)`
+            (model (c-prop X) (d-prop X))
+            (model (a-prop X) (b-prop X) (c-prop X))
+            (model (a-prop X) (b-prop X) (d-prop X))))

@@ -1,0 +1,53 @@
+;;; 16_pair_through_closure — a pair the coupling reads over commitments, met through a closure.
+;;;
+;;; `(p-prop X)` with `(r-prop X)` brings `(q-prop X)`, and one rule forbids p with q. So {p, q}
+;;; is dead, and so is {p, r}, which commits no q and derives one. R is the five commitments
+;;; below.
+;;;
+;;; What it is the witness of: the same claim as `15_union_label_dead.ein`, that an alive state
+;;; `S` and a candidate `b` give an alive `S ∪ {b}` wherever no coupling edge through `b`'s
+;;; question is met, here with every label of the whole node one class, so that what breaks it is
+;;; not a union. The reading the obligation tree takes (`structure::NodeCoupling`) makes no edge of
+;;; a conflict one application concludes from exactly two committed candidates, and lists it as a
+;;; pair: {p, q}. Read over commitments, the pair is not met by {p, r}, which holds no q; the one
+;;; edge, the derivation of q, {p, q, r}, is not met either, since q is derived there and not
+;;; committed; and p is in no question with r, and alive alone. {r} is alive, {p, r} is dead, and
+;;; it closes nothing that reading holds.
+;;;
+;;; What the engine does: R is the oracle's; no route reads the claim.
+;;; `ein-infer/tests/no_edge.rs` holds the counterexample to the oracle.
+
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation p-prop T   :why "p holds of {?1}")
+(relation q-prop T   :why "q holds of {?1}")
+(relation r-prop T   :why "r holds of {?1}")
+
+(rule q-from-p-and-r ()
+  :match  (and (p-prop ?x) (r-prop ?x))
+  :assert (q-prop ?x)
+  :why    "p and r of {?x} bring q")
+(rule p-and-q ()
+  :match  (and (p-prop ?x) (q-prop ?x))
+  :assert (false)
+  :why    "p and q of {?x} are jointly forbidden")
+
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
+
+(is-a Item T)
+(is-a X    Item)
+
+(solve
+  :hrules (
+    guess (p-prop Item)
+    guess (q-prop Item)
+    guess (r-prop Item))
+  :expect (region
+            (model)
+            (model (p-prop X))
+            (model (q-prop X))
+            ;; alive, and the state the counterexample extends by `(p-prop X)`
+            (model (r-prop X))
+            (model (q-prop X) (r-prop X))))

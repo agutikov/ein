@@ -1421,6 +1421,16 @@
 0    examples/lattice/14_seats_nothing_proposes.ein :: solve
 0    examples/lattice/14_seats_nothing_proposes.ein :: solve --maximal
 0    examples/lattice/14_seats_nothing_proposes.ein :: solve --single
+0    examples/lattice/15_union_label_dead.ein :: oracle --dump {out}/region
+0    examples/lattice/15_union_label_dead.ein :: render lattice
+0    examples/lattice/15_union_label_dead.ein :: saturate
+0    examples/lattice/15_union_label_dead.ein :: solve
+0    examples/lattice/15_union_label_dead.ein :: solve --maximal
+0    examples/lattice/16_pair_through_closure.ein :: oracle --dump {out}/region
+0    examples/lattice/16_pair_through_closure.ein :: render lattice
+0    examples/lattice/16_pair_through_closure.ein :: saturate
+0    examples/lattice/16_pair_through_closure.ein :: solve
+0    examples/lattice/16_pair_through_closure.ein :: solve --maximal
 0    examples/lattice/synth/local_not_global.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/local_not_global.ein :: render lattice
 0    examples/lattice/synth/local_not_global.ein :: saturate
