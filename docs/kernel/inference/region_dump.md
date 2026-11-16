@@ -217,7 +217,7 @@ was prototyped beside it and held to the cube, and it is not what ships.
 whose consequence operator the check approximates; the lattice is the domain,
 and is never itself monotone or not. A site can break two properties of the
 node functions, kept apart in
-[`monotonicity.md` § 7](monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence):
+[`monotonicity.md` § 2](../../ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program):
 the **state**'s, monotone in C and, where saturation is cumulative,
 independent of the path that built the node, which only an `absent` breaks;
 and the **status**'s, which an obligation's trigger or an activator breaks
@@ -380,5 +380,5 @@ root's fixpoint.
   this directory drawn, with a region run on it, `ein render region`.
 - [`solution_semantics.md`](solution_semantics.md): the definitions this
   computes.
-- [`monotonicity.md`](monotonicity.md): what the static check's two verdicts
+- [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md): what the static check's two verdicts
   mean for R, compared, with one fixture and one drawing per cause.

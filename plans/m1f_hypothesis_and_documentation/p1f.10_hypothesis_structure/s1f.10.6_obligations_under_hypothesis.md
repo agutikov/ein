@@ -579,7 +579,7 @@ fact*.
   none of the twelve candidates on either ([H6-2](findings.md#h6-2--under-b-q-m1f306-bears-on-two-more-programs-and-marks-nothing-on-them)).
 - **(C) refuses three or four corpus programs, two of them not wrong in H today.** `lattice/09` and `/12` are
   the corpus's two exercised activator sites, the third cause of a non-monotone program in
-  [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md); `ein-infer/tests/detector.rs` reads
+  [`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md); `ein-infer/tests/detector.rs` reads
   both by name, `tests/region.rs` the first and `src/detector.rs`'s docs the second, and their renderings are
   in the shape golden.
 - **(D) needs a new line.** Today the witness's read-out says where the debt comes from, *site … at stake:

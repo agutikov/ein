@@ -386,7 +386,7 @@ Each gap is a place where Ein gives no answer, a refusal, a scoped answer or a l
 | the S-16 loop: for each of the 7 flagged programs stopped at the limit, `ein solve FILE --minimal --single`, then `--minimal -n 1`, then a bare `ein solve FILE` | S-16, P-14 | 30 s | `s16_sweep.log` |
 
 **Describe against the oracle.** There are 250 programs where both finish. On each, describe and the oracle agree on k_s, k_c, |N|, the hole count and the static verdict, so there are 0 disagreements (`classify.py`'s `agree_describe_oracle`).
-- **A null hole count.** Describe writes `holes: null` on a monotone program. That program prints no hole row, and has no hole by the convexity [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md) states. A null is read as 0 there, and the oracle's count is 0 on all 230 monotone cubes.
+- **A null hole count.** Describe writes `holes: null` on a monotone program. That program prints no hole row, and has no hole by the convexity [`monotonicity.md`](../../docs/ein/reasoning/kb-evolution/monotonicity.md) states. A null is read as 0 there, and the oracle's count is 0 on all 230 monotone cubes.
 - **The two the oracle answers and describe does not.** These are G-2's two query-goal refusals: `query-goal-free-head` and `features/02`.
 
 **The modes against the oracle.**

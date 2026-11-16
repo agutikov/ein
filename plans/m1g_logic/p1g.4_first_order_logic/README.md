@@ -31,7 +31,7 @@ particular kind, and F1b asked which. The coordinator's expectation, which the s
 - **`not`** is a stored, explicit negation, a fact like any other that a rule must derive; **`absent`** is
   negation as failure, a test of the state, non-monotone
   ([`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md),
-  [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md)); **`(false)`** is an integrity
+  [`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md)); **`(false)`** is an integrity
   constraint's head;
 - an **obligation**, `(open ?R)`, is an existential conclusion with no witness built: the state owes one,
   and the search proposes witnesses *from the names the program has*;

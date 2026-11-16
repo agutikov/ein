@@ -102,7 +102,7 @@ not computed"*. The function is `region::compute`.
 ## 3. `ein solve` on a program the static check flags
 
 A program is **flagged** when the static check cannot prove it monotone
-([`monotonicity.md`](monotonicity.md)). On such a program a dead set can have an alive superset, and
+([`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md)). On such a program a dead set can have an alive superset, and
 an alive superset of a member of `R` can owe. No skip is sound, and every mode takes the cube, as the
 oracle does (route 2). It takes the cube in layer order where its question can be decided before the
 cube ends.
@@ -121,7 +121,7 @@ sat(root + C₁ + C₂)  ≠  sat(sat(root + C₁) + C₂)        possible on a 
 and on the agenda's order, so *the set of nodes* is not one object. The engine builds every node one way, a fork of
 root's fixpoint with all of `C` written at once (`st(C)` above), and the oracle and every mode compute the region
 of that construction. They agree with each other, which the gate holds; that the region is the program's meaning is
-not claimed ([`monotonicity.md`](monotonicity.md) § 7).
+not claimed ([`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md) § 12.3).
 
 ## 4. A monotone program: three properties and the licences
 
@@ -327,7 +327,7 @@ is the cube.
 
 - [`solution_semantics.md`](solution_semantics.md): the definitions of commitment, state, closure,
   monotone and `R`.
-- [`monotonicity.md`](monotonicity.md): what makes a program flagged, and how each kind is solved.
+- [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md): what makes a program flagged, and how each kind is solved.
 - [`read_out.md`](read_out.md): the `route` and `work` rows.
 - [`hypothesis_space.md`](hypothesis_space.md): `H` and its structure, which the tree's order reads.
 - `ein.rs/crates/ein-infer/src/tree.rs`, `states.rs`, `tree_classes.rs`, `known_dead.rs`, `order.rs`: the routes and
