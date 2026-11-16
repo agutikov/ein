@@ -1,5 +1,5 @@
-;;; The FIFO gap over a static read — M1e2 S1e2.1b.7, the case
-;;; docs/kernel/inference/monotonicity.md § 7.6 argued and this file measures:
+;;; The FIFO gap over a static read, the case
+;;; docs/ein/reasoning/kb-evolution/monotonicity.md § 3.4 argues and this file measures:
 ;;; a program the static check calls **monotone**, on which a node built from
 ;;; scratch holds a stale fact that the node built by fork does not.
 ;;;

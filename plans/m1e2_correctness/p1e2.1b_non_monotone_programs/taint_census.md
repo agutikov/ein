@@ -257,6 +257,6 @@ fact.
 - [F21](../../followups/f21_non_monotone_programs_decided.md)'s D6: the census
   and the test, linked, with the agent's recommendation, (b) with the
   activator walk; and a fifth item under *what forbid does not cover*.
-- [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md): § 3's
+- `docs/kernel/inference/monotonicity.md` at `50739fdb`: § 3's
   *learned nogoods* row, § 7.4, § 7.7, § 7.8 and § 8 cite the census and the
   test. The taxonomy's refutation rows are S1e2.1b.7's.

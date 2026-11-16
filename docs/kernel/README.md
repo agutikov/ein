@@ -86,7 +86,7 @@ visible from the page itself. Triaged page by page at M1e
 (2026-08-30), 40 pages; 41 since M1e2 S1e2.1.2 added
 [`inference/answer_dump.md`](inference/answer_dump.md), 42 since S1e2.1a.1
 added [`inference/region_dump.md`](inference/region_dump.md), 43 since
-S1e2.1b.6 added [`inference/monotonicity.md`](inference/monotonicity.md), 45
+S1e2.1b.6 added [`inference/monotonicity.md`](../ein/reasoning/kb-evolution/monotonicity.md), 45
 since M1f S1f.5.16 added [`inference/read_out.md`](inference/read_out.md) and
 [`inference/read_out_examples.md`](inference/read_out_examples.md), 46 since
 M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)

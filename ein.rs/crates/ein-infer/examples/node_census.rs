@@ -152,7 +152,7 @@ const WRITTEN: &[(&str, &str)] = &[
          (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :priority 200)\n\
          (query :goal (r ?x))\n",
     ),
-    // The FIFO gap over a static read (`monotonicity.md` § 7.6, S1e2.1b.7):
+    // The FIFO gap over a static read (`monotonicity.md` § 3.4):
     // `examples/lattice/10_fifo_gap.ein` with `a` given and only `b` a
     // candidate. `q` is outside D, so the static check finds no site; root
     // derives `q`, and a fork never re-derives it, while scratch re-derives

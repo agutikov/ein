@@ -1051,7 +1051,7 @@ with its F2 of 2026-11-04, *via, per activator*: a rule that concludes
 `(false)` or `(not …)` may not rest on an `(absent P)` over a relation a
 commitment can still extend, directly, through a fact a rule derived under
 one, or through its activator. *Extendable* is `D⁺`: the static check's `D`
-([`monotonicity.md`](inference/monotonicity.md)) followed through every rule
+([`monotonicity.md`](../ein/reasoning/kb-evolution/monotonicity.md)) followed through every rule
 with parameters whose activator relation it holds, since a node compiles a
 plan of such a rule that root never had, and what that plan writes a
 commitment can change too. The check reads root's plans and, from its

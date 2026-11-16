@@ -6671,7 +6671,7 @@ by *forbid* and have no R.
   ([H6-2](p1f.10_hypothesis_structure/findings.md#h6-2--under-b-q-m1f306-bears-on-two-more-programs-and-marks-nothing-on-them)).
 - **(C)** turns three or four corpus programs into refusals. Two of them, `lattice/09` and `/12`, are not
   wrong in H today: they are the corpus's two exercised activator sites, which
-  [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md) and `ein-infer`'s detector tests read by
+  [`monotonicity.md`](../../docs/ein/reasoning/kb-evolution/monotonicity.md) and `ein-infer`'s detector tests read by
   name, and F21's examples of the third cause of a non-monotone program.
 - **(D)** changes no answer and keeps an empty R where a model exists.
 
