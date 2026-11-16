@@ -103,7 +103,7 @@ after root.
 | `described.rs`, `count.rs`, `read_out.rs`, `verdict.rs`, `claim.rs`, `expect.rs` | `R` described once; exact counts; the read-out's data; a query projected over a state; claims checked against `R` |
 | `canon.rs`, `explain.rs` | a state's identity; the minimal explanation search |
 | `structure.rs`, `structure/` | the structure of H, read from the program's rules |
-| `events.rs`, `error.rs`, `build.rs`, `mt19937.rs` | the `--events` writer; why a question was not answered; what the build compiled in; `--shuffle`'s generator |
+| `events.rs`, `error.rs`, `build.rs`, `mt19937.rs` | the `--events` writer; why a question was not answered; what the build compiled in; the seeded generator tests draw from (no command takes a seed) |
 
 ### 3.4 `ein-einb`, `ein-render`, `ein-cli`
 
