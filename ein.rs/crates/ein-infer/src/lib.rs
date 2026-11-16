@@ -21,8 +21,6 @@
 
 #![forbid(unsafe_code)]
 
-/// What this build has compiled in — `ein --version`'s feature line.
-pub mod borders;
 pub mod build;
 pub mod canon;
 pub mod claim;
@@ -67,6 +65,8 @@ pub mod strata;
 pub mod structure;
 pub mod transversal;
 pub(crate) mod tree;
+/// What this build has compiled in — `ein --version`'s feature line.
+pub mod tree_classes;
 pub mod types_as_objects;
 pub mod unheld;
 pub mod verdict;

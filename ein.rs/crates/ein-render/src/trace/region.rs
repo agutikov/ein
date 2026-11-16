@@ -16,6 +16,7 @@
 //! appends each state's whole KB.
 
 use ein_core::{Kb, Terms};
+use ein_infer::explore::Route;
 use ein_infer::read_out::{Listing, ReadOut};
 use ein_ir::Ast;
 
@@ -51,8 +52,14 @@ pub struct RegionTrace {
     /// States the read-out did not print, and so not traced.
     pub untraced: usize,
     pub dead: Vec<DeadTrace>,
+    /// `N` was not computed by the route ([`Route::TreeClasses`]):
+    /// [`Self::dead`] is the members the run met.
+    pub dead_met_only: bool,
     /// For an empty R that owes: each frontier node and what it owes.
     pub owing: Vec<(String, Vec<String>)>,
+    /// The owing frontier was not computed by the route: [`Self::owing`] is
+    /// the nodes the run met.
+    pub owing_met_only: bool,
     /// `--reorder`: each section's steps grouped by their entity.
     pub reorder: bool,
 }
@@ -193,7 +200,14 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
         ));
         lines.push(String::new());
     }
-    if !t.owing.is_empty() {
+    if !t.owing.is_empty() && t.owing_met_only {
+        lines.push(format!(
+            "## Owing — not computed by the tree and the classes; the {} {} the run met with \
+             every extension dead",
+            t.owing.len(),
+            if t.owing.len() == 1 { "node" } else { "nodes" }
+        ));
+    } else if !t.owing.is_empty() {
         lines.push(format!(
             "## Owing — {} {} with no alive node one fact up",
             t.owing.len(),
@@ -208,7 +222,13 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
         }
         lines.push(String::new());
     }
-    if !t.dead.is_empty() {
+    if !t.dead.is_empty() && t.dead_met_only {
+        lines.push(format!(
+            "## N — not computed by the tree and the classes; the {} members met, the candidates \
+             dead alone",
+            t.dead.len()
+        ));
+    } else if !t.dead.is_empty() {
         lines.push(format!("## N — {} minimal dead sets", t.dead.len()));
         lines.push(String::new());
         for d in &t.dead {
@@ -366,7 +386,11 @@ pub fn of_read_out(
             untraced: listed.saturating_sub(states.len()),
             states,
             dead,
+            dead_met_only: r
+                .described()
+                .is_some_and(|d| d.nogoods_skipped && d.route == Route::TreeClasses),
             owing,
+            owing_met_only: r.described().is_some_and(|d| d.frontier_skipped),
             reorder,
         },
         diagrams,

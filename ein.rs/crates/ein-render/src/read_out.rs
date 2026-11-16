@@ -20,7 +20,7 @@
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
-use ein_infer::described::Described;
+use ein_infer::described::{Described, TreePartial};
 use ein_infer::detector::{ASSUMES, Paths, State, Status, Warning};
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Checked, Licence, Route, Stopped, Verdict, Which};
@@ -30,6 +30,7 @@ use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
 use ein_infer::region::Class;
 use ein_infer::relation_names::RelationNamesAsObjects;
 use ein_infer::scope::{Outside, Why};
+use ein_infer::tree_classes::Part;
 use ein_infer::types_as_objects::TypesAsObjects;
 use ein_ir::expect::Over;
 
@@ -752,7 +753,41 @@ pub fn dead_alone_known(d: &Described) -> bool {
     d.exhausted
         || d.complete_up_to.is_some_and(|k| k >= 1)
         || d.states_partial.is_some_and(|p| p.up_to.is_some())
+        || d.tree_partial
+            .is_some_and(|p| p.stopped_in > ein_infer::tree_classes::Part::Singles)
         || !d.root.alive
+}
+
+/// The part a run of the tree and the classes was finding when its budget
+/// stopped it, in words.
+fn tree_part(d: &Described, p: TreePartial) -> String {
+    match p.stopped_in {
+        Part::States => "R's states, the tree not exhausted".to_string(),
+        Part::Singles => "the candidates dead alone, every state of R found".to_string(),
+        Part::Classes => format!(
+            "the classes, those of {} of R's {} states found",
+            group(p.classes),
+            group(d.k_s())
+        ),
+    }
+}
+
+/// The `N` row of a description that did not compute `N`: by the route's
+/// choice, the tree and the classes, with the members met and the option
+/// that computes it; or because the run was asked by a surface that prints
+/// none.
+fn nogoods_not_computed(d: &Described) -> String {
+    if d.route == Route::TreeClasses && d.nogoods == 0 {
+        "not computed by the tree and the classes; --describe-route states computes N".to_string()
+    } else if d.route == Route::TreeClasses {
+        format!(
+            "not computed by the tree and the classes — ≥ {}, the candidates dead alone; \
+             --describe-route states computes N",
+            plural(d.nogoods, "minimal dead set", "minimal dead sets")
+        )
+    } else {
+        "not taken: this run was asked by a surface that prints no N".to_string()
+    }
 }
 
 /// The `note:` a partial run writes.
@@ -1310,9 +1345,9 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     }
 }
 
-/// The border route's words ([`ein_infer::borders`]): what describe found and
-/// how, before its licences.
-const BORDERS_ROUTE: &str = "the borders: R's states by the obligation tree, each state's class and N by dualise and advance";
+/// The words of the tree and the classes ([`ein_infer::tree_classes`]): what
+/// describe found and how, before its licences.
+const TREE_CLASSES_ROUTE: &str = "the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance";
 
 /// `--no-search`'s `route` row.
 const ROOT_ROUTE: &str = "none — --no-search: root's node, and no node past it";
@@ -1545,6 +1580,8 @@ fn minimal_line(d: &Described) -> String {
     };
     if d.exhausted || root.in_r() {
         format!("{}{min_note}", plural(n_min, "state", "states"))
+    } else if d.tree_partial.is_some() {
+        "not known — the run did not find every state's class".to_string()
     } else if let Some(p) = sp {
         match p.up_to {
             Some(k) => format!(
@@ -1588,6 +1625,16 @@ fn maximal_line(d: &Described) -> String {
         format!("{}{note}", plural(n_max, "state", "states"))
     } else if cube {
         "not known — without a licence it needs the whole cube".to_string()
+    } else if let Some(p) = d.tree_partial
+        && p.stopped_in > Part::States
+    {
+        // Every state of R was found and extended by every candidate.
+        plural(n_max, "state", "states")
+    } else if d.tree_partial.is_some() && n_max > 0 {
+        format!(
+            "≥ {} — those met with every extension dead",
+            plural(n_max, "state", "states")
+        )
     } else if top {
         "1 state — ⊤, every candidate: no node is dead, the trivial line, certified by one \
          saturation"
@@ -1629,6 +1676,14 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     let sp = d.states_partial;
     let lb = if d.exhausted {
         String::new()
+    } else if let Some(p) = d.tree_partial {
+        match p.stopped_in {
+            Part::States => {
+                "   (a lower bound: the tree stopped before it was exhausted)".to_string()
+            }
+            _ => "   (every state of R: the run stopped before it counted their commitments)"
+                .to_string(),
+        }
     } else if let Some(p) = sp {
         match p.up_to {
             Some(k) => format!(
@@ -1648,7 +1703,18 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     out.row(Row::StatesKs, format!("{}{lb}", group(k_s)));
     // R itself is decided when it is the whole cube; only its states are not.
     let decided = sp.is_some_and(|p| p.cube);
-    let lb_c = if decided { "" } else { lb.as_str() };
+    let tree_lb_c = d.tree_partial.filter(|p| p.stopped_in > Part::States).map(|p| {
+        format!(
+            "   (a lower bound: the commitments of {} of R's {} states, one for each of the others)",
+            group(p.classes),
+            group(k_s)
+        )
+    });
+    let lb_c = if decided {
+        ""
+    } else {
+        tree_lb_c.as_deref().unwrap_or(lb.as_str())
+    };
     // Past the cap the count is a floor for another reason than a partial
     // run's, and says which.
     let past = if d.k_c >= ein_infer::count::CAP {
@@ -1665,6 +1731,56 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             Row::Exhausted,
             "yes — every commitment is classified: this is all of R",
         ),
+        (Some(Stopped::Budget { spent, projected }), false) if d.tree_partial.is_some() => {
+            let p = d
+                .tree_partial
+                .expect("a partial run of the tree and the classes");
+            out.row(
+                Row::Exhausted,
+                format!(
+                    "no — the tree and the classes stopped in {}: the next step projects {} facts \
+                     on top of the {} spent, past --region-budget {}",
+                    tree_part(d, p),
+                    group(*projected),
+                    group(*spent),
+                    o.budget
+                ),
+            );
+            let established = match p.stopped_in {
+                Part::States => {
+                    format!("{} of R met, a lower bound", plural(k_s, "state", "states"))
+                }
+                Part::Singles => format!(
+                    "R's {}, every one, and its maximal line",
+                    plural(k_s, "state", "states")
+                ),
+                Part::Classes => format!(
+                    "R's {}, every one, its maximal line, and the commitments of {} of them",
+                    plural(k_s, "state", "states"),
+                    group(p.classes)
+                ),
+            };
+            partial_note(
+                out,
+                o,
+                format!(
+                    "the tree and the classes stopped in {} at --region-budget {}: the next step \
+                     projects {} facts on top of the {} spent. Established: {established}; not \
+                     established: k_c, the minimal line and the shape{}; N is not computed by this \
+                     route. A larger --region-budget takes more steps; --describe-route states \
+                     visits every alive state and computes N",
+                    tree_part(d, p),
+                    o.budget,
+                    group(*projected),
+                    group(*spent),
+                    if p.stopped_in == Part::States {
+                        ", R's other states, the maximal line"
+                    } else {
+                        ""
+                    },
+                ),
+            );
+        }
         (Some(Stopped::Budget { spent, projected }), false) if sp.is_some() => {
             let p = sp.expect("a state-route partial");
             let (size, next) = p.stopped_at;
@@ -1688,13 +1804,44 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             } else {
                 out.row(Row::Exhausted, format!("no — the {why}"));
             }
+            let up_to = p.up_to.map_or(String::new(), |k| {
+                format!(
+                    "every alive state of up to {}, R's {} met among them",
+                    plural(k as u64, "candidate", "candidates"),
+                    group(k_s)
+                )
+            });
             partial_note(
                 out,
                 o,
                 format!(
-                    "the state route stopped before the states of {} at --region-budget {}",
+                    "the state route stopped before the states of {} at --region-budget {}: their \
+                     {} extensions project {} facts on top of the {} spent. Established: {}; not \
+                     established: {}. --region-budget {} or more takes the next layer{}",
                     plural(size as u64, "candidate", "candidates"),
-                    o.budget
+                    o.budget,
+                    group(next),
+                    group(*projected),
+                    group(*spent),
+                    if p.cube {
+                        "R, the whole cube".to_string()
+                    } else if up_to.is_empty() {
+                        "root's state".to_string()
+                    } else {
+                        up_to
+                    },
+                    if p.cube {
+                        "how many states R has"
+                    } else {
+                        "R's other states, k_c, the lines, the shape and N"
+                    },
+                    group(spent.saturating_add(*projected)),
+                    if a.describe_alt == Some(ein_infer::explore::DescribeRoute::Tree) {
+                        "; --describe-route tree finds R's states by the obligation tree and their \
+                         classes, and not N"
+                    } else {
+                        ""
+                    },
                 ),
             );
         }
@@ -1817,7 +1964,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 out.row(
                     Row::N,
                     if d.nogoods_skipped {
-                        "not taken: this run was asked by a surface that prints no N".to_string()
+                        nogoods_not_computed(d)
                     } else {
                         plural(d.nogoods, "minimal dead set", "minimal dead sets")
                     },
@@ -1835,6 +1982,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 out.row(
                     Row::N,
                     match (sp, d.complete_up_to) {
+                        _ if d.route == Route::TreeClasses => nogoods_not_computed(d),
                         (Some(p), _) if p.nogoods_known => {
                             "0 minimal dead sets — ⊤ is alive, so no node is dead".to_string()
                         }
@@ -1938,7 +2086,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             "2, the cube — no licence: the static check flags the program".to_string()
         }
         (Route::Root, _) => ROOT_ROUTE.to_string(),
-        (Route::Borders, _) => format!("{BORDERS_ROUTE} — {}", licences(&a.licences)),
+        (Route::TreeClasses, _) => format!("{TREE_CLASSES_ROUTE} — {}", licences(&a.licences)),
     };
     out.row(Row::Route, route);
     out.row(
@@ -2174,7 +2322,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
                 Route::States => "the state route, each state at most once",
                 Route::Tree => "the obligation tree, over states",
                 Route::Root => ROOT_ROUTE,
-                Route::Borders => BORDERS_ROUTE,
+                Route::TreeClasses => TREE_CLASSES_ROUTE,
             },
             licences(&a.licences)
         ),
@@ -2258,6 +2406,14 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
         }
         Listing::Owing(frontier) => {
             out.blank();
+            let skipped = r.described().is_some_and(|d| d.frontier_skipped);
+            if skipped {
+                out.line(
+                    "  ;; the owing frontier is not computed by the tree and the classes: the nodes \
+                     below are those the run met, each owing with every extension dead. \
+                     --describe-route states computes it. Not a (region …).",
+                );
+            }
             for f in frontier {
                 out.row(
                     Row::Owing,
@@ -2271,14 +2427,16 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
                     out.more(format!("  {w}"));
                 }
             }
-            out.blank();
-            let items: Vec<String> = frontier.iter().map(|f| model_text(&f.model)).collect();
-            let mut lines = wrapped("region (owing", &items, 2, 78);
-            if let Some(last) = lines.last_mut() {
-                last.push(')');
-            }
-            for l in lines {
-                out.line(l);
+            if !skipped {
+                out.blank();
+                let items: Vec<String> = frontier.iter().map(|f| model_text(&f.model)).collect();
+                let mut lines = wrapped("region (owing", &items, 2, 78);
+                if let Some(last) = lines.last_mut() {
+                    last.push(')');
+                }
+                for l in lines {
+                    out.line(l);
+                }
             }
         }
         Listing::Region => {

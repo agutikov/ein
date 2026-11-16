@@ -161,6 +161,26 @@ fn run(row: &Row, dir: &Path) -> Got {
         argv.push("--dump-answer".to_string());
         argv.push(answer.display().to_string());
     }
+    // A row that records `N` reads it off a describe that computes it: the
+    // state route, which `--describe-route states` asks, describe's default
+    // computing no `N` where its tree branches. A mode's run takes no route
+    // option.
+    let describes = argv.first().map(String::as_str) == Some("solve")
+        && !argv.iter().any(|a| {
+            matches!(
+                a.as_str(),
+                "-n" | "--solutions"
+                    | "--single"
+                    | "--minimal"
+                    | "--maximal"
+                    | "--monotone"
+                    | "--no-search"
+            )
+        });
+    if row.now.nogoods.is_some() && describes {
+        argv.push("--describe-route".to_string());
+        argv.push("states".to_string());
+    }
     let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
     cmd.args(&argv).current_dir(repo_root());
     // A closed stdout (schema /21): a pipe whose reader is dropped before the

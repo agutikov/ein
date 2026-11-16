@@ -601,6 +601,31 @@ fn solve_command() -> Command {
                      claim checked. Over all of R only",
                 ),
         )
+        // Two routes for describe and `--count`, the tree and the classes by
+        // default, an option forcing either: it chooses a route and never R.
+        .arg(
+            Arg::new("describe-route")
+                .long("describe-route")
+                .value_name("ROUTE")
+                .value_parser(PossibleValuesParser::new(["tree", "states"]))
+                .default_value("tree")
+                .conflicts_with_all([
+                    "solutions",
+                    "single",
+                    "minimal",
+                    "maximal",
+                    "monotone",
+                    "no-search",
+                ])
+                .help(
+                    "describe's and --count's route on a monotone program: 'tree', R's \
+                     states by the obligation tree and each state's class, where root owes \
+                     an instance a licence takes (elsewhere its walk is the state route's, \
+                     which is taken), N and an empty R's owing frontier not computed; or \
+                     'states', every alive state once, N and the frontier among them. It \
+                     changes no part of R",
+                ),
+        )
         // M1e2 S1e2.1b.5, approved 2026-11-03: a question about the program.
         .arg(
             Arg::new("monotone")

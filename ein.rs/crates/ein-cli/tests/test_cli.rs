@@ -1414,8 +1414,9 @@ fn a_claim_is_asked_the_least_question_and_the_surfaces_say_which() {
 /// **The stage's point, on a corpus program**: a claim the least question
 /// decides is held where describing R stops at the budget. I + BB = ILL at
 /// a budget of 1 200 facts: `--single` shows the one state and no other
-/// within it, and describe, which visits every alive partial assignment,
-/// does not finish, so until S1f.6.27 the claim was NOT CHECKED, exit 1.
+/// within it, and describe by the state route, which visits every alive
+/// partial assignment, does not finish, so until S1f.6.27 the claim was NOT
+/// CHECKED, exit 1. Describe's default, the tree and the classes, finishes.
 #[test]
 fn a_claim_on_a_search_is_held_where_describing_r_stops() {
     let file = "examples/beyond_arith/cryptarithm.ein";
@@ -1427,15 +1428,32 @@ fn a_claim_on_a_search_is_held_where_describing_r_stops() {
         "{}",
         r.out
     );
-    // The same budget does stop the description, which `ein solve` says and
-    // exits 0 on: the claim is a note there, not checked.
-    let described = ein(&["solve", file, "--region-budget", "1200"]);
+    // The same budget does stop the state route's description, which `ein
+    // solve` says and exits 0 on: the claim is a note there, not checked.
+    let described = ein(&[
+        "solve",
+        file,
+        "--region-budget",
+        "1200",
+        "--describe-route",
+        "states",
+    ]);
     assert_eq!(described.code, 0, "{}{}", described.out, described.err);
     assert!(
         described.out.contains("NOT CHECKED") && described.err.contains("note: "),
         "{}{}",
         described.out,
         described.err
+    );
+    // Describe's default, the tree and the classes, finishes within it and
+    // holds the claim.
+    let by_tree = ein(&["solve", file, "--region-budget", "1200"]);
+    assert_eq!(by_tree.code, 0, "{}{}", by_tree.out, by_tree.err);
+    assert!(
+        !by_tree.out.contains("NOT CHECKED") && by_tree.out.contains("holds"),
+        "{}{}",
+        by_tree.out,
+        by_tree.err
     );
 }
 

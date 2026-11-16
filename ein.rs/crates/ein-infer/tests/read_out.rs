@@ -225,7 +225,14 @@ fn one_program(path: &Path) -> Found {
                     },
                 )
                 .expect("checks");
-                if again.report.outcome != checked.outcome {
+                // The tree and the classes leave a claim over an empty R's
+                // owing frontier unchecked, not computing it; a check that
+                // computes R again reads it off the state route.
+                let frontier_skipped = out.described().is_some_and(|d| d.frontier_skipped);
+                let unchecked_by_route = frontier_skipped
+                    && checked.outcome == ein_infer::expect::Outcome::NotChecked
+                    && again.report.outcome != ein_infer::expect::Outcome::NotChecked;
+                if again.report.outcome != checked.outcome && !unchecked_by_route {
                     failures.push(format!(
                         "{tag}: the claim is {:?} against this run's R and {:?} against R \
                          computed again",

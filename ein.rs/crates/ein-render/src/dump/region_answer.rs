@@ -363,7 +363,17 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
         ("route", Json::str(route(d.route))),
         ("licences", licences(r)),
         ("states", states_json(states)),
-        ("frontier", frontier),
+        // An owing frontier the route did not compute is not written as if
+        // it were one: `null`, as `nogoods` is (the listing names the members
+        // met, and `--dump-answer` writes them under `owing/`).
+        (
+            "frontier",
+            if d.frontier_skipped {
+                Json::Null
+            } else {
+                frontier
+            },
+        ),
         ("core", core),
         ("core_status", status),
         ("refuted_by", refuted_by),
@@ -411,7 +421,7 @@ fn route(r: Route) -> &'static str {
         Route::States => "states",
         Route::Tree => "tree",
         Route::Root => "root",
-        Route::Borders => "borders",
+        Route::TreeClasses => "tree-classes",
     }
 }
 

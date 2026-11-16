@@ -37,9 +37,11 @@
 //!
 //! ### The routes
 //!
-//! **Describe** on a monotone program takes **the state route**
-//! ([`crate::states`], M1e2 S1e2.1c.2): every alive state once, its one-up
-//! extensions saturated, `R` read off the states. **Every other question on a
+//! **Describe** on a monotone program takes **the tree and the classes**
+//! ([`crate::tree_classes`]) where root owes an instance a licence takes, and
+//! **the state route** ([`crate::states`], M1e2 S1e2.1c.2) elsewhere or when
+//! asked: every alive state once, its one-up extensions saturated, `R` read
+//! off the states (§ Describe's route). **Every other question on a
 //! monotone program** takes the least of the same lattice of states it needs
 //! (`crate::tree`, M1e2 S1e2.1c.4): the **obligation tree**, where an owing
 //! state branches on one owed instance's alternatives (L5), for `-n`,
@@ -60,13 +62,26 @@
 //! (`Space::empty_state`): ∅ is below every commitment, so the minimal line
 //! is {∅}, on the user's ruling of 2026-11-07 on S-16.
 //!
-//! ### Describe's route — a decision taken without a ruling
+//! ### Describe's route
 //!
-//! **The rule reads the program and nothing else: the static check's
-//! verdict.** Monotone, describe takes the state route; flagged, it takes the
-//! cube as before, or route 1 when root is dead. No option chooses it.
+//! **On a monotone program describe and `--count` have two routes**, and
+//! [`Options::describe_route`] (`ein solve --describe-route tree|states`)
+//! chooses between them; it changes no part of `R`:
 //!
-//! The argument is that the state route never does more than route 1. The
+//! - **the tree and the classes**, the default ([`crate::tree_classes`]):
+//!   `R`'s states by the obligation tree and each state's class by dualise
+//!   and advance inside it. It is taken where root owes an instance L5 or L9
+//!   licenses, read off root's fixpoint before any node
+//!   (`tree_classes::branches`); elsewhere the tree has nothing to branch on
+//!   and its walk is the state route's, which is taken. It does not compute
+//!   `N` or an empty `R`'s owing frontier, and says so;
+//! - **the state route** ([`crate::states`]): every alive state once, every
+//!   row read off them, `N` and the frontier among them.
+//!
+//! A flagged program takes the cube as before, or route 1 when root is dead,
+//! whatever the option says.
+//!
+//! The state route never does more than route 1. The
 //! alive commitments it saturates are distinct, so they are at most route 1's;
 //! a dead extension it saturates is pruned from every superset (L1), and
 //! the commitments that are a state already are read, not saturated (L3).
@@ -219,6 +234,38 @@ pub struct Options {
     /// that every node is dead (L0). It states no other part of `R`, and a
     /// claim root does not decide is not checked.
     pub no_search: bool,
+    /// **Which route describe and `--count` take on a monotone program**
+    /// whose root is alive: the tree and the classes, the default, or the
+    /// state route (`ein solve --describe-route`). It changes no part of `R`:
+    /// the two describe `R` alike, and the state route alone computes `N` and
+    /// an empty `R`'s owing frontier where root owes an instance L5 or L9
+    /// licenses (the module's § Describe's route). No other question reads
+    /// it.
+    pub describe_route: DescribeRoute,
+}
+
+/// Describe's two routes on a monotone program, the first the default and
+/// an option of `ein solve` forcing either (the module's § Describe's
+/// route).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum DescribeRoute {
+    /// The tree and the classes ([`crate::tree_classes`]), where root owes an
+    /// instance L5 or L9 licenses; elsewhere their walk is the state route's,
+    /// and the state route is taken.
+    #[default]
+    Tree,
+    /// The state route ([`crate::states`]): every alive state once.
+    States,
+}
+
+impl DescribeRoute {
+    /// The option's value, as `ein solve --describe-route` spells it.
+    pub fn word(self) -> &'static str {
+        match self {
+            DescribeRoute::Tree => "tree",
+            DescribeRoute::States => "states",
+        }
+    }
 }
 
 impl Options {
@@ -234,6 +281,7 @@ impl Options {
             refute: false,
             nogoods: true,
             no_search: false,
+            describe_route: DescribeRoute::Tree,
         }
     }
 }
@@ -257,11 +305,12 @@ pub enum Route {
     /// No route: `--no-search` read root's node alone, and searched no
     /// further (M1f S1f.6.36, [`Options::no_search`]).
     Root,
-    /// The border route ([`crate::borders`]): describe on a monotone program
-    /// by the borders of the predicates the description reads, `R`'s states
-    /// by the obligation tree and each state's class and `N` by dualise and
-    /// advance.
-    Borders,
+    /// The tree and the classes ([`crate::tree_classes`]): describe and
+    /// `--count` on a monotone program by `R`'s states, found by the
+    /// obligation tree, and each state's class, found by dualise and advance
+    /// inside it; `N` and an empty `R`'s owing frontier not computed. The
+    /// default of [`DescribeRoute`].
+    TreeClasses,
 }
 
 /// A theorem a mode used to skip work —
@@ -527,9 +576,16 @@ pub struct Answer {
     /// What root's saturation and the universe's generator pass counted, as
     /// every route starts from them: `--json-summary`'s `root` block.
     pub root: RootStats,
-    /// On the border route, what each border cost and how large it is; `None`
-    /// on every other route. No surface prints it.
-    pub borders: Option<Box<BorderWork>>,
+    /// On the tree and the classes, what each part cost and how large the
+    /// classes are; `None` on every other route. No surface prints it.
+    pub tree_work: Option<Box<TreeWork>>,
+    /// Under describe and `--count` on a monotone program, **the other route
+    /// describe could take on it**: the state route where the tree and the
+    /// classes answered, the tree and the classes where the state route did
+    /// though they would branch; `None` where there is none (the tree would
+    /// have nothing to branch on), and on every other question. A stopped
+    /// run's note names it.
+    pub describe_alt: Option<DescribeRoute>,
 }
 
 impl Answer {
@@ -614,7 +670,16 @@ pub fn run_with(
         {
             // Describe's route: the module's § Describe's route.
             if prepared.monotonicity.is_monotone() {
-                describe_states(root, terms, ast, prepared, t0, opts, events)?
+                let branches = crate::tree_classes::branches(root, terms, ast, &prepared)?;
+                if branches && opts.describe_route == DescribeRoute::Tree {
+                    let mut a = describe_tree_classes(root, terms, ast, prepared, opts, events)?;
+                    a.describe_alt = Some(DescribeRoute::States);
+                    a
+                } else {
+                    let mut a = describe_states(root, terms, ast, prepared, t0, opts, events)?;
+                    a.describe_alt = branches.then_some(DescribeRoute::Tree);
+                    a
+                }
             } else {
                 describe_route_1(root, terms, ast, prepared, t0, opts, events)?
             }
@@ -801,7 +866,7 @@ pub(crate) struct Space<'a> {
     root_stats: RootStats,
     /// Per state, numbered as [`Seen::class`], the instances an alive owing
     /// node of it owes, rendered through their rule's `:why`: what a
-    /// description that lists an owing state prints ([`crate::borders`]).
+    /// description that lists an owing state prints ([`crate::tree_classes`]).
     owed_text: FxHashMap<u32, Vec<String>>,
 }
 
@@ -1141,7 +1206,8 @@ impl<'a> Space<'a> {
             wall: Duration::ZERO,
             warning,
             root: self.root_stats,
-            borders: None,
+            tree_work: None,
+            describe_alt: None,
         }
     }
 
@@ -1749,6 +1815,7 @@ impl<'a> Space<'a> {
             complete_up_to: None,
             stopped_before: None,
             states_partial: None,
+            tree_partial: None,
             root: described::Root {
                 alive: root.is_some_and(|r| !r.dead) || (root.is_none() && !self.root_dead),
                 owes: root.map_or(0, |r| r.owes),
@@ -1770,6 +1837,7 @@ impl<'a> Space<'a> {
             states,
             shape: None,
             frontier: Vec::new(),
+            frontier_skipped: false,
             nogoods_skipped: false,
             work: described::Work {
                 saturations: self.saturations,
@@ -1954,17 +2022,18 @@ fn describe_route_1(
         wall: Duration::ZERO,
         warning,
         root: root_stats,
-        borders: None,
+        tree_work: None,
+        describe_alt: None,
     })
 }
 
-/// Describe all of `R` by `route` — the state route, route 1, or the border
-/// route ([`crate::borders`]) — whatever the rule would pick: for the tests
-/// that hold two routes to one read-out, and for the price list that
-/// measures one against another. `ein solve` never calls it; describe's
-/// route is the rule's (the module's § Describe's route). A flagged program
-/// is refused unless its root is dead, and the border route refuses a dead
-/// root too.
+/// Describe all of `R` by `route` — the state route, route 1, or the tree
+/// and the classes ([`crate::tree_classes`]) — whatever the program or
+/// [`Options::describe_route`] would pick: for the tests that hold two routes
+/// to one read-out, and for the price list that measures one against
+/// another. `ein solve` never calls it; describe's route is the module's
+/// § Describe's route. A flagged program is refused unless its root is
+/// dead, and the tree and the classes refuse a dead root too.
 pub fn describe_by(
     root: &mut Kb,
     terms: &mut Terms,
@@ -1978,8 +2047,8 @@ pub fn describe_by(
         Route::States if prepared.monotonicity.is_monotone() => {
             describe_states(root, terms, ast, prepared, t0, opts, &mut Events::off())?
         }
-        Route::Borders if prepared.monotonicity.is_monotone() && !prepared.root_dead => {
-            describe_borders(root, terms, ast, prepared, opts, &mut Events::off())?
+        Route::TreeClasses if prepared.monotonicity.is_monotone() && !prepared.root_dead => {
+            describe_tree_classes(root, terms, ast, prepared, opts, &mut Events::off())?
         }
         Route::DownSet if prepared.monotonicity.is_monotone() || prepared.root_dead => {
             describe_route_1(root, terms, ast, prepared, t0, opts, &mut Events::off())?
@@ -2137,16 +2206,19 @@ fn describe_states(
         wall: Duration::ZERO,
         warning: None,
         root: root_stats,
-        borders: None,
+        tree_work: None,
+        describe_alt: None,
     })
 }
 
-/// Describe all of `R` on a monotone program whose root is alive by the
-/// border route ([`crate::borders`]): `R`'s states by the obligation tree,
-/// each state's class and `N` by dualise and advance, the description read
-/// off the borders. Where a node contradicts the static verdict, the run
-/// refuses, as the state route's does.
-fn describe_borders(
+/// Describe all of `R` on a monotone program whose root is alive by **the
+/// tree and the classes** ([`crate::tree_classes`]): `R`'s states by the
+/// obligation tree, each state's class by dualise and advance inside it, the
+/// description read off them; `N` and an empty `R`'s owing frontier not
+/// computed, each said so with the members the run met. Where a node
+/// contradicts the static verdict, the run refuses, as the state route's
+/// does.
+fn describe_tree_classes(
     root: &mut Kb,
     terms: &mut Terms,
     ast: &Ast,
@@ -2155,10 +2227,11 @@ fn describe_borders(
     events: &mut Events,
 ) -> Result<Answer, SolveError> {
     let mut sp = Space::open(root, terms, ast, prepared, opts, events);
-    let b = crate::borders::describe(&mut sp, opts.mode, opts.nogoods)?;
-    let mut described = described::of_borders(&b, &sp, opts.nogoods);
-    // N's cores, after the walk, as the state route takes those of the
-    // members it did not saturate: the core an eager walk takes.
+    let b = crate::tree_classes::describe(&mut sp, opts.mode)?;
+    let mut described = described::of_tree_classes(&b, &sp);
+    // The cores of N's members the run holds, after the walk, as the state
+    // route takes those of the members it did not saturate: the core an eager
+    // walk takes.
     if opts.cores.nogoods {
         let sets: Vec<Box<[u32]>> = described
             .dead
@@ -2232,7 +2305,7 @@ fn describe_borders(
         stopped: b.stopped.as_ref().map(|(_, stop)| stop.clone()),
         licences,
         members: described.k_c,
-        route: Some(Route::Borders),
+        route: Some(Route::TreeClasses),
         denials: s.dead.denials_spent(),
         order: s.order_took(),
     };
@@ -2240,73 +2313,50 @@ fn describe_borders(
         k_c: described.k_c,
         k_s: described.k_s(),
     };
-    let mut answer = sp.answer(opts.mode, Route::Borders, found);
+    let mut answer = sp.answer(opts.mode, Route::TreeClasses, found);
     answer.shape = shape;
     answer.counts = Some(counts);
-    answer.borders = Some(Box::new(BorderWork::of(&b)));
+    answer.tree_work = Some(Box::new(TreeWork::of(&b)));
     answer.described = Some(Box::new(described));
     Ok(answer)
 }
 
-/// What each border cost a border-route run, and how large it is: what the
-/// price list reads ([`Answer::borders`]). No surface prints it.
+/// What each part of the tree and the classes cost a run, and how large the
+/// classes are: what the price list reads ([`Answer::tree_work`]). No
+/// surface prints it.
 #[derive(Clone, Debug, Default)]
-pub struct BorderWork {
-    /// Per border, `(saturations, facts beyond root)`: `R`'s states, the
-    /// classes, the singles, `N` with the maximal alive sets.
-    pub work: [(u64, u64); 4],
-    /// The border the run stopped in, where the budget stopped it.
-    pub stopped_in: Option<crate::borders::Border>,
+pub struct TreeWork {
+    /// Per part, `(saturations, facts beyond root)`: `R`'s states, the
+    /// candidates dead alone, the classes. Root's node is none of them.
+    pub work: [(u64, u64); 3],
+    /// The part the run stopped in, where the budget stopped it.
+    pub stopped_in: Option<crate::tree_classes::Part>,
     /// `R`'s states found.
     pub states: u64,
-    /// Per state, its maximal closed proper subsets, summed.
+    /// The classes found.
+    pub classes: u64,
+    /// Over the classes found, their maximal closed proper subsets.
     pub below: u64,
-    /// Per state, its minimal generators, summed.
+    /// Over the classes found, their minimal generators.
     pub generators: u64,
     /// The classes found with no node asked.
     pub classes_read: u64,
-    /// `N`, where it was found.
-    pub nogoods: Option<u64>,
-    /// The maximal alive sets, where they were found.
-    pub maximal_alive: Option<u64>,
-    /// `N` was read off the states met with no node asked.
-    pub global_read: bool,
-    /// Transversals the memory decided dead with no saturation.
-    pub known: u64,
-    /// Rounds of the global dualisation.
-    pub rounds: u64,
-    /// The classes found.
-    pub classes: u64,
-    /// Where the run stopped in the global border: the maximal alive sets
-    /// and the members of `N` it had found, the transversals of the round
-    /// it stopped in, and the rounds begun.
-    pub global_met: Option<(u64, u64, u64, u64)>,
 }
 
-impl BorderWork {
-    fn of(b: &crate::borders::Borders) -> BorderWork {
-        // determinism-ok: `b.classes` is a vector, a class per state of `R`.
-        let classes = b.classes.iter().flatten();
-        BorderWork {
+impl TreeWork {
+    fn of(b: &crate::tree_classes::TreeClasses) -> TreeWork {
+        TreeWork {
             work: b.work,
-            stopped_in: b.stopped.as_ref().map(|(border, _)| *border),
+            stopped_in: b.stopped.as_ref().map(|(part, _)| *part),
             states: b.r.len() as u64,
-            below: classes.clone().map(|c| c.edges.len() as u64).sum(),
-            generators: classes.clone().map(|c| c.generators.len() as u64).sum(),
-            classes_read: classes.filter(|c| c.read).count() as u64,
-            nogoods: b.global.as_ref().map(|g| g.nogoods.len() as u64),
-            maximal_alive: b.global.as_ref().map(|g| g.maximal_alive.len() as u64),
-            global_read: b.global.as_ref().is_some_and(|g| g.read),
-            known: b.global.as_ref().map_or(0, |g| g.known),
-            rounds: b.global.as_ref().map_or(0, |g| g.rounds),
-            // determinism-ok: a count over a vector.
-            classes: b.classes.iter().flatten().count() as u64,
-            global_met: matches!(b.stopped, Some((crate::borders::Border::Global, _))).then_some((
-                b.met.maximal_alive,
-                b.met.dead,
-                b.met.transversals,
-                b.met.rounds,
-            )),
+            classes: b.classes.len() as u64,
+            // determinism-ok: `b.classes` is a vector, a class per state of R;
+            // each of these three is a sum or a count over it.
+            below: b.classes.iter().map(|c| c.edges.len() as u64).sum(),
+            // determinism-ok: as above.
+            generators: b.classes.iter().map(|c| c.generators.len() as u64).sum(),
+            // determinism-ok: as above.
+            classes_read: b.classes.iter().filter(|c| c.read).count() as u64,
         }
     }
 }
@@ -2624,7 +2674,8 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         monotonicity: r.monotonicity,
         root_dead: r.root_dead,
         root: r.root,
-        borders: None,
+        tree_work: None,
+        describe_alt: None,
     }
 }
 

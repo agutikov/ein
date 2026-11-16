@@ -571,13 +571,16 @@ const FIXTURE: &str = "tests/region/10_denied_extensions.ein";
 fn the_fixture_pins_the_extensions_known_dead_by_a_denial() {
     let path = repo_root().join(FIXTURE);
     // (question, denials spent, saturations, saturations from deaths alone)
-    // A describe's 18 are the 18 pairs of seatings that exclude each other,
-    // each a saturation from deaths alone and none here: 52 less 18. A tree
+    // Describe takes the tree and the classes here, root owing an instance a
+    // licence takes: its 18 are the 18 pairs of seatings that exclude each
+    // other, as the state route's are (34 with them, and 52 from deaths
+    // alone by the state route, which `--describe-route states` asks). A tree
     // meets states out of size order, so it also takes larger sets for dead
-    // on a denial.
+    // on a denial, and from deaths alone it saturates more than the state
+    // route does.
     let expected: [(&str, u64, u64, u64); 6] = [
-        ("describe", 18, 34, 52),
-        ("--count", 18, 34, 52),
+        ("describe", 18, 34, 67),
+        ("--count", 18, 34, 67),
         ("--single", 6, 12, 19),
         ("-n 1", 5, 11, 16),
         ("--minimal", 60, 34, 70),

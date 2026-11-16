@@ -144,7 +144,7 @@ fn route_word(r: Route) -> String {
         Route::States => "state route",
         Route::Tree => "obligation tree",
         Route::Root => "root alone",
-        Route::Borders => "borders",
+        Route::TreeClasses => "tree and classes",
     }
     .to_string()
 }

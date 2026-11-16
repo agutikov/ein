@@ -1508,8 +1508,12 @@
 #     /20 whose `right` is one, a command's `now` included (W62 to W65: a
 #     program refused at load has no R). `ein-infer/tests/register_region.rs` recomputes it with
 #     `explore` and holds every field; `EIN_BLESS=1` re-banks the blocks.
-#     route     `state route` (a monotone program's alive states, describe's
-#               route since M1e2 S1e2.1c.2) | `route 1` (the alive down-set,
+#     route     `tree and classes` (a monotone program whose root owes an
+#               instance a licence takes: R's states by the obligation tree
+#               and each state's class, describe's default since M1f
+#               S1f.10.17) | `state route` (a monotone program's alive
+#               states, describe's route since M1e2 S1e2.1c.2, and its route
+#               elsewhere since S1f.10.17) | `route 1` (the alive down-set,
 #               a flagged program whose root is dead) | `route 2` (the cube,
 #               for a program the static check flags)
 #     monotone  the static check's verdict. `false` means the region is the
@@ -1960,7 +1964,7 @@ exhausted = true
 core      = ["(likes Ann Soup)", "(likes Ann Stew)"]
 
 [case.region]
-route    = "state route"
+route    = "tree and classes"
 monotone = true
 k_s      = 0
 k_c      = 0
@@ -3046,7 +3050,7 @@ closes    = ["seats"]
 models    = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
 
 [case.region]
-route    = "state route"
+route    = "tree and classes"
 monotone = true
 k_s      = 7
 k_c      = 7
@@ -3134,7 +3138,7 @@ closes    = ["seats", "knows"]
 models    = [["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C1)", "(seats Bob C2)"], ["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C2)", "(seats Bob C1)"]]
 
 [case.region]
-route    = "state route"
+route    = "tree and classes"
 monotone = true
 k_s      = 7
 k_c      = 7
@@ -4154,7 +4158,7 @@ exhausted = true
 nogoods   = [{ set = ["(nation-loc Ukrainian House-2)", "(smoke-loc Old_Gold House-4)"], core = ["(bijective color-loc)", "(bijective nation-loc)", "(is-a Dog Pet)", "(is-a Englishman Nationality)", "(is-a Horse Pet)", "(is-a House-4 House)", "(is-a House-5 House)", "(is-a Ivory Color)", "(is-a Parliament Cigarette)", "(nation-loc Norwegian House-1)", "(nation-loc Ukrainian House-2)", "(relation color-loc Color House)", "(relation drink-loc Drink House)", "(relation nation-loc Nationality House)", "(relation pet-loc Pet House)", "(relation smoke-loc Cigarette House)", "(right-of House-5 House-4)", "(smoke-loc Old_Gold House-4)"] }]
 
 [case.region]
-route    = "state route"
+route    = "tree and classes"
 monotone = true
 k_s      = 1
 k_c      = 261982
