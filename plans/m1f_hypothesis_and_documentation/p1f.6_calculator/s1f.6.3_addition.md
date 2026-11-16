@@ -5,7 +5,7 @@
 constants, held to Rust's integers, search-free, and the rule of the theory held on the text and on a counter;
 six decisions taken by default, Q-M1f.149 to .154, and one finding, E-11 ([§ T1 record](#t1-record-2026-11-11)
 onward). Planned
-2026-11-08; re-planned 2026-11-11 to [the rulings](design.md#the-rulings-2026-11-11).
+2026-11-08; re-planned 2026-11-11 to [the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath).
 **Depends on:** [S1f.6.2](s1f.6.2_digits_and_tables.md).
 
 ## What it builds
@@ -23,7 +23,7 @@ by a result fact that repeats its operands, `(sum-of X Y S)`. A program reads th
 variable in the result's place.
 
 **The machinery,** design K of
-[design.md § Round 3](design.md#k-an-accumulator-in-the-other-order-and-a-continuation-on-every-call):
+[stdlib.md § Round 3](../../../docs/ein/user/reference/stdlib.md#stdmathdecimal-arith--school-arithmetic-on-natural-numbers):
 - **One walk from the units,** each column through the table, its digit put in front of an accumulator. The
   accumulator holds the answer most significant digit outermost, a second shape, `(b DIGIT REST)`, that only the
   theory writes.
@@ -46,7 +46,7 @@ It is stated in the module's header and held by a test (task 4).
    so `(import std.arith :symbols (arith))` brings the theory.
 2. **Named constants** (the user: *"(let NAME NUMBER) is ok"*). `(let price N)` names a number, and a request
    may name its operand: `(add price qty)` is answered by `(sum-of price qty S)`. The stage's default for what
-   that means is in [the rulings § what is open](design.md#what-is-open-after-the-rulings), item 2, and it is the
+   that means is in [the rulings § what is open](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath), item 2, and it is the
    user's to overrule before this task is written.
 3. **The tests.**
    - One program per rule under `tests/stdlib/arith/`, each with its `:expect`.
@@ -117,7 +117,7 @@ fact and no other.
 
 **What `(let NAME NUMBER)` does**
 ([Q-M1f.149](../open_questions.md#q-m1f149--what-let-name-number-does-as-built), defaulted, the reading of
-[the rulings § what is open](design.md#what-is-open-after-the-rulings), item 2). A request's operand is a number
+[the rulings § what is open](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath), item 2). A request's operand is a number
 or a name. `add-ask` asks for the first operand's number, `(operand (add-first X Y) X)`, and three rules answer
 with `(operand-is TAG NUMBER)`: `z` and `(n …)` stand for themselves, and a name for the number its `let`
 states. The second operand the same way, and then the walk starts with the two numbers and the tag `(sum X Y)`,

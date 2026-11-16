@@ -299,7 +299,7 @@ with another count of arguments, or a walk started from another place, fails
 per commit.
 
 **How it computes** (design K of the phase's
-[`design.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#k-an-accumulator-in-the-other-order-and-a-continuation-on-every-call)):
+[`stdlib.md`](../docs/ein/user/reference/stdlib.md#stdmathdecimal-arith--school-arithmetic-on-natural-numbers)):
 each operand is looked up; one walk from the units takes each column through
 the full adder's table and puts its digit in front of an accumulator, `(b
 DIGIT REST)`, which so holds the answer most significant digit outermost;
@@ -980,7 +980,7 @@ Binary arithmetic as a theory of its own, beside decimal (P1f.6's reply 13,
 way (b)): its own numeral, its own names, the same rules where they are the
 same. The user, 2026-11-11: *"arithmetic with binary numbers, I suspect simpler
 rules"*; what got simpler is
-[`binary_arithmetic.md` § What shipped](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_arithmetic.md#what-shipped-2026-11-15).
+[`stdlib.md` § What shipped](../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith).
 
 | module | what it is |
 |---|---|
@@ -1132,7 +1132,7 @@ held by the same two tests (`num9_theory.rs` on the text, per commit, and
 `arith_batch.rs` on the matcher's count, by hand since M1f S1f.6.21). It is what the design's prototype did not do: its step
 rule joined a division's state with the divisor's multiples on the divisor, a
 nested fact, and 4 000 divisions took 8.1 s where 250 took 0.19
-([`design.md` § 4](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#4-the-table)).
+([`stdlib.md` § std.math.num9 — nine digits in one fact](../docs/ein/user/reference/stdlib.md#stdmathnum9--nine-digits-in-one-fact)).
 With the multiples in the state, and a product's rows computed inside its
 step, a batch costs in proportion to its count: 362, 362, 901, 10 409 and
 26 889 candidates a request for a sum, a difference, a comparison, a product
@@ -1560,7 +1560,7 @@ with it.
 Four modules under `bool/`, the user's rulings of 2026-11-12 on P1f.6's
 questions 19 to 23 and round 2's item 23 (*"std.bool"*); the stage that built
 them is [S1f.6.17](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md),
-and its plan page, [`binary_logic.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_logic.md),
+and its plan page, [`stdlib.md`](../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool),
 the prototype they come from. The two bits are the names `0` and `1`, which
 are decimal's digits too: Ein has no truth values of its own, as it has no
 numbers. Each module comes whole with what it imports (M1f S1f.6.35), and

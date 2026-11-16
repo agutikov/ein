@@ -431,7 +431,7 @@ H — the universe: 380 candidates over 1 relation, dead alone not known: this r
 ```
 
 `(value 0 __closed__)` is among them ([E-1](findings.md)). A bare `ein solve` on it stops with one line and exit
-1, *a state's commitments pass 2^128: the state route cannot count them*, as [`design.md`](design.md) records for
+1, *a state's commitments pass 2^128: the state route cannot count them*, as [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath) records for
 an unclosed theory. So: **numbers are not enumerable, and the blind enumerator does not try.**
 
 **From a list of numbers the problem file states: it works, and it is a search** (`p/gap_c.ein`). The file states
@@ -1512,7 +1512,7 @@ Each with its witness under `build/s1f.6.20/witness/` (output in `out/witness/`)
 **Rows the problems meet**, already in `findings.md`: E-1 (`(value 0 __closed__)`, § 3.3), E-3 (the join on a
 quantity, § 7), E-5 (the plan rules' `needs`, § 2.2), E-14 (every number on this page), E-15 (§ 7). And two that
 are not rows there: the stale fact of § 3.5, which is F21's open question, and the 2^128 stop with exit 1, which
-[`design.md`](design.md) records.
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath) records.
 
 No wrong answer of the engine was found: no register row.
 

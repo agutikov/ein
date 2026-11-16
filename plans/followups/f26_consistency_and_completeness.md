@@ -86,7 +86,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   program can be incomplete, as an ambiguous puzzle is, and the engine **shows** the incompleteness as a region.
   Nothing there is undecidable.
 - **Nested facts change the class.** A rule may conclude a fact nested deeper than its premises
-  ([P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md)'s numbers are that:
+  ([P1f.6](../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)'s numbers are that:
   `(n (n (n z 1) 2) 3)`), so the facts a program can derive are no longer bounded by its names, and saturation
   need not stop. That is Horn clauses with function symbols, which compute anything computable. So whether root
   derives `(false)`, **consistency itself**, is then undecidable in general: the halting problem, Turing's and

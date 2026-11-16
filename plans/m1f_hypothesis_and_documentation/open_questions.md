@@ -527,7 +527,7 @@ meets nothing. The dunder half meets two things the reading did not see:
 
 - **The stdlib documents a dunder as an argument value, and a test holds it.** `stdlib/algebra.ein`'s `imply1`,
   *"Doubles as property→property: (imply1 functional __closed__) turns a functional relation closed"*;
-  [`07_stdlib_api.md`](../../docs/kernel/ir/03-ein-lang/07_stdlib_api.md)'s `imply1` row, *e.g. `(imply1
+  [`stdlib.md`](../../docs/ein/user/reference/stdlib.md)'s `imply1` row, *e.g. `(imply1
   functional __closed__)`*; and `ein-infer/tests/algebra_semantics.rs`'
   `imply1_lifts_a_property_marker_onto_a_kernel_trigger`, which holds that the program derives `(__closed__
   foo)`, *"userspace reaching a kernel switch"*. Today's binary and T9's generated build both derive `(__closed__
@@ -3142,7 +3142,7 @@ is wrong. The choice of reading rules nothing: F24's question stays the user's.
 
 ### Q-M1f.135 — Which facts a flat import brings
 
-**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (a), and taken by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md). The user ruled that day that *"importing facts is
+**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (a), and taken by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md). The user ruled that day that *"importing facts is
 mandatory"*; a fact has no name to list, so which facts `(import M :symbols (…))` brings is a choice.
 
 - **(a1) Every fact of the module, always.**
@@ -3157,7 +3157,7 @@ naming every relation. Held by `imports_semantics.rs`, W88's four rows and `defi
 
 ### Q-M1f.136 — What a qualified import does to the names inside a fact
 
-**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (b). A qualified import renames every name the module declares, the relation
+**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (b). A qualified import renames every name the module declares, the relation
 heading a fact among them, so a library's `is-a` facts land in `o.is-a` and do not join the program's `is-a`.
 
 - **(b1) Keep it, and say nothing.**
@@ -3170,7 +3170,7 @@ heading a fact among them, so a library's `is-a` facts land in `o.is-a` and do n
 
 **Decision file:** [`docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md`](../../docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)
 
-**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (c). They were under a qualified import, and they enter the blind
+**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (c). They were under a qualified import, and they enter the blind
 enumerator's objects: importing an ontology of n constants widens the universe of every open relation by n.
 
 - **(a) Yes**: an imported fact is a fact of the program, and `solution_semantics.md` § 1.2 defines the names as
@@ -3184,7 +3184,7 @@ library closes its own.
 
 **Decision file:** [`docs/decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md`](../../docs/decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)
 
-**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (d).
+**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (d).
 
 - **(a) Its own**: a `:source` where the module wrote one, otherwise background, as if written in the program.
 - **(b) Stamped with the module's name** where it has no `:source`.
@@ -3196,7 +3196,7 @@ library closes its own.
 
 **Decision file:** [`docs/decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md`](../../docs/decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)
 
-**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (e); E-6 of [`findings.md`](p1f.6_calculator/findings.md). A fact stated by
+**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (e); E-6 of [`findings.md`](p1f.6_calculator/findings.md). A fact stated by
 a module and by the program, or by two modules, with different `:source`s keeps its first statement, and the
 later `:source` is gone with no word, as it is for a fact written twice in one file.
 
@@ -3208,7 +3208,7 @@ later `:source` is gone with no word, as it is for a fact written twice in one f
 
 ### Q-M1f.140 — A rule of the module the selection does not name
 
-**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (f). `(import onto :symbols (is-a))` brings the `is-a` facts and neither of
+**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (f). `(import onto :symbols (is-a))` brings the `is-a` facts and neither of
 the module's rules over `is-a`, though the facts would fire them.
 
 - **(a) Still dropped.**
@@ -3361,7 +3361,7 @@ arithmetic programs makes the 12 ms matter.
 **Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md)
 
 **Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T2. The user ruled *"(let NAME NUMBER) is ok"*; what a request may do with a name
-is item 2 of [`design.md` § what is open](p1f.6_calculator/design.md#what-is-open-after-the-rulings), the
+is item 2 of [`stdlib.md` § what is open](../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath), the
 coordinator's reading, the user's to overrule.
 
 - **(a) A request may name an operand,** and its answer repeats the names: `(add price qty)` is answered by
@@ -4116,10 +4116,10 @@ arithmetic and logic prototypes into examples too"*). Where a page recommends a 
 (b) and its generation from `std.arith` for arithmetic; the one table, and the properties as generated facts with
 the deriving rules as their check, for logic. On four points the pages show variants and recommend none:
 
-- **The truth table's candidates.** [`binary_logic.md`](p1f.6_calculator/binary_logic.md#2-the-truth-table-of-a-circuit) shows three ways,
+- **The truth table's candidates.** [`stdlib.md`](../../docs/ein/user/reference/stdlib.md#stdboolinputs--inputs-as-hypotheses) shows three ways,
   the obligations rung alone, an hrule, and `:hypothesis-relations`, with one answer and one cost.
 - **Where the conversions live,** in the binary module or a module of their own: question 5 of
-  [`binary_arithmetic.md`](p1f.6_calculator/binary_arithmetic.md).
+  [`stdlib.md`](../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith).
 - **Post's criterion as a program:** the page's has 140 written sets and reads eight `-u` relations restated by
   `forall` and `absent`.
 - **What the simplifier reads:** the prototype's imports the deriving rules; the recommendation makes the
@@ -4177,7 +4177,7 @@ gates against rows typed beside them and not against the calculator's table.
 **Raised** 2026-11-12 by the same banking. Every corpus program is solved, dumped and reloaded per commit by a
 bare `ein solve`, which describes all of R and writes each state as text (E-24); describing R over n inputs as
 hypotheses is 3ⁿ + n saturations and stops at the default budget near twelve inputs
-([`binary_logic.md`](p1f.6_calculator/binary_logic.md#scale-inputs-4-to-24)).
+([`stdlib.md`](../../docs/ein/user/reference/stdlib.md#stdboolinputs--inputs-as-hypotheses)).
 
 - **(a) Sizes every surface affords:** three inputs for every search, 30 saturations at most; binary operands
   to seventeen bits; five numbers to binary, the largest 255, and seven to decimal, the largest 1000.
@@ -4491,7 +4491,7 @@ digits and probes of `nz`, a table the binary theory does not have.
 **Defaulted 2026-11-13, the user's to revise: `gen_binary.py` leaves the check out,** rules and relations,
 and takes the two rules of the operands as they were, so `bin.ein` is byte for byte what it was and the
 binary theory answers a malformed request by silence. A check of base two is two guards where ten and is
-[`binary_arithmetic.md`](p1f.6_calculator/binary_arithmetic.md)'s to ask, with the page's other questions.
+[`stdlib.md`](../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)'s to ask, with the page's other questions.
 
 **Superseded 2026-11-15** at P1f.6's close, on the user's ruling of that day (*"all as you recommended"*, [`close.md` § The user's rulings](p1f.6_calculator/close.md#the-users-rulings-2026-11-15), 3): binary's numeral is `std.math.binary`'s, checked since S1f.6.16's build. The question has no subject since; the default stands as the record of what was built before.
 

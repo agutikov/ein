@@ -167,7 +167,7 @@ figure and what is read off the picture, are [P1g.11's](../p1g.11_school_geometr
 ## Expressions, and S1f.6.14
 
 The calculator's rulings left one thing open: the expression layer, `(calc E)` and `(let NAME E)`
-([`design.md` § The rulings](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#the-rulings-2026-11-11)).
+([`stdlib.md` § The rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)).
 The user found it questionable, and
 [S1f.6.14](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.14_expressions.md) waits. Algebra meets
 the same shape from the other side and the two must not be confused:

@@ -19,7 +19,7 @@
 ;;;
 ;;; Every claim was computed in Python and is checked by `ein test`.
 ;;;
-;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
+;;; M1f P1f.6 (S1f.6.16): `docs/ein/user/reference/stdlib.md` has
 ;;; the prototype this program was banked from, its counts and its costs; the
 ;;; module is the stdlib's `std.math.convert` since the stage's build.
 (import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))

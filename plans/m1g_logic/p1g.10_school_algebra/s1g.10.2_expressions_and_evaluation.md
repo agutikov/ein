@@ -184,7 +184,7 @@ thing with `(evaluate E)`; that is still S1g.10.1's to show on programs:
 expression is strict, with a value when the first is not the smaller and otherwise `(negative (sub a b))` and
 no value; division is two heads, `div` for the quotient and `mod` for the remainder. Round 2 of the
 calculator's design built the layer on a prototype
-([`design.md` § C](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#ii-nested-expressions-evaluated-on-demand)), three rules an
+([`stdlib.md` § C](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)), three rules an
 operator, and that is the starting text.
 
 ### The checks the reply names

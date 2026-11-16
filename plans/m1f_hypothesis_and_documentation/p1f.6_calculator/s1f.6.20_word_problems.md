@@ -13,7 +13,7 @@ test of the gate does not end on it (E-33). The twelve questions stay open, and 
 rulings.
 Its first task **stops for the user** with example programs before any theory is written.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations. The protocol is ruled
-([the rulings](design.md#the-rulings-2026-11-11)): request facts, result facts read by a goal with a variable in
+([the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)): request facts, result facts read by a goal with a variable in
 the result's place, and named constants. **No expression layer is in the core:** every *"together means sum"* is a
 rule of the problem's theory from facts to a request. How that reads, and how often a quantity needs two or three
 operations, is the evidence [S1f.6.14](s1f.6.14_expressions.md)'s question to the user waits for. It does not need
@@ -79,7 +79,7 @@ theory and a set of problems, each run on the release binary, every answer compu
 | the same with the assumption stated, *Alice had none* | the gap closed by an assumption, and the answer marked as resting on it |
 | *Bob has 5 apples and gave 7 to Alice* | a contradiction in the problem's facts: what the program says, `(false)` or a flag, as the user ruled for division by zero |
 | *Bob has 5 apples, Alice has 3 pears. How many apples do they have together?* | two kinds of thing: a sum only over the kind asked about |
-| *12 boxes of 144 pencils, 250 go to the office, the rest shared among 31 classes* | several steps, a product, a difference, a quotient and a remainder ([`design.md`](design.md)'s word problem, with its words as facts rather than as `let` lines) |
+| *12 boxes of 144 pencils, 250 go to the office, the rest shared among 31 classes* | several steps, a product, a difference, a quotient and a remainder ([`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)'s word problem, with its words as facts rather than as `let` lines) |
 | a *who has more, and by how much* problem | the comparison |
 | *Bob has 5 apples, Alice has 7. A box holds 3. How many boxes do they need?* (the user's, 2026-11-11) | **three numbers, two steps, and the program explains the plan**: which operations, in what order, and why. *They* fill the boxes together, so the apples are summed first, 5 + 7 = 12; a box *holds* 3, so the boxes are a division, 12 ÷ 3 = 4. See [§ The plan is explained](#the-plan-is-explained) |
 | the same with *Alice has 8* (the coordinator's variant) | the division leaves a remainder, 13 ÷ 3 = 4 and 1 over: whether *need* means a fifth box is a reading of the word, and the program says which reading it took |

@@ -6,7 +6,7 @@ the rational, lowest terms by Euclid's chain, negation, the four operations and 
 as a division by zero; held to exact fractions, search-free, and under the rule of the theory on the text and on
 the counter; five decisions taken by default, Q-M1f.180 to .184, and no finding
 ([§ T1 record](#t1-record-2026-11-12) onward). **It did not need integer division**, so it did not wait for
-Q-M1f.179. Planned 2026-11-08; restated 2026-11-11 to [the rulings](design.md#the-rulings-2026-11-11): the
+Q-M1f.179. Planned 2026-11-08; restated 2026-11-11 to [the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath): the
 numbers under it are nested, of any length, and its rules follow S1f.6.3's rule of the theory.
 **Depends on:** [S1f.6.7](s1f.6.7_negative_numbers.md).
 
@@ -33,7 +33,7 @@ A zero denominator, written by a program or reached by dividing by a zero ration
 S1f.6.1 ruled for division by zero.
 
 **No width limits it.** Cross products are twice as long as their operands, and nested numbers hold them.
-The gcd chain is the program `le/p/gcd.ein` of [design.md § C](design.md#i-round-1s-request-and-answer-facts),
+The gcd chain is the program `le/p/gcd.ein` of [stdlib.md § C](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath),
 rewritten with tags so that it follows the rule of the theory.
 
 ## Tasks

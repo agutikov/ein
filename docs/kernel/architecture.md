@@ -400,7 +400,7 @@ two need distinct names and a line at each saying what the other is.
 | I want to…                          | files to touch |
 |-------------------------------------|----------------|
 | add/adjust a **puzzle** rule        | the `.ein` file itself, or import from [`stdlib/`](../../stdlib/) |
-| add a **stdlib** rule/module        | `stdlib/<m>.ein` + a `tests/` exercise; document in [`ir/03-ein-lang/07_stdlib_api.md`](ir/03-ein-lang/07_stdlib_api.md) |
+| add a **stdlib** rule/module        | `stdlib/<m>.ein` + a `tests/` exercise; document in [`stdlib.md`](../ein/user/reference/stdlib.md) |
 | add a **kernel primitive** (`absent`-like) | `ein-core/src/terms.rs` (the reserved atom) or `ein-infer/src/predicates.rs` + `compile.rs` + `match_.rs` + tests; a *negative* one also touches the saturator's boundary phase |
 | add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`grammar.md`](../ein/user/reference/grammar.md) and [`reserved-names.md`](../ein/user/reference/reserved-names.md) |
 | change **saturation order**         | `ein-infer/src/saturator.rs` (the agenda, `saturator::AGENDA`: what leads to `(false)` first, FIFO within each half; FIFO alone before it, the priority bands until M1f S1f.5.15) |

@@ -6,7 +6,7 @@ reads all seven tables; `(div X Y)` answered by `(quot-of X Y Q R)`, held to Rus
 under the rule of the theory on the text and on the counter; division by zero a flag and `(false)` from it, each
 by its own rule, every surface shown below; three decisions taken by default, Q-M1f.163 to .165, and no finding
 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08; re-planned 2026-11-11 to
-[the rulings](design.md#the-rulings-2026-11-11).
+[the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath).
 **Depends on:** [S1f.6.4](s1f.6.4_subtraction.md), [S1f.6.5](s1f.6.5_multiplication.md).
 
 ## What it builds
@@ -30,7 +30,7 @@ cause (false), the cost is ok, program contains division by zero, why we would w
 So the trace shows the flag as a step of its own and the contradiction as the next, the core is the request,
 and `refuted by` names the second rule. The costs are accepted as ruled: R is empty, every other query of the
 program loses its answer, and only `(false)` can be claimed
-([design.md § E](design.md#e-division-by-zero-as-false-question-5)). The stage shows every surface again on the
+([stdlib.md § E](../../../docs/ein/user/reference/stdlib.md#stdmatharith--zero-and-the-division-by-zero)). The stage shows every surface again on the
 shipped theory.
 
 ## Tasks

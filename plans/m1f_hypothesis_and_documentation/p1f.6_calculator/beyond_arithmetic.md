@@ -120,7 +120,7 @@ underdetermined equation is an enumeration, and saturation is a breadth-first on
 
 ## 2. Equations by search
 
-The unknown's digits as hypotheses. The theory half is the one [`binary_logic.md`](binary_logic.md) § 5 used for
+The unknown's digits as hypotheses. The theory half is the one [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#what-they-are-for) § 5 used for
 a circuit's inputs: an hrule proposes every digit at every place, `total-owed` says a state with a place unset is
 no answer, `functional` that a place has one digit.
 
@@ -387,7 +387,7 @@ second way, from nine facts `(next 0 1)` … `(next 8 9)` and five rules of coun
 
 601 firings, 0.8 ms, 200 `agrees` facts and no `disagrees` (`$E saturate --dump
 examples/beyond_arith/column_lemma.ein`). `(every-row agrees)` is derived by a walk over the 200 rows in order:
-over a table that is complete, *for every row* is a chain and needs no negation, as [`binary_logic.md`](binary_logic.md)
+over a table that is complete, *for every row* is a chain and needs no negation, as [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool)
 found for a gate's four rows. A mutant with the step over ten made wrong fails all three claims, with 90 rows
 named (`build/s1f.6.10/p/p4b_mutant.ein`, `$E test`).
 
@@ -638,7 +638,7 @@ numbers at 500); **E-14** and **E-17** (the worked solution, § 6a).
    left as the example? **Recommended: into `std.arith`**, as `(gcd X Y)` answered by `(gcd-of X Y G)`, when
    question 1's stage runs.
 6. **An unsatisfiable search as `Open`** (E-23, now on an equation). It was question 6 of
-   [`binary_logic.md`](binary_logic.md) and M1g's probe 1b; this page adds only that the same question, asked by
+   [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool) and M1g's probe 1b; this page adds only that the same question, asked by
    saturation, gets a dead root and a three-row proof. No new recommendation.
 7. **A cryptarithm theory** (`std.crypt` or under another name), after 2 and 3? **Recommended: yes, small**: it
    is the first puzzle family beside the zebra that the stdlib's tables make cheap to state.

@@ -58,7 +58,7 @@ nothing here adds engine arithmetic.
    [Q-M1g.10](../open_questions.md#q-m1g10--the-optional-proof-systems) and
    [.11](../open_questions.md#q-m1g11--how-far-induction-goes), the scope questions.
 9. **§ The rulings,** empty until the user answers, then their words verbatim and dated, as
-   [the calculator's](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#the-rulings-2026-11-11)
+   [the calculator's](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)
    are.
 
 ## Tasks

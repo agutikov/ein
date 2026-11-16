@@ -23,7 +23,7 @@ into this stage, which already stopped for the user, so that P1g.11 has a stop o
 it was written there, with nothing added:
 
 **The page.** `p1g.11_school_geometry/design.md`, as the calculator's
-[`design.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md) is: target programs written
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath) is: target programs written
 for a prototype under `build/s1g.11/`, each run on the release binary, each shown with every artefact a run
 writes (`ein solve`, `ein saturate --dump`, `ein test`, `--trace`, `--dump-answer`), and after them the
 conventions proposed and the questions, each with a recommendation that a run supports. The commit at the stop

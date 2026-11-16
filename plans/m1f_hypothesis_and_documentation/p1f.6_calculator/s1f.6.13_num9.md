@@ -18,7 +18,7 @@ The user, 2026-11-11: *"yes, ship num9 in stdlib, why not"*.
 
 `stdlib/num9.ein`, imported as `std.num9`: the user's own number, `(num9 0 0 0 1 2 3 0 7 8)`, most significant
 digit first, nine digits. It is round 1's theory
-([design.md § How the prototype is built](design.md#how-the-prototype-is-built)): one rule with a premise per
+([stdlib.md § How the prototype is built](../../../docs/ein/user/reference/stdlib.md#stdmathnum9--nine-digits-in-one-fact)): one rule with a premise per
 column for a sum, a difference and a comparison, shift registers over step names for a product and a quotient.
 Where it wins is a single request on numbers that fit: one firing for a sum.
 
@@ -39,7 +39,7 @@ Where it wins is a single request on numbers that fit: one firing for a sum.
 
 **Its known cost.** The division's step rule joins its state with the divisor's multiples on the divisor, a
 nested fact, so a batch is quadratic: 250 divisions in 193 ms and 4 000 in 8.1 s on the prototype
-([design.md § 4](design.md#4-the-table)). Task 3 decides whether the multiples travel in the state, as
+([stdlib.md § std.math.num9 — nine digits in one fact](../../../docs/ein/user/reference/stdlib.md#stdmathnum9--nine-digits-in-one-fact)). Task 3 decides whether the multiples travel in the state, as
 `std.arith`'s do.
 
 ## Tasks

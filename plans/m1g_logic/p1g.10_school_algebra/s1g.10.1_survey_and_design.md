@@ -31,7 +31,7 @@ anything is implemented.
 ## What it is
 
 A page, `p1g.10_school_algebra/design.md`, as the calculator's
-[`design.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md) is: target programs written for a prototype under `build/s1g.10/`,
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath) is: target programs written for a prototype under `build/s1g.10/`,
 each run on the release binary, each shown with every artefact a run writes (`ein solve`, `ein saturate --dump`,
 `ein test`, `--trace`, `--dump-answer`), and after them the conventions proposed and the questions, each with a
 recommendation that a run supports. The commit at the stop is docs only.
@@ -130,7 +130,7 @@ to this shape.
    re-taken (F-1, F-2 and F-6; F-3 to F-5 are S1g.11.1's), and the questions a to d and f (g is S1g.11.1's) of
    [README § The questions for the user](README.md#the-questions-for-the-user) with their recommendations.
 2. **T2, the stop.** The user reads the page. The rulings are recorded on it in the user's words, as
-   [`design.md` § The rulings](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#the-rulings-2026-11-11) records the calculator's.
+   [`stdlib.md` § The rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath) records the calculator's.
 3. **T3, the re-plan.** The phase's README and stage files are restated to the rulings, and the questions are
    filed in [`open_questions.md`](../open_questions.md) with ids then free.
 

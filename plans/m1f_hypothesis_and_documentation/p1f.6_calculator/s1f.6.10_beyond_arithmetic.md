@@ -8,7 +8,7 @@ taken by default (Q-M1f.186 to .189), eight questions put ([§ T1 record](#t1-re
 stdlib module and no engine source moved. Planned 2026-11-08 as a report: probes and a page, no change to the
 theory unless the user rules one.
 **Depends on:** [S1f.6.8](s1f.6.8_rational_numbers.md) and [S1f.6.9](s1f.6.9_width.md). It works on the ruled design of
-2026-11-11 ([the rulings](design.md#the-rulings-2026-11-11)): nested numbers of any length, so a bound in a probe is a
+2026-11-11 ([the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)): nested numbers of any length, so a bound in a probe is a
 choice of the probe and no longer the theory's width.
 
 ## The question

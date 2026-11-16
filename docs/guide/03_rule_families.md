@@ -37,7 +37,7 @@ digraph { rankdir=LR; node [shape=box];
 ```
 
 You never wrote `symmetric`/`bijective`'s logic — the stdlib did
-([`07_stdlib_api.md`](../kernel/ir/03-ein-lang/07_stdlib_api.md)). Each
+([`stdlib.md`](../ein/user/reference/stdlib.md)). Each
 `(bijective R)` pulls in four cardinality properties and the inference they
 license: **negative-completion** and **domain-elimination**.
 
@@ -209,5 +209,5 @@ In [Chapter 4](04_solving_the_whole_puzzle.md) we assemble the whole thing
 and watch these families solve it.
 
 > **Reference:** the stdlib per-symbol —
-> [`07_stdlib_api.md`](../kernel/ir/03-ein-lang/07_stdlib_api.md); each
+> [`stdlib.md`](../ein/user/reference/stdlib.md); each
 > family firing in context — [the walkthrough](../kernel/inference/zebra_walkthrough.md).

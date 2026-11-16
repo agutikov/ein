@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
-page shown to the user: [`binary_arithmetic.md`](binary_arithmetic.md)**, the three ways each tried and measured,
+page shown to the user: [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)**, the three ways each tried and measured,
 with a recommendation of (b). Nothing shipped; T2 to T4 wait for the user's ruling on that page's questions.
 **Way (b) banked as examples 2026-11-12** (`9612b350`), on the user's instruction of that day:
 [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md); the [record](#record-2026-11-12-way-b-banked-as-examples)
@@ -234,7 +234,7 @@ parse, load and compile 5.8 ms against 26.8. Under (b), 51 of the 67 rules are `
    the trial succeeded, or the generator moves to `utils/` with its `--check` in the gate if the copy is
    generated. `examples/binary_logic/bits.ein`, the copy E-32 forced, goes either way. No claim of any
    example changes; the request names in them do.
-7. **T1f.6.16.11 — the comparison page,** task 4 of the old list: [`binary_arithmetic.md`](binary_arithmetic.md)
+7. **T1f.6.16.11 — the comparison page,** task 4 of the old list: [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)
    gets a closing section, what shipped and what each ruling made of the page's questions;
    [`stdlib/README.md`](../../../stdlib/README.md) a section a module; `AGENTS.md`.
 
