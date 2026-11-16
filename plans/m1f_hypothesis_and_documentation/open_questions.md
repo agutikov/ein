@@ -315,7 +315,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth. **Renamed 2026-11-16** on the user's instruction: `ein render h-space FILE`, and `ein show hyps FILE` lists H as Ein facts |
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
 | [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, then, on S1f.10.17's measured *no* for the whole border route, *"2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one or another, verbose warning about budget"*. **Built** by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md)'s T3: `--describe-route tree|states`, the tree and the classes by default |
-| [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **put 2026-11-16 by S1f.10.16's T2, not ruled, to be shown at the phase's close**: default (b), `hyp` re-pointed at H's pass and `hyp+closed` removed; not acted on, both ops as they were; [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers) |
+| [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **ruled 2026-11-16: (e)**, both ops removed and what only they read deleted; the user's choice at the phase's close |
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. **Built** by [S1f.10.19](p1f.10_hypothesis_structure/s1f.10.19_a_dead_node_stopped_early.md#record-2026-11-16-the-agenda): `pairs` everywhere, the engine's order |
 
 **The questions those two phases already own are M1e's and keep their ids.**
@@ -6690,6 +6690,11 @@ kill cache (`write_negated`), `complete` and `open_hypotheses` have no other rea
 **The default named: (b).** The golden then pins what a command produces and nothing only the golden runs,
 which is the rule S1f.10.16 settled every other piece by. **Not acted on**: both ops, and every piece they
 call, are as they were.
+
+**Ruled 2026-11-16: (e), remove both.** The user, asked at the phase's close with the options above, chose *"(e)
+Remove both"*. So the shape golden digests no hypothesis generation, H being held by `ein show hyps`' tests and the
+routes' sweeps; and what only the two ops read (the walk's generator `hypgen::generate`, its lookahead and kill
+cache, `closed::emit_closed`) has no reader left and is deleted by S1f.10.16's rule.
 
 ### Q-M1f.313 — May the agenda inside a route's node fire first what leads to `(false)`?
 

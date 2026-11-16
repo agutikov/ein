@@ -161,6 +161,26 @@ user's to confirm**:
 | H15-6 | `register_region.rs`'s bless writes a region block into a quoted note | fixed in the test, small |
 | K-5, K-9 | the classes of program the small-KB rule does not fit | stay as the rule's stated limits |
 
+## The user's answers at the close (2026-11-16)
+
+Asked as four questions, each with its options; the user chose:
+
+1. **Q-M1f.312: *"(e) Remove both"*.** The `hyp` and `hyp+closed` ops leave the shape golden, and what only they
+   read (`hypgen::generate`, the lookahead and its kill cache, `closed::emit_closed`) is deleted.
+2. **H9-1 and H9-4: *"File and fix them in this phase"*.** Each an `open` register row with its witness, then fixed
+   and flipped before the close.
+3. **The other findings: *"Accept as proposed"*.** H6-1, H6-3, H6-4 and K-41 to [F21](../../followups/f21_non_monotone_programs_decided.md);
+   K-12 to P1f.20; K-13's stdlib half a stdlib change of its own, later; K-21 with describe's next work; and K-19,
+   K-29, K-30 and H15-6 fixed now, before the close.
+4. **Part 2's defaults: *"Accept all"*.** Each stands until revised.
+
+So the close waits for three pieces of work and the last gate: the ops removed with the walk's last code (with K-29
+and K-30); H9-1 and H9-4 filed and fixed; K-19 and H15-6 fixed. The container gate on `bb3579d1` found one more:
+`lever_invariance`'s per-commit sweep ran for more than 45 minutes on one unit, after `zebra.ein` left the slow
+set; it is found and fixed with them, and the user asked why the test is not spread over the workers more finely
+(*"currently lever_invariance runs in a single thread, we already parallelized tests, why not this?"*): its units
+are a program and a setting, every question of one unit run in turn.
+
 ## What the user is asked
 
 1. **[Q-M1f.311](../open_questions.md#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead)**,
