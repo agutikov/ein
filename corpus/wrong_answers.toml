@@ -1214,8 +1214,8 @@
 # control's R. The list of the program's names, which the alive-set invariant
 # reads, is unchanged, and a dunder stays legal to write as a value. No other
 # corpus program's H, R, read-out or exit code moved. Each `[case.fixed]`
-# carries the null id in the flipping commit, and the stage's next commit
-# writes the hash. No open row is owned by a stage of M1f's phase 10.
+# carried the null id in the flipping commit, `4ee131e3`, and the stage's next
+# commit wrote the hash. No open row is owned by a stage of M1f's phase 10.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -17522,7 +17522,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) from E-1 of P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.306, *\"all defaults ok\"*: (b), a kernel dunder is never an object, wide. Ten digits closed by a rule beside an open `total`: the prototype calculator's shape, on which E-1 was found. The control, dunder-object-closed-by-fact.ein, writes the closure as a fact, and differs in nothing else. The row's run asks the maximal line, one state, since R is 2 048 states today and 1 024 right: `[case.wrong]` and `[case.control]` carry the counts, and `[case.region]` the witness's R. Fixed by the same task (2026-11-16): ten candidates and 1 024 states, the control's"
 
 [case.fixed]
-commit = "0000000"
+commit = "4ee131e3"
 by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
 date   = "2026-11-16"
 
@@ -17582,7 +17582,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the shipped stdlib: `std.math.arith` imported whole beside an open `total`. The module's closing rule derives its closures and it writes no `(__closed__ R)` fact, so the dunder is the program's one object. `std.math.decimal-arith`, which brings `std.math.digits` and its written closures, proposes no dunder and is no witness. Fixed by the same task (2026-11-16): no candidate, R {∅}"
 
 [case.fixed]
-commit = "0000000"
+commit = "4ee131e3"
 by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
 date   = "2026-11-16"
 
@@ -17634,7 +17634,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, for the kernel's other dunder: `(__symmetric__ near)` derived by a rule and never written, `near` scoped out, beside an open `total`. `near` is written both ways round, so that the row does not rest on H9-4 of P1f.10's `findings.md`: the saturation that derives a `(__symmetric__ R)` does not mirror R. Fixed by the same task (2026-11-16): two candidates and four states"
 
 [case.fixed]
-commit = "0000000"
+commit = "4ee131e3"
 by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
 date   = "2026-11-16"
 
@@ -17696,7 +17696,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the user's ruling of that day, *\"dunder never an object, wide reading\"*: a dunder a program writes in an argument position, `(lift complete __closed__)`, as `std.algebra`'s `(imply1 functional __closed__)` does. Writing it so is legal (Q-M1f.7 (b)) and stays legal; it is a name of the program as `invariant::program_names` lists them, which the alive-set invariant reads and which does not change. Fixed by the same task (2026-11-16): one candidate and two states"
 
 [case.fixed]
-commit = "0000000"
+commit = "4ee131e3"
 by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
 date   = "2026-11-16"
 
