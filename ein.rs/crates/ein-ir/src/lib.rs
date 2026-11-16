@@ -10,12 +10,12 @@
 //!
 //! The frontend is a **pure function** (source → forms) with no engine state,
 //! which is why it was M1a's first phase
-//! ([P1a.1](../../../../docs/history/m1a_rust/README.md#p1a1--ir-frontend)): every
+//! ([design/ir-frontend.md § 1](../../../../docs/ein/ein.rs/design/ir-frontend.md#1-a-pure-function-of-its-inputs)): every
 //! artefact it produces is text a golden file pins, so it can be checked byte
 //! for byte in isolation.
 //!
 //! [`stdlib`] landed at
-//! [S1a.0.3](../../../../docs/history/m1a_rust/README.md#s1a03--shared-stdlib-and-examples).
+//! [design/shared-assets.md](../../../../docs/ein/ein.rs/design/shared-assets.md).
 
 #![forbid(unsafe_code)]
 

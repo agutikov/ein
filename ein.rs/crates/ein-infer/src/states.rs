@@ -7,7 +7,7 @@
 //! program a commitment's state is its closure's (L3), so the alive
 //! commitments fall into far fewer states — `zebra.ein` has 270 454 alive
 //! commitments and 27 alive states
-//! ([`alive_set_reach.md` § 3](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/alive_set_reach.md#3-states-beside-commitments)).
+//! ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
 //! This route visits each alive state once and saturates its one-up
 //! extensions, and nothing else.
 //!

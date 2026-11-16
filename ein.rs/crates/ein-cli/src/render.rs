@@ -8,7 +8,7 @@
 //! `program`) draw it from its parsed forms after that, its imports
 //! unresolved, as before. Until S1f.5.21 those four parsed it and never loaded
 //! it, so each drew a program every other command refused. The renderers themselves are `ein-render`'s
-//! ([S1a.5.1](../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers));
+//! ([architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli));
 //! what this adds is the surface around them.
 
 use std::path::Path;

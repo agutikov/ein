@@ -29,7 +29,7 @@ fn int_arg(s: &str) -> Result<i64, String> {
 /// `available_parallelism` counts logical CPUs, and on a hybrid CPU that
 /// includes SMT siblings and E-cores. P1a.7's measurements say more threads
 /// than physical P-cores is not faster
-/// ([scaling.md](../../../../docs/history/m1a_rust/measurements/scaling.md)), so
+/// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)), so
 /// `auto` is a convenience and `--jobs N` is what a measurement uses.
 fn jobs_spec(s: &str) -> Result<i64, String> {
     if s.eq_ignore_ascii_case("auto") {

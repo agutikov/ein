@@ -21,7 +21,7 @@
 //! ([`unreachable_references`]).
 //!
 //! This is nominally
-//! [S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)
+//! [architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli)
 //! T6, and it lived in `ein-render` until M1d S1d.2.4, because the only
 //! things that rendered a `:why` were the trace, the slice and the answer —
 //! all of them above the engine. The obligation pass is the first reader

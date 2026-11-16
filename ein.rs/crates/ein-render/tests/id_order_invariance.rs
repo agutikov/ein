@@ -35,7 +35,7 @@
 //! It asks one question — *does an output depend on an order accident rather
 //! than on the data?* — and it cannot ask it by re-running: `FxHashMap`
 //! hashes the same way every run
-//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §9),
+//! ([design/determinism-and-order.md § 9](../../../../docs/ein/ein.rs/design/determinism-and-order.md#9-the-tests-that-hold-it)),
 //! so two runs of one build agree whether or not an output leaks an order.
 //!
 //! What *is* available is the question in this engine's own terms. Ids
@@ -45,7 +45,7 @@
 //! `Symbol` deliberately has no `Ord`, observable sorts go through
 //! `Interner::rank`, and iterating an `FxHashMap` keyed on one is the thing
 //! `utils/check_hashmap_iteration.py` greps for
-//! ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §1).
+//! ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)).
 //! Every one of those claims is falsified by the same experiment: **assign the
 //! ids in a different order and see whether anything moves.**
 //!

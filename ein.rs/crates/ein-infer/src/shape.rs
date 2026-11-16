@@ -3,7 +3,7 @@
 //! A compiled plan has no CLI surface: nothing `ein` prints exposes a step
 //! sequence, a guard's scope, or a `watched` set. So the compiler is rendered
 //! as one text, the way the loader is at
-//! [S1a.2.3](../../../../docs/history/m1a_rust/README.md#s1a23--the-loader-from_ir),
+//! [design/ir-frontend.md § 9.3](../../../../docs/ein/ein.rs/design/ir-frontend.md#93-the-kb-as-one-text),
 //! and since S1a.10.2 the text is digested into `corpus_shapes.md5`.
 //!
 //! Two rules make the text stable, and they are the same two the KB shape

@@ -221,7 +221,7 @@ impl From<FireError> for SaturateError {
 
 /// One queued or parked candidate, with the payload in a side arena so the
 /// heap compares two integers
-/// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §2).
+/// ([design/determinism-and-order.md § 3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#3-ordered-containers)).
 #[derive(Clone)]
 struct Entry {
     plan: usize,
@@ -244,24 +244,24 @@ struct Entry {
     /// encodes the watched symbols themselves, so two candidates that share an
     /// id watch exactly the same relations and go stale at exactly the same
     /// moment. That is what lets one epoch per guard set replace one stamp per
-    /// candidate — [T1a.6.12.1a](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot).
+    /// candidate — [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set).
     guard_set: GuardSetId,
 }
 
 /// The candidate arena, in two layers — the shape
-/// [design/03 §5](../../../../docs/history/m1a_rust/design/03_data_model.md) gives
+/// [design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md) gives
 /// the KB, for the same reason.
 ///
 /// A fork *resumes* its parent's saturation
-/// ([S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)),
+/// ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)),
 /// so it inherits every candidate the parent enqueued — and, before
-/// [T1a.6.12.5](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot),
+/// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set),
 /// deep-copied all of them once per entering: a `Vec` whose rows own three
 /// boxed slices and a `BindingKey`, so four allocations per candidate,
 /// **3.5 % of `zebra -e` in `Vec::clone` and 1.6 % more dropping it again**.
 ///
 /// Nothing in the parent's half is ever written after enqueue — that was
-/// [T1a.6.12.1a](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)'s
+/// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)'s
 /// side effect, moving `judged_at` out of the row — so the parent's half is
 /// shared behind an `Arc` and the fork appends to a local vector. Entry ids
 /// stay dense and stable: `base` first, then `local`.
@@ -365,7 +365,7 @@ pub struct Saturator {
     /// A side table rather than a field on [`Entry`] because a fork inherits
     /// the arena and re-judges against its own world: this is the only part of
     /// a candidate that a saturation writes after enqueue, and separating it
-    /// is what [T1a.6.12.5](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)
+    /// is what [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)
     /// needs to share the arena instead of deep-copying it.
     judged_at: Vec<u32>,
     /// `gs_epoch[g]` — the last epoch at which some relation guard set `g`
@@ -419,14 +419,14 @@ pub struct Saturator {
     /// Guard sub-plan **evaluations** — how many times a negative query was
     /// actually run. The boundary's cost is this number times the cost of one
     /// query, and 72 % of an exhaustive solve sits under it
-    /// ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) §2), so
+    /// ([design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)), so
     /// it is the figure Win B is measured in. It is the engine's own
     /// instrument, and it is deliberately *not* in the event stream — a number
     /// that must not change is not evidence that nothing changed.
     pub guard_evals: u64,
     /// Of those, the ones on a **monotone** guard — the only ones the
     /// semi-naive re-evaluation of
-    /// [design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) § Win B
+    /// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)
     /// can help, since a nested absent can flip from failing to passing and
     /// has no "only a new fact can change this" argument.
     pub guard_evals_monotone: u64,
@@ -447,14 +447,14 @@ pub struct Saturator {
 }
 
 /// A saturation at its fixpoint, in a form another saturation can continue
-/// from — [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator).
+/// from — [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation).
 ///
 /// The closure is semi-naive *within* a saturation (`pos_index` + `run_seeded`)
 /// and abandons that at the one boundary where the delta is smallest and known
 /// exactly: `try_commitment_set` forks the saturated root and builds a **fresh**
 /// `Saturator`, whose `delta = None` is a FULL pass, so the parent's whole
 /// deductive closure is re-derived inside the fork — 94.6 % of a fork's firings
-/// on `zebra -e` ([baseline.md §9](../../../../docs/history/m1a_rust/measurements/baseline.md#9-the-fork-entry-re-derivation)).
+/// on `zebra -e` ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)).
 ///
 /// What is carried is everything that answers "has this already been done":
 /// the plan list *in its order*, `fired`, `seen`, the candidate arena and the
@@ -1578,7 +1578,7 @@ impl Saturator {
     /// grows monotonically within a run, so a relation cannot lose a fact and
     /// equal size means equal extent — but the question was asked 248 043
     /// times on `zebra -e` to reach 29 865 judgements
-    /// ([baseline.md §17](../../../../docs/history/m1a_rust/measurements/baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it)),
+    /// ([design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)),
     /// because *sizes* are a property of the world and only the comparison is
     /// a property of the candidate.
     ///
@@ -2028,7 +2028,7 @@ mod tests {
 
     /// A resumed saturation reaches the same fixpoint as a fresh one —
     /// [`Saturator::resume`], the mechanism
-    /// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
+    /// [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)
     /// is about.
     ///
     /// Saturate, add a fact, then continue two ways: a **fresh** saturator

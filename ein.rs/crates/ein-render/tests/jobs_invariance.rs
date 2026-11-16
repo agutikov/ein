@@ -4,12 +4,12 @@
 //! This is the second sweep over [`corpus_ops`](corpus_ops), beside
 //! `id_order_invariance` (digested against the golden once, and again with
 //! the ids permuted). It is what
-//! [P1a.7's acceptance](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
+//! [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
 //! names.
 //!
 //! ## What it claims, and it is stronger than the contract
 //!
-//! The contract ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md)
+//! The contract ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
 //! §1) is that `--jobs N` is *the same computation* as `--jobs 1` — same
 //! verdict, same models, same unsat core, same counters — and no wider in
 //! narration than a permuted id space already is, which is
@@ -18,7 +18,7 @@
 //! **Today it is wider than that in neither direction: nothing moves at all.**
 //! A worker builds its narration into its own buffer with a hole where the
 //! event ordinal goes, and `Events::replay` fills it in at the ordered commit
-//! ([S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
+//! ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
 //! T1a.7.2.2), so the bytes are the bytes. This test therefore asserts **byte
 //! equality** and reports any difference *through the cut*, so that the day
 //! one appears the failure says which half it is:
@@ -35,7 +35,7 @@
 //! two is where a scheduling-dependent bug lives. The walk had one store its
 //! workers shared, its learned clauses, and the **mechanism** that kept a
 //! worker from observing a clause arriving is
-//! [design/02 §6a](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)
+//! [design/determinism-and-order.md](../../../../docs/ein/ein.rs/design/determinism-and-order.md)
 //! (M1e S1e.1.2, Q-M1e.23); the store went with the walk, and a route's
 //! node is a fork of root that no other node reads.
 //!

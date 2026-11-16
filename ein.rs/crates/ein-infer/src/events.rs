@@ -47,13 +47,13 @@ impl Level {
 
 /// Where an [`Events`] puts what it narrates.
 ///
-/// The third state is [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)'s.
+/// The third state is [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)'s.
 /// A worker cannot hold the run's sink — writes from many threads would
 /// interleave, and the ordinal an event carries is a property of the *stream*
 /// rather than of the worker — so it narrates into one of these and the
 /// ordered commit replays it ([`Events::replay`]). That is the same shape the
 /// counters have, which is what
-/// [design/08 §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+/// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 /// says a sink needs and §3's "no shared queue" hid, because a sink is not a
 /// queue.
 enum Sink {

@@ -1728,7 +1728,7 @@ fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load
 }
 
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
-/// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
+/// else** — [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
 /// T1a.7.5.1.
 ///
 /// What it asserts is the contract: the read-out at two jobs and at `auto` is

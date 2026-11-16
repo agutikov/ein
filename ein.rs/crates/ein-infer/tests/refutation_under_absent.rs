@@ -7,7 +7,7 @@
 //! ## What is unsound
 //!
 //! `dead` is **not** upward-closed under `absent`. The premise
-//! [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md)
+//! [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
 //! states — *`X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and
 //! nothing retracts* — establishes that `sat` is **inflationary**, not that it
 //! is monotone in its input, and `(absent P)` is exactly what separates the

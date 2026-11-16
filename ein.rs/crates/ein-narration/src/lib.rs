@@ -2,7 +2,7 @@
 //!
 //! **Not part of the engine.** `publish = false`, and nothing outside a test
 //! depends on it. It exists because
-//! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
+//! [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)
 //! left the same decision implemented in several places — three `tests/`
 //! files and `ein-render`'s `shape.rs` among them — each cut made one at a
 //! time as the next test went red. A relaxation that has to be discovered by

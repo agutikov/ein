@@ -21,7 +21,7 @@
 //! hottest path in the engine — 6.0 M of them on an exhaustive `zebra2`, 60 M
 //! on `zebra` — and would perturb the very profile it exists to explain.
 //!
-//! Thread-local, because [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
+//! Thread-local, because [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
 //! will run several searches at once and a shared counter would either race or
 //! serialise. [`snapshot`] reads the calling thread's; a parallel run sums them
 //! at the join.
@@ -44,7 +44,7 @@ pub struct Counters {
     /// How a premise reached its candidates: through a participation-index
     /// bucket, or by walking the relation's whole extent. This is a question
     /// about the data layout, and it is the one that chose
-    /// [S1a.6.2](../../../../docs/history/m1a_rust/README.md#s1a62--memory-layout)'s
+    /// [design/data-model.md § 4](../../../../docs/ein/ein.rs/design/data-model.md#4-facts-as-interned-rows)'s
     /// remaining tasks: on an exhaustive `zebra` **99.1 %** of candidates come
     /// from an extent scan and only 0.9 % from a bucket, because the index does
     /// not key a nested-fact argument and `(not (R …))` is most of the corpus.
@@ -62,12 +62,12 @@ pub struct Counters {
     /// The same four again, restricted to the **guard sub-plans** the NAF
     /// boundary runs — `join = total − guard`.
     ///
-    /// [S1a.6.3](../../../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)
+    /// [design/matcher.md § 5.2](../../../../docs/ein/ein.rs/design/matcher.md#52-a-probe-into-the-participation-index)
     /// made the join 4.5× faster by keying the index one level inside a nested
     /// argument, and guard sub-plans go through the same `Matcher::walk`
     /// driver, so they should have got it too. Whole-run totals cannot say
     /// whether they did: they are dominated by whichever caller runs more.
-    /// [T1a.6.12.3](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)
+    /// [design/matcher.md § 5.1](../../../../docs/ein/ein.rs/design/matcher.md#51-a-ground-premise-one-lookup)
     /// splits them, because a guard that *could* key on a bound argument and
     /// does not is a bug with a 30 % price tag, and one that offers nothing to
     /// key on is a fact about the query.
@@ -78,7 +78,7 @@ pub struct Counters {
     /// Premises answered by **one interned lookup** rather than by a scan —
     /// a step every one of whose slots was already bound, which asks whether
     /// one exact proposition is in the KB
-    /// ([T1a.6.12.3](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)).
+    /// ([design/matcher.md § 5.1](../../../../docs/ein/ein.rs/design/matcher.md#51-a-ground-premise-one-lookup)).
     /// `scan_ground` counts the questions and `cand_ground` the ones that
     /// found their fact; `scan_bucket + scan_extent + scan_ground` is every
     /// premise the matcher resolved.
@@ -111,7 +111,7 @@ pub struct Counters {
     /// Rule plans compiled. A cache per `Engine`, with one engine per
     /// saturation, compiles the same plan many times over — **17 430** on an
     /// exhaustive `zebra2`, which is what the engine did until
-    /// [S1a.6.8](../../../../docs/history/m1a_rust/README.md#s1a68--the-compile-cache-and-the-extent-counts)
+    /// [design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)
     /// built design/06 § Win A's per-run memo. It is **305** on that run now,
     /// and 305 is the number of distinct `(rule, activator)` pairs rather than
     /// a target — design/06 guessed ~170, and the forks derive activators the
@@ -135,13 +135,13 @@ pub struct Counters {
     /// ids it actually assigned. The **ratio** is the measurement: on
     /// `branching/06 -e` it is 2 318 949 to 505, so the store is a read
     /// structure with a rare append rather than a write structure
-    /// ([shared_state.md](../../../../docs/history/m1a_rust/measurements/shared_state.md) §2).
+    /// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)).
     pub fact_intern: u64,
     pub fact_new: u64,
     /// Provenance records created — [`crate::prov::ProvArena::push`]. The
     /// arena is shared for the same reason the fact store is (see
     /// [`crate::prov`]) and has the same borrow-returning read, but
-    /// [design/08 §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
     /// does not list it, so nobody had asked how hard it is written.
     pub prov_push: u64,
     /// Records **read** — `ProvArena::get`, which returns a `&Prov`. The
@@ -159,7 +159,7 @@ pub struct Counters {
     /// …of which assigned at least one **fact id**, and at least one
     /// **provenance record**. This is the rate at which a worker forbidden to
     /// append would have to hand its entering back
-    /// ([shared_state.md §5](../../../../docs/history/m1a_rust/measurements/shared_state.md)),
+    /// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)),
     /// and it is a different question from the totals: 417 ids spread one per
     /// entering is a design and 417 in one entering is another.
     pub entering_fact_new: u64,
@@ -181,7 +181,7 @@ pub struct Counters {
     // ── the enqueue pass ───────────────────────────────────────────
     /// Enqueue passes run — one full pass at saturation start, then one delta
     /// pass per firing. It exists because
-    /// [S1a.7.4](../../../../docs/history/m1a_rust/README.md#s1a74--level-2-the-parallel-enqueue-pass)
+    /// [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
     /// proposes to fan a pass out and the question that decides it is not how
     /// much the passes cost in total but how much *one* of them has to hand out.
     pub enqueue_pass: u64,
@@ -223,7 +223,7 @@ pub struct Counters {
     pub fork: u64,
     /// [`crate::kb::Kb::flatten`] calls and the facts each one copied — the
     /// **cost** column of the layer-barrier coalesce
-    /// ([T1a.7.2.0](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)).
+    /// ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)).
     /// `materialise` is O(facts) per layer and a fork's saving is one stack
     /// walk, so the pair is what says whether the threshold is right: a search
     /// with a large root and cheap layers pays `flatten_facts` to save
@@ -238,7 +238,7 @@ pub struct Counters {
     /// Guard sub-plan queries actually **run**, and the monotone half of them.
     ///
     /// Equal to `guard_query` since
-    /// [T1a.6.12.2](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)
+    /// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)
     /// removed the per-round memo that used to sit between them: its hit rate
     /// was 0–1.2 %, because the watch stamp had already filtered out the
     /// candidates that would have shared a question. The two counters are kept

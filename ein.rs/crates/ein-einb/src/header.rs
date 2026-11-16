@@ -1,5 +1,4 @@
-//! The 64-byte header and the section table — [design/10
-//! §2](../../../../docs/history/m1a_rust/design/10_binary_format.md).
+//! The 64-byte header and the section table — [design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md).
 //!
 //! Everything here is little-endian and fixed-width, which is checked rather
 //! than assumed: a big-endian host reading a file written on a little-endian

@@ -6,7 +6,7 @@
 //! possible outcome this phase has available to it, so every fixture below
 //! that must *fail* is checked for failing — with the right exit code and the
 //! right message — and not merely run. The
-//! [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)
+//! [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)
 //! precedent: the fuzzer's own three controls each failed once first.
 //!
 //! The comparisons themselves live in `ein-infer` — a query's classes in

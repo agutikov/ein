@@ -1,13 +1,11 @@
 //! The zero-copy casts — **the only `unsafe` in the repository**
-//! (T1a.8.1.4, [design/12
-//! §2](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md#2-dependency-policy)).
+//! (T1a.8.1.4, [design/toolchain-and-layout.md § 2](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#2-dependency-policy)).
 //!
 //! A `.einb` section is an array of fixed-width little-endian records, and
 //! reading one element at a time through [`crate::wire::Reader`] costs a bounds
 //! check and a `from_le_bytes` per field. The point of the layout is that on a
 //! little-endian host those bytes **already are** the array, so the reader
-//! borrows it instead ([design/10
-//! §2](../../../../docs/history/m1a_rust/design/10_binary_format.md#2-container)).
+//! borrows it instead ([design/binary-format.md § 2](../../../../docs/ein/ein.rs/design/binary-format.md#2-the-container)).
 //!
 //! Three things make that sound, and all three are checked here rather than
 //! assumed:

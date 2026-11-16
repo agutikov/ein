@@ -4,7 +4,7 @@
 //!
 //! The canonical state key sorts by it, the explanation tie-breaks order by
 //! it and the DOT labels print it
-//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7),
+//! ([design/determinism-and-order.md § 7](../../../../docs/ein/ein.rs/design/determinism-and-order.md#7-the-value-renderer)),
 //! so its bytes are observable. The format:
 //!
 //! - **str** — quoted in `'`, unless the body contains a `'` and no `"`, in
@@ -24,7 +24,7 @@ use crate::printable::is_printable;
 
 /// The value shapes reachable from a fact argument. `Fact` is spelled out
 /// rather than referenced because [`crate`]'s fact store lands in
-/// [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core); the renderer
+/// [design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md); the renderer
 /// only ever needed the relation name and the args.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ReprValue {

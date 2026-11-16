@@ -4,7 +4,7 @@
 //! *process*: a **sweep**, run to see that the cells run. How many is `wc -l`
 //! on this file's own golden, `golden/corpus_exits.txt`, which is one line
 //! per cell of the full selection —
-//! [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
+//! [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)
 //! re-priced the tail and sixteen runs turned out to be asking their fixtures
 //! nothing.
 //!
@@ -113,7 +113,7 @@ impl Cell {
 /// `ein_corpus::manifest::SLOW_MS` or more together. Which ones is
 /// `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`'s to say, per commit
 /// (M1e S1e.3.6), where there were seventeen at
-/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced),
+/// [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus),
 /// one of them `zebra2.ein` at 16 ms. Their cells run in the CI nightly's
 /// `deep-corpus` job and on the dev host, not per commit (`nightly_steps.rs`).
 ///
@@ -476,7 +476,7 @@ fn no_cell_crashes() {
 /// the whole sweep and more than that on some cells; since S1f.6.39 it runs
 /// the gate profile's, release codegen with the debug checks, on the pool. And the drift it exists to catch
 /// was **165×**: a flag set on 2026-08-17 and still there, unexamined, when
-/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
+/// [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)
 /// re-priced it. Nothing that big hides inside 4×.
 const COST_FACTOR: u32 = 4;
 
