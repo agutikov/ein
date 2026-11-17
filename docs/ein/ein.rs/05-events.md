@@ -235,9 +235,10 @@ stream is one run's, the last question asked, and its `region` event's `asked` s
 is, in order:
 
 1. `run` and `load`, as above;
-2. **root**: root's saturation (`compile`, `enqueue`, `fire`, …), its obligation pass (`owe`), **how H was built**
-   (the generator's `rung` line where it reached the obligations rung, one `hyp` per candidate and, at `verbose`,
-   the `hypskip`s) and, on a program the static check flags, one `monotonicity` line;
+2. **root**, in this order: root's saturation (`compile`, `enqueue`, `fire`, …); **how H was built** (one `hyp` per
+   candidate and, at `verbose`, the `hypskip`s, with the generator's `rung` line where it reached the obligations
+   rung: after the candidates of a call that generated, before the blind enumerator's of a call that declined);
+   root's obligation pass (`owe`); and, on a program the static check flags, one `monotonicity` line;
 3. **every node the route visits**, in visit order whatever `-j` is: that node's saturation and obligation events,
    then one `enter` line. A dead node on a monotone program's route narrates its saturation up to the firing that
    makes its first contradiction, where the route stops it, and its debts there; the `enter` line's core is taken
@@ -247,6 +248,113 @@ is, in order:
 5. **`region`**, last.
 
 `region_modes.rs`'s `the_event_stream_is_the_runs_and_jobs_move_no_line` holds the shape and the `-j` invariance.
+
+### One run, line by line
+
+A program with one rule, one hrule and two candidates, small enough to follow every line of:
+
+```lisp
+(relation person Person      :why "{?1} is a person")
+(relation drink  Drink       :why "{?1} is a drink")
+(relation likes  Person Drink :why "{?1} likes {?2}")
+
+(person Ann)
+(drink Tea) (drink Coffee)
+
+(hrule guess ()
+  :match  (and (person ?p) (drink ?d))
+  :assert (likes ?p ?d)
+  :why    "guess that {?p} likes {?d}")
+
+(rule one-drink ()
+  :match  (and (likes ?p Tea) (likes ?p Coffee))
+  :assert (false)
+  :why    "{?p} cannot like both Tea and Coffee")
+```
+
+`ein solve FILE --events OUT.jsonl` describes its region by the state route: root, the two candidates alone, both
+alive, and the pair, dead. Each arrow below is one line of `OUT.jsonl`, with its `n`; the column it leaves is the
+part of the engine that wrote it, and a node's lines are written by the route as it takes the node.
+
+```plantuml
+@startuml
+participant "ein-cli" as cli
+participant "root's saturation" as sat
+participant "the generator" as gen
+participant "the route\n(a node's saturation,\nreplayed in visit order)" as route
+participant "OUT.jsonl" as out
+
+cli -> out : 0 run (version, level, impl, file, argv, config)
+cli -> out : 1 load (the counts and the names)
+== root ==
+sat -> out : 2 compile one-drink
+sat -> out : 3 quiesce (nothing to fire: no likes fact yet)
+gen -> out : 4 hyp (likes Ann Tea), emitted
+gen -> out : 5 hyp (likes Ann Coffee), emitted
+== layer 0: the empty commitment ==
+route -> out : 6 quiesce
+route -> out : 7 enter [ ], in-r
+route -> out : 8 layer 0
+== layer 1: each candidate alone ==
+route -> out : 9 quiesce
+route -> out : 10 enter [(likes Ann Coffee)], in-r
+route -> out : 11 quiesce
+route -> out : 12 enter [(likes Ann Tea)], in-r
+route -> out : 13 layer 1
+== layer 2: the pair ==
+route -> out : 14 enqueue one-drink, p = Ann
+route -> out : 15 fire one-drink, derived (false)
+note right of route
+  stopped at its first contradiction:
+  no quiesce line
+end note
+route -> out : 16 enter [both], dead, its core both candidates
+route -> out : 17 layer 2
+== the end ==
+cli -> out : 18 region (asked, region, verdict, work)
+@enduml
+```
+
+### The orders a stream can take
+
+The kinds of a region run's stream as a state machine: a state is the part of the run that is writing, the kinds
+in it are the ones it may write, and a transition is the first line of the next part. A stream of `ein saturate` is
+the first three states and nothing after them.
+
+```plantuml
+@startuml
+hide empty description
+state "run" as Run
+state "load" as Load
+state "root's saturation" as Sat : compile, enqueue, fire, mirror,\nquiesce, park, admit, retire, alt
+state "H is built" as Gen : hyp, hypskip (verbose),\nat most one rung
+state "root's obligation pass" as Owe : owe, one a debt
+state "monotonicity" as Mono : one line, a flagged program's
+state "a node" as Node : its saturation's kinds, as root's;\nthen owe, one a debt;\nthen enter, its last line
+state "layer" as Layer : route 1 and the state route:\none line at the end of a layer
+state "region" as Region
+
+[*] --> Run
+Run --> Load
+Load --> Sat
+Sat --> Gen
+Gen --> Owe
+Owe --> Mono : the static check\nfound a site
+Owe --> Node : a monotone program
+Mono --> Node
+Node --> Node : the next node,\nin visit order
+Node --> Layer
+Layer --> Node
+Layer --> Layer : a layer that\nvisited nothing
+Node --> Region
+Layer --> Region
+Region --> [*]
+@enduml
+```
+
+A state may write little or nothing: a program none of whose rules fires has a root saturation of its `compile`
+lines and one `quiesce`, a program that states `(solve :no-search)` builds no H, and one that owes nothing has no
+`owe`. The first node is root's own, the empty commitment, and under `--no-search` it is the only one.
 
 ## Versioning
 
