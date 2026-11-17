@@ -1,0 +1,31 @@
+digraph removed_chain {
+  rankdir=LR; nodesep=0.4; ranksep=0.9;
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled"];
+  edge [fontname="Helvetica", fontsize=10];
+  s0 [fillcolor="#fee391", label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
+    <TR><TD ALIGN="LEFT"><B>∅ — owes 4</B></TD></TR>
+    <TR><TD ALIGN="LEFT">facts: root's twelve</TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#b35806">open(seats; total-owed, Ann)</FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#b35806">open(seats; total-owed, Bob)</FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#b35806">open(seats; surjective-owed, C1)</FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#b35806">open(seats; surjective-owed, C2)</FONT></TD></TR>
+  </TABLE>>];
+  s1 [fillcolor="#fee391", label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
+    <TR><TD ALIGN="LEFT"><B>{seats(Ann, C1)} — owes 2</B></TD></TR>
+    <TR><TD ALIGN="LEFT">facts: root's twelve, seats(Ann, C1)</TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#737373"><S>open(seats; total-owed, Ann)</S></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#b35806">open(seats; total-owed, Bob)</FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#737373"><S>open(seats; surjective-owed, C1)</S></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#b35806">open(seats; surjective-owed, C2)</FONT></TD></TR>
+  </TABLE>>];
+  s2 [fillcolor="#a1d99b", label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
+    <TR><TD ALIGN="LEFT"><B>{seats(Ann, C1), seats(Bob, C2)} — in R, owes 0</B></TD></TR>
+    <TR><TD ALIGN="LEFT">facts: root's twelve, seats(Ann, C1), seats(Bob, C2)</TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#737373"><S>open(seats; total-owed, Ann)</S></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#737373"><S>open(seats; total-owed, Bob)</S></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#737373"><S>open(seats; surjective-owed, C1)</S></FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><FONT COLOR="#737373"><S>open(seats; surjective-owed, C2)</S></FONT></TD></TR>
+  </TABLE>>];
+  s0 -> s1 [label="add seats(Ann, C1)"];
+  s1 -> s2 [label="add seats(Bob, C2)"];
+}

@@ -2,7 +2,9 @@
 
 **Milestone:** [M1f](../README.md)
 **Status:** created 2026-11-17 on the user's instruction (below). [S1f.21.1](s1f.21.1_the_survey_and_the_design.md)
-is next; the phase stops after it for the user's ruling on its question.
+is done: [`design.md`](design.md) is its survey and design, and its question is put as
+[Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
+**not ruled**. The phase stops here for the user's ruling.
 **Depends on:** [S1f.20.10](../p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md) for its second stage,
 which writes into pages of `docs/ein/reasoning/02-kb-evolution/` that S1f.20.10's remaining lanes still move
 (the diagrams into files, the formulas onto several lines). Its first stage reads the engine and writes here.
@@ -47,17 +49,21 @@ goes; what then becomes of (2) is the design.
 
 | stage | what | state |
 |---|---|---|
-| [S1f.21.1](s1f.21.1_the_survey_and_the_design.md) | **The survey and the design.** What the kernel does for each verdict, where, and what shows it; each verdict written as a rule, and whether Ein can load and run that rule today; `(open R)` today, the two properties shown on programs; `(open R <justification>)` designed: what the justification is, what holds a discharged debt, what changes in the engine, the stdlib, hypothesis generation, the read-out and the tests, on real corpus programs with their answers computed. Ends with the question for the user | next |
-| S1f.21.2 | **The reasoning pages.** In `docs/ein/reasoning/02-kb-evolution/`: the contradiction rule, alive and dead, owed and discharged, each as a rule with its graph and its formula, and the remark on `(open R)` as facts; the user's pages where the same is said in Ein, if S1f.21.1 finds Ein can say it | after S1f.21.1 and S1f.20.10's lanes |
-| S1f.21.3 | **`(open R <justification>)` in the engine**, if the user rules for it: planned from S1f.21.1's design when the ruling is given | waits for the ruling |
+| [S1f.21.1](s1f.21.1_the_survey_and_the_design.md) | **The survey and the design.** What the kernel does for each verdict, where, and what shows it; each verdict written as a rule, and whether Ein can load and run that rule today; `(open R)` today, the two properties shown on programs; `(open R <justification>)` designed: what the justification is, what holds a discharged debt, what changes in the engine, the stdlib, hypothesis generation, the read-out and the tests, on real corpus programs with their answers computed. Ends with the question for the user | **done**: [`design.md`](design.md), [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact), [`findings.md`](findings.md) |
+| S1f.21.2 | **The reasoning pages.** In `docs/ein/reasoning/02-kb-evolution/`: the contradiction rule, alive and dead, owed and discharged, each as a rule with its graph and its formula, and the remark on `(open R)` as facts; the user's pages where the same is said in Ein, which S1f.21.1 finds for the contradiction rule of one relation or one count of arguments, for *dead*, and for the requirement, the payment and *discharged*, and not for the rule of every fact, for *alive* or for a stored debt ([`design.md` § What S1f.21.2 writes under each ruling](design.md#what-s1f212-writes-under-each-ruling)) | after S1f.21.1 and S1f.20.10's lanes |
+| S1f.21.3 | **`(open R <justification>)` in the engine**, if the user rules for it: planned from S1f.21.1's design when the ruling is given. Under (a) of Q-M1f.390, and under (b) with nothing printed, there is nothing to build and the stage is not run | waits for the ruling |
 | S1f.21.4 | **The close.** | last |
 
-## The question it will put
+## The question it puts
 
-**Should an obligation emit `(open R <justification>)` as a fact of the knowledge base?** The user's *maybe*.
-S1f.21.1 answers what it would mean and cost, and shows it on programs; the ruling is the user's, and S1f.21.3
-is planned only on it. S1f.21.2 does not wait for it: it states today's kernel as rules, and says of `(open R)`
-what the instruction says.
+**Should an obligation emit `(open R <justification>)` as a fact of the knowledge base?** The user's *maybe*,
+put as [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
+with four options: (a) as today; (b) the verdict carries its justification, the instance, and stays a verdict,
+which S1f.21.1 recommends; (c) the requirement and its payment are facts and *owed* is their difference; (d)
+`(open R j)` is a fact of the state that owes it, in a part of the node no fork inherits.
+[`design.md` § 5](design.md#5-the-question-and-a-recommendation) is the page to rule from. The ruling is the
+user's, and S1f.21.3 is planned only on it. S1f.21.2 does not wait for it: it states today's kernel as rules, and
+the ruling decides how it writes the verdict and the remark on `(open R)`.
 
 ## Rules of the phase
 

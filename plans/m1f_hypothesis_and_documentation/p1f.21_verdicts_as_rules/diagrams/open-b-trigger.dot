@@ -1,0 +1,26 @@
+digraph open_b_trigger {
+  rankdir=TB; nodesep=0.4; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  { rank=min; "open"; }
+  { rank=same; "seats"; "is-a"; }
+  { rank=max; "Ann"; "Bob"; "Guest"; }
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  v1 [xlabel="v1", style="dotted", penwidth=2];
+  v2 [xlabel="v2", style="dotted", penwidth=2];
+  m1 [xlabel="m1"]; m2 [xlabel="m2"];
+  { rank=same; v1; v2; }
+  { rank=same; m1; m2; }
+  v1 -> "open" [label="1", style=dotted];
+  v1 -> "seats" [label="2", style=dotted];
+  v1 -> m1 [label="3", style=dotted];
+  v2 -> "open" [label="1", style=dotted];
+  v2 -> "seats" [label="2", style=dotted];
+  v2 -> m2 [label="3", style=dotted];
+  "is-a" -> m1 [label="1", dir=back];
+  m1 -> "Ann" [label="2"];
+  m1 -> "Guest" [label="3"];
+  "is-a" -> m2 [label="1", dir=back];
+  m2 -> "Bob" [label="2"];
+  m2 -> "Guest" [label="3"];
+}

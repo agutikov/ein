@@ -1,0 +1,120 @@
+# P1f.21 — findings outside the stages' scope
+
+**Phase:** [P1f.21](README.md)
+
+What a stage of this phase met that is not its own to settle: something the engine does that a page or a
+decision says otherwise, or says nothing of. Each has the program and the command that shows it. None is a wrong
+answer about $R$, and none is filed anywhere else; a stage that fixes one says so here.
+
+`ein` is the gate build, `ein.rs/target/gate/ein`, of the main tree as it stood on 2026-11-17. A program named
+without a path is in [`design.md`](design.md), whole.
+
+| id | what | found by | state |
+|---|---|---|---|
+| [V-1](#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* reads rules, and the kernel's contradiction is none: seven corpus programs that load are refused once the contradiction is written as a rule | S1f.21.1 | open |
+| [V-2](#v-2--the-surfaces-say-derives-false-of-a-state-that-holds-none) | the surfaces say *derives (false)* of a state that holds none | S1f.21.1 | open |
+| [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | open |
+| [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
+
+## V-1 — *forbid* reads rules, and the kernel's contradiction is none
+
+**What.** [Q-M1e2.5](../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md) refuses
+a rule that concludes `(false)` or a stored negation where it rests on an `(absent …)` over a relation a
+commitment can still extend, *directly, through a fact a rule derives resting on such an `absent`, or through its
+activator*. The kernel's contradiction, a fact beside its stored negation, is the same refutation and is no rule,
+so *forbid* does not read it: a program in which a fact derived under such an absence can stand beside its
+negation loads.
+
+**Shown by.** The contradiction written as a rule, one rule a count of arguments with its activators derived
+from the declarations ([`design.md` Appendix A.1](design.md#a1-the-contradiction-rule-set-contrainc)), appended to
+every corpus program `ein solve` answers ([`sweep_clash.py`](design.md#b1-sweep_clashpy)): 560 answer as they
+did, and seven are refused, each by *forbid*, each naming the written rule. For
+`examples/lattice/08_absent_witness_hole.ein` with the set appended, `ein solve` prints, exit 1:
+
+```text
+rule 'clash-0' [activator meal]: concludes (false) from meal, which rule 'soup-unless-allergic' derives resting on (absent …) over allergic, a relation a commitment can still extend — so it calls a state that has not yet decided allergic a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). …
+```
+
+The seven: `examples/features/07_unstratifiable.ein`, `examples/lattice/08_absent_witness_hole.ein`,
+`examples/lattice/10_fifo_gap.ein`, and `f07-fpoff.ein`, `f07-rules-swapped.ein`, `kw-neq-in-absent.ein`,
+`kw-neq-in-absent-twin.ein` under `examples/ein-bugs/wrong-answers/`.
+
+**What it is not.** No wrong answer. Each of the seven is a program the static check flags as it stands
+(`monotonicity.monotone` is `false` in its `--json-summary`), since the fact derived under the absence is a
+positive conclusion from an absence a commitment can fill, and of a flagged program the engine claims nothing.
+So the two readings agree that the program is outside what is claimed; they differ in that one refuses it and
+the other answers it. The refusal is also at relation grain: it is issued for `clash-0` under an activator
+whether or not any rule can conclude the negation of that relation's fact.
+
+**Whose.** The reading of *forbid* is [F21](../../followups/f21_non_monotone_programs_decided.md)'s ground. It
+bears on S1f.21.2 only as one line of the contradiction rule's account: what the kernel does differs from firing
+the rule in that *forbid* does not read it.
+
+## V-2 — the surfaces say *derives (false)* of a state that holds none
+
+**What.** A state dead by a fact beside its negation holds no `(false)`: the contradiction is read, and nothing
+is derived. The read-out, the answer dump's reference, the region drawing's legend and the code's own comment
+all name *dead* as *derives `(false)`*.
+
+**Shown by.** `c1.ein` ([`design.md` § 1.1](design.md#11-contradiction)). `ein saturate --dump c1.ein` ends
+
+```text
+;; ── DERIVED (2 facts) ──
+  (not (p one) :rule r-denies-p)
+  (p one :rule q-gives-p)
+```
+
+and `ein solve c1.ein` prints
+
+```text
+  empty             every node is dead — root's own fixpoint derives (false)
+  …
+  (false)
+```
+
+The same words: [`10-answer-dump.md`](../../../docs/ein/user/04-reference/10-answer-dump.md)'s `root.dead` row
+(*root's own fixpoint derives `(false)`*); the legend of `ein render region` (*dead: derives (false)*);
+`ein-infer/src/region.rs`' `DEAD` (*the status bit of a node that derives `(false)`*). The reasoning pages define
+*dead* with both clauses and are right.
+
+**What it is not.** No answer moves. The words are true of every dead state once the contradiction rule is read
+as a rule, which is what the phase's second stage states; whether the surfaces keep the words on that ground or
+say *holds a contradiction* is a wording to settle with those pages.
+
+## V-3 — `-p` prints a fact of no argument with a space inside
+
+**What.** The text of a fact of no argument is `(r)`
+([the knowledge base § The text of an object](../../../docs/ein/reasoning/01-static-ir/01-knowledge-base.md#the-text-of-an-object)).
+`ein solve -p` and `-P` print it `(r )`.
+
+**Shown by.** `v1.ein` ([`design.md` § 2.2](design.md#22-dead-from-false-alive-from-its-absence)).
+`ein solve v1.ein -p`:
+
+```text
+── state 1 of 1 ──
+final-state facts (beyond the program as loaded: root's derivations, the commitment and what it derives; 1 fact):
+  (alive )
+```
+
+The same run's `stale` row prints `(alive)`, as `ein saturate --dump` and `ein oracle --dump DIR --states` do.
+
+## V-4 — the saturated dump lists no obligation rule
+
+**What.** `ein saturate --dump FILE` lists the program's rules under `;; Rules (N)`, each with its parameters
+and its stratum. An obligation rule is in none of its sections: the dump shows its activator's relation under
+`;; Relations — auto-vivified` and the activator among the facts, and nothing says the program has an
+obligation.
+
+**Shown by.** `ein saturate --dump examples/lattice/05_owed_seats_bounded.ein`: `;; Rules (38)`, the rules of
+`std.algebra` that are in the agenda, among which neither `total-owed` nor `surjective-owed` stands;
+
+```text
+;; Relations — auto-vivified (4)
+;;   total-owed
+;;   surjective-owed
+;;   functional
+;;   injective
+```
+
+`ein saturate --dump examples/zebra2.ein` lists `;; Rules (60)` and no hypothesis rule either, so the section is
+of the agenda's rules; what the dump leaves unsaid is that it is.

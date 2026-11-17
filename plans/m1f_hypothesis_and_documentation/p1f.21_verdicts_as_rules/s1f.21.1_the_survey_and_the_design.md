@@ -1,7 +1,7 @@
 # S1f.21.1 — the survey and the design
 
 **Phase:** [P1f.21](README.md)
-**Status:** next.
+**Status:** done 2026-11-17. The question is put as [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact), not ruled.
 **Writes:** this file's § Record, `design.md` beside it, and nothing under `docs/`, `ein.rs/`,
 `stdlib/`, `examples/`, `tests/` or `corpus/`: it reads the engine and runs it.
 
@@ -77,4 +77,53 @@ pass. Nothing outside this folder is changed.
 
 ## Record
 
-(the stage writes what it did here)
+**2026-11-17.** [`design.md`](design.md) holds the five answers in the stage's order; the engine was read at
+`c38b4048` and run as the main tree's gate build, and nothing under `docs/`, `ein.rs/`, `stdlib/`, `examples/`,
+`tests/` or `corpus/` was changed. Every program the page relies on is in it whole, and every script that took
+a count is in its Appendix B.
+
+**What it found.**
+
+- **Contradiction** ([§ 1.1](design.md#11-contradiction), [§ 2.1](design.md#21-from-a-fact-and-its-negation-false)).
+  The kernel reads a fact beside its negation and derives nothing: the state holds no `(false)`
+  (`ein saturate --dump`). Ein cannot write the rule of every fact, since no premise is a variable and
+  `(not ?f)` is written in a conclusion only; it writes one rule a relation, or one a count of arguments with
+  its activators derived from the declarations. With that set appended, 560 of the 567 corpus programs `ein
+  solve` answers answer the same, and seven are refused by *forbid*.
+- **Alive and dead** ([§ 2.2](design.md#22-dead-from-false-alive-from-its-absence)). *Dead from `(false)`* runs,
+  and does not fire in a route's node stopped at its first contradiction, nor in a state dead by a pair. *Alive
+  from its absence* loads, makes the program one the static check flags, and leaves `(alive)` in a dead node.
+- **Owed and discharged** ([§ 2.3](design.md#23-owed-and-discharged), [§ 2.4](design.md#24-the-verdicts-together-which-may-be-a-fact)).
+  As ordinary rules under another relation's name, the verdicts are the kernel's one state at a time, on all 16
+  commitments of `examples/lattice/05_owed_seats_bounded.ein`; with the rule for *discharged* written first, 9 of
+  the 16 are wrong; across a fork the debt outlives its payment in 15 of 16 nodes, reported as stale facts. The
+  requirement, the payment and *discharged* are three rules that read no absence a larger state falsifies: the
+  static check stays monotone, and the unpaid requirements are the kernel's `owes` at all 16 nodes and at all 120
+  nodes `ein solve` enters on `examples/zebra2-obligations.ein`.
+- **`(open R)` as a fact** ([§ 3](design.md#3-open-r-as-a-fact)). Both properties, on programs; `open` is a
+  parse error everywhere but the verdict; and how an owed instance, a hypothesis and the verdict stand to a
+  relation's extent, in the two terms the user ruled the same day.
+- **The design** ([§ 4](design.md#4-open-r-justification-designed)). Four candidates for the justification, of
+  which the instance alone makes a tuple a debt; why no fact meaning *owed now* is a fact of a state; who can
+  emit what; every reader; what changes for a program; what each option builds and buys.
+
+**The question.** [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
+four options, the recommended default (b): the verdict carries its justification and stays a verdict.
+[`design.md` § 5](design.md#5-the-question-and-a-recommendation) is the page to rule from, with the strongest
+argument against the recommendation and what was not determined.
+
+**Beside the stage's own files.** The question's entry is in `../open_questions.md`, which the stage's *Writes*
+line does not name: the instruction that launched the stage asked for it there. [`findings.md`](findings.md) is
+the phase's findings page, V-1 to V-4. The [README](README.md)'s status, its row for this stage and its section
+on the question say what is done; its row for S1f.21.2 now says which verdicts Ein can state as rules and which
+it cannot, where it said *if S1f.21.1 finds Ein can say it*, and its row for S1f.21.3 says when there is nothing
+to build. Nothing else of S1f.21.2 to S1f.21.4 was changed.
+
+**Not done.** No time was measured, only facts. `std.slots`' two obligations were emulated at root on their four
+fixtures and on no search. The slow corpus entries were swept with the others under a 60 s limit a run, and none
+timed out. What option (d) asks of the copy-on-write layers and the container was not read.
+
+**Checks.** `python3 utils/doc_audit.py --links --check --tracked`: 0 findings in links, 0 in decision ids.
+`python3 utils/check_release_voice.py`: none. `python3 utils/check_doc_blocks.py` and `python3
+utils/render_diagrams.py --check`: both hold. The ten diagrams are sources under [`diagrams/`](diagrams/), each
+drawn by `dot -Tsvg` beside it; `region-owed-seats.dot` is the engine's (`ein render region`).
