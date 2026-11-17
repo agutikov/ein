@@ -356,7 +356,7 @@ are alive and every one of them owes.
 | `slot-owed-fill` | `std.slots` | each slot an item of each kind | `slot-partition-setup` |
 
 Each asserts `(open ?R)` and nothing else, and each is paired with the restriction that refutes the same requirement
-once it cannot be met. Their reference is [the standard library](../04-reference/04-stdlib.md).
+once it cannot be met. Their reference is [the standard library](../04-reference/04-stdlib/README.md).
 
 ## Saying how many
 
@@ -389,6 +389,6 @@ Each of these is refused before anything runs, on every command, with the line u
 - [Constraints](06-constraints.md): `(false)`, the other bound.
 - [Hypotheses](09-hypotheses.md): the ladder an obligation's second part belongs to.
 - [Solutions and models](13-solutions-and-models.md): R, its two lines, and the two kinds of empty R.
-- [The standard library](../04-reference/04-stdlib.md): `std.algebra`, `std.bijection`, `std.slots`, `std.elim`.
+- [The standard library](../04-reference/04-stdlib/README.md): `std.algebra`, `std.bijection`, `std.slots`, `std.elim`.
 - [The read-out](../04-reference/08-read-out.md): every row that reports a debt.
 - [The definition of R](../../reasoning/02-kb-evolution/06-solution-semantics.md), stated for a second implementation.

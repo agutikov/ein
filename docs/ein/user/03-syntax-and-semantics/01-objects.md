@@ -8,7 +8,7 @@ is a **name**, or a **fact** a state could hold
 
 **Ein has no types.** A name carries nothing but its spelling. `Person`, `House`, `Object` and `Type` below are
 names like `Norwegian`: labels, which mean what the program's rules make them mean, and nothing where no rule reads
-them ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are-labels.md)).
+them ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)).
 
 ## In Ein
 

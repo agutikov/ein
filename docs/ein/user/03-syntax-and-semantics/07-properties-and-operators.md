@@ -355,7 +355,7 @@ it ([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). 
 ## See also
 
 - [Theories](10-theory.md): a rule set as a whole, and how its rules interact.
-- [The stdlib reference](../04-reference/04-stdlib.md): every module, `std.bijection`, `std.slots` and the calculator
+- [The stdlib reference](../04-reference/04-stdlib/README.md): every module, `std.bijection`, `std.slots` and the calculator
   among them.
 - [Relations](02-relations.md): why a property is written beside a declaration and not inside it.
 - [Constraints](06-constraints.md): what a check's `(false)` does to a state.

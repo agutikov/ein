@@ -162,7 +162,7 @@ refused the same way ([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-r
 
 It is a count and no check of what is counted: what stands in an argument's place is not held to the label declared
 for it, and `(lives-in House-1 Norwegian)` loads beside the declaration above
-([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are-labels.md)). A
+([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). A
 relation that nobody declares has no count, so a fixture that wants one relation at several counts leaves it
 undeclared. A relation written as a variable, `(?R ?a ?b)`, is held to no declared count, nor is a kernel marker or
 a rule's activator fact.

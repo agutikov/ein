@@ -242,7 +242,7 @@ and a keyword `:why` is no node at all but marks a clause.
 ## No types, and nothing built in
 
 The engine has no type system ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md),
-[Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are-labels.md)). No
+[Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). No
 variable, relation, rule or fact has a slot for one. A relation's declaration writes a label per argument, and the
 engine reads how many there are; a rule reads which they are through the declaration's stored fact, `(relation ?R
 ?A ?B)`. A variable is restricted by a premise that reads the program's membership relation, `(is-a ?h House)`, and
