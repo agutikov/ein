@@ -213,7 +213,7 @@ search?*
 | a fact headed by a rule's name, `(symmetric R)`, `(total-owed seats is-a)` | the rule's instances: the **activator** binds its parameters. No name is reserved for it, and a module's rules are switched on so | `compile.rs` |
 | an obligation's guard, on the fixpoint | what the state owes, and rung 2's candidates | `obligations.rs`, `oblgen.rs` |
 | the program's names | `neq`'s free side; the blind rung's candidate objects | `predicates.rs`, `hypgen.rs` |
-| `is-a`, by its name | nothing: one line of the read-out, the types the blind rung bound as objects | `types_as_objects.rs` |
+| `is-a`, by its name | nothing: one line of the read-out, the types the blind rung bound as objects ([V-6](findings.md#v-6--the-read-out-reads-is-a-by-its-name)) | `types_as_objects.rs` |
 
 **From the program, not from a state:**
 - the rules' plans (the third row);
@@ -230,7 +230,7 @@ search?*
 | `false` | the kernel's: a held one kills | a proposition; `(false)` ⟹ `(ein.kill)` a rule every program gets (§ 3) | 658 in 278 programs |
 | `not` | the kernel's: beside its fact it kills; the agenda, *forbid* and the static check read it; a candidate root denies is not in $H$ ([`design.md` § 3.4](design.md#34-the-extent-an-owed-instance-a-hypothesis-and-openr)) | a relation of one argument whose meaning is two rules: the contradiction ([A.1](design.md#a1-the-contradiction-rule-set-contrainc)) and the elimination of a double negation (Q-M1f.391). Whatever read it for a decision then reads the rules that lead to `ein.kill`, which is V-1's fix. Leaving a denied candidate out of $H$, and § 5's move into *not*, become economies: committing a denied candidate gives a dead child | |
 | `relation` | a position word: the declaration, the fact `(relation R A B)` rules match, the count of arguments, the `:why` | a convention for what rules read (Q-M1f.381: any head is a relation). The declaration keeps three uses: the count the loader holds a fact to, the `:why` a fact is read in, and the blind rung's guessing (which relations, which objects) until proposing is rules (§ 6, row 1) | |
-| `eq` | computed; binds a free side | goes where one variable says it, by substitution at load. **Except** `std.math`'s two `(neq ?v z) (eq ?v ?x)` (`decimal-arith.ein`'s `operand-undeclared`, binary's twin): *?x is a name, and not a fact*. `neq`'s free side ranges over names, and substituting `?x` for `?v` loses that. Without `eq` the test needs a word of its own, a computed `(atom ?x)` say | 146 in 40 files, 30 of them under `examples/ein-bugs/wrong-answers/` |
+| `eq` | computed; binds a free side | **stays as it is**, on the user's word (*"Ok, so eq still required, leave as it is"*). Substitution at load would say most uses with one variable, but not `std.math`'s two `(neq ?v z) (eq ?v ?x)` (`decimal-arith.ein`'s `operand-undeclared`, binary's twin): *?x is a name, and not a fact*. `neq`'s free side ranges over names, and substituting `?x` for `?v` loses that. On nested facts both compare as they should (§ 8.4) | 146 in 40 files, 30 of them under `examples/ein-bugs/wrong-answers/` |
 | `neq` | computed; a free side ranges over the program's names | stays: no rule says *differ* without it | 345 in 119 files |
 | `and`, `or`, `absent` | the `:match`'s syntax | stay. `absent` is the one premise the kernel orders (the boundary). `or` is one rule a disjunct, which the loader writes | |
 | `open` | the verdict, only as an obligation's whole `:assert` | the open facts the kernel writes and moves, `(open F J)` (§ 4, § 5), named beside `ein.kill` (§ 3) | |
@@ -249,14 +249,60 @@ search?*
 **The kernel then reads:**
 - one verb in a saturation, `ein.kill`;
 - `absent`'s boundary;
-- `neq`;
+- `eq` and `neq`;
 - a rule's activator;
 - its open facts, which it writes and moves (§ 5);
 - the split in the search, which it makes (§ 7 (A)).
 
-**The rest becomes a theory's**: `false`, `not`, `relation` as rules read it, `eq`, `hrule`, `__closed__`, and
-`is-a`, which already is one. The grammar's reserved words shrink to the declarators and the connectives.
-What a declarator may not bind becomes the `ein.` prefix, `neq` and the connectives.
+**The rest becomes a theory's**: `false`, `not`, `relation` as rules read it, `hrule`, `__closed__`, and
+`is-a`, which already is one but for the read-out's row (V-6). The grammar's reserved words shrink to the
+declarators and the connectives. What a declarator may not bind becomes the `ein.` prefix, `eq`, `neq` and the
+connectives.
+
+### 8.4 `eq` and `neq` on nested facts
+
+The user: *"Do eq/neq correctly compare nested facts? they should I guess."* **They do**, by the object: a fact's
+identity is its tuple (Q-M1f.380), interned once, so two facts with one tuple are one object wherever they came
+from. `corpus/regressions.toml`'s `form-in-guard` holds the simple case (`examples/ein-bugs/wrong-answers/form-in-guard.ein`).
+The run below adds depth, a negation, a derived fact against a written one, a bound free side, a free `neq` and a
+conclusion. `eqn.ein`:
+
+```lisp
+(relation p X :why "p {?1}")
+(relation q X :why "q {?1}")
+(relation r X :why "r {?1}")
+(relation f X :why "f {?1}")
+(relation g X :why "g {?1}")
+(relation hit C X Y :why "case {?1}: {?2} {?3}")
+(p (f a)) (p (f b)) (p (g (f a))) (p a) (p (not (f a)))
+(q (f a)) (q (g (f a))) (q (not (f a)))
+(rule mk () :match (p a) :assert (r (f a)) :why "a rule builds (f a)")
+(rule c1 () :match (and (p ?x) (q ?y) (eq ?x ?y)) :assert (hit c1-eq ?x ?y) :why "eq")
+(rule c2 () :match (and (p ?x) (q ?y) (neq ?x ?y)) :assert (hit c2-neq ?x ?y) :why "neq")
+(rule c3 () :match (and (r ?x) (q ?y) (eq ?x ?y)) :assert (hit c3-derived-eq ?x ?y) :why "derived")
+(rule c4 () :match (and (p a) (eq ?z (g (f a)))) :assert (hit c4-bind ?z ?z) :why "bind")
+(rule c6 () :match (and (p (g ?x)) (neq ?v ?x)) :assert (hit c6-free-neq ?x ?v) :why "free neq")
+(rule c7 () :match (and (p ?x) (q ?y) (eq ?x ?y)) :assert (eq ?x ?y) :why "check holds")
+(solve :no-search)
+```
+
+`ein saturate --dump eqn.ein`, the `hit` facts:
+
+| case | what it shows | result |
+|---|---|---|
+| c1 | `eq`, both sides bound: depth 1, depth 2, a negation | 3 hits, the three equal pairs: `(f a)`, `(g (f a))`, `(not (f a))` |
+| c2 | `neq`, both sides bound | 12 hits: the 15 pairs less those 3 |
+| c3 | a fact a rule built against the same one written | `(hit c3-derived-eq (f a) (f a))` |
+| c4 | a free side bound to a written fact | `(hit c4-bind (g (f a)) (g (f a)))` |
+| c6 | `neq` with a free side, the other `(f a)` | 18 hits, each an **atom** of the program: `a`, `b`, `f`, `g`, `p`, the labels `X`, `C`, `Y`, the cases' names… and no fact. The free side ranges over the program's names, as the reference says (*"`neq` over the program's names"*), so it never binds a nested fact. `std.math`'s test of a name rests on this |
+| c7 | `eq` as a conclusion, true | no `(false)`; `ein solve`: ∅ in $R$ |
+
+Two more:
+- **`eqn8.ein`**, `(p (f a)) (q (f b))` with `:assert (eq ?x ?y)` over `(p ?x) (q ?y)`: *every node is dead*, `unsat
+  core (p (f a))`, `(q (f b))`, `refuted by c8`. A false `eq` concluded on two nested facts kills.
+- **`(eq ?x (f ?w))`**, a side that is a fact with a variable inside: refused at load. *"a guard compares two
+  values, each a variable, a name, or a fact that holds no variable"*. `eq` does not take a fact apart; a premise
+  `(p (f ?w))` does.
 
 ## 9. What S1f.21.4 answers
 

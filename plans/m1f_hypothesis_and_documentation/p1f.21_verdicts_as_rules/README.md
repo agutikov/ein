@@ -70,6 +70,20 @@ two points:
 
 The rest: `hrule`, `__closed__`, `__symmetric__`, `open`, `is-a`, and `solve`'s two lists.
 
+Then, the same day:
+
+> is-a is just some random relation, or maybe not even a relation; what for is it read by kernel read-out? Ok, so
+> eq still required, leave as it is. Do eq/neq correctly compare nested facts? they should I guess.
+
+- **`is-a`** is read by its name for one read-out row (Q-M1e.12), which decides nothing:
+  [V-6](findings.md#v-6--the-read-out-reads-is-a-by-its-name), with the leaning to drop it.
+- **`eq` stays.**
+- **On nested facts, both compare by the object**: at any depth, a negation, a derived fact against a written one,
+  and a false `eq` concluded kills.
+  [`open_facts.md` § 8.4](open_facts.md#84-eq-and-neq-on-nested-facts) has the run. A free `neq` ranges over the
+  program's atoms, never over a fact, and `eq` does not take a fact apart: a side with a variable inside is refused
+  at load.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:

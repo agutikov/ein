@@ -16,6 +16,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | open |
 | [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
 | [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
+| [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | open: for S1f.21.4's item 6 |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -162,3 +163,27 @@ inferable under an arrow and globally, with no effect of its own; the kernel rea
 the kernel's fact is a verb, `(ein.kill)` among the names offered, and an obligation emits the hypotheses
 themselves under `open`, which rules read and which leave the open context as a state decides them. Point 1 of
 this entry is § 6's row *ask* there. Worked out in [`open_facts.md`](open_facts.md), for S1f.21.4.
+
+## V-6 — The read-out reads `is-a` by its name
+
+**What.** The user, 2026-11-18: *"is-a is just some random relation, or maybe not even a relation; what for is it
+read by kernel read-out?"* It is read for one row, and decides nothing.
+[Q-M1e.12](../../../docs/decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md): the
+blind enumerator is untyped and fills every place with every name no declaration writes as a label. So
+`(relation co-located T T)` beside `(is-a Color T)` makes `(co-located Blue Color)` a candidate. Where the blind rung
+built $H$, every candidate naming the second argument of an `is-a` fact is counted in a `types` row under
+`universe`, and in the summary's `root.hypgen.types_as_objects`. The row is meant to warn the author that a *type*
+was bound as an object. [`types_as_objects.rs`](../../../ein.rs/crates/ein-infer/src/types_as_objects.rs) reads the
+relation `is-a` by its spelling, the only module of `ein-infer` that does. The reserved names page lists `is-a` as
+not reserved (*"nothing else is special"*), and two conventions coexist (`zebra.ein`'s `type` and `instance`). So the
+row speaks for one convention and not the other.
+
+**Options, none ruled.**
+- (a) Drop the row and the summary key, with Q-M1e.12's second half. The kernel then reads no name of a convention.
+- (b) Keep the warning but make it a theory's: once the open facts are facts (§ 4 of
+  [`open_facts.md`](open_facts.md)), a rule over `(open F)` and `is-a` can report it, in a module a program
+  imports.
+- (c) Keep it as it is.
+
+**Leaning: (a)**, and (b) where a program wants the warning. S1f.21.4 takes it with the reserved names (its item 6).
+
