@@ -345,7 +345,11 @@ The entry is `rat-arith`, which names `int-arith`, `decimal-arith`, `decimal`, `
 An operation answers the cross products, or the numerators' product, over the product of the denominators:
 
 $$
-\frac{a}{b} + \frac{c}{d} = \frac{a d + c b}{b d}, \qquad \frac{a}{b} \cdot \frac{c}{d} = \frac{a c}{b d}, \qquad \frac{a}{b} \div \frac{c}{d} = \frac{a d}{b c}
+\begin{aligned}
+\frac{a}{b} + \frac{c}{d} &= \frac{a d + c b}{b d} \\
+\frac{a}{b} \cdot \frac{c}{d} &= \frac{a c}{b d} \\
+\frac{a}{b} \div \frac{c}{d} &= \frac{a d}{b c}
+\end{aligned}
 $$
 
 ```lisp

@@ -29,9 +29,10 @@ What a bijection asserts of a state, with $R(a, b)$ for the fact `(R a b)`:
 
 $$
 \begin{aligned}
-\text{negative completion} &: \quad R(a, b) \implies \lnot R(a, b') \ \text{for each}\ b' \in B_S,\ b' \neq b; \qquad \lnot R(a', b) \ \text{for each}\ a' \in A_S,\ a' \neq a \\
-\text{elimination} &: \quad a \in A_S \land b \in B_S \land \forall b' \in B_S.\ (b' \neq b \to \lnot R(a, b') \in S) \implies R(a, b) \\
-\text{the argument check} &: \quad R(a, b) \land a \notin A_S \implies \bot
+\text{negative completion} &:\ \ R(a, b) \implies \lnot R(a, b') && \text{for each } b' \in B_S,\ b' \neq b \\
+&\phantom{:}\ \ R(a, b) \implies \lnot R(a', b) && \text{for each } a' \in A_S,\ a' \neq a \\
+\text{elimination} &:\ \ a \in A_S \land b \in B_S \land \forall b' \in B_S.\ (b' \neq b \to \lnot R(a, b') \in S) \implies R(a, b) \\
+\text{the argument check} &:\ \ R(a, b) \land a \notin A_S \implies \bot
 \end{aligned}
 $$
 

@@ -374,7 +374,7 @@ also what proposes the candidates, `(in w 0)` and `(in w 1)` for each input, and
 nothing:
 
 $$
-R = \{\, \sigma : \mathit{Inputs} \to \{0, 1\} \;:\; \text{every required wire carries its required bit under}\ \sigma \,\}
+R = \lbrace \, \sigma : \mathit{Inputs} \to \lbrace 0, 1 \rbrace \;:\; \text{every required wire carries its required bit under}\ \sigma \, \rbrace
 $$
 
 With no requirement R is every assignment, and a query's classes are a truth table's rows:

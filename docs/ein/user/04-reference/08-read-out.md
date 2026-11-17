@@ -55,7 +55,10 @@ R = \lbrace C \subseteq H : \operatorname{st}(C) \text{ is alive and owes nothin
 $$
 
 $$
-k_c = |R| \qquad k_s = |\lbrace \operatorname{st}(C) : C \in R \rbrace|
+\begin{aligned}
+k_c &= |R| \\
+k_s &= |\lbrace \operatorname{st}(C) : C \in R \rbrace|
+\end{aligned}
 $$
 
 `commitments (k_c)` counts the members of $R$ and `states (k_s)` the states they reach, so $k_s \le k_c$, with
@@ -63,7 +66,10 @@ equality exactly where the `merged` row reads *none*. The two lines are the stat
 member below them, and with none above:
 
 $$
-\min R = \lbrace C \in R : \nexists D \in R \colon D \subsetneq C \rbrace \qquad \max R = \lbrace C \in R : \nexists D \in R \colon C \subsetneq D \rbrace
+\begin{aligned}
+\min R &= \lbrace C \in R : \nexists D \in R \colon D \subsetneq C \rbrace \\
+\max R &= \lbrace C \in R : \nexists D \in R \colon C \subsetneq D \rbrace
+\end{aligned}
 $$
 
 and `minimal line` and `maximal line` count $\lbrace \operatorname{st}(C) : C \in \min R \rbrace$ and

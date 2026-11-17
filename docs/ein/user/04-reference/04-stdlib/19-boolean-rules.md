@@ -344,7 +344,10 @@ are one variable. Associativity is checked a point at a time, by four rows of th
 points do.
 
 $$
-\operatorname{commutative}(F) \iff F(0, 1) = F(1, 0), \qquad \operatorname{idempotent}(F) \iff F(0, 0) = 0 \land F(1, 1) = 1
+\begin{aligned}
+\operatorname{commutative}(F) &\iff F(0, 1) = F(1, 0) \\
+\operatorname{idempotent}(F) &\iff F(0, 0) = 0 \land F(1, 1) = 1
+\end{aligned}
 $$
 
 #### `commutative-r`

@@ -26,7 +26,10 @@ A binary number is `z` or `(b2 PREFIX BIT)`, twice the prefix plus the bit; the 
 bit `0` or `1`:
 
 $$
-\operatorname{val}(\mathsf{z}) = 0, \qquad \operatorname{val}\bigl((\mathsf{b2}\ P\ d)\bigr) = 2 \cdot \operatorname{val}(P) + d
+\begin{aligned}
+\operatorname{val}(\mathsf{z}) &= 0 \\
+\operatorname{val}\bigl((\mathsf{b2}\ P\ d)\bigr) &= 2 \cdot \operatorname{val}(P) + d
+\end{aligned}
 $$
 
 5 is `(b2 (b2 (b2 z 1) 0) 1)`.
@@ -377,7 +380,10 @@ tables in place of decimal's. What is binary's own is small. Binary has no digit
 row of a product is nothing or the multiplicand, and one subtraction decides a bit of a quotient.
 
 $$
-x \cdot y = \sum_{i} y_i \cdot 2^i \cdot x, \qquad y_i \in \{0, 1\}
+\begin{aligned}
+x \cdot y &= \sum_{i} y_i \cdot 2^i \cdot x \\
+y_i &\in \lbrace 0, 1 \rbrace
+\end{aligned}
 $$
 
 The conversions are circuits over the two bases' tagged calls. `to-bin` halves X by decimal's tagged division

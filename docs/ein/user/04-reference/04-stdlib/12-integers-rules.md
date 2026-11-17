@@ -46,7 +46,11 @@ For $P$ less $N$, two subtraction walks, each part from the other, as a natural 
 two has an answer, and it is the part that is left.
 
 $$
-\operatorname{norm}(P, N) = \begin{cases} (\mathsf{int}\ (P - N)\ \mathsf{z}) & P \ge N \\ (\mathsf{int}\ \mathsf{z}\ (N - P)) & P < N \end{cases}
+\operatorname{norm}(P, N) =
+\begin{cases}
+(\mathsf{int}\ (P - N)\ \mathsf{z}) & P \ge N \\
+(\mathsf{int}\ \mathsf{z}\ (N - P)) & P \lt N
+\end{cases}
 $$
 
 #### `int-norm-walks`
@@ -636,7 +640,10 @@ need.
 ## Division: the Euclidean convention
 
 $$
-X = Q \cdot Y + R, \qquad 0 \le R < \lvert Y \rvert
+\begin{aligned}
+X &= Q \cdot Y + R \\
+0 &\le R \lt \lvert Y \rvert
+\end{aligned}
 $$
 
 Where the dividend is negative and a remainder is left, the quotient's size is one more and the remainder is the

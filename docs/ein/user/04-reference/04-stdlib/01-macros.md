@@ -23,7 +23,7 @@ A program that writes one in its own rule lists it. The module imports nothing a
 `(forall ?b G B)` is a premise that holds where no `?b` satisfies the guard `G` and not the body `B`:
 
 $$
-\forall b.\; G(b) \to B(b) \quad\equiv\quad \lnot \exists b.\; G(b) \land \lnot B(b)
+\forall b.\; G(b) \to B(b) \;\;\equiv\;\; \lnot \exists b.\; G(b) \land \lnot B(b)
 $$
 
 The program below is [`tests/stdlib/macro/01_forall.ein`](../../../../../tests/stdlib/macro/01_forall.ein). A group

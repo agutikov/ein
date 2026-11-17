@@ -262,7 +262,10 @@ $$
 For the rule above, with $S$ the state it is judged in:
 
 $$
-\text{is-a}(\mathit{bag}, \mathsf{Bag}) \land \forall i.\ \bigl( \text{goes-in}(i, \mathit{bag}) \implies \operatorname{packed}(i) \bigr) \implies \operatorname{ready}(\mathit{bag})
+\begin{aligned}
+& \text{is-a}(\mathit{bag}, \mathsf{Bag}) \land \forall i.\ \bigl( \text{goes-in}(i, \mathit{bag}) \implies \operatorname{packed}(i) \bigr) \\
+& \implies \operatorname{ready}(\mathit{bag})
+\end{aligned}
 $$
 
 Both negations are negation as failure, read off $S$ ([rules](05-rules.md)): the inner one is

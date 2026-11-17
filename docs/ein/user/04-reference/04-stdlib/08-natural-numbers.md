@@ -27,7 +27,10 @@ A natural number is `z`, zero, or `(n PREFIX DIGIT)`, ten times the prefix plus 
 written ([Q-M1f.361](../../../../decisions/stdlib/math/decimal/Q-M1f.361-a-natural-number-is-a-numeral-of-digit-names.md)):
 
 $$
-\operatorname{val}(\mathsf{z}) = 0, \qquad \operatorname{val}\bigl((\mathsf{n}\ P\ d)\bigr) = 10 \cdot \operatorname{val}(P) + d
+\begin{aligned}
+\operatorname{val}(\mathsf{z}) &= 0 \\
+\operatorname{val}\bigl((\mathsf{n}\ P\ d)\bigr) &= 10 \cdot \operatorname{val}(P) + d
+\end{aligned}
 $$
 
 | number | numeral |
@@ -51,8 +54,13 @@ A digit is one of `0` to `9`, a prefix `z` or a numeral. Any length; a program m
 | `(div X Y)` | `(quot-of X Y Q R)` | $X = Q \cdot Y + R$ with $0 \le R < Y$ |
 | `(let NAME NUMBER)` | nothing: it is read | NAME names NUMBER, and a request may name an operand ([Q-M1f.149](../../../../decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md)) |
 
+In $\operatorname{diff-of}(X, Y, D, R)$,
+
 $$
-\operatorname{diff-of}(X, Y, D, R): \qquad D = \max(X - Y,\ 0), \qquad R = \max(Y - X,\ 0)
+\begin{aligned}
+D &= \max(X - Y,\ 0) \\
+R &= \max(Y - X,\ 0)
+\end{aligned}
 $$
 
 One of the two is always `z`, both when $X = Y$. There is no negative number: `(diff-of X Y z (n ?p ?a))` matches
@@ -494,7 +502,10 @@ A sum, in the columns of school arithmetic. With $x_i$ and $y_i$ the digits of t
 $c_i$ the carry into column $i$:
 
 $$
-x_i + y_i + c_i = 10 \cdot c_{i+1} + s_i, \qquad c_0 = 0
+\begin{aligned}
+x_i + y_i + c_i &= 10 \cdot c_{i+1} + s_i \\
+c_0 &= 0
+\end{aligned}
 $$
 
 and the sum's digits are the $s_i$, with the last carry in front. The table `fa` holds every solution of the

@@ -161,7 +161,10 @@ A product is summed from the multiplier's top digit: the sum so far, times ten, 
 walk over the multiplicand's columns through the table `md`,
 
 $$
-x_i \cdot m + c_i = 10 \cdot c_{i+1} + s_i, \qquad c_0 = 0
+\begin{aligned}
+x_i \cdot m + c_i &= 10 \cdot c_{i+1} + s_i \\
+c_0 &= 0
+\end{aligned}
 $$
 
 with $m$ the multiplier's digit and $c_i$ a carry from `0` to `8`.

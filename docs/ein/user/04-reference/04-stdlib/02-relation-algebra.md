@@ -40,7 +40,7 @@ the state holds `(isa a A)`, where `isa` is a relation the program has and passe
 `(total likes is-a)`. Below, for a state $S$,
 
 $$
-A_S = \{\, a : \operatorname{isa}(a, A) \in S \,\}
+A_S = \lbrace \, a : \operatorname{isa}(a, A) \in S \, \rbrace
 $$
 
 is the set of members of a label, and $R(a, b)$ stands for the fact `(R a b)` in $S$.
@@ -73,7 +73,7 @@ Read these before importing a relation-algebra module: they decide whether a rul
 | `(imply2-fwd R1 R2)` | `(R2 a b)` for each `(R1 a b)`: $R_2 \supseteq R_1$ | intrinsic |
 | `(imply2-reverse R1 R2)` | `(R2 b a)` for each `(R1 a b)`, the same as `converse` | intrinsic |
 | `(compose R1 R2 R3)` | `(R3 a c)` for each `(R1 a b)` and `(R2 b c)`: $R_3 \supseteq R_1 ; R_2$. `(compose R R R)` is R's transitive closure | intrinsic |
-| `(identity R isa Dom)` | `(R a a)` for every member `a` of `Dom`: $R \supseteq \{(a, a) : a \in \mathit{Dom}_S\}$ | extensive |
+| `(identity R isa Dom)` | `(R a a)` for every member `a` of `Dom`: $R \supseteq \lbrace (a, a) : a \in \mathit{Dom}_S \rbrace$ | extensive |
 
 ```lisp
 (import std.algebra :symbols (converse compose includes identity))
@@ -315,9 +315,9 @@ A closure derives the edges that make a property hold.
 
 $$
 \begin{aligned}
-\operatorname{symmetric}(R) &: \quad R(a, b) \implies R(b, a) \\
-\operatorname{transitive}(R) &: \quad R(a, b) \land R(b, c) \land a \neq c \implies R(a, c) \\
-\operatorname{difunctional}(R) &: \quad R(a, b) \land R(c, b) \land R(c, d) \implies R(a, d)
+\operatorname{symmetric}(R) &:\ \ R(a, b) \implies R(b, a) \\
+\operatorname{transitive}(R) &:\ \ R(a, b) \land R(b, c) \land a \neq c \implies R(a, c) \\
+\operatorname{difunctional}(R) &:\ \ R(a, b) \land R(c, b) \land R(c, d) \implies R(a, d)
 \end{aligned}
 $$
 
@@ -410,11 +410,11 @@ A check derives nothing: a state that violates the property derives `(false)` an
 
 $$
 \begin{aligned}
-\operatorname{functional}(R) &: \quad R(a, b) \land R(a, c) \land b \neq c \implies \bot \\
-\operatorname{injective}(R) &: \quad R(a, c) \land R(b, c) \land a \neq b \implies \bot \\
-\operatorname{total}(R, \mathit{isa}) &: \quad a \in A_S \land \forall b \in B_S.\ \lnot R(a, b) \in S \implies \bot \\
-\operatorname{surjective}(R, \mathit{isa}) &: \quad b \in B_S \land \forall a \in A_S.\ \lnot R(a, b) \in S \implies \bot \\
-\operatorname{connex}(R, \mathit{isa}, D) &: \quad a, b \in D_S \land a \neq b \land R(a, b) \notin S \land R(b, a) \notin S \implies \bot
+\operatorname{functional}(R) &:\ \ R(a, b) \land R(a, c) \land b \neq c \implies \bot \\
+\operatorname{injective}(R) &:\ \ R(a, c) \land R(b, c) \land a \neq b \implies \bot \\
+\operatorname{total}(R, \mathit{isa}) &:\ \ a \in A_S \land \forall b \in B_S.\ \lnot R(a, b) \in S \implies \bot \\
+\operatorname{surjective}(R, \mathit{isa}) &:\ \ b \in B_S \land \forall a \in A_S.\ \lnot R(a, b) \in S \implies \bot \\
+\operatorname{connex}(R, \mathit{isa}, D) &:\ \ a, b \in D_S \land a \neq b \land R(a, b) \notin S \land R(b, a) \notin S \implies \bot
 \end{aligned}
 $$
 
@@ -768,7 +768,10 @@ Schröder's law is opted into per triple, for a composite $T = R ; S$ that compo
 | `(compose-negative-r R S T)` | `(not (R a b))` for each `(not (T a c))` and `(S b c)` |
 
 $$
-\lnot T(a, c) \land R(a, b) \implies \lnot S(b, c) \qquad\qquad \lnot T(a, c) \land S(b, c) \implies \lnot R(a, b)
+\begin{aligned}
+\lnot T(a, c) \land R(a, b) &\implies \lnot S(b, c) && \text{(compose-negative-s)} \\
+\lnot T(a, c) \land S(b, c) &\implies \lnot R(a, b) && \text{(compose-negative-r)}
+\end{aligned}
 $$
 
 Both are closed-world, so each is declared per triple.

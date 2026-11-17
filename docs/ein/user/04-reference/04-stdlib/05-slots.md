@@ -30,8 +30,8 @@ a label $T$ in a state $S$ ([labels](02-relation-algebra.md#labels-and-the-membe
 
 $$
 \begin{aligned}
-\text{slot-partition} &: \quad \forall i \in \mathit{Index}_S,\ \forall T \ \text{with}\ \operatorname{sub}(T, \mathit{Super}): \quad \bigl|\{\, v \in T_S : R(v, i) \,\}\bigr| = 1 \\
-\text{slot-spatial} &: \quad S(a, b) \iff S(\operatorname{slot}(a), \operatorname{slot}(b))
+\text{slot-partition} &:\ \ \bigl|\lbrace\, v \in T_S : R(v, i) \,\rbrace\bigr| = 1 && \text{for every } i \in \mathit{Index}_S \text{ and every } T \text{ with } \operatorname{sub}(T, \mathit{Super}) \\
+\text{slot-spatial} &:\ \ S(a, b) \iff S(\operatorname{slot}(a), \operatorname{slot}(b))
 \end{aligned}
 $$
 

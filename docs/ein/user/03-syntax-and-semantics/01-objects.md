@@ -188,7 +188,10 @@ depth, and every name written anywhere in one of its rules
 ([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). Here
 
 $$
-N = \lbrace \mathsf{Norwegian},\ \text{House-1},\ \mathsf{Person},\ \mathsf{House},\ \mathsf{Object},\ \mathsf{Type},\ \text{is-instance},\ \text{lives-in} \rbrace
+\begin{aligned}
+N = \lbrace\ & \mathsf{Norwegian},\ \text{House-1},\ \mathsf{Person},\ \mathsf{House}, \\
+& \mathsf{Object},\ \mathsf{Type},\ \text{is-instance},\ \text{lives-in}\ \rbrace
+\end{aligned}
 $$
 
 $N$ is not partitioned: there is no subset of *types* and no function from an atom to a type. The words of the

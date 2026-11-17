@@ -173,7 +173,10 @@ The numerator in the integers' normal form, the denominator with no high zero, a
 ### Lowest terms, on request
 
 $$
-\frac{a}{d} = \frac{a / g}{d / g}, \qquad g = \gcd(\lvert a \rvert, d)
+\begin{aligned}
+\frac{a}{d} &= \frac{a / g}{d / g} \\
+g &= \gcd(\lvert a \rvert, d)
+\end{aligned}
 $$
 
 The greatest common divisor is `std.math.gcd`'s tagged call, and the two quotients are the natural numbers'

@@ -128,10 +128,15 @@ other number of arguments. It makes visible what the compact view hides: `(can-d
 
 ## In mathematics
 
-The program states a finite set $K$ of ground atoms:
+The program states a finite set $K$ of facts:
 
 $$
-K = \lbrace \operatorname{is-a}(\mathsf{Jack}, \mathsf{Human}),\ \operatorname{is-a}(\mathsf{Coffee}, \mathsf{Drink}),\ \operatorname{can-drink}(\mathsf{Human}, \mathsf{Drink}),\ \operatorname{drinks}(\mathsf{Jack}, \mathsf{Coffee}) \rbrace
+\begin{aligned}
+K = \lbrace\ & \operatorname{is-a}(\mathsf{Jack}, \mathsf{Human}), \\
+& \operatorname{is-a}(\mathsf{Coffee}, \mathsf{Drink}), \\
+& \operatorname{can-drink}(\mathsf{Human}, \mathsf{Drink}), \\
+& \operatorname{drinks}(\mathsf{Jack}, \mathsf{Coffee})\ \rbrace
+\end{aligned}
 $$
 
 Each rule, once activated for `can-drink`, is a Horn clause over it, `inherit-rel-lhs` the first and
@@ -139,15 +144,19 @@ Each rule, once activated for `can-drink`, is a Horn clause over it, `inherit-re
 
 $$
 \begin{aligned}
-\forall t, o, i.\quad & \operatorname{can-drink}(t, o) \land \operatorname{is-a}(i, t) \implies \operatorname{can-drink}(i, o) \\
-\forall o, t, i.\quad & \operatorname{can-drink}(o, t) \land \operatorname{is-a}(i, t) \implies \operatorname{can-drink}(o, i)
+\forall t, o, i.\ \ & \operatorname{can-drink}(t, o) \land \operatorname{is-a}(i, t) \implies \operatorname{can-drink}(i, o) \\
+\forall o, t, i.\ \ & \operatorname{can-drink}(o, t) \land \operatorname{is-a}(i, t) \implies \operatorname{can-drink}(o, i)
 \end{aligned}
 $$
 
 The answer is the least set $K^{\ast} \supseteq K$ closed under both clauses, the fixpoint saturation reaches:
 
 $$
-K^{\ast} = K \cup \lbrace \operatorname{can-drink}(\mathsf{Jack}, \mathsf{Drink}),\ \operatorname{can-drink}(\mathsf{Human}, \mathsf{Coffee}),\ \operatorname{can-drink}(\mathsf{Jack}, \mathsf{Coffee}) \rbrace
+\begin{aligned}
+K^{\ast} = K \cup \lbrace\ & \operatorname{can-drink}(\mathsf{Jack}, \mathsf{Drink}), \\
+& \operatorname{can-drink}(\mathsf{Human}, \mathsf{Coffee}), \\
+& \operatorname{can-drink}(\mathsf{Jack}, \mathsf{Coffee})\ \rbrace
+\end{aligned}
 $$
 
 and $\operatorname{can-drink}(\mathsf{Jack}, \mathsf{Coffee}) \in K^{\ast}$ is the goal. Since `can-drink` has two
