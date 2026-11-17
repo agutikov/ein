@@ -1,7 +1,10 @@
 # P1f.22 — nested facts
 
 **Milestone:** [M1f](../README.md)
-**Status:** created 2026-11-17 on the user's instruction (below). [S1f.22.1](s1f.22.1_what_we_have.md) is next.
+**Status:** created 2026-11-17 on the user's instruction (below). [S1f.22.1](s1f.22.1_what_we_have.md) is done:
+[`analysis.md`](analysis.md) is what the engine and the pages do, the explanation drafted, and the six points for
+the user (Q-M1f.391 to .396); [`findings.md`](findings.md) is what it found outside its scope. **The phase waits
+for the user's rulings**; S1f.22.2 is next after them.
 **Depends on:** [S1f.20.10](../p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md) for its second stage,
 which writes into pages of `docs/ein/reasoning/` that S1f.20.10's remaining lanes still move. Its first stage
 reads the engine and the pages and writes here.
@@ -48,7 +51,7 @@ consistent explanation.
 
 | stage | what | state |
 |---|---|---|
-| [S1f.22.1](s1f.22.1_what_we_have.md) | **What we have.** What the engine does with a fact under an arrow of another, run and shown: what is held, what a pattern can match inside a fact, what a rule can pack and unpack, what the engine itself reads or states of nested facts (`written`, a hypothesis, a negation, a claim), what is refused; what every page and decision says of it, and where they disagree with the engine or with one another. Then the explanation, drafted: the representation in the graph, the three cases, packing and unpacking as rewriting. Ends with what is the user's to decide | next |
+| [S1f.22.1](s1f.22.1_what_we_have.md) | **What we have.** What the engine does with a fact under an arrow of another, run and shown: what is held, what a pattern can match inside a fact, what a rule can pack and unpack, what the engine itself reads or states of nested facts (`written`, a hypothesis, a negation, a claim), what is refused; what every page and decision says of it, and where they disagree with the engine or with one another. Then the explanation, drafted: the representation in the graph, the three cases, packing and unpacking as rewriting. Ends with what is the user's to decide | **done 2026-11-17**: [`analysis.md`](analysis.md), [`findings.md`](findings.md) (N-1 to N-13), Q-M1f.391 to .396 not ruled |
 | S1f.22.2 | **The explanation, written.** In `docs/ein/reasoning/` (the knowledge base, the rewriting rules, and the pages of `02-kb-evolution/` that fire rules over nested facts), and where the user's pages and the decisions say otherwise | after S1f.22.1, the user's rulings on it, and S1f.20.10's lanes |
 | S1f.22.3 | **What the analysis leaves to build**, if anything: planned from S1f.22.1 on the user's ruling | waits for the ruling |
 | S1f.22.4 | **The close.** | last |
