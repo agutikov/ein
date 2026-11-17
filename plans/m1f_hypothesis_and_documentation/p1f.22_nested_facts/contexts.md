@@ -569,34 +569,46 @@ marks are independent, as the properties are:
 | | the mark |
 |---|---|
 | **held**, in the global context | the octagon is **filled**, as the pages have it today |
-| **in a context**, a fact's | the octagon is **inside the dashed frame** |
+| **in a context**, a fact's | the octagon is **inside a dashed frame labelled with the context's relation**, `think ctx` |
 
 So a fact that is only held is filled and outside; one that is only in a context is empty and inside; one that is
-both is filled and inside. The frame is the dashed, rounded one an absence has in a rule's drawing, with its own
-label. The sources and pictures are under [`diagrams/`](diagrams/), `inctx-*.dot` and `inctx-*.svg`.
+both is filled and inside. The frame is the dashed, rounded one an absence has in a rule's drawing.
+
+**The label**, on the user's word after the second trial's first figures (*"label contexts `<relation name> cts`
+instead of `in context`"*; written `ctx` here): a frame is named for the relation of the facts that point at what
+is in it. The facts under an arrow of a fact of `think` are in the frame `think ctx`; $s$, under the third arrow
+of a fact of `=`, is in `= ctx`. Two things follow from *every object drawn once*, and are how the figures below
+are drawn:
+
+- **a fact that facts of two relations point at is in one frame that names both**, `says, think ctx`: it cannot
+  be in two frames;
+- **the frames are side by side and never one inside another**: $s$ is in `= ctx` beside `think ctx`, not within
+  it, and that $s$ is also in the context of $t$ is read off the path $t \to e \to s$.
+
+The sources and pictures are under [`diagrams/`](diagrams/), `inctx-*.dot` and `inctx-*.svg`.
 
 The user's example, the three cases. $K = \lbrace e \rbrace$: $e$ is held and in no context, and $s$, which nobody
 states, is in the context of $e$:
 
-![e filled and outside the frame; s empty and inside it](diagrams/inctx-case-stated.svg)
+![e filled and outside; s empty, in the frame labelled = ctx](diagrams/inctx-case-stated.svg)
 
 $K = \lbrace t \rbrace$: $e$ and $s$ are in the context of $t$, and neither is held:
 
-![t filled and outside; e and s empty, inside the frame](diagrams/inctx-case-nested.svg)
+![t filled and outside; e empty in the frame think ctx; s empty in the frame = ctx](diagrams/inctx-case-nested.svg)
 
 $K = \lbrace t, e \rbrace$: $e$ is held and in the context of $t$:
 
-![t filled and outside; e filled and inside the frame; s empty and inside it](diagrams/inctx-case-both.svg)
+![t filled and outside; e filled, in the frame think ctx; s empty in the frame = ctx](diagrams/inctx-case-both.svg)
 
 One knowledge base with every case: $t$, $b$ and $h$ only held; $e$ held and in the contexts of $t$ and $b$; $s$
 only in a context:
 
-![t, b and h filled and outside; e filled and s empty, both inside the frame](diagrams/inctx-example.svg)
+![t, b and h filled and outside; e filled, in the frame says, think ctx; s empty in the frame = ctx](diagrams/inctx-example.svg)
 
 The page's figure of a fact about a relation, a fact about a fact and a negation; $g$ is in the contexts of $n$
 and $s$:
 
-![p, n, s and f3 filled and outside; g empty, inside the frame](diagrams/inctx-what-an-arrow-points-at.svg)
+![p, n, s and f3 filled and outside; g empty, in the frame not, says ctx](diagrams/inctx-what-an-arrow-points-at.svg)
 
 A rule that unpacks, and its match. In the pattern the frame is around the fact pattern under the premise's
 arrow, which is the rule's conclusion; in the knowledge base around $e$ and $s$:
@@ -610,9 +622,10 @@ arrow, which is the rule's conclusion; in the knowledge base around $e$ and $s$:
 - **A figure with no fact under an arrow does not change.** The page's first figure, its declaration and its
   extent keep their sources, their layout and, for the extent, its own dashed frame; only the figures that have a
   nested fact gain a frame. The first trial changed all of them.
-- **One frame, not one for each context.** A frame for each context, holding what that context speaks about,
-  cannot be drawn where one fact is in two contexts, which is the case the phase was opened for. So the frame says
-  *in some context*, and *which* is read off the arrows that enter it.
+- **A frame is a context relation's, not one context fact's.** A frame for each fact that speaks, holding what
+  that one fact speaks about, cannot be drawn where one fact is in two contexts, which is the case the phase was
+  opened for. Named for the relation, every fact is in exactly one frame, and *which* fact speaks about it is
+  read off the arrows that enter the frame.
 - **Atoms stay outside.** The frame holds facts; an atom under an arrow of a nested fact is outside, as every atom
   is.
 - In a figure of two graphs, a rule and a knowledge base, each has its own frame, inside the frame of its graph.
@@ -621,8 +634,8 @@ arrow, which is the rule's conclusion; in the knowledge base around $e$ and $s$:
 
 | | question | |
 |---|---|---|
-| 1 | **the frame**, second trial: do the six figures of § 14 look right, so that S1f.22.2 draws every figure that has a nested fact so | the user's look |
+| 1 | **the frame**: settled by the user's two looks, a dashed frame around the facts in a context, labelled with the context's relation; S1f.22.2 draws every figure that has a nested fact so | none |
 | 2 | **Q-M1f.392**: ruled a bug, to be fixed and held by a simple unit test. Which fix, and whether `written` stays as it is: [`q392_state_file_and_written.md`](q392_state_file_and_written.md), its last two sections | the user's word on the fix |
 | 3 | **Q-M1f.399**, and `(open)` as facts: P1f.21's, with the user's direction recorded there | does not hold this phase |
 
-S1f.22.2 is planned in [its stage file](s1f.22.2_the_explanation_written.md) and waits only for 1.
+S1f.22.2 is planned in [its stage file](s1f.22.2_the_explanation_written.md) and is started.

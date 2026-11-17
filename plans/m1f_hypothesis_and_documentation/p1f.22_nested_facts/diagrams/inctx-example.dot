@@ -4,8 +4,11 @@ digraph inctx_example {
   edge [fontname="Helvetica", fontsize=10];
   "think"; "says"; "="; "+";
   t [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="t"]; b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="b"]; h [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="h"];
-  subgraph cluster_ctx { label="in a context"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
-    e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="e"]; s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="s"];
+  subgraph cluster_ctx_think_says { label="says, think ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="e"];
+  }
+  subgraph cluster_ctx_eq { label="= ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="s"];
   }
   "think" -> t [label="1", dir=back]; t -> "Alice" [label="2"]; t -> e [label="3"];
   "says" -> b [label="1", dir=back]; b -> "Bob" [label="2"]; b -> e [label="3"];

@@ -4,7 +4,7 @@ digraph inctx_what_an_arrow_points_at {
   edge [fontname="Helvetica", fontsize=10];
   "transitive"; "not"; "says"; "left-of";
   p [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="p"]; n [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="n"]; s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="s"]; f3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="f3"];
-  subgraph cluster_ctx { label="in a context"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+  subgraph cluster_ctx_not_says { label="not, says ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
     g [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="g"];
   }
   "transitive" -> p [label="1", dir=back]; p -> "left-of" [label="2"];

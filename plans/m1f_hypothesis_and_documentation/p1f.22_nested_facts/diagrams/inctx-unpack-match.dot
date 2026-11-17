@@ -7,7 +7,7 @@ digraph inctx_unpack_match {
     node [shape=diamond];
     "?a"; "?b";
     q [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="q"];
-    subgraph cluster_rctx { label="in a context"; labelloc=t; labeljust=l; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    subgraph cluster_rctx { label="think ctx"; labelloc=t; labeljust=l; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
       u [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style="filled,dashed", fillcolor="#d9d9d9", xlabel="u"];
     }
   }
@@ -15,8 +15,11 @@ digraph inctx_unpack_match {
     node [shape=box];
     "+"; "5"; "2";
     t [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="t"];
-    subgraph cluster_kctx { label="in a context"; labelloc=t; labeljust=l; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
-      e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="e"]; s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="s"];
+    subgraph cluster_kctx_think { label="think ctx"; labelloc=t; labeljust=l; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+      e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="e"];
+    }
+    subgraph cluster_kctx_eq { label="= ctx"; labelloc=t; labeljust=l; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+      s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="s"];
     }
   }
   "think" -> q [label="1", dir=back]; "Alice" -> q [label="2", dir=back]; q -> u [label="3"];

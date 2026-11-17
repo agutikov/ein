@@ -13,8 +13,8 @@ elimination a rule), Q-M1f.392 (**a bug**, to be fixed and held by a unit test),
 words), Q-M1f.395 (every object drawn once), Q-M1f.396 (sections), Q-M1f.397 (the reserved words), Q-M1f.398
 (**a frame around the facts in a context**, the filling for held; re-ruled on the first trial, tried again in
 [`contexts.md` § 14](contexts.md#14-the-frame-tried-twice)). **P1f.21's**: Q-M1f.399 and `(open)` as facts, with
-the user's direction recorded in its V-5. **The phase waits for the user** on two things: the look at the second
-trial's figures, on which [S1f.22.2](s1f.22.2_the_explanation_written.md) starts, and the word on the fix of
+the user's direction recorded in its V-5. **[S1f.22.2](s1f.22.2_the_explanation_written.md) is started**, the frame settled by the user's two looks
+(labelled with the context's relation, `think ctx`). **The phase waits for the user** on the word on the fix of
 Q-M1f.392 ([`q392_state_file_and_written.md`](q392_state_file_and_written.md)), which is S1f.22.3's first task.
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/` that S1f.20.10, the
 last stage of P1f.20, was still moving; that stage is done and P1f.20 is closed (2026-11-17). What P1f.20 found
@@ -64,7 +64,7 @@ consistent explanation.
 | stage | what | state |
 |---|---|---|
 | [S1f.22.1](s1f.22.1_what_we_have.md) | **What we have.** What the engine does with a fact under an arrow of another, run and shown: what is held, what a pattern can match inside a fact, what a rule can pack and unpack, what the engine itself reads or states of nested facts (`written`, a hypothesis, a negation, a claim), what is refused; what every page and decision says of it, and where they disagree with the engine or with one another. Then the explanation, drafted: the representation in the graph, the three cases, packing and unpacking as rewriting. Ends with what is the user's to decide | **done 2026-11-17**: [`analysis.md`](analysis.md), [`findings.md`](findings.md) (N-1 to N-13), Q-M1f.391 to .396 not ruled |
-| [S1f.22.2](s1f.22.2_the_explanation_written.md) | **The explanation, written.** In `docs/ein/reasoning/` (the knowledge base, the rewriting rules, and the pages of `02-kb-evolution/` that fire rules over nested facts), every figure of the graph with the frame, the user's pages, and the decisions | **planned 2026-11-17**; starts on the user's look at the frame |
+| [S1f.22.2](s1f.22.2_the_explanation_written.md) | **The explanation, written.** In `docs/ein/reasoning/` (the knowledge base, the rewriting rules, and the pages of `02-kb-evolution/` that fire rules over nested facts), every figure of the graph with the frame, the user's pages, and the decisions | **started 2026-11-17** |
 | S1f.22.3 | **What the rulings leave to build**: `(not (not g))` admitted by the grammar (Q-M1f.391); `ein render kb` and `ein render rule` drawing every object once, with the frame (Q-M1f.395, Q-M1f.398); the saved state that loads back as itself, with its unit test (Q-M1f.392); the witnesses of the explanation's propositions as corpus programs; each with its pages in its commit | not planned; after S1f.22.2 |
 | S1f.22.4 | **The close.** | last |
 

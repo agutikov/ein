@@ -1,8 +1,8 @@
 # S1f.22.2 — the explanation, written
 
 **Phase:** [P1f.22](README.md)
-**Status:** planned 2026-11-17; **not started**. It waits for the user's look at the frame
-([`contexts.md` § 14](contexts.md#14-the-frame-tried-twice)) and for nothing else.
+**Status:** planned 2026-11-17; **started 2026-11-17**, the frame settled by the user's two looks at the trial
+([`contexts.md` § 14](contexts.md#14-the-frame-tried-twice)).
 **Writes:** pages of `docs/ein/` and their diagrams, decisions under `docs/decisions/`, and this file's § Record.
 No crate, no standard library, no corpus program: what the rulings need built is S1f.22.3's.
 
@@ -15,7 +15,7 @@ The draft is [`analysis.md` § 3](analysis.md#3-the-explanation-drafted). The ru
 |---|---|
 | Q-M1f.394 | **the words**: a fact is *held*, which is *in the global context*, and/or *in a context*, a fact's (local) one; a negation is a context; *object* for every node of the graph; *value* only for the object a variable of a rule is bound to; *term* a word of the syntax; no *relational node* |
 | Q-M1f.396 | **where**: sections of `01-static-ir/01-knowledge-base.md` and `02-rewriting-rules.md`, a sentence each on the pages of `02-kb-evolution/`; the user's example for the cases and the two rewritings, the page's `says` kept |
-| Q-M1f.398 | **the drawing**: a fact is filled where it is held and inside a dashed frame where it is in a context; a figure with no fact under an arrow is not changed |
+| Q-M1f.398 | **the drawing**: a fact is filled where it is held, and inside a dashed frame labelled with the context's relation, `think ctx`, where it is in a context; one frame names two relations where facts of both point at a fact; frames stand side by side; a figure with no fact under an arrow is not changed |
 | Q-M1f.397 | **the reserved words**: mathematics on the reasoning's pages; on the user's and the engine's, the surface between the kernel and a theory in Ein |
 | Q-M1f.393 (a) | **what a rule can spell**: it unpacks by a fact's count, the relation a parameter where wanted; a variable is no literal and no premise |
 | *all rules are global* ([`contexts.md` § 3 to § 5](contexts.md#3-rules-are-global-what-a-premise-reads-and-what-a-wrapped-premise-reads)) | a premise reads the global context; a context's rule is the same patterns wrapped, by hand, by a macro, or with the context a parameter; `(false)` in a context is a held fact of the context's relation |
