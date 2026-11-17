@@ -1,15 +1,13 @@
-//! The exposed set — M1e2
-//! [S1e2.4.1](../../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md),
-//! which is M1f S1f.10.8's T1 taken in M1e2: every rule whose `(false)` or
+//! The exposed set: every rule whose `(false)` or
 //! `(not …)` conclusion rests on an `(absent P)` over a relation the search can
 //! still extend, per corpus entry and register witness.
 //!
 //! *Still extendable* has two readings in the engine, and this prints both,
-//! because the ruling has to say which one it means:
+//! because a refusal has to say which one it means:
 //!
 //! | column | extendable means | where it is computed |
 //! |---|---|---|
-//! | `s1e23` | the relation is **hypothesis-eligible** ([`hypgen::eligible_relations`]): the generator's scope, read directly | [`naf_deps::compute_naf_map`], M1e S1e.2.3's census, pinned by `ein-infer/tests/refutation_under_absent.rs` |
+//! | `s1e23` | the relation is **hypothesis-eligible** ([`hypgen::eligible_relations`]): the generator's scope, read directly | [`naf_deps::compute_naf_map`], the refutation warning's reading, pinned by `ein-infer/tests/refutation_under_absent.rs` |
 //! | `direct` | the relation is in **`D`**: the root candidate list's relations, config-free, closed under *a saturation plan that reads `D` writes `D`* | [`monotone::classify`], the static check the region modes route on |
 //! | `via` | the plan has no such `absent` itself, but reads **positively** a relation a non-monotone plan derives, so a commitment can take the premise away | this file: `N`, closed the same way `D` is |
 //!
@@ -23,13 +21,13 @@
 //! cargo run --release -p ein-infer --example refutation_census -- --option-e [--json] [FILE…]
 //! ```
 //!
-//! **`--option-e`** (M1e2 S1e2.1b.7) reads F21's D1, option (E): *forbid*
-//! extended to every `absent` at odd depth in a saturation rule, whatever the
-//! rule concludes, under two of S1e2.2.5's F1 readings of *extendable*: the
-//! relation in `D` (b), and the relation hypothesis-eligible (a). Per program
-//! it lists the rules (E) would refuse under each, what each concludes, and
-//! which of them *forbid* already refuses (`direct`) or would through F2's
-//! `via`. F1's fact grain, (c), is `site_census`'s per-site verdict.
+//! **`--option-e`** reads a wider *forbid*: one extended to every `absent`
+//! at odd depth in a saturation rule, whatever the rule concludes, under two
+//! readings of *extendable*: the relation in `D` (b), and the relation
+//! hypothesis-eligible (a). Per program it lists the rules it would refuse
+//! under each, what each concludes, and which of them *forbid* already
+//! refuses (`direct`) or would through `via`. The fact grain, (c), is
+//! `site_census`'s per-site verdict.
 //!
 //! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses.
 //! It writes nothing and changes no answer: it loads, saturates root, takes
@@ -94,7 +92,7 @@ fn main() {
             continue;
         };
 
-        // Root's fixpoint, S1e.2.3's column off it, and the static check —
+        // Root's fixpoint, the `s1e23` column off it, and the static check —
         // `region::prepare`.
         let Some((root, s1e23)) = census::root_of(&mut kb, &mut terms, &ast, |sat, s| {
             let eligible = eligible_relations(s).ok()?;
@@ -288,8 +286,8 @@ fn main() {
     }
 }
 
-/// F21's D1, option (E), per program: every saturation rule that reads a
-/// relation at odd `absent` depth, under F1 (b) (`D`) and F1 (a) (eligible),
+/// The wider *forbid*, per program: every saturation rule that reads a
+/// relation at odd `absent` depth, under (b) (`D`) and (a) (eligible),
 /// with what it concludes and whether *forbid* already refuses it.
 fn e_census(files: &[PathBuf], as_json: bool) {
     let mut swept = 0usize;

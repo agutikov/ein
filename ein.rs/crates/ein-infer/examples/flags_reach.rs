@@ -1,13 +1,11 @@
-//! Every mode of `ein solve` on a monotone program, beside describe — M1e2
-//! [S1e2.1c.4](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md)'s
-//! measurement, for `solve_interface.md` § 3.4 (T1e2.1c.4.3) and for what of
-//! the walk's library the routes reuse (T1e2.1c.4.4).
+//! Every mode of `ein solve` on a monotone program, beside describe: what
+//! each question costs
+//! ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
 //!
 //! For each file and each mode it runs [`explore::run`], the routes
 //! `ein solve` takes, and prints one JSON line: the route, the licences,
-//! saturations, facts, the answer and the wall. Its `--walk` arm, which ran
-//! the walk's library for comparison, went with the walk at M1e2 S1e2.1c.5
-//! (2026-11-03). Nothing here is read by a route.
+//! saturations, facts, the answer and the wall. Nothing here is read by a
+//! route.
 //!
 //! ```sh
 //! cargo build --release -p ein-infer --example flags_reach

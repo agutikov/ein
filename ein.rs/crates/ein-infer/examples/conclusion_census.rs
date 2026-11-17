@@ -1,14 +1,13 @@
-//! The conclusion census — M1f
-//! [S1f.6.37](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md):
-//! every rule's, hrule's and obligation's `:assert` in the corpus, **after
+//! The conclusion census: every rule's, hrule's and obligation's `:assert`
+//! in the corpus, **after
 //! macro expansion**, by shape.
 //!
 //! A conclusion is `()`, an obligation `(open …)`, one conjunct, or an
 //! `(and …)` of conjuncts; a conjunct is a fact (a pattern), a stored
 //! negation `(not …)`, `(false)` or a check (`eq`, `neq`, `(not (eq …))`).
 //! The census counts each shape and lists every conclusion that writes an
-//! `and` inside an `and` (E-63), which the loader reads flattened at any depth
-//! since S1f.6.37 ([`ein_ir::Ast::conjuncts`]).
+//! `and` inside an `and`, which the loader reads flattened at any depth
+//! ([`ein_ir::Ast::conjuncts`]).
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example conclusion_census            # corpus_files() and the register's witnesses

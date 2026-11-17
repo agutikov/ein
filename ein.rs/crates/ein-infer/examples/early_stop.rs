@@ -1,5 +1,5 @@
 //! What a dead node stopped at its first contradiction would save, under
-//! FIFO and under a fail-first agenda — M1f S1f.10.19's T2, beside
+//! FIFO and under a fail-first agenda, beside
 //! [`price_list`](price_list.rs). It measures; no route reads any of it.
 //! Since the routes stop a dead node on a monotone program at its first
 //! contradiction (`ein_infer::region`'s § What a node is), each is asked here
@@ -47,7 +47,7 @@
 //! root): `early_stop.jsonl`, a line a program (the distinct nodes, the
 //! checks, what a stopped node reports, and per question its cell), and
 //! `verdicts.json` and `early_stop.md`, the corpus's tables and the verdicts
-//! by S1f.10.19's rule for *go*. Progress is a line a program on stderr.
+//! by its rule for *go*. Progress is a line a program on stderr.
 //! Every count is the same on any machine and at any `--jobs`.
 
 use std::collections::BTreeMap;
@@ -74,7 +74,7 @@ use serde_json::{Value, json};
 #[path = "../../ein-render/tests/corpus_ops/searches.rs"]
 mod searching;
 
-/// The orders: FIFO, as ruled, and the two fail-first agendas.
+/// The orders: plain FIFO, and the two fail-first agendas.
 const ORDERS: [(&str, Option<FailFirst>); 3] = [
     ("fifo", None),
     ("pairs", Some(FailFirst::Pairs)),

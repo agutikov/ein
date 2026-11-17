@@ -1,17 +1,14 @@
-//! Every corpus `:expect`, read against R — M1e2
-//! [S1e2.1a.4](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md)'s
-//! grammar diff, which has to name the migration before anything moves.
+//! Every corpus `:expect`, read against R.
 //!
-//! An `:expect` today is a claim about the states the walk recorded. Under
-//! Q-M1e2.7 the answer is R, so each claim is read four ways against the
+//! The answer is R (Q-M1e2.7), so each claim is read four ways against the
 //! oracle's cube, every state of R in full (root's facts and the node's):
 //!
 //! | reading | the claim is about |
 //! |---|---|
-//! | `all` | every state of R, today's rules: as many listed models as states, matched one to one, each model closing the relations it names |
+//! | `all` | every state of R: as many listed models as states, matched one to one, each model closing the relations it names |
 //! | `maximal` | the states of R's maximal line, the same rules |
 //! | `minimal` | the states of R's minimal line, the same rules |
-//! | `projection` | (c)'s reading: every state of R cut to the goal's relations, deduplicated, against the listed models cut the same way |
+//! | `projection` | every state of R cut to the goal's relations, deduplicated, against the listed models cut the same way: a query's claim |
 //!
 //! `(false)` holds under every reading exactly when R is empty. One JSON line
 //! per file.

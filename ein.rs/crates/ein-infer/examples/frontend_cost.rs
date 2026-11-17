@@ -17,13 +17,13 @@
 //! | `parse` | the puzzle's own forms |
 //! | `resolve` | `(import …)` — **including parsing every module it pulls** |
 //! | `Resolver::new` | `$EIN_STDLIB` → checkout walk → embedded (twice per load) |
-//! | `macro guard` | `stdlib_macro_names()`, the S1.8a.f20 check |
+//! | `macro guard` | `stdlib_macro_names()`, read for the pattern-macro guard |
 //! | `rebuild_indexes` | the six groupings, from the fact list |
 //! | `prov cycles` | `detect_provenance_cycles` |
 //! | *ingest* | the residual: relations, rules, macro expansion, facts |
 //!
 //! — and reports each one's allocations next to its time, because the
-//! stage's question is whether the load path's cost is *work* or *traffic*.
+//! question is whether the load path's cost is *work* or *traffic*.
 //!
 //! Counts, not just times: with `--features counters` the `parse_call` /
 //! `parse_bytes` pair prices the diamond. `zebra2` imports `std.algebra` and
@@ -148,8 +148,7 @@ fn cell(root: &Path, rel: &str, rounds: u32) {
     let resolve_allocs = phases[2].allocs.saturating_sub(phases[1].allocs);
 
     // Macro expansion, on the forms a resolve produces — `collect_macros`
-    // plus the rule-clause rewrite the loader runs inside `ingest_rules`
-    // (T1a.6.5.4).
+    // plus the rule-clause rewrite the loader runs inside `ingest_rules`.
     phases.push(measure("macro expand", rounds, || {
         let mut ast = Ast::new();
         let forms = parse(&mut ast, &text, path.to_str()).expect("parses");

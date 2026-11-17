@@ -1,7 +1,6 @@
-//! The taint census — M1e2
-//! [S1e2.1b.4](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md):
-//! every dead node of every flagged cube the oracle reaches, with the `absent`
-//! premises its death rests on, for F21's D6 and S1e2.2.5's F1–F3.
+//! The taint census: every dead node of every flagged cube the oracle
+//! reaches, with the `absent` premises its death rests on, under each
+//! reading of *extendable* a refusal could take.
 //!
 //! A node's **taint** is `shared/taint.rs`'s: every contradiction of its
 //! fixpoint, both sides of a pair, followed through every fact's primary
@@ -12,7 +11,7 @@
 //! activator** or not. Per program it prints:
 //!
 //! - each dead node: its premises, tainted or not under each reading (`D`;
-//!   *eligible*, S1e.2.3's; the oracle's own `absent_premises`; the walk
+//!   *eligible*, the refutation warning's; the oracle's own `absent_premises`; the walk
 //!   without activators, which is option (b) read off provenance alone), and
 //!   whether it has an alive superset, is a hole, and is dead from scratch;
 //! - an **untainted death with an alive superset** under each reading: a
@@ -22,7 +21,7 @@
 //! - the refutations a **node compiles**: plans of a rule with parameters whose
 //!   activator a commitment derives, which conclude `(false)` or `(not …)` —
 //!   and of those, the ones that read an `absent` over `D`, which is what a
-//!   *forbid* check at each node's compile would refuse (S1e2.2.5's F3), and
+//!   *forbid* check at each node's compile would refuse, and
 //!   the ones whose activator rests on one.
 //!
 //! Past the limit it reads the static half: the activator sites, and whether a
@@ -94,7 +93,8 @@ impl Source {
     }
 }
 
-/// One node from scratch, to its two bits: `utils/region.py`'s node.
+/// One node from scratch, to its two bits: the program's text with the
+/// commitment written in.
 fn scratch_status(src: &Source, commitment: &str) -> Option<u8> {
     let (mut kb, mut terms, ast) = src.load(commitment)?;
     let memo = SharedMemo::default();

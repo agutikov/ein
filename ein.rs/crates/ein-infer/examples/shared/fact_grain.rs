@@ -1,10 +1,8 @@
-//! The static check at **fact grain** — M1e2
-//! [S1e2.1b.1](../../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md)
-//! T1e2.1b.1.2's prototype. It is computed **beside** [`monotone::classify`]
-//! and read by no route: `site_census` prints it and
-//! `ein-infer/tests/region.rs` holds it to the cube. Which grain the shipped
-//! check reads at is the user's ruling (T1e2.1b.1.4), and until then it reads
-//! at relation grain.
+//! The static check at **fact grain** — a prototype. It is computed
+//! **beside** [`monotone::classify`] and read by no route: `site_census`
+//! prints it and `ein-infer/tests/region.rs` holds it to the cube. The
+//! shipped check reads at relation grain
+//! ([monotonicity.md § 3.3](../../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#33-the-grain)).
 //!
 //! ### What changes, and what does not
 //!
@@ -53,7 +51,7 @@
 //! the argument the relation-grain theorem makes: nothing a commitment adds
 //! matches a read at non-monotone polarity, so no fact root derived can go
 //! missing. That is an argument, not a test; comparing the two nodes is
-//! S1e2.1b.2's. A **site's** verdict on a program that stays flagged is read
+//! `node_census`'s. A **site's** verdict on a program that stays flagged is read
 //! against the fork only: `features/07`'s `derive-q` reads `p` under an
 //! `absent`, and `p` is static here because a fork never loses the `(p one)`
 //! root derived.
@@ -68,18 +66,16 @@
 //!
 //! ### When the closure runs, and when it gives up
 //!
-//! **`Δ̂` is read by the sites and by nothing else** (M1f
-//! [S1f.6.28](../../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)
-//! T1f.6.28.1, E-33). A program the relation-grain check does not flag has no
+//! **`Δ̂` is read by the sites and by nothing else.** A program the
+//! relation-grain check does not flag has no
 //! site, so its fact-grain verdict is *monotone* and *complete* whatever
 //! `Δ̂` holds, and the closure is not computed ([`FactGrain::shapes`] is
 //! `None`). Until then it was computed on every program and thrown away on
 //! these, and on a program where a supposed fact leads to a request to
 //! `std.math.decimal-arith` with an operand the commitment does not bind, `(div _ (n z
 //! 3))`, it follows every shape of every circuit of the calculator: the
-//! nesting is widened past [`MAX_NESTING`], but the breadth is not, and on
-//! E-33's witness the antichain held 137 731 shapes after 1 312 s, still
-//! growing, when it was stopped.
+//! nesting is widened past [`MAX_NESTING`], but the breadth is not, and the
+//! antichain grows without end.
 //!
 //! On a program that is flagged the closure runs, and it **gives up** once
 //! [`MAX_SHAPES`] shapes have been added to `Δ̂`: `Δ̂` is then taken to be
@@ -102,8 +98,8 @@ pub const MAX_NESTING: usize = 4;
 
 /// The closure gives up once this many shapes have been added to `Δ̂`, and
 /// takes `Δ̂` to be every fact (the module docs, *When the closure runs, and
-/// when it gives up*). A hundred times the largest closure a flagged corpus
-/// program computes, 100 shapes (S1f.6.28, 2026-11-13).
+/// when it gives up*). Far above the largest closure a flagged corpus
+/// program computes.
 pub const MAX_SHAPES: usize = 10_000;
 
 /// One argument of a [`Shape`].
@@ -111,7 +107,7 @@ pub const MAX_SHAPES: usize = 10_000;
 pub enum Arg {
     /// Any value.
     Any,
-    /// A name (or an integer, until M1f S1f.5.4 retired the int kind).
+    /// A name.
     Val(Value),
     /// A nested fact, `(not (likes A B))`'s one argument.
     Nested(Shape),

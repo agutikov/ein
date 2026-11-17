@@ -1,12 +1,12 @@
-//! **A state that closes no coupling cannot die?** M1f S1f.10.18's T2: the
-//! claim measured on the nodes the routes visit, with no route changed.
+//! **A state that closes no coupling cannot die?** The claim measured on
+//! the nodes the routes visit, with no route changed.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example no_edge -- [--out DIR] [--jobs J] [FILE…]
 //! cargo run --release -p ein-infer --example no_edge -- --report [--out DIR]
 //! ```
 //!
-//! **The claim**, as the stage states it: on a monotone program, let `S` be
+//! **The claim**: on a monotone program, let `S` be
 //! an alive state and `b` a candidate. If no edge of the coupling read off
 //! the whole node ([`ein_infer::structure::NodeCoupling`]) that holds a
 //! question of `b` has each of its questions met by `S ∪ {b}`, then
@@ -49,7 +49,7 @@
 //! Under `--out` (default `build/no_edge` under the repo root) it writes
 //! `no_edge.jsonl`, a line a program, and `counterexamples.jsonl`, a line a
 //! dead node that closes no edge. `--report` reads them back and prints the
-//! tables and **the rule for *go***, S1f.10.13's as its defaults read it:
+//! tables and **the rule for *go***:
 //! per question, over the programs that search, the work with the licence
 //! (each alive node closing none saved, its saturation and its facts, and
 //! the whole node's cost added where the run did not read that node itself)
