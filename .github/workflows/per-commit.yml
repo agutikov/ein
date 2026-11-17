@@ -95,6 +95,12 @@ jobs:
       # The tests' `TMPDIR` has to exist before rustc and the tests write to
       # it; `run_tests.sh` makes its own just before its test step.
       - run: mkdir -p "${GATE_TMP}"
+      # The pages' own rules: every fenced `dot` block of a page is one
+      # Graphviz lays out, and the pages and folders of `docs/ein/` are
+      # numbered in reading order. In this job because it needs Graphviz.
+      # gate-step
+      - run: python3 utils/check_doc_blocks.py
+        working-directory: ${{ github.workspace }}
       # gate-step
       - run: cargo fmt --all --check
       # gate-step

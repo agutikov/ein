@@ -2,7 +2,7 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # nine static checks, the tests, their scratch check, the generated files' and the region routes' checks, the review-bundle smoke, the bench smoke
+#     ./run_tests.sh                 # ten static checks, the tests, their scratch check, the generated files' and the region routes' checks, the review-bundle smoke, the bench smoke
 #     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1: every corpus program) and 8 id seeds
 #     ./run_tests.sh --nightly       # instead of the gate: every step of .github/workflows/nightly.yml, in order
 #     ./run_tests.sh --dev-host      # instead of the gate: the nightly's steps at full budget, and the steps CI no longer runs
@@ -79,6 +79,9 @@
 #   check_tool_mirrors.py         the editor grammar, the natural-language
 #                                 census and the review driver against the
 #                                 lists of the engine they copy
+#   check_doc_blocks.py           every fenced `dot` block of a page through
+#                                 Graphviz, and the numbering of the pages
+#                                 and folders of `docs/ein/`
 #   cargo fmt --all --check       three files were unformatted the first time
 #                                 it ran, all three from M1c's `:expect` work
 #   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four
@@ -91,7 +94,7 @@
 #                                 in the workflow too
 #
 # They cost about a second each warm, they run before the tests because their
-# failures are the cheapest ones to read, and `--tests-only` turns all nine off
+# failures are the cheapest ones to read, and `--tests-only` turns all ten off
 # — and the bench smoke below with them, which is what
 # `utils/check_gate_steps.py` reads out of this script rather than out of this
 # sentence. Nothing turns them off
@@ -556,6 +559,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "dev host: utils/doc_audit.py --links --check build/review"
     python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check build/review
 
+    dev_host_step "dev host: utils/check_doc_blocks.py --plantuml"
+    python3 "${SCRIPT_DIR}/utils/check_doc_blocks.py" --plantuml
+
     # ── deep-corpus-shards, once per shard of its matrix, one after another ──
     dev_host_step "deep-corpus-shards 1/4: the test binaries, built"
     TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
@@ -785,6 +791,14 @@ if [[ "${CHECKS}" == 1 ]]; then
     # the natural-language census, the review driver) against the engine.
     step "utils/check_tool_mirrors.py"
     python3 "${SCRIPT_DIR}/utils/check_tool_mirrors.py"
+
+    # The pages' own rules: every fenced `dot` block of `docs/ein/` and
+    # `docs/decisions/` is one Graphviz lays out, and every page and folder
+    # under the four perspectives is numbered in its folder's reading order,
+    # 01 to n with no gap. `--all` adds the rules on a page's languages, and
+    # `--plantuml`, the dev host's, the `plantuml` blocks.
+    step "utils/check_doc_blocks.py"
+    python3 "${SCRIPT_DIR}/utils/check_doc_blocks.py"
 
     step "cargo fmt --all --check"
     if ! cargo fmt --manifest-path "${MANIFEST}" --all --check; then

@@ -148,6 +148,7 @@ TESTS_ONLY_SKIPS = [
     "utils/check_release_voice.py",
     "utils/check_gate_steps.py",
     "utils/check_tool_mirrors.py",
+    "utils/check_doc_blocks.py",
     "cargo fmt --all --check",
     "cargo clippy --workspace --all-targets -D warnings",
     "cargo doc --no-deps, -D warnings",
@@ -254,7 +255,8 @@ def check_tests_only() -> list[str]:
 NOT_NIGHTLY_STEPS = NOT_GATE_STEPS
 
 # The dev host's steps that the nightly does not run, with why: each is over
-# 5 min on the runner or measures rather than checks.
+# 5 min on the runner, measures rather than checks, or needs a tool the
+# runner's image does not have.
 DEV_HOST_ONLY = [
     ('EIN_ID_SEEDS="8" EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test -p ein-render '
      '--profile gate --test id_order_invariance',
@@ -267,6 +269,9 @@ DEV_HOST_ONLY = [
      "four cases"),
     ("python3 utils/doc_audit.py --links --check build/review",
      "left the nightly with the bundle it reads"),
+    ("python3 utils/check_doc_blocks.py --plantuml",
+     "needs a PlantUML that knows `@startebnf`, which the runner's package predates; the "
+     "per-commit step holds the `dot` blocks and the numbering"),
 ]
 
 # The fuzzer's budget on the dev host; the nightly runs it at a budget that fits.
