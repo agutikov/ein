@@ -349,7 +349,7 @@ the program's facts and of its rules, match and conclusion alike
 invariant, *no rule asserts a name the program lacks*, is
 
 $$
-\forall C \subseteq H.\quad \operatorname{names}\bigl(\operatorname{st}(C)\bigr) \;\subseteq\; \operatorname{names}(P)
+\forall C \subseteq H.\quad \operatorname{names}\bigl(\operatorname{st}(C)\bigr) \;\subseteq\; \operatorname{names}(\operatorname{root}) \cup \operatorname{names}(P)
 $$
 
 and it has three clauses:
@@ -375,7 +375,7 @@ Three readings of the invariant, each stronger than the one before:
 | | claim |
 |---|---|
 | **static** | $\operatorname{names}(P) \setminus X \subseteq \operatorname{obj}(P)$: every name of the program, less the excluded kinds $X$ below, is an object candidates are proposed about when nothing narrower is stated |
-| **at the fixpoint** | $\operatorname{names}(\operatorname{sat}(K_0)) \subseteq \operatorname{names}(P)$: nothing a saturation derives names what the program, its facts and its rules' constants, did not |
+| **at the fixpoint** | $\operatorname{names}(\operatorname{sat}(K_0)) \subseteq \operatorname{names}(K_0) \cup \operatorname{names}(P)$: nothing a saturation derives names what the program as read, its facts and its rules' constants, did not |
 | **in the search** | $\forall C \subseteq H.\; \operatorname{names}(\operatorname{st}(C)) \subseteq \operatorname{names}(\operatorname{root}) \cup \operatorname{names}(P)$: nothing a node reaches names what root's fixpoint and the rules' constants did not |
 
 The third is the one $R$'s soundness rests on, and the first is what makes it hold for a rule's constant: a

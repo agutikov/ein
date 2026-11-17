@@ -368,7 +368,8 @@ line, a heavy green one its maximal line, a purple one a hole.
 
 ## 7. The drawings
 
-Seven regions, each the whole cube of its program with the nodes a description of $R$ computed marked on it
+Seven regions, each the cube of its program, or the part of it around $R$ where the cube is large, with the
+nodes a description of $R$ computed marked on it
 ([rendering](../../user/04-reference/12-rendering.md) is the legend). Fill is the node's status, shape is what
 the computation did there, and border is the lines and the defects; a purple border is a hole, and an edge
 labelled with a fact is the repair that takes the hole back into $R$. On a monotone program the computation
