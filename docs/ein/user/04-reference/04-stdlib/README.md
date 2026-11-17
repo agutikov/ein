@@ -16,7 +16,9 @@ is a relation a program declares, never a form of the language
 Each family of modules has a page that says how a program **uses** it: what it imports and lists, every relation,
 macro and entry name it writes, and what each produces, shown by small programs with what `ein` prints for them.
 How a family **works**, its rules one by one, each as Ein and as the engine's drawing of it, is kept apart: at the
-end of the page where the family's rules are few, on the page after it otherwise.
+end of the page where the family's rules are few, on the page after it otherwise
+([Q-M1f.375](../../../../decisions/docs/Q-M1f.375-the-standard-librarys-reference-shows-usage.md)). A block of
+output is what `ein` printed for the program above it; a line `…` in one stands for rows left out.
 
 | page | modules | what is on it |
 |---|---|---|
@@ -231,10 +233,11 @@ modules have none, since what they close is the program's to say.
 
 On the pages of rules, each rule is its Ein, as the module writes it, and its drawing, as
 `ein render rule --name NAME FILE` writes it for the module's file: the `match` cluster above, the `assert` cluster
-below, a variable a diamond, a fact of two arguments an arrow, a longer one an octagon with a numbered edge to each
+below, a variable a diamond, a fact of two arguments an arrow, any other an octagon with a numbered edge to each
 argument, an `absent` a dashed cluster ([Rendering](../12-rendering.md#rules--ein-render-rules-and-ein-render-rule)
 is the legend). A closing rule, which names every relation and rule of its module, is shown as Ein alone: its
-drawing is a few hundred nodes.
+drawing is a few hundred nodes. The text and the drawing of a rule on these pages are generated from the module's
+file and the engine, and are not edited by hand.
 
 A rule with parameters, `(rule transitive (?rel) …)`, is **activated** by a fact headed by its name,
 `(transitive linked)`, once for each such fact. A rule with none, `(rule gcd-step () …)`, is active wherever its
