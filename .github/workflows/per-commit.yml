@@ -48,9 +48,10 @@ jobs:
       # `.ein` comment and in `corpus/corpus.toml`.
       # gate-step
       - run: python3 utils/doc_audit.py --links --check --tracked
-      # The release voice, held to its banked per-file baseline, which may
-      # only fall: no milestone, phase, stage or task id, no path into
-      # `plans/` and no date where the released tree keeps its prose.
+      # The release voice, with no baseline: no milestone, phase, stage or
+      # task id, no plan's finding, followup or review id, no case of the
+      # wrong-answer register, no path into the process and no date where
+      # the project keeps its prose.
       # gate-step
       - run: python3 utils/check_release_voice.py
       # The gate's, the nightly's and the dev host's step lists against the

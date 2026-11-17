@@ -1,45 +1,50 @@
 #!/usr/bin/env python3
-"""Code, comments and docs speak as a released system, not as a development log.
+"""The project speaks as a released system, and names nothing of the process.
 
-A released system's documentation states what is true of it now. A line that
-names the work which produced it — a milestone, phase, stage or task id, a path
-into `plans/`, the date a ruling was made or a measurement taken — reads only
-while the plan it points at exists, and plans are deleted when finished. This
-check finds those lines where the released tree keeps its prose:
+The project is `README.md`, `ein.rs/` with its tests, `stdlib/`, `examples/`,
+`tests/`, `corpus/` and `docs/` but `docs/lib/`. The process is the plans, the
+scripts, the gate and CI and the agents' guide; it reads the project, which it
+sees in many states, and nothing in the project reads, links or names it. A
+released system's documentation states what is true of it now. A line that
+names the work which produced it reads only while the process keeps what it
+points at, and a plan is deleted when it is finished. This check finds those
+lines wherever the project keeps prose:
 
-- every `.md` under `docs/ein/` and `docs/decisions/`;
-- every doc comment (`///`, `//!`) of a shipped crate: `ein-core`, `ein-ir`,
-  `ein-infer`, `ein-einb`, `ein-render`, `ein-cli`, their tests, examples and
-  benches included;
-- every comment of a tracked `.ein` file outside `plans/` and `docs/history/`
-  (the text after a `;` outside a string, read by `doc_audit.py`'s reader);
-- `corpus/corpus.toml`, whole;
-- `README.md`; not `AGENTS.md` (and so `CLAUDE.md`), which guides the
-  development and is part of it, as `plans/` and `utils/` are;
-- this script, which holds itself to the rule it states.
+- every `.md` file of the project;
+- every comment of a crate's `.rs` file, a whole line or the end of one, doc
+  comments and plain ones, block comments too, of every crate under
+  `ein.rs/crates/`, the six that ship and the two dev-only ones, their tests,
+  examples and benches included; a whole line's `//` comment of the grammar's
+  sources, `ein.l` and `ein.y`; and a `#` comment of every `.toml` under
+  `ein.rs/` (the workspace's, each crate's, `deny.toml`, the toolchain's);
+- every comment of a `.ein` file of the project (the text after a `;`
+  outside a string, read by `doc_audit.py`'s reader);
+- `corpus/corpus.toml` and `corpus/regressions.toml`, whole.
 
 A line fails on any of
 
-- an id of a milestone, phase, stage or task, the letter forms too:
-  `M2`, `M1e2`, `P2.3`, `S2.6.4`, `S1e2.1c.5`, `T2.6.4.1`;  # release-voice-ok: what fails
-- a path into `plans/`, written bare or relative (`../../plans/m2_nl_to_ir/`);  # release-voice-ok: what fails
-  the folder named alone, `plans/`, passes;
+- an id of a milestone, phase, stage or task, the letter forms too, as
+  `M2`, `M1e2`, `P2.3`, `S2.6.4`, `S1e2.1c.5`, `T2.6.4.1` are;
+- an id a plan files its work under: a finding (`E-33`, `K-82`, `L-7`), a
+  followup (`F21`) or a review's (`CD-H1`, `TE-L3`);
+- a case of the wrong-answer register, `W62`, or one of its rows,
+  `W8/features-07`: the project names a regression by its name in
+  `corpus/regressions.toml`, and an open wrong answer is the process's;
+- a path into `plans/` or `utils/`, written bare or relative
+  (`../../plans/m2_nl_to_ir/`), or either folder named alone, and the gate's,
+  CI's and the agents' files: `run_tests.sh`, `.github/`, `AGENTS.md`,
+  `CLAUDE.md`;
 - an ISO date, `YYYY-MM-DD`: in this scope a date dates a development event.
 
-**A decision id passes**: `Q-M1f.304` names a decision, which a page or a  # release-voice-ok: the form that passes
-comment may cite. A line carrying `release-voice-ok: <reason>` passes too,
-the reason required, as `determinism-ok:` is in `check_hashmap_iteration.py`.
+**A decision id passes**: `Q-M1f.304` names a decision, which a page or a
+comment may cite. A line carrying `release-voice-ok: <reason>` passes too, the
+reason required, as `determinism-ok:` is in `check_hashmap_iteration.py`: a
+test's list of the strings no output may contain, say. There is no baseline:
+the check fails on any line it finds.
 
-**It is a ratchet.** The tree does not pass it yet, so it reads a banked
-baseline, `utils/release_voice_baseline.txt`, of each file's count of failing
-lines, and fails where a count rises or a file it does not list has one. A
-count that falls is reported, and the commit that lowers it re-banks the
-baseline (`--bless`); when every count is 0 the baseline is empty and goes.
-
-    python3 utils/check_release_voice.py               # exit 1 on a rise or a new file
+    python3 utils/check_release_voice.py               # exit 1 on any finding
     python3 utils/check_release_voice.py --list        # every failing line, file:line
     python3 utils/check_release_voice.py --list README.md ein.rs/crates/ein-ir
-    python3 utils/check_release_voice.py --bless       # re-bank the baseline
 """
 from __future__ import annotations
 
@@ -51,13 +56,17 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "utils"))
-from doc_audit import ein_comment_text  # noqa: E402
+from doc_audit import RS_CHAR, RS_RAW, ein_comment_text  # noqa: E402
 
-BASELINE = REPO / "utils" / "release_voice_baseline.txt"
-SELF = Path(__file__).resolve()
-
-#: The crates that ship; `ein-corpus` and `ein-narration` are dev-only.
-SHIPPED = ("ein-core", "ein-ir", "ein-infer", "ein-einb", "ein-render", "ein-cli")
+#: What is not the project: the process (the plans, the scripts, the gate and
+#: CI, the agents' guide), what is external to both, and third-party source.
+#: `docs/history/` is the record the sweep deletes.
+NOT_PROJECT = (
+    "plans/", "utils/", ".github/", "run_tests.sh", "AGENTS.md", "CLAUDE.md",
+    "c/", "nl2smt/", "docs/lib/", "docs/history/", "ein.rs/vendor/",
+)
+#: The project's data read whole, beside its `.md` files.
+WHOLE = ("corpus/corpus.toml", "corpus/regressions.toml")
 
 
 #: A milestone number: `1`, `10`, `1f`, `1e2`. An id is not preceded by a word
@@ -69,13 +78,17 @@ PATTERNS: tuple[tuple[str, re.Pattern], ...] = (
     ("phase", re.compile(r"(?<![\w-])P" + _N + _PART + r"(?![\w])")),
     ("stage", re.compile(r"(?<![\w-])S" + _N + _PART + r"(?:" + _PART + r")*(?![\w])")),
     ("task", re.compile(r"(?<![\w-])T" + _N + _PART + r"(?:" + _PART + r")+(?![\w])")),
-    ("plans path", re.compile(r"(?<![\w.-])(?:\.\./)*plans/(?=[\w.])")),
+    ("finding", re.compile(r"(?<![\w-])[EKL]-\d+(?![\w])")),
+    ("followup", re.compile(r"(?<![\w-])F\d{1,2}(?![\w])")),
+    ("review", re.compile(r"(?<![\w-])[A-Z]{2}-[HML]\d+(?![\w])")),
+    ("case", re.compile(r"(?<![\w-])W-?\d{1,3}(?:/[\w-]+(?:\.[\w-]+)*)?(?![\w])")),
+    ("plans path", re.compile(r"(?<![\w./-])(?:\.\./)*plans/")),
+    ("process path", re.compile(
+        r"(?<![\w./-])(?:\.\./)*(?:utils/|run_tests\.sh(?![\w])|\.github/"
+        r"|(?:AGENTS|CLAUDE)\.md(?![\w]))")),
     ("date", re.compile(r"(?<!\d)20\d\d-[01]\d-[0-3]\d(?!\d)")),
 )
 ESCAPE = re.compile(r"release-voice-ok:\s*\S")
-
-#: A full-line doc comment of a Rust source file.
-DOC_COMMENT = re.compile(r"^\s*//[/!]")
 
 
 def findings_of(line: str) -> list[tuple[str, str]]:
@@ -96,13 +109,53 @@ def tracked() -> list[str]:
 
 
 def in_scope(rel: str) -> bool:
-    if rel.startswith(("docs/ein/", "docs/decisions/")) and rel.endswith(".md"):
+    if rel.startswith(NOT_PROJECT):
+        return False
+    if rel.endswith((".md", ".ein")) or rel in WHOLE:
         return True
-    if rel.endswith(".rs") and any(rel.startswith(f"ein.rs/crates/{c}/") for c in SHIPPED):
+    if rel.startswith("ein.rs/crates/") and rel.endswith((".rs", ".l", ".y")):
         return True
-    if rel.endswith(".ein") and not rel.startswith(("plans/", "docs/history/")):
-        return True
-    return rel in ("corpus/corpus.toml", "README.md")
+    return rel.startswith("ein.rs/") and rel.endswith(".toml")
+
+
+def rust_comments(text: str) -> str:
+    """Every comment of a Rust source, all else blanked to spaces, its
+    newlines kept, so a line number is the file's: a comment at a line's start
+    or after code, a block comment nested; a string or a char literal is
+    code."""
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        c = text[i]
+        keep = False
+        if text.startswith("//", i):
+            j, keep = text.find("\n", i), True
+            j = n if j < 0 else j
+        elif text.startswith("/*", i):
+            depth, j, keep = 1, i + 2, True
+            while j < n and depth:
+                if text.startswith("/*", j):
+                    depth, j = depth + 1, j + 2
+                elif text.startswith("*/", j):
+                    depth, j = depth - 1, j + 2
+                else:
+                    j += 1
+        elif c in "bcr" and (i == 0 or not (text[i - 1].isalnum() or text[i - 1] == "_")) \
+                and (m := RS_RAW.match(text, i)):
+            close = '"' + m.group(1)
+            j = text.find(close, m.end())
+            j = n if j < 0 else j + len(close)
+        elif c == '"':
+            j = i + 1
+            while j < n and text[j] != '"':
+                j += 2 if text[j] == "\\" else 1
+            j = min(j + 1, n)
+        else:
+            m = RS_CHAR.match(text, i) if c == "'" else None
+            j = m.end() if m else i + 1
+        out.append(text[i:j] if keep else re.sub(r"[^\n]", " ", text[i:j]))
+        i = j
+    return "".join(out)
 
 
 def read_lines(path: Path) -> list[str]:
@@ -110,17 +163,19 @@ def read_lines(path: Path) -> list[str]:
     finding's line number is the file's."""
     text = path.read_text(errors="replace")
     if path.suffix == ".rs":
-        return [line if DOC_COMMENT.match(line) else "" for line in text.splitlines()]
+        return rust_comments(text).split("\n")
+    if path.suffix in (".l", ".y"):
+        return [line if line.lstrip().startswith("//") else "" for line in text.splitlines()]
+    if path.suffix == ".toml" and path.relative_to(REPO).as_posix() not in WHOLE:
+        return [line[line.index("#"):] if "#" in line else "" for line in text.splitlines()]
     if path.suffix == ".ein":
         return ein_comment_text(text).splitlines()
     return text.splitlines()
 
 
 def scope() -> list[Path]:
-    files = {(REPO / rel).resolve() for rel in tracked() if in_scope(rel)}
-    files = {p for p in files if p.is_file()}
-    files.add(SELF)
-    return sorted(files)
+    files = {(REPO / rel) for rel in tracked() if in_scope(rel)}
+    return sorted(p for p in files if p.is_file() and not p.is_symlink())
 
 
 def scan(path: Path) -> list[tuple[int, str, str, str]]:
@@ -133,6 +188,7 @@ def scan(path: Path) -> list[tuple[int, str, str, str]]:
 
 
 def counts(files: list[Path]) -> tuple[dict[str, int], dict[str, list]]:
+    """Per file, its count of failing lines, and its findings."""
     per: dict[str, int] = {}
     hits: dict[str, list] = {}
     for path in files:
@@ -144,35 +200,6 @@ def counts(files: list[Path]) -> tuple[dict[str, int], dict[str, list]]:
     return per, hits
 
 
-# ── the baseline ────────────────────────────────────────────────────────────
-
-HEADER = """\
-# The release-voice check's banked baseline: per file, the lines that still
-# carry a milestone, phase, stage or task id, a path into plans/ or a date.
-# Written by `python3 utils/check_release_voice.py --bless`; read by the
-# check, which fails where a file's count rises or a file not listed here
-# has one. A count only falls: the commit that lowers it re-banks this file,
-# and when every count is 0 the file is deleted with the baseline's reader.
-"""
-
-
-def read_baseline() -> dict[str, int] | None:
-    if not BASELINE.exists():
-        return None
-    out = {}
-    for line in BASELINE.read_text().splitlines():
-        if not line.strip() or line.startswith("#"):
-            continue
-        n, path = line.split(None, 1)
-        out[path.strip()] = int(n)
-    return out
-
-
-def write_baseline(per: dict[str, int]) -> None:
-    body = "".join(f"{n:>5}  {path}\n" for path, n in sorted(per.items()))
-    BASELINE.write_text(HEADER + body)
-
-
 # ── main ────────────────────────────────────────────────────────────────────
 
 
@@ -180,7 +207,6 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--list", nargs="*", metavar="PATH",
                     help="print every failing line, of the files under each PATH (default all)")
-    ap.add_argument("--bless", action="store_true", help="re-bank the baseline from the tree")
     args = ap.parse_args()
 
     files = scope()
@@ -196,43 +222,18 @@ def main() -> int:
                 print(f"{rel}:{line}: {kind} `{text}` — {whole.strip()[:120]}")
         return 0
 
-    if args.bless:
-        old = read_baseline()
-        write_baseline(per)
-        print(f"wrote {BASELINE.relative_to(REPO)}: {total} line(s) in {len(per)} file(s)")
-        # A bless that raises a count is a regression banked: say which.
-        for p in sorted(per) if old is not None else []:
-            if per[p] > old.get(p, 0):
-                print(f"  rose: {p} {old.get(p, 0)} → {per[p]}")
-        return 0
-
-    base = read_baseline()
-    if base is None:
-        print(f"no {BASELINE.relative_to(REPO)}: write it with --bless", file=sys.stderr)
-        return 2
-    rose = [(p, base[p], n) for p, n in sorted(per.items()) if p in base and n > base[p]]
-    new = [(p, n) for p, n in sorted(per.items()) if p not in base]
-    fell = [(p, b, per.get(p, 0)) for p, b in sorted(base.items()) if per.get(p, 0) < b]
-
-    if rose or new:
-        print("release voice: lines that speak of the development, above the baseline:",
-              file=sys.stderr)
-        for p, b, n in rose:
-            print(f"  {p}: {n} line(s), the baseline {b}", file=sys.stderr)
-        for p, n in new:
-            print(f"  {p}: {n} line(s), and not in the baseline", file=sys.stderr)
-        print(f"\n  python3 utils/check_release_voice.py --list {' '.join(p for p, *_ in rose + new)}",
-              file=sys.stderr)
-        print("\nState the behaviour, or cite a decision id, instead of the plan, the id or\n"
-              "the date; a line that has to keep one carries `release-voice-ok: <why>`.",
-              file=sys.stderr)
+    if per:
+        print("release voice: lines of the project that speak of the development or name the "
+              "process:", file=sys.stderr)
+        for rel, n in sorted(per.items()):
+            print(f"  {rel}: {n} line(s)", file=sys.stderr)
+        print(f"\n  {total} line(s) in {len(per)} file(s); "
+              "python3 utils/check_release_voice.py --list PATH prints them", file=sys.stderr)
+        print("\nState the behaviour, name the regression or cite a decision id, instead of\n"
+              "the plan, the id, the path or the date; a line that has to keep one carries\n"
+              "`release-voice-ok: <why>`.", file=sys.stderr)
         return 1
-    print(f"release voice ok — {len(files)} file(s) read, {total} line(s) in {len(per)} "
-          f"file(s), none above {BASELINE.relative_to(REPO)}")
-    if fell:
-        print(f"  {len(fell)} file(s) below the baseline; lower it with --bless:")
-        for p, b, n in fell:
-            print(f"    {p}: {b} → {n}")
+    print(f"release voice ok — {len(files)} file(s) read, none speaks of the development")
     return 0
 
 

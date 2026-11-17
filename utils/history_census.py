@@ -17,8 +17,8 @@ each as lines and as the files that have one. The summary line is the
 milestone-id column over every tree but `docs/history/`, which is the history.
 Then the crates' comment links into `docs/history/`, by sub-folder, and into
 `plans/`; the tracked names outside `plans/` and `docs/history/` that carry an
-id; and the release-voice check's own count over its scope, which is its
-baseline.
+id; and the release-voice check's own count over its scope, which fails on
+any line.
 
     python3 utils/history_census.py          # the tables, as markdown
 """
@@ -186,12 +186,12 @@ def main() -> int:
         if rel.startswith("docs/ein/"):
             by["`docs/ein/` pages"] += n
         elif rel.endswith(".rs"):
-            by["shipped crates' doc comments"] += n
+            by["crates' comments"] += n
         elif rel.endswith(".ein"):
             by["`.ein` comments"] += n
         else:
             by[f"`{rel}`"] += n
-    print(f"\nThe release-voice check over its scope (its baseline): **{num(sum(voice.values()))} "
+    print(f"\nThe release-voice check over its scope: **{num(sum(voice.values()))} "
           f"lines in {len(voice)} files** — "
           + ", ".join(f"{k} {num(n)}" for k, n in by.most_common()) + ".")
     return 0

@@ -1,6 +1,0 @@
-# The release-voice check's banked baseline: per file, the lines that still
-# carry a milestone, phase, stage or task id, a path into plans/ or a date.
-# Written by `python3 utils/check_release_voice.py --bless`; read by the
-# check, which fails where a file's count rises or a file not listed here
-# has one. A count only falls: the commit that lowers it re-banks this file,
-# and when every count is 0 the file is deleted with the baseline's reader.
