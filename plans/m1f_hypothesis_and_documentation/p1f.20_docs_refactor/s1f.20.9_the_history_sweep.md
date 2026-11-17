@@ -601,7 +601,9 @@ shape moved by a comment); `check_gate_steps.py`; `history_census.py` runs. No `
 - **Parts A and B: green on `f3e540b2`**, `./run_tests.sh` exit 0, 160 test binaries, none failed (three fewer than
   before: the tests that read the process are process checks now, `check_gate_steps.py`, `check_tool_mirrors.py`,
   `check_generated.py`, `check_region_routes.py` and `wrong_answers.py`, each a gate step that ran).
-- **Parts C1 and C2** (deletions, comments, the voice check, a few renamed tests): the stage's last verification is
-  `utils/ci_container.sh` on the merged tree, since the stage changed a DOT writer's text (the region legend), the
-  review bundle and the workflows (AGENTS.md § When `utils/ci_container.sh` is part of done).
+- **Parts C1 and C2, and the phase's last verification: green in the runner's image on `f0917a57`** —
+  `utils/ci_container.sh` (Ubuntu 26.04.1, Graphviz 14.1.2, the amd64v3 packages) exit 0, 160 test binaries, none
+  failed; and `utils/ci_container.sh --nightly`, exit 0, none failed. The container is this stage's gate, since it
+  changed a DOT writer's text (the region legend), the review bundle and both workflows, the nightly's steps among
+  them (AGENTS.md § When `utils/ci_container.sh` is part of done).
 
