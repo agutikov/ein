@@ -11,6 +11,36 @@ writes after a fact (`source`, `rule`, `hypothesis`), the trace's *Derives* and 
 labels. Every text a program writes, its `:why`s, `:source`s and `:goal-text`s, is the domain's, which the engine
 fills and never edits ([Q-M1f.12](../../decisions/read-out/Q-M1f.12-natural-language-text-reaches-a-fixed-set.md)).
 
+Each group of strings, and the one part of the engine that gives it its meaning: where a program is stopped from
+writing or binding it, and where the engine reads it.
+
+```dot
+digraph reserved {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  dunder [label="__closed__\n__symmetric__"];
+  wb     [label="<forced-positive>\n<monotonic-unconditional>\n<lookahead-dies-immediately>"];
+  hash   [label="#empty  #nested  #params\n#list  #query  #written"];
+  keys   [label=":hypothesis-relations\n:no-hypothesis"];
+
+  lexer  [label="the lexer, ein.l\nWRITEBACK is a token no production takes;\n# is no name character"];
+  loader [label="the loader\nein_core::terms::RESERVED:\na declarator may not bind it"];
+  sat    [label="saturator.rs\nthe native mirror"];
+  gen    [label="hypgen.rs\nno candidate for a closed relation;\nthe two lists scope the generator"];
+  parser [label="the parser's builder, the loader,\nthe compiler: they make the name up"];
+
+  wb -> lexer      [label="refused where written"];
+  hash -> lexer    [label="cannot be spelt"];
+  hash -> parser   [dir=back, label="made up by"];
+  dunder -> loader [label="may be used, not bound"];
+  dunder -> sat    [label="(__symmetric__ R)"];
+  dunder -> gen    [label="(__closed__ R)"];
+  keys -> gen      [label="read off (solve ...)"];
+}
+```
+
 ## The engine's names
 
 A name that triggers behaviour hard-coded in the engine is written `__dunder__`, lexically distinct from a
