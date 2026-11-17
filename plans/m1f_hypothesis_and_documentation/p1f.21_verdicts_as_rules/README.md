@@ -52,6 +52,24 @@ Each question is answered in [`open_facts.md`](open_facts.md), on runs where the
 - **The search**: every decision of it can be a rule, but the split cannot; it stays the kernel's one primitive,
   or each state becomes a context.
 
+## The third instruction
+
+The user, 2026-11-18, verbatim:
+
+> also ideas for p1f.21: what reserved names will be left? false - not anymore; rule - yes; relation - is not
+> actually, it's just a convention already now - any new head of tuple will be new relation atom; eq,neq - neq
+> needed, but eq not so much because we use one variable for equal objects in rules; not - will become a
+> convention also with contradiction rule; what else? what is read by kernel from KB to make decisions about
+> saturation or search?
+
+Answered in [`open_facts.md` § 8](open_facts.md#8-the-reserved-names-that-are-left-and-what-the-kernel-reads),
+with a census of every name the kernel reads, and from where. Each name of the instruction is as it says, but for
+two points:
+- `eq` has one use substitution does not keep: `std.math`'s test that an operand is a name and not a fact.
+- `relation`'s declaration keeps the count of arguments and the `:why`.
+
+The rest: `hrule`, `__closed__`, `__symmetric__`, `open`, `is-a`, and `solve`'s two lists.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -80,7 +98,7 @@ goes; what then becomes of (2) is the design.
 | stage | what | state |
 |---|---|---|
 | [S1f.21.1](s1f.21.1_the_survey_and_the_design.md) | **The survey and the design.** What the kernel does for each verdict, where, and what shows it; each verdict written as a rule, and whether Ein can load and run that rule today; `(open R)` today, the two properties shown on programs; `(open R <justification>)` designed: what the justification is, what holds a discharged debt, what changes in the engine, the stdlib, hypothesis generation, the read-out and the tests, on real corpus programs with their answers computed. Ends with the question for the user | **done**: [`design.md`](design.md), [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact), [`findings.md`](findings.md) |
-| S1f.21.4 | **Open facts and `(ein.kill)`: the design on programs.** The user's second instruction, from [`open_facts.md`](open_facts.md): the verdict's name and the module that concludes it, with the contradiction rules and V-1; the form of an open fact and its justification for each rung; the move and the stratum; the rules over open facts the standard library states and what the routes read of them; the search as rules. On real corpus programs with their answers computed, each put as a question with a default ([`open_facts.md` § 8](open_facts.md#8-what-s1f214-answers)) | **next**, planned 2026-11-18, **not started** |
+| S1f.21.4 | **Open facts and `(ein.kill)`: the design on programs.** The user's second and third instructions, from [`open_facts.md`](open_facts.md): the verdict's name and the module that concludes it, with the contradiction rules and V-1; the form of an open fact and its justification for each rung; the move and the stratum; the rules over open facts the standard library states and what the routes read of them; the search as rules; the reserved names that are left and what the kernel reads (§ 8). On real corpus programs with their answers computed, each put as a question with a default ([`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers)) | **next**, planned 2026-11-18, **not started** |
 | S1f.21.2 | **The reasoning pages.** In `docs/ein/reasoning/02-kb-evolution/`: the contradiction rule, alive and dead, owed and discharged, each as a rule with its graph and its formula, and the remark on `(open R)` as facts; the user's pages where the same is said in Ein, which S1f.21.1 finds for the contradiction rule of one relation or one count of arguments, for *dead*, and for the requirement, the payment and *discharged*, and not for the rule of every fact, for *alive* or for a stored debt ([`design.md` § What S1f.21.2 writes under each ruling](design.md#what-s1f212-writes-under-each-ruling)) | after S1f.21.4's rulings, and after S1f.21.3 where they change the kernel: the pages state the kernel as it is |
 | S1f.21.3 | **The engine**, if the user rules for a change: planned from S1f.21.1's and S1f.21.4's designs when the rulings are given. Under (a) of Q-M1f.390, and under (b) with nothing printed, with no `(ein.kill)` and no open fact, there is nothing to build and the stage is not run | waits for the rulings |
 | S1f.21.5 | **The close.** | last |

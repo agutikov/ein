@@ -186,7 +186,79 @@ runs in, and a split needs states that disagree, one holding F and one not. Ther
 **Leaning: (A) for the engine, and (B) as the reasoning pages' statement of what $R$ is.** (B) defines $R$ with
 no search at all, and the oracle is its brute-force reading. Neither is built here.
 
-## 8. What S1f.21.4 answers
+## 8. The reserved names that are left, and what the kernel reads
+
+The user's third note (verbatim in [the README](README.md#the-third-instruction)): *false* no longer the kernel's,
+*rule* stays, *relation* already a convention, *neq* needed and *eq* hardly, *not* a convention once the
+contradiction is a rule; *what else? what is read by kernel from KB to make decisions about saturation or
+search?*
+
+**The census.**
+- The names: `ein-core/src/terms.rs`' `Kernel`, the names interned before any program.
+- Who reads each: `grep -rlE 'kernel(\(\))?\.NAME\b'` over the crates' `src/`.
+- The counts in programs: `grep -rhoE '(\(|:)NAME( |\))' --include='*.ein' stdlib examples tests`, with the files
+  beside them.
+
+### 8.1 What the kernel reads, and what it decides with it
+
+**From a state's facts:**
+
+| it reads | it decides | where |
+|---|---|---|
+| `(false)` held | the node stops saturating and is dead | `contradiction.rs`, `saturator.rs` |
+| a fact beside its `(not F)` | the same | `contradiction.rs` |
+| a rule whose conclusion is `(false)`, a `(not …)`, or a fact whose negation some rule concludes | the agenda's first half; *forbid*; the static check, whose verdict grants the routes' licences | `saturator.rs`, `forbid.rs`, `monotone.rs`, `naf_deps.rs`, `structure.rs` |
+| `(__symmetric__ R)` | the extent of R closed under swapping, in the saturation, with no rule firing a mirror | `saturator.rs` |
+| `(__closed__ R)` | no candidate of R in $H$ (rungs 2 and 3), so a commitment cannot extend R and *forbid* lets a refutation rest on an `absent` over it; the mechanisms' conflicts | `hypgen.rs`, `mechanisms.rs` |
+| a fact headed by a rule's name, `(symmetric R)`, `(total-owed seats is-a)` | the rule's instances: the **activator** binds its parameters. No name is reserved for it, and a module's rules are switched on so | `compile.rs` |
+| an obligation's guard, on the fixpoint | what the state owes, and rung 2's candidates | `obligations.rs`, `oblgen.rs` |
+| the program's names | `neq`'s free side; the blind rung's candidate objects | `predicates.rs`, `hypgen.rs` |
+| `is-a`, by its name | nothing: one line of the read-out, the types the blind rung bound as objects | `types_as_objects.rs` |
+
+**From the program, not from a state:**
+- the rules' plans (the third row);
+- the hrules and `(solve :hrules …)`;
+- the declarations: the loader holds every fact to its declaration's count of arguments, and the blind rung
+  guesses facts only of a relation with labels, never with a label as an object;
+- `:hypothesis-relations`, `:no-hypothesis` and `:no-search`;
+- `(config …)`, which changes no answer.
+
+### 8.2 Each name, under this phase's direction
+
+| name | today | under the direction | counted |
+|---|---|---|---|
+| `false` | the kernel's: a held one kills | a proposition; `(false)` ⟹ `(ein.kill)` a rule every program gets (§ 3) | 658 in 278 programs |
+| `not` | the kernel's: beside its fact it kills; the agenda, *forbid* and the static check read it; a candidate root denies is not in $H$ ([`design.md` § 3.4](design.md#34-the-extent-an-owed-instance-a-hypothesis-and-openr)) | a relation of one argument whose meaning is two rules: the contradiction ([A.1](design.md#a1-the-contradiction-rule-set-contrainc)) and the elimination of a double negation (Q-M1f.391). Whatever read it for a decision then reads the rules that lead to `ein.kill`, which is V-1's fix. Leaving a denied candidate out of $H$, and § 5's move into *not*, become economies: committing a denied candidate gives a dead child | |
+| `relation` | a position word: the declaration, the fact `(relation R A B)` rules match, the count of arguments, the `:why` | a convention for what rules read (Q-M1f.381: any head is a relation). The declaration keeps three uses: the count the loader holds a fact to, the `:why` a fact is read in, and the blind rung's guessing (which relations, which objects) until proposing is rules (§ 6, row 1) | |
+| `eq` | computed; binds a free side | goes where one variable says it, by substitution at load. **Except** `std.math`'s two `(neq ?v z) (eq ?v ?x)` (`decimal-arith.ein`'s `operand-undeclared`, binary's twin): *?x is a name, and not a fact*. `neq`'s free side ranges over names, and substituting `?x` for `?v` loses that. Without `eq` the test needs a word of its own, a computed `(atom ?x)` say | 146 in 40 files, 30 of them under `examples/ein-bugs/wrong-answers/` |
+| `neq` | computed; a free side ranges over the program's names | stays: no rule says *differ* without it | 345 in 119 files |
+| `and`, `or`, `absent` | the `:match`'s syntax | stay. `absent` is the one premise the kernel orders (the boundary). `or` is one rule a disjunct, which the loader writes | |
+| `open` | the verdict, only as an obligation's whole `:assert` | the open facts the kernel writes and moves, `(open F J)` (§ 4, § 5), named beside `ein.kill` (§ 3) | |
+| `__closed__` | read by $H$ and the mechanisms' check | derived, once proposing is rules: a relation no rule proposes a fact of is closed, and *forbid* reads that off the rules as it reads the rest. Or the kernel's, `ein.closed` | 685 in 91 files |
+| `__symmetric__` | the saturation's native mirror | an economy of the kernel's (`ein.symmetric`), or `std.algebra`'s `symmetric` rule alone | 12 in 5 files |
+| `hrule` | a declarator, rung 1 | a rule that concludes `(open F)` (§ 4, § 6 row 1), still activated by `(solve :hrules …)` | 141 in 115 files |
+| `rule`, `macro`, `import` | declarators | stay: the program's structure | |
+| `query`, `solve`, `config`, `trace` | declarators: questions about $R$, flags, a log | stay: none is a fact of a state. Of `solve`'s lists, `:hypothesis-relations` and `:no-hypothesis` filter what is proposed, and become rules if proposing does | |
+| `model`, `region`, `merged`, `owing` | position words of a claim | stay | |
+| `<forced-positive>` and its two siblings, the `#` names | the engine's own records | stay the engine's | |
+
+`written`, the loader's until S1f.22.6, is erased by it (Q-M1f.404).
+
+### 8.3 What is left
+
+**The kernel then reads:**
+- one verb in a saturation, `ein.kill`;
+- `absent`'s boundary;
+- `neq`;
+- a rule's activator;
+- its open facts, which it writes and moves (§ 5);
+- the split in the search, which it makes (§ 7 (A)).
+
+**The rest becomes a theory's**: `false`, `not`, `relation` as rules read it, `eq`, `hrule`, `__closed__`, and
+`is-a`, which already is one. The grammar's reserved words shrink to the declarators and the connectives.
+What a declarator may not bind becomes the `ein.` prefix, `neq` and the connectives.
+
+## 9. What S1f.21.4 answers
 
 On real corpus programs, at least `examples/lattice/05_owed_seats_bounded.ein`, `examples/zebra2-obligations.ein`
 and a program with an hrule, with their answers computed (emulated in Ein with a stand-in relation where the
@@ -199,6 +271,9 @@ did). Each is put as a question with a default:
 4. Which of § 6's rules the standard library states and what the routes read of them, each shown not to change
    $R$, or to be a verdict the oracle holds.
 5. The search as rules: (A), (B), or (A) with (B) on the reasoning pages (§ 7).
-6. What becomes of [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
+6. The kernel's surface (§ 8): the census of what it reads re-taken; for each name of § 8.2, its place under the
+   rulings (the kernel's, a theory's, syntax), with what reads it moved and the corpus's answers unchanged; `eq`'s
+   test of a name; the module every program gets.
+7. What becomes of [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
    whose four options this design stands beside, and of
    [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open), the name.
