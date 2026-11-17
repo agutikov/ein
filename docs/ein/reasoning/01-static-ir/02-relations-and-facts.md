@@ -1,140 +1,335 @@
 # Relations and facts
 
-A **knowledge base** is a program and a set of facts. The program is what the text declares: its relations, its
-rules and hrules, its macros (expanded as the text is read), its queries and its `(solve …)` and `(config …)`
-forms. The facts are what holds: the facts the text writes, the facts the loader states about the text, and the
-facts saturation derives. This page states what the store of facts is, which operations it has, and what each fact
-records of how it came to be held. What a single name or fact *is* is [names and atoms](01-names-and-atoms.md).
+A **knowledge base** is a program, the facts that hold, and how each came to hold:
 
-The knowledge base is a **hypergraph with provenance**: its nodes are objects, types, relations, rules and facts,
-and a fact is one edge over any number of arguments, labelled by its relation. A relation of three arguments is one
-edge, not a construction of binary ones. Every fact carries how it came to be held
-([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)).
+$$
+K = (P,\ S,\ J)
+$$
+
+$P$ is the **program**: what the text declares, its relations and its rules, with its questions. $S \subseteq F$ is
+the **state**: a finite set of facts ([names and atoms](01-names-and-atoms.md) defines $F$). $J$ is the
+**provenance**: for each $f \in S$, the derivations recorded for it ([below](#provenance-a-fact-is-an-or-of-derivations)). This page states what the state is,
+which operations it has, and what $J$ records.
+
+## A hypergraph with provenance
+
+The knowledge base is a **hypergraph**: its vertices are the names and the facts, and each fact is one edge over
+its arguments, labelled by its relation,
+
+$$
+G(S) = \big(\ \operatorname{names}(S) \cup S,\ \ \{\, (f,\ i,\ \operatorname{arg}_i(f)) \;:\; f \in S,\ 1 \le i \le \operatorname{ar}(f) \,\}\ \big)
+$$
+
+A relation of three arguments is one edge, not a construction of edges of two, and a fact is a vertex as well as
+an edge, since a fact may be an argument. Every fact carries its provenance
+([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)). The state of the three-house
+example, once its three rules have fired, is drawn below; the facts its declarations are held as are left out.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  "House" [shape=box, label="House"];
+  "Person" [shape=box, label="Person"];
+  "Pet" [shape=box, label="Pet"];
+  "Dog" [shape=oval, label="Dog"];
+  "House-1" [shape=oval, label="House-1"];
+  "House-2" [shape=oval, label="House-2"];
+  "House-3" [shape=oval, label="House-3"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+  "Norwegian" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
+  "Dog" -> "Pet" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-3" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "Dog" [label="owns The Norwegian owns the dog", color="#000000", fontcolor="#000000", style=solid];
+  "Norwegian" -> "House-1" [label="lives-in The Norwegian lives in the first house", color="#000000", fontcolor="#000000", style=solid];
+  "House-1" -> "House-2" [label="left-of The first house is left of the second", color="#000000", fontcolor="#000000", style=solid];
+  "House-2" -> "House-3" [label="left-of The second house is left of the third", color="#000000", fontcolor="#000000", style=solid];
+  "Dog" -> "House-1" [label="pet-at by pet-follows-owner", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "House-1" -> "House-3" [label="left-of by transitive", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "House-2" -> "House-2" [label="vacant by nobody-home", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "House-3" -> "House-3" [label="vacant by nobody-home", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+}
+```
+
+Each arrow is a fact of two arguments and each loop a fact of one. A solid black arrow is a fact the text writes
+with its source sentence, which the label carries; a dashed arrow with an empty head is a membership fact; a
+dashed blue arrow is a fact a rule derived, and its label names the rule. The provenance is on the drawing: it is
+what tells the three kinds of arrow apart.
 
 ## A fact, its negation, and neither
 
-For any fact `P` a knowledge base holds one of three things:
+A state holds a fact $f \in A$, or its stored negation, or neither, or both:
 
-| `P` is | the store holds | a pattern that matches it |
+$$
+\operatorname{status}_S(f) =
+\begin{cases}
+\text{asserted} & f \in S,\ \lnot f \notin S \\
+\text{negated} & f \notin S,\ \lnot f \in S \\
+\text{open} & f \notin S,\ \lnot f \notin S \\
+\text{contradicted} & f \in S,\ \lnot f \in S
+\end{cases}
+$$
+
+Each of the first three has a pattern that matches it and nothing else, in an alive state:
+
+| $f$ is | the state holds | the pattern that matches it |
 |---|---|---|
-| **asserted** | the fact `P` | `P` |
-| **negated** | the fact `(not P)`, a fact of `not` whose one argument is `P` | `(not P)` |
-| **open** | neither | `(unknown P)`, which is `(and (absent P) (absent (not P)))` |
+| **asserted** | the fact $f$ | $f$ |
+| **negated** | the fact $\lnot f$ | $\lnot f$ |
+| **open** | neither | $\operatorname{unknown}(f) \;=\; \operatorname{absent}(f) \land \operatorname{absent}(\lnot f)$ |
 
-A stored negation is a fact like any other: it is written or derived, recorded with its provenance, matched by a
-pattern of its shape. **`(not P)` in a pattern matches a stored negation and nothing else**; it is never negation
-as failure. Negation as failure is `(absent P)`, a test that no fact of a shape is held, and it is read against a
-saturated world, never against a half-built one ([`absent`](../02-kb-evolution/03-absent-and-naf.md)). `(not N)` of a
-name `N` is the negation of no fact.
+A stored negation is a fact like any other: written or derived, recorded with its provenance, matched by a pattern
+of its shape. **The pattern $\lnot f$ matches a stored negation and nothing else.** It is never negation as
+failure:
 
-Holding both `P` and `(not P)` is a contradiction, and so is holding `(false)`. A knowledge base that holds one is
-**dead**; which facts a contradiction rests on is its core ([cores](../02-kb-evolution/09-cores.md)).
+$$
+S \models \lnot f \iff \lnot f \in S, \qquad\qquad S \models \operatorname{absent}(f) \iff f \notin S
+$$
 
-## The store only grows
+for a fact $f$ with no variable. The two differ on every open fact, where the second holds and the first does
+not. The absence is a test of a state, and it is read against a saturated state, never against a half-built one
+([negation as failure](../02-kb-evolution/03-absent-and-naf.md)).
 
-No operation removes a fact. Rules add facts; a stored negation adds a fact; nothing deletes one. Two statements of
-one fact are one fact, and the first statement's provenance is kept, whether the two are in one file, in a module
-and the program, or in two modules
-([Q-M1f.139](../../../decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)). What a
-search assumes is undone by discarding a fork (below), never by retracting from the store.
+**A contradiction** is a contradicted fact, or the fact of falsity:
 
-## Reading a program into a store
+$$
+\operatorname{dead}(S) \iff \bot \in S \;\lor\; \exists f \in A.\ \ f \in S \land \lnot f \in S, \qquad\qquad \operatorname{alive}(S) \iff \lnot \operatorname{dead}(S)
+$$
 
-Each top-level form of the text is a declaration, a relation, a rule, an hrule, a macro or an import, or a
-program's question, a query, a `(solve …)` or a `(config …)`, or a **fact**. A fact's provenance is what the text
-says of it:
+A knowledge base whose state is dead is dead. Which facts a contradiction rests on is its core
+([cores](../02-kb-evolution/09-cores.md)).
 
-- written with `:source "…"`, it is **given**, and the source sentence is its provenance;
-- written with `:rule R :using (P₁ … Pₙ)`, it is **derived**, as the text says, from those premises by that rule;
-- written with neither, it is given with no source, a **background** fact.
+## The state only grows
+
+No operation removes a fact. Every operation on a state is an addition,
+
+$$
+S \;\longmapsto\; S \cup \Delta, \qquad \Delta \subseteq F
+$$
+
+so along any computation $S_0 \subseteq S_1 \subseteq S_2 \subseteq \cdots$. A rule adds facts; a stored negation
+is an added fact; nothing deletes one. A state is a set: stating a fact twice states one fact, and the provenance
+of the first statement is the one kept, whether the two statements are in one file, in a module and the program,
+or in two modules
+([Q-M1f.139](../../../decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)). What a search
+assumes is undone by discarding a fork ([below](#a-fork)), never by taking a fact out of a state.
+
+## Reading a program into a state
+
+Each form of a program's text is a declaration, a question, or a **fact**. Reading gives the program $P$ and the
+initial state
+
+$$
+S_0 \;=\; T \;\cup\; D \;\cup\; \{\, \operatorname{written}(t) \;:\; t \in \operatorname{sub}(f),\ f \in T \,\}
+$$
+
+where $T$ is the facts the text writes and $D$ the facts its declarations are held as
+([names and atoms](01-names-and-atoms.md) defines both maps). A written fact's provenance is what the text says of
+it:
+
+| the text writes $f$ | its provenance | its origin |
+|---|---|---|
+| with a source sentence | given, with that sentence | given |
+| with a rule's name and a list of premises | derived, as the text says, by that rule from those premises | derived |
+| with neither | given, with no source | background |
 
 A fact an import brings keeps the provenance its module writes, as if the program had written it in place
-([Q-M1f.138](../../../decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)). A head that no
-declaration names is a relation with no declared count, and its facts load like any other
-([names and atoms](01-names-and-atoms.md#a-relation-is-an-object)).
+([Q-M1f.138](../../../decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)).
 
-Reading refuses a program, and names every reason at once, where it declares one name twice, where a form of a
-declared relation has another count of arguments than the declaration has types, and where the `:using` chains the
-text writes make a fact its own premise. A **cycle of derivations the engine records** is legitimate, and is not
-refused: once a symmetric relation's two facts are each derived from the other, `(R a b)` and `(R b a)` justify
-each other, and a walk over provenance breaks such a cycle by not expanding a fact twice.
+**The conditions of a program.** A text is a program only if all of these hold, and a reading that refuses one
+names every failure together:
 
-The facts the loader states about the text, beside those it writes: each declaration as facts of `relation`, and
-`(written T)` for what the text nests ([names and atoms](01-names-and-atoms.md#a-relation-is-an-object)).
+$$
+\begin{aligned}
+&\text{each relation name and each rule name is declared at most once;} \\
+&\operatorname{ar}(f) = n \quad \text{for every fact or pattern } f \text{ of a relation declared with } n \text{ slot names;} \\
+&\text{the relation } g \rightarrow f \text{ (} g \text{ is a premise the text states for } f \text{) has no cycle on } T.
+\end{aligned}
+$$
+
+The third condition is on what the text **states**. A cycle among the derivations a computation **records** is
+legitimate. Where a relation is symmetric, $r(\mathsf{a}, \mathsf{b})$ derives $r(\mathsf{b}, \mathsf{a})$, which
+derives $r(\mathsf{a}, \mathsf{b})$ again, and each then has a derivation resting on the other:
+
+```dot
+digraph recorded_cycle {
+  rankdir=LR;
+  node [shape=box, style=rounded];
+  g  [label="g, given"];
+  ab [label="r(a, b)"];
+  ba [label="r(b, a)"];
+  j1 [label="a rule", style="rounded,bold"];
+  j2 [label="symmetric", style="rounded,bold"];
+  j3 [label="symmetric", style="rounded,bold"];
+  g  -> j1; j1 -> ab [style=bold];
+  ab -> j2; j2 -> ba [style=bold];
+  ba -> j3; j3 -> ab [style="bold,dashed", label="a second derivation"];
+}
+```
+
+A walk over provenance does not expand a fact twice, so it ends on such a cycle.
 
 ## A fork
 
-A **fork** of a knowledge base is a knowledge base of its own that starts as its parent stands: the same program,
-and every fact the parent holds. From then on the two diverge:
+A **fork** of a knowledge base $K = (P, S, J)$ is a knowledge base $K' = (P, S', J')$ that starts as $K$ stands,
+$S' = S$ and $J' = J$, and from then on is its own. Writing $S(t)$ for a state after $t$ further additions:
 
-- what the fork adds is the fork's alone: no fact a fork derives reaches its parent or a sibling;
-- what the parent adds after the fork is not the fork's;
-- the derivations a fork records are the fork's, and stay in it: a derivation recorded under a commitment may rest
-  on the commitment, which the parent never assumed, and would otherwise name it in an explanation of the parent.
+$$
+\begin{aligned}
+S'(t) &\supseteq S && \text{the fork keeps what its parent held when it was made;} \\
+S'(t) \setminus S &\ \text{is the fork's alone} && \text{nothing a fork adds reaches its parent or a sibling;} \\
+S(t) \setminus S &\ \text{is the parent's alone} && \text{nothing the parent adds afterwards reaches the fork;} \\
+J'(f) \setminus J(f) &\ \text{stays in } K' && \text{a derivation recorded in a fork is the fork's.}
+\end{aligned}
+$$
 
-Every node a search reads is a fork of root, root's fixpoint with the node's commitment added and saturated
-([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)), and a node's
-saturation continues root's rather than repeating it, reaching the fixpoint a fresh saturation of the grown
-knowledge base reaches ([Q-M1a.18](../../../decisions/engine/Q-M1a.18-a-node-resumes-roots-saturation.md)). That
-nothing a node derives reaches root is what lets every node be read independently of every other
-([finding R](../02-kb-evolution/07-finding-r.md)).
+The last line is what keeps explanations honest: a derivation recorded under a commitment may rest on the
+commitment, which the parent never assumed, and would otherwise be named in an explanation of the parent.
+
+```dot
+digraph forks {
+  rankdir=TB;
+  node [shape=box, style=rounded];
+  root [label="root\nthe program's facts, saturated"];
+  c1   [label="node C1\nsat(root + C1)"];
+  c2   [label="node C2\nsat(root + C2)"];
+  c12  [label="node C1 ∪ C2\nsat(root + C1 ∪ C2)"];
+  root -> c1  [label="fork, add C1"];
+  root -> c2  [label="fork, add C2"];
+  root -> c12 [label="fork, add C1 ∪ C2"];
+}
+```
+
+Every arrow starts at root: **every node a search reads is a fork of root**, root's state with the node's
+commitment added and saturated,
+
+$$
+\operatorname{st}(C) = \operatorname{sat}(\operatorname{root} + C)
+$$
+
+([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). A node's state is
+defined from root's, never from another node's, and no arrow points back: that nothing a node derives reaches
+root is what lets every node be read independently of every other
+([finding R](../02-kb-evolution/07-finding-r.md)). A node's saturation continues root's rather than repeating it,
+and reaches the fixpoint that a saturation started afresh from the grown state reaches
+([Q-M1a.18](../../../decisions/engine/Q-M1a.18-a-node-resumes-roots-saturation.md)).
 
 ## Provenance: a fact is an OR of derivations
 
-Every fact records how it came to be held: given, with its source where the text writes one; derived by a rule's
-firing; or committed as a hypothesis. A **derivation** by a firing records its rule, the activator the rule was
-applied under, the positive premises it matched, the `(absent …)` queries that had to find nothing for it to be
-admitted, and, for a `forall`, the facts each body matched over its domain
-([Q18](../../../decisions/engine/Q18-provenance-is-per-fact-an-or-of-derivations-over.md)).
+For each fact $f \in S$, $J(f)$ is a non-empty finite sequence of **derivations**, in the order they were
+recorded:
 
-So the proof structure is an **AND/OR graph**: a fact is an OR over its derivations, and each derivation is an AND
-over its premises, with its activator where a node derived or committed the activator, and with the facts its
-`forall`s read
+$$
+J(f) = (j_1, j_2, \dots, j_k), \qquad k \ge 1
+$$
+
+A derivation is a **terminal**, *given* (with its source sentence where the text writes one) or *committed* (a
+hypothesis), or it is a **firing**:
+
+$$
+j = (\rho,\ \bar{a},\ \Pi,\ \Omega,\ \Phi)
+$$
+
+| part | what it records |
+|---|---|
+| $\rho$ | the rule that fired |
+| $\bar{a}$ | the activator the rule was applied under ([values and their order](03-values-and-order.md)) |
+| $\Pi \subseteq S$ | the positive premises the pattern matched |
+| $\Omega$ | the absences: the patterns that had to match nothing for the firing to be admitted |
+| $\Phi \subseteq S$ | for each universal premise, the facts its body matched over its domain |
+
+([Q18](../../../decisions/engine/Q18-provenance-is-per-fact-an-or-of-derivations-over.md)). The proof structure is
+an **AND/OR graph**: a fact is an OR over its derivations, and a derivation is an AND over what it rests on,
+
+$$
+\operatorname{supported}(f) \iff \bigvee_{j \in J(f)} \Big( j \text{ is a terminal} \;\lor \bigwedge_{g \in \operatorname{prem}(j)} \operatorname{supported}(g) \Big)
+$$
+
+read as a least fixpoint, where $\operatorname{prem}(j) = \Pi \cup \Phi$, with the activator fact too where a node
+derived or committed it
 ([Q-M1e2.12](../../../decisions/answer/Q-M1e2.12-a-dead-nodes-core-follows-an-activator-only.md),
-[Q-M1e2.15](../../../decisions/answer/Q-M1e2.15-a-derivation-through-a-forall-rests-on-each-fact.md)).
+[Q-M1e2.15](../../../decisions/answer/Q-M1e2.15-a-derivation-through-a-forall-rests-on-each-fact.md)). Two firings of the
+three-house example, as premises, the firing, and the fact it adds:
 
-- **The primary derivation** is the first one recorded. Deriving the fact again never changes it, so everything
-  that reads one derivation of a fact reads one stable story.
-- **A terminal takes no other derivation.** A given fact and a commitment are the frontier of every explanation: a
-  given that some rule could also derive is still given. A firing with no premise, an engine's writeback, is a
-  terminal too, and a walk over provenance grounds out on it.
-- **Two firings of one rule over the same premises from the same activator are one derivation.** The bindings a
-  firing used are read for display and are not part of what makes two derivations different.
-- **What is recorded is what saturation attempted.** A derivation no rule firing reached is in no record. An
-  implementation may bound how many derivations it keeps for one fact; `(config :record-alternative-justifications
-  false)` keeps the primary alone. Neither changes what is held, nor the answer: what they may change is a dead
-  node's core, which is an explanation and not part of the answer
+```dot
+digraph derivations {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_e62a4252e0" [label="owns(Norwegian, Dog)", shape=box, style=rounded];
+  "f_ba78d8e6bc" [label="lives-in(Norwegian, House-1)", shape=box, style=rounded];
+  "f_57a4501bc4" [label="pet-at(Dog, House-1)", shape=box, style=rounded, penwidth=2];
+  "fire0_pet-follows-owner" [shape=box, style="rounded,bold", color="#2ca02c", fontcolor="#2ca02c", label="pet-follows-owner\nNorwegian owns Dog and lives in House-1, so Dog is kept at House-1"];
+  "f_e62a4252e0" -> "fire0_pet-follows-owner" [color="#2ca02c"];
+  "f_ba78d8e6bc" -> "fire0_pet-follows-owner" [color="#2ca02c"];
+  "fire0_pet-follows-owner" -> "f_57a4501bc4" [color="#2ca02c", style=bold];
+  "f_a710130aba" [label="left-of(House-1, House-2)", shape=box, style=rounded];
+  "f_188e3bcdae" [label="left-of(House-2, House-3)", shape=box, style=rounded];
+  "f_dc5d46f5f0" [label="left-of(House-1, House-3)", shape=box, style=rounded, penwidth=2];
+  "fire0_transitive" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="transitive\nleft-of is transitive: House-1 to House-2 to House-3"];
+  "f_a710130aba" -> "fire0_transitive" [color="#7f7f7f"];
+  "f_188e3bcdae" -> "fire0_transitive" [color="#7f7f7f"];
+  "fire0_transitive" -> "f_dc5d46f5f0" [color="#7f7f7f", style=bold];
+}
+```
+
+A thin box is a fact, a bold box a firing with its rule and the rule's reason, an arrow into a firing one of its
+premises, the bold arrow out of it the fact it adds. The four facts on the left are terminals, given by the text.
+
+What is true of $J$ in every implementation:
+
+- **The primary derivation is the first one recorded**, $j_1$. Deriving the fact again never changes it, so
+  everything that reads one derivation of a fact reads one stable story.
+- **A terminal takes no other derivation**: if $j_1$ is a terminal then $k = 1$. A given fact and a commitment are
+  the frontier of every explanation, and a given that some rule could also derive is still given. A firing with no
+  premise is a terminal too, and a walk over provenance grounds out on it.
+- **Two firings of one rule over the same premises under the same activator are one derivation**:
+  $(\rho, \bar{a}, \Pi)$ is what tells two derivations apart. The substitution a firing used is read for display
+  and is no part of it.
+- **What is recorded is what saturation attempted.** A derivation no firing reached is in no $J(f)$. An
+  implementation may bound $k$, and a program may ask for the primary alone. Neither changes $S$, nor the answer:
+  what they may change is a dead node's core, which is an explanation and not part of the answer
   ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md),
   [Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)).
 
-**The derivation graph of a fact** is its premises, walked transitively to the terminals: through the primary
-derivation alone, one proof a reader can follow, or through every recorded derivation, the AND/OR graph. The
-terminals the second reaches bound every explanation: no core of a contradiction names a fact outside the union of
-the terminals of every recorded derivation of the facts it rests on. Choosing the *smallest* set of terminals is a
-search over the AND/OR graph, not a walk, and is [cores](../02-kb-evolution/09-cores.md)' subject.
+**The derivation graph of a fact** is its premises, followed to the terminals: through $j_1$ alone, which is one
+proof a reader can follow, or through every recorded derivation, which is the AND/OR graph. The **frontier** of a
+fact is the set of terminals the second reaches, the least sets with
+
+$$
+\operatorname{front}(f) =
+\begin{cases}
+\{f\} & j_1(f) \text{ is a terminal} \\
+\bigcup_{j \in J(f)}\ \bigcup_{g \in \operatorname{prem}(j)} \operatorname{front}(g) & \text{otherwise}
+\end{cases}
+$$
+
+An **explanation** of a set $X$ of facts is the set $E$ of terminals that a *witness* ends in, a witness being a
+choice of one recorded derivation for each fact reached from $X$ along the derivations chosen.
+
+**Proposition (the frontier bounds every explanation).** For every explanation $E$ of $X$,
+
+$$
+E \subseteq \bigcup_{f \in X} \operatorname{front}(f)
+$$
+
+*Argument.* A witness follows, from each $f \in X$, one derivation of $J(f)$ and then one derivation of each of
+its premises, down to terminals. $\operatorname{front}(f)$ follows every derivation of $J(f)$ and of every
+premise. So each path of the witness is a path the frontier follows, and the terminal it ends in is in
+$\operatorname{front}(f)$. $\square$
+
+So no core of a contradiction names a fact outside the frontier of the facts it rests on. Choosing a *smallest*
+explanation is a search over the AND/OR graph, not a walk, and is [cores](../02-kb-evolution/09-cores.md)' subject.
 
 ## Equality
 
-No fact makes two names one. `eq` is name identity, a relation computed from its two arguments and never stored,
-and `neq` its complement; nothing merges two names into one node, and a pattern matches a name only where it is
-written ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md),
+No fact makes two names one. Equality is name identity, a relation computed from its two arguments and never
+stored, and inequality is its complement:
+
+$$
+S \models (u = v) \iff u \text{ and } v \text{ are one value}, \qquad S \models (u \ne v) \iff \lnot\, S \models (u = v)
+$$
+
+for every state $S$ alike. Nothing merges two names into one node, and a pattern matches a name only where that
+name is written ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md),
 [Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)).
-
-## What holds it
-
-| claim | test |
-|---|---|
-| `(not P)` in a premise matches a stored negation, not the absence of `P` | `ein-infer/tests/rule_semantics.rs`: `not_in_a_premise_is_stored_negation_not_negation_as_failure` |
-| `(unknown P)` admits exactly the facts neither held nor denied | `ein-infer/tests/naf_semantics.rs`: `unknown_admits_exactly_the_undecided_pairs` |
-| `P` beside `(not P)` is a contradiction whatever either half's origin, and every pair is reported | `ein-infer/tests/search_semantics.rs`: `mutual_negation_is_detected_whatever_either_sides_origin`, `every_pair_is_reported_not_only_the_first` |
-| a fact stated twice keeps its first statement | the store's unit test `the_loader_path_keeps_the_first_occurrence_and_does_not_index` in `ein-core/src/kb.rs` |
-| an imported fact keeps the provenance its module writes | `ein-ir/tests/imports_semantics.rs`: `what_each_import_form_brings_of_a_module`; `ein-cli/tests/import_facts.rs`: `a_flat_import_of_facts_answers_as_the_facts_written_in_place_on_every_command` |
-| a written derivation cycle is refused at load, and every load refusal is reported together | `ein-ir/tests/load_semantics.rs`: `the_load_negative_fixtures_are_byte_identical` (`examples/broken/load/derivation_cycle.ein`), `load_errors_accumulate_in_pass_order` |
-| a fork and its parent diverge after the fork, each seeing only its own additions | the store's unit test `a_fork_reads_base_then_delta_and_the_two_histories_diverge` in `ein-core/src/kb.rs` |
-| a derivation recorded in a fork does not reach its parent | the store's unit test `a_forks_alternatives_do_not_leak_into_its_parent` in `ein-core/src/kb.rs` |
-| a fork saturated reaches the state a direct saturation reaches | `ein-infer/tests/explain_semantics.rs`: `fork_and_direct_saturation_agree`, `fork_and_direct_agree_at_the_naf_boundary` |
-| only a firing with a premise is recorded as another derivation, and a terminal takes none | the store's unit tests `only_a_real_firing_is_recorded_as_an_alternative`, `a_terminal_primary_takes_no_alternatives_at_all` in `ein-core/src/kb.rs` |
-| a firing admitted at the boundary records what had to be absent, each derivation its own | `ein-infer/tests/naf_semantics.rs`: `a_boundary_admitted_firing_records_what_was_absent`, `an_alternative_justification_carries_its_own_negative_premises` |
-| every explanation lies inside the union over every recorded derivation; with other derivations not recorded, the primary-only frontier is what remains | `ein-infer/tests/search_semantics.rs`: `an_explanation_is_a_subset_of_the_or_aware_closure_and_not_of_the_primary_only_union`, `turning_alternative_recording_off_restores_the_primary_only_frontier` |
-| the recorded derivations survive a rebuild of the store's indexes | `ein-infer/tests/explain_semantics.rs`: `a_rebuild_preserves_the_alternative_justifications` |
-| matching merges no names | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
