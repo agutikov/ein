@@ -1,7 +1,6 @@
 # Installing `ein`
 
-**There are two channels:** a binary from a release, or `cargo install` from a checkout. There is no `pip install`
-([§ There is no Python package](#there-is-no-python-package)).
+**There are two channels:** a binary from a release, or `cargo install` from a checkout.
 
 `ein` is one self-contained executable. The `std.*` standard library is compiled into it
 ([the standard library](reference/stdlib.md)), so a downloaded binary solves `zebra2.ein` on a machine with nothing
