@@ -62,12 +62,14 @@ observable order is a content order ([§ 2.2](#22-content-order)).
 ### 2.2 Content order
 
 Names sort by Unicode code point, which is what `Ord for str` gives, since UTF-8 byte order is code-point order.
-`Interner::rank` turns that into a `u32`: the rank table is built on first use, dropped when a name is interned,
-and makes every later sort by name an integer sort. `Terms::cmp_semantic` orders two values by content: two names
-by rank, two facts by `Terms::cmp_fact_semantic` (relation name, then arguments element-wise, a prefix first), and
-a name before a nested fact, by a tag order `tag_order` fixes rather than the encoding's bits. Held by
-`ein-core/tests/values_semantics.rs`: `the_rank_table_orders_names_by_code_point`, against `Vec<String>::sort`
-over a generated corpus.
+`Interner::rank` turns that into a `u32`: the rank table is built on first use, dropped when a name is interned, and
+makes every later sort by name an integer sort. `Terms::cmp_semantic` orders two objects by content (a `Value` is
+the code's word for an object, an atom or a fact,
+[Q-M1f.379](../../../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md)): two names by
+rank, two facts by `Terms::cmp_fact_semantic` (relation name, then arguments element-wise, a prefix first), and a
+name before a nested fact, by a tag order `tag_order` fixes rather than the encoding's bits. Held by
+`ein-core/tests/values_semantics.rs`: `the_rank_table_orders_names_by_code_point`, against `Vec<String>::sort` over
+a generated corpus.
 
 ### 2.3 Hash containers
 
@@ -98,7 +100,7 @@ itself one of the fixed orders below.
 |---|---|---|
 | the registries: relations, rules, hrules, obligations, macros | declaration order | `entities::Registry<V>`: `Vec<(Symbol, V)>` and an `FxHashMap<Symbol, u32>` index |
 | the KB's fact list, `Kb::facts` | append order, layers read oldest first | `Layer::facts: Vec<FactId>` per layer |
-| a relation's extent, `Kb::facts_of` | append order | `Layer::by_rel`, one `Vec<FactId>` per relation |
+| a relation's held extent, `Kb::facts_of` | append order | `Layer::by_rel`, one `Vec<FactId>` per relation |
 | a participation bucket `(relation, slot, value)` | append order | `Layer::by_rel_slot_val`, keyed by `SlotKey` |
 | `Kb::names` | first-seen order, which no consumer relies on: each sorts | a bitset dedup over each layer's name registry |
 | an engine's plan list | compilation order: each rule with each of its activators, each engine its own list over the shared memo | `Engine::plans: Vec<PlanId>` with `by_key` |
@@ -138,26 +140,26 @@ core of a dead node.
 
 | site | the structure that fixes its order |
 |---|---|
-| candidate selection, `Matcher` | the bucket of the first slot, left to right, holding a usable value (`plan.probes`, checked against `candidates_scan` in debug builds); a bucket yields in extent order, so narrowing changes no match sequence: `match_.rs`' `narrowing_never_changes_the_match_sequence` |
+| candidate selection, `Matcher` | the bucket of the first slot, left to right, holding a usable object (`plan.probes`, checked against `candidates_scan` in debug builds); a bucket yields in the held extent's order, so narrowing changes no match sequence: `match_.rs`' `narrowing_never_changes_the_match_sequence` |
 | the join | left-deep, steps in plan order; no join is reordered ([`05-matcher.md`](05-matcher.md)) |
 | a seeded match | the delta fact at each matching step, in step order, at its own premise position |
 | compilation, `Engine` | each rule with each of its activators, in registry and append order; the memo shares plans, never the order |
 | the enqueue pass | a full pass walks the plan list; a delta pass walks the delta facts in order, then `pos_index[rel]` |
 | the closure step | the symmetric mirror before rule firings, its queue a stack |
-| the mirror's seed | the relations marked `(__symmetric__ R)` sorted by name, each extent in store order: `saturator.rs`' `the_mirror_seeds_its_relations_in_name_order` |
+| the mirror's seed | the relations marked `(__symmetric__ R)` sorted by name, each held extent in store order: `saturator.rs`' `the_mirror_seeds_its_relations_in_name_order` |
 | the boundary | parked candidates in rank order; the first whose guards pass is admitted, one per round |
 | a resumed node's delta | the facts the snapshot lacks in the order the KB holds them, which is the order the caller wrote them (`Snapshot::new_facts_of`); every route writes a commitment in H's order |
 
 ### 4.2 The hypothesis set and the search
 
-- **The generator** (`hypgen`): the objects it guesses about sorted by name rank; its focal order by descending
+- **The generator** (`hypgen`): the atoms it guesses about sorted by name rank; its focal order by descending
   participation, then name, stably; relations in declaration order, slots ascending. The order of its filters
   decides which counter a dropped candidate is attributed to, and those counters are printed.
-- **H** is the generator's list sorted by `region::order_key`, a candidate's s-expression with every name as its
-  raw text and a nested fact rendered recursively, stably, and deduplicated. The key is defined for every argument
+- **H** is the generator's list sorted by `region::order_key`, a candidate's s-expression with every name as its raw
+  text and a nested fact rendered recursively, stably, and deduplicated. The key is defined for every argument
   shape, a name or a nested fact, so H's order is a content order whatever a hypothesis holds; between two
-  candidates of one key, the generator's order, itself a content order, decides. H's order is the bit order of
-  every node mask, the oracle's cube included, so no node, edge or listing depends on ids.
+  candidates of one key, the generator's order, itself a content order, decides. H's order is the bit order of every
+  node mask, the oracle's cube included, so no node, edge or listing depends on ids.
 - **The tree's order** (`ein_infer::order`): which owed instance a state branches on and which state next. No key
   reads an interner id; the last key is rendered text or, on the minimal line and under `-n N`, the order the
   obligation pass reports, which is the program's written order ([`07-search.md`](07-search.md)).
@@ -169,17 +171,15 @@ core of a dead node.
   by variable, then the rows), the stale facts of a flagged program. The trace slice's edges into `⊥` sort the core
   by `repr`. The JSON summary builds its per-relation maps as `BTreeMap`s, and `HypGenStats`' counter keys are in
   sorted order by construction.
-- **The explanation**: `explain` ranks the facts of a justification graph by the `repr` of their
-  `(relation_name, args)` tuple, and `recorded_fallback` keys a candidate core on its size and its facts' sorted
-  `repr`s.
+- **The explanation**: `explain` ranks the facts of a justification graph by the `repr` of their `(relation_name,
+  args)` tuple, and `recorded_fallback` keys a candidate core on its size and its facts' sorted `repr`s.
 - **DOT**: `Builder` emits nodes in first-declaration order and keeps a node's position when its attributes are
-  refined; the KB view sorts its type and instance names; node ids and colours are digests
-  ([§ 8](#8-hashes-that-reach-the-output)).
+  refined; the KB view sorts the names it draws as a type and as an instance, the two ends of an `is-a` fact; node
+  ids and colours are digests ([§ 8](#8-hashes-that-reach-the-output)).
 - **`--dump-config`** prints `SolverConfig`'s fields in `config::FIELDS` order, a fixed array in declaration order
   (`config::rendered_fields`).
 - **`ein --version`**'s feature line is sorted and deduplicated.
-- **Files**: `stdlib::Source::modules` sorts the module list, since a directory's listing order is the
-  filesystem's.
+- **Files**: `stdlib::Source::modules` sorts the module list, since a directory's listing order is the filesystem's.
 - **The event stream** writes facts as s-expressions and no internal id, and numbers its lines on the thread that
   writes them ([§ 6](#6-order-across-worker-threads)); [`05-events.md`](../05-events.md).
 - **`.einb`**: a save holds no clock, so two saves of one program are one file
@@ -239,18 +239,18 @@ thread. The mechanism is [`08-parallelism.md`](08-parallelism.md).
 
 ## 7. The value renderer
 
-`ein_core::repr` renders a value in one fixed textual form. Sort keys that must be total over every argument shape
-go through it, so a name and a nested fact can never collide, and some messages quote names with it
-(`repr::repr_str`). It covers the three shapes `ReprValue` reachable from a fact argument:
+`ein_core::repr` renders an object, or a list of them, in one fixed textual form. Sort keys that must be total over
+every argument shape go through it, so a name and a nested fact can never collide, and some messages quote names
+with it (`repr::repr_str`). It covers the three shapes `ReprValue` reachable from a fact argument:
 
-| value | `repr` |
+| shape | `repr` |
 |---|---|
 | a name, `Str` | quoted in `'`, or in `"` when the text holds a `'` and no `"`; the chosen quote and `\` backslash-escaped; tab, newline and carriage return as `\t` `\n` `\r`; any other C0 control and DEL as `\xNN`; any other non-printable code point as `\xNN` below U+0100, `\uNNNN` below U+10000, `\UNNNNNNNN` above, lower-case hex; everything else as itself |
 | a tuple | `(a, b)`, items separated by `, `; one item `(a,)`; none `()` |
 | a fact | `Fact(relation_name='p', args=('A',))`: the relation name as a name and the arguments as a tuple, a nested fact recursively |
 
 Printability is `ein_core::printable`'s table. `Terms::repr_value` and `Terms::repr_fact` build a `ReprValue` from
-an interned value. The format is specified by tables: `ein-core/tests/format_tables.rs` holds every value shape
+an interned `Value`. The format is specified by tables: `ein-core/tests/format_tables.rs` holds every shape
 (`golden/repr_values.txt`) and every code point where printability turns over (`golden/repr_escapes.txt`), so a
 change to the format is a re-blessed golden, never a silent one. `repr` is a sort key and a quoting rule, never the
 form a fact is shown to a reader in; that is the s-expression.

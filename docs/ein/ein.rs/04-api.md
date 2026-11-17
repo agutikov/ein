@@ -61,10 +61,11 @@ to every call; nothing is kept between calls but what those three hold.
 
 ### 2.1 The two arenas
 
-`Ast` owns the parsed forms; `Terms` owns the interned symbols and values. Both outlive the KB and are threaded
-through by `&mut`, because loading and solving both intern. A `Kb` means nothing without the `Terms` it was built
-against: a fact is a row of `Value`s whose text lives in the interner
-([`03-design/03-data-model.md`](03-design/03-data-model.md)).
+`Ast` owns the parsed forms; `Terms` owns the interned names and facts. Both outlive the KB and are threaded through
+by `&mut`, because loading and solving both intern. A `Kb` means nothing without the `Terms` it was built against: a
+fact is a row of `Value`s, the code's word for objects (an atom or a fact,
+[Q-M1f.379](../../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md)), whose text
+lives in the interner ([`03-design/03-data-model.md`](03-design/03-data-model.md)).
 
 ### 2.2 Load
 

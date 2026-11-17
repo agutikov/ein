@@ -108,7 +108,7 @@ impl From<Overflow> for FireError {
 /// deliberately separate from [`fire`].
 ///
 /// **`None` is the negation of a name**, which is no fact (under the value
-/// rule: *a value is a name, or a fact a state could hold: an atom of
+/// rule: *an object is an atom, or a fact a state could hold: a fact of
 /// an ordinary relation, or its negation*). A conclusion `(not ?x)` is of a
 /// variable bound to a fact;
 /// where a binding gives it a name there is nothing to conclude, so the

@@ -1,11 +1,11 @@
-# Q-M1e2.27 — In Ein's JSON, `[]` is the empty set and `null` no object
+# Q-M1e2.27 — In Ein's JSON, `[]` is the empty set and `null` what does not exist
 
-On every field of every JSON surface, `[]` is a set known to be empty, and `null` an object that does not exist or
-that the run does not state. A core is one object, the set of facts a dead node's contradiction rests on, so a dead
+On every field of every JSON surface, `[]` is a set known to be empty, and `null` something that does not exist or
+that the run does not state. A core is one thing, the set of facts a dead node's contradiction rests on, so a dead
 node's `core` and `refuted_by` are lists, and a node that is not dead, whose core does not exist, has `null`: in the
 summary's root and minimal holes, `nogoods.json`, `region.json`, `nodes.json` and `--events`' `enter` lines alike.
-`core: []` is a core that exists and holds no fact, *the empty set suffices*, as the dead root of a rule
-`:match () :assert (false)` has.
+`core: []` is a core that exists and holds no fact, *the empty set suffices*, as the dead root of a rule `:match ()
+:assert (false)` has.
 
 **Why.** An empty core and no core are two answers: the first says the refutation rests on nothing, the second
 that there is no refutation. Written alike, a reader could not tell an alive node from one dead for no reason.

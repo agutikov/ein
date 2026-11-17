@@ -65,10 +65,10 @@ files are modules.
 | `std.macro` | [`macro.ein`](macro.ein) | the pattern macros `forall` and `unknown`, expanded at load ([§](#the-relation-algebra-and-the-puzzle-libraries)) | none |
 | `std.algebra` | [`algebra.ein`](algebra.ein) | the relation algebra: the relative operators (`converse`, `compose`, `identity`), the Boolean ones (`meet`, `join`, `difference`, `complement`, `top`, `empty`), the cardinality checks (`functional`, `injective`, `total`, `surjective`, and the `bijective-properties` fan-out), the property checks (`irreflexive`, `antisymmetric`, `asymmetric`, `connex`, `difunctional`), the property closures (`symmetric` with its `symmetric-negative` mirror through `symmetric-negative-setup`, `transitive`, `includes`), `imply1`, `imply2-fwd`, `imply2-reverse`, the equational lemmas (`symmetric` ⟺ `converse R R`, Schröder's `compose-negative-r` and `-s`, contravariance, converse over join), the signature typecheck `converse-illtyped-dom` and `-ran`, and the totality obligations `total-owed` and `surjective-owed` ([§](#the-relation-algebra-and-the-puzzle-libraries)) | none |
 | `std.bijection` | [`bijection.ein`](bijection.ein) | closed-world bijection inference, read off the signature `(relation R A B)`: `bijective-setup` and `typecheck-setup` fan a `(bijective R)` and two hierarchy knobs into `domain-elimination` and `range-elimination` (survivor forcing), `functional-negative` and `injective-negative` (negative completion at root), and `typecheck-arg-0` and `-1`. Needs `forall`. The zebra2 encoding, generalised | none |
-| `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-0` and `-1`, `domain-elimination` and `no-room-left`, the instance-type relation a parameter `?isa`; the positional counterpart of `std.bijection`. Needs `forall` | none |
-| `std.slots` | [`slots.ein`](slots.ein) | closed-world inference for **one co-location relation** whose equivalence classes are *slots*, one member per type: `slot-partition-setup` fans `(slot-partition R isa sub Super Index)` into `slot-locate`, `slot-exclusive`, `slot-occupied`, `slot-negative`, `slot-elimination` and `slot-fill`, `slot-no-room` and `slot-no-fill`, and the obligations `slot-owed-room` and `slot-owed-fill`; `slot-spatial-setup` fans `(slot-spatial R S isa PT)` into eight congruence rules, `slot-adjacent-fwd` and `-bwd` with their negatives, `slot-prune-fwd` and `-bwd`, `slot-endpoint-fwd` and `-bwd`. Needs `forall`, `symmetric` and `symmetric-negative-setup`. The zebra encoding, generalised | none |
+| `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-0` and `-1`, `domain-elimination` and `no-room-left`, the membership relation a parameter `?isa`; the positional counterpart of `std.bijection`. Needs `forall` | none |
+| `std.slots` | [`slots.ein`](slots.ein) | closed-world inference for **one co-location relation** whose equivalence classes are *slots*, one member for each child of `Super`: `slot-partition-setup` fans `(slot-partition R isa sub Super Index)` into `slot-locate`, `slot-exclusive`, `slot-occupied`, `slot-negative`, `slot-elimination` and `slot-fill`, `slot-no-room` and `slot-no-fill`, and the obligations `slot-owed-room` and `slot-owed-fill`; `slot-spatial-setup` fans `(slot-spatial R S isa PT)` into eight congruence rules, `slot-adjacent-fwd` and `-bwd` with their negatives, `slot-prune-fwd` and `-bwd`, `slot-endpoint-fwd` and `-bwd`. Needs `forall`, `symmetric` and `symmetric-negative-setup`. The zebra encoding, generalised | none |
 | `std.typing` | [`typing.ein`](typing.ein) | `(type-hierarchy ?isR*)`, a converse-typecheck driver named once, and the `(reflexive R)` closure; pairs with `std.algebra`'s `converse-illtyped-*` | none |
-| `std.closure` | [`closure.ein`](closure.ein) | `infer-closure`: `functional` ∧ `total` ⟹ `(__closed__ R)`. Opt-in, and **not for a relation the search decides** (the file's caveat) | none |
+| `std.closure` | [`closure.ein`](closure.ein) | `infer-closure`: `functional` ∧ `total` ⟹ `(__closed__ R)`. Opt-in, and **not for a relation whose facts the search decides** (the file's caveat) | none |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | the decimal tables, facts and no rule, generated ([§](#stdmathdigits-a-library-of-facts)) | none |
 | `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `arith` |
 | `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, and its check where it is written ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `decimal` |
@@ -88,10 +88,10 @@ files are modules.
 | `std.bool.inputs` | [`bool/inputs.ein`](bool/inputs.ein) | a circuit's inputs as hypotheses, and required values ([§](#stdboolinputs-inputs-as-hypotheses)) | `inputs` |
 
 An **entry** is a module's closing rule: a rule with an empty `:match` that
-closes every relation of the module and names every rule of it, so that one
-name brings all of it and nothing of it is left for the search to guess. The
-relation-algebra modules have none, since what they close is the program's to
-say.
+closes the held extent of every relation of the module and names every rule of
+it, so that one name brings all of it and nothing of it is left for the search
+to guess. The relation-algebra modules have none, since what they close is the
+program's to say.
 
 ## Importing
 
@@ -181,42 +181,43 @@ the cardinality checks and `forall`, is one line:
 Both give the same closed-world inference (negative completion, elimination,
 no-room ⊥); they differ in what carries the property. `std.bijection` wants one
 relation per attribute, each a bijection onto the positions, and reads the
-argument types off `(relation R A B)`, so the property is per relation.
-`std.slots` wants *one* relation shared by every attribute, and the property
-is scoped by a type **family** (`Super`'s direct children) and the type that
-names a slot (`Index`), because `(bijective R)` has nowhere to put a type
-pair, and scoping per pair would need one declaration per ordered pair of
-attribute types. The two Zebra encodings are the worked comparison:
-[`examples/zebra2.ein`](../examples/zebra2.ein) uses `std.bijection`,
-[`examples/zebra.ein`](../examples/zebra.ein) uses `std.slots`, and both are
-held to the published answer
+labels off the declaration `(relation R A B)`, so the property is per relation.
+`std.slots` wants *one* relation shared by every attribute, and the property is
+scoped by a **family** of kinds (`Super`'s direct children) and the kind that
+names a slot (`Index`), because `(bijective R)` has nowhere to put a pair of
+kinds, and scoping per pair would need one declaration per ordered pair of
+them. A *kind* here is an atom that membership facts point at, `Color` in
+`(is-a Red Color)`: Ein has no types. The two Zebra encodings are the worked
+comparison: [`examples/zebra2.ein`](../examples/zebra2.ein) uses
+`std.bijection`, [`examples/zebra.ein`](../examples/zebra.ein) uses
+`std.slots`, and both are held to the published answer
 ([Q-M1e.25](../docs/decisions/corpus/Q-M1e.25-both-zebra-encodings-are-held-to-the-published.md);
 the [examples' catalogue](../examples/README.md) has them side by side).
 
-**Why `std.slots` anchors its conclusions at the `Index` type** instead of
+**Why `std.slots` anchors its conclusions at the `Index` kind** instead of
 enumerating the equivalence closure is a cost. `(transitive co-located)`
 materialises every pair inside a class, 6 members × 5 ordered partners × 5
-slots = **150** positive edges, where the typed encoding holds the same
-information in **25**; and the negative side is the complement of a
-30-element square, **900** ordered pairs against 125. The negative rules join
-positives *against* negatives, so the cost is the **product** of the two.
+slots = **150** positive edges, where the encoding with a relation an attribute
+holds the same information in **25**; and the negative side is the complement
+of a 30-element square, **900** ordered pairs against 125. The negative rules
+join positives *against* negatives, so the cost is the **product** of the two.
 `slot-locate` is transitivity with its conclusion pinned to the slot's index,
 and `slot-negative` likewise, which puts every derived fact on the same
-Attribute × House rectangle the typed relations occupy. Transitivity still
-*holds*, and it is what justifies both rules; it is not enumerated off the
-rectangle.
+Attribute × House rectangle the per-attribute relations occupy. Transitivity
+still *holds*, and it is what justifies both rules; it is not enumerated off
+the rectangle.
 
 **`std.algebra`'s operators are intrinsic or extensive.** An intrinsic one
 reads existing edges: `compose`, `meet`, `difference`, `converse`, `join`,
 `difunctional`. An extensive one ranges over the `Dom × Ran` universe to reach
 absent pairs: `complement`, `top`, `identity`, `connex`. The extensive ones
-take the puzzle's instance-type relation and argument types `(?isa Dom Ran)`
-as parameters and inherit the closed-world caveat: sound only where the
-operand is decided by saturation (the `std.closure` caveat), so not for a
-relation the search decides
+take the puzzle's membership relation and the two kinds the arguments range
+over, `(?isa Dom Ran)`, as parameters and inherit the closed-world caveat:
+sound only where the operand is decided by saturation (the `std.closure`
+caveat), so not for a relation whose facts the search decides
 ([`04-stdlib/02-relation-algebra.md` § Three distinctions](../docs/ein/user/04-reference/04-stdlib/02-relation-algebra.md#three-distinctions-that-govern-soundness)).
-The module has no division residuals (`R\S`, `R/S`, `syq`), which would need
-a `forall` over the universe.
+The module has no division residuals (`R\S`, `R/S`, `syq`), which would need a
+`forall` over the universe.
 
 **The universal closures** (`symmetric`, `transitive`, `includes`) are
 `std.algebra`'s property-closure section. The Zebra encodings import them,
@@ -389,7 +390,7 @@ stdlib/math/decimal-arith.ein stdlib/math/positional.ein`).
 | **division by zero** | a contradiction, **in two steps**: a request whose divisor is zero, however written, derives the flag `(division-by-zero (div X Y))`, and the flag derives `(false)` by `std.math.arith`'s rule ([Q-M1f.269](../docs/decisions/stdlib/math/Q-M1f.269-division-by-zero-is-a-contradiction.md)). Root is dead, R is empty, and no query of the program has an answer; `ein solve` names the request in the unsat core and `division-by-zero-is-false` as what refuted it. A program that must not die compares its divisor with zero first and derives its `div` request by a rule over `(cmp-of Y z gt)`. **It is flagged wherever it is called** ([Q-M1f.163](../docs/decisions/stdlib/math/decimal/Q-M1f.163-a-division-by-zero-is-flagged-wherever-division.md)): every division goes through the tagged call `(div-call TAG X Y)`, and a call whose Y is zero by value derives `(division-by-zero (div-call TAG X Y))`, the call as it was asserted, and `(false)` from it, whoever made the call, a rule of a program's own included. A public request therefore holds two flags, its own and its call's under the tag `(quotient X Y)` ([Q-M1f.211](../docs/decisions/stdlib/math/decimal/Q-M1f.211-a-public-division-by-zero-holds-two-flags.md)); `ein solve`'s read-out names the request, and `--trace` and `ein saturate --dump` show the second flag. `std.math.int`, `std.math.rat` and `std.math.num9` see a zero divisor before they call, so theirs is one flag, the request's. **A theory in which division by zero is allowed** (a wheel, a meadow, transreal arithmetic) would be a module of its own that does not import `std.math.arith`; none is built |
 | **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)` ([Q-M1f.149](../docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md)). The same sum written with the numbers is another request with its own answer. A name stands for one number: a name no `let` states, a name stated twice with two numbers, and `z` or a digit as a name are each flagged (below) |
 | **a malformed request** | a contradiction, **in two steps**, as a division by zero is ([Q-M1f.316](../docs/decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md)). `(malformed REQUEST)`, the request as written, where a digit stands for an operand; `(malformed (let NAME NUMBER))` where a `let` cannot be read; `(undeclared NAME REQUEST)` where the request names an operand no `let` states. A malformed **numeral** is `std.math.decimal`'s, `(not-decimal NUMERAL THING)`, flagged where it is written, with no request reading it. Each flag derives `(false)` by a rule of its own. Root is dead, R is empty, every command exits 0, and `ein solve` names the fact the fault was written in, in the unsat core. **A flag means malformed; no flag does not mean well-formed** ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)) |
-| **the one entry** | `decimal-arith`, the closing rule: it names every rule of the theory and closes every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. A relation the importing program declares is the program's to close |
+| **the one entry** | `decimal-arith`, the closing rule: it names every rule of the theory and closes the held extent of every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. The held extent of a relation the importing program declares is the program's to close |
 | **the tagged calls** | what a theory built on the calculator calls, below: an interface, held to its shapes by a test |
 
 **The tagged calls, an interface**
@@ -681,9 +682,9 @@ holds that the list is this one:
   it, so nothing states it
   ([Q-M1f.275](../docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)),
   and a top-level fact of `n`, which is no nested term;
-- **in `std.math.int` and `std.math.rat`, an operand of another type**: a
-  natural number where an integer goes, and an integer or a natural number
-  where a rational goes
+- **in `std.math.int` and `std.math.rat`, an operand of another kind of
+  number**: a natural number where an integer goes, and an integer or a natural
+  number where a rational goes
   ([Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md));
 - **every malformation of `std.math.num9`**, which is kept as an example of
   another representation
@@ -895,7 +896,7 @@ of that, and `div9-start`, the widest here, binds 162
 | **overflow** | **a fact, and no number** ([Q-M1f.168](../docs/decisions/stdlib/math/num9/Q-M1f.168-overflow-is-a-fact-and-no-number-and-a-division.md)). A sum or a product that does not fit nine digits derives `(overflow REQUEST)`, the request as written, and no result fact: never a truncated number. Root stays alive, the program's other requests are answered, and a rule of the program may match the flag. A difference, a comparison and a quotient cannot overflow |
 | **division by zero** | a contradiction, as everywhere in the calculator: `div9-by-zero` derives `(division-by-zero (div9 X ZERO))`, and `std.math.arith`'s `division-by-zero-is-false`, which this module imports, derives `(false)`. Root is dead and R is empty |
 | **conversions** | a request each way, one firing: `(to9 X)`, X a natural number of `std.math.decimal`, is answered by `(as9 X W)`, or by `(big X)` where X is written with more than nine digits; `(from9 W)` by `(of9 W X)`, X in normal form. Nothing converts a number because it exists, and no rule of either module hands a request to the other: a program that wants both writes the rules that ask ([`examples/arith/num9_both_ways.ein`](../examples/arith/num9_both_ways.ein)) |
-| **the one entry** | `arith9`, the closing rule: it names every rule and closes every relation of the module, the six tables it reads, and the two relations it takes from the modules below, `n` and `division-by-zero` |
+| **the one entry** | `arith9`, the closing rule: it names every rule and closes the held extent of every relation of the module, the six tables it reads, and the two relations it takes from the modules below, `n` and `division-by-zero` |
 
 **How it computes.** `add9-fits` has a premise for the request and nine rows
 of the full adder's table, the carry handed from column to column in a
@@ -998,7 +999,7 @@ of its own (a program that imports it holds `std.math.decimal-arith`'s one
 | **an operand** | an integer written out, or a name a `(let NAME (int P N))` states: `let` is `std.math.decimal-arith`'s. A natural number is **not** an integer operand, and such a request is never answered and not flagged ([Q-M1f.175](../docs/decisions/stdlib/math/int/Q-M1f.175-an-integer-operand-is-an-integer-written-out.md), [Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)). **An undeclared name and a digit as an operand are flagged** on the request, by the module's three rules from its tags to the request and `int-bad-div`; **a digit or a named constant where a part goes**, `(int 7 z)`, `(int price z)`, is the integer's own fault, `(not-integer INTEGER THING)`, flagged where it is written ([Q-M1f.276](../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)); a malformed numeral inside a part is `std.math.decimal`'s ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)) |
 | **division** | **names its convention** ([Q-M1f.179](../docs/decisions/stdlib/math/int/Q-M1f.179-integer-division-names-its-convention.md)); there is no bare `int-div`. Each request is answered by one fact with a quotient and a remainder, X = Q·Y + R: `(int-div-euclid X Y)` by `(int-quot-euclid-of X Y Q R)`, 0 ≤ R < \|Y\|, Q an integer and R a **natural number** of `std.math.decimal-arith`; `(int-div-trunc X Y)` by `(int-quot-trunc-of X Y Q R)`, Q rounded toward zero and R with the dividend's sign, both integers; `(int-div-floor X Y)` by `(int-quot-floor-of X Y Q R)`, Q rounded down and R with the divisor's sign, both integers ([Q-M1f.200](../docs/decisions/stdlib/math/int/Q-M1f.200-an-integer-divisions-result-is-named-after.md)). The three agree where neither operand is negative, and with `std.math.decimal-arith`'s `div` there |
 | **division by zero** | a divisor that is zero by value, however written or named, derives `std.math.arith`'s flag, `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s rule derives `(false)`: root is dead and R is empty, as everywhere in the calculator. The module's one rule that concludes `(false)` is its integer's shape's, `not-integer-is-false` |
-| **the one entry** | `int-arith`, the closing rule: it closes every relation of the module and `nz`, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
+| **the one entry** | `int-arith`, the closing rule: it closes the held extent of every relation of the module and of `nz`, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
 
 **How it computes.** Each operation works on the parts with
 `std.math.decimal-arith`'s walks and then simplifies. Simplifying is
@@ -1094,7 +1095,7 @@ program asks `rat-simplify` on the way.
 | **the protocol** | `(rat-simplify X)` answered by `(rat-simple-of X S)`, X in lowest terms, the one request that reduces; `(rat-neg X)` by `(rat-neg-of X S)`; `(rat-add X Y)` by `(rat-sum-of X Y S)`; `(rat-sub X Y)` by `(rat-diff-of X Y S)`; `(rat-mul X Y)` by `(rat-product-of X Y S)`; `(rat-div X Y)` by `(rat-quot-of X Y S)`, **one rational, exact, and no remainder**; `(rat-cmp X Y)` by `(rat-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value ([Q-M1f.180](../docs/decisions/stdlib/math/rat/Q-M1f.180-the-names-of-std-math-rat-carry-the-prefix-rat.md)) |
 | **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand, and is not flagged ([Q-M1f.181](../docs/decisions/stdlib/math/rat/Q-M1f.181-a-rational-operand-is-a-rational-written-out.md), [Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)). An undeclared name and a digit as an operand are flagged on the request, by the module's three rules from its tags to the request; a digit or a named constant where the integer or the denominator goes, `(rat 7 (n z 2))`, is the rational's own fault, `(not-rational RATIONAL THING)`, flagged where it is written ([Q-M1f.276](../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)), as in `std.math.int` |
 | **a zero denominator** | **a division by zero, and a contradiction**, as in `std.math.decimal-arith`, and by `std.math.arith`'s rule ([Q-M1f.182](../docs/decisions/stdlib/math/rat/Q-M1f.182-a-zero-denominator-is-a-division-by-zero.md)). A request any operand of which has a denominator of zero, however the zero is written, and a `rat-div` by a rational that is zero, derive `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s `division-by-zero-is-false` derives `(false)`. Root is dead and R is empty |
-| **the one entry** | `rat-arith`, the closing rule: it closes every relation of the module and `nz`, names every rule, and names `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`, the entries of the modules it imports |
+| **the one entry** | `rat-arith`, the closing rule: it closes the held extent of every relation of the module and of `nz`, names every rule, and names `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`, the entries of the modules it imports |
 
 **How it computes.** The operands are looked up and each denominator is
 compared with zero by `std.math.decimal-arith`'s walk. A sum of P1 less N1
@@ -1199,7 +1200,7 @@ and no guard of its own (a program that imports it holds
 | **the protocol** | `(gcd X Y)` answered by `(gcd-of X Y G)`; `(lcm X Y)` by `(lcm-of X Y L)`. The operands are repeated as written; every answer is in normal form |
 | **an operand** | a natural number of `std.math.decimal-arith`, high zeros allowed and read by value, or a name a `(let NAME NUMBER)` states. **Natural numbers only**: an integer or a rational where a number goes is answered by silence. An undeclared name and a digit as an operand are flagged on the request, by the module's two rules from its tags to the request, as `std.math.int`'s are; a malformed numeral is `std.math.decimal`'s, where it is written |
 | **zero** | gcd(X, 0) = gcd(0, X) = X, and **gcd(0, 0) = 0**, the usual convention ([Q-M1f.299](../docs/decisions/stdlib/math/gcd/Q-M1f.299-the-greatest-common-divisor-of-zero-and-zero-is.md)); lcm with a zero is zero, lcm(0, 0) too. **No request of this module divides by zero**: the chain divides only by a number whose shape says it is not zero, and the least common multiple divides by the greatest common divisor only where that is not zero |
-| **the one entry** | `gcd`, the closing rule, which has the request's name: it closes every relation of the module, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
+| **the one entry** | `gcd`, the closing rule, which has the request's name: it closes the held extent of every relation of the module, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
 
 **How it computes.** The operands are looked up by `std.math.decimal-arith`'s
 `operand`; each is put into normal form by an addition walk to zero, so that
@@ -1257,10 +1258,10 @@ Four modules under `bool/`
 ([Q-M1f.328](../docs/decisions/stdlib/bool/Q-M1f.328-boolean-functions-and-circuits-ship-as-four-std.md);
 [`04-stdlib/18-boolean-functions.md`](../docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md)
 has every relation). The two bits are the names `0` and `1`, which are
-decimal's digits too: Ein has no truth values of its own, as it has no
-numbers. Each module comes whole with what it imports, and each has an entry,
-its closing rule, that closes its relations and names its rules and the entry
-below it
+decimal's digits too: Ein has no truth values of its own, as it has no numbers.
+Each module comes whole with what it imports, and each has an entry, its
+closing rule, that closes its relations' held extents and names its rules and
+the entry below it
 ([Q-M1f.265](../docs/decisions/stdlib/bool/Q-M1f.265-each-std-bool-module-is-entered-by-its-last-name.md)):
 
     std.bool.gates  ←  std.bool.props
@@ -1281,7 +1282,7 @@ Rorn Nand One`, capitalised because `and`, `or` and `not` are Ein's own words.
 Two layouts
 ([Q-M1f.325](../docs/decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-a-value-of-one-table.md)):
 
-    (gate2 Xor 0 1 1)   the table, 64 rows: a function is a value, so a rule
+    (gate2 Xor 0 1 1)   the table, 64 rows: a function is an argument, so a rule
                         about any function needs no parameter, and a search can
                         make the function a hypothesis
     (Xor 0 1 1)         a relation a function, its four rows, derived from the
@@ -1293,15 +1294,14 @@ table's rows are generated**, between two lines of the file that say so, and
 not edited by hand; the rest is written by hand, the sixteen rules among it.
 
 **A function's name is the module's.** Declared as a relation, each name has
-one full name, `std.bool.gates.Xor`, as the relation and as the value in the
+one full name, `std.bool.gates.Xor`, as the relation and as the argument in the
 table, so a program that writes it, as a gate's function too, lists it:
 `(import std.bool.gates :symbols (Xor And))`. A name a program writes and does
 not list is its own, a name no row has: a gate of that function computes
 nothing, and nothing says so
 ([Q-M1f.264](../docs/decisions/imports/Q-M1f.264-a-gate-functions-name-a-program-writes-and-does.md)).
 Every program that imports the module derives the second layout, 64 firings at
-root: an import brings every rule, so the sixteen are not a program's to
-select
+root: an import brings every rule, so the sixteen are not a program's to select
 ([Q-M1f.263](../docs/decisions/stdlib/bool/Q-M1f.263-every-program-that-imports-std-bool-gates.md)).
 
 ### `std.bool.props`: what is known of the sixteen, by rules
@@ -1358,10 +1358,10 @@ are every depth's, `find stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '
 (`cat stdlib/*.ein` would read only the top level).
 
 **"Activated" is two events**, and the second is not an optimisation of the
-first. A saturation rule reaches the agenda and emits `fire`. An
-**obligation** rule, one whose `:assert` is the verdict atom `open`, never
-can: it derives nothing and is kept out of the agenda, so its evidence is the
-`owe` its post-fixpoint pass emits
+first. A saturation rule reaches the agenda and emits `fire`. An **obligation**
+rule, one whose `:assert` is the verdict `open`, never can: it derives nothing
+and is kept out of the agenda, so its evidence is the `owe` its post-fixpoint
+pass emits
 ([`08-obligations.md`](../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)).
 The test reads both kinds; counting only `fire` would leave the four duals
 permanently unactivated.

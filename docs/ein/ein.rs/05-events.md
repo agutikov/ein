@@ -114,9 +114,9 @@ comparison surface: a changed field meaning is a schema version ([§ Versioning]
 
 `asserts` and `rule` mean what they say.
 
-**`owe` is not a firing.** A rule whose `:assert` is the verdict atom `open` derives nothing, so it is kept out of
-the saturation agenda and runs as one pass over the KB after the fixpoint ([`03-design/06-saturation.md`](03-design/06-saturation.md)).
-Three consequences for a reader of this stream:
+**`owe` is not a firing.** A rule whose `:assert` is the verdict `open` derives nothing, so it is kept out of the
+saturation agenda and runs as one pass over the KB after the fixpoint
+([`03-design/06-saturation.md`](03-design/06-saturation.md)). Three consequences for a reader of this stream:
 
 - **A rule never emits both.** An obligation rule never produces a `fire`; a saturation rule never produces an
   `owe`. That makes `owe` the activation evidence for the obligation half of the stdlib, which is how
@@ -144,7 +144,7 @@ makes the queue's pop order checkable rather than inferred.
 |---|---|---|
 | `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered`; and `later_debts`, `later_candidates` where the call read a debt the state does not owe |
 | `hyp` | each candidate the generator constructs | `fact`; `verdict`, which is `emitted` or the name of the filter that dropped it |
-| `hypskip` | a skip **before** a candidate exists; *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
+| `hypskip` | a skip **before** a candidate exists; *verbose only* | `relation`, `reason`, `object` (for `self_edge`), the stream's word for a guessable atom |
 | `enter` | each node a route visits, after the node's own events, in visit order | `layer` (the commitment's size), `commitment` (sorted), `kind`, one of `dead`, `owing` and `in-r`, `owes`, `core` (a dead node's, a list; `null` on a node that is not dead, which has no core), `core_status` (`within-budget`, or `cut-` and the caps the core's search stopped at; `null` where no core was taken) |
 | `layer` | the end of each layer of route 1 or of the state route | `layer`, `visited`, `dead`, `owing`, `r`, `facts`: the layer's own counters. On route 1 `layer` is the commitments' size, from 0; on the state route it is the layer's index, root's 0, then one per state size extended, and the counters are its saturations |
 
@@ -152,10 +152,9 @@ makes the queue's pop order checkable rather than inferred.
 $\operatorname{raw} = \operatorname{emitted} + \sum_{f} \operatorname{dropped}_f$ over the filters $f$ is the
 invariant the generator's statistics assert, and naming the filter makes a counter difference locate itself (`hypgen::apply_filters` returns that name for this reason).
 
-A skip before any candidate exists gets its own kind rather than a `hyp` with an invented `fact`:
-`closed_relation`, `relation_not_whitelisted` and `no_hypothesis_relation` are decisions about a *relation*, and
-`self_edge` about an (object, relation) pair. They are verbose only, since `self_edge` fires once per (object,
-filler, relation, slot).
+A skip before any candidate exists gets its own kind rather than a `hyp` with an invented `fact`: `closed_relation`,
+`relation_not_whitelisted` and `no_hypothesis_relation` are decisions about a *relation*, and `self_edge` about an
+(atom, relation) pair. They are verbose only, since `self_edge` fires once per (atom, filler, relation, slot).
 
 `enter` and `core`: a core is an explanation
 ([Q-M1f.6](../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)); `null` and `[]` differ, `[]` being the empty

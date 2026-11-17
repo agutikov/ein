@@ -1,6 +1,6 @@
 # Data model
 
-This page specifies how `ein.rs` holds what it reasons about: names, values and facts as integers, the knowledge
+This page specifies how `ein.rs` holds what it reasons about: names, objects and facts as integers, the knowledge
 base as a stack of copy-on-write layers, its indexes, its provenance records and the records of the program's
 registries. All of it is `ein-core`: [`intern.rs`](../../../../ein.rs/crates/ein-core/src/intern.rs),
 [`terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs),
@@ -12,26 +12,36 @@ registries. All of it is `ein-core`: [`intern.rs`](../../../../ein.rs/crates/ein
 [`walks.rs`](../../../../ein.rs/crates/ein-core/src/walks.rs),
 [`entities.rs`](../../../../ein.rs/crates/ein-core/src/entities.rs),
 [`program.rs`](../../../../ein.rs/crates/ein-core/src/program.rs) and
-[`shape.rs`](../../../../ein.rs/crates/ein-core/src/shape.rs). The crate depends on nothing in the workspace and
-is `#![forbid(unsafe_code)]`; how it sits among the other crates is [`01-architecture.md`](../01-architecture.md).
+[`shape.rs`](../../../../ein.rs/crates/ein-core/src/shape.rs). The crate depends on nothing in the workspace and is
+`#![forbid(unsafe_code)]`; how it sits among the other crates is [`01-architecture.md`](../01-architecture.md).
 
 ## 1. Identity and what it costs
 
-A fact is a relation name and a tuple of arguments, each argument a name or a fact, and its identity is exactly those
-two things ([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md),
+A fact is a relation and a tuple of arguments, each argument an atom or a fact, and its identity is exactly those
+two things ([Q-M1f.380](../../../decisions/language/Q-M1f.380-an-objects-identity-is-its-name-or-its-tuple.md),
+[Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md),
 [Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)): provenance,
 source position and everything else take no part in it. In `ein.rs` every identity is a `u32`:
 
 | thing | type | equality | hash |
 |---|---|---|---|
-| a name | `Symbol(u32)` | integer compare | the integer |
+| an atom, by its name | `Symbol(u32)` | integer compare | the integer |
 | a proposition | `FactId(u32)` | integer compare | the integer |
-| an argument | `Value(u32)`, a 2-bit tag beside a 30-bit payload | integer compare | the integer |
+| an object, as an argument | `Value(u32)`, a 2-bit tag beside a 30-bit payload | integer compare | the integer |
 | a nested fact argument | a `Value` whose payload is a `FactId` | integer compare | the integer |
 
 So unifying two arguments starts with a tag test, the matcher's registers hold `Value`s, and the keys of every
 per-fact table (belief, the negated set, provenance, the alive set) are dense integers usable as a `Vec` or bit-set
 index.
+
+**The code's words.** `Value` is the code's word for an **object**, a node of the knowledge-base graph: an atom,
+held as the `Symbol` of its name, or a fact, held as a `FactId`
+([Q-M1f.379](../../../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md)). A `FactId`
+is a fact whether or not any KB holds it, which is why the table calls it a proposition. A KB's facts of one
+relation are that relation's **held extent**
+([Q-M1f.381](../../../decisions/language/Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md)), and the
+code calls them its extent: `Kb::facts_of`, `n_by_rel`, `check_extent_counts`. Where a section below says *extent*
+of a KB, it is the held extent.
 
 **Interning is not belief.** The intern tables say that a name or a proposition has a number; whether a KB holds the
 proposition is a bit in that KB (§ 5). A fork may intern freely without its parent ever seeing the proposition, which
@@ -64,8 +74,8 @@ as a sort key would make an output depend on the order the loader walked the fil
 | `lookup` | `FxHashMap<Box<str>, Symbol>` | the reverse map; it owns a second copy of each string, because a map keyed by slices of `arena` would be a self-referential borrow and need `unsafe` |
 | `rank` | `OnceLock<Vec<u32>>` | for each `Symbol`, its position in the sorted symbol list, built on demand (§ 2.1) |
 
-What interns here: relation, object, rule, variable and keyword names, and every name that reaches a fact argument.
-A run of digits is a name like any other, so `7` and `07` are two symbols
+What interns here: the names of relations, rules, variables and keywords, and every name that reaches a fact
+argument. A run of digits is a name like any other, so `7` and `07` are two symbols
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md); `terms.rs`'s
 `a_name_is_its_texts_one_value`, `values_semantics.rs`'s `a_run_of_digits_is_a_name_as_written`). `Interner::intern`
 assigns or returns an id, `Interner::get` only looks one up, and `Interner::text` borrows the text from the arena.
@@ -127,10 +137,11 @@ copy that interns from where the original stood, so it hands out the ids the ori
 nested shape is what makes `(not (color-loc Red House-1))` one fact whose single argument is a `FactId`, so the
 negation index is a bit set over `FactId` and a contradiction test is a bit test (§ 6).
 
-`Value` has no `Ord`, so `.sort()` cannot reach for the wrong order. `Value::cmp_identity` is a total order over bits,
-correct where any total order is (a sorted state key, a canonical form). `Terms::cmp_semantic` is the observable
-order: two names by rank, two facts by `Terms::cmp_fact_semantic` (relation rank, then arguments element-wise, then
-arity), and `Sym` before `Fact` across shapes. `Terms::display` is the one printer of a value as Ein text.
+`Value` has no `Ord`, so `.sort()` cannot reach for the wrong order. `Value::cmp_identity` is a total order over
+bits, correct where any total order is (a sorted state key, a canonical form). `Terms::cmp_semantic` is the
+observable order: two names by rank, two facts by `Terms::cmp_fact_semantic` (relation rank, then arguments
+element-wise, then arity), and `Sym` before `Fact` across shapes. `Terms::display` is the one printer of a `Value`
+as Ein text.
 
 `ein_core::facts::FactId(pub u32)` is dense, so it indexes a `Vec` or a bit set directly. It derives `Ord`, and that
 order is assignment order, legitimate only where any total order is equivalent.
@@ -272,8 +283,8 @@ fact list (`rebuild_layer`) and then checks the extent counts (§ 7). Held by
 | index | where | keyed on | holds | read by |
 |---|---|---|---|---|
 | `present` | per layer | `FactId` | a bit set: believed here | `Kb::contains` |
-| `by_rel` | per layer | relation `Symbol` | the extent, append order | `Kb::facts_of` |
-| `by_rel_slot_val` | per layer | `SlotKey` (§ 6.1) | the facts with that value at that position | `Kb::facts_with` |
+| `by_rel` | per layer | relation `Symbol` | the held extent, append order | `Kb::facts_of` |
+| `by_rel_slot_val` | per layer | `SlotKey` (§ 6.1) | the facts with that object at that position | `Kb::facts_with` |
 | `negated` | per layer | the inner `FactId` of each stored `(not X)` | a bit set | `Kb::is_negated`, `Kb::negated` |
 | `rule_apps_by_rule` | per layer | a rule's name | the facts headed by it: its activators | `Kb::rule_apps_by_rule` |
 | `rule_apps_on_rel` | per layer | a relation's name | rule-application facts naming it as an argument, `(symmetric co-located)` | `Kb::rule_apps_on_relation` |
@@ -301,11 +312,11 @@ impl SlotKey { pub const DIRECT: u16 = u16::MAX; }
 ```
 
 Its four fields make 12 bytes, which does not pack into a `u64` (the symbol and the value need 32 bits each), so it
-stays a struct key. A name in argument `slot` is keyed `(rel, slot, DIRECT, value)`. A nested fact in argument `slot`
-has no single value to key on, so the key reaches **one level inside** it instead: each name at position `inner` of
-the nested fact is keyed `(rel, slot, inner, value)`. A premise `(not (R ?a ?b))` with `?a` bound is then a bucket
-lookup rather than a scan of the `not` extent. One level only: the nesting a program writes is a negation around a
-fact, and a deeper key would add entries nothing asks for.
+stays a struct key. A name in argument `slot` is keyed `(rel, slot, DIRECT, value)`. A nested fact in argument
+`slot` has no single name to key on, so the key reaches **one level inside** it instead: each name at position
+`inner` of the nested fact is keyed `(rel, slot, inner, value)`. A premise `(not (R ?a ?b))` with `?a` bound is then
+a bucket lookup rather than a scan of the held extent of `not`. One level only: the nesting a program writes is a
+negation around a fact, and a deeper key would add entries nothing asks for.
 
 The index is a narrowing. The matcher re-checks every slot of every candidate, so a key changes which facts are
 offered and never which ones match; buckets are appended in insertion order, so the facts that survive come in the
@@ -331,14 +342,14 @@ the alive set and dense-id dedups elsewhere in the engine.
 
 ## 7. Per-relation extent counts
 
-`Kb::n_by_rel` maps each relation to the size of its extent across every layer. It is KB-wide rather than per layer,
-maintained by `Kb::index_fact` wherever `by_rel` is written, recomputed by `Kb::rebuild_indexes`, and copied per fork.
-`Kb::n_facts_of(rel)` is one map lookup at any depth, where a fold over the layers would grow with the stack; the
-negation-as-failure boundary asks it once per watched relation ([`06-saturation.md`](06-saturation.md)).
+`Kb::n_by_rel` maps each relation to the size of its held extent across every layer. It is KB-wide rather than per
+layer, maintained by `Kb::index_fact` wherever `by_rel` is written, recomputed by `Kb::rebuild_indexes`, and copied
+per fork. `Kb::n_facts_of(rel)` is one map lookup at any depth, where a fold over the layers would grow with the
+stack; the negation-as-failure boundary asks it once per watched relation ([`06-saturation.md`](06-saturation.md)).
 `Kb::check_extent_counts` compares the map with a walk of the layers and is part of `check_layering`. Held by
-`kb.rs`'s `n_facts_of_costs_one_probe_at_any_depth`, which counts probes forty forks deep under
-`--features counters`, and `a_rebuild_reconstructs_the_extent_counts`. The other aggregate reads (`n_facts`,
-`n_rule_apps`, `contains`, `is_negated`) stay $O(\operatorname{depth})$.
+`kb.rs`'s `n_facts_of_costs_one_probe_at_any_depth`, which counts probes forty forks deep under `--features
+counters`, and `a_rebuild_reconstructs_the_extent_counts`. The other aggregate reads (`n_facts`, `n_rule_apps`,
+`contains`, `is_negated`) stay $O(\operatorname{depth})$.
 
 ## 8. Provenance
 
@@ -485,7 +496,7 @@ explicitly, so a record shared between a root and its forks cannot answer for on
 
 | record | fields |
 |---|---|
-| `Relation` | `name: Symbol`, `signature: Box<[Symbol]>` (argument types by name; empty is legal and makes no hypothesis target), `declared: bool` (false for a head auto-created for an undeclared fact), `why: Option<Symbol>`, `loc: Option<Loc>` |
+| `Relation` | `name: Symbol`, `signature: Box<[Symbol]>` (the declaration's labels, by name; empty is legal and makes no hypothesis target), `declared: bool` (false for a head auto-created for an undeclared fact), `why: Option<Symbol>`, `loc: Option<Loc>` |
 | `Rule` | `name`, `params: Box<[Symbol]>`, `match_: Option<Pattern>`, `assert_: Option<Pattern>`, `why`, `loc` |
 | `Pattern` | `expr: ExprRef`, `variables: Box<[Symbol]>`, `relation_names: Box<[Symbol]>` (the relations a clause names literally, which feed `rules_by_relation`) |
 | `Macro` | `name`, `params`, `body: ExprRef`, `loc` |
@@ -498,13 +509,14 @@ explicitly, so a record shared between a root and its forks cannot answer for on
 There is no type or instance record: a program's membership facts are ordinary facts. `Program::categorise` gives
 each name a `NameCategory`: `Relation` for the kernel's `relation`, `rule` and `written` and for every registered
 relation, `Rule` for a saturation or obligation rule's name, `Object` for everything else, an hrule's name included.
-The blind enumerator draws the objects it proposes facts about from `Object` names alone.
+`Object` is the category's name in the code and no sort of node; the blind enumerator draws the guessable atoms from
+`Object` names alone.
 
 ### 9.3 The KB shape dump
 
 `ein_core::shape::shape(kb, terms)` renders a KB as one deterministic text: each fact by its position in the fact
 list, the registries, the seven indexes of § 6 (the participation index by its `DIRECT` keys), the primary
-provenance and the alternative counts. Values are written with `repr`, so a name and a nested fact cannot collide,
+provenance and the alternative counts. `Value`s are written with `repr`, so a name and a nested fact cannot collide,
 and every map is emitted in a sorted order of its own. It is the `load` operation of the corpus shape digests
 ([`ein-render/tests/golden/corpus_shapes.md5`](../../../../ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5)),
 and the comparator of a `.einb` opened into a crowded interner, where ids differ and the KB must not.
@@ -516,8 +528,8 @@ and the comparator of a `.einb` opened into a crowded interner, where ids differ
 not inserted; `EqClasses::union` merges by first argument, the first argument's root winning; `EqClasses::classes`
 lists root and members in the map's insertion order. `Kb::classes()` is its one accessor.
 
-What holds today ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)): names are never
-merged, and `eq` is name identity.
+What holds today ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)): atoms are never
+merged, and `eq` is identity of names.
 
 - **Nothing writes it.** No rule, pass or loader step calls `union`; the only callers are tests.
 - **No matcher reads it.** A scan for `(r C ?y)` does not match a stored `(r A B)` with `A` and `C` united, and an

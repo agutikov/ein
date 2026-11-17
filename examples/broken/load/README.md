@@ -42,15 +42,15 @@ parse error, read where the module is.
   refuses it where the rule is written, so it never reaches the compiler.
 - **A derived activator that binds a relation parameter to a fact**, `derived_activator.ein` and
   `derived_activator_never.ein`: a rule, `mk`, derives `r`'s activator `(r ?f)` from `item`'s argument, and `r`'s
-  parameter names a relation. `item` is declared, so its argument holds any value, a fact among them, and the
+  parameter names a relation. `item` is declared, so its argument holds any object, a fact among them, and the
   loader refuses the program whether or not a fact puts one there
   ([Q-M1f.1](../../../docs/decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)), one line
   naming the deriving rule, the activated rule and the parameter
-  ([`07-diagnostics.md` § 2.9](../../../docs/ein/user/04-reference/07-diagnostics.md#29-a-rule-shape-that-reads-nothing)).
-  A marker's argument, `(bijective ?R)`, passes a relation name on and loads: the loader reads what the program does
-  with it ([Q-M1f.41](../../../docs/decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)).
-  A relation parameter bound to a nested fact where the activator is written is refused the same way: a relation
-  is named by a symbol, not a fact
+  ([`07-diagnostics.md` § 2.9](../../../docs/ein/user/04-reference/07-diagnostics.md#29-a-rule-shape-that-reads-nothing)). A marker's
+  argument, `(bijective ?R)`, passes a relation name on and loads: the loader reads what the program does with it
+  ([Q-M1f.41](../../../docs/decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)). A relation
+  parameter bound to a nested fact where the activator is written is refused the same way: a relation is named by a
+  symbol, not a fact
   ([`07-diagnostics.md` § 2.6](../../../docs/ein/user/04-reference/07-diagnostics.md#26-a-relation-named-by-a-number)).
 - **Imports**: a module not found, a relative path not found, a bare `std`, `:as` and `:symbols` together, a short
   name listed that the module does not provide, two definitions of one short name, and a cycle.

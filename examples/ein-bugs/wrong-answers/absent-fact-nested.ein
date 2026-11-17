@@ -7,7 +7,7 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────────
 ;;;
-;;; A value is a name, or a fact a state could hold, and no state holds a fact of
+;;; An object is an atom, or a fact a state could hold, and no state holds a fact of
 ;;; `absent`: refused at the parse, on every command. What Ann says is written
 ;;; `(says Ann (not (paid Bob)))`.
 ;;;

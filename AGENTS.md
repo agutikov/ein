@@ -32,7 +32,7 @@ constrained-reasoning research.
   [`08-read-out.md`](docs/ein/user/04-reference/08-read-out.md), every row
   `ein solve` prints and what it counts;
   [`05-hypothesis-space.md`](docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md),
-  the hypothesis space and its structure, each object defined;
+  the hypothesis space and its structure, each notion defined;
   [`03-hypotheses-and-the-answer.md`](docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md),
   `ein show hyps`, `ein render h-space` and `h-space.json`, key by key (its
   § 1.3, § 2.3 and § 2.4), and the routes' tests;
@@ -205,7 +205,7 @@ constrained-reasoning research.
   rows are generated and a relation each, `(And A B OUT)`), `std.bool.props`
   (thirty relations known of them, derived by rules), `std.bool.circuit` and
   `std.bool.inputs` (a circuit's inputs as hypotheses); a function's name is
-  `std.bool.gates`', as a relation and as a value, so a program that writes
+  `std.bool.gates`', as a relation and as an argument, so a program that writes
   one lists it. `std.logic` is left free for M1g.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
   [`stdlib/README.md`](stdlib/README.md) has a section for each, and the
@@ -219,7 +219,7 @@ constrained-reasoning research.
   family**, each carrying an `:expect`, so `ein test tests/` is the whole
   suite. They are deliberately *not* under `examples/`: that directory is
   things to read, and these exist to break. Idioms worth knowing before
-  writing a new one — **naming a relation closes it** (which is how a rule
+  writing a new one — **naming a relation closes its held extent** (which is how a rule
   with no guard gets a negative case at all), **`(unknown …)` as a probe**
   (the only way to say a rule did *not* derive a negative, since stored
   negatives are not closed), **a refutation rule gets two files** — one where
@@ -265,7 +265,8 @@ constrained-reasoning research.
   macros → imports → load), `ein-infer` (compile → match → saturate → the NAF
   boundary → the routes over R; `invariant.rs`, the **alive-set invariant** —
   *no rule asserts a name the program lacks* — whose list of the program's
-  names seeds the blind enumerator's objects), **`ein-einb`** (the `.einb`
+  names seeds the guessable atoms, what the blind enumerator guesses
+  about), **`ein-einb`** (the `.einb`
   binary KB container, and the **only library crate that is not
   `#![forbid(unsafe_code)]`**: its `cast.rs` is the one audited module
   `03-design/10-toolchain-and-layout.md` § 2 permits `unsafe` in; the other audited `unsafe` is
@@ -375,12 +376,28 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **Ein has no numbers, no ranges and no int kind**, and none is planned.
   `1` and `01` are two names. Arithmetic is a theory in the stdlib, computed
   by saturation.
-- **A value is a name, or a fact a state could hold**: an atom of an ordinary
-  relation or its negation. `eq`, `neq`, `absent`, `and`, `or` and `false`
-  with an argument are never a nested head; `not` of a name is the negation
-  of no fact.
+- **An object is a node of the knowledge-base graph, an atom or a fact**, and
+  nothing else is called an object. An **atom** is a labelled node with no
+  outgoing arrow, its label its **name**; a **fact** is a node with ordered
+  arrows, the first at its **relation**, an atom, the others at its
+  arguments, objects. An object's identity is its name or its tuple, and the
+  graph is the representation, a written list of tuples its notation. A
+  relation's **extent** is every fact of it, held or not; what a knowledge
+  base holds of it is the **held extent**; a declaration, and any fact with
+  the relation's atom under a later arrow, speaks of the relation as one
+  object ([Q-M1f.379](docs/decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md),
+  [Q-M1f.380](docs/decisions/language/Q-M1f.380-an-objects-identity-is-its-name-or-its-tuple.md),
+  [Q-M1f.381](docs/decisions/language/Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md),
+  [Q-M1f.382](docs/decisions/language/Q-M1f.382-a-labelled-arrow-draws-a-fact-of-two-arguments.md);
+  the page is [`01-knowledge-base.md`](docs/ein/reasoning/01-static-ir/01-knowledge-base.md)).
+  *Value* is the code's word for an object (`ein_core::Value`), and *atom*
+  never means an atomic formula: that is a fact.
+- **A fact that is an argument is one a state could hold**: a fact of an
+  ordinary relation or its negation. `eq`, `neq`, `absent`, `and`, `or` and
+  `false` with an argument are never a nested head; `not` of an atom is the
+  negation of no fact.
 - **A string is natural-language text**, written only after `:why`, `:source`
-  or `:goal-text`, never a value. Names are ASCII.
+  or `:goal-text`, never an object. Names are ASCII.
 - `_` and `?_` are refused everywhere. Keywords are closed per form.
   `:priority` is gone: **the agenda fires first what leads to `(false)`** —
   a rule concluding `(false)`, a stored negation, or a fact whose negation
@@ -394,8 +411,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **`:why` is required** on every relation, rule, hrule and macro;
   `--no-require-why` loads a program without.
 - `__closed__` and `__symmetric__` are reserved and never bound, and never
-  an object the blind enumerator proposes about, whether a rule derives the
-  fact one heads or a program writes one as a value, which stays legal
+  an atom the blind enumerator guesses about, whether a rule derives a
+  fact of one or a program writes one as an argument, which stays legal
   (`ein-infer/tests/dunder_objects.rs`); names the loader makes up start
   with `#` (`ein_core::text::INTERNAL_NAMES`).
 - **`written` is the loader's**: it states `(written T)` for every fact
@@ -434,11 +451,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   against whole against `:as`). **No import brings a module's `(query …)`,
   `(solve …)` or `(config …)`**: those are a program's.
 - *Forbid*: a program whose refutation could rest on an `absent` over a
-  relation a commitment can still extend is refused (`ein_infer::forbid`).
+  relation whose held extent a commitment can still extend is refused
+  (`ein_infer::forbid`).
 - **The hypothesis mechanisms do not contradict one another**: an hrule, an
   obligation, `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)`,
-  read on root's fixpoint. No active hrule proposes a relation a list or a
-  closure takes out, no obligation owes one (a list only with no hrule), and no
+  read on root's fixpoint. No active hrule proposes a fact of a relation a list
+  or a closure takes out, no obligation owes one (a list only with no hrule), and no
   relation is in both lists or listed and closed; a list an hrule leaves
   filtering nothing, or a redundant name, is a `note:` (`ein_infer::mechanisms`).
   **`(solve :no-search)`**, a flag with no value, states that the lattice is

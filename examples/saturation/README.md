@@ -36,9 +36,9 @@ it is applied once for each activator, a fact such as `(symmetric co-located)` t
 
 ## How to read a demo
 
-Each demo is self-contained: the header explains what to read in the program. For most demos the rule fires
-exactly once, but the `symmetric` demos (which also re-match on their own conclusion) and the
-`type-exclusivity` demos (which fire over ordered pairs of distinct instances of one type) fire more than once.
+Each demo is self-contained: the header explains what to read in the program. For most demos the rule fires exactly
+once, but the `symmetric` demos (which also re-match on their own conclusion) and the `type-exclusivity` demos
+(which fire over ordered pairs of distinct atoms that membership facts put under one atom) fire more than once.
 
 ## Nested-fact patterns
 

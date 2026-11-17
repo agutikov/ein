@@ -96,8 +96,8 @@ these programs give each rule one.
 |---|---|
 | [`stdlib/algebra/`](stdlib/algebra/) | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — the totality pair's `forall` in both directions, and the totality pair's **obligation** duals, each once owing and once satisfied |
 | [`stdlib/bijection/`](stdlib/bijection/) | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on**, by an obligation the rung declines, which is the only way to reach it from a program that declares one |
-| [`stdlib/elim/`](stdlib/elim/) | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces a value, exactly full refutes |
-| [`stdlib/closure/`](stdlib/closure/) | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from many models to one; plus `02`, closed and satisfied. An obligation on a closed relation is refused at load ([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)), so the closed and owing case is `examples/ein-bugs/closed-and-owing.ein`, a refused program |
+| [`stdlib/elim/`](stdlib/elim/) | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces the one fact left, exactly full refutes |
+| [`stdlib/closure/`](stdlib/closure/) | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from many models to one; plus `02`, closed and satisfied. An obligation on a relation whose held extent is closed is refused at load ([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)), so the closed and owing case is `examples/ein-bugs/closed-and-owing.ein`, a refused program |
 | [`stdlib/slots/`](stdlib/slots/) | a second activating puzzle for the module beside `examples/zebra.ein` — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/math/decimal-arith/`](stdlib/math/decimal-arith/) | `std.math.decimal-arith`, school arithmetic computed by saturation alone: addition, subtraction and comparison, multiplication, division, and the faults of an operand and a `let`: one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but those that divide by zero and those that state something the theory flags, which claim `(false)`; see [below](#stdlibmathdecimal-arith-a-theory-whose-answers-a-program-cannot-check) |
@@ -112,7 +112,7 @@ these programs give each rule one.
 
 ### The obligation pairs, and the check that is not an `:expect`
 
-Four rules assert the verdict atom `open` — `total-owed`, `surjective-owed`,
+Four rules assert the verdict `open` — `total-owed`, `surjective-owed`,
 `slot-owed-room`, `slot-owed-fill`
 ([when an obligation is read](../docs/ein/user/03-syntax-and-semantics/08-obligations.md#when-an-obligation-is-read))
 — and eight programs exercise them, one owing and one satisfied per rule. They
@@ -139,13 +139,13 @@ whole claim that the guard is right.
 **`06_blind_enumeration.ein` is not a rule's test.** It exists because the
 activator facts a declaration derives are *stored* facts, and the question "can
 a blind run start guessing about them" has to be a fixture rather than an
-argument. An obligation's name is no candidate object
+argument. An obligation's name is no guessable atom
 ([Q-M1f.226](../docs/decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-candidate-object.md)):
 were it one, the enumerator would propose `(seats total-owed C1)`, the name of
-a rule as a puzzle value. It is the only program in this directory that leaves
-the enumerator on, and it names only the hierarchy relations and `sort` in
-`:no-hypothesis`, because a file that scoped the activators out would be
-testing its own scoping line.
+a rule as something the puzzle is about. It is the only program in this
+directory that leaves the enumerator on, and it names only the hierarchy
+relations and `sort` in `:no-hypothesis`, because a file that scoped the
+activators out would be testing its own scoping line.
 
 **And it has to *earn* the enumerator**, which is worth knowing before editing
 it. Hypothesis generation is a ladder — the puzzle's hrules, else what root
@@ -191,12 +191,12 @@ one per rule or tight family, each claiming `sum-of`'s whole extent, with two
 differences worth knowing before adding one.
 
 **Every program claims R = {∅}** on its `(solve …)` form, with no
-`:hypothesis-relations` list. The theory closes its own relations, and that
-claim is what fails if a relation added to the module is left out of the
-closing rule. `ein-cli/tests/arith_search_free.rs` reads the same off every
-program in this directory and in `examples/arith/`: no candidate, one state,
-one saturation, and the same result facts under `ein solve`, `ein saturate`
-and `ein test`. A new program joins by being here.
+`:hypothesis-relations` list. The theory closes the held extents of its own
+relations, and that claim is what fails if a relation added to the module is
+left out of the closing rule. `ein-cli/tests/arith_search_free.rs` reads the
+same off every program in this directory and in `examples/arith/`: no
+candidate, one state, one saturation, and the same result facts under
+`ein solve`, `ein saturate` and `ein test`. A new program joins by being here.
 
 **Right is held from outside the language.** A program here can claim a
 handful of sums, written out by hand. Whether the theory adds *correctly* is
@@ -469,7 +469,7 @@ sum beside its request:
 | `35_undeclared_divisor.ein` | `int-bad-first` and `int-bad-div`: a division's tag holds `(int-div-of REQUEST)`, and the request as written is flagged beside it | a division's flag that names no request |
 | `23`, `29`, `31` to `34` | `int-p-digit`, `-named`, `int-n-digit`, `int-p-zero`, `int-n-zero`, `int-n-named`, and `not-integer-is-false`: a digit or a named constant where a part goes ([Q-M1f.276](../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)) | an integer's own malformation read as an integer |
 | `25` to `27` | `let-twice`, `let-zero`, `let-digit` on a `let` of an integer | a `let` of an integer not read |
-| `28_natural_where_an_integer_goes.ein` | nothing: a natural number for an integer is silent ([Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)), and the request is not answered | a rule that starts flagging another type, which makes the module's page wrong |
+| `28_natural_where_an_integer_goes.ein` | nothing: a natural number for an integer is silent ([Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)), and the request is not answered | a rule that starts flagging another kind of number, which makes the module's page wrong |
 
 ### `stdlib/math/rat/`: lowest terms on request, and four ways to divide by zero
 
@@ -544,7 +544,7 @@ was computed from Python's `math.gcd` and `math.lcm`; `08` to `11` claim
 | `07_gcd_call.ein` | the tagged call `(gcd-call TAG X Y)` from a rule of the program's own, answered under its tag ([Q-M1f.300](../docs/decisions/stdlib/math/gcd/Q-M1f.300-the-greatest-common-divisors-tagged-call-is.md)) | an answer not under the caller's tag; a call read as a request |
 | `08_undeclared_first_operand.ein`, `09_undeclared_second_operand.ein` | `gcd-bad-first`, `gcd-bad-second`: an undeclared name, flagged on the request, a gcd and an lcm | an operand's fault seen under the module's tag and not flagged |
 | `10_digit_as_an_operand.ein`, `11_digit_zero_as_the_second_operand.ein` | the same two rules on a digit, and on the digit 0 | a digit as an operand passed over, or read as a zero to divide by |
-| `12_what_stays_silent.ein` | nothing: an integer where a number goes is silent (natural numbers only), and the request beside it answered | a rule that starts reading another type |
+| `12_what_stays_silent.ein` | nothing: an integer where a number goes is silent (natural numbers only), and the request beside it answered | a rule that starts reading another kind of number |
 
 **Every mutant of the module is killed.**
 
@@ -552,14 +552,14 @@ was computed from Python's `math.gcd` and `math.lcm`; `08` to `11` claim
 
 Four modules, a directory each. **The programs under `gates/` and `props/` are
 generated** from the sixteen columns and are not edited by hand: `gates/01`
-claims each of the sixteen relations of the second layout whole, and
-`props/01` to `07` claim every relation of `std.bool.props`, a family a
-program, each relation's whole extent computed in Python. A library with no
-refutation rule has its negative case in that idiom alone: a claim that names a
-relation closes it, so a rule that derived one fact too many, or one too few,
-fails the file. Right is held from outside the language too, by
-`ein-infer/tests/bool_theory.rs`, against each property's definition in Rust.
-A generated program's R is {∅}; the four written by hand state theirs.
+claims each of the sixteen relations of the second layout whole, and `props/01`
+to `07` claim every relation of `std.bool.props`, a family a program, each
+relation's whole held extent computed in Python. A library with no refutation
+rule has its negative case in that idiom alone: a claim that names a relation
+closes its held extent, so a rule that derived one fact too many, or one too
+few, fails the file. Right is held from outside the language too, by
+`ein-infer/tests/bool_theory.rs`, against each property's definition in Rust. A
+generated program's R is {∅}; the four written by hand state theirs.
 
 | file | the rules it is there for | what would fail it |
 |---|---|---|
@@ -596,14 +596,15 @@ one that exchanges an `le`, a one-sided relation or a value of `val`.
 
 ### Five things about how they are written
 
-**Naming a relation closes it.** An expectation lists a relation's *complete*
-extent, so a rule that derived one fact too many fails the file. That is what
-makes a "must not fire" case checkable at all for a rule that carries no
-guard: its only *must not* is scope, and scope is a claim about a whole
-relation. Where a rule needs a relation to stay untouched, the fixture gives it
-one authored edge and closes it there. A relation with no fact at all is
-said empty another way: a query over it claims `(model)`, the class of a state
-where its goal has no row, or a region claim names it in another state
+**Naming a relation closes its held extent.** An expectation lists a relation's
+*complete* held extent, every fact of it the state holds, so a rule that
+derived one fact too many fails the file. That is what makes a "must not fire"
+case checkable at all for a rule that carries no guard: its only *must not* is
+scope, and scope is a claim about a whole relation. Where a rule needs a
+relation to stay untouched, the fixture gives it one authored fact and closes
+its held extent there. That a state holds no fact of a relation at all is said
+another way: a query over it claims `(model)`, the class of a state where its
+goal has no row, or a region claim names it in another state
 ([Q-M1c.6](../docs/decisions/answer/Q-M1c.6-a-claim-can-say-that-a-relation-is-empty.md)).
 
 **`(unknown …)` is how a fixture says a negative was *not* invented.** Stored

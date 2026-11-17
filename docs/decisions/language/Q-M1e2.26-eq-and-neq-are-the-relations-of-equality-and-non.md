@@ -1,14 +1,14 @@
 # Q-M1e2.26 — `eq` and `neq` are the relations of equality and non-equality
 
-`eq` and `neq` are relations whose facts are fixed by name identity, computed and never stored. They read the same
-in every place a relation is written:
+`eq` and `neq` are relations whose facts are fixed by the identity of objects, which for an atom is its name,
+computed and never stored. They read the same in every place a relation is written:
 
-- **In a goal**, a query over them is answered: `(query :goal (neq w ?y))` gives a row for every name of the
-  program but `w`, and `(eq w ?y)` binds `?y` to `w`. A claim may name either.
+- **In a goal**, a query over them is answered: `(query :goal (neq w ?y))` gives a row for every name of the program
+  but `w`, and `(eq w ?y)` binds `?y` to `w`. A claim may name either.
 - **In a premise**, a rule's `:match` means the same in any order of its conjuncts: a guard whose variable a
   relation premise of the conjunction binds waits for it, and one whose variable nothing else binds ranges over the
   program's names ([Q-M1e2.9](Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). A fact that holds no
-  variable is a value a guard may compare.
+  variable is an object a guard may compare.
 - **In a conclusion**, a rule may conclude either: a true one adds nothing, and a false one is a contradiction, as
   `(false)` is.
 

@@ -9,7 +9,7 @@ expanded rule were written out:
   variable (a conclusion may negate a variable);
 - `false` with an argument;
 - an `(or …)` as a conclusion;
-- a connective, an `(and …)`, an `(or …)` or a `(neq …)`, where a value goes;
+- a connective, an `(and …)`, an `(or …)` or a `(neq …)`, where an object goes;
 - a conclusion that is no form, a body that is its own parameter called with a variable or a name.
 
 An `(and …)` a call leaves inside a conclusion's `(and …)` is no malformed primitive: a conclusion is read flat.

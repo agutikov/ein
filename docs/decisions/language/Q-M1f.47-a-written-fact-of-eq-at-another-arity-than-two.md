@@ -6,7 +6,7 @@ arguments but two, `(eq a)`, `(eq)`, `(eq a a a)` or `(not (eq a))`, it is refus
 every command that loads the program: `the fact (eq a) writes eq with 1 argument — eq is the relation of equality,
 which holds between exactly two values`.
 
-**Why.** `eq` holds between exactly two values and its facts are computed, never stored, so a fact of another arity
+**Why.** `eq` holds between exactly two objects and its facts are computed, never stored, so a fact of another arity
 states nothing that could be checked. The grammar refuses `(eq ?x)` as a premise and as a conclusion; the loader is
 where a written `eq` fact is read, so it is where this shape is refused.
 

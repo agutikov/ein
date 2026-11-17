@@ -1,6 +1,6 @@
 # Q-M1e.7 — A state is what the engine judges, and a model is a projection of it
 
-The object the engine records, compares and judges is a node's **state**, `sat(root + C)`: dead, alive, owing and
+What the engine records, compares and judges is a node's **state**, `sat(root + C)`: dead, alive, owing and
 discharged are each read on the whole state, its negations included. No route writes into a state anything its own
 fixpoint does not derive, so every fact a rule reads there is a consequence of root and the commitment. A **model**
 ([Q-M1e.6](Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)) is computed from the state where a surface prints

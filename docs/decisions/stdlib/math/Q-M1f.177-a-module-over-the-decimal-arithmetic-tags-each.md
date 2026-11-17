@@ -6,7 +6,7 @@ answers reads `(int-done (int-add ?x ?y) ?s)`. Each module looks its operands up
 `operand`, and extends the look-up by a rule of its own for its own kind of number, `int-operand` and
 `rat-operand`, so that a name goes through the one `let`.
 
-**Why.** A request is a fact a state holds, so it is a value, and a tag that is the request needs no relation of
+**Why.** A request is a fact a state holds, so it is an object, and a tag that is the request needs no relation of
 its own. Looking an operand up through the one `let` keeps one kind of named constant in a program.
 
 **Held by.** `ein-infer/tests/int_theory.rs` and `rat_theory.rs`: `named_operands_work_for_every_request`,

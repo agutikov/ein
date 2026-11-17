@@ -24,7 +24,7 @@ with its fixed meaning, and is refused as a program's own:
 
 | name | a program may | a program may not | refused by |
 |---|---|---|---|
-| `__closed__`, `__symmetric__` | **use** it wherever a name is used: as the relation of a fact, a premise, a conclusion, a goal or a claim's fact, and as a value, `(imply1 functional __closed__)` among them | **bind** it: declare a relation of that name, name a rule, an hrule or a macro after it, or import a module `:as` it | the loader, *relation '__closed__' shadows a reserved kernel name* (and *rule*, *hrule*, *macro*, *alias*): the two are in `ein_core::terms::RESERVED`, the names a declarator may not bind |
+| `__closed__`, `__symmetric__` | **use** it wherever a name is used: as the relation of a fact, a premise, a conclusion, a goal or a claim's fact, and as an argument, `(imply1 functional __closed__)` among them | **bind** it: declare a relation of that name, name a rule, an hrule or a macro after it, or import a module `:as` it | the loader, *relation '__closed__' shadows a reserved kernel name* (and *rule*, *hrule*, *macro*, *alias*): the two are in `ein_core::terms::RESERVED`, the names a declarator may not bind |
 | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | — | write it anywhere: each names a conclusion no rule drew, which a program cannot | the parse: the grammar's `WRITEBACK` token, which no production takes (*unexpected `<forced-positive>`: the engine's writeback rule name (reserved)*) |
 
 So a printed `:rule <lookahead-dies-immediately>` would always be the engine's, and a rule's firings never print
@@ -76,8 +76,8 @@ opens a comment), so no program can spell one. `ein_core::text::INTERNAL_NAMES` 
 | `#query` | the rule a query's `:goal` compiles to, so a binding has a rule to be reported under (`ein_core::terms::QUERY_RULE`) | a quoted name |
 | `#written` | the loader's step a `(written T)` fact is derived by, from the fact it was read in (`ein_core::terms::WRITTEN_STEP`) | a quoted name, `:rule "#written"` in `ein saturate --dump` |
 
-`:match ()` is the empty conjunction, which fires once, and `:assert ()` the empty conclusion, which asserts nothing:
-each compiles with no synthetic head, so no run reaches a value `#empty`.
+`:match ()` is the empty conjunction, which fires once, and `:assert ()` the empty conclusion, which asserts
+nothing: each compiles with no synthetic head, so no run reaches an atom `#empty`.
 
 ## Provenance kinds
 

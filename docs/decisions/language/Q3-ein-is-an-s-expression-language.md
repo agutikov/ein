@@ -1,10 +1,10 @@
 # Q3 — Ein is an S-expression language
 
-A program is a sequence of S-expressions: every form is a parenthesised list whose head is a declarator
-(`relation`, `rule`, `hrule`, `macro`, `import`, `query`, `solve`, `config`, `trace`), a fact's relation, or `not`
-before a stored negation, and whose parts are names, variables, nested forms, keyword pairs and, after `:why`,
-`:source` or `:goal-text`, a string. Named atoms carry the meaning; the syntax adds only the parentheses, `?`
-before a variable, and `:` before a keyword.
+A program is a sequence of S-expressions: every form is a parenthesised list whose head is a declarator (`relation`,
+`rule`, `hrule`, `macro`, `import`, `query`, `solve`, `config`, `trace`), a fact's relation, or `not` before a
+stored negation, and whose parts are names, variables, nested forms, keyword pairs and, after `:why`, `:source` or
+`:goal-text`, a string. Names carry the meaning; the syntax adds only the parentheses, `?` before a variable, and
+`:` before a keyword.
 
 **Why.** A small, uniform syntax is one context-free grammar short enough to be read in full, to be held to its
 parser by a test, and to constrain a generator that writes Ein; the meaning stays in names a reader and a rule can

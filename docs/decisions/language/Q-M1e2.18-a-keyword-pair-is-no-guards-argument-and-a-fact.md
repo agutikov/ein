@@ -2,7 +2,7 @@
 
 Two shapes that would read nothing are refused before anything runs:
 
-- **A keyword pair as a guard's argument**, `(eq ?x :k a)`: a guard compares two values, and a keyword pair is
+- **A keyword pair as a guard's argument**, `(eq ?x :k a)`: a guard compares two objects, and a keyword pair is
   none, so the shape is a parse error at the keyword.
 - **A relation parameter bound to a fact.** `(rule r (?R) :match (box (?R b)) …)` with the activator `(r (a b))`
   names a relation by a fact, which names none. An activator that does so is refused at load where it is written, a

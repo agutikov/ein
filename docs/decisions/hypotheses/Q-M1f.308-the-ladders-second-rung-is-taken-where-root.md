@@ -2,11 +2,11 @@
 
 Hypothesis generation is a ladder, decided once at root by one function that the generator and
 `ein_infer::hypgen::eligible_relations` both read: the program's `(hrule …)` if it declares one; else, where root's
-activators compile a plan of an obligation rule (one with no parameters always), the obligations rung; else the blind
-enumerator.
-`(solve :no-search)` runs none. An obligation rule the program loads and nothing activates chooses no rung, so a module
-imported for another of its names leaves the program's own open relations to the blind enumerator. A root that owes
-nothing under an activated obligation proposes nothing, and is complete because it is discharged.
+activators compile a plan of an obligation rule (one with no parameters always), the obligations rung; else the
+blind enumerator. `(solve :no-search)` runs none. An obligation rule the program loads and nothing activates chooses
+no rung, so a module imported for another of its names leaves the program's own relations whose held extent is not
+closed to the blind enumerator. A root that owes nothing under an activated obligation proposes nothing, and is
+complete because it is discharged.
 
 **Why.** Where a program states an obligation, a state is judged by whether it is paid, and that judgement needs a
 rung that proposes nothing once nothing is owed. Whether a program states one is a matter of what root activates:

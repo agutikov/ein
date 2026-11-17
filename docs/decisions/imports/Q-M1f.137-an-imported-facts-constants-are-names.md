@@ -1,9 +1,9 @@
 # Q-M1f.137 — An imported fact's constants are names of the program
 
-A fact an import brings is a fact of the program, and the constants it writes are names of the program like the
-ones the main file writes: they enter the blind enumerator's objects. A library of n constants widens the universe
-of every open relation by n. A program that wants no guesses over a library's relation closes it, or the library
-closes its own.
+A fact an import brings is a fact of the program, and the constants it writes are names of the program like the ones
+the main file writes: they are guessable atoms. A library of n constants widens the universe of every relation whose
+held extent is not closed by n. A program that wants no guesses over a library's relation closes its held extent, or
+the library closes its own.
 
 **Why.** The program's names are the constants its facts and rules write, and an import brings its module's text
 into the program whole ([Q-M1f.247](Q-M1f.247-every-import-brings-its-module-whole.md)). Marking a library's
