@@ -1,7 +1,7 @@
 //! *Forbid*: a refutation may not rest on an `(absent P)` over a relation a
 //! commitment can still extend (Q-M1e2.5,
-//! [monotonicity.md § 10](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#10-forbid-what-is-refused-at-load),
-//! [diagnostics.md § 2.7](../../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
+//! [08-monotonicity.md § 10](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#10-forbid-what-is-refused-at-load),
+//! [07-diagnostics.md § 2.7](../../../../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
 //!
 //! Over such a relation, `(absent P)` ⟹ `(false)` or `(not …)` is an
 //! obligation written as a refutation. It judges a state that has not yet

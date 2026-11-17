@@ -41,7 +41,7 @@
 ;;; ── R has two maximal states, not one ───────────────────────
 ;;;
 ;;; Under the region definition
-;;; (docs/ein/reasoning/kb-evolution/solution-semantics.md § 2)
+;;; (docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md § 2)
 ;;; this file is not determinate: R has 6 states and two maximal,
 ;;; and its minimal line is ∅, root itself, which owes nothing.
 ;;; One maximal state is the solution above. The other is a

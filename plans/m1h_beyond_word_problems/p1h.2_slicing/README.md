@@ -97,7 +97,7 @@ figure is re-taken by [S1h.2.1](s1h.2.1_what_a_slice_is_today.md).
 - **A justification a fact.** Every derived fact records the rule and the premises that gave it:
   `ein saturate FILE --dump` writes a fact's `:rule`; `--events`' `fire` line carries `rule`, `bindings`,
   `premises` and `derived`, and an `alt` line a further justification of a fact already held
-  ([`events.md`](../../../docs/ein/ein.rs/events.md)).
+  ([`05-events.md`](../../../docs/ein/ein.rs/05-events.md)).
 - **`--trace -l`,** *prune each derivation to the goal-relevant slice*
   (`ein-render/src/trace/relevance.rs`): a walk back along provenance from the facts of the query's
   relations and the `:hrules` targets, which keeps the firings on a path to one. It cuts the **trace**, not
@@ -128,7 +128,7 @@ figure is re-taken by [S1h.2.1](s1h.2.1_what_a_slice_is_today.md).
   writes 22 `fire` lines, and none is of `giver-gave-too-many` or `gave-more-than-had-is-false`.
   `--events-level verbose` adds 2 120 `hypskip` lines and no other kind.
 - **Two banked problems with a fact no question needs,** `unused.ein` and `bystander.ein`
-  ([`word-problems.md` § The plan, and in what order](../../../docs/ein/user/guide/word-problems.md#the-plan-and-in-what-order)).
+  ([`08-word-problems.md` § The plan, and in what order](../../../docs/ein/user/02-guide/08-word-problems.md#the-plan-and-in-what-order)).
 - **The pairs under `tests/stdlib/`:** a rule that refutes has two programs, one where it fires and one
   where it is *loaded, activated and satisfied* ([`tests/README.md`](../../../tests/README.md)). The second
   of each pair is the phase's second opening question, already written as a test.
@@ -169,16 +169,16 @@ cites this section:
 - **Real computed examples first.** Every row, file and view proposed is shown on real programs, its content
   computed by S1h.2.1's script, before the printer moves (the user's rule of 2026-10-16).
 - **A change to what `ein solve` prints changes
-  [`read-out.md`](../../../docs/ein/user/reference/read-out.md) in the same commit,** with
+  [`08-read-out.md`](../../../docs/ein/user/04-reference/08-read-out.md) in the same commit,** with
   `read_out_examples.md` re-written by `utils/read_out_examples.py`, and
   `ein-cli/tests/read_out_reference.rs` holds the page to the printer. A file added to `--dump-answer`'s
-  directory changes [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md) in the same commit, and
+  directory changes [`10-answer-dump.md`](../../../docs/ein/user/04-reference/10-answer-dump.md) in the same commit, and
   `ein-cli/tests/answer_round_trip.rs` holds what a dump reloads to.
 - **No answer moves.** R, N, H, every claim's outcome and every exit code are the same before and after, on
   every corpus program, by a sweep of the old binary against the new; `ein oracle` is the reference.
 - **A slice is taken only where a surface prints it.** No run that did not ask for one pays for one.
 - **Config never changes an answer,** and a new option is a row of
-  [`config.md`](../../../docs/ein/user/reference/config.md) with its *does it change the answer* column,
+  [`06-config.md`](../../../docs/ein/user/04-reference/06-config.md) with its *does it change the answer* column,
   pinned by `ein-cli/tests/config_reference.rs`.
 - **Stdout listings share 100 lines;** `--dump-answer` writes a listing whole (the user's rule of
   2026-10-16).

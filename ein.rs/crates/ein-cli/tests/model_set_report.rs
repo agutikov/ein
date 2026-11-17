@@ -2,7 +2,7 @@
 //! determining key that is the set's compact form, read over the states a run
 //! lists.
 //!
-//! [What a count of models claims](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)
+//! [What a count of models claims](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#6-a-set-of-models-and-what-its-count-claims)
 //! answers *print or describe* with **both**, and the two halves are tested
 //! here because they are one surface. The rule first, since the key inherits
 //! it.

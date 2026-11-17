@@ -11,11 +11,11 @@
 //! [`state_digest`] exists only for display and is *never* identity.
 //!
 //! For **identity** any total order is equivalent
-//! ([design/determinism-and-order.md § 5](../../../../docs/ein/ein.rs/design/determinism-and-order.md#5-where-order-does-not-matter)),
+//! ([03-design/01-determinism-and-order.md § 5](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#5-where-order-does-not-matter)),
 //! so this sorts by `FactId` — a `u32` sort and a `memcmp` equality instead of
 //! building a string per fact. The `repr` order is needed only where the key
 //! is *displayed* (`--dump-states` sorts nodes by it), and that is
-//! [design/determinism-and-order.md § 4.3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#43-output-bytes)'s.
+//! [03-design/01-determinism-and-order.md § 4.3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#43-output-bytes)'s.
 
 use ein_core::{FactId, Kb};
 
@@ -36,7 +36,7 @@ pub fn state_key(kb: &Kb) -> Box<[FactId]> {
     // equality and never rendered. Any total order gives the same
     // equivalence classes; what the order has to be is a function of the
     // input, which it is, because ids are assigned at load and the search
-    // assigns none (`docs/ein/ein.rs/design/determinism-and-order.md` § 2.1).
+    // assigns none (`docs/ein/ein.rs/03-design/01-determinism-and-order.md` § 2.1).
     // The dumper re-sorts by repr before printing — `dump::snapshot`'s
     // `repr_sorted`, and the paragraph above.
     out.sort_unstable();
@@ -81,7 +81,7 @@ where
 /// A hash of a [`state_key`] — **display and logging only**.
 ///
 /// Never use a digest as identity: distinct states may share one
-/// ([design/determinism-and-order.md § 8](../../../../docs/ein/ein.rs/design/determinism-and-order.md#8-hashes-that-reach-the-output)).
+/// ([03-design/01-determinism-and-order.md § 8](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#8-hashes-that-reach-the-output)).
 pub fn state_digest(key: &[FactId]) -> u64 {
     use std::hash::{Hash, Hasher};
     let mut h = rustc_hash::FxHasher::default();

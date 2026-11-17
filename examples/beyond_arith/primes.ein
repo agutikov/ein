@@ -6,7 +6,7 @@
 ;;; positive pattern, so "k does not divide n" needs no negation; then, if
 ;;; the quotient is already smaller than k, no larger k can divide n either
 ;;; and n is prime. Otherwise the next k is asked.
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is add-walk done div-call div-done))
 (import std.math.decimal :symbols (n))

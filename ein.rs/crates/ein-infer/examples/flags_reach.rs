@@ -1,6 +1,6 @@
 //! Every mode of `ein solve` on a monotone program, beside describe: what
 //! each question costs
-//! ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
+//! ([03-design/07-search.md § 4](../../../../docs/ein/ein.rs/03-design/07-search.md#4-the-routes)).
 //!
 //! For each file and each mode it runs [`explore::run`], the routes
 //! `ein solve` takes, and prints one JSON line: the route, the licences,

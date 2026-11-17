@@ -66,7 +66,7 @@ milestone:
 | **F2** | the verdict: SAT / UNSAT / AMBIGUOUS | `verdict.type` × `exhausted` × `unsat_core`, as P2.1 maps them | one word |
 | **F3** | cardinality: *4 models remain, the query has 3 bindings* | `verdict.k`, `solutions[].goal_bindings` | counting |
 | **F4** | model difference: two models and *the relevant difference* | `verdict.solutions[]` — sorted fact lists, so a difference is a set difference | **new**: choose two representatives, take the symmetric difference, restrict it to the query's relations, render with the puzzle's `:why` templates |
-| **F5** | unsat core: *these source-derived constraints jointly imply contradiction* | `verdict.unsat_core` — given facts, which carry `:source` | render the core as the English it quotes; the core is a minimum-cardinality frontier, not a MUS ([glossary](../../../docs/ein/user/reference/glossary.md)), and the renderer says so |
+| **F5** | unsat core: *these source-derived constraints jointly imply contradiction* | `verdict.unsat_core` — given facts, which carry `:source` | render the core as the English it quotes; the core is a minimum-cardinality frontier, not a MUS ([glossary](../../../docs/ein/user/04-reference/13-glossary.md)), and the renderer says so |
 | **F6** | dependency: *`?owner` depends on nationality, on house, has no path to pet* | **nothing** — no crate computes a relation dependency graph (the census) | **new**, and outside the kernel: a static relation graph from the program — rule bodies → heads, activators → the rules they instantiate — and reachability from the query's relations; *no path* is the diagnostic |
 | **F7** | provenance: *fact X ← rule R ← facts A, B* | `ein-events/1` `fire` lines (`rule`, `premises`, `derived`), the trace's per-step derivations | reassemble the chain for the facts F4 / F5 named; the trace renderer already does this for humans |
 | **F8** | the combined object | all of the above | the union, and the plan's caution: *the system should not assume F8 is best* |
@@ -98,7 +98,7 @@ iteration budget, the token budget, the solver budget (`--max-time` /
 `--max-enterings`, read from the feedback object, never from exit code 2),
 a repeated theory, a repair cycle. Cycles by hash — the program's canonical
 dump, and the saturated state's digest, which the engine defines as the
-sorted fact list ([`values-and-order.md` § A state is its facts](../../../docs/ein/reasoning/static-ir/values-and-order.md#a-state-is-its-facts));
+sorted fact list ([`03-values-and-order.md` § A state is its facts](../../../docs/ein/reasoning/01-static-ir/03-values-and-order.md#a-state-is-its-facts));
 [Q-M2.4](../open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic)
 recommends stopping on the second and logging both.
 
@@ -163,7 +163,7 @@ regenerate and repair, and it is kept as one — an arm for
   candidate model is a counterexample*) the ladder's F2–F7 realise;
   [F17](../../followups/f17_formal_verification/ideas.md) —
   `Spec₀ → verify → counterexample → Spec₁`.
-- [`docs/ein/ein.rs/events.md`](../../../docs/ein/ein.rs/events.md) —
+- [`docs/ein/ein.rs/05-events.md`](../../../docs/ein/ein.rs/05-events.md) —
   F7's source; the trace renderer (`--trace`, `--relevant`) — the human
   version of F7 that already exists.
 - [Idea 03](../../ideas/03-three-task-classes.md) — solve / gaps /

@@ -908,7 +908,7 @@ verdict   = "Contradiction"
 k         = 0
 exhausted = true
 core      = ["(c x)", "(small s0)"]
-derived   = "the file's header: `(hit w)` has two derivations, through `(p w)` and through `(q w)`, and the smallest frontier over every derivation of `(false)`, with `(c x)`, is `(c x) (small s0)` (`glossary.md` § Smallest contradiction frontier); the twin, the same rule as two rules, reports it"
+derived   = "the file's header: `(hit w)` has two derivations, through `(p w)` and through `(q w)`, and the smallest frontier over every derivation of `(false)`, with `(c x)`, is `(c x) (small s0)` (`13-glossary.md` § Smallest contradiction frontier); the twin, the same rule as two rules, reports it"
 
 [case.review]
 verdict = "deferred"

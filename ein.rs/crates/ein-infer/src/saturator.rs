@@ -1,5 +1,5 @@
 //! The saturation driver — the **two-phase** loop
-//! ([design/saturation.md § 1](../../../../docs/ein/ein.rs/design/saturation.md#1-two-phases)).
+//! ([03-design/06-saturation.md § 1](../../../../docs/ein/ein.rs/03-design/06-saturation.md#1-two-phases)).
 //!
 //! ```text
 //! step():
@@ -222,7 +222,7 @@ impl From<FireError> for SaturateError {
 
 /// One queued or parked candidate, with the payload in a side arena so the
 /// heap compares two integers
-/// ([design/determinism-and-order.md § 3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#3-ordered-containers)).
+/// ([03-design/01-determinism-and-order.md § 3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#3-ordered-containers)).
 #[derive(Clone)]
 struct Entry {
     plan: usize,
@@ -245,24 +245,24 @@ struct Entry {
     /// encodes the watched symbols themselves, so two candidates that share an
     /// id watch exactly the same relations and go stale at exactly the same
     /// moment. That is what lets one epoch per guard set replace one stamp per
-    /// candidate — [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set).
+    /// candidate — [03-design/06-saturation.md § 3](../../../../docs/ein/ein.rs/03-design/06-saturation.md#3-the-queue-the-delta-and-the-parked-set).
     guard_set: GuardSetId,
 }
 
 /// The candidate arena, in two layers — the shape
-/// [design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md) gives
+/// [03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md) gives
 /// the KB, for the same reason.
 ///
 /// A fork *resumes* its parent's saturation
-/// ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)),
+/// ([03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)),
 /// so it inherits every candidate the parent enqueued — and, before
-/// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set),
+/// [03-design/06-saturation.md § 3](../../../../docs/ein/ein.rs/03-design/06-saturation.md#3-the-queue-the-delta-and-the-parked-set),
 /// deep-copied all of them once per entering: a `Vec` whose rows own three
 /// boxed slices and a `BindingKey`, so four allocations per candidate,
 /// **3.5 % of `zebra -e` in `Vec::clone` and 1.6 % more dropping it again**.
 ///
 /// Nothing in the parent's half is ever written after enqueue — that was
-/// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)'s
+/// [03-design/06-saturation.md § 3](../../../../docs/ein/ein.rs/03-design/06-saturation.md#3-the-queue-the-delta-and-the-parked-set)'s
 /// side effect, moving `judged_at` out of the row — so the parent's half is
 /// shared behind an `Arc` and the fork appends to a local vector. Entry ids
 /// stay dense and stable: `base` first, then `local`.
@@ -366,7 +366,7 @@ pub struct Saturator {
     /// A side table rather than a field on [`Entry`] because a fork inherits
     /// the arena and re-judges against its own world: this is the only part of
     /// a candidate that a saturation writes after enqueue, and separating it
-    /// is what [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)
+    /// is what [03-design/06-saturation.md § 3](../../../../docs/ein/ein.rs/03-design/06-saturation.md#3-the-queue-the-delta-and-the-parked-set)
     /// needs to share the arena instead of deep-copying it.
     judged_at: Vec<u32>,
     /// `gs_epoch[g]` — the last epoch at which some relation guard set `g`
@@ -420,14 +420,14 @@ pub struct Saturator {
     /// Guard sub-plan **evaluations** — how many times a negative query was
     /// actually run. The boundary's cost is this number times the cost of one
     /// query, and 72 % of an exhaustive solve sits under it
-    /// ([design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)), so
+    /// ([03-design/06-saturation.md § 3](../../../../docs/ein/ein.rs/03-design/06-saturation.md#3-the-queue-the-delta-and-the-parked-set)), so
     /// it is the figure Win B is measured in. It is the engine's own
     /// instrument, and it is deliberately *not* in the event stream — a number
     /// that must not change is not evidence that nothing changed.
     pub guard_evals: u64,
     /// Of those, the ones on a **monotone** guard — the only ones the
     /// semi-naive re-evaluation of
-    /// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)
+    /// [03-design/06-saturation.md § 3](../../../../docs/ein/ein.rs/03-design/06-saturation.md#3-the-queue-the-delta-and-the-parked-set)
     /// can help, since a nested absent can flip from failing to passing and
     /// has no "only a new fact can change this" argument.
     pub guard_evals_monotone: u64,
@@ -446,14 +446,14 @@ pub struct Saturator {
 }
 
 /// A saturation at its fixpoint, in a form another saturation can continue
-/// from — [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation).
+/// from — [03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation).
 ///
 /// The closure is semi-naive *within* a saturation (`pos_index` + `run_seeded`)
 /// and abandons that at the one boundary where the delta is smallest and known
 /// exactly: `try_commitment_set` forks the saturated root and builds a **fresh**
 /// `Saturator`, whose `delta = None` is a FULL pass, so the parent's whole
 /// deductive closure is re-derived inside the fork — 94.6 % of a fork's firings
-/// on `zebra -e` ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)).
+/// on `zebra -e` ([03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)).
 ///
 /// What is carried is everything that answers "has this already been done":
 /// the plan list *in its order*, `fired`, `seen`, the candidate arena and the
@@ -866,7 +866,7 @@ impl Saturator {
     /// behaviour, and it is not free.
     ///
     /// So an embedder probing quiescence mid-drive is perturbing the drive.
-    /// [`docs/ein/ein.rs/api.md`] says so where a reader of the crate boundary will
+    /// [`docs/ein/ein.rs/04-api.md`] says so where a reader of the crate boundary will
     /// meet it, because a hazard whose only statement is a comment inside the
     /// crate is a hazard for everyone outside it.
     ///
@@ -875,7 +875,7 @@ impl Saturator {
     /// `closure_step` to re-seed. Re-seeding was harmless — `seen` dedups it —
     /// and it was work done twice for a question that asked nothing.
     ///
-    /// [`docs/ein/ein.rs/api.md`]: `docs/ein/ein.rs/api.md`
+    /// [`docs/ein/ein.rs/04-api.md`]: `docs/ein/ein.rs/04-api.md`
     pub fn is_stalled(&mut self, s: &mut Session<'_>) -> Result<bool, SaturateError> {
         // The FULL pass subsumes whatever the delta would have seeded, so
         // taking it loses nothing and leaves no stale seed behind.
@@ -1568,7 +1568,7 @@ impl Saturator {
     /// monotonically within a run, so a relation cannot lose a fact and equal
     /// size means equal extent. But asked that way it is asked many times per
     /// judgement
-    /// ([design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)),
+    /// ([03-design/06-saturation.md § 3](../../../../docs/ein/ein.rs/03-design/06-saturation.md#3-the-queue-the-delta-and-the-parked-set)),
     /// because *sizes* are a property of the world and only the comparison is
     /// a property of the candidate.
     ///
@@ -1694,7 +1694,7 @@ impl Saturator {
                     .collect();
             // Sorted by name and held sorted throughout: a hash-ordered set
             // here leaks into firing order
-            // (`docs/ein/ein.rs/design/determinism-and-order.md` § 2.3). So the mirror
+            // (`docs/ein/ein.rs/03-design/01-determinism-and-order.md` § 2.3). So the mirror
             // sequence is a function of the input alone.
             rels.sort_by(|a, b| s.terms.sym(*a).cmp(s.terms.sym(*b)));
             rels.dedup();
@@ -1981,7 +1981,7 @@ mod tests {
     /// A hash-ordered set here would, with two or more markers, leak into the
     /// seed order, hence into the firing order, hence into every
     /// derivation-order observable
-    /// ([design/determinism-and-order.md § 2.3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#23-hash-containers)).
+    /// ([03-design/01-determinism-and-order.md § 2.3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#23-hash-containers)).
     #[test]
     fn the_mirror_seeds_its_relations_in_name_order() {
         let src = "(relation zeta A B :why \"zeta holds of {?1} and {?2}\")\n(relation alpha A B :why \"alpha holds of {?1} and {?2}\")\n(relation mid A B :why \"mid holds of {?1} and {?2}\")\n\
@@ -2020,7 +2020,7 @@ mod tests {
 
     /// A resumed saturation reaches the same fixpoint as a fresh one —
     /// [`Saturator::resume`], the mechanism
-    /// [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)
+    /// [03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)
     /// is about.
     ///
     /// Saturate, add a fact, then continue two ways: a **fresh** saturator

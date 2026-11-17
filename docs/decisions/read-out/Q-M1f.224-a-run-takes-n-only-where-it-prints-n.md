@@ -11,4 +11,4 @@ N, and the row says so.
 all of it.
 
 **Held by.** `ein-cli/tests/test_cli.rs`: `a_run_that_prints_no_n_takes_none_and_says_the_same`;
-`ein_infer::transversal`, the search; the `N` row: [read-out.md](../../ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2.
+`ein_infer::transversal`, the search; the `N` row: [08-read-out.md](../../ein/user/04-reference/08-read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2.

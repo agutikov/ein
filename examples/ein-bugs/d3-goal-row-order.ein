@@ -5,7 +5,7 @@
 ;;; the goal `(cand ?x)` twice, with `?x = A` and `?x = B`, and the walk's
 ;;; solve table printed one row: `rows[0]` of an unsorted match, which moved
 ;;; when the interner assigned ids in another order (an order-sensitive site
-;;; `docs/ein/ein.rs/design/determinism-and-order.md` forbids).
+;;; `docs/ein/ein.rs/03-design/01-determinism-and-order.md` forbids).
 ;;;
 ;;; The region read-out sorts a class's rows and prints them all, so state
 ;;; 5's class lists `?x = A` and then `?x = B` under any id order. The file

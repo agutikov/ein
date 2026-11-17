@@ -1,6 +1,6 @@
 //! The KB-shape dump — a test instrument, not engine output.
 //!
-//! [design/data-model.md § 9.3](../../../../docs/ein/ein.rs/design/data-model.md#93-the-kb-shape-dump)'s gate was
+//! [03-design/03-data-model.md § 9.3](../../../../docs/ein/ein.rs/03-design/03-data-model.md#93-the-kb-shape-dump)'s gate was
 //! "every corpus file loads to the same KB", and a KB has no CLI surface of
 //! its own: the registries, the seven indexes and the participation counts
 //! are exactly the things the output of an `ein` *process* does not show.

@@ -12,4 +12,4 @@ answer whole is one explicit flag away, and a file appears only where its reader
 
 **Held by.** `ein_render::read_out::LIST_LINES`; `ein-cli/tests/forms_cut.rs`:
 `on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut`, `where_nothing_is_cut_stdout_is_the_file`;
-`docs/ein/user/reference/read-out.md`, the rows and what each counts.
+`docs/ein/user/04-reference/08-read-out.md`, the rows and what each counts.

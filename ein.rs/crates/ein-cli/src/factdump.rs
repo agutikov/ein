@@ -16,7 +16,7 @@ pub enum Mode {
     /// the commitment and what it derives, the `(not …)` facts among them.
     All,
     /// `-P` — `All` with the `(not …)` facts dropped: the state's model, as
-    /// `docs/ein/reasoning/kb-evolution/solution-semantics.md` § 3 defines it.
+    /// `docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md` § 3 defines it.
     Positive,
     /// `-f` — only the facts of the candidates' relations, *whatever their
     /// origin*, so the given conditions count too.

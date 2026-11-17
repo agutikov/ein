@@ -1,5 +1,5 @@
 //! **Every core names its commitment, and derives its contradiction**
-//! ([cores.md](../../../../docs/ein/reasoning/kb-evolution/cores.md#the-core)).
+//! ([09-cores.md](../../../../docs/ein/reasoning/02-kb-evolution/09-cores.md#the-core)).
 //!
 //! A dead node's unsat core is the facts its refutation rests on, the
 //! smallest frontier over every derivation the program records

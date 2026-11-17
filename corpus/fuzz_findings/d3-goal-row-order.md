@@ -32,7 +32,7 @@ The goal `(cand ?x)` is satisfied **twice** in one model: the blind enumerator p
 and both survive. A table that printed one row, `rows[0]` of an unsorted match, would print a row the data does not
 determine, and it would move when the interner assigns ids in another order, whether or not a fork resumes root's
 saturation: an observable that depends on the order ids were assigned in, which
-[the determinism contract](../../docs/ein/ein.rs/design/determinism-and-order.md#21-ids-are-not-an-output-order)
+[the determinism contract](../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#21-ids-are-not-an-output-order)
 forbids. The read-out prints every row, sorted, and `summary.json`'s `goal_bindings` carries both, sorted.
 
 ```sh

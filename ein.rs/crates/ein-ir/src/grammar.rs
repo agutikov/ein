@@ -21,7 +21,7 @@
 //! refused**: the repairs are advice, and no repaired program is loaded.
 //!
 //! **A program nested past [`NESTING_LIMIT`] is refused before it is parsed**
-//! ([design/ir-frontend.md § 3.4](../../../../docs/ein/ein.rs/design/ir-frontend.md#34-the-nesting-limit)).
+//! ([03-design/04-ir-frontend.md § 3.4](../../../../docs/ein/ein.rs/03-design/04-ir-frontend.md#34-the-nesting-limit)).
 //! The LR parser survives any depth, but macro expansion, the loader and the
 //! dumper recurse over the tree it builds.
 

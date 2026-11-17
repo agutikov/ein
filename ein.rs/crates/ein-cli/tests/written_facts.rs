@@ -1,5 +1,5 @@
 //! **What a file writes, stated at load** (Q-M1f.272;
-//! [`diagnostics.md` § 2.30](../../../../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)).
+//! [`07-diagnostics.md` § 2.30](../../../../docs/ein/user/04-reference/07-diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)).
 //!
 //! The loader states every fact nested in a fact a file writes, and the ones a
 //! rule's or an hrule's conclusion holds where they hold no variable

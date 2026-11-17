@@ -102,7 +102,7 @@ figure is re-taken by the stage that uses it.
   the pupil's in 123 ([its F-2](../../m1g_logic/p1g.10_school_algebra/findings.md)).
 - **The formula exists nowhere today.** It is the order in which rules ask the calculator. What a run does
   hold is the requests, each with the rule that asked
-  ([`word-problems.md` § The plan, and in what order](../../../docs/ein/user/guide/word-problems.md#the-plan-and-in-what-order),
+  ([`08-word-problems.md` § The plan, and in what order](../../../docs/ein/user/02-guide/08-word-problems.md#the-plan-and-in-what-order),
   `ein saturate boxes12.ein --dump`): `(add (n z 5) (n z 7) :rule together-means-sum)` and
   `(div (n (n z 1) 2) (n z 3) :rule holds-means-divide)`, and the order between them is nowhere written:
   the second is derived from the first one's answer.
@@ -172,7 +172,7 @@ Where the phase changes the engine or a surface (S1h.4.6), the repo's rules, whi
   printer moves.
 - **A change to what a surface prints moves its reference page in the same commit,** and the test that holds
   the page to the printer; a new option is a row of
-  [`config.md`](../../../docs/ein/user/reference/config.md), pinned by `ein-cli/tests/config_reference.rs`.
+  [`06-config.md`](../../../docs/ein/user/04-reference/06-config.md), pinned by `ein-cli/tests/config_reference.rs`.
 - **A change to the grammar needs the user's ruling,** on real programs shown first; the grammar's pages are
   generated from `ein.l` and `ein.y`, and a shape newly refused gets a row in the grammar page's table.
 - **No answer moves:** R, N, H, every claim's outcome and every exit code are the same before and after on

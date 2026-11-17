@@ -21,7 +21,7 @@ const MAX_EXPANSION_DEPTH: u32 = 50;
 
 /// A malformed invocation — arity mismatch or runaway recursion. The message
 /// is `MacroError`'s; the loader's `({head} {name}): ` prefix is added where
-/// the loader adds it ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)).
+/// the loader adds it ([03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md)).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MacroError(pub String);
 
@@ -263,7 +263,7 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
 /// as it is, because the loader only ever runs the expander over rule clauses
 /// and a goal. The loader refuses such a fact (`from_ir`'s
 /// `refuse_macro_facts`): a macro's call is no fact
-/// ([`diagnostics.md` § 2.24](../../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
+/// ([`07-diagnostics.md` § 2.24](../../../../docs/ein/user/04-reference/07-diagnostics.md#224-a-macros-call-is-no-fact)).
 pub fn expand_rule_clauses(
     ast: &mut Ast,
     forms: &[NodeId],
@@ -320,7 +320,7 @@ pub fn expand_rule_clauses(
 /// `total`, `hypothesis`, …) whose absence just means the rule does not fire.
 ///
 /// Returns the message lines; wiring them into the loader's error list is
-/// [design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)'s.
+/// [03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md)'s.
 pub fn unimported_macro_errors(
     ast: &Ast,
     rules: &[(String, NodeId)],

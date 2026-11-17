@@ -1,7 +1,7 @@
 ;;; The greatest common divisor by Euclid's chain, and the least common
 ;;; multiple from it: gcd(a, b) is gcd(b, a mod b), and gcd(a, 0) is a; the
 ;;; lcm is a x b divided by the gcd. Saturation alone.
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 ;;;
 ;;; Euclid's chain over `std.math.decimal-arith`'s tagged division is

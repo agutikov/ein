@@ -701,7 +701,7 @@ pub fn read_program_names<'a>(
 /// the ones the file stored; a reader that has decided not to believe the
 /// derived sections keeps this one, because re-loading `PROGRAM` is exactly
 /// what reading the `.ein` would have done
-/// ([design/binary-format.md § 4.3](../../../../docs/ein/ein.rs/design/binary-format.md#43-a-file-not-believed)).
+/// ([03-design/09-binary-format.md § 4.3](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#43-a-file-not-believed)).
 ///
 /// The text is parsed under `name`, [`crate::program_name`]'s, so every
 /// position in it, a parse error's or a rule's `Loc` in a compile error, says

@@ -1,5 +1,5 @@
 //! A model as **the grid a person would draw** (`--models grid`,
-//! [`read-out.md` § 8](../../../../docs/ein/user/reference/read-out.md#8-the-forms-after-the-read-out)).
+//! [`08-read-out.md` § 8](../../../../docs/ein/user/04-reference/08-read-out.md#8-the-forms-after-the-read-out)).
 //!
 //! `zebra2`'s unique model is 444 facts, and nobody checks 444 facts. A person
 //! checks it as a 5 × 5 table: the houses down the side, an attribute per

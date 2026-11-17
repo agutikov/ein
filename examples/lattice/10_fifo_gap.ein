@@ -1,5 +1,5 @@
 ;;; The FIFO gap, the counter-example of
-;;; docs/ein/reasoning/kb-evolution/monotonicity.md § 8.3 written out and run.
+;;; docs/ein/reasoning/02-kb-evolution/08-monotonicity.md § 8.3 written out and run.
 ;;;
 ;;; Two `absent` rules, the reader written first:
 ;;;

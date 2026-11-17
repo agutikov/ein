@@ -26,7 +26,7 @@ a frontend-fuzzer seed.
 A contradiction can have several minimal cores, and the engine is free to report any of them, but *which* one it
 reports must be a function of the program and not of interning order: an observable that depends on the order ids
 were assigned in is what
-[the determinism contract](../../docs/ein/ein.rs/design/determinism-and-order.md#21-ids-are-not-an-output-order)
+[the determinism contract](../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#21-ids-are-not-an-output-order)
 forbids. A core is an explanation, and canonical only up to that contract.
 
 A symmetric program reaches the same question with no generated input: a blind pigeonhole, three pigeons and two

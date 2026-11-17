@@ -2,7 +2,7 @@
 
 The standard library, and its **single source of truth**: every `std.*` module
 is a file in this directory, and nothing holds a copy that can differ.
-[`stdlib.md`](../docs/ein/user/reference/stdlib.md) is the reference a
+[`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md) is the reference a
 program's author reads, module by module: what a program lists, every relation
 and rule it writes or reads, what each module flags. This page is the
 library's own, beside its files: where a module is read from, how the
@@ -35,7 +35,7 @@ that the manifest or the conformance test does not see.
 The stdlib is not test data but part of the semantics under test: a second,
 drifting copy would let two runs disagree because their *programs* differ,
 and the difference would be blamed on the engine
-([`shared-assets.md`](../docs/ein/ein.rs/design/shared-assets.md)).
+([`02-shared-assets.md`](../docs/ein/ein.rs/03-design/02-shared-assets.md)).
 
 ## The layout
 
@@ -133,12 +133,12 @@ its path: `std.x.y` under this directory, any other name a path from the
 No import brings a module's `(query …)`, `(solve …)` or `(config …)`
 ([Q-M1f.215](../docs/decisions/imports/Q-M1f.215-no-import-brings-a-modules-query-solve-config.md)).
 The whole rule, the refusals and what prints are
-[`syntax.md` § Import](../docs/ein/user/reference/syntax.md#import) and
-[`diagnostics.md` § 2.28](../docs/ein/user/reference/diagnostics.md#228-an-import-is-by-full-name-and-a-short-name-names-one-declaration-in-a-file).
+[`02-syntax.md` § Import](../docs/ein/user/04-reference/02-syntax.md#import) and
+[`07-diagnostics.md` § 2.28](../docs/ein/user/04-reference/07-diagnostics.md#228-an-import-is-by-full-name-and-a-short-name-names-one-declaration-in-a-file).
 
 **A program with its imports inlined.** No command prints it on its own;
 every state file `ein solve FILE --dump-answer DIR` writes begins with it
-([`answer-dump.md`](../docs/ein/user/reference/answer-dump.md)). The library
+([`10-answer-dump.md`](../docs/ein/user/04-reference/10-answer-dump.md)). The library
 route is three calls:
 
 ```rust
@@ -213,7 +213,7 @@ take the puzzle's instance-type relation and argument types `(?isa Dom Ran)`
 as parameters and inherit the closed-world caveat: sound only where the
 operand is decided by saturation (the `std.closure` caveat), so not for a
 relation the search decides
-([`stdlib.md` § Three distinctions](../docs/ein/user/reference/stdlib.md#three-distinctions-that-govern-soundness)).
+([`04-stdlib.md` § Three distinctions](../docs/ein/user/04-reference/04-stdlib.md#three-distinctions-that-govern-soundness)).
 The module has no division residuals (`R\S`, `R/S`, `syq`), which would need
 a `forall` over the universe.
 
@@ -243,12 +243,12 @@ They derive nothing and are not in the saturation agenda; what reads them is
 one pass over the quiescent KB, reported through `--events`' `owe` lines,
 `--json-summary`'s `owes` block and the trace's *Outstanding obligations*
 section
-([`reserved-names.md` § the verdict atom](../docs/ein/user/reference/reserved-names.md#the-verdict-atom--open)).
+([`03-reserved-names.md` § the verdict atom](../docs/ein/user/04-reference/03-reserved-names.md#the-verdict-atom--open)).
 
 ## `std.math.digits`: a library of facts
 
 A module of **facts and no rule**: the *ontology* half of
-[`solution-semantics.md` § 1.1](../docs/ein/reasoning/kb-evolution/solution-semantics.md#11-context-and-problem),
+[`06-solution-semantics.md` § 1.1](../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#11-context-and-problem),
 where every other module is theory. Ein has no numbers and no arithmetic
 ([Q-M1e2.24](../docs/decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)),
 so the ten digits `0` to `9` are plain names, and what school arithmetic knows
@@ -334,7 +334,7 @@ numeral, nothing being re-exported:
 **The numeral's check reads what the loader states.** The loader states every
 fact nested in a fact a file writes, and in a rule's conclusion where it holds
 no variable, as `(written T)`
-([`diagnostics.md` § 2.30](../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load),
+([`07-diagnostics.md` § 2.30](../docs/ein/user/04-reference/07-diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load),
 [Q-M1f.272](../docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)),
 so `std.math.decimal`'s rules see every place of every numeral a file writes,
 wherever it sits, and flag a malformed one in root's first layer, with no
@@ -438,7 +438,7 @@ theory and writes one of them, so a call written with another count of
 arguments, or a walk started from another place, fails.
 
 **How it computes**
-([`stdlib.md`](../docs/ein/user/reference/stdlib.md#stdmathdecimal-arith--school-arithmetic-on-natural-numbers)
+([`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md#stdmathdecimal-arith--school-arithmetic-on-natural-numbers)
 has the protocol): each operand is looked up
 ([Q-M1f.157](../docs/decisions/stdlib/math/decimal/Q-M1f.157-each-request-looks-its-operands-up-by-rules.md));
 one walk from the units takes each column through the full adder's table and
@@ -604,7 +604,7 @@ written by hand is an answer nobody computed; no module reserves its names
 **A number or a request with the wrong count of arguments is refused at
 load**, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`, each a form of a relation the
 module declares
-([`diagnostics.md` § 2.26](../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)).
+([`07-diagnostics.md` § 2.26](../docs/ein/user/04-reference/07-diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)).
 
 ### Malformed requests and numerals: what is flagged, where, and what stays silent
 
@@ -619,7 +619,7 @@ own
 **A numeral is checked where it is written.** The loader states every fact
 nested in a fact a file writes, and in a rule's conclusion where it holds no
 variable, as `(written T)`
-([`diagnostics.md` § 2.30](../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)),
+([`07-diagnostics.md` § 2.30](../docs/ein/user/04-reference/07-diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)),
 and every place of a numeral is such a fact, so `std.math.decimal`'s five
 rules over `(written (n P A))` see every place of every numeral, as an
 operand, inside an integer or a rational, as a `let`'s value nobody asks
@@ -766,7 +766,7 @@ activates it.
 Binary arithmetic as a theory of its own, beside decimal: its own numeral, its
 own names, the same rules where they are the same
 ([Q-M1f.321](../docs/decisions/stdlib/math/binary/Q-M1f.321-binary-arithmetic-is-a-theory-of-its-own-beside.md);
-[`stdlib.md`](../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)
+[`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)
 has every relation).
 
 | module | what it is |
@@ -1254,7 +1254,7 @@ and the entry `gcd`; everything of `std.math.decimal-arith` comes with it.
 
 Four modules under `bool/`
 ([Q-M1f.328](../docs/decisions/stdlib/bool/Q-M1f.328-boolean-functions-and-circuits-ship-as-four-std.md);
-[`stdlib.md`](../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool)
+[`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md#boolean-functions-and-circuits-stdbool)
 has every relation). The two bits are the names `0` and `1`, which are
 decimal's digits too: Ein has no truth values of its own, as it has no
 numbers. Each module comes whole with what it imports, and each has an entry,
@@ -1361,7 +1361,7 @@ first. A saturation rule reaches the agenda and emits `fire`. An
 **obligation** rule, one whose `:assert` is the verdict atom `open`, never
 can: it derives nothing and is kept out of the agenda, so its evidence is the
 `owe` its post-fixpoint pass emits
-([`obligations.md`](../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)).
+([`08-obligations.md`](../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)).
 The test reads both kinds; counting only `fire` would leave the four duals
 permanently unactivated.
 

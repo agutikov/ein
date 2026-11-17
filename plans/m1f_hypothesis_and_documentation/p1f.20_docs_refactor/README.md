@@ -323,16 +323,16 @@ The plan was written on 2026-08-28. Taken on 2026-11-08:
   `parity_baselines.md` are superseded, with banners. The walk they describe has had no code since M1e2
   S1e2.1c.5 (2026-11-03), so `search.md ← inference/algorithm_layer_n.md` maps a page onto a search that is
   gone: the answer is now the region R and its routes
-  ([`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)). `inference/features.md`'s
-  levers are mostly retired ([`config.md`](../../../docs/ein/user/reference/config.md) lists them).
+  ([`solution-semantics.md`](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md)). `inference/features.md`'s
+  levers are mostly retired ([`config.md`](../../../docs/ein/user/04-reference/06-config.md) lists them).
 - **User-facing references live under `plans/`.** The read-out's vocabulary,
   `read_out.md`, its golden page
   `read_out_examples.md`, and
   `solve_interface.md` describe what
   `ein solve` prints, and the map has no row for any of them. Since
   S1f.5.16 the first two are records, and the live
-  pages are [`docs/ein/user/reference/read-out.md`](../../../docs/ein/user/reference/read-out.md) and its
-  [examples](../../../docs/ein/user/reference/read-out-examples.md); `solve_interface.md` is the one left.
+  pages are [`docs/ein/user/04-reference/08-read-out.md`](../../../docs/ein/user/04-reference/08-read-out.md) and its
+  [examples](../../../docs/ein/user/04-reference/09-read-out-examples.md); `solve_interface.md` is the one left.
 - **`CLAUDE.md` is a symlink to `AGENTS.md`.** Both names are one file.
 
 So [S1f.20.2](s1f.20.2_the_disposition_table.md) redraws the target tree against the tree as it is when the
@@ -507,7 +507,7 @@ twice. That is satisfied. The same rule holds for M1e2's edits to kernel pages: 
   — *who owns a page that should be neither fixed nor deleted* — the ruling
   this phase's triage is an application of, at scale.
 - S1e.5.1 and
-  [S1e.5.2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md) — two pages
+  [S1e.5.2](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md) — two pages
   written into the *old* tree; both are `docs/ein/user/` pages by this
   phase's map, and both are cited by anchor text rather than section number so
   the move does not break them.

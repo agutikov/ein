@@ -552,7 +552,7 @@ relation along with its algebraic properties:
 ```
 
 Semantically equivalent. Which form, and why? See
-[`docs/ein/user/syntax-and-semantics/ontology.md` §Two forms that look alike](../docs/ein/user/syntax-and-semantics/ontology.md#two-forms-that-look-alike)
+[`docs/ein/user/03-syntax-and-semantics/04-ontology.md` §Two forms that look alike](../docs/ein/user/03-syntax-and-semantics/04-ontology.md#two-forms-that-look-alike)
 for the full trade-off table.
 
 **Working answer:** ship form **(b)** in M1 (already the de-facto

@@ -22,4 +22,4 @@ matched, concluded or proposed.
 `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes`, each shape at each site and every shape the
 grammar takes loading; `ein-cli/tests/macro_bodies.rs`:
 `every_malformed_primitive_is_refused_before_any_path_runs_it`. The lines each shape is refused with:
-[`diagnostics.md` § 2.16](../../ein/user/reference/diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes).
+[`07-diagnostics.md` § 2.16](../../ein/user/04-reference/07-diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes).

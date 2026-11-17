@@ -75,7 +75,7 @@ path   = "examples/branching/06_lookahead_on.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 cost_ms = 40
-note   = "the on half of a pair, `07` its twin, whose `(config …)` lines set the one-step lookahead that no route runs (docs/ein/user/reference/config.md): the two are one program and describe one R. The puzzle: five colours, five houses, four anchored, and Blue's four doomed placements each dead in one firing."
+note   = "the on half of a pair, `07` its twin, whose `(config …)` lines set the one-step lookahead that no route runs (docs/ein/user/04-reference/06-config.md): the two are one program and describe one R. The puzzle: five colours, five houses, four anchored, and Blue's four doomed placements each dead in one firing."
 
 [[entry]]
 path   = "examples/branching/07_lookahead_off.ein"
@@ -632,13 +632,13 @@ note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)`
 path   = "examples/lattice/10_fifo_gap.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region", "solve --minimal --region-limit 1", "solve --maximal --region-limit 1"]
-note   = "the FIFO gap, the counter-example of docs/ein/reasoning/kb-evolution/monotonicity.md § 8.3: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative. The two line modes at `--region-limit 1` (`fifo-gap-limit-1-minimal`, `-maximal`), held against labelling every member met as on its line: past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}."
+note   = "the FIFO gap, the counter-example of docs/ein/reasoning/02-kb-evolution/08-monotonicity.md § 8.3: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative. The two line modes at `--region-limit 1` (`fifo-gap-limit-1-minimal`, `-maximal`), held against labelling every member met as on its line: past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}."
 
 [[entry]]
 path   = "examples/lattice/11_fifo_gap_static.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "10_fifo_gap with `a` given and only `b` a candidate: `q` is static, the static check calls the program monotone, and route 1 answers it. Built from scratch, {b} holds a stale p that the fork, which inherits root's q, does not: a *Monotone* verdict is relative to root (docs/ein/reasoning/kb-evolution/monotonicity.md § 3.4)."
+note   = "10_fifo_gap with `a` given and only `b` a candidate: `q` is static, the static check calls the program monotone, and route 1 answers it. Built from scratch, {b} holds a stale p that the fork, which inherits root's q, does not: a *Monotone* verdict is relative to root (docs/ein/reasoning/02-kb-evolution/08-monotonicity.md § 3.4)."
 
 [[entry]]
 path   = "examples/lattice/12_activator_chain_hole.ein"
@@ -977,7 +977,7 @@ note   = "the `MAX_ALT_JUSTIFICATIONS = 32` cap and which unsat core is reported
 path   = "examples/ein-bugs/alt-cap-core-reordered.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "`alt-cap-core.ein` with `mk-w3` (which reads `(w1 X)` again as `(w3 X)`, `wide`'s premise) written before `mk-q` instead of after it, and nothing else changed. Its two-premise derivation becomes the primary, which is never evicted, and the core is 2 facts. The pair is what makes the cap's cost order-dependence rather than only size: `glossary.md`'s *independent of the order in which the rules fired* is true of the search and not of the store in front of it. The store keeps each fact's smallest-closure arrival beside its full list, and both files report the 2-fact core."
+note   = "`alt-cap-core.ein` with `mk-w3` (which reads `(w1 X)` again as `(w3 X)`, `wide`'s premise) written before `mk-q` instead of after it, and nothing else changed. Its two-premise derivation becomes the primary, which is never evicted, and the core is 2 facts. The pair is what makes the cap's cost order-dependence rather than only size: `13-glossary.md`'s *independent of the order in which the rules fired* is true of the search and not of the store in front of it. The store keeps each fact's smallest-closure arrival beside its full list, and both files report the 2-fact core."
 
 [[entry]]
 path   = "examples/ein-bugs/unsat-core-id-space.ein"
@@ -1067,7 +1067,7 @@ note   = "the only program known to put a nested fact in an unsat core: the give
 path   = "examples/ein-bugs/binding-key-int-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "The binding-key family (Q-M1e.16): docs/ein/reasoning/static-ir/values-and-order.md's binding-key program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare. A run of digits is a name, so `2` is a candidate object, and the solve holds `edge` and `noted` out: R is two states, root and `{(holds 2)}`, each with root's two `noted` facts `(noted 1 1)` and `(noted 2 1)`, which `:expect` states."
+note   = "The binding-key family (Q-M1e.16): docs/ein/reasoning/01-static-ir/03-values-and-order.md's binding-key program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare. A run of digits is a name, so `2` is a candidate object, and the solve holds `edge` and `noted` out: R is two states, root and `{(holds 2)}`, each with root's two `noted` facts `(noted 1 1)` and `(noted 2 1)`, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-nested-only.ein"
@@ -1131,7 +1131,7 @@ note   = "The control of an activator read as none: `activator-all-int.ein` with
 path   = "examples/ein-bugs/wrong-answers/forced-1.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`forced-1-L`: one candidate refuted in one firing. Root is consistent and its one candidate dies, so R = {∅}, root itself; no route writes a dead candidate into root (docs/ein/user/reference/config.md)."
+note   = "`forced-1-L`: one candidate refuted in one firing. Root is consistent and its one candidate dies, so R = {∅}, root itself; no route writes a dead candidate into root (docs/ein/user/04-reference/06-config.md)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-1-two.ein"
@@ -1203,7 +1203,7 @@ note   = "The twin of owed-seats.ein with Ann renamed Zed: the same R under the 
 path   = "examples/ein-bugs/wrong-answers/uncovered.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`uncovered`, docs/ein/reasoning/kb-evolution/satisfiability.md § 5's witness: `knows`, which the rung never proposes, is a relation of the program, and R is over the universe, not over what a rung proposes (Q-M1e2.3)."
+note   = "`uncovered`, docs/ein/reasoning/02-kb-evolution/10-satisfiability.md § 5's witness: `knows`, which the rung never proposes, is a relation of the program, and R is over the universe, not over what a rung proposes (Q-M1e2.3)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"
@@ -1239,7 +1239,7 @@ note   = "The twin of stale-naf-fork.ein: its program, kept for the shape a warn
 path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "The twin of features/07: features/07 with the forced-positive cascade set off, a `(config …)` line gone with the cascade (docs/ein/user/reference/config.md): features/07's program, a flagged program whose answer the engine claims nothing of."
+note   = "The twin of features/07: features/07 with the forced-positive cascade set off, a `(config …)` line gone with the cascade (docs/ein/user/04-reference/06-config.md): features/07's program, a flagged program whose answer the engine claims nothing of."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/match-only.ein"
@@ -1503,7 +1503,7 @@ note   = "A boundary of regression `pair-core-root-given`: the pair's negative s
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-neq-in-assert`: `r`'s `:assert` is `(neqw ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(neqw a)`, R {∅}, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-assert`: `r`'s `:assert` is `(neqw ?x)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `neqw` is a name: root `(neqw a)`, R {∅}, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-assert-twin.ein"
@@ -1515,7 +1515,7 @@ note   = "The twin of `kw-neq-in-assert.ein`: `neqw` renamed `nneqw`, a name tha
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-or-in-assert`: `(orz ?x)` in `r`'s `:assert`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: root `(orz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-assert`: `(orz ?x)` in `r`'s `:assert`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `orz` is a name: root `(orz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert-twin.ein"
@@ -1527,7 +1527,7 @@ note   = "The twin of `kw-or-in-assert.ein`: `orz` renamed `oorz`, a name that s
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-and-in-assert`: `(andz ?x)` in `r`'s `:assert`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: root `(andz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
+note   = "`kw-and-in-assert`: `(andz ?x)` in `r`'s `:assert`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `andz` is a name: root `(andz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein"
@@ -1539,7 +1539,7 @@ note   = "The twin of `kw-and-in-assert.ein`: `andz` renamed `aandz`, a name tha
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-and-in-match`: the premise `(andz ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
+note   = "`kw-and-in-match`: the premise `(andz ?x)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `andz` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-match-twin.ein"
@@ -1551,7 +1551,7 @@ note   = "The twin of `kw-and-in-match.ein`: `andz` renamed `aandz`, a name that
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-neq-in-match`: the premise `(neqw ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-match`: the premise `(neqw ?x)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match-twin.ein"
@@ -1563,7 +1563,7 @@ note   = "The twin of `kw-neq-in-match.ein`: `neqw` renamed `nneqw`, a name that
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-neq-in-absent`: `(absent (neqw ?x))`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit a)`, R eight states over three candidates, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-absent`: `(absent (neqw ?x))`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit a)`, R eight states over three candidates, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent-twin.ein"
@@ -1575,7 +1575,7 @@ note   = "The twin of `kw-neq-in-absent.ein`: `neqw` renamed `nneqw`, a name tha
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-neq-in-fact`: the fact `(box (neqw a))`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(box (neqw a))`, R two states over `(box a)`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-fact`: the fact `(box (neqw a))`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `neqw` is a name: root `(box (neqw a))`, R two states over `(box a)`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact-twin.ein"
@@ -1587,7 +1587,7 @@ note   = "The twin of `kw-neq-in-fact.ein`: `neqw` renamed `nneqw`, a name that 
 path   = "examples/ein-bugs/wrong-answers/kw-not-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-not-fact`: the fact `(notw)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `notw` is a name: root `(notw)`, R {∅}, the twin's answer (Q-M1e2.17)."
+note   = "`kw-not-fact`: the fact `(notw)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `notw` is a name: root `(notw)`, R {∅}, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-not-fact-twin.ein"
@@ -1599,7 +1599,7 @@ note   = "The twin of `kw-not-fact.ein`: `notw` renamed `nnotw`, a name that sta
 path   = "examples/ein-bugs/wrong-answers/kw-relation-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-relation-fact`: the fact `(relationship alice bob)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `relationship` is a name: root `(relationship alice bob)`, R two states over `(relationship bob alice)`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-relation-fact`: the fact `(relationship alice bob)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `relationship` is a name: root `(relationship alice bob)`, R two states over `(relationship bob alice)`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-relation-fact-twin.ein"
@@ -1611,7 +1611,7 @@ note   = "The twin of `kw-relation-fact.ein`: `relationship` renamed `rrelations
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-neq-in-goal`: the query's goal `(neqw ?y)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: the read-out's `outside` names `neqw`, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-goal`: the query's goal `(neqw ?y)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `neqw` is a name: the read-out's `outside` names `neqw`, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal-twin.ein"
@@ -1623,7 +1623,7 @@ note   = "The twin of `kw-neq-in-goal.ein`: `neqw` renamed `nneqw`, a name that 
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-or-in-hrule`: the hrule's template `(orz ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: H `(orz a)`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-hrule`: the hrule's template `(orz ?x)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `orz` is a name: H `(orz a)`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule-twin.ein"
@@ -1635,7 +1635,7 @@ note   = "The twin of `kw-or-in-hrule.ein`: `orz` renamed `oorz`, a name that st
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-or-in-obligation`: the obligation's guard `(orz ?a)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: R empty, owing, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-obligation`: the obligation's guard `(orz ?a)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `orz` is a name: R empty, owing, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation-twin.ein"
@@ -1647,7 +1647,7 @@ note   = "The twin of `kw-or-in-obligation.ein`: `orz` renamed `oorz`, a name th
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-and-in-expect`: the query's goal and `:expect` write `(andz …)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
+note   = "`kw-and-in-expect`: the query's goal and `:expect` write `(andz …)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `andz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect-twin.ein"
@@ -1659,7 +1659,7 @@ note   = "The twin of `kw-and-in-expect.ein`: `andz` renamed `aandz`, a name tha
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-or-in-solve`: the `(solve …)` claim writes `(orz a)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-solve`: the `(solve …)` claim writes `(orz a)`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `orz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve-twin.ein"

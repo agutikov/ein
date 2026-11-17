@@ -19,7 +19,7 @@ E) is not function call, so (let NAME (calc E)) is not the case, Ein is not Lisp
 ## What it builds
 
 **The term language.** An expression is a value under the value rule
-([`diagnostics.md` § 2.22](../../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)): a name, or a fact of an ordinary
+([`07-diagnostics.md` § 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)): a name, or a fact of an ordinary
 relation. As planned, to be confirmed at S1g.10.1's stop:
 
 | written | reads |
@@ -184,7 +184,7 @@ thing with `(evaluate E)`; that is still S1g.10.1's to show on programs:
 expression is strict, with a value when the first is not the smaller and otherwise `(negative (sub a b))` and
 no value; division is two heads, `div` for the quotient and `mod` for the remainder. Round 2 of the
 calculator's design built the layer on a prototype
-([`stdlib.md` § C](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)), three rules an
+([`04-stdlib.md` § C](../../../docs/ein/user/04-reference/04-stdlib.md#the-calculator-stdmath)), three rules an
 operator, and that is the starting text.
 
 ### The checks the reply names

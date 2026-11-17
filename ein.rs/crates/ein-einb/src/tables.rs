@@ -1,4 +1,4 @@
-//! The remap — [design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary).
+//! The remap — [03-design/09-binary-format.md § 3](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#3-ids-across-the-boundary).
 //!
 //! `Symbol`, `FactId` and `ProvId` are process-local integers, so a
 //! file must be loadable into a process whose tables already hold other

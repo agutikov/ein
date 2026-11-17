@@ -1,7 +1,7 @@
 //! The obligation pass — what a quiescent KB still **owes**.
 //!
 //! The verdict atom `(open ?R)` is reserved
-//! ([obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r),
+//! ([08-obligations.md](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r),
 //! Q-M1d.2), and the loader routes the rules that assert it into
 //! [`ein_core::Program::obligations`]. This is what walks them.
 //!

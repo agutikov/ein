@@ -101,7 +101,7 @@ Linux/Windows/macOS testing is a real line item, not a formality.
 
 ### Consequence for the engine
 
-**The surface it calls now has a page**: [`docs/ein/ein.rs/api.md`](../../docs/ein/ein.rs/api.md)
+**The surface it calls now has a page**: [`docs/ein/ein.rs/04-api.md`](../../docs/ein/ein.rs/04-api.md)
 (M1a S1a.9.4) — the five
 steps, which crate owns each, and a worked example that is a test the gate
 runs. It is written for exactly this consumer, and M20 is the first of its
@@ -167,7 +167,7 @@ Worth formalising early, because it survives the later shift to live mode.
 Bulk graph data goes over `command → result`; progress and live-mode
 streams go over channels/events. When real-time engine integration
 arrives (currently deferred, below), the architecture does not change —
-the engine's `--events` stream ([`docs/ein/ein.rs/events.md`](../../docs/ein/ein.rs/events.md))
+the engine's `--events` stream ([`docs/ein/ein.rs/05-events.md`](../../docs/ein/ein.rs/05-events.md))
 is already the narration format to fan out.
 
 ---
@@ -198,7 +198,7 @@ Three principal views, composable into 2- or 3-pane layouts.
 - **Compact vs detailed (Levi-bipartite) view**: toggle between
   the abstract entity view (instances + arrows) and the underlying
   Levi-bipartite graph (relation nodes as first-class vertices).
-  See [ein model §Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words).
+  See [ein model §Five words](../../docs/ein/user/03-syntax-and-semantics/04-ontology.md#five-words).
 - **Auto-layout**: keep the Graphviz engines (`dot` / `fdp` / `sfdp` /
   `osage`) that `utils/render_knowledge_graph.sh` uses today — Rust
   shells out and hands coordinates to the frontend — and add **fCoSE**,
@@ -254,7 +254,7 @@ Both modes support **collapse branches** (hide dead sub-trees) and
 ## Workspace layout
 
 The GUI is a sibling of the CLI in the same Rust workspace, depending on
-the same crates ([design/12](../../docs/ein/ein.rs/design/toolchain-and-layout.md) §2):
+the same crates ([design/12](../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md) §2):
 
 ```text
 ein.rs/
@@ -343,11 +343,11 @@ Stack-specific:
 ## Cross-links
 
 - M1a — the Rust engine — the engine this binds to;
-  [design/12 § workspace](../../docs/ein/ein.rs/design/toolchain-and-layout.md)
+  [design/12 § workspace](../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md)
   for the crate layout, P1a.8
   for `.einb` saved sessions.
 - [`docs/ein/`](../../docs/ein/README.md) — the semantics the views
-  render; [ein model §Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words)
+  render; [ein model §Five words](../../docs/ein/user/03-syntax-and-semantics/04-ontology.md#five-words)
   for compact vs Levi-bipartite.
 - [`utils/render_knowledge_graph_cy.py`](../../utils/render_knowledge_graph_cy.py)
   — the existing browser-Cytoscape renderer; closest existing point to

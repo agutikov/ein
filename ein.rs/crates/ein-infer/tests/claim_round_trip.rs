@@ -1,6 +1,6 @@
 //! **A printed region reads back as its own claim**: one form for both
 //! directions
-//! ([query.md § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
+//! ([12-query.md § The region claim](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#the-region-claim)).
 //!
 //! For every corpus program whose R a route describes, [`claim::print`] writes
 //! R as a `(region …)` (or `(false)`), the claim is spliced into the program's

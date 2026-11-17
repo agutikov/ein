@@ -15,4 +15,4 @@ every import brings its module whole, and importing one name must not change wha
 **Held by.** `ein-cli/tests/import_invariance.rs`: `a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out`;
 `ein-infer/tests/obligation_rung.rs`: `the_ladder_dispatches_by_what_the_program_declares`,
 `a_discharged_state_owes_nothing_and_declines_nothing`; `ein_infer::hypgen`, its `rung`;
-[Solution semantics § 1.4](../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe).
+[Solution semantics § 1.4](../../ein/reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe).

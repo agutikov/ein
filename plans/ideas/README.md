@@ -68,9 +68,9 @@ These are seeds for further work, not specifications.
     **requires** something, so it cannot tell *no model* from *not yet a
     model*. Ex-followup F14, the note M1d was built on (in Russian, with the
     reply it was discussed in). What shipped of it: obligations,
-    [`(open ?R)`](../../docs/ein/user/syntax-and-semantics/obligations.md), and
+    [`(open ?R)`](../../docs/ein/user/03-syntax-and-semantics/08-obligations.md), and
     the hypothesis ladder they drive
-    ([`hypothesis-generation.md`](../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md)).
+    ([`04-hypothesis-generation.md`](../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md)).
 
 ## Cross-cutting observations
 

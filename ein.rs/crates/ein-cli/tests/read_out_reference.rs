@@ -1,4 +1,4 @@
-//! [`docs/ein/user/reference/read-out.md`] — the read-out reference, pinned.
+//! [`docs/ein/user/04-reference/08-read-out.md`] — the read-out reference, pinned.
 //!
 //! The page defines every row `ein solve` and `ein oracle` print:
 //! its label, what it says, what its numbers count, and the summary field that
@@ -6,10 +6,10 @@
 //! is, so its labels, its summary paths and its numbers are held here, both
 //! ways, against the printer's own list,
 //! [`ein_render::read_out::Row`], and against real runs: the blocks of the
-//! examples page, [`docs/ein/user/reference/read-out-examples.md`], which
+//! examples page, [`docs/ein/user/04-reference/09-read-out-examples.md`], which
 //! `read_out_examples.rs` holds to the binary byte for byte. What no test
 //! reads is a row's *meaning*; the page quotes no printed value, so that only
-//! that column can drift. [`config.md`] with `config_reference.rs` is
+//! that column can drift. [`06-config.md`] with `config_reference.rs` is
 //! the precedent.
 //!
 //! 1. [`every_row_label_has_a_row_and_no_row_is_orphaned`]: each row table
@@ -35,9 +35,9 @@
 //!    describe takes route 1 on, at the smallest budget the command takes,
 //!    is exhausted.
 //!
-//! [`docs/ein/user/reference/read-out.md`]: ../../../../docs/ein/user/reference/read-out.md
-//! [`docs/ein/user/reference/read-out-examples.md`]: ../../../../docs/ein/user/reference/read-out-examples.md
-//! [`config.md`]: ../../../../docs/ein/user/reference/config.md
+//! [`docs/ein/user/04-reference/08-read-out.md`]: ../../../../docs/ein/user/04-reference/08-read-out.md
+//! [`docs/ein/user/04-reference/09-read-out-examples.md`]: ../../../../docs/ein/user/04-reference/09-read-out-examples.md
+//! [`06-config.md`]: ../../../../docs/ein/user/04-reference/06-config.md
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::process::Command;
@@ -47,10 +47,10 @@ use ein_corpus::{Scratch, repo_root};
 use ein_render::read_out::{Layout, Row};
 use serde_json::Value as J;
 
-/// The page, at one path, as `embedding.rs` reads `api.md`: a page and its
+/// The page, at one path, as `embedding.rs` reads `04-api.md`: a page and its
 /// test move together.
-const PAGE: &str = "docs/ein/user/reference/read-out.md";
-const EXAMPLES: &str = "docs/ein/user/reference/read-out-examples.md";
+const PAGE: &str = "docs/ein/user/04-reference/08-read-out.md";
+const EXAMPLES: &str = "docs/ein/user/04-reference/09-read-out-examples.md";
 
 /// The seven keys the page defines; the others' owners are in its table.
 const ANSWER_KEYS: [&str; 7] = [

@@ -1,5 +1,5 @@
 //! `META` — what the file was made from, and therefore when to disbelieve it
-//! ([design/binary-format.md § 4](../../../../docs/ein/ein.rs/design/binary-format.md#4-versioning-and-invalidation)).
+//! ([03-design/09-binary-format.md § 4](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#4-versioning-and-invalidation)).
 //!
 //! Two different questions live here and they have different answers.
 //!
@@ -97,7 +97,7 @@ pub struct Meta {
     pub config: Option<SolverConfig>,
     pub sources: Vec<Source>,
     /// BLAKE3 of `stdlib/MANIFEST.sha256`, which is the one input whose
-    /// divergence nothing else would notice ([design/shared-assets.md](../../../../docs/ein/ein.rs/design/shared-assets.md)).
+    /// divergence nothing else would notice ([03-design/02-shared-assets.md](../../../../docs/ein/ein.rs/03-design/02-shared-assets.md)).
     pub stdlib: [u8; 32],
 }
 

@@ -2,7 +2,7 @@
 ;;; Regression `uncovered` (`corpus/regressions.toml`).
 ;;;
 ;;; Below this header the program is the witness of
-;;; `docs/ein/reasoning/kb-evolution/satisfiability.md` § 5: a relation
+;;; `docs/ein/reasoning/02-kb-evolution/10-satisfiability.md` § 5: a relation
 ;;; no obligation owes and no rule closes, outside the universe.
 ;;;
 ;;; ── What the engine said ───────────────────────────────────────────────────

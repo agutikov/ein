@@ -245,7 +245,7 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
 }
 
 /// The same, at a chosen job count — the axis of
-/// [design/parallelism.md § 1](../../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract).
+/// [03-design/08-parallelism.md § 1](../../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract).
 ///
 /// It is a parameter and not a global because `jobs_invariance` runs the same
 /// op at two job counts inside one process. **Only an op [`Op::takes_jobs`]

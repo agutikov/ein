@@ -13,7 +13,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; Every constant a fact names, at any depth, is a name of the program and so a
-;;; candidate object (`docs/ein/reasoning/kb-evolution/solution-semantics.md`
+;;; candidate object (`docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md`
 ;;; § 1.2, Q-M1e2.9). So H is `q` over A, B and Z
 ;;; without self-edges and without the negated `(q Z A)`: five candidates,
 ;;; three dead alone. `{(q A Z), (q B Z)}` is consistent and quiescent and is

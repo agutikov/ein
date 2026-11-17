@@ -11,5 +11,5 @@ arithmetic-dominated constraints, large combinatorial search and global cardinal
 not a trigger for a solver call.
 
 **Held by.** The workspace manifest, `ein.rs/Cargo.toml`, whose dependencies name no solver;
-[architecture.md](../../ein/ein.rs/architecture.md#2-one-ein-solve-from-file-to-read-out), the path from a `.ein` file to its answer. Arithmetic as a
+[01-architecture.md](../../ein/ein.rs/01-architecture.md#2-one-ein-solve-from-file-to-read-out), the path from a `.ein` file to its answer. Arithmetic as a
 theory: [Q-M1e2.24](../language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md).

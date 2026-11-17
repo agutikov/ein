@@ -1,4 +1,4 @@
-//! `ein solve` — the one command for R (`docs/ein/user/reference/cli.md`
+//! `ein solve` — the one command for R (`docs/ein/user/04-reference/05-cli.md`
 //! § 2.1).
 //!
 //! Every run is a region run (`crate::modes`): bare `ein solve FILE`
@@ -172,7 +172,7 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
 /// because the answer on stdout is correct and complete and the artefact is
 /// paperwork. `--dump-states` is the exception and states why at its call
 /// site. The ruling and the reasoning are
-/// [`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure),
+/// [`07-diagnostics.md` § 2.4](../../../../docs/ein/user/04-reference/07-diagnostics.md#24-an-artefact-flags-failure),
 /// and the additive arm has no exit code of its own
 /// ([Q-M1e.22](../../../../docs/decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)).
 pub(crate) fn artefact_failed(flag: &str, path: &str, e: impl std::fmt::Display) {
@@ -200,7 +200,7 @@ pub(crate) fn events_load(events: &mut Events, terms: &Terms, kb: &Kb) {
 
 /// `--jobs N`, or `--jobs auto` — which the parser gives us as `0`.
 ///
-/// **The default is 1 and stays 1** ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)):
+/// **The default is 1 and stays 1** ([03-design/08-parallelism.md § 1](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract)):
 /// a benchmark, a golden run and the corpus sweep must never
 /// silently become a different computation, even one that is provably the
 /// same. `auto` is what a user opts into, and it is the *machine's* number:

@@ -14,4 +14,4 @@ run it is deterministic.
 **Held by.** `ein_render::sentence`; `ein-cli/tests/natural_language_text.rs`:
 `a_state_file_writes_each_fact_in_english`; `ein-cli/tests/natural_language_page.rs`:
 `the_pages_state_file_lines_are_a_runs`. The ladder:
-[natural-language.md](../../ein/user/syntax-and-semantics/natural-language.md#3-a-fact-in-english-the-fallback-ladder) § 3.
+[14-natural-language.md](../../ein/user/03-syntax-and-semantics/14-natural-language.md#3-a-fact-in-english-the-fallback-ladder) § 3.

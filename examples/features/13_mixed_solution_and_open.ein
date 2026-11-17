@@ -2,7 +2,7 @@
 ;;; alive and discharged, and its sibling, alive and owing.
 ;;
 ;; R is the commitments whose state is alive and discharged
-;; (docs/ein/reasoning/kb-evolution/solution-semantics.md § 2). A node that
+;; (docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md § 2). A node that
 ;; owes is alive and not in R; a node that is dead is neither. The cube here
 ;; has four nodes, and each kind is among them:
 ;;

@@ -14,6 +14,6 @@ state that must persist across many small queries in one process, or a Python pr
 expects a module.
 
 **Held by.** `ein-cli/tests/embedding.rs`: `the_worked_example_runs` and `the_page_quotes_this_file`, the
-embedding example of [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md) run as a test. The pages:
-[`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md) § 7;
-[`docs/ein/user/install.md`](../../ein/user/install.md) § There is no Python package.
+embedding example of [`docs/ein/ein.rs/04-api.md`](../../ein/ein.rs/04-api.md) run as a test. The pages:
+[`docs/ein/ein.rs/04-api.md`](../../ein/ein.rs/04-api.md) § 7;
+[`docs/ein/user/01-install.md`](../../ein/user/01-install.md) § There is no Python package.

@@ -3,7 +3,7 @@
 //! Accept/reject is the weaker half; the *message* is the half a puzzle author
 //! reads, and every `examples/broken/` fixture is baselined against it, so a
 //! "better" diagnostic is a re-baseline rather than an improvement in passing
-//! (design/04 §4, Q-M1a.3).
+//! ([03-design/04-ir-frontend.md § 6](../../../../docs/ein/ein.rs/03-design/04-ir-frontend.md#6-parse-errors), Q-M1a.3).
 //!
 //! | claim | where |
 //! |---|---|

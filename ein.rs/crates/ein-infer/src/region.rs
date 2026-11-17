@@ -1,5 +1,5 @@
 //! The solution region, by brute force — the oracle
-//! ([finding-r.md § 2](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#2-the-oracle-the-cube)).
+//! ([07-finding-r.md § 2](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#2-the-oracle-the-cube)).
 //!
 //! The answer to a program is `R = { C : C alive and discharged }`, a region
 //! of its hypothesis lattice (Q-M1e2.7).
@@ -131,7 +131,7 @@ pub const DEAD: u8 = 1;
 pub const OWING: u8 = 2;
 
 /// `n` past which the oracle refuses unless asked: `--region-limit`'s default
-/// ([cli.md § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
+/// ([05-cli.md § 2.2](../../../../docs/ein/user/04-reference/05-cli.md#22-ein-oracle)).
 pub const DEFAULT_LIMIT: u32 = 16;
 /// From here a raised limit warns on one line.
 pub const WARN_FROM: usize = 17;
@@ -338,7 +338,7 @@ pub struct Region {
 /// universe, kept for `--json-summary`'s `root` block: root's fixpoint and H,
 /// config-free, so a summary reads what every route starts from and runs no
 /// pass of its own
-/// ([read-out.md § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)).
+/// ([08-read-out.md § 11](../../../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks)).
 #[derive(Clone, Debug, Default)]
 pub struct RootStats {
     /// The plans root's saturator compiled, the derived activators' included.
@@ -1995,7 +1995,7 @@ fn node_in_region(
 /// One node's narration, replayed into `events`, then its `enter` line:
 /// the layer (the commitment's size), the commitment, what the node is, and
 /// a dead node's core
-/// ([events.md § Search layer](../../../../docs/ein/ein.rs/events.md#search-layer)).
+/// ([05-events.md § Search layer](../../../../docs/ein/ein.rs/05-events.md#search-layer)).
 pub(crate) fn narrate_node(
     events: &mut Events,
     out: &mut NodeOut,

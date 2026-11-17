@@ -1,6 +1,6 @@
 //! **The Rust embedding contract, executable.**
 //!
-//! [`docs/ein/ein.rs/api.md`](../../../../docs/ein/ein.rs/api.md) documents
+//! [`docs/ein/ein.rs/04-api.md`](../../../../docs/ein/ein.rs/04-api.md) documents
 //! how to drive the engine from another Rust program. Its worked example is
 //! not a code block someone typed into a markdown file: it is the region of
 //! *this* file between the two `// ─── page ───` markers, and
@@ -52,7 +52,7 @@ fn this_file() -> PathBuf {
 
 /// The page these markers are quoted into.
 fn page() -> String {
-    std::fs::read_to_string(repo_root().join("docs/ein/ein.rs/api.md")).expect("the page")
+    std::fs::read_to_string(repo_root().join("docs/ein/ein.rs/04-api.md")).expect("the page")
 }
 
 // ─── page ───────────────────────────────────────────────────────────
@@ -230,14 +230,14 @@ fn the_page_quotes_this_file() {
     let block = page
         .split("```rust\n")
         .nth(1)
-        .expect("a ```rust block in docs/ein/ein.rs/api.md")
+        .expect("a ```rust block in docs/ein/ein.rs/04-api.md")
         .split("\n```")
         .next()
         .expect("its close");
 
     assert_eq!(
         block, example,
-        "docs/ein/ein.rs/api.md's first ```rust block and this file's marked region \
+        "docs/ein/ein.rs/04-api.md's first ```rust block and this file's marked region \
          have diverged. They are one text: edit the test, run it, paste."
     );
 }
@@ -276,11 +276,11 @@ fn the_page_quotes_this_files_prose_too() {
     let quoted = page
         .split("<!-- prose -->")
         .nth(1)
-        .expect("a <!-- prose --> region in docs/ein/ein.rs/api.md");
+        .expect("a <!-- prose --> region in docs/ein/ein.rs/04-api.md");
     assert_eq!(
         quoted.trim_matches('\n'),
         prose.trim_matches('\n'),
-        "docs/ein/ein.rs/api.md's <!-- prose --> region and this file's \
+        "docs/ein/ein.rs/04-api.md's <!-- prose --> region and this file's \
          `// ─── prose ───` \
          region have diverged. They are one text: edit the comment, paste."
     );
@@ -330,13 +330,13 @@ fn the_page_and_the_file_name_the_same_tests() {
     let phantom: Vec<_> = cited.difference(&declared).collect();
     assert!(
         phantom.is_empty(),
-        "docs/ein/ein.rs/api.md names {phantom:?}, which is not a test in \
+        "docs/ein/ein.rs/04-api.md names {phantom:?}, which is not a test in \
          ein-cli/tests/embedding.rs"
     );
     let unnamed: Vec<_> = declared.difference(&cited).collect();
     assert!(
         unnamed.is_empty(),
-        "{unnamed:?} is a test here that docs/ein/ein.rs/api.md never names — if it \
+        "{unnamed:?} is a test here that docs/ein/ein.rs/04-api.md never names — if it \
          was renamed, the page still names the old one"
     );
 }

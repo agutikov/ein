@@ -1,5 +1,5 @@
 //! The rule dependency graph and its strata
-//! ([Analysis of rules](../../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md)).
+//! ([Analysis of rules](../../../../docs/ein/reasoning/03-rule-evolution/02-analysis-of-rules.md)).
 //!
 //! **The graph.** An edge from each relation a compiled plan reads to each it
 //! writes, negative where the read is under an odd number of `absent`s, and a

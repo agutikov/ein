@@ -16,7 +16,7 @@
 ;;;   Solution k = 1, `{(p one)}` plus `(not (q one))`, `exhausted = true`
 ;;;
 ;;; Committing `(q one)` falsifies `derive-p`'s guard, but nothing retracts
-;;; (docs/ein/reasoning/kb-evolution/absent-and-naf.md § What is not
+;;; (docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md § What is not
 ;;; provided), so the fork held the stale `(p one)` beside `(q one)`, the
 ;;; clash fired, and the candidate was killed: the state `{(q one)}` was
 ;;; unreachable. R said the same at `c887a35b`: one state, ∅, root holding

@@ -22,7 +22,7 @@ use ein_corpus::{Scratch, golden, golden_path};
 /// diff; it does not pass this.
 ///
 /// `ein test`'s options
-/// ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test))
+/// ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test))
 /// are a design of their own, and `ein kb save --saturate` exists only under
 /// the `einb` feature, so each is counted apart from the rest.
 ///
@@ -31,11 +31,11 @@ use ein_corpus::{Scratch, golden, golden_path};
 const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein\n", 0),
     // Among them `--jobs`
-    // ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)),
+    // ([03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)),
     // `--models`, `--layer-progress`, `--dump-answer`, `--dump-lattice`,
     // `--diff-models`, `--region-limit`, the four region flags
     // `--minimal`, `--maximal`, `--single` and `--region-budget`
-    // ([`cli.md`](../../../../docs/ein/user/reference/cli.md)), `--monotone`,
+    // ([`05-cli.md`](../../../../docs/ein/user/04-reference/05-cli.md)), `--monotone`,
     // `--count`, `--no-require-why`, as every command that loads a program
     // takes it, `--no-search`, root alone, R not searched, and
     // `--describe-route`, describe's two routes, one R. The retired options
@@ -64,7 +64,7 @@ const EXPECTED: [(&str, usize); 12] = [
 ];
 
 /// `ein test`'s parser
-/// ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
+/// ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)).
 /// **Ten**, and the number is the design: the two that decide whether a run
 /// can finish (`--region-budget`, `-T`; `-m` and `-E` are retired with
 /// `solve`'s), the two that decide how much of a passing run to print (`-v`,

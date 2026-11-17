@@ -4,7 +4,7 @@
 //!
 //! | its side of the boundary |
 //! |---|
-//! | the worked examples of [`absent-and-naf.md`](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#worked-examples) — what `(absent P)` *means* |
+//! | the worked examples of [`03-absent-and-naf.md`](../../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md#worked-examples) — what `(absent P)` *means* |
 //! | what the boundary *records*: the negative half of `Deps(Y)` |
 //! | the closure a guard is judged against, including one a rule built |
 //! | the advisory stratification map, which no flag narrates |
@@ -201,7 +201,7 @@ fn gate_program(gate_first: bool) -> String {
 }
 
 /// **The order no longer decides what is derivable** — the first worked
-/// example of `absent-and-naf.md`, which is the same claim as "a guard is judged
+/// example of `03-absent-and-naf.md`, which is the same claim as "a guard is judged
 /// against the closure fixpoint".
 ///
 /// Two fixtures, one claim. A guard evaluated when its candidate is
@@ -1029,7 +1029,7 @@ fn boundary_lines(src: &str) -> (u32, usize, usize) {
 
 /// **A parked candidate is not re-judged when an unrelated relation grows.**
 ///
-/// [design/saturation.md § 1](../../../../docs/ein/ein.rs/design/saturation.md#1-two-phases)'s
+/// [03-design/06-saturation.md § 1](../../../../docs/ein/ein.rs/03-design/06-saturation.md#1-two-phases)'s
 /// watch is a per-round epoch, not a per-candidate stamp: `refresh_epochs` takes
 /// the watched extents once and stamps the guard *sets* whose world moved, and
 /// a candidate is stale exactly when its set's epoch is past the epoch it was

@@ -1,6 +1,6 @@
 //! Every question `ein solve` asks about `R`, each answered with the least
 //! work it needs (Q-M1e2.31,
-//! [design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
+//! [03-design/07-search.md § 4](../../../../docs/ein/ein.rs/03-design/07-search.md#4-the-routes)).
 //!
 //! A question is a [`Mode`]: **which** part of `R` (all of it, the minimal
 //! line, the maximal line) and **what is asked** (describe it, find `N` of
@@ -322,7 +322,7 @@ pub enum Route {
 }
 
 /// A theorem a mode used to skip work —
-/// [the licences](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
+/// [the licences](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Licence {
     /// L0: a fork only adds — every node is root's fixpoint and more, so when
@@ -2708,7 +2708,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
 
 /// `ein solve FILE --monotone`'s answer, a question about the **program**
 /// rather than about `R`
-/// ([design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs)).
+/// ([03-design/07-search.md § 7](../../../../docs/ein/ein.rs/03-design/07-search.md#7-monotone-and-flagged-programs)).
 /// Its work is root's fixpoint and the static check, and nothing
 /// else: no node is built, so it has no `R` to disagree with `ein solve`
 /// about, and its verdict and sites are the ones every surface prints, from

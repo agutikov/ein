@@ -7,7 +7,7 @@
 ;;;
 ;;; Root is dead. `(hit w)` has two derivations, through `(holds b0)` and
 ;;; through `(holds s0)`, and the smallest frontier over them, with `(c x)`,
-;;; is `(c x) (small s0)`: two facts (`docs/ein/user/reference/glossary.md` §
+;;; is `(c x) (small s0)`: two facts (`docs/ein/user/04-reference/13-glossary.md` §
 ;;; Core, the smallest contradiction frontier).
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────

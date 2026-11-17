@@ -30,9 +30,9 @@ never run it, which reads as coverage nobody has.
 Each program states its expected region on `(solve … :expect …)`, or a query's
 classes over a part of R, and `ein test` checks it against R as `ein solve`
 describes it: by the routes on a monotone program, by the cube on one the
-static check flags ([finding R](../docs/ein/reasoning/kb-evolution/finding-r.md)).
+static check flags ([finding R](../docs/ein/reasoning/02-kb-evolution/07-finding-r.md)).
 The claims were rendered from each program's computed R, the way
-[`query.md`](../docs/ein/user/syntax-and-semantics/query.md#claims)'s
+[`12-query.md`](../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)'s
 were.
 
 | file | the form |
@@ -114,7 +114,7 @@ these programs give each rule one.
 
 Four rules assert the verdict atom `open` — `total-owed`, `surjective-owed`,
 `slot-owed-room`, `slot-owed-fill`
-([when an obligation is read](../docs/ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read))
+([when an obligation is read](../docs/ein/user/03-syntax-and-semantics/08-obligations.md#when-an-obligation-is-read))
 — and eight programs exercise them, one owing and one satisfied per rule. They
 are written the way everything else here is, with one exception that is worth
 knowing before writing a ninth.
@@ -154,7 +154,7 @@ does not reach the third rung on its own. It gets there with a second
 obligation, `sorted-somewhere`, a bare `(open)`, which names no relation to
 branch on, so the rung declines it, and a declined obligation hands the whole
 call to the blind enumerator
-([the ladder § 4.3](../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#43-when-it-declines)).
+([the ladder § 4.3](../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#43-when-it-declines)).
 So the file is also the corpus's one `mode=declined` fixture, and the
 obligation it adds is *satisfied* on purpose: the decline must not depend on
 the KB happening to owe something.
@@ -634,7 +634,7 @@ because a reader who does not know why `slot-partition-setup` is absent will
 put it back.
 
 **A verdict word is not what an expectation claims.** All `:expect` forms are
-assertions about **facts** ([`syntax.md` § Query](../docs/ein/user/reference/syntax.md#query)),
+assertions about **facts** ([`02-syntax.md` § Query](../docs/ein/user/04-reference/02-syntax.md#query)),
 so no fixture here says `Solution`, `Open` or `Contradiction` — it says what
 the answer's fact set is, and the facts an owing state reached are the facts it
 reached. What a fixture cannot state it asserts in-process instead — the owe
@@ -643,7 +643,7 @@ counts in
 the rung modes in `obligation_rung.rs`. One form says that a state owes, though
 not how much: `(solve … :expect (region (owing (model …))))` names an owing
 state, which R, the states that are alive *and discharged*, does not hold
-([solution semantics](../docs/ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r)).
+([solution semantics](../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#2-the-answer-the-region-r)).
 **A list may not switch an obligation's generating role off**: a
 `:no-hypothesis` naming a relation an obligation owes is refused at load, and
 so is a closure of one
@@ -713,7 +713,7 @@ activator into `(total is-a seats)`, so `std.algebra`'s `total` (or
 is the one program in `stdlib/bijection/` that leaves the blind enumerator on,
 so `seats` is a relation a commitment can extend, and *forbid* refuses the
 program at load, exit 2
-([diagnostics § 2.7](../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)):
+([diagnostics § 2.7](../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)):
 a refusal is a kill.
 
 **The calculator's walks.** The modules' rules are mostly the two exchange
@@ -785,7 +785,7 @@ ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt` is the whole cell count.
 The coverage gate is a yes/no. The numbers — firings per rule, productive
 against redundant, which program is a rule's sole activator — are read off the
 `fire` events a run writes (`ein test PROGRAM --events FILE`;
-[the `--events` protocol](../docs/ein/ein.rs/events.md)). A firing counts for a
+[the `--events` protocol](../docs/ein/ein.rs/05-events.md)). A firing counts for a
 module only when the file does not declare that name itself and the module is
 in its import closure, so a puzzle's inline `symmetric` is never credited to
 `std.algebra`'s; and the arity of the activator tells `std.elim`'s
@@ -799,11 +799,11 @@ That is the attribution `stdlib_coverage.rs` applies.
 default `--region-budget`: `--single` or `-n k+1` for queries' claims over one
 part of R and the description for a region claim, and then the description
 for whatever that left undecided
-([`syntax.md` § Query](../docs/ein/user/reference/syntax.md#query)).
+([`02-syntax.md` § Query](../docs/ein/user/04-reference/02-syntax.md#query)).
 So a query's claim can go in where its question decides it, on a program whose
 R the description does not exhaust within the budget; a region claim on such a
 program cannot. Where both questions stop short, `:expect` reports
-[`NOT CHECKED`](../docs/ein/user/reference/diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals)
+[`NOT CHECKED`](../docs/ein/user/04-reference/07-diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals)
 — which is honest, is not a pass, and under `ein test` **takes a failing exit
 code**. So the policy needs no mechanism: a claim that does not check cannot
 be added without turning `ein test tests/` red. It is the failure mode of

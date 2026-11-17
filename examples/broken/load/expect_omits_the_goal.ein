@@ -1,5 +1,5 @@
 ;; A query's `:expect` lists its projection classes — the goal's atoms under
-;; its rows (docs/ein/user/syntax-and-semantics/query.md) — so a listed fact the
+;; its rows (docs/ein/user/03-syntax-and-semantics/12-query.md) — so a listed fact the
 ;; goal does not match is not a class of it. A claim about the state, which
 ;; `(q A H1)` here would be, is the region claim's, `(solve … :expect (region
 ;; …))`. The loader refuses the listing, naming the fact and the claim that

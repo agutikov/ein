@@ -13,7 +13,7 @@
 ;;; digit is set: of the 1 000 full assignments 997 are dead, each found
 ;;; separately.
 ;;;
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith mul product-of add sum-of))
 (import std.math.decimal :symbols (n))

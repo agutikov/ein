@@ -14,7 +14,7 @@ Two places where a value that is not a name has to go where the engine expects a
 **C-8: something new.** First-order reasoning introduces individuals: the witness of an existential, the
 arbitrary x of a universal's proof. Ein's standing design is that **no rule asserts a name the program
 lacks** (the M1 alive-set invariant, `ein-infer/src/invariant.rs`), and the universe H is built from the
-program's names ([`solution-semantics.md` § 1.2 and § 1.4](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names)).
+program's names ([`06-solution-semantics.md` § 1.2 and § 1.4](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#12-names)).
 A Skolem term, a nested fact over names in scope, is a new *value* and no new *name*, so it is legal today
 (M1g's probe 5: `(parent (father-of Ann) Ann)`).
 

@@ -1,6 +1,6 @@
 //! The modes' routes on a monotone program, each stated, with why it is
 //! sound, in
-//! [the routes, question by question](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#6-the-routes-question-by-question).
+//! [the routes, question by question](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question).
 //!
 //! Describe takes the state route ([`crate::states`]): it needs every state of
 //! `R`, so it visits every alive state. The four other questions do not, and

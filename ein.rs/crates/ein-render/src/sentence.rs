@@ -1,5 +1,5 @@
 //! A fact in English: fact-level rendering from provenance
-//! ([`docs/ein/user/syntax-and-semantics/natural-language.md`](../../../../docs/ein/user/syntax-and-semantics/natural-language.md)).
+//! ([`docs/ein/user/03-syntax-and-semantics/14-natural-language.md`](../../../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)).
 //!
 //! **Two texts a fact can have, from two places.** Its *statement* is what the
 //! fact says, its relation's `:why` with the fact's arguments in its
@@ -15,7 +15,7 @@
 //! `MAX_ALT_JUSTIFICATIONS` more, and which arrived first can move with rule
 //! order; a reason is an explanation, as a core is (Q-M1f.6), and neither is
 //! canonical. Recording order is deterministic in a run
-//! ([`determinism-and-order.md`](../../../../docs/ein/ein.rs/design/determinism-and-order.md)),
+//! ([`01-determinism-and-order.md`](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md)),
 //! so the text is under the same invariance
 //! `id_order_invariance` and `jobs_invariance` hold the rest of the answer to.
 //!
@@ -23,7 +23,7 @@
 //! statement, and one whose justification has no text has no reason; where
 //! both are missing the fact reads as its s-expression. The engine adds the
 //! provenance's own words (`rule r`, `source
-//! "…"`, `hypothesis N`), which `reserved-engine-strings.md` owns, and nothing
+//! "…"`, `hypothesis N`), which `07-reserved-engine-strings.md` owns, and nothing
 //! of the domain's.
 
 use ein_core::{FactId, Kb, Program, ProvKind, Symbol, Terms, Value, render_why};

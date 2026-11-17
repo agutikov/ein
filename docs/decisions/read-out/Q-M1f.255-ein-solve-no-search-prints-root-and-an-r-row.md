@@ -13,4 +13,4 @@ way to one that says R was not searched. The commands that take it:
 
 **Held by.** `ein-cli/tests/no_search.rs`: `solve_reports_root_and_says_r_was_not_searched`;
 `ein-cli/tests/lever_invariance.rs`: `no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r`. The rows:
-[read-out.md](../../ein/user/reference/read-out.md#4---monotone-and---no-search-no-question-about-r) § 4.
+[08-read-out.md](../../ein/user/04-reference/08-read-out.md#4---monotone-and---no-search-no-question-about-r) § 4.

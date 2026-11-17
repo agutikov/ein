@@ -30,8 +30,8 @@ particular kind, and F1b asked which. The coordinator's expectation, which the s
 - a **nested fact** is a term built by a constructor: a function symbol with no equations;
 - **`not`** is a stored, explicit negation, a fact like any other that a rule must derive; **`absent`** is
   negation as failure, a test of the state, non-monotone
-  ([`absent-and-naf.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md),
-  [`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md)); **`(false)`** is an integrity
+  ([`03-absent-and-naf.md`](../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md),
+  [`08-monotonicity.md`](../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md)); **`(false)`** is an integrity
   constraint's head;
 - an **obligation**, `(open ?R)`, is an existential conclusion with no witness built: the state owes one,
   and the search proposes witnesses *from the names the program has*;

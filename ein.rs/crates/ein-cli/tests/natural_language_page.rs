@@ -1,4 +1,4 @@
-//! **[`natural-language.md`](../../../../docs/ein/user/syntax-and-semantics/natural-language.md)
+//! **[`14-natural-language.md`](../../../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)
 //! is held to the engine**: a page is pinned by something that runs.
 //!
 //! Three of its claims are checked here:
@@ -15,7 +15,7 @@ use std::process::Command;
 
 use ein_corpus::{Scratch, repo_root};
 
-const PAGE: &str = "docs/ein/user/syntax-and-semantics/natural-language.md";
+const PAGE: &str = "docs/ein/user/03-syntax-and-semantics/14-natural-language.md";
 const OPEN: &str = "<!-- state-file: ";
 const CLOSE: &str = "<!-- /state-file -->";
 

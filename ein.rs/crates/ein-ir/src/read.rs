@@ -71,7 +71,7 @@ impl std::error::Error for ReadError {}
 /// A file that cannot be read gives one line naming the error class, the
 /// errno text and the quoted path (`FileNotFoundError: [Errno 2] No such file
 /// or directory: '<path>'`, and its two siblings below), the spelling
-/// [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
+/// [`07-diagnostics.md` §2](../../../../docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes)
 /// states, one of the two places a diagnostic keeps a Python exception class.
 /// A file that is neither a container nor UTF-8 gives [`not_utf8_line`], in
 /// Ein's own words.

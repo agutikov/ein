@@ -1,5 +1,5 @@
 //! **`std.bool`, held to an enumeration of the sixteen columns**
-//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md)).
+//! ([04-stdlib.md](../../../../docs/ein/user/04-reference/04-stdlib.md)).
 //!
 //! `stdlib/bool/` is four modules: `std.bool.gates`, the sixteen Boolean
 //! functions of two inputs as one table and as a relation each;

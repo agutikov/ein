@@ -37,7 +37,7 @@ Two halves, and both run the engine ($EIN_BIN or --bin, default
      sentence, or the deriving rule's `:why`, filled with the firing's
      bindings;
    - **rendered** — either, which is the fallback ladder
-     [`natural-language.md`](../docs/ein/user/syntax-and-semantics/natural-language.md)
+     [`14-natural-language.md`](../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)
      states: a fact with neither reads as its s-expression, and is a
      **fallback**.
 

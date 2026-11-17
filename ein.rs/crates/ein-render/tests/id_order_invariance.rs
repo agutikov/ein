@@ -33,7 +33,7 @@
 //! It asks one question — *does an output depend on an order accident rather
 //! than on the data?* — and it cannot ask it by re-running: `FxHashMap`
 //! hashes the same way every run
-//! ([design/determinism-and-order.md § 9](../../../../docs/ein/ein.rs/design/determinism-and-order.md#9-the-tests-that-hold-it)),
+//! ([03-design/01-determinism-and-order.md § 9](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#9-the-tests-that-hold-it)),
 //! so two runs of one build agree whether or not an output leaks an order.
 //!
 //! What *is* available is the question in this engine's own terms. Ids
@@ -44,7 +44,7 @@
 //! `Interner::rank`, and iterating an `FxHashMap` keyed on one is the thing
 //! a static check greps for, each such line carrying its `determinism-ok:`
 //! reason
-//! ([design/determinism-and-order.md § 2.3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#23-hash-containers)).
+//! ([03-design/01-determinism-and-order.md § 2.3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#23-hash-containers)).
 //! Every one of those claims is falsified by the same experiment: **assign the
 //! ids in a different order and see whether anything moves.**
 //!

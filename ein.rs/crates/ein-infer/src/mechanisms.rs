@@ -1,5 +1,5 @@
 //! The hypothesis mechanisms a program declares, read at a state
-//! ([hypothesis-generation.md § 6](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#6-scoping-and-the-mechanisms-judged-together)).
+//! ([04-hypothesis-generation.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#6-scoping-and-the-mechanisms-judged-together)).
 //!
 //! Five declarations steer what a commitment may be about, and a sixth
 //! mechanism, the blind enumerator, is what runs where none of the generating
@@ -537,7 +537,7 @@ impl Words<'_> {
     /// The form that writes `fact`: the first of the program's forms whose
     /// head and arguments are the fact's names, a fact being stated with no
     /// position of its own
-    /// ([diagnostics.md § 1.5](../../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none))
+    /// ([07-diagnostics.md § 1.5](../../../../docs/ein/user/04-reference/07-diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none))
     /// while its form's
     /// words carry theirs. `None` for a fact with a nested argument.
     fn form_of(&self, fact: FactId) -> Option<NodeId> {

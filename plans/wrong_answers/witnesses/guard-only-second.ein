@@ -20,7 +20,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; `{(p a)}` is dead, and its core is the smallest frontier over its
-;;; derivations (`glossary.md` § Smallest contradiction frontier): `w`'s rests
+;;; derivations (`13-glossary.md` § Smallest contradiction frontier): `w`'s rests
 ;;; on its activator `(w a)`, which a node derived from `(p a)` and which a core
 ;;; follows (Q-M1e2.12), so the core is `(p a)` alone, as the control reports.
 ;;;

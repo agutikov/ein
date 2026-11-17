@@ -77,7 +77,7 @@ names; now they are not, and *does root derive `(false)`* is undecidable in gene
    surface before and after.
 4. **T1g.6.1.4 — the diagnostic** of point 7, and its row in the read-out reference.
 5. **T1g.6.1.5 — the pages:** `defined_behaviour.md`, `read_out.md` (held by `read_out_reference.rs`),
-   `configuration.md`, `solution_semantics.md` (a third status beside alive and dead), `events.md`; and
+   `configuration.md`, `solution_semantics.md` (a third status beside alive and dead), `05-events.md`; and
    F26's promotion 3 marked done.
 
 ## Acceptance

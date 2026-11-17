@@ -1,8 +1,8 @@
 //! The region trace: `--trace FILE.md` under a region mode
-//! ([`rendering.md` § The trace](../../../../../docs/ein/user/reference/rendering.md#the-trace--ein-solve---trace)).
+//! ([`12-rendering.md` § The trace](../../../../../docs/ein/user/04-reference/12-rendering.md#the-trace--ein-solve---trace)).
 //!
 //! **What R is made of, told step by step.** The headline is the read-out's
-//! own rows ([`read-out.md`](../../../../../docs/ein/user/reference/read-out.md)), so the trace cannot
+//! own rows ([`08-read-out.md`](../../../../../docs/ein/user/04-reference/08-read-out.md)), so the trace cannot
 //! say *No solution* over a run with states. Then root's derivation; then
 //! each state the read-out printed, derived from its first minimal
 //! commitment; then `N`, each minimal dead set with why it is dead; and, for
@@ -274,7 +274,7 @@ pub struct Shape {
 
 /// `ein solve --trace FILE.md`: root's derivation, then each state stdout
 /// printed, derived from its first minimal commitment, then N and the owing
-/// frontier ([`rendering.md` § The trace](../../../../../docs/ein/user/reference/rendering.md#the-trace--ein-solve---trace)).
+/// frontier ([`12-rendering.md` § The trace](../../../../../docs/ein/user/04-reference/12-rendering.md#the-trace--ein-solve---trace)).
 /// `root_firings` are root's own saturation's
 /// ([`ein_infer::region::root_firings`]), and `options` the read-out's, whose
 /// summary rows head the trace and whose listing says which states it traces.

@@ -2,12 +2,12 @@
 //!
 //! A `fork()` that copied the fact list and the index maps would cost every
 //! node a copy of root's store, and
-//! [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
+//! [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md)
 //! keeps several nodes live at once
-//! ([design/data-model.md § 5.1](../../../../docs/ein/ein.rs/design/data-model.md#51-the-fork)).
+//! ([03-design/03-data-model.md § 5.1](../../../../docs/ein/ein.rs/03-design/03-data-model.md#51-the-fork)).
 //!
 //! So a `Kb` is `Vec<Arc<Layer>>` plus a writable [`Layer`]
-//! ([design/data-model.md § 5](../../../../docs/ein/ein.rs/design/data-model.md#5-the-layered-kb)):
+//! ([03-design/03-data-model.md § 5](../../../../docs/ein/ein.rs/03-design/03-data-model.md#5-the-layered-kb)):
 //!
 //! - **Read** = walk the layers oldest-first. For every ordered list that
 //!   means *concatenated* iteration, which is exactly the order "copy the
@@ -71,7 +71,7 @@ pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 
 /// A key of the participation index: relation, argument
 /// position, and the value in it — or, since
-/// [design/data-model.md § 6.1](../../../../docs/ein/ein.rs/design/data-model.md#61-the-participation-key),
+/// [03-design/03-data-model.md § 6.1](../../../../docs/ein/ein.rs/03-design/03-data-model.md#61-the-participation-key),
 /// a position *inside* the fact in that argument.
 ///
 /// 12 bytes with padding. Packing it into a `u64` does not fit — the
@@ -82,7 +82,7 @@ pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 /// **Why the second level exists.** Keyed on the join-key types only, a
 /// `Fact`-valued argument is not indexed, so a `(not (R ?a ?b))` premise
 /// scans `not`'s whole extent to reject all but a handful
-/// ([design/data-model.md § 5](../../../../docs/ein/ein.rs/design/data-model.md#5-the-layered-kb)).
+/// ([03-design/03-data-model.md § 5](../../../../docs/ein/ein.rs/03-design/03-data-model.md#5-the-layered-kb)).
 /// Keying one level in turns that scan into a bucket lookup. It is a
 /// *narrowing* — the matcher re-checks every slot regardless — so it changes
 /// which facts are offered and not which ones match, and buckets are appended
@@ -128,7 +128,7 @@ pub struct NameEntry {
 ///
 /// A *hit* is never reported as a miss, so the filter can only skip a layer
 /// that provably lacks the key; what the size buys is how often a miss is
-/// recognised as one. [design/data-model.md § 6.2](../../../../docs/ein/ein.rs/design/data-model.md#62-the-per-layer-bloom-filter) put
+/// recognised as one. [03-design/03-data-model.md § 6.2](../../../../docs/ein/ein.rs/03-design/03-data-model.md#62-the-per-layer-bloom-filter) put
 /// **15.6 %** of an exhaustive `zebra` in the layer walk of `facts_with` —
 /// a fork 24 layers deep hashing its key 24 times to find the one or two
 /// layers that have it — and this takes 6–7 % of the run off.
@@ -136,7 +136,7 @@ pub struct NameEntry {
 /// Sized by sweep rather than by arithmetic: 512 bits is −6.0 %, 2048 is
 /// **−7.3 %**, and 8192 is −7.2 %, so the curve is flat past here and the
 /// extra 768 bytes a layer would buy nothing. A fork's layer is ~6 KB, which
-/// is what [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
+/// is what [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md)
 /// sizes `--jobs` by, so 256 bytes is 4 % of it.
 const BLOOM_BITS: usize = 2048;
 const BLOOM_WORDS: usize = BLOOM_BITS / 64;
@@ -161,7 +161,7 @@ pub struct Layer {
     /// `Engine.compile_all` walks `rules × activators` on every enqueue pass
     /// and the walk is only *worth* repeating when a rule gained an activator
     /// — which happens exactly when this grows
-    /// ([design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)).
+    /// ([03-design/05-matcher.md § 7](../../../../docs/ein/ein.rs/03-design/05-matcher.md#7-the-compile-cache)).
     /// Counting it per layer keeps the question O(layers) instead of
     /// O(rules × activators), which is the size of the walk being skipped.
     rule_apps: u32,
@@ -285,10 +285,10 @@ impl Layer {
     }
 
     /// Heap bytes this layer holds — the **delta** a fork owns, which is the
-    /// number [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
+    /// number [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)
     /// sizes `--jobs` by: a machine can hold `RAM / mean-delta` searches at
     /// once, and the claim that a fork is O(1)
-    /// ([design/data-model.md § 5.1](../../../../docs/ein/ein.rs/design/data-model.md#51-the-fork)) is a
+    /// ([03-design/03-data-model.md § 5.1](../../../../docs/ein/ein.rs/03-design/03-data-model.md#51-the-fork)) is a
     /// claim about exactly this quantity not growing with the KB.
     ///
     /// Capacity, not length, because a `Vec` that doubled holds the doubling;
@@ -329,7 +329,7 @@ impl Layer {
     ///
     /// `names` is compared **as a set** rather than in order, and that is not
     /// laziness: its order is in no contract, and every consumer sorts
-    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
+    /// ([03-design/01-determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#22-content-order)).
     /// Every other list here is append-ordered and is compared
     /// exactly.
     fn diff(&self, other: &Layer) -> Result<(), String> {
@@ -416,7 +416,7 @@ fn diff_map<K: Eq + std::hash::Hash + std::fmt::Debug>(
 /// are tests), no matcher reads a class, and a `.einb` does not store it; a
 /// KB still copies it on every `fork()` / `snapshot()`, and the copy is
 /// observable through [`EqClasses::classes`]
-/// ([design/data-model.md § 10](../../../../docs/ein/ein.rs/design/data-model.md#10-equality-classes)).
+/// ([03-design/03-data-model.md § 10](../../../../docs/ein/ein.rs/03-design/03-data-model.md#10-equality-classes)).
 ///
 /// # Reading it does not write it
 ///
@@ -457,10 +457,10 @@ impl EqClasses {
     /// Asking `equivalent(a, c)` does not insert `c`, so [`Self::classes`]'s
     /// output is no function of **query history** and [`Kb::branch`] copies
     /// nothing a question left behind. Path compression and
-    /// union-by-first-argument are the two behaviours [design/data-model.md]
+    /// union-by-first-argument are the two behaviours [03-design/03-data-model.md]
     /// § 10 names.
     ///
-    /// [design/data-model.md]: ../../../../docs/ein/ein.rs/design/data-model.md#10-equality-classes
+    /// [03-design/03-data-model.md]: ../../../../docs/ein/ein.rs/03-design/03-data-model.md#10-equality-classes
     pub fn find(&mut self, x: Symbol) -> Symbol {
         if self.parent.get(x).is_none() {
             return x;
@@ -567,7 +567,7 @@ pub struct Kb {
     /// watched relation per parked boundary entry — and folding it over the
     /// layer stack made it O(depth) where a flat index answers in O(1).
     /// The search reaches depth 35, and that cost was 9.5 % of the run
-    /// ([design/data-model.md § 5](../../../../docs/ein/ein.rs/design/data-model.md#5-the-layered-kb)
+    /// ([03-design/03-data-model.md § 5](../../../../docs/ein/ein.rs/03-design/03-data-model.md#5-the-layered-kb)
     /// item 2). Maintained wherever `by_rel` is, and cloned per fork: a map of
     /// one `u32` per *declared relation* — 17 on the zebra puzzles — against a
     /// delta that is already kilobytes.
@@ -641,7 +641,7 @@ impl Kb {
 
     /// A KB over registries someone else already built.
     ///
-    /// The `.einb` reader's, and only its ([design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md)): it rebuilds
+    /// The `.einb` reader's, and only its ([03-design/09-binary-format.md](../../../../docs/ein/ein.rs/03-design/09-binary-format.md)): it rebuilds
     /// the program by re-loading the file's `PROGRAM` section and then installs
     /// the file's *own* fact state on top of those registries rather than the
     /// loader's. Sharing the `Arc` is what makes that two KBs over one program
@@ -734,7 +734,7 @@ impl Kb {
     /// Seal the top layer, so later appends land in a new one — the half of
     /// [`Kb::fork`] that mutates, and the only half a *layer* has to do once.
     ///
-    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md) is why
+    /// [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md) is why
     /// the two are separable: a fanned-out layer's workers all branch from one
     /// root and none of them may write to it, so the seal happens once when the
     /// layer opens and every worker then calls [`Kb::branch`] through a `&`.
@@ -923,7 +923,7 @@ impl Kb {
     /// A relation's extent size — **one** map lookup, whatever the depth.
     ///
     /// The counter is the acceptance instrument for that claim
-    /// ([design/data-model.md § 7](../../../../docs/ein/ein.rs/design/data-model.md#7-per-relation-extent-counts)):
+    /// ([03-design/03-data-model.md § 7](../../../../docs/ein/ein.rs/03-design/03-data-model.md#7-per-relation-extent-counts)):
     /// it counts probes, and a fold over the layers would make it grow with
     /// `depth()`.
     pub fn n_facts_of(&self, rel: Symbol) -> usize {
@@ -988,7 +988,7 @@ impl Kb {
     /// Every name that appears anywhere, in first-seen order.
     ///
     /// Every consumer sorts
-    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
+    /// ([03-design/01-determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#22-content-order)).
     /// This order is deterministic; it is still not something to depend on.
     pub fn names(&self) -> Vec<Symbol> {
         let mut out = Vec::new();
@@ -1125,7 +1125,7 @@ impl Kb {
     /// rule and an obligation rule find their activators the same way — by
     /// name, in this index — because the two registries share **one
     /// name-space**
-    /// ([obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)):
+    /// ([08-obligations.md](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)):
     /// which pass walks a rule is not a fact about its activator. `hrules` are absent
     /// and stay absent — a generic hrule takes its activators from the query's
     /// `:hrules` keyword and never from the store, because an hrule activator
@@ -1379,7 +1379,7 @@ impl Kb {
 
     /// `n_by_rel` against a full walk of the layer stack — the invariant the
     /// O(1) [`Kb::n_facts_of`] rests on, checked rather than argued
-    /// ([design/data-model.md § 7](../../../../docs/ein/ein.rs/design/data-model.md#7-per-relation-extent-counts)).
+    /// ([03-design/03-data-model.md § 7](../../../../docs/ein/ein.rs/03-design/03-data-model.md#7-per-relation-extent-counts)).
     /// Part of `check_layering` because that is where every
     /// KB-shape fixture already asks whether the layer stack still adds up.
     pub fn check_extent_counts(&self) -> Result<(), String> {
@@ -1638,7 +1638,7 @@ impl Kb {
 
     /// Field-by-field comparison against another KB — what "identical" means
     /// when a round trip has to prove it
-    /// ([design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md)).
+    /// ([03-design/09-binary-format.md](../../../../docs/ein/ein.rs/03-design/09-binary-format.md)).
     ///
     /// Both sides are materialised first, so the answer is about *content* and
     /// not about how many forks each one has been through — which is the same

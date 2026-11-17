@@ -140,19 +140,19 @@ As the tree stands on 2026-11-13. Each is re-taken by the stage that uses it.
   ([`words.ein`](../../../examples/word_problems/words.ein)'s `model-counts-only`).
 - **The read-out row for what root owes** (S1f.6.26, done 2026-11-13): where root is alive, owes, and R is
   not empty, `owed` rows under `∅` name each instance through its rule's `:why`
-  ([`read-out.md` § 2](../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
+  ([`08-read-out.md` § 2](../../../docs/ein/user/04-reference/08-read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
   So the calculator's table of what each form of a gap prints
-  ([`word-problems.md` § When the problem leaves a number out](../../../docs/ein/user/guide/word-problems.md#when-the-problem-leaves-a-number-out))
+  ([`08-word-problems.md` § When the problem leaves a number out](../../../docs/ein/user/02-guide/08-word-problems.md#when-the-problem-leaves-a-number-out))
   is out of date in one cell, *the gap is not printed*, and S1h.3.1 re-takes it whole.
 - **The forms that were tried and not banked.** The investigation's prototypes, `gap_a` (an obligation),
   `gap_c` (a hypothesis over a stated list), `gap_assume_h`, `_ha` and `_hb` (the assumption as a
   hypothesis, alone and with each form of the gap), `readings_always`, `readings_both`, `readings_gap`, stand
   under `build/s1f.6.20/p/` on 2026-11-13. That directory is scratch and not tracked: where it is gone, each
-  is rebuilt from [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md#the-theory-of-the-examples),
+  is rebuilt from [`08-word-problems.md`](../../../docs/ein/user/02-guide/08-word-problems.md#the-theory-of-the-examples),
   which carries the theory in full (§ 12) and each variant's rule.
 - **The stale fact.** With the gap as a fact and the assumption as a hypothesis (`gap_assume_hb`), the state
   that supposes Alice's amount still holds *not stated*, and the read-out's warning names it
-  ([`word-problems.md` § When the reader assumes a number](../../../docs/ein/user/guide/word-problems.md#when-the-reader-assumes-a-number)).
+  ([`08-word-problems.md` § When the reader assumes a number](../../../docs/ein/user/02-guide/08-word-problems.md#when-the-reader-assumes-a-number)).
   It is F21's open question met on a program a user would write.
 - **Two findings of the calculator's phase** that bear on a gap as a debt: E-18, a query's `:expect (false)`
   holds on a program that only owes

@@ -1,5 +1,5 @@
 //! A model **set** as a
-//! [determining key](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims),
+//! [determining key](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#6-a-set-of-models-and-what-its-count-claims),
 //! the answer to *print or describe*.
 //!
 //! The form is the smallest set of slots that tells every model apart, plus
@@ -22,7 +22,7 @@
 //!
 //! A model set varies in *facts*; a key is a claim about *variables*, so
 //! something has to turn one into the other. Two rules
-//! ([`satisfiability.md` § 6](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)):
+//! ([`10-satisfiability.md` § 6](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#6-a-set-of-models-and-what-its-count-claims)):
 //!
 //! 1. **Every varying positive atom is a Boolean variable.** A fact is in a
 //!    model or it is not; no declaration needed.
@@ -50,7 +50,7 @@ use ein_core::{FactId, Kb, Symbol, Terms, Value};
 /// How `ein solve` prints a model **set** — the `--models` flag.
 ///
 /// `List` is what the engine has always printed: one block per model. `Key`
-/// is the [determining key](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims).
+/// is the [determining key](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#6-a-set-of-models-and-what-its-count-claims).
 /// Neither changes what is *recorded*, and every verdict but `Ambiguity`
 /// ignores the choice, because a single model is its own smallest description.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
@@ -89,7 +89,7 @@ const KEY_NODE_BUDGET: u64 = 2_000_000;
 /// A second budget rather than the same one, because the two searches answer
 /// different questions: the first finds *a* size, the second enumerates
 /// **every** key of that size to answer *"why these"*
-/// ([`satisfiability.md` § 6](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)).
+/// ([`10-satisfiability.md` § 6](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#6-a-set-of-models-and-what-its-count-claims)).
 /// A form that printed one key without being able to say how many others there
 /// are would present an arbitrary basis as if it were the only one.
 const KEY_TABLE_BUDGET: u128 = 4_000_000;
@@ -1093,7 +1093,7 @@ pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
 /// `closes` is `corpus/regressions.toml`'s rule — naming a relation closes
 /// it — and is what lets a file say *one model with no `q`*. Without it a
 /// model is compared as its positive facts minus the program's given ones
-/// ([the model](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)).
+/// ([the model](../../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#3-model)).
 ///
 /// **A model's facts are Ein, compared by value.** The text between two `model`
 /// lines is read by the generated parser as facts, so a fact may span lines

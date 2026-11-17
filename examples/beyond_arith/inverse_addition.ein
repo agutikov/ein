@@ -12,7 +12,7 @@
 ;;; walk says so with a fact, `(no-addend …)`, since it reaches the end of
 ;;; the sum with digits of the operand still unread.
 ;;;
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (fa nz __closed__))
 

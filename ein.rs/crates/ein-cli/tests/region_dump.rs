@@ -1,5 +1,5 @@
 //! `ein oracle FILE --dump DIR`
-//! ([`region-dump.md`](../../../../docs/ein/user/reference/region-dump.md)).
+//! ([`11-region-dump.md`](../../../../docs/ein/user/04-reference/11-region-dump.md)).
 //!
 //! Held from the outside: the dump moves nothing the oracle prints; its limit
 //! refuses, exit 2, and warns when raised; and the `non_monotone` stub's line
@@ -230,7 +230,7 @@ fn region_states_keeps_every_nodes_state() {
     assert!(region["region"]["nodes"][0].get("state").is_none());
 }
 
-/// **The warning** (`read-out.md` § 5.1): on a program with a site the
+/// **The warning** (`08-read-out.md` § 5.1): on a program with a site the
 /// read-out's `lattice` block says what is assumed, each site and what it
 /// puts at stake, whether it bit — the status and the state apart — and the
 /// parent paths checked, and the summary's block carries the same; on a
@@ -328,7 +328,7 @@ fn the_warning_says_what_is_assumed_where_there_is_a_site() {
     }
 }
 
-/// The block's fields as `region-dump.md` § The `monotonicity` block names
+/// The block's fields as `11-region-dump.md` § The `monotonicity` block names
 /// them: each leaf, a list of objects written `name[]` and its elements'
 /// fields under it, a `null` or an empty list being the field it stands in.
 fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
@@ -364,8 +364,9 @@ fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
 /// or an empty list stands in for its fields only where no run fills them.
 #[test]
 fn every_monotonicity_field_is_defined_on_the_page() {
-    let page = std::fs::read_to_string(repo_root().join("docs/ein/user/reference/region-dump.md"))
-        .expect("the page");
+    let page =
+        std::fs::read_to_string(repo_root().join("docs/ein/user/04-reference/11-region-dump.md"))
+            .expect("the page");
     let section = page
         .split("### The `monotonicity` block, field by field")
         .nth(1)
@@ -486,6 +487,6 @@ fn every_monotonicity_field_is_defined_on_the_page() {
     let unwritten: Vec<&String> = rows.difference(&leaves).collect();
     assert!(
         unnamed.is_empty() && unwritten.is_empty(),
-        "region-dump.md's `monotonicity` fields and the block's differ:\n  written, no row: {unnamed:?}\n  a row, never written: {unwritten:?}"
+        "11-region-dump.md's `monotonicity` fields and the block's differ:\n  written, no row: {unnamed:?}\n  a row, never written: {unwritten:?}"
     );
 }

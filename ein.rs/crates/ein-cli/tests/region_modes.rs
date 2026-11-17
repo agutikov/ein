@@ -9,9 +9,9 @@
 //! - the oracle's directory, which `ein render region` draws with no run
 //!   overlaid.
 //!
-//! The modes print the read-out `docs/ein/user/reference/read-out.md`
+//! The modes print the read-out `docs/ein/user/04-reference/08-read-out.md`
 //! defines, whose
-//! golden is its `read-out-examples.md` (`read_out_examples.rs`); the rows
+//! golden is its `09-read-out-examples.md` (`read_out_examples.rs`); the rows
 //! here are read by label.
 
 use std::process::Command;
@@ -323,7 +323,7 @@ fn the_oracle_refuses_past_its_limit() {
 }
 
 /// `--models key|grid`, `-p/-P/-f` and `--diff-models` over the listed states
-/// (`read-out.md` § 8). Each block
+/// (`08-read-out.md` § 8). Each block
 /// follows the read-out, which it leaves as it was, and names its set.
 #[test]
 fn the_listed_states_print_as_asked() {
@@ -418,8 +418,8 @@ fn the_listed_states_print_as_asked() {
     );
 }
 
-/// `-H` and `--trace` under a region mode (`read-out.md` § 8,
-/// `rendering.md`).
+/// `-H` and `--trace` under a region mode (`08-read-out.md` § 8,
+/// `12-rendering.md`).
 #[test]
 fn the_universe_and_the_trace() {
     let zebra = "examples/branching/05_mini_zebra.ein";
@@ -473,7 +473,7 @@ fn the_universe_and_the_trace() {
     );
 }
 
-/// `--events FILE` under a region mode (`docs/ein/ein.rs/events.md` § Region
+/// `--events FILE` under a region mode (`docs/ein/ein.rs/05-events.md` § Region
 /// runs): `run` and `load`, root's own events, one `enter` per
 /// node visited after that node's events, a `layer` per route-1 layer, and
 /// one `region` line last. The same stream at one job and at four, and the
@@ -858,7 +858,7 @@ fn a_count_past_the_cap_is_an_answer_on_every_surface() {
 }
 
 /// `ein oracle`'s five options from `ein solve`
-/// ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
+/// ([`05-cli.md` § 2.2](../../../../docs/ein/user/04-reference/05-cli.md#22-ein-oracle)).
 #[test]
 fn the_oracle_takes_the_read_outs_options() {
     let dir = scratch("oracle-options");
@@ -894,7 +894,7 @@ fn the_oracle_takes_the_read_outs_options() {
 
 /// **`ein solve FILE --monotone`**, the explicit check: a question about the
 /// program, answered by root's fixpoint and the static check
-/// (`read-out.md` § 4.1). The blocks are held byte for byte (the monotone one
+/// (`08-read-out.md` § 4.1). The blocks are held byte for byte (the monotone one
 /// on `lattice/02` rather than zebra, which this file does not anchor on); every
 /// verdict exits 0; it is exclusive with the questions about R; and its
 /// summary says what was asked and describes no region.

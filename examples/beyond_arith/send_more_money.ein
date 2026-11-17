@@ -20,7 +20,7 @@
 ;;; declared as the puzzle is written, and `--single` does the same on both.
 ;;;
 ;;; I + BB = ILL beside it, `cryptarithm.ein`, is the same rules on 30
-;;; candidates; `docs/ein/user/guide/word-problems.md` § Cryptarithms
+;;; candidates; `docs/ein/user/02-guide/08-word-problems.md` § Cryptarithms
 ;;; reads both.
 (import std.math.digits :symbols (fa nz __closed__))
 (import std.algebra :symbols (total-owed functional injective))

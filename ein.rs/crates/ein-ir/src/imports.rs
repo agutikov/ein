@@ -31,7 +31,7 @@
 //!   that spelling, before the loader sees it, so every surface prints it.
 //!
 //! The refusals, each a section of
-//! [`diagnostics.md` § 2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes): a module's
+//! [`07-diagnostics.md` § 2](../../../../docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes): a module's
 //! name with an empty segment or a `/` (Q-M1f.252, `..` among them); one short
 //! name bound to two full names in one file (Q-M1f.234); a prefixed or full
 //! name that names nothing its module declares (Q-M1f.251); a full name of a

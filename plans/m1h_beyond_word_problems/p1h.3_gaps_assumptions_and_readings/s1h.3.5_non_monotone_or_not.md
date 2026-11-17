@@ -6,7 +6,7 @@
 **Depends on:** [S1h.3.1](s1h.3.1_the_three_forms_of_a_gap.md) to [S1h.3.4](s1h.3.4_readings.md), whose
 programs it runs through one check.
 **Read with:** [F21](../../followups/f21_non_monotone_programs_decided.md), which owns what a non-monotone
-program means, and [`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md), the kernel page.
+program means, and [`08-monotonicity.md`](../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md), the kernel page.
 
 ## What it rests on
 
@@ -49,7 +49,7 @@ sentences of the reply each with the program that answers it, and a list handed 
    gap, with a supposition and without; the two ways to write an assumption; *what is not listed is zero*;
    each form of a reading) under `ein solve --monotone`, and, where the static check flags it, under a bare
    `ein solve`, whose `lattice` block says what the cube showed: the sites, what each puts at stake, a hole,
-   a stale fact ([`read-out.md` § 5.1](../../../docs/ein/user/reference/read-out.md#51-under-lattice-and-monotone-the-warning)).
+   a stale fact ([`08-read-out.md` § 5.1](../../../docs/ein/user/04-reference/08-read-out.md#51-under-lattice-and-monotone-the-warning)).
    One table: the form, the verdict, the site if any, and whether the answer a reader takes from the
    read-out is affected.
 2. **T1h.3.5.2 — the reply's three sentences, each on a program.**

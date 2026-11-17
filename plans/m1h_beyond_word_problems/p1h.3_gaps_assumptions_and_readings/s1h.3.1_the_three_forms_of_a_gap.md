@@ -35,7 +35,7 @@ reasons.*
 ## What it starts from
 
 The calculator's investigation ran the three forms once, on its prototype of 2026-11-11
-([`word-problems.md` § When the problem leaves a number out](../../../docs/ein/user/guide/word-problems.md#when-the-problem-leaves-a-number-out)):
+([`08-word-problems.md` § When the problem leaves a number out](../../../docs/ein/user/02-guide/08-word-problems.md#when-the-problem-leaves-a-number-out)):
 `gap_b` (a fact by `absent`, banked as `gap.ein` over
 [`gaps.ein`](../../../examples/word_problems/gaps.ein)), `gap_a` (an obligation, the rule `quantity-owed`
 concluding `(open value)`), `gap_c` (a hypothesis over a list of numbers the problem file states), and their

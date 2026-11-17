@@ -1,5 +1,5 @@
 //! **The alive-set invariant, evaluated over the corpus**
-//! ([saturation.md](../../../../docs/ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant)).
+//! ([02-saturation.md](../../../../docs/ein/reasoning/02-kb-evolution/02-saturation.md#the-alive-set-invariant)).
 //!
 //! [`ein_infer::invariant`] is the check; this is what it says, banked. The
 //! invariant licenses the per-KB `alive` recompute, the `state_key` dedup

@@ -24,8 +24,8 @@ or a type is `ein.rs`'s; one about what a program says or what `ein` prints, wit
 
 ## Where to start
 
-- **To write and solve a puzzle**: [the guide](user/guide/README.md), then [install](user/install.md) and
-  [the command line](user/reference/cli.md).
-- **To read an answer**: [the read-out](user/reference/read-out.md), every row `ein solve` prints and what it counts.
-- **To know what the answer is**: [the solution semantics](reasoning/kb-evolution/solution-semantics.md).
-- **To embed the engine**: [the library API](ein.rs/api.md).
+- **To write and solve a puzzle**: [the guide](user/02-guide/README.md), then [install](user/01-install.md) and
+  [the command line](user/04-reference/05-cli.md).
+- **To read an answer**: [the read-out](user/04-reference/08-read-out.md), every row `ein solve` prints and what it counts.
+- **To know what the answer is**: [the solution semantics](reasoning/02-kb-evolution/06-solution-semantics.md).
+- **To embed the engine**: [the library API](ein.rs/04-api.md).

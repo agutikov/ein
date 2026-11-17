@@ -1,7 +1,7 @@
 //! MT19937 and a downward Fisher–Yates shuffle — the seeded generator the
 //! tests and measurement examples that permute an order draw from (the id
 //! space's permutations, the matcher's insertion orders)
-//! ([design/determinism-and-order.md § 9.1](../../../../docs/ein/ein.rs/design/determinism-and-order.md#91-the-seeded-generator)).
+//! ([03-design/01-determinism-and-order.md § 9.1](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#91-the-seeded-generator)).
 //!
 //! One generator carries its state **across shuffles**, so reproducing a
 //! permuted run means reproducing the generator bit for bit: the Mersenne

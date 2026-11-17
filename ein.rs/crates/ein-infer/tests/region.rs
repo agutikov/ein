@@ -1,6 +1,6 @@
 //! The oracle and the static check
-//! ([finding-r.md § 2](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#2-the-oracle-the-cube),
-//! [monotonicity.md § 3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#3-the-static-check)).
+//! ([07-finding-r.md § 2](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#2-the-oracle-the-cube),
+//! [08-monotonicity.md § 3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#3-the-static-check)).
 //!
 //! Every number here was taken by a different route, one `ein saturate` per
 //! subset; the comparison node for node is `ein-cli/tests/region_dump.rs`'s,
@@ -272,7 +272,7 @@ fn monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged() 
 use written::ACTIVATOR_REFUTES;
 
 /// **One fixture per cause**
-/// ([monotonicity.md § 9](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#9-the-causes)).
+/// ([08-monotonicity.md § 9](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#9-the-causes)).
 /// Each program's only site is of its cause, and its cube shows the hole
 /// that cause makes: an `absent` that takes a witness away
 /// (`lattice/08`), an obligation's trigger (`lattice/04`), and an activator
@@ -327,7 +327,7 @@ fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
 }
 
 /// **Across a hole the one-fact test misreads the lines**
-/// ([monotonicity.md § 6](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)).
+/// ([08-monotonicity.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#6-the-two-kinds-compared)).
 /// On a monotone cube a node of R is maximal exactly
 /// when every edge up leaves R, and the corpus never disagrees. On
 /// `synth/local_not_global`, *A and B together or not at all*, ∅ and {A,B}
@@ -471,7 +471,7 @@ fn violated(r: &Region) -> bool {
 /// with an owing superset). Checked on every corpus file and regression witness
 /// within the limit, and on [`FACT_GRAIN_PROGRAMS`]. No route reads the
 /// prototype; the shipped check reads at relation grain
-/// ([monotonicity.md § 3.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#33-the-grain)).
+/// ([08-monotonicity.md § 3.3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#33-the-grain)).
 ///
 /// **The closure runs only where a site reads it**, and a program on which
 /// it gives up fails here: its verdict would be the safe
@@ -763,7 +763,7 @@ const CL_NOT_MONOTONE: &str = "(relation p T :why \"p holds of {?1}\") (relation
      (rule derive-s () :match (and (p ?x) (absent (q ?x))) :assert (s ?x) :why \"p holds of {?x} and q does not, so s holds of {?x}\")";
 
 /// **A *Monotone* verdict makes saturation a closure operator on the cube**
-/// ([monotonicity.md § 6](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)).
+/// ([08-monotonicity.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#6-the-two-kinds-compared)).
 /// `cl(C)` is the
 /// candidates `C`'s fixpoint holds (`Node::closure`). On every corpus and
 /// register cube within the limit that the static check calls monotone, `cl`
@@ -1019,7 +1019,7 @@ fn print_for_inspection() {
     }
 }
 
-/// The corpus census behind `region-dump.md § Monotonicity`'s numbers — off
+/// The corpus census behind `11-region-dump.md § Monotonicity`'s numbers — off
 /// unless `EIN_REGION_CENSUS` is set, because it is a measurement and not a
 /// claim. Re-take: `EIN_REGION_CENSUS=1 cargo test --release -p ein-infer
 /// --test region census_for_inspection -- --nocapture`.

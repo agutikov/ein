@@ -11,7 +11,7 @@
 
 Ein has three kinds of rule, told apart by what they conclude. Each matches
 a sentence form, and each has its own role in the region R
-([`solution-semantics.md` § 4](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#4-restrictions-and-obligations-the-two-lines)):
+([`06-solution-semantics.md` § 4](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#4-restrictions-and-obligations-the-two-lines)):
 
 | rule kind | concludes | sentence form | Zebra, in words | what it does to R |
 |---|---|---|---|---|
@@ -50,7 +50,7 @@ without contradicting its negations, closed under its assertions.**
   (Groenendijk and Roelofsen) treats a question as a set of possibilities to
   be resolved. Both are close to *an obligation is the disjunction of its
   alternatives, discharged by one of them*
-  ([`satisfiability.md`](../../docs/ein/reasoning/kb-evolution/satisfiability.md)).
+  ([`10-satisfiability.md`](../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md)).
 - **Answer set programming** has the same three forms:
   - normal rules are assertions;
   - integrity constraints (`:- body.`) are negations;

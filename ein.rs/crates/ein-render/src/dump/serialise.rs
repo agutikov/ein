@@ -14,7 +14,7 @@ use super::json::Json;
 /// source "…"`, `; rule r` or `; hypothesis N`, and nothing for a fact with
 /// none. A comment, so the loader skips it and a reloaded fact reads as
 /// given
-/// ([`answer-dump.md`](../../../../../docs/ein/user/reference/answer-dump.md#every-state-file-loads-and-is-a-fixpoint)).
+/// ([`10-answer-dump.md`](../../../../../docs/ein/user/04-reference/10-answer-dump.md#every-state-file-loads-and-is-a-fixpoint)).
 ///
 /// **And the fact in English** ([`crate::sentence`]): a rule's `:why` filled
 /// with the firing's bindings

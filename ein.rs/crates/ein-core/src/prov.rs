@@ -6,7 +6,7 @@
 //! records a given KB has recorded is a per-KB table in [`crate::kb`], and the
 //! policy that decides what may be recorded is
 //! [`crate::kb::Kb::record_justification`]
-//! ([design/data-model.md § 8](../../../../docs/ein/ein.rs/design/data-model.md#8-provenance)).
+//! ([03-design/03-data-model.md § 8](../../../../docs/ein/ein.rs/03-design/03-data-model.md#8-provenance)).
 //!
 //! **The arena is global, like the fact store** — all but one region of it.
 //! It sits beside the other interned tables rather than inside a KB, the
@@ -22,7 +22,7 @@
 //! Records kept for the whole run would hold every record any node derived
 //! to serve the few that anything still points at, and would make the arena a
 //! shared structure on a worker's write path, which
-//! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
+//! [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)
 //! has no row for. So the search opens a **fork region** around
 //! each entering ([`ProvArena::open_fork`]); every record the fork derives
 //! lands there; and the region is discarded when the fork is
@@ -31,7 +31,7 @@
 //! still cites into the arena proper first.
 //!
 //! Two properties make that safe, and both are asserted rather than assumed
-//! ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)):
+//! ([03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)):
 //!
 //! - **A fork's records die with the fork.** [`ProvArena::discard_fork`]
 //!   drops the region (`a_forks_records_do_not_reach_the_arena`, below), and
@@ -145,7 +145,7 @@ pub struct Prov {
     /// Positive premises, in plan-step order.
     pub premises: Box<[FactId]>,
     /// Variable bindings in **bind order**, which is the order they land in
-    /// the trace ([design/determinism-and-order.md § 3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#3-ordered-containers)).
+    /// the trace ([03-design/01-determinism-and-order.md § 3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#3-ordered-containers)).
     ///
     /// Kept as the `Value` and rendered at display time
     /// (`Terms::display`), which leaves the rendering decision where it
@@ -270,7 +270,7 @@ impl Prov {
 /// A region travels with the entering that produced it: a worker builds one,
 /// hands it back with its result, and the ordered commit installs it while
 /// that result is being read
-/// ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)).
+/// ([03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)).
 /// Keeping the base *with* the records is what makes that safe: an id means
 /// something only against the region it was issued from, and the two cannot be
 /// separated.
@@ -449,7 +449,7 @@ impl ProvArena {
     /// justification tables are hash maps: which ids a promotion assigns has
     /// to be a function of what the fork derived, not of where a `FactId`
     /// happened to hash — that is
-    /// [design/determinism-and-order.md](../../../../docs/ein/ein.rs/design/determinism-and-order.md)
+    /// [03-design/01-determinism-and-order.md](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md)
     /// §3's rule, and `id_order_invariance` is the instrument that would find
     /// it broken.
     ///

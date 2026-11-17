@@ -195,7 +195,7 @@ def look(r: RunResult, pointer: str, page: Path) -> str:
         target = step["page"] if step else None
         why = f"the run did not visit {set_text(want)}"
     elif word == "refuted":
-        target = pages / "nogoods.md"   # N replaces the walk's `refuted/` (answer-dump.md)
+        target = pages / "nogoods.md"   # N replaces the walk's `refuted/` (10-answer-dump.md)
     elif word == "trace":
         target = pages / "trace" / "index.md"
     elif word == "answer":
@@ -221,7 +221,7 @@ def look(r: RunResult, pointer: str, page: Path) -> str:
 # has every one.
 STATES_IN_A_CELL = 20
 
-LEGEND = "docs/ein/user/reference/rendering.md"
+LEGEND = "docs/ein/user/04-reference/12-rendering.md"
 
 
 def sets_cell(sets, link=None) -> str:

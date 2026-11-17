@@ -7,7 +7,7 @@
 ;;; This is the genuine combinatorial core: no amount of subset
 ;;; elimination can avoid the size-3 fork, and the pair layer of the
 ;;; hypothesis space does not see the conflict either
-;;; (docs/ein/reasoning/kb-evolution/hypothesis-space.md). Every node of
+;;; (docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md). Every node of
 ;;; the cube is saturated: the dead triple is the one node no smaller
 ;;; dead set accounts for, and the route reaches it last, at the
 ;;; cube's top.
@@ -43,7 +43,7 @@
 ;;;   work             8 saturations: root, the three singletons, the
 ;;;                    three pairs and the triple
 ;;;
-;;; docs/ein/reasoning/kb-evolution/solution-semantics.md § 2.5 works this
+;;; docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md § 2.5 works this
 ;;; region through, with its drawing, and `ein render lattice` draws the
 ;;; cube as a node-coloured lattice.
 ;;;

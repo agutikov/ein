@@ -196,7 +196,7 @@ hole the one-fact test sees the hole and not the node of R beyond it.
 dead hole (`naf-upward-closure`, `naf-nowb`, `three_components`, `trigger_hole`,
 `via_hole`, both written programs) and on `06` and `maximal_not_top`; it holds
 on `lattice/04`, `08`, `09`, `local_not_global`, `07_cube` and the three
-owing probes. That is [`monotonicity.md` § 6](../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)'s
+owing probes. That is [`08-monotonicity.md` § 6](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#6-the-two-kinds-compared)'s
 row, measured over more programs.
 
 **Repair edges.** One per hole and missing fact, from the hole to a node of R.
@@ -242,7 +242,7 @@ node), on 16 threads, and its two bits are held to the oracle's fork.
 This is [`node_census.md` § 2.1](node-census.md#21-the-corpus)'s finding,
 extended to the probes, the written programs and `06`: **on every program
 with a hole, the holes are the same by fork and from scratch.** A hole here
-needs no path dependence, as `monotonicity.md` § 7.5 argues for owing holes.
+needs no path dependence, as `08-monotonicity.md` § 7.5 argues for owing holes.
 The dead holes agree too: on none of these programs does a site's rule fire
 at root (site census § 2), and a fact root
 derived under an `absent` is what makes the two routes differ.
@@ -274,7 +274,7 @@ read-out says about them is its D4.
 ## 8. The attribution gap, closed
 
 S1e2.1b.6's re-take of the site census printed *a violation no site is named
-for: 2* ([`monotonicity.md` § 4](../../docs/ein/reasoning/kb-evolution/monotonicity.md#4-what-the-cube-shows)).
+for: 2* ([`08-monotonicity.md` § 4](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#4-what-the-cube-shows)).
 `site_census` named a site for a dead node by its `absent` premises, and for
 an owing node by the trigger sites of what it owes. The owing holes of
 `lattice/08` and `lattice/09` fit neither rule: `lattice/08` owes because an
@@ -648,7 +648,7 @@ two golden files and `site_census --json`'s rows.
 | **read-out lines** | the `describe` read-out of a program with a hole: the `lattice` row's text, and one row per minimal hole plus one of repair edges, where today has up to four | the same read-out: a `pieces` row and one per piece | the `lattice` row, wherever the stub prints it today: every flagged program, every mode | all of them: a load error on stderr and nothing on stdout |
 | **`corpus_shapes.md5`** | `read-out[describe]` and `region-trace` of the **9** corpus entries with a hole: **18** lines | the same **18** | `read-out[*]` and `region-trace` of all **25** flagged corpus entries: **150** lines | every rendering of the 25 that runs a lattice: **175** lines (5 read-outs, `region-trace`, `region-lattice` each), or all **875** if every subcommand refuses (S1e2.2.5's F3 asks the same of *forbid*) |
 | **`corpus_exits.txt`** | 0 | 0 | 0 | the cells of the 25 that run `solve`, `oracle` or `test`: **33** of their 104 (24, 7 and 2), all 0 → 1 or 2; all 104 if every subcommand refuses |
-| **`read-out-examples.md`** | X8 | X8 | X8, X9 | X8, X9 |
+| **`09-read-out-examples.md`** | X8 | X8 | X8, X9 | X8, X9 |
 | **`ein-summary/2`** | `holes.minimal[*]` gains `cause`, `sites` and `repairs`: additive | a `pieces` block: additive | none, unless the qualifier is a field | no summary |
 | **the register** | nothing | nothing | nothing | the 9 rows whose witness is flagged are re-stated with a refusal as `right`: `W1/alive-empty-interlayer`, `W1/` and `W11/d3-unsat-core`, W3's four (already a refusal under *forbid*), `W8/features-07`, `W8/stale-naf-fork` |
 | **new notions** | none: the oracle has every field | *convex piece*, which is not a partition (§ 5): a choice of which piece keeps a shared state, or overlapping pieces on the page | none | *R can have a hole*, decided statically: the static check's flag, sufficient and not necessary |

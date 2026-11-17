@@ -12,7 +12,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; Every command that takes a `.ein` path takes a `.einb` too, dispatching on
-;;; the magic bytes (`docs/ein/ein.rs/design/binary-format.md`), and no two
+;;; the magic bytes (`docs/ein/ein.rs/03-design/09-binary-format.md`), and no two
 ;;; commands, or one command on two forms of one program, may disagree
 ;;; (Q-M1e2.32). A `.einb` stores its program, resolved and
 ;;; import-flattened, and every command reads it (`einb-every-command/*`), so `ein

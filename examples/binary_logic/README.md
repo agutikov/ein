@@ -8,7 +8,7 @@ Six things to do with a circuit, each a program over the stdlib's `std.bool` mod
 [`std.bool.circuit`](../../stdlib/bool/circuit.ein), a circuit as a program; and
 [`std.bool.inputs`](../../stdlib/bool/inputs.ein), inputs as hypotheses that each owe one value, and the
 values a program requires. [`stdlib/README.md`](../../stdlib/README.md) has a section on each, and
-[`stdlib.md`](../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool) is their reference.
+[`04-stdlib.md`](../../docs/ein/user/04-reference/04-stdlib.md#boolean-functions-and-circuits-stdbool) is their reference.
 
 **A function's name is `std.bool.gates`'.** Each of the sixteen is declared there, as the relation of
 the second layout, so a program that writes one, as a gate's function too, lists it:

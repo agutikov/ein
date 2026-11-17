@@ -1,5 +1,5 @@
 ;;; A hole in the solution region with no `absent` in any saturation rule —
-;;; the trigger site of docs/ein/reasoning/kb-evolution/monotonicity.md.
+;;; the trigger site of docs/ein/reasoning/02-kb-evolution/08-monotonicity.md.
 ;;;
 ;;; `total-owed meal is-a` says every Diner owes a meal. Nobody is a Diner at
 ;;; root; seating a guest derives `(is-a ?g Diner)`. So the commitment

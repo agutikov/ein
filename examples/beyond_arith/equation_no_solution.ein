@@ -13,7 +13,7 @@
 ;;; `equation_refuted.ein` beside this file is the same kind of question
 ;;; answered with no search, by a root that is dead.
 ;;;
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (md nz __closed__))
 (import std.algebra :symbols (total-owed functional))

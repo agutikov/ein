@@ -30,7 +30,7 @@ until the user says otherwise (a default is not a ruling, and any may be reopene
 ## Q-M1g.1 — The spelling of the connectives
 
 `and`, `or`, `eq`, `neq`, `absent` and `false` head no value
-([`diagnostics.md` § 2.22](../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)), and `(not F)` is the engine's
+([`07-diagnostics.md` § 2.22](../../docs/ein/user/04-reference/07-diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)), and `(not F)` is the engine's
 stored negation of a fact, so a formula's negation spelt `not` would make `(holds (not p))` mean something to
 the engine that the theory did not say. The user, 2026-11-11: *"for "and" element, function can use _and,
 _and_, __and, AND, And, l_and, And2 - whatever"*.
@@ -113,7 +113,7 @@ Ein never makes a name at run time. First-order proof needs something fresh in t
 existential, and the arbitrary individual of a universal's introduction. A **Skolem term**, a nested fact
 over the names in scope such as `(father-of Ann)`, is a value today (probe 5). The question is whether that is
 enough for everything M1g wants, and S1g.4.4 is where it is found out; names made by the engine would be a
-change to what a program's names *are* ([`solution-semantics.md` § 1.2](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names)),
+change to what a program's names *are* ([`06-solution-semantics.md` § 1.2](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#12-names)),
 and the M1 alive-set invariant says no rule asserts a name the program lacks.
 
 ## Q-M1g.9 — The bound of an exhaustive check, and its tier

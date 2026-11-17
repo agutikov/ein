@@ -2,7 +2,7 @@
 //! read-out says so*.
 //!
 //! R is over H, the candidate list the generation ladder builds at root
-//! ([the universe](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)),
+//! ([the universe](../../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)),
 //! so `exhausted` certifies all of R over H and nothing beyond it. Where the
 //! rung that built H proposes no fact of a relation the program **can
 //! conclude or ask about**, every state of R holds of that relation only what

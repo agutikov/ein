@@ -3,7 +3,7 @@
 //! The renderers *do* have a CLI surface, but not all of it and not in every
 //! combination: `ein render` reaches four of them, `kb_dot::to_dot`'s option
 //! surface is library-only, and the slice cones are reachable only through a
-//! `--trace` ([architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli)).
+//! `--trace` ([01-architecture.md § 3.4](../../../../docs/ein/ein.rs/01-architecture.md#34-ein-einb-ein-render-ein-cli)).
 //! So the renderers are pinned the way the loader and the compiler are: every
 //! view is rendered over the whole corpus and the texts are digested
 //! (`ein-render/tests/golden/corpus_shapes.md5`, which

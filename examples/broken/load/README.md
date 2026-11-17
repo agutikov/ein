@@ -23,7 +23,7 @@ parse error, read where the module is.
   | `region_merged_unlisted.ein` | a `(merged …)` whose state the region does not list |
   | `region_owing_with_states.ein` | an `(owing …)`, which says R is empty, beside states |
 
-  [`diagnostics.md` § 2.1](../../../docs/ein/user/reference/diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals)
+  [`07-diagnostics.md` § 2.1](../../../docs/ein/user/04-reference/07-diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals)
   states each refusal.
 - **An `(or …)` written as a premise of an `and`**, `nested_or.ein`: the loader refuses it in one line naming the
   rule, the disjunction and what it is a premise of. An `(or …)` is a whole `:match`, each of its premises one way
@@ -46,12 +46,12 @@ parse error, read where the module is.
   loader refuses the program whether or not a fact puts one there
   ([Q-M1f.1](../../../docs/decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)), one line
   naming the deriving rule, the activated rule and the parameter
-  ([`diagnostics.md` § 2.9](../../../docs/ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing)).
+  ([`07-diagnostics.md` § 2.9](../../../docs/ein/user/04-reference/07-diagnostics.md#29-a-rule-shape-that-reads-nothing)).
   A marker's argument, `(bijective ?R)`, passes a relation name on and loads: the loader reads what the program does
   with it ([Q-M1f.41](../../../docs/decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)).
   A relation parameter bound to a nested fact where the activator is written is refused the same way: a relation
   is named by a symbol, not a fact
-  ([`diagnostics.md` § 2.6](../../../docs/ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number)).
+  ([`07-diagnostics.md` § 2.6](../../../docs/ein/user/04-reference/07-diagnostics.md#26-a-relation-named-by-a-number)).
 - **Imports**: a module not found, a relative path not found, a bare `std`, `:as` and `:symbols` together, a short
   name listed that the module does not provide, two definitions of one short name, and a cycle.
   `import_cycle.ein` and `import_cycle_b.ein` import each other. Both are fixtures: the reported chain is the
@@ -95,7 +95,7 @@ oversight. Recorded so the gap is a decision and not a hole:
 | `(import M) — file-relative import needs a base directory` | **not expressible as a file.** It fires only when `base_dir` is `None`, i.e. `ein_ir::load(…, None)` over parsed source, and loading a *file* always supplies one, on every command. It is an inline unit test in [`ein-ir/tests/kb_semantics.rs`](../../../ein.rs/crates/ein-ir/tests/kb_semantics.rs). |
 
 A message about a top-level form ends `at None`: the form is built without a source position
-([diagnostics § 1.5](../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none),
+([diagnostics § 1.5](../../../docs/ein/user/04-reference/07-diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none),
 [Q-M1a.6](../../../docs/decisions/diagnostics/Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md)). A
 message about a form inside another names the file, the line and the column, as `macro_arity_mismatch`'s does, raised
 during expansion on a nested node, and as the lines that start `{FILE}:<line>:<col>:` do.

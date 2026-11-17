@@ -12,7 +12,7 @@
 ;;; and names over binary tables could not be imported beside decimal, and the
 ;;; conversions of `std.math.convert` need both bases at once.
 ;;;
-;;; `docs/ein/user/reference/stdlib.md` § Binary has the modules this
+;;; `docs/ein/user/04-reference/04-stdlib.md` § Binary has the modules this
 ;;; program imports.
 (import std.math.decimal-arith :symbols (decimal-arith add sum-of))
 (import std.math.decimal :symbols (n))

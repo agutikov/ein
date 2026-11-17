@@ -9,7 +9,7 @@
 ;;; 10FFFF, and `\u{D800}`, a surrogate, which is a code point and no character.
 ;;; A string is Unicode text with the escapes `\n \t \r \" \\` and `\u{…}`,
 ;;; one to six hex digits naming that code point, and any other is refused
-;;; (`docs/ein/user/reference/syntax.md` § 1, the `TEXT` row).
+;;; (`docs/ein/user/04-reference/02-syntax.md` § 1, the `TEXT` row).
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;

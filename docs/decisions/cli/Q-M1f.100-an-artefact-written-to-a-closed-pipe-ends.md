@@ -14,4 +14,4 @@ corpus reaches.
 the artefact flags on `/dev/stdout`; `ein-cli/tests/artefact_contract.rs`:
 `every_artefact_failure_names_its_flag_and_its_path`,
 `a_failed_artefact_write_leaves_the_exit_code_alone_except_for_the_directories`. The page:
-[diagnostics.md](../../ein/user/reference/diagnostics.md#24-an-artefact-flags-failure) § 2.4 and § 4.19.
+[07-diagnostics.md](../../ein/user/04-reference/07-diagnostics.md#24-an-artefact-flags-failure) § 2.4 and § 4.19.

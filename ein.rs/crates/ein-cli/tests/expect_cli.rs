@@ -1,5 +1,5 @@
 //! `:expect` through the CLI
-//! ([claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
+//! ([claims](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)).
 //!
 //! The comparison itself is `ein-infer`'s `expect_semantics` (a query's
 //! classes) and `claim_round_trip` (the region claim); what is here is the part
@@ -12,7 +12,7 @@
 //! A checker that reports success on a broken expectation is the worst outcome
 //! a checker has, so the fixtures that must *fail* are checked
 //! for failing — with the right code and the right message — and not merely
-//! run. The [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)
+//! run. The [03-design/10-toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#5-the-tests)
 //! precedent: the fuzzer's own three controls each failed once first.
 
 use std::path::PathBuf;

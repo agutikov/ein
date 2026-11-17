@@ -1,5 +1,5 @@
 //! Where `std.*` comes from
-//! ([design/shared-assets.md](../../../../docs/ein/ein.rs/design/shared-assets.md)).
+//! ([03-design/02-shared-assets.md](../../../../docs/ein/ein.rs/03-design/02-shared-assets.md)).
 //!
 //! The stdlib is checked in **once**, at repo-root `stdlib/`, and everything
 //! reads those bytes. It is not test data: it is the library programs import
@@ -119,7 +119,7 @@ impl Source {
     /// Every module in this source, at any depth, as its path from the root
     /// (`algebra.ein`, `math/decimal-arith.ein`), sorted. Sorted because the
     /// caller may report them and iteration order must not reach an observable
-    /// ([design/determinism-and-order.md](../../../../docs/ein/ein.rs/design/determinism-and-order.md)).
+    /// ([03-design/01-determinism-and-order.md](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md)).
     /// At any depth because `std.math.x` is `math/x.ein`: a
     /// list of one directory would leave such a module out of the check that
     /// reads this, in silence. Read by tests; no command lists the stdlib.

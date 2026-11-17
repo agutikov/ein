@@ -1,5 +1,5 @@
 //! A `(solve … :expect …)` claim against R
-//! ([query.md § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
+//! ([12-query.md § The region claim](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#the-region-claim)).
 //!
 //! `tests/region/` holds one program per form, each a claim that holds. This
 //! file holds the other half: every way a claim can be false is reported as

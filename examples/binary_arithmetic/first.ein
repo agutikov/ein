@@ -19,7 +19,7 @@
 ;;;
 ;;;   ein solve examples/binary_arithmetic/first.ein
 ;;;
-;;; `docs/ein/user/reference/stdlib.md` § Binary has the theory this
+;;; `docs/ein/user/04-reference/04-stdlib.md` § Binary has the theory this
 ;;; program requests, `std.math.binary-arith`, and the numeral it reads,
 ;;; `std.math.binary`'s.
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sub bin-sum-of bin-diff-of))

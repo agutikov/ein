@@ -24,7 +24,7 @@ is everything established on 2026-11-02, and [§ The decisions](#the-decisions)
 is every decision P1e2.1b was to take, with its options, its evidence, and
 what the engine does until it is taken. The docs half of the analysis, each
 claim labelled by its standing, is
-[`monotonicity.md` § 2](../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program).
+[`08-monotonicity.md` § 2](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#2-the-state-the-status-and-the-program).
 Each option's measured consequences per program are P1e2.1b's
 S1e2.1b.7's.
 
@@ -179,7 +179,7 @@ fails.
   `state(C′)`. Saturation is **cumulative** when X ⊆ Y ⊆ sat(X) ⇒
   sat(Y) = sat(X).
 - **⇒ always holds.** Construction is append-only: the KB never retracts
-  ([`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
+  ([`absent_semantics.md`](../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*). Take C ⊆ C′ and build
   C′ by way of C. The result holds `state(C)`, and by path independence it is
   `state(C′)`.
@@ -263,11 +263,11 @@ approximates: a site says the operator is not monotone over D. The node
 functions can still be monotone on the program's own lattice, and those are
 the check's **conservative** flags: 8 of the 18 flagged programs within the
 limit at `4562bf70`
-([`monotonicity.md` § 4](../../docs/ein/reasoning/kb-evolution/monotonicity.md#4-what-the-cube-shows)).
+([`08-monotonicity.md` § 4](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#4-what-the-cube-shows)).
 
 **The check's verdict is relative to root**, which the analysis above did not
 say and the docs now do
-([`monotonicity.md` § 2](../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program)).
+([`08-monotonicity.md` § 2](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#2-the-state-the-status-and-the-program)).
 A read outside D is static because root completes it and a fork never
 re-derives it. A scratch build re-derives root in every node, so the FIFO race
 can reach a static read: with `a` given and only `b` a candidate, r2
@@ -724,7 +724,7 @@ propose a fact outside H: three by the cube at the oracle's default limit, the s
 88 programs on the hrule rung the cube read 61, and **no corpus answer is known to be concerned**.
 
 **How it reads against the rulings.**
-[`solution-semantics.md` § 1.4](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe) defines a candidate as
+[`06-solution-semantics.md` § 1.4](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe) defines a candidate as
 *a fact the generator proposes at root*, so R is right by the definition. The same section holds that *H must
 contain every fact a model needs* (ruling (h)), and that where it does not *either the program is wrong … or
 the engine is*: which of the two an hrule conditioned on a guess is, is the user's. **Not filed as a register
@@ -789,7 +789,7 @@ commitment extends, reads `D` from H's own relations and so does see it. `scope:
 - Each option moves answers or refuses programs that are named, and the
   measurements are in. What none of them has is a program that needs the
   decision: within the oracle's limit, every flagged cube with a violation was
-  written to show one ([`monotonicity.md` § 5](../../docs/ein/reasoning/kb-evolution/monotonicity.md#5-the-ladder)).
+  written to show one ([`08-monotonicity.md` § 5](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#5-the-ladder)).
   `lattice/06`'s conditional obligation is the exception the user wrote, and
   it is past the limit.
 - Until a decision, what holds is documented and every surface that reports R
@@ -797,7 +797,7 @@ commitment extends, reads `D` from H's own relations and so does see it. `scope:
 
 ## Read before deciding
 
-- [`monotonicity.md`](../../docs/ein/reasoning/kb-evolution/monotonicity.md): the two
+- [`08-monotonicity.md`](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md): the two
   kinds of program compared; § 7, this analysis with every claim labelled by
   its standing; § 8, what is open.
 - [`node-census.md`](../../utils/censuses/node-census.md)
@@ -806,13 +806,13 @@ commitment extends, reads `D` from H's own relations and so does see it. `scope:
   S1e2.1b.7's consequences (`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1–8.2,
   all) and its path and cumulativity censuses
   ([`node-census.md` § 11–12](../../utils/censuses/node-census.md#11-the-path-census--s1e21b7), D2 and D3).
-  The causes as one table: [`monotonicity.md` § 9](../../docs/ein/reasoning/kb-evolution/monotonicity.md#9-the-causes).
+  The causes as one table: [`08-monotonicity.md` § 9](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#9-the-causes).
 - S1e2.4.1:
   *forbid*, its F1–F5, the `via` set and the rewrites that keep R. Its fourteen
   probes are kept here, in [`f21_probes/`](f21_probes/), since M1e2's folder is
   deleted: the hole, node and taint censuses run them, and `via_hole.ein` is
   this page's dead hole through `via`.
-- [`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
+- [`absent_semantics.md`](../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*, which D2's (B) and (C)
   would qualify.
 - F18, whose closure rode on *forbid* (D6).

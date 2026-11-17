@@ -2,7 +2,7 @@
 //! R, and `--minimal`, `--maximal`,
 //! `--single` and `-n N` each ask one question about it, answered by
 //! [`ein_infer::explore`] and printed in the read-out
-//! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines, by
+//! [`08-read-out.md`](../../../../docs/ein/user/04-reference/08-read-out.md) defines, by
 //! [`ein_render::read_out`].
 //!
 //! The program is loaded and solved **once**, and every `(query …)` it holds
@@ -293,7 +293,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     // root saturated twice would move cores.
     // `--events FILE`: the `run` and `load` lines, then root and every node
     // the route visits, then one `region` line
-    // (`docs/ein/ein.rs/events.md` § Region runs).
+    // (`docs/ein/ein.rs/05-events.md` § Region runs).
     let mut events = crate::solve::events_start(m, &file, &cfg);
     // `-v`, `--layer-progress` and `--dump-lattice` read the route's nodes
     // and steps as it visits them.
@@ -419,7 +419,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         .and_then(|md| std::fs::write(path, md).map_err(|e| e.to_string()));
         // Additive: a file that could not be written says so, and the answer
         // printed above stands with its exit code
-        // (`docs/ein/user/reference/diagnostics.md` § 2.4, Q-M1e.22).
+        // (`docs/ein/user/04-reference/07-diagnostics.md` § 2.4, Q-M1e.22).
         if let Err(e) = written {
             crate::solve::artefact_failed("trace", path, e);
         }
@@ -596,7 +596,7 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
     text.code
 }
 
-/// The `region` event that closes a region run's stream (`read-out.md`
+/// The `region` event that closes a region run's stream (`08-read-out.md`
 /// § 8.6): the summary's own blocks, as JSON on one line — what the run
 /// asked, R as it established it (its states are the summary's and the
 /// dump's), `--single`'s word, and the work. `ein solve` and `ein test` both
@@ -626,7 +626,7 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
     });
 }
 
-/// What a region run prints after its read-out when asked — `read-out.md`
+/// What a region run prints after its read-out when asked — `08-read-out.md`
 /// § 8: `-H`, then `--models key|grid`, then `-p`, `-P` and `-f`,
 /// each its own form, then `--diff-models FILE`.
 ///
@@ -1098,7 +1098,7 @@ pub(crate) fn extras(
 }
 
 /// `-H`: H, the universe — every candidate, by relation, and those dead
-/// alone, which no state of R can hold (`read-out.md` § 8).
+/// alone, which no state of R can hold (`08-read-out.md` § 8).
 /// A relation's line is never cut; its candidates are the form's items.
 fn universe(r: &ReadOut, terms: &Terms) -> Form {
     let a = &r.answer;

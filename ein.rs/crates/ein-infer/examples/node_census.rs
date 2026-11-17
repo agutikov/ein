@@ -149,7 +149,7 @@ const WRITTEN: &[(&str, &str)] = &[
          (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :priority 200)\n\
          (query :goal (r ?x))\n",
     ),
-    // The FIFO gap over a static read (`monotonicity.md` § 3.4):
+    // The FIFO gap over a static read (`08-monotonicity.md` § 3.4):
     // `examples/lattice/10_fifo_gap.ein` with `a` given and only `b` a
     // candidate. `q` is outside D, so the static check finds no site; root
     // derives `q`, and a fork never re-derives it, while scratch re-derives
@@ -1224,7 +1224,7 @@ fn permutations(v: &[usize]) -> Vec<Vec<usize>> {
 }
 
 /// The two `(config …)` flags and their defaults
-/// ([config.md](../../../../docs/ein/user/reference/config.md)).
+/// ([06-config.md](../../../../docs/ein/user/04-reference/06-config.md)).
 const FLAGS: &[(&str, bool)] = &[
     ("lattice-sanity-check", false),
     ("record-alternative-justifications", true),

@@ -136,7 +136,7 @@ pub fn goal_bindings(
 /// `None` when there is no goal, or when it compiles. [`goal_bindings`] cannot
 /// report it — its signature is infallible — so the CLI asks this before it
 /// renders a model, and refuses the run with this error. Found by
-/// [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)'s
+/// [03-design/10-toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#5-the-tests)'s
 /// fuzzer on a two-line program; `examples/ein-bugs/query-goal-free-head.ein`
 /// is the fixture.
 pub fn goal_plan_error(

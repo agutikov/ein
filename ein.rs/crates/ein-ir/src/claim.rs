@@ -1,5 +1,5 @@
 //! `(solve … :expect …)` — the expected region
-//! ([`query.md` § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
+//! ([`12-query.md` § The region claim](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#the-region-claim)).
 //!
 //! The shape, which the loader validates; the comparison against R is
 //! `ein_infer::claim`:

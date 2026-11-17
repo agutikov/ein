@@ -14,4 +14,4 @@ with no qualifier would claim a completeness the run did not establish.
 **Held by.** `ein-cli/tests/model_set_report.rs`: `an_exhausted_run_reports_the_states`,
 `an_unexhausted_run_reports_states_found`, `the_key_form_changes_stdout_and_nothing_recorded`,
 `the_key_table_names_its_size_its_alternatives_and_one_row_per_state`, `an_unaffordable_key_says_why`. The rows:
-[read-out.md](../../ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2 and § 8.
+[08-read-out.md](../../ein/user/04-reference/08-read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2 and § 8.

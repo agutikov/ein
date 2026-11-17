@@ -24,7 +24,7 @@ ein-infer = { path = "../ein-infer", default-features = false }
 md-5.workspace = true
 # The relevance prune's `needed` / `conditional` / `seen` sets: membership
 # only, so their order never reaches the output — the case
-# design/determinism-and-order.md § 2.3 wants a non-randomised hasher for.
+# 03-design/01-determinism-and-order.md § 2.3 wants a non-randomised hasher for.
 rustc-hash.workspace = true
 # `palette::hash_color` is `sha1(name)` mod the palette length — a colour
 # index, not a security claim, and stable across processes and builds

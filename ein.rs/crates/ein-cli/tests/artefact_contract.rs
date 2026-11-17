@@ -1,5 +1,5 @@
 //! **What the artefact flags do when the file cannot be written**
-//! ([`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure),
+//! ([`07-diagnostics.md` § 2.4](../../../../docs/ein/user/04-reference/07-diagnostics.md#24-an-artefact-flags-failure),
 //! Q-M1e.22).
 //!
 //! A failed `--events` open, a failed `--json-summary` write and a failed

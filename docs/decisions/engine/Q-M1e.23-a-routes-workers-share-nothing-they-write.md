@@ -13,5 +13,5 @@ observe mid-flight is root, which does not change during the step.
 **Held by.** `ein_infer::region`'s `fan_out` and `pool_of`, and `ein_core::Terms::lend`;
 `ein-infer/tests/worker_view.rs`: `a_lent_table_answers_a_lookup_and_refuses_an_assignment`,
 `reclaiming_under_a_live_view_is_loud`; `ein-infer/tests/region.rs`: `jobs_change_nothing`. The mechanism is described
-in [`parallelism.md`](../../ein/ein.rs/design/parallelism.md) § 2. What it buys:
+in [`08-parallelism.md`](../../ein/ein.rs/03-design/08-parallelism.md) § 2. What it buys:
 [Q-M1a.7](Q-M1a.7-a-job-count-moves-nothing-a-run-prints.md).

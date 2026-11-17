@@ -1,6 +1,6 @@
 //! **A claim is decided alike by its least question, by the description and
 //! by the oracle** (Q-M1f.221,
-//! [cli.md § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
+//! [05-cli.md § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)).
 //!
 //! `ein test` reads a file's claims by their shapes and asks the least
 //! question that can decide them ([`read_out::least`]): `--single` for

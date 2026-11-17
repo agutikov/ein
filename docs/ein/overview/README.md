@@ -6,7 +6,7 @@ the lineage of Ein's language.
 
 | page | what it holds |
 |---|---|
-| [`inspirations.md`](inspirations.md) | what Ein's language takes from SMT-LIB, miniKanren, AtomSpace, Datalog and double-pushout graph rewriting, and where it differs from each |
+| [`01-inspirations.md`](01-inspirations.md) | what Ein's language takes from SMT-LIB, miniKanren, AtomSpace, Datalog and double-pushout graph rewriting, and where it differs from each |
 
 The axes each comparison will be read along:
 

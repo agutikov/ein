@@ -23,7 +23,7 @@ finding the construction is the hard part of the proof.
 
 **The constraint.** Ein never makes a name at run time: no rule asserts a name the program lacks (the M1
 alive-set invariant), and the universe H is built from the program's names
-([`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#1-the-vocabulary), §§ 1 and 2). A constructed
+([`06-solution-semantics.md`](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#1-the-vocabulary), §§ 1 and 2). A constructed
 point has no name. Three ways to have one anyway, each tried:
 
 | | how | what it is | expected limit |

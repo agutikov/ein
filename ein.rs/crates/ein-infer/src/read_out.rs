@@ -1,6 +1,6 @@
 //! The read-out's data: what `ein solve` and `ein oracle` print, computed
 //! once, for the layout
-//! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines.
+//! [`08-read-out.md`](../../../../docs/ein/user/04-reference/08-read-out.md) defines.
 //!
 //! [`run`] asks [`crate::explore`] the question, then reads every state it
 //! lists through **the node function every route uses**
@@ -853,7 +853,7 @@ struct Coverage {
 }
 
 /// A query's `:expect` against its classes
-/// ([query.md § The query's claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-querys-claim)): the
+/// ([12-query.md § The query's claim](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#the-querys-claim)): the
 /// classes it lists, as a set, are the query's. Checked when the classes are
 /// over the set the query asks about and complete; otherwise not checked,
 /// with why. With `refute` ([`explore::Options::refute`], Q-M1f.222),

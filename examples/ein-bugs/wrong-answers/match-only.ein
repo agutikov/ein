@@ -15,7 +15,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; A name is *a constant the program writes*, in a fact or anywhere in a rule
-;;; (`docs/ein/reasoning/kb-evolution/solution-semantics.md` § 1.2; Q-M1e2.9):
+;;; (`docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md` § 1.2; Q-M1e2.9):
 ;;; a constant anywhere in a rule, its `:match`
 ;;; included, is a name of the program and so a candidate object. So H is the
 ;;; six `q` candidates over A, B and Z, four of them dead alone, and

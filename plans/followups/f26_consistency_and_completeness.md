@@ -11,7 +11,7 @@
 **It was not written anywhere.** A search of `plans/` and `docs/` that day found Gödel named twice, both in
 passing, in [idea 09](../ideas/09-puzzles-beyond-zebra.md) (the liar's sentence as a puzzle, and *Gödel, Escher,
 Bach* as reading); *incompleteness* used only for a relation that owes a witness (M1d's
-`the_boundary.md`, now [`satisfiability.md`](../../docs/ein/reasoning/kb-evolution/satisfiability.md)) and for M2's *semantic
+`the_boundary.md`, now [`10-satisfiability.md`](../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md)) and for M2's *semantic
 incompleteness* ([P2.8](../m2_nl_to_ir/p2.8_representations/README.md)); and
 [idea 06](../ideas/06-inference-rules-completeness.md) asking whether the *rule set* is complete, a third sense.
 [F1b](f1b_logical_formulation.md) asks which fragment of first-order logic Ein covers and does not ask this.
@@ -37,7 +37,7 @@ tested when the theme is taken up, and may be wrong.
 ## What Ein means by the two words
 
 Ein already uses both ideas, under other names, and it keeps them apart
-([`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md)):
+([`06-solution-semantics.md`](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md)):
 
 | | Ein's notion | where it shows |
 |---|---|---|
@@ -86,7 +86,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   program can be incomplete, as an ambiguous puzzle is, and the engine **shows** the incompleteness as a region.
   Nothing there is undecidable.
 - **Nested facts change the class.** A rule may conclude a fact nested deeper than its premises
-  ([P1f.6](../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)'s numbers are that:
+  ([P1f.6](../../docs/ein/user/04-reference/04-stdlib.md#the-calculator-stdmath)'s numbers are that:
   `(n (n (n z 1) 2) 3)`), so the facts a program can derive are no longer bounded by its names, and saturation
   need not stop. That is Horn clauses with function symbols, which compute anything computable. So whether root
   derives `(false)`, **consistency itself**, is then undecidable in general: the halting problem, Turing's and
@@ -100,7 +100,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   statements, checked on a bounded range, or induction as a rule schema.
 - **Self-reference needs rules as data.** The theorem's sentence speaks of its own provability. Ein programs
   cannot name their rules as values today ([F5](f5_rules_as_data.md),
-  [rules as data](../../docs/ein/reasoning/rule-evolution/rules-as-data.md)), and idea 09's liar's
+  [rules as data](../../docs/ein/reasoning/03-rule-evolution/01-rules-as-data.md)), and idea 09's liar's
   sentence is the puzzle form of it. An Ein that could write *this rule does not fire* would have to say what
   its answer is, and [F21](f21_non_monotone_programs_decided.md)'s cycles through `absent` are the nearest thing
   the engine has: a program with no stable reading.

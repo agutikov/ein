@@ -115,7 +115,7 @@ allowance: add the cell and the rule together, or the check cannot tell it
 from a stale argv.
 
 **`test` is the one run name that can fail on the file's own account.**
-[`ein test <path>`](../docs/ein/user/reference/cli.md#23-ein-test) checks
+[`ein test <path>`](../docs/ein/user/04-reference/05-cli.md#23-ein-test) checks
 whatever `:expect` the file carries and exits 1 when one of them is refuted, so
 a `test` cell in the exit golden is banking a claim the *program* makes, not
 one the engine happens to render. It is declared on every entry that carries
@@ -277,9 +277,9 @@ on). The other flags a program can set are reachable only through its own
 `(config …)` block, so a process sweep cannot flip them from outside.
 
 **No route reads a lever**, and a cell is a claim that it changes nothing
-printed: C4 of [`cli.md`](../docs/ein/user/reference/cli.md#1-the-contract),
+printed: C4 of [`05-cli.md`](../docs/ein/user/04-reference/05-cli.md#1-the-contract),
 and the config principle
-([`config.md` § 2.5](../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row),
+([`06-config.md` § 2.5](../docs/ein/user/04-reference/06-config.md#25-the-config-principle-read-against-every-row),
 [Q-M1e2.30](../docs/decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)).
 `corpus_cli.rs` runs each cell for its exit code, and
 **`ein-cli/tests/lever_invariance.rs` holds what it prints**: every declared

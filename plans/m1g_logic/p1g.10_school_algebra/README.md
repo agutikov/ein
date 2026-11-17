@@ -167,7 +167,7 @@ figure and what is read off the picture, are [P1g.11's](../p1g.11_school_geometr
 ## Expressions, and S1f.6.14
 
 The calculator's rulings left one thing open: the expression layer, `(calc E)` and `(let NAME E)`
-([`stdlib.md` § The rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)).
+([`04-stdlib.md` § The rulings](../../../docs/ein/user/04-reference/04-stdlib.md#the-calculator-stdmath)).
 The user found it questionable, and
 S1f.6.14 waits. Algebra meets
 the same shape from the other side and the two must not be confused:
@@ -264,7 +264,7 @@ program is reproduced as a sketch in the stage that re-takes it. The geometry's 
 | A-2 | the same with 18 for 19, and a rule that reads a remainder `(n ?p ?r)` | `(no-root x)` derived with no negation: a non-zero normal-form number always has the shape `(n P D)`, so *the remainder is not zero* is a pattern | S1g.10.4 |
 | A-3 | the same with the coefficient `z`: `0·x + 4 = 19` | **root is dead:** the naive solver asks `(div 15 z)`, and the calculator's ruled division by zero derives `(false)`. `refuted by division-by-zero-is-false`; the core is the equation and three table rows. A solver must compare the coefficient with zero before it divides | S1g.10.4 |
 | A-4 | `3x + 4 = 19` by search: an hrule proposes `(value x (n z D))` for each of ten digits, a rule kills two values of one unknown, a rule kills a value whose left side is not 19 | 10 candidates, **9 dead alone**, N 9, k_s 2: ∅ and `{(value x (n z 5))}`, 11 saturations. ∅ is in R because nothing says the unknown has a value; `:over maximal` reads the one answer | S1g.10.4 |
-| A-5 | a fact `(unknown x)` | refused at load: `unknown` is a macro of `std.macro`, and a macro's call is no fact ([`diagnostics.md` § 2.24](../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)). The plan writes `sought` | [S1g.10.2](s1g.10.2_expressions_and_evaluation.md) |
+| A-5 | a fact `(unknown x)` | refused at load: `unknown` is a macro of `std.macro`, and a macro's call is no fact ([`07-diagnostics.md` § 2.24](../../../docs/ein/user/04-reference/07-diagnostics.md#224-a-macros-call-is-no-fact)). The plan writes `sought` | [S1g.10.2](s1g.10.2_expressions_and_evaluation.md) |
 | A-6 | `(simplify (Plus (term 2 x) (term 3 x)))`, two rules: ask the calculator for the sum of the coefficients, read it | `(simpler … (term (n z 5) x))`; search-free | [S1g.10.3](s1g.10.3_simplification_and_identities.md) |
 | A-7 | `(evaluate (Plus (Times (num 3) (var x)) (num 4)))` with `(assign x 5)`, eight rules: requests go down the tree, values come up through `mul` and `add` | `(value-of … (n (n z 1) 9))`; search-free. Its rules join an expression with its parts' values, so they break the calculator's rule of the theory | S1g.10.2 |
 | A-8 | A-1 with the line `(solve :hypothesis-relations ())` taken out | **exit 1**, one line: *a state's commitments pass 2^128: the state route cannot count them*. The program's own relations are candidates for the blind enumerator over every name the tables hold. Every program of this phase states its lattice | [S1g.10.1](s1g.10.1_survey_and_design.md); [`findings.md`](findings.md) F-1 |

@@ -1,5 +1,5 @@
 //! **Every `{?ref}` a corpus or stdlib `:why` writes names something its form
-//! can fill** ([`natural-language.md` § 7](../../../../docs/ein/user/syntax-and-semantics/natural-language.md#7-what-is-checked)).
+//! can fill** ([`14-natural-language.md` § 7](../../../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md#7-what-is-checked)).
 //!
 //! [`ein_core::render_why`] leaves a reference nothing binds as written, so a
 //! typo reaches a user's output as `{?huse}`; the effect is held where a
@@ -16,7 +16,7 @@
 //! - a **macro**'s name a parameter.
 //!
 //! And **no `{x}` is a reference with its `?` missing**: a bare `{x}` is a
-//! literal (`syntax.md` § `:why`), so `{1}` in a relation's `:why`, or
+//! literal (`02-syntax.md` § `:why`), so `{1}` in a relation's `:why`, or
 //! `{a}` in a rule's that binds `?a`, prints as written where a reference was
 //! meant: `"{1} is a {2}"` for `"{?1} is a {?2}"`, or `"{?1} knows {?2}, …"`
 //! in a rule that binds `?a` and `?b`, each of which would print as written.

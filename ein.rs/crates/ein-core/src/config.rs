@@ -3,9 +3,9 @@
 //! Each field maps 1:1 to a `:kebab-flag`, and the field *list with its
 //! declaration order* is observable twice over: `--dump-config` prints it in
 //! declaration order, and an unknown flag is rejected with the valid names
-//! **sorted** ([design/determinism-and-order.md § 4.3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#43-output-bytes)).
+//! **sorted** ([03-design/01-determinism-and-order.md § 4.3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#43-output-bytes)).
 //! [`FIELDS`] is that list, and the loader
-//! ([design/ir-frontend.md § 9.1](../../../../docs/ein/ein.rs/design/ir-frontend.md#91-passes-and-accumulated-errors))
+//! ([03-design/04-ir-frontend.md § 9.1](../../../../docs/ein/ein.rs/03-design/04-ir-frontend.md#91-passes-and-accumulated-errors))
 //! parses through it.
 //!
 //! It lives here rather than beside the engine because the KB holds one and
@@ -20,7 +20,7 @@
 //!
 //! Every flag, with its default, what it changes, whether it changes the
 //! answer and what depending on it commits you to:
-//! [`docs/ein/user/reference/config.md`](../../../../docs/ein/user/reference/config.md),
+//! [`docs/ein/user/04-reference/06-config.md`](../../../../docs/ein/user/04-reference/06-config.md),
 //! whose defaults block is `--dump-config`'s own output and whose flag list is
 //! diffed against [`FIELDS`] by `ein-cli/tests/config_reference.rs`.
 
@@ -34,7 +34,7 @@ pub enum FieldKind {
 }
 
 /// The flags a `(config …)` takes, in declaration order
-/// (`docs/ein/user/reference/config.md` § 2.2): what `--dump-config` prints
+/// (`docs/ein/user/04-reference/06-config.md` § 2.2): what `--dump-config` prints
 /// and what the loader parses.
 pub const FLAGS: &[(&str, FieldKind)] = &[
     ("lattice-sanity-check", FieldKind::Bool),
@@ -42,7 +42,7 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 ];
 
 /// The retired flags, each with why it went, which the loader's error prints
-/// beside it (`docs/ein/user/reference/config.md` § 2.4), so a program
+/// beside it (`docs/ein/user/04-reference/06-config.md` § 2.4), so a program
 /// that sets one is refused with the reason rather than as an unknown flag:
 /// the walk's levers and order seeds, which no route reads;
 /// `enable-symmetric-mirror`, the one flag that changed R (Q-M1e2.30); and
@@ -196,7 +196,7 @@ pub struct SolverConfig {
     /// built and saturated again. On a program the static check flags it fills
     /// the warning's `paths` row and never fails the run; on a monotone one a
     /// parent path that reaches another state contradicts the static check's
-    /// theorem (`docs/ein/reasoning/kb-evolution/monotonicity.md` § 3.2),
+    /// theorem (`docs/ein/reasoning/02-kb-evolution/08-monotonicity.md` § 3.2),
     /// and the run is an engine error. Its cost is outside the `work` block.
     pub lattice_sanity_check: bool,
     /// **Retired**, as is the seed below, and read by nothing; kept at its

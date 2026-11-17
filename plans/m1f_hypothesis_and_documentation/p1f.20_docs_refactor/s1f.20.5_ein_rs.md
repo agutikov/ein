@@ -8,7 +8,7 @@
 ## What it writes
 
 Every page the table sends to `docs/ein/ein.rs/`. It is mostly relocation, with one rule:
-**[`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md)'s marker-guarded region moves intact**, and the test that
+**[`docs/ein/ein.rs/04-api.md`](../../../docs/ein/ein.rs/04-api.md)'s marker-guarded region moves intact**, and the test that
 diffs it against [`embedding.rs`](../../../ein.rs/crates/ein-cli/tests/embedding.rs) moves with it. It is the
 repo's working precedent for a page that cannot rot, and breaking it in a refactor about documentation
 quality would be the phase's worst possible outcome.

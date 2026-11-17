@@ -46,7 +46,7 @@ pub fn fact_key(relation_name: &str, args: &[String]) -> String {
 
 // ── The shape legend ───────────────────────────────────────────────
 //
-// `docs/ein/user/reference/rendering.md` § Node-shape legend. Named
+// `docs/ein/user/04-reference/12-rendering.md` § Node-shape legend. Named
 // constants rather than literals because the per-form IR renderer and the
 // rule renderer must agree, and a legend that lives in two string literals
 // drifts.

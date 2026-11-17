@@ -1,5 +1,5 @@
 //! The detector
-//! ([monotonicity.md § 11](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#11-the-detector)).
+//! ([08-monotonicity.md § 11](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#11-the-detector)).
 //!
 //! What a program the static check flags is warned of, held to the corpus:
 //! the static half ([`ein_infer::detector::Static`]) on every corpus program,
@@ -214,14 +214,14 @@ fn the_order_check_finds_every_fifo_race() {
     let (m, _) = written(FIFO_GAP_WRITTEN);
     assert_eq!(races(&m.detector), ["r2 ← r1: q"]);
     // The static variant: `q` is outside D, so the program is monotone and
-    // the gated detector reads nothing (monotonicity.md § 3.4).
+    // the gated detector reads nothing (08-monotonicity.md § 3.4).
     let (m, _) = file("examples/lattice/11_fifo_gap_static.ein");
     assert!(m.is_monotone());
     assert_eq!(*m.detector, Static::default());
 }
 
 /// What each kind of site concludes and puts at stake, one fixture per cause
-/// (`monotonicity.md` § 9's c2, c4, c5, c6).
+/// (`08-monotonicity.md` § 9's c2, c4, c5, c6).
 #[test]
 fn each_site_names_what_it_concludes_and_puts_at_stake() {
     let cases: &[(&str, Concludes, AtStake)] = &[
@@ -667,7 +667,7 @@ fn sweep(text: &str, at: &Path, bound: usize) -> Option<Swept> {
 /// verdict (`detector.rs`'s module docs). **From scratch the verdict does not
 /// reach**: on `examples/lattice/11_fifo_gap_static.ein` a FIFO race over a
 /// static read leaves `{(b one)}` a stale `(p one)` that the fork
-/// never holds (`monotonicity.md` § 3.4), and it is the one corpus node
+/// never holds (`08-monotonicity.md` § 3.4), and it is the one corpus node
 /// where scratch departs.
 #[test]
 fn a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split() {

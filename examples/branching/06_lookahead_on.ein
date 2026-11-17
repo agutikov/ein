@@ -3,7 +3,7 @@
 ;;; 06_lookahead_on.ein and 07_lookahead_off.ein are the same program, byte
 ;;; for byte outside their comments, and the witnesses of regressions
 ;;; branching-06 and branching-07: no flag tells them apart, since no
-;;; flag changes R (docs/ein/user/reference/config.md § 2.5).
+;;; flag changes R (docs/ein/user/04-reference/06-config.md § 2.5).
 ;;;
 ;;; The puzzle: five colours, five houses, four colours anchored.
 ;;; Blue is the lone unanchored colour and must take the one free

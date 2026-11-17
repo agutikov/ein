@@ -13,7 +13,7 @@ here, as a static step of the gate. It reads files only: no binary.
 1. **The editor grammar**, `vscode-ein/ein.tmLanguage.json`:
    - it parses, claims `source.ein` and the `ein` file type, and has patterns;
    - the names it highlights as declarators are exactly the closed set,
-     the first column of `docs/ein/user/reference/reserved-names.md`'s table
+     the first column of `docs/ein/user/04-reference/03-reserved-names.md`'s table
      of top-level declarators;
    - its primitives are `ein_core::STRUCTURAL` and the verdict atom `open`
      (reserved, `ein_core::RESERVED`, and no rule-body primitive), and its
@@ -22,7 +22,7 @@ here, as a static step of the gate. It reads files only: no binary.
      `reasoning`, `rules`) are highlighted by none of the three scopes.
 2. **The natural-language census**, `nl_census.py`: its `KERNEL` is
    `ein_core::RESERVED`, name for name, and it assigns the four registers
-   `docs/ein/user/syntax-and-semantics/natural-language.md` § 4 names.
+   `docs/ein/user/03-syntax-and-semantics/14-natural-language.md` § 4 names.
 3. **The review bundle's driver**, `review/run.py`: every `ein solve` option
    whose value is a path (`metavar=FILE…` or `DIR`), read off the help
    surface's golden (`ein-cli/tests/golden/help_shape.txt`, which a crate
@@ -41,8 +41,8 @@ ROOT = Path(__file__).resolve().parent.parent
 GRAMMAR = "utils/vscode-ein/ein.tmLanguage.json"
 TERMS = "ein.rs/crates/ein-core/src/terms.rs"
 PREDICATES = "ein.rs/crates/ein-infer/src/predicates.rs"
-RESERVED_PAGE = "docs/ein/user/reference/reserved-names.md"
-NL_PAGE = "docs/ein/user/syntax-and-semantics/natural-language.md"
+RESERVED_PAGE = "docs/ein/user/04-reference/03-reserved-names.md"
+NL_PAGE = "docs/ein/user/03-syntax-and-semantics/14-natural-language.md"
 NL_CENSUS = "utils/nl_census.py"
 HELP = "ein.rs/crates/ein-cli/tests/golden/help_shape.txt"
 DRIVER = "utils/review/run.py"

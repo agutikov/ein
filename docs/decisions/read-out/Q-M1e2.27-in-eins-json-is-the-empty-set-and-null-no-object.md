@@ -12,5 +12,5 @@ that there is no refutation. Written alike, a reader could not tell an alive nod
 
 **Held by.** `ein-cli/tests/answer_round_trip.rs`: `no_core_unless_dead`, over every corpus program's dump and the
 oracle's; `ein-infer/tests/corpus_cores.rs`: `a_rule_with_no_premise_refutes_root_with_the_empty_core`. The rule:
-[read-out.md](../../ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) § 11. A text surface writes the empty core `∅`
+[08-read-out.md](../../ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks) § 11. A text surface writes the empty core `∅`
 ([Q-M1f.48](Q-M1f.48-a-text-surface-writes-the-empty-core.md)).

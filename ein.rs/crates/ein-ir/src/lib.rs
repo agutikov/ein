@@ -9,12 +9,12 @@
 //! the engine may read a single seam.
 //!
 //! The frontend is a **pure function** (source → forms) with no engine state
-//! ([design/ir-frontend.md § 1](../../../../docs/ein/ein.rs/design/ir-frontend.md#1-a-pure-function-of-its-inputs)): every
+//! ([03-design/04-ir-frontend.md § 1](../../../../docs/ein/ein.rs/03-design/04-ir-frontend.md#1-a-pure-function-of-its-inputs)): every
 //! artefact it produces is text a golden file pins, so it can be checked byte
 //! for byte in isolation.
 //!
 //! [`stdlib`] is specified by
-//! [design/shared-assets.md](../../../../docs/ein/ein.rs/design/shared-assets.md).
+//! [03-design/02-shared-assets.md](../../../../docs/ein/ein.rs/03-design/02-shared-assets.md).
 
 #![forbid(unsafe_code)]
 

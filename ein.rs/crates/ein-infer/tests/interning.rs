@@ -1,10 +1,10 @@
 //! **What a run interns, and when.**
 //!
-//! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
+//! [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)
 //! has to make [`Terms`] shareable across workers, and the interner is the
 //! part of it that cannot simply be wrapped: [`Interner::text`] hands out a
 //! `&str` borrowed from the arena, and no lock returns a borrow that outlives
-//! its guard. A sharded `RwLock` — [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)'s
+//! its guard. A sharded `RwLock` — [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)'s
 //! sketch — would therefore have to change every read site in the engine, not
 //! the write sites.
 //!
@@ -40,10 +40,10 @@
 //! digits is a name the program has, and a relation parameter bound to a fact
 //! is refused, by the loader where the activator is written down and by the
 //! compiler where a rule derives it, before anything is interned
-//! ([diagnostics.md § 2.6](../../../../docs/ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number),
+//! ([07-diagnostics.md § 2.6](../../../../docs/ein/user/04-reference/07-diagnostics.md#26-a-relation-named-by-a-number),
 //! Q-M1e.21). A worker that cannot
 //! intern can only fall back, which is
-//! [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)'s
+//! [03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)'s
 //! to build and this file's to keep honest.
 
 use ein_core::Terms;

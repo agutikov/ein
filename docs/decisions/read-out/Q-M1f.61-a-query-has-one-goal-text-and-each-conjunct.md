@@ -8,4 +8,4 @@ relation's `:why`, as every fact does.
 change that says again what the declarations say.
 
 **Held by.** `ein-cli/tests/natural_language_text.rs`: `the_read_out_prints_the_goal_text_as_written`;
-[natural-language.md](../../ein/user/syntax-and-semantics/natural-language.md#1-the-four-texts) § 1 and § 5.
+[14-natural-language.md](../../ein/user/03-syntax-and-semantics/14-natural-language.md#1-the-four-texts) § 1 and § 5.

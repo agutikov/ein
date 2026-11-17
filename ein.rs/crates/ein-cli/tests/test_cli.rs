@@ -1,12 +1,12 @@
 //! `ein test`
-//! ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)),
+//! ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)),
 //! **the tests for the tester**.
 //!
 //! A test runner that reports success on a broken expectation is the worst
 //! possible outcome a runner has, so every fixture below
 //! that must *fail* is checked for failing — with the right exit code and the
 //! right message — and not merely run. The
-//! [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)
+//! [03-design/10-toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#5-the-tests)
 //! precedent: the fuzzer's own three controls each failed once first.
 //!
 //! The comparisons themselves live in `ein-infer` — a query's classes in
@@ -1621,7 +1621,7 @@ fn the_regions_false_is_refuted_at_an_alive_root() {
 }
 
 /// **The pages name the schema the binary writes.** `--json-report`'s
-/// version is said on two reference pages, `cli.md` and `config.md`, and in
+/// version is said on two reference pages, `05-cli.md` and `06-config.md`, and in
 /// the option's help, and this holds each to the report: each names the
 /// binary's version and none a later one.
 #[test]
@@ -1632,8 +1632,8 @@ fn the_pages_name_the_reports_schema() {
     let (name, version) = schema.split_once('/').expect("name/version");
     let version: u32 = version.parse().expect("a number");
     for page in [
-        "docs/ein/user/reference/cli.md",
-        "docs/ein/user/reference/config.md",
+        "docs/ein/user/04-reference/05-cli.md",
+        "docs/ein/user/04-reference/06-config.md",
     ] {
         let text = std::fs::read_to_string(repo_root().join(page)).expect("the page");
         assert!(

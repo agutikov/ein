@@ -1,8 +1,8 @@
 //! `ein test` — the expectations a program states about itself, run.
 //!
-//! [`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test).
+//! [`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test).
 //! A `(query …)` and a `(solve …)` may state their own answer
-//! ([claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims));
+//! ([claims](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims));
 //! this is the runner that turns a directory of them into a status code, so
 //! that **nothing reads output**: checking that a rule works is not running
 //! `solve` and looking, nor diffing against a golden.
@@ -80,7 +80,7 @@
 //! corpus what fraction of it states a closure claim — `:expect` is a query
 //! keyword, and a grep cannot tell a keyword from a comment about one. That
 //! is the transport of
-//! [the claims about a set of states](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states).
+//! [the claims about a set of states](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#3-claims-about-the-set-of-states).
 //!
 //! Additive, in the sense the other artefact flags are: stdout, stderr, the
 //! exit code and what is solved are identical with the flag and without it. A

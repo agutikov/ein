@@ -13,7 +13,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; Every command that takes a `.ein` path takes a `.einb` too, dispatching on
-;;; the magic bytes (`docs/ein/ein.rs/design/binary-format.md`), and no two
+;;; the magic bytes (`docs/ein/ein.rs/03-design/09-binary-format.md`), and no two
 ;;; commands may disagree (Q-M1e2.32). So the container `ein kb
 ;;; save` writes from this file is answered by every command that takes a
 ;;; program, each as it answers this file: `saturate --dump` the same KB, each

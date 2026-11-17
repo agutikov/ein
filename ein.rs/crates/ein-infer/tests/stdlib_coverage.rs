@@ -295,7 +295,7 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
 /// the same thing here: this program activated that rule and observed what it
 /// concluded. Reading only `fire` would have put every obligation rule
 /// permanently in the zero set
-/// ([obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)).
+/// ([08-obligations.md](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)).
 fn read_activations(path: &Path, log: &str) -> Vec<(String, usize)> {
     let mut out = Vec::new();
     for line in log.lines() {

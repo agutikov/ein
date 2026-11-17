@@ -41,7 +41,7 @@ pub struct Program {
     pub obligations: Registry<Rule>,
     pub macros: Registry<Macro>,
     /// **Every** `(query …)` block, in source order
-    /// ([query.md](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
+    /// ([12-query.md](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)).
     ///
     /// Not the last block alone, which is the one failure mode a file
     /// carrying `:expect` must not have: a second check that loads, is

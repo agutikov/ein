@@ -3,7 +3,7 @@
 //!
 //! On a program the static check flags, a question that needs the whole cube
 //! is answered past the limit from the members the run met in layer order
-//! ([finding-r.md § 3](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#3-a-program-the-static-check-flags)).
+//! ([07-finding-r.md § 3](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#3-a-program-the-static-check-flags)).
 //! Describe certifies a member met with no member of R met below it as
 //! minimal, `{∅}` when ∅ is in R, and says the maximal line is not known;
 //! `--minimal` and `--maximal` label no other member met as on their line.

@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────
 ;;;
-;;; A keyword is a whole word: `grammar.md` § 1, fact 1, excludes a reserved
+;;; A keyword is a whole word: `01-grammar.md` § 1, fact 1, excludes a reserved
 ;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
 ;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. `r` concludes
 ;;; `(orz a)`: root holds `(orz a)` and `(p a)`, H is empty and R is {∅}. The
@@ -24,7 +24,7 @@
 ;;; became a name of the program, H was `(orz a)`, `(orz z)` and `(p z)`, and R
 ;;; was their eight subsets. The query printed as `(or z ?y)`. (`ein solve FILE`
 ;;; at `35186bc0`, release and debug; every mode and `ein oracle` the same.) A
-;;; keyword is a whole word now, at the boundary `grammar.md` § 1 states
+;;; keyword is a whole word now, at the boundary `01-grammar.md` § 1 states
 ;;; (Q-M1e2.17), and the program answers its twin's R.
 ;;;
 

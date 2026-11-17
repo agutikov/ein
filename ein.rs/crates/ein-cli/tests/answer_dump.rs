@@ -4,7 +4,7 @@
 //! The flag writes the answer as files: the read-out, the summary, one
 //! loadable program per state the run reached, the owing frontier of an empty
 //! R, the minimal dead sets, and `index.json` naming each. Its page is
-//! [`docs/ein/user/reference/answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md),
+//! [`docs/ein/user/04-reference/10-answer-dump.md`](../../../../docs/ein/user/04-reference/10-answer-dump.md),
 //! and these are the claims on it that a test can hold:
 //!
 //! - `answer.json` **is** `--json-summary`, and `answer.txt` stdout, byte for
@@ -515,15 +515,16 @@ fn a_container_writes_the_directory_its_program_writes() {
 }
 
 /// **Every `work` counter and every `root` field a summary carries is
-/// defined on the page.** The review bundle quotes `answer-dump.md` § The run
+/// defined on the page.** The review bundle quotes `10-answer-dump.md` § The run
 /// summary beside each number, so a counter without a row would be printed
 /// with no meaning — and a row for a counter no summary carries is a
 /// definition of nothing. A `root` field is a dotted row (`root.hypgen.raw`)
 /// down to the sparse blocks, whose keys are data.
 #[test]
 fn every_summary_counter_is_defined_on_this_page() {
-    let page = std::fs::read_to_string(repo_root().join("docs/ein/user/reference/answer-dump.md"))
-        .expect("the page");
+    let page =
+        std::fs::read_to_string(repo_root().join("docs/ein/user/04-reference/10-answer-dump.md"))
+            .expect("the page");
     let section = page
         .split("## The run summary")
         .nth(1)

@@ -10,7 +10,7 @@
 ;;;
 ;;; *Append-only, nothing retracts* makes saturation **inflationary**. It does
 ;;; not make it **monotone in its input**, and `(absent P)` is exactly what
-;;; separates the two — which `docs/ein/reasoning/kb-evolution/absent-and-naf.md`
+;;; separates the two — which `docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md`
 ;;; § What follows says from the other direction: removing a fact can flip an
 ;;; absent and *fabricate* a contradiction the full KB never had.
 ;;;

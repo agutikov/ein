@@ -11,7 +11,7 @@
 //! ```
 //!
 //! The third door is a region run's visited nodes (`ein-lattice/2`,
-//! [`lattice-dump.md`](../../../../docs/ein/ein.rs/lattice-dump.md)), and
+//! [`06-lattice-dump.md`](../../../../docs/ein/ein.rs/06-lattice-dump.md)), and
 //! `ein render lattice` draws them.
 //!
 //! The renderers' own standard is `ein-render/tests/dot_wellformed.rs`: what

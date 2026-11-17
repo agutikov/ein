@@ -19,25 +19,25 @@ constrained-reasoning research.
   **`ein.rs/`**, how this implementation computes it (below). Start here for
   any "what does Ein reason about / how" question. The pages an agent most
   often needs:
-  [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes),
+  [`07-diagnostics.md`](docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes),
   the parse and load diagnostics and the load refusals the engine defines
   normatively (§ 2 has one section per refusal);
-  [`solution-semantics.md`](docs/ein/reasoning/kb-evolution/solution-semantics.md),
+  [`06-solution-semantics.md`](docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md),
   the answer as a region R;
-  [`read-out.md`](docs/ein/user/reference/read-out.md), every row
+  [`08-read-out.md`](docs/ein/user/04-reference/08-read-out.md), every row
   `ein solve` prints and what it counts;
-  [`hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
+  [`05-hypothesis-space.md`](docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
   `h-space.json`;
-  [`config.md`](docs/ein/user/reference/config.md), the `(config …)` flags,
+  [`06-config.md`](docs/ein/user/04-reference/06-config.md), the `(config …)` flags,
   the CLI options and the `EIN_*` names, each with a *does it change the
   answer* column;
-  [`syntax.md`](docs/ein/user/reference/syntax.md) and
-  [`grammar.md`](docs/ein/user/reference/grammar.md), the language;
-  [`natural-language.md`](docs/ein/user/syntax-and-semantics/natural-language.md),
+  [`02-syntax.md`](docs/ein/user/04-reference/02-syntax.md) and
+  [`01-grammar.md`](docs/ein/user/04-reference/01-grammar.md), the language;
+  [`14-natural-language.md`](docs/ein/user/03-syntax-and-semantics/14-natural-language.md),
   `:why` texts and how a fact reads as English; and
-  [`architecture.md`](docs/ein/ein.rs/architecture.md), the crate and module
-  map, with the design contracts the code cites under `docs/ein/ein.rs/design/`.
+  [`01-architecture.md`](docs/ein/ein.rs/01-architecture.md), the crate and module
+  map, with the design contracts the code cites under `docs/ein/ein.rs/03-design/`.
   What is true of the language and the answer today is
   [§ Standing rules](#standing-rules) below; how each rule came to be is in
   the stage records under `plans/` and in `git log`, not here.
@@ -77,20 +77,20 @@ constrained-reasoning research.
 - **`docs/ein/ein.rs/`** — **the engine as built**: the crate and module map,
   the design contracts the crates cite (`design/`), the `--events` protocol and
   the other engine read-outs, and **how to drive Ein as a library**,
-  [`api.md`](docs/ein/ein.rs/api.md): the **crates** — `ein-ir` to load, `ein-infer` to solve, `ein-render` to
+  [`04-api.md`](docs/ein/ein.rs/04-api.md): the **crates** — `ein-ir` to load, `ein-infer` to solve, `ein-render` to
   explain, `ein-einb` to cache. **Its worked example is a test.** The page's
   `rust` block is the marked region of
   [`ein-cli/tests/embedding.rs`](ein.rs/crates/ein-cli/tests/embedding.rs) and
   a test in that file diffs the two, so `cargo test --workspace` keeps the
   page true — *edit the test, run it, paste; never edit the block by hand*.
-- **`docs/ein/user/install.md`** — the install page: the two channels (a release
+- **`docs/ein/user/01-install.md`** — the install page: the two channels (a release
   binary, `cargo install --path`), what `ein --version`'s five lines mean, how
   to check a binary's stdlib against the checkout's manifest, and
   `$EIN_STDLIB`. **`pip install` is not a channel.**
-- **`docs/ein/user/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
+- **`docs/ein/user/02-guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
   Zebra puzzle"). User-facing; links the reference and the concept pages
   under `docs/ein/user/`, never explains internals; its chapter 6 is
-  `06_zebra_walkthrough.md`.
+  `06-zebra-walkthrough.md`.
 - **`docs/lib/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
   theory, graphs & rewrite systems, reasoning benchmarks, …), and a
@@ -108,7 +108,7 @@ constrained-reasoning research.
   and [`zebra2-obligations.ein`](examples/zebra2-obligations.ein) and its
   `-minus-15` twin, which are `zebra2` with the `(hrule guess …)` and the
   `(solve … :hrules …)` clause **deleted and nothing else**.
-- **`docs/ein/user/guide/06_zebra_walkthrough.md`** — the Wikipedia human
+- **`docs/ein/user/02-guide/06-zebra-walkthrough.md`** — the Wikipedia human
   Zebra walkthrough annotated as ein inference: the **M1 target trace** for
   the engine and the **M2 target** for the NL ⇄ IR round-trip.
 - **`stdlib/`** — the ein-lang standard library (`std.*`), the single source
@@ -199,7 +199,7 @@ constrained-reasoning research.
   `stdlib/` or `tests/` with no entry fails a completeness check. What runs it
   is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the table of
   readers; the `--events` protocol is
-  [`docs/ein/ein.rs/events.md`](docs/ein/ein.rs/events.md).
+  [`docs/ein/ein.rs/05-events.md`](docs/ein/ein.rs/05-events.md).
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py` re-takes it;
@@ -323,7 +323,7 @@ paragraph, no register count, no measurement (the user's rule).
 ### The language
 
 Each of these is a refusal at load or at the parse, on every command, stated
-normatively in [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) § 2
+normatively in [`07-diagnostics.md`](docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes) § 2
 or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 
 - **Ein has no numbers, no ranges and no int kind**, and none is planned.
@@ -355,7 +355,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   that holds no variable, derived from the fact it was read in. A rule reads
   it, which is how a representation module checks its own terms where they
   are written (`std.math.decimal`'s numeral); no program writes it, and no
-  declarator binds it (`diagnostics.md` § 2.30).
+  declarator binds it (`07-diagnostics.md` § 2.30).
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.
@@ -435,7 +435,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 ### Edits that go together
 
 - **Generated, never edited by hand** (edit the generator and re-run):
-  `grammar.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
+  `01-grammar.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
   `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
   (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
   and its width-2 twin, the fixture `ein-infer/tests/golden/num2_theory.ein`
@@ -448,8 +448,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   zebra2 variants (`utils/gen_zebra2_variants.py`);
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`utils/gen_send_written.py`);
-  `read-out-examples.md` (`utils/read_out_examples.py`); `config.md`'s
-  defaults block and `docs/ein/ein.rs/api.md`'s `rust` block;
+  `09-read-out-examples.md` (`utils/read_out_examples.py`); `06-config.md`'s
+  defaults block and `docs/ein/ein.rs/04-api.md`'s `rust` block;
   `ein-core/src/printable.rs` (`utils/gen_unicode_printable.py`, with
   `ein-core/tests/golden/repr_escapes.txt` re-blessed). All of those have a
   `--check` or a test in the gate; `utils/check_generated.py` runs every
@@ -458,7 +458,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   down.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
-- A change to what `ein solve` prints changes `read-out.md` in the same
+- A change to what `ein solve` prints changes `08-read-out.md` in the same
   commit. A shape the grammar newly refuses gets a row in the grammar page's
   table.
 - **A file that moves takes every reference to it along**, in the commit
@@ -568,12 +568,12 @@ python3 utils/history_census.py                              # the history censu
 ```
 
 The read-out's vocabulary is
-[`docs/ein/user/reference/read-out.md`](docs/ein/user/reference/read-out.md),
+[`docs/ein/user/04-reference/08-read-out.md`](docs/ein/user/04-reference/08-read-out.md),
 every row `ein solve` prints and what it counts, and its golden page, written
 by the binary, is
-[`read-out-examples.md`](docs/ein/user/reference/read-out-examples.md), both
+[`09-read-out-examples.md`](docs/ein/user/04-reference/09-read-out-examples.md), both
 held to the printer by `ein-cli/tests/read_out_reference.rs`.
-[`docs/ein/user/reference/config.md`](docs/ein/user/reference/config.md) is the census
+[`docs/ein/user/04-reference/06-config.md`](docs/ein/user/04-reference/06-config.md) is the census
 of every `(config …)` field, CLI option and `EIN_*` name the binary reads, with a
 *does it change the answer* column on every flag row, pinned by
 `ein-cli/tests/config_reference.rs`. **The test harness's `EIN_*` names are the
@@ -584,7 +584,7 @@ re-takes the set, the binary's two among it.
 
 | name | what it does |
 |---|---|
-| `EIN_BLESS` | `=1` rewrites a golden instead of comparing it, `config.md`'s generated block among them |
+| `EIN_BLESS` | `=1` rewrites a golden instead of comparing it, `06-config.md`'s generated block among them |
 | `EIN_CORPUS_SLOW` | `=1` adds the corpus entries marked slow, the heavy answer dumps, and the slow half of every test that has one |
 | `EIN_CORPUS_TIMEOUT` | the per-run wall budget of the corpus sweep through the binary, in seconds, default 300 |
 | `EIN_ID_SEEDS` | how many permutations of the interned ids the id-order sweep runs, default 1 |

@@ -1,5 +1,5 @@
 //! `ein render region DIR [--visited DIR] [--answer DIR]`
-//! ([`rendering.md`](../../../../docs/ein/user/reference/rendering.md)).
+//! ([`12-rendering.md`](../../../../docs/ein/user/04-reference/12-rendering.md)).
 //!
 //! The drawing of an `ein oracle --dump` directory with a region run on it,
 //! held from the outside: every view is DOT Graphviz accepts

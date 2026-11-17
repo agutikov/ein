@@ -21,7 +21,7 @@ P1h.2's slice drawn another way; an engine change where it is one, with the refe
   what [S1h.4.3](s1h.4.3_the_trace_as_the_pupils_page.md)'s second task found the engine must know: a
   rule's module, and where a call starts and ends.
 - **A property of an import:** a grammar change. `ein.l` and `ein.y`; the grammar's pages re-generated
-  (`EIN_BLESS=1`), a row in [`syntax.md`](../../../docs/ein/user/reference/syntax.md) for the new
+  (`EIN_BLESS=1`), a row in [`02-syntax.md`](../../../docs/ein/user/04-reference/02-syntax.md) for the new
   keyword and one in its table for each shape newly refused; what the keyword means to every command that
   reads a program, since every command reads one by one path; and then the fold as above.
 - **The slice drawn another way:** no trace change; the page is a rendering of P1h.2's cut, and this stage
@@ -36,7 +36,7 @@ P1h.2's slice drawn another way; an engine change where it is one, with the refe
 - **The pages shown first.** The stage's first task re-takes S1h.4.3's written-out pages on the day's
   binary beside what the printer will write, before the printer moves.
 - **The reference pages in the same commit:** a row of
-  [`config.md`](../../../docs/ein/user/reference/config.md) for a new option, held by
+  [`06-config.md`](../../../docs/ein/user/04-reference/06-config.md) for a new option, held by
   `config_reference.rs`; the trace's golden (`ein-render/tests/golden_trace.rs`) and the `region-trace`
   digests of `corpus_shapes.md5`, which a run without the option must leave unmoved.
 - **No answer moves;** stdout, stderr and the exit code of every run without the option, or without the

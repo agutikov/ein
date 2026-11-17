@@ -16,7 +16,7 @@ No run stops on a heuristic, *no new state for k layers* or the like, and none s
 not classify. A criterion that would certify all of R sooner than the routes do, on purpose and for a class of
 program, is not used; one is adopted only with the proof that licenses it.
 
-**Why.** An answer is a statement about R, which [`ein oracle`](../../ein/reasoning/kb-evolution/finding-r.md#2-the-oracle-the-cube)
+**Why.** An answer is a statement about R, which [`ein oracle`](../../ein/reasoning/02-kb-evolution/07-finding-r.md#2-the-oracle-the-cube)
 computes by brute force, and every mode must agree with it. A stop that rests on a proof keeps that agreement; a
 stop on a guess would print a different answer as if it were the same one, and a bounded run that did not say it
 was bounded would too.
@@ -24,5 +24,5 @@ was bounded would too.
 **Held by.** `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle`, every mode of `ein solve` against the
 oracle's region on every corpus program it enumerates, and a stop inside the oracle's limit a failure;
 `ein-cli/tests/test_cli.rs`: `a_budget_stopped_run_is_not_checked_and_says_why`; `ein-cli/tests/cli_semantics.rs`:
-`a_stopped_run_writes_its_summary_and_says_why`. The page: [`read-out.md`](../../ein/user/reference/read-out.md),
+`a_stopped_run_writes_its_summary_and_says_why`. The page: [`08-read-out.md`](../../ein/user/04-reference/08-read-out.md),
 the rows `exhausted` and `decided`.

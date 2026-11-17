@@ -17,7 +17,7 @@ this followup is its record now. When the theory ships, its decision file is wri
 
 **What it is.** The column rules of an addition with the digit tables read in every direction, written once, so a
 cryptarithm states only its letters and its columns; SEND + MORE = MONEY its example. The question's source is
-[`word-problems.md`](../../docs/ein/user/guide/word-problems.md#cryptarithms) § 3 and its
+[`08-word-problems.md`](../../docs/ein/user/02-guide/08-word-problems.md#cryptarithms) § 3 and its
 question 7: the same puzzle as a plain search takes 17 747 search nodes, with the tables read backwards as
 propagation 639, and a human a dozen deductions. *"A cryptarithm theory in the stdlib, with those rules written
 once, would be to arithmetic puzzles what `std.bijection`'s elimination rules are to the zebra."* What the corpus

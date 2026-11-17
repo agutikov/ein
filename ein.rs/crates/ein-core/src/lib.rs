@@ -1,17 +1,17 @@
 //! `ein-core` — the data model.
 //!
 //! No I/O and no engine: interning, `Value` / `FactId` as integers, row
-//! storage, the layered COW KB ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)),
+//! storage, the layered COW KB ([03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md)),
 //! and the `repr` / `numfmt` value renderers
-//! ([design/determinism-and-order.md § 7](../../../../docs/ein/ein.rs/design/determinism-and-order.md#7-the-value-renderer)).
+//! ([03-design/01-determinism-and-order.md § 7](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#7-the-value-renderer)).
 //! Everything depends on this crate; it depends on nothing.
 //!
 //! The data model lands at
-//! [design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md); the two
+//! [03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md); the two
 //! renderers land early, at
-//! [design/determinism-and-order.md § 7](../../../../docs/ein/ein.rs/design/determinism-and-order.md#7-the-value-renderer),
+//! [03-design/01-determinism-and-order.md § 7](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#7-the-value-renderer),
 //! because they are trivial to write and expensive to discover missing at
-//! [architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli).
+//! [01-architecture.md § 3.4](../../../../docs/ein/ein.rs/01-architecture.md#34-ein-einb-ein-render-ein-cli).
 
 #![forbid(unsafe_code)]
 

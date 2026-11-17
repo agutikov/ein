@@ -23,7 +23,7 @@
 ;;; equals the binary adder's table*.
 ;;;
 ;;;
-;;; `docs/ein/user/reference/stdlib.md` § `std.bool.circuit`.
+;;; `docs/ein/user/04-reference/04-stdlib.md` § `std.bool.circuit`.
 (import std.bool.gates :symbols (gate2))
 (import std.bool.circuit :symbols (gate))   ; the relation full_adder's gates are facts of
 (import std.math.bits :symbols (bin-fa))

@@ -1,5 +1,5 @@
 //! **Hypotheses from obligations, asserted**
-//! ([hypothesis-generation.md § 4](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt)).
+//! ([04-hypothesis-generation.md § 4](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt)).
 //!
 //! [`obligation_reports.rs`](obligation_reports.rs)'s sibling.
 //! That suite checks what a quiescent state *says* it owes; this one checks
@@ -14,7 +14,7 @@
 //! pinned as a test would be a test of the fixtures' arithmetic rather than
 //! of the engine. The ladder these tests hold is [the page's].
 //!
-//! [the page's]: ../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#2-the-ladder
+//! [the page's]: ../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#2-the-ladder
 
 //!
 //! **It reads the routes** ([`ein_infer::explore`]). The ladder is what
@@ -237,7 +237,7 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// closed**: such a node is not recorded as a model by the read-out at all;
 /// and a list that names a relation an obligation owes is refused at load
 /// (filtered obligations are nonsense by definition,
-/// [diagnostics.md § 2.27](../../../../docs/ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
+/// [07-diagnostics.md § 2.27](../../../../docs/ein/user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
 /// so a state is stuck because every candidate that would pay it is already
 /// refuted, Ann's of [`stuck_program`], who likes neither food: owed 1,
 /// branched on 1, declined 0.

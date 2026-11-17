@@ -7,7 +7,7 @@
 //! program as written (`rules`, `rule`, `constraints`, `program`) draw it
 //! from its parsed forms after that, its imports unresolved, and so never
 //! draw a program every other command refuses. The renderers themselves are `ein-render`'s
-//! ([architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli));
+//! ([01-architecture.md § 3.4](../../../../docs/ein/ein.rs/01-architecture.md#34-ein-einb-ein-render-ein-cli));
 //! what this adds is the surface around them.
 
 use std::path::Path;

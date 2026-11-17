@@ -16,12 +16,12 @@ use rustc_hash::FxHashMap;
 /// The frontend's own `Loc` names its file through a `FileId` into the AST's
 /// file table; this is the same three numbers with the table left behind, so
 /// the data model does not depend on the parser
-/// ([design/toolchain-and-layout.md § 1](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#1-the-workspace)
+/// ([03-design/10-toolchain-and-layout.md § 1](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#1-the-workspace)
 /// — everything depends on `ein-core`, and `ein-core` depends on nothing).
 ///
 /// In practice almost every one of these is `None`: the frontend builds a
 /// top-level form without a position, so a loader error that interpolates the
-/// form's location prints `at None` (`docs/ein/user/reference/diagnostics.md`
+/// form's location prints `at None` (`docs/ein/user/04-reference/07-diagnostics.md`
 /// § 1.5).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Loc {
@@ -33,7 +33,7 @@ pub struct Loc {
 /// A node in the program's syntax arena, opaque here.
 ///
 /// A rule's `:match` / `:assert` clause stays as parsed until the compiler
-/// lowers it to plan bytecode ([design/matcher.md § 2](../../../../docs/ein/ein.rs/design/matcher.md#2-from-a-rule-to-a-plan)),
+/// lowers it to plan bytecode ([03-design/05-matcher.md § 2](../../../../docs/ein/ein.rs/03-design/05-matcher.md#2-from-a-rule-to-a-plan)),
 /// so the KB has to *hold* syntax without *knowing* it. It holds this
 /// instead: the loader converts from the frontend's `NodeId` and the compiler
 /// converts back, and neither direction costs anything.
@@ -144,7 +144,7 @@ pub struct Solve {
 
 /// An insertion-ordered map from [`Symbol`] to `V`, whose order is observable
 /// through hypgen's `raw_candidates` and `Engine::compile_all`
-/// ([design/determinism-and-order.md § 3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#3-ordered-containers)).
+/// ([03-design/01-determinism-and-order.md § 3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#3-ordered-containers)).
 #[derive(Clone, Debug)]
 pub struct Registry<V> {
     entries: Vec<(Symbol, V)>,

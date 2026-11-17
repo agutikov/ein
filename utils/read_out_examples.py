@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Write `docs/ein/user/reference/read-out-examples.md`, the read-out in real runs.
+"""Write `docs/ein/user/04-reference/09-read-out-examples.md`, the read-out in real runs.
 
-The examples page of the read-out reference, `docs/ein/user/reference/read-out.md`
+The examples page of the read-out reference, `docs/ein/user/04-reference/08-read-out.md`
 (M1f S1f.5.16, T1f.5.16.2; moved into `docs/ein/user/` by S1f.20.3, which took
 the plan links and the history out of its prose). Every code block on the page
 is one `ein solve` or `ein oracle` run, as the binary prints it: stdout, then
@@ -32,10 +32,10 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "docs/ein/user/reference/read-out-examples.md"
+OUT = ROOT / "docs/ein/user/04-reference/09-read-out-examples.md"
 # The pages the prose links, relative to OUT.
-QUERY = "../syntax-and-semantics/query.md"
-SOLUTION_SEMANTICS = "../../reasoning/kb-evolution/solution-semantics.md"
+QUERY = "../03-syntax-and-semantics/12-query.md"
+SOLUTION_SEMANTICS = "../../reasoning/02-kb-evolution/06-solution-semantics.md"
 
 ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 ap.add_argument("--bin", default=os.environ.get("EIN_BIN", str(ROOT / "ein.rs/target/release/ein")))
@@ -108,7 +108,7 @@ add = S.append
 
 add("""# The read-out in real runs
 
-**What this page is.** The examples for [`read-out.md`](read-out.md), the read-out reference: every block below is one
+**What this page is.** The examples for [`08-read-out.md`](08-read-out.md), the read-out reference: every block below is one
 run of the binary, stdout, then each stderr line as `stderr: …`, then the exit code. A block captioned `--dump-answer
 DIR` is the `DIR/answer.txt` that run writes: the read-out with no listing cut. One block is not one whole run: X4's
 variant, whose query block is quoted. **The page is generated** from the binary's own runs and not edited by hand, and
@@ -156,7 +156,7 @@ add(block(["examples/branching/05_mini_zebra.ein"]))
 
 add("""## X2 — `lattice/02_genuine_3set_death.ein`: one program, every mode
 
-[`solution-semantics.md` § 2.5]("""+SOLUTION_SEMANTICS+"""#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
+[`06-solution-semantics.md` § 2.5]("""+SOLUTION_SEMANTICS+"""#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
 example: three candidates, every pair alive, the triple dead, no obligation. One run per question, so the same R can be
 read through each.
 
@@ -198,7 +198,7 @@ add(block(["-y", "examples/lattice/02_genuine_3set_death.ein"]))
 
 add("""## X3 — `features/11_expect_ambiguity.ein`: a query over the maximal line
 
-Two people, two seats, restrictions only. The query is `:over maximal` ([`query.md`]("""+QUERY+""")): over all of R
+Two people, two seats, restrictions only. The query is `:over maximal` ([`12-query.md`]("""+QUERY+""")): over all of R
 the goal `(seat ?who ?slot)` would see every seat fact, so each state would be its own class and ∅ the undetermined
 one. Over the maximal line its answer is two classes, and its claim holds.
 """)
@@ -343,7 +343,7 @@ add(block(["--maximal", "-n", "1", "examples/saturation/square-bwd/floors.ein"])
 
 add("""## X12 — `tests/region/03_merged_or.ein`: a program that states its region
 
-A `(merged …)` with `(or …)`: the colocation chain. Its `(solve … :expect (region …))` ([`query.md`]("""+QUERY+"""))
+A `(merged …)` with `(or …)`: the colocation chain. Its `(solve … :expect (region …))` ([`12-query.md`]("""+QUERY+"""))
 is checked against the R the run described, and the `(region …)` printed above the query is that claim's own text: one
 form, both directions.
 """)

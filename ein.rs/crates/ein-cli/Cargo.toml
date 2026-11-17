@@ -13,7 +13,7 @@ repository.workspace = true
 default  = ["snmalloc", "einb", "parallel"]
 # The global allocator.
 snmalloc = ["dep:snmalloc-rs"]
-# `.einb` read and write (docs/ein/ein.rs/design/toolchain-and-layout.md § 4).
+# `.einb` read and write (docs/ein/ein.rs/03-design/10-toolchain-and-layout.md § 4).
 # Off, `ein kb` is not registered
 # and a `.einb` argument is refused by the loader that would have opened it,
 # which is what a build with no container in it should say.

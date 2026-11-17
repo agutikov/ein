@@ -15,4 +15,4 @@ that wants positions on those messages, so that the move is made once and on pur
 `a_rule_needs_params_and_a_query_needs_a_kw_pair`; `ein-cli/tests/expect_cli.rs`:
 `the_load_negatives_are_refused_with_their_banked_message`, every `examples/broken/load/` fixture against its
 `.expected`. The page:
-[`diagnostics.md` § 1.5](../../ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none).
+[`07-diagnostics.md` § 1.5](../../ein/user/04-reference/07-diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none).

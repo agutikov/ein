@@ -5,7 +5,7 @@
 //! so the compiler substitutes the parameters and bakes concrete relation
 //! names into the program, with the slots lowered to [`Slot`]s and the
 //! variables numbered
-//! ([design/matcher.md § 2.1](../../../../docs/ein/ein.rs/design/matcher.md#21-the-compile-unit-and-its-activator)).
+//! ([03-design/05-matcher.md § 2.1](../../../../docs/ein/ein.rs/03-design/05-matcher.md#21-the-compile-unit-and-its-activator)).
 //!
 //! The compiler is small and its **edge cases are semantics**. It never drops
 //! a premise, because dropping one is unsound in one direction and incomplete
@@ -144,7 +144,7 @@ pub fn plan_key(terms: &Terms, rule: &Rule, activator: Option<FactId>) -> PlanKe
 }
 
 /// The **process-wide** `(rule, activator) → PlanId` memo
-/// ([design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)).
+/// ([03-design/05-matcher.md § 7](../../../../docs/ein/ein.rs/03-design/05-matcher.md#7-the-compile-cache)).
 ///
 /// A plan is a pure function of its key, so compiling it twice is waste: an
 /// exhaustive `zebra2` makes 253 440 `compile_for` calls of which all but 19
@@ -154,13 +154,13 @@ pub fn plan_key(terms: &Terms, rule: &Rule, activator: Option<FactId>) -> PlanKe
 /// the saturator's full enqueue pass walks — so each engine keeps its own ordered
 /// `Vec<PlanId>` and this holds only the plans.
 ///
-/// Append-only, which is what will let [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
+/// Append-only, which is what will let [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md)
 /// put it behind a shared lock without any invalidation story.
 #[derive(Default, Debug)]
 pub struct PlanMemo {
     /// `Arc` because a plan outlives the borrow of the memo that produced it:
     /// the saturator holds one while it mutates the engine around it, and
-    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md) will
+    /// [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md) will
     /// share the same plans across threads without copying them.
     plans: Vec<Arc<Plan>>,
     by_key: FxHashMap<PlanKey, PlanId>,
@@ -209,7 +209,7 @@ impl PlanMemo {
     /// [`Engine::compile_for`](crate::engine::Engine::compile_for) computes it
     /// to probe its own cache first, so recomputing it here would copy the
     /// activator's arguments again for an answer already in hand
-    /// ([design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)).
+    /// ([03-design/05-matcher.md § 7](../../../../docs/ein/ein.rs/03-design/05-matcher.md#7-the-compile-cache)).
     pub fn intern_keyed(
         &mut self,
         key: PlanKey,
@@ -233,10 +233,10 @@ impl PlanMemo {
 ///
 /// One handle lives on the [`Session`](crate::saturator::Session), so a fork's
 /// saturator and every other engine of the run compile into the same table —
-/// ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)).
+/// ([03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)).
 /// A `Mutex` rather than a `RefCell` because `Terms` is `Send + Sync` for
 /// exactly this reason: the worker threads share the plans
-/// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)).
+/// ([03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)).
 /// The lock is taken **only on
 /// an engine cache miss**, never on the read path — [`crate::Engine`] holds its own
 /// `Arc<Plan>` per cached pair.
@@ -667,13 +667,13 @@ impl<'a> Compiler<'a> {
         //
         // **Exactly one argument.** `absent`
         // is one of the three kernel meta-primitives the grammar does not
-        // shape-pin ([`grammar.md` §2] names four of seven), so what its arity
+        // shape-pin ([`01-grammar.md` §2] names four of seven), so what its arity
         // is checked by is whatever reads it — and where nothing does,
         // `(absent)` falls through to the ordinary relation path and
         // retired the rule in silence, while `(absent A B)` read `args[0]` and
         // dropped the rest, firing a guard weaker than the one written.
         //
-        // [`grammar.md` §2]: ../../../../docs/ein/user/reference/grammar.md
+        // [`01-grammar.md` §2]: ../../../../docs/ein/user/04-reference/01-grammar.md
         //
         // **An invariant**: the grammar takes `absent` at one
         // premise, and what a macro's expansion writes is held to the

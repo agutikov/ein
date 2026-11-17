@@ -100,7 +100,7 @@ table is the map from the plan to the folder.
 
 | stage | what it asks for | where it lives |
 |---|---|---|
-| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1/A2/A5 are the kernel's and exist — [`docs/ein/`](../../docs/ein/README.md), the gate, [`diagnostics.md`](../../docs/ein/user/reference/diagnostics.md); what is missing is named in [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_census.md). A3/A4 are **[P2.1](p2.1_kernel_as_instrumentation/README.md)**. A1's sixth outcome, `unknown`, is [M1d Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)'s |
+| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1/A2/A5 are the kernel's and exist — [`docs/ein/`](../../docs/ein/README.md), the gate, [`07-diagnostics.md`](../../docs/ein/user/04-reference/07-diagnostics.md); what is missing is named in [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_census.md). A3/A4 are **[P2.1](p2.1_kernel_as_instrumentation/README.md)**. A1's sixth outcome, `unknown`, is [M1d Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)'s |
 | **B** autoformalization as an explicit task | the contract (B1), source vs generated (B2), what the model may know (B3), prompt versioning (B4) | **[P2.2](p2.2_formalizer/README.md)** |
 | **C** a heterogeneous benchmark | eight families (C1), external + synthetic (C2), unique / ambiguous / unsat (C3), difficulty knobs (C4), frozen splits (C5) | **[P2.3](p2.3_benchmark/README.md)** |
 | **D** baselines | B0 direct answer … B5 full loop, under a matched inference budget | [S2.5.2](p2.5_harness/s2.5.2_baselines.md) |
@@ -164,7 +164,7 @@ keeps what it got right in the stage that now needs it. The census:
 |---|---|---|
 | P2.1 investigations + decisions (S2.1.1 survey; S2.1.2–6 the six verdicts under `docs/decisions/M2-*.md`) | a fortnight of deciding before building | **Each decision moves to the stage that needs it**: Q25 → [S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_boundary.md); Q8 → [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md); Q9 → [S2.2.4](p2.2_formalizer/s2.2.4_passes.md), where "library of ontologies + override" becomes theory *selection* from the stdlib catalogue; Q23 / Q24 → [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md) / [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md); Q10 → [P2.8](p2.8_representations/README.md), which is that question asked properly; Q7 stays a question and leaves the research question (§ Open questions). **`docs/decisions/` is dropped** — it never existed, and a verdict lands beside its question in [`open_questions.md`](open_questions.md), as M1a's did. The reading list is [S2.2.1](p2.2_formalizer/s2.2.1_contract.md)'s |
 | P2.2 LLM infra (S2.2.1 compose service + model pin; S2.2.2 Python client) | a `llama-server` container and a thin client | [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md), the same stage in the language Q25 picks; the reproducibility envelope becomes the first field of the experiment record ([S2.5.1](p2.5_harness/s2.5.1_experiment_record.md)) |
-| P2.3 GBNF for IR (S2.3.1 generator; S2.3.2 task grammars) | the IR lifted into GBNF so the LLM can only emit valid IR | [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) — generated from [`grammar.md`](../../docs/ein/user/reference/grammar.md) rather than from the parser's keyword inventory; one grammar per pass, the facts grammar parameterised on the ontology's instance lists, kept whole |
+| P2.3 GBNF for IR (S2.3.1 generator; S2.3.2 task grammars) | the IR lifted into GBNF so the LLM can only emit valid IR | [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) — generated from [`01-grammar.md`](../../docs/ein/user/04-reference/01-grammar.md) rather than from the parser's keyword inventory; one grammar per pass, the facts grammar parameterised on the ontology's instance lists, kept whole |
 | P2.4 pipeline (S2.4.1 two-stage extraction; S2.4.2 validator + re-prompt; S2.4.3 ambiguity as hypotheses; S2.4.4 `ein from-text`) | the pipeline, with one repair loop inside it | **Split along the plan's seam between Stage B and Stage E.** The passes → [S2.2.4](p2.2_formalizer/s2.2.4_passes.md), plus the *theory* pass the old plan lacked; the CLI → [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md), one-shot only and renamed `einaf from-text`; the validator → [S2.4.2](p2.4_loop/s2.4.2_repair.md), where it is feedback level **F1** of nine and "≤ 3 attempts" becomes Stage E's termination policy; ambiguity as hypotheses → [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md) |
 | P2.5 link-grammar experiment (S2.5.1 runner; S2.5.2 A/B with a pre-registered rule) | the user's question Q11, measured | [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md) — one arm of the representation ablation, same rule, same submodule note |
 | P2.6 evaluation harness (S2.6.1 five puzzles + gold IR + a gold trace; S2.6.2 harness + CI) | five puzzles, three metrics | the five puzzles are the **seed set** of [S2.3.1](p2.3_benchmark/s2.3.1_families_and_seed_set.md); the harness is [S2.5.1](p2.5_harness/s2.5.1_experiment_record.md); IR-F1 becomes constraint precision / recall against a canonical theory ([S2.5.3](p2.5_harness/s2.5.3_metrics.md)), which synthetic instances make exact; the gold trace and trace coverage stay as the Zebra smoke test |
@@ -242,7 +242,7 @@ reading, which the user may correct:
   chain of thought a model would otherwise write beside its answer.
 - **Self-explained** has a meaning in Ein since M1f S1f.5.14: every relation and rule carries a `:why`, and a
   derived fact reads as English from its justification
-  ([`natural-language.md`](../../docs/ein/user/syntax-and-semantics/natural-language.md)). So a program is a
+  ([`14-natural-language.md`](../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)). So a program is a
   chain of thought whose every step the kernel has checked, and whose trace is the explanation.
 - **A tree of thoughts** has a counterpart the kernel already computes, the hypothesis lattice: a branch is a
   commitment, a dead branch has a core that says why, and the answer is the region R. Whether a model's
@@ -303,9 +303,9 @@ and whether the fixed point is syntactic or semantic
   [M10](../m10_external_benchmarks/README.md) — the hand-written encodings
   P2.8 starts from, and the benchmark direction that is *not* this one
   (formal-language shaped, not M2-gated).
-- [`docs/ein/ein.rs/api.md`](../../docs/ein/ein.rs/api.md) — what a Rust loop links;
-  [`docs/install.md`](../../docs/ein/user/install.md), `--json-summary`
-  (`ein-summary/1`) and [`--events`](../../docs/ein/ein.rs/events.md)
+- [`docs/ein/ein.rs/04-api.md`](../../docs/ein/ein.rs/04-api.md) — what a Rust loop links;
+  [`docs/ein/user/01-install.md`](../../docs/ein/user/01-install.md), `--json-summary`
+  (`ein-summary/1`) and [`--events`](../../docs/ein/ein.rs/05-events.md)
   (`ein-events/1`) — what a Python one drives; Q25 chooses.
 - M1f S1f.6.20 — word problems as hand-written Ein programs over the calculator theory: the first
   instances of § The reasoning as a program, and candidates for the benchmark once it has run.

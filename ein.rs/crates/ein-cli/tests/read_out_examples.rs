@@ -1,5 +1,5 @@
 //! **The read-out's golden is the reference's examples page**,
-//! [`read-out-examples.md`](../../../../docs/ein/user/reference/read-out-examples.md),
+//! [`09-read-out-examples.md`](../../../../docs/ein/user/04-reference/09-read-out-examples.md),
 //! beside the reference.
 //!
 //! The page holds real runs: each block is captioned with the `ein solve` or
@@ -24,7 +24,7 @@ use std::process::Command;
 
 use ein_corpus::{Scratch, repo_root};
 
-const PAGE: &str = "docs/ein/user/reference/read-out-examples.md";
+const PAGE: &str = "docs/ein/user/04-reference/09-read-out-examples.md";
 
 struct Block {
     line: usize,

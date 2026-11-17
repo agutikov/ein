@@ -1,7 +1,7 @@
 //! The read-out as data: `--json-summary` as `ein-summary/2` and
 //! `--dump-answer DIR` as `ein-answer/2`, the fields
-//! [`read-out.md` § 11](../../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)
-//! and [`answer-dump.md`](../../../../../docs/ein/user/reference/answer-dump.md)
+//! [`08-read-out.md` § 11](../../../../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks)
+//! and [`10-answer-dump.md`](../../../../../docs/ein/user/04-reference/10-answer-dump.md)
 //! define.
 //!
 //! **The same facts as stdout**, from the same [`ReadOut`]: what was asked,
@@ -713,7 +713,7 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
          ;;; Below: the program as loaded, imports inlined, and then every fact of\n\
          ;;; the state ({} facts; the program's own relation declarations are not\n\
          ;;; repeated). It loads, and saturating it derives nothing new: the state is\n\
-         ;;; a fixpoint of the program (answer-dump.md, every state file loads).{stated}\n\n\
+         ;;; a fixpoint of the program (10-answer-dump.md, every state file loads).{stated}\n\n\
          {}\n\
          ;; ── the state ──────────────────────────────────────────────────────────\n\n\
          {}",

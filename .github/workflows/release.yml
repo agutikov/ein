@@ -179,7 +179,7 @@ jobs:
         working-directory: ein.rs
         run: rustup target add ${{ matrix.target }}
 
-      # snmalloc is default-on and pulls `cc` + `cmake` (design/12 §2). All
+      # snmalloc is default-on and pulls `cc` + `cmake` (`docs/ein/ein.rs/03-design/10-toolchain-and-layout.md` § 4). All
       # three runner images ship both today; this is insurance on the one
       # platform where it is a one-liner, because `snmalloc-sys` fails deep
       # inside a build script and the error does not say "no cmake".
@@ -330,7 +330,7 @@ jobs:
             echo "Identify: \`ein --version\` reports the engine version, the"
             echo "\`--events\` protocol, the features compiled in, and the SHA-256 of"
             echo "the \`std.*\` manifest it will load. See"
-            echo "[docs/ein/user/install.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/docs/ein/user/install.md)."
+            echo "[docs/ein/user/01-install.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/docs/ein/user/01-install.md)."
             echo
             echo "### Artefacts"
             echo

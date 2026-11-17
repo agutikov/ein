@@ -98,7 +98,7 @@ another and do not restate.
 
 - **Not build a relation no problem of the set uses,** and no decision procedure over the relations.
 - **Not write a non-monotone theory in silence.** A form the static check flags is shown with its site
-  ([`monotonicity.md` § 3](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#3-the-static-check)) and is not proposed
+  ([`08-monotonicity.md` § 3](../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#3-the-static-check)) and is not proposed
   for the module without saying so.
 - **Not name the module or place it.** Q-M1h.5.
 - **Not introduce a number for a time.** If a problem of the set needs a duration, it is the calculator's

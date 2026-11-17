@@ -35,7 +35,7 @@ What every stdlib module carries here, by [`AGENTS.md` § Edits that go together
 - **the mutation census:** `utils/stdlib_mutants.py --check`, the survivors banked as a set in
   `tests/mutation_survivors.txt` and each one read;
 - **a `:why` on every relation and rule,** checked for how it reads through
-  [`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md)'s ladder;
+  [`14-natural-language.md`](../../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)'s ladder;
 - **the manifest,** `utils/stdlib_manifest.py --write`;
 - **a corpus entry for every new `.ein`,** in `corpus/corpus.toml`, with the runs it is exercised under;
 - **a closing rule** that closes the module's relations and names its rules, as the calculator's modules and

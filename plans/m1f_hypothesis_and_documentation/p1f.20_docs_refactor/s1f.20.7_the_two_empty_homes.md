@@ -39,6 +39,6 @@ folder will hold and who writes it, in the release voice: the boundary (the user
 forbids naming a plan, so M5 is "Ein's presentation". The overview lists the axes a comparison is read along and
 links `docs/lib/`; the demo gives the article's five beats and links `c/` and `nl2smt/`, outside the project, with no
 measured figure (the 3 668 465× table stays on `c/README.md`). `ir/03-ein-lang/05_inspirations.md` is rewritten into
-`docs/ein/overview/inspirations.md` and deleted, its two links and one bare mention re-aimed; what the grammar now
+`docs/ein/overview/01-inspirations.md` and deleted, its two links and one bare mention re-aimed; what the grammar now
 accepts (`:using`) and the DPO view that does not exist were corrected, the plan links and the *what we'd revisit*
 section dropped.

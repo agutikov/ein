@@ -1,9 +1,9 @@
 //! The detector: what a program the static check flags is warned of
-//! ([`monotonicity.md` § 11](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#11-the-detector)).
+//! ([`08-monotonicity.md` § 11](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#11-the-detector)).
 //!
 //! [`crate::monotone::classify`] answers *is this program monotone?* from the
 //! compiled plans. On a program it flags, this module says more, in the words
-//! of `docs/ein/reasoning/kb-evolution/monotonicity.md` § 2: which property of a node
+//! of `docs/ein/reasoning/02-kb-evolution/08-monotonicity.md` § 2: which property of a node
 //! each site puts at stake (the **state**, or the **status**), whether a
 //! **cycle** runs through an `absent` over `D`, and whether the boundary's
 //! **order** of admission can decide what a node holds. That is the static
@@ -35,7 +35,7 @@
 //! It decides nothing. A node on a flagged program is a fork of root by
 //! assumption, and the engine claims nothing about such a program's
 //! solutions (Q-M1e2.2,
-//! [monotonicity.md § 12.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#123-what-is-claimed-of-a-flagged-program)):
+//! [08-monotonicity.md § 12.3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#123-what-is-claimed-of-a-flagged-program)):
 //! no finding here chooses a node, refuses a program or moves `R`.
 //!
 //! ### Why it is gated, and why the gate costs nothing it should not
@@ -47,7 +47,7 @@
 //! **On an unflagged program the detector has nothing to find**, on every node
 //! built by fork from root — which is how every shipped route builds one — and
 //! on every split `sat(sat(P ∪ C1) ∪ (C \ C1))` from a fixpoint that already
-//! holds root's. The argument is `monotonicity.md` § 11.3, from § 3.2's theorem: a program
+//! holds root's. The argument is `08-monotonicity.md` § 11.3, from § 3.2's theorem: a program
 //! with no site reads no relation in `D` under an odd `absent`, so its graph
 //! over `D` has no negative edge (no cycle through an `absent` over `D`), no
 //! `absent` rule reads under an `absent` a relation in `D` another concludes
@@ -60,7 +60,7 @@
 //! race over a static read can leave a stale fact on a program the check
 //! calls monotone: `examples/lattice/11_fifo_gap_static.ein`, whose
 //! `{(b one)}` holds a stale `(p one)` from scratch and none by fork
-//! ([monotonicity.md § 3.4](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#34-the-verdict-is-relative-to-root)).
+//! ([08-monotonicity.md § 3.4](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#34-the-verdict-is-relative-to-root)).
 //! No shipped route builds from scratch,
 //! so the gate is sound for what ships, and the scope is the claim.
 //!
@@ -133,7 +133,7 @@ impl Concludes {
     }
 }
 
-/// Which property of a node a site puts at stake — `monotonicity.md` § 2's
+/// Which property of a node a site puts at stake — `08-monotonicity.md` § 2's
 /// table, read per site: an `absent` puts the **state** at stake, and `dead`
 /// with it when it refutes; a trigger puts the **status** (`owes`); an
 /// activator, either, through the plan a node compiles.
@@ -379,7 +379,7 @@ fn cycles_over(
 /// rules that are not deferred, which fire before the boundary speaks — can be
 /// admitted before B and keep a fact B's conclusion then falsifies (the FIFO
 /// gap,
-/// [monotonicity.md § 8.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#83-the-fifo-gap)).
+/// [08-monotonicity.md § 8.3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#83-the-fifo-gap)).
 /// No rule has a priority, so the written order decides which goes first:
 /// B written first is the stratified order.
 fn order(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], dynamic: &BTreeSet<String>) -> Vec<Race> {
@@ -558,7 +558,7 @@ pub struct Paths {
 /// The dynamic half: whether a flagged site bit, in the status (the cube) and
 /// in the state (stale facts, parent paths). Reported apart, because the cube
 /// reads only the status: five programs it calls conservative have a broken
-/// state (`monotonicity.md` § 9).
+/// state (`08-monotonicity.md` § 9).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Warning {
     pub status: Status,

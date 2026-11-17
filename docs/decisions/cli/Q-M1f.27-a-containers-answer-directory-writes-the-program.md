@@ -11,4 +11,4 @@ command handed a container answers from the file it was handed, never from a sou
 
 **Held by.** `ein-cli/tests/einb_cli.rs`: `the_answer_directory_of_a_container_is_its_sources`, the files, their
 names and their bytes held to the source's, and on a program that imports a state file's header and state. The
-directory's files: [answer-dump.md](../../ein/user/reference/answer-dump.md).
+directory's files: [10-answer-dump.md](../../ein/user/04-reference/10-answer-dump.md).

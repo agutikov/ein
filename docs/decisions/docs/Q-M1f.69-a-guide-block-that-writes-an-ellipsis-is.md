@@ -1,6 +1,6 @@
 # Q-M1f.69 — A guide block that writes an ellipsis is an excerpt, and its whole forms load together
 
-Every `lisp` block of the guide, `docs/ein/user/guide/`, is read as its reader reads it, strings and comments as the lexer
+Every `lisp` block of the guide, `docs/ein/user/02-guide/`, is read as its reader reads it, strings and comments as the lexer
 reads them. A block that writes `…` outside a string is an **excerpt**; any other block is a **whole program**.
 
 - A whole program loads under the default options, so a `:why` is required, and `ein solve FILE` answers it with
@@ -16,5 +16,5 @@ names are not read.
 marker kept in step with the text. That an excerpt's forms load together is what a reader who copies them gets.
 
 **Held by.** `ein-cli/tests/guide_programs.rs`: `every_program_block_in_the_guide_runs`, and
-`a_planted_refusal_in_a_copy_of_the_guide_fails_it`, which holds the reading the other way; `docs/ein/user/guide/README.md`
+`a_planted_refusal_in_a_copy_of_the_guide_fails_it`, which holds the reading the other way; `docs/ein/user/02-guide/README.md`
 says what the test does not read.

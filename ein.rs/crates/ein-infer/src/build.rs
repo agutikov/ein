@@ -1,6 +1,6 @@
 //! What this build of the engine has compiled in — the half of `ein
 //! --version` that the binary cannot work out for itself
-//! ([design/toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#7-what-a-binary-says-it-is)).
+//! ([03-design/10-toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#7-what-a-binary-says-it-is)).
 //!
 //! `cfg!(feature = "parallel")` in `ein-cli` reads **`ein-cli`'s** feature
 //! table, not this crate's, so a dependent has no way to ask. It asks here
@@ -9,7 +9,7 @@
 //! Only features that change what the engine *is* are listed. `parallel` is
 //! the one a user can observe without reading a profile: without it `--jobs
 //! N` is accepted and inert, every layer running on the committing thread
-//! ([design/toolchain-and-layout.md § 4](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#4-feature-flags)),
+//! ([03-design/10-toolchain-and-layout.md § 4](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#4-feature-flags)),
 //! and a version line that did not say so would leave "I passed `--jobs 8`
 //! and nothing happened" undiagnosable.
 

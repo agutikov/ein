@@ -1,13 +1,13 @@
 //! The obligations rung — hypotheses from what a state still owes.
 //!
-//! [The ladder's second rung](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt).
-//! [The pass over a quiescent state](../../../../docs/ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read)
+//! [The ladder's second rung](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt).
+//! [The pass over a quiescent state](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#when-an-obligation-is-read)
 //! makes it able to say what it owes; this makes the debt a
 //! *choice point*.
 //!
 //! ### The ladder
 //!
-//! [design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)'s
+//! [03-design/07-search.md § 1](../../../../docs/ein/ein.rs/03-design/07-search.md#1-hypothesis-generation)'s
 //! "hrule presence *is* the switch", grown one rung:
 //!
 //! | the program declares | hypotheses come from |
@@ -37,7 +37,7 @@
 //! guard's own sub-plan with the witness step **skipped**
 //! ([`crate::match_::Matcher::scan_without`]). Nothing restates the domain:
 //! the branch set is the guard, evaluated at this quiescence, which is
-//! [`obligations.md`](../../../../docs/ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
+//! [`08-obligations.md`](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#what-an-obligation-quantifies-over)
 //! C1 and C4 in one call.
 //!
 //! ### What it proposes, and why it is the union
@@ -196,7 +196,7 @@ pub struct RungReport {
     /// only a model-set comparison can settle, and the zebra family is where
     /// it was settled.
     ///
-    /// [what the rung leaves]: ../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#46-what-the-rung-leaves-to-saturation
+    /// [what the rung leaves]: ../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#46-what-the-rung-leaves-to-saturation
     pub uncovered: u64,
     /// Debts this state does not owe and a commitment can bring: the
     /// activators of an obligation rule, not held here, that a rule's
@@ -323,7 +323,7 @@ fn admit(
         // The bare `(open)` counts and reports and names nothing, so there is
         // no relation to branch on and no guard to read a domain out of
         // (`(open)` counts, `(open ?R)` also attributes and branches,
-        // [obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)).
+        // [08-obligations.md](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)).
         // One of them in the program is enough to
         // stop the rung claiming exhaustiveness, so the call falls through
         // rather than silently owing something nobody proposes for.
@@ -980,7 +980,7 @@ impl Alternatives {
 }
 
 /// **L5's premise, checked at load** —
-/// [L5 and its argument](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
+/// [L5 and its argument](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
 ///
 /// `kb` is root's fixpoint, on a program the static check calls monotone, and
 /// `candidates` maps each candidate of `H` to its bit. For every obligation

@@ -1,6 +1,6 @@
 //! Route 1 — a monotone program's region, from its alive down-set
-//! ([finding-r.md § 6](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#6-the-routes-question-by-question),
-//! [design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
+//! ([07-finding-r.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question),
+//! [03-design/07-search.md § 4](../../../../docs/ein/ein.rs/03-design/07-search.md#4-the-routes)).
 //!
 //! [`crate::region`] (route 2, *the oracle*) saturates all `2ⁿ` commitments.
 //! When [`crate::monotone`] finds no site, the theorem there says `dead` is
@@ -206,7 +206,7 @@ pub struct Component {
 /// A state with more than one generating commitment: its minimal generators
 /// (`from`) and the candidates its fixpoint holds (`to`). For a monotone
 /// program the class is the union of `[from … to]` over the generators
-/// ([solution-semantics.md § 1.5](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#15-commitment-node-state)).
+/// ([06-solution-semantics.md § 1.5](../../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#15-commitment-node-state)).
 #[derive(Clone, Debug)]
 pub struct Merged {
     /// The class's first visited point.
@@ -255,7 +255,7 @@ pub struct DownSet {
     /// ⊤, every candidate, saturated once when the budget stopped the route:
     /// in `R`, it certifies the trivial maximal line (L6) on a run that is
     /// otherwise partial
-    /// ([read-out.md § 2](../../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
+    /// ([08-read-out.md § 2](../../../../docs/ein/user/04-reference/08-read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
     /// Not one of [`Self::points`], whose visit order it would break.
     pub top: Option<Point>,
     /// The facts beyond root's that ⊤'s fixpoint holds.

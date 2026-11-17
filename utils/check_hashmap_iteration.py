@@ -6,12 +6,12 @@ iterating one makes the *same binary on the same input* produce different
 output between runs. That is the one class of nondeterminism a golden diff
 cannot report usefully: the diff moves every time you look at it.
 
-`design/12` §2 answers it with `FxHashMap` everywhere — deterministic hashing,
+`docs/ein/ein.rs/03-design/01-determinism-and-order.md` § 2.3 answers it with `FxHashMap` everywhere — deterministic hashing,
 and the right choice here anyway since none of this is adversary-facing input.
 But `FxHashMap`'s iteration order, while stable run-to-run, is still an
 artefact of hash values and insertion history rather than of the data, where
 the engine's observables are defined by *insertion order* or an explicit sort
-([`determinism-and-order.md`](../docs/ein/ein.rs/design/determinism-and-order.md) § 2). So the
+([`01-determinism-and-order.md`](../docs/ein/ein.rs/03-design/01-determinism-and-order.md) § 2). So the
 rule is stronger than "don't use RandomState": **do not iterate a hash map at
 all** where the order can reach an output.
 
@@ -23,7 +23,7 @@ finds an order that *could* leak; those find one that *does*.
     python3 utils/check_hashmap_iteration.py            # exit 1 on a finding
     python3 utils/check_hashmap_iteration.py --list     # show the allow-list
 
-The check is a grep, deliberately. `design/02` §9 allows for upgrading it to a
+The check is a grep, deliberately. It could be upgraded to a
 `dylint` rule if the grep proves noisy — but a grep needs no toolchain, runs in
 CI in milliseconds, and the escape hatch is one comment:
 
@@ -77,8 +77,8 @@ def bindings(text: str) -> list[tuple[int, str, str]]:
     `m` of different types without the second inheriting the first's verdict.
 
     What it still cannot see is a map reached through a method call on another
-    type (`self.cache().iter()`). That is the grep's ceiling and the reason
-    `design/02` §9 leaves the door open to a `dylint` rule — but the common
+    type (`self.cache().iter()`). That is the grep's ceiling, which a
+    `dylint` rule would not have — but the common
     shape by far is a local or a field declared right there.
     """
     found: list[tuple[int, str, str]] = []

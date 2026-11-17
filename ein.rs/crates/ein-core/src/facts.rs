@@ -2,7 +2,7 @@
 //!
 //! A fact's identity is its relation name and its argument tuple — names and
 //! nested facts — and nothing else. Here a proposition is a `u32`
-//! ([design/data-model.md § 4](../../../../docs/ein/ein.rs/design/data-model.md#4-facts-as-interned-rows)):
+//! ([03-design/03-data-model.md § 4](../../../../docs/ein/ein.rs/03-design/03-data-model.md#4-facts-as-interned-rows)):
 //!
 //! | question | answer |
 //! |---|---|
@@ -27,7 +27,7 @@ use std::hash::Hasher;
 /// `Ord` is derived and is **assignment order** — first-interned first. That
 /// is a legitimate sort key only where any total order is equivalent (a
 /// `state_key`'s sorted vector, a no-good clause's canonical form —
-/// [design/determinism-and-order.md § 5](../../../../docs/ein/ein.rs/design/determinism-and-order.md#5-where-order-does-not-matter)),
+/// [03-design/01-determinism-and-order.md § 5](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#5-where-order-does-not-matter)),
 /// never where a reader sees the result.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct FactId(pub u32);
@@ -37,7 +37,7 @@ pub struct FactId(pub u32);
 ///
 /// 20 bytes, and reading a fact's arguments is **one** load rather than two
 /// dependent ones. A puzzle's store fits in L1, so this is not a
-/// cache-footprint question ([design/data-model.md § 4](../../../../docs/ein/ein.rs/design/data-model.md#4-facts-as-interned-rows)); it is a
+/// cache-footprint question ([03-design/03-data-model.md § 4](../../../../docs/ein/ein.rs/03-design/03-data-model.md#4-facts-as-interned-rows)); it is a
 /// question about the *dependency chain* on the matcher's hot path, where
 /// every candidate resolves two argument lists — the premise's and, for a
 /// nested pattern, the fact inside it — before it can be rejected.
@@ -92,7 +92,7 @@ impl FactStore {
     ///
     /// Computes the key without materialising a row, which is what lets the
     /// hypothesis generator reject a candidate before creating anything
-    /// ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
+    /// ([03-design/07-search.md § 1](../../../../docs/ein/ein.rs/03-design/07-search.md#1-hypothesis-generation)).
     pub fn probe(&self, rel: Symbol, args: &[Value]) -> Option<FactId> {
         crate::counters::bump(|c| c.fact_probe += 1);
         if self.table.is_empty() {
@@ -119,7 +119,7 @@ impl FactStore {
         // Two bounds beside the id count, both of them promised by
         // `Overflow`'s own doc comment. The arity is reachable: a 65 536-
         // argument fact is a three-line program, and an `expect` here would
-        // take the process down with exit 101, the shape `diagnostics.md`
+        // take the process down with exit 101, the shape `07-diagnostics.md`
         // § 2.3 rules out for `(eq ?x)`.
         let arity = u16::try_from(args.len()).map_err(|_| Overflow::FactArity)?;
         if args.len() > INLINE_ARGS {
@@ -391,7 +391,7 @@ mod tests {
     ///
     /// The threshold is exact and it is an error, not a **panic**: a
     /// `u16::try_from(args.len()).expect(…)` would take the process down with
-    /// exit 101 on a three-line program, which is the shape `diagnostics.md`
+    /// exit 101 on a three-line program, which is the shape `07-diagnostics.md`
     /// § 2.3 rules out for `(eq ?x)` and which [`Overflow`]'s own doc comment
     /// says this crate does not do.
     #[test]

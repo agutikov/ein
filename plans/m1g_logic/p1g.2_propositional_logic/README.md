@@ -77,4 +77,4 @@ re-takes it and builds on what the user rules at P1g.1's stop.
 - **An unsatisfiable requirement does not read as a contradiction.** Probe 1b's read-out says *empty: every
   alive node owes*. It is right, and a reader expecting *every node is dead* will misread it. The page of
   S1g.2.2 has to teach the read-out, and
-  [`read-out.md`](../../../docs/ein/user/reference/read-out.md) is the reference.
+  [`08-read-out.md`](../../../docs/ein/user/04-reference/08-read-out.md) is the reference.

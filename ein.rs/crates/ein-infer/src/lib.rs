@@ -1,9 +1,9 @@
 //! `ein-infer` — Compile, match, saturate, world, search, verdict, explain.
 //!
 //! The engine proper. It lands over
-//! [architecture.md § 3.3](../../../../docs/ein/ein.rs/architecture.md#33-ein-infer) (compile →
+//! [01-architecture.md § 3.3](../../../../docs/ein/ein.rs/01-architecture.md#33-ein-infer) (compile →
 //! match → saturate → the NAF boundary) and
-//! [design/search.md](../../../../docs/ein/ein.rs/design/search.md) (the
+//! [03-design/07-search.md](../../../../docs/ein/ein.rs/03-design/07-search.md) (the
 //! hypothesis loop above it). The search is the region's: every question
 //! about `R` is [`explore`]'s, answered by a route over nodes that are root
 //! with a subset of H committed and saturated ([`region`]). The generator
@@ -11,12 +11,12 @@
 //!
 //! The shape of a plan, the order of a firing sequence and the text of an
 //! error are all observable, and fixed:
-//! [design/determinism-and-order.md](../../../../docs/ein/ein.rs/design/determinism-and-order.md)
+//! [03-design/01-determinism-and-order.md](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md)
 //! states what a run's output depends on, and
-//! [diagnostics.md](../../../../docs/ein/user/reference/diagnostics.md) every
+//! [07-diagnostics.md](../../../../docs/ein/user/04-reference/07-diagnostics.md) every
 //! refusal's text.
 //! What is free is the encoding, and that is where the cost lives —
-//! [design/matcher.md § 1](../../../../docs/ein/ein.rs/design/matcher.md#1-the-costs-it-is-shaped-against) attributes 46 %
+//! [03-design/05-matcher.md § 1](../../../../docs/ein/ein.rs/03-design/05-matcher.md#1-the-costs-it-is-shaped-against) attributes 46 %
 //! of an exhaustive solve's self time to unification.
 
 #![forbid(unsafe_code)]

@@ -1,7 +1,7 @@
 //! `:expect` — what a `(query …)` says its own answer is.
 //!
 //! The query's claim
-//! ([`query.md` § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)),
+//! ([`12-query.md` § Claims](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)),
 //! and the one part of it that is *shape* rather than comparison. The
 //! comparison is `ein_infer::expect`, which needs solutions; this module reads
 //! the claim the loader validates, so a program that checks nothing is
@@ -27,7 +27,7 @@
 //! admitting one would change the grammar of *every* form to buy one keyword's
 //! ergonomics, where a name head costs nothing. `model` is a word a position
 //! gives a meaning to, and still a name wherever a name goes, so a relation of
-//! that name is unaffected ([`grammar.md`](../../../../docs/ein/user/reference/grammar.md)).
+//! that name is unaffected ([`01-grammar.md`](../../../../docs/ein/user/04-reference/01-grammar.md)).
 //!
 //! **The verdict is implied, never asserted.** One `(model …)` means
 //! `Solution`; `(or …)` means `Ambiguity` with `k` equal to the number of
@@ -87,7 +87,7 @@ impl Expectation {
 }
 
 /// A query's `:over` — which states of R its classes are over
-/// ([`query.md`](../../../../docs/ein/user/syntax-and-semantics/query.md#query--one-question-about-r)).
+/// ([`12-query.md`](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#query--one-question-about-r)).
 /// All of R by default.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Over {

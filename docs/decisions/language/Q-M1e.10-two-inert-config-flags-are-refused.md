@@ -20,4 +20,4 @@ delete.
 `ein-cli/tests/config_reference.rs`: `the_retired_flags_are_refused_with_why`; `ein-ir/tests/load_semantics.rs`:
 `the_config_coercion_table_is_stable`, against `ein-ir/tests/golden/config_coercion.txt`;
 `ein-ir/tests/grammar_pages.rs`: `every_row_of_the_grammars_table_is_refused_at_the_parse`. The page:
-[`config.md`](../../ein/user/reference/config.md), the table of retired flags.
+[`06-config.md`](../../ein/user/04-reference/06-config.md), the table of retired flags.

@@ -16,7 +16,7 @@
 #
 # The second is to pin: `taskset` onto one P-core hyperthread, `LC_ALL=C`, and
 # `EIN_STDLIB` cleared so both implementations resolve the same checkout
-# (design/11 § Resolution order).
+# (`docs/ein/ein.rs/03-design/02-shared-assets.md` § 3).
 #
 # `--cores` (P1a.7 S1a.7.1) is the multi-core form, and it exists because
 # `--core` cannot state a scaling measurement. On a hybrid CPU "8 cores" names

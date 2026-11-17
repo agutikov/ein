@@ -1,6 +1,6 @@
 //! `ein render region DIR` — the cube drawn, with a region run on it
 //! (`--visited`, `--answer`). The legend is
-//! [`rendering.md` § Region rendering](../../../../docs/ein/user/reference/rendering.md#the-region--ein-render-region).
+//! [`12-rendering.md` § Region rendering](../../../../docs/ein/user/04-reference/12-rendering.md#the-region--ein-render-region).
 //!
 //! **The nodes are the pure cube**: every subset `C` of the root candidates
 //! `H₁`, one rank per layer, `L0` at the top, and a thin edge for adding one

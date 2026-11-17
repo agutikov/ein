@@ -8,7 +8,7 @@
 //! |---|---|
 //! | every subcommand | how a broken file is reported |
 //! | `ein solve` | the stop policy, the diagnostic flags, `--json-summary` |
-//! | the event stream | `--events`, whose spec is [`events.md`](../../../../docs/ein/ein.rs/events.md) |
+//! | the event stream | `--events`, whose spec is [`05-events.md`](../../../../docs/ein/ein.rs/05-events.md) |
 //! | the Zebra files | that `zebra2.ein` and its two variants stay one encoding |
 //!
 //! Everything here runs the built binary (`CARGO_BIN_EXE_ein`) except three
@@ -578,7 +578,7 @@ fn the_question_is_the_flags() {
 ///
 /// - the refusal, its exit code (**2**, a usage error) and its wording;
 /// - a **non-integer** still gets `int_arg`'s message, unchanged, because
-///   [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
+///   [`07-diagnostics.md` §2](../../../../docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes)
 ///   quotes that message verbatim and uses `--solutions` as its example.
 #[test]
 fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
@@ -690,7 +690,7 @@ fn progress_every_is_zero_for_no_node_lines_and_refuses_a_negative() {
 /// nothing no crate defines, and does not say *without reaching fixed point*
 /// on `colocation-chain.ein` at `--max-steps 1`, whose one firing is the
 /// whole saturation. A step limit leaves the KB where it stopped, which is what the flag asks
-/// for, so nothing goes to stderr and the exit code is 0 (`read-out.md` § 9).
+/// for, so nothing goes to stderr and the exit code is 0 (`08-read-out.md` § 9).
 #[test]
 fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
     const LINE: &str = "!! saturator step limit hit: ";
@@ -1602,7 +1602,7 @@ fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load
 }
 
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
-/// else** — [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract).
+/// else** — [03-design/08-parallelism.md § 1](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract).
 ///
 /// What it asserts is the contract: the read-out at two jobs and at `auto` is
 /// the one-job read-out, byte for byte, and `-j` is one of the options the
@@ -1999,7 +1999,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 }
 
 /// The corpus fixtures that between them emit every kind
-/// [`events.md`](../../../../docs/ein/ein.rs/events.md) defines, and the
+/// [`05-events.md`](../../../../docs/ein/ein.rs/05-events.md) defines, and the
 /// kind each is here for.
 ///
 /// A six-file cover rather than the whole corpus: the sweep is 0.06 s this
@@ -2041,7 +2041,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
 
 /// Where the `--events` schema lives: the protocol is a product surface — a
 /// debugging tool, and a front end's feed.
-const EVENTS_DOC: &str = "docs/ein/ein.rs/events.md";
+const EVENTS_DOC: &str = "docs/ein/ein.rs/05-events.md";
 
 /// Every event kind the schema names, read out of the document itself.
 ///

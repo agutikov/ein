@@ -148,7 +148,7 @@ rows and two witnesses' `malformed_numbers.md`.
 ### Findings closed or taken
 
 L-5 (`stdlib.md` covers every module), L-8 (the generator's links), L-10's line 340 (the release note links
-`docs/ein/user/install.md`; the comments are S1f.20.6's), L-13 (the exit table was right: `-T` aborts with exit 2,
+`docs/ein/user/01-install.md`; the comments are S1f.20.6's), L-13 (the exit table was right: `-T` aborts with exit 2,
 nothing on stdout, no summary, an empty `--dump-answer` directory; the `exhausted` row and `region.stopped.why`'s
 `deadline` were wrong), L-15 for every page this stage wrote, and S1f.20.4's finding on `(relation ?R)` (`syntax.md`
 and `relations.md`: a rule may conclude the membership fact, so the pattern matches every declared relation and every

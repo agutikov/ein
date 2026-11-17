@@ -18,4 +18,4 @@ the file checks that it exists, or reads stderr, where the line names the option
 **Held by.** `artefact_failed` (`ein-cli/src/solve.rs`), the one line every such failure prints;
 `ein-cli/tests/artefact_contract.rs`: `a_failed_artefact_write_leaves_the_exit_code_alone_except_for_the_directories`,
 `every_artefact_failure_names_its_flag_and_its_path` and `an_empty_artefact_path_is_refused`. The page:
-[`diagnostics.md` § 2.4](../../ein/user/reference/diagnostics.md#24-an-artefact-flags-failure).
+[`07-diagnostics.md` § 2.4](../../ein/user/04-reference/07-diagnostics.md#24-an-artefact-flags-failure).

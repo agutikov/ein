@@ -33,7 +33,7 @@
 ;;; ── Why it is wrong ────────────────────────────────────────────────────────
 ;;;
 ;;; No config option may change the answer (Q-M1e2.30,
-;;; `docs/ein/user/reference/config.md` § 2.5). The flag's one exemption is the
+;;; `docs/ein/user/04-reference/06-config.md` § 2.5). The flag's one exemption is the
 ;;; core (Q-M1e2.11), and `refuted by` may follow it only where the core moved
 ;;; (Q-M1e2.21: *"where the core is the same the primaries are a derivation
 ;;; from it"*). Here the core is the same

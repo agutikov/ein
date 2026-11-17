@@ -20,7 +20,7 @@
 ;;; any length is right follows by an induction on its columns, which is an
 ;;; argument made outside Ein: Ein has checked its only case analysis.
 ;;;
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (fa __closed__))
 

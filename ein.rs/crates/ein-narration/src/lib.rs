@@ -2,7 +2,7 @@
 //!
 //! **Not part of the engine.** `publish = false`, and nothing outside a test
 //! depends on it. It exists because
-//! [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)
+//! [03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)
 //! implies one decision that several places apply — three `tests/` files and
 //! `ein-render`'s `shape.rs` among them — and a relaxation each call site
 //! makes on its own, as its test needs it, is not a contract. So this crate is

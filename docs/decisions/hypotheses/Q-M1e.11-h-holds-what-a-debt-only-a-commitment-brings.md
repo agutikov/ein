@@ -21,5 +21,5 @@ reading the rules keeps H one set, taken once, which every route and the oracle 
 
 **Held by.** `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`,
 `r_over_the_readings_universe_is_the_oracles`, `the_rung_line_counts_a_later_debt_apart`; `ein_infer::oblgen`;
-[Solution semantics § 1.4](../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe); the `later debt` row of
-[`read-out.md`](../../ein/user/reference/read-out.md).
+[Solution semantics § 1.4](../../ein/reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe); the `later debt` row of
+[`08-read-out.md`](../../ein/user/04-reference/08-read-out.md).

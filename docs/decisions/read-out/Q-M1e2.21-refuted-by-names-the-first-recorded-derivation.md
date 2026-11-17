@@ -17,4 +17,4 @@ with the flag off the store keeps each fact's first justification, which is a de
 `ein-infer/tests/corpus_cores.rs`: `every_core_names_its_commitment_and_derives_its_contradiction`, which holds every
 printed core's rules to the first recorded step of each fact of its contradiction over the corpus.
 `ein-cli/tests/lever_invariance.rs`: `the_core_exemption_is_one_flag_and_the_core_rows`. The row:
-[read-out.md](../../ein/user/reference/read-out.md#6-the-listing) § 6.
+[08-read-out.md](../../ein/user/04-reference/08-read-out.md#6-the-listing) § 6.

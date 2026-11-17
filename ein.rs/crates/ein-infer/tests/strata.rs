@@ -1,5 +1,5 @@
 //! **The rule dependency graph and its strata**
-//! ([Analysis of rules](../../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md)),
+//! ([Analysis of rules](../../../../docs/ein/reasoning/03-rule-evolution/02-analysis-of-rules.md)),
 //! held on small programs and on the diagnostic's two fixtures.
 //!
 //! `ein_infer::strata` builds the graph over the plans a run compiled, so each

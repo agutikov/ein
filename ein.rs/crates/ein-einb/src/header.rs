@@ -1,4 +1,4 @@
-//! The 64-byte header and the section table — [design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md).
+//! The 64-byte header and the section table — [03-design/09-binary-format.md](../../../../docs/ein/ein.rs/03-design/09-binary-format.md).
 //!
 //! Everything here is little-endian and fixed-width, which is checked rather
 //! than assumed: a big-endian host reading a file written on a little-endian
@@ -128,7 +128,7 @@ impl Header {
         }
         let (major, minor, flags, n_sections) = (r.u16()?, r.u16()?, r.u32()?, r.u32()?);
         // The digest covers everything *after* the header
-        // (binary-format.md § 2.1), so
+        // (09-binary-format.md § 2.1), so
         // the header is the one place a flipped bit has no hash over it. Every
         // field but these two either changes what the file claims to be
         // (`magic`, `major`, `flags`, `n_sections`) or is legitimately allowed

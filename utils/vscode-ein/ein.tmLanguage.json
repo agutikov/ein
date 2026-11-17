@@ -8,7 +8,7 @@
     "not a parser: it will happily colour syntactically-invalid ein — shape",
     "correctness is the loader's job (ein_ir::from_ir). The three closed reserved",
     "name sets below are the single source of truth's mirror — keep them in",
-    "sync with docs/ein/user/reference/reserved-names.md (declarators)",
+    "sync with docs/ein/user/04-reference/03-reserved-names.md (declarators)",
     "and ein_core::STRUCTURAL / ein_infer::predicates::names() (rule-body",
     "primitives + computed predicates). utils/check_tool_mirrors.py",
     "re-derives each list from this file and fails on drift. Since M1f S1f.5.5's",
@@ -70,7 +70,7 @@
     },
 
     "declarator-relation": {
-      "comment": "(relation R A B …) — head + relation-type name. Closed declarator set; see reserved-names.md.",
+      "comment": "(relation R A B …) — head + relation-type name. Closed declarator set; see 03-reserved-names.md.",
       "begin": "(\\()\\s*(relation)(?=[\\s()])\\s*([A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}]+)?",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },

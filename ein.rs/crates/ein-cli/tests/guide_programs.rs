@@ -1,6 +1,6 @@
 //! **Every program block in the guide runs on the engine.**
 //!
-//! [`docs/ein/user/guide/`](../../../../docs/ein/user/guide/) is the newcomer's first contact
+//! [`docs/ein/user/02-guide/`](../../../../docs/ein/user/02-guide/) is the newcomer's first contact
 //! with Ein, and [`guide_transcripts.rs`](guide_transcripts.rs) diffs the
 //! *marked transcripts* and nothing else, so without this a block could go on
 //! writing a retired `(config …)` flag, or a rule with no `:why`, and a reader
@@ -8,7 +8,7 @@
 //!
 //! ## What is read, and how
 //!
-//! Every fenced `lisp` block of every page in `docs/ein/user/guide/`, by
+//! Every fenced `lisp` block of every page in `docs/ein/user/02-guide/`, by
 //! [`read_guide`]:
 //!
 //! - **A whole program** is a block that writes no `…` outside a string. It is
@@ -28,7 +28,7 @@
 //!
 //! What this does not read is the prose around a block, the `sh` commands
 //! outside a marked transcript, and whether an excerpt quotes the file it says
-//! it is from; [`docs/ein/user/guide/README.md`](../../../../docs/ein/user/guide/README.md) says
+//! it is from; [`docs/ein/user/02-guide/README.md`](../../../../docs/ein/user/02-guide/README.md) says
 //! so where a reader of the guide will look. The choices above, that `…`
 //! decides the kind and that an excerpt's whole forms load together, are
 //! Q-M1f.69's.
@@ -45,7 +45,7 @@ use ein_corpus::{Scratch, repo_root};
 use ein_ir::Ast;
 
 /// The guide, repo-relative.
-const GUIDE: &str = "docs/ein/user/guide";
+const GUIDE: &str = "docs/ein/user/02-guide";
 
 /// What marks an elision on a guide page.
 const ELLIPSIS: char = '…';
@@ -238,7 +238,7 @@ struct Report {
 }
 
 /// Read every `lisp` block of every `.md` page in `dir`, which `shown` names
-/// in a finding (`docs/ein/user/guide` for the guide itself). Each block's text is
+/// in a finding (`docs/ein/user/02-guide` for the guide itself). Each block's text is
 /// written under `scratch` to be loaded and, if it is a whole program, solved.
 fn read_guide(dir: &Path, shown: &str, scratch: &Path) -> Report {
     let mut pages: Vec<PathBuf> = std::fs::read_dir(dir)
@@ -351,7 +351,7 @@ fn every_program_block_in_the_guide_runs() {
         report
             .read
             .iter()
-            .any(|(page, _, excerpt, n)| page.starts_with("04_") && *excerpt && *n > 0),
+            .any(|(page, _, excerpt, n)| page.starts_with("04-") && *excerpt && *n > 0),
         "chapter 4's block, the one finding 6 was about, was not read as an \
          excerpt with forms to load"
     );
@@ -367,16 +367,16 @@ fn every_program_block_in_the_guide_runs() {
 fn a_planted_refusal_in_a_copy_of_the_guide_fails_it() {
     const PLANTS: [(&str, &str); 4] = [
         (
-            "04_solving_the_whole_puzzle.md",
+            "04-solving-the-whole-puzzle.md",
             "(config :enable-pre-branch-lookahead true)\n",
         ),
-        ("02_first_rules.md", "(relation unexplained T T)\n"),
+        ("02-first-rules.md", "(relation unexplained T T)\n"),
         (
-            "01_objects_and_relations.md",
+            "01-objects-and-relations.md",
             "(relation located T T :why \"{?1} is in {?2}\" :priority 100)\n",
         ),
         (
-            "03_rule_families.md",
+            "03-rule-families.md",
             "(relation p T :why \"p holds of {?1}\")\n(p a)\n\
              (query :goal (p ?x) :expect (model (p b)))\n",
         ),
@@ -386,7 +386,7 @@ fn a_planted_refusal_in_a_copy_of_the_guide_fails_it() {
     let loads = scratch.join("loads");
     std::fs::create_dir_all(&copy).expect("the scratch is writable");
     std::fs::create_dir_all(&loads).expect("the scratch is writable");
-    for entry in std::fs::read_dir(repo_root().join(GUIDE)).expect("docs/ein/user/guide") {
+    for entry in std::fs::read_dir(repo_root().join(GUIDE)).expect("docs/ein/user/02-guide") {
         let path = entry.expect("a directory entry").path();
         std::fs::copy(&path, copy.join(path.file_name().expect("a name"))).expect("a copy");
     }
@@ -398,7 +398,7 @@ fn a_planted_refusal_in_a_copy_of_the_guide_fails_it() {
             .find("```lisp\n")
             .unwrap_or_else(|| panic!("{page} has no ```lisp block to plant in"));
         let at = fence + "```lisp\n".len();
-        if page.starts_with("04_") {
+        if page.starts_with("04-") {
             planted_at = Some(text[..at].lines().count() + 1);
         }
         let planted = format!("{}{plant}{}", &text[..at], &text[at..]);
@@ -433,22 +433,22 @@ fn a_planted_refusal_in_a_copy_of_the_guide_fails_it() {
             .expect("a finding on the page")
             .clone()
     };
-    let retired = finding("04_solving_the_whole_puzzle.md");
+    let retired = finding("04-solving-the-whole-puzzle.md");
     let line = planted_at.expect("chapter 4 was planted");
     assert!(
         retired.contains("retired")
-            && retired.contains(&format!("copy/04_solving_the_whole_puzzle.md:{line}:")),
+            && retired.contains(&format!("copy/04-solving-the-whole-puzzle.md:{line}:")),
         "the retired flag is refused at its line on the page, {line}:\n{retired}"
     );
     assert!(
-        finding("02_first_rules.md").contains("has no :why"),
+        finding("02-first-rules.md").contains("has no :why"),
         "the excerpt's relation with no :why is refused for it"
     );
     assert!(
-        finding("01_objects_and_relations.md").contains(":priority"),
+        finding("01-objects-and-relations.md").contains(":priority"),
         "the whole program's keyword is refused"
     );
-    let claim = finding("03_rule_families.md");
+    let claim = finding("03-rule-families.md");
     assert!(
         claim.contains("`ein solve` does not answer it") && claim.contains("FAILED"),
         "the whole program loads, and its refuted claim fails the solve:\n{claim}"

@@ -1,5 +1,5 @@
 //! `ein --version` — what this binary *is*, in five lines
-//! ([design/toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#7-what-a-binary-says-it-is)).
+//! ([03-design/10-toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#7-what-a-binary-says-it-is)).
 //!
 //! A version number alone answers almost nothing about this program. Three of
 //! the four things that decide what a run does are not in it:
@@ -29,7 +29,7 @@
 //! **Not the same digest `.einb` carries.** [`ein_einb::meta::stdlib_digest`]
 //! hashes the same bytes with BLAKE3 because it is a field of a binary
 //! container — content addressing, frozen into the format
-//! ([design/binary-format.md § 2](../../../../docs/ein/ein.rs/design/binary-format.md#2-the-container)).
+//! ([03-design/09-binary-format.md § 2](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#2-the-container)).
 //! This one is for a human with `sha256sum`, and the manifest it hashes is
 //! itself a list of SHA-256 digests, so a second algorithm here would make
 //! the file describe itself in two ways.

@@ -1,10 +1,10 @@
 //! **What a quiescent state owes, asserted**
-//! ([obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#reading-a-state-that-owes)).
+//! ([08-obligations.md](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#reading-a-state-that-owes)).
 //!
 //! `stdlib_coverage.rs`'s sibling, and it exists for a reason that is stated
 //! in every fixture it reads: `:expect` has three forms and all three are
 //! assertions about **facts** (`(model …)`, `(or (model …) …)`, `(false)` —
-//! [query.md](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
+//! [12-query.md](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)).
 //! An `open` conclusion is by construction never a
 //! fact — it is a tally on the search-lattice node, because a stored one would
 //! survive its own discharge in a fork that paid it — so **no expectation can
@@ -28,7 +28,7 @@
 //! [`ein_infer::obligations::tally`], over root's fixpoint, because describing
 //! `zebra2-minus-15`'s R to read root's tally would cost the slow tier's run.
 //!
-//! [the claims about a set of states]: ../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states
+//! [the claims about a set of states]: ../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#3-claims-about-the-set-of-states
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};

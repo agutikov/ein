@@ -449,7 +449,7 @@ def program_page(p: Pages) -> None:
     # shows the refusal under each view, where it drew the rules until then.
     lines = header("The program", "the source, and three views of it, drawn as written once the loader has read it",
                    "`ein render program`, `ein render rules`, `ein render constraints`",
-                   [("rendering.md", "docs/ein/user/reference/rendering.md")],
+                   [("12-rendering.md", "docs/ein/user/04-reference/12-rendering.md")],
                    [src, p.raw / "render-program.stdout.txt", p.raw / "render-rules.stdout.txt",
                     p.raw / "render-constraints.stdout.txt"], page)
     if p.spec.source:
@@ -475,8 +475,8 @@ def root_page(p: Pages, summary: dict | None, trace: list[dict]) -> None:
     page = p.dir / "root.md"
     lines = header("Root, after saturation", "the KB before any hypothesis: what the program derives on its own",
                    "`--json-summary` (`root`), `ein render kb FILE`, the trace's § Root",
-                   [("solution-semantics.md § 1.3",
-                     "docs/ein/reasoning/kb-evolution/solution-semantics.md#13-root")],
+                   [("06-solution-semantics.md § 1.3",
+                     "docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#13-root")],
                    [p.raw / "summary.json", p.raw / "render-root.stdout.txt"], page,
                    "**Root is never written by a region run**: it is `sat(program)`, and every node is "
                    "`sat(root ∪ C)` — there are no root writes to show.")
@@ -485,17 +485,17 @@ def root_page(p: Pages, summary: dict | None, trace: list[dict]) -> None:
         # The block is root's fixpoint and H as every route starts from them
         # (M1e2 S1e2.3.1, the user's ruling (a) of 2026-11-03), so its count
         # is the count of the KB the sentence above says is never written.
-        link = doc("docs/ein/user/reference/answer-dump.md", page) + "#the-run-summary"
+        link = doc("docs/ein/user/04-reference/10-answer-dump.md", page) + "#the-run-summary"
         lines += ["## Facts by relation", "",
                   f"From `summary.json`'s `root` block — root's fixpoint, {root.get('facts', '?')} facts "
-                  f"(`root.facts`, [`answer-dump.md` § The run summary]({link})).", ""]
+                  f"(`root.facts`, [`10-answer-dump.md` § The run summary]({link})).", ""]
         lines += table(["relation", "facts"], [[r, n] for r, n in (root.get("facts_by_relation") or {}).items()])
         lines.append("")
         rest = root_rows(root, page, skip=("facts", "facts_by_relation"))
         if rest:
             lines += ["## The rest of the block", "",
                       f"`root.hypgen` is the pass that built H, the universe every route reads, so "
-                      f"`root.hypgen.emitted` is H's size. Meanings are [`answer-dump.md` § The run "
+                      f"`root.hypgen.emitted` is H's size. Meanings are [`10-answer-dump.md` § The run "
                       f"summary]({link})'s, quoted.", ""]
             lines += table(["field", "value", "meaning"], rest)
             lines.append("")
@@ -555,9 +555,9 @@ def trace_pages(p: Pages) -> list[dict]:
         p.add("Trace", tdir / "index.md", header("The trace", "not written", "`--trace`", [], [raw], tdir / "index.md"))
         return []
     pre, sections = split_trace(text)
-    defined = [("solution-semantics.md § 1",
-                "docs/ein/reasoning/kb-evolution/solution-semantics.md#1-the-vocabulary"),
-               ("rendering.md § The trace", "docs/ein/user/reference/rendering.md#the-trace--ein-solve---trace")]
+    defined = [("06-solution-semantics.md § 1",
+                "docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#1-the-vocabulary"),
+               ("12-rendering.md § The trace", "docs/ein/user/04-reference/12-rendering.md#the-trace--ein-solve---trace")]
     out: list[dict] = []
     block = 0
     for title, body in sections:
@@ -615,7 +615,7 @@ def lattice_pages(p: Pages) -> list[dict]:
     ldir = p.dir / "lattice"
     raw = p.raw / "lattice"
     index = ldir / "index.md"
-    defined = [("lattice-dump.md § Under a region mode", "docs/ein/ein.rs/lattice-dump.md")]
+    defined = [("06-lattice-dump.md § Under a region mode", "docs/ein/ein.rs/06-lattice-dump.md")]
     d = load_json(raw / "nodes.json") or {}
     nodes, steps = d.get("nodes") or [], d.get("steps") or []
     lines = header("Every node visited", "the nodes this run's route visited, in visit order, each with its "
@@ -702,9 +702,9 @@ def region_pages(p: Pages) -> None:
     raw = p.raw / "region"
     rdir = p.dir / "region"
     index = rdir / "index.md"
-    defined = [("region-dump.md", "docs/ein/user/reference/region-dump.md"),
-               ("rendering.md § Region rendering",
-                "docs/ein/user/reference/rendering.md")]
+    defined = [("11-region-dump.md", "docs/ein/user/04-reference/11-region-dump.md"),
+               ("12-rendering.md § Region rendering",
+                "docs/ein/user/04-reference/12-rendering.md")]
     oracle = p.inv.get("oracle")
     region = load_json(raw / "region.json") or {}
     r = region.get("region")
@@ -864,9 +864,9 @@ def answer_pages(p: Pages, s: dict | None) -> None:
     index = load_json(raw / "index.json") or {}
     region = (s or {}).get("region") or index.get("region") or {}
     states = region.get("states") or []
-    defined = [("answer-dump.md", "docs/ein/user/reference/answer-dump.md"),
-               ("solution-semantics.md § 2",
-                "docs/ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r")]
+    defined = [("10-answer-dump.md", "docs/ein/user/04-reference/10-answer-dump.md"),
+               ("06-solution-semantics.md § 2",
+                "docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#2-the-answer-the-region-r")]
     listed = [x for x in states if x.get("listed")]
     lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: grid, graph, "
                    "commitment, its `(model …)`", "`--dump-answer DIR`, `--models grid`, `--models key`, "
@@ -973,9 +973,9 @@ def nogood_core(x: dict) -> str:
 # ── summary, events, consistency ──────────────────────────────────────────────
 
 def counter_meanings() -> dict[str, str]:
-    """`answer-dump.md`'s counter table: `| `name` | meaning |`."""
+    """`10-answer-dump.md`'s counter table: `| `name` | meaning |`."""
     out = {}
-    text = read(REPO / "docs/ein/user/reference/answer-dump.md")
+    text = read(REPO / "docs/ein/user/04-reference/10-answer-dump.md")
     sec = text.split("## The run summary", 1)[-1] if "## The run summary" in text else ""
     sec = sec.split("\n## ", 1)[0]
     for line in sec.splitlines():
@@ -987,7 +987,7 @@ def counter_meanings() -> dict[str, str]:
 
 def root_rows(root: dict, page: Path, skip: tuple = ()) -> list[list[str]]:
     """The `root` block as `[field, value, meaning]` rows, one per field
-    `answer-dump.md` defines: dotted down to the sparse blocks, whose keys are
+    `10-answer-dump.md` defines: dotted down to the sparse blocks, whose keys are
     data, and each meaning quoted from the page."""
     meanings = counter_meanings()
     sparse = ("facts_by_relation", "filtered", "pre_candidate")
@@ -1001,7 +1001,7 @@ def root_rows(root: dict, page: Path, skip: tuple = ()) -> list[list[str]]:
             else:
                 out.append([f"`{name}`", cell(child),
                             rebase(meanings.get(name, "**not defined on any page**"),
-                                   "docs/ein/user/reference/answer-dump.md", page)])
+                                   "docs/ein/user/04-reference/10-answer-dump.md", page)])
 
     walk({k: v for k, v in root.items() if k not in skip}, "root")
     return out
@@ -1023,9 +1023,9 @@ def cell(v) -> str:
 def summary_page(p: Pages, s: dict | None) -> None:
     page = p.dir / "summary.md"
     raw = p.raw / "summary.json"
-    defined = [("answer-dump.md § The run summary", "docs/ein/user/reference/answer-dump.md"),
-               ("read-out.md § 11", "docs/ein/user/reference/read-out.md"),
-               ("config.md", "docs/ein/user/reference/config.md")]
+    defined = [("10-answer-dump.md § The run summary", "docs/ein/user/04-reference/10-answer-dump.md"),
+               ("08-read-out.md § 11", "docs/ein/user/04-reference/08-read-out.md"),
+               ("06-config.md", "docs/ein/user/04-reference/06-config.md")]
     lines = header("The run summary", "`--json-summary` (`ein-summary/2`), as tables", "`--json-summary FILE`",
                    defined, [raw], page)
     if not s:
@@ -1043,33 +1043,33 @@ def summary_page(p: Pages, s: dict | None) -> None:
                      cell(q.get("expect"))] for q in qs]) if qs else ["_none_"]
     lines += ["", "## The claim", "", f"`{cell(s.get('claim'))}`", ""]
     meanings = counter_meanings()
-    link = doc("docs/ein/user/reference/answer-dump.md", page) + "#the-run-summary"
-    lines += ["## Work", "", f"Meanings are [`answer-dump.md` § The run summary]({link})'s, quoted.", ""]
+    link = doc("docs/ein/user/04-reference/10-answer-dump.md", page) + "#the-run-summary"
+    lines += ["## Work", "", f"Meanings are [`10-answer-dump.md` § The run summary]({link})'s, quoted.", ""]
     lines += table(["counter", "value", "meaning"],
                    [[k, cell(val), rebase(meanings.get(k, "**not defined on any page**"),
-                                          "docs/ein/user/reference/answer-dump.md", page)]
+                                          "docs/ein/user/04-reference/10-answer-dump.md", page)]
                     for k, val in (s.get("work") or {}).items()])
     lines += ["", "## Monotonicity", ""]
     lines += table(["field", "value"], [[k, cell(v)] for k, v in (s.get("monotonicity") or {}).items()])
     lines += ["", "## Root", "", "Root's fixpoint and how H was built, as every route starts from them; "
-              f"meanings are [`answer-dump.md` § The run summary]({link})'s, quoted.", ""]
+              f"meanings are [`10-answer-dump.md` § The run summary]({link})'s, quoted.", ""]
     lines += table(["field", "value", "meaning"], root_rows(s.get("root") or {}, page))
     lines += ["", "## Leftover", "", "```json", json.dumps(s.get("leftover"), indent=2, ensure_ascii=False), "```", ""]
     lines += ["## Resolved configuration", "",
-              f"Every flag is documented in [`config.md`]({doc('docs/ein/user/reference/config.md', page)}).", ""]
+              f"Every flag is documented in [`06-config.md`]({doc('docs/ein/user/04-reference/06-config.md', page)}).", ""]
     lines += table(["flag", "value"], [[k, cell(val)] for k, val in (s.get("config") or {}).items()])
     p.add("Summary", page, lines)
 
 
 def event_kinds_doc() -> dict[str, tuple[str, str]]:
-    """`events.md`'s three schema tables: kind → (section anchor, emitted at).
+    """`05-events.md`'s three schema tables: kind → (section anchor, emitted at).
 
     A schema table is found by its header row, `| `e` | emitted at | payload |`,
     the way `events_reference.rs` finds it: the page has other tables keyed by
     kind (what the tree traversal omits), and their second column is not
     *emitted at*."""
     out = {}
-    text = read(REPO / "docs/ein/ein.rs/events.md")
+    text = read(REPO / "docs/ein/ein.rs/05-events.md")
     section, in_table = "", False
     for line in text.splitlines():
         if line.startswith("### "):
@@ -1111,12 +1111,12 @@ def events_pages(p: Pages) -> list[dict]:
             page = edir / (f"{_safe(kind)}.md" if pages_n == 1 else f"{_safe(kind)}-{pi + 1:03d}.md")
             first = first or page
             sec, at = docs.get(kind, ("", ""))
-            schema = doc("docs/ein/ein.rs/events.md", page) + (f"#{sec}" if sec else "")
-            at = rebase(at, "docs/ein/ein.rs/events.md", page)
+            schema = doc("docs/ein/ein.rs/05-events.md", page) + (f"#{sec}" if sec else "")
+            at = rebase(at, "docs/ein/ein.rs/05-events.md", page)
             lines = header(f"Events — `{kind}`" + (f" ({pi + 1}/{pages_n})" if pages_n > 1 else ""),
                            f"every `{kind}` line of the event stream" + (f" — emitted at: {at}" if at else ""),
                            "`--events FILE --events-level verbose`",
-                           [("events.md" + (f" § {sec}" if sec else " (no schema row)"), "docs/ein/ein.rs/events.md")],
+                           [("05-events.md" + (f" § {sec}" if sec else " (no schema row)"), "docs/ein/ein.rs/05-events.md")],
                            [raw], page, f"rows {pi * ROWS_PER_PAGE + 1}–{pi * ROWS_PER_PAGE + len(chunk)} of {len(es)} · "
                            f"[schema row]({schema}) · [all kinds]({rel(index, page)})"
                            + (f"  \n> **{len(all_es)} `{kind}` lines; these pages show the first {half} and the last "
@@ -1125,13 +1125,13 @@ def events_pages(p: Pages) -> list[dict]:
                                    else e.get(k, "") for k in keys] for e in chunk])
             p.add(f"Events: {kind}" + (f" {pi + 1}" if pages_n > 1 else ""), page, lines)
         rows.append([f"[`{kind}`]({rel(first, index)})", len(all_es) if not capped else f"{len(all_es)} (first and last {half} rendered)", pages_n,
-                     rebase(docs.get(kind, ("", "—"))[1], "docs/ein/ein.rs/events.md", index)])
+                     rebase(docs.get(kind, ("", "—"))[1], "docs/ein/ein.rs/05-events.md", index)])
     lines = header("The event stream", "the engine's *record* of the run — every step, by kind",
-                   "`--events FILE --events-level verbose`", [("events.md § Region runs", "docs/ein/ein.rs/events.md")],
+                   "`--events FILE --events-level verbose`", [("05-events.md § Region runs", "docs/ein/ein.rs/05-events.md")],
                    [raw], index, f"**{len(events)} events**, {len(by_kind)} kinds")
     if not events:
         lines += ["_Not written._" if not raw.exists() else "_Empty._"]
-    lines += table(["kind", "lines", "pages", "emitted at (events.md)"], rows)
+    lines += table(["kind", "lines", "pages", "emitted at (05-events.md)"], rows)
     p.add("Events", index, lines)
     return events
 

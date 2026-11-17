@@ -17,7 +17,7 @@ count a test pins stays exact. A number beside its command is checked by a reade
 test is checked on every run of the tests. The warrant is right only because it is run: the number is trusted for
 the command or the test, not for the sentence.
 
-**Held by.** `docs/ein/user/reference/config.md`, whose option counts `ein-cli/tests/config_reference.rs` takes from the
+**Held by.** `docs/ein/user/04-reference/06-config.md`, whose option counts `ein-cli/tests/config_reference.rs` takes from the
 binary (`the_cli_counts_come_from_the_golden`); `corpus/README.md`, whose slow set is named by `ein-corpus`'s
-`the_slow_set_is_exactly_these_fifteen`; `docs/ein/ein.rs/api.md`, whose worked example `ein-cli/tests/embedding.rs`
+`the_slow_set_is_exactly_these_fifteen`; `docs/ein/ein.rs/04-api.md`, whose worked example `ein-cli/tests/embedding.rs`
 diffs against itself (`the_page_quotes_this_file`).

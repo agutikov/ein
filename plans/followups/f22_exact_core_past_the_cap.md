@@ -200,5 +200,5 @@ Any one:
 - [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs) and
   `Kb::record_justification` ([`kb.rs`](../../ein.rs/crates/ein-core/src/kb.rs)):
   what the search is offered.
-- [`glossary.md` § Smallest contradiction frontier](../../docs/ein/user/reference/glossary.md):
+- [`13-glossary.md` § Smallest contradiction frontier](../../docs/ein/user/04-reference/13-glossary.md):
   the promise this would make true everywhere.

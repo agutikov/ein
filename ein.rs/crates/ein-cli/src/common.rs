@@ -14,7 +14,7 @@
 //! The convention: nothing here exits. A failure comes back as the text the
 //! command prints to stderr, and the exit code is the command's to choose —
 //! 1 for `solve`, `saturate`, `oracle`, `render` and `kb save`, and for `ein
-//! test` an `ERROR` row and 2 (`docs/ein/user/reference/diagnostics.md` § 2).
+//! test` an `ERROR` row and 2 (`docs/ein/user/04-reference/07-diagnostics.md` § 2).
 
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -137,7 +137,7 @@ fn no_einb_line(path: &Path) -> String {
 ///
 /// A container whose *inputs* have moved is opened anyway and said so on
 /// stderr. There is nothing else to do — the caller was handed the `.einb` and
-/// not the `.ein`, so "re-parse the source" (`binary-format.md` § 4.3) is not available to
+/// not the `.ein`, so "re-parse the source" (`09-binary-format.md` § 4.3) is not available to
 /// it — and the one thing that must not happen is believing it silently.
 pub fn load_held(
     ast: &mut Ast,
@@ -378,7 +378,7 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
 ///
 /// No line is an unbound `:assert` variable's: the loader refuses a
 /// conclusion's variable nothing binds
-/// ([`diagnostics.md` § 2.13](../../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds);
+/// ([`07-diagnostics.md` § 2.13](../../../../docs/ein/user/04-reference/07-diagnostics.md#213-a-conclusions-variable-nothing-binds);
 /// `examples/ein-bugs/unbound-assert-var.ein`), and a parameter its activator
 /// binds to a nested fact read only by a conclusion is seeded
 /// (`parameter-nested-assert`), so `ein_infer::firing::FireError` has no

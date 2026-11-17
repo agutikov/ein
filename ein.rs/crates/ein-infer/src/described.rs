@@ -1,5 +1,5 @@
 //! `R`, described: what every surface says about the region, built once, for
-//! the read-out [`read-out.md`](../../../../docs/ein/user/reference/read-out.md)
+//! the read-out [`08-read-out.md`](../../../../docs/ein/user/04-reference/08-read-out.md)
 //! defines.
 //!
 //! A [`Described`] is read off route 1's down-set ([`of_downset`]) or off the
@@ -13,7 +13,7 @@
 //! past `--region-limit`) the states are the members met, each line flag is
 //! set only where it is **certified**, and the shape is `None`: components,
 //! sub-cubes and merged states need all of `R`
-//! ([read-out.md § 2](../../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
+//! ([08-read-out.md § 2](../../../../docs/ein/user/04-reference/08-read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
 
 use rustc_hash::{FxHashMap, FxHashSet};
 

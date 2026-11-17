@@ -43,7 +43,7 @@
 //!   so the search is offered each fact's first derivation alone and the core
 //!   can be another: the one config flag that may change which core is
 //!   named, and nothing else
-//!   ([config.md](../../../../docs/ein/user/reference/config.md), Q-M1e2.30).
+//!   ([06-config.md](../../../../docs/ein/user/04-reference/06-config.md), Q-M1e2.30).
 //!
 //! It is not a soundness question either way: a larger frontier is still a
 //! real explanation.

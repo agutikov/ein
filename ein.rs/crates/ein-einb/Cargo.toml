@@ -1,8 +1,8 @@
 # `.einb` — the binary knowledge-base container
-# (docs/ein/ein.rs/design/binary-format.md).
+# (docs/ein/ein.rs/03-design/09-binary-format.md).
 #
 # The one library crate that is not `#![forbid(unsafe_code)]`: the dependency
-# policy (docs/ein/ein.rs/design/toolchain-and-layout.md § 2) permits `unsafe`
+# policy (docs/ein/ein.rs/03-design/10-toolchain-and-layout.md § 2) permits `unsafe`
 # in exactly one audited module, the zero-copy casts in `src/cast.rs`, and a
 # crate boundary is how "exactly one" is enforced rather than asserted —
 # `forbid` cannot be lifted per-module, so a container module inside

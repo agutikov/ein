@@ -1,5 +1,5 @@
 //! `ein oracle` — the region by brute force
-//! ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
+//! ([`05-cli.md` § 2.2](../../../../docs/ein/user/04-reference/05-cli.md#22-ein-oracle)).
 //!
 //! Every subset of the root candidates is saturated by
 //! [`ein_infer::region::compute`], with no licence and nothing skipped, and
@@ -59,7 +59,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     // `--dump DIR` is made before the cube, as `solve`'s directories are: a
     // path that cannot be made fails before the work, exit 1, and a write that
     // fails after it leaves the answer's exit code (Q-M1e.22,
-    // `docs/ein/user/reference/diagnostics.md` § 2.4).
+    // `docs/ein/user/04-reference/07-diagnostics.md` § 2.4).
     if let Some(dir) = dir.as_deref()
         && let Err(e) = std::fs::create_dir_all(dir)
     {

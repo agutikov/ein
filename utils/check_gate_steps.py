@@ -569,7 +569,7 @@ def check_slow_tiers(nightly: list[str], dev: list[str]) -> list[str]:
         excuse = next((why for t, why in NO_SLOW_TIER if t == target), None)
         if excuse is not None:
             if target == "read_out_examples" and \
-                    "33554432" in read("docs/ein/user/reference/read-out-examples.md"):
+                    "33554432" in read("docs/ein/user/04-reference/09-read-out-examples.md"):
                 bad.append(f"NO_SLOW_TIER excuses `{target}` ({excuse}), and the page has a block "
                            "at --region-budget 33554432 now: give the target a step")
             continue

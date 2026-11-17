@@ -11,4 +11,4 @@ the requirement on by default, a positive flag would be inert, and an option tha
 **Held by.** `ein-cli/tests/config_reference.rs`: `require_why_decides_loading_only`, the option on every command
 that loads and on no other, a program missing three `:why`s refused with a line each and run with the option, two
 corpus programs byte for byte the same with it and without; `ein-ir/tests/load_semantics.rs`:
-`the_default_requires_a_why_and_false_loads_without`. The row: [config.md](../../ein/user/reference/config.md).
+`the_default_requires_a_why_and_false_loads_without`. The row: [06-config.md](../../ein/user/04-reference/06-config.md).

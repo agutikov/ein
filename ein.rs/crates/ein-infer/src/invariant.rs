@@ -1,6 +1,6 @@
 //! The **alive-set invariant**, as a predicate the engine can evaluate.
 //!
-//! `docs/ein/reasoning/kb-evolution/saturation.md` § The alive-set invariant states three clauses —
+//! `docs/ein/reasoning/02-kb-evolution/02-saturation.md` § The alive-set invariant states three clauses —
 //! rules assert no new objects, no new relations, and hypotheses connect
 //! existing names only — and concludes that the candidates are a pure
 //! function of the closed KB. Three mechanisms cited that conclusion as their
@@ -20,7 +20,7 @@
 //!
 //! # Every constant the program writes, but a query's
 //!
-//! [solution-semantics.md § 1.2](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names)
+//! [06-solution-semantics.md § 1.2](../../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#12-names)
 //! calls a name *a constant the program mentions, in a fact or in a rule*,
 //! meant literally (Q-M1e2.9): a constant in a rule's `:match` is one, as one
 //! in its `:assert` is,
@@ -280,7 +280,7 @@ fn walk_args(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
     }
 }
 
-/// **Every name of the program** (Q-M1e2.9), `solution-semantics.md` § 1.2
+/// **Every name of the program** (Q-M1e2.9), `06-solution-semantics.md` § 1.2
 /// read literally:
 /// every constant in an argument position of a fact, at any depth (a nested
 /// fact's arguments, which the names index does not hold, and not its head,

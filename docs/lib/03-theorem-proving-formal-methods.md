@@ -133,7 +133,7 @@ defects have small counterexamples). Alloy 6 adds linear temporal logic.
 - <https://alloytools.org/>
 
 Catalogued from M1d S1d.4.2 (its argument is now
-[`satisfiability.md`](../ein/reasoning/kb-evolution/satisfiability.md)),
+[`10-satisfiability.md`](../ein/reasoning/02-kb-evolution/10-satisfiability.md)),
 which went looking for a language whose *program* can constrain its own
 model count and found that Alloy is the nearest miss: `#r` counts tuples
 **inside** an instance, and `for N` is a **command**, not a sentence in

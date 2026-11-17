@@ -17,5 +17,5 @@ integer does, and the denominator, a natural number, has none to carry. The nume
 **Held by.** `ein-infer/tests/rat_theory.rs`: `every_pair_of_small_fractions_is_right`,
 `an_integer_is_not_a_rational_operand`, `a_malformed_rational_is_flagged_as_written`,
 `a_zero_denominator_is_flagged_and_false`; `tests/stdlib/math/rat/24_digit_as_the_numerator.ein` and
-`27_digit_as_the_denominator.ein`. The page: [`stdlib.md`](../../../../ein/user/reference/stdlib.md),
+`27_digit_as_the_denominator.ein`. The page: [`04-stdlib.md`](../../../../ein/user/04-reference/04-stdlib.md),
 `std.math.rat`.

@@ -40,7 +40,7 @@ jobs:
       # different program.
       # gate-step
       - run: python3 utils/stdlib_manifest.py
-      # No iteration over a hash map at an observable site (design/02 §9).
+      # No iteration over a hash map at an observable site (`docs/ein/ein.rs/03-design/01-determinism-and-order.md` § 2.3).
       # gate-step
       - run: python3 utils/check_hashmap_iteration.py
       # Every reference in a tracked file resolves, file and anchor: each

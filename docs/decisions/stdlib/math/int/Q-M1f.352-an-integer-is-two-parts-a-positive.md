@@ -16,4 +16,4 @@ first.
 
 **Held by.** `ein-infer/tests/int_theory.rs`: `every_pair_of_small_parts_is_right`, `an_operand_is_read_by_value`,
 `simplification_and_negation_are_right`; `tests/stdlib/math/int/01_simplify.ein` and `07_unsimplified.ein`. The
-page: [`stdlib.md`](../../../../ein/user/reference/stdlib.md), `std.math.int`.
+page: [`04-stdlib.md`](../../../../ein/user/04-reference/04-stdlib.md), `std.math.int`.

@@ -7,7 +7,7 @@
 //!
 //! **Why the root section is asserted.** A fork resumes root's saturation
 //! rather than re-deriving root's closure
-//! ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)),
+//! ([03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)),
 //! so a node's own firings hold none of root's proof: `symmetric`, which
 //! closes `next-to` at root and nowhere else, is not among the solution
 //! node's. Root's proof reaches the reader only through the trace's root
@@ -49,7 +49,7 @@ const WALKTHROUGH_RULES: [&str; 9] = [
 /// What must actually **fire** on a zebra2 solve. The property rules
 /// `functional` / `total` surface as their consequences — see the
 /// structural-equivalence notes in
-/// [`06_zebra_walkthrough.md`](../../../../docs/ein/user/guide/06_zebra_walkthrough.md)
+/// [`06-zebra-walkthrough.md`](../../../../docs/ein/user/02-guide/06-zebra-walkthrough.md)
 /// — so the firing target maps `functional` → `functional-negative` and adds
 /// the `-bwd` dual.
 const FIRING_TARGET: [&str; 9] = [
@@ -66,7 +66,7 @@ const FIRING_TARGET: [&str; 9] = [
 
 /// The generic-link encoding: `zebra.ein` reaches the same
 /// conclusions over one `co-located` equivalence instead of five typed
-/// relations. `docs/ein/reasoning/kb-evolution/saturation.md` documents the correspondence;
+/// relations. `docs/ein/reasoning/02-kb-evolution/02-saturation.md` documents the correspondence;
 /// this is its machine-checkable form.
 const WALKTHROUGH_RULES_GENERIC: [&str; 14] = [
     "slot-locate",

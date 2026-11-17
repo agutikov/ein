@@ -151,7 +151,7 @@ pub const SCHEMA: &str = "ein-corpus/2";
 ///
 /// One second is where a single entry stops being part of a default sweep and
 /// starts being the reason it is slow.
-/// [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)
+/// [03-design/02-shared-assets.md § 5](../../../../docs/ein/ein.rs/03-design/02-shared-assets.md#5-the-corpus)
 /// states the field and `corpus/README.md` § `slow` the rule.
 pub const SLOW_MS: u64 = 1000;
 

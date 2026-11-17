@@ -1,6 +1,6 @@
 ;;; A hole made by an `absent` whose rule concludes a positive fact, the
 ;;; first of the three causes of a non-monotone program
-;;; (docs/ein/reasoning/kb-evolution/monotonicity.md).
+;;; (docs/ein/reasoning/02-kb-evolution/08-monotonicity.md).
 ;;;
 ;;; `total-owed meal is-a` says every Guest owes a meal. A seated guest who is
 ;;; not allergic has the soup, so seating Ann pays her debt; learning that she

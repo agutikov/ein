@@ -84,9 +84,9 @@ test). The premise was written down, believed, load-bearing and wrong. That is w
 
 ## See also
 
-- [The diagnostics](user/reference/diagnostics.md): what the engine refuses and prints, as opposed to what it takes
+- [The diagnostics](user/04-reference/07-diagnostics.md): what the engine refuses and prints, as opposed to what it takes
   to know it.
-- [Solutions and models](user/syntax-and-semantics/solutions-and-models.md): the answer, whose lines are premises of
+- [Solutions and models](user/03-syntax-and-semantics/13-solutions-and-models.md): the answer, whose lines are premises of
   this kind.
-- [`absent` and negation as failure](reasoning/kb-evolution/absent-and-naf.md): the corollaries the upward-closure
+- [`absent` and negation as failure](reasoning/02-kb-evolution/03-absent-and-naf.md): the corollaries the upward-closure
   premise is read beside.

@@ -1,6 +1,6 @@
 //! **C4 under every lever**, the config principle as a test.
 //!
-//! [`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract)'s
+//! [`05-cli.md` § 1](../../../../docs/ein/user/04-reference/05-cli.md#1-the-contract)'s
 //! C4: *no lever changes what is printed, cost counters aside — that includes
 //! which states `-n` prints*. Q-M1e2.30 says the same of every configuration
 //! knob: no option, lever or flag changes R. What a
@@ -507,7 +507,7 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
 /// off, a re-derivation is dropped rather than recorded, the explanation
 /// search is offered each fact's first derivation alone, and the core it
 /// names can be another. The classic zebra puzzle's own `(config …)` sets
-/// it off for speed (`config.md` § 2.2); `alt-cap-core.ein` is where it
+/// it off for speed (`06-config.md` § 2.2); `alt-cap-core.ein` is where it
 /// changes a core.
 const CORE_FLAG: &str = "record-alternative-justifications";
 
@@ -806,7 +806,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         bad.is_empty(),
         "{} of {cells} (program, flag, question) cells printed something the \
          default does not. No config option may change the answer \
-         (config.md § 2.5) — this is a wrong answer:\n\n{}",
+         (06-config.md § 2.5) — this is a wrong answer:\n\n{}",
         bad.len(),
         bad.join("\n\n")
     );

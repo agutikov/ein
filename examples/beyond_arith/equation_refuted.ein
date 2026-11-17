@@ -8,7 +8,7 @@
 ;;; `ein solve` then names what the refutation rests on: the request and the
 ;;; three rows of the table it passed through. That core is the proof.
 ;;;
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (md nz __closed__))
 

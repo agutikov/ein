@@ -56,7 +56,7 @@ impl From<Overflow> for KbLoadError {
 /// **One option, and it decides only whether a program loads**: `:why` is
 /// optional in the grammar, and this option makes the loader require it. A
 /// program it lets through loads to the same `Kb` it loads to without it, so it
-/// is not a lever under the config principle (`docs/ein/user/reference/config.md`
+/// is not a lever under the config principle (`docs/ein/user/04-reference/06-config.md`
 /// § 2.5). It is not a `(config …)` field, which a program could set against
 /// itself and which the KB-shape digest renders, and not an `EIN_*` name; the
 /// CLI's `--no-require-why` turns it off on every command that loads a program.
@@ -421,11 +421,11 @@ pub fn load_query_with(
 /// `Ann` in `(hrule guess … :assert (seat Ann ?v))`, which no fact mentions —
 /// is therefore first seen *during the search*. That is one symbol on one
 /// corpus file, and it would be a curiosity except for what
-/// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md) needs:
+/// [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md) needs:
 /// [`Interner::text`](ein_core::Interner::text) hands out a `&str` borrowed
 /// from the arena, so an interner that is *shared* must be one that does not
 /// **grow**, and the search is exactly where it would be shared
-/// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)).
+/// ([03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)).
 ///
 /// Deliberately a **superset** of what the compiler asks for, walked off the
 /// registered rules rather than the raw forms so macro expansion has already
@@ -528,7 +528,7 @@ fn intern_guard_facts(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<(), 
 /// (`ein.y`'s `SolveClause` and `QueryClause`): any other is a parse error at
 /// its place, a query's lattice keyword with a note naming its home on
 /// `(solve …)`, so this pass reads no keyword list of its own
-/// ([claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
+/// ([claims](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)).
 fn validate_solve(
     ast: &Ast,
     kb: &Kb,
@@ -989,7 +989,7 @@ fn validate_queries(
                 }
             }
         }
-        // A query's `:expect` lists its projection classes (`query.md`):
+        // A query's `:expect` lists its projection classes (`12-query.md`):
         // each `(model …)` is one class,
         // the goal's atoms under its rows. So a listed fact must be one a goal
         // atom matches — anything else is a claim about the state, which is
@@ -1029,7 +1029,7 @@ fn validate_queries(
 }
 
 /// **A template that names a variable no reference can reach is refused**
-/// ([`diagnostics.md` § 2.11](../../../../docs/ein/user/reference/diagnostics.md#211-a-template-reference-no-reference-can-reach)).
+/// ([`07-diagnostics.md` § 2.11](../../../../docs/ein/user/04-reference/07-diagnostics.md#211-a-template-reference-no-reference-can-reach)).
 /// A reference reads a
 /// variable's name up to its first `}` ([`ein_core::why::render_why`]), and
 /// `}` is a name character, so `{?a}b}` is the reference `{?a}` and the text
@@ -1268,7 +1268,7 @@ fn ingest_relation(
 // ── `written`: what a file writes, stated ──────────────────────────
 
 /// The second half of every refusal of a `written` fact a program writes, or a
-/// rule concludes ([`diagnostics.md` § 2.30](../../../../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)).
+/// rule concludes ([`07-diagnostics.md` § 2.30](../../../../docs/ein/user/04-reference/07-diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)).
 const WRITTEN_IS_THE_LOADERS: &str = "written is the loader's: it states (written T) for each \
      fact nested in a fact a file writes, and a program does not write it";
 
@@ -1286,7 +1286,7 @@ fn writes_written(ast: &Ast, node: NodeId) -> bool {
 }
 
 /// A fact a file writes of `written`, or a stored negation of one: refused,
-/// one line each, placed at the fact (`diagnostics.md` § 2.30).
+/// one line each, placed at the fact (`07-diagnostics.md` § 2.30).
 fn refuse_written_facts(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
     for &form in facts {
         if writes_written(ast, form) {
@@ -1671,7 +1671,7 @@ fn ingest_rules(
             }
         }
         // `written` is the loader's to state, and a rule that concluded it
-        // would let a commitment extend it (`diagnostics.md` § 2.30).
+        // would let a commitment extend it (`07-diagnostics.md` § 2.30).
         if !is_obligation {
             let n_written = errors.len();
             for c in ast.conjuncts(assert_node) {
@@ -1707,7 +1707,7 @@ fn ingest_rules(
             // Never the saturator's: it derives nothing, so it has no place in
             // a queue that orders derivation, and it is read once per quiescent
             // KB after the fixpoint instead. An `hrule` asserting `open` is the
-            // same object and goes the same way (`obligations.md`).
+            // same object and goes the same way (`08-obligations.md`).
             kb.program_mut().add_obligation(rule);
         } else if head == "hrule" {
             kb.program_mut().add_hrule(rule);
@@ -1962,7 +1962,7 @@ fn refuse_no_fact_holds(
 }
 
 /// **A conclusion's every variable is bound**
-/// ([`diagnostics.md` § 2.13](../../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)).
+/// ([`07-diagnostics.md` § 2.13](../../../../docs/ein/user/04-reference/07-diagnostics.md#213-a-conclusions-variable-nothing-binds)).
 ///
 /// Every variable a rule's or an hrule's `:assert` writes, at any depth, must
 /// be bound on every way its `:match` can hold, as the compiler reads it
@@ -2096,7 +2096,7 @@ fn refuse_unbound_conclusions(
 }
 
 /// **An `(or …)` is a whole `:match`, or a whole `:goal`**
-/// ([`diagnostics.md` § 2.15](../../../../docs/ein/user/reference/diagnostics.md#215-a-nested-or--a-wide-match-and-a-goals-relation-variable)).
+/// ([`07-diagnostics.md` § 2.15](../../../../docs/ein/user/04-reference/07-diagnostics.md#215-a-nested-or--a-wide-match-and-a-goals-relation-variable)).
 ///
 /// A top-level `(or …)` is one way the rule holds per disjunct, each compiled
 /// as a plan of its own (`ein_infer::compile`'s `match_disjuncts`). One written
@@ -2161,7 +2161,7 @@ fn refuse_nested_disjunctions(
 
 /// **A macro's expansion is held to the shapes the grammar gives a written
 /// rule** (Q-M1f.67;
-/// [`diagnostics.md` § 2.16](../../../../docs/ein/user/reference/diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes)).
+/// [`07-diagnostics.md` § 2.16](../../../../docs/ein/user/04-reference/07-diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes)).
 ///
 /// A macro's body is a template whose head may be any name at any arity
 /// (`ein.y`'s `Template`), and a call's argument may be any premise, so the
@@ -4403,7 +4403,7 @@ fn declared_counts(ast: &Ast, relations: &[NodeId]) -> Declared {
 
 /// **A form headed by a declared relation has as many arguments as the
 /// declaration has types** (Q-M1f.315;
-/// [`diagnostics.md` § 2.26](../../../../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)):
+/// [`07-diagnostics.md` § 2.26](../../../../docs/ein/user/04-reference/07-diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)):
 /// every form headed by a declared relation, at any depth, in a fact, a rule
 /// or a query, is refused at load with one line naming the relation, the
 /// count declared and the count written.
@@ -4590,7 +4590,7 @@ fn refuse_wrong_counts_in_queries(
 }
 
 /// **A macro's call is a premise, a conclusion or a goal, and never a fact**
-/// ([`diagnostics.md` § 2.24](../../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
+/// ([`07-diagnostics.md` § 2.24](../../../../docs/ein/user/04-reference/07-diagnostics.md#224-a-macros-call-is-no-fact)).
 ///
 /// The loader expands a macro's call in a rule's or an hrule's `:match` and
 /// `:assert` and in a query's `:goal` (Q-M1f.130). A fact headed by a macro's
@@ -4888,7 +4888,7 @@ fn rel_premises(
 ///
 /// Returns `true` when the rule is an **obligation** — its `:assert` is
 /// `(open …)` and nothing else — which routes it out of the saturation agenda
-/// ([the form](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)). Errors are pushed rather than returned
+/// ([the form](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)). Errors are pushed rather than returned
 /// so one malformed rule does not hide the next.
 ///
 /// **Where `open` stands is the grammar's** (Q-M1f.66): `open` is no name,
@@ -5106,7 +5106,7 @@ fn pattern_from_ir(ast: &Ast, terms: &mut Terms, expr: NodeId) -> Result<Pattern
 /// relations an expectation has to list the complete extent of. `ein test
 /// --json-report` publishes the list per query, because the **write cost** of
 /// a closure claim is `relations x models x facts` and the first factor is
-/// this one ([claims about a set of states](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states)).
+/// this one ([claims about a set of states](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#3-claims-about-the-set-of-states)).
 ///
 /// Connectives (`and`, `or`, `not`, `neq`, `eq`, `=`) and the two macro
 /// internals are not relations and do not appear; a `(?rel ?a ?b)` head binds
@@ -5332,7 +5332,7 @@ mod tests {
     }
 
     /// The reserved verdict atom, and the classification it drives
-    /// ([the form](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)).
+    /// ([the form](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)).
     ///
     /// A rule whose `:assert` is `(open …)` and nothing else is an
     /// **obligation**: it derives nothing, so it never enters the saturator's
@@ -6410,7 +6410,7 @@ mod tests {
     }
 
     /// **The verdict atom refuses every shape it cannot resolve**
-    /// (`diagnostics.md` § 2.2's table). **The shapes a position states are
+    /// (`07-diagnostics.md` § 2.2's table). **The shapes a position states are
     /// the grammar's**: an `(open …)` as a premise or beside another
     /// conclusion, with three arguments, or with a term for its argument, and
     /// `open` bound by a declarator, are parse errors at their place (`open`
@@ -6488,7 +6488,7 @@ mod tests {
     /// `std.algebra`, `slot-owed-room` and `slot-owed-fill` of `std.slots` —
     /// written out here in their shapes, each resolves its projection and is
     /// routed to the obligation pass
-    /// ([the stdlib's four](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-stdlibs-four)).
+    /// ([the stdlib's four](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-stdlibs-four)).
     ///
     /// The projection resolves on the shapes the stdlib writes: the two
     /// `std.algebra` duals mirror `total` / `surjective`, and the two

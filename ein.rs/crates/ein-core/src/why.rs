@@ -18,7 +18,7 @@
 //! ([`unreachable_references`], Q-M1f.11).
 //!
 //! It lives here, in the crate that depends on nothing
-//! ([architecture.md § 3.1](../../../../docs/ein/ein.rs/architecture.md#31-ein-core)),
+//! ([01-architecture.md § 3.1](../../../../docs/ein/ein.rs/01-architecture.md#31-ein-core)),
 //! rather than beside the renderers above the engine (the trace, the slice
 //! and the answer), because the obligation pass is a reader *below* them: an
 //! `owe` event carries the rendered sentence, and `--events` is emitted from

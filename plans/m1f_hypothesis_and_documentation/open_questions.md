@@ -527,7 +527,7 @@ meets nothing. The dunder half meets two things the reading did not see:
 
 - **The stdlib documents a dunder as an argument value, and a test holds it.** `stdlib/algebra.ein`'s `imply1`,
   *"Doubles as property→property: (imply1 functional __closed__) turns a functional relation closed"*;
-  [`stdlib.md`](../../docs/ein/user/reference/stdlib.md)'s `imply1` row, *e.g. `(imply1
+  [`04-stdlib.md`](../../docs/ein/user/04-reference/04-stdlib.md)'s `imply1` row, *e.g. `(imply1
   functional __closed__)`*; and `ein-infer/tests/algebra_semantics.rs`'
   `imply1_lifts_a_property_marker_onto_a_kernel_trigger`, which holds that the program derives `(__closed__
   foo)`, *"userspace reaching a kernel switch"*. Today's binary and T9's generated build both derive `(__closed__
@@ -864,7 +864,7 @@ holds. `program_read` holds each view's drawing of a container to the `.ein`'s o
 
 **Raised** 2026-11-09 by S1f.5.16's T1f.5.16.1, as its Q1: M1e's
 [Q-M1e.7](../../docs/decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)
-ruled that a state's model, [`solution-semantics.md` § 3](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)'s
+ruled that a state's model, [`06-solution-semantics.md` § 3](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#3-model)'s
 *positive part minus the positive initial KB*, is printed by `ein solve` and `--json-summary` *"under that name"*, and
 gave that half to this stage. Today a listing's `(model …)` is the region language's claim form, a state's facts over the
 candidates' relations (`region.states[].facts` in the summary); § 3's model is what `-P` prints, under *final-state
@@ -996,7 +996,7 @@ hold for a class of program. On a monotone program the same stop has always prin
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
 till the end of the phase"*. (a) moves no `route` row the rule does not already move, and the read-out's `minimal line`
-row on the live page says why the line is decided ([`read-out.md`](../../docs/ein/user/reference/read-out.md#3-a-mode---minimal---maximal--n-n---single) § 3).
+row on the live page says why the line is decided ([`08-read-out.md`](../../docs/ein/user/04-reference/08-read-out.md#3-a-mode---minimal---maximal--n-n---single) § 3).
 Re-opening it means (b), which is [Q-M1f.20](#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another)'s
 neighbour: both ask what a route row's licence list is for.
 
@@ -1119,7 +1119,7 @@ core either. Root is dead, so its core exists.
 
 - **(a) `null`, documented**: the summary is stdout's facts, and `null` is where a key does not apply; the ruling reads
   `null` as *an object that does not exist or is not known*, and a count does not state root's core.
-  [`read-out.md` § 11](../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) says so, from
+  [`08-read-out.md` § 11](../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks) says so, from
   T1f.5.8.2 on.
 - **(b) Root's core under every question** whose summary says root is dead: `--count`'s summary, and its stdout's
   `unsat core` and `refuted by` rows, where a count prints no listing today.
@@ -2298,8 +2298,8 @@ Re-opening it means (b).
 
 **Raised** 2026-11-10 by S1f.5.23's T3. The stage file
 sketches one line, *``<file>:<line>:<col>: `open` is the verdict a rule's :assert states, and is not a relation: …``*.
-Where the grammar refuses, the line is a parse error's ([`diagnostics.md`
-§ 1](../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics)): ``<file>:<line>:<col>: unexpected `open` ``,
+Where the grammar refuses, the line is a parse error's ([`07-diagnostics.md`
+§ 1](../../docs/ein/user/04-reference/07-diagnostics.md#1-parse-and-load-diagnostics)): ``<file>:<line>:<col>: unexpected `open` ``,
 then the error's notes and repairs.
 
 - **(a) The parse error's line, and the stage's sentence as a note under it**, as S1f.5.1's `_` and S1f.5.2's string
@@ -2510,7 +2510,7 @@ builds them, its smoke a `W75/solve` case per commit. Re-opening it means (b).
 
 **Decision file:** [`docs/decisions/cli/Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md`](../../docs/decisions/cli/Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md)
 
-**Raised** 2026-11-10 by S1f.5.25's T2. [`diagnostics.md` § 2.4](../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure)
+**Raised** 2026-11-10 by S1f.5.25's T2. [`07-diagnostics.md` § 2.4](../../docs/ein/user/04-reference/07-diagnostics.md#24-an-artefact-flags-failure)
 rules that an artefact flag's failed write prints `error: --<flag> <path>: <os error>` and leaves the exit code
 unchanged. Its census ran `--events`, `--json-summary`, `--trace` and `--json-report` on `/dev/stdout`: under `head
 -1`, `solve --trace /dev/stdout` and `--json-summary /dev/stdout` printed that line and exited 0, the read-out's one
@@ -3142,7 +3142,7 @@ is wrong. The choice of reading rules nothing: F24's question stays the user's.
 
 ### Q-M1f.135 — Which facts a flat import brings
 
-**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (a), and taken by S1f.6.11. The user ruled that day that *"importing facts is
+**Raised** 2026-11-11 by [04-stdlib.md § G](../../docs/ein/user/04-reference/04-stdlib.md#importing-a-module), point (a), and taken by S1f.6.11. The user ruled that day that *"importing facts is
 mandatory"*; a fact has no name to list, so which facts `(import M :symbols (…))` brings is a choice.
 
 - **(a1) Every fact of the module, always.**
@@ -3157,7 +3157,7 @@ naming every relation. Held by `imports_semantics.rs`, W88's four rows and `defi
 
 ### Q-M1f.136 — What a qualified import does to the names inside a fact
 
-**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (b). A qualified import renames every name the module declares, the relation
+**Raised** 2026-11-11 by [04-stdlib.md § G](../../docs/ein/user/04-reference/04-stdlib.md#importing-a-module), point (b). A qualified import renames every name the module declares, the relation
 heading a fact among them, so a library's `is-a` facts land in `o.is-a` and do not join the program's `is-a`.
 
 - **(b1) Keep it, and say nothing.**
@@ -3170,7 +3170,7 @@ heading a fact among them, so a library's `is-a` facts land in `o.is-a` and do n
 
 **Decision file:** [`docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md`](../../docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)
 
-**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (c). They were under a qualified import, and they enter the blind
+**Raised** 2026-11-11 by [04-stdlib.md § G](../../docs/ein/user/04-reference/04-stdlib.md#importing-a-module), point (c). They were under a qualified import, and they enter the blind
 enumerator's objects: importing an ontology of n constants widens the universe of every open relation by n.
 
 - **(a) Yes**: an imported fact is a fact of the program, and `solution_semantics.md` § 1.2 defines the names as
@@ -3184,7 +3184,7 @@ library closes its own.
 
 **Decision file:** [`docs/decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md`](../../docs/decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)
 
-**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (d).
+**Raised** 2026-11-11 by [04-stdlib.md § G](../../docs/ein/user/04-reference/04-stdlib.md#importing-a-module), point (d).
 
 - **(a) Its own**: a `:source` where the module wrote one, otherwise background, as if written in the program.
 - **(b) Stamped with the module's name** where it has no `:source`.
@@ -3196,7 +3196,7 @@ library closes its own.
 
 **Decision file:** [`docs/decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md`](../../docs/decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)
 
-**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (e); E-6 of `findings.md`. A fact stated by
+**Raised** 2026-11-11 by [04-stdlib.md § G](../../docs/ein/user/04-reference/04-stdlib.md#importing-a-module), point (e); E-6 of `findings.md`. A fact stated by
 a module and by the program, or by two modules, with different `:source`s keeps its first statement, and the
 later `:source` is gone with no word, as it is for a fact written twice in one file.
 
@@ -3208,7 +3208,7 @@ later `:source` is gone with no word, as it is for a fact written twice in one f
 
 ### Q-M1f.140 — A rule of the module the selection does not name
 
-**Raised** 2026-11-11 by [stdlib.md § G](../../docs/ein/user/reference/stdlib.md#importing-a-module), point (f). `(import onto :symbols (is-a))` brings the `is-a` facts and neither of
+**Raised** 2026-11-11 by [04-stdlib.md § G](../../docs/ein/user/04-reference/04-stdlib.md#importing-a-module), point (f). `(import onto :symbols (is-a))` brings the `is-a` facts and neither of
 the module's rules over `is-a`, though the facts would fire them.
 
 - **(a) Still dropped.**
@@ -3361,7 +3361,7 @@ arithmetic programs makes the 12 ms matter.
 **Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md)
 
 **Raised** 2026-11-11 by S1f.6.3's T2. The user ruled *"(let NAME NUMBER) is ok"*; what a request may do with a name
-is item 2 of [`stdlib.md` § what is open](../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath), the
+is item 2 of [`04-stdlib.md` § what is open](../../docs/ein/user/04-reference/04-stdlib.md#the-calculator-stdmath), the
 coordinator's reading, the user's to overrule.
 
 - **(a) A request may name an operand,** and its answer repeats the names: `(add price qty)` is answered by
@@ -4044,7 +4044,7 @@ four import the tables alone.
 - **(b) Under `examples/arith/`,** with the test told which files search, by a list or a marker in the file.
 
 **Defaulted 2026-11-12: (a).** It moves no test, and the directory's name is the page's. It is question 8 of
-[`word-problems.md`](../../docs/ein/user/guide/word-problems.md).
+[`08-word-problems.md`](../../docs/ein/user/02-guide/08-word-problems.md).
 
 ### Q-M1f.187 — Which probes of S1f.6.10 are banked, and at what size
 
@@ -4092,7 +4092,7 @@ circuit's own*; `std.int` and `std.rat` call them from inside the stdlib.
   hide it.
 
 **Defaulted 2026-11-12: (a), for the banked programs; the interface question is the user's**, question 4 of
-[`word-problems.md`](../../docs/ein/user/guide/word-problems.md), with the recommendation that the module's page
+[`08-word-problems.md`](../../docs/ein/user/02-guide/08-word-problems.md), with the recommendation that the module's page
 name the tagged calls as what a theory built on it calls. Eight programs under `examples/beyond_arith/` would
 move if a tagged call's shape did; `arith_theory.rs` does not hold those shapes for outside callers.
 
@@ -4116,10 +4116,10 @@ arithmetic and logic prototypes into examples too"*). Where a page recommends a 
 (b) and its generation from `std.arith` for arithmetic; the one table, and the properties as generated facts with
 the deriving rules as their check, for logic. On four points the pages show variants and recommend none:
 
-- **The truth table's candidates.** [`stdlib.md`](../../docs/ein/user/reference/stdlib.md#stdboolinputs--inputs-as-hypotheses) shows three ways,
+- **The truth table's candidates.** [`04-stdlib.md`](../../docs/ein/user/04-reference/04-stdlib.md#stdboolinputs--inputs-as-hypotheses) shows three ways,
   the obligations rung alone, an hrule, and `:hypothesis-relations`, with one answer and one cost.
 - **Where the conversions live,** in the binary module or a module of their own: question 5 of
-  [`stdlib.md`](../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith).
+  [`04-stdlib.md`](../../docs/ein/user/04-reference/04-stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith).
 - **Post's criterion as a program:** the page's has 140 written sets and reads eight `-u` relations restated by
   `forall` and `absent`.
 - **What the simplifier reads:** the prototype's imports the deriving rules; the recommendation makes the
@@ -4177,7 +4177,7 @@ gates against rows typed beside them and not against the calculator's table.
 **Raised** 2026-11-12 by the same banking. Every corpus program is solved, dumped and reloaded per commit by a
 bare `ein solve`, which describes all of R and writes each state as text (E-24); describing R over n inputs as
 hypotheses is 3ⁿ + n saturations and stops at the default budget near twelve inputs
-([`stdlib.md`](../../docs/ein/user/reference/stdlib.md#stdboolinputs--inputs-as-hypotheses)).
+([`04-stdlib.md`](../../docs/ein/user/04-reference/04-stdlib.md#stdboolinputs--inputs-as-hypotheses)).
 
 - **(a) Sizes every surface affords:** three inputs for every search, 30 saturations at most; binary operands
   to seventeen bits; five numbers to binary, the largest 255, and seven to decimal, the largest 1000.
@@ -4193,7 +4193,7 @@ three-input classes stay under `build/s1f.6.16/` and `build/s1f.6.17/`, with the
 
 **Raised** 2026-11-12 by S1f.6.20, on the user's instruction of that day: *"bank word problems into
 examples/word_problems with recommended variants"*. The prototype is 29 programs and nine modules, most of them
-one problem written under several variants ([`word-problems.md`](../../docs/ein/user/guide/word-problems.md#the-problems) § 0).
+one problem written under several variants ([`08-word-problems.md`](../../docs/ein/user/02-guide/08-word-problems.md#the-problems) § 0).
 
 - **(a) One file per distinct problem, under the variant the page recommends for each choice**, and the modules
   under the names the page proposes (§ 8): `words.ein`, `gaps.ein`, and `readings.ein`, which is the page's
@@ -4341,7 +4341,7 @@ S1f.6.31 moves the modules and renames no relation.
 
 **Raised** 2026-11-12 by S1f.6.23, whose T1 names it: the ruling holds a form to *the count declared*, and a
 declaration with no type atom, `(relation flag)`, is legal
-([`syntax.md` § Relation](../../docs/ein/user/reference/syntax.md#relation-declarator)): *a relation
+([`02-syntax.md` § Relation](../../docs/ein/user/04-reference/02-syntax.md#relation-declarator)): *a relation
 node with no declared arg types*.
 
 - **(a) It declares none,** so `(flag)` is its one form and `(flag up)` is refused. The count is the count of
@@ -4491,7 +4491,7 @@ digits and probes of `nz`, a table the binary theory does not have.
 **Defaulted 2026-11-13, the user's to revise: `gen_binary.py` leaves the check out,** rules and relations,
 and takes the two rules of the operands as they were, so `bin.ein` is byte for byte what it was and the
 binary theory answers a malformed request by silence. A check of base two is two guards where ten and is
-[`stdlib.md`](../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)'s to ask, with the page's other questions.
+[`04-stdlib.md`](../../docs/ein/user/04-reference/04-stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)'s to ask, with the page's other questions.
 
 **Superseded 2026-11-15** at P1f.6's close, on the user's ruling of that day (*"all as you recommended"*, `close.md` § The user's rulings, 3): binary's numeral is `std.math.binary`'s, checked since S1f.6.16's build. The question has no subject since; the default stands as the record of what was built before.
 
@@ -6671,7 +6671,7 @@ by *forbid* and have no R.
   (H6-2).
 - **(C)** turns three or four corpus programs into refusals. Two of them, `lattice/09` and `/12`, are not
   wrong in H today: they are the corpus's two exercised activator sites, which
-  [`monotonicity.md`](../../docs/ein/reasoning/kb-evolution/monotonicity.md) and `ein-infer`'s detector tests read by
+  [`08-monotonicity.md`](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md) and `ein-infer`'s detector tests read by
   name, and F21's examples of the third cause of a non-monotone program.
 - **(D)** changes no answer and keeps an empty R where a model exists.
 
@@ -6769,7 +6769,7 @@ activators compile, and a rule nothing activates is not among a program's mechan
 **What M1d ruled.** Its decision table has *obligations supersede `:hrules` as the generator, as a ladder*
 (user, 2026-08-24) and *the read-out is scoped — discharge where stated, exhaustion where not* (2026-08-25).
 The second was a rule about the verdict, and under R it is gone:
-[`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md) has *one definition for every
+[`06-solution-semantics.md`](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md) has *one definition for every
 program*. What is left of *where stated* is this switch, and its reason is `oblgen.rs`'s: *falling back to the
 blind enumerator whenever nothing was owed would put exhaustion back in charge of completeness*. That is said
 of a discharged state under a stated obligation. In M1d a program loaded an obligation rule only by naming
@@ -6920,7 +6920,7 @@ also can we get plain dump of hypothesis? we should be able to"*. The view shows
 set H alone, so it is renamed: **`ein render h-space FILE`**, the main session's choice between the user's two
 examples and a default the user may change, with no alias; its document is `h-space.json`, schema
 `ein-h-space/1`, and its page
-[`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). And of the dump,
+[`docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md`](../../docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md). And of the dump,
 the same day: *"ein render writes dot, by listing hypothesis I meant listing them as ein facts, so add one more
 top level command `show` and one sub-command `show hyps` that lists them"*. So: **`ein show hyps FILE`**, a new
 top-level command with one subcommand, prints H as Ein facts, one candidate a line and nothing else on stdout,

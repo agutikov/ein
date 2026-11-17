@@ -444,7 +444,7 @@ root derives `(q one)` where it derived `(p one)`. The candidate list becomes
 `{(p one)}`, and R is `{∅, {(p one)}}`, the mirror image of today's. That
 happens **on both routes**. The oracle's own R on `features/07` depends on
 which of two rules at priority 200 is written first, which is the config
-principle's *stable* ([`monotonicity.md` § 12.1](../../docs/ein/reasoning/kb-evolution/monotonicity.md#121-three-words):
+principle's *stable* ([`08-monotonicity.md` § 12.1](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#121-three-words):
 *"it does not depend … on rule order"*) broken by today's node, not only by
 scratch.
 
@@ -625,7 +625,7 @@ a fork-aware cell, which S1e2.1c.3 would have to design.
 ## 11. The path census — S1e2.1b.7
 
 S1e2.1b.7's T1e2.1b.7.2, for
-the rows [`monotonicity.md` § What holds it](../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it)
+the rows [`08-monotonicity.md` § What holds it](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#what-holds-it)
 left *unverified*: every split C1 ⊆ C and longer chains, the state-memoized
 path DAG and (F)'s per-node counts, and the premise that a step is a function
 of the KB's contents. § 6.1 above read one-step parents, as `-y` built them.
@@ -816,7 +816,7 @@ are not read.
 ## 12. The cumulativity census, and the FIFO gap — S1e2.1b.7
 
 T1e2.1b.7.3, for three rows of
-[`monotonicity.md` § What holds it](../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it):
+[`08-monotonicity.md` § What holds it](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#what-holds-it):
 *a stratified program evaluated stratum by stratum is cumulative*, *the FIFO
 example is path-dependent in the engine as written*, and *a Monotone verdict
 can leave scratch ≠ fork through a FIFO race over a static read*.

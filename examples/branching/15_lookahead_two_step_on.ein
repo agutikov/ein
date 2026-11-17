@@ -23,7 +23,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────────
 ;;;
 ;;; A solution is a maximal alive commitment — one with no live child
-;;; (`docs/ein/reasoning/kb-evolution/solution-semantics.md` § 2). Two sets qualify:
+;;; (`docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md` § 2). Two sets qualify:
 ;;;
 ;;;   {(p A)}          — both its children, {A,B} and {A,C}, are dead.
 ;;;   {(p B), (p C)}   — its only child, {A,B,C}, is dead.

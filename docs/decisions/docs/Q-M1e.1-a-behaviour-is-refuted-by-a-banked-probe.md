@@ -16,5 +16,5 @@ thing that would contradict it; and a risk is a statement about what could happe
 happen closes.
 
 **Held by.** `docs/ein/standard-of-proof.md`, Rule 1, which states it and calibrates it; the pages that apply it,
-[`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md) (each claim beside the test that holds it) and
-[`diagnostics.md`](../../ein/user/reference/diagnostics.md), what Ein refuses and prints when it does.
+[`08-monotonicity.md`](../../ein/reasoning/02-kb-evolution/08-monotonicity.md) (each claim beside the test that holds it) and
+[`07-diagnostics.md`](../../ein/user/04-reference/07-diagnostics.md), what Ein refuses and prints when it does.

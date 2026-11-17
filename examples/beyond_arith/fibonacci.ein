@@ -1,6 +1,6 @@
 ;;; The Fibonacci numbers F(0) to F(30), each the sum of the two before it.
 ;;; Saturation alone: one addition a step, and a second to count the steps.
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is add-walk done))
 (import std.math.decimal :symbols (n))

@@ -7,7 +7,7 @@ outside `plans/` and `build/` moves.
 which rebuilds `readings.ein` to *always owed*, makes `boxes12.ein` two states with one answer, and brings
 back the 13-apple problem. If that stage has not run, this one uses the investigation's `readings_always`
 and its two problems from `build/s1f.6.20/p/`, or rebuilds them from
-[`word-problems.md` § When a word has two readings](../../../docs/ein/user/guide/word-problems.md#when-a-word-has-two-readings),
+[`08-word-problems.md` § When a word has two readings](../../../docs/ein/user/02-guide/08-word-problems.md#when-a-word-has-two-readings),
 and says so.
 **Hands on to:** [S1h.4.4](../p1h.4_the_formula_and_the_calculation/s1h.4.4_the_alternatives_not_taken.md),
 *answer correct, solution not*.

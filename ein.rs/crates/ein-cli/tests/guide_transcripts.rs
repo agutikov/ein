@@ -1,6 +1,6 @@
 //! **A marked transcript is a real run.**
 //!
-//! [`docs/ein/user/guide/`](../../../../docs/ein/user/guide/) is the newcomer's first contact
+//! [`docs/ein/user/02-guide/`](../../../../docs/ein/user/02-guide/) is the newcomer's first contact
 //! with the tool, and a transcript typed by hand can differ from what any
 //! engine prints — bindings packed two to a line, a rule under the title
 //! dropped. So the bytes are taken from a run, and kept taken.
@@ -20,7 +20,7 @@
 //! them would push seven lines of `(query has no :goal-text template)` into a
 //! tutorial to satisfy a test. Their lines are byte-correct today; that they
 //! are excerpts is stated in
-//! [`docs/ein/user/guide/README.md`](../../../../docs/ein/user/guide/README.md), which is where
+//! [`docs/ein/user/02-guide/README.md`](../../../../docs/ein/user/02-guide/README.md), which is where
 //! a reader who wonders why one page is generated and another is not will
 //! look.
 //!
@@ -40,15 +40,15 @@ use ein_corpus::repo_root;
 /// Every page that may carry a marked transcript, repo-relative.
 const PAGES: [&str; 10] = [
     "README.md",
-    "docs/ein/user/guide/README.md",
-    "docs/ein/user/guide/01_objects_and_relations.md",
-    "docs/ein/user/guide/02_first_rules.md",
-    "docs/ein/user/guide/03_rule_families.md",
-    "docs/ein/user/guide/04_solving_the_whole_puzzle.md",
-    "docs/ein/user/guide/05_jack_drinks_coffee.md",
-    "docs/ein/user/guide/06_zebra_walkthrough.md",
-    "docs/ein/user/guide/examples.md",
-    "docs/ein/user/guide/word-problems.md",
+    "docs/ein/user/02-guide/README.md",
+    "docs/ein/user/02-guide/01-objects-and-relations.md",
+    "docs/ein/user/02-guide/02-first-rules.md",
+    "docs/ein/user/02-guide/03-rule-families.md",
+    "docs/ein/user/02-guide/04-solving-the-whole-puzzle.md",
+    "docs/ein/user/02-guide/05-jack-drinks-coffee.md",
+    "docs/ein/user/02-guide/06-zebra-walkthrough.md",
+    "docs/ein/user/02-guide/07-examples.md",
+    "docs/ein/user/02-guide/08-word-problems.md",
 ];
 
 const OPEN: &str = "<!-- transcript: ";

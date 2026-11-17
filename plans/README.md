@@ -37,7 +37,7 @@ framing 2026-05-24):
   leans on. Induction *from facts* (F7 B′, F5) stays a followup.
 
 The end-to-end target the milestone stack converges on is the
-worked solution in [`examples/README.md`](../docs/ein/user/guide/06_zebra_walkthrough.md): the
+worked solution in [`examples/README.md`](../docs/ein/user/02-guide/06-zebra-walkthrough.md): the
 human Wikipedia walkthrough of the Zebra puzzle annotated as ein
 inference (NL ↔ ein rule ↔ branch-depth, plus learnt no-goods). M1
 must reproduce the *inference* column — the rule firings, branches,

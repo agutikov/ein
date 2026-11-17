@@ -17,6 +17,6 @@ alone, and lets every command be held to the oracle
 ([Q-M1e2.32](Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)).
 
 **Held by.** `ein-cli/tests/lever_invariance.rs`: `every_declared_lever_cell_moves_no_line_of_any_mode`, every mode
-under every lever a corpus entry declares, `--no-search` among them; `docs/ein/user/reference/config.md`, whose every flag
+under every lever a corpus entry declares, `--no-search` among them; `docs/ein/user/04-reference/06-config.md`, whose every flag
 row says whether it changes the answer, held by `ein-cli/tests/config_reference.rs`
 (`every_flag_has_a_row_and_no_row_is_orphaned`, `the_retired_flags_are_refused_with_why`).

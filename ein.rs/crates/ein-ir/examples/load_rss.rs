@@ -7,7 +7,7 @@
 //!
 //! Both numbers are worth having. `peak` is what a user's machine sees; `delta`
 //! is the RSS the load itself added, which is the data model's cost
-//! ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)).
+//! ([03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md)).
 
 use ein_core::Terms;
 use ein_ir::{Ast, load_file};

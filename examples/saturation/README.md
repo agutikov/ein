@@ -30,9 +30,9 @@ What enforces this for every demo is
 | `type-exclusivity` | `?R` | [colors](type-exclusivity/colors.ein) · [nationalities](type-exclusivity/nationalities.ein) · [pets](type-exclusivity/pets.ein) |
 | `hypothesis-contradiction` | none | [coloc-disproved](hypothesis-contradiction/coloc-disproved.ein) · [right-of-disproved](hypothesis-contradiction/right-of-disproved.ein) · [next-to-disproved](hypothesis-contradiction/next-to-disproved.ein) |
 
-A rule with parameters is [relation-polymorphic](../../docs/ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic):
+A rule with parameters is [relation-polymorphic](../../docs/ein/reasoning/01-static-ir/04-rules-as-statements.md#relation-polymorphic):
 it is applied once for each activator, a fact such as `(symmetric co-located)` that binds them. A rule with none is
-[first-order](../../docs/ein/reasoning/static-ir/rules-as-statements.md#first-order) and names its relations.
+[first-order](../../docs/ein/reasoning/01-static-ir/04-rules-as-statements.md#first-order) and names its relations.
 
 ## How to read a demo
 
@@ -44,7 +44,7 @@ exactly once, but the `symmetric` demos (which also re-match on their own conclu
 
 The three `hypothesis-contradiction/*.ein` demos carry **`(hypothesis …)` and `(contradiction-under …)` facts
 whose argument is itself a fact**, a relational node
-([`ontology.md` § Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words)), and the rule
+([`04-ontology.md` § Five words](../../docs/ein/user/03-syntax-and-semantics/04-ontology.md#five-words)), and the rule
 matches the nested fact. The engine writes no such facts of its own; the demos state them to exercise the rule.
 
 ## Running a single demo

@@ -19,7 +19,7 @@
 ;;;
 ;;; Every claim was computed in Python and is checked by `ein test`.
 ;;;
-;;; `docs/ein/user/reference/stdlib.md` § `std.math.convert` has the
+;;; `docs/ein/user/04-reference/04-stdlib.md` § `std.math.convert` has the
 ;;; module this program requests, over the arithmetic of both bases
 ;;; (§ Binary).
 (import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))

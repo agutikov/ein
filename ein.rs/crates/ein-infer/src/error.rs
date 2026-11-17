@@ -21,7 +21,7 @@ pub enum SolveError {
     Deadline,
     /// `-y` on a program the static check calls monotone found a parent path
     /// that reaches another state: the static check's theorem
-    /// ([monotonicity.md § 3.2](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#32-the-theorem))
+    /// ([08-monotonicity.md § 3.2](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#32-the-theorem))
     /// says none can, so this is an engine error, never an answer. The message
     /// names the state and the parent.
     SpotCheck(String),

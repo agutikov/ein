@@ -1,5 +1,5 @@
 //! **Two routes, one read-out**, in the form of C4
-//! ([`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract)).
+//! ([`05-cli.md` § 1](../../../../docs/ein/user/04-reference/05-cli.md#1-the-contract)).
 //!
 //! On a monotone program describe takes the state route
 //! ([`ein_infer::states`]), with `--describe-route states` or where the tree

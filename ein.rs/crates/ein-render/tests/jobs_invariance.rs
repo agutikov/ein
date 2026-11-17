@@ -4,12 +4,12 @@
 //! This is the second sweep over [`corpus_ops`](corpus_ops), beside
 //! `id_order_invariance` (digested against the golden once, and again with
 //! the ids permuted). It is what
-//! [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
+//! [03-design/08-parallelism.md § 1](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract)
 //! names.
 //!
 //! ## What it claims, and it is stronger than the contract
 //!
-//! The contract ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract))
+//! The contract ([03-design/08-parallelism.md § 1](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract))
 //! is that `--jobs N` is *the same computation* as `--jobs 1` — same
 //! verdict, same models, same unsat core, same counters — and no wider in
 //! narration than a permuted id space already is.
@@ -17,7 +17,7 @@
 //! **It is wider than that in neither direction: nothing moves at all.**
 //! A worker builds its narration into its own buffer with a hole where the
 //! event ordinal goes, and `Events::replay` fills it in at the ordered commit
-//! ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)),
+//! ([03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)),
 //! so the bytes are the bytes. This test therefore asserts **byte
 //! equality** and reports any difference *through the cut*, so that the day
 //! one appears the failure says which half it is:
@@ -34,7 +34,7 @@
 //! two is where a scheduling-dependent bug lives. What keeps one out is a
 //! **mechanism**, not this sweep: a route's workers share nothing they write,
 //! and a route's node is a fork of root that no other node reads (Q-M1e.23,
-//! [design/determinism-and-order.md § 6](../../../../docs/ein/ein.rs/design/determinism-and-order.md#6-order-across-worker-threads)).
+//! [03-design/01-determinism-and-order.md § 6](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#6-order-across-worker-threads)).
 //!
 //! ## What it runs, and against what
 //!

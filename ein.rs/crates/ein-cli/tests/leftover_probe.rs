@@ -9,7 +9,7 @@
 //!
 //! What the probe answers is the question a state's model cannot be asked:
 //! how many facts the **blind** enumerator would still propose there, outside
-//! H. It is read per state the read-out lists (`config.md`'s `EIN_LEFTOVER`
+//! H. It is read per state the read-out lists (`06-config.md`'s `EIN_LEFTOVER`
 //! row) — a question about the universe, not about a route.
 //! Running it on a fork of the state's fixpoint is what makes it a read, and
 //! *that* is the claim worth a test, because it is the one that would fail

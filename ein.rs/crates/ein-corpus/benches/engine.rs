@@ -1,5 +1,5 @@
 //! The benchmark set —
-//! [design/toolchain-and-layout.md § 8](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#8-benchmarks)
+//! [03-design/10-toolchain-and-layout.md § 8](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#8-benchmarks)
 //!
 //! Eight benches, each a stage of a run: parsing, the load path, root's
 //! saturation, the matcher over a saturated root, the boundary, a fork, and
@@ -157,7 +157,7 @@ fn deductive(c: &mut Criterion) {
     group.finish();
 
     // `match::run` over the saturated root, every plan — the bench the
-    // register matcher ([design/matcher.md](../../../../docs/ein/ein.rs/design/matcher.md))
+    // register matcher ([03-design/05-matcher.md](../../../../docs/ein/ein.rs/03-design/05-matcher.md))
     // is shaped against.
     let (ast, terms, kb) = zebra2_root();
     let rules: Vec<_> = kb.program().rules.values().cloned().collect();
@@ -187,7 +187,7 @@ fn deductive(c: &mut Criterion) {
     });
     group.finish();
 
-    // The boundary ([design/saturation.md § 1](../../../../docs/ein/ein.rs/design/saturation.md#1-two-phases)),
+    // The boundary ([03-design/06-saturation.md § 1](../../../../docs/ein/ein.rs/03-design/06-saturation.md#1-two-phases)),
     // timed over a whole root saturation rather than a single round: a round
     // is not repeatable without rebuilding the state that produced it, and
     // the state is the saturation. `ein-infer`'s `examples/engine_cost.rs`

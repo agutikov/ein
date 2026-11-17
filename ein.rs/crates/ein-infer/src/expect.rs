@@ -6,7 +6,7 @@
 //! `(solve … :expect (region …))` is checked against the `R` the run
 //! described ([`crate::claim::check_described`]), with the claim's
 //! relation-closure rule, *naming a relation asserts its complete extent*
-//! ([query.md § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
+//! ([12-query.md § Claims](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)).
 
 use ein_core::{FactId, Kb, ProvKind, Terms};
 
@@ -57,7 +57,7 @@ impl Report {
 /// come from" is `--trace`'s question and not this report's.
 ///
 /// A surplus fact is the case relation-closure
-/// ([query.md § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims))
+/// ([12-query.md § Claims](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims))
 /// is for, and the *next* thing its reader wants is the rule that put it
 /// there, one step past "there is an extra fact here". One level of
 /// premises, not a walk: the primary justification is what

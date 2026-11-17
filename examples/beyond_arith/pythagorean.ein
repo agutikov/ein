@@ -3,7 +3,7 @@
 ;;; computed once, every pair of squares is added, and a sum that is itself
 ;;; one of the squares is a triple. That last step is an ordinary join on a
 ;;; number, which is how a question about a whole set is asked.
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is add-walk done mul-call))
 (import std.math.decimal :symbols (n))

@@ -21,7 +21,7 @@
 # There is no server crate: the engine ships as libraries plus this CLI.
 #
 # Layout and the dependency policy:
-# docs/ein/ein.rs/design/toolchain-and-layout.md.
+# docs/ein/ein.rs/03-design/10-toolchain-and-layout.md.
 
 [workspace]
 resolver = "3"
@@ -53,7 +53,7 @@ repository = "https://github.com/agutikov/ein"
 # by integers it assigned itself, so the adversarial-input resistance
 # `RandomState` buys is worthless here — and its per-process randomisation is
 # an active hazard, because a hash map that iterates in a run-dependent order
-# is exactly the failure docs/ein/ein.rs/design/determinism-and-order.md
+# is exactly the failure docs/ein/ein.rs/03-design/01-determinism-and-order.md
 # § 2.3 forbids.
 rustc-hash = "2"
 serde      = { version = "1", features = ["derive"] }
@@ -61,20 +61,20 @@ serde_json = "1"
 toml        = { version = "0.9", default-features = false, features = ["parse", "serde"] }
 include_dir = "0.7"
 # `render.dot_util.hashed_id` is `md5(seed)[:10]` and the checked-in DOT
-# goldens are its fixture (determinism-and-order.md § 8) — a node id, not a
+# goldens are its fixture (01-determinism-and-order.md § 8) — a node id, not a
 # security claim.
 md-5        = "0.10"
 # `render.palette.hash_color` — the relation-colour index (the same § 8).
 sha1        = "0.10"
 sha2        = "0.10"
-# The `.einb` header digest (docs/ein/ein.rs/design/binary-format.md § 2.1) —
+# The `.einb` header digest (docs/ein/ein.rs/03-design/09-binary-format.md § 2.1) —
 # content addressing, so the question it answers is "are these the bytes that
 # were written", which is what a fast tree hash is for. `ein-einb` only; the engine crates stay
 # dependency-light, and the two digests already here are rendering fixtures
 # rather than integrity checks (`md-5` is a DOT node id, `sha1` a colour index).
 blake3      = { version = "1", default-features = false, features = ["std"] }
 # The route workers' work-stealing pool, `ein-infer` only and behind its
-# `parallel` feature (toolchain-and-layout.md § 4). What it buys over
+# `parallel` feature (10-toolchain-and-layout.md § 4). What it buys over
 # `std::thread::scope` is that the threads **stay alive between batches**:
 # work runs in bounded batches so that the results in flight stay bounded,
 # and spawning `jobs` threads for every batch would cost more than the
@@ -92,7 +92,7 @@ snmalloc-rs = "0.7"
 # The CLI's argument parser. `--help` layout and usage-error text are clap's;
 # what is fixed is the *surface* — every option's name, short key, default,
 # exclusions and help string, and every exit code
-# (`docs/ein/user/reference/cli.md` § 5). `cli` only; the engine crates stay
+# (`docs/ein/user/04-reference/05-cli.md` § 5). `cli` only; the engine crates stay
 # dependency-light.
 clap        = { version = "4", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions"] }
 # `signal(SIGPIPE, SIG_DFL)`, once, at the top of the binary's `main`

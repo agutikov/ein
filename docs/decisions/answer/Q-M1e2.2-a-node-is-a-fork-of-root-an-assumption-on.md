@@ -19,4 +19,4 @@ that class of program as a whole, and is taken up with it, not one witness at a 
 **Held by.** `ein_infer::detector::ASSUMES`, the `assumes` row of a flagged program's read-out;
 `ein-cli/tests/region_modes.rs`: `the_monotone_question_is_about_the_program`; `ein-infer/tests/explore.rs`:
 `every_mode_is_the_oracle`, the oracle building every node by the same fork. The page:
-[`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md).
+[`08-monotonicity.md`](../../ein/reasoning/02-kb-evolution/08-monotonicity.md).

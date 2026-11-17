@@ -11,7 +11,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; The goal has two rows, `?x = a` and `?x = b`, so the class is the goal's
-;;; two instances, `(not (p a))` and `(not (p b))` (`query.md`),
+;;; two instances, `(not (p a))` and `(not (p b))` (`12-query.md`),
 ;;; and the claim holds: exit 0.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────

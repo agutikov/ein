@@ -53,13 +53,13 @@ stop is pages only.
    - **a read-out section:** rows under a query's answer, or a form asked for by an option, as `-H` and
      `--models` are; what is cut at 100 lines and what the last line says;
    - **`--dump-answer`:** *a file a slice*. Where the files sit in the directory
-     ([`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)), what a file holds, and one property
+     ([`10-answer-dump.md`](../../../docs/ein/user/04-reference/10-answer-dump.md)), what a file holds, and one property
      the page tests on every banked problem: **the used part alone, loaded as a program, answers the query
      as the whole did.** Where it does not (a closing rule the answer never fired, an `absent` that held
      because of a fact now gone), the page shows the program and says what the file then is;
    - **`ein render program`:** the view with the two parts told apart, as DOT rendered for one program.
    For each: the option that would ask for it, counted against the CLI's options as
-   [`config.md`](../../../docs/ein/user/reference/config.md) lists them, and what it costs a run that asks
+   [`06-config.md`](../../../docs/ein/user/04-reference/06-config.md) lists them, and what it costs a run that asks
    and one that does not (nothing).
 6. **T1h.2.4.6 — the questions,** each beside its programs:
    [Q-M1h.11](../open_questions.md#q-m1h11--what-used-means), what *used* means;

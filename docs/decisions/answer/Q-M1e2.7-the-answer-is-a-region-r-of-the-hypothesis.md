@@ -19,6 +19,6 @@ region of the engine's one construction of each node, every command agrees on it
 **Why.** *Which commitments are solutions* has no single answer once obligations bound the lattice from below and
 restrictions from above: the solutions are every node between the two, and their shape is the answer.
 
-**Held by.** [Solution semantics](../../ein/reasoning/kb-evolution/solution-semantics.md) § 2; `ein oracle`, R by brute
+**Held by.** [Solution semantics](../../ein/reasoning/02-kb-evolution/06-solution-semantics.md) § 2; `ein oracle`, R by brute
 force; `ein-infer/tests/region.rs`: `the_seven_programs_have_the_tables_regions`; `ein-infer/tests/explore.rs`:
 `every_mode_is_the_oracle`.

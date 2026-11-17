@@ -1,6 +1,6 @@
 //! The per-form IR → DOT renderer.
 //!
-//! Implements `docs/ein/user/reference/rendering.md`. The default
+//! Implements `docs/ein/user/04-reference/12-rendering.md`. The default
 //! view is **compact**: a binary fact `(rel a b)` collapses to one labelled,
 //! relation-coloured arrow, and a unary fact to a labelled self-loop (the
 //! predicate-as-subset idiom). `levi = true` keeps the canonical

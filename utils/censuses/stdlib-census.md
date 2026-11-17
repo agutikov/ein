@@ -13,7 +13,7 @@ corpus entries, **400 inference runs**, `--events-level verbose`, 35.6 s wall
 > after S1c.1.4, where the zero-firing set is
 > **0**. What follows in this callout is the smaller of the two moves.
 >
-> [S1c.1.2](../../docs/ein/user/syntax-and-semantics/query.md#claims) added five fixtures to
+> [S1c.1.2](../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims) added five fixtures to
 > the corpus on the same day. Re-taken against them, exactly one cell moves:
 > `std.algebra`'s `symmetric` goes from **7 entries to 8** and 1 084 → 1 092
 > productive firings, because
@@ -87,7 +87,7 @@ the count rather than hiding it, because silent double-counting is how the
 first version read 129 firings for a rule that fires twice.
 
 **`normal` hides three rules** — the one the stage doc warned about, so it was
-never taken, only measured. [events.md § Levels](../../docs/ein/ein.rs/events.md)
+never taken, only measured. [05-events.md § Levels](../../docs/ein/ein.rs/05-events.md)
 says a redundant firing is counted but not emitted at `normal`, so a rule whose
 every firing re-derives an existing fact reads as zero — the trap
 S1a.7.0's
@@ -413,7 +413,7 @@ the pure copiers (`converse`, `imply*`, `includes`, `symmetric`, `join-*`,
 lemmas, and the four `std.typing` rules. For those the only "must not" is
 *scope* — a copier activated for `R1→R2` must not touch `R3` — which is a
 relation-closure claim and therefore exactly what
-[S1c.1.2](../../docs/ein/user/syntax-and-semantics/query.md#claims)'s rule 3 makes checkable, and *only* rule 3:
+[S1c.1.2](../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)'s rule 3 makes checkable, and *only* rule 3:
 neither a per-fact assertion nor a whole-state golden states it.
 
 **The `forall` row is the one to write first.** Ten rules quantify, every
@@ -684,7 +684,7 @@ rules that were never anybody's subject.
   in-process, 0.04 s, and scoped to `tests/stdlib/` — §12
 - [`stdlib/README.md`](../../stdlib/README.md) — the module catalogue, and
   the `std.bijection` vs `std.slots` comparison §4 turns into a fragility
-- [`docs/ein/ein.rs/events.md`](../../docs/ein/ein.rs/events.md)
+- [`docs/ein/ein.rs/05-events.md`](../../docs/ein/ein.rs/05-events.md)
   § Levels — why the census runs at `verbose`
-- [S1c.1.2](../../docs/ein/user/syntax-and-semantics/query.md#claims) — the form these findings become
+- [S1c.1.2](../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims) — the form these findings become
   expectations in; §7 and §8 are its two hardest cases

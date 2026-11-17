@@ -14,4 +14,4 @@ keeps the refusal and admits every derived relation, which is often the one a te
 **Held by.** `program_relations` (`ein-ir/src/from_ir.rs`), the one list a goal and a claim are held to;
 `ein-cli/tests/goal_premises.rs`: `a_goal_is_answered_as_a_rules_match_would_be` (its region claim over a rule's
 conclusion) and `a_goal_over_a_relation_of_the_program_loads` (a goal over a relation only an imported rule
-concludes). The page: [`diagnostics.md` § 2.21](../../ein/user/reference/diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to).
+concludes). The page: [`07-diagnostics.md` § 2.21](../../ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to).

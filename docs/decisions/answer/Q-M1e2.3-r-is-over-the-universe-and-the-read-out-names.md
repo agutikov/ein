@@ -11,4 +11,4 @@ would claim what no node tested. Naming the relations left out keeps the certifi
 
 **Held by.** `ein_infer::scope`; `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface`,
 one witness per rung and a program that leaves nothing out. The universe:
-[Solution semantics](../../ein/reasoning/kb-evolution/solution-semantics.md) § 1.4.
+[Solution semantics](../../ein/reasoning/02-kb-evolution/06-solution-semantics.md) § 1.4.

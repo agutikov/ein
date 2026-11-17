@@ -1,5 +1,5 @@
 //! A `(solve … :expect …)` claim, checked against R
-//! ([query.md § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
+//! ([12-query.md § The region claim](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#the-region-claim)).
 //!
 //! The shape is [`ein_ir::claim`]'s and the loader has validated it. This is
 //! the comparison: R comes from route 1 on a
@@ -7,7 +7,7 @@
 //! `ein solve` describes R by ([`crate::explore`]). Each state's facts are its
 //! fixpoint's, root's included, read by the oracle's own node.
 //!
-//! The rules ([query.md § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)):
+//! The rules ([12-query.md § Claims](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)):
 //!
 //! - every relation the claim names positively is closed, across the whole
 //!   claim, and a listed `(not …)` is checked for presence;

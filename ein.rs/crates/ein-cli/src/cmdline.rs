@@ -29,7 +29,7 @@ fn int_arg(s: &str) -> Result<i64, String> {
 /// `available_parallelism` counts logical CPUs, and on a hybrid CPU that
 /// includes SMT siblings and E-cores, and more threads than physical P-cores
 /// need not be faster
-/// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)), so
+/// ([03-design/08-parallelism.md § 1](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract)), so
 /// `auto` is a convenience and `--jobs N` is what a measurement uses.
 fn jobs_spec(s: &str) -> Result<i64, String> {
     if s.eq_ignore_ascii_case("auto") {
@@ -55,7 +55,7 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
 /// refused with it.
 ///
 /// The non-integer message stays [`int_arg`]'s, because
-/// [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
+/// [`07-diagnostics.md` §2](../../../../docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes)
 /// quotes it verbatim, with `--solutions` as its example.
 fn solutions_spec(s: &str) -> Result<i64, String> {
     match int_arg(s)? {
@@ -111,7 +111,7 @@ fn progress_every_spec(s: &str) -> Result<i64, String> {
 /// An artefact flag's path — **not empty**.
 ///
 /// Several options name a file or a directory the run will write
-/// ([`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure)),
+/// ([`07-diagnostics.md` § 2.4](../../../../docs/ein/user/04-reference/07-diagnostics.md#24-an-artefact-flags-failure)),
 /// and an empty string would reach each: a file write would fail with a bare
 /// `No such file or directory`, and a directory would **succeed** —
 /// `create_dir_all("")` is `Ok` on Linux, so `""/<file>` resolves to the
@@ -189,7 +189,7 @@ fn event_args(cmd: Command) -> Command {
                  (one JSON object per line). Off by default and \
                  additive: stdout, stderr and the exit code are \
                  unchanged. Schema: \
-                 docs/ein/ein.rs/events.md.",
+                 docs/ein/ein.rs/05-events.md.",
             ),
     )
     .arg(
@@ -223,7 +223,7 @@ fn show_command() -> Command {
                      which rung built H and how many it holds. It is the set every route \
                      searches over, and listing it costs root's saturation and the \
                      generator, no search. It asks about H, not about R, and changes no \
-                     answer (docs/ein/reasoning/kb-evolution/hypothesis-space.md)",
+                     answer (docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md)",
                 )
                 .arg(Arg::new("file").required(true))
                 .arg(no_require_why()),
@@ -329,7 +329,7 @@ fn render_command() -> Command {
                     "the solution region as a Hasse diagram: DIR is an `ein oracle \
                      --dump` directory, drawn with a `solve` run on it when --visited \
                      or --answer names its dumps \
-                     (docs/ein/user/reference/rendering.md)",
+                     (docs/ein/user/04-reference/12-rendering.md)",
                 )
                 .arg(Arg::new("dir").required(true))
                 .arg(Arg::new("visited").long("visited").value_name("DIR").help(
@@ -409,7 +409,7 @@ fn render_command() -> Command {
                      lattice with nobody declaring it: which candidates exclude each other, \
                      which of those pairs the theory makes alone, the groups (pick at most \
                      one), the owed groups and grids (exactly one), and what couples the \
-                     questions (docs/ein/reasoning/kb-evolution/hypothesis-space.md). Prints a \
+                     questions (docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md). Prints a \
                      read-out, or the --view asked. It reads nodes and changes no answer",
                 )
                 .arg(Arg::new("file").required(true))
@@ -494,7 +494,7 @@ const H_SPACE_VIEWS: [&str; 6] = [
 ];
 
 /// `ein solve` — the one command for R
-/// ([`cli.md` § 2.1](../../../../docs/ein/user/reference/cli.md#21-ein-solve)).
+/// ([`05-cli.md` § 2.1](../../../../docs/ein/user/04-reference/05-cli.md#21-ein-solve)).
 /// It describes R by default, and `--minimal`, `--maximal`, `--single` and
 /// `-n N` each ask one question about it; `--count` asks how many states and
 /// commitments R holds.
@@ -836,7 +836,7 @@ fn solve_command() -> Command {
                      uncut), answer.json (= --json-summary), index.json, one \
                      loadable file per state, the owing frontier, N, and each \
                      form asked for (-H, --models, -p, -P, -f, --diff-models) \
-                     uncut under forms/ (docs/ein/user/reference/answer-dump.md). \
+                     uncut under forms/ (docs/ein/user/04-reference/10-answer-dump.md). \
                      DIR is made before the run; past that, stdout, stderr and \
                      the exit code are unchanged.",
                 ),
@@ -849,7 +849,7 @@ fn solve_command() -> Command {
                 .help(
                     "write every node this run visited, in visit order, to DIR: \
                      nodes.json (ein-lattice/2) and nodes.md \
-                     (docs/ein/ein.rs/lattice-dump.md). DIR is made before \
+                     (docs/ein/ein.rs/06-lattice-dump.md). DIR is made before \
                      the run; past that, stdout, stderr and the exit code are \
                      unchanged.",
                 ),
@@ -922,7 +922,7 @@ fn solve_command() -> Command {
 }
 
 /// `ein test`
-/// ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
+/// ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)).
 ///
 /// **Small on purpose.** The only engine knobs here are the ones that decide
 /// whether a run *can finish*, the two budgets, because everything else
@@ -1047,7 +1047,7 @@ fn test_command() -> Command {
 /// subset of the root candidates saturated, nothing skipped. It is the
 /// reference every `ein solve` mode is held to, and it costs `2ⁿ` on every
 /// program, so it runs only when asked for by name
-/// ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
+/// ([`05-cli.md` § 2.2](../../../../docs/ein/user/04-reference/05-cli.md#22-ein-oracle)).
 fn oracle_command() -> Command {
     Command::new("oracle")
         .about("the solution region by brute force: every subset of the root candidates saturated")
@@ -1080,7 +1080,7 @@ fn oracle_command() -> Command {
                 .value_parser(artefact_path)
                 .help(
                     "also write the cube to DIR: region.json and region.md \
-                     (docs/ein/user/reference/region-dump.md), which `ein render \
+                     (docs/ein/user/04-reference/11-region-dump.md), which `ein render \
                      region DIR` draws",
                 ),
         )

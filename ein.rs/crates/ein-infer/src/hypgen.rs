@@ -1,7 +1,7 @@
 //! Hypothesis generation — the enumerator that proposes what to guess.
 //!
 //! **Three** modes, and the switch is a ladder
-//! ([hypothesis-generation.md § 2](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#2-the-ladder)):
+//! ([04-hypothesis-generation.md § 2](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#2-the-ladder)):
 //! rule-driven
 //! when the puzzle declares any `(hrule …)` ([`crate::hrule`]); otherwise
 //! obligation-driven where an obligation is **activated** at the state, a plan
@@ -24,7 +24,7 @@
 //! - **The filter order.** It decides which counter a drop is attributed to,
 //!   and the counters are observable. A reordering that looks like an
 //!   optimisation changes them
-//!   ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
+//!   ([03-design/07-search.md § 1](../../../../docs/ein/ein.rs/03-design/07-search.md#1-hypothesis-generation)).
 //! - **The candidate order.** A route reads it only as a tie-break: H is
 //!   sorted by each candidate's raw text and deduped before any route sees it
 //!   (`region::order_key`), and the generator's order decides only between
@@ -46,7 +46,7 @@
 //! *row key is the identity*, so a candidate costs one intern — a hash lookup
 //! that returns the same `FactId` every later call — and the two filters that
 //! reject almost all of them are single bit tests on it
-//! ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
+//! ([03-design/07-search.md § 1](../../../../docs/ein/ein.rs/03-design/07-search.md#1-hypothesis-generation)).
 //!
 //! This is "intern-on-demand: probe, and only materialise on survival". The
 //! probe and the intern are *the same hash
@@ -193,7 +193,7 @@ pub const CLOSED: &str = ein_core::terms::CLOSED;
 /// that is active there stops as soon as its own candidates run out: *how many
 /// facts would the blind enumerator still propose at a state the rung called
 /// complete?* That number is the state's
-/// [leftover-open count](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it),
+/// [leftover-open count](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it),
 /// and it is what separates "one model" from "2ⁿ models" when the reading
 /// is open-world.
 ///

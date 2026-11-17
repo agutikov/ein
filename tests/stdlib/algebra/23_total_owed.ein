@@ -32,7 +32,7 @@
 ;;;
 ;;; `:expect` claims are assertions about **facts**, and a region claim's
 ;;; `(owing …)` lists the alive states that owe
-;;; (docs/ein/user/syntax-and-semantics/query.md § Claims). An `open`
+;;; (docs/ein/user/03-syntax-and-semantics/12-query.md § Claims). An `open`
 ;;; conclusion is by construction never a fact — it is a tally on the
 ;;; search-lattice node, because a stored one would survive its own discharge
 ;;; in a fork that paid it — so no expectation here can say "owes 1". The

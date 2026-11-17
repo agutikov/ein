@@ -7,7 +7,7 @@ user; a build only on their word.**
 [S1g.5.3](../p1g.5_peano_and_induction/s1g.5.3_induction.md) (the scoped induction hypothesis),
 [S1g.5.4](../p1g.5_peano_and_induction/s1g.5.4_goedel_made_concrete.md) (self-reference).
 **Pulls in:** [F5](../../followups/f5_rules_as_data.md), *operate IR rules as data*, the part of it that
-logic needs; [Rules as data](../../../docs/ein/reasoning/rule-evolution/rules-as-data.md) § 4, *where it
+logic needs; [Rules as data](../../../docs/ein/reasoning/03-rule-evolution/01-rules-as-data.md) § 4, *where it
 stops: a rule is not data*; [idea 06](../../ideas/06-inference-rules-completeness.md)'s row *hypothesis +
 contradiction*; [F21](../../followups/f21_non_monotone_programs_decided.md), because the walk's writeback
 and its removal are part of the history.

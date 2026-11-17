@@ -1,5 +1,5 @@
 //! The read-out's data against the oracle
-//! ([read-out.md](../../../../docs/ein/user/reference/read-out.md)).
+//! ([08-read-out.md](../../../../docs/ein/user/04-reference/08-read-out.md)).
 //!
 //! [`read_out::run`] reads every state it lists through the node function,
 //! answers every query from one solve, and checks the program's claim against

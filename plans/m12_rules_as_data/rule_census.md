@@ -36,7 +36,7 @@ Contents: [what is counted](#what-is-counted) · [the corpus](#the-corpus-measur
 **A rule** is a `(rule NAME (PARAMS) :match M :assert A)` or an `(hrule …)` written at the top level of a
 tracked `.ein` file under `stdlib/`, `examples/` or `tests/`, read **as written**. The script has an
 S-expression reader of its own (`;` comments, `#| |#` blocks, strings, the name characters of
-[`grammar.md`](../../docs/ein/user/reference/grammar.md#1-lexical-grammar) § 1) and is not the loader:
+[`01-grammar.md`](../../docs/ein/user/04-reference/01-grammar.md#1-lexical-grammar) § 1) and is not the loader:
 
 - **No macro is expanded for a shape and no import is resolved for a shape.** A rule that calls `forall`
   has `forall` in its shape.

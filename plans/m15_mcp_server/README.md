@@ -36,14 +36,14 @@ a default.**
 - **What a tool returns.** The machine surfaces that exist today are the candidates, and whether they
   suffice is the question:
   - `--json-summary`, the `ein-summary/2` object, which is also `--dump-answer`'s `answer.json`
-    ([`answer-dump.md`](../../docs/ein/user/reference/answer-dump.md));
+    ([`10-answer-dump.md`](../../docs/ein/user/04-reference/10-answer-dump.md));
   - the event protocol, `--events`
-    ([`events.md`](../../docs/ein/ein.rs/events.md)), a stream and not a result;
+    ([`05-events.md`](../../docs/ein/ein.rs/05-events.md)), a stream and not a result;
   - `ein test --json-report`;
-  - the text read-out ([`read-out.md`](../../docs/ein/user/reference/read-out.md)) and a parse error's
+  - the text read-out ([`08-read-out.md`](../../docs/ein/user/04-reference/08-read-out.md)) and a parse error's
     lines, which are written for a reader and may be what a model reads best.
 - **How it is built on the engine.** As a process around the binary, or against the crates:
-  [`docs/ein/ein.rs/api.md`](../../docs/ein/ein.rs/api.md) is how Ein is driven as a library (`ein-ir` to load,
+  [`docs/ein/ein.rs/04-api.md`](../../docs/ein/ein.rs/04-api.md) is how Ein is driven as a library (`ein-ir` to load,
   `ein-infer` to solve, `ein-render` to explain), and it is what [M20](../m20_gui/README.md) binds
   against. Server mode was dropped from M1a on 2026-08-18 and the Python binding deferred on 2026-08-21 for
   want of a consumer; this milestone would be such a consumer, and that history is read before either is
@@ -65,5 +65,5 @@ a default.**
 - [M20](../m20_gui/README.md), the GUI: the other consumer of the crates.
 - [M2](../m2_nl_to_ir/README.md): its first phase is *the kernel as instrumentation*, the kernel's feedback
   as input to a model, which a tool-calling server would also deliver.
-- [`docs/api/`](../../docs/ein/ein.rs/README.md) and [`docs/ein/user/reference/config.md`](../../docs/ein/user/reference/config.md),
+- [`docs/api/`](../../docs/ein/ein.rs/README.md) and [`docs/ein/user/04-reference/06-config.md`](../../docs/ein/user/04-reference/06-config.md),
   the options a tool's schema would be drawn from.

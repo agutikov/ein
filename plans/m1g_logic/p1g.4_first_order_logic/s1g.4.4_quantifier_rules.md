@@ -19,7 +19,7 @@ condition, and the side conditions are the stage.
 
 | rule | says | needs | expected |
 |---|---|---|---|
-| ∀ elimination | from `(All x F)`, `F[t/x]` for any term t | substitution; *t free for x in F*; and, forward, a choice of t | checking: possible. Applying it forward: t is unbound, the schema's wall again ([§ 2.13](../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)); on request, or over the terms that occur in the proof so far |
+| ∀ elimination | from `(All x F)`, `F[t/x]` for any term t | substitution; *t free for x in F*; and, forward, a choice of t | checking: possible. Applying it forward: t is unbound, the schema's wall again ([§ 2.13](../../../docs/ein/user/04-reference/07-diagnostics.md#213-a-conclusions-variable-nothing-binds)); on request, or over the terms that occur in the proof so far |
 | ∃ introduction | from `F[t/x]`, `(Ex x F)` | substitution, read backward: the line names t | checking: possible |
 | ∀ introduction | from F proved for an *arbitrary* x, `(All x F)` | **freshness:** x not free in any open assumption | checking: a walk over the context with `free-in`; the negative, *not free in*, has to be derived positively (a `not-free-in` relation by recursion on the formula), since the theory writes no `absent` |
 | ∃ elimination | from `(Ex x F)` and a derivation of G from `F[c/x]` with c **new**, G | freshness of c: not in G, not in the context; and a discharge, as `Or` elimination has | checking: as above, plus S1g.3.3's answer to discharge |
@@ -109,7 +109,7 @@ That sentence is the coordinator's and is the stage's to confirm or correct.
 ## What it may find
 
 - **That H holds candidates about Skolem terms,** or none, in a way that changes R: read against
-  [`solution-semantics.md` § 1.4](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe), and a register row
+  [`06-solution-semantics.md` § 1.4](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe), and a register row
   if it is wrong.
 - **That equality is needed at once.** *Every person has exactly one father* needs the witness to be equal
   to something, and Ein's `eq` is identity of values: `(father-of Ann)` is never equal to `Bob`. A theory of

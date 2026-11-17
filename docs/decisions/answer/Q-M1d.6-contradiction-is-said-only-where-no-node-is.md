@@ -12,4 +12,4 @@ reach, and a node a budget left unvisited is not known to be dead. Only a node e
 **Held by.** `ein_infer::explore::Verdict`, its four words read off R; `ein-infer/tests/explore.rs`:
 `every_mode_is_the_oracle`, which holds every `--single` word to the oracle's, `Open` where some node is alive and
 `Contradiction` where none is, at the default budget and at one small enough to stop most runs. The two kinds of
-empty R: [solutions-and-models.md § Two kinds of empty R](../../ein/user/syntax-and-semantics/solutions-and-models.md#two-kinds-of-empty-r).
+empty R: [13-solutions-and-models.md § Two kinds of empty R](../../ein/user/03-syntax-and-semantics/13-solutions-and-models.md#two-kinds-of-empty-r).

@@ -3,7 +3,7 @@
 //! Symbols and facts are interned together because they are asked together:
 //! a fact's argument is a `Value` whose tag says which of the two tables to
 //! read, and rendering or ordering one needs both
-//! ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md) §§2–4).
+//! ([03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md) §§2–4).
 //! There is no third: Ein has no integers (Q-M1e2.24), and a run of digits
 //! is a name.
 //!
@@ -29,9 +29,9 @@ use std::sync::atomic::{AtomicBool, Ordering as Atomics};
 /// duration of a fanned-out layer.
 ///
 /// Two states and one rule: **a table that is lent cannot grow.** That is the
-/// whole of what [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
+/// whole of what [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md)
 /// needs from the interner and the fact store, and it is why neither takes a
-/// lock — [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how).
+/// lock — [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how).
 ///
 /// **Why not simply `Arc<T>` in both states.** Growing an `Arc`'s contents
 /// means [`Arc::get_mut`], whose uniqueness test is a locked read-modify-write
@@ -128,7 +128,7 @@ pub struct Terms {
     /// A lent table is readable from every thread and growable from none, so
     /// *sharing is what forbids growing* — no lock, no shard, and the
     /// invariant that makes it affordable is the one
-    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
+    /// [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)
     /// measured and `ein-infer/tests/interning.rs` keeps: nothing interns a
     /// name during a search.
     pub syms: Table<Interner>,
@@ -150,7 +150,7 @@ pub struct Terms {
     /// doing and this says so: whatever the entering produced afterwards is
     /// **not** the entering the sequential engine would have run, so the
     /// fan-out discards it and re-runs it on the committing thread
-    /// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)).
+    /// ([03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)).
     ///
     /// Atomic only because [`Terms`] is `Sync`; it is written and read by the
     /// one thread that owns this `Terms`, so `Relaxed` is the whole ordering
@@ -197,7 +197,7 @@ impl Clone for Terms {
 /// contradiction detector does not read it. `(false)` is its dual and lives
 /// here because a stored `(false)` fact *is* read by the detector; an `open`
 /// conclusion is never stored at all
-/// (`docs/ein/user/syntax-and-semantics/obligations.md`).
+/// (`docs/ein/user/03-syntax-and-semantics/08-obligations.md`).
 pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];
 
 /// The built-in computed predicates.
@@ -259,13 +259,13 @@ pub fn is_reserved(name: &str) -> bool {
 /// search**, measured over the whole corpus by
 /// `ein-infer/tests/interning.rs`.
 ///
-/// Why that matters is [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)'s
-/// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how):
+/// Why that matters is [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md)'s
+/// [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how):
 /// [`Interner::text`](crate::Interner::text) hands out a `&str` borrowed from
 /// the arena, which no lock can do, so a shareable interner is one that does
 /// not **grow** while it is shared, and the search is where it would be
 /// shared. Three of the eight were growing it there
-/// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how));
+/// ([03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how));
 /// the other five arrive during root saturation, which is single-threaded —
 /// they are here because `__symmetric__` was interned by every
 /// `Saturator::new` and [`MIRROR_A`] / [`MIRROR_B`] by every mirror firing,
@@ -301,7 +301,7 @@ pub const QUERY_RULE: &str = "#query";
 /// mirror facts are: **the loader states it** and nothing else does, so it is
 /// reserved (no declarator binds it), never a hypothesis target, and decided
 /// at root; a program that writes a fact of it, or a rule that concludes one,
-/// is refused at load (`docs/ein/user/reference/diagnostics.md` § 2.30).
+/// is refused at load (`docs/ein/user/04-reference/07-diagnostics.md` § 2.30).
 /// What reads it is a
 /// representation module's check of its own terms, `std.math.decimal`'s of a
 /// numeral, which so sees every numeral a program writes, wherever it sits,
@@ -424,9 +424,9 @@ impl Terms {
     /// **record region of its own**.
     ///
     /// This is the whole of what
-    /// [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
+    /// [03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)
     /// hands a worker, and the shape is
-    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)'s
+    /// [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)'s
     /// four decisions in one type:
     ///
     /// - the **interner** is shared by `&`, because a search almost never
@@ -485,7 +485,7 @@ impl Terms {
     /// from the other side: not a crash, but a `Terms` that has silently
     /// stopped growing and an entering that hands itself back for ever. The
     /// pairing is structural here rather than a rule someone has to keep
-    /// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)).
+    /// ([03-design/08-parallelism.md § 1](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract)).
     pub fn lend(&mut self) -> Lent<'_> {
         self.share();
         Lent { terms: self }
@@ -591,7 +591,7 @@ impl Terms {
     /// Order two values by content: a name by its text ([`Interner::rank`]),
     /// a fact as [`Self::cmp_fact_semantic`] orders it, and a mixed pair by
     /// tag, `Sym < Fact`
-    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
+    /// ([03-design/01-determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#22-content-order)).
     pub fn cmp_semantic(&self, a: Value, b: Value) -> Ordering {
         match (a.tag(), b.tag()) {
             (Tag::Sym, Tag::Sym) => self
@@ -611,7 +611,7 @@ impl Terms {
     /// tuple that is a prefix of a longer one sorting first — by arity.
     ///
     /// This is the comparator the lattice's first layer sorts the alive set by
-    /// ([design/determinism-and-order.md § 4.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#42-the-hypothesis-set-and-the-search)).
+    /// ([03-design/01-determinism-and-order.md § 4.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#42-the-hypothesis-set-and-the-search)).
     pub fn cmp_fact_semantic(&self, a: FactId, b: FactId) -> Ordering {
         let (a_rel, a_args) = self.facts.get(a);
         let (b_rel, b_args) = self.facts.get(b);
@@ -631,7 +631,7 @@ impl Terms {
 
     // ── Rendering ──────────────────────────────────────────────────
 
-    /// The value as a [`ReprValue`], for the `repr`-shaped output sites ([design/determinism-and-order.md § 7](../../../../docs/ein/ein.rs/design/determinism-and-order.md#7-the-value-renderer)).
+    /// The value as a [`ReprValue`], for the `repr`-shaped output sites ([03-design/01-determinism-and-order.md § 7](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#7-the-value-renderer)).
     pub fn repr_value(&self, v: Value) -> ReprValue {
         match v.tag() {
             Tag::Sym => ReprValue::Str(self.sym(v.as_sym().expect("tagged Sym")).to_string()),
@@ -713,7 +713,7 @@ impl Drop for Lent<'_> {
 }
 
 /// `Sym < Fact`
-/// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
+/// ([03-design/01-determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#22-content-order)).
 /// The raw tag order agrees, but an
 /// observable order is not left to an encoding (`Sym` is tag 0 because it is
 /// the overwhelmingly common shape and the cheapest thing to leave untagged in
@@ -730,7 +730,7 @@ mod tests {
     use super::*;
 
     /// The intern tables cross into the workers of
-    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md),
+    /// [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md),
     /// so the property is asserted here, which is what rules out an `Rc` or a
     /// `RefCell` creeping in.
     #[test]
@@ -768,7 +768,7 @@ mod tests {
         // A run of digits is a name (Q-M1e2.24), so it sorts as text:
         // "10" < "2", as `(p 10)` lists before `(p 2)`.
         assert_eq!(t.cmp_semantic(ten, two), Ordering::Less);
-        // Mixed: Sym < Fact (determinism-and-order.md § 2.2).
+        // Mixed: Sym < Fact (01-determinism-and-order.md § 2.2).
         let rel = t.intern_text("p").expect("room");
         let fact = t.value_fact(rel, &[apple]).expect("room");
         assert_eq!(t.cmp_semantic(zebra, fact), Ordering::Less);

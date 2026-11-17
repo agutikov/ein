@@ -12,7 +12,7 @@
 //!
 //! **It is not a soundness signal.** `(absent …)` is evaluated on the
 //! closure/world boundary against a positive fixpoint
-//! ([absent-and-naf.md](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary)),
+//! ([03-absent-and-naf.md](../../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md#the-boundary)),
 //! so a derived-NAF rule is sound whatever order its rules fire in.
 //!
 //! What the distinction still buys is **stratification**. NAF over a derived
@@ -64,8 +64,8 @@
 //! This map's line is a warning, advisory as the rest of the map. The
 //! refusal is [`crate::forbid`]'s, at load, over the same shape read at
 //! relation grain on the whole program
-//! ([absent-and-naf.md](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#a-refutation-resting-on-an-absent),
-//! [diagnostics.md § 2.7](../../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
+//! ([03-absent-and-naf.md](../../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md#a-refutation-resting-on-an-absent),
+//! [07-diagnostics.md § 2.7](../../../../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
 //!
 //! [`Q-M1e2.5`]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
 

@@ -53,7 +53,7 @@ the lexical surface.
 
 The three closed name sets mirror the kernel's single source of truth:
 
-- **declarators** — [`docs/ein/user/reference/reserved-names.md`](../../docs/ein/user/reference/reserved-names.md)
+- **declarators** — [`docs/ein/user/04-reference/03-reserved-names.md`](../../docs/ein/user/04-reference/03-reserved-names.md)
 - **primitives** — `ein_core::STRUCTURAL`, plus the verdict atom `open`
 - **predicates** — `ein-infer`'s predicate registry (`ein_infer::predicates::names()`)
 

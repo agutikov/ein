@@ -1,4 +1,4 @@
-//! When not to believe a file — [design/binary-format.md § 4](../../../../docs/ein/ein.rs/design/binary-format.md#4-versioning-and-invalidation).
+//! When not to believe a file — [03-design/09-binary-format.md § 4](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#4-versioning-and-invalidation).
 //!
 //! The rule the tests here pin is that **a stale cache can never change a
 //! verdict**. Two ways that could happen and neither is allowed: believing

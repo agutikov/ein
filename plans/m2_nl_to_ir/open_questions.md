@@ -203,8 +203,8 @@ engine in-process, and that needed no argument. It is now open:
 
 | | how it reaches the engine | what it gets |
 |---|---|---|
-| **Rust** | links `ein-ir` / `ein-infer` as crates ([`docs/ein/ein.rs/api.md`](../../docs/ein/ein.rs/api.md)) | structured diagnostics as *values* — `ParseError` with its location, `KbLoadError` with the accumulated problems. No boundary, no mirrored data model, no exception hierarchy to design |
-| **Python** | drives the `ein` binary — `--json-summary` for the verdict and counters, `--events` for the narration | the ecosystem, and a frontend that can be rewritten without touching the engine. Diagnostics are **strings**: [`diagnostics.md` §1/§4](../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics) pins them as such, and the CLI cannot grow a structured surface without breaking that |
+| **Rust** | links `ein-ir` / `ein-infer` as crates ([`docs/ein/ein.rs/04-api.md`](../../docs/ein/ein.rs/04-api.md)) | structured diagnostics as *values* — `ParseError` with its location, `KbLoadError` with the accumulated problems. No boundary, no mirrored data model, no exception hierarchy to design |
+| **Python** | drives the `ein` binary — `--json-summary` for the verdict and counters, `--events` for the narration | the ecosystem, and a frontend that can be rewritten without touching the engine. Diagnostics are **strings**: [`07-diagnostics.md` §1/§4](../../docs/ein/user/04-reference/07-diagnostics.md#1-parse-and-load-diagnostics) pins them as such, and the CLI cannot grow a structured surface without breaking that |
 
 **What the reshape changes in the trade (2026-08-23).** The research plan's
 Stage A3 says *human-readable CLI output should not be used by the
@@ -316,7 +316,7 @@ hashes* — syntactic. The user's own note says the fixed point should be
 rewrite equivalent rules forever without the closure moving.
 
 **The engine can do both, today.** `ein-ir` has a canonical dump, which is the
-syntactic hash; and [`values-and-order.md` § A state is its facts](../../docs/ein/reasoning/static-ir/values-and-order.md#a-state-is-its-facts)
+syntactic hash; and [`03-values-and-order.md` § A state is its facts](../../docs/ein/reasoning/01-static-ir/03-values-and-order.md#a-state-is-its-facts)
 pins that *canonical state identity is the sorted fact list itself*, which
 makes the saturated state's digest — or the `.einb` of a saturated KB — the
 semantic one, and the summary's sorted `solutions` the model-set one. So the

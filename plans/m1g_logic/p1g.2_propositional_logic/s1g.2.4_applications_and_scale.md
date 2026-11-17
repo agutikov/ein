@@ -5,7 +5,7 @@
 **Depends on:** [S1g.2.2](s1g.2.2_valuations_as_hypotheses.md).
 **Pulls in:** [idea 09](../../ideas/09-puzzles-beyond-zebra.md)'s knights and knaves;
 S1f.6.17's application 5 (puzzles of truth and lies) and its measurement at 8, 16 and 24 inputs, restated for
-formulas; [`absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)'s three-state model.
+formulas; [`absent_semantics.md`](../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md)'s three-state model.
 
 ## What it asks
 

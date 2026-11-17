@@ -8,6 +8,6 @@ facts minus the positive initial KB, is what `-P` prints. `-t`'s `read-out` row 
 **Why.** `(model …)` is a form of the language, and a claim is written in it; printing the other object under that
 name on the screen that holds the claim blocks would give one word two sets in one place.
 
-**Held by.** [read-out.md](../../ein/user/reference/read-out.md#6-the-listing) § 6 and § 8, held to the printer by
+**Held by.** [08-read-out.md](../../ein/user/04-reference/08-read-out.md#6-the-listing) § 6 and § 8, held to the printer by
 `ein-cli/tests/read_out_reference.rs`; the model's definition:
-[Solution semantics](../../ein/reasoning/kb-evolution/solution-semantics.md) § 3.
+[Solution semantics](../../ein/reasoning/02-kb-evolution/06-solution-semantics.md) § 3.

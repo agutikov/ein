@@ -3,7 +3,7 @@
 ;;; Saturation alone: the digit sum is a walk over the number's digits, each
 ;;; an addition of std.math.decimal-arith; then two divisions by 9, and the remainders are
 ;;; set against each other.
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is add-walk done div-call div-done))
 (import std.math.decimal :symbols (n))

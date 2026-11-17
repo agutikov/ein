@@ -1,5 +1,5 @@
 //! Every mode of `ein solve` against the oracle, and the contract of
-//! [`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract):
+//! [`05-cli.md` § 1](../../../../docs/ein/user/04-reference/05-cli.md#1-the-contract):
 //!
 //! - **C1** every state a run prints is in the oracle's chosen part of `R`;
 //! - **C2** a run that says it exhausted that part printed all of it, and a
@@ -943,7 +943,7 @@ fn every_mode_at_four_jobs_is_every_mode_at_one() {
 }
 
 /// The cheap questions are cheap
-/// ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)):
+/// ([03-design/07-search.md § 4](../../../../docs/ein/ein.rs/03-design/07-search.md#4-the-routes)):
 /// on the `square-*` cube, where every commitment is alive and in `R`.
 #[test]
 fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {

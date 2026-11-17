@@ -3,13 +3,13 @@
 //! The generated parser is the grammar: `src/ein.l` and `src/ein.y`, which
 //! `build.rs` compiles. This file keeps two things in step with them.
 //!
-//! - **The page.** `docs/ein/user/reference/grammar.md`'s two grammar
+//! - **The page.** `docs/ein/user/04-reference/01-grammar.md`'s two grammar
 //!   blocks are written here, from the two files, read through grmtools'
 //!   public readers (`lrlex`'s `LRNonStreamingLexerDef` and `cfgrammar`'s
 //!   `YaccGrammar`), so the page cannot state a token or a production the
 //!   parser does not have. The test fails when the page differs, and
 //!   `EIN_BLESS=1` rewrites the two marked regions, as
-//!   `ein-cli/tests/embedding.rs` does for `docs/ein/ein.rs/api.md`.
+//!   `ein-cli/tests/embedding.rs` does for `docs/ein/ein.rs/04-api.md`.
 //! - **The grammar's table** ([`TABLE`]). One row for each shape the grammar
 //!   refuses at the parse, with the parse error it is refused with, banked in
 //!   `tests/golden/grammar_table.txt`. A row that names a refusal line
@@ -46,7 +46,7 @@ use lrlex::{DefaultLexerTypes, LRNonStreamingLexerDef, LexerDef};
 // ── The page ───────────────────────────────────────────────────────
 
 /// The page the blocks are written into.
-const PAGE: &str = "docs/ein/user/reference/grammar.md";
+const PAGE: &str = "docs/ein/user/04-reference/01-grammar.md";
 
 /// A grammar file, as `build.rs` reads it.
 fn source(name: &str) -> String {
@@ -198,7 +198,7 @@ fn page_with(page: &str, blocks: &[(&str, String)]) -> String {
     out
 }
 
-/// **`grammar.md`'s blocks are the grammar's.** Each is generated from the
+/// **`01-grammar.md`'s blocks are the grammar's.** Each is generated from the
 /// file `build.rs` compiles; a page that differs fails, and `EIN_BLESS=1`
 /// writes the blocks into it.
 #[test]

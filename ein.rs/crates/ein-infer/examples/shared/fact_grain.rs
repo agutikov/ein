@@ -2,7 +2,7 @@
 //! **beside** [`monotone::classify`] and read by no route: `site_census`
 //! prints it and `ein-infer/tests/region.rs` holds it to the cube. The
 //! shipped check reads at relation grain
-//! ([monotonicity.md § 3.3](../../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#33-the-grain)).
+//! ([08-monotonicity.md § 3.3](../../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#33-the-grain)).
 //!
 //! ### What changes, and what does not
 //!

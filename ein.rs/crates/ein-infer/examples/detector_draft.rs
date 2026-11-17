@@ -1,5 +1,5 @@
 //! The detector, drafted: the rows
-//! [design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs)
+//! [03-design/07-search.md § 7](../../../../docs/ein/ein.rs/03-design/07-search.md#7-monotone-and-flagged-programs)
 //! shows on real programs, computed here rather than written by hand.
 //!
 //! Per program:

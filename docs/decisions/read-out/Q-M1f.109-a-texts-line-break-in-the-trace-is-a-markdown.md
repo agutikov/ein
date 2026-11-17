@@ -10,4 +10,4 @@ line break is the writer's, as it is on the read-out
 ([Q-M1f.19](Q-M1f.19-a-texts-line-break-on-the-read-out-continues-at.md)).
 
 **Held by.** `ein-cli/tests/natural_language_text.rs`: `the_trace_prints_the_rules_why_and_the_premises_source`;
-[natural-language.md](../../ein/user/syntax-and-semantics/natural-language.md#3-a-fact-in-english-the-fallback-ladder) § 3.
+[14-natural-language.md](../../ein/user/03-syntax-and-semantics/14-natural-language.md#3-a-fact-in-english-the-fallback-ladder) § 3.

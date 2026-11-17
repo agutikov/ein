@@ -1,4 +1,4 @@
-//! The `--events` protocol — `docs/ein/ein.rs/events.md`, engine side.
+//! The `--events` protocol — `docs/ein/ein.rs/05-events.md`, engine side.
 //!
 //! The engine narrates what it did: one JSON object per line, opt-in behind
 //! `--events FILE`. The schema is fixed (`ein-events/1`) and was designed as a
@@ -47,13 +47,13 @@ impl Level {
 
 /// Where an [`Events`] puts what it narrates.
 ///
-/// The third state is [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)'s.
+/// The third state is [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md)'s.
 /// A worker cannot hold the run's sink — writes from many threads would
 /// interleave, and the ordinal an event carries is a property of the *stream*
 /// rather than of the worker — so it narrates into one of these and the
 /// ordered commit replays it ([`Events::replay`]). That is the same shape the
 /// counters have, which is what
-/// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
+/// [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)
 /// says a sink needs and §3's "no shared queue" hid, because a sink is not a
 /// queue.
 enum Sink {
@@ -139,7 +139,7 @@ impl Events {
     ///
     /// `Events` is `Send` and **not** `Sync` — a sink two threads could write
     /// at once is a shared queue, which
-    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
+    /// [03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how)
     /// refuses — so a fan-out cannot
     /// hand its workers a `&Events`. It hands them this instead, which is
     /// `Copy`.
@@ -211,7 +211,7 @@ impl Events {
 
     /// [`Events::to`] with the CLI's own `run` fields appended — `impl`,
     /// `file`, `argv` and the resolved config, which
-    /// [`events.md`](../../../../docs/ein/ein.rs/events.md) lists after `version`
+    /// [`05-events.md`](../../../../docs/ein/ein.rs/05-events.md) lists after `version`
     /// and `level`. The engine has no argv, so the caller supplies them.
     pub fn to_with(
         sink: Box<dyn Write + Send>,

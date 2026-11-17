@@ -68,7 +68,7 @@
 ;;; sentence carries a positional `:why` render template. Together with
 ;;; the query's `:goal-text` that makes this file the NL ⇄ IR
 ;;; round-trip target, not just a fixture. See
-;;; docs/ein/user/guide/06_zebra_walkthrough.md.
+;;; docs/ein/user/02-guide/06-zebra-walkthrough.md.
 
 
 ;; ──── Search control ───────────────────────────────────────────────
@@ -81,7 +81,7 @@
 (config
   ;; `:record-alternative-justifications` is the one flag set here, and
   ;; no flag changes R: this one may change which core a dead node's
-  ;; refutation names, and no state (docs/ein/user/reference/config.md). It is
+  ;; refutation names, and no state (docs/ein/user/04-reference/06-config.md). It is
   ;; set
   ;; OFF, and this is the single most consequential knob in the file.
   ;; With multi-justification provenance on, a dead branch's no-good is

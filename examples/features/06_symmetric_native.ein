@@ -6,7 +6,7 @@
 ;;; saturator closes R's extension under arg-swap directly (pop `(R a b)`,
 ;;; write `(R b a)`), skipping the JoinPlan + matcher the stdlib `symmetric`
 ;;; rule pays per mirror. Identical closure, one kernel fast-path —
-;;; `docs/ein/user/reference/reserved-names.md` for the reference.
+;;; `docs/ein/user/04-reference/03-reserved-names.md` for the reference.
 ;;;
 ;;; **The mirror cannot be turned off.** A flag that took the three
 ;;; mirrored facts below out of root's fixpoint would take the query's goal

@@ -10,10 +10,10 @@ is held to it, is the reasoning perspective's subject, and how `ein.rs` computes
 
 | part | what it is for |
 |---|---|
-| [`install.md`](install.md) | getting the `ein` binary, checking which build and which standard library it carries |
-| [`guide/`](guide/README.md) | the tutorial: *Learn Ein by solving the Zebra puzzle*, then worked examples and word problems |
-| [`syntax-and-semantics/`](syntax-and-semantics/README.md) | one page a concept — objects, relations, facts, rules, constraints, obligations, hypotheses, theories, macros, queries, solutions — each stated four ways: in Ein, as a graph, in words and in mathematics |
-| [`reference/`](reference/README.md) | the exact surface: the grammar, every form and reserved name, the standard library symbol by symbol, every command and option, every diagnostic, every row of the read-out and every file of a dump |
+| [`01-install.md`](01-install.md) | getting the `ein` binary, checking which build and which standard library it carries |
+| [`02-guide/`](02-guide/README.md) | the tutorial: *Learn Ein by solving the Zebra puzzle*, then worked examples and word problems |
+| [`03-syntax-and-semantics/`](03-syntax-and-semantics/README.md) | one page a concept — objects, relations, facts, rules, constraints, obligations, hypotheses, theories, macros, queries, solutions — each stated four ways: in Ein, as a graph, in words and in mathematics |
+| [`04-reference/`](04-reference/README.md) | the exact surface: the grammar, every form and reserved name, the standard library symbol by symbol, every command and option, every diagnostic, every row of the read-out and every file of a dump |
 
 Beside them, [`../standard-of-proof.md`](../standard-of-proof.md) says what it takes to call a claim on any of these
 pages settled, and [`../../decisions/`](../../decisions/README.md) holds every decision the pages cite, one file
@@ -21,21 +21,21 @@ each.
 
 ## Reading paths
 
-- **Never seen Ein.** [`install.md`](install.md), then the [guide](guide/README.md) from chapter 1 to the Zebra
+- **Never seen Ein.** [`01-install.md`](01-install.md), then the [guide](02-guide/README.md) from chapter 1 to the Zebra
   walkthrough. Each chapter links the concept pages it leans on.
-- **Writing a program.** [`syntax-and-semantics/`](syntax-and-semantics/README.md) in its order — objects,
-  relations, facts, rules, constraints — then [`theory.md`](syntax-and-semantics/theory.md) for how rules work
-  together, [`query.md`](syntax-and-semantics/query.md) for what a program asks, and
-  [`reference/stdlib.md`](reference/stdlib.md) for what the standard library already states. Keep
-  [`reference/syntax.md`](reference/syntax.md) and [`reference/diagnostics.md`](reference/diagnostics.md) open
+- **Writing a program.** [`03-syntax-and-semantics/`](03-syntax-and-semantics/README.md) in its order — objects,
+  relations, facts, rules, constraints — then [`10-theory.md`](03-syntax-and-semantics/10-theory.md) for how rules work
+  together, [`12-query.md`](03-syntax-and-semantics/12-query.md) for what a program asks, and
+  [`04-reference/04-stdlib.md`](04-reference/04-stdlib.md) for what the standard library already states. Keep
+  [`04-reference/02-syntax.md`](04-reference/02-syntax.md) and [`04-reference/07-diagnostics.md`](04-reference/07-diagnostics.md) open
   beside it: the first says what each form takes, the second what each refusal means.
-- **Reading an answer.** [`solutions-and-models.md`](syntax-and-semantics/solutions-and-models.md) for what the
-  region R is, then [`reference/read-out.md`](reference/read-out.md), every row `ein solve` prints and what it
-  counts, with [`reference/read-out-examples.md`](reference/read-out-examples.md) beside it.
-- **Driving `ein` from another program.** [`reference/cli.md`](reference/cli.md) for the commands and their exit
-  codes, `--json-summary`'s blocks in [`reference/read-out.md`](reference/read-out.md), the files of
-  [`reference/answer-dump.md`](reference/answer-dump.md) and [`reference/region-dump.md`](reference/region-dump.md),
-  and [`reference/config.md`](reference/config.md) for which options change only how much is printed. No option
+- **Reading an answer.** [`13-solutions-and-models.md`](03-syntax-and-semantics/13-solutions-and-models.md) for what the
+  region R is, then [`04-reference/08-read-out.md`](04-reference/08-read-out.md), every row `ein solve` prints and what it
+  counts, with [`04-reference/09-read-out-examples.md`](04-reference/09-read-out-examples.md) beside it.
+- **Driving `ein` from another program.** [`04-reference/05-cli.md`](04-reference/05-cli.md) for the commands and their exit
+  codes, `--json-summary`'s blocks in [`04-reference/08-read-out.md`](04-reference/08-read-out.md), the files of
+  [`04-reference/10-answer-dump.md`](04-reference/10-answer-dump.md) and [`04-reference/11-region-dump.md`](04-reference/11-region-dump.md),
+  and [`04-reference/06-config.md`](04-reference/06-config.md) for which options change only how much is printed. No option
   changes the answer.
 
 ## Conventions

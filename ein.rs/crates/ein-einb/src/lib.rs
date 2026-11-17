@@ -1,5 +1,5 @@
 //! `.einb` — the binary knowledge-base container
-//! ([design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md)).
+//! ([03-design/09-binary-format.md](../../../../docs/ein/ein.rs/03-design/09-binary-format.md)).
 //!
 //! A loaded — and optionally saturated — KB on disk, in a form the engine
 //! opens with no import resolution, no macro expansion and no filesystem walk.
@@ -57,7 +57,7 @@
 //! pass, and the pass is skipped when the tables come back the identity —
 //! which is what a fresh process opening one file gets. [`tables`] is that,
 //! and
-//! [design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary)
+//! [03-design/09-binary-format.md § 3](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#3-ids-across-the-boundary)
 //! is why.
 //!
 //! ## Trusting a file
@@ -314,7 +314,7 @@ pub struct OpenOptions {
     /// "did not look", which claims nothing.
     pub sources: Vec<Source>,
     /// `--trust-cache` turns this off
-    /// ([design/binary-format.md § 4.2](../../../../docs/ein/ein.rs/design/binary-format.md#42-a-file-refused)).
+    /// ([03-design/09-binary-format.md § 4.2](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#42-a-file-refused)).
     /// On by default, because a digest is cheap and a silently misread KB is a
     /// wrong answer with a straight face.
     pub verify_digest: bool,
@@ -389,7 +389,7 @@ pub struct Opened {
     /// Present only when the file carried one *and* it was believed.
     pub solutions: Option<Solutions>,
     /// False when every id space came back the identity — the fast path of
-    /// [design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary),
+    /// [03-design/09-binary-format.md § 3](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#3-ids-across-the-boundary),
     /// and the number a benchmark wants to know it took.
     pub remapped: bool,
 }
@@ -419,7 +419,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         let end = off.checked_add(len).ok_or(EinbError::Truncated)?;
         let body = bytes.get(off..end).ok_or(EinbError::Truncated)?;
         // An unknown kind in this major is skipped, not refused: that is what
-        // makes a minor bump additive (binary-format.md § 4.1).
+        // makes a minor bump additive (09-binary-format.md § 4.1).
         if let Some(kind) = Kind::from_u32(e.kind) {
             found[kind as usize] = Some(body);
         }

@@ -17,7 +17,7 @@
 ;;; depends on it: ein.rs skips the per-candidate `fired`
 ;;; probe on programs where no two entries *can* share a key, and this is the
 ;;; fixture that says what happens when they can
-;;; (docs/ein/ein.rs/design/saturation.md).
+;;; (docs/ein/ein.rs/03-design/06-saturation.md).
 ;;;
 ;;; Expected: `touched` for both people, one per person, each derived once.
 ;;;   Alice — from the second disjunct, `(likes Alice Bob)` holds.

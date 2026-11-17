@@ -11,7 +11,7 @@
 //! except by having restored the KB exactly.
 //!
 //! **Gated on the feature it tests.** `einb` is a default feature and `ein kb`
-//! is registered only with it ([design/toolchain-and-layout.md § 4](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#4-feature-flags)),
+//! is registered only with it ([03-design/10-toolchain-and-layout.md § 4](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#4-feature-flags)),
 //! so without it every case below asks a binary that has no `kb`
 //! subcommand and gets exit 2 — eight failures that say nothing about the
 //! container. `help_surface.rs` already holds the *other* direction, that a
@@ -303,7 +303,7 @@ fn a_saturated_container_reaches_the_same_verdict() {
 }
 
 /// The stdlib is the input whose divergence nothing else would notice
-/// ([design/shared-assets.md § 4](../../../../docs/ein/ein.rs/design/shared-assets.md#4-drift)),
+/// ([03-design/02-shared-assets.md § 4](../../../../docs/ein/ein.rs/03-design/02-shared-assets.md#4-drift)),
 /// so a container written against one stdlib and opened
 /// against another is a **cache miss**: said out loud, and with the derived
 /// state dropped rather than believed.

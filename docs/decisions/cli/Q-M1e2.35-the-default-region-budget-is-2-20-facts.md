@@ -10,5 +10,5 @@ much of R a run discovers and never which R
 ([Q-M1e2.30](../answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)).
 
 **Held by.** `ein_infer::downset::DEFAULT_BUDGET`, the one constant the option's default and its help text read
-(`ein-cli`'s `cmdline.rs`); `docs/ein/user/reference/config.md`, the budgets; `docs/ein/user/reference/read-out-examples.md`,
+(`ein-cli`'s `cmdline.rs`); `docs/ein/user/04-reference/06-config.md`, the budgets; `docs/ein/user/04-reference/09-read-out-examples.md`,
 which the binary writes and `ein-cli/tests/read_out_reference.rs` holds, a describe stopped at this default.

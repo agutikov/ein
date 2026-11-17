@@ -12,7 +12,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; Root is dead. Its core is the smallest frontier over every derivation
-;;; (`docs/ein/user/reference/glossary.md` § Core, the smallest contradiction
+;;; (`docs/ein/user/04-reference/13-glossary.md` § Core, the smallest contradiction
 ;;; frontier): `x-uv`'s rests on `(g K)` alone, so the core is `(g K)`, as the
 ;;; control reports and as a store with no alternatives cap does
 ;;; (`MAX_ALT_JUSTIFICATIONS = 1 000 000`, a scratch build at `94c75204`).

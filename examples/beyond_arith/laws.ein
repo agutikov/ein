@@ -16,7 +16,7 @@
 ;;; one premise and reads what it needs out of the tag, so no rule joins two
 ;;; facts on a number.
 ;;;
-;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; `docs/ein/user/02-guide/08-word-problems.md` § Beyond word problems reads
 ;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith add-walk mul-call done div-call div-done cmp-walk order-is))
 (import std.math.decimal :symbols (n))

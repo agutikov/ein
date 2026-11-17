@@ -64,8 +64,8 @@ scope. What's left is a focused contradiction detector
 ### P1.2b audit — closed 2026-05-19, verdict: no phase needed
 
 Audited the ein-model unification
-([`ontology.md`](../docs/ein/user/syntax-and-semantics/ontology.md)
-+ [`05_jack_drinks_coffee.md`](../docs/ein/user/guide/05_jack_drinks_coffee.md))
+([`04-ontology.md`](../docs/ein/user/03-syntax-and-semantics/04-ontology.md)
++ [`05-jack-drinks-coffee.md`](../docs/ein/user/02-guide/05-jack-drinks-coffee.md))
 against the existing P1.2 stages.
 
 - [x] **S1.2.1-S1.2.4 acceptance under reflexive framing** — *all 4

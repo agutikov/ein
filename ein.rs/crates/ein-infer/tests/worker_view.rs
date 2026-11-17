@@ -1,6 +1,6 @@
 //! **The seam a worker crosses**, without a thread.
 //!
-//! [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
+//! [03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)
 //! fans a layer out by handing every worker the same root (a route's fan-out
 //! is `region::fan_out`, held by `jobs_invariance`). Four things have to be
 //! true for that, and all four are properties of *types* rather than of threads,

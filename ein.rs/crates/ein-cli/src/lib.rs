@@ -6,13 +6,13 @@
 //! "registered so it appears in help, never actually parsed".
 //!
 //! Exit codes: 0 success, 1 load error, 2 usage error, and 2 again for a
-//! budget abort ([`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)).
+//! budget abort ([`07-diagnostics.md` §2](../../../../docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes)).
 //! The last two collide.
 //!
 //! **`test` is the one exception, and it is deliberate**: there 1 means *an
 //! expectation is false* and a load error takes 2, because a test runner that
 //! cannot tell a broken file from a false claim fails at its one job
-//! ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
+//! ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)).
 
 #![forbid(unsafe_code)]
 

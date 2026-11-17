@@ -2,7 +2,7 @@
 //! ([`write_cube_dir`]).
 //!
 //! Two files, documented in
-//! [`region-dump.md`](../../../../../docs/ein/user/reference/region-dump.md):
+//! [`11-region-dump.md`](../../../../../docs/ein/user/04-reference/11-region-dump.md):
 //!
 //! - `region.json` — `ein_infer::region`'s cube: every node, its two bits and
 //!   their reasons, `R`'s lines, holes, components, sub-cubes, `N`, `E`, the
@@ -769,7 +769,7 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
     };
     out.push_str(&format!(
         "The lattice is over **{} root candidates** — the generator's list at root's \
-         fixpoint with no config switch applied (`docs/ein/user/reference/region-dump.md`).\n\n",
+         fixpoint with no config switch applied (`docs/ein/user/04-reference/11-region-dump.md`).\n\n",
         candidates.len()
     ));
     for l in later_of(oracle) {

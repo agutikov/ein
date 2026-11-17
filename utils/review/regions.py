@@ -202,7 +202,7 @@ def cmd_regions(out: Path, bin: str) -> int:
     lines = ["# The region gallery", "",
              f"> Every corpus program's region — {len(have)} computed, {len(rows) - len(have)} not — and a page for the ones "
              f"worth reading. Built by `python3 utils/review_bundle.py --regions` (M1e2 S1e2.1a.8). The legend is "
-             f"[§ Region rendering]({doc('docs/ein/user/reference/rendering.md', index)}#the-region--ein-render-region); "
+             f"[§ Region rendering]({doc('docs/ein/user/04-reference/12-rendering.md', index)}#the-region--ein-render-region); "
              f"the raw survey is [`survey.json`](survey.json). Each region is `ein oracle --dump`'s; each program "
              f"page runs the corpus entry's first declared `solve`.", ""]
     for title, what, group in [

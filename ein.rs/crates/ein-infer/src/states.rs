@@ -1,12 +1,12 @@
 //! The state route — a monotone program's region over its **states**, not its
 //! commitments
-//! ([finding-r.md § 6](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#6-the-routes-question-by-question)).
+//! ([07-finding-r.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question)).
 //!
 //! Route 1 ([`crate::downset`]) visits every alive commitment. On a monotone
 //! program a commitment's state is its closure's (L3), so the alive
 //! commitments fall into far fewer states — `zebra.ein` has 270 454 alive
 //! commitments and 27 alive states
-//! ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
+//! ([03-design/07-search.md § 4](../../../../docs/ein/ein.rs/03-design/07-search.md#4-the-routes)).
 //! This route visits each alive state once and saturates its one-up
 //! extensions, and nothing else.
 //!
@@ -79,7 +79,7 @@
 //! every state of `R`. Beside this route it would only add saturations, and
 //! read here, `N` and `E` cost none. The argument holds while describe needs
 //! the states, which is what *describe* asks
-//! ([solution-semantics.md § 2.3](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#23-how-many-k_s-and-k_c)),
+//! ([06-solution-semantics.md § 2.3](../../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#23-how-many-k_s-and-k_c)),
 //! and while this route meets every alive state, which
 //! `ein-infer/tests/region.rs` holds to the oracle. A mode that asks for a
 //! line alone is `crate::tree`'s, and that is where an enumeration without

@@ -4,7 +4,7 @@
 //! `parse(dump(parse(x))) == parse(x)` holds. Positions live in a **side
 //! table** so that it holds by construction: [`Node`] carries no `Loc`, so
 //! structural equality ([`Ast::eq_nodes`]) cannot see one
-//! ([design/ir-frontend.md § 5](../../../../docs/ein/ein.rs/design/ir-frontend.md#5-the-ast-arena)).
+//! ([03-design/04-ir-frontend.md § 5](../../../../docs/ein/ein.rs/03-design/04-ir-frontend.md#5-the-ast-arena)).
 //!
 //! Everything is `u32`-indexed into three parallel arenas — nodes, their
 //! locations, and a flat argument list. No `Rc`, no recursive `Drop`, and a
@@ -24,7 +24,7 @@
 //!   `or`, `not` and `neq` without one, and only a form inside another takes
 //!   its head's. A loader error that interpolates a top-level form's location
 //!   therefore prints `at None`
-//!   ([`diagnostics.md` § 1.5](../../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none);
+//!   ([`07-diagnostics.md` § 1.5](../../../../docs/ein/user/04-reference/07-diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none);
 //!   Q-M1a.6 — a usability gap, kept so that fixing it is one visible
 //!   re-baseline).
 
@@ -103,7 +103,7 @@ pub enum Node {
 
 /// String interner. Never iterated — only `intern` and index lookups — so the
 /// hash map's order cannot reach an observable
-/// ([design/determinism-and-order.md § 9](../../../../docs/ein/ein.rs/design/determinism-and-order.md#9-the-tests-that-hold-it)),
+/// ([03-design/01-determinism-and-order.md § 9](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#9-the-tests-that-hold-it)),
 /// and it may therefore be hashed by whatever is fastest: `FxHashMap`, not the
 /// standard library's SipHash.
 #[derive(Clone, Default, Debug)]
@@ -276,7 +276,7 @@ impl Ast {
     /// `(and (r a) (p a) (q a))` is.
     ///
     /// **The one reading of a rule's `:assert`**
-    /// ([`rules.md` § The conclusion](../../../../docs/ein/user/syntax-and-semantics/rules.md#the-conclusion)):
+    /// ([`05-rules.md` § The conclusion](../../../../docs/ein/user/03-syntax-and-semantics/05-rules.md#the-conclusion)):
     /// the compiler's templates (`ein_infer::compile`), the loader's checks
     /// (`from_ir`) and every other reader that splits a conclusion call it,
     /// so all read the same list. A premise flattens the same way where the
@@ -387,7 +387,7 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
 ///
 /// The compiler's arity line prints it the same way (Q-M1f.75). `None` for a
 /// **top-level** form, which is what makes loader messages end in `at None`
-/// ([`diagnostics.md` § 1.5](../../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none)):
+/// ([`07-diagnostics.md` § 1.5](../../../../docs/ein/user/04-reference/07-diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none)):
 /// the builder makes a top-level fact, a declarator, `and`, `or`, `not` and
 /// `neq` without a `loc`, and only a form inside another takes its head's.
 /// Q-M1a.6 — a usability gap, kept so that fixing it is one visible

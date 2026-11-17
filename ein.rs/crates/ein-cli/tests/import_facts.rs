@@ -142,7 +142,7 @@ fn witnesses() -> Vec<Witness> {
 /// that the program does not list under its full name, `module.unused`, as
 /// the program prints it. A dotted name the main file declares where no
 /// module of the program has its prefix is the program's own
-/// (`docs/ein/user/reference/diagnostics.md` § 2.28), so the twin loads.
+/// (`docs/ein/user/04-reference/07-diagnostics.md` § 2.28), so the twin loads.
 /// Strings are left as
 /// they are.
 fn in_place(text: &str, module: &str, listed: &[&str]) -> String {

@@ -1,8 +1,8 @@
 //! `--json-summary` (`ein-summary/2`) and `--dump-answer DIR` (`ein-answer/2`)
 //! under the region modes, the fields
-//! [`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)
+//! [`08-read-out.md` § 11](../../../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks)
 //! defines (the directory is
-//! [`answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md)'s).
+//! [`10-answer-dump.md`](../../../../docs/ein/user/04-reference/10-answer-dump.md)'s).
 //!
 //! - **one shape on every arm**: the summary's keys, and the `region` block's,
 //!   do not depend on the question or on what R turned out to be;

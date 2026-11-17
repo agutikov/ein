@@ -18,7 +18,7 @@ Four substitutions, in decreasing frequency:
 1. **`(M1d P1d.2 S1d.2.4)` → a link to the `docs/ein/` page that states the behaviour.** This is the user's
    own example, and the common case.
 2. **A link into `docs/history/m1a_rust/design/NN` → the same file's new home under
-   `docs/ein/ein.rs/design/`.** It is mechanical, and the link check verifies it. S1f.20.3 to S1f.20.5 have
+   `docs/ein/ein.rs/03-design/`.** It is mechanical, and the link check verifies it. S1f.20.3 to S1f.20.5 have
    done this already for every page they moved ([P1f.20 § Two rules](README.md#two-rules-across-the-stages)).
 3. **A sentence whose *subject* is the development event**, where the id carries the paragraph's meaning:
    *"Empty before S1a.6.9 and not because there was nothing to say"*. These do not substitute. They are

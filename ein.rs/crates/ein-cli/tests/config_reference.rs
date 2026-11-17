@@ -1,9 +1,9 @@
-//! [`docs/ein/user/reference/config.md`] — the configuration reference, pinned.
+//! [`docs/ein/user/04-reference/06-config.md`] — the configuration reference, pinned.
 //!
 //! The page enumerates three surfaces — the 17 `(config …)` flags, the CLI
 //! options, and the `EIN_*` environment — and a reference page is the most
 //! drift-prone shape there is: a list of names and defaults that nothing runs.
-//! [`docs/ein/ein.rs/api.md`](../../../../docs/ein/ein.rs/api.md) is the precedent that
+//! [`docs/ein/ein.rs/04-api.md`](../../../../docs/ein/ein.rs/04-api.md) is the precedent that
 //! works, and this file is the same trade with a different generator.
 //!
 //! Eight claims, one test each, and each is a claim the page makes in prose:
@@ -40,7 +40,7 @@
 //!    row names every key of `--json-summary`'s `leftover` block, and the
 //!    block is what the row says, with the variable and without.
 //!
-//! [`docs/ein/user/reference/config.md`]: ../../../../docs/ein/user/reference/config.md
+//! [`docs/ein/user/04-reference/06-config.md`]: ../../../../docs/ein/user/04-reference/06-config.md
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -58,11 +58,11 @@ fn repo_root() -> PathBuf {
 }
 
 fn page_path() -> PathBuf {
-    repo_root().join("docs/ein/user/reference/config.md")
+    repo_root().join("docs/ein/user/04-reference/06-config.md")
 }
 
 fn page() -> String {
-    std::fs::read_to_string(page_path()).expect("docs/ein/user/reference/config.md")
+    std::fs::read_to_string(page_path()).expect("docs/ein/user/04-reference/06-config.md")
 }
 
 /// A fixture `<tag>.ein` in `dir`, a [`Scratch`] the calling test owns, so it
@@ -135,10 +135,10 @@ fn the_defaults_block_is_the_binarys_own_dump_config() {
     let text = page();
     let (before, rest) = text
         .split_once(BEGIN)
-        .expect("docs/ein/user/reference/config.md has no generated-block opening marker");
+        .expect("docs/ein/user/04-reference/06-config.md has no generated-block opening marker");
     let (got, after) = rest
         .split_once(END)
-        .expect("docs/ein/user/reference/config.md has no generated-block closing marker");
+        .expect("docs/ein/user/04-reference/06-config.md has no generated-block closing marker");
 
     if got == want {
         return;
@@ -149,7 +149,7 @@ fn the_defaults_block_is_the_binarys_own_dump_config() {
         return;
     }
     panic!(
-        "docs/ein/user/reference/config.md's generated block is not \
+        "docs/ein/user/04-reference/06-config.md's generated block is not \
          `ein solve --dump-config`'s output.\n\
          Re-bank it with `EIN_BLESS=1 cargo test -p ein-cli --test \
          config_reference`; never edit the block by hand.\n\n\
@@ -221,7 +221,7 @@ fn every_flag_has_a_row_and_no_row_is_orphaned() {
     let rows = judgement_rows(&text);
     assert!(
         !rows.is_empty(),
-        "found no table in docs/ein/user/reference/config.md whose first column is `flag`"
+        "found no table in docs/ein/user/04-reference/06-config.md whose first column is `flag`"
     );
 
     let want: Vec<&str> = FLAGS.iter().map(|(n, _)| *n).collect();
@@ -329,7 +329,7 @@ fn the_cli_counts_come_from_the_golden() {
         let want = format!("| `{cmd}` | {n} |");
         assert!(
             text.contains(&want),
-            "docs/ein/user/reference/config.md has no row `{want}` — the golden says \
+            "docs/ein/user/04-reference/06-config.md has no row `{want}` — the golden says \
              {cmd} takes {n} options"
         );
     }
@@ -538,7 +538,7 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
     }
 }
 
-/// The fifteen retired flags (`config.md` § 2.4) are load errors that say
+/// The fifteen retired flags (`06-config.md` § 2.4) are load errors that say
 /// why, each with the reason its refusal prints, and none is offered among the
 /// valid names.
 #[test]
@@ -611,7 +611,7 @@ fn require_why_decides_loading_only() {
     let text = page();
     assert!(
         text.contains("| `--no-require-why` |"),
-        "docs/ein/user/reference/config.md has no row for --no-require-why"
+        "docs/ein/user/04-reference/06-config.md has no row for --no-require-why"
     );
     let golden = std::fs::read_to_string(
         repo_root().join("ein.rs/crates/ein-cli/tests/golden/help_shape.txt"),
@@ -745,7 +745,7 @@ fn the_surface_table_agrees_with_the_sections_it_summarises() {
 }
 
 /// **The `EIN_LEFTOVER` row names every key of its block.** The page owns
-/// `--json-summary`'s `leftover` block (`read-out.md`'s owners table), so its
+/// `--json-summary`'s `leftover` block (`08-read-out.md`'s owners table), so its
 /// row names each key, `states_by_relation` among them. Both directions: every key
 /// a summary writes is a backticked name in the row, and the block is what the
 /// row says, `taken` the variable, `states` one count per listed state and

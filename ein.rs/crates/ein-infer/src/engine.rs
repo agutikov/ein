@@ -12,7 +12,7 @@
 //!    rule. Sharing one cache across forks and appending would be a different
 //!    order, which is why the process-wide memo holds the **plans** and each
 //!    engine keeps its own ordered list
-//!    ([design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)).
+//!    ([03-design/05-matcher.md § 7](../../../../docs/ein/ein.rs/03-design/05-matcher.md#7-the-compile-cache)).
 //! 2. **`fired` is the canonical "already applied" record**, guard-free: once
 //!    the conclusion is derived, every other disjunct for those bindings is
 //!    redundant, which is what it already meant.
@@ -54,7 +54,7 @@ pub struct Engine {
     /// Binding keys that have already been applied.
     pub fired: FxHashSet<BindingKey>,
     /// Shared with every other engine of this run
-    /// ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)). What
+    /// ([03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)). What
     /// may **not** be shared is the order below it, which is why `plans` is
     /// per-engine and this is not.
     memo: SharedMemo,
@@ -111,7 +111,7 @@ impl Engine {
     }
 
     /// How many plans this run has compiled, across every engine sharing the
-    /// memo — the number [design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)
+    /// memo — the number [03-design/05-matcher.md § 7](../../../../docs/ein/ein.rs/03-design/05-matcher.md#7-the-compile-cache)
     /// reports in place of a prediction.
     pub fn n_memoised(&self) -> usize {
         self.memo.lock().expect("no compiler panicked").len()
@@ -144,7 +144,7 @@ impl Engine {
         // `rules` borrows the program and `compile_for` touches `self`,
         // `terms` and `events`, so the two borrows never meet, and one buffer
         // serves every rule. This walk runs once per hypothesis generation
-        // ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
+        // ([03-design/07-search.md § 1](../../../../docs/ein/ein.rs/03-design/07-search.md#1-hypothesis-generation)).
         let mut acts: Vec<Option<FactId>> = Vec::new();
         for rule in kb.program().rules.values() {
             activators_into(kb, terms, rule, &mut acts);
@@ -183,7 +183,7 @@ impl Engine {
                 plan.disjuncts[0].steps.len(),
                 plan.disjuncts.len() - 1,
                 // One guard list per disjunct, so this counts disjuncts, not
-                // guarded ones — which is what `events.md` documents
+                // guarded ones — which is what `05-events.md` documents
                 // `n_guards` as.
                 plan.disjuncts.len(),
                 plan.asserts.len(),

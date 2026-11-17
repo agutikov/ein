@@ -1,5 +1,5 @@
 //! Is a program monotone? — the static check
-//! ([monotonicity.md § 3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#3-the-static-check)).
+//! ([08-monotonicity.md § 3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#3-the-static-check)).
 //!
 //! The answer to a program is the region `R` of its hypothesis lattice, the
 //! commitments that are alive and owe nothing (Q-M1e2.7).
@@ -40,7 +40,7 @@
 //!
 //! ### Which property it is about
 //!
-//! In the words of `docs/ein/reasoning/kb-evolution/monotonicity.md` § 2. The lattice,
+//! In the words of `docs/ein/reasoning/02-kb-evolution/08-monotonicity.md` § 2. The lattice,
 //! the commitments over the candidates ordered by ⊆, is the domain, and it is
 //! neither monotone nor not. What can be monotone are the functions on its
 //! nodes: the **state**, `C ⊆ C′ ⇒ state(C) ⊆ state(C′)`, and the **status**,
@@ -56,7 +56,7 @@
 //! builds one. A node built from scratch re-derives root inside itself, and
 //! there a FIFO race over a static read can leave a stale fact on a program
 //! this check calls monotone (`examples/lattice/11_fifo_gap_static.ein`,
-//! [monotonicity.md § 3.4](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#34-the-verdict-is-relative-to-root)).
+//! [08-monotonicity.md § 3.4](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#34-the-verdict-is-relative-to-root)).
 //!
 //! ### The theorem
 //!
@@ -83,7 +83,7 @@
 //! **Fact grain**, where a read is dynamic only when a candidate, or a fact
 //! derived from candidates, can match its pattern, is sufficient too, and is
 //! not what this check reads
-//! ([`monotonicity.md` § 3.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#33-the-grain)).
+//! ([`08-monotonicity.md` § 3.3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#33-the-grain)).
 //! The prototype, `ein-infer/examples/shared/fact_grain.rs`, and its two tests
 //! in `tests/region.rs` hold that reading to the cube; no route reads them.
 //!
@@ -540,7 +540,7 @@ pub(crate) fn dynamic(
 
 /// `D` followed through the rules root has no plan of: the relations
 /// *forbid* calls extendable, `D⁺`
-/// ([monotonicity.md § 10](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#10-forbid-what-is-refused-at-load)).
+/// ([08-monotonicity.md § 10](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#10-forbid-what-is-refused-at-load)).
 ///
 /// `D` is closed over the plans root compiled. A rule with parameters whose
 /// activator relation is in `D` is an activator site: a node compiles a plan

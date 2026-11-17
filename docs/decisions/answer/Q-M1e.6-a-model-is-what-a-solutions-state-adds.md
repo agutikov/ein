@@ -8,7 +8,7 @@ file states and nothing the loader writes: it is what the program did not say an
 **Why.** Two runs can agree on every model and differ in what their states hold besides, negations above all; the
 model is the part of a solution that answers the puzzle, and the state is what the engine computed to reach it.
 
-**Held by.** [Solution semantics](../../ein/reasoning/kb-evolution/solution-semantics.md) § 2 and § 3; `ein solve -P`
+**Held by.** [Solution semantics](../../ein/reasoning/02-kb-evolution/06-solution-semantics.md) § 2 and § 3; `ein solve -P`
 (`--print-final-positive`) prints each listed state's model; `ein-cli/tests/acceptance_cli.rs`:
 `solve_zebra2_prints_the_answer_the_puzzle_asked_for`. What a listing's `(model …)` prints instead:
 [Q-M1f.18](../read-out/Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md).

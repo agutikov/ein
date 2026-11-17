@@ -4,7 +4,7 @@ Elementary-school word problems as Ein programs. The calculator,
 [`std.math.decimal-arith`](../../stdlib/math/decimal-arith.ein), is a library among other relations here and not the
 subject: a problem states what its sentences say as facts, a theory of what the words mean turns them into requests
 to the calculator, and the theory reads the answers back as facts about the people. The engine knows no arithmetic
-and no word. [`word-problems.md`](../../docs/ein/user/guide/word-problems.md) is the guide to them.
+and no word. [`08-word-problems.md`](../../docs/ein/user/02-guide/08-word-problems.md) is the guide to them.
 
 These are **examples, not a stdlib module**
 ([Q-M1f.334](../../docs/decisions/corpus/Q-M1f.334-the-word-theory-is-examples-not-a-module.md)). The four theory
@@ -49,7 +49,7 @@ sweep banks.
 | [`boxes13.ein`](boxes13.ein) | Bob has 5 apples, Alice has 8. A box holds 3. How many boxes do they need? | **two states and two answers**: 4 boxes and 1 apple unpacked, if *need* is read as whole-only; 5 boxes, the last part full, if as pack-all | 2 candidates, a reading each; root owes one |
 | [`unused.ein`](unused.ein) | Bob has 5 apples. Alice has 7 apples. Carol has 9 apples and a box that holds 3. Bob gave 2 apples to Alice. How many apples does Bob have? | 3; Alice's 7, Carol's 9 and the box are never wanted | none |
 | [`bystander.ein`](bystander.ein) | Bob has 5 apples. Carol has 9 apples. Bob gave 2 apples to Alice. How many apples does Carol have? | 9, unchanged | none |
-| [`before.ein`](before.ein) | Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before? | no answer, and the question's quantity named as not stated, where a pupil answers 7: the theory reads *gave* in one direction of time and has no rule from a later moment back to an earlier one ([what the theory does not read](../../docs/ein/user/guide/word-problems.md#what-the-theory-does-not-read)) | none |
+| [`before.ein`](before.ein) | Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before? | no answer, and the question's quantity named as not stated, where a pupil answers 7: the theory reads *gave* in one direction of time and has no rule from a later moment back to an earlier one ([what the theory does not read](../../docs/ein/user/02-guide/08-word-problems.md#what-the-theory-does-not-read)) | none |
 
 *search: none* is the read-out's `universe` row, *no candidate: R is {∅} or empty, decided by root alone*. Every
 problem here is search-free but the two that ask what is *needed*: a reading of *need* is always chosen, so their

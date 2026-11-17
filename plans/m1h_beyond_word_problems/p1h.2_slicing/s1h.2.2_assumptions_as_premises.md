@@ -32,7 +32,7 @@ So the answer is *yes, for that answer*, **provided** assumptions are written th
 `(model-counts-only)`, whose `:source` holds three clauses: things are counted by number alone; any thing of a
 kind fits any container that holds that kind; nobody gives away what they do not have. Two rules take it as a
 premise, `need-exact` and `gave-more-than-had-is-false`. The calculator's investigation recommended more
-([`word-problems.md` § What the model leaves out](../../../docs/ein/user/guide/word-problems.md#what-the-model-leaves-out)):
+([`08-word-problems.md` § What the model leaves out](../../../docs/ein/user/02-guide/08-word-problems.md#what-the-model-leaves-out)):
 *a theory that ships would have one per assumption, so that an answer cites only those it used.* On
 2026-11-13 the `-l` trace of `boxes12.ein` names the fact and those of `bob1.ein`, `unused.ein` and
 `bystander.ein` do not.

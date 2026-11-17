@@ -1,6 +1,6 @@
 //! An `ein oracle --dump` directory read back, and a region run joined to the
-//! cube ([`region-dump.md`](../../../../docs/ein/user/reference/region-dump.md),
-//! [`rendering.md`](../../../../docs/ein/user/reference/rendering.md)).
+//! cube ([`11-region-dump.md`](../../../../docs/ein/user/04-reference/11-region-dump.md),
+//! [`12-rendering.md`](../../../../docs/ein/user/04-reference/12-rendering.md)).
 //!
 //! `ein render region DIR` draws from the files the commands wrote, never from
 //! a second solve, so the picture is of the run whose answer it shows. The

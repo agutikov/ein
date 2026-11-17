@@ -78,30 +78,30 @@ solve · examples/zebra2.ein --single
 Every word of that answer comes from the **puzzle**, not the engine: the `(query … :goal-text "…")` template renders
 the headline from the goal variables, and `--single` decides that R holds no other state, which is what makes the
 answer *the* answer. A bare `ein solve examples/zebra2.ein` describes all of R, and it is the same one state; its
-`work` row says what that cost. The [guide](docs/ein/user/guide/README.md) builds this program from nothing, and
-[the Zebra walkthrough](docs/ein/user/guide/06_zebra_walkthrough.md) pairs every clue of the published solution with
+`work` row says what that cost. The [guide](docs/ein/user/02-guide/README.md) builds this program from nothing, and
+[the Zebra walkthrough](docs/ein/user/02-guide/06-zebra-walkthrough.md) pairs every clue of the published solution with
 its fact and every human deduction with the rule firing that makes it.
 
 ## How it reasons
 
 The engine fuses a deductive database, a constraint search and an assumption-based truth maintenance system, split at
 the seam between what only grows and what a guess can retract
-([firing a rule](docs/ein/reasoning/kb-evolution/firing.md#the-core-operations)):
+([firing a rule](docs/ein/reasoning/02-kb-evolution/01-firing.md#the-core-operations)):
 
 | op | what Ein does | nearest analogs |
 |---|---|---|
 | O1 matching | bind a rule's premises against the knowledge base, structurally | relational join, RETE / LEAPS, worst-case-optimal joins |
 | O2 saturation | fire rules to a least fixpoint, semi-naively | Datalog bottom-up evaluation, magic sets, differential dataflow |
-| O3 negation as failure | `(absent P)` judged once, at the closure's fixpoint ([`absent`](docs/ein/reasoning/kb-evolution/absent-and-naf.md)) | stratified Datalog, the closed-world assumption, stable models |
+| O3 negation as failure | `(absent P)` judged once, at the closure's fixpoint ([`absent`](docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md)) | stratified Datalog, the closed-world assumption, stable models |
 | O4 equality | none of its own: equality is whatever relation a program states; `eq` and `neq` compare two values as written | union-find, congruence closure, e-graphs |
 | O5 contradiction | `(false)`, or a fact beside its stored negation | clause violation, tableau clash |
-| O6 provenance and the core | every derivation recorded; the smallest set of givens and commitments a contradiction rests on ([cores](docs/ein/reasoning/kb-evolution/cores.md)) | ATMS / JTMS justifications, provenance semirings, MUS |
-| O7 the candidate set and the lattice | the undecided candidates read off root's fixpoint, commitments as subsets of them ([the hypothesis space](docs/ein/reasoning/kb-evolution/hypothesis-space.md)) | DPLL decisions, Apriori, ATMS environments |
-| O8 learning from a refutation | on a monotone program a superset of a dead commitment is dead, so one dead node decides every node above it ([finding R](docs/ein/reasoning/kb-evolution/finding-r.md)) | CDCL, backjumping, arc consistency |
+| O6 provenance and the core | every derivation recorded; the smallest set of givens and commitments a contradiction rests on ([cores](docs/ein/reasoning/02-kb-evolution/09-cores.md)) | ATMS / JTMS justifications, provenance semirings, MUS |
+| O7 the candidate set and the lattice | the undecided candidates read off root's fixpoint, commitments as subsets of them ([the hypothesis space](docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md)) | DPLL decisions, Apriori, ATMS environments |
+| O8 learning from a refutation | on a monotone program a superset of a dead commitment is dead, so one dead node decides every node above it ([finding R](docs/ein/reasoning/02-kb-evolution/07-finding-r.md)) | CDCL, backjumping, arc consistency |
 | O9 state identity | two commitments whose worlds hold the same facts are one state; the identity is the sorted fact set | symmetry breaking, SBDS / SBDD |
 
 A program whose rules read `absent` over a relation a guess can still extend may not be monotone. The static check
-flags it ([monotonicity](docs/ein/reasoning/kb-evolution/monotonicity.md)), every route then classifies the cube,
+flags it ([monotonicity](docs/ein/reasoning/02-kb-evolution/08-monotonicity.md)), every route then classifies the cube,
 and the read-out says so: of such a program the engine gives one R, every command the same, and claims nothing about
 whether it is the program's meaning. A refutation that could rest on such an `absent` is refused at load.
 
@@ -110,7 +110,7 @@ whether it is the program's meaning. A refutation that could rest on such an `ab
 [`stdlib/`](stdlib/README.md) is the single source of truth for `std.*`; the binary embeds a copy, identified by
 `MANIFEST.sha256`. A property is stated as a fact and the module's rules apply it: `(transitive left-of)` is a theory
 instantiated. Every rule has a program under [`tests/stdlib/`](tests/README.md) that activates it, and `ein test
-tests/` runs them all. The per-symbol reference is [`stdlib.md`](docs/ein/user/reference/stdlib.md).
+tests/` runs them all. The per-symbol reference is [`04-stdlib.md`](docs/ein/user/04-reference/04-stdlib.md).
 
 | module | provides |
 |---|---|
@@ -131,7 +131,7 @@ cargo build --release --manifest-path ein.rs/Cargo.toml -p ein-cli
 ein.rs/target/release/ein --version
 ```
 
-[The install page](docs/ein/user/install.md) has the two channels (a release binary, `cargo install --path`), what
+[The install page](docs/ein/user/01-install.md) has the two channels (a release binary, `cargo install --path`), what
 the five lines of `ein --version` say, and how to check which standard library a binary reads. The default build
 links the `snmalloc` allocator and needs `cmake` and a C++ compiler; `--no-default-features` builds against the
 system allocator, without `ein kb` and `--jobs`, and answers every program the same.
@@ -154,11 +154,11 @@ ein render <view> <file>           # DOT: rules, constraints, the program, a KB,
 ein kb save <file> out.einb        # a loaded program as a binary container
 ```
 
-Each flag names the part of R it asks about ([the command line](docs/ein/user/reference/cli.md)); every row the
-read-out prints is in [the read-out reference](docs/ein/user/reference/read-out.md). `--region-budget F` bounds the
+Each flag names the part of R it asks about ([the command line](docs/ein/user/04-reference/05-cli.md)); every row the
+read-out prints is in [the read-out reference](docs/ein/user/04-reference/08-read-out.md). `--region-budget F` bounds the
 facts a description may derive (2²⁰ by default); a run that reaches it stops with an answer, its bounds and a
 `note:`. `--jobs N` changes the wall clock and nothing else, and no configuration option, lever or flag changes R
-([config](docs/ein/user/reference/config.md)). `.einb` is a private cache format, never an interchange one: every
+([config](docs/ein/user/04-reference/06-config.md)). `.einb` is a private cache format, never an interchange one: every
 command that takes a `.ein` path takes a `.einb` too, and answers the same.
 
 The engine's own tests run with `cargo test --manifest-path ein.rs/Cargo.toml --workspace`, and need Graphviz on
@@ -167,7 +167,7 @@ The engine's own tests run with `cargo test --manifest-path ein.rs/Cargo.toml --
 ## ein-lang at a glance
 
 A `.ein` file is a **flat** sequence of S-expression forms, each classified by its head
-([syntax](docs/ein/user/reference/syntax.md#2-top-level-forms)):
+([syntax](docs/ein/user/04-reference/02-syntax.md#2-top-level-forms)):
 
 | head | role |
 |---|---|
@@ -182,19 +182,19 @@ A `.ein` file is a **flat** sequence of S-expression forms, each classified by i
 
 Ein has no numbers, no ranges and no types of its own: `1` and `01` are two names, and arithmetic is a theory in the
 standard library. A `:why` is required on every relation, rule, hrule and macro. The grammar is
-[`grammar.md`](docs/ein/user/reference/grammar.md), and the names the language reserves are
-[`reserved-names.md`](docs/ein/user/reference/reserved-names.md).
+[`01-grammar.md`](docs/ein/user/04-reference/01-grammar.md), and the names the language reserves are
+[`03-reserved-names.md`](docs/ein/user/04-reference/03-reserved-names.md).
 
 ## Documentation
 
 [`docs/ein/`](docs/ein/README.md) describes Ein as it ships, in three perspectives:
 
 - [**user/**](docs/ein/user/README.md): the language, how to run `ein`, what the answer means and every row it
-  prints, and [a guide](docs/ein/user/guide/README.md) that solves the Zebra puzzle;
+  prints, and [a guide](docs/ein/user/02-guide/README.md) that solves the Zebra puzzle;
 - [**reasoning/**](docs/ein/reasoning/README.md): what a loaded program means, how its knowledge base grows, what
   the answer is and why every way of finding it gives the same one, true of any implementation;
 - [**ein.rs/**](docs/ein/ein.rs/README.md): the Rust workspace, its crates and design contracts, and
-  [the library API](docs/ein/ein.rs/api.md).
+  [the library API](docs/ein/ein.rs/04-api.md).
 
 Beside them, [`docs/decisions/`](docs/decisions/README.md) holds every question about Ein that has an answer, as that
 answer, and [the standard of proof](docs/ein/standard-of-proof.md) says what it takes to call a claim on these pages
@@ -204,7 +204,7 @@ settled.
 
 | path | what's in it |
 |---|---|
-| [`ein.rs/`](ein.rs/) | the implementation: a Cargo workspace of eight crates, six that ship (`ein-core`, `ein-ir`, `ein-infer`, `ein-einb`, `ein-render`, `ein-cli`) and two its tests use ([architecture](docs/ein/ein.rs/architecture.md)) |
+| [`ein.rs/`](ein.rs/) | the implementation: a Cargo workspace of eight crates, six that ship (`ein-core`, `ein-ir`, `ein-infer`, `ein-einb`, `ein-render`, `ein-cli`) and two its tests use ([architecture](docs/ein/ein.rs/01-architecture.md)) |
 | [`stdlib/`](stdlib/README.md) | the standard library, `std.*`, and its manifest |
 | [`tests/`](tests/README.md) | the language's test suites: one program per stdlib rule or tight family, each stating what it should and should not derive, and programs over imports, the region and text |
 | [`examples/`](examples/README.md) | the Zebra puzzle in its encodings, per-feature fixtures, the calculator's and the circuits' programs, regressions, and programs the loader must refuse |

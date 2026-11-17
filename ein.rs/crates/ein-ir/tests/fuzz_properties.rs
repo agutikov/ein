@@ -2,7 +2,7 @@
 //!
 //! The grammar admits every tokenization; the lexer commits to one.
 //! That is the one structural risk in the parser
-//! ([design/ir-frontend.md § 3.3](../../../../docs/ein/ein.rs/design/ir-frontend.md#33-the-lexer)),
+//! ([03-design/04-ir-frontend.md § 3.3](../../../../docs/ein/ein.rs/03-design/04-ir-frontend.md#33-the-lexer)),
 //! and the fuzzer probes it by generating malformed and nearly-well-formed
 //! inputs. It is the generator, the minimiser, the seed corpus, and three
 //! properties:

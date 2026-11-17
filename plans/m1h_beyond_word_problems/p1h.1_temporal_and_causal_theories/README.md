@@ -95,7 +95,7 @@ As the tree stands on 2026-11-13. Each figure is re-taken by the stage named bes
   `(has WHO KIND NUMBER MOMENT)` and `(gave WHO WHOM KIND NUMBER BEFORE AFTER)`: a moment is a name (`t0`,
   `t1`, or `now` where a problem has no event), an event names the moment before it and the moment after, and
   **no fact relates two moments**: the order is the two names on the event.
-  [`word-problems.md` § A problem, and the theory of its words](../../../docs/ein/user/guide/word-problems.md#a-problem-and-the-theory-of-its-words)
+  [`08-word-problems.md` § A problem, and the theory of its words](../../../docs/ein/user/02-guide/08-word-problems.md#a-problem-and-the-theory-of-its-words)
   ran the same problem in two more forms, nested events (`(after EVENT MOMENT)`) and a chain of numbered
   sentences (`(next s1 s2)`), with its table of what each costs.
 - **One direction of time.** The rules for *gave* plan from a later moment to an earlier one
@@ -119,7 +119,7 @@ As the tree stands on 2026-11-13. Each figure is re-taken by the stage named bes
 - **The derivation tree.** Every derived fact records the rule and the premises that gave it:
   `ein saturate FILE --dump` writes a fact's `:rule`, `--trace` writes a step a firing, and `--events`'
   `fire` line carries `rule`, `premises` and `derived`
-  ([`events.md`](../../../docs/ein/ein.rs/events.md)).
+  ([`05-events.md`](../../../docs/ein/ein.rs/05-events.md)).
 
 **Names.** S1f.6.31
 moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which this

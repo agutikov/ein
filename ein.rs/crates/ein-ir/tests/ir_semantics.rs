@@ -1,5 +1,5 @@
 //! The IR contract — what ein-lang *is*, written down as answers
-//! ([design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)).
+//! ([03-design/10-toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/03-design/10-toolchain-and-layout.md#5-the-tests)).
 //! Three surfaces: the grammar (what is accepted and what is rejected),
 //! lowering (the node a text becomes, and the `dump ∘ parse` round trip), and
 //! macros (expansion, and the names a macro may not take).

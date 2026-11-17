@@ -1,5 +1,5 @@
 //! `--dump-lattice DIR` under a region mode
-//! ([`lattice-dump.md`](../../../../../docs/ein/ein.rs/lattice-dump.md)):
+//! ([`06-lattice-dump.md`](../../../../../docs/ein/ein.rs/06-lattice-dump.md)):
 //! every node the run visited, whatever the route, in visit order.
 //!
 //! Two files, `nodes.json` (`ein-lattice/2`) and `nodes.md`, written after the

@@ -11,10 +11,10 @@ ein-core    = { path = "../ein-core" }
 # The interner's index. Its keys are strings the *source file* chose, so the
 # adversarial-input resistance `RandomState` buys is not worth its cost on every
 # parse, and a per-process random seed is a determinism hazard the workspace
-# refuses everywhere else (docs/ein/ein.rs/design/determinism-and-order.md § 2.3).
+# refuses everywhere else (docs/ein/ein.rs/03-design/01-determinism-and-order.md § 2.3).
 rustc-hash.workspace = true
 # The stdlib, embedded so the binary ships self-contained
-# (docs/ein/ein.rs/design/shared-assets.md § 3).
+# (docs/ein/ein.rs/03-design/02-shared-assets.md § 3).
 include_dir.workspace = true
 # grmtools (Q-M1e2.25): the grammar is `src/ein.l` and `src/ein.y`, and
 # `build.rs` generates the parser from them, so a conflict in the grammar fails

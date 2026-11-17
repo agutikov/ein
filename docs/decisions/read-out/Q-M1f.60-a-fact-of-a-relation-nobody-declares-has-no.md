@@ -8,4 +8,4 @@ back to its s-expression. A program that wants such a fact read declares the rel
 form of its own for what a declaration already does.
 
 **Held by.** `ein_render::sentence`'s `statement`, which reads a declared relation's `:why` and nothing else;
-[natural-language.md](../../ein/user/syntax-and-semantics/natural-language.md#3-a-fact-in-english-the-fallback-ladder) § 3 and § 5.
+[14-natural-language.md](../../ein/user/03-syntax-and-semantics/14-natural-language.md#3-a-fact-in-english-the-fallback-ladder) § 3 and § 5.

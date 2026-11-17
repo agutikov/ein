@@ -53,7 +53,7 @@ syntax: real examples first).
 7. **Where things ship** (Q-M1g.2): `examples/logic/` first, the stdlib for what a second program imports.
 8. **Reading a formula.** A `:why` renders `(Imp (And p q) p)` as written. Infix, `(p ∧ q) → p`, would need
    non-ASCII text, which a string may hold
-   ([`diagnostics.md` § 1.6](../../../docs/ein/user/reference/diagnostics.md#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment)) and a template cannot build
+   ([`07-diagnostics.md` § 1.6](../../../docs/ein/user/04-reference/07-diagnostics.md#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment)) and a template cannot build
    from a nested value today. To be shown as it is; a readable rendering is
    [S1g.6.3](../p1g.6_engine_requirements/s1g.6.3_seeing_nested_facts.md)'s.
 

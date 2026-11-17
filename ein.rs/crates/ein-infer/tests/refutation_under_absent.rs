@@ -1,11 +1,11 @@
 //! **A refutation resting on an `absent` a commitment can still fill**, refused
 //! ([Q-M1e2.5](../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md),
-//! [absent-and-naf.md](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#a-refutation-resting-on-an-absent)).
+//! [03-absent-and-naf.md](../../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md#a-refutation-resting-on-an-absent)).
 //!
 //! ## What is unsound
 //!
 //! `dead` is **not** upward-closed under `absent`. The premise
-//! [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
+//! [03-design/08-parallelism.md § 1](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#1-the-contract)
 //! states — *`X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and
 //! nothing retracts* — establishes that `sat` is **inflationary**, not that it
 //! is monotone in its input, and `(absent P)` is exactly what separates the
@@ -336,7 +336,7 @@ fn beside_an_hrule_the_remedy_names_the_hrule_and_not_the_list() {
 /// **With no hrule, an obligation's relation is no list's to close either.**
 /// Where an obligation owes the relation the refutation reads under
 /// `absent`, `(solve :no-hypothesis (R))` is a conflict
-/// ([diagnostics.md § 2.27](../../../../docs/ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
+/// ([07-diagnostics.md § 2.27](../../../../docs/ein/user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
 /// so the first remedy names the obligation;
 /// where none owes it, the list, as before.
 #[test]

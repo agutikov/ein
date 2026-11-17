@@ -43,9 +43,9 @@ fn main() -> std::process::ExitCode {
 /// only on error*, a rule about the codes Ein returns, is not engaged.
 ///
 /// It is the binary's, as the allocator is: a disposition is process-wide, and
-/// a program that embeds the engine keeps its own (`docs/ein/ein.rs/api.md`). It
+/// a program that embeds the engine keeps its own (`docs/ein/ein.rs/04-api.md`). It
 /// covers every pipe the process writes, an artefact flag's FIFO or
-/// `/dev/stdout` too (`docs/ein/user/reference/diagnostics.md` § 2.19).
+/// `/dev/stdout` too (`docs/ein/user/04-reference/07-diagnostics.md` § 2.19).
 /// Rust 1.97.1, the pinned
 /// toolchain, has no stable option for it, so it is one `libc` call, the
 /// second audited `unsafe` site beside `ein-einb`'s `cast.rs`. Pinned by

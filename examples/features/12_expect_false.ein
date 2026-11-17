@@ -31,7 +31,7 @@
 ;;; a pigeon to be anywhere. `no-room` is a refutation at the extreme, never an
 ;;; existence requirement — it fires only once the stored negatives happen to
 ;;; cover a pigeon's whole range. A pigeon owes a hole only where a program
-;;; says so, as an obligation (docs/ein/user/syntax-and-semantics/obligations.md).
+;;; says so, as an obligation (docs/ein/user/03-syntax-and-semantics/08-obligations.md).
 ;;;
 ;;; The searched version also has **several equally small unsat cores**, and
 ;;; which one the engine reports may move with the id space: a core is an

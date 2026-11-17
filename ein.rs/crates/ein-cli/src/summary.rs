@@ -1,6 +1,6 @@
 //! `ein solve --json-summary FILE` — the structured run summary,
 //! `ein-summary/2`: the read-out as data
-//! ([`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)).
+//! ([`08-read-out.md` § 11](../../../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks)).
 //!
 //! Four properties: **additive** (writes a file, never stdout/stderr/the exit
 //! code), **order-free** (every set-shaped observable sorted, so a difference
@@ -135,7 +135,7 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
 /// What the **blind** enumerator would still propose at one recorded state.
 ///
 /// The probe of
-/// [what a state of R leaves open](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it)
+/// [what a state of R leaves open](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it)
 /// takes: `complete` means *the active rung proposes nothing*, and the active
 /// rung is whichever of the three the program earned. A node the hrule rung or
 /// the obligations rung called complete may still have facts the blind
@@ -193,7 +193,7 @@ fn leftover_at(
     ))
 }
 
-/// `EIN_LEFTOVER=1`'s block for a region run (`config.md`'s `EIN_LEFTOVER`
+/// `EIN_LEFTOVER=1`'s block for a region run (`06-config.md`'s `EIN_LEFTOVER`
 /// row): what the
 /// **blind** enumerator would still propose at each state the read-out
 /// listed, outside H — a question about the universe, not about a route.
@@ -258,7 +258,7 @@ fn config_block(cfg: &SolverConfig) -> Json {
 }
 
 /// The summary of a region run, `ein-summary/2`, its answer blocks defined by
-/// [`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks).
+/// [`08-read-out.md` § 11](../../../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks).
 /// The read-out's blocks (`asked`, `region`, `verdict`, `queries`, `claim`,
 /// `work`) from [`ein_render::dump::region_answer::summary_blocks`], then the
 /// program's: the static check, `EIN_LEFTOVER`'s block, root's fixpoint and H

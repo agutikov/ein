@@ -18,7 +18,7 @@ instance of an axiom is a theorem, and modus ponens closes the set.
 
 - It cannot be written as it stands. `(rule k () :match () :assert (thm (Imp ?a (Imp ?b ?a))))` is refused at
   load: a conclusion's variable nothing binds
-  ([`diagnostics.md` § 2.13](../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)); the binary's line is *rule
+  ([`07-diagnostics.md` § 2.13](../../../docs/ein/user/04-reference/07-diagnostics.md#213-a-conclusions-variable-nothing-binds)); the binary's line is *rule
   'k': its :assert writes ?a, which no premise or parameter binds* (one run, release binary at `8860d616`,
   2026-11-11). And rightly: the instances
   are infinitely many.

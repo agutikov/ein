@@ -1,4 +1,4 @@
-//! The round trip — [design/binary-format.md § 7](../../../../docs/ein/ein.rs/design/binary-format.md#7-tests).
+//! The round trip — [03-design/09-binary-format.md § 7](../../../../docs/ein/ein.rs/03-design/09-binary-format.md#7-tests).
 //!
 //! `save(kb) → open()` has to be **identical**: the same facts in the same
 //! order, the same provenance, the same indexes, in both the empty-interner

@@ -11,8 +11,8 @@ target.
 explanation between `ein-lang` and the human reading);
 [idea 02](../../ideas/02-graph-as-formal-substrate.md), the graph as the substrate;
 [idea 08](../../ideas/08-human-style-deductive-trace.md), the human-style trace;
-[`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md);
-[`rendering.md`](../../../docs/ein/user/reference/rendering.md).
+[`14-natural-language.md`](../../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md);
+[`12-rendering.md`](../../../docs/ein/user/04-reference/12-rendering.md).
 **Stops for the user:** its first task. What a formula should look like is a matter of taste and of the
 user's standing rule that anything built for review carries every artefact, raw and rendered.
 

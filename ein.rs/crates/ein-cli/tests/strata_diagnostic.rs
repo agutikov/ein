@@ -1,5 +1,5 @@
 //! **The static non-stratifiability diagnostic**, through the binary
-//! ([Analysis of rules](../../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md)).
+//! ([Analysis of rules](../../../../docs/ein/reasoning/03-rule-evolution/02-analysis-of-rules.md)).
 //!
 //! A program whose rules' dependency graph has a cycle through an `absent`
 //! has no stratification, so its root fixpoint may depend on the boundary's

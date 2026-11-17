@@ -20,7 +20,7 @@ binary the tests ran.
 | `gen_zebra2_variants.py` | the four `zebra2` variants under `examples/` |
 | `gen_send_written.py` | `examples/beyond_arith/send_more_money_written.ein` |
 | `gen_random_programs.py` | `ein-infer/tests/golden/random_programs.txt`, the detector's random programs |
-| `read_out_examples.py` | `docs/ein/user/reference/read-out-examples.md`, from the binary (`--bin`) |
+| `read_out_examples.py` | `docs/ein/user/04-reference/09-read-out-examples.md`, from the binary (`--bin`) |
 
 A generator whose `--check` fails prints what differs; the fix is to run it
 without `--check` (and, for a stdlib module, `stdlib_manifest.py --write`).

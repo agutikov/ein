@@ -55,7 +55,7 @@
 ;;; recorded, a core is the smallest over each fact's first derivation, and
 ;;; this file reports the 3-fact core again, refuted by `narrow`: the flag may
 ;;; change the core, and its rule with it, and nothing else
-;;; (`docs/ein/user/reference/config.md` § 2.5). And a saving *between* two
+;;; (`docs/ein/user/04-reference/06-config.md` § 2.5). And a saving *between* two
 ;;; facts, behind a full list, is still refused —
 ;;; [`wrong-answers/alt-cap-shared.ein`](wrong-answers/alt-cap-shared.ein),
 ;;; a known gap.
