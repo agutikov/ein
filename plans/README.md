@@ -54,8 +54,8 @@ from its last phases, two by promotion since — one created out of a review of
 the tree they left, and one out of that review's close:
 
 - **M1a — the Rust engine (ein.rs)** — **shipped 2026-08-23**, between M1 and M2; the
-  engine that ships from M2 onward. Its plan folder is gone and the record is
-  `docs/history/m1a_rust/`. Inside it:
+  engine that ships from M2 onward. Its plan folder and its record
+  (`docs/history/m1a_rust/`) are deleted and in git. Inside it:
   integer-encoded atoms and facts, a register matcher, copy-on-write forks,
   multi-core search. All four landed. It ships a **library and a CLI**;
   server mode was dropped 2026-08-18 and the PyO3 binding deferred 2026-08-21
@@ -64,16 +64,16 @@ the tree they left, and one out of that review's close:
 - **M20 — GUI** ([m20_gui/](m20_gui/README.md)) after M1a —
   **Tauri 2 + React + Monaco + Cytoscape.js**, linking the ein.rs crates
   directly (stack decided 2026-08-18). Renumbered from M1b 2026-08-23.
-- **M1c — External validation** — **shipped 2026-08-24**, and its record is
-  `docs/history/m1c_external_validation/`.
+- **M1c — External validation** — **shipped 2026-08-24**; its record,
+  `docs/history/m1c_external_validation/`, is deleted and in git.
   The check that is *not* relative to Ein's own past: the stdlib's rules got
   expectations of their own (`:expect` on `query`, `ein test`, 45 programs, and
   a coverage number in the gate). Created 2026-08-21 out of M1a's ex-P1a.11
   plus a benchmark phase that left for M10 on 2026-08-23; the plan tree was
   deleted the day it shipped.
-- **M1d — From saturation to satisfiability** — **shipped 2026-08-27**, and
-  its record is
-  `docs/history/m1d_satisfiability/`.
+- **M1d — From saturation to satisfiability** — **shipped 2026-08-27**; its
+  record, `docs/history/m1d_satisfiability/`, is deleted and in git, and the note
+  it began with is [`ideas/11`](ideas/11-saturation-and-satisfiability.md).
   Why an under-determined puzzle does not finish, and what saturation lacks to
   be a decision procedure: existence requirements (`total` / `surjective` with
   the force their names claim) as first-class obligations rather than as
@@ -82,16 +82,16 @@ the tree they left, and one out of that review's close:
   needs 17 204 592. Created 2026-08-21 out of M1a's ex-P1a.12 plus the F14
   note; the plan tree was deleted the day it shipped.
 - **M1e — Review processing** — **closed 2026-10-14** (the work ran
-  2026-08-27 → 09-01), and its record is
-  `docs/history/m1e_review_processing/`.
+  2026-08-27 → 09-01); its record, `docs/history/m1e_review_processing/`, is
+  deleted and in git.
   The full-tree review of 2026-08-27, processed: **63 findings** in nine topics
   and **10 open questions**, every one dispositioned. Its spine was that a
   finding is a claim until something holds it. The review's own verification
   stage was aborted, so sixty of the sixty-three were one reader's reading, and
   every task ended in a fixture, a test, a measured number or a written
   decision. The wrong answers its probes found and filed are M1e2's.
-- **M1e2 — Correctness: every known wrong answer** (m1e2_correctness/)
-  after M1e, **closed 2026-11-08** with its plans kept in place and no
+- **M1e2 — Correctness: every known wrong answer** (`m1e2_correctness/`, deleted
+  by M1f's S1f.20.9 and in git) after M1e, **closed 2026-11-08** with no
   `docs/history/` record, on the user's instruction. Created 2026-10-14 out of M1e's close and a survey
   taken the same day (`inventory.md`): twelve
   wrong answers and one contested reading, all but one reachable at default
@@ -148,8 +148,8 @@ the tree they left, and one out of that review's close:
   with real programs or a survey and stops for the user before anything
   ships, and a stage past a stop is a file in outline whose tasks are written
   at the stop. Not started.
-- **M1j — `nlp/` and `smt/` as one proof of concept** (m1j_nlp_smt_poc/)
-  — **done 2026-11-13**, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's
+- **M1j — `nlp/` and `smt/` as one proof of concept** (`m1j_nlp_smt_poc/`, deleted
+  by M1f's S1f.20.9 and in git) — **done 2026-11-13**, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's
   note; small. The Zebra puzzle's sentences, over a limited vocabulary,
   through link grammar and a small Racket converter to SMT code, run by a
   Python wrapper, in [`nl2smt/`](../nl2smt/README.md): adding, removing,
@@ -222,31 +222,16 @@ plans/
 ├── open_questions.md                 cross-milestone questions; sticky Q ids
 ├── ideas.md                          rolling scratchpad
 ├── m1_core_graph_reasoning/          (deleted at P1.22 — M1 shipped; see git history)
-├── m1a_rust/                         (deleted 2026-08-23 — M1a shipped; the record
-│                                     is docs/history/m1a_rust/, the plan tree is
-│                                     in git history)
-├── m1c_external_validation/          (deleted 2026-08-24 — M1c shipped; the record
-│                                     is docs/history/m1c_external_validation/,
-│                                     the plan tree is in git history)
-├── m1d_satisfiability/               (deleted 2026-08-27 — M1d shipped; the record
-│                                     is docs/history/m1d_satisfiability/,
-│                                     the plan tree is in git history)
-├── m1e_review_processing/            (deleted 2026-10-14 — M1e closed; the record
-│                                     is docs/history/m1e_review_processing/,
-│                                     the plan tree is in git history)
-├── m1e2_correctness/                 every known wrong answer, seen and then fixed
-│   ├── README.md                     (created 2026-10-14 out of M1e's close)
-│   ├── open_questions.md             Q-M1e2.1–6, the readings the contested cases need
-│   ├── inventory.md                  the 2026-10-14 survey, carried as evidence
-│   ├── probes/                       its 31 probe programs, capture.sh and four sweeps
-│   ├── p1e2.1_seeing_the_answer/     dumps + every artefact rendered + the review (7)
-│   └── p1e2.2_wrong_answers/         one stage per wrong answer               (13)
-├── m1f_hypothesis_and_documentation/ the two phases M1e carried and did not need
+├── m1a_rust/, m1c_external_validation/, m1d_satisfiability/, m1e_review_processing/
+│                                     (deleted when each shipped; their records, under
+│                                     docs/history/, deleted by M1f's S1f.20.9; all in git)
+├── m1e2_correctness/, m1j_nlp_smt_poc/  (deleted by M1f's S1f.20.9 — finished; in git)
+├── m1f_hypothesis_and_documentation/ the hypothesis set's structure, and the documentation
 │   ├── README.md                     (created 2026-08-29 out of M1e's P1e.1b + P1e.5)
-│   ├── open_questions.md             Q-M1f.<n> — empty; the Q-M1e ids stayed in M1e
-│   ├── p1f.5_the_no_owner_items/       (was P1e2.5 + p1e.5) 16 stage files + 1 proposed
-│   ├── p1f.10_hypothesis_structure/    (was p1e.1b)  8
-│   └── p1f.20_docs_refactor/           (was S1f.5.20) 7
+│   ├── open_questions.md             Q-M1f.<n>
+│   └── p1f.20_docs_refactor/           the documentation tree (P1f.5, .6, .7, .8 and .10
+│                                       finished and deleted by its S1f.20.9; in git)
+├── wrong_answers/                    the open wrong answers: register.toml, its rules, witnesses
 ├── m1g_logic/                        logic in Ein — planned 2026-11-11, runs after M1f
 │   ├── README.md                     (promotes followups/f1b; the user's instruction verbatim)
 │   ├── open_questions.md             Q-M1g.1–12
@@ -271,12 +256,10 @@ plans/
 │   ├── p1h.10_a_school_text/                   5 (3 in outline) — stops at S1h.10.1 and at S1h.10.2
 │   ├── p1h.20_requirements_verification/       2 — a survey that stops, and the place of the plan after it
 │   └── p1h.30_triz/                            2 — a survey that stops, and the place of the plan after it
-├── m1j_nlp_smt_poc/                  nlp/ + smt/ as one proof of concept — done 2026-11-13
-│   └── README.md                     (the user's TODO verbatim; six tasks; the record)
 ├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
 │   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
 │   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
-│   ├── EinAf.md                      the research plan, verbatim (the m1d/ideas.md precedent)
+│   ├── EinAf.md                      the research plan, verbatim (the ideas/11 precedent)
 │   ├── p2.1_kernel_as_instrumentation/   Stage A   (3 stage files)
 │   ├── p2.2_formalizer/                  Stage B   (5)
 │   ├── p2.3_benchmark/                   Stage C   (4)
@@ -336,15 +319,15 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
-| M1a               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `solve zebra2.ein -e` end-to-end in **29.0 ms** with peak RSS 17 MB, `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
-| M1c | *(plans removed 2026-08-24 — the record is `docs/history/m1c_external_validation/`)* | **shipped** — done 2026-08-24, one phase and five stages. `:expect` on `query`, `ein test` as the fourth subcommand, 45 programs in `tests/stdlib/`, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test` in 0.04 s. Its benchmark phase left for M10 on 2026-08-23 | est. ~2.5 weeks; ran 2026-08-23 → 2026-08-24 |
-| M1d | *(plans removed 2026-08-27 — the record is `docs/history/m1d_satisfiability/`)* | **shipped** — done 2026-08-27, four phases and eighteen stages. A program can state a requirement, a state can say what it **owes**, the verdict word `Open` reports it, every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree` reaches 32 models in **86** enterings against the lattice's 17 204 592. P1d.10 closed as it stood, three of six stages shipped | est. ~2 months; ran 2026-08-21 → 2026-08-27 |
-| M1e | *(plans removed 2026-10-14 — the record is `docs/history/m1e_review_processing/`)* | **closed** 2026-10-14; the work ran 2026-08-27 → 09-01. The 2026-08-27 review processed: all **63 findings** dispositioned and all **10 questions** answered, the gate 738 → **821 tests**. Its probes found wrong answers the review never listed; they are M1e2's | est. ~11 weeks; ran six days |
-| M1e2 | **full** — 7 phases, 66 stages, plans kept | **closed** 2026-11-08, no `docs/history/` record by the user's instruction: 103 rows fixed, 1 not wrong, 10 open and deferred (F21, F22, M1f S1f.10.6); the no-owner items are M1f's P1f.5. Created 2026-10-14 at M1e's close. Every known wrong answer: P1e2.1 makes each one visible (dumps, every artefact of a run rendered to markdown with graphs, a case register that is a cargo test, the user's review); P1e2.2 fixes them, one stage each — W1–W12 and C1 of `inventory.md` | ~8 weeks |
-| [M1f](m1f_hypothesis_and_documentation/README.md) | **full** — 3 phases, 33 stage files (+1 proposed) | **running** since 2026-11-08 — the two phases M1e carried that processed no finding, moved out 2026-08-29, and since 2026-11-08 M1e2's no-owner items as P1f.5, which runs first; P1f.5 re-planned the same day on the user's ruling, the generated parser first, 87.75 days of stage estimates where it was 87.5. The language as ruled, a branch structure derived from the program rather than paid for in deaths, and the pages a released system would have | ~18 weeks |
+| M1a               | *(plans removed 2026-08-23, the record `docs/history/m1a_rust/` at M1f's S1f.20.9 — git history)* | **shipped** — done 2026-08-23, all eleven phases closed. `solve zebra2.ein -e` end-to-end in **29.0 ms** with peak RSS 17 MB, `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
+| M1c | *(plans removed 2026-08-24, the record `docs/history/m1c_external_validation/` at M1f's S1f.20.9 — git history)* | **shipped** — done 2026-08-24, one phase and five stages. `:expect` on `query`, `ein test` as the fourth subcommand, 45 programs in `tests/stdlib/`, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test` in 0.04 s. Its benchmark phase left for M10 on 2026-08-23 | est. ~2.5 weeks; ran 2026-08-23 → 2026-08-24 |
+| M1d | *(plans removed 2026-08-27, the record `docs/history/m1d_satisfiability/` at M1f's S1f.20.9 — git history)* | **shipped** — done 2026-08-27, four phases and eighteen stages. A program can state a requirement, a state can say what it **owes**, the verdict word `Open` reports it, every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree` reaches 32 models in **86** enterings against the lattice's 17 204 592. P1d.10 closed as it stood, three of six stages shipped | est. ~2 months; ran 2026-08-21 → 2026-08-27 |
+| M1e | *(plans removed 2026-10-14, the record `docs/history/m1e_review_processing/` at M1f's S1f.20.9 — git history)* | **closed** 2026-10-14; the work ran 2026-08-27 → 09-01. The 2026-08-27 review processed: all **63 findings** dispositioned and all **10 questions** answered, the gate 738 → **821 tests**. Its probes found wrong answers the review never listed; they are M1e2's | est. ~11 weeks; ran six days |
+| M1e2 | *(plans removed at M1f's S1f.20.9 — git history)* | **closed** 2026-11-08, no `docs/history/` record by the user's instruction: 103 rows fixed, 1 not wrong, 10 open and deferred (F21, F22, M1f S1f.10.6); the no-owner items are M1f's P1f.5. Created 2026-10-14 at M1e's close. Every known wrong answer: P1e2.1 makes each one visible (dumps, every artefact of a run rendered to markdown with graphs, a case register that is a cargo test, the user's review); P1e2.2 fixes them, one stage each — W1–W12 and C1 of `inventory.md` | ~8 weeks |
+| [M1f](m1f_hypothesis_and_documentation/README.md) | P1f.20 alone; P1f.5, P1f.6, P1f.7, P1f.8 and P1f.10 finished and deleted (git history) | **running** since 2026-11-08 — the language as ruled, the calculator, the structure of the hypothesis set, and the pages a released system would have. **P1f.20, the documentation tree**, has every stage done and waits for the user's review of the new docs before the phase closes | ~18 weeks |
 | [M1g](m1g_logic/README.md) | **full** — 11 phases, 40 stage files (1 optional; P1g.6's seven provisional; P1g.7, P1g.8 and P1g.9 a README each, added 2026-11-12; P1g.10 and P1g.11, school algebra and school geometry, eleven stage files, moved in from M1f's P1f.8 on 2026-11-13) | **planned** 2026-11-11 on the user's instruction, not started; runs after M1f is complete. Logic in Ein: propositional logic, proof systems, first-order logic, Peano and induction, and the engine requirements they turn out to have; P1g.1, a survey on real programs, stops for the user first. Promotes F1b | — (no estimates, the user's ruling of 2026-11-08) |
 | [M1h](m1h_beyond_word_problems/README.md) | **full to each phase's stop** — 7 phases, 37 stage files (13 past a stop, in outline; two of those hold the place of a plan written after a survey), written out 2026-11-13 on the user's instruction | **planned** 2026-11-12 on the user's instruction, not started. Beyond word problems: temporal and causal theories, slicing, gaps and assumptions, the formula against the calculation; then a school text with fifty questions, requirements verification, TRIZ. Every phase stops for the user before anything ships; Q-M1h.1–20 are open, and its place against M1g is not ruled | — (no estimates, the user's ruling of 2026-11-08) |
-| M1j | README only — six tasks, and the record | **done** 2026-11-13, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's note; small. Zebra sentences through link grammar and a Racket converter to SMT code, under a Python wrapper, in [`nl2smt/`](../nl2smt/README.md); a proof of concept | — |
+| M1j | *(plans removed at M1f's S1f.20.9 — git history)* | **done** 2026-11-13, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's note; small. Zebra sentences through link grammar and a Racket converter to SMT code, under a Python wrapper, in [`nl2smt/`](../nl2smt/README.md); a proof of concept | — |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
