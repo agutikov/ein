@@ -375,11 +375,11 @@ The properties are read from the states' own facts, so a program that states the
 function and one that derives the property by a rule are read alike. A stored negation is no variable: where
 the program stores $\lnot r(a, b)$ beside every excluded value, it mirrors the positive facts exactly.
 
-**The determining key** is a smallest set of those variables whose values tell every listed state apart, with
-the table of the combinations that occur, one row per state:
+**The determining key** is a smallest set of those variables, $X$, whose values tell every listed state apart,
+with the table of the combinations that occur, one row per state:
 
 $$
-\kappa \;\in\; \operatorname*{arg\,min}_{\kappa \subseteq X} \;\lbrace\, \lvert \kappa \rvert \;:\; \forall S \neq S' \in \mathcal{S}.\;\; \exists x \in \kappa.\;\; x(S) \neq x(S') \,\rbrace
+\operatorname{key}(\mathcal{S}) \;\in\; \operatorname*{arg\,min}_{Y \subseteq X} \;\lbrace\, \lvert Y \rvert \;:\; \forall S \neq S' \in \mathcal{S}.\;\; \exists x \in Y.\;\; x(S) \neq x(S') \,\rbrace
 $$
 
 ```dot
