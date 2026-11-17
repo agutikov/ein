@@ -91,6 +91,46 @@ digraph rule_guess_lhs_rhs {
 The drawing is the same as a rule's, and the difference is in what the dashed arrow means: a rule's is added to
 the state the rule fires in, an hrule's is a candidate, added in the states that commit to it and in no other.
 
+The program's two restrictions are what the guesses are judged by ([constraints](06-constraints.md)). Each is a
+picture of what a state may not hold, two `seat` arrows out of one person or into one chair, with `(false)` on the
+other side:
+
+```dot
+digraph rule_one_chair_each_lhs_rhs {
+  rankdir=TB;
+  label="one-chair-each"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?p_L" -> "?a_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?p_L" -> "?b_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}
+```
+
+```dot
+digraph rule_one_person_a_chair_lhs_rhs {
+  rankdir=TB;
+  label="one-person-a-chair"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
+    "?p_L" -> "?c_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?q_L" -> "?c_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?p_L" -> "?q_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}
+```
+
 `ein render h-space FILE --view exclusion` draws H itself as an undirected graph: a candidate a node, and an edge
 between two that exclude each other, solid where the theory alone excludes them. For the chairs program:
 
@@ -141,11 +181,11 @@ which is the four facts `ein show hyps` lists. In general $H$ is built by the fi
 applies, and narrowed by the program's scoping:
 
 $$
-H = \operatorname{scope}\left( \begin{cases}
+H = \operatorname{scope}(G), \qquad G = \begin{cases}
 \operatorname{hrules}(\mathrm{root}) & \text{if the program declares an hrule} \\
 \operatorname{payments}(\mathrm{root}) & \text{else, if an obligation is activated at root and its domain cannot grow} \\
 \operatorname{blind}(\mathrm{root}) & \text{else}
-\end{cases} \right)
+\end{cases}
 $$
 
 $$

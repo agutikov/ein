@@ -22,13 +22,14 @@ Which pages owe the four, and which do not:
 | pages | the notion | owes |
 |---|---|---|
 | [objects](01-objects.md), [relations](02-relations.md), [facts](03-facts.md), [ontology](04-ontology.md) | what the knowledge base holds | all four |
-| [rules](05-rules.md), [constraints](06-constraints.md), [properties and operators](07-properties-and-operators.md), [obligations](08-obligations.md), [hypotheses](09-hypotheses.md), [theories](10-theory.md) | what a program says about it | all four, and every rule shown is drawn |
+| [rules](05-rules.md), [constraints](06-constraints.md), [properties and operators](07-properties-and-operators.md), [obligations](08-obligations.md), [hypotheses](09-hypotheses.md), [theories](10-theory.md) | what a program says about it | all four, and every rule of the page's example is drawn, there or on the page its program is taken from |
 | [queries](12-query.md), [solutions and models](13-solutions-and-models.md) | what is asked and what the answer is | all four |
 | [macros and imports](11-macros.md) | syntax: a pattern and its expansion, a module brought in under a name | Ein and words. No graph and no formula for the form; a macro that means something, `forall`, has both |
 | [natural language](14-natural-language.md) | syntax: `:why`, `:source` and `:goal-text`, the built-in connection between a form and its English | Ein and words, and nothing else |
 
-Every block of output on these pages is the binary's, from the command named beside it, and every drawing is the
-DOT the named command wrote, trimmed of comments, tooltips and legends and of nothing else; a drawing made by hand
+DOT the named command wrote, less its comments and font settings, a region's tooltips, layer labels, legend and
+the line of its title that names the run, and the facts a page says it leaves out; a drawing made by hand
+the facts a page says it leaves out; a drawing made by hand
 says so. A formula is TeX. After the four come the details, each refusal linked to the
 [diagnostics](../04-reference/07-diagnostics.md), and a list of related pages.
 

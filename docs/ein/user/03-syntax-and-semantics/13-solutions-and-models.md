@@ -136,7 +136,9 @@ digraph region {
 ```
 
 With a run's dumps beside it, `--visited` and `--answer`, the drawing also shows what that run did: which nodes it
-visited and which states it reported ([rendering](../04-reference/12-rendering.md)).
+visited and which states it reported ([rendering](../04-reference/12-rendering.md)). The program's three rules, the
+hrule that proposes the four candidates and the two restrictions that make nine of the sixteen nodes red, are drawn
+on [hypotheses](09-hypotheses.md#as-a-graph).
 
 ## In words
 

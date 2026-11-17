@@ -166,10 +166,18 @@ octagon of the graph above, which `ein saturate --dump FILE` lists among the pro
 that says the name is declared:
 
 ```text
-;; ── BACKGROUND (2 facts) ──
-;;   relation (2)
+;; ── BACKGROUND (6 facts) ──
+;;   is-instance (2)
+  (is-instance Norwegian Person)
+  (is-instance House-1 House)
+;;   relation (4)
   (relation is-instance Object Type)
   (relation is-instance)
+  (relation lives-in Person House)
+  (relation lives-in)
+
+;; ── GIVEN (1 facts) ──
+  (lives-in Norwegian House-1 :source "condition (10)")
 ```
 
 `Object` and `Type` are its second and third arguments: names, written in a fact, and nothing more. The engine
@@ -227,7 +235,9 @@ relation's first label* is a sentence a program can write:
 of `?R`, and an `is-instance` arrow from that fact's first argument to the first label. Where all three are there,
 *the type of `?x1` is `?T1`* is a fair thing to call it, and the rule says so of the fact. A relation written as a
 variable is a **parameter** of its rule ([rules](05-rules.md)), bound by an activator fact, so the second rule
-supplies one for every relation declared with two labels. `ein solve FILE`:
+supplies one for every relation declared with two labels. The first rule written with no parameter, its `?R` bound
+by the `(relation ?R ?T1 ?T2)` premise alone, is refused at load: *a relation is named by a name or by a parameter
+its activator binds*. `ein solve FILE`:
 
 ```text
   query             (fits ?fact)
@@ -263,6 +273,30 @@ digraph rule_first_argument_fits_lhs_rhs {
     "(?R ?x1 ?x2)_R" [label="(?R ?x1 ?x2)", shape=rectangle];
     "h2_fits_R" [shape=octagon, label="fits", color="#bcbd22", fontcolor="#bcbd22"];
     "h2_fits_R" -> "(?R ?x1 ?x2)_R" [label="1", color="#bcbd22", style=dashed];
+  }
+}
+```
+
+The second rule, `ein render rule --name every-declared-pair FILE`, matches a declaration alone and asserts the
+first rule's activator, a fact about the relation's name:
+
+```dot
+digraph rule_every_declared_pair_lhs_rhs {
+  rankdir=TB;
+  label="every-declared-pair"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?T1_L" [label="?T1", shape=diamond];
+    "?T2_L" [label="?T2", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?T1_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?T2_L" [label="3", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h2_first-argument-fits_R" [shape=octagon, label="first-argument-fits", color="#d62728", fontcolor="#d62728"];
+    "h2_first-argument-fits_R" -> "?R_R" [label="1", color="#d62728", style=dashed];
   }
 }
 ```

@@ -141,6 +141,9 @@ digraph rule_total_owed_lhs_rhs {
 }
 ```
 
+The program's two restrictions, `one-chair-each` and `one-person-a-chair`, are drawn on
+[hypotheses](09-hypotheses.md#as-a-graph), whose program shares them.
+
 What the obligation does to the answer is a picture of the lattice: `ein oracle FILE --dump DIR`, then `ein render
 region DIR` (the layer labels, the tooltips and the legend left out). An owing node is filled amber, a node of R
 green, a dead one red, and the edge that pays a node's last debt is drawn blue:

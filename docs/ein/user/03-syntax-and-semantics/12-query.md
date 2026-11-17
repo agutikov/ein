@@ -104,7 +104,8 @@ shows
 ([solutions and models](13-solutions-and-models.md#as-a-graph)).
 
 `ein render program FILE` draws the two forms themselves, each a note holding its keywords, one digraph each, beside
-the rules, the ontology and the facts:
+the rules, the ontology and the facts (the program's hrule and its two restrictions are drawn on
+[hypotheses](09-hypotheses.md#as-a-graph)):
 
 ```dot
 digraph solve {
