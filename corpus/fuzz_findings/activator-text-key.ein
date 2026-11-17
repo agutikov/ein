@@ -1,9 +1,9 @@
-;;; An int and a string with the same text share a compile key, and a
-;;; derivation is lost — M1e2 W16. Register row `W16/int-and-string`
+;;; An activator `1` and one `"1"`, whose text is one: a string is
+;;; natural-language text and never a value (Q-M1e2.23), so the program is
+;;; refused at the parse. Register row `W16/int-and-string`
 ;;; (`corpus/wrong_answers.toml`); the note is `activator-text-key.md`.
 ;;;
-;;; Release: the string's two `noted` facts are never derived. Debug:
-;;; `Engine::compile_all`'s shortcut check aborts.
+;;; A compile plan is keyed by the activator's values, never by their text.
 (relation edge  Node Node)
 (relation holds Node)
 (relation noted Node Node)

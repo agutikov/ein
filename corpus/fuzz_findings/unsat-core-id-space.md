@@ -1,26 +1,14 @@
 # unsat-core-id-space
 
-**Settled 2026-11-04** by M1e2
-[S1e2.2.12](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.12_core_id_order.md),
-the second of the user's two visits to W11. The core this note is about was
-the walk's, gone with it: under R the program is three states and its four
-dead sets have one core each, none of which moves under eight permutations of
-the interner with every core a run reports compared. The *decision nobody has
-taken* below had been taken in `explain.rs`: the smallest frontier, then the
-least by `repr` rank, never by id. What could still move a core was what the
-store is offered, a resumed fork's delta sorted by `FactId`, which
-[`fork-delta-order.ein`](fork-delta-order.md) showed and `10858b96` fixed.
-Promoted to
-[`examples/ein-bugs/unsat-core-id-space.ein`](../../examples/ein-bugs/unsat-core-id-space.ein);
-this file and its `.ein` stay as the dedup signature and a frontend-fuzzer
-seed. The blind pigeonhole below was measured (S1e2.2.12, eight seeds: R =
-{∅}, each member of N one placement and one core, nothing moves) and is not
-checked in: it has no tie left to break. The note below is the finding as it
-stood.
+A generated program, minimised to four forms, whose reported core could depend on the order ids were assigned in.
+Under R it is three states, and its four minimal dead sets have one core each, none of which moves under a permuted
+interner: `explain.rs` reports the smallest frontier, then the least by `repr` rank, never by id, and what the store
+is offered, a resumed fork's delta, is in the order the commitment was written
+([`fork-delta-order`](fork-delta-order.md)). The fixture is
+[`examples/ein-bugs/unsat-core-id-space.ein`](../../examples/ein-bugs/unsat-core-id-space.ein), which the id-order
+sweep permutes on every commit; this note and its `.ein` stay as the signature a later find is compared against and
+a frontend-fuzzer seed.
 
-- found: 2026-08-21, `utils/fuzz_engine.py --seed 20260821 --minutes 4`, mode
-  `mixed`, by the rewritten fuzzer
-  ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer))
 - property: **id-order** — the same answer under a permuted interner
 - minimised: 19 → 4 forms
 
@@ -33,90 +21,19 @@ stood.
   :assert (false))
 ```
 
-## What happens
+## What it guards
 
-The verdict is `Contradiction` either way. **Which facts the unsat core names,
-and how many, is not determined by the data** — six of the 45 rendering ops
-move under one permutation:
+A contradiction can have several minimal cores, and the engine is free to report any of them, but *which* one it
+reports must be a function of the program and not of interning order: an observable that depends on the order ids
+were assigned in is what
+[the determinism contract](../../docs/ein/ein.rs/design/determinism-and-order.md#21-ids-are-not-an-output-order)
+forbids. A core is an explanation, and canonical only up to that contract.
 
-```
-[solve[default]] / [solve[exhaustive]] / [solve[shuffled]]
-  plain:    CORE 1 [(r1 o4 o5)]
-  permuted: CORE 2 [(r1 o1 o5) (r1 o4 o1)]
-
-[trace[answer]]
-  plain:    No solution — the constraints are contradictory (unsat core: 1 facts).
-  permuted: No solution — the constraints are contradictory (unsat core: 2 facts).
-
-[dot[lattice]] / [dot[lattice-full]]
-  tooltip="unsat-core: r1(o4, o5) …"  vs  tooltip="unsat-core: r1(o1, o5) …"
-```
-
-Reproduce:
+A symmetric program reaches the same question with no generated input: a blind pigeonhole, three pigeons and two
+holes, whose contradiction has an automorphism group, offers equal-size cores that differ only by which pigeon is
+which. `examples/features/12_expect_false.ein` **forces its chain instead of searching it** — two givens, survivor
+forcing, one core — so that a fixture about `:expect (false)` is not also a symmetry stress test.
 
 ```sh
-mkdir -p /tmp/unsat-core && cp corpus/fuzz_findings/unsat-core-id-space.ein /tmp/unsat-core/
-EIN_ID_FILES=/tmp/unsat-core cargo test --manifest-path ein.rs/Cargo.toml \
-    -p ein-render --test id_order_invariance
+ein solve corpus/fuzz_findings/unsat-core-id-space.ein   # R three states; N four minimal dead sets, one core each
 ```
-
-## Why it is here rather than fixed
-
-It is the class
-[design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md) forbids —
-an observable that depends on the order ids were assigned in — and it is the
-second one the id-space sweep has found that the corpus does not reach (the
-first is [`d3-goal-row-order`](d3-goal-row-order.md)). Both arrived within
-minutes of `utils/fuzz_engine.py` being pointed at that sweep, which is the
-argument for pointing it there.
-
-Same *surface* as [`d3-unsat-core`](d3-unsat-core.md) and a different cause:
-that one's 6-vs-4 core is the resumed fork saturator (`EIN_FORK_DELTA=0`
-reproduces the six), and it is **green** under a permuted id space. This one
-has one build and two answers.
-
-The engine is not wrong to have more than one minimal core — a contradiction
-can have several — but it is wrong for *which* one it reports to be a function
-of interning order rather than of the program. Whether the fix is a canonical
-choice (smallest, then `Interner::rank`-least) or reporting every core is a
-decision nobody has taken, which is why this is a fixture and a question. When
-it settles it becomes a `regression` entry in the same commit and this file
-goes.
-
-## 2026-08-24 — the corpus reaches it now
-
-The paragraph above says this is one of two findings *"the corpus does not
-reach"*, and that was true for three days. Writing M1c
-[S1c.1.2](../../docs/ein/user/syntax-and-semantics/query.md#claims)'s
-`k = 0` fixture reached it on the first try, with no fuzzer and no generated
-input — the blind pigeonhole, three pigeons and two holes:
-
-```lisp
-(instance P1 Pigeon) (instance P2 Pigeon) (instance P3 Pigeon)
-(instance H1 Hole)   (instance H2 Hole)
-;; one pigeon per hole, a pigeon in one hole is in no other,
-;; a pigeon with every hole excluded is ⊥ — then guess placements
-(hrule guess (?p ?h) :match (instance ?p Pigeon) :assert (in ?p ?h) :why "…")
-```
-
-`id_order_invariance` moved **6 of 5 437 (file, op) pairs**, all of them this
-file, on seed 1:
-
-```text
-plain:    CORE 8 [(in P1 H2) (in P2 H1) (in P2 H2) (in P3 H1) (in P3 H2) …]
-permuted: CORE 8 [(in P1 H1) (in P1 H2) (in P2 H1) (in P2 H2) (in P3 H1) …]
-```
-
-Same size, different facts — the eight-fact version of the 1-vs-2 above. **What
-this changes about the finding is its reachability, not its cause**: the fuzzer
-found it in generated input because nothing in the corpus was symmetric enough,
-and a pigeonhole is symmetric enough. Any puzzle whose contradiction has an
-automorphism group will do it, which is a much larger class than "an input a
-fuzzer minimised to four forms" suggests, and it raises the cost of leaving the
-choice uncanonicalised.
-
-`examples/features/12_expect_false.ein` **forces its chain instead of searching
-it** — two givens, survivor forcing, one core — precisely so that a fixture
-about `:expect (false)` is not also a symmetry stress test. Its header says so
-and points here. The blind version is not checked in: it belongs to this
-finding, and it will be the `regression` entry when the question settles.

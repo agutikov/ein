@@ -1,28 +1,22 @@
 # binding-key-layout
 
-**Fixed 2026-11-04** by M1e2
-[S1e2.2.7](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md),
-[Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)'s
-fix (1): a rule application's identity interns its activator's every
-argument, as the compile cache's key does, so both files derive the four
-`noted` facts in a release build and a debug one. Promoted the same day to
-[`examples/ein-bugs/binding-key-both.ein`](../../examples/ein-bugs/binding-key-both.ein)
-and [`binding-key-swapped.ein`](../../examples/ein-bugs/binding-key-swapped.ein),
-with the single-activator controls beside them; the two files here stay as
-the dedup signature and frontend-fuzzer seeds, their text unchanged. The
-note below is the finding as it stood.
+Two activators of one rule, a name of digits and a nested fact in one position, `(note edge 1)` and
+`(note edge (src Y))`, in two orders: this file and [`binding-key-layout-swapped.ein`](binding-key-layout-swapped.ein).
+Each argument of an activator binds its parameter, a nested fact included
+([Q-M1f.43](../../docs/decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)), and a rule
+application's identity interns its activator's every argument, as the compile cache's key does
+([Q-M1e.16](../../docs/decisions/engine/Q-M1e.16-a-firings-identity-keys-on-every-activator.md)). So both orders
+derive the same two `noted` facts, `(noted 1 1)` and `(noted 2 1)`, in a release build and a debug one: the nested
+fact's `?f` is `(src Y)`, which nothing `holds`.
 
-- found: 2026-08-28, by hand — M1e
-  [S1e.1.4](../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-  answering the review's Q3, and written down as
-  [`defined_behaviour.md` § 3.2](../../docs/kernel/defined_behaviour.md)'s
-  thirteen-line program
+The two files are the witnesses of register row `W7/binding-key-layout`
+([`corpus/wrong_answers.toml`](../wrong_answers.toml)) and frontend-fuzzer seeds. The fixtures are
+[`examples/ein-bugs/binding-key-both.ein`](../../examples/ein-bugs/binding-key-both.ein) and
+[`binding-key-swapped.ein`](../../examples/ein-bugs/binding-key-swapped.ein), with the single-activator controls
+beside them, and `ein-infer/tests/rule_semantics.rs`'s
+`an_int_beside_a_nested_fact_in_one_position_loses_no_derivation` states the same program in-process.
+
 - property: **no-crash** in a debug build; a **lost derivation** in release
-- banked here: 2026-10-14, M1e2
-  [S1e2.1.1](../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.1_the_case_register.md),
-  as the witness of register row `W7/binding-key-layout`
-  ([`corpus/wrong_answers.toml`](../wrong_answers.toml)), with
-  [`binding-key-layout-swapped.ein`](binding-key-layout-swapped.ein) as its twin
 
 ```
 (rule note (?R ?f)
@@ -34,44 +28,23 @@ note below is the finding as it stood.
 (note edge (src Y))
 ```
 
-## What happens
+## What it guards
 
-`BindingKey = (rule, activator, values)` compares two register layouts
-position by position. An `int` activator argument binds its parameter and a
-nested `Fact` does not, so `(note edge 1)` and `(note edge (src Y))` compile
-two plans with **different** layouts under one key, and the second plan's
-bindings are deduplicated against the first's.
+Two activators of one rule whose arguments are of different kinds compile two plans. An identity that compared
+two plans' bindings position by position under one key, with a nested fact binding no parameter, would compare
+different variables, and the order the two activators are written in could decide what is derived, with nothing
+said; a debug build's layout check would abort on both files. Both files answer alike:
 
-```
-$ ein saturate --dump corpus/fuzz_findings/binding-key-layout.ein        # release
+```text
+$ ein saturate --dump corpus/fuzz_findings/binding-key-layout.ein
+;;   noted (2)
   (noted 1 1 :rule note)
   (noted 2 1 :rule note)
-  (noted 2 3 :rule note)
-$ ein saturate --dump corpus/fuzz_findings/binding-key-layout-swapped.ein
-  (noted 1 1 :rule note)
-  (noted 1 3 :rule note)
-  (noted 2 1 :rule note)
-  (noted 2 3 :rule note)
 ```
 
-The rule has four conclusions; the activator order decides whether one is
-lost, and nothing says so. In a debug build `check_layout`
-(`ein-infer/src/engine.rs`) is the only enforcement of the key's invariant and
-aborts on **both** files:
+The panic below is this find's signature, which a later find of the same site is compared against:
 
 ```
 panicked at crates/ein-infer/src/engine.rs:254:21:
 assertion `left == right` failed: two plans share (rule, activator) and disagree on their register layout — `BindingKey` compares their value vectors and would be comparing different variables
 ```
-
-## Why it is here rather than in `examples/`
-
-Every in-process corpus sweep (`corpus_shapes`, `id_order_invariance`,
-`jobs_invariance`, `summary_properties`) saturates every corpus file inside a
-debug test binary, and this one aborts it. A register row may not point into a
-plan directory, and this is the directory the repo keeps for a minimised input
-that violates a property the corpus sweeps assert — so the pair lives here
-until [S1e2.2.7](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md)
-fixes it, and moves to `examples/` in the same commit, as the README's rule for
-a fixed find says. The in-crate statement of the same program is
-`ein-infer/tests/rule_semantics.rs::an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`.
