@@ -116,13 +116,16 @@ Six facts about the terminals that the diagrams state and do not explain:
      whole `:assert`, `(open)` or `(open ?R)`
      ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)). An error found
      at any other `open` carries the note *open is reserved: it is the verdict a rule's :assert states, written as the
-     whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value*.
-   - **`eq`, `absent` and `false` head no value.** §2's `ValueHead` lists the words that may head a fact inside a
+     whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value*. *Value*, in that
+     note, in the production `ValueHead` and in every line `ein` prints, is the engine's word for an object in an
+     argument's place: an atom, or a fact a state could hold.
+   - **`eq`, `absent` and `false` head no argument.** §2's `ValueHead` lists the words that may head a fact inside a
      fact, a pattern inside a pattern and a conclusion's argument, and those three are not among them: `absent` heads
-     only a premise's connective and a claim's class atom, `false` is written only as `(false)`, and `(eq a b)` only as
-     a fact, a premise or a conclusion of its own. An error found at an `absent` that opens a form, at an `eq` or `neq`
-     that opens a form inside another, and at an argument written after `(false`, carries a note saying so
-     ([`07-diagnostics.md`](07-diagnostics.md), *a value is a name, or a fact a state could hold*).
+     only a premise's connective and a fact a claim's class lists, `false` is written only as `(false)`, and `(eq a
+     b)` only as a fact, a premise or a conclusion of its own. An error found at an `absent` that opens a form, at an
+     `eq` or `neq` that opens a form inside another, and at an argument written after `(false`, carries a note saying
+     so ([`07-diagnostics.md`](07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold), *an object
+     is an atom, or a fact a state could hold*).
    - **A keyword is `:` and a run of name characters**, read the same way: `:why` is the token `':why'`, and `:where`
      a `KEYWORD`, which no production of §2 takes, so a keyword a form does not take is a parse error that says so
      ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
@@ -137,7 +140,7 @@ Six facts about the terminals that the diagrams state and do not explain:
    `1..5` are names (fact 5), each printed as written, and a fact of one is never a fact of another.
 4. **A string is natural-language text, with five escapes and `\u{…}`**
    ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). `TEXT`
-   is the value of `:why`, `:source` or `:goal-text` and nothing else (§2's `Text`): written anywhere a value goes it
+   is the value of `:why`, `:source` or `:goal-text` and nothing else (§2's `Text`): written anywhere an argument goes it
    is a parse error at the string, with a note saying so, and the name written bare is what it meant. It holds any
    character but `"` and `\` as itself, a raw newline among them, and reads `\n` `\t` `\r` `\"` `\\` and `\u{…}`, one
    to six hex digits naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF (`\u{1F993}` is 🦓). Any other
@@ -198,13 +201,13 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 ![Variables, strings, flags and lists of names, as a railroad diagram](diagrams/01-grammar-phrase-variables-strings-flags.svg)
 
-### 2.4 A fact, a stored negation and a fact as a value
+### 2.4 A fact, a stored negation and a fact as an argument
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-fact.puml`](diagrams/01-grammar-phrase-fact.puml):
 `Fact`, `NotFact`, `NestedFact`, `EqFact`, `FactArg`, `FactArgs`, `FactClause`, `FactClauses`, `NestedFacts`.
 
-![A fact, a stored negation and a fact as a value, as a railroad diagram](diagrams/01-grammar-phrase-fact.svg)
+![A fact, a stored negation and a fact as an argument, as a railroad diagram](diagrams/01-grammar-phrase-fact.svg)
 
 ### 2.5 A relation's declaration
 
@@ -328,12 +331,12 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
   names exist, and that it names the goal's, is the loader's.
 - **How many arguments a form of a declared relation has.** The loader holds every form of a declared relation to the
   count of slots its declaration names ([`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). The
-  names it gives the slots are labels, ordinary names, and no argument is checked against one.
+  names it gives the slots are labels, ordinary atoms, and no argument is checked against one.
 - **Unbound variables**: a conclusion's variable that no way of satisfying the `:match` binds
   ([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert)).
 - **What a macro's body expands to.** A `Template` takes any head at any arity, and a call takes any premise as an
   argument (`Arg`'s `Connective`), so a premise that is a name, `eq` or `absent` at another arity, a `not` of no fact,
-  a connective where a value goes, `false` with an argument, an `(or …)` as a conclusion and a conclusion that is a
+  a connective where an argument goes, `false` with an argument, an `(or …)` as a conclusion and a conclusion that is a
   bare variable reach the loader through a macro. The loader refuses each after expansion, holding the expanded rule
   to this grammar's shapes by position. A macro no rule calls is not read, so it loads whatever its body
   ([Q-M1f.67](../../../decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)).
@@ -342,7 +345,7 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
   a connective that is still a pattern's argument, `(q (and (p ?x)))`, `(q (eq ?a ?b))` or `(q (absent (p ?x)))`, is
   a pattern no fact matches, and the loader refuses it, in a rule, an hrule, an obligation and a goal; `(not
   <pattern>)`, a stored negation, stays. The same reading refuses what a macro's expansion writes of the shapes §2
-  refuses written out: a fact, value or conclusion of `absent`, `false` with an argument, and `(eq …)` as a value.
+  refuses written out: a fact, argument or conclusion of `absent`, `false` with an argument, and `(eq …)` as an argument.
 - **Where an `(or …)` sits, how wide a clause is, and a goal's relations.** `Connective` takes an `(or …)` wherever a
   premise goes, so an `(or …)` written as a premise of an `(and …)`, under an `(absent …)` or as a whole `:match`
   parses; so do a `:match` or a `:goal` of any width, and a goal's premise whose relation is a variable
@@ -351,7 +354,7 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
   binds one ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)).
   Where `open` stands is the grammar's; what the loader still refuses of it is the program's to tell, an `(open ?R)`
   whose `?R` is no parameter or whose projection does not resolve, each line placed where the `(open …)` is written
-  ([`03-reserved-names.md` § The verdict atom](03-reserved-names.md#the-verdict-atom--open)).
+  ([`03-reserved-names.md` § The verdict](03-reserved-names.md#the-verdict--open)).
 
 Every program under [`examples/broken/`](../../../../examples/broken/) is refused, and its report, the engine's
 defined output for it, is kept beside it as its `.expected` file: a parse error at the top, and one refused at load in

@@ -12,7 +12,7 @@ are [`03-reserved-names.md`](03-reserved-names.md), and every refusal's line is 
 
 | terminal | regex | examples | role |
 |---|---|---|---|
-| `NAME` | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | an atom: a value, a relation, a rule, a slot's label, a step. **The name rule**: a run of ASCII name characters, each name printed as written and reloading to itself, so `7` and `07` are two names. No character has a meaning of its own, `*` among them. A reserved word is never a name, and a position word is one wherever a name goes ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar), fact 1). A token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused |
+| `NAME` | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | the name of an atom: an argument, a relation, a rule's name, a slot's label, a step. **The name rule**: a run of ASCII name characters, each name printed as written and reloading to itself, so `7` and `07` are two names. No character has a meaning of its own, `*` among them. A reserved word is never a name, and a position word is one wherever a name goes ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar), fact 1). A token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused |
 | `VAR` | ``\?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `?a`, `?house`, `?T`, `?R*`, `?_x`, `?a.b` | a variable: `?` and a name's characters, bound by a `:match` and reused in an `:assert` |
 | `KEYWORD` | `:` and a name's characters | `:match`, `:rule`, `:source` | a form's clause marker, followed by its value, but `(solve …)`'s `:no-search`, a flag. **Each form takes a fixed set** ([below](#the-keywords-each-form-takes)), and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)) |
 | `TEXT` | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else**: the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, carried byte for byte by every surface that prints it ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). Written anywhere else, as a fact's or a rule's argument, a name or a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact |
@@ -20,7 +20,8 @@ are [`03-reserved-names.md`](03-reserved-names.md), and every refusal's line is 
 **There is no `_`, no number and no range.** A bare `_` and `?_` are refused wherever either is written, with the
 note *_ is reserved and names nothing: where any value will do, write a variable used once*
 ([Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)); a variable used once is
-what to write where any value will do, and `_` anywhere else in a word is a name character, so `_a_in_b_` is a name
+what to write where any object will do (the note's *value*, here and in every line `ein` prints, is an object in
+an argument's place), and `_` anywhere else in a word is a name character, so `_a_in_b_` is a name
 and `?_x` a variable. Ein has no numbers and no ranges
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)): `1..5`, `7` and `07` are
 three names, and arithmetic is a theory in the standard library ([the calculator](04-stdlib/07-calculator.md)).
@@ -142,16 +143,17 @@ property tag gets nothing.
   :why "<template>")                      ; the one keyword a relation takes
 ```
 
-`relation` declares a relation and its signature. The loader also stores each declaration as an ordinary fact,
-`(relation R L1 L2 …)`, its **mirror**, so that a rule can read a signature with a `(relation ?R ?A ?B)` pattern.
+`relation` declares a relation and its signature. A declaration is a fact of the relation `relation`: the loader
+stores it as an ordinary fact, `(relation R L1 L2 …)`, its **mirror**, so that a rule can read a signature with a
+`(relation ?R ?A ?B)` pattern.
 That is why `relation` is a position word: a name wherever a name goes, `(relation ?R ?A ?B)` a pattern, and as a
 form's head the declarator, so `(relation)` and the wrapped form `(relation R (T1 T2))` are parse errors.
 
-**A name and zero or more slot labels.** Ein has no types. A label is an ordinary name, an argument of the mirror
-fact like the relation's own name, and it means what the rules that read the mirror make it mean
+**A name and zero or more slot labels.** Ein has no types. A label is an ordinary atom, an argument of the mirror
+fact as the declared relation is, and it means what the rules that read the mirror make it mean
 ([§ What the signature means](#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)).
-`(relation adult Person)` is a legal **unary** declaration, and
-`(relation opaque)` a legal **bare** one, a relation with no argument
+`(relation adult Person)` is a legal declaration of **one label**, and
+`(relation opaque)` a legal **bare** one, of a relation whose facts have no argument
 ([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)): `(opaque)` is its one
 form.
 
@@ -170,10 +172,11 @@ kb load error: t.ein:2:2: the fact (likes Bob) gives likes 1 argument, and (rela
 A keyword pair is no argument. A relation nothing declares has no count and is not held, a relation written as a
 variable, `(?R ?a ?b)`, is not read
 ([Q-M1f.202](../../../decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)), and no
-argument is held to a label: `(likes Tea Ann)` loads. The line's last word, *types*, is the count of labels.
+argument is held to a label: `(likes Tea Ann)` loads. The line's last word, *types*, is the engine's word for the
+labels, and what it counts.
 
-**The membership fact.** A pattern matches facts of its own count, so `(relation ?R ?A ?B)` sees only binary
-declarations. Every declaration therefore also stores `(relation R)`, the pattern for *is `?R` a declared relation?*
+**The membership fact.** A pattern matches facts of its own count, so `(relation ?R ?A ?B)` sees only declarations
+of two labels. Every declaration therefore also stores `(relation R)`, the pattern for *is `?R` a declared relation?*
 at any count:
 
 ```lisp
@@ -185,7 +188,7 @@ at any count:
 For a bare declaration the two coincide, so one fact is stored. A relation no form declares, a property tag such as
 `symmetric`, gets neither from the loader. A rule may conclude the membership fact too: `(rule r () :match (p ?x)
 :assert (relation ?x) …)` over `(p a)` derives `(relation a :rule r)`, a fact like any other, with no declaration
-behind it. So `(relation ?R)` matches every declared relation and every name a rule has concluded it of.
+behind it. So `(relation ?R)` matches every declared relation and every object a rule has concluded it of.
 
 **What a file writes, stated.** As it stores each declaration's mirror, the loader states each fact nested in a fact
 a file writes, at any depth, as `(written T)`, and each fact a rule's or an hrule's conclusion nests that holds no
@@ -234,7 +237,7 @@ inert. It is read in two ways that never mix: rules read its *labels*, and the e
 
 **The labels, by rules only.** A rule reads a signature through the mirror fact, `(relation ?R ?A ?B)`, and a label
 means what that rule does with it. Here `first-slot` reads the label of a relation's first slot and says which facts
-put there a name with no `is-a` fact into it:
+put there an atom with no `is-a` fact into it:
 
 ```lisp
 (relation is-a T T :why "{?1} is a {?2}")
@@ -260,20 +263,20 @@ put there a name with no `is-a` fact into it:
 has no row: both `likes` facts load either way, and `Person` and `Drink` say nothing. Everything type-like in the
 standard library is such a rule: `std.bijection`'s check, `std.algebra`'s converse domain and range check,
 `std.typing`'s hierarchy ([labels, and the membership relation](04-stdlib/02-relation-algebra.md#labels-and-the-membership-relation)). The engine never resolves a label to anything: a
-signature holds opaque names.
+signature holds atoms it does not read into.
 
 **The shape, by the engine**, in three places and no other, each about what may be guessed
 ([`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)):
 
 | the signature is… | so the blind enumerator… |
 |---|---|
-| **not empty** | may guess the relation's facts: a declaration with no label is never guessed, so write `(relation R T)`, `T` any name, for a guessable relation whose slot needs no label that says something |
-| **one or two labels long** | proposes one candidate per object for a unary relation, and one per pair of objects for a binary one; a relation of three arguments or more loads, stores facts and saturates, and is never guessed |
-| **its labels** | never proposes a fact *about* a name a signature lists as a label ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)) |
+| **not empty** | may guess the relation's facts: no fact of a relation declared with no label is ever guessed, so write `(relation R T)`, `T` any name, for a relation whose facts may be guessed and whose slot needs no label that says something |
+| **one or two labels long** | proposes one candidate per guessable atom for a relation of one argument, and one per pair of them for a relation of two; a relation of three arguments or more loads, its facts are stored and saturate, and none is ever guessed |
+| **its labels** | never proposes a fact *about* an atom a signature lists as a label: a label is no guessable atom ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)) |
 
 So a label is not inert where the blind enumerator builds the candidates. `ein show hyps` on the two lines
 `(relation likes Person Drink :why "{?1} likes {?2}")` and `(likes Ann Tea)` lists one candidate, `(likes Tea Ann)`;
-with the first label written `Ann` in place of `Person` it lists none, `Ann` being a label and no object. Where an
+with the first label written `Ann` in place of `Person` it lists none, `Ann` being a label and so not guessable. Where an
 hrule proposes, the labels are not read: the same two lines with an hrule that proposes `(likes ?b ?a)` from
 `(likes ?a ?b)` list `(likes Tea Ann)` under either label.
 
@@ -286,23 +289,23 @@ A fact is any top-level form whose head is **not** a declarator:
 
 ```text
 (not <fact> [:source "<text>"])           ; a stored negative: one fact, the head `not` reserved
-(<name> <arg>* [:source "<text>"])        ; a relation instance, an enumeration, a property tag
+(<name> <arg>* [:source "<text>"])        ; a fact of a relation: an enumeration, a property tag
 ```
 
 | kind | example | semantics |
 |---|---|---|
-| **relation instance** | `(co-located Englishman Red :source "(2)")` | a relation holds between these arguments |
+| **a fact of a relation** | `(co-located Englishman Red :source "(2)")` | the relation holds of these arguments |
 | **negative** | `(not (drinks Spaniard Coffee) :source "(?)")` | the wrapped fact does *not* hold |
 | **a fact of `=`** | `(= Red Colour-1)` | an ordinary fact of the relation named `=` ([§ 3](#is-a-fact-head-not-a-unifier)) |
 
-An argument is a name or a fact, `(hypothesis (co-located Norwegian House-2))`
-([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)). **A value is a name, or a fact a
-state could hold**, an atom of an ordinary relation or its negation
+An argument is an object, an atom or a fact, `(hypothesis (co-located Norwegian House-2))`
+([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)). **An object is an atom, or a fact
+a state could hold**, a fact of an ordinary relation or its negation
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)), so:
 
 - `not` is shape-pinned: `(not <fact>)`, one fact; a wrong count is a parse error.
-- `and`, `or`, `neq` and `absent` are premises of a rule's `:match`, never a fact's head, and never a value. A guard is
-  a premise, `(neq ?a ?c)`; there is no `:where` clause.
+- `and`, `or`, `neq` and `absent` are premises of a rule's `:match`, never a fact's head, and never an argument. A
+  guard is a premise, `(neq ?a ?c)`; there is no `:where` clause.
 - **`eq` and `neq` are relations whose facts are computed**
   ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)), so no
   fact changes them. `(neq …)` is no fact the grammar takes; a written `(eq a b)`, or `(not (eq a b))`, is checked as
@@ -312,14 +315,15 @@ state could hold**, an atom of an ordinary relation or its negation
   ([Q-M1f.47](../../../decisions/language/Q-M1f.47-a-written-fact-of-eq-at-another-arity-than-two.md)). `(eq a b)`
   is written only as a form of its own, never inside another, `(q (eq a b))`
   ([Q-M1f.124](../../../decisions/language/Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md)).
-- No fact or value is headed `absent`, which is negation as failure, a premise's test; the stored negation of a fact is
-  `(not …)` ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)).
-- `false` takes no argument, `(false)` alone, as a fact and as a value
+- No fact, written at the top or as an argument, is headed `absent`, which is negation as failure, a premise's test;
+  the stored negation of a fact is `(not …)`
+  ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)).
+- `false` takes no argument, `(false)` alone, as a fact and as an argument
   ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)).
 - The declarators `rule`, `hrule`, `query`, `solve`, `config`, `macro`, `import` and `trace` are reserved words, never
   a fact's head.
 
-Everything else, `instance`, `type`, `symmetric`, `co-located`, `lives-in`, …, is an ordinary `(NAME value*)` fact:
+Everything else, `instance`, `type`, `symmetric`, `co-located`, `lives-in`, …, is an ordinary `(NAME arg*)` fact:
 introduce a relation by declaring it and stating its facts. A fact that activates a rule, `(symmetric co-located)`,
 `(implies right-of next-to)`, carries no annotation and reads as background: the puzzle never says *co-located is
 symmetric*; it is the relation's context. Pairwise distinctness in a category is no primitive either: a rule derives it
@@ -338,7 +342,7 @@ call at any depth, `(says (settled Ann))`, `(not (settled Bob))`, one a claim li
 macro's name ([Q-M1f.131](../../../decisions/language/Q-M1f.131-no-relation-is-declared-under-a-macros-name.md),
 [Q-M1f.133](../../../decisions/language/Q-M1f.133-a-macros-call-inside-a-claims-fact-or-a-using-is.md)); the same
 holds of `std.macro`'s `unknown` and `forall`, imported or not. Write the fact itself, `(paid Ann)`. A macro's name
-written as a value, `(word settled)`, is a name.
+written as an argument, `(word settled)`, is an atom.
 
 ### Derived facts — engine working memory
 
@@ -373,7 +377,8 @@ A rule is a top-level `(rule …)` form, and an hrule the same shape headed `hru
 priority**: the saturation agenda fires first the rules whose conclusion leads to `(false)`, then the rest, in the
 order they are written and their facts arrive within each half
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Where no
-rule's `absent` reads a relation that another rule waiting on an `absent` derives, that order decides no answer;
+rule's `absent` reads facts of a relation that another rule waiting on an `absent` derives facts of, that order
+decides no answer;
 it orders the trace, and the derivation a core is explained from.
 
 **The parameter list** is required:
@@ -419,9 +424,9 @@ proposes one fact per match**, each a commitment of its own, so its conclusion, 
 refused at load ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)): write one
 hrule per conclusion.
 
-**An activator binds each parameter to its argument, any value**: a name, or a nested fact, `(act (f a))` binding
-`?y` to `(f a)`, which the rule's patterns match and its conclusions write as they would a name. A parameter that
-names a relation, `?rel` above, binds a name: an activator that binds one to a fact is refused at load, where the
+**An activator binds each parameter to its argument, any object**: an atom, or a nested fact, `(act (f a))` binding
+`?y` to `(f a)`, which the rule's patterns match and its conclusions write as they would an atom. A parameter that
+stands for a relation, `?rel` above, binds an atom: an activator that binds one to a fact is refused at load, where the
 activator is written and where a rule could derive it
 ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). One that can be
 bound to `eq` heads premises and conclusions of two arguments only
@@ -446,8 +451,9 @@ At any moment a fact `P` is **asserted**, matched by `P`; **negated**, matched b
 
 **What a premise may be.** A premise is a form: a fact pattern, a guard (`eq`, `neq`, and `(not (eq a b))`, which is
 `(neq a b)` ([Q-M1f.31](../../../decisions/language/Q-M1f.31-not-eq-x-y-is-neq-x-y-in-every-place.md))), an
-`(absent …)`, or an `(and …)` or `(or …)` of premises. A pattern's relation is a name, or one of the rule's
-parameters, which its activator binds to a name; its arguments are values, variables or patterns. The loader refuses,
+`(absent …)`, or an `(and …)` or `(or …)` of premises. A pattern's relation is written as a name, or as one of the
+rule's parameters, which its activator binds to an atom; its arguments are objects, variables or patterns. The loader
+refuses,
 one line naming the rule and the clause ([`07-diagnostics.md`](07-diagnostics.md), *a rule shape that reads nothing*): a
 name or a variable written where a premise goes; a relation written as a variable no parameter binds, at the top
 level or inside a pattern, in a `:match` or an `:assert`; and an activator that binds a relation parameter to a nested
@@ -461,13 +467,13 @@ A conclusion is ordinarily a fact pattern, with `(and …)` concluding several a
 | conclusion | says |
 |---|---|
 | `(false)` | this state is contradictory |
-| `(open)` / `(open ?R)` | this state is **unfinished**: it owes a witness, and `(open ?R)` names the relation whose extent is incomplete |
+| `(open)` / `(open ?R)` | this state is **unfinished**: it owes a witness, and `(open ?R)` names the relation whose held extent is incomplete |
 
 **`open` is written there and nowhere else**
 ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): a rule's or an
-hrule's whole `:assert`, `(open)` or `(open ?R)`, `?R` a parameter or a relation's name. It is one of the words that
-are never a name, so no fact, nested fact, stored negation, pattern, value, label, object, activator argument, goal,
-claim, `(solve …)` list, `:over`, import, trace step or macro body writes it
+hrule's whole `:assert`, `(open)` or `(open ?R)`, `?R` a parameter or a relation written by name. It is one of the
+words that are never a name, so no fact, nested fact, stored negation, pattern, argument, label, activator argument,
+goal, claim, `(solve …)` list, `:over`, import, trace step or macro body writes it
 ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)); each is refused at the
 parse, at the `open`, with the note *open is reserved: it is the verdict a rule's :assert states, written as the whole
 :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value*.
@@ -475,14 +481,14 @@ parse, at the `open`, with the note *open is reserved: it is the verdict a rule'
 **A conclusion of `eq` or `neq`**, `(neq ?x ?y)`, `(eq ?x w)`, `(not (eq ?x ?y))`, or a pattern whose relation a
 parameter binds to `eq`, **is checked against its definition, never stored**: one that holds adds nothing, and one
 that does not is `(false)`, derived by the rule from the premises its firing matched, so its state is dead, its core
-those premises and `refuted by` the rule. A firing whose every conclusion holds derives nothing and is no firing. An
-hrule's instance of either is no hypothesis
+those premises and `refuted by` the rule. A firing whose every conclusion holds derives nothing and is no firing. A
+fact of either that an hrule proposes is no hypothesis
 ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)).
 
-**A conclusion `(not ?x)` negates the fact `?x` holds**, and a name has no negation: where the program shows that
-`?x` can hold a name, the rule or the hrule is refused at load
+**A conclusion `(not ?x)` negates the fact `?x` is bound to**, and an atom has no negation: where the program shows
+that `?x` can be bound to an atom, the rule or the hrule is refused at load
 ([Q-M1f.127](../../../decisions/language/Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md)), and where
-only a run meets the name, the firing concludes nothing for it
+only a run meets the atom, the firing concludes nothing for it
 ([Q-M1f.128](../../../decisions/language/Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md)).
 
 **Every variable a conclusion writes is bound** on every way the `:match` can hold
@@ -492,16 +498,17 @@ binds a variable nothing else binds, over the program's names. A variable seen o
 `forall` or an `unknown` is not bound outside it, `()` binds nothing, and a top-level `(or …)` must bind it in every
 disjunct. An hrule's `:assert` is held to the same rule. A rule or an hrule that writes one nothing binds is refused
 at load, one line per variable naming the two explicit spellings of what the implicit form could mean: a premise such
-as `(is-a ?y T)`, *every object of a type*, or `(eq ?y ?y)`, *every name of the program*.
+as `(is-a ?y T)`, *every object of a type*, or `(eq ?y ?y)`, *every name of the program*. The two phrases are the
+line's: its *object of a type* is an atom that a fact of the program's membership relation classifies.
 
 `(false)` is stored, since a contradiction survives any extension and a dead state stays dead; `open` is not, because
 openness exists to be destroyed by an extension, and a stored one would survive its own discharge. It is a tally on
 the state, read once the state has reached its fixpoint, and a rule that asserts it is an **obligation**, which never
-fires during saturation. `(open ?R)` names the incomplete relation and nothing else: the witness domain and the slot
+fires during saturation. `(open ?R)` names the relation whose held extent is incomplete and nothing else: the witness domain and the slot
 to fill are read off the rule's own `(absent …)`, and where they cannot be, the rule is refused at load rather than
 guessed. What an obligation means, and how a state's debts are reported, is
 [`../03-syntax-and-semantics/08-obligations.md`](../03-syntax-and-semantics/08-obligations.md); its refusals are
-[`03-reserved-names.md` § The verdict atom](03-reserved-names.md#the-verdict-atom--open).
+[`03-reserved-names.md` § The verdict](03-reserved-names.md#the-verdict--open).
 
 #### NAF evaluation timing — the closure/world boundary
 
@@ -538,8 +545,8 @@ Where an `(absent …)` stands among the positive premises decides *what it asks
 Write the binding premise **before** the guard to mean *for this `?x`*.
 
 A **guard**, `(eq a b)` or `(neq a b)`, is a premise over the relations of equality and non-equality: `(eq x x)` for
-every value, and `(neq x y)` for every two different values, computed and never stored. Its arguments are values: a
-variable, a name, or a fact that holds no variable, `(f a)`, the nested fact it spells as in `(p (f a))`; a form that
+every object, and `(neq x y)` for every two different objects, computed and never stored. Each argument is a
+variable or an object: an atom, or a fact that holds no variable, `(f a)`, the nested fact it spells as in `(p (f a))`; a form that
 holds a variable is refused at load
 ([Q-M1f.30](../../../decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)). **A guard's
 place among the relation premises of its conjunction does not change what the premise means; the order of two guards
@@ -554,9 +561,9 @@ on a variable no relation premise binds does**
   ([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)); a name only a
   query writes is none of them.
 - A guard on that variable after it is a test, so the first of two such guards decides what the variable holds: `(and
-  (p ?a) (neq ?m z) (eq ?m ?a))` binds `?a` to each name `p` holds of but `z`, and to no nested fact, since `neq`
-  ranges `?m` over the names and `eq` tests it, while `(and (p ?a) (eq ?m ?a) (neq ?m z))` binds it to each value `p`
-  holds of but `z`, a nested fact too. The first order is how a rule says *a name, and not a fact*
+  (p ?a) (neq ?m z) (eq ?m ?a))` binds `?a` to each atom `p` holds of but `z`, and to no nested fact, since `neq`
+  ranges `?m` over the names and `eq` tests it, while `(and (p ?a) (eq ?m ?a) (neq ?m z))` binds it to each object `p`
+  holds of but `z`, a nested fact too. The first order is how a rule says *an atom, and not a fact*
   ([Q-M1f.208](../../../decisions/stdlib/math/decimal/Q-M1f.208-two-guards-say-that-an-operand-is-a-name.md)).
 - An `(absent …)` after such a guard reads its variable, and one before it does not. Under an `(absent …)`, the
   enclosing premises before it bind, as they scope the `absent` itself.
@@ -591,8 +598,9 @@ has one lattice and one answer, and every query asks about it. What each list do
 - **The lists do not contradict the program's other hypothesis declarations**, read on root's fixpoint, or the program
   is refused at load, one line per conflict, on every command
   ([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)): no
-  active hrule proposes a relation `:hypothesis-relations` leaves out or `:no-hypothesis` names; with no hrule, no
-  obligation owes one; no relation is in both lists; and no listed relation is closed. A list that filters nothing, or
+  active hrule proposes a fact of a relation `:hypothesis-relations` leaves out or `:no-hypothesis` names; with no
+  hrule, no obligation owes facts of one; no relation is in both lists; and no listed relation is closed by a
+  `(__closed__ R)`. A list that filters nothing, or
   a `:no-hypothesis` name another list or a closure already says, is one `note:` line on stderr
   ([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)).
   `:no-search` relaxes no conflict
@@ -605,14 +613,14 @@ has one lattice and one answer, and every query asks about it. What each list do
   - `:hrules (h (a b) (c d) …)`: `h`, and every bare name after it, is an hrule the program declares
     ([Q-M1f.115](../../../decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md)). Each `(a b)` is an
     activator, which binds `h`'s parameters once, so it has as many arguments as `h` has parameters. An argument at a
-    parameter that names a relation, one that heads a form of the hrule as `?R` does in `(?R ?a ?b)`, is a relation of
-    the program; an argument at any other parameter is a value, a label or an object, and is not checked
+    parameter that stands for a relation, one that heads a form of the hrule as `?R` does in `(?R ?a ?b)`, is a relation
+    of the program; an argument at any other parameter is any object, and is not checked
     ([Q-M1f.116](../../../decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)).
   - `:hypothesis-relations` and `:no-hypothesis`: every name is a relation of the program. `()` names none.
-  - **A relation of the program** is a name the program writes as a relation outside the three lists: one it declares
-    or states a fact of, `is-a`, `eq` and `neq`, the relation of a form in a rule, an hrule or a query's `:goal`, or a
-    name it passes where a relation's name is held, `(bijective color-loc)`. A relation only a rule's `:assert` derives
-    is one.
+  - **A relation of the program** is an atom the program writes as a relation outside the three lists: one it declares
+    or states a fact of, `is-a`, `eq` and `neq`, the relation of a form in a rule, an hrule or a query's `:goal`, or
+    one it passes where a relation is expected, `(bijective color-loc)`. A relation of which only a rule's `:assert`
+    derives facts is one.
 
 #### The expected region — `(solve … :expect …)`
 
@@ -631,7 +639,7 @@ The productions are `RegionClaim`, `RegionItem` and `MergedFrom` of
 [the grammar, § 2.11](01-grammar.md#211-a-solve-and-its-claim).
 
 A `(model …)` is a state of R, root's facts included; the models are R's states, one to one, in any order; naming a
-relation closes it, across the whole claim, and stored negatives are not closed; `(merged …)` is all or nothing;
+relation closes its held extent, across the whole claim, and stored negatives are not closed; `(merged …)` is all or nothing;
 `(owing …)` says R is empty and lists the alive, owing nodes with no alive node one fact up; `(false)` says every node
 is dead, and `(region)` that R is empty, of either kind. How each reads, on real programs, is
 [`../03-syntax-and-semantics/12-query.md`](../03-syntax-and-semantics/12-query.md).
@@ -696,9 +704,9 @@ state its own answer, and the engine checks it. Three shapes, the verdict implie
 1. **The goal's relations are required.** An expectation that does not pin what the query asked does not load.
 2. **More is allowed.** Any ground fact may be listed, a `(not …)` among them, so a claim can pin a consequence at a
    distance rather than restate the rule it is about.
-3. **Naming a relation closes it**
+3. **Naming a relation closes its held extent**
    ([Q-M1c.2](../../../decisions/language/Q-M1c.2-an-expectation-is-ground-and-naming-a-relation.md)): if `:expect`
-   names `pet-loc` at all, the listed `pet-loc` facts are that relation's complete extent in the class. Relations it
+   names `pet-loc` at all, the listed `pet-loc` facts are every fact of that relation in the class. Relations it
    never names are not constrained. Stored negatives are not closed, and a listed `(not …)` is checked for presence;
    `(or …)` compares sets of classes, never sequences.
 
@@ -710,8 +718,8 @@ each file the least question that decides its claims ([`05-cli.md`](05-cli.md)).
 
 **A goal may ask about `eq` and `neq`**: a guard in a goal reads as it does in a premise, so `(query :goal (neq w
 ?y))` answers a row for each name of the program but `w`, `(eq w ?y)` answers `?y = w`, `(neq a b)` holds and `(eq a
-b)` has no row, and a class lists the guard's instances beside the goal's other atoms, `(model (neq w a) (p a))`. A
-claim may name either, and naming one closes it over the class, which holds the goal's instances only. *the goal
+b)` has no row, and a class lists the guard's instances beside those of the goal's other patterns, `(model (neq w a)
+(p a))`. A claim may name either, and naming one closes it over the class, which holds the goal's instances only. *the goal
 holds: it has no variable* is printed only for a goal with no variable; one whose every variable is an `(absent …)`'s
 own prints *the goal holds: it binds no variable*.
 
@@ -754,7 +762,7 @@ name**, the module's name and the name, `std.math.decimal-arith.add`, `onto.is-a
 every import path, so a module read by two imports, under two aliases, is one copy. A full name is global: any file
 may write one of a module the program brings. The main file has no module name, so what it declares keeps its name. A
 name no file declares, a slot's label, a digit, a relation a module states facts of and never declares, has no full name and
-is one name in every file.
+is one atom in every file.
 
 **A module's name is its path.** `std.x.y` is `x/y.ein` under the [standard library](04-stdlib/README.md#importing-a-module); any other name is a
 path **from the program file's directory**, a dot per directory, for the imports a module writes too
@@ -801,8 +809,8 @@ given where it carries a `:source`
 ([Q-M1f.138](../../../decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)). Its constants are
 names of the program
 ([Q-M1f.137](../../../decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)), so they are among the
-objects the blind enumerator proposes facts about; a program that wants no guesses about a library's relation closes
-it. A fact of a module arrives once, the module being one copy
+guessable atoms, which the blind enumerator proposes facts about; a program that wants no fact of a library's
+relation guessed closes the relation. A fact of a module arrives once, the module being one copy
 ([Q-M1f.143](../../../decisions/imports/Q-M1f.143-a-modules-fact-arrives-once-however-many-imports.md)). The same fact
 stated with two `:source`s keeps its first statement
 ([Q-M1f.139](../../../decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)), as it does
@@ -875,17 +883,17 @@ A macro no rule calls is not read, so it loads whatever its body
 is a premise, and a macro call in one is expanded and read the same way. A macro call written as a fact, or listed in
 a claim, is not expanded.
 
-**A pattern's argument is what a value can be**: a name, a variable, a pattern of an ordinary relation, or `(not
+**A pattern's argument is what an object can be**: an atom, a variable, a pattern of an ordinary relation, or `(not
 <pattern>)`, a stored negation. The grammar takes a connective there so that a macro such as `forall` can be called
 with premises; once the macros are expanded, `(and …)`, `(or …)`, `(neq …)`, `(eq …)`, `(absent …)` and `(false …)`
 with an argument as a pattern's argument are refused at load, in a rule, an hrule, an obligation and a goal
 ([Q-M1f.125](../../../decisions/language/Q-M1f.125-a-connective-as-a-patterns-argument-is-refused.md)). The same
-rule, *a value is a name, or a fact a state could hold*, refuses at the parse a premise `(false ?s)`, a conclusion
-headed `absent`, and `(eq …)`, `(absent …)` or `(false k)` as a conclusion's or a guard's value.
+rule, *an object is an atom, or a fact a state could hold*, refuses at the parse a premise `(false ?s)`, a conclusion
+headed `absent`, and `(eq …)`, `(absent …)` or `(false k)` as a conclusion's or a guard's argument.
 
-**A conclusion `(not ?x)` negates a fact**, the one a variable holds: `(rule hypothesis-contradiction () :match (and
-(hypothesis ?h) (contradiction-under ?h)) :assert (not ?h))` stores `(not (co-located Norwegian House-2))`. A name has
-no negation, so the loader refuses the conclusion wherever the program shows that the variable can hold a name: a
+**A conclusion `(not ?x)` negates a fact**, the one a variable is bound to: `(rule hypothesis-contradiction () :match (and
+(hypothesis ?h) (contradiction-under ?h)) :assert (not ?h))` stores `(not (co-located Norwegian House-2))`. An atom has
+no negation, so the loader refuses the conclusion wherever the program shows that the variable can be bound to an atom: a
 written fact, a declaration, another rule's or an hrule's conclusion, the rule's activator, a declared relation the
 hypotheses are taken from, or a guard that alone binds it. Where only a run meets the name, the firing stores nothing
 for that conclusion and an hrule proposes nothing. **An hrule's `:match` may read `not`**, as a premise, under
@@ -902,7 +910,7 @@ and the loader refuses it, a macro's expansion included; a top-level `(or …)` 
 | variable | `?a`, `?house` | bound by the match, and reused across the clauses |
 | name | `Red`, `House-1` | matches itself |
 | named relation pattern | `(co-located ?a ?b)` | matches the relation's facts |
-| relation pattern | `(?R ?a ?b …)` | the head is one of the rule's parameters, which its activator binds to a relation's name; the arguments bind by position. A head variable no parameter binds, at the top level or inside a pattern, in either clause, is refused at load |
+| relation pattern | `(?R ?a ?b …)` | the head is one of the rule's parameters, which its activator binds to a relation; the arguments bind by position. A head variable no parameter binds, at the top level or inside a pattern, in either clause, is refused at load |
 | conjunction | `(and <p1> <p2> …)` | every premise holds |
 | disjunction | `(or <p1> <p2> …)` | one premise holds |
 | stored negation | `(not <p>)` | a stored `(not p)` fact matches |
@@ -948,13 +956,13 @@ shows.
 
 | relation | arguments | holds when |
 |---|:-:|---|
-| `(eq ?a ?b)` | 2 | the two values are one; a free side is bound to the other |
-| `(neq ?a ?b)` | 2 | the two values differ; a free side ranges over the program's names but the other |
+| `(eq ?a ?b)` | 2 | the two objects are one; a free side is bound to the other |
+| `(neq ?a ?b)` | 2 | the two objects differ; a free side ranges over the program's names but the other |
 
 `eq` and `neq` are relations
 ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)): `(eq x x)`
-for every value, `(neq x y)` for every two different values, computed and never stored, in a goal, a premise and a
-conclusion alike. A guard's argument is a value: a variable, a name, or a fact that holds no variable; a form that
+for every object, `(neq x y)` for every two different objects, computed and never stored, in a goal, a premise and a
+conclusion alike. A guard's argument is a variable or an object, an atom or a fact that holds no variable; a form that
 holds a variable is refused at load. A premise means the same in any order of its conjuncts, and the order of two
 guards on a variable only they bind decides what it holds ([§ Premise order around a guard](#premise-order-around-a-guard)).
 `(not (eq ?a ?b))` is `(neq ?a ?b)`. A conclusion of either is checked against its definition: a true one adds

@@ -2,7 +2,7 @@
 
 The names a program may *write* but not *redefine*: the language gives each a fixed meaning. A name is reserved
 **if and only if** this page lists it, and nothing else is special. Ein has **no types**, `is-a` and `T`
-being an ordinary relation and an ordinary name
+being an ordinary relation and an ordinary atom
 ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)), and **no symmetry**,
 `symmetric` being a property a rule gives meaning to
 ([Q6](../../../decisions/answer/Q6-symmetry-is-the-programs-not-the-engines.md)). The names the engine makes up for
@@ -27,13 +27,13 @@ program can be written without reading anything else.
 | join or choose premises in a `:match` | `(and …)` / `(or …)` | [§ Rule-body primitives](#rule-body-primitives) |
 | match where a pattern is **absent**, negation as failure | `(absent P)` | [§ Rule-body primitives](#rule-body-primitives) |
 | match a **stored** negation | `(not P)` in a `:match` | [§ Rule-body primitives](#rule-body-primitives) |
-| require two values to differ, or be one | `(neq ?a ?b)` / `(eq ?a ?b)` | [§ Computed relations](#computed-relations--eq-and-neq) |
+| require two objects to differ, or be one | `(neq ?a ?b)` / `(eq ?a ?b)` | [§ Computed relations](#computed-relations--eq-and-neq) |
 | say this state is contradictory | `:assert (false)` | [§ Rule-body primitives](#rule-body-primitives) |
-| say this state is unfinished | `:assert (open)` / `(open ?R)` | [§ The verdict atom](#the-verdict-atom--open) |
+| say this state is unfinished | `:assert (open)` / `(open ?R)` | [§ The verdict](#the-verdict--open) |
 | say *P is undecided* | `(unknown P)`, imported from `std.macro` | [§ Pattern macros](#pattern-macros-forall-and-unknown--not-reserved) |
 | say *for every b with G, B holds* | `(forall ?b G B)`, imported from `std.macro` | [§ Pattern macros](#pattern-macros-forall-and-unknown--not-reserved) |
 | make a relation symmetric, transitive, … | `(symmetric R)` and the rule that reads it | [§ Not reserved](#not-reserved) |
-| keep a relation from being guessed | `(__closed__ R)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
+| keep the facts of a relation from being guessed | `(__closed__ R)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
 | read a fact nested in what a file writes | `(written T)` in a `:match` | [§ `written`](#written--what-a-file-writes-stated-by-the-loader) |
 | choose what the blind enumerator guesses | `(solve :hypothesis-relations (…))` / `:no-hypothesis (…)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
 | judge root alone | `(solve :no-search)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
@@ -65,7 +65,7 @@ malformed form is a parse error too.
 
 **Declared names are the program's, with one guard**: a `(rule …)`, `(hrule …)`, `(relation …)` or `(macro …)` may
 not *bind* a name that shadows the language's own vocabulary, and an import's `:as` takes the same guard. The
-vocabulary is the structural primitives `absent` and `false`, the verdict atom `open`, the computed relations `eq` and
+vocabulary is the structural primitives `absent` and `false`, the verdict `open`, the computed relations `eq` and
 `neq`, `relation`, the two dunders `__closed__` and `__symmetric__`, which a program uses and never binds
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)), and `written`,
 the relation the loader states what a file writes in
@@ -89,21 +89,22 @@ Two sets answer two questions, and neither contains the other:
 Five names are in both. **`relation` is the one that keeps them apart**: it must read as a name, because `(relation ?R
 ?A ?B)` is a pattern rules match, so it is a position word, a token of its own that the grammar takes wherever a name
 goes. `open` is a reserved word, never a name: the grammar takes it in the one place it is written
-([§ The verdict atom](#the-verdict-atom--open)).
+([§ The verdict](#the-verdict--open)).
 
 ### A bare `_` and `?_` — reserved, and written nowhere
 
 Neither set holds them, because neither is a name: `_` and `?_` are tokens of their own that the grammar takes
 nowhere, so a program writes neither anywhere, where a reserved name may be written and not bound. Each is refused at
 the parse, with the note *_ is reserved and names nothing: where any value will do, write a variable used once*
-([Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)). `_` anywhere else in a word
+([Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)); the note's *value*, as in
+every line `ein` prints, is an object in an argument's place. `_` anywhere else in a word
 is a name character, so `_a_in_b_` and `__x` are names and `?_x` a variable.
 
-## The verdict atom — `open`
+## The verdict — `open`
 
 Reserved, and **written only as a rule's or an hrule's whole `:assert`**
 ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): `open` is one of the
-words that are never a name, so no fact, pattern, value, activator, goal, claim, list, trace or macro body writes it,
+words that are never a name, so no fact, pattern, argument, activator, goal, claim, list, trace or macro body writes it,
 each refused at the parse at the `open`. It is `(false)`'s dual: where `(false)` says *this state is dead*, `open`
 says *this state is unfinished*. A contradiction survives any extension, while openness exists to be destroyed by one,
 so an `open` conclusion is **never stored**: it is a tally on the state, read once the state has reached its fixpoint.
@@ -111,7 +112,7 @@ so an `open` conclusion is **never stored**: it is a tally on the state, read on
 | form | arguments | meaning |
 |---|---|---|
 | `(open)` | 0 | this state owes something; the rule's `:why` is the report. Counted, with no slot to name |
-| `(open ?R)` | 1 | the extent of `?R` is **incomplete**. `?R` is a parameter of the rule, bound by its activator; the witness domain and the slot to fill are read off the rule's own `(absent …)` |
+| `(open ?R)` | 1 | the held extent of `?R` is **incomplete**. `?R` is a parameter of the rule, bound by its activator; the witness domain and the slot to fill are read off the rule's own `(absent …)` |
 
 A rule asserting it is an **obligation**
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)), and it never
@@ -120,7 +121,7 @@ two at load, each load line starting where the `(open …)` is written:
 
 | refused | why |
 |---|---|
-| `(open …)` in a `:match` (at the parse) | the atom is a conclusion about the state. The third-state test for a *fact* is `(unknown P)` |
+| `(open …)` in a `:match` (at the parse) | the verdict is a conclusion about the state. The third-state test for a *fact* is `(unknown P)` |
 | two arguments or more (at the parse) | a guard restated in the head could disagree with the rule's own |
 | an `:assert` that writes `open` beside anything else (at the parse) | such a rule would both fire during saturation and be read after it |
 | `(open ?R)` where `?R` is not a parameter (at load) | a relation written as a variable is bound by the activator, never by a premise |
@@ -182,10 +183,10 @@ state file writes none of it, since the loader states it again when the file is 
 | name | arguments | meaning |
 |---|---|---|
 | `not` | 1 | the negation of one fact: `(not X)` is a stored fact whose argument is the fact denied. In a `:match` it matches a stored negation, and with `X` it is a contradiction |
-| `false` | 0 | `(false)`: the state is contradictory. It takes no argument, as a fact, a value, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)) |
+| `false` | 0 | `(false)`: the state is contradictory. It takes no argument, as a fact, an argument of a fact, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)) |
 | `and` | 1 or more | conjunction: every premise holds, or every conclusion is derived |
 | `or` | 1 or more | disjunction, in a `:match` only: a top-level `(or …)` is one rule per disjunct, and an `(or …)` anywhere else in a `:match` is refused at load |
-| `absent` | 1 | negation as failure on a pattern: a question asked of the state, never a stored fact, so no fact, value or conclusion is headed by it, and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)). It is asked once, at the closure boundary, against the positive fixpoint ([`02-syntax.md` § NAF evaluation timing](02-syntax.md#naf-evaluation-timing--the-closureworld-boundary)) |
+| `absent` | 1 | negation as failure on a pattern: a question asked of the state, never a stored fact, so no fact, argument or conclusion is headed by it, and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)). It is asked once, at the closure boundary, against the positive fixpoint ([`02-syntax.md` § NAF evaluation timing](02-syntax.md#naf-evaluation-timing--the-closureworld-boundary)) |
 
 ## Computed relations — `eq` and `neq`
 
@@ -197,10 +198,10 @@ and a conclusion of either checked, a false one `(false)`
 
 | name | arguments | meaning |
 |---|---|---|
-| `eq` | 2 | `(eq ?a ?b)` holds when the two values are one; a free side is bound to the other |
-| `neq` | 2 | `(neq ?a ?b)` holds when the two values differ; a free side ranges over the program's names but the other |
+| `eq` | 2 | `(eq ?a ?b)` holds when the two objects are one; a free side is bound to the other |
+| `neq` | 2 | `(neq ?a ?b)` holds when the two objects differ; a free side ranges over the program's names but the other |
 
-Neither heads a value: `(q (eq k j))`, as `(q (neq k j))`, is refused, in a fact, a conclusion and a pattern
+Neither heads an argument: `(q (eq k j))`, as `(q (neq k j))`, is refused, in a fact, a conclusion and a pattern
 ([Q-M1f.124](../../../decisions/language/Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md)).
 
 ## Pattern macros (`forall` and `unknown`) — not reserved
@@ -225,20 +226,20 @@ again at every later quiescence.
 fact, is refused at load, its line placed at the call in the program's file. The same holds of a program's own
 macros: a body or a call that writes `eq`, `absent`, `not`, `false` or `or` in another shape than the grammar gives it
 where a rule writes it is refused where the macro is called, and a macro no rule calls loads
-([`02-syntax.md` § 3](02-syntax.md#the-primitives-and-where-a-malformed-one-is-caught)). **A value is a name, or a fact a
-state could hold**
+([`02-syntax.md` § 3](02-syntax.md#the-primitives-and-where-a-malformed-one-is-caught)). **An object is an atom, or a
+fact a state could hold**
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)): `eq`, `neq`,
-`absent`, `and`, `or` and `false` with an argument head no value, written or left by a macro's expansion, and `not`
-does, a stored negation being a fact.
+`absent`, `and`, `or` and `false` with an argument head no argument of a fact, written or left by a macro's
+expansion, and `not` does, a stored negation being a fact.
 
 ## Hypothesis and query control
 
 | name | form | meaning |
 |---|---|---|
-| `__closed__` | `(__closed__ R)` | no hypothesis is generated about R: its extension is fixed. Written by a program, or derived by `std.closure` or a module's closing rule; the engine infers it for no relation. Used as a relation or a value, never bound, and never an object the blind enumerator proposes about. No hrule proposes a closed relation and no obligation owes one ([below](#the-mechanisms-and-each-pair)) |
-| `__symmetric__` | `(__symmetric__ R)` | R's extension is closed under swapping its two arguments, $R(a, b) \implies R(b, a)$, in the saturation the mark comes to hold in, whether written or derived: the closure the `symmetric` rule of `std.algebra` derives, with no rule firing per mirror. Used as a relation or a value, never bound, and never an object the blind enumerator proposes about |
-| `:hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | the blind enumerator and the obligations rung guess only the listed relations; the hrule rung reads no list. Every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are |
-| `:no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual: never guess on the listed relations, while saturation rules on them still fire; read by the blind enumerator and the obligations rung, never the hrule rung |
+| `__closed__` | `(__closed__ R)` | no fact of R is proposed as a hypothesis: the held extent of R is fixed, and R is a **closed relation**. Written by a program, or derived by `std.closure` or a module's closing rule; the engine infers it for no relation. Used as a relation or as an argument, never bound, and never a guessable atom, one the blind enumerator proposes about. No hrule proposes a fact of a closed relation and no obligation owes one ([below](#the-mechanisms-and-each-pair)) |
+| `__symmetric__` | `(__symmetric__ R)` | the held extent of R is closed under swapping a fact's two arguments, $R(a, b) \implies R(b, a)$, in the saturation the mark comes to hold in, whether written or derived: the closure the `symmetric` rule of `std.algebra` derives, with no rule firing per mirror. Used as a relation or as an argument, never bound, and never a guessable atom |
+| `:hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | the blind enumerator and the obligations rung guess facts of the listed relations only; the hrule rung reads no list. Every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are |
+| `:no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual: never guess a fact of the listed relations, while saturation rules still derive their facts; read by the blind enumerator and the obligations rung, never the hrule rung |
 | `:no-search` | `(solve … :no-search)` | a flag, no value: the lattice is root alone, nothing is proposed whatever else the program declares, so R is $\lbrace \emptyset \rbrace$ where root is alive and discharged and empty otherwise. The way to say *judge root alone* |
 | `:expect` on a query | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be: the query's own claim, checked by the engine, and `ein solve` exits 1 when it is false ([`02-syntax.md` § Query](02-syntax.md#query)) |
 | `:expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region: R's states, `(merged …)` states, `(owing …)`, written only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a parse error; `model` is a name ([`02-syntax.md` § Solve](02-syntax.md#solve)) |
@@ -257,8 +258,8 @@ where an obligation is **activated** at root, the obligations, which propose wha
 root that owes nothing under an activated obligation proposes nothing; otherwise, or where the obligations rung
 declines ([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md)),
 the blind enumerator. An obligation rule nothing activates chooses no rung: every import brings its module whole, so a
-program that imports `std.algebra` for `symmetric` loads its two obligation rules, and its own open relations are the
-blind enumerator's to guess. The hypothesis set H is built once, at root; the obligations rung proposes there too what
+program that imports `std.algebra` for `symmetric` loads its two obligation rules, and the facts of its own
+relations that nothing closes are the blind enumerator's to guess. The hypothesis set H is built once, at root; the obligations rung proposes there too what
 would pay a debt only a commitment brings
 ([Q-M1e.11](../../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). What each
 mechanism means is [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
@@ -270,7 +271,7 @@ mechanism means is [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-
 | B | the blind enumerator | generates, rung 3: no hrule and no obligation activated at root, or the obligations rung declined | — |
 | HR | `(solve :hypothesis-relations …)` | a whitelist, *speculate only these*; `()` names none | rungs 2 and 3; the read-out's `outside` row |
 | NH | `(solve :no-hypothesis …)` | a blacklist, *never these* | rungs 2 and 3; the `outside` row |
-| C | `(__closed__ R)`, stated or derived | keeps R out of rungs 2 and 3, and so makes an `absent` over it closed-world | rungs 2 and 3; the `outside` row |
+| C | `(__closed__ R)`, stated or derived | keeps the facts of R out of rungs 2 and 3, and so makes an `absent` over them closed-world | rungs 2 and 3; the `outside` row |
 | NS | `(solve :no-search)` | no rung runs: H is empty, the lattice root alone; an obligation judges root and proposes nothing | the ladder, before rung 1 |
 
 No list and no closure filters an hrule's candidates. **The pairs**, each refused or noted at load on every command,
@@ -280,12 +281,12 @@ read on root's fixpoint
 | pair | verdict |
 |---|---|
 | H + O | no conflict: H generates, O judges |
-| H + HR | HR filters nothing, a `note:`; a **conflict** where an active hrule proposes a relation HR leaves out |
-| H + NH | NH filters nothing, a `note:`; a **conflict** where an active hrule proposes a relation NH lists |
-| H + C | a **conflict** where an active hrule proposes a closed relation; closing another relation stands |
-| O + HR | with no hrule, a **conflict** where an owed relation is outside HR |
-| O + NH | with no hrule, a **conflict** where an owed relation is in NH: an obligation filtered away is no obligation |
-| O + C | a **conflict** where an owed relation is closed, whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)) |
+| H + HR | HR filters nothing, a `note:`; a **conflict** where an active hrule proposes a fact of a relation HR leaves out |
+| H + NH | NH filters nothing, a `note:`; a **conflict** where an active hrule proposes a fact of a relation NH lists |
+| H + C | a **conflict** where an active hrule proposes a fact of a closed relation; closing another relation stands |
+| O + HR | with no hrule, a **conflict** where a relation whose facts are owed is outside HR |
+| O + NH | with no hrule, a **conflict** where a relation whose facts are owed is in NH: an obligation filtered away is no obligation |
+| O + C | a **conflict** where a relation whose facts are owed is closed, whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)) |
 | HR + NH | a **conflict** where one relation is in both; with no hrule, NH naming a relation HR leaves out is **redundant**, a `note:` |
 | HR + C | a **conflict** where a listed relation is closed |
 | NH + C | with no hrule, an overlap is **redundant**, a `note:`; never a conflict |
@@ -304,14 +305,14 @@ row of the table stands beside it
 ## Not reserved
 
 - **`model`**, the head of an `:expect` value. It is read in that one position and nowhere else, so a relation, rule
-  or name called `model` is unaffected: a position word, a name wherever a name goes.
+  or atom called `model` is unaffected: a position word, a name wherever a name goes.
 - **`closed`**, bare: free for a program or the standard library to define. The engine reads `__closed__`.
-- **`is-a` and `T`**: an ordinary relation and an ordinary name. Ein has no types: what a program calls a type is a
-  name its membership facts point at or a declaration labels a slot with, and it means what the program's rules,
+- **`is-a` and `T`**: an ordinary relation and an ordinary atom. Ein has no types: what a program calls a type is an
+  atom its membership facts point at or a declaration labels a slot with, and it means what the program's rules,
   and the library's it imports, make of those facts. `T` is the conventional label for a slot that needs none that
   says something, and any name behaves the same. The slot may be dropped, `(relation R)` being a legal bare
-  declaration, but that changes what is guessed: only a relation with a non-empty signature is guessed, so `T` is
-  what to write for such a slot of a guessable relation
+  declaration, but that changes what is guessed: only facts of a relation with a non-empty signature are guessed, so
+  `T` is what to write for such a slot of a relation whose facts may be guessed
   ([`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). Because nothing is reserved here, **two
   conventions coexist**: [`zebra.ein`](../../../../examples/zebra.ein) writes membership as `type` and `instance`
   relations, and [`zebra2.ein`](../../../../examples/zebra2.ein) as one `is-a`, and both are declared relations. A
