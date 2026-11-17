@@ -533,7 +533,7 @@ pub(crate) fn compute_prepared(
     let mut classes: FxHashMap<Box<[FactId]>, u64> = FxHashMap::default();
     let mut stale: Vec<(u64, Vec<String>)> = Vec::new();
 
-    // Layer order, as the stage asks: the probe's first nodes are then the
+    // Layer order: the probe's first nodes are then the
     // small commitments, and every node is independent of the order anyway.
     let mut order: Vec<u64> = (0..size as u64).collect();
     order.sort_by_key(|m| (m.count_ones(), *m));

@@ -67,7 +67,7 @@
 //!
 //! Under [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
 //! rule 2 the argument is enough only while its premise is enforced, and the
-//! premise is enforced by the tests of the stage's (c), which fail when it stops
+//! premise is enforced by these tests, which fail when it stops
 //! being true:
 //!
 //! - `ein-infer/tests/region.rs::fact_grain_never_calls_a_violated_cube_monotone`

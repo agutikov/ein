@@ -12,7 +12,7 @@
 //!
 //! | the program declares | hypotheses come from |
 //! |---|---|
-//! | any `(hrule …)` | the user's hrules — an override, exactly as before |
+//! | any `(hrule …)` | the program's hrules — an override |
 //! | an obligation activated at the state, no hrule | **this module** |
 //! | neither | the blind combinatorial enumerator |
 //!

@@ -972,7 +972,7 @@ mod tests {
     /// negative), are objects of the program; a constant only a `(query …)`
     /// names (`Q`) is not, because R is the program's and a query asks about
     /// it. A nested fact's head (`q` inside `(not (q N A))`) is a relation,
-    /// not an argument. Before the ruling this was `["A", "B"]`.
+    /// not an argument. Without the seed this would be `["A", "B"]`.
     #[test]
     fn candidate_objects_hold_every_name_the_program_writes() {
         let (ast, terms, kb) = kb_of(

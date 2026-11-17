@@ -6,7 +6,7 @@
 //! Color)` and declares `(relation co-located T T)`, `(co-located Blue Color)`
 //! is a candidate like `(co-located Blue H5)`, and a state of R can hold it.
 //! The engine does what the signature says, and the answer is right for the
-//! program as written; what the ruling asks is that the read-out **say so**, so
+//! program as written; what Q-M1e.12 asks is that the read-out **say so**, so
 //! that an author learns which relation admits it.
 //!
 //! **What is named.** When the blind enumerator built H (the rung took

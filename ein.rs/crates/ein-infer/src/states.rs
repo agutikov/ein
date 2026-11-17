@@ -58,7 +58,7 @@
 //! it enumerates (`ein-infer/tests/region.rs`), and
 //! `ein-infer/tests/known_dead.rs` holds it to itself with the denials unread.
 //!
-//! ### Where N and E come from — a decision taken without a ruling
+//! ### Where N and E come from, and why
 //!
 //! [`describe`] reads both lines, `N` and `E`'s alive members off the states
 //! this route met, and enumerates neither separately:
@@ -1075,8 +1075,7 @@ pub fn describe_with(s: &StateRoute, nogoods: bool) -> Result<Description, Solve
 
     // N, by duality: the minimal transversals of the maximal alive states'
     // complements — a set is dead exactly when no maximal alive state holds
-    // it (L1). Where N comes from is a decision taken without a ruling; the
-    // module's § "Where N and E come from" gives its argument.
+    // it (L1). The module's § "Where N and E come from" gives the argument.
     let want_nogoods = nogoods;
     let nogoods = if exhausted && want_nogoods {
         let full = Bits::full(n);

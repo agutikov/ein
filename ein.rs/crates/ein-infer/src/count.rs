@@ -3,12 +3,9 @@
 //!
 //! One state can be reached by more commitments than any machine integer
 //! holds: a state of 130 candidates that any one of them reaches is reached by
-//! 2¹³⁰ − 1. Until that stage the state route counted in `u128` and summed
-//! into `u64`, and where either overflowed the whole description was an
-//! error, *a state's commitments pass 2^128: the state route cannot count
-//! them*, exit 1 with no read-out, though the run had classified every
-//! commitment. It was no error and its sentence was not true either: a sum
-//! past 2⁶⁴ raised it too.
+//! 2¹³⁰ − 1. A count in a machine integer would overflow there, and an
+//! overflow is no error of the program: the run has classified every
+//! commitment.
 //!
 //! [`Count`] is exact, so the counting itself never fails: `2^|S|` less the
 //! states below is a subtraction of exact numbers whatever their size. What a

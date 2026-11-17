@@ -142,9 +142,8 @@ pub struct RelStep {
 /// (never keyed) and a variable bound to a nested `Fact` (not keyed).
 ///
 /// The first skip is static and is applied here — an opaque or nested slot
-/// never produces a `Probe`. The other two conditions are **not** static, and
-/// [design/matcher.md § 5.2](../../../../docs/ein/ein.rs/design/matcher.md#52-a-probe-into-the-participation-index)'s claim that
-/// they are is the one thing in that section this stage had to correct:
+/// never produces a `Probe`. The other two conditions are **not** static
+/// ([design/matcher.md § 5.2](../../../../docs/ein/ein.rs/design/matcher.md#52-a-probe-into-the-participation-index)):
 ///
 /// - whether a register is bound at this step depends on the *entry point* —
 ///   `run_seeded` removes a step from the sequence and binds it first, so a

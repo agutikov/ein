@@ -607,7 +607,7 @@ impl Saturator {
     /// Continue `snapshot`'s saturation over `s.kb`, seeded from `delta`.
     ///
     /// The counterpart of [`Saturator::new`], and the difference is the whole
-    /// stage: `new` starts with `delta = None`, which is a FULL enqueue pass
+    /// point: `new` starts with `delta = None`, which is a FULL enqueue pass
     /// over a KB already at its parent's fixpoint. This starts with the delta
     /// the caller knows exactly, and inherits `fired` / `seen` so the matches
     /// that already fired are not re-offered.
@@ -2028,7 +2028,7 @@ mod tests {
     /// **resumed** one seeded with just the new fact. The two fact sets must
     /// agree exactly. What the test deliberately does *not* assert is the
     /// firing sequence: the resumed run skips the re-derivations, and that
-    /// difference is the stage's whole subject.
+    /// difference is the whole point of resuming.
     #[test]
     fn a_resumed_saturation_reaches_the_same_fixpoint() {
         let src = "(relation edge T T :why \"there is an edge from {?1} to {?2}\")\n(relation path T T :why \"there is a path from {?1} to {?2}\")\n                   (rule step ()\n  :match (edge ?a ?b)\n  :assert (path ?a ?b) :why \"there is an edge from {?a} to {?b}, so there is a path from {?a} to {?b}\")\n                   (rule trans ()\n  :match (and (path ?a ?b) (path ?b ?c))\n                     :assert (path ?a ?c) :why \"there are paths from {?a} to {?b} and from {?b} to {?c}, so there is one from {?a} to {?c}\")\n                   (rule tip ()\n  :match (and (path ?a ?b) (absent (edge ?b ?a)))\n                     :assert (path ?b ?b) :why \"there is a path from {?a} to {?b} and no edge from {?b} back to {?a}, so there is a path from {?b} to {?b}\")\n                   (edge A B)\n(edge B C)\n";
@@ -2268,7 +2268,7 @@ mod tests {
         );
     }
 
-    /// The stage's other switch: under [`stopping_at_first_contradiction`]
+    /// The other switch: under [`stopping_at_first_contradiction`]
     /// `saturate` returns after the firing whose conclusion makes the first
     /// contradiction, and holds only while it runs.
     #[test]

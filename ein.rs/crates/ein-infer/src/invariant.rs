@@ -365,15 +365,14 @@ impl Universe {
                 u.objects.insert(ty.0);
             }
         }
-        // **…∪ rule-assertable**, which is a widening of the review's
-        // *declared ∪ auto-vivified* and the stage's first finding. `from_ir`
-        // vivifies an undeclared **fact** head and not an undeclared
+        // **…∪ rule-assertable**, wider than *declared ∪ auto-vivified*.
+        // `from_ir` vivifies an undeclared **fact** head and not an undeclared
         // **rule-`:assert`** head, so a relation a rule derives and no fact
-        // states is in no registry at all: **49** such names over 33 corpus
-        // files, all but one a stdlib activator (`total` derived from
-        // `(bijective …)`, `slot-endpoint-fwd`, `converse-illtyped-dom`, …;
-        // the exception is `examples/features/01_not_and_absent.ein`'s own
-        // `explicitly-dislikes`). Reading the registry as the whole answer
+        // states is in no registry at all: many such names in the corpus,
+        // nearly all stdlib activators (`total` derived from `(bijective …)`,
+        // `slot-endpoint-fwd`, `converse-illtyped-dom`, …;
+        // `examples/features/01_not_and_absent.ein`'s own
+        // `explicitly-dislikes` among the others). Reading the registry as the whole answer
         // would make the check fire on the standard library on its first
         // run, which is a check that says nothing.
         //
