@@ -1,6 +1,7 @@
-//! M1d S1d.2.5 — **hypotheses from obligations, asserted.**
+//! **Hypotheses from obligations, asserted**
+//! ([hypothesis-generation.md § 4](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt)).
 //!
-//! [`obligation_reports.rs`](obligation_reports.rs)'s sibling one stage on.
+//! [`obligation_reports.rs`](obligation_reports.rs)'s sibling.
 //! That suite checks what a quiescent state *says* it owes; this one checks
 //! that the debt is a **choice point** — that the ladder dispatches where it
 //! should, that the branch is the obligation's own domain scan, and that the
@@ -16,9 +17,8 @@
 //! [the page's]: ../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#2-the-ladder
 
 //!
-//! **Since M1e2 S1e2.1c.5 (2026-11-03) it reads the routes**
-//! ([`ein_infer::explore`]): the walk it was written against was deleted on
-//! the user's ruling of that day. The ladder is what builds H, the candidates
+//! **It reads the routes** ([`ein_infer::explore`]). The ladder is what
+//! builds H, the candidates
 //! every route commits to, so the dispatch is a claim about the one `rung`
 //! line a route narrates when it builds H at root; and the completeness claim
 //! is that the hrule path and the obligation path build the same H, so their
@@ -105,11 +105,11 @@ fn universe(rel: &str) -> Vec<String> {
         .collect()
 }
 
-/// The stuck state, as a program of its own: `tests/region/04_owing.ein` as
-/// M1f S1f.6.34 left it, Ann's two likings stored false so that every
-/// candidate that would pay her debt is refuted, and no `(solve :no-search)`.
-/// The fixture states `:no-search` since S1f.6.36, which runs no rung; the
-/// stuck rung is this program's. Written into a scratch directory the caller
+/// The stuck state, as a program of its own: `tests/region/04_owing.ein`
+/// with Ann's two likings stored false so that every candidate that would
+/// pay her debt is refuted, and no `(solve :no-search)`. The fixture states
+/// `:no-search`, which runs no rung; the stuck rung is this program's.
+/// Written into a scratch directory the caller
 /// holds, as an absolute path, which `repo_root().join` keeps.
 fn stuck_program() -> (Scratch, String) {
     let dir = Scratch::new("ein-obligation-rung-stuck");
@@ -179,11 +179,10 @@ fn rungs(rel: &str) -> Vec<(String, u64, u64, u64)> {
 
 /// **The dispatch, one file per rung.**
 ///
-/// `(hrule …)` presence is still the switch it has always been — the override
-/// rung — and the two rungs below it are the stage's addition. The fourth row
-/// is the one that keeps the corpus still: a program that declares no
-/// obligation rule narrates **nothing**, which is why every pre-M1d event
-/// stream is byte-identical.
+/// `(hrule …)` presence is the switch — the override rung — and the two
+/// rungs below it are the ladder's. The fourth row is the one that keeps the
+/// corpus still: a program that declares no obligation rule narrates
+/// **nothing**, so its event stream carries no `rung` line.
 #[test]
 fn the_ladder_dispatches_by_what_the_program_declares() {
     // (file, the modes its generation calls report)
@@ -196,12 +195,11 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         ("examples/zebra2.ein", &[]),
         // the same puzzle with the hrule deleted: rung 2.
         ("examples/zebra2-obligations.ein", &["obligations"]),
-        // owes, and every candidate that would pay it is stored false. Until
-        // M1f S1f.6.34 this was `23_total_owed.ein`, whose `:no-hypothesis`
-        // named the relation it owes, which is refused at load since; until
-        // S1f.6.36 `tests/region/04_owing.ein`, which states `:no-search` since.
+        // owes, and every candidate that would pay it is stored false. A
+        // `:no-hypothesis` naming the relation it owes would be refused at
+        // load, and `tests/region/04_owing.ein` states `:no-search`.
         (&stuck, &["stuck"]),
-        // `(solve :no-search)` (M1f S1f.6.36): no rung runs, and none narrates,
+        // `(solve :no-search)`: no rung runs, and none narrates,
         // though root owes.
         ("tests/region/04_owing.ein", &[]),
         // an obligation whose guard scans a relation the rung proposes.
@@ -233,27 +231,23 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// silently complete.**
 ///
 /// The trap the ladder's second rung opens: the generator proposes nothing, so
-/// `complete()` says yes, so the node is recorded as a model — while the tally
-/// beside it says the requirement is unmet. Ten corpus programs were in exactly
-/// that state at S1d.2.5, every one of them because `:no-hypothesis` names the
-/// relation they owe, and the `stuck` line is what tells them apart from a
-/// state that is finished. **That trap is closed**: since S1d.2.6 such a node
-/// is not recorded as a model by the read-out at all; and since M1f S1f.6.34 a
-/// list that names a relation an obligation owes is refused at load (*"filtered
-/// obligations are nonsense by definition"*), so a state is stuck because
-/// every candidate that would pay it is already refuted, Ann's of
-/// [`stuck_program`], who likes neither food: owed 1, branched on 1, declined
-/// 0 (`tests/region/04_owing.ein` until M1f S1f.6.36, which states
-/// `:no-search` since and runs no rung).
+/// `complete()` says yes, so the node would be recorded as a model — while
+/// the tally beside it says the requirement is unmet, and the `stuck` line is
+/// what tells it apart from a state that is finished. **That trap is
+/// closed**: such a node is not recorded as a model by the read-out at all;
+/// and a list that names a relation an obligation owes is refused at load
+/// (filtered obligations are nonsense by definition,
+/// [diagnostics.md § 2.27](../../../../docs/ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
+/// so a state is stuck because every candidate that would pay it is already
+/// refuted, Ann's of [`stuck_program`], who likes neither food: owed 1,
+/// branched on 1, declined 0.
 ///
-/// **The word moved at [S1d.2.6]**, which is what this stage's evidence bought:
-/// a stuck state reports `Open`, not `Solution`. The two halves stay separate
+/// **The word**: a stuck state reports `Open`, not `Solution`. The two
+/// halves stay separate
 /// on purpose — `stuck` is the *generator's* report (it proposed nothing and
 /// says why) and `Open` is the *read-out's* (the state is not discharged) —
 /// and this test asserts both, because a regression in either one alone would
 /// leave the other still true.
-///
-/// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 #[test]
 fn owing_and_unable_to_branch_is_stuck_and_says_so() {
     let (_dir, rel) = stuck_program();
@@ -268,7 +262,7 @@ fn owing_and_unable_to_branch_is_stuck_and_says_so() {
     assert_eq!(
         a.verdict.map(|v| v.word()),
         Some("Open"),
-        "a stuck state is not a model — S1d.2.6"
+        "a stuck state is not a model"
     );
     assert_eq!(root_owes(rel), 1, "and it still says what it owes");
 }
@@ -277,7 +271,7 @@ fn owing_and_unable_to_branch_is_stuck_and_says_so() {
 ///
 /// The other half of the same question: [`discharged_program`] is
 /// `24_total_owed_satisfied.ein`'s, `23_total_owed.ein`'s twin with the witness
-/// present, without the `:no-search` both state since M1f S1f.6.36. Rung 2 runs, owes nothing, proposes
+/// present, without the `:no-search` both state. Rung 2 runs, owes nothing, proposes
 /// nothing — and *not* because anything was scoped out. The pair is what makes
 /// "complete means discharged" a distinction rather than a coincidence, since
 /// both files report `k = 1` and only one of them owes.
@@ -325,22 +319,21 @@ fn the_candidates_are_what_the_guard_scans() {
 
 /// **Every state the hrule path finds, the obligation path finds.**
 ///
-/// T1d.2.5.3, and the phase's central claim: the ladder is exhaustive iff
+/// The ladder's central claim: it is exhaustive iff
 /// obligations and saturation between them determine every remaining open
 /// fact. On the zebra family the obligated arrows *are* the decision
 /// variables, so the two paths must agree — and the pair below is one
 /// determinate puzzle and one genuinely under-determined one, because a
 /// comparison of two singleton sets proves much less.
 ///
-/// Since M1e2 a route commits to H, the candidates the ladder builds at root,
+/// A route commits to H, the candidates the ladder builds at root,
 /// and R is a function of the program's rules and H. The twins differ by the
 /// `(hrule …)` and the `:hrules` clause alone, which are no rule, so **one H
 /// is one R**: that is asserted on both pairs, and the maximal lines are
 /// compared on `zebra2`, where the obligation tree reaches its one state in
-/// 45 saturations. `zebra2-minus-15`'s 32 cost 2 346 a side (5 s in a release
-/// build, 2026-11-03), so `EIN_CORPUS_SLOW` compares those, the way the
-/// corpus sweep splits the same way. The CI nightly sets it since M1f
-/// S1f.5.27, where no tier had.
+/// a few dozen saturations. `zebra2-minus-15`'s 32 cost thousands a side, so
+/// `EIN_CORPUS_SLOW` compares those, the way the corpus sweep splits the same
+/// way.
 #[test]
 fn the_theory_finds_what_the_hrule_finds() {
     let deep = std::env::var_os("EIN_CORPUS_SLOW").is_some();

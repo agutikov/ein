@@ -1,15 +1,13 @@
-//! Negation as failure at the closure/world boundary — S1.21.8, as law.
+//! Negation as failure at the closure/world boundary, as law.
 //!
-//! **T1a.10.2.2.** Six claims, all of them about the same boundary from a
-//! different side, five of them here since M1e2 S1e2.1c.5:
+//! Five claims, all of them about the same boundary from a different side:
 //!
 //! | its side of the boundary |
 //! |---|
 //! | the worked examples of [`absent-and-naf.md`](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#worked-examples) — what `(absent P)` *means* |
 //! | what the boundary *records*: the negative half of `Deps(Y)` |
 //! | the closure a guard is judged against, including one a rule built |
-//! | C1 — a NAF-derived fork fact is not a truth of root: the walk's, whose root writes it guarded; deleted with the walk on the user's ruling of 2026-11-03. A route writes nothing into root (`region.rs` § What a node is) |
-//! | the advisory stratification map and its one wired flag |
+//! | the advisory stratification map, which no flag narrates |
 //! | `(unknown P)`, which is two guards in a trench coat |
 //!
 //! The one idea underneath all of them: **`absent` is a query about a world,
@@ -63,7 +61,7 @@ struct Run {
     naf_rounds: u32,
     naf_admitted: u32,
     naf_retired: u32,
-    /// Structurally 0 since S1.21.8; asserted, not assumed.
+    /// Structurally 0; asserted, not assumed.
     naf_dropped: u32,
     guard_evals: u64,
 }
@@ -206,18 +204,13 @@ fn gate_program(gate_first: bool) -> String {
 /// example of `absent-and-naf.md`, which is the same claim as "a guard is judged
 /// against the closure fixpoint".
 ///
-/// *(work-list: `priority-does-not-decide-what-is-derivable` merged with
-/// `a-guard-is-judged-against-the-closure-fixpoint` — two fixtures, one
-/// claim.)*
+/// Two fixtures, one claim. A guard evaluated when its candidate is
+/// **dequeued** would let whichever rule popped first win: gate-first would
+/// give `{p, q}` — `q` sitting in the closure while `(absent q)` had licensed
+/// `p`, which is not a model of anything — and derive-first `{q}`. Two
+/// answers, one program, chosen by the order the rules are written in.
 ///
-/// This is the flip that S1.21.8 bought, and it is worth stating what the old
-/// engine did: it evaluated a guard when the candidate was **dequeued**, so
-/// whichever band popped first won. Gate-first gave `{p, q}` — `q` sitting in
-/// the closure while `(absent q)` had licensed `p`, which is not a model of
-/// anything — and derive-first gave `{q}`. Two answers, one program, chosen by
-/// a number the author wrote for scheduling reasons.
-///
-/// Now both orderings give `{q}`, because the closure is purely positive and
+/// Both orderings give `{q}`, because the closure is purely positive and
 /// runs to a fixpoint before any guard is asked. `naf_dropped == 0` is the
 /// mechanical half: the gate is not admitted-then-dropped, it is **never
 /// admitted**, and `naf_rounds >= 1` proves the boundary actually ran rather
@@ -225,8 +218,7 @@ fn gate_program(gate_first: bool) -> String {
 #[test]
 fn the_order_does_not_decide_what_is_derivable() {
     // Written gate-first and derive-first: the order the agenda and the
-    // boundary read since M1f S1f.5.15, which took `:priority` out (until then
-    // the two rules' priorities, 100/200 and 200/100).
+    // boundary read (Q-M1f.313).
     for gate_first in [true, false] {
         let (gate, derive) = if gate_first {
             ("first", "second")
@@ -300,15 +292,14 @@ fn a_guard_over_a_conjunction_is_a_negated_existential() {
     );
 }
 
-/// **A guard inside an `(or …)` disjunct is judged on the boundary too** —
-/// divergence D5, which was a confirmed unsound firing.
+/// **A guard inside an `(or …)` disjunct is judged on the boundary too.**
 ///
 /// The gate matches through the *second* disjunct, whose guard watches `r2`,
 /// and another rule derives `(r2 A)` into the quiesced world. The firing must
-/// not happen. It used to, and the reason is worth keeping: the disjunct's
-/// guard lived in a second collection that the fire-time re-check did not
-/// walk. The fix is structural — every match is produced together with **its
-/// own disjunct's** guards, so there is no longer a tuple a caller can forget
+/// not happen. A guard kept apart from its disjunct's match is a guard a
+/// check can fail to walk, so the pairing is structural — every match is
+/// produced together with **its own disjunct's** guards, so there is no tuple
+/// a caller can forget
 /// — and `naf_dropped == 0` is what says so: the candidate is never admitted,
 /// rather than admitted and then caught.
 #[test]
@@ -388,13 +379,11 @@ fn a_guard_sees_the_closed_extent_of_its_watched_relation() {
 /// **A firing admitted through the boundary records what had to be absent** —
 /// C2, the negative half of `Deps(Y)`.
 ///
-/// *(work-list: `boundary-admitted-firing-records-its-negative-premises`, which
-/// covers both the guarded and the purely positive case.)*
-///
-/// Before S1.21.8 this was invisible: a guard contributed no premise, so the
-/// provenance of `(ok A)` named `(seed A)` and stopped — and every walk over
-/// it, including the unsat-core minimiser, believed `(ok A)` depended on that
-/// one fact. It depends on an *absence* too, and the pair of assertions here
+/// Both the guarded and the purely positive case. Were a guard to
+/// contribute no premise, the provenance of `(ok A)` would name `(seed A)`
+/// and stop — and every walk over it, the unsat-core minimiser included,
+/// would believe `(ok A)` depended on that one fact. It depends on an
+/// *absence* too, and the pair of assertions here
 /// is what makes the record meaningful: a guarded firing records the query,
 /// and a purely positive one records nothing, so the field distinguishes the
 /// two rather than being decoration on both.
@@ -449,7 +438,7 @@ fn a_free_position_in_a_negative_premise_is_recorded_as_free() {
 
 /// **An alternative justification carries *its own* negative premises.**
 ///
-/// Provenance is per derivation (S1.21.7), so a fact believed for two reasons
+/// Provenance is per derivation (Q18), so a fact believed for two reasons
 /// is an OR-node over two AND-nodes — and the two need not have the same
 /// dependencies. Here `(target A)` is derived once by a purely positive rule
 /// and once through a guard, and only the second depends on `(block A)` being
@@ -541,7 +530,7 @@ fn a_nested_guard_records_both_levels() {
 }
 
 /// **`(or …)` is commutative even when its disjuncts produce the same
-/// bindings** — the S1.22.0 regression, in the only shape that exposes it.
+/// bindings**, in the only shape that could expose an order dependence.
 ///
 /// Both disjuncts scan `(a ?x)` and so bind `?x = X` identically; only their
 /// guards differ, and only one passes. The saturator dedups candidates by
@@ -841,20 +830,18 @@ const DERIVED_NAF: &str = "\
 (query :goal (out ?x ?y))
 ";
 
-/// **The stratification advisory is the library's, and no flag narrates it
-/// since M1e2 S1e2.2.5.**
+/// **The stratification advisory is the library's, and no flag narrates it.**
 ///
 /// The distinction the advisory draws — a guard watching a *rule-derived*
-/// relation, as against one whose extension the puzzle fixes — stopped being a
-/// soundness signal at S1.21.8 and became a stratification one: only derived
-/// NAF can make a rule set non-stratifiable. `(config :warn-derived-naf true)`
-/// narrated it on the stream after root's saturation until S1e2.2.5 retired
-/// the flag (the user's ruling of 2026-11-04): its other half became *forbid*'s
-/// refusal, and a non-monotone site is the detector's warning on every surface.
+/// relation, as against one whose extension the puzzle fixes — is no
+/// soundness signal but a stratification one: only derived NAF can make a
+/// rule set non-stratifiable. `:warn-derived-naf` is a retired flag: the
+/// refusal is *forbid*'s, and a non-monotone site is the detector's warning
+/// on every surface.
 /// What is left is [`ein_infer::derived_naf_warnings`], read by the corpus's
 /// `naf` shape op. So: the library still names the rule and the relation; a
 /// run narrates no `warn`; and a program that sets the flag is refused at the
-/// parse, with the stage that retired it.
+/// parse, with its *was retired* note.
 #[test]
 fn the_stratification_advisory_is_the_librarys_and_the_flag_is_retired() {
     let (ast, mut terms, mut kb) = load_src(DERIVED_NAF);
@@ -892,10 +879,9 @@ fn the_stratification_advisory_is_the_librarys_and_the_flag_is_retired() {
         "a run narrated a warn line:\n{stream}"
     );
 
-    // Since M1f S1f.5.5's swap the flag is a keyword a `(config …)` does
-    // not take, refused at the parse (S1f.5.11), the loader's line a note on
-    // the parse error (the paper grammar's default 5): a row of `ein-ir`'s
-    // grammar table since T1f.5.5.5 deleted that line.
+    // The flag is a keyword a `(config …)` does not take, refused at the
+    // parse (Q-M1e2.28) with its *was retired* note: a row of `ein-ir`'s
+    // grammar table.
 }
 
 /// **The NAF map is incomplete before saturation, which is why the warning
@@ -943,7 +929,7 @@ fn the_naf_map_is_incomplete_before_saturation() {
          load-time: {at_load:?}\n  saturated: {saturated:?}"
     );
     // `total` and `domain-elimination` print by their full names, which
-    // zebra2 does not list (M1f S1f.6.35).
+    // zebra2 does not list.
     let at_load: BTreeSet<String> = at_load.iter().map(|r| ein_corpus::unprefixed(r)).collect();
     let saturated: BTreeSet<String> = saturated
         .iter()
@@ -961,7 +947,7 @@ fn the_naf_map_is_incomplete_before_saturation() {
 /// The rules whose `(absent …)` watches a rule-derived relation, by name.
 ///
 /// The empty eligible set asks the *stratification* question only, which is
-/// this file's subject; M1e S1e.2.3's refutation question is
+/// this file's subject; the refutation question is
 /// `refutation_under_absent.rs`'s.
 fn flagged(engine: &Engine, terms: &Terms) -> BTreeSet<String> {
     compute_naf_map(engine, terms, &Default::default())
@@ -971,7 +957,7 @@ fn flagged(engine: &Engine, terms: &Terms) -> BTreeSet<String> {
         .collect()
 }
 
-// ── M1e S1e.3.6 T7 — the boundary's invalidation, directly ─────────
+// ── The boundary's invalidation, directly ─────────────────────────
 
 /// A program with **one parked candidate and a chain of unrelated
 /// admissions**, the chain's length supplied by the caller.
@@ -1041,11 +1027,10 @@ fn boundary_lines(src: &str) -> (u32, usize, usize) {
     (rounds, count("park"), count("admit"))
 }
 
-/// **A parked candidate is not re-judged when an unrelated relation grows** —
-/// M1e S1e.3.6 T7, the review's `TE-M7`.
+/// **A parked candidate is not re-judged when an unrelated relation grows.**
 ///
 /// [design/saturation.md § 1](../../../../docs/ein/ein.rs/design/saturation.md#1-two-phases)'s
-/// per-candidate watch stamp became a per-round epoch: `refresh_epochs` takes
+/// watch is a per-round epoch, not a per-candidate stamp: `refresh_epochs` takes
 /// the watched extents once and stamps the guard *sets* whose world moved, and
 /// a candidate is stale exactly when its set's epoch is past the epoch it was
 /// judged at. That is two integer loads where the honest version is two extent
@@ -1090,7 +1075,7 @@ fn a_parked_candidate_is_not_rejudged_when_an_unrelated_relation_grows() {
 }
 
 /// **A fork-inherited candidate is re-judged exactly when its watched extent
-/// grew in the fork** — the second half of `TE-M7`.
+/// grew in the fork** — the invalidation's second half.
 ///
 /// `Saturator::resume` carries the parked set with its stamps across the fork
 /// boundary, and `resume`'s own doc gives the argument: *the KB only grows, so

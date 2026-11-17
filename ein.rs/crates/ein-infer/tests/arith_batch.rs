@@ -1,11 +1,10 @@
 //! **A batch of requests costs in proportion to its count** — the measured
-//! half of the rule of `std.math.decimal-arith`, M1f
-//! [S1f.6.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md).
+//! half of the rule of `std.math.decimal-arith`.
 //!
 //! The rule of the theory is *no rule joins two facts on a number*, and
 //! `arith_theory.rs` holds it on the module's text. This file holds what the
-//! rule is **for**. The engine's fact index does not key on a nested fact
-//! (E-3 of P1f.6's `findings.md`), so a premise looked up by a number walks
+//! rule is **for**. The engine's fact index does not key on a nested fact,
+//! so a premise looked up by a number walks
 //! its relation's whole extent: with one such join in the theory, every
 //! request scans every other request's facts, and a batch costs the square of
 //! its count while every answer stays right. Round 2's theory, written with
@@ -27,10 +26,8 @@
 //!   weaker claim that needs none: the *firings* per request do not grow with
 //!   the batch, and every batch is answered;
 //! - under **`cargo test -p ein-infer --features counters --test
-//!   arith_batch`**, which is **run by hand and by no tier** since M1f
-//!   S1f.6.21 (it was a step of the gate from S1f.6.3 until the user ruled,
-//!   on 2026-11-12, *"we don't need this proportional gate"*; a stage that
-//!   changes a rule of the calculator runs it), it holds the claim itself: `candidates` per request
+//!   arith_batch`**, which is **run by hand** (a change to a rule of the
+//!   calculator runs it), it holds the claim itself: `candidates` per request
 //!   at 1 000 and at 4 000 requests is what it is at 250, within
 //!   [`TOLERANCE`].
 //!
@@ -42,16 +39,16 @@
 //! stops there. [`a_number_operand_does_not_walk_the_lets`] holds that a
 //! batch of number requests costs the same beside two hundred `let`s as
 //! beside none. Without `(named ?x)` the same batch cost `2 × requests ×
-//! lets` candidates more, 200 000 for 500 requests beside 200 `let`s
-//! (2026-11-11): each operand walked every `let`, because the index does not
-//! key the nested fact it was asked with.
+//! lets` candidates more, 200 000 for 500 requests beside 200 `let`s: each
+//! operand would walk every `let`, because the index does not key the nested
+//! fact it is asked with.
 //!
 //! A later operation joins this file by adding its request to [`REQUESTS`]
 //! and its bound to [`BOUND`]. Each operation is measured in batches of its
-//! own (S1f.6.4).
+//! own.
 //!
-//! `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7), `std.math.rat` (S1f.6.8),
-//! `std.math.binary-arith` (S1f.6.16) and `std.math.gcd` (S1f.6.32) have a test of
+//! `std.math.num9`, `std.math.int`, `std.math.rat`,
+//! `std.math.binary-arith` and `std.math.gcd` have a test of
 //! their own each, below, of the same shape; binary's holds the rule of the theory where most of its rules
 //! are `std.math.positional`'s, activated with binary's relations, and the
 //! stated exception where its `bin-let` is.
@@ -95,9 +92,9 @@ const BOUND: [f64; 5] = [250.0, 500.0, 1000.0, 20000.0, 40000.0];
 const TOLERANCE: f64 = 1.05;
 
 /// What a request may cost in guard values at the smallest batch: a little
-/// above the measure, 992 for two nine-digit operands (2026-11-13). Ten for
-/// each digit, `check-digit`'s until M1f S1f.6.38 and `std.math.decimal`'s
-/// `numeral-digit`'s since, read once a numeral; and for each operand twice the program's
+/// above the measure, 992 for two nine-digit operands. Ten for each digit,
+/// `std.math.decimal`'s `numeral-digit`'s, read once a numeral; and for each
+/// operand twice the program's
 /// names, some two hundred in a program of the theory and numbers alone,
 /// which is `operand-undeclared` asking whether the operand is a name
 /// ([`a_number_operand_does_not_walk_the_lets`] holds how that grows).
@@ -121,8 +118,8 @@ fn number(rng: &mut u64, digits: u32) -> String {
 /// constants nobody asks about. The requests are the same whatever `lets`
 /// is: the constants are drawn from a stream of their own, and each is
 /// written with a high zero, `(n (n z 0) …)`, so that no numeral of a
-/// constant's is one of a request's. Since M1f S1f.6.38 the loader states a
-/// numeral once, `(written T)`, and `std.math.decimal` checks it once, so a
+/// constant's is one of a request's. The loader states a numeral once,
+/// `(written T)`, and `std.math.decimal` checks it once, so a
 /// numeral the two shared would cost the program less than the two apart.
 fn batch(op: &str, count: usize, lets: usize) -> String {
     let (mut rng, mut names) = (0x5146_0603_u64, 0x5146_0604_u64);
@@ -176,7 +173,7 @@ fn saturate(src: &str, result: &str) -> Work {
         guards = counted.predicate_value;
     }
     // The program writes the requests and not the result, so the result
-    // prints by its full name (M1f S1f.6.35).
+    // prints by its full name.
     let answers = terms
         .syms
         .get(result)
@@ -223,7 +220,7 @@ fn a_batch_costs_in_proportion_to_its_count() {
             }
             let base_firings = per_request(work[0].firings, sizes[0]);
             let base = per_request(work[0].candidates, sizes[0]);
-            // The numbers themselves, for `-- --nocapture`: the stage records quote them.
+            // The numbers themselves, for `-- --nocapture`.
             for (n, w) in sizes.iter().zip(&work) {
                 eprintln!(
                     "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request; \
@@ -252,12 +249,12 @@ fn a_batch_costs_in_proportion_to_its_count() {
                         "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
                      candidates a request at {} and {c:.1} at {n}. A rule of \
                      std.math.decimal-arith joins two facts on a number: the index does not key \
-                     a nested fact, so that premise walks its whole relation (E-3 \
-                     of P1f.6's findings.md). `arith_theory.rs` names the rule if \
+                     a nested fact, so that premise walks its whole relation. \
+                     `arith_theory.rs` names the rule if \
                      it is written as two premises",
                         sizes[0]
                     );
-                    // The second measure (S1f.6.12, E-27): a guard is no
+                    // The second measure: a guard is no
                     // candidate, so a rule whose guard ranges over something
                     // that grows with the batch passes the count above.
                     let g = per_request(w.guards, *n);
@@ -266,7 +263,7 @@ fn a_batch_costs_in_proportion_to_its_count() {
                         "`{op}`: the guards' work per request grew with the batch: \
                      {base_guards:.1} values a request at {} and {g:.1} at {n}. A guard \
                      of std.math.decimal-arith ranges over something that grows with the requests; \
-                     `candidates` does not see it (E-27 of P1f.6's findings.md)",
+                     `candidates` does not see it",
                         sizes[0]
                     );
                 }
@@ -299,8 +296,8 @@ fn a_batch_costs_in_proportion_to_its_count() {
 /// The stated exception costs a number operand one lookup: the same requests
 /// beside `lets` named constants cost what they cost beside none, plus what
 /// the constants cost themselves, a firing each, whatever the requests. Every
-/// operation looks its operands up the same way, and each is held. Since M1f
-/// S1f.6.38 a program of neither costs something too, the loader stating the
+/// operation looks its operands up the same way, and each is held. A
+/// program of neither costs something too, the loader stating the
 /// numerals the theory's own rules write and `std.math.decimal` checking them,
 /// which the two runs apart count twice: the program with no request and no
 /// `let` is added to the one with both.
@@ -338,7 +335,7 @@ fn a_number_operand_does_not_walk_the_lets() {
              facts. `operand-name` asks `(named ?x)` first so that it does not"
             );
             // **What the undeclared name costs, and it does grow with the
-            // program's names** (S1f.6.12; E-36 of P1f.6's findings.md). To say
+            // program's names**. To say
             // that an operand is a name, `operand-undeclared` ranges a variable
             // over the program's names and compares each with the operand: two
             // guard values a name, for each operand of each request, a number
@@ -357,7 +354,7 @@ fn a_number_operand_does_not_walk_the_lets() {
     );
 }
 
-// ── std.math.num9 (S1f.6.13) ────────────────────────────────────────────
+// ── std.math.num9 ───────────────────────────────────────────────────────
 
 const IMPORT9: &str = "(import std.math.num9 :symbols (arith9))\n";
 
@@ -421,10 +418,9 @@ fn batch9(op: &str, count: usize, first: u32, second: u32) -> String {
 }
 
 /// **The second module keeps the rule of the theory, and this is what it
-/// buys.** The prototype's `num9` joined a division's state with the
-/// divisor's multiples on the divisor, a nested fact, and its batches were
-/// quadratic: 250 divisions in 193 ms and 4 000 in 8.1 s (P1f.6's
-/// `design.md` § 4). The shipped module computes the nine multiples in one
+/// buys.** A `num9` that joined a division's state with the divisor's
+/// multiples on the divisor, a nested fact, would have quadratic batches.
+/// The shipped module computes the nine multiples in one
 /// firing and carries them in the state, and computes a product's rows
 /// inside its step rule, so no rule has a second premise that holds a
 /// number (`num9_theory.rs` holds that on the text). Here: a request of each
@@ -469,7 +465,7 @@ fn a_batch_of_nine_digit_requests_costs_in_proportion_to_its_count() {
                         c <= base * TOLERANCE,
                         "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
                      candidates a request at {} and {c:.1} at {n}. A rule of std.math.num9 \
-                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     joins two facts on a number; \
                      `num9_theory.rs` names the rule if it is written as two premises",
                         sizes[0]
                     );
@@ -487,7 +483,7 @@ fn a_batch_of_nine_digit_requests_costs_in_proportion_to_its_count() {
     );
 }
 
-// ── std.math.int (S1f.6.7) ──────────────────────────────────────────────
+// ── std.math.int ────────────────────────────────────────────────────────
 
 const IMPORT_INT: &str = "(import std.math.int :symbols (int-arith))\n";
 
@@ -496,7 +492,7 @@ const IMPORT_INT: &str = "(import std.math.int :symbols (int-arith))\n";
 /// above the measure, as [`BOUND`] is; and the digits of an operand's parts,
 /// six, and four for a product, which is four of `std.math.decimal-arith`'s. Every third
 /// operand is written with both parts, not simplified. The three divisions
-/// (S1f.6.22) are of four-digit parts, a divisor that is zero left out.
+/// are of four-digit parts, a divisor that is zero left out.
 const REQUESTS_INT: [(&str, &str, f64, u32); 7] = [
     ("int-add", "int-sum-of", BOUND_INT_ADD, 6),
     ("int-sub", "int-diff-of", BOUND_INT_ADD, 6),
@@ -596,7 +592,7 @@ fn a_batch_of_integer_requests_costs_in_proportion_to_its_count() {
                         c <= base * TOLERANCE,
                         "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
                      candidates a request at {} and {c:.1} at {n}. A rule of std.math.int \
-                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     joins two facts on a number; \
                      `int_theory.rs` names the rule if it is written as two premises",
                         sizes[0]
                     );
@@ -614,7 +610,7 @@ fn a_batch_of_integer_requests_costs_in_proportion_to_its_count() {
     );
 }
 
-// ── std.math.rat (S1f.6.8) ──────────────────────────────────────────────
+// ── std.math.rat ────────────────────────────────────────────────────────
 
 const IMPORT_RAT: &str = "(import std.math.rat :symbols (rat-arith))\n";
 
@@ -628,19 +624,18 @@ const REQUESTS_RAT: [(&str, &str, f64); 5] = [
     ("rat-div", "rat-quot-of", BOUND_RAT_MUL),
     ("rat-cmp", "rat-cmp-of", BOUND_RAT_CMP),
 ];
-// Since M1f S1f.6.33 an operation divides nothing: a sum or a difference is
-// some 670 candidates a request at 100, a product 502 and a quotient 549, where
-// lowest terms made them 7 511, 7 470, 6 957 and 6 942 (2026-11-12).
+// An operation divides nothing (Q-M1f.183): a sum or a difference is some
+// 670 candidates a request at 100, a product 502 and a quotient 549, as this
+// test measures them.
 const BOUND_RAT_ADD: f64 = 750.0;
 const BOUND_RAT_MUL: f64 = 650.0;
 const BOUND_RAT_CMP: f64 = 900.0;
 
-/// The batches of `std.math.rat`. Smaller than the others': until M1f S1f.6.33
-/// every request was put in lowest terms, a chain of divisions, some hundreds
-/// of firings a request, and a stored fact costs about a kilobyte (E-26 of
-/// P1f.6's `findings.md`). An operation divides nothing since, and the sizes
-/// are kept, so that the measures compare; `std.math.gcd`'s batch, which the
-/// chain is now, uses them too.
+/// The batches of `std.math.rat`. Smaller than the others': a request put in
+/// lowest terms is a chain of divisions, some hundreds of firings, and a
+/// stored fact costs about a kilobyte. An operation divides nothing, and the
+/// sizes are kept, so that the measures compare; `std.math.gcd`'s batch,
+/// which the chain is, uses them too.
 const SIZES_RAT: [usize; 3] = [100, 400, 1200];
 
 /// A rational of the batch: a numerator from 1 to 9 and either sign, never
@@ -684,8 +679,8 @@ fn batch_rat(op: &str, count: usize) -> String {
 /// **The rationals keep the rule of the theory.** Every rule of `std.math.rat`
 /// has one premise (`rat_theory.rs` holds that on the text): the cross
 /// products and the products of the parts are each a call of
-/// `std.math.decimal-arith` or `std.math.int` under a tag, and since M1f
-/// S1f.6.33 an operation divides nothing. Here: a request of each operation
+/// `std.math.decimal-arith` or `std.math.int` under a tag, and an operation
+/// divides nothing. Here: a request of each operation
 /// costs the same `candidates` and the same firings at 400 and at 1 200
 /// requests as at 100.
 #[test]
@@ -727,7 +722,7 @@ fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
                         c <= base * TOLERANCE_RAT,
                         "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
                      candidates a request at {} and {c:.1} at {n}. A rule of std.math.rat \
-                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     joins two facts on a number; \
                      `rat_theory.rs` names the rule if it is written as two premises",
                         sizes[0]
                     );
@@ -746,21 +741,21 @@ fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
 }
 
 /// What a request of `std.math.rat` costs depends on its operands more than a sum
-/// of two nine-digit numbers does: the lengths of the cross products vary, and
-/// until M1f S1f.6.33 the length of Euclid's chain did, as `std.math.gcd`'s
-/// does. A hundred requests are a small sample of that, so the per-request
+/// of two nine-digit numbers does: the lengths of the cross products vary, as
+/// the length of Euclid's chain does in `std.math.gcd`'s. A hundred requests
+/// are a small sample of that, so the per-request
 /// work at a larger batch may exceed the smallest's by this factor; a join on
 /// a number multiplies it by the batches' ratio, 4 and 12.
 const TOLERANCE_RAT: f64 = 1.15;
 
-// ── std.math.binary-arith (S1f.6.16) ────────────────────────────────────
+// ── std.math.binary-arith ───────────────────────────────────────────────
 
 const IMPORT_BIN: &str = "(import std.math.binary-arith :symbols (binary-arith))\n";
 
 /// Binary's requests, each with its result relation and what a request may
 /// cost at the smallest batch, in `candidates`, a little above the measure:
-/// thirty-bit operands, about nine decimal digits, as the prototype's batches
-/// had them (S1f.6.16's T1); a divisor of thirteen bits, about four; and a
+/// thirty-bit operands, about nine decimal digits, as decimal's batches have
+/// them; a divisor of thirteen bits, about four; and a
 /// product of two twenty-bit numbers.
 const REQUESTS_BIN: [(&str, &str, f64, [usize; 3]); 5] = [
     ("bin-add", "bin-sum-of", 600.0, SIZES_BIN),
@@ -860,7 +855,7 @@ fn a_batch_of_binary_requests_costs_in_proportion_to_its_count() {
                         "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
                      candidates a request at {} and {c:.1} at {n}. A rule of \
                      std.math.binary-arith or of std.math.positional joins two facts on a \
-                     number (E-3 of P1f.6's findings.md); `arith_theory.rs` names the rule",
+                     number; `arith_theory.rs` names the rule",
                         sizes[0]
                     );
                     let g = per_request(w.guards, *n);
@@ -937,7 +932,7 @@ fn a_binary_number_operand_does_not_walk_the_lets() {
     );
 }
 
-// ── std.math.gcd (S1f.6.32) ─────────────────────────────────────────────
+// ── std.math.gcd ────────────────────────────────────────────────────────
 
 const IMPORT_GCD: &str = "(import std.math.gcd :symbols (gcd))\n";
 
@@ -1027,7 +1022,7 @@ fn a_batch_of_gcd_requests_costs_in_proportion_to_its_count() {
                         c <= base * TOLERANCE_RAT,
                         "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
                      candidates a request at {} and {c:.1} at {n}. A rule of std.math.gcd \
-                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     joins two facts on a number; \
                      `gcd_theory.rs` names the rule if it is written as two premises",
                         sizes[0]
                     );

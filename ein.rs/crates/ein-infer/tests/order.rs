@@ -45,9 +45,9 @@
 //!   `known_dead.rs` hold; one that is another and that neither a describe
 //!   nor a line holds fails the test.
 //!
-//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, the
-//! nightly's, under fewer orders; the two zebra puzzles every run. The
-//! nightly runs it in shards, `EIN_TEST_SHARD=k/n`, each program in one
+//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, under
+//! fewer orders; the two zebra puzzles every run. It runs in shards,
+//! `EIN_TEST_SHARD=k/n`, each program in one
 //! (`ein_corpus::shard`), and the two SENDs' test whole in one of them.
 //!
 //! ```text
@@ -90,7 +90,8 @@ fn rel_of(path: &Path) -> String {
 const INSTANCES: [&str; 2] = ["examples/zebra.ein", "examples/zebra2.ein"];
 
 const SEND: &str = "examples/beyond_arith/send_more_money.ein";
-/// The nightly's shard [`the_two_sends_take_the_same_work`] runs whole in.
+/// The shard (`EIN_TEST_SHARD`) [`the_two_sends_take_the_same_work`] runs
+/// whole in.
 const SENDS_SHARD: usize = 4;
 const SEND_WRITTEN: &str = "examples/beyond_arith/send_more_money_written.ein";
 
@@ -491,9 +492,9 @@ fn held(path: &Path, base: &Base, name: &'static str, o: &Order) -> Tally {
 #[test]
 fn every_order_gives_one_answer() {
     let slow = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
-    // Per commit every program that is not `slow`, under six orders. The
-    // nightly reads those under every order, and the `slow` ones under the
-    // first four.
+    // By default every program that is not `slow`, under six orders.
+    // `EIN_CORPUS_SLOW=1` reads those under every order, and the `slow` ones
+    // under the first four.
     let (few, most) = if slow {
         (orders(Set::Few), orders(Set::All))
     } else {
@@ -503,7 +504,7 @@ fn every_order_gives_one_answer() {
     if slow {
         units.extend(files(true).into_iter().map(|f| (f, true)));
     }
-    // The nightly runs this in shards, a program in one of them.
+    // `EIN_TEST_SHARD` runs this in shards, a program in one of them.
     let units = ein_corpus::shard::keep(units, |(p, _)| rel_of(p));
     let orders = &most;
     // Each program's answers under the routes' order, then one unit per
@@ -612,7 +613,7 @@ fn every_order_gives_one_answer() {
 /// read with the `slow` entries, and there the two are two runs.
 #[test]
 fn the_two_sends_take_the_same_work() {
-    // One computation, whole in one shard of the nightly's.
+    // One computation, whole in one shard (`EIN_TEST_SHARD`).
     if !ein_corpus::shard::whole_in(SENDS_SHARD) {
         return;
     }

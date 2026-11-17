@@ -1,6 +1,5 @@
-//! The read-out's data against the oracle — M1e2
-//! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! third step.
+//! The read-out's data against the oracle
+//! ([read-out.md](../../../../docs/ein/user/reference/read-out.md)).
 //!
 //! [`read_out::run`] reads every state it lists through the node function,
 //! answers every query from one solve, and checks the program's claim against
@@ -88,7 +87,7 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
     let mut models = 0usize;
     let mut claims = 0usize;
     let mut classes = 0usize;
-    // One unit per program on the pool (M1f S1f.6.39), read back in order.
+    // One unit per program on the pool, read back in order.
     let paths = corpus_and_register();
     let found = ein_corpus::pool::map(
         "read_out",
@@ -103,7 +102,7 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
         classes += f.classes;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // Not vacuous: 17 130 models, 7 claims and 359 classes on 2026-10-16.
+    // Not vacuous: the floors below are under what the sweep reads.
     assert!(
         models >= 15_000 && claims >= 7 && classes >= 300,
         "{models} {claims} {classes}"
@@ -152,7 +151,7 @@ fn one_program(path: &Path) -> Found {
             let out = match read_out::run(&mut kb, &mut terms, &ast, &opts) {
                 Ok(out) => out,
                 // A goal the compiler refuses ends the run where a state is
-                // answered (M1a S1a.6.6): `query-goal-free-head.ein`, whose
+                // answered: `query-goal-free-head.ein`, whose
                 // refusal `corpus_cli` banks, and `features/02_star_in_
                 // identifiers.ein`, which declares no `solve` for it.
                 Err(ein_infer::SolveError::Compile(_)) => continue,

@@ -1,9 +1,9 @@
 //! What a `:match` compiles to, what it is refused for, and what a
-//! `(config …)` block coerces to — T1a.10.2.2.
+//! `(config …)` block coerces to.
 //!
 //! Four subjects, all of them the *semantics* of the front half of the engine:
 //!
-//! - the in-`:match` kw_pair drop, and S1.22.0's four refusals;
+//! - a guard written as a positional premise, and the compiler's refusals;
 //! - each refusal's message, against its `.expected` fixture;
 //! - `SolverConfig` coercion from IR literals (the F-KER-4 regression);
 //! - the arity-1 `(relation R)` membership channel and bare declarations.
@@ -50,10 +50,10 @@ fn load_text(text: &str) -> Loaded {
 
 /// [`load_text`], under the file name the parser should stamp on every `Loc`.
 ///
-/// Which matters since M1e S1e.2.1: a `CompileError` may now carry the
-/// position of the form it refuses, and a position is only as real as the file
-/// name it names. The `.expected` fixtures write it as `{FILE}` — the same
-/// placeholder `examples/broken/load/` has used since S1a.0.1.
+/// It matters because a `CompileError` may carry the position of the form it
+/// refuses, and a position is only as real as the file name it names. The
+/// `.expected` fixtures write it as `{FILE}` — the same placeholder
+/// `examples/broken/load/` uses.
 fn load_named(text: &str, file: &str) -> Loaded {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -76,7 +76,7 @@ impl Loaded {
     /// Every plan this KB compiles, as the deterministic text `plan_shape`
     /// renders — or the `CompileError` that stopped it.
     ///
-    /// `filter` is `activators_for`'s S1.22.0 arity filter: `true` is what the
+    /// `filter` is `activators_for`'s arity filter: `true` is what the
     /// engine does, `false` is what a direct caller of `compile_rule` is.
     fn shape(&mut self, filter: bool) -> Result<String, String> {
         ein_infer::plan_shape_with(&self.ast, &mut self.terms, &self.kb, filter).map_err(|e| e.0)
@@ -140,31 +140,24 @@ fn cfg(body: &str) -> SolverConfig {
     config(body).expect("coerces")
 }
 
-/// The parser's report on `text`, which must refuse it: since M1f S1f.5.5's
-/// swap the grammar refuses a shape the loader or the compiler refused until
-/// then, each error at its place, `<fixture>:line:col: …`.
+/// The parser's report on `text`, which must refuse it: the grammar refuses
+/// the shape, each error at its place, `<fixture>:line:col: …`.
 fn refused(text: &str) -> ein_ir::ParseError {
     parse(&mut Ast::new(), text, Some("<fixture>")).expect_err("the parser refuses it")
 }
 
 // ── The in-`:match` keyword pair ───────────────────────────────────
 
-/// **A guard is a positional premise, and it compiles** — the test of the
-/// `:where` drop, restated by M1f S1f.5.11's T1f.5.11.2, which retired the
-/// drop.
+/// **A guard is a positional premise, and it compiles.**
 ///
-/// Until M1f S1f.5.5's swap `:where (neq ?a ?b)` inside a `:match` conjunction
-/// was dropped (work-list `an-in-match-keyword-pair-is-dropped-not-compiled`):
-/// guards had moved from a `:where` clause to positional `(neq …)` premises
-/// with tolerance chosen over a loud failure, so the old spelling survived the
-/// parser and vanished, and the rule compiled to one `SCAN` and no guard,
-/// firing unguarded; this test held the drop. Since the swap the pair is
-/// refused at the parse, at the keyword: each form takes a fixed set of
-/// keywords, and no keyword pair parses inside a term (S1f.5.11's ruling,
-/// D-15; Q-M1e2.28). The refusal of this program is a row of the grammar's
-/// table (`ein-ir/tests/grammar_pages.rs`, *a :match's and*), where every
-/// place in a term is held, and the compiler's drop is gone; what stays here
-/// is the compiler's half, that the positional guard is what to write.
+/// `:where (neq ?a ?b)` inside a `:match` conjunction is refused at the
+/// parse, at the keyword: each form takes a fixed set of keywords, and no
+/// keyword pair parses inside a term (Q-M1e2.28). Were the pair dropped
+/// instead, the rule would compile to one `SCAN` and no guard and fire
+/// unguarded. The refusal of this program is a row of the grammar's table
+/// (`ein-ir/tests/grammar_pages.rs`, *a :match's and*), where every place in a
+/// term is held; what stays here is the compiler's half, that the positional
+/// guard is what to write.
 #[test]
 fn a_where_guard_written_as_a_positional_premise_compiles() {
     let mut l = load_text(
@@ -180,21 +173,14 @@ fn a_where_guard_written_as_a_positional_premise_compiles() {
     assert!(shape.contains("GUARD"), "the guard is compiled:\n{shape}");
 }
 
-// ── A string in a rule — M1e2 S1e2.2.18 ────────────────────────────
+// ── A string in a rule ─────────────────────────────────────────────
 
-/// **A string in a rule is refused at the parse** — M1f S1f.5.5's swap, on
-/// S1f.5.2's ruling: a string is natural-language text, written only after
-/// `:why`, `:source` or `:goal-text`, so a string as a value is refused in
-/// both clauses, at any depth, and as a fact's argument, each with S1f.5.2's
-/// note; the name written bare is what to write.
-///
-/// Until M1e2 S1e2.2.18 a string in a `:match` was an opaque slot that matched
-/// nothing, a guard's a raw node that equalled no value, and in an `:assert`
-/// the firing stopped the run (W18); from S1e2.2.18 to the swap a string in a
-/// rule was the symbol it names, what the loader held a string in a fact as.
-/// The same program with every string written bare as the name it spelled
-/// derives what the string program derived then, `"1"` and the int `1` being
-/// one name since S1f.5.4's ruling.
+/// **A string in a rule is refused at the parse**: a string is
+/// natural-language text, written only after `:why`, `:source` or
+/// `:goal-text`, so a string as a value is refused in both clauses, at any
+/// depth, and as a fact's argument, each with its note (`W18`); the name
+/// written bare is what to write, and the program with every string written
+/// bare as the name it spells derives what the name says.
 #[test]
 fn a_string_in_a_rule_is_the_symbol_it_names() {
     let program = |q: &str| {
@@ -241,21 +227,17 @@ fn a_string_in_a_rule_is_the_symbol_it_names() {
             "(tag out (box lbl))",
             "(tag out lbl)"
         ],
-        "eq holds for b alone and neq for 1, one name since S1f.5.4"
+        "eq holds for b alone and neq for 1, one name"
     );
     assert_eq!(names.facts_under("not"), ["(not (tag lbl lbl))"]);
     let shape = names.shape(true).expect("compiles");
     assert!(shape.contains("    SCAN holds ['1']"), "{shape}");
 }
 
-/// M1e2 S1e2.2.20 (W20) — **a wildcard in a rule's pattern
-/// matched any value**, at the top of a premise, in a nested fact, under a
-/// `not` and under an `absent`, two of them independently: the program
-/// concluded what the same program with each `_` written as a fresh variable
-/// concludes, by value (until then the compiler lowered `_` as an opaque slot
-/// that matched nothing). **Since M1f S1f.5.5's swap a bare `_` is refused at
-/// the parse, in every position** (S1f.5.1's ruling), each with its note, and
-/// the fresh variable is what to write: it derives what the wildcard did.
+/// **A bare `_` is refused at the parse, in every position** (Q-M1e2.22,
+/// `W20`) — at the top of a premise, in a nested fact, under a `not` and under
+/// an `absent` — each with its note, and a fresh variable is what to write:
+/// it matches any value, two of them independently.
 #[test]
 fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
     let program = |wild: bool| {
@@ -311,16 +293,14 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
     );
 }
 
-// ── S1.22.0's four refusals, and M1e's four ────────────────────────
+// ── The compiler's refusals ───────────────────────────────────────
 
 /// Each fixture under `examples/broken/compile/` is refused with exactly the
-/// message in its `.expected` file — work-list
-/// `the-four-compile-errors-say-what-their-expected-file-says`.
+/// message in its `.expected` file.
 ///
-/// **Two since M1f S1f.5.5's swap**: the grammar states `eq`'s and `absent`'s
-/// shapes, so the four M1e fixtures below are parse errors, and they moved to
-/// `examples/broken/` beside the parse-negatives, each
-/// `.expected` the parse report, which
+/// The grammar states `eq`'s and `absent`'s shapes, so the fixtures with
+/// either below or above its arity are parse errors, under `examples/broken/`
+/// beside the parse-negatives, each `.expected` the parse report, which
 /// `ein-ir/tests/grammar_decisions.rs` holds.
 ///
 /// These messages are a **surface**: a rule author reads them, and all but one
@@ -329,32 +309,15 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
 /// `.expected`, or a refusal added without one, would leave a branch of the
 /// compiler with nobody asserting its text.
 ///
-/// **Eight since M1e [S1e.2.1], not four.** `CO-H1` was one process panic from
-/// a well-formed program, `(eq ?x)`; the S1e.1.6 sweep turned it into a rule —
-/// the grammar shape-pins four of the seven kernel meta-primitives, and every
-/// cell that panicked or silently misbehaved was one of the other three. The
-/// four new fixtures are that rule's whole surface: `eq` and `absent`, each
-/// below and above its arity. Two of the four used to **fire and exit 0**,
-/// which is why they are here rather than in a note.
-///
-/// [S1e.2.1]: ../../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal
-///
-/// **Six since M1e2 S1e2.2.24**: `empty_absent` and `unbound_head` moved to
-/// `examples/broken/load/` when the loader began refusing a premise that is
-/// not a form and a relation variable no parameter binds (W24), each
-/// `.expected` its load line there.
-///
-/// **Two since M1f S1f.5.21**, and the four arity fixtures at the parse since
-/// S1f.5.5's swap: `nested_or` moved to `broken/load/`, the loader refusing a
-/// nested `(or …)` (W62), and `eq_in_a_macro_body` was the one compile refusal
-/// a program still reached, `(eq ?x)` written in a macro's body; each line in
-/// Ein's words since, `{FILE}:<line>:<col>: rule 'r': …` where the form has a
+/// **One fixture is left here**, `activator_arity`, a direct caller's: every
+/// other refusal of the compiler is the loader's or the grammar's first. A
+/// premise that is not a form and a relation variable no parameter binds
+/// (`W24`, `empty_absent`, `unbound_head`), a nested `(or …)` (`W62`,
+/// `nested_or`) and what a macro's expansion writes outside the grammar's
+/// shapes (`W66` to `W69`, `eq_in_a_macro_body`) are under
+/// `examples/broken/load/`, each `.expected` its load line; each line is in
+/// Ein's words, `{FILE}:<line>:<col>: rule 'r': …` where the form has a
 /// position.
-///
-/// **One since M1f S1f.5.24**: `eq_in_a_macro_body` moved to `broken/load/`,
-/// the loader holding a macro's expansion to the grammar's shapes (W66 to
-/// W69), so no program reaches a compile refusal, and `activator_arity`'s is
-/// a direct caller's.
 ///
 /// The walk runs with the arity filter **off**, because `activator_arity`'s
 /// error is unreachable with it on — see the next test but one.
@@ -376,10 +339,8 @@ fn every_compile_error_says_what_its_expected_file_says() {
                 .into_owned()
         })
         .collect();
-    // `nested_or` moved to `broken/load/` at M1f S1f.5.21, the loader refusing
-    // it (W62), and `eq_in_a_macro_body` arrived, the one compile refusal a
-    // program still reached, through a macro's body; it moved to
-    // `broken/load/` at S1f.5.24 (W66).
+    // `nested_or` and `eq_in_a_macro_body` are under `broken/load/`, the
+    // loader refusing each (`W62`, `W66`).
     assert_eq!(
         stems,
         ["activator_arity"],
@@ -401,22 +362,20 @@ fn every_compile_error_says_what_its_expected_file_says() {
     }
 }
 
-/// A `(or …)` that is not top-level is refused in **both** polarities —
-/// work-list `a-nested-or-in-a-match-premise-is-refused`.
+/// A `(or …)` that is not top-level is refused in **both** polarities.
 ///
-/// One message, two reachable call sites, and before S1.22.0 the two were
-/// wrong in opposite directions: dropped from a positive premise the conjunct
-/// made the match set *larger*, so the rule fired with neither disjunct in the
-/// KB; dropped from inside an `(absent …)` it left the guard's sub-plan empty,
-/// which matches vacuously — so the guard failed against every possible KB
-/// and, being monotone, retired its candidates for good. Only the positive
+/// One message, two call sites, and a drop would be wrong in opposite
+/// directions at them: dropped from a positive premise the conjunct makes the
+/// match set *larger*, so the rule fires with neither disjunct in the KB;
+/// dropped from inside an `(absent …)` it leaves the guard's sub-plan empty,
+/// which matches vacuously — so the guard fails against every possible KB
+/// and, being monotone, retires its candidates for good. Only the positive
 /// site has a checked-in fixture, so the negative one is built here: a
 /// compiler that guarded only the site it had a fixture for would look correct.
 ///
-/// **At load since M1f S1f.5.21** (W62): until then the compiler refused both
-/// where it compiled the rule, in the Python IR's spelling; the loader refuses
-/// each since, one line naming the rule, the disjunction and what it is a
-/// premise of, and the compiler's arm is an invariant.
+/// **At load** (`W62`): the loader refuses each, one line naming the rule,
+/// the disjunction and what it is a premise of, and the compiler's arm is an
+/// invariant.
 #[test]
 fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
     let decls = "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation out T :why \"out holds of {?1}\")\n";
@@ -447,41 +406,37 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
     }
 }
 
-/// **The lines a macro's body reaches are the loader's** — M1f S1f.5.5,
-/// T1f.5.5.5, and S1f.5.24.
+/// **The lines a macro's body reaches are the loader's.**
 ///
-/// An `(absent …)` that compiled to no steps was refused here until T5 (work-list
-/// `an-absent-whose-sub-plan-is-empty-is-refused`): an empty sub-plan is not "a
-/// query that finds nothing", the matcher reads an empty step tuple as one
-/// *vacuous* match, so the guard fails and, being monotone, retires its
-/// candidate for good, in silence. No program reaches it since the swap: an
-/// `absent` takes one premise (`ein.y`'s `Connective`), the two programs that
-/// did, `(absent :k v)` and `(absent ?x)`, are parse errors (rows of `ein-ir`'s
-/// grammar table), and a premise that is no form, which only a macro's body
-/// still writes, is the loader's refusal (`Found::NotAForm`). So T5 made it an
-/// assertion, and deleted the line.
+/// An `(absent …)` that compiled to no steps is an assertion in the compiler:
+/// an empty sub-plan is not "a query that finds nothing", the matcher reads an
+/// empty step tuple as one *vacuous* match, so the guard would fail and, being
+/// monotone, retire its candidate for good, in silence. No program reaches
+/// it: an `absent` takes one premise (`ein.y`'s `Connective`), `(absent :k v)`
+/// and `(absent ?x)` are parse errors (rows of `ein-ir`'s grammar table), and
+/// a premise that is no form, which only a macro's body can write, is the
+/// loader's refusal (`Found::NotAForm`).
 ///
-/// The census counted three more lines the grammar's, and each was still
-/// reached, through a macro: a macro's body is a template whose head may be
+/// Three more shapes the grammar refuses are reachable through a macro: a
+/// macro's body is a template whose head may be
 /// any name (`ein.y`'s `Template`), `absent` and `eq` among them, at any
-/// arity, which the compiler refused where it compiled the plan; and a body
-/// that is a bare parameter, called in an `:assert`, left a variable as the
-/// whole conclusion, which the firing refused. **Since M1f S1f.5.24 the loader
-/// refuses all three** (`ein_ir::from_ir`'s `refuse_malformed_primitives`,
-/// W66 and W69), with the same words, the position where the expanded form is
+/// arity; and a body that is a bare parameter, called in an `:assert`, leaves
+/// a variable as the whole conclusion. **The loader refuses all three**
+/// (`ein_ir::from_ir`'s `refuse_malformed_primitives`, `W66` and `W69`, and
+/// Q-M1f.80), with the same words, the position where the expanded form is
 /// written first, so a rule only a commitment activates, an hrule and an
 /// obligation are refused by every command, not only where they are compiled
 /// or fired; the compiler's two arms and the firing's line are invariants. So
 /// is a relation variable no parameter binds under an `absent`, the loader's
-/// since S1e2.2.24.
+/// too.
 #[test]
 fn the_lines_a_macro_body_reaches_are_the_loaders() {
     let err = load_error(
         "(macro two (?a ?b) (absent ?a ?b) :why \"an absent of both {?a} and {?b}, two premises where it takes one\")\n(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
          (rule r () :match (and (p ?x) (two (p ?x) (p ?x))) :assert (hit ?x) :why \"p holds of {?x} and two's absent holds, so hit holds of {?x}\")\n",
     );
-    // In Ein's words since M1f S1f.5.21, at load since S1f.5.24: the place in
-    // the macro's body, the rule, the form as expanded, and what to write.
+    // In Ein's words, at load: the place in the macro's body, the rule, the
+    // form as expanded, and what to write.
     assert_eq!(
         err,
         "<fixture>:1:21: rule 'r': its :match writes (absent (p ?x) (p ?x)), and absent takes \
@@ -515,18 +470,17 @@ fn the_lines_a_macro_body_reaches_are_the_loaders() {
             "rule 'free-head': its :match writes (?R ?x) with ?R as its relation, which no \
              parameter binds"
         ),
-        "a relation variable no parameter binds is the loader's since S1e2.2.24: {unbound}"
+        "a relation variable no parameter binds is the loader's: {unbound}"
     );
 }
 
 /// An activator whose arity does not match the rule's parameter list is
-/// refused by the compiler, **and** never reaches it through the engine —
-/// work-list `an-arity-mismatched-activator-is-refused-by-a-direct-caller`.
+/// refused by the compiler, **and** never reaches it through the engine.
 ///
-/// S1.22.0 added two guards and the pair is the point. Without the filter the
-/// mismatched pair left every parameter-headed premise with an unbound head
-/// var; those premises were dropped; `steps` was then empty, which the matcher
-/// accepts as one vacuous match — so the rule fired unconditionally. Without
+/// Two guards, and the pair is the point. Without the filter the mismatched
+/// pair would leave every parameter-headed premise with an unbound head var;
+/// dropped, those premises would leave `steps` empty, which the matcher
+/// accepts as one vacuous match — so the rule would fire unconditionally. Without
 /// the error, anything that builds the pair itself gets that same vacuous plan
 /// back. So both halves are asserted against the one fixture: unfiltered it
 /// raises, filtered it compiles *nothing at all* — which is the whole
@@ -538,8 +492,8 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
     let mut l = load_text(&text);
 
     let err = l.compile_error(false);
-    // In Ein's words since M1f S1f.5.21, where it printed a Python tuple of
-    // each, `pairwise('r',)` and `('R', 'T')`.
+    // In Ein's words: the activator as a fact, the parameters as the rule
+    // writes them.
     assert!(
         err.contains("its activator (pairwise r) has 1 argument"),
         "the message names the activator and its arity: {err}"
@@ -557,22 +511,15 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
     );
 }
 
-// ── A relation named by a fact — M1e2 S1e2.2.4, S1e2.2.24 ──────────
+// ── A relation named by a fact ────────────────────────────────────
 
 /// **A relation parameter bound to a nested fact is refused, wherever the
-/// binding is made** — M1e2 S1e2.2.24 (W24, Q-M1e2.18 (iv)); where a rule
-/// derives the binding, at load since M1f S1f.5.18 (Q-M1f.1 (b)), and by the
-/// compiler behind it.
+/// binding is made** (`W24`, Q-M1e2.18); where a rule derives the binding, at
+/// load (Q-M1f.1), and by the compiler behind it.
 ///
-/// `mirror` names the relation it matches and asserts by its parameter. Until
-/// M1f S1f.5.5's swap this test held the integer case too, S1e2.2.4's (Q-M1e.21's
-/// residue): `(mirror 3)` had the compiler intern `3` as a relation's name, a
-/// name no rule's text predicts, and the loader (written as a fact, the fixture
-/// `examples/broken/load/relation_parameter_int.ein`) or the compiler (derived
-/// through a variable) refused it. Since the swap a run of digits is a name
-/// (S1f.5.4's ruling), so `(mirror 3)` names the relation `3` as `(mirror q)`
-/// names `q`, and the fixture and that half retired with it (S1f.5.4's Q2 (a),
-/// decided 2026-11-08).
+/// `mirror` names the relation it matches and asserts by its parameter. A run
+/// of digits is a name, so `(mirror 3)` names the relation `3` as
+/// `(mirror q)` names `q`.
 #[test]
 fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     const MIRROR: &str = "(rule mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a) :why \"{?R} holds of {?a} and {?b}, so it holds of {?b} and {?a}\")";
@@ -585,14 +532,11 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     digits.saturate();
     assert_eq!(digits.facts_under("3"), ["(3 A B)", "(3 B A)"]);
 
-    // A nested fact, derived the same way, names no relation either — M1e2
-    // S1e2.2.24 (W24, Q-M1e2.18 (iv)). Until then the top-level premise
-    // stopped compilation with the unbound-head line in the Python IR's
-    // spelling, and a pattern inside a pattern matched nothing. Since M1f
-    // S1f.5.18 the loader refuses the program (Q-M1f.1 (b)): `src` is a marker
+    // A nested fact, derived the same way, names no relation either (`W24`,
+    // Q-M1e2.18). The loader refuses the program (Q-M1f.1): `src` is a marker
     // whose argument `make` passes to `mirror`'s relation parameter, so the fact
-    // `(src (q A B))` writes a fact where a relation is named (Q-M1f.41). Until
-    // then it loaded and the run stopped where `mirror`'s plan was compiled.
+    // `(src (q A B))` writes a fact where a relation is named (Q-M1f.41), and
+    // the run never reaches the compile of `mirror`'s plan.
     for pattern in ["(?R ?a ?b)", "(box (?R ?a ?b))"] {
         let rule = format!(
             "(rule mirror (?R) :match {pattern} :assert (hit a) :why \"a fact of {{?R}} matches the pattern, so hit holds of a\")"
@@ -634,9 +578,8 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
         let err = ein_infer::compile_rule(&l.ast, &mut l.terms, &rule, Some(activator))
             .expect_err("a relation head bound to a fact")
             .0;
-        // In Ein's words since M1f S1f.5.21: the place, the rule, the form whose
-        // relation the parameter names (inside `box`, the inner one) and the
-        // fact, where it placed the form `at Loc(…)`.
+        // In Ein's words: the place, the rule, the form whose relation the
+        // parameter names (inside `box`, the inner one) and the fact.
         assert!(
             err.starts_with("<fixture>:3:")
                 && err.contains(
@@ -655,19 +598,15 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     assert_eq!(ok.facts_under("q"), ["(q A B)", "(q B A)"]);
 }
 
-/// **A value parameter binds a nested fact** — M1f S1f.5.18, W33 and W58, on
-/// the user's ruling of 2026-11-08 on S1f.5.5's census (*"Q3 - as
-/// recommended"*): a nested fact is a value, so an activator binds a
-/// parameter to it as to a name, whether the activator is written down or a
-/// rule derives it.
+/// **A value parameter binds a nested fact** (`W33`, `W58`): a nested fact
+/// is a value, so an activator binds a parameter to it as to a name, whether
+/// the activator is written down or a rule derives it.
 ///
-/// Until S1f.5.18 `compile::Compiler::bind_activator` skipped a nested fact
-/// (*a nested Fact does not bind*): the parameter was a free variable of the
-/// plan, so `(act (f a))` fired `(p ?y)` on every `p` and concluded `(hit a)`
-/// and `(hit b)` beside `(hit (f a))` (`W33/activator-nested-value`), and a
-/// conclusion that alone read the parameter stopped the run with
-/// `FireError::UnboundVar`'s *unbound var ?y in :assert* (`W58`). The test
-/// beside it holds the relation half, which stays refused.
+/// Were it skipped, the parameter would be a free variable of the plan, so
+/// `(act (f a))` would fire `(p ?y)` on every `p` and conclude `(hit a)` and
+/// `(hit b)` beside `(hit (f a))` (`W33/activator-nested-value`), and a
+/// conclusion that alone read the parameter would have no value (`W58`). The
+/// test beside it holds the relation half, which stays refused.
 #[test]
 fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
     // Written down, read by the premise: W33's witness.
@@ -712,26 +651,20 @@ fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
 
 // ── `(config …)` coercion ──────────────────────────────────────────
 
-/// The bool coercion reads its IR shapes — work-list
-/// `bool-str-and-float-flags-coerce-from-their-ir-shapes`, whose string and
-/// float halves retired with their flags (M1e2 S1e2.1a.5: every flag a program
-/// can set is a bool). Since M1f S1f.5.5's swap a flag takes `true` or `false`
-/// and nothing else, and every other shape a `(config …)` was refused for is the
-/// grammar's: the quoted `"false"` this test coerced until then (a string,
-/// S1f.5.2), an unknown flag, a value no bool, and a flag retired at M1e2, with
-/// its *was retired at* sentence as a note (the paper grammar's default 5).
-/// Each is a row of `ein-ir`'s grammar table since T1f.5.5.5 deleted the
-/// loader's lines and moved their tests there (`the_retired_flags_are_refused_with_why`
-/// and `the_config_rejections_name_the_flag_and_the_shape_they_wanted` until
-/// then). The coercions the retired flags reached stay the container's
+/// The bool coercion reads its IR shapes: every flag a program can set is a
+/// bool, and takes `true` or `false` and nothing else.
+/// Every other shape a `(config …)` is refused for is the grammar's — a
+/// quoted `"false"` (a string), an unknown flag, a value no bool, and a
+/// retired flag, with its *was retired at* sentence as a note — each a row of
+/// `ein-ir`'s grammar table. The coercions the retired flags reached stay the
+/// container's
 /// (`ein-einb` round-trips every field).
 #[test]
 fn bool_flags_coerce_from_their_ir_shapes() {
-    // `lattice-sanity-check` since M1e2 S1e2.2.5 retired `warn-derived-naf`.
+    // `lattice-sanity-check`.
     assert!(cfg(":lattice-sanity-check true").lattice_sanity_check);
     assert!(!cfg(":lattice-sanity-check false").lattice_sanity_check);
-    // `record-alternative-justifications` since M1e2 S1e2.1c.5 retired
-    // `enable-path-nogoods`, which carried it.
+    // `record-alternative-justifications`.
     assert!(!cfg(":record-alternative-justifications false").record_alternative_justifications);
     // The last of a repeated flag wins.
     assert!(cfg(":lattice-sanity-check false :lattice-sanity-check true").lattice_sanity_check);
@@ -742,21 +675,20 @@ fn bool_flags_coerce_from_their_ir_shapes() {
     );
 }
 
-// ── S1.22.4 — the arity-1 membership channel ───────────────────────
+// ── The arity-1 membership channel ────────────────────────────────
 
 const DECLS: &str = "(relation adult Person :why \"{?1} is an adult\")\n\
                      (relation likes Person Drink :why \"{?1} likes {?2}\")\n\
                      (relation between Person Person Person :why \"{?1} is between {?2} and {?3}\")\n";
 
 /// `:match (relation ?R)` sees every declaration whatever its arity, and the
-/// arity-coupled patterns still see exactly what they saw before — work-list
-/// `arity-independent-membership-match`.
+/// arity-coupled patterns still see exactly what they saw before.
 ///
 /// This is the origin ask ("other rules could check if argument is name of
-/// relation by `:match (relation ?R)`"), and before S1.22.4 it matched
-/// *nothing*: the loader stored only the arity-N signature mirror, and
-/// matching is arity-coupled, so `std.bijection` / `std.algebra` /
-/// `std.typing` quietly saw only the binary declarations. The second half of
+/// relation by `:match (relation ?R)`"). With only the arity-N signature
+/// mirror stored it would match *nothing*, because matching is
+/// arity-coupled, and `std.bijection` / `std.algebra` / `std.typing` would
+/// quietly see only the binary declarations. The second half of
 /// the assertion is the real hazard in a fix of this shape — a membership fact
 /// that *replaced* the mirror, or a matcher made arity-tolerant, would satisfy
 /// the ask and break every existing signature-reading rule at the same time.
@@ -787,8 +719,7 @@ fn the_membership_channel_is_arity_independent_and_the_old_ones_are_unchanged() 
     );
 }
 
-/// Only *declared* relations get a membership fact — work-list
-/// `membership-facts-are-declarations-only`.
+/// Only *declared* relations get a membership fact.
 ///
 /// A property tag such as `(symmetric likes)` auto-vivifies `symmetric` into
 /// the relation registry, open-world, with nobody having declared it. If
@@ -818,8 +749,7 @@ fn only_declared_relations_get_a_membership_fact() {
 }
 
 /// A bare `(relation opaque)` is a declaration with an empty signature, and it
-/// stores exactly one fact — work-list
-/// `a-bare-declaration-is-declared-with-an-empty-signature`.
+/// stores exactly one fact.
 ///
 /// Every other declaration stores two facts: the arity-N signature mirror and
 /// the arity-1 membership companion. For a bare one the two coincide, and the
@@ -845,13 +775,11 @@ fn a_bare_declaration_is_declared_with_an_empty_signature_and_stores_one_fact() 
         ["(relation opaque)"],
         "the mirror *is* the membership fact; a second copy would double-count"
     );
-    // Since M1f S1f.5.5's swap a declaration's signature is names, so the
-    // wrapped list is a parse error at its `(`, where the loader refused it as
-    // `malformed (relation)` until then: a row of `ein-ir`'s grammar table
-    // since T1f.5.5.5 deleted the line.
+    // A declaration's signature is names, so the wrapped list is a parse
+    // error at its `(`: a row of `ein-ir`'s grammar table.
 }
 
-// ── S1.22.4 — what the blind enumerator fills ──────────────────────
+// ── What the blind enumerator fills ──────────────────────────────
 
 /// The relation names the blind enumerator proposes hypotheses for.
 fn guessed_relations(text: &str) -> BTreeSet<String> {
@@ -878,8 +806,7 @@ fn guessed_relations(text: &str) -> BTreeSet<String> {
         .collect()
 }
 
-/// A relation with an empty signature is never a hypothesis target — work-list
-/// `an-empty-signature-is-not-a-hypothesis-target`.
+/// A relation with an empty signature is never a hypothesis target.
 ///
 /// Signature *presence* is the kernel's only "declared domain relation"
 /// signal, and a bare declaration deliberately fails it: with no signature
@@ -903,7 +830,7 @@ fn an_empty_signature_is_not_a_hypothesis_target() {
     );
 }
 
-/// Arity 3 and beyond is unenumerated — work-list `arity-three-is-unenumerated`.
+/// Arity 3 and beyond is unenumerated.
 ///
 /// The enumerator fills arity 1 (the candidate *is* `(R focal)`, no filler
 /// loop) and arity 2 (a filler loop over the object set); a ternary
@@ -926,18 +853,16 @@ fn arity_three_is_unenumerated() {
     );
 }
 
-/// **No corpus program is refused in the Python IR's spelling** — M1f
-/// S1f.5.21, the close review's finding 1.
+/// **No corpus program is refused in the Python IR's spelling.**
 ///
 /// The text every command prints when it refuses a program is the loader's
 /// line or the compiler's, behind at most `kb load error: ` (`ein-cli`'s
 /// `common`). So every corpus program is loaded, and where it loads, every plan
 /// its rules, hrules and obligations compile, one per activator as the engine
 /// compiles them, and every query's goal: no refusal holds the Python class,
-/// the IR's repr, a `Loc(…)`, a stage id or *the M1 compiler*. The compile
-/// refusals a corpus program reaches are counted, and there are none since M1f
-/// S1f.5.24, which moved the last, the macro body's
-/// (`examples/broken/load/eq_in_a_macro_body.ein`), to the loader.
+/// the IR's repr, a `Loc(…)` or a development id. The compile refusals a
+/// corpus program reaches are counted, and there are none: the macro body's
+/// (`examples/broken/load/eq_in_a_macro_body.ein`) is the loader's.
 #[test]
 fn no_corpus_program_is_refused_in_the_python_spelling() {
     const PYTHON: [&str; 7] = [

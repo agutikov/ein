@@ -50,8 +50,8 @@
 //!   describe by the tree and the classes, which branch as a tree does: there
 //!   R's states found whole both ways are the same states.
 //!
-//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, the
-//! nightly's; the two zebra puzzles every run.
+//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`; the two
+//! zebra puzzles every run.
 //!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test known_dead

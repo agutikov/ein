@@ -1,6 +1,6 @@
-//! **A printed region reads back as its own claim** — M1e2
-//! [S1e2.1a.4](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md),
-//! ruling 1 of 2026-10-16: one form for both directions.
+//! **A printed region reads back as its own claim**: one form for both
+//! directions
+//! ([query.md § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
 //!
 //! For every corpus program whose R a route describes, [`claim::print`] writes
 //! R as a `(region …)` (or `(false)`), the claim is spliced into the program's
@@ -21,26 +21,13 @@ use ein_infer::claim::{self, Options};
 use ein_infer::expect::Outcome;
 use ein_ir::{Ast, load, parse};
 
-/// **The programs whose printed region does not read back today**, each the
-/// witness of an open register row (M1f S1f.5.5's swap, the user's ruling of
-/// 2026-11-08 on its review stop, item 9): W34, `:assert ()` stored as a fact
-/// named `#empty`, which joins H and prints as the name `"#empty"` in its
-/// region, a string a claim may not write since the swap (S1f.5.2's ruling).
-/// Not a printer's defect but the row's own wrong answer, so it is named
-/// rather than checked, and it must still fail: a printed region here that
-/// reads back is the row fixed, and S1f.5.9 takes it off the list in the
-/// commit that fixes W34, with `answer_round_trip.rs`'s `DO_NOT_LOAD`. W53's
-/// `hrule-eq` joined it on 2026-11-09 (M1f S1f.5.7's T1f.5.7.1): its
-/// commitments state `(eq …)` facts, which its region prints, and a region
-/// claim names no relation the program does not declare, nor, since
-/// T1f.5.7.2, `eq` or `neq`, which a state never stores; T1f.5.7.4 took it
-/// off the same day, the hrule proposing no `eq` instance since. W34's left
-/// at M1f S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts nothing, so
-/// no `#empty` joins H. Empty from then until M1f S1f.6.37's T1f.6.37.1
-/// (2026-11-14): W95's `hrule-and-in-and`, whose hrule proposes a fact headed
-/// `and`, which its region prints and no claim can write. S1f.6.37's fix
-/// (T1f.6.37.3, the same day), which reads the conclusion flat, took it off.
-/// Empty since.
+/// **The programs whose printed region does not read back**, each the
+/// witness of an open register row whose wrong answer is a region no claim
+/// can write. Not a printer's defect but the row's own wrong answer, so it is
+/// named rather than checked, and it must still fail: a printed region here
+/// that reads back is the row fixed, and the commit that fixes it takes it
+/// off the list, with `answer_round_trip.rs`'s `DO_NOT_LOAD`. Empty: the
+/// rows that were here (`W34`, `W53`, `W95`) are fixed.
 const DO_NOT_READ_BACK: [&str; 0] = [];
 
 fn loaded(src: &str, dir: Option<&Path>) -> Option<(Kb, Terms, Ast)> {
@@ -108,7 +95,7 @@ fn every_printed_region_holds_as_its_own_claim() {
     let mut checked = 0usize;
     let mut kinds = [0usize; 3]; // (false), (region (owing …)), (region …)
     let mut bad = Vec::new();
-    // On the corpus sweeps' pool (M1f S1f.6.39), a program a unit, its
+    // On the corpus sweeps' pool, a program a unit, its
     // findings read back in order.
     let files = corpus_files();
     let found = ein_corpus::pool::map(
@@ -214,8 +201,8 @@ fn every_printed_region_holds_as_its_own_claim() {
         bad.join("\n\n")
     );
     // Not vacuous: the corpus has every kind, and most of it is reached. The
-    // floor was 150 until M1e2 S1e2.1a.5 moved 72 query claims to region
-    // claims, whose programs `ein test` holds and this sweep skips.
+    // programs whose claims are region claims `ein test` holds, and this sweep
+    // skips them.
     assert!(
         checked >= 90,
         "only {checked} programs were printed and checked"

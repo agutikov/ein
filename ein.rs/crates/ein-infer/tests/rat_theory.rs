@@ -1,11 +1,10 @@
-//! **`std.math.rat`, held to exact fractions and to the rule of the theory** — M1f
-//! [S1f.6.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md).
+//! **`std.math.rat`, held to exact fractions and to the rule of the theory**
+//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md)).
 //!
 //! `stdlib/math/rat.ein` is the calculator's second extension: a rational is
 //! `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith`
-//! that is not zero. **An operation answers unreduced** since M1f
-//! [S1f.6.33](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md)
-//! (round 2's item 54, the user's *"(b)"*): the numerator in `std.math.int`'s
+//! that is not zero. **An operation answers unreduced** (Q-M1f.183,
+//! Q-M1f.302): the numerator in `std.math.int`'s
 //! normal form and the denominator with no high zero, a common factor of the
 //! two left where it is; `rat-simplify` alone answers in lowest terms, by
 //! `std.math.gcd`. The module calls the theories below it and edits none. Ein
@@ -33,12 +32,12 @@
 //! the search-free claim, on the binary, is
 //! `ein-cli/tests/arith_search_free.rs`.
 //!
-//! **The sizes are small on purpose.** A stored fact costs about a kilobyte
-//! (E-26 of P1f.6's `findings.md`). Lowest terms was a chain of divisions in
-//! every request, some 450 firings for two one-digit fractions; since S1f.6.33
-//! only `rat-simplify` pays for it, and a sum of two one-digit fractions is
-//! some hundred firings, so the exhausting set could grow fivefold for the
-//! same facts. It is kept, so that the record's measures compare. [`hold`]
+//! **The sizes are small on purpose.** A stored fact costs about a kilobyte.
+//! Lowest terms is a chain of divisions, some 450 firings for two one-digit
+//! fractions, and only `rat-simplify` pays for it; a sum of two one-digit
+//! fractions is some hundred firings, so the exhausting set could grow
+//! fivefold for the same facts. It is kept, so that the measures compare
+//! (Q-M1f.184). [`hold`]
 //! asks its cases in programs of [`CHUNK`] requests.
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -338,7 +337,7 @@ const OPS: [Op; 5] = [
 /// Ask every pair, [`CHUNK`] requests a program, and hold every answer:
 /// **exactly one** result fact per request, repeating the operands as
 /// written, its last argument what the fractions say **by value**, in the
-/// module's form (S1f.6.33: not reduced). No program derives `(false)`.
+/// module's form (not reduced, Q-M1f.183). No program derives `(false)`.
 fn hold(op: &Op, cases: &[(Operand, Operand)]) {
     let mut want: BTreeMap<(String, String), Want> = BTreeMap::new();
     for ((x, a), (y, b)) in cases {
@@ -440,8 +439,8 @@ fn longer_fractions_are_right() {
     }
 }
 
-/// The stage's task 3: *an unsimplified operand, such as 2/4, must answer as
-/// 1/2*. Here an operand is spelt with a common factor in both terms, with a
+/// *An unsimplified operand, such as 2/4, answers as 1/2.* Here an operand
+/// is spelt with a common factor in both terms, with a
 /// common amount in both parts of its numerator, and with high zeros in its
 /// denominator.
 #[test]
@@ -482,7 +481,7 @@ fn an_operand_is_read_by_value() {
 
 /// The two requests with one operand: `(rat-simplify X)`, held to its one
 /// normal form **in lowest terms**, as written, and `(rat-neg X)`, held by
-/// value, since it reduces nothing (S1f.6.33).
+/// value, since it reduces nothing.
 #[test]
 fn simplification_and_negation_are_right() {
     let mut rng = Rng(0x5146_0628);
@@ -626,7 +625,7 @@ fn an_integer_is_not_a_rational_operand() {
          (rat-add n5 {half})\n(rat-neg {five})\n(rat-mul {half} {five})\n\
          (rat-add {half} {half})\n"
     );
-    // 1/2 + 1/2 is 4/4: not reduced (S1f.6.33).
+    // 1/2 + 1/2 is 4/4: not reduced.
     assert_eq!(
         run(&body, "rat-sum-of"),
         [format!("(rat-sum-of {half} {half} {})", spelt(4, 0, 4))]
@@ -637,7 +636,7 @@ fn an_integer_is_not_a_rational_operand() {
     assert!(run(&body, "false").is_empty());
 }
 
-// ── unreduced answers, and lowest terms on request (S1f.6.33) ──────
+// ── unreduced answers, and lowest terms on request ─────────────────
 
 /// **No request reduces but `rat-simplify`.** Over every pair of the
 /// exhausting set, an operation's answer is the cross products, or the
@@ -716,7 +715,7 @@ fn only_rat_simplify_reduces() {
 }
 
 /// **Two requests whose values are equal answer two different facts, and
-/// `rat-cmp` says `eq` of them** (S1f.6.33's T3): an answer is not canonical,
+/// `rat-cmp` says `eq` of them**: an answer is not canonical,
 /// and the equality is the comparison, which reads by cross products.
 #[test]
 fn equal_values_are_two_facts_and_rat_cmp_says_eq() {
@@ -788,15 +787,15 @@ fn equal_values_are_two_facts_and_rat_cmp_says_eq() {
 // ── a zero denominator, and a division by zero ─────────────────────
 
 /// **A zero denominator is a division by zero, in two steps**, as
-/// `std.math.decimal-arith`'s is (the user's ruling of 2026-11-11). A request with an
+/// `std.math.decimal-arith`'s is (Q-M1f.269). A request with an
 /// operand whose denominator is zero, written `z`, with digits, or under a
 /// name, and a `rat-div` by a rational that is zero, however that is
 /// written, derive `(division-by-zero REQUEST)`, the request as written;
 /// `std.math.decimal-arith`'s rule derives `(false)`; and the request is never answered.
 /// The requests beside them are answered and not flagged.
 ///
-/// **One flag a request, and it is the request's** (S1f.6.24). `std.math.decimal-arith`
-/// flags a division at its tagged call since that stage, whoever made it.
+/// **One flag a request, and it is the request's.** `std.math.decimal-arith`
+/// flags a division at its tagged call, whoever made it (Q-M1f.163).
 /// None of this module's rules is replaced by it: a request with a
 /// denominator of zero performs no division, and a `rat-div` by a rational
 /// that is zero is seen at the divisor's numerator, before any call; the
@@ -869,7 +868,7 @@ fn a_zero_denominator_is_flagged_and_false() {
     }
     assert!(run(&body, "rat-simple-of").is_empty());
     assert!(run(&body, "rat-neg-of").is_empty());
-    // 1/2 divided by 1/2 is 2/2: not reduced (S1f.6.33).
+    // 1/2 divided by 1/2 is 2/2: not reduced.
     assert_eq!(
         run(&body, "rat-quot-of"),
         [format!("(rat-quot-of {half} {half} {})", spelt(2, 0, 2))],
@@ -886,8 +885,7 @@ fn a_zero_denominator_is_flagged_and_false() {
 // ── the circuit's measure ──────────────────────────────────────────
 
 /// Firings and depth of one request, as `arith_theory.rs` measures them; the
-/// closing rules' firings are left out, `std.math.gcd`'s among them since
-/// S1f.6.33.
+/// closing rules' firings are left out, `std.math.gcd`'s among them.
 fn circuit(body: &str) -> (usize, usize) {
     let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
@@ -953,10 +951,10 @@ fn circuit(body: &str) -> (usize, usize) {
     (firings, deepest)
 }
 
-/// **Each operation as a circuit.** Since S1f.6.33 an operation divides
-/// nothing: a sum is the cross products, a product of the denominators and
-/// the numerator simplified, about a fifth of what it was when lowest terms
-/// followed (round 2's item 54: 1/2 + 1/3 was 492 firings, and is 101).
+/// **Each operation as a circuit.** An operation divides nothing: a sum is
+/// the cross products, a product of the denominators and the numerator
+/// simplified, about a fifth of what it would be with lowest terms after it
+/// (1/2 + 1/3 is 101 firings).
 /// Lowest terms is `rat-simplify`'s alone: the numerator simplified,
 /// `std.math.gcd`'s call, Euclid's chain, a division a step, each computing
 /// its divisor's nine multiples first, and two more divisions by what the
@@ -1078,8 +1076,9 @@ impl Module {
 /// **The rule of the theory, on the text**, in its strongest form: every
 /// rule of `std.math.rat` but the closing rule has exactly **one** premise. It
 /// reads no table itself and joins nothing: all it needs travels in the
-/// call's tag (E-3 of P1f.6's `findings.md` is why).
-/// The rules of the rational's own shape (S1f.6.38, Q-M1f.276 (a)): each
+/// call's tag (the index does not key a nested fact, so a second premise
+/// looked up by a number would make a batch cost the square of its count).
+/// The rules of the rational's own shape (Q-M1f.276): each
 /// reads `(written (rat Z D))` and probes what it binds, `nz` or `named`.
 const SHAPE_RULES: [&str; 6] = [
     "rat-z-digit",
@@ -1106,7 +1105,7 @@ fn every_rule_has_one_premise() {
             continue;
         }
         if SHAPE_RULES.contains(&name.as_str()) {
-            // The rational's own shape (S1f.6.38): `(written (rat Z D))`, the
+            // The rational's own shape: `(written (rat Z D))`, the
             // one premise that holds numbers, and a probe of what it binds.
             let heads: Vec<&str> = premises
                 .iter()
@@ -1134,7 +1133,7 @@ fn every_rule_has_one_premise() {
 /// has one stratum. A zero denominator derives `std.math.arith`'s flag, by one
 /// of the four rules named here, and `std.math.arith`'s rule derives the
 /// contradiction; the module's own `(false)` is its rational's shape's,
-/// `not-rational-is-false`, from its flag alone (S1f.6.38).
+/// `not-rational-is-false`, from its flag alone.
 #[test]
 fn the_theory_writes_no_negation_and_no_guard() {
     let m = module();
@@ -1187,8 +1186,7 @@ fn the_theory_writes_no_negation_and_no_guard() {
 /// `rat-arith` is the theory's one entry. It closes every relation the
 /// module declares and the table it reads, names every other rule, and names
 /// the entries of the modules it imports, `int-arith`, `decimal-arith`,
-/// `decimal`, `arith` and, since S1f.6.33, `gcd`, without which a selection
-/// left their rules behind in silence (E-20 of P1f.6's `findings.md`).
+/// `decimal`, `arith` and `gcd` (Q-M1f.283).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let m = module();
@@ -1256,7 +1254,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         ]
     );
 
-    // Its own name is a written fact, the module's only one (E-11).
+    // Its own name is a written fact, the module's only one.
     let facts: Vec<(String, Vec<String>)> = m
         .forms
         .iter()
@@ -1285,7 +1283,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
 }
 
 /// **A rational's own malformation is its flag, as written, and `(false)`**
-/// (M1f S1f.6.38, Q-M1f.276 (a)), held from outside the language as
+/// (Q-M1f.276), held from outside the language as
 /// `int_theory.rs` holds an integer's: a dead program's one claim cannot say
 /// how its flag is written.
 #[test]

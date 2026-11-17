@@ -1,4 +1,4 @@
-//! The justification graph and the saturator's own contract — T1a.10.2.2.
+//! The justification graph and the saturator's own contract.
 //!
 //! The common subject is *what a derivation is*:
 //!
@@ -132,7 +132,7 @@ fn load_path(rel: &str) -> Fixture {
 fn load_text(text: &str) -> Fixture {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    // A fixture that imports names what it writes (M1f S1f.6.35).
+    // A fixture that imports names what it writes.
     let text = &ein_corpus::listed(text);
     let forms = parse(&mut ast, text, Some("<fixture>")).expect("the fixture parses");
     let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the fixture loads");
@@ -288,7 +288,7 @@ impl Fixture {
     }
 }
 
-// ── The cap on recorded alternatives — M1e S1e.1.3, the review's Q2 ────────
+// ── The cap on recorded alternatives ──────────────────────────────────────
 
 /// Every fact of a saturated KB, as sorted s-expressions — comparable across
 /// two arenas, which two separate loads necessarily are.
@@ -301,27 +301,26 @@ fn fact_set(f: &Fixture) -> Vec<String> {
     out
 }
 
-/// **A full alternatives list no longer decides which unsat core is
-/// reported** — W10, fixed by M1e2 S1e2.2.11.
+/// **A full alternatives list does not decide which unsat core is
+/// reported** (`W10`, Q-M1e2.11).
 ///
-/// The review's Q2, answered *yes* by M1e S1e.1.3: `Kb::record_justification`
-/// retains by **premise count**, which is local, and `explain` minimises
-/// **frontier size**, which is transitive, so a full list refused the
-/// derivation with the smaller frontier. The two files were one `:priority`
-/// apart and nothing else until M1f S1f.5.15 removed the keyword; since then
-/// they are one rule's written place apart, `mk-w3` after `mk-q` or before it
-/// — same facts, same rules, same verdict:
+/// `Kb::record_justification` retains by **premise count**, which is local,
+/// and `explain` minimises **frontier size**, which is transitive, so a full
+/// list alone would refuse the derivation with the smaller frontier. The two
+/// files are one rule's written place apart, `mk-w3` after `mk-q` or before
+/// it — same facts, same rules, same verdict:
 ///
-/// | | `(false)`'s primary | core until S1e2.2.11 | core since |
-/// |---|---|---|---|
-/// | `alt-cap-core.ein` | `narrow`, one premise three givens deep | 3 — `(p1 Y01) (p2 Y01) (p3 Y01)` | **2** — `(w1 X) (w2 X)` |
-/// | `alt-cap-core-reordered.ein` | `wide`, two premises over givens | 2 | 2 |
+/// | | `(false)`'s primary | core |
+/// |---|---|---|
+/// | `alt-cap-core.ein` | `narrow`, one premise three givens deep | **2** — `(w1 X) (w2 X)` |
+/// | `alt-cap-core-reordered.ein` | `wide`, two premises over givens | 2 |
 ///
-/// Since S1e2.2.11 (Q-M1e2.11) a fact keeps beside its list the arrival with the smallest
-/// closure, so `wide`'s two-given derivation is offered to the search in the
-/// first file too, and the core is the one an uncapped store reports
-/// (`MAX_ALT_JUSTIFICATIONS = 1_000_000`, measured 2026-11-04). The list
-/// itself is as it was: 32 one-premise `narrow` entries.
+/// A fact keeps beside its list the arrival with the smallest closure, so
+/// `wide`'s two-given derivation is offered to the search in the first file
+/// too, and the core is the one an uncapped store reports
+/// (`MAX_ALT_JUSTIFICATIONS = 1_000_000`), not the 3 —
+/// `(p1 Y01) (p2 Y01) (p3 Y01)` — the full list holds. The list itself
+/// holds 32 one-premise `narrow` entries.
 #[test]
 fn a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core() {
     let mut capped = load_path("examples/ein-bugs/alt-cap-core.ein");
@@ -381,17 +380,15 @@ fn a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core() {
 }
 
 /// **A saving between two facts, behind a full list, is still refused** —
-/// `W10/alt-cap-shared`, open, deferred to F22 by the user's ruling of
-/// 2026-11-04 on Q-M1e2.11 (i)(b).
+/// `W10/alt-cap-shared`, the limit Q-M1e2.11 states.
 ///
 /// `(x K)` has 33 one-given derivations and a 34th over `(a K)` `(b K)`, and
 /// `(false)` needs `(z K)` too, whose only derivation is over the same two.
 /// The smallest frontier over every derivation is `{(a K), (b K)}`, but the
 /// 34th is `(x K)`'s per-fact worst, so its full list refuses it and the
 /// smallest-closure arrival kept beside it is an `x-chain`: the core is three
-/// facts. No bounded per-fact retention keeps it, which is why the row is
-/// F22's and not this stage's. Pinned as the promise's one known gap: the
-/// day this reports two, F22 has landed and the row flips.
+/// facts. No bounded per-fact retention keeps it. Pinned as the promise's
+/// one known gap: the day this reports two, the row flips.
 #[test]
 fn a_saving_between_two_facts_behind_a_full_list_is_still_refused() {
     let mut f = load_path("examples/ein-bugs/wrong-answers/alt-cap-shared.ein");
@@ -605,13 +602,12 @@ fn every_budget_cap_stays_sound_and_reports_itself() {
     );
 }
 
-/// **Each cap a search stops at is named** — M1e2 S1e2.2.23 (W23).
+/// **Each cap a search stops at is named** (`W23`).
 ///
-/// `Explanation::exhausted` said only *some* cap was hit, and no surface
-/// printed it. Since S1e2.2.23 `Explanation::cut` says which, and a core's
-/// status ([`CoreStatus`]) carries it to every surface: the corpus hits two
-/// of them, `zebra.ein` the rounds and the `zebra2` family the environments
-/// (S1e2.2.23 T1, 2026-11-05). Each budget below hits its own cap and no
+/// `Explanation::exhausted` says only *some* cap was hit; `Explanation::cut`
+/// says which, and a core's status ([`CoreStatus`]) carries it to every
+/// surface: the corpus hits two of them, `zebra.ein` the rounds and the
+/// `zebra2` family the environments. Each budget below hits its own cap and no
 /// other, `exhausted` is `!cut.any()`, and the default budget hits the
 /// environments on `core-search-cut.ein`, whose `(A k)` has 256, and none on
 /// its five-pair twin, whose `(A k)` has 32.
@@ -676,13 +672,12 @@ fn each_cap_a_search_stops_at_is_named() {
     }
 }
 
-/// **A core's status is one word, read back as written** — M1e2 S1e2.2.23:
+/// **A core's status is one word, read back as written**:
 /// `within-budget`, or `cut-` and the caps in [`Cut`]'s order, which every
 /// JSON surface writes beside a core and `ein render region` reads back; and
 /// the sentence a text surface prints names the caps with the default
-/// budget's sizes, and is printed for a cut core alone. S1e2.3.9's
-/// `not-kept`, beside a member of N a run past `--region-limit` printed with
-/// no core, is no word since M1f S1f.5.12, which gives every member its core.
+/// budget's sizes, and is printed for a cut core alone. `not-kept` is no
+/// word: every member of N is given its core (Q-M1f.26).
 #[test]
 fn a_core_status_is_one_word_read_back_as_written() {
     let mut words = Vec::new();
@@ -728,8 +723,8 @@ fn a_core_status_is_one_word_read_back_as_written() {
         .as_deref(),
         Some("cut at its budget of 64 rounds and 20 000 facts: a smaller core may exist")
     );
-    // M1f S1f.5.12: `not-kept`, S1e2.3.9's ninth word, is retired with the
-    // member of N it stood for, and reads back as no status.
+    // `not-kept` is no word: every member of N has its core, and the word
+    // reads back as no status.
     for bad in ["not-kept", "not-taken", "not-kept-", "kept"] {
         assert_eq!(CoreStatus::from_word(bad), None, "{bad}");
     }
@@ -914,9 +909,9 @@ fn a_derived_closure_marker_silences_hypgen() {
     );
 
     // `std.closure`'s rule as the module states it, written in the program:
-    // since M1f S1f.6.35 an import of the module brings `std.algebra` whole,
-    // whose loaded obligation rules take the ladder to the obligations rung
-    // (E-51), which proposes nothing here for its own reason, and the marker
+    // an import of the module brings `std.algebra` whole (Q-M1f.247), whose
+    // loaded obligation rules take the ladder to the obligations rung, which
+    // proposes nothing here for its own reason, and the marker
     // would not be what silenced r.
     let text = ein_ir::stdlib::resolve_default()
         .read("closure.ein")
@@ -943,13 +938,10 @@ fn a_derived_closure_marker_silences_hypgen() {
     );
 }
 
-/// **a-file-s-own-declaration-is-its-own** — M1f S1f.6.35, the user's model
-/// (h): a short name a file declares is its own, and one an import lists is
-/// the module's, so the two are one short name bound to two full names, and
-/// refused whatever the two bodies (Q-M1f.234). Until S1f.6.35 a flat import
-/// shared the name, an identical re-declaration collapsed (the diamond's
-/// case, which one copy of a module now answers) and a differing one was
-/// refused as *conflicting definitions*. Not listed, the file's declaration
+/// **a-file-s-own-declaration-is-its-own**: a short name a file declares is
+/// its own, and one an import lists is the module's, so the two are one short
+/// name bound to two full names, and refused whatever the two bodies
+/// (Q-M1f.234). Not listed, the file's declaration
 /// shadows the module's: two rules, `infer-closure` and
 /// `std.closure.infer-closure`, each closing `r`, one fact.
 #[test]
@@ -1112,20 +1104,15 @@ fn an_activator_with_an_empty_extent_saturates_to_nothing() {
     );
 }
 
-/// **The agenda is FIFO: the written and arrival order** (M1f S1f.5.15, the
-/// user's ruling of 2026-11-08 on Q-M1f.6, *"plain FIFO"*).
+/// **The agenda is FIFO: the written and arrival order** (Q-M1f.313, within
+/// each half of the agenda).
 ///
 /// No rule has a priority: candidates fire in the order they were enqueued,
 /// and a rule's first candidates are enqueued in the order the rules are
 /// written. Four one-premise rules on one given fire in their written order,
-/// whatever their names. A `:priority` written anyway was dropped by the
-/// loader as any rule keyword it does not read (D-15) from S1f.5.15 until
-/// S1f.5.5's swap, and is refused at the parse since, as any keyword a rule
-/// does not take (S1f.5.11), so the program that wrote two orders nothing:
-/// it does not load. Until S1f.5.15 this file held the bands' order
-/// (`priority_bands_order_the_firing_sequence`) and the default's value
-/// (`the_default_priority_is_1000_and_fires_last`), which went with the
-/// keyword.
+/// whatever their names. A `:priority` written anyway is refused at the
+/// parse, as any keyword a rule does not take (Q-M1e2.28), so the program
+/// that wrote two orders nothing: it does not load.
 #[test]
 fn the_agenda_is_fifo_in_the_written_order() {
     let rules = |priority: &str, other: &str| {
@@ -1218,7 +1205,7 @@ fn fork_and_direct_saturation_agree() {
 
 /// **fork-and-direct-agree-at-the-naf-boundary.**
 ///
-/// The fact set is not all a saturation carries: since S1.21.8 there is a
+/// The fact set is not all a saturation carries: there is a
 /// second phase with state of its own — the parked candidates, their watch
 /// stamps, and the round counters — and a fork that agreed about the facts
 /// while disagreeing about *those* would diverge on the next write, not on this
@@ -1361,12 +1348,8 @@ fn counts_by_relation(kb: &Kb, terms: &Terms) -> BTreeMap<String, usize> {
 
 /// **`zebra2-bad`'s witness count and its union, measured rather than quoted.**
 ///
-/// M1e `MA-M4`. Three doc comments carried this pair and two of them
-/// disagreed — `explain.rs`'s *123 witnesses / 38 facts, each 1–5* against
-/// `solve.rs`'s and `shape.rs`'s *126 / 39*. Neither had an owner, so neither
-/// could be checked, and a reader cross-checking the union argument could not
-/// tell which snapshot was current. Measured, all three had drifted: **126
-/// witnesses, union 36, single frontiers 1–4**.
+/// A number a doc comment quotes has no owner and drifts; this test is the
+/// one place the pair is stated, measured.
 ///
 /// The pair is what the argument for `source_frontier_core` rests on — *do not
 /// union the frontiers, because when one cause propagates it fans out* — so it
@@ -1374,11 +1357,10 @@ fn counts_by_relation(kb: &Kb, terms: &Terms) -> BTreeMap<String, usize> {
 /// of magnitude larger than the smallest single witness, and it stops being an
 /// argument if the two ever converge.
 ///
-/// **M1e2 S1e2.2.21 moved the numbers, by design**: a derivation through a
-/// `forall` rests on the facts its universal read (Q-M1e2.15 (b)), and
-/// `zebra2-bad`'s witnesses are concluded through the stdlib's eliminations,
-/// so a single witness's frontier takes them in. Until then the union was 36
-/// and the largest single frontier 4; the smallest is still 1.
+/// A derivation through a `forall` rests on the facts its universal read
+/// (Q-M1e2.15), and `zebra2-bad`'s witnesses are concluded through the
+/// stdlib's eliminations, so a single witness's frontier takes them in; the
+/// smallest is 1.
 #[test]
 fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
     let mut f = load_path("examples/ein-bugs/zebra2-bad.ein");

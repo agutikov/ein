@@ -20,7 +20,7 @@
 //! 5. **a conflict of three** forms no group, and its three candidates are
 //!    in none;
 //! 6. **what a cover is**, on every corpus program the pair layer's own
-//!    per-commit sweep reads: every group a clique of the theory's pairs and
+//!    default sweep reads: every group a clique of the theory's pairs and
 //!    a maximal one, every pair of the theory inside a group, the two maps
 //!    each other's inverse, nothing cut by the bound, and every pair of a
 //!    group dead at root;

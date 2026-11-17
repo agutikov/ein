@@ -1,4 +1,4 @@
-//! P1a.4's acceptance gate — the three zebra fixtures, solved and checked
+//! The acceptance gate — the three zebra fixtures, solved and checked
 //! against the published answer.
 //!
 //! These prove the answer is the **right** one. That distinction matters at
@@ -9,7 +9,7 @@
 //! Each is a few dozen saturations on the routes, so they run with the
 //! ordinary suite.
 //!
-//! **T1a.10.2.3 — this is the whole acceptance gate.** It covers four
+//! **This is the whole acceptance gate.** It covers four
 //! questions:
 //!
 //! | what it asserts | here |
@@ -19,18 +19,15 @@
 //! | two encodings, one model | `the_generic_link_encoding_is_the_unique_solution`, `both_ontologies_reach_the_same_model` |
 //! | the CLI prints the answer, `k`, `exhausted` | the CLI's surface, not the engine's — `ein-cli/tests/` |
 //!
-//! The history worth keeping is the second row's: on 2026-06-16
-//! three *separate* entry points disagreed about the same input — `ein search`
-//! said `Solution` while `ein lattice --gaps` fabricated a second model and
-//! `ein lattice --contradictions` produced an 81-fact "core" for a satisfiable
-//! puzzle — because the verdict tracked **the function called** rather than the
-//! input. The buggy entries were deleted and one entry point kept. These are
-//! the guard on that, and they are the reason the repo has something that is
-//! not a self-golden: they assert the *answer*.
+//! The second row is the guard against a verdict that tracks **the function
+//! called** rather than the input: entry points that disagree about the same
+//! program, one saying `Solution` while another fabricates a second model or a
+//! large "core" for a satisfiable puzzle (Q-M1e2.32). These tests are the
+//! reason the repo has something that is not a self-golden: they assert the
+//! *answer*.
 //!
-//! **Since M1e2 S1e2.1c.5 (2026-11-03) they ask the routes**
-//! ([`ein_infer::explore`]): the walk they were written against was deleted
-//! on the user's ruling of that day. *Unique* is `--single`'s `Solution`,
+//! **They ask the routes** ([`ein_infer::explore`]). *Unique* is `--single`'s
+//! `Solution`,
 //! which is decided only when R is exactly one state; a model is that state's
 //! fixpoint, read through the node function every route uses
 //! ([`ein_infer::region::Nodes`]); and the unsat case is an empty R whose root
@@ -123,7 +120,7 @@ const CLASSES: [(&str, Verdict); 3] = [
 
 // The Wikipedia answer, as the 25 `(attribute, house)` cells — vocabulary
 // independent, which is the whole point of checking two encodings against it.
-// Lives in `ein-corpus` since M1e2 S1e2.1.4, because `ein solve --models grid`
+// Lives in `ein-corpus`, because `ein solve --models grid`
 // is held to the same 25 cells (`ein-cli/tests/models_grid.rs`): the solver
 // and the renderer checked against one independent source.
 use ein_corpus::ZEBRA_GRID as GRID;
@@ -229,7 +226,7 @@ fn the_three_readings_agree_with_the_input() {
     );
 }
 
-// ── T1a.10.2.3 — the rest of the acceptance gate ──────────────────
+// ── The rest of the acceptance gate ───────────────────────────────
 
 /// **Uniqueness is a claim about the *search*, not only about `k`.**
 ///
@@ -274,8 +271,8 @@ fn the_typed_encoding_is_unique_and_the_search_that_says_so_was_exhausted() {
 /// `--single` lists the states that decided it: one for `Solution`, two for
 /// `Ambiguity`, none for `Contradiction`. The contract is that they are
 /// *distinct* states, by `state_key`, because two records of the same model
-/// reached by different commitments are one model and counting them twice is
-/// precisely the 2026-06-16 bug.
+/// reached by different commitments are one model and counting them twice
+/// would report a second model the puzzle does not have.
 #[test]
 fn the_listing_is_the_verdict_counted() {
     for (rel, word) in CLASSES {
@@ -420,7 +417,7 @@ fn the_injected_clash_carries_the_source_that_names_it() {
 /// A satisfiable puzzle is never a `Contradiction` and an unsatisfiable one is
 /// never a `Solution`. Weaker than the two tests above and deliberately kept
 /// separate: it is the one that would still fail if the listing and the core
-/// were dropped tomorrow, and it is the shape of the 2026-06-16 bug.
+/// were dropped tomorrow, and it is the shape of a fabricated second model.
 #[test]
 fn a_satisfiable_puzzle_is_never_unsat_and_an_unsat_one_is_never_solved() {
     let (word, cells) = ask(

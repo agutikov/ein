@@ -1,5 +1,5 @@
-//! **`std.math.decimal-arith`, held to the integers and to its own rule** — M1f
-//! [S1f.6.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md).
+//! **`std.math.decimal-arith`, held to the integers and to its own rule**
+//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md)).
 //!
 //! `stdlib/math/decimal-arith.ein` is school arithmetic written *in* Ein, over the digit
 //! tables of `std.math.digits`. Ein has no numbers, so the engine cannot say
@@ -14,16 +14,16 @@
 //! | operands written with high zeros are read by value | [`high_zeros_are_read_by_value`] |
 //! | a request of every operation may name its operands | [`named_operands_work_for_every_request`] |
 //! | **every answer is in normal form**, and each request has exactly one | all five, through [`hold`] |
-//! | **the rule of the theory**, on the module's text: no rule joins two facts on a number, in every module of the two bases, `std.math.positional`'s rules read as each base activates them (S1f.6.16) | [`no_rule_joins_two_facts_on_a_number`] |
+//! | **the rule of the theory**, on the module's text: no rule joins two facts on a number, in every module of the two bases, `std.math.positional`'s rules read as each base activates them | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `not`, no `or`, and **exactly one `absent`, over `let`**, which no rule derives; `eq` and `neq` in the checking rules alone; each rule that concludes `(false)` reads its flag alone, in each of the three modules | [`the_theory_writes_one_absent_over_let`] |
-//! | the closing rule closes every relation and names every rule, and so do `std.math.decimal`'s and `std.math.arith`'s (S1f.6.38), and binary's (S1f.6.16) | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
-//! | **one call of `std.math.positional`'s macro connects each base** (S1f.6.16): the macro activates each shared rule once with its parameters, and each base's closing rule calls it with its relations in the macro's order | [`one_call_of_the_macro_connects_each_base`] |
+//! | the closing rule closes every relation and names every rule, and so do `std.math.decimal`'s and `std.math.arith`'s, and binary's | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
+//! | **one call of `std.math.positional`'s macro connects each base** (Q-M1f.266): the macro activates each shared rule once with its parameters, and each base's closing rule calls it with its relations in the macro's order | [`one_call_of_the_macro_connects_each_base`] |
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`], [`the_circuit_of_one_division`] |
 //! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
-//! | **a division by zero is flagged at the call, whoever made it** (S1f.6.24): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
+//! | **a division by zero is flagged at the call, whoever made it** (Q-M1f.163): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
 //! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
-//! | **a malformed numeral has exactly one flag where it is written, `std.math.decimal`'s, a malformed operand its request's, and neither an answer**, and each flag derives `(false)`; a well-formed one has no flag (S1f.6.12, S1f.6.38) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
-//! | **the tagged calls are an interface** (S1f.6.30): `std.math.decimal-arith`'s, `std.math.int`'s, `std.math.rat`'s and, since S1f.6.16, `std.math.binary-arith`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
+//! | **a malformed numeral has exactly one flag where it is written, `std.math.decimal`'s, a malformed operand its request's, and neither an answer**, and each flag derives `(false)`; a well-formed one has no flag (Q-M1f.210) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
+//! | **the tagged calls are an interface** (Q-M1f.189, Q-M1f.297): `std.math.decimal-arith`'s, `std.math.int`'s, `std.math.rat`'s and `std.math.binary-arith`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -37,9 +37,8 @@
 //! **A later operation joins this file** by a row of [`OPS`], its request,
 //! its result and what the integers say, and by a pin of its circuit; the
 //! three static tests read the whole module and need no change to cover a new
-//! rule. Subtraction and comparison joined at S1f.6.4, multiplication at
-//! S1f.6.5, division at S1f.6.6. S1f.6.12 added the check of what a program
-//! wrote, and restated the static tests: guards, a probe, a second join on a
+//! rule. The check of what a program wrote is held too, and the static tests
+//! allow what it needs: guards, a probe, a second join on a
 //! name, one `absent` and three rules that conclude `(false)`, each named
 //! here by a constant.
 
@@ -190,7 +189,8 @@ struct Op {
     answer: fn(u128, u128) -> Option<Vec<String>>,
 }
 
-/// The operations, in the order the stages added them. A later operation
+/// The operations: addition, subtraction, comparison, multiplication,
+/// division. A later operation
 /// joins the harness by a row here.
 const OPS: [Op; 5] = [
     Op {
@@ -248,7 +248,7 @@ const OPS: [Op; 5] = [
 /// An operand as written, and its value.
 type Operand = (String, u128);
 
-/// **`f` for every operation, on the corpus sweeps' pool** (M1f S1f.6.39):
+/// **`f` for every operation, on the corpus sweeps' pool**:
 /// each operation's program is its own unit,
 /// and a failing one is reported as the first in `OPS`' order, with its own
 /// message, as the loop it replaced reported it.
@@ -447,13 +447,13 @@ fn named_operands_work_for_every_request() {
 
 // ── division by zero ───────────────────────────────────────────────
 
-/// **Division by zero, in two steps** (the user's ruling of 2026-11-11). A
+/// **Division by zero, in two steps** (Q-M1f.269). A
 /// request whose divisor is zero, written `z`, with digits, or by a name,
 /// derives the flag `(division-by-zero (div X Y))`, the request as written;
 /// the flag derives `(false)`; and the request is never answered with a
 /// number. Requests whose divisor is not zero are not flagged.
 ///
-/// Since S1f.6.24 the request's call is flagged beside it,
+/// The request's call is flagged beside it (Q-M1f.211),
 /// `(division-by-zero (div-call (quotient X Y) U V))`, U and V the numbers the
 /// operands stand for: **two flags for one public division**, exactly.
 ///
@@ -510,10 +510,10 @@ fn a_division_by_zero_is_flagged_and_false() {
     assert!(run(fine, "false").is_empty());
 }
 
-/// **A division by zero is flagged at the call, whoever made it** (S1f.6.24;
-/// the user's ruling of 2026-11-12: *"(div ?x 0) must emit division-by-zero
-/// no matter where it happens"*). Until the stage a tagged call with a zero
-/// divisor derived nothing, and each theory over this one wrote a rule of its
+/// **A division by zero is flagged at the call, whoever made it**
+/// (Q-M1f.163: `(div ?x 0)` emits `division-by-zero` no matter where it
+/// happens). A tagged call with a zero divisor that derived nothing would
+/// leave each theory over this one to write a rule of its
 /// own.
 ///
 /// The calls here are written as facts, which the theory computes with as
@@ -580,7 +580,7 @@ fn a_tagged_call_by_zero_is_flagged_whoever_made_it() {
     assert_eq!(run(fine, "div-done").len(), 2);
 }
 
-// ── malformed requests (S1f.6.12) ──────────────────────────────────
+// ── malformed requests ─────────────────────────────────────────────
 
 /// A well-formed operand that is not zero, to stand beside a malformed one.
 const FINE: &str = "(n z 5)";
@@ -617,10 +617,8 @@ fn outcome(body: &str) -> Outcome {
 }
 
 /// **A malformed numeral is flagged where it is written, a malformed operand
-/// at its request, and neither is answered** (S1f.6.12, the user's rulings of
-/// 2026-11-11 and 2026-11-12; S1f.6.38, the user's ruling of 2026-11-14 on
-/// Q-M1f.210). Every operation, either operand, every kind of the set the
-/// investigation called b1:
+/// at its request, and neither is answered** (Q-M1f.210, Q-M1f.206). Every
+/// operation, either operand, every kind of malformed operand:
 ///
 /// - a digit's place holding a name that is no digit, at the units and a
 ///   place up, `z` and the bound `10` among the names, or holding a fact;
@@ -729,7 +727,7 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
         );
     }
     // **Where it is written does not matter**: the same numeral, asked about
-    // by no request, is flagged as it is written (S1f.6.38).
+    // by no request, is flagged as it is written.
     let got = outcome("(let unused (n (n z 1) x))\n");
     assert_eq!(
         got.not_decimal,
@@ -740,8 +738,8 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
     assert_eq!(got.contradiction, ["(false)"]);
 }
 
-/// **A name no `let` states is undeclared** (the user's reply of 2026-11-12
-/// to round 2's item 5, (b)): `(undeclared NAME REQUEST)`, the request as
+/// **A name no `let` states is undeclared** (Q-M1f.317):
+/// `(undeclared NAME REQUEST)`, the request as
 /// written, and `(false)` from it; one flag a request, for the operand that
 /// is looked up first; and never `(malformed …)`. **The same program with
 /// the `let`s stated is answered and has no flag**: the premise is an
@@ -789,9 +787,9 @@ fn an_undeclared_name_is_flagged_and_a_let_answers_it() {
 
 /// **A `let` that cannot be read** is flagged as the `let`, whether or not a
 /// request uses the name: a name stated twice with two numbers, each of the
-/// two; `z` or a digit as a constant's name; and, since S1f.6.38, a digit or
-/// another named constant as what it names. Until S1f.6.12 each gave
-/// two answers to one request. A name stated twice with one number is one
+/// two; `z` or a digit as a constant's name; and a digit or another named
+/// constant as what it names (Q-M1f.207, Q-M1f.281). Unflagged, each would
+/// give two answers to one request. A name stated twice with one number is one
 /// fact, and fine.
 #[test]
 fn a_let_that_cannot_be_read_is_flagged() {
@@ -835,9 +833,9 @@ fn a_let_that_cannot_be_read_is_flagged() {
     assert_eq!(got.answered.len(), 1);
 }
 
-/// **What stays silent** (the user's reply 6 (a) of 2026-11-12: no general
-/// report of unanswered requests; *a flag means malformed, no flag does not
-/// mean well-formed*). Each of these is neither flagged nor answered, and
+/// **What stays silent** (Q-M1f.318: no general report of unanswered
+/// requests; *a flag means malformed, no flag does not mean well-formed*).
+/// Each of these is neither flagged nor answered, and
 /// the module's header and `stdlib/README.md` name them:
 ///
 /// - a number that ends in a name that is neither a digit nor a constant;
@@ -894,7 +892,7 @@ fn what_stays_silent() {
 /// fact, a table row among them, is at depth 0.
 ///
 /// The closing rules' firings are not the request's and are left out: the
-/// theory's and, since S1f.6.38, those of the two modules below it.
+/// theory's and those of the two modules below it.
 fn circuit(body: &str) -> (usize, usize) {
     let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
@@ -943,10 +941,9 @@ fn circuit(body: &str) -> (usize, usize) {
 /// **One addition, as a circuit.** 123078 + 4567: two operands looked up
 /// (5 firings with the request's own), six columns, the end of the walk, the
 /// check for a high zero, six digits turned round, the hand-over and the
-/// answer: 21 firings, one chain, every call carrying its continuation.
-/// From S1f.6.12 until S1f.6.38 the check of the operands added a firing a
-/// place, six and four, 31 firings at the same depth; the check of a numeral
-/// is `std.math.decimal`'s since, read off what the loader states, and costs
+/// answer: 21 firings, one chain, every call carrying its continuation. The
+/// check of a numeral is `std.math.decimal`'s, read off what the loader
+/// states, and costs
 /// a well-formed numeral no firing, so every pin of the four tests below is
 /// its chain again, its size its depth but where walks run side by side.
 ///
@@ -1023,8 +1020,7 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
 /// its digits is a row, a walk the length of the multiplicand with its strip
 /// and turn, and, after the first, an addition walk the length of the sum so
 /// far. So the size grows as the product of the two lengths, and the circuit
-/// is still one chain: its depth is its size (until S1f.6.38 its size less the
-/// check of the two operands, a firing a digit, S1f.6.12).
+/// is still one chain: its depth is its size.
 #[test]
 fn the_circuit_of_one_multiplication() {
     let mul = |x: &str, y: &str| circuit(&format!("(mul {} {})\n", written(x), written(y)));
@@ -1055,8 +1051,7 @@ fn the_circuit_of_one_multiplication() {
 /// multiples, each a row of two columns; the dividend's six digits turned
 /// round; then a step a digit, each three trials, and a trial a subtraction
 /// with its strip and turn where it fits. One chain, so its depth is its
-/// size (until S1f.6.38 its size less the check of the two operands, six
-/// firings and two, S1f.6.12).
+/// size.
 /// A divisor of one digit and a dividend of one are the two ends.
 #[test]
 fn the_circuit_of_one_division() {
@@ -1075,17 +1070,16 @@ fn the_circuit_of_one_division() {
         "twelve digits by six"
     );
     // A division by zero stops at the divisor's normal form: the operands,
-    // one row, its strip, the flag and the contradiction. Since S1f.6.24 the
-    // call is flagged beside the request and is a contradiction too: two
-    // firings more, no deeper. Until S1f.6.38 the dividend's six places were
-    // checked beside it, six firings more.
+    // one row, its strip, the flag and the contradiction. The call is
+    // flagged beside the request and is a contradiction too: two firings
+    // more, no deeper.
     assert_eq!(div("127645", ""), (12, 10), "127645 / 0");
 }
 
 // ── the module's text ──────────────────────────────────────────────
 
 /// The tables a premise looks a row up in by digits: the seven of
-/// `std.math.digits` and, since S1f.6.16, the four of `std.math.bits`.
+/// `std.math.digits` and the four of `std.math.bits`.
 const TABLES: [&str; 11] = [
     "fa", "fs", "md", "cl", "nz", "mid", "adj", "bin-fa", "bin-fs", "bin-cl", "bin-nz",
 ];
@@ -1104,33 +1098,33 @@ type Exception = (&'static str, &'static [&'static str]);
 /// name. With the two exchanged, or `named` left out, every number operand
 /// walks every `let` (`arith_batch.rs` measures it). The module's header
 /// states the exception; adding a rule here is a decision about the theory's
-/// cost, not a way to make a test pass. `std.math.positional`'s since
-/// S1f.6.16, read here with decimal's relations in its parameters' places.
+/// cost, not a way to make a test pass. `std.math.positional`'s, read here
+/// with decimal's relations in its parameters' places.
 const NAME_LOOKUP: Exception = ("operand-name", &["operand", "named", "let"]);
 
-/// The second rule that joins two facts, **on a name** as the first does
-/// (S1f.6.12): a constant named twice is two `let`s of one name, which the
+/// The second rule that joins two facts, **on a name** as the first does:
+/// a constant named twice is two `let`s of one name, which the
 /// fact index finds by the name; the numbers are compared by a guard and
 /// looked up by nothing.
 const NAME_TWICE: Exception = ("let-twice", &["let", "let", "neq"]);
 
-/// The same two, read with binary's relations (S1f.6.16).
+/// The same two, read with binary's relations.
 const BIN_NAME_LOOKUP: Exception = ("operand-name", &["bin-operand", "bin-named", "bin-let"]);
 const BIN_NAME_TWICE: Exception = ("let-twice", &["bin-let", "bin-let", "neq"]);
 
 /// A premise that is **one probe**: a relation of one argument, asked with
 /// its argument bound by the premise that holds the numbers, which the
 /// engine answers by one interned lookup whatever the argument is, a number
-/// too (E-3's note). `nz` and `bin-nz` are tables and are held as such;
+/// too. `nz` and `bin-nz` are tables and are held as such;
 /// `named` and `bin-named` are the representations'.
 const PROBES: [&str; 2] = ["named", "bin-named"];
 
 /// The computed relations: a guard compares two values and looks nothing up.
 const GUARDS: [&str; 2] = ["eq", "neq"];
 
-/// **A module of the calculator, held to the text rules** (S1f.6.38 for the
-/// modules below `std.math.decimal-arith`; S1f.6.16 for `std.math.positional`
-/// and binary's): the file, how it is read, its closing rule, the relation
+/// **A module of the calculator, held to the text rules** — the modules
+/// below `std.math.decimal-arith`, `std.math.positional` and binary's among
+/// them: the file, how it is read, its closing rule, the relation
 /// its closing rule names rules by, the rules that write a guard, the rules
 /// that conclude `(false)` with their flag, the one `absent` it may read and
 /// the rules that may join on a name.
@@ -1154,8 +1148,8 @@ struct Spec {
 }
 
 /// `std.math.decimal-arith`, decimal's own rules: the digit multiplier, the
-/// division of base ten and the operand that is a name; since S1f.6.16 the
-/// shared rules are [`POSITIONAL_DECIMAL`]'s.
+/// division of base ten and the operand that is a name; the shared rules are
+/// [`POSITIONAL_DECIMAL`]'s.
 const DECIMAL_ARITH: Spec = Spec {
     file: "stdlib/math/decimal-arith.ein",
     instance: None,
@@ -1209,7 +1203,7 @@ const ARITH: Spec = Spec {
 };
 
 /// `std.math.binary-arith`, binary's own rules: a product's row, the division
-/// of base two and the operand that is a name (S1f.6.16).
+/// of base two and the operand that is a name.
 const BINARY_ARITH: Spec = Spec {
     file: "stdlib/math/binary-arith.ein",
     instance: None,
@@ -1251,7 +1245,7 @@ const BINARY: Spec = Spec {
 };
 
 /// Every module of the calculator's two bases, each held to the same text
-/// rules. Binary's join at S1f.6.16.
+/// rules, binary's among them.
 const SPECS: [&Spec; 7] = [
     &DECIMAL_ARITH,
     &POSITIONAL_DECIMAL,
@@ -1506,12 +1500,12 @@ impl Module {
 /// never a form. The two exceptions join on a **name** and are each spec's
 /// [`Spec::exceptions`], `std.math.positional`'s.
 ///
-/// Since S1f.6.12 a rule may also hold guards, which compare and look
+/// A rule may also hold guards, which compare and look
 /// nothing up, and whose arguments are variables or names, never a form; a
 /// probe of [`PROBES`], on a variable the state premise binds; and, in the
 /// one rule a spec's [`Spec::absent`] names, the `absent`, which
-/// [`the_theory_writes_one_absent_over_let`] holds. Since S1f.6.16 the
-/// shared rules are read as each base activates them.
+/// [`the_theory_writes_one_absent_over_let`] holds. The shared rules are
+/// read as each base activates them.
 #[test]
 fn no_rule_joins_two_facts_on_a_number() {
     for spec in SPECS {
@@ -1601,7 +1595,7 @@ fn no_rule_joins_two_facts_in(spec: &Spec) {
             "rule {name} of {} joins {state:?}: a rule of the calculator has ONE premise \
              that holds numbers, and its other premises are rows of a table. \
              A second one changes no answer and makes every batch of requests \
-             cost the square of its count (E-3 of P1f.6's findings.md); carry \
+             cost the square of its count; carry \
              what the rule needs in the call's tag instead",
             spec.file
         );
@@ -1615,8 +1609,7 @@ fn no_rule_joins_two_facts_in(spec: &Spec) {
     );
 }
 
-/// **One `absent` a base, over its `let`; no `not`, no `or`** (S1f.6.12;
-/// until then the module wrote no `absent` at all). Decimal's is
+/// **One `absent` a base, over its `let`; no `not`, no `or`.** Decimal's is
 /// `operand-undeclared`'s: an operand that is a name and that no `let`
 /// states. `let` is a relation a program writes and no rule of the theory
 /// concludes, and the closing rule closes it, so no commitment can add the
@@ -1624,7 +1617,7 @@ fn no_rule_joins_two_facts_in(spec: &Spec) {
 /// theory, the static check calls a program that imports it monotone, and
 /// `ein saturate --dump`'s `;; Strata` line says *stratified, 2 strata*, the
 /// rule that reads the `absent` above the rest (`arith_search_free.rs` holds
-/// all three on the binary). Since S1f.6.16 binary has its own,
+/// all three on the binary). Binary has its own,
 /// `bin-operand-undeclared` over `bin-let`, and the shared rules read none.
 ///
 /// **Guards in the checking rules alone:** `eq` and `neq` are computed and
@@ -1739,11 +1732,11 @@ fn absents_of(spec: &Spec) -> Vec<(String, String)> {
 /// `(import std.math.decimal-arith :symbols (decimal-arith))` leaves behind, in silence. Both are
 /// easy to forget when a rule is added, and neither changes an answer the day
 /// it is forgotten. So for `std.math.decimal` and `std.math.arith`, the
-/// modules below it since S1f.6.38, by their own closing rules: each closes
+/// modules below it, by their own closing rules (Q-M1f.283): each closes
 /// every relation it declares and every table it imports, and names every
 /// other rule of its own and the entry of each calculator module it imports.
 /// **A base that imports `std.math.positional` calls its macro** in the same
-/// conclusion, once, and names none of its rules (S1f.6.16; E-55):
+/// conclusion, once, and names none of its rules (Q-M1f.266):
 /// [`one_call_of_the_macro_connects_each_base`] holds the call.
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
@@ -1872,8 +1865,8 @@ fn the_closing_rule_of(spec: &Spec) {
 
     // `std.math.decimal-arith`'s own name is a written fact, the module's only
     // one: what kept the closing rule in a program that is inlined and
-    // tree-shaken, as a `--dump-answer` state file's was (E-11 of P1f.6's
-    // findings.md). The other modules write none.
+    // tree-shaken, as a `--dump-answer` state file's is. The other modules
+    // write none.
     let facts: Vec<(String, Vec<String>)> = m
         .forms
         .iter()
@@ -1921,8 +1914,8 @@ const BASES: [(&str, Spelt); 2] = [
     }),
 ];
 
-/// **One call of the macro connects a base** (S1f.6.16, Q-M1f.266 ruled
-/// (iii); Q-M1f.270: the macro's body written by hand, and held here).
+/// **One call of the macro connects a base** (Q-M1f.266; Q-M1f.270: the
+/// macro's body written by hand, and held here).
 ///
 /// - **The macro activates each rule of `std.math.positional` once, with
 ///   that rule's parameters**: its body is one activator a rule, in the
@@ -2015,10 +2008,10 @@ fn one_call_of_the_macro_connects_each_base() {
 }
 
 /// **The ten rules from an operand's tag to its request are one rule
-/// written ten times** (S1f.6.12): `bad-OP-first` and `bad-OP-second` for
-/// each of the five operations, alike but for the operation's name, its
-/// sign in the sentence, and the second tag's third argument. Since S1f.6.16
-/// they are `std.math.positional`'s, every relation a parameter.
+/// written ten times**: `bad-OP-first` and `bad-OP-second` for each of the
+/// five operations, alike but for the operation's name, its sign in the
+/// sentence, and the second tag's third argument. They are
+/// `std.math.positional`'s, every relation a parameter.
 #[test]
 fn the_rules_from_a_tag_to_its_request_are_alike() {
     let path = repo_root().join("stdlib/math/positional.ein");
@@ -2107,15 +2100,15 @@ fn the_rules_of_a_family_differ_by_their_digit_alone() {
 // ── the tagged calls: an interface ─────────────────────────────────
 
 /// **The tagged calls,** as each module's header and `stdlib/README.md` write
-/// them (M1f S1f.6.30's T1; the user's *"(a)"* of 2026-11-12 to round 2's
-/// item 41): `(module, as written, the declaration's types)`. As written, a
+/// them (Q-M1f.189, Q-M1f.228): `(module, as written, the declaration's
+/// types)`. As written, a
 /// capital stands where a caller writes a value of its own, and a name where
 /// every caller writes that name: a walk starts at `z`, a subtraction at `0`
 /// and a comparison at `eq`; an addition's carry in is the caller's, a bit
 /// in `std.math.convert`. Each module's calls come first and then the facts
 /// that answer them; `std.math.int`'s comparison is answered by
-/// `std.math.decimal-arith`'s `order-is`. Binary's twins join at S1f.6.16, and
-/// `std.math.gcd`'s call at S1f.6.32 (Q-M1f.300).
+/// `std.math.decimal-arith`'s `order-is`. Binary's twins are here, and
+/// `std.math.gcd`'s call (Q-M1f.300).
 const TAGGED: [(&str, &str, &str); 34] = [
     (
         "decimal-arith",
@@ -2251,10 +2244,10 @@ fn declaration(ast: &Ast, form: NodeId) -> Option<(String, Vec<String>)> {
     Some((name, rest))
 }
 
-/// **The tagged calls keep their shapes** (M1f S1f.6.30's T1). `std.math.decimal-arith`'s
+/// **The tagged calls keep their shapes.** `std.math.decimal-arith`'s
 /// five calls and their four answers and its operand look-up, and `std.math.int`'s and `std.math.rat`'s calls
 /// with theirs, are what a theory built on the calculator calls: an
-/// interface since the user's reply of 2026-11-12 to round 2's item 41. Held
+/// interface (Q-M1f.189). Held
 /// three ways:
 ///
 /// - **the declarations:** each module declares each of its rows of
@@ -2270,7 +2263,7 @@ fn declaration(ast: &Ast, form: NodeId) -> Option<(String, Vec<String>)> {
 ///   it writes the row's names in their places, `z`, `0` or `eq`.
 ///
 /// The loader refuses a form of a declared relation with another count of
-/// arguments in a program it loads (S1f.6.23); this holds the count against
+/// arguments in a program it loads (Q-M1f.315); this holds the count against
 /// the interface, by name, in every file, and the start values, which no
 /// loader sees. A file that does not parse, or whose imports do not resolve,
 /// calls nothing and is not read.

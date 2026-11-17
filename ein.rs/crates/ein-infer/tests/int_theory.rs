@@ -1,6 +1,5 @@
-//! **`std.math.int`, held to the signed integers and to the rule of the theory** —
-//! M1f
-//! [S1f.6.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md).
+//! **`std.math.int`, held to the signed integers and to the rule of the theory**
+//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md)).
 //!
 //! `stdlib/math/int.ein` is the calculator's first extension: an integer is
 //! `(int P N)`, two natural numbers of `std.math.decimal-arith`, and its value is P less
@@ -27,9 +26,8 @@
 //! `arith_batch.rs`; the search-free claim, on the binary, is
 //! `ein-cli/tests/arith_search_free.rs`.
 //!
-//! **Integer division is three rows of [`OPS`]** since M1f
-//! [S1f.6.22](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.22_integer_division.md),
-//! one a convention, each answered by a quotient and a remainder: Euclidean
+//! **Integer division is three rows of [`OPS`]** (Q-M1f.179), one a
+//! convention, each answered by a quotient and a remainder: Euclidean
 //! against `i128`'s `div_euclid` and `rem_euclid`, its remainder a natural
 //! number; truncated against `/` and `%`; floored against the pair computed
 //! from them. A request whose divisor is zero is left out of every sample
@@ -232,7 +230,7 @@ const OPS: [Op; 7] = [
         answer: |a, b| normal(a - b),
     },
     // The Euclidean remainder is a **natural number** of `std.math.decimal-arith`, in
-    // normal form, and never an integer (the user's ruling of 2026-11-12).
+    // normal form, and never an integer (Q-M1f.200).
     Op {
         request: "int-div-euclid",
         result: "int-quot-euclid-of",
@@ -288,7 +286,7 @@ const OPS: [Op; 7] = [
     },
 ];
 
-/// **`f` for every operation, on the corpus sweeps' pool** (M1f S1f.6.39):
+/// **`f` for every operation, on the corpus sweeps' pool**:
 /// each operation's program is its own unit,
 /// and a failing one is reported as the first in `OPS`' order, with its own
 /// message, as the loop it replaced reported it.
@@ -568,8 +566,7 @@ fn named_operands_work_for_every_request() {
 
 /// The module's stated limit (Q-M1f.175): an operand of an integer request is
 /// an integer, or a name of one. A natural number in an operand's place is
-/// answered by silence, as any malformed operand of the calculator is today
-/// (S1f.6.12's investigation), and the well-formed request beside it is
+/// answered by silence (Q-M1f.277), and the well-formed request beside it is
 /// answered.
 #[test]
 fn a_natural_number_is_not_an_integer_operand() {
@@ -595,8 +592,8 @@ fn a_natural_number_is_not_an_integer_operand() {
 /// written, `std.math.decimal-arith`'s rule derives `(false)`, and the request has no
 /// quotient; the request beside it is answered.
 ///
-/// **One flag a request, and it is the request's** (S1f.6.24). `std.math.decimal-arith`
-/// flags a division at its tagged call since that stage, whoever made it;
+/// **One flag a request, and it is the request's.** `std.math.decimal-arith`
+/// flags a division at its tagged call, whoever made it (Q-M1f.163);
 /// this module sees a divisor that is zero by its shape before it calls, so
 /// no call with a zero divisor is made and no `(division-by-zero (div-call
 /// …))` stands beside the request's flag. The equality below is exact.
@@ -646,8 +643,8 @@ fn a_division_by_zero_is_the_flag_under_every_convention() {
 // ── the circuit's measure ──────────────────────────────────────────
 
 /// Firings and depth of one request, as `arith_theory.rs` measures them; the
-/// closing rules' firings are left out, the two theories' and, since
-/// S1f.6.38, those of `std.math.decimal` and `std.math.arith`.
+/// closing rules' firings are left out, the two theories' and those of
+/// `std.math.decimal` and `std.math.arith`.
 fn circuit(body: &str) -> (usize, usize) {
     let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
@@ -861,8 +858,8 @@ impl Module {
 /// reads no table of `std.math.digits` itself and joins nothing: all it needs
 /// travels in the call's tag. A second premise that looks a fact up by a
 /// number would change no answer and make every batch cost the square of its
-/// count (E-3 of P1f.6's `findings.md`).
-/// The rules of the integer's own shape (S1f.6.38, Q-M1f.276 (a)): each
+/// count: the index does not key a nested fact.
+/// The rules of the integer's own shape (Q-M1f.276): each
 /// reads `(written (int P N))` and probes what it binds, `nz` or `named`.
 const SHAPE_RULES: [&str; 6] = [
     "int-p-digit",
@@ -889,7 +886,7 @@ fn every_rule_has_one_premise() {
             continue;
         }
         if SHAPE_RULES.contains(&name.as_str()) {
-            // The integer's own shape (S1f.6.38): `(written (int P N))`, the
+            // The integer's own shape: `(written (int P N))`, the
             // one premise that holds numbers, and a probe of what it binds.
             let heads: Vec<&str> = premises
                 .iter()
@@ -915,10 +912,10 @@ fn every_rule_has_one_premise() {
 
 /// No `absent`, no `not`, no `or`, no guard, and one `(false)`: the module is
 /// monotone and has one stratum. A division by zero in a program of integers
-/// is `std.math.arith`'s: since S1f.6.22 the module derives its flag,
+/// is `std.math.arith`'s: the module derives its flag,
 /// `(division-by-zero REQUEST)`, and `std.math.arith`'s rule concludes
 /// `(false)` from it. The module's own refutation is its integer's shape's,
-/// `not-integer-is-false`, from its flag alone (S1f.6.38).
+/// `not-integer-is-false`, from its flag alone.
 #[test]
 fn the_theory_writes_no_negation_and_no_guard() {
     let m = module();
@@ -955,8 +952,7 @@ fn the_theory_writes_no_negation_and_no_guard() {
 /// `int-arith` is the theory's one entry. It closes every relation the
 /// module declares and the table it reads, names every other rule, and names
 /// the entries of the modules it imports, `decimal-arith`, `decimal` and
-/// `arith`, without which a selection left the lower theory's rules behind in
-/// silence (E-20 of P1f.6's `findings.md`).
+/// `arith` (Q-M1f.283).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let m = module();
@@ -1022,7 +1018,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         ]
     );
 
-    // Its own name is a written fact, the module's only one (E-11).
+    // Its own name is a written fact, the module's only one.
     let facts: Vec<(String, Vec<String>)> = m
         .forms
         .iter()
@@ -1051,8 +1047,8 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
 }
 
 /// **An integer's own malformation is its flag, as written, and `(false)`**
-/// (M1f S1f.6.38, Q-M1f.276 (a)); **an operand's fault is the request's**,
-/// and a division's is its request's beside its tag's (Q-M1f.282 (a)). A
+/// (Q-M1f.276); **an operand's fault is the request's**, and a division's is
+/// its request's beside its tag's (Q-M1f.282). A
 /// program here is dead, and a dead program's one claim, `(false)`, cannot say
 /// which flag killed it nor how the flag is written: the mutation census
 /// banks the mutants that exchange a flag's arguments, and this holds the text

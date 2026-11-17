@@ -1,37 +1,34 @@
-//! M1e S1e.3.3 — **the M1 alive-set invariant, evaluated over the corpus.**
+//! **The alive-set invariant, evaluated over the corpus**
+//! ([saturation.md](../../../../docs/ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant)).
 //!
 //! [`ein_infer::invariant`] is the check; this is what it says, banked. The
-//! finding it closes is `ST-M1`: the invariant licenses the per-KB `alive`
-//! recompute, the `state_key` dedup that produces `k`, and — since M1d — the
-//! tree's exhaustiveness-by-discharge argument, and until S1e.3.3 nothing
-//! evaluated it.
+//! invariant licenses the per-KB `alive` recompute, the `state_key` dedup
+//! that produces `k`, and the tree's exhaustiveness-by-discharge argument, so
+//! it is evaluated rather than assumed.
 //!
-//! # Since M1e2 S1e2.2.4: the seed
+//! # The seed
 //!
-//! S1e.3.3 read clause 1, *rules assert no new objects*, against the names the
-//! loaded **facts** mention, and found three programs that break it and a
-//! fourth, `examples/ein-bugs/alive-set-fresh-name.ein`, on which breaking it
-//! cost a model (M1e2's W4): the blind enumerator built its objects from the
-//! KB's names, so a constant only a rule names entered no candidate. The user
-//! ruled on 2026-10-16 that such a constant is a name of the program (Q-M1e.21
-//! (b): *"rules are part of root, so rules can't assert new names"*), and
-//! S1e2.2.4 seeds the universe with it. S1e2.2.14 widened the seed to every
-//! name of the program, on the user's ruling of 2026-11-04 on Q-M1e2.9 (a): a
-//! constant in a rule's `:match`, and one a fact names only inside a nested
-//! fact, as well (M1e2's W15). So the three readings S1e.3.3 named read today:
+//! Clause 1, *rules assert no new objects*, read against the names the
+//! loaded **facts** mention alone, would break on a constant only a rule
+//! names, and on `examples/ein-bugs/alive-set-fresh-name.ein` breaking it
+//! would cost a model (`W4`): a blind enumerator that built its objects from
+//! the KB's names would put such a constant in no candidate. Such a constant
+//! is a name of the program — *rules are part of root, so rules can't assert
+//! new names* (Q-M1e.21) — and the universe is seeded with every name of the
+//! program (Q-M1e2.9): a constant in a rule's `:match` too, and one a fact
+//! names only inside a nested fact (`W15`). So the three readings read:
 //!
 //! | | claim | corpus |
 //! |---|---|---|
-//! | **R0** | every name of the program is among the blind enumerator's objects, the ones the names index does not hold included | **37** names on **16** programs the index does not hold (S1e2.2.4: 3 on 3), and each is a candidate object |
+//! | **R0** | every name of the program is among the blind enumerator's objects, the ones the names index does not hold included | the names the index does not hold, [`SEEDED`], each a candidate object |
 //! | **R1** | nothing a run derives names what the loaded program, its rules' constants included, did not | **0** |
 //! | **R2** | nothing the **search** reaches names what **root's fixpoint** and the rules' constants did not | **0** |
 //!
-//! Until S1e2.2.4, R1 found `Ann` and `G` and R2 found `Ann`, because the
-//! baseline was the facts'. A name R1 or R2 found now would be one no rule's
-//! text predicts — the residue `interning.rs` named, a relation head written
-//! as a parameter and bound to an integer, until M1f S1f.5.4 retired the int
-//! kind (a run of digits is a name since S1f.5.5's swap) — and the test that
-//! sweeps for it is [`no_run_reaches_a_name_the_program_does_not_have`].
+//! With the facts' names alone as the baseline, R1 would find `Ann` and `G`
+//! and R2 `Ann`. A name R1 or R2 found would be one no rule's text predicts —
+//! a relation head written as a parameter and bound to a value the program
+//! does not hold, which the loader and the compiler refuse — and the test
+//! that sweeps for it is [`no_run_reaches_a_name_the_program_does_not_have`].
 
 use ein_core::{FactId, Kb, Terms};
 use ein_corpus::{corpus_files, repo_root};
@@ -72,136 +69,86 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Every name of the program the names index does not hold, corpus-wide**,
 /// at load, as `(path, [rendered…])` — what [`invariant::seeded`] reports.
 ///
-/// Until M1e2 S1e2.2.4 these were the corpus's breaches; S1e2.2.4 made a
-/// rule's `:assert` constant a name of the program (`Ann`, `G`, `Z`), and
-/// S1e2.2.14, on the user's ruling of 2026-11-04 on Q-M1e2.9 (a), a constant
-/// in a rule's `:match` (`eq_arity_high`'s `A` and `B`, `match-only`'s `Z`)
-/// and one a fact names only inside a nested fact (the rest). Each is a
-/// candidate object.
+/// Each is a name of the program (Q-M1e.21, Q-M1e2.9) and a candidate
+/// object: a rule's `:assert` constant (`Ann`, `G`, `Z`), a constant in a
+/// rule's `:match` (`match-only`'s `Z`), and one a fact names only inside a
+/// nested fact (the rest).
 ///
 /// - `mixed-type-hypothesis.ein` — `Ann`, in an `hrule`'s `:assert`. That
-///   query drives the hrule rung, whose candidates already named `Ann`; the
+///   query drives the hrule rung, whose candidates already name `Ann`; the
 ///   seed reaches its blind probe (`EIN_LEFTOVER`) alone.
 /// - `07_schroder.ein` — `G`, in the probe rule `probe-undecided`, which fires
-///   in **root** saturation, so `G` was a name at root before the seed too;
+///   in **root** saturation, so `G` is a name at root without the seed too;
 ///   and `C`, `D`, inside its stored negatives.
-/// - `wrong-answers/fresh-name-default.ein` — `Z`, M1e2's W4 in isolation.
-/// - `wrong-answers/match-only.ein` and `negative-only.ein` — `Z`, M1e2's W15:
-///   before S1e2.2.14 no candidate named it, and R was {∅} where the
+/// - `wrong-answers/fresh-name-default.ein` — `Z`, `W4` in isolation.
+/// - `wrong-answers/match-only.ein` and `negative-only.ein` — `Z`, `W15`:
+///   without the seed no candidate names it, and R would be {∅} where the
 ///   `-declared` controls' four states are.
 /// - `wrong-answers/oblig-fresh-name.ein`, `-two.ein` and
-///   `oblig-stdlib-total-owed.ein` — `Z`, in `special`'s `:assert`, M1e2's
-///   W14 (S1e2.2.15): an object of the blind enumerator, which the obligations
-///   rung those programs take does not consult.
+///   `oblig-stdlib-total-owed.ein` — `Z`, in `special`'s `:assert`, `W14`:
+///   an object of the blind enumerator, which the obligations rung those
+///   programs take does not consult.
 /// - the three `*-disproved`, `syntax/equality` and `syntax/arg-kinds` — the
-///   corpus programs whose H that moved (W15's rows; `arg-kinds`' `a` and `b`
-///   inside `(r (nested a b) c)`, its solve scoped since M1f S1f.5.5's swap,
-///   R {∅}).
-/// - since M1f S1f.5.5's swap, a run of digits a name (S1f.5.4's ruling):
-///   `stdlib/elim.ein`'s `0` and `1`, `:match` constants of
-///   `domain-elimination` that were ints until then; `syntax/relation-decls`'
-///   `7`, inside its `ontology` fact; and `wrong-answers/range-in-match.ein`'s
-///   `1..3`, a `:match` constant the parser refused from S1f.5.3 to the swap.
+///   corpus programs whose H the seed moves (`W15`'s rows; `arg-kinds`' `a`
+///   and `b` inside `(r (nested a b) c)`, its solve scoped, R {∅}).
+/// - a run of digits is a name: `stdlib/elim.ein`'s `0` and `1`, `:match`
+///   constants of `domain-elimination`; `syntax/relation-decls`' `7`, inside
+///   its `ontology` fact; and `wrong-answers/range-in-match.ein`'s `1..3`, a
+///   `:match` constant.
 /// - `ein-bugs/binding-key-{both,swapped,nested-only}.ein` — `Y`, inside an
-///   activator's nested `(src Y)`, M1e2's W7 family (S1e2.2.7): H is
-///   `(holds Y)`, as W15 made it on the pair, which S1e2.2.7 promoted.
+///   activator's nested `(src Y)`, `W7`'s family: H is `(holds Y)`.
 /// - `wrong-answers/or-one-key-twin.ein` — `w`, in `m1`'s and `s`'s
-///   `:assert`, M1f's W39 (S1f.5.1's T1f.5.1.3): the witness beside it names a
-///   rule `w`, which makes `w` a name of the program there, and the twin,
-///   whose rules are `w1` and `w2`, names it in no fact.
+///   `:assert`, `W39`: the witness beside it names a rule `w`, which makes `w`
+///   a name of the program there, and the twin, whose rules are `w1` and
+///   `w2`, names it in no fact.
 /// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`,
-///   M1e2's W16 (S1e2.2.16): its one candidate is the hrule's `(checked
-///   (box a))`, and the name is no candidate's.
+///   `W16`: its one candidate is the hrule's `(checked (box a))`, and the
+///   name is no candidate's.
+/// - `W30`'s `assert-neq-w-x.ein` and `assert-eq-x-w.ein`, `w` in a
+///   concluded `neq` or `eq`, a constant of the rule's `:assert` and so a
+///   name of the program though the conclusion is checked and never stored,
+///   which makes `(p w)` a candidate; and `W31`'s `empty-match-fact.ein` and
+///   `empty-match-hrule.ein`, `b` in a conclusion no firing reaches.
+/// - `W52`'s `relvar-eq-assert.ein`, `w` in a conclusion whose relation a
+///   parameter binds to `eq`, as `W30`'s `assert-eq-x-w.ein`'s; and `W54`'s
+///   `goal-nested-var.ein`, `a` and `b` inside its stored negations.
+/// - `syntax/query-full.ein`'s `House`, `Water` and `Tea`, constants of the
+///   two hrules its `:hrules` names, which the program declares, since the
+///   loader refuses a list naming an hrule the program does not declare.
+/// - `W94`'s `and-in-and.ein` and `and-in-and-macro.ein`, `a`, a name only a
+///   rule's conclusion writes: a constant of the conclusion, read at any
+///   depth, however the conclusion's `and` nests.
+/// - the programs whose `z` only a rule's conclusion wrote meet it first in
+///   the fact the loader states from that conclusion, `(written (n z 1))`;
+///   and `z` is `std.math.arith`'s, a declared relation of no argument, a
+///   name of every program that loads the calculator, so a `z` is listed
+///   only where a fact names it inside a nested fact.
+/// - every program of `tests/stdlib/math/rat/` and
+///   `tests/stdlib/math/gcd/12_what_stays_silent.ein`, which imports
+///   `std.math.int` beside `std.math.gcd`: `pos` and `neg` in
+///   `std.math.int`'s division's rules, met before `std.math.rat`'s own `pos`
+///   and `neg` in `rat-simplify-pos` and `-neg`.
+/// - three programs of `tests/stdlib/math/binary/`, on the pattern of
+///   decimal's (a letter or a decimal digit in a numeral, a name only a rule
+///   writes); and `stdlib/math/positional.ein` alone, the rules both bases
+///   share with every relation a parameter, so no table and no fact of its
+///   own: `0` and `1`, a carry, are names only its rules' premises write.
+///   `eq`, which its `cmp-start` writes, is a kernel word and never an
+///   object, and is not listed.
+/// - a rule a program does not list is named by its full name,
+///   `std.math.int.int-div-pn`; `elim/03` and `04` hold `std.elim` whole
+///   and meet `0` and `1` in its `domain-elimination`.
+/// - `beliefs/01` and `02` write a belief's or a claim's content only as
+///   another fact's argument, so its names are no top-level argument.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
 ///
-/// Nine of M1e2's W22 witnesses (`wrong-answers/kw-*.ein`) stood here from
-/// T1e2.2.22.1 until the stage's fix the same day (2026-11-05): `w` or `z`,
-/// the rest of a name the parser split after a keyword, `(neqw ?x)` read as
-/// `(neq w ?x)`, which made `w` a name of the program. A keyword is a whole
-/// word since, and `neqw` the name it spells.
-///
-/// Two of M1e2's W24 witnesses stood here from T1e2.2.24.1 until the stage's
-/// fix the same day (2026-11-05): `wrong-answers/bare-premise.ein`'s `z`, a
-/// rule's `:assert` constant, and `nested-unbound-head.ein`'s `b` and `z`. The
-/// loader refuses both programs since, so neither loads here.
-///
-/// Four of the witnesses M1f S1f.5.0 banked on 2026-11-08 stand here, each a
-/// name only a rule writes: W30's `assert-neq-w-x.ein` and
-/// `assert-eq-x-w.ein`, `w` in a concluded `neq` or `eq`, which makes `(p w)`
-/// a candidate; and W31's `empty-match-fact.ein` and `empty-match-hrule.ein`,
-/// `b` in a conclusion no firing reaches. Each owning stage says whether its
-/// fix moves its line: S1f.5.7's (T1f.5.7.4) moves neither of W30's, `w`
-/// being a constant of the rule's `:assert`, a name of the program though the
-/// conclusion is checked and never stored.
-///
-/// Two of the witnesses M1f S1f.5.7 banked on 2026-11-09 (T1f.5.7.1) stand
-/// here: W52's `relvar-eq-assert.ein`, `w` in a conclusion whose relation a
-/// parameter binds to `eq`, as W30's `assert-eq-x-w.ein`'s; and W54's
-/// `goal-nested-var.ein`, `a` and `b` inside its stored negations.
-///
-/// Both witnesses M1f S1f.5.18 banked on 2026-11-09 (T1f.5.18.1) stood here
-/// until T1f.5.18.3 refused both programs at load the same day, so neither
-/// loads here since: W59's `derived-activator.ein` and
-/// `derived-activator-never.ein`, `b`, inside the nested fact `(box (a b))`,
-/// and `z`, a constant of rule `r`'s `:assert`.
-///
-/// **Left at M1f S1f.5.5's swap (T1f.5.5.4)**, each refused at the parse since
-/// and so loading here no more: `broken/compile/eq_arity_high.ein`'s `A` and
-/// `B` (moved to `examples/broken/`, `eq` taking two terms), the moved
-/// `kwpair-below-the-filter.ein`'s four step names (S1f.5.11), W18's
-/// `str-in-assert.ein` and `str-in-hrule.ein`'s `lbl` and W28's
-/// `classes-int-name.ein`'s `"1"` (strings, S1f.5.2), W32's
-/// `kwpair-in-pattern.ein` and `kwpair-in-assert.ein`'s `v` (S1f.5.11), and
-/// W29's `underscore-nested-fact-arg.ein`'s `a` (S1f.5.1).
-///
-/// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
-/// `Tea`, constants of the two hrules its `:hrules` names, declared since the
-/// loader refuses a list naming an hrule the program does not declare.
-///
-/// **Joined at M1f S1f.6.37** (T1f.6.37.1): W94's `and-in-and.ein` and
-/// `and-in-and-macro.ein` and W95's `hrule-and.ein` and `hrule-and-in-and.ein`,
-/// `a`, a name only a rule's or an hrule's conclusion writes. The stage's fix
-/// moves none of the four lines: the name is a constant of the conclusion,
-/// read at any depth, however the conclusion's `and` nests. W95's two left
-/// the same day, when the stage's refusal of an hrule concluding more than one
-/// fact (Q-M1f.271's default) made the loader refuse both.
-///
-/// **Moved at M1f S1f.6.38**, twice. The loader's `(written T)`: six
-/// programs whose `z` only a rule's conclusion wrote met it first in the fact
-/// the loader states from that conclusion, `(written (n z 1))`, where they met
-/// it in the rule that matched it. Then `z` became `std.math.arith`'s, a
-/// declared relation of no argument, a name of every program that loads the
-/// calculator: the 38 programs listed for `z` alone left the list, and the
-/// others lost their `z` line.
-///
-/// **Joined at M1f S1f.6.33**: `tests/stdlib/math/rat/31_equal_values_two_facts.ein`,
-/// as every program of its directory, `pos` and `neg` in `std.math.int`'s
-/// division's rules. Its siblings' lines did not move: `std.math.rat`'s own
-/// `pos` and `neg`, in `rat-simplify-pos` and `-neg` since that stage, are met
-/// after `std.math.int`'s.
-///
-/// **Joined at M1f S1f.6.32**: `tests/stdlib/math/gcd/12_what_stays_silent.ein`,
-/// which imports `std.math.int` beside `std.math.gcd` for an integer where a
-/// number goes, and so meets `pos` and `neg` where every program that brings
-/// `std.math.int` does, in its division's rules.
-///
-/// **Joined at M1f S1f.6.16**: three programs of `tests/stdlib/math/binary/`,
-/// on the pattern of decimal's (a letter or a decimal digit in a numeral, a
-/// name only a rule writes); and `stdlib/math/positional.ein` alone, the rules
-/// both bases share with every relation a parameter, so no table and no fact
-/// of its own: `0` and `1`, a carry, are names only its rules' premises
-/// write. `eq`, which its `cmp-start` writes, is a kernel word and never an
-/// object (E-74), and is not listed.
-///
-/// **Moved at M1f S1f.6.35**, imports by full name: a rule a program does not
-/// list is named by its full name, `std.math.int.int-div-pn` (66 lines); the
-/// sixteen programs that bring `std.math.num9`, and `gaps`, `listed_is_all` and
-/// `readings`, hold the calculator whole and meet `z` first in
-/// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
-/// `0` and `1` in its `domain-elimination`. `beliefs/01` and `02` write a belief's or a
-/// claim's content only as another fact's argument, so its names are no top-level argument.
+/// A program the loader refuses loads here no more: the shapes the grammar
+/// refuses (a string, a keyword pair inside a term, a bare `_`, `eq` at
+/// another arity) and the loader's refusals (a premise that is no form, a
+/// relation variable no parameter binds, a relation parameter bound to a
+/// fact, an hrule concluding more than one fact).
 const SEEDED: [(&str, &[&str]); 128] = [
     (
         "examples/arith/int.ein",
@@ -1028,7 +975,7 @@ const SEEDED: [(&str, &[&str]); 128] = [
     ),
 ];
 
-/// The pair S1e.3.3 added, which is in `SEEDED`'s shape and not in `SEEDED`:
+/// The pair in `SEEDED`'s shape and not in `SEEDED`:
 /// it is checked by [`the_pair_answers_one_region`] instead, where the
 /// answers are the claim.
 const PAIR: [&str; 2] = [
@@ -1066,10 +1013,9 @@ fn every_name_of_the_program_is_a_candidate_object() {
         }
         let objects = ein_infer::candidate_objects(&kb, &terms, &ast);
         // The kernel's own words are never an object, whatever a program
-        // writes them as: `candidate_objects` leaves them out by name (M1f
-        // S1f.6.16; E-74 of P1f.6's findings.md). `std.math.positional` alone
-        // writes `eq`, the comparison's start, in a rule's conclusion and in
-        // no fact, where every program until it wrote it in a fact too. The
+        // writes them as: `candidate_objects` leaves them out by name.
+        // `std.math.positional` writes `eq`, the comparison's start, in a
+        // rule's conclusion and in no fact. The
         // kernel's two dunders are left out the same way: a name of the
         // program where one is written as a value, and no object.
         let k = &terms.kernel;
@@ -1116,14 +1062,10 @@ fn every_name_of_the_program_is_a_candidate_object() {
     );
 }
 
-/// **The breach a register row holds today** (M1f S1f.5.0, 2026-11-08):
-/// W34, `:assert ()` stored as a fact whose head is the parser's synthetic
-/// `#empty` (`@empty` until M1f T1f.5.5.8), a name no fact or rule writes,
-/// which then joins H as an object.
-/// It is the row's own wrong answer (`W34/assert-empty`), so it was named
-/// rather than failed, and held both ways, until M1f S1f.5.9's T1f.5.9.2
-/// (2026-11-09) fixed W34: `:assert ()` asserts nothing, and no run reaches a
-/// name the program does not have. Empty since.
+/// **The breaches open register rows hold**, each named rather than failed
+/// and held both ways, as the row's own wrong answer. Empty: `W34`'s, a
+/// synthetic name an `:assert ()` would store, is fixed — `:assert ()`
+/// asserts nothing, and no run reaches a name the program does not have.
 const KNOWN_R1: [(&str, &str); 0] = [];
 
 /// **R1 and R2 — no run reaches a name the program does not have.**
@@ -1133,15 +1075,15 @@ const KNOWN_R1: [(&str, &str); 0] = [];
 /// a rule's constant can introduce a name — and a rule's constant is a name of
 /// the program. Measured over every state a bounded describe meets on the
 /// corpus, the scan finds **nothing**, against either baseline, but for the
-/// one breach a register row holds ([`KNOWN_R1`], W34's). Until M1e2
-/// S1e2.2.4 the baselines left the rules' constants out, and R1 found `Ann`
-/// and `G`, R2 `Ann`.
+/// breaches open register rows hold ([`KNOWN_R1`], none). Baselines that
+/// left the rules' constants out would find `Ann` and `G` under R1, `Ann`
+/// under R2.
 #[test]
 fn no_run_reaches_a_name_the_program_does_not_have() {
     let mut r1: Vec<(String, String)> = Vec::new();
     let mut r2: Vec<(String, String)> = Vec::new();
     let mut solved = 0usize;
-    // On the corpus sweeps' pool (M1f S1f.6.39): a program a unit, its rows
+    // On the corpus sweeps' pool: a program a unit, its rows
     // named by the program, so no unit's rows meet another's.
     let files = corpus_files();
     let found = ein_corpus::pool::map(
@@ -1235,7 +1177,7 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
         r1, known,
         "R1 — a run derived a name that is neither a loaded fact's nor a rule's \
          constant: a value no rule's text predicts, which the seed cannot hold \
-         (KNOWN_R1 named W34's until S1f.5.9 fixed it)"
+         (KNOWN_R1 names the breaches open register rows hold)"
     );
     assert_eq!(
         r2,
@@ -1251,12 +1193,11 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
 /// else mentions. It changes no rule, no constraint and no goal: all it does
 /// is put `Z` in a fact.
 ///
-/// Until M1e2 S1e2.2.4 that one fact was the difference between two answers:
-/// the twin's R was `{∅}`, because a rule's constant was in no candidate (W4,
-/// `corpus/wrong_answers.toml`), and the control's maximal state was
-/// `{(q A Z), (q B Z)}`. Since the seed, `Z` is a name of both programs, the
-/// fact names it in one of them, and the two describe the same R: four
-/// states, that one the maximal.
+/// Without the seed that one fact would be the difference between two
+/// answers: the twin's R `{∅}`, a rule's constant in no candidate (`W4`), and
+/// the control's maximal state `{(q A Z), (q B Z)}`. `Z` is a name of both
+/// programs, the fact names it in one of them, and the two describe the same
+/// R: four states, that one the maximal.
 #[test]
 fn the_pair_answers_one_region() {
     let run = |rel: &str, which: Which| {

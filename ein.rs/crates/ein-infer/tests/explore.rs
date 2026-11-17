@@ -1,6 +1,4 @@
-//! Every mode of `ein solve` against the oracle — M1e2
-//! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
-//! T1e2.1a.9.4, and the contract of
+//! Every mode of `ein solve` against the oracle, and the contract of
 //! [`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract):
 //!
 //! - **C1** every state a run prints is in the oracle's chosen part of `R`;
@@ -11,7 +9,7 @@
 //!
 //! Over every corpus file and register witness whose cube the oracle
 //! enumerates, monotone or flagged. Where the oracle refuses the program
-//! (*forbid*, M1e2 S1e2.2.5), every mode refuses it with the same message.
+//! (*forbid*, Q-M1e2.5), every mode refuses it with the same message.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -32,9 +30,7 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once. A debug build left
-/// out W7's two witnesses, which it aborted on, until M1e2 S1e2.2.7 fixed W7,
-/// and W16's order pair until M1e2 S1e2.2.16 fixed W16.
+/// Every corpus file and every register witness, once, in either build.
 fn corpus_and_register() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
@@ -419,7 +415,7 @@ fn described_against(tag: &str, r: &Region, d: &Described) -> Vec<String> {
 
 /// Every question of `ein solve`'s two axes: three parts of `R` × describe,
 /// `-n 1`, `-n 2`, `-n k+1`, `--single`; and `--count`, over all of `R`
-/// only (M1e2 T1e2.1c.4.6).
+/// only.
 fn cells(k: usize) -> Vec<Mode> {
     let mut v = Vec::new();
     for which in WHICH {
@@ -485,7 +481,7 @@ fn every_mode_is_the_oracle() {
         jobs: jobs(),
         ..region::Options::default()
     };
-    // One unit per program on the pool (M1f S1f.6.39), each with its own
+    // One unit per program on the pool, each with its own
     // tallies, folded back in the programs' order.
     let paths = corpus_and_register();
     let found = ein_corpus::pool::map(
@@ -558,17 +554,15 @@ fn every_mode_is_the_oracle() {
                     if a.route == explore::Route::DownSet && !monotone && !a.root_dead {
                         failures.push(format!("{rel} {mode:?}: route 1 on a flagged program"));
                     }
-                    // Each mode's route (S1e2.1c.4): a flagged program keeps the cube
+                    // Each mode's route: a flagged program keeps the cube
                     // and its warning, but where its root is dead, which decides it
-                    // (L0, a fork only adds: `explore::run` since the switch), and
+                    // (L0, a fork only adds: `explore::run`), and
                     // route 1 reads root alone, with the warning; a monotone one whose
                     // root is alive takes the state route for describe and the modes'
                     // routes over states otherwise, naming L5 exactly when the
                     // obligation tree used it. No program the oracle answers has a
-                    // flagged dead root: W16's second-shape witnesses had one from
-                    // their banking until W16's fix the same day (M1e2 S1e2.2.16), and
-                    // *forbid* refuses them since. This expected the cube there until
-                    // that banking.
+                    // flagged dead root: *forbid* refuses `W16`'s second-shape
+                    // witnesses, which have one.
                     let describe =
                         mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
                     let route_ok = if !monotone && a.root_dead {
@@ -664,11 +658,10 @@ fn every_mode_is_the_oracle() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // C3 binds only where the budget stopped a run; a budget nothing reached
-    // would pass the loop above without testing it.
-    // 247 on 2026-10-16.
+    // would pass the loop above without testing it. Each floor is under the
+    // count the sweep finds.
     assert!(stopped >= 200, "the budget stopped {stopped} runs");
-    // 2026-11-04: 9 flagged, since *forbid* (M1e2 S1e2.2.5) refuses ten
-    // programs of the corpus and the register, each refused alike by every
+    // *Forbid*'s refusals are counted apart: each is refused alike by every
     // mode.
     assert!(
         counted.get("monotone").copied().unwrap_or(0) >= 140
@@ -676,16 +669,14 @@ fn every_mode_is_the_oracle() {
         "{counted:?}"
     );
     assert!(refused >= 10, "{refused} refused");
-    // The ∅ rule held on both routes: 835 monotone cells and 80 flagged ones,
-    // the five minimal cells of each of 16 flagged programs, on 2026-11-09
-    // (M1f S1f.5.6).
+    // The ∅ rule held on both routes, the five minimal cells of each flagged
+    // program where ∅ is in `R` among them.
     assert!(
         counted.get("∅ rule, monotone").copied().unwrap_or(0) >= 800
             && counted.get("∅ rule, flagged").copied().unwrap_or(0) >= 75,
         "{counted:?}"
     );
-    // L5 is used, not only licensed: the obligation tree answered real cells,
-    // 168 of them on 2026-11-03.
+    // L5 is used, not only licensed: the obligation tree answered real cells.
     assert!(
         counted.get("tree").copied().unwrap_or(0) >= 100,
         "{counted:?}"
@@ -873,14 +864,12 @@ fn cells_of_the_modes(k: usize) -> Vec<Mode> {
         .collect()
 }
 
-/// **The ∅ rule** — M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16,
-/// *"b, use the ∅ rule in both"*: the minimal line is the members of `R` with
+/// **The ∅ rule** (Q-M1f.23): the minimal line is the members of `R` with
 /// no smaller member, and ∅ is below every commitment, so where ∅ is in `R`
 /// every minimal question, under every ask, answers {∅}, decided, after one
-/// saturation, on every route, monotone or flagged. *Minimum work per
-/// question*, held where the corpus can break it: until S1f.5.6 a flagged
-/// program walked its cube on, 2, 4 or 8 saturations within the limit and
-/// 2^16 past it.
+/// saturation, on every route, monotone or flagged. *The least work each
+/// question needs* (Q-M1e2.31), held where the corpus can break it: a flagged
+/// program never walks its cube on.
 fn empty_rule(rel: &str, r: &Region, mode: Mode, a: &Answer) -> Vec<String> {
     if mode.which != Which::Minimal || !r.in_r(0) {
         return Vec::new();
@@ -919,7 +908,7 @@ fn every_mode_at_four_jobs_is_every_mode_at_one() {
         let path = repo_root().join(rel);
         for mode in cells(3) {
             // `naf-upward-closure`'s dead hole, studied past *forbid*'s
-            // refusal (M1e2 S1e2.2.5): C4 is about the machinery.
+            // refusal: C4 is about the machinery.
             let run = |jobs: usize| {
                 let mut opts = explore::Options::new(mode);
                 opts.jobs = jobs;
@@ -955,9 +944,9 @@ fn every_mode_at_four_jobs_is_every_mode_at_one() {
     }
 }
 
-/// The cheap questions are cheap: the costs `solve_interface.md` § 3.4
-/// derived for the `square-*` cube, where every commitment is alive and in
-/// `R` and today's walk says *no model found*.
+/// The cheap questions are cheap
+/// ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)):
+/// on the `square-*` cube, where every commitment is alive and in `R`.
 #[test]
 fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {
     let path = repo_root().join("examples/saturation/square-bwd/floors.ein");
@@ -992,16 +981,10 @@ fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {
     assert_eq!((min.saturations, min.minimal.len()), (1, 1), "∅ ∈ R");
 }
 
-/// M1e2 S1e2.2.20 (W20) — **a wildcard answered what a fresh
-/// variable does**: on each program below, `_` in a rule's, an hrule's or an
-/// obligation's pattern gave the same candidates, the same root and the same
-/// R as the program with each `_` written `?wN`, a variable read nowhere else.
-/// Until S1e2.2.20 the compiler lowered `_` as an opaque slot that matched
-/// nothing, and the loader refused the obligation as *ground*. **Since M1f
-/// S1f.5.5's swap a bare `_` is refused at the parse, in every position**
-/// (S1f.5.1's ruling), so each program written with `_` is refused at each
-/// `_`, and the fresh variable is what to write: each program so written
-/// loads and answers.
+/// **A bare `_` is refused at the parse, in every position** (`W20`,
+/// Q-M1e2.22): `_` in a rule's, an hrule's or an obligation's pattern is
+/// refused at each `_`, and the fresh variable, `?wN`, a variable read
+/// nowhere else, is what to write: each program so written loads and answers.
 #[test]
 fn a_wildcard_answers_what_a_fresh_variable_does() {
     fn loaded_text(text: &str) -> (Kb, Terms, Ast) {
@@ -1105,7 +1088,7 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
 type DeadVisit = (Vec<String>, bool);
 
 /// The dead nodes a walk visits, each with whether it took a core, as
-/// `--dump-lattice`'s watch reads them (M1f S1f.5.12).
+/// `--dump-lattice`'s watch reads them.
 struct DeadCores(std::sync::Arc<std::sync::Mutex<Vec<DeadVisit>>>);
 
 impl ein_infer::events::Watch for DeadCores {
@@ -1119,20 +1102,19 @@ impl ein_infer::events::Watch for DeadCores {
     }
 }
 
-/// **A run that prints no core takes none, and answers alike** — M1e2
-/// S1e2.2.21, the user's ruling of 2026-11-05: a core is taken only where a
-/// surface prints one, and it moves no answer.
+/// **A run that prints no core takes none, and answers alike** (Q-M1e2.31):
+/// a core is taken only where a surface prints one, and it moves no answer.
 ///
 /// Every mode's answer with [`explore::Options::cores`] off is the answer
 /// with it on, field for field, but the dead nodes' cores it was not asked
 /// for: root's core and, on the cube, each minimal hole's, which the read-out
 /// and the summary print, are the eager run's, and every other core the lazy
-/// run reports is empty. A core's status goes with it (M1e2 S1e2.2.23): a
+/// run reports is empty. A core's status goes with it: a
 /// core not taken has none. Over every corpus file and register witness but the
 /// slow entries, describe on each part of `R`, `-n 2` and `--single`.
 ///
-/// **And N's cores taken after the walk are the eager ones** (M1f S1f.5.12,
-/// P-15 (c)): describe asked for N's cores alone (`Cores { visited: false,
+/// **And N's cores taken after the walk are the eager ones** (Q-M1f.25):
+/// describe asked for N's cores alone (`Cores { visited: false,
 /// nogoods: true }`, what `--dump-answer` and `--trace` ask) answers alike,
 /// gives every member of N a core, past `--region-limit` too, and gives each
 /// the core, status and rules the run that takes every core gives it; and
@@ -1245,7 +1227,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                         if let Some(d) = a.described.as_mut() {
                             for x in d.dead.iter_mut() {
                                 x.core.clear();
-                                // A core's status goes with it (M1e2 S1e2.2.23).
+                                // A core's status goes with it.
                                 x.core_status = None;
                                 x.refuted_by.clear();
                             }
@@ -1372,8 +1354,8 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     );
 }
 
-/// **A description asked without N is the description, less N** — M1f
-/// S1f.6.27's T5, E-31 of P1f.6's `findings.md`, *minimum work per question*.
+/// **A description asked without N is the description, less N** — *the
+/// least work each question needs* (Q-M1e2.31).
 /// `N` is the one part of an exhausted description on the state route that is
 /// searched for after the walk, and `ein solve --count` and `ein test` print
 /// neither it nor its count, so they ask without it

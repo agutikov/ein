@@ -1,8 +1,6 @@
-//! **A refutation resting on an `absent` a commitment can still fill** — M1e
-//! [S1e.2.3](../../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)'s
-//! containment, refused since M1e2
-//! [S1e2.2.5](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
-//! ([Q-M1e2.5](../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
+//! **A refutation resting on an `absent` a commitment can still fill**, refused
+//! ([Q-M1e2.5](../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md),
+//! [absent-and-naf.md](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#a-refutation-resting-on-an-absent)).
 //!
 //! ## What is unsound
 //!
@@ -13,18 +11,15 @@
 //! is monotone in its input, and `(absent P)` is exactly what separates the
 //! two. A twenty-line probe has `{(p A)}` dead and `{(p A), (q A)}` alive.
 //!
-//! ## From a warning to a refusal
+//! ## A refusal
 //!
-//! [D4](../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
-//! ruled **B** in M1e: narrow the claim and diagnose it, and this file was the
-//! census the warning's default was set from. The user ruled ***forbid*** on
-//! 2026-11-02 (M1e2 S1e2.4.1): over a relation a commitment can still extend,
-//! `(absent P)` ⟹ `(false)` or `(not …)` is an obligation written as a
-//! refutation, and a program that writes it is refused, the message naming a
-//! form that says what was meant. On 2026-11-04 the user ruled its F2, *via,
-//! per activator*: a refutation resting on such an `absent` only through a
-//! fact a rule derived under it counts too. [`ein_infer::forbid`] is the
-//! check, and this file holds what it refuses, exactly.
+//! Over a relation a commitment can still extend, `(absent P)` ⟹ `(false)`
+//! or `(not …)` is an obligation written as a refutation, and a program that
+//! writes it is refused (*forbid*), the message naming a form that says what
+//! was meant. A refutation resting on such an `absent` only through a fact a
+//! rule derived under it counts too, *via* and *per activator*.
+//! [`ein_infer::forbid`] is the check, and this file holds what it refuses,
+//! exactly.
 
 use std::collections::BTreeSet;
 use std::path::Path;
@@ -36,50 +31,37 @@ use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load, parse};
 
-// The programs written for P1e2.1b's censuses: the two activator shapes.
+// The programs written for the censuses: the two activator shapes.
 #[allow(dead_code)]
 #[path = "../examples/shared/written.rs"]
 mod written;
 
-/// D4's probe, as a **corpus** fixture.
+/// The upward-closure probe, as a **corpus** fixture.
 ///
-/// The original was `plans/m1e_review_processing/…/probes/naf_upward_closure.ein`,
-/// and since M1e closed it is kept with S1e.1.1's other evidence at
-/// `docs/history/m1e_review_processing/search_soundness_probes/probes/`. That
-/// copy is a record and nothing runs it. A probe that decides a soundness
-/// question belongs where the gate sweeps, so it is banked under
-/// `examples/ein-bugs/` with the three sibling fixtures that also state today's
-/// answer and are meant to break.
+/// A probe that decides a soundness question belongs where the corpus sweeps
+/// run, so it is banked under `examples/ein-bugs/` with the three sibling
+/// fixtures that also state today's answer and are meant to break.
 const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 
-/// **What *forbid* refuses on the corpus and the register, exactly** — M1e2
-/// [S1e2.2.5](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md),
-/// 2026-11-04. Until then this was S1e.2.3's census of the exposed set, the
-/// rules the warning named: nine over seven entries on 2026-08-30, fourteen
-/// over ten by M1e2 S1e2.4.1's re-count, whose `direct` reading (thirteen
-/// over nine) the user ruled *forbid* on, with F2 *via, per activator*.
+/// **What *forbid* refuses on the corpus and the register, exactly.**
 ///
 /// Each row is the program and the first clause of its refusal's line: the
 /// rule, what it concludes, and what it rests on. The `direct` rows are W3's
 /// four witnesses, `W1/alive-empty-interlayer` and the two `branching/`
-/// refusal fixtures; the `via` rows are W8's `stale-naf-fork` pair and the
-/// fuzz finding `d3-unsat-core`, a corpus entry since M1e2 S1e2.2.12
-/// promoted it (2026-11-04); the three `per activator` rows are W16's second
-/// shape, banked by S1e2.2.16 the same day: the symbol control, and its int
-/// and nested-fact twins, which loaded until W16's fix, *forbid* reading an
-/// activator with no symbol argument as none; and W17's family (M1e2
-/// S1e2.2.17, 2026-11-04): `forbid-chain-0`, its control, an activator `mk`
-/// derives resting on an `absent` compiling a refutation root has no plan of,
-/// refused since S1e2.2.5 because its activator relation is in D, and its
-/// five witnesses, which loaded until *forbid* followed the chain past D:
-/// one and two links longer, the `absent` in a plan a node compiles (over a
-/// relation, and over a parameter's), and over a relation only such a plan
-/// writes, `x`, in D⁺ and not in D.
-/// Since M1f S1f.5.5's swap the int twin's activator is the name `1`, a run
-/// of digits being a name (S1f.5.4's ruling), so its line names it,
-/// `[activator 1]`, as the symbol control's names `a`. Since M1f S1f.5.18
-/// the nested twin's names its fact, `[activator (box a)]`, where it named
-/// none: `Plan::activator_args` keeps every argument (Q-M1f.43).
+/// refusal fixtures; the `via` rows are `W8`'s `stale-naf-fork` pair and the
+/// fuzz finding `d3-unsat-core`; the three `per activator` rows are `W16`'s
+/// second shape: the symbol control, and its int and nested-fact twins, each
+/// refused whatever its activator's arguments are; and `W17`'s family:
+/// `forbid-chain-0`, its control, an activator `mk` derives resting on an
+/// `absent` compiling a refutation root has no plan of, refused because its
+/// activator relation is in D, and its five witnesses, refused because
+/// *forbid* follows the chain past D: one and two links longer, the `absent`
+/// in a plan a node compiles (over a relation, and over a parameter's), and
+/// over a relation only such a plan writes, `x`, in D⁺ and not in D.
+/// The int twin's activator is the name `1`, a run of digits being a name,
+/// so its line names it, `[activator 1]`, as the symbol control's names `a`;
+/// the nested twin's names its fact, `[activator (box a)]`:
+/// `Plan::activator_args` keeps every argument (Q-M1f.43).
 /// `features/05` and `/12`, `direct` too, close
 /// the relation their refutations read and load. `W97/connex-import` is the
 /// one row whose program loaded until the ladder's second rung was chosen by
@@ -173,9 +155,10 @@ fn the_refused_set_is_exactly_these() {
 }
 
 /// **The two written activator programs** (`examples/shared/written.rs`),
-/// which no corpus program has: F3's read of a rule with parameters refuses
-/// `ACTIVATOR_REFUTES` at load, where no plan of `watch` exists at root, and
-/// F2's *per activator* refuses `ACTIVATOR_UNDER_ABSENT`, whose refutation
+/// which no corpus program has: *forbid*'s read of a rule with parameters
+/// (`Cause::Parameter`) refuses `ACTIVATOR_REFUTES` at load, where no plan of
+/// `watch` exists at root, and *per activator* (`Cause::Activator`) refuses
+/// `ACTIVATOR_UNDER_ABSENT`, whose refutation
 /// reads no `absent` and whose activator rests on one.
 #[test]
 fn the_written_activator_programs_are_refused() {
@@ -200,7 +183,7 @@ fn the_written_activator_programs_are_refused() {
 }
 
 /// **The refusal is lifted only by `forbid::studying`**, the library-level
-/// fixture's way past it, which no CLI path calls: inside it D4's probe
+/// fixture's way past it, which no CLI path calls: inside it the probe
 /// answers the R it had (three states, a dead hole), and after it the probe
 /// is refused again.
 #[test]
@@ -221,11 +204,11 @@ fn studying_lifts_the_refusal_and_only_while_it_runs() {
     assert!(matches!(run(), Err(SolveError::Refused(_))));
 }
 
-/// D4's probe, banked: refused, and the message names the replacements —
-/// F4's three forms. The probe is a **mis-encoded obligation**: it says *a
-/// world with `p` and without `q` is false* and never says *`q` is
-/// required*. That reading is the user's, 2026-08-28, and it is why the
-/// message has to say *instead* and not only *don't*.
+/// The probe, banked: refused, and the message names the replacements — the
+/// three forms that say what was meant. The probe is a **mis-encoded
+/// obligation**: it says *a world with `p` and without `q` is false* and
+/// never says *`q` is required*. That is why the message has to say
+/// *instead* and not only *don't*.
 #[test]
 fn the_probe_is_refused_and_the_message_names_the_replacements() {
     let path = repo_root().join(PROBE);
@@ -245,7 +228,7 @@ fn the_probe_is_refused_and_the_message_names_the_replacements() {
         "concludes (false)",
         "over q",
         "a relation a commitment can still extend",
-        // The three forms the ruling measured.
+        // The three forms the message names.
         "(solve :no-hypothesis (q))",
         "functional + total-owed",
         "(open ?R)",
@@ -256,15 +239,15 @@ fn the_probe_is_refused_and_the_message_names_the_replacements() {
     }
 }
 
-/// **Beside an hrule, the first remedy names the hrule** — M1f S1f.6.34, E-47.
+/// **Beside an hrule, the first remedy names the hrule.**
 ///
-/// E-47's witness (S1f.6.28's T4): *what is not listed is zero* adopted for
-/// `has`, an hrule `maybe-apples` supposing Alice has an apple, and `(solve
-/// :hrules (maybe-apples) :no-hypothesis (has))`. *Forbid* refused it with four
-/// lines whose first remedy was `(solve :no-hypothesis (has))`, the form the
-/// program already wrote, and one that does nothing where an hrule proposes
-/// the relation: no list filters an hrule's candidates. Every command refuses
-/// the program at load since, for the two conflicts it writes
+/// The witness: *what is not listed is zero* adopted for `has`, an hrule
+/// `maybe-apples` supposing Alice has an apple, and `(solve :hrules
+/// (maybe-apples) :no-hypothesis (has))`. A first remedy of
+/// `(solve :no-hypothesis (has))` would be the form the program already
+/// wrote, and one that does nothing where an hrule proposes the relation: no
+/// list filters an hrule's candidates. Every command refuses the program at
+/// load, for the two conflicts it writes
 /// (`ein-cli/tests/mechanism_conflicts.rs`); the library's routes, which do
 /// not run that check, still reach *forbid*, and its lines name the hrule.
 /// Without the list the remedy is the same; the twin without `listed_is_all`
@@ -349,10 +332,11 @@ fn beside_an_hrule_the_remedy_names_the_hrule_and_not_the_list() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// **With no hrule, an obligation's relation is no list's to close either** —
-/// M1f S1f.6.34. Where an obligation owes the relation the refutation reads
-/// under `absent`, `(solve :no-hypothesis (R))` is a conflict (O + NH,
-/// `defined_behaviour.md` § 4.27), so the first remedy names the obligation;
+/// **With no hrule, an obligation's relation is no list's to close either.**
+/// Where an obligation owes the relation the refutation reads under
+/// `absent`, `(solve :no-hypothesis (R))` is a conflict
+/// ([diagnostics.md § 2.27](../../../../docs/ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
+/// so the first remedy names the obligation;
 /// where none owes it, the list, as before.
 #[test]
 fn beside_an_obligation_the_remedy_names_the_obligation() {
@@ -401,11 +385,9 @@ fn beside_an_obligation_the_remedy_names_the_obligation() {
     }
 }
 
-/// **The refusal is the stream's end, and no warning precedes it.** Until
-/// M1e2 S1e2.2.5 the fixture's own `(config :warn-derived-naf true)` made S1e.2.3's
-/// `RefutationUnderAbsentWarning` part of its recorded output, a `warn` line
-/// after root's saturation; that sentence is the refusal's now, the flag is
-/// retired and the fixture's line went. `ein solve FILE --events` narrates
+/// **The refusal is the stream's end, and no warning precedes it.** The
+/// sentence `RefutationUnderAbsentWarning` carries is the refusal's, and no
+/// flag narrates it as a `warn` line. `ein solve FILE --events` narrates
 /// root's saturation and then stops: no `warn` line, no `monotonicity` line,
 /// no node.
 #[test]
@@ -422,7 +404,7 @@ fn the_fixtures_stream_ends_at_the_refusal() {
     let out = ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events);
     assert!(
         matches!(out, Err(SolveError::Refused(_))),
-        "the fixture is refused (M1e2 S1e2.2.5)"
+        "the fixture is refused (Q-M1e2.5)"
     );
     let stream = buf.to_string_lossy();
     for kind in ["warn", "monotonicity", "node"] {
@@ -438,11 +420,10 @@ fn the_fixtures_stream_ends_at_the_refusal() {
 }
 
 /// The one existing hazard signal stays silent here, and that is the finding
-/// it was filed as: the stratification advisory (`warn_derived_naf`'s other
-/// half, retired with it at M1e2 S1e2.2.5; the library's
-/// `derived_naf_warnings` since) watches an `(absent …)` over a
-/// **rule-derived** relation, and `q` is only ever proposed by the generator.
-/// Two adjacent hazards, and until S1e.2.3 the engine had a warning for one.
+/// it was filed as: the stratification advisory (the library's
+/// `derived_naf_warnings`) watches an `(absent …)` over a **rule-derived**
+/// relation, and `q` is only ever proposed by the generator. Two adjacent
+/// hazards, and the advisory is about the other one.
 #[test]
 fn the_stratification_warning_does_not_cover_this() {
     let path = repo_root().join(PROBE);

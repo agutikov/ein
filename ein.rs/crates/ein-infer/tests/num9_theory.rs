@@ -1,9 +1,9 @@
-//! **`std.math.num9`, held to the integers and to its own rule** — M1f
-//! [S1f.6.13](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md).
+//! **`std.math.num9`, held to the integers and to its own rule**
+//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md)).
 //!
 //! `stdlib/math/num9.ein` is school arithmetic on numbers of nine digits, the
-//! calculator's second module: wide rules, a premise a column, written by
-//! `utils/gen_num9.py`. Ein has no numbers, so nothing in the engine can say
+//! calculator's second module: wide rules, a premise a column, generated.
+//! Ein has no numbers, so nothing in the engine can say
 //! whether a sum is right. What holds the theory is here.
 //!
 //! | claim | where |
@@ -13,7 +13,7 @@
 //! | **overflow is a flag and never a truncated number**: a request has exactly one of an answer and a flag | both, through [`hold`] |
 //! | the conversions to and from `std.math.decimal-arith`'s numbers, at every count of digits; `big` past the width | [`conversions_are_right_at_every_length`] |
 //! | a division by zero derives the flag, and `std.math.decimal-arith`'s rule `(false)` from it | [`a_division_by_zero_is_flagged_and_false`] |
-//! | the file is what the generator writes: the script's `--check`, which is how that check is in the gate | [`the_file_is_what_the_generator_writes`] |
+//! | the file is what the generator writes: its `--check` | [`the_file_is_what_the_generator_writes`] |
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `absent`, no `not`, no `or`, no guard, and no `(false)` of its own | [`the_theory_writes_no_negation`] |
 //! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
@@ -144,9 +144,9 @@ fn run(src: &str, relations: &[&str], closer: &str) -> Run {
         .iter()
         .find_map(|n| terms.syms.get(n))
         .expect("the closing rule's name");
-    // `std.math.decimal-arith`'s closing rule fires too since M1f S1f.6.35, the module
-    // coming whole with `std.math.num9`'s import of it, and since S1f.6.38 those
-    // of `std.math.decimal` and `std.math.arith`; they are no request's either.
+    // `std.math.decimal-arith`'s closing rule fires too, the module coming
+    // whole with `std.math.num9`'s import of it, and those of
+    // `std.math.decimal` and `std.math.arith`; they are no request's either.
     let lower: Vec<ein_core::Symbol> = [
         "std.math.decimal-arith.decimal-arith",
         "std.math.decimal.decimal",
@@ -331,7 +331,7 @@ fn hold(theory: &str, w: u32, cases: &[(u64, u64)]) {
     );
 }
 
-/// `python3 utils/gen_num9.py ARGS`, its stdout.
+/// The module's generator run with `ARGS`, its stdout.
 fn generator(args: &[&str]) -> std::process::Output {
     let probe = Command::new("python3")
         .args(["-c", "pass"])
@@ -570,9 +570,8 @@ fn the_circuit_of_each_operation() {
     }
 }
 
-/// `utils/gen_num9.py --check`, run here so that it is in the gate: the
-/// per-commit tier runs `cargo test --workspace`, and its job installs a
-/// `python3`, as for `utils/gen_arith_tables.py --check`.
+/// The generator's `--check`: `stdlib/math/num9.ein` is what the generator
+/// writes. It needs a `python3`, as the digit tables' check does.
 #[test]
 fn the_file_is_what_the_generator_writes() {
     let out = generator(&["--check"]);
@@ -592,8 +591,8 @@ const TABLES: [&str; 6] = ["fa", "fs", "md", "cl", "nz", "adj"];
 
 /// What the module takes from `std.math.decimal-arith`: the number's relation, for the
 /// conversions, and the flag with the rule from it to `(false)`.
-/// What the module takes from the modules below it, by module (M1f S1f.6.38:
-/// `n` is `std.math.decimal`'s, `z`, the flag of a division by zero and its
+/// What the module takes from the modules below it, by module (`n` is
+/// `std.math.decimal`'s, `z`, the flag of a division by zero and its
 /// rule `std.math.arith`'s; `std.math.decimal-arith` comes whole, its import
 /// bare).
 const FROM_ARITH: [(&str, &[&str]); 3] = [
@@ -743,8 +742,7 @@ fn no_rule_joins_two_facts_on_a_number() {
         assert!(
             state.len() <= 1,
             "rule {name} joins {state:?}: a rule of std.math.num9 has ONE premise that \
-             holds numbers, and its other premises are rows of std.math.digits (E-3 of \
-             P1f.6's findings.md)"
+             holds numbers, and its other premises are rows of std.math.digits"
         );
     }
 }
@@ -776,7 +774,7 @@ fn the_theory_writes_no_negation() {
 /// declares, every table it reads and the two relations it takes from the
 /// modules below, `n` and `division-by-zero`, and names every other rule of
 /// the module and the one it takes. Its own name is the module's one written
-/// fact (E-11).
+/// fact.
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let m = module();

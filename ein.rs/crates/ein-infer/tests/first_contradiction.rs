@@ -47,9 +47,9 @@
 //!   with the stop is never stopped where the run without it finished. A
 //!   verdict both reach is one verdict.
 //!
-//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, the
-//! nightly's, in four shards (`EIN_TEST_SHARD=k/4`), each holding its share
-//! of the floors; the two zebra puzzles every run.
+//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, which runs
+//! in four shards (`EIN_TEST_SHARD=k/4`), each holding its share of the
+//! floors; the two zebra puzzles every run.
 //!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test first_contradiction
@@ -110,7 +110,7 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
     files.sort();
     files.dedup();
     files.retain(|f| slow_too || !slow.contains(f));
-    // The nightly's shard of them (`EIN_TEST_SHARD`).
+    // This shard's share of them (`EIN_TEST_SHARD`).
     ein_corpus::shard::keep(files, |f| rel_of(f))
 }
 
@@ -565,8 +565,8 @@ fn every_question_answers_alike_with_the_stop_and_without() {
         all.unheld
     );
     // Not vacuous: the programs that search are read, the stop reaches most
-    // of their cells, and where it does the work falls. A shard of the
-    // nightly's (`EIN_TEST_SHARD`) holds its share of each floor.
+    // of their cells, and where it does the work falls. A shard
+    // (`EIN_TEST_SHARD`) holds its share of each floor.
     let share = ein_corpus::shard::share;
     assert!(
         programs >= share(150) && all.cells >= share(6 * 150) && all.reached >= share(6 * 120),

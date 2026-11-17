@@ -1,11 +1,9 @@
-//! T1a.7.2.1 — **the seam a worker crosses**, without a thread yet.
+//! **The seam a worker crosses**, without a thread.
 //!
 //! [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
-//! fanned a layer out by handing every worker the same root and letting each
-//! run the walk's `try_commitment_set` against it (deleted with the walk at
-//! M1e2 S1e2.1c.5, and with it the test that an entering on a worker view is
-//! the committer's; a route's fan-out is `region::fan_out`, held by
-//! `jobs_invariance`). Four things have to be true before that is a design, and all four are properties of *types* rather than of threads,
+//! fans a layer out by handing every worker the same root (a route's fan-out
+//! is `region::fan_out`, held by `jobs_invariance`). Four things have to be
+//! true for that, and all four are properties of *types* rather than of threads,
 //! which is why they are checked here and not behind a job count:
 //!
 //! 1. **Root is `&`.** [`Kb::branch`] takes a shared reference, so the claim
@@ -109,7 +107,7 @@ fn reclaiming_under_a_live_view_is_loud() {
     terms.reclaim();
 }
 
-/// **A panic inside the lend window leaves the tables usable** — T1a.7.5.6.
+/// **A panic inside the lend window leaves the tables usable.**
 ///
 /// `Terms::share` and `Terms::reclaim` have to come in pairs, and the window
 /// between them is one function call wide today. What makes that safe is not
