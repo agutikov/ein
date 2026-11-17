@@ -416,8 +416,8 @@ stop
 
 | question | what it does with the tree |
 |---|---|
-| `-n N` | the tree's leaves in its own order; when it runs out, the states of `R` above its leaves, each extended once (L2) |
-| `--single` | stops at the tree's second state of `R`; with exactly one, that state's extensions until one is alive (L4) |
+| `-n N` | the tree's leaves in its own order; when it runs out, the states of `R` above its leaves, each extended once (L2). Where ∅ is in `R`, root's state first, then the states above it |
+| `--single` | where ∅ is in `R`, root's extensions until one is alive; otherwise the tree, stopped at its second state of `R`, and with exactly one, that state's extensions until one is alive (L4) |
 | `--minimal` | each leaf's commitment shrunk while it stays discharged; for the whole line, the alive minimal transversals of the complements of the maximal owing states |
 | `--maximal` | a first state of `R` climbed to a maximal one, then dualise and advance above each minimal state: each minimal transversal of the complements of the maximal states found is saturated with the seed, and an alive one is climbed |
 
