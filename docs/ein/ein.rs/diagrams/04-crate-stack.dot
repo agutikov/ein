@@ -1,0 +1,20 @@
+digraph stack {
+  rankdir=TB;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  app    [style=dashed, label="your program"];
+  cli    [label="ein-cli"];
+  render [label="ein-render\nDOT, the markdown trace, the dumps,\nthe read-out's rendering"];
+  einb   [label="ein-einb\nthe .einb container"];
+  infer  [label="ein-infer"];
+  ir     [label="ein-ir"];
+  core   [label="ein-core"];
+
+  cli -> render; cli -> einb;
+  render -> infer; einb -> infer;
+  infer -> ir; ir -> core;
+  app -> infer  [style=dashed];
+  app -> render [style=dashed, label="optional"];
+  app -> einb   [style=dashed, label="optional"];
+}

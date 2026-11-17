@@ -1,0 +1,19 @@
+@startuml
+start
+:build the graph: the premise closure of the contradiction's facts,\nevery justification the KB holds for each (Kb::justifications);
+:label each given fact {itself};\na premise-free derivation {the empty environment};
+:dirty = the consumers of the labelled facts;
+while (dirty is not empty, and rounds < max_rounds?) is (yes)
+  :take the dirty facts, sorted by rank;
+  while (next fact?) is (one)
+    :for each of its derivations: fold the premises' labels\ninto the unions of one environment each;
+    :minimise: drop supersets, keep the smallest\nmax_environments of them;
+    if (the label changed?) then (yes)
+      :its consumers become dirty;
+    endif
+  endwhile (none)
+endwhile (no)
+:each contradiction: the smallest environment of (false),\nor of X and (not X) folded as one AND;
+:the core is the smallest over the node's contradictions;\nits status: within-budget, or cut and the caps it met;
+stop
+@enduml

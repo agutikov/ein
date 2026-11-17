@@ -1,0 +1,24 @@
+digraph deps {
+  rankdir=LR;
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  node [shape=box];
+  core [label="ein-core"]; ir [label="ein-ir"]; infer [label="ein-infer"];
+  einb [label="ein-einb"]; render [label="ein-render"]; cli [label="ein-cli"];
+
+  node [shape=ellipse];
+  fx [label="rustc-hash"]; incl [label="include_dir"];
+  grm [label="cfgrammar, lrlex, lrpar\n=0.15.0"];
+  rayon; blake3; md5 [label="md-5"]; sha1; sha2; clap; libc;
+  snm [label="snmalloc-rs"];
+
+  core -> fx;
+  ir -> fx; ir -> incl; ir -> grm;
+  infer -> fx; infer -> rayon [style=dashed, label="parallel"];
+  einb -> blake3;
+  render -> fx; render -> md5; render -> sha1;
+  cli -> clap; cli -> sha2;
+  cli -> libc [label="unix"];
+  cli -> snm [style=dashed, label="snmalloc"];
+}

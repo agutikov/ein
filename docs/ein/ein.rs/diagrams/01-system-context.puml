@@ -1,0 +1,28 @@
+@startuml
+left to right direction
+skinparam componentStyle rectangle
+
+actor "user" as user
+rectangle "ein\n(one binary)" as ein
+
+file "program.ein\nand the modules it imports\nfrom its own directory" as prog
+database "program.einb\na private cache of one\nloaded program" as einb
+package "the standard library: the first source that answers" as std {
+  folder "1. $EIN_STDLIB" as s1
+  folder "2. stdlib/ of a checkout,\nfound from the executable" as s2
+  artifact "3. the copy compiled\ninto ein" as s3
+}
+file "the answer\nthe read-out on stdout; as files:\n~--dump-answer, ~--json-summary,\n~--events, ~--trace, ~--dump-lattice" as out
+file "DOT text\nein render …" as dot
+rectangle "Graphviz" as gv
+
+user --> prog : writes
+user --> ein : runs a command on a file
+ein --> prog : reads
+ein --> std : resolves std.*
+ein --> einb : ein kb save writes it
+einb --> ein : read wherever a .ein is
+ein --> out : writes
+ein --> dot : writes
+dot --> gv : the user draws it
+@enduml

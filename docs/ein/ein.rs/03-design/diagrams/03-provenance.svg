@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: prov Pages: 1 -->
+<svg width="552pt" height="340pt"
+ viewBox="0.00 0.00 552.00 340.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 335.84)">
+<title>prov</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-335.84 548.36,-335.84 548.36,4 -4,4"/>
+<!-- f -->
+<g id="node1" class="node">
+<title>f</title>
+<polygon fill="none" stroke="black" points="447.7,-331.84 254.7,-331.84 254.7,-295.84 447.7,-295.84 447.7,-331.84"/>
+<text xml:space="preserve" text-anchor="middle" x="351.2" y="-316.89" font-family="Helvetica,sans-Serif" font-size="11.00">fact F</text>
+<text xml:space="preserve" text-anchor="middle" x="351.2" y="-303.39" font-family="Helvetica,sans-Serif" font-size="11.00">(the OR&#45;node: Kb::justifications)</text>
+</g>
+<!-- p1 -->
+<g id="node2" class="node">
+<title>p1</title>
+<ellipse fill="none" stroke="black" cx="255.2" cy="-214.29" rx="83.44" ry="34.29"/>
+<text xml:space="preserve" text-anchor="middle" x="255.2" y="-224.09" font-family="Helvetica,sans-Serif" font-size="11.00">Prov #1 &#160;kind Rule</text>
+<text xml:space="preserve" text-anchor="middle" x="255.2" y="-210.59" font-family="Helvetica,sans-Serif" font-size="11.00">rule r1</text>
+<text xml:space="preserve" text-anchor="middle" x="255.2" y="-197.09" font-family="Helvetica,sans-Serif" font-size="11.00">(an AND&#45;node)</text>
+</g>
+<!-- p1&#45;&gt;f -->
+<g id="edge1" class="edge">
+<title>p1&#45;&gt;f</title>
+<path fill="none" stroke="black" d="M263.47,-248.71C267.26,-258.97 272.65,-269.68 280.2,-277.84 284.28,-282.25 289.04,-286.18 294.13,-289.66"/>
+<polygon fill="black" stroke="black" points="291.92,-292.41 302.27,-294.65 295.58,-286.44 291.92,-292.41"/>
+<text xml:space="preserve" text-anchor="middle" x="340.2" y="-269.29" font-family="Helvetica,sans-Serif" font-size="9.00">primary: the first recorded</text>
+</g>
+<!-- p2 -->
+<g id="node3" class="node">
+<title>p2</title>
+<ellipse fill="none" stroke="black" cx="441.2" cy="-214.29" rx="83.44" ry="34.29"/>
+<text xml:space="preserve" text-anchor="middle" x="441.2" y="-224.09" font-family="Helvetica,sans-Serif" font-size="11.00">Prov #2 &#160;kind Rule</text>
+<text xml:space="preserve" text-anchor="middle" x="441.2" y="-210.59" font-family="Helvetica,sans-Serif" font-size="11.00">rule r2</text>
+<text xml:space="preserve" text-anchor="middle" x="441.2" y="-197.09" font-family="Helvetica,sans-Serif" font-size="11.00">(an AND&#45;node)</text>
+</g>
+<!-- p2&#45;&gt;f -->
+<g id="edge2" class="edge">
+<title>p2&#45;&gt;f</title>
+<path fill="none" stroke="black" d="M425.32,-248.41C419.53,-258.53 412.37,-269.25 404.2,-277.84 400.49,-281.73 396.28,-285.4 391.89,-288.8"/>
+<polygon fill="black" stroke="black" points="390.04,-285.83 383.96,-294.5 394.12,-291.51 390.04,-285.83"/>
+<text xml:space="preserve" text-anchor="middle" x="475.34" y="-269.29" font-family="Helvetica,sans-Serif" font-size="9.00">alts: kept by premise count</text>
+</g>
+<!-- a -->
+<g id="node4" class="node">
+<title>a</title>
+<polygon fill="none" stroke="black" points="131.2,-132.75 77.2,-132.75 77.2,-96.75 131.2,-96.75 131.2,-132.75"/>
+<text xml:space="preserve" text-anchor="middle" x="104.2" y="-111.05" font-family="Helvetica,sans-Serif" font-size="11.00">fact A</text>
+</g>
+<!-- a&#45;&gt;p1 -->
+<g id="edge3" class="edge">
+<title>a&#45;&gt;p1</title>
+<path fill="none" stroke="black" d="M131.19,-133.19C150.65,-145.76 177.57,-163.14 201.35,-178.51"/>
+<polygon fill="black" stroke="black" points="199.4,-181.42 209.7,-183.9 203.2,-175.54 199.4,-181.42"/>
+<text xml:space="preserve" text-anchor="middle" x="202.17" y="-153.45" font-family="Helvetica,sans-Serif" font-size="9.00">premises[0]</text>
+</g>
+<!-- b -->
+<g id="node5" class="node">
+<title>b</title>
+<polygon fill="none" stroke="black" points="282.2,-132.75 228.2,-132.75 228.2,-96.75 282.2,-96.75 282.2,-132.75"/>
+<text xml:space="preserve" text-anchor="middle" x="255.2" y="-111.05" font-family="Helvetica,sans-Serif" font-size="11.00">fact B</text>
+</g>
+<!-- b&#45;&gt;p1 -->
+<g id="edge4" class="edge">
+<title>b&#45;&gt;p1</title>
+<path fill="none" stroke="black" d="M255.2,-133.19C255.2,-143.09 255.2,-155.98 255.2,-168.51"/>
+<polygon fill="black" stroke="black" points="251.7,-168.32 255.2,-178.32 258.7,-168.32 251.7,-168.32"/>
+<text xml:space="preserve" text-anchor="middle" x="282.2" y="-153.45" font-family="Helvetica,sans-Serif" font-size="9.00">premises[1]</text>
+</g>
+<!-- c -->
+<g id="node6" class="node">
+<title>c</title>
+<polygon fill="none" stroke="black" points="471.2,-132.75 417.2,-132.75 417.2,-96.75 471.2,-96.75 471.2,-132.75"/>
+<text xml:space="preserve" text-anchor="middle" x="444.2" y="-111.05" font-family="Helvetica,sans-Serif" font-size="11.00">fact C</text>
+</g>
+<!-- c&#45;&gt;p2 -->
+<g id="edge5" class="edge">
+<title>c&#45;&gt;p2</title>
+<path fill="none" stroke="black" d="M443.66,-133.19C443.36,-143.09 442.96,-155.98 442.57,-168.51"/>
+<polygon fill="black" stroke="black" points="439.08,-168.21 442.27,-178.32 446.08,-168.43 439.08,-168.21"/>
+<text xml:space="preserve" text-anchor="middle" x="470.05" y="-153.45" font-family="Helvetica,sans-Serif" font-size="9.00">premises[0]</text>
+</g>
+<!-- s1 -->
+<g id="node7" class="node">
+<title>s1</title>
+<ellipse fill="none" stroke="black" stroke-dasharray="5,2" cx="79.2" cy="-24.75" rx="79.2" ry="24.75"/>
+<text xml:space="preserve" text-anchor="middle" x="79.2" y="-27.8" font-family="Helvetica,sans-Serif" font-size="11.00">Prov &#160;kind Source</text>
+<text xml:space="preserve" text-anchor="middle" x="79.2" y="-14.3" font-family="Helvetica,sans-Serif" font-size="11.00">(terminal)</text>
+</g>
+<!-- s1&#45;&gt;a -->
+<g id="edge6" class="edge">
+<title>s1&#45;&gt;a</title>
+<path fill="none" stroke="black" d="M86.03,-49.79C89.17,-60.86 92.92,-74.07 96.2,-85.6"/>
+<polygon fill="black" stroke="black" points="92.76,-86.31 98.86,-94.97 99.5,-84.4 92.76,-86.31"/>
+<text xml:space="preserve" text-anchor="middle" x="111.56" y="-70.2" font-family="Helvetica,sans-Serif" font-size="9.00">primary</text>
+</g>
+<!-- s2 -->
+<g id="node8" class="node">
+<title>s2</title>
+<ellipse fill="none" stroke="black" stroke-dasharray="5,2" cx="255.2" cy="-24.75" rx="79.2" ry="24.75"/>
+<text xml:space="preserve" text-anchor="middle" x="255.2" y="-27.8" font-family="Helvetica,sans-Serif" font-size="11.00">Prov &#160;kind Source</text>
+<text xml:space="preserve" text-anchor="middle" x="255.2" y="-14.3" font-family="Helvetica,sans-Serif" font-size="11.00">(terminal)</text>
+</g>
+<!-- s2&#45;&gt;b -->
+<g id="edge7" class="edge">
+<title>s2&#45;&gt;b</title>
+<path fill="none" stroke="black" d="M255.2,-49.79C255.2,-60.75 255.2,-73.79 255.2,-85.24"/>
+<polygon fill="black" stroke="black" points="251.7,-84.91 255.2,-94.91 258.7,-84.91 251.7,-84.91"/>
+<text xml:space="preserve" text-anchor="middle" x="272.82" y="-70.2" font-family="Helvetica,sans-Serif" font-size="9.00">primary</text>
+</g>
+<!-- h -->
+<g id="node9" class="node">
+<title>h</title>
+<ellipse fill="none" stroke="black" stroke-dasharray="5,2" cx="448.2" cy="-24.75" rx="96.17" ry="24.75"/>
+<text xml:space="preserve" text-anchor="middle" x="448.2" y="-27.8" font-family="Helvetica,sans-Serif" font-size="11.00">Prov &#160;kind Hypothesis</text>
+<text xml:space="preserve" text-anchor="middle" x="448.2" y="-14.3" font-family="Helvetica,sans-Serif" font-size="11.00">(terminal)</text>
+</g>
+<!-- h&#45;&gt;c -->
+<g id="edge8" class="edge">
+<title>h&#45;&gt;c</title>
+<path fill="none" stroke="black" d="M447.1,-49.79C446.61,-60.75 446.01,-73.79 445.49,-85.24"/>
+<polygon fill="black" stroke="black" points="442.01,-84.77 445.05,-94.92 449,-85.08 442.01,-84.77"/>
+<text xml:space="preserve" text-anchor="middle" x="463.82" y="-70.2" font-family="Helvetica,sans-Serif" font-size="9.00">primary</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 7b13c1d32ed9d742b7c9cd0ab05aa2d9af3ac2022e6ab324245f8834fb977069 -->

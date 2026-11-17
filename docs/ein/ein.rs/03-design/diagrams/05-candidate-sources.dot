@@ -1,0 +1,21 @@
+digraph candidates {
+  rankdir=TB;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  step   [label="a Rel step"];
+  ground [shape=diamond, label="every slot bound,\nat most GROUND_ARITY arguments?"];
+  probe  [shape=diamond, label="a probe of the compiled list that is\na constant, or a bound register\nholding a name?"];
+  one    [label="FactStore::probe(rel, args), Kb::contains\none fact or none  (§ 5.1)"];
+  bucket [label="Kb::facts_with(SlotKey)\na bucket, behind each layer's\nBloom filter  (§ 5.2)"];
+  extent [label="Kb::facts_of(rel)\nthe whole extent  (§ 5.3)"];
+  unify  [label="try_candidate: unify every slot,\nthe probed one included"];
+
+  step -> ground;
+  ground -> one    [label="yes"];
+  ground -> probe  [label="no"];
+  probe -> bucket  [label="yes: the first such"];
+  probe -> extent  [label="no"];
+  bucket -> unify  [label="in extent order"];
+  extent -> unify  [label="in extent order"];
+}

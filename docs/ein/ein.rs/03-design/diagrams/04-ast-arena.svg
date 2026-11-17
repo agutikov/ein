@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: ast Pages: 1 -->
+<svg width="575pt" height="312pt"
+ viewBox="0.00 0.00 575.00 312.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 308.37)">
+<title>ast</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-308.37 571.19,-308.37 571.19,4 -4,4"/>
+<!-- nodes -->
+<g id="node1" class="node">
+<title>nodes</title>
+<polygon fill="none" stroke="black" points="99.44,-78.37 99.44,-185.87 233.19,-185.87 233.19,-78.37 99.44,-78.37"/>
+<text xml:space="preserve" text-anchor="middle" x="166.31" y="-171.42" font-family="Helvetica,sans-Serif" font-size="11.00">nodes : Vec&lt;Node&gt;</text>
+<polyline fill="none" stroke="black" points="99.44,-164.37 233.19,-164.37"/>
+<text xml:space="preserve" text-anchor="middle" x="166.31" y="-149.92" font-family="Helvetica,sans-Serif" font-size="11.00">SForm { head, args }</text>
+<polyline fill="none" stroke="black" points="99.44,-142.87 233.19,-142.87"/>
+<text xml:space="preserve" text-anchor="middle" x="166.31" y="-128.42" font-family="Helvetica,sans-Serif" font-size="11.00">Atom(SymId)</text>
+<polyline fill="none" stroke="black" points="99.44,-121.37 233.19,-121.37"/>
+<text xml:space="preserve" text-anchor="middle" x="166.31" y="-106.92" font-family="Helvetica,sans-Serif" font-size="11.00">Atom(SymId)</text>
+<polyline fill="none" stroke="black" points="99.44,-99.87 233.19,-99.87"/>
+<text xml:space="preserve" text-anchor="middle" x="166.31" y="-85.42" font-family="Helvetica,sans-Serif" font-size="11.00">Var(SymId)</text>
+</g>
+<!-- nodes&#45;&gt;nodes -->
+<g id="edge1" class="edge">
+<title>nodes:f&#45;&gt;nodes:h</title>
+<path fill="none" stroke="black" d="M99,-159.39C59.48,-159.79 22.5,-155.14 22.5,-142.87 22.5,-131.8 52.61,-126.94 87.53,-126.38"/>
+<polygon fill="black" stroke="black" points="87.49,-129.89 97.48,-126.36 87.47,-122.89 87.49,-129.89"/>
+<text xml:space="preserve" text-anchor="middle" x="11.25" y="-129.2" font-family="Helvetica,sans-Serif" font-size="9.00">head</text>
+</g>
+<!-- locs -->
+<g id="node2" class="node">
+<title>locs</title>
+<polygon fill="none" stroke="black" points="407.19,-196.37 407.19,-303.87 567.19,-303.87 567.19,-196.37 407.19,-196.37"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-289.42" font-family="Helvetica,sans-Serif" font-size="11.00">locs : Vec&lt;Option&lt;Loc&gt;&gt;</text>
+<polyline fill="none" stroke="black" points="407.19,-282.37 567.19,-282.37"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-267.92" font-family="Helvetica,sans-Serif" font-size="11.00">Some(file, line, col)</text>
+<polyline fill="none" stroke="black" points="407.19,-260.87 567.19,-260.87"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-246.42" font-family="Helvetica,sans-Serif" font-size="11.00">...</text>
+<polyline fill="none" stroke="black" points="407.19,-239.37 567.19,-239.37"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-224.92" font-family="Helvetica,sans-Serif" font-size="11.00">...</text>
+<polyline fill="none" stroke="black" points="407.19,-217.87 567.19,-217.87"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-203.42" font-family="Helvetica,sans-Serif" font-size="11.00">...</text>
+</g>
+<!-- nodes&#45;&gt;locs -->
+<g id="edge8" class="edge">
+<title>nodes:f&#45;&gt;locs:f</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M233.19,-153.62C243.74,-153.62 242.76,-162.77 251.19,-169.12 314.32,-216.73 323.46,-266.7 396.01,-271.28"/>
+<polygon fill="black" stroke="black" points="395.57,-274.77 405.67,-271.58 395.79,-267.77 395.57,-274.77"/>
+<text xml:space="preserve" text-anchor="middle" x="320.19" y="-273.34" font-family="Helvetica,sans-Serif" font-size="9.00">same index</text>
+</g>
+<!-- args -->
+<g id="node3" class="node">
+<title>args</title>
+<polygon fill="none" stroke="black" points="423.69,-112.87 423.69,-177.37 550.69,-177.37 550.69,-112.87 423.69,-112.87"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-162.92" font-family="Helvetica,sans-Serif" font-size="11.00">args : Vec&lt;NodeId&gt;</text>
+<polyline fill="none" stroke="black" points="423.69,-155.87 550.69,-155.87"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-141.42" font-family="Helvetica,sans-Serif" font-size="11.00">NodeId</text>
+<polyline fill="none" stroke="black" points="423.69,-134.37 550.69,-134.37"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-119.92" font-family="Helvetica,sans-Serif" font-size="11.00">NodeId</text>
+</g>
+<!-- nodes&#45;&gt;args -->
+<g id="edge2" class="edge">
+<title>nodes:f&#45;&gt;args:a0</title>
+<path fill="none" stroke="black" d="M233.19,-153.62C313.54,-153.62 336.28,-145.9 411.24,-145.18"/>
+<polygon fill="black" stroke="black" points="411.19,-148.68 421.17,-145.13 411.16,-141.68 411.19,-148.68"/>
+<text xml:space="preserve" text-anchor="middle" x="320.19" y="-156.17" font-family="Helvetica,sans-Serif" font-size="9.00">args: ArgSpan { start, len: 2 }</text>
+</g>
+<!-- strs -->
+<g id="node4" class="node">
+<title>strs</title>
+<polygon fill="none" stroke="black" points="436.81,-8.12 436.81,-94.12 537.56,-94.12 537.56,-8.12 436.81,-8.12"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-79.67" font-family="Helvetica,sans-Serif" font-size="11.00">the string table</text>
+<polyline fill="none" stroke="black" points="436.81,-72.62 537.56,-72.62"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-58.17" font-family="Helvetica,sans-Serif" font-size="11.00">likes</text>
+<polyline fill="none" stroke="black" points="436.81,-51.12 537.56,-51.12"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-36.67" font-family="Helvetica,sans-Serif" font-size="11.00">Ann</text>
+<polyline fill="none" stroke="black" points="436.81,-29.62 537.56,-29.62"/>
+<text xml:space="preserve" text-anchor="middle" x="487.19" y="-15.17" font-family="Helvetica,sans-Serif" font-size="11.00">x</text>
+</g>
+<!-- nodes&#45;&gt;strs -->
+<g id="edge5" class="edge">
+<title>nodes:h&#45;&gt;strs:l</title>
+<path fill="none" stroke="black" d="M233.19,-132.12C255.56,-132.12 233.59,-98.93 251.19,-85.12 281.05,-61.7 376.82,-61.69 424.32,-61.84"/>
+<polygon fill="black" stroke="black" points="424.29,-65.34 434.3,-61.87 424.31,-58.34 424.29,-65.34"/>
+</g>
+<!-- nodes&#45;&gt;strs -->
+<g id="edge6" class="edge">
+<title>nodes:a&#45;&gt;strs:n</title>
+<path fill="none" stroke="black" d="M233.19,-110.62C257.43,-110.62 232.15,-74.14 251.19,-59.12 280.91,-35.68 376.89,-39.48 424.34,-40.26"/>
+<polygon fill="black" stroke="black" points="424.26,-43.76 434.3,-40.36 424.33,-36.76 424.26,-43.76"/>
+</g>
+<!-- nodes&#45;&gt;strs -->
+<g id="edge7" class="edge">
+<title>nodes:v&#45;&gt;strs:x</title>
+<path fill="none" stroke="black" d="M233.19,-89.12C263.27,-89.12 227.5,-42.42 251.19,-23.87 312.79,24.36 350.11,-14.81 424.55,-18.59"/>
+<polygon fill="black" stroke="black" points="424.21,-22.08 434.3,-18.83 424.39,-15.08 424.21,-22.08"/>
+<text xml:space="preserve" text-anchor="middle" x="320.19" y="-26.57" font-family="Helvetica,sans-Serif" font-size="9.00">without its ?</text>
+</g>
+<!-- args&#45;&gt;nodes -->
+<g id="edge3" class="edge">
+<title>args:a0&#45;&gt;nodes:a</title>
+<path fill="none" stroke="black" d="M422.69,-145.12C383.31,-145.12 292.24,-115.93 244.58,-111.25"/>
+<polygon fill="black" stroke="black" points="244.88,-107.76 234.7,-110.71 244.49,-114.75 244.88,-107.76"/>
+</g>
+<!-- args&#45;&gt;nodes -->
+<g id="edge4" class="edge">
+<title>args:a1&#45;&gt;nodes:v</title>
+<path fill="none" stroke="black" d="M422.69,-123.62C406.46,-123.62 404.83,-113.42 389.19,-109.12 325.6,-91.66 305.36,-89.35 244.59,-89.14"/>
+<polygon fill="black" stroke="black" points="244.71,-85.64 234.7,-89.13 244.7,-92.64 244.71,-85.64"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 50ebeba057e5d167d486e2862fab96465127cd70d2585afdcbf4325400ea8daf -->

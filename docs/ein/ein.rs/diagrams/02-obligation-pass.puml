@@ -1,0 +1,20 @@
+@startuml
+start
+if (the program has an obligation rule?) then (no)
+  :owes nothing;
+  stop
+endif
+while (next obligation rule, in registry order,\nand next activator of it?) is (one)
+  :its plan, from the run's memo;
+  :Matcher::run: collect the matches,\none per distinct set of bindings;
+  while (next match?) is (one)
+    if (a guard of its disjunct holds?) then (yes)
+      :a witness exists: discharged;
+    else (no)
+      :an owed instance: the rule, the activator,\nthe relation (open ?R) names, the bindings,\nthe rule's :why rendered;
+    endif
+  endwhile (none)
+endwhile (none)
+:one owe event an instance;\nOwes: the instances in report order;
+stop
+@enduml

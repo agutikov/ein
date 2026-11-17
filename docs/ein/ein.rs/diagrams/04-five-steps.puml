@@ -1,0 +1,22 @@
+@startuml
+participant "your program" as app
+participant "ein-ir" as ir
+participant "ein-infer" as infer
+participant "ein-render" as render
+
+app -> app : Ast::new(), Terms::new()
+app -> ir : load_file(&mut ast, &mut terms, path)
+ir --> app : Kb, or KbLoadError
+opt a trace is wanted
+  app -> infer : region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
+  infer --> app : root's firings; root is now saturated
+end
+app -> app : explore::Options::new(Mode { which, ask })
+app -> infer : read_out::run(&mut kb, &mut terms, &ast, &opts)
+infer --> app : ReadOut { answer, states, queries, .. }, or SolveError
+app -> app : match r.answer.verdict:\nSolution, Ambiguity, Contradiction, Open, None
+opt a trace is wanted
+  app -> render : trace::region::of_read_out(&r, &mut kb, &mut terms, &ast, &firings, ...)
+  render --> app : the markdown
+end
+@enduml

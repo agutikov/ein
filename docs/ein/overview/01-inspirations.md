@@ -14,38 +14,7 @@ lineage: what was taken, and what Ein does instead.
 The same lineage as a picture. A solid arrow is what Ein takes; the dashed note under a source is the place where
 Ein does something else.
 
-```dot
-digraph lineage {
-  rankdir=LR;
-  node [fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  ein [shape=box, style=bold, label="Ein\nfacts, rules, queries\nin one S-expression syntax"];
-
-  node [shape=box];
-  smt  [label="SMT-LIB 2"];
-  mk   [label="miniKanren"];
-  as   [label="AtomSpace"];
-  dl   [label="Datalog"];
-  dpo  [label="double-pushout\ngraph rewriting"];
-
-  node [shape=note, style=dashed];
-  d_smt [label="no (check-sat), no theory annotations:\n(query ...) and (solve ...) state what is asked"];
-  d_mk  [label="no fresh, no unification syntax:\n:match binds a rule's variables"];
-  d_as  [label="no types, no truth values, no weights:\na fact holds, its negation is stored,\nor neither is known"];
-  d_dl  [label="S-expressions, not infix clauses;\nevery rule carries a :why"];
-  d_dpo [label="no span, no pushout:\nthe engine adds facts"];
-
-  smt -> ein [label="S-expressions, comments,\n:keyword arguments"];
-  mk  -> ein [label="relations over atoms,\n?var, a body as a conjunction"];
-  as  -> ein [label="explicit declarations of relations,\neach argument place given a label"];
-  dl  -> ein [label="head and body: :assert and :match;\nderivation to a fixpoint"];
-  dpo -> ein [label=":match and :assert as the\nsub-graph before and after"];
-
-  edge [style=dashed, arrowhead=none];
-  d_smt -> smt; d_mk -> mk; d_as -> as; d_dl -> dl; d_dpo -> dpo;
-}
-```
+![Ein's lineage: what it takes from each source, and where it does something else](diagrams/01-lineage.svg)
 
 ## Why S-expressions
 

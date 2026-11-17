@@ -1,0 +1,44 @@
+digraph lattice {
+  rankdir=BT;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10];
+  label="examples/lattice/01_subset_pruned.ein — 13 of 13 nodes visited by the state route, every alive state once";
+  labelloc=t;
+  n0 [label="∅", color="#2ca02c", fillcolor="#e8f6e8"];
+  n1 [label="(proposed a)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n2 [label="(proposed b)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n3 [label="(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n4 [label="(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n5 [label="(proposed a)\n(proposed b)", color="#d62728", fillcolor="#fdeaea"];
+  n6 [label="(proposed a)\n(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n7 [label="(proposed a)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n8 [label="(proposed b)\n(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n9 [label="(proposed b)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n10 [label="(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n11 [label="(proposed a)\n(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n12 [label="(proposed b)\n(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  { rank=same; n1; n2; n3; n4; }
+  { rank=same; n5; n6; n7; n8; n9; n10; }
+  { rank=same; n11; n12; }
+  n0 -> n1;
+  n0 -> n2;
+  n0 -> n3;
+  n0 -> n4;
+  n2 -> n5;
+  n1 -> n5;
+  n3 -> n6;
+  n1 -> n6;
+  n4 -> n7;
+  n1 -> n7;
+  n3 -> n8;
+  n2 -> n8;
+  n4 -> n9;
+  n2 -> n9;
+  n4 -> n10;
+  n3 -> n10;
+  n10 -> n11;
+  n7 -> n11;
+  n6 -> n11;
+  n10 -> n12;
+  n9 -> n12;
+  n8 -> n12;
+}

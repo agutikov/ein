@@ -47,34 +47,8 @@ $$
 From the program to the bit order of every node mask; the choice between the rungs is drawn as a flow in
 [`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-ladder):
 
-```dot
-digraph h {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
+![From the program to the bit order of every node mask](diagrams/07-hypothesis-order.svg)
 
-  root  [shape=cylinder, label="root's fixpoint"];
-  rung  [shape=diamond, label="hypgen::rung"];
-  r1    [label="rung 1\nhrule.rs\nthe hrule plans' matches"];
-  r2    [label="rung 2\noblgen.rs\nwhat pays root's debts,\nand a commitment's"];
-  r3    [label="rung 3\nthe blind enumerator\nrelations x slots x objects"];
-  scope [shape=note, label=":hypothesis-relations\n:no-hypothesis\n(__closed__ R)"];
-  filt  [label="the filters, in order\nnegated_fact\nfact_already_exists\nseen_in_call"];
-  sort  [label="region::prepare\nsort by order_key,\ndeduplicate"];
-  H     [shape=cylinder, label="H: Vec<Candidate>\nbit i of every node mask"];
-
-  root -> rung;
-  rung -> r1 [label="an hrule is declared"];
-  rung -> r2 [label="an obligation is\nactivated at root"];
-  rung -> r3 [label="neither"];
-  r2 -> r3   [style=dashed, label="declined"];
-  scope -> r2 [style=dotted];
-  scope -> r3 [style=dotted];
-  r1 -> filt; r2 -> filt; r3 -> filt;
-  filt -> sort [label="emitted"];
-  sort -> H;
-}
-```
 `(solve :hypothesis-relations …)`, `(solve :no-hypothesis …)` and `(__closed__ R)` scope the blind enumerator
 ([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)).
 
@@ -99,35 +73,7 @@ read one differently.
 A commitment's life in one run. Its kind is one of three, `region::Class`: `Dead`, `Owing` or `R`, printed `dead`,
 `owing` and `in-r`. A set a route knows to be dead is never forked, and has no `enter` line (§ 3).
 
-```plantuml
-@startuml
-hide empty description
-state "not visited" as Unvisited
-state "known dead" as Known
-state "forked" as Forked
-state "saturating" as Sat
-state "stopped at its\nfirst contradiction" as Stopped
-state "quiescent" as Quiet
-state "dead" as Dead
-state "owing" as Owing
-state "in R" as InR
-
-[*] --> Unvisited
-Unvisited --> Known : a set known dead lies inside it\n(L1, L8): no saturation
-Unvisited --> Forked : the node function:\nroot.branch(), the commitment written
-Forked --> Sat : Saturator::resume(root's snapshot)
-Sat --> Stopped : a firing makes a contradiction\n(a route's node, monotone program)
-Sat --> Quiet : the fixpoint
-Stopped --> Dead
-Quiet --> Dead : contradiction::detect\nfinds (false), or X and (not X)
-Quiet --> Owing : alive, and obligations::tally\nreports an instance
-Quiet --> InR : alive, and it owes nothing
-Dead --> [*] : its core, where a surface prints one,\ntaken over its fixpoint
-Owing --> [*]
-InR --> [*]
-Known --> [*]
-@enduml
-```
+![A commitment's life in one run as a state machine: not visited, known dead, forked, then dead, owing or in R](diagrams/07-commitment-life.svg)
 
 On a monotone program a route's node is saturated with the **stop at its first contradiction**: its dead bit is all
 a route reads of a dead node, and the agenda puts first what can make the contradiction. A node a route reads whole,
@@ -190,52 +136,8 @@ whose four candidates make a cube of sixteen commitments, as `ein render lattice
 green, the one dead node red. The three commitments above the dead pair are not drawn, because the route never
 saturated them (L1).
 
-```dot
-digraph lattice {
-  rankdir=BT;
-  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10];
-  label="examples/lattice/01_subset_pruned.ein — 13 of 13 nodes visited by the state route, every alive state once";
-  labelloc=t;
-  n0 [label="∅", color="#2ca02c", fillcolor="#e8f6e8"];
-  n1 [label="(proposed a)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n2 [label="(proposed b)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n3 [label="(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n4 [label="(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n5 [label="(proposed a)\n(proposed b)", color="#d62728", fillcolor="#fdeaea"];
-  n6 [label="(proposed a)\n(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n7 [label="(proposed a)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n8 [label="(proposed b)\n(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n9 [label="(proposed b)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n10 [label="(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n11 [label="(proposed a)\n(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
-  n12 [label="(proposed b)\n(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
-  { rank=same; n1; n2; n3; n4; }
-  { rank=same; n5; n6; n7; n8; n9; n10; }
-  { rank=same; n11; n12; }
-  n0 -> n1;
-  n0 -> n2;
-  n0 -> n3;
-  n0 -> n4;
-  n2 -> n5;
-  n1 -> n5;
-  n3 -> n6;
-  n1 -> n6;
-  n4 -> n7;
-  n1 -> n7;
-  n3 -> n8;
-  n2 -> n8;
-  n4 -> n9;
-  n2 -> n9;
-  n4 -> n10;
-  n3 -> n10;
-  n10 -> n11;
-  n7 -> n11;
-  n6 -> n11;
-  n10 -> n12;
-  n9 -> n12;
-  n8 -> n12;
-}
-```
+![The lattice a route visits on 01_subset_pruned: R green, the one dead node red](diagrams/07-route-on-subset-pruned.svg)
+
  The alive commitments it saturates are
 distinct, so they are at most route 1's, and a dead extension it saturates prunes every superset (L1); where both
 routes finish, their read-outs are identical but for the `route` and `work` rows (`ein-infer/tests/explore.rs`).
@@ -321,30 +223,7 @@ an `(absent …)` at odd depth in a saturation rule over a relation a commitment
 one, or a rule whose activator a commitment can derive. A program with no site is monotone, and its routes take every
 licence of § 3; a program with a site is **flagged**, and gets the cube alone.
 
-```dot
-digraph check {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  plans   [shape=cylinder, label="root's compiled plans,\nthe relations of H"];
-  classify [label="monotone::classify\na site: a read a commitment\ncan undo"];
-  mono    [label="monotone\nevery licence of § 3"];
-  flagged [label="flagged\nL7, the cube, alone"];
-  det     [label="detector.rs\nwhat each site puts at stake,\ncycles, order findings"];
-  forbid  [label="forbid::check\na refutation resting on an\nabsent a commitment can extend"];
-  refused [shape=note, label="the program is refused,\nbefore any node"];
-  warn    [shape=note, label="the read-out's warnings"];
-
-  plans -> classify;
-  classify -> mono    [label="no site"];
-  classify -> flagged [label="a site"];
-  flagged -> det;
-  det -> warn;
-  classify -> forbid  [label="the sites"];
-  forbid -> refused   [label="one found"];
-}
-```
+![The static check: root's plans classified monotone or flagged, and what forbid refuses](diagrams/07-static-check.svg)
 
 **The detector** ([`detector.rs`](../../../../ein.rs/crates/ein-infer/src/detector.rs)) says more of a flagged program:
 its static half, read off root's plans before any node, is which property of a node each site puts at stake (the

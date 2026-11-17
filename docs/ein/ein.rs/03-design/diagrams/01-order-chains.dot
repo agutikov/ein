@@ -1,0 +1,37 @@
+digraph orders {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  written [shape=cylinder, label="the order forms are written in\n(the registries, a file's facts)"];
+  names   [shape=cylinder, label="the text of names\n(Interner::rank, repr)"];
+  argv    [shape=cylinder, label="the command and its options"];
+
+  extent  [label="a relation's extent,\nappend order"];
+  plans   [label="the engine's plan list\nrules x activators"];
+  matches [label="the match sequence\nleft-deep, steps in plan order"];
+  rank    [label="the agenda's rank\nhalf, then the tiebreaker"];
+  firing  [label="the firing sequence"];
+  first   [label="which derivation a fact\nrecords first"];
+  gen     [label="the generator's list\nobjects by name rank"];
+  H       [label="H, sorted by order_key:\nthe bit order of every node mask"];
+  visit   [label="the route's visit order"];
+  sorted  [label="every printed set,\nsorted by rendered text"];
+
+  o_trace [shape=note, label="the trace,\nthe event stream"];
+  o_core  [shape=note, label="a dead node's core"];
+  o_list  [shape=note, label="the read-out's listings,\nthe dumps, DOT"];
+
+  written -> extent; written -> plans;
+  extent -> matches; plans -> matches;
+  matches -> rank; rank -> firing;
+  firing -> extent [style=dashed, label="derived facts append"];
+  firing -> plans  [style=dashed, label="a derived activator's plan appends"];
+  firing -> first; firing -> o_trace;
+  first -> o_core;
+  names -> gen; written -> gen;
+  gen -> H; names -> H;
+  H -> visit; argv -> visit;
+  visit -> o_trace;
+  names -> sorted; sorted -> o_list; H -> o_list;
+}

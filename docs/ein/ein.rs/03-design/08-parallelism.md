@@ -47,40 +47,7 @@ One batch of three nodes at `--jobs 2`, of which the second would have to number
 is the only one that writes the intern tables, the event stream and the route's memory; a worker writes its own
 fork, its own derivation records and its own event buffer.
 
-```plantuml
-@startuml
-participant "the committing thread\n(the route)" as main
-participant "Terms" as terms
-participant "worker 1" as w1
-participant "worker 2" as w2
-participant "--events sink" as sink
-
-main -> terms : lend()
-note right of terms : both tables shared for the batch:\nreadable from every thread,\ngrowable from none
-main -> w1 : node 1 (pool.install, par_iter)
-main -> w2 : node 2
-activate w1
-activate w2
-w1 -> terms : worker(): a view;\nprovs.open_fork()
-w2 -> terms : worker(): a view;\nprovs.open_fork()
-w1 -> w1 : root.branch(), resume, saturate,\ntally: every fact already interned
-w2 -> w2 : root.branch(), resume, saturate:\na new fact
-terms --> w2 : Overflow::Shared; refused is set
-w1 --> main : Some(NodeOut), its events buffered
-deactivate w1
-w2 --> main : None: handed back
-deactivate w2
-main -> w1 : node 3
-activate w1
-w1 --> main : Some(NodeOut)
-deactivate w1
-main -> terms : the Lent guard drops: the tables are owned again
-main -> main : node 2 computed here, in the batch's order:\nits new facts get their numbers
-loop the batch's order: node 1, node 2, node 3
-  main -> sink : Events::replay(the node's buffer),\neach line numbered now; then its enter line
-end
-@enduml
-```
+![One batch of three nodes at two jobs: the committing thread and two workers](diagrams/08-batch-of-nodes.svg)
 
 A node's narration is buffered per worker: a worker builds each event line with a hole where its sequence number goes,
 and `Events::replay` fills the holes as the committing thread replays the node's events in visit order, so the stream

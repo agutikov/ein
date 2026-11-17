@@ -1,0 +1,26 @@
+digraph h {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  root  [shape=cylinder, label="root's fixpoint"];
+  rung  [shape=diamond, label="hypgen::rung"];
+  r1    [label="rung 1\nhrule.rs\nthe hrule plans' matches"];
+  r2    [label="rung 2\noblgen.rs\nwhat pays root's debts,\nand a commitment's"];
+  r3    [label="rung 3\nthe blind enumerator\nrelations x slots x objects"];
+  scope [shape=note, label=":hypothesis-relations\n:no-hypothesis\n(__closed__ R)"];
+  filt  [label="the filters, in order\nnegated_fact\nfact_already_exists\nseen_in_call"];
+  sort  [label="region::prepare\nsort by order_key,\ndeduplicate"];
+  H     [shape=cylinder, label="H: Vec<Candidate>\nbit i of every node mask"];
+
+  root -> rung;
+  rung -> r1 [label="an hrule is declared"];
+  rung -> r2 [label="an obligation is\nactivated at root"];
+  rung -> r3 [label="neither"];
+  r2 -> r3   [style=dashed, label="declined"];
+  scope -> r2 [style=dotted];
+  scope -> r3 [style=dotted];
+  r1 -> filt; r2 -> filt; r3 -> filt;
+  filt -> sort [label="emitted"];
+  sort -> H;
+}

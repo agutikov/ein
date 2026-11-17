@@ -1,0 +1,21 @@
+@startuml
+start
+:take the size of each watched relation;\nadvance the clock of each guard set that grew;
+while (next parked candidate, in rank order?) is (one)
+  if (judged before, and nothing\nits guard set watches grew?) then (yes)
+    :skip it;
+  else (no)
+    :run each guard's sub-plan on the candidate's bindings\n(Matcher::holds), to the first that finds a match;
+    if (no guard found a match?) then (yes)
+      :admit: move it to the queue;
+      stop
+    elseif (the failing guard is monotone?) then (yes)
+      :retire: it can only keep failing;
+    else (no: it holds a nested absent)
+      :stays parked, stamped with this round;
+    endif
+  endif
+endwhile (none left)
+:no admission: the fixpoint;
+stop
+@enduml

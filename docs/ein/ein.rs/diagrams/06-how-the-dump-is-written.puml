@@ -1,0 +1,22 @@
+@startuml
+participant "ein-cli\nmodes::run" as cli
+participant "Events\n(with a Watch)" as ev
+participant "the route\n(ein-infer)" as route
+participant "Visits\n(ein-render)" as visits
+participant "DIR/" as dir
+
+cli -> dir : create_dir_all(DIR), before the run
+cli -> ev : watched(Watcher { visits })
+cli -> route : read_out::run_with(..., events)
+loop each layer of the route, or batch of a mode
+  loop each of its nodes, in visit order
+    route -> ev : watch_node(Visited)
+    ev -> visits : the node: its commitment, kind,\nowes, core, closure, facts
+  end
+  route -> ev : watch_step(Stepped)
+  ev -> visits : the step: its layer and counts
+end
+route --> cli : ReadOut
+cli -> visits : region_lattice::write(DIR, visits, inputs)
+visits -> dir : nodes.json, nodes.md
+@enduml

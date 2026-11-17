@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: lineage Pages: 1 -->
+<svg width="773pt" height="274pt"
+ viewBox="0.00 0.00 773.00 274.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 269.65)">
+<title>lineage</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-269.65 769.25,-269.65 769.25,4 -4,4"/>
+<!-- ein -->
+<g id="node1" class="node">
+<title>ein</title>
+<polygon fill="none" stroke="black" stroke-width="2" points="765.25,-156.25 600,-156.25 600,-107.75 765.25,-107.75 765.25,-156.25"/>
+<text xml:space="preserve" text-anchor="middle" x="682.62" y="-141.8" font-family="Helvetica,sans-Serif" font-size="11.00">Ein</text>
+<text xml:space="preserve" text-anchor="middle" x="682.62" y="-128.3" font-family="Helvetica,sans-Serif" font-size="11.00">facts, rules, queries</text>
+<text xml:space="preserve" text-anchor="middle" x="682.62" y="-114.8" font-family="Helvetica,sans-Serif" font-size="11.00">in one S&#45;expression syntax</text>
+</g>
+<!-- smt -->
+<g id="node2" class="node">
+<title>smt</title>
+<polygon fill="none" stroke="black" points="386.25,-263 317,-263 317,-227 386.25,-227 386.25,-263"/>
+<text xml:space="preserve" text-anchor="middle" x="351.62" y="-241.3" font-family="Helvetica,sans-Serif" font-size="11.00">SMT&#45;LIB 2</text>
+</g>
+<!-- smt&#45;&gt;ein -->
+<g id="edge1" class="edge">
+<title>smt&#45;&gt;ein</title>
+<path fill="none" stroke="black" d="M386.74,-244.87C432.86,-243.56 516.85,-237.07 582,-209 606.67,-198.37 630.61,-180.2 648.84,-164.18"/>
+<polygon fill="black" stroke="black" points="651.11,-166.85 656.19,-157.55 646.42,-161.65 651.11,-166.85"/>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-257.1" font-family="Helvetica,sans-Serif" font-size="9.00">S&#45;expressions, comments,</text>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-245.85" font-family="Helvetica,sans-Serif" font-size="9.00">:keyword arguments</text>
+</g>
+<!-- mk -->
+<g id="node3" class="node">
+<title>mk</title>
+<polygon fill="none" stroke="black" points="390.38,-207 312.88,-207 312.88,-171 390.38,-171 390.38,-207"/>
+<text xml:space="preserve" text-anchor="middle" x="351.62" y="-185.3" font-family="Helvetica,sans-Serif" font-size="11.00">miniKanren</text>
+</g>
+<!-- mk&#45;&gt;ein -->
+<g id="edge2" class="edge">
+<title>mk&#45;&gt;ein</title>
+<path fill="none" stroke="black" d="M390.63,-185.61C436.33,-181.17 515.25,-172.35 582,-159 584.17,-158.57 586.37,-158.11 588.58,-157.64"/>
+<polygon fill="black" stroke="black" points="589.27,-161.07 598.26,-155.46 587.74,-154.24 589.27,-161.07"/>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-196.1" font-family="Helvetica,sans-Serif" font-size="9.00">relations over atoms,</text>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-184.85" font-family="Helvetica,sans-Serif" font-size="9.00">?var, a body as a conjunction</text>
+</g>
+<!-- as -->
+<g id="node4" class="node">
+<title>as</title>
+<polygon fill="none" stroke="black" points="390.75,-150 312.5,-150 312.5,-114 390.75,-114 390.75,-150"/>
+<text xml:space="preserve" text-anchor="middle" x="351.62" y="-128.3" font-family="Helvetica,sans-Serif" font-size="11.00">AtomSpace</text>
+</g>
+<!-- as&#45;&gt;ein -->
+<g id="edge3" class="edge">
+<title>as&#45;&gt;ein</title>
+<path fill="none" stroke="black" d="M391.01,-132C439.08,-132 523.06,-132 588.42,-132"/>
+<polygon fill="black" stroke="black" points="588.05,-135.5 598.05,-132 588.05,-128.5 588.05,-135.5"/>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-145.95" font-family="Helvetica,sans-Serif" font-size="9.00">explicit declarations of relations,</text>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-134.7" font-family="Helvetica,sans-Serif" font-size="9.00">each argument place given a label</text>
+</g>
+<!-- dl -->
+<g id="node5" class="node">
+<title>dl</title>
+<polygon fill="none" stroke="black" points="381,-95 322.25,-95 322.25,-59 381,-59 381,-95"/>
+<text xml:space="preserve" text-anchor="middle" x="351.62" y="-73.3" font-family="Helvetica,sans-Serif" font-size="11.00">Datalog</text>
+</g>
+<!-- dl&#45;&gt;ein -->
+<g id="edge4" class="edge">
+<title>dl&#45;&gt;ein</title>
+<path fill="none" stroke="black" d="M381.43,-79.31C425.09,-83.09 510.5,-91.62 582,-105.5 584.17,-105.92 586.37,-106.37 588.58,-106.83"/>
+<polygon fill="black" stroke="black" points="587.74,-110.23 598.26,-108.95 589.24,-103.39 587.74,-110.23"/>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-119.45" font-family="Helvetica,sans-Serif" font-size="9.00">head and body: :assert and :match;</text>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-108.2" font-family="Helvetica,sans-Serif" font-size="9.00">derivation to a fixpoint</text>
+</g>
+<!-- dpo -->
+<g id="node6" class="node">
+<title>dpo</title>
+<polygon fill="none" stroke="black" points="402,-38 301.25,-38 301.25,-2 402,-2 402,-38"/>
+<text xml:space="preserve" text-anchor="middle" x="351.62" y="-23.05" font-family="Helvetica,sans-Serif" font-size="11.00">double&#45;pushout</text>
+<text xml:space="preserve" text-anchor="middle" x="351.62" y="-9.55" font-family="Helvetica,sans-Serif" font-size="11.00">graph rewriting</text>
+</g>
+<!-- dpo&#45;&gt;ein -->
+<g id="edge5" class="edge">
+<title>dpo&#45;&gt;ein</title>
+<path fill="none" stroke="black" d="M402.42,-20.99C450.22,-23.51 523.58,-31.58 582,-56.5 606.36,-66.89 630.13,-84.53 648.34,-100.15"/>
+<polygon fill="black" stroke="black" points="645.86,-102.63 655.68,-106.61 650.49,-97.37 645.86,-102.63"/>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-70.45" font-family="Helvetica,sans-Serif" font-size="9.00">:match and :assert as the</text>
+<text xml:space="preserve" text-anchor="middle" x="501" y="-59.2" font-family="Helvetica,sans-Serif" font-size="9.00">sub&#45;graph before and after</text>
+</g>
+<!-- d_smt -->
+<g id="node7" class="node">
+<title>d_smt</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="258.25,-264 0,-264 0,-228 264.25,-228 264.25,-258 258.25,-264"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="258.25,-264 258.25,-258"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="264.25,-258 258.25,-258"/>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-249.05" font-family="Helvetica,sans-Serif" font-size="11.00">no (check&#45;sat), no theory annotations:</text>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-235.55" font-family="Helvetica,sans-Serif" font-size="11.00">(query ...) and (solve ...) state what is asked</text>
+</g>
+<!-- d_smt&#45;&gt;smt -->
+<g id="edge6" class="edge">
+<title>d_smt&#45;&gt;smt</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M264.66,-245.4C283.81,-245.31 301.97,-245.22 316.62,-245.16"/>
+</g>
+<!-- d_mk -->
+<g id="node8" class="node">
+<title>d_mk</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="220,-210 38.25,-210 38.25,-174 226,-174 226,-204 220,-210"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="220,-210 220,-204"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="226,-204 220,-204"/>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-195.05" font-family="Helvetica,sans-Serif" font-size="11.00">no fresh, no unification syntax:</text>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-181.55" font-family="Helvetica,sans-Serif" font-size="11.00">:match binds a rule&#39;s variables</text>
+</g>
+<!-- d_mk&#45;&gt;mk -->
+<g id="edge7" class="edge">
+<title>d_mk&#45;&gt;mk</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M226.31,-190.71C256.63,-190.3 288.61,-189.86 312.53,-189.53"/>
+</g>
+<!-- d_as -->
+<g id="node9" class="node">
+<title>d_as</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="239.5,-156.25 18.75,-156.25 18.75,-107.75 245.5,-107.75 245.5,-150.25 239.5,-156.25"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="239.5,-156.25 239.5,-150.25"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="245.5,-150.25 239.5,-150.25"/>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-141.8" font-family="Helvetica,sans-Serif" font-size="11.00">no types, no truth values, no weights:</text>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-128.3" font-family="Helvetica,sans-Serif" font-size="11.00">a fact holds, its negation is stored,</text>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-114.8" font-family="Helvetica,sans-Serif" font-size="11.00">or neither is known</text>
+</g>
+<!-- d_as&#45;&gt;as -->
+<g id="edge8" class="edge">
+<title>d_as&#45;&gt;as</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M245.7,-132C269.75,-132 293.54,-132 312.38,-132"/>
+</g>
+<!-- d_dl -->
+<g id="node10" class="node">
+<title>d_dl</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="223,-90 35.25,-90 35.25,-54 229,-54 229,-84 223,-90"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="223,-90 223,-84"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="229,-84 223,-84"/>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-75.05" font-family="Helvetica,sans-Serif" font-size="11.00">S&#45;expressions, not infix clauses;</text>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-61.55" font-family="Helvetica,sans-Serif" font-size="11.00">every rule carries a :why</text>
+</g>
+<!-- d_dl&#45;&gt;dl -->
+<g id="edge9" class="edge">
+<title>d_dl&#45;&gt;dl</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M229.47,-74.21C263.11,-74.99 298.34,-75.8 322.09,-76.34"/>
+</g>
+<!-- d_dpo -->
+<g id="node11" class="node">
+<title>d_dpo</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="193.75,-36 64.5,-36 64.5,0 199.75,0 199.75,-30 193.75,-36"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="193.75,-36 193.75,-30"/>
+<polyline fill="none" stroke="black" stroke-dasharray="5,2" points="199.75,-30 193.75,-30"/>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">no span, no pushout:</text>
+<text xml:space="preserve" text-anchor="middle" x="132.12" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">the engine adds facts</text>
+</g>
+<!-- d_dpo&#45;&gt;dpo -->
+<g id="edge10" class="edge">
+<title>d_dpo&#45;&gt;dpo</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M200.16,-18.62C232.73,-18.92 271.2,-19.27 301.08,-19.54"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 576ec3b1c7df621abc9b9b65322b7f49a4b64c4e87cb694fc481a272b361810b -->

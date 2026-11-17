@@ -1,0 +1,31 @@
+digraph design {
+  rankdir=LR; compound=true;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_contract {
+    label="1. the contract: what may not change"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    det    [label="01 determinism\nand order"];
+    assets [label="02 shared assets"];
+    det -> assets;
+  }
+  subgraph cluster_machine {
+    label="2. the machine: what changes underneath it"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    data   [label="03 data model"];
+    ir     [label="04 IR frontend"];
+    match  [label="05 matcher"];
+    sat    [label="06 saturation"];
+    search [label="07 search"];
+    data -> ir -> match -> sat -> search;
+  }
+  subgraph cluster_scale {
+    label="3. the scale-out and the build"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    par  [label="08 parallelism"];
+    einb [label="09 binary format"];
+    tool [label="10 toolchain\nand layout"];
+    par -> einb -> tool;
+  }
+
+  assets -> data [style=dashed, ltail=cluster_contract, lhead=cluster_machine, label="constrains"];
+  search -> par  [style=dashed, ltail=cluster_machine, lhead=cluster_scale, label="constrains"];
+}

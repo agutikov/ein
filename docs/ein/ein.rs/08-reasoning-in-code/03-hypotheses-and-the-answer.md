@@ -226,44 +226,7 @@ keeps; `(written T)` is stated again as the loader states it, so it follows the 
 no relation by what it is called and no `:source`. Its nodes are the node function's, over its own saturated root
 and the universe **root** built: the small KB's own generator is not asked.
 
-```plantuml
-@startuml
-left to right direction
-rectangle "ein show hyps" as show
-rectangle "ein render h-space" as cmd
-rectangle "ein solve (the obligation tree)" as solve
-package "ein-infer: structure.rs" {
-  component "hypotheses" as hyps
-  component "PairLayer (root)" as pl
-  component "small_kb + PairLayer" as sk
-  component "Theory" as th
-  component "Cover" as cov
-  component "ExactlyOne" as eo
-  component "Coupling" as cp
-  component "NodeCoupling" as nc
-}
-package "ein-render: structure.rs" {
-  component "read-out" as ro
-  component "four DOT graphs" as dots
-  component "h-space.json" as json
-}
-show --> hyps
-cmd --> hyps
-hyps --> pl
-hyps --> sk
-pl --> th
-sk --> th
-sk --> cov
-cov --> eo
-cov --> cp
-pl --> cp
-cp --> ro
-cp --> dots
-cp --> json
-eo --> json
-solve --> nc : order.rs, where a choice is tied
-@enduml
-```
+![Where the structure of H lives: three commands, the parts ein-infer computes and what ein-render writes](diagrams/03-structure-components.svg)
 
 ### 2.2 What it costs
 
@@ -814,76 +777,7 @@ ein solve  examples/lattice/05_owed_seats_bounded.ein --single --dump-lattice ru
 ein render region cube/ --visited run/lattice --answer run/answer
 ```
 
-```dot
-digraph region {
-  // ein render region — view full
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · examples/lattice/05_owed_seats_bounded.ein\nn = 4 · |R| = 2 of 16 · monotone\nrun: all of R, --single — 2 states reported, stopped (asked) · 6 nodes visited · view full (16 of 16 nodes)"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
-  L1 [shape=plaintext, fontsize=9, label="L1 · 4"];
-  L2 [shape=plaintext, fontsize=9, label="L2 · 6"];
-  L3 [shape=plaintext, fontsize=9, label="L3 · 4"];
-  L4 [shape=plaintext, fontsize=9, label="L4 · 1"];
-  L0 -> L1 [style=invis];
-  L1 -> L2 [style=invis];
-  L2 -> L3 [style=invis];
-  L3 -> L4 [style=invis];
-  m0 [label="∅\nowing 4\nvisited", shape=box, style="filled,rounded", fillcolor="#fee391", color="#525252", penwidth=1];
-  m1 [label="(seats Ann C1)\nowing 2\nvisited", shape=box, style="filled,rounded", fillcolor="#fee391", color="#525252", penwidth=1];
-  m2 [label="(seats Ann C2)\nowing 2\nvisited", shape=box, style="filled,rounded", fillcolor="#fee391", color="#525252", penwidth=1];
-  m4 [label="(seats Bob C1)\nowing 2\nthe run stopped first", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m8 [label="(seats Bob C2)\nowing 2\nthe run stopped first", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m3 [label="(seats Ann C1)\n(seats Ann C2)\ndead+owing 1\nvisited", shape=box, style="filled,rounded", fillcolor="#fcbba1:#fee391", color="#525252", penwidth=1];
-  m5 [label="(seats Ann C1)\n(seats Bob C1)\ndead+owing 1\nthe run stopped first", shape=ellipse, style="filled", fillcolor="#fcbba1:#fee391", color="#525252", penwidth=1];
-  m6 [label="(seats Ann C2)\n(seats Bob C1)\nR · min · max\nstate 2", shape=octagon, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3, peripheries=2];
-  m9 [label="(seats Ann C1)\n(seats Bob C2)\nR · min · max\nstate 1", shape=octagon, style="filled", fillcolor="#9ecae1", color="#006d2c", penwidth=3, peripheries=2];
-  m10 [label="(seats Ann C2)\n(seats Bob C2)\ndead+owing 1\nthe run stopped first", shape=ellipse, style="filled", fillcolor="#fcbba1:#fee391", color="#525252", penwidth=1];
-  m12 [label="(seats Bob C1)\n(seats Bob C2)\ndead+owing 1\nthe run stopped first", shape=ellipse, style="filled", fillcolor="#fcbba1:#fee391", color="#525252", penwidth=1];
-  m7 [label="(seats Ann C1)\n(seats Ann C2)\n(seats Bob C1)\ndead\nabove a dead node", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m11 [label="(seats Ann C1)\n(seats Ann C2)\n(seats Bob C2)\ndead\nabove a dead node", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m13 [label="(seats Ann C1)\n(seats Bob C1)\n(seats Bob C2)\ndead\nthe run stopped first", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m14 [label="(seats Ann C2)\n(seats Bob C1)\n(seats Bob C2)\ndead\nthe run stopped first", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m15 [label="(seats Ann C1)\n(seats Ann C2)\n(seats Bob C1)\n(seats Bob C2)\ndead\nabove a dead node", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  { rank=same; L0; m0 }
-  { rank=same; L1; m1; m2; m4; m8 }
-  { rank=same; L2; m3; m5; m6; m9; m10; m12 }
-  { rank=same; L3; m7; m11; m13; m14 }
-  { rank=same; L4; m15 }
-  m0 -> m1 [color="#fdae6b", style=solid, penwidth=1.2];
-  m0 -> m2 [color="#fdae6b", style=solid, penwidth=1.2];
-  m0 -> m4 [color="#fdae6b", style=solid, penwidth=1.2];
-  m0 -> m8 [color="#fdae6b", style=solid, penwidth=1.2];
-  m1 -> m3 [color="#cb181d", style=dashed, penwidth=1.2];
-  m1 -> m5 [color="#cb181d", style=dashed, penwidth=1.2];
-  m1 -> m9 [color="#2171b5", style=solid, penwidth=2];
-  m2 -> m3 [color="#cb181d", style=dashed, penwidth=1.2];
-  m2 -> m6 [color="#2171b5", style=solid, penwidth=2];
-  m2 -> m10 [color="#cb181d", style=dashed, penwidth=1.2];
-  m4 -> m5 [color="#cb181d", style=dashed, penwidth=1.2];
-  m4 -> m6 [color="#2171b5", style=solid, penwidth=2];
-  m4 -> m12 [color="#cb181d", style=dashed, penwidth=1.2];
-  m8 -> m9 [color="#2171b5", style=solid, penwidth=2];
-  m8 -> m10 [color="#cb181d", style=dashed, penwidth=1.2];
-  m8 -> m12 [color="#cb181d", style=dashed, penwidth=1.2];
-  m3 -> m7 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m3 -> m11 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m5 -> m7 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m5 -> m13 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m6 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
-  m6 -> m14 [color="#cb181d", style=solid, penwidth=1.2];
-  m9 -> m11 [color="#cb181d", style=solid, penwidth=1.2];
-  m9 -> m13 [color="#cb181d", style=solid, penwidth=1.2];
-  m10 -> m11 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m10 -> m14 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m12 -> m13 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m12 -> m14 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m7 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m11 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m13 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m14 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-}
-```
+![The region of 05_owed_seats_bounded with a --single run overlaid](diagrams/03-single-run-on-owed-seats.svg)
 
 A rounded box is a node the run saturated, an octagon a state it reported, an ellipse a node it did not visit, with
 why under its facts: *above a dead node* is L1, and *the run stopped first* is the question having been decided. The

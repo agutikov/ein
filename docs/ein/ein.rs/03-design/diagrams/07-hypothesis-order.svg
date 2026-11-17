@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: h Pages: 1 -->
+<svg width="1446pt" height="219pt"
+ viewBox="0.00 0.00 1446.00 219.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 215.25)">
+<title>h</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-215.25 1442.48,-215.25 1442.48,4 -4,4"/>
+<!-- root -->
+<g id="node1" class="node">
+<title>root</title>
+<path fill="none" stroke="black" d="M92.5,-80.98C92.5,-82.78 71.77,-84.25 46.25,-84.25 20.73,-84.25 0,-82.78 0,-80.98 0,-80.98 0,-51.52 0,-51.52 0,-49.72 20.73,-48.25 46.25,-48.25 71.77,-48.25 92.5,-49.72 92.5,-51.52 92.5,-51.52 92.5,-80.98 92.5,-80.98"/>
+<path fill="none" stroke="black" d="M92.5,-80.98C92.5,-79.17 71.77,-77.7 46.25,-77.7 20.73,-77.7 0,-79.17 0,-80.98"/>
+<text xml:space="preserve" text-anchor="middle" x="46.25" y="-62.55" font-family="Helvetica,sans-Serif" font-size="11.00">root&#39;s fixpoint</text>
+</g>
+<!-- rung -->
+<g id="node2" class="node">
+<title>rung</title>
+<polygon fill="none" stroke="black" points="207.74,-84.25 129.5,-66.25 207.74,-48.25 285.98,-66.25 207.74,-84.25"/>
+<text xml:space="preserve" text-anchor="middle" x="207.74" y="-62.55" font-family="Helvetica,sans-Serif" font-size="11.00">hypgen::rung</text>
+</g>
+<!-- root&#45;&gt;rung -->
+<g id="edge1" class="edge">
+<title>root&#45;&gt;rung</title>
+<path fill="none" stroke="black" d="M92.95,-66.25C100.27,-66.25 108.07,-66.25 116,-66.25"/>
+<polygon fill="black" stroke="black" points="115.78,-69.75 125.78,-66.25 115.78,-62.75 115.78,-69.75"/>
+</g>
+<!-- r1 -->
+<g id="node3" class="node">
+<title>r1</title>
+<polygon fill="none" stroke="black" points="728.23,-48.5 575.73,-48.5 575.73,0 728.23,0 728.23,-48.5"/>
+<text xml:space="preserve" text-anchor="middle" x="651.98" y="-34.05" font-family="Helvetica,sans-Serif" font-size="11.00">rung 1</text>
+<text xml:space="preserve" text-anchor="middle" x="651.98" y="-20.55" font-family="Helvetica,sans-Serif" font-size="11.00">hrule.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="651.98" y="-7.05" font-family="Helvetica,sans-Serif" font-size="11.00">the hrule plans&#39; matches</text>
+</g>
+<!-- rung&#45;&gt;r1 -->
+<g id="edge2" class="edge">
+<title>rung&#45;&gt;r1</title>
+<path fill="none" stroke="black" d="M241.87,-55.62C260.02,-50.27 283.02,-44.25 303.98,-41 391.78,-27.4 493.42,-23.9 563.91,-23.39"/>
+<polygon fill="black" stroke="black" points="563.89,-26.89 573.87,-23.34 563.86,-19.89 563.89,-26.89"/>
+<text xml:space="preserve" text-anchor="middle" x="348.61" y="-43.7" font-family="Helvetica,sans-Serif" font-size="9.00">an hrule is declared</text>
+</g>
+<!-- r2 -->
+<g id="node4" class="node">
+<title>r2</title>
+<polygon fill="none" stroke="black" points="557.73,-211.25 411.23,-211.25 411.23,-149.25 557.73,-149.25 557.73,-211.25"/>
+<text xml:space="preserve" text-anchor="middle" x="484.48" y="-196.8" font-family="Helvetica,sans-Serif" font-size="11.00">rung 2</text>
+<text xml:space="preserve" text-anchor="middle" x="484.48" y="-183.3" font-family="Helvetica,sans-Serif" font-size="11.00">oblgen.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="484.48" y="-169.8" font-family="Helvetica,sans-Serif" font-size="11.00">what pays root&#39;s debts,</text>
+<text xml:space="preserve" text-anchor="middle" x="484.48" y="-156.3" font-family="Helvetica,sans-Serif" font-size="11.00">and a commitment&#39;s</text>
+</g>
+<!-- rung&#45;&gt;r2 -->
+<g id="edge3" class="edge">
+<title>rung&#45;&gt;r2</title>
+<path fill="none" stroke="black" d="M241.17,-77.06C278.36,-89.74 340.93,-111.94 393.23,-134.75 399.93,-137.67 406.84,-140.85 413.72,-144.12"/>
+<polygon fill="black" stroke="black" points="411.84,-147.1 422.37,-148.3 414.89,-140.8 411.84,-147.1"/>
+<text xml:space="preserve" text-anchor="middle" x="348.61" y="-148.7" font-family="Helvetica,sans-Serif" font-size="9.00">an obligation is</text>
+<text xml:space="preserve" text-anchor="middle" x="348.61" y="-137.45" font-family="Helvetica,sans-Serif" font-size="9.00">activated at root</text>
+</g>
+<!-- r3 -->
+<g id="node5" class="node">
+<title>r3</title>
+<polygon fill="none" stroke="black" points="904.73,-145.5 746.23,-145.5 746.23,-97 904.73,-97 904.73,-145.5"/>
+<text xml:space="preserve" text-anchor="middle" x="825.48" y="-131.05" font-family="Helvetica,sans-Serif" font-size="11.00">rung 3</text>
+<text xml:space="preserve" text-anchor="middle" x="825.48" y="-117.55" font-family="Helvetica,sans-Serif" font-size="11.00">the blind enumerator</text>
+<text xml:space="preserve" text-anchor="middle" x="825.48" y="-104.05" font-family="Helvetica,sans-Serif" font-size="11.00">relations x slots x objects</text>
+</g>
+<!-- rung&#45;&gt;r3 -->
+<g id="edge4" class="edge">
+<title>rung&#45;&gt;r3</title>
+<path fill="none" stroke="black" d="M265.84,-71.35C373.21,-80.94 605.92,-101.73 734.53,-113.21"/>
+<polygon fill="black" stroke="black" points="734.1,-116.69 744.37,-114.09 734.73,-109.72 734.1,-116.69"/>
+<text xml:space="preserve" text-anchor="middle" x="484.48" y="-100.11" font-family="Helvetica,sans-Serif" font-size="9.00">neither</text>
+</g>
+<!-- filt -->
+<g id="node7" class="node">
+<title>filt</title>
+<polygon fill="none" stroke="black" points="1063.48,-152.25 941.73,-152.25 941.73,-90.25 1063.48,-90.25 1063.48,-152.25"/>
+<text xml:space="preserve" text-anchor="middle" x="1002.61" y="-137.8" font-family="Helvetica,sans-Serif" font-size="11.00">the filters, in order</text>
+<text xml:space="preserve" text-anchor="middle" x="1002.61" y="-124.3" font-family="Helvetica,sans-Serif" font-size="11.00">negated_fact</text>
+<text xml:space="preserve" text-anchor="middle" x="1002.61" y="-110.8" font-family="Helvetica,sans-Serif" font-size="11.00">fact_already_exists</text>
+<text xml:space="preserve" text-anchor="middle" x="1002.61" y="-97.3" font-family="Helvetica,sans-Serif" font-size="11.00">seen_in_call</text>
+</g>
+<!-- r1&#45;&gt;filt -->
+<g id="edge8" class="edge">
+<title>r1&#45;&gt;filt</title>
+<path fill="none" stroke="black" d="M728.59,-41.81C778.81,-53.88 846.05,-70.82 904.73,-88.25 913.12,-90.74 921.86,-93.49 930.51,-96.31"/>
+<polygon fill="black" stroke="black" points="929.35,-99.62 939.95,-99.43 931.55,-92.97 929.35,-99.62"/>
+</g>
+<!-- r2&#45;&gt;r3 -->
+<g id="edge5" class="edge">
+<title>r2&#45;&gt;r3</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M558.17,-158.98C564.09,-157.54 570,-156.19 575.73,-155 605.4,-148.87 676.22,-139.44 734.74,-132.11"/>
+<polygon fill="black" stroke="black" points="734.89,-135.61 744.38,-130.9 734.03,-128.67 734.89,-135.61"/>
+<text xml:space="preserve" text-anchor="middle" x="651.98" y="-157.7" font-family="Helvetica,sans-Serif" font-size="9.00">declined</text>
+</g>
+<!-- r2&#45;&gt;filt -->
+<g id="edge9" class="edge">
+<title>r2&#45;&gt;filt</title>
+<path fill="none" stroke="black" d="M558.22,-181.7C642.45,-182 784.97,-178.29 904.73,-154.25 913.18,-152.55 921.91,-150.31 930.51,-147.8"/>
+<polygon fill="black" stroke="black" points="931.31,-151.21 939.85,-144.93 929.26,-144.52 931.31,-151.21"/>
+</g>
+<!-- r3&#45;&gt;filt -->
+<g id="edge10" class="edge">
+<title>r3&#45;&gt;filt</title>
+<path fill="none" stroke="black" d="M905.08,-121.25C913.36,-121.25 921.75,-121.25 929.95,-121.25"/>
+<polygon fill="black" stroke="black" points="929.87,-124.75 939.87,-121.25 929.87,-117.75 929.87,-124.75"/>
+</g>
+<!-- scope -->
+<g id="node6" class="node">
+<title>scope</title>
+<polygon fill="none" stroke="black" points="267.49,-174.5 141.99,-174.5 141.99,-126 273.49,-126 273.49,-168.5 267.49,-174.5"/>
+<polyline fill="none" stroke="black" points="267.49,-174.5 267.49,-168.5"/>
+<polyline fill="none" stroke="black" points="273.49,-168.5 267.49,-168.5"/>
+<text xml:space="preserve" text-anchor="middle" x="207.74" y="-160.05" font-family="Helvetica,sans-Serif" font-size="11.00">:hypothesis&#45;relations</text>
+<text xml:space="preserve" text-anchor="middle" x="207.74" y="-146.55" font-family="Helvetica,sans-Serif" font-size="11.00">:no&#45;hypothesis</text>
+<text xml:space="preserve" text-anchor="middle" x="207.74" y="-133.05" font-family="Helvetica,sans-Serif" font-size="11.00">(__closed__ R)</text>
+</g>
+<!-- scope&#45;&gt;r2 -->
+<g id="edge6" class="edge">
+<title>scope&#45;&gt;r2</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M273.85,-157.36C311.56,-161.48 359.43,-166.7 399.9,-171.12"/>
+<polygon fill="black" stroke="black" points="399.28,-174.58 409.6,-172.18 400.04,-167.62 399.28,-174.58"/>
+</g>
+<!-- scope&#45;&gt;r3 -->
+<g id="edge7" class="edge">
+<title>scope&#45;&gt;r3</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M273.94,-146.97C313.63,-144.99 365.35,-142.44 411.23,-140.25 522.69,-134.94 651.06,-129.07 734.77,-125.29"/>
+<polygon fill="black" stroke="black" points="734.68,-128.79 744.51,-124.85 734.37,-121.8 734.68,-128.79"/>
+</g>
+<!-- sort -->
+<g id="node8" class="node">
+<title>sort</title>
+<polygon fill="none" stroke="black" points="1251.23,-145.5 1134.73,-145.5 1134.73,-97 1251.23,-97 1251.23,-145.5"/>
+<text xml:space="preserve" text-anchor="middle" x="1192.98" y="-131.05" font-family="Helvetica,sans-Serif" font-size="11.00">region::prepare</text>
+<text xml:space="preserve" text-anchor="middle" x="1192.98" y="-117.55" font-family="Helvetica,sans-Serif" font-size="11.00">sort by order_key,</text>
+<text xml:space="preserve" text-anchor="middle" x="1192.98" y="-104.05" font-family="Helvetica,sans-Serif" font-size="11.00">deduplicate</text>
+</g>
+<!-- filt&#45;&gt;sort -->
+<g id="edge11" class="edge">
+<title>filt&#45;&gt;sort</title>
+<path fill="none" stroke="black" d="M1063.73,-121.25C1082.63,-121.25 1103.65,-121.25 1123.11,-121.25"/>
+<polygon fill="black" stroke="black" points="1122.85,-124.75 1132.85,-121.25 1122.85,-117.75 1122.85,-124.75"/>
+<text xml:space="preserve" text-anchor="middle" x="1099.11" y="-123.95" font-family="Helvetica,sans-Serif" font-size="9.00">emitted</text>
+</g>
+<!-- H -->
+<g id="node9" class="node">
+<title>H</title>
+<path fill="none" stroke="black" d="M1438.48,-140.94C1438.48,-143.35 1404.81,-145.31 1363.36,-145.31 1321.91,-145.31 1288.23,-143.35 1288.23,-140.94 1288.23,-140.94 1288.23,-101.56 1288.23,-101.56 1288.23,-99.15 1321.91,-97.19 1363.36,-97.19 1404.81,-97.19 1438.48,-99.15 1438.48,-101.56 1438.48,-101.56 1438.48,-140.94 1438.48,-140.94"/>
+<path fill="none" stroke="black" d="M1438.48,-140.94C1438.48,-138.52 1404.81,-136.56 1363.36,-136.56 1321.91,-136.56 1288.23,-138.52 1288.23,-140.94"/>
+<text xml:space="preserve" text-anchor="middle" x="1363.36" y="-124.3" font-family="Helvetica,sans-Serif" font-size="11.00">H: Vec&lt;Candidate&gt;</text>
+<text xml:space="preserve" text-anchor="middle" x="1363.36" y="-110.8" font-family="Helvetica,sans-Serif" font-size="11.00">bit i of every node mask</text>
+</g>
+<!-- sort&#45;&gt;H -->
+<g id="edge12" class="edge">
+<title>sort&#45;&gt;H</title>
+<path fill="none" stroke="black" d="M1251.46,-121.25C1259.51,-121.25 1267.93,-121.25 1276.38,-121.25"/>
+<polygon fill="black" stroke="black" points="1276.36,-124.75 1286.36,-121.25 1276.36,-117.75 1276.36,-124.75"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 893daef2836d724d7b8a3579f692c7c6b49d206ff9bd07a8d67d397c20db547b -->

@@ -74,66 +74,7 @@ composition below a `Disjunct` is a `Span` into one of the plan's arenas, so a `
 `Slot` and a `NafGuard` hold no pointer, only a start and a length. A lifted guard's sub-plan is steps of the same
 arena, run in a register space of its own (§ 2.3).
 
-```plantuml
-@startuml
-hide empty methods
-skinparam classAttributeIconSize 0
-
-class Plan {
-  rule : Symbol
-  activator_args : Box<[Value]>
-  activator : Option<FactId>
-  seed : Box<[(Symbol, Value)]>
-  asserts : Box<[Slot]>
-  n_regs : u16
-  reg_names : Box<[Symbol]>
-  .. the arenas ..
-  steps, slots, guards, probes,
-  shared, guard_args, guard_keys
-}
-class Disjunct {
-  n_premises : u16
-  n_slots : u16
-}
-class NafGuard {
-  n_regs : u16
-  reg_names
-  scope_of : Box<[Option<Reg>]>
-  scope, watched : Box<[Symbol]>
-  monotone : bool
-}
-enum Step {
-  Rel(RelStep)
-  Guard { pred, args }
-  Absent { sub }
-}
-class RelStep {
-  rel : Symbol
-  join : bool
-}
-enum Slot {
-  Reg(Reg)
-  Const(Value)
-  Nested { rel, slots }
-  Opaque(NodeId)
-}
-class Probe {
-  slot : u16
-  inner : u16
-  src : Const(Value) | Reg(Reg)
-}
-
-Plan *-- "1..*" Disjunct : disjuncts
-Disjunct *-- "0..*" Step : steps
-Disjunct *-- "0..*" NafGuard : guards
-NafGuard *-- "1..*" Step : sub
-Step -- RelStep
-RelStep *-- "0..*" Slot : slots
-RelStep *-- "0..*" Probe : probe
-Slot *-- "0..*" Slot : Nested.slots
-Plan *-- "0..*" Slot : asserts
-@enduml
-```
+![The plan's types as a class diagram: disjuncts, steps and slots as spans into arenas](diagrams/05-plan-layout.svg)
 
 A `:match` of `()` compiles to one empty disjunct, which the matcher accepts as one match: the rule fires once, or
 once per activator, with only its parameters bound
@@ -228,23 +169,7 @@ What it keeps invariant is the life of one register: bound at most once on the w
 frame that bound it on the way back, so that when a candidate fails or the callback returns, the register file is
 what it was before that candidate was tried.
 
-```plantuml
-@startuml
-hide empty description
-state "UNBOUND" as U
-state "bound to a Value,\non the trail" as B
-state "bound to a Value,\nnot on the trail" as P
-
-[*] --> U : reset
-U --> B : the activator's seed, before any step
-U --> B : unify_slot on a Reg slot:\nregs[r] = arg; trail.push(r)
-U --> B : an eq or neq guard binds\nits free side
-B --> B : unify_slot on a bound Reg slot:\na compare, no write
-B --> U : unwind(mark): the frame that bound it\nreturns, pass or fail
-U --> P : holds: a guard's register projected\nfrom the parent's through scope_of
-P --> [*] : the guard's run ends
-@enduml
-```
+![The life of one register as a state machine: bound once on the way down, unbound on the way back](diagrams/05-register-life.svg)
 
 ### 3.2 The trail is the binding order
 
@@ -308,29 +233,7 @@ For a relation step, `rel_step` takes its candidates from the first of these tha
 facts in the order of the relation's extent, the KB's layers oldest first and each in insertion order, so the
 source chosen changes how many facts are offered and never the order of the matches.
 
-```dot
-digraph candidates {
-  rankdir=TB;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  step   [label="a Rel step"];
-  ground [shape=diamond, label="every slot bound,\nat most GROUND_ARITY arguments?"];
-  probe  [shape=diamond, label="a probe of the compiled list that is\na constant, or a bound register\nholding a name?"];
-  one    [label="FactStore::probe(rel, args), Kb::contains\none fact or none  (§ 5.1)"];
-  bucket [label="Kb::facts_with(SlotKey)\na bucket, behind each layer's\nBloom filter  (§ 5.2)"];
-  extent [label="Kb::facts_of(rel)\nthe whole extent  (§ 5.3)"];
-  unify  [label="try_candidate: unify every slot,\nthe probed one included"];
-
-  step -> ground;
-  ground -> one    [label="yes"];
-  ground -> probe  [label="no"];
-  probe -> bucket  [label="yes: the first such"];
-  probe -> extent  [label="no"];
-  bucket -> unify  [label="in extent order"];
-  extent -> unify  [label="in extent order"];
-}
-```
+![The sources a relation step takes its candidates from, the first that applies](diagrams/05-candidate-sources.svg)
 
 ### 5.1 A ground premise: one lookup
 
@@ -426,35 +329,7 @@ levels:
   activator of a later rule. An engine is `Clone`, so a node that resumes root's saturation inherits its list, its
   order and its `fired` set.
 
-```plantuml
-@startuml
-participant "Saturator\nenqueue_pass" as sat
-participant "Engine\n(one per saturation)" as eng
-participant "PlanMemo\n(one per run, behind a Mutex)" as memo
-participant "compile_rule" as comp
-
-sat -> eng : compile_all(kb)
-alt Kb::n_rule_apps unchanged
-  eng --> sat : nothing to compile
-else an activator arrived
-  loop each rule, in registry order; each of its activators
-    eng -> eng : key = plan_key(rule, activator);\nby_key.get(key)
-    alt the engine has it
-      eng -> eng : its place in the list
-    else an engine miss
-      eng -> memo : lock; intern_keyed(key, rule, activator)
-      alt a memo miss
-        memo -> comp : compile_rule(ast, terms, rule, activator)
-        comp --> memo : Plan
-      end
-      memo --> eng : PlanId, Arc<Plan>
-      eng -> eng : push on plans, arcs, keys, activators;\n[compile]
-    end
-  end
-  eng --> sat : the list, grown in compilation order
-end
-@enduml
-```
+![The compile cache as a sequence: the saturator, its engine, the run's plan memo and the compiler](diagrams/05-compile-cache.svg)
 
 `Engine::compile_all` walks the rules in registry order and each rule's activators in `rule_apps_by_rule` order,
 calling `Engine::compile_for` for each pair. The walk is skipped while `Kb::n_rule_apps` has not changed, the count of

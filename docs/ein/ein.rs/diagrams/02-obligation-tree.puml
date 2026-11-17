@@ -1,0 +1,26 @@
+@startuml
+start
+:take the next state C of the tree,\nowing states by size, then closure;
+if (C owes nothing?) then (yes)
+  :C is in R: a leaf;
+  stop
+elseif (C owes a licensed instance?) then (yes)
+  :choose the instance I (order.rs);\nbranch on its alternatives alt(I);
+else (no)
+  :branch on every candidate not in C;
+endif
+while (next branch b?) is (one)
+  if (C + {b} holds a set known dead?) then (yes)
+    :dead with no saturation (L1, L8);
+  else (no)
+    :the node of C + {b};
+    if (dead?) then (yes)
+      :remember the set dead;
+    else (no)
+      :its closure joins the tree;
+    endif
+  endif
+endwhile (none)
+:where every branch was dead,\nno member of R lies above C;
+stop
+@enduml

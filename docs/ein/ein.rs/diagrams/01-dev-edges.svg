@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: dev_edges Pages: 1 -->
+<svg width="578pt" height="315pt"
+ viewBox="0.00 0.00 578.00 315.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 310.75)">
+<title>dev_edges</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-310.75 574.12,-310.75 574.12,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_dev</title>
+<polygon fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" points="100.12,-65 100.12,-150.25 562.12,-150.25 562.12,-65 100.12,-65"/>
+<text xml:space="preserve" text-anchor="middle" x="146" y="-136.75" font-family="Helvetica,sans-Serif" font-size="10.00">dev&#45;only crates</text>
+</g>
+<!-- corpus -->
+<g id="node1" class="node">
+<title>corpus</title>
+<polygon fill="none" stroke="black" points="553.88,-121.5 320.38,-121.5 320.38,-73 553.88,-73 553.88,-121.5"/>
+<text xml:space="preserve" text-anchor="middle" x="437.12" y="-107.05" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;corpus</text>
+<text xml:space="preserve" text-anchor="middle" x="437.12" y="-93.55" font-family="Helvetica,sans-Serif" font-size="11.00">the corpus manifest, fixture helpers,</text>
+<text xml:space="preserve" text-anchor="middle" x="437.12" y="-80.05" font-family="Helvetica,sans-Serif" font-size="11.00">the sweeps&#39; worker pool, the bench set</text>
+</g>
+<!-- core -->
+<g id="node3" class="node">
+<title>core</title>
+<polygon fill="none" stroke="black" points="466.25,-36 406,-36 406,0 466.25,0 466.25,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="436.12" y="-14.3" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;core</text>
+</g>
+<!-- corpus&#45;&gt;core -->
+<g id="edge11" class="edge">
+<title>corpus&#45;&gt;core</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M436.82,-72.65C436.72,-64.78 436.6,-55.93 436.5,-47.71"/>
+<polygon fill="black" stroke="black" points="440,-47.79 436.37,-37.84 433,-47.88 440,-47.79"/>
+</g>
+<!-- ir -->
+<g id="node4" class="node">
+<title>ir</title>
+<polygon fill="none" stroke="black" points="491.12,-306.75 437.12,-306.75 437.12,-270.75 491.12,-270.75 491.12,-306.75"/>
+<text xml:space="preserve" text-anchor="middle" x="464.12" y="-285.05" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;ir</text>
+</g>
+<!-- corpus&#45;&gt;ir -->
+<g id="edge12" class="edge">
+<title>corpus&#45;&gt;ir</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M440.49,-121.84C445.45,-156.65 454.71,-221.66 460.05,-259.14"/>
+<polygon fill="black" stroke="black" points="456.54,-259.36 461.42,-268.76 463.47,-258.37 456.54,-259.36"/>
+</g>
+<!-- infer -->
+<g id="node5" class="node">
+<title>infer</title>
+<polygon fill="none" stroke="black" points="286.62,-223.5 225.62,-223.5 225.62,-187.5 286.62,-187.5 286.62,-223.5"/>
+<text xml:space="preserve" text-anchor="middle" x="256.12" y="-201.8" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;infer</text>
+</g>
+<!-- corpus&#45;&gt;infer -->
+<g id="edge13" class="edge">
+<title>corpus&#45;&gt;infer</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M396.83,-121.9C366.56,-139.67 325.32,-163.88 295.32,-181.49"/>
+<polygon fill="black" stroke="black" points="293.77,-178.35 286.91,-186.43 297.31,-184.38 293.77,-178.35"/>
+</g>
+<!-- narration -->
+<g id="node2" class="node">
+<title>narration</title>
+<polygon fill="none" stroke="black" points="302,-115.25 108.25,-115.25 108.25,-79.25 302,-79.25 302,-115.25"/>
+<text xml:space="preserve" text-anchor="middle" x="205.12" y="-100.3" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;narration</text>
+<text xml:space="preserve" text-anchor="middle" x="205.12" y="-86.8" font-family="Helvetica,sans-Serif" font-size="11.00">what of a derivation is narration</text>
+</g>
+<!-- core&#45;&gt;corpus -->
+<g id="edge1" class="edge">
+<title>core&#45;&gt;corpus</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M436.35,-36.32C436.44,-43.69 436.56,-52.56 436.67,-61.19"/>
+<polygon fill="black" stroke="black" points="433.17,-61.19 436.8,-71.14 440.17,-61.09 433.17,-61.19"/>
+</g>
+<!-- ir&#45;&gt;corpus -->
+<g id="edge2" class="edge">
+<title>ir&#45;&gt;corpus</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M472.6,-270.34C474.86,-264.85 476.99,-258.66 478.12,-252.75 486.07,-211.51 490.53,-198.38 478.12,-158.25 475.21,-148.81 470.23,-139.52 464.74,-131.19"/>
+<polygon fill="black" stroke="black" points="467.66,-129.25 459.02,-123.12 461.95,-133.3 467.66,-129.25"/>
+</g>
+<!-- ir&#45;&gt;infer -->
+<g id="edge9" class="edge">
+<title>ir&#45;&gt;infer</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M436.75,-277.8C405.22,-266.24 351.68,-246.31 297.25,-224.29"/>
+<polygon fill="black" stroke="black" points="298.71,-221.1 288.13,-220.57 296.07,-227.58 298.71,-221.1"/>
+<text xml:space="preserve" text-anchor="middle" x="390.75" y="-244.2" font-family="Helvetica,sans-Serif" font-size="9.00">tests only</text>
+</g>
+<!-- infer&#45;&gt;corpus -->
+<g id="edge3" class="edge">
+<title>infer&#45;&gt;corpus</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M264.66,-187.05C270.18,-177.38 278.18,-165.81 288.12,-158.25 296.74,-151.7 301.01,-154.09 311.12,-150.25 330.72,-142.8 351.85,-134.28 371.09,-126.33"/>
+<polygon fill="black" stroke="black" points="372.28,-129.62 380.17,-122.55 369.6,-123.16 372.28,-129.62"/>
+</g>
+<!-- infer&#45;&gt;narration -->
+<g id="edge7" class="edge">
+<title>infer&#45;&gt;narration</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M247.93,-187.43C239.95,-170.8 227.68,-145.24 218.32,-125.75"/>
+<polygon fill="black" stroke="black" points="221.61,-124.5 214.12,-117 215.3,-127.53 221.61,-124.5"/>
+</g>
+<!-- render -->
+<g id="node7" class="node">
+<title>render</title>
+<polygon fill="none" stroke="black" points="72.25,-115.25 0,-115.25 0,-79.25 72.25,-79.25 72.25,-115.25"/>
+<text xml:space="preserve" text-anchor="middle" x="36.12" y="-93.55" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;render</text>
+</g>
+<!-- infer&#45;&gt;render -->
+<g id="edge10" class="edge">
+<title>infer&#45;&gt;render</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M225.15,-197.79C191.78,-189.71 137.86,-174.17 96.12,-150.25 83.42,-142.97 70.92,-132.77 60.65,-123.34"/>
+<polygon fill="black" stroke="black" points="63.35,-121.07 53.69,-116.71 58.53,-126.14 63.35,-121.07"/>
+<text xml:space="preserve" text-anchor="middle" x="155.21" y="-160.95" font-family="Helvetica,sans-Serif" font-size="9.00">tests only</text>
+</g>
+<!-- einb -->
+<g id="node6" class="node">
+<title>einb</title>
+<polygon fill="none" stroke="black" points="363.88,-223.5 304.38,-223.5 304.38,-187.5 363.88,-187.5 363.88,-223.5"/>
+<text xml:space="preserve" text-anchor="middle" x="334.12" y="-201.8" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;einb</text>
+</g>
+<!-- einb&#45;&gt;corpus -->
+<g id="edge4" class="edge">
+<title>einb&#45;&gt;corpus</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M350.67,-187.43C365.73,-171.89 388.34,-148.57 406.66,-129.68"/>
+<polygon fill="black" stroke="black" points="408.97,-132.32 413.42,-122.7 403.95,-127.45 408.97,-132.32"/>
+</g>
+<!-- render&#45;&gt;corpus -->
+<g id="edge5" class="edge">
+<title>render&#45;&gt;corpus</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M47.46,-115.68C59.36,-133.1 79.86,-158.13 105.12,-168.88 145.41,-186 259.64,-179.45 302.12,-168.88 334.29,-160.87 367.21,-143.62 392.48,-128.06"/>
+<polygon fill="black" stroke="black" points="394.26,-131.08 400.85,-122.78 390.52,-125.16 394.26,-131.08"/>
+</g>
+<!-- render&#45;&gt;narration -->
+<g id="edge8" class="edge">
+<title>render&#45;&gt;narration</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M72.43,-97.25C80.48,-97.25 88.52,-97.25 96.57,-97.25"/>
+<polygon fill="black" stroke="black" points="96.43,-100.75 106.43,-97.25 96.43,-93.75 96.43,-100.75"/>
+</g>
+<!-- cli -->
+<g id="node8" class="node">
+<title>cli</title>
+<polygon fill="none" stroke="black" points="436.12,-223.5 382.12,-223.5 382.12,-187.5 436.12,-187.5 436.12,-223.5"/>
+<text xml:space="preserve" text-anchor="middle" x="409.12" y="-201.8" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;cli</text>
+</g>
+<!-- cli&#45;&gt;corpus -->
+<g id="edge6" class="edge">
+<title>cli&#45;&gt;corpus</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M413.62,-187.43C417.52,-172.66 423.26,-150.86 428.1,-132.5"/>
+<polygon fill="black" stroke="black" points="431.42,-133.64 430.58,-123.08 424.65,-131.86 431.42,-133.64"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 30242a36d9fa6621b77cdf609dc45192079df50c08afdc1e158c2d4f996550e1 -->

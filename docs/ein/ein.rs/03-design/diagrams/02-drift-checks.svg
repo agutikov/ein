@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: drift Pages: 1 -->
+<svg width="523pt" height="433pt"
+ viewBox="0.00 0.00 523.00 433.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 428.65)">
+<title>drift</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-428.65 518.67,-428.65 518.67,4 -4,4"/>
+<!-- manifest -->
+<g id="node1" class="node">
+<title>manifest</title>
+<polygon fill="none" stroke="black" points="323.17,-227.52 176.67,-227.52 176.67,-191.52 323.17,-191.52 323.17,-227.52"/>
+<text xml:space="preserve" text-anchor="middle" x="249.92" y="-212.57" font-family="Helvetica,sans-Serif" font-size="11.00">stdlib/MANIFEST.sha256</text>
+<text xml:space="preserve" text-anchor="middle" x="249.92" y="-199.07" font-family="Helvetica,sans-Serif" font-size="11.00">one line a module</text>
+</g>
+<!-- checkout -->
+<g id="node2" class="node">
+<title>checkout</title>
+<polygon fill="none" stroke="black" points="514.67,-227.52 425.17,-227.52 425.17,-191.52 514.67,-191.52 514.67,-227.52"/>
+<text xml:space="preserve" text-anchor="middle" x="469.92" y="-212.57" font-family="Helvetica,sans-Serif" font-size="11.00">the checkout</text>
+<text xml:space="preserve" text-anchor="middle" x="469.92" y="-199.07" font-family="Helvetica,sans-Serif" font-size="11.00">stdlib/**/*.ein</text>
+</g>
+<!-- checkout&#45;&gt;manifest -->
+<g id="edge2" class="edge">
+<title>checkout&#45;&gt;manifest</title>
+<path fill="none" stroke="black" d="M413.51,-209.52C389.54,-209.52 361.08,-209.52 334.66,-209.52"/>
+<polygon fill="black" stroke="black" points="413.35,-213.02 423.35,-209.52 413.35,-206.02 413.35,-213.02"/>
+<polygon fill="black" stroke="black" points="335,-206.02 325,-209.52 335,-213.02 335,-206.02"/>
+<text xml:space="preserve" text-anchor="middle" x="374.09" y="-200.97" font-family="Helvetica,sans-Serif" font-size="9.00">the_checkout_has_no_module_</text>
+<text xml:space="preserve" text-anchor="middle" x="374.09" y="-189.72" font-family="Helvetica,sans-Serif" font-size="9.00">the_manifest_does_not_list</text>
+</g>
+<!-- embedded -->
+<g id="node3" class="node">
+<title>embedded</title>
+<polygon fill="none" stroke="black" points="215.01,-424.65 89.51,-424.65 89.51,-388.65 215.01,-388.65 215.01,-424.65"/>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-409.7" font-family="Helvetica,sans-Serif" font-size="11.00">the embedded copy</text>
+<text xml:space="preserve" text-anchor="middle" x="152.26" y="-396.2" font-family="Helvetica,sans-Serif" font-size="11.00">in a built ein</text>
+</g>
+<!-- embedded&#45;&gt;manifest -->
+<g id="edge1" class="edge">
+<title>embedded&#45;&gt;manifest</title>
+<path fill="none" stroke="black" d="M166.29,-378.33C184.78,-341 217.13,-275.69 235.71,-238.19"/>
+<polygon fill="black" stroke="black" points="163.24,-376.59 161.94,-387.1 169.52,-379.7 163.24,-376.59"/>
+<polygon fill="black" stroke="black" points="238.81,-239.82 240.11,-229.31 232.54,-236.72 238.81,-239.82"/>
+<text xml:space="preserve" text-anchor="middle" x="100.5" y="-322.21" font-family="Helvetica,sans-Serif" font-size="9.00">the_embedded_copy_matches_the_manifest</text>
+<text xml:space="preserve" text-anchor="middle" x="100.5" y="-310.96" font-family="Helvetica,sans-Serif" font-size="9.00">the_embedded_copy_has_no_extra_modules</text>
+</g>
+<!-- einb -->
+<g id="node4" class="node">
+<title>einb</title>
+<polygon fill="none" stroke="black" points="216.4,-36 66.9,-36 66.9,0 216.4,0 216.4,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="141.65" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">a .einb container</text>
+<text xml:space="preserve" text-anchor="middle" x="141.65" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">made under some stdlib</text>
+</g>
+<!-- einb&#45;&gt;manifest -->
+<g id="edge3" class="edge">
+<title>einb&#45;&gt;manifest</title>
+<path fill="none" stroke="black" d="M157.61,-46.23C178.11,-82.49 213.47,-145.04 233.96,-181.29"/>
+<polygon fill="black" stroke="black" points="160.75,-44.66 152.78,-37.68 154.65,-48.11 160.75,-44.66"/>
+<polygon fill="black" stroke="black" points="230.85,-182.91 238.82,-189.89 236.95,-179.46 230.85,-182.91"/>
+<text xml:space="preserve" text-anchor="middle" x="115.16" y="-127.71" font-family="Helvetica,sans-Serif" font-size="9.00">META records the manifest&#39;s digest:</text>
+<text xml:space="preserve" text-anchor="middle" x="115.16" y="-116.46" font-family="Helvetica,sans-Serif" font-size="9.00">another digest is a cache miss</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 5e893131885eef39881843e0ee024ad48b0859f2368aeb5cfb2e98a94c8cc309 -->

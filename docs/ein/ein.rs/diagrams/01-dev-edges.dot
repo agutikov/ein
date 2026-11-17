@@ -1,0 +1,19 @@
+digraph dev_edges {
+  rankdir=TB; labelloc=t;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [style=dashed, fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_dev {
+    label="dev-only crates"; labeljust=l; fontname="Helvetica"; fontsize=10; style=dashed; color=gray50;
+    corpus    [label="ein-corpus\nthe corpus manifest, fixture helpers,\nthe sweeps' worker pool, the bench set"];
+    narration [label="ein-narration\nwhat of a derivation is narration"];
+  }
+  core [label="ein-core"]; ir [label="ein-ir"]; infer [label="ein-infer"];
+  einb [label="ein-einb"]; render [label="ein-render"]; cli [label="ein-cli"];
+
+  core -> corpus; ir -> corpus; infer -> corpus; einb -> corpus; render -> corpus; cli -> corpus;
+  infer -> narration; render -> narration;
+  ir -> infer     [label="tests only"];
+  infer -> render [label="tests only"];
+  corpus -> core; corpus -> ir; corpus -> infer;
+}

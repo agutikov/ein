@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: lattice Pages: 1 -->
+<svg width="525pt" height="213pt"
+ viewBox="0.00 0.00 525.00 213.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 209.25)">
+<title>lattice</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-209.25 521,-209.25 521,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="258.5" y="-187.95" font-family="Times,serif" font-size="14.00">ev.ein — 4 of 4 nodes visited by the state route, every alive state once</text>
+<!-- n0 -->
+<g id="node1" class="node">
+<title>n0</title>
+<path fill="#e8f6e8" stroke="#2ca02c" d="M276.75,-36C276.75,-36 246.75,-36 246.75,-36 240.75,-36 234.75,-30 234.75,-24 234.75,-24 234.75,-12 234.75,-12 234.75,-6 240.75,0 246.75,0 246.75,0 276.75,0 276.75,0 282.75,0 288.75,-6 288.75,-12 288.75,-12 288.75,-24 288.75,-24 288.75,-30 282.75,-36 276.75,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="261.75" y="-14.88" font-family="Helvetica,sans-Serif" font-size="10.00">∅</text>
+</g>
+<!-- n1 -->
+<g id="node2" class="node">
+<title>n1</title>
+<path fill="#e8f6e8" stroke="#2ca02c" d="M244.88,-108C244.88,-108 166.62,-108 166.62,-108 160.62,-108 154.62,-102 154.62,-96 154.62,-96 154.62,-84 154.62,-84 154.62,-78 160.62,-72 166.62,-72 166.62,-72 244.88,-72 244.88,-72 250.88,-72 256.88,-78 256.88,-84 256.88,-84 256.88,-96 256.88,-96 256.88,-102 250.88,-108 244.88,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="205.75" y="-86.88" font-family="Helvetica,sans-Serif" font-size="10.00">(likes Ann Coffee)</text>
+</g>
+<!-- n0&#45;&gt;n1 -->
+<g id="edge1" class="edge">
+<title>n0&#45;&gt;n1</title>
+<path fill="none" stroke="black" d="M247.91,-36.3C241.46,-44.36 233.67,-54.11 226.54,-63.02"/>
+<polygon fill="black" stroke="black" points="223.89,-60.72 220.38,-70.71 229.36,-65.09 223.89,-60.72"/>
+</g>
+<!-- n2 -->
+<g id="node3" class="node">
+<title>n2</title>
+<path fill="#e8f6e8" stroke="#2ca02c" d="M350.38,-108C350.38,-108 287.12,-108 287.12,-108 281.12,-108 275.12,-102 275.12,-96 275.12,-96 275.12,-84 275.12,-84 275.12,-78 281.12,-72 287.12,-72 287.12,-72 350.38,-72 350.38,-72 356.38,-72 362.38,-78 362.38,-84 362.38,-84 362.38,-96 362.38,-96 362.38,-102 356.38,-108 350.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="318.75" y="-86.88" font-family="Helvetica,sans-Serif" font-size="10.00">(likes Ann Tea)</text>
+</g>
+<!-- n0&#45;&gt;n2 -->
+<g id="edge2" class="edge">
+<title>n0&#45;&gt;n2</title>
+<path fill="none" stroke="black" d="M275.84,-36.3C282.4,-44.36 290.34,-54.11 297.59,-63.02"/>
+<polygon fill="black" stroke="black" points="294.84,-65.18 303.87,-70.72 300.27,-60.76 294.84,-65.18"/>
+</g>
+<!-- n3 -->
+<g id="node4" class="node">
+<title>n3</title>
+<path fill="#fdeaea" stroke="#d62728" d="M300.88,-180C300.88,-180 222.62,-180 222.62,-180 216.62,-180 210.62,-174 210.62,-168 210.62,-168 210.62,-156 210.62,-156 210.62,-150 216.62,-144 222.62,-144 222.62,-144 300.88,-144 300.88,-144 306.88,-144 312.88,-150 312.88,-156 312.88,-156 312.88,-168 312.88,-168 312.88,-174 306.88,-180 300.88,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="261.75" y="-165.25" font-family="Helvetica,sans-Serif" font-size="10.00">(likes Ann Coffee)</text>
+<text xml:space="preserve" text-anchor="middle" x="261.75" y="-152.5" font-family="Helvetica,sans-Serif" font-size="10.00">(likes Ann Tea)</text>
+</g>
+<!-- n1&#45;&gt;n3 -->
+<g id="edge4" class="edge">
+<title>n1&#45;&gt;n3</title>
+<path fill="none" stroke="black" d="M219.59,-108.3C226.04,-116.36 233.83,-126.11 240.96,-135.02"/>
+<polygon fill="black" stroke="black" points="238.14,-137.09 247.12,-142.71 243.61,-132.72 238.14,-137.09"/>
+</g>
+<!-- n2&#45;&gt;n3 -->
+<g id="edge3" class="edge">
+<title>n2&#45;&gt;n3</title>
+<path fill="none" stroke="black" d="M304.66,-108.3C298.1,-116.36 290.16,-126.11 282.91,-135.02"/>
+<polygon fill="black" stroke="black" points="280.23,-132.76 276.63,-142.72 285.66,-137.18 280.23,-132.76"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: b57bc650ca49ecf4cfba80e711b167783f0f36e7ede66a82bfa5da2cc54db284 -->

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: stack Pages: 1 -->
+<svg width="390pt" height="359pt"
+ viewBox="0.00 0.00 390.00 359.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 354.75)">
+<title>stack</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-354.75 385.94,-354.75 385.94,4 -4,4"/>
+<!-- app -->
+<g id="node1" class="node">
+<title>app</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="121.32,-350.75 30.32,-350.75 30.32,-314.75 121.32,-314.75 121.32,-350.75"/>
+<text xml:space="preserve" text-anchor="middle" x="75.82" y="-329.05" font-family="Helvetica,sans-Serif" font-size="11.00">your program</text>
+</g>
+<!-- render -->
+<g id="node3" class="node">
+<title>render</title>
+<polygon fill="none" stroke="black" points="381.94,-267.5 153.69,-267.5 153.69,-219 381.94,-219 381.94,-267.5"/>
+<text xml:space="preserve" text-anchor="middle" x="267.82" y="-253.05" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;render</text>
+<text xml:space="preserve" text-anchor="middle" x="267.82" y="-239.55" font-family="Helvetica,sans-Serif" font-size="11.00">DOT, the markdown trace, the dumps,</text>
+<text xml:space="preserve" text-anchor="middle" x="267.82" y="-226.05" font-family="Helvetica,sans-Serif" font-size="11.00">the read&#45;out&#39;s rendering</text>
+</g>
+<!-- app&#45;&gt;render -->
+<g id="edge8" class="edge">
+<title>app&#45;&gt;render</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M114.21,-314.25C140.35,-302.34 175.53,-286.31 205.62,-272.59"/>
+<polygon fill="black" stroke="black" points="207.01,-275.81 214.66,-268.48 204.11,-269.44 207.01,-275.81"/>
+<text xml:space="preserve" text-anchor="middle" x="189.82" y="-288.2" font-family="Helvetica,sans-Serif" font-size="9.00">optional</text>
+</g>
+<!-- einb -->
+<g id="node4" class="node">
+<title>einb</title>
+<polygon fill="none" stroke="black" points="135.94,-261.25 15.69,-261.25 15.69,-225.25 135.94,-225.25 135.94,-261.25"/>
+<text xml:space="preserve" text-anchor="middle" x="75.82" y="-246.3" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;einb</text>
+<text xml:space="preserve" text-anchor="middle" x="75.82" y="-232.8" font-family="Helvetica,sans-Serif" font-size="11.00">the .einb container</text>
+</g>
+<!-- app&#45;&gt;einb -->
+<g id="edge9" class="edge">
+<title>app&#45;&gt;einb</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M75.82,-314.46C75.82,-302.6 75.82,-286.57 75.82,-272.83"/>
+<polygon fill="black" stroke="black" points="79.32,-273.01 75.82,-263.01 72.32,-273.01 79.32,-273.01"/>
+<text xml:space="preserve" text-anchor="middle" x="93.82" y="-288.2" font-family="Helvetica,sans-Serif" font-size="9.00">optional</text>
+</g>
+<!-- infer -->
+<g id="node5" class="node">
+<title>infer</title>
+<polygon fill="none" stroke="black" points="106.32,-182 45.32,-182 45.32,-146 106.32,-146 106.32,-182"/>
+<text xml:space="preserve" text-anchor="middle" x="75.82" y="-160.3" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;infer</text>
+</g>
+<!-- app&#45;&gt;infer -->
+<g id="edge7" class="edge">
+<title>app&#45;&gt;infer</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M47.94,-314.3C32.7,-303.02 15.25,-286.86 6.82,-267.5 -1.78,-247.74 -2.62,-238.38 6.82,-219 13.13,-206.05 24.21,-195.29 35.67,-186.88"/>
+<polygon fill="black" stroke="black" points="37.3,-190 43.61,-181.48 33.37,-184.21 37.3,-190"/>
+</g>
+<!-- cli -->
+<g id="node2" class="node">
+<title>cli</title>
+<polygon fill="none" stroke="black" points="270.82,-350.75 216.82,-350.75 216.82,-314.75 270.82,-314.75 270.82,-350.75"/>
+<text xml:space="preserve" text-anchor="middle" x="243.82" y="-329.05" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;cli</text>
+</g>
+<!-- cli&#45;&gt;render -->
+<g id="edge1" class="edge">
+<title>cli&#45;&gt;render</title>
+<path fill="none" stroke="black" d="M248.56,-314.46C251.36,-304.24 255.01,-290.94 258.38,-278.66"/>
+<polygon fill="black" stroke="black" points="261.69,-279.82 260.96,-269.26 254.94,-277.97 261.69,-279.82"/>
+</g>
+<!-- cli&#45;&gt;einb -->
+<g id="edge2" class="edge">
+<title>cli&#45;&gt;einb</title>
+<path fill="none" stroke="black" d="M232.32,-314.66C224.93,-304.87 214.54,-293.07 202.82,-285.5 180.14,-270.86 170.5,-275.81 144.82,-267.5 142.47,-266.74 140.09,-265.96 137.67,-265.17"/>
+<polygon fill="black" stroke="black" points="139.05,-261.94 128.46,-262.13 136.85,-268.59 139.05,-261.94"/>
+</g>
+<!-- render&#45;&gt;infer -->
+<g id="edge3" class="edge">
+<title>render&#45;&gt;infer</title>
+<path fill="none" stroke="black" d="M208.91,-218.55C179.26,-206.62 144.04,-192.45 117.28,-181.68"/>
+<polygon fill="black" stroke="black" points="118.72,-178.49 108.14,-178 116.11,-184.98 118.72,-178.49"/>
+</g>
+<!-- einb&#45;&gt;infer -->
+<g id="edge4" class="edge">
+<title>einb&#45;&gt;infer</title>
+<path fill="none" stroke="black" d="M75.82,-225.11C75.82,-215.87 75.82,-204.23 75.82,-193.66"/>
+<polygon fill="black" stroke="black" points="79.32,-193.88 75.82,-183.88 72.32,-193.88 79.32,-193.88"/>
+</g>
+<!-- ir -->
+<g id="node6" class="node">
+<title>ir</title>
+<polygon fill="none" stroke="black" points="102.82,-109 48.82,-109 48.82,-73 102.82,-73 102.82,-109"/>
+<text xml:space="preserve" text-anchor="middle" x="75.82" y="-87.3" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;ir</text>
+</g>
+<!-- infer&#45;&gt;ir -->
+<g id="edge5" class="edge">
+<title>infer&#45;&gt;ir</title>
+<path fill="none" stroke="black" d="M75.82,-145.81C75.82,-138.23 75.82,-129.1 75.82,-120.54"/>
+<polygon fill="black" stroke="black" points="79.32,-120.54 75.82,-110.54 72.32,-120.54 79.32,-120.54"/>
+</g>
+<!-- core -->
+<g id="node7" class="node">
+<title>core</title>
+<polygon fill="none" stroke="black" points="105.94,-36 45.69,-36 45.69,0 105.94,0 105.94,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="75.82" y="-14.3" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;core</text>
+</g>
+<!-- ir&#45;&gt;core -->
+<g id="edge6" class="edge">
+<title>ir&#45;&gt;core</title>
+<path fill="none" stroke="black" d="M75.82,-72.81C75.82,-65.23 75.82,-56.1 75.82,-47.54"/>
+<polygon fill="black" stroke="black" points="79.32,-47.54 75.82,-37.54 72.32,-47.54 79.32,-47.54"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 87c9db677033dcffa624a82c38484403b144ef6f1badccf86ebb704c061c6c73 -->

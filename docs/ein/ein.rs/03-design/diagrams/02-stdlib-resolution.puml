@@ -1,0 +1,25 @@
+@startuml
+start
+:an import names std.x.y;
+if ($EIN_STDLIB is set?) then (yes)
+  if (the directory holds MANIFEST.sha256?) then (yes)
+    :Source::Override(dir);
+  else (no)
+    :refused: the message says the directory\nis not the stdlib (Source::problem);
+    stop
+  endif
+else (no)
+  :walk up from the executable's directory;
+  if (an ancestor has stdlib/ with MANIFEST.sha256?) then (yes)
+    :Source::Checkout(that stdlib/);
+  else (no)
+    :Source::Embedded:\nthe copy include_dir! compiled into ein-ir;
+  endif
+endif
+if (the source holds x/y.ein?) then (yes)
+  :the module's text;
+else (no)
+  :module not found at <path>,\nthe path this source would hold it at;
+endif
+stop
+@enduml

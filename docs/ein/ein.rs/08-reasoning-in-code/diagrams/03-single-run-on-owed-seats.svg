@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: region Pages: 1 -->
+<svg width="1027pt" height="662pt"
+ viewBox="0.00 0.00 1027.00 662.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 657.69)">
+<title>region</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-657.69 1022.79,-657.69 1022.79,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="509.39" y="-638.29" font-family="Times,serif" font-size="12.00">region · examples/lattice/05_owed_seats_bounded.ein</text>
+<text xml:space="preserve" text-anchor="middle" x="509.39" y="-624.04" font-family="Times,serif" font-size="12.00">n = 4 · |R| = 2 of 16 · monotone</text>
+<text xml:space="preserve" text-anchor="middle" x="509.39" y="-609.79" font-family="Times,serif" font-size="12.00">run: all of R, &#45;&#45;single — 2 states reported, stopped (asked) · 6 nodes visited · view full (16 of 16 nodes)</text>
+<!-- L0 -->
+<g id="node1" class="node">
+<title>L0</title>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-576.89" font-family="Helvetica,sans-Serif" font-size="9.00">L0 · 1</text>
+</g>
+<!-- L1 -->
+<g id="node2" class="node">
+<title>L1</title>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-478.06" font-family="Helvetica,sans-Serif" font-size="9.00">L1 · 4</text>
+</g>
+<!-- L0&#45;&gt;L1 -->
+<!-- L2 -->
+<g id="node3" class="node">
+<title>L2</title>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-353.2" font-family="Helvetica,sans-Serif" font-size="9.00">L2 · 6</text>
+</g>
+<!-- L1&#45;&gt;L2 -->
+<!-- L3 -->
+<g id="node4" class="node">
+<title>L3</title>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-210.31" font-family="Helvetica,sans-Serif" font-size="9.00">L3 · 4</text>
+</g>
+<!-- L2&#45;&gt;L3 -->
+<!-- L4 -->
+<g id="node5" class="node">
+<title>L4</title>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-56.83" font-family="Helvetica,sans-Serif" font-size="9.00">L4 · 1</text>
+</g>
+<!-- L3&#45;&gt;L4 -->
+<!-- m0 -->
+<g id="node6" class="node">
+<title>m0</title>
+<path fill="#fee391" stroke="#525252" d="M491.12,-602.94C491.12,-602.94 460.88,-602.94 460.88,-602.94 454.88,-602.94 448.88,-596.94 448.88,-590.94 448.88,-590.94 448.88,-568.69 448.88,-568.69 448.88,-562.69 454.88,-556.69 460.88,-556.69 460.88,-556.69 491.12,-556.69 491.12,-556.69 497.12,-556.69 503.12,-562.69 503.12,-568.69 503.12,-568.69 503.12,-590.94 503.12,-590.94 503.12,-596.94 497.12,-602.94 491.12,-602.94"/>
+<text xml:space="preserve" text-anchor="middle" x="476" y="-589.44" font-family="Helvetica,sans-Serif" font-size="10.00">∅</text>
+<text xml:space="preserve" text-anchor="middle" x="476" y="-576.69" font-family="Helvetica,sans-Serif" font-size="10.00">owing 4</text>
+<text xml:space="preserve" text-anchor="middle" x="476" y="-563.94" font-family="Helvetica,sans-Serif" font-size="10.00">visited</text>
+</g>
+<!-- m1 -->
+<g id="node7" class="node">
+<title>m1</title>
+<path fill="#fee391" stroke="#525252" d="M299.62,-504.11C299.62,-504.11 236.38,-504.11 236.38,-504.11 230.38,-504.11 224.38,-498.11 224.38,-492.11 224.38,-492.11 224.38,-469.86 224.38,-469.86 224.38,-463.86 230.38,-457.86 236.38,-457.86 236.38,-457.86 299.62,-457.86 299.62,-457.86 305.62,-457.86 311.62,-463.86 311.62,-469.86 311.62,-469.86 311.62,-492.11 311.62,-492.11 311.62,-498.11 305.62,-504.11 299.62,-504.11"/>
+<text xml:space="preserve" text-anchor="middle" x="268" y="-490.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="268" y="-477.86" font-family="Helvetica,sans-Serif" font-size="10.00">owing 2</text>
+<text xml:space="preserve" text-anchor="middle" x="268" y="-465.11" font-family="Helvetica,sans-Serif" font-size="10.00">visited</text>
+</g>
+<!-- m0&#45;&gt;m1 -->
+<g id="edge5" class="edge">
+<title>m0&#45;&gt;m1</title>
+<path fill="none" stroke="#fdae6b" stroke-width="1.2" d="M448.38,-565.96C415.47,-550.64 359.83,-524.74 319.03,-505.74"/>
+<polygon fill="#fdae6b" stroke="#fdae6b" stroke-width="1.2" points="320.07,-503.91 313.75,-503.29 318.3,-507.72 320.07,-503.91"/>
+</g>
+<!-- m2 -->
+<g id="node8" class="node">
+<title>m2</title>
+<path fill="#fee391" stroke="#525252" d="M436.62,-504.11C436.62,-504.11 373.38,-504.11 373.38,-504.11 367.38,-504.11 361.38,-498.11 361.38,-492.11 361.38,-492.11 361.38,-469.86 361.38,-469.86 361.38,-463.86 367.38,-457.86 373.38,-457.86 373.38,-457.86 436.62,-457.86 436.62,-457.86 442.62,-457.86 448.62,-463.86 448.62,-469.86 448.62,-469.86 448.62,-492.11 448.62,-492.11 448.62,-498.11 442.62,-504.11 436.62,-504.11"/>
+<text xml:space="preserve" text-anchor="middle" x="405" y="-490.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="405" y="-477.86" font-family="Helvetica,sans-Serif" font-size="10.00">owing 2</text>
+<text xml:space="preserve" text-anchor="middle" x="405" y="-465.11" font-family="Helvetica,sans-Serif" font-size="10.00">visited</text>
+</g>
+<!-- m0&#45;&gt;m2 -->
+<g id="edge6" class="edge">
+<title>m0&#45;&gt;m2</title>
+<path fill="none" stroke="#fdae6b" stroke-width="1.2" d="M459.53,-556.36C449.5,-542.67 436.58,-525.05 425.83,-510.4"/>
+<polygon fill="#fdae6b" stroke="#fdae6b" stroke-width="1.2" points="427.69,-509.39 422.45,-505.79 424.31,-511.87 427.69,-509.39"/>
+</g>
+<!-- m4 -->
+<g id="node9" class="node">
+<title>m4</title>
+<ellipse fill="#fee391" stroke="#525252" cx="547" cy="-480.99" rx="80.79" ry="32.7"/>
+<text xml:space="preserve" text-anchor="middle" x="547" y="-490.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="547" y="-477.86" font-family="Helvetica,sans-Serif" font-size="10.00">owing 2</text>
+<text xml:space="preserve" text-anchor="middle" x="547" y="-465.11" font-family="Helvetica,sans-Serif" font-size="10.00">the run stopped first</text>
+</g>
+<!-- m0&#45;&gt;m4 -->
+<g id="edge7" class="edge">
+<title>m0&#45;&gt;m4</title>
+<path fill="none" stroke="#fdae6b" stroke-width="1.2" d="M492.47,-556.36C500.63,-545.22 510.71,-531.48 519.97,-518.85"/>
+<polygon fill="#fdae6b" stroke="#fdae6b" stroke-width="1.2" points="521.51,-520.3 523.36,-514.22 518.12,-517.82 521.51,-520.3"/>
+</g>
+<!-- m8 -->
+<g id="node10" class="node">
+<title>m8</title>
+<ellipse fill="#fee391" stroke="#525252" cx="747" cy="-480.99" rx="80.79" ry="32.7"/>
+<text xml:space="preserve" text-anchor="middle" x="747" y="-490.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="747" y="-477.86" font-family="Helvetica,sans-Serif" font-size="10.00">owing 2</text>
+<text xml:space="preserve" text-anchor="middle" x="747" y="-465.11" font-family="Helvetica,sans-Serif" font-size="10.00">the run stopped first</text>
+</g>
+<!-- m0&#45;&gt;m8 -->
+<g id="edge8" class="edge">
+<title>m0&#45;&gt;m8</title>
+<path fill="none" stroke="#fdae6b" stroke-width="1.2" d="M503.48,-569C544.58,-554.31 623.3,-526.18 680.14,-505.88"/>
+<polygon fill="#fdae6b" stroke="#fdae6b" stroke-width="1.2" points="680.65,-507.92 685.6,-503.93 679.24,-503.97 680.65,-507.92"/>
+</g>
+<!-- m3 -->
+<g id="node11" class="node">
+<title>m3</title>
+<defs>
+<linearGradient id="node11_l_0" gradientUnits="userSpaceOnUse" x1="72.38" y1="-356.13" x2="159.62" y2="-356.13" >
+<stop offset="0" style="stop-color:#fcbba1;stop-opacity:1.;"/>
+<stop offset="1" style="stop-color:#fee391;stop-opacity:1.;"/>
+</linearGradient>
+</defs>
+<path fill="url(#node11_l_0)" stroke="#525252" d="M147.62,-385.63C147.62,-385.63 84.38,-385.63 84.38,-385.63 78.38,-385.63 72.38,-379.63 72.38,-373.63 72.38,-373.63 72.38,-338.63 72.38,-338.63 72.38,-332.63 78.38,-326.63 84.38,-326.63 84.38,-326.63 147.62,-326.63 147.62,-326.63 153.62,-326.63 159.62,-332.63 159.62,-338.63 159.62,-338.63 159.62,-373.63 159.62,-373.63 159.62,-379.63 153.62,-385.63 147.62,-385.63"/>
+<text xml:space="preserve" text-anchor="middle" x="116" y="-372.13" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="116" y="-359.38" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="116" y="-346.63" font-family="Helvetica,sans-Serif" font-size="10.00">dead+owing 1</text>
+<text xml:space="preserve" text-anchor="middle" x="116" y="-333.88" font-family="Helvetica,sans-Serif" font-size="10.00">visited</text>
+</g>
+<!-- m1&#45;&gt;m3 -->
+<g id="edge9" class="edge">
+<title>m1&#45;&gt;m3</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M236.27,-457.6C216.28,-443.17 190.15,-423.73 168,-405.28 162.65,-400.83 157.13,-396 151.77,-391.17"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="153.23,-389.65 147.38,-387.17 150.4,-392.76 153.23,-389.65"/>
+</g>
+<!-- m5 -->
+<g id="node12" class="node">
+<title>m5</title>
+<defs>
+<linearGradient id="node12_l_1" gradientUnits="userSpaceOnUse" x1="177.21" y1="-356.13" x2="338.79" y2="-356.13" >
+<stop offset="0" style="stop-color:#fcbba1;stop-opacity:1.;"/>
+<stop offset="1" style="stop-color:#fee391;stop-opacity:1.;"/>
+</linearGradient>
+</defs>
+<ellipse fill="url(#node12_l_1)" stroke="#525252" cx="258" cy="-356.13" rx="80.79" ry="41.72"/>
+<text xml:space="preserve" text-anchor="middle" x="258" y="-372.13" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="258" y="-359.38" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="258" y="-346.63" font-family="Helvetica,sans-Serif" font-size="10.00">dead+owing 1</text>
+<text xml:space="preserve" text-anchor="middle" x="258" y="-333.88" font-family="Helvetica,sans-Serif" font-size="10.00">the run stopped first</text>
+</g>
+<!-- m1&#45;&gt;m5 -->
+<g id="edge10" class="edge">
+<title>m1&#45;&gt;m5</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M266.17,-457.45C264.98,-442.91 263.4,-423.41 261.94,-405.48"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="264.05,-405.53 261.47,-399.72 259.86,-405.87 264.05,-405.53"/>
+</g>
+<!-- m9 -->
+<g id="node14" class="node">
+<title>m9</title>
+<polygon fill="#9ecae1" stroke="#006d2c" stroke-width="3" points="654.78,-337.42 654.78,-374.83 615.66,-401.28 560.34,-401.28 521.22,-374.83 521.22,-337.42 560.34,-310.97 615.66,-310.97 654.78,-337.42"/>
+<polygon fill="none" stroke="#006d2c" stroke-width="3" points="658.78,-335.3 658.78,-376.96 616.89,-405.28 559.11,-405.28 517.22,-376.96 517.22,-335.3 559.11,-306.97 616.89,-306.97 658.78,-335.3"/>
+<text xml:space="preserve" text-anchor="middle" x="588" y="-372.13" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="588" y="-359.38" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="588" y="-346.63" font-family="Helvetica,sans-Serif" font-size="10.00">R · min · max</text>
+<text xml:space="preserve" text-anchor="middle" x="588" y="-333.88" font-family="Helvetica,sans-Serif" font-size="10.00">state 1</text>
+</g>
+<!-- m1&#45;&gt;m9 -->
+<g id="edge11" class="edge">
+<title>m1&#45;&gt;m9</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M311.76,-462.6C324.64,-457.72 338.81,-452.58 352,-448.28 420.38,-426.01 441.91,-433.65 508,-405.28 514.75,-402.39 521.61,-399.01 528.33,-395.41"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="529.26,-397.3 533.5,-392.56 527.23,-393.62 529.26,-397.3"/>
+</g>
+<!-- m2&#45;&gt;m3 -->
+<g id="edge12" class="edge">
+<title>m2&#45;&gt;m3</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M361.22,-462.64C348.35,-457.77 334.18,-452.61 321,-448.28 253.89,-426.24 229.63,-439.8 168,-405.28 161.01,-401.37 154.22,-396.34 147.97,-391"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="149.63,-389.67 143.75,-387.25 146.84,-392.81 149.63,-389.67"/>
+</g>
+<!-- m6 -->
+<g id="node13" class="node">
+<title>m6</title>
+<polygon fill="#a1d99b" stroke="#006d2c" stroke-width="3" points="494.78,-337.42 494.78,-374.83 455.66,-401.28 400.34,-401.28 361.22,-374.83 361.22,-337.42 400.34,-310.97 455.66,-310.97 494.78,-337.42"/>
+<polygon fill="none" stroke="#006d2c" stroke-width="3" points="498.78,-335.3 498.78,-376.96 456.89,-405.28 399.11,-405.28 357.22,-376.96 357.22,-335.3 399.11,-306.97 456.89,-306.97 498.78,-335.3"/>
+<text xml:space="preserve" text-anchor="middle" x="428" y="-372.13" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="428" y="-359.38" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="428" y="-346.63" font-family="Helvetica,sans-Serif" font-size="10.00">R · min · max</text>
+<text xml:space="preserve" text-anchor="middle" x="428" y="-333.88" font-family="Helvetica,sans-Serif" font-size="10.00">state 2</text>
+</g>
+<!-- m2&#45;&gt;m6 -->
+<g id="edge13" class="edge">
+<title>m2&#45;&gt;m6</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M409.22,-457.45C411.44,-445.58 414.28,-430.42 417.07,-415.5"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="419.11,-416.02 418.15,-409.74 414.98,-415.25 419.11,-416.02"/>
+</g>
+<!-- m10 -->
+<g id="node15" class="node">
+<title>m10</title>
+<defs>
+<linearGradient id="node15_l_2" gradientUnits="userSpaceOnUse" x1="677.21" y1="-356.13" x2="838.79" y2="-356.13" >
+<stop offset="0" style="stop-color:#fcbba1;stop-opacity:1.;"/>
+<stop offset="1" style="stop-color:#fee391;stop-opacity:1.;"/>
+</linearGradient>
+</defs>
+<ellipse fill="url(#node15_l_2)" stroke="#525252" cx="758" cy="-356.13" rx="80.79" ry="41.72"/>
+<text xml:space="preserve" text-anchor="middle" x="758" y="-372.13" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="758" y="-359.38" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="758" y="-346.63" font-family="Helvetica,sans-Serif" font-size="10.00">dead+owing 1</text>
+<text xml:space="preserve" text-anchor="middle" x="758" y="-333.88" font-family="Helvetica,sans-Serif" font-size="10.00">the run stopped first</text>
+</g>
+<!-- m2&#45;&gt;m10 -->
+<g id="edge14" class="edge">
+<title>m2&#45;&gt;m10</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M438.25,-457.41C444.3,-453.98 450.7,-450.76 457,-448.28 546.08,-413.29 577.97,-437.76 668,-405.28 678.29,-401.57 688.86,-396.85 698.96,-391.82"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="699.87,-393.71 704.26,-389.12 697.96,-389.97 699.87,-393.71"/>
+</g>
+<!-- m4&#45;&gt;m5 -->
+<g id="edge15" class="edge">
+<title>m4&#45;&gt;m5</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M487.32,-458.57C438.48,-440.86 373.46,-416.82 348,-405.28 338.52,-400.99 328.65,-396.13 319.07,-391.19"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="320.06,-389.34 313.76,-388.43 318.11,-393.06 320.06,-389.34"/>
+</g>
+<!-- m4&#45;&gt;m6 -->
+<g id="edge16" class="edge">
+<title>m4&#45;&gt;m6</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M518.19,-450.25C505.07,-436.7 489.21,-420.32 474.47,-405.1"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="476.02,-403.69 470.34,-400.84 473,-406.61 476.02,-403.69"/>
+</g>
+<!-- m12 -->
+<g id="node16" class="node">
+<title>m12</title>
+<defs>
+<linearGradient id="node16_l_3" gradientUnits="userSpaceOnUse" x1="857.21" y1="-356.13" x2="1018.79" y2="-356.13" >
+<stop offset="0" style="stop-color:#fcbba1;stop-opacity:1.;"/>
+<stop offset="1" style="stop-color:#fee391;stop-opacity:1.;"/>
+</linearGradient>
+</defs>
+<ellipse fill="url(#node16_l_3)" stroke="#525252" cx="938" cy="-356.13" rx="80.79" ry="41.72"/>
+<text xml:space="preserve" text-anchor="middle" x="938" y="-372.13" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="938" y="-359.38" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="938" y="-346.63" font-family="Helvetica,sans-Serif" font-size="10.00">dead+owing 1</text>
+<text xml:space="preserve" text-anchor="middle" x="938" y="-333.88" font-family="Helvetica,sans-Serif" font-size="10.00">the run stopped first</text>
+</g>
+<!-- m4&#45;&gt;m12 -->
+<g id="edge17" class="edge">
+<title>m4&#45;&gt;m12</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M611.39,-460.74C626.32,-456.47 642.18,-452.09 657,-448.28 741.29,-426.67 766.45,-435.64 848,-405.28 858.26,-401.47 868.8,-396.69 878.9,-391.64"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="879.8,-393.53 884.19,-388.93 877.89,-389.79 879.8,-393.53"/>
+</g>
+<!-- m8&#45;&gt;m9 -->
+<g id="edge18" class="edge">
+<title>m8&#45;&gt;m9</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M710.12,-451.49C690.17,-436.08 665.14,-416.73 642.94,-399.58"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="644.27,-397.95 638.24,-395.94 641.7,-401.28 644.27,-397.95"/>
+</g>
+<!-- m8&#45;&gt;m10 -->
+<g id="edge19" class="edge">
+<title>m8&#45;&gt;m10</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M749.86,-448.03C751.01,-435.19 752.36,-420.1 753.63,-405.95"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="755.72,-406.17 754.16,-400.01 751.53,-405.8 755.72,-406.17"/>
+</g>
+<!-- m8&#45;&gt;m12 -->
+<g id="edge20" class="edge">
+<title>m8&#45;&gt;m12</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M789.39,-452.72C816.58,-435.23 852.19,-412.32 881.74,-393.32"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="882.51,-395.32 886.42,-390.31 880.24,-391.79 882.51,-395.32"/>
+</g>
+<!-- m7 -->
+<g id="node17" class="node">
+<title>m7</title>
+<ellipse fill="#fcbba1" stroke="#525252" cx="249" cy="-213.24" rx="77.07" ry="50.73"/>
+<text xml:space="preserve" text-anchor="middle" x="249" y="-235.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="249" y="-222.86" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="249" y="-210.11" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="249" y="-197.36" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+<text xml:space="preserve" text-anchor="middle" x="249" y="-184.61" font-family="Helvetica,sans-Serif" font-size="10.00">above a dead node</text>
+</g>
+<!-- m3&#45;&gt;m7 -->
+<g id="edge21" class="edge">
+<title>m3&#45;&gt;m7</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M143.24,-326.28C160.76,-307.71 183.95,-283.15 204.14,-261.75"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="205.46,-263.42 208.05,-257.62 202.4,-260.54 205.46,-263.42"/>
+</g>
+<!-- m11 -->
+<g id="node18" class="node">
+<title>m11</title>
+<ellipse fill="#fcbba1" stroke="#525252" cx="421" cy="-213.24" rx="77.07" ry="50.73"/>
+<text xml:space="preserve" text-anchor="middle" x="421" y="-235.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="421" y="-222.86" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="421" y="-210.11" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="421" y="-197.36" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+<text xml:space="preserve" text-anchor="middle" x="421" y="-184.61" font-family="Helvetica,sans-Serif" font-size="10.00">above a dead node</text>
+</g>
+<!-- m3&#45;&gt;m11 -->
+<g id="edge22" class="edge">
+<title>m3&#45;&gt;m11</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M142.05,-326.33C149.79,-319.14 158.71,-312.04 168,-306.97 235.28,-270.26 264.06,-292.98 335,-263.97 343.3,-260.58 351.78,-256.51 360.02,-252.18"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="360.58,-254.26 364.88,-249.58 358.6,-250.56 360.58,-254.26"/>
+</g>
+<!-- m5&#45;&gt;m7 -->
+<g id="edge23" class="edge">
+<title>m5&#45;&gt;m7</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M255.37,-314C254.51,-300.54 253.54,-285.35 252.62,-270.96"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="254.74,-271.17 252.26,-265.32 250.55,-271.44 254.74,-271.17"/>
+</g>
+<!-- m13 -->
+<g id="node19" class="node">
+<title>m13</title>
+<ellipse fill="#fcbba1" stroke="#525252" cx="597" cy="-213.24" rx="80.79" ry="50.73"/>
+<text xml:space="preserve" text-anchor="middle" x="597" y="-235.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="597" y="-222.86" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="597" y="-210.11" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="597" y="-197.36" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+<text xml:space="preserve" text-anchor="middle" x="597" y="-184.61" font-family="Helvetica,sans-Serif" font-size="10.00">the run stopped first</text>
+</g>
+<!-- m5&#45;&gt;m13 -->
+<g id="edge24" class="edge">
+<title>m5&#45;&gt;m13</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M310.82,-324.3C322.81,-318.04 335.65,-311.87 348,-306.97 416.04,-279.97 439.14,-291.43 507,-263.97 515.61,-260.49 524.43,-256.37 533.02,-252.02"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="533.76,-254 538.13,-249.38 531.83,-250.27 533.76,-254"/>
+</g>
+<!-- m6&#45;&gt;m7 -->
+<g id="edge25" class="edge">
+<title>m6&#45;&gt;m7</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" d="M380.97,-318.11C357.28,-299.47 328.43,-276.76 303.75,-257.33"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="305.34,-255.91 299.33,-253.85 302.74,-259.21 305.34,-255.91"/>
+</g>
+<!-- m14 -->
+<g id="node20" class="node">
+<title>m14</title>
+<ellipse fill="#fcbba1" stroke="#525252" cx="777" cy="-213.24" rx="80.79" ry="50.73"/>
+<text xml:space="preserve" text-anchor="middle" x="777" y="-235.61" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="777" y="-222.86" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="777" y="-210.11" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="777" y="-197.36" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+<text xml:space="preserve" text-anchor="middle" x="777" y="-184.61" font-family="Helvetica,sans-Serif" font-size="10.00">the run stopped first</text>
+</g>
+<!-- m6&#45;&gt;m14 -->
+<g id="edge26" class="edge">
+<title>m6&#45;&gt;m14</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" d="M479.74,-320.89C488.91,-315.72 498.55,-310.84 508,-306.97 583.71,-275.95 610.73,-293.58 687,-263.97 695.54,-260.66 704.26,-256.68 712.76,-252.43"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="713.52,-254.4 717.91,-249.79 711.61,-250.66 713.52,-254.4"/>
+</g>
+<!-- m9&#45;&gt;m11 -->
+<g id="edge27" class="edge">
+<title>m9&#45;&gt;m11</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" d="M542.37,-316.63C521.18,-298.75 495.86,-277.4 473.85,-258.82"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="475.36,-257.35 469.42,-255.09 472.65,-260.56 475.36,-257.35"/>
+</g>
+<!-- m9&#45;&gt;m13 -->
+<g id="edge28" class="edge">
+<title>m9&#45;&gt;m13</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" d="M591.15,-305.85C591.85,-294.89 592.6,-283.18 593.32,-271.91"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="595.41,-272.13 593.69,-266.01 591.21,-271.87 595.41,-272.13"/>
+</g>
+<!-- m10&#45;&gt;m11 -->
+<g id="edge29" class="edge">
+<title>m10&#45;&gt;m11</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M705.19,-324.27C693.2,-318.01 680.36,-311.85 668,-306.97 599.11,-279.76 575.43,-292.31 507,-263.97 498.71,-260.54 490.25,-256.45 482.01,-252.11"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="483.43,-250.49 477.15,-249.5 481.45,-254.19 483.43,-250.49"/>
+</g>
+<!-- m10&#45;&gt;m14 -->
+<g id="edge30" class="edge">
+<title>m10&#45;&gt;m14</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M763.5,-314.38C765.33,-300.77 767.41,-285.36 769.37,-270.78"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="771.43,-271.28 770.15,-265.05 767.26,-270.71 771.43,-271.28"/>
+</g>
+<!-- m12&#45;&gt;m13 -->
+<g id="edge31" class="edge">
+<title>m12&#45;&gt;m13</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M885.19,-324.27C873.2,-318.01 860.36,-311.85 848,-306.97 779.11,-279.76 755.7,-291.64 687,-263.97 678.39,-260.5 669.56,-256.39 660.96,-252.04"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="662.16,-250.29 655.86,-249.41 660.23,-254.03 662.16,-250.29"/>
+</g>
+<!-- m12&#45;&gt;m14 -->
+<g id="edge32" class="edge">
+<title>m12&#45;&gt;m14</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M897.37,-319.57C876.5,-301.31 850.85,-278.86 828.59,-259.38"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="830.18,-257.99 824.29,-255.62 827.42,-261.15 830.18,-257.99"/>
+</g>
+<!-- m15 -->
+<g id="node21" class="node">
+<title>m15</title>
+<ellipse fill="#fcbba1" stroke="#525252" cx="509" cy="-59.75" rx="77.07" ry="59.75"/>
+<text xml:space="preserve" text-anchor="middle" x="509" y="-88.5" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="509" y="-75.75" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="509" y="-63" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="509" y="-50.25" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="509" y="-37.5" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+<text xml:space="preserve" text-anchor="middle" x="509" y="-24.75" font-family="Helvetica,sans-Serif" font-size="10.00">above a dead node</text>
+</g>
+<!-- m7&#45;&gt;m15 -->
+<g id="edge33" class="edge">
+<title>m7&#45;&gt;m15</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M306.38,-178.8C346.37,-155.5 399.86,-124.34 441.84,-99.88"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="442.78,-101.77 446.9,-96.93 440.66,-98.14 442.78,-101.77"/>
+</g>
+<!-- m11&#45;&gt;m15 -->
+<g id="edge34" class="edge">
+<title>m11&#45;&gt;m15</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M448.12,-165.55C456.37,-151.35 465.55,-135.55 474.23,-120.61"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="476,-121.74 477.2,-115.49 472.37,-119.63 476,-121.74"/>
+</g>
+<!-- m13&#45;&gt;m15 -->
+<g id="edge35" class="edge">
+<title>m13&#45;&gt;m15</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M569.64,-165.14C561.44,-151.03 552.34,-135.36 543.74,-120.55"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="545.63,-119.62 540.8,-115.49 542,-121.73 545.63,-119.62"/>
+</g>
+<!-- m14&#45;&gt;m15 -->
+<g id="edge36" class="edge">
+<title>m14&#45;&gt;m15</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M717.52,-178.62C675.76,-155.01 619.83,-123.4 576.41,-98.85"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="577.68,-97.16 571.43,-96.04 575.62,-100.82 577.68,-97.16"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: b52de08b4da39ee93563e360e7966cf9978e7906fbcdf308844758dd0ed2271b -->

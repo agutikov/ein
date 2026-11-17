@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+rectangle "ein show hyps" as show
+rectangle "ein render h-space" as cmd
+rectangle "ein solve (the obligation tree)" as solve
+package "ein-infer: structure.rs" {
+  component "hypotheses" as hyps
+  component "PairLayer (root)" as pl
+  component "small_kb + PairLayer" as sk
+  component "Theory" as th
+  component "Cover" as cov
+  component "ExactlyOne" as eo
+  component "Coupling" as cp
+  component "NodeCoupling" as nc
+}
+package "ein-render: structure.rs" {
+  component "read-out" as ro
+  component "four DOT graphs" as dots
+  component "h-space.json" as json
+}
+show --> hyps
+cmd --> hyps
+hyps --> pl
+hyps --> sk
+pl --> th
+sk --> th
+sk --> cov
+cov --> eo
+cov --> cp
+pl --> cp
+cp --> ro
+cp --> dots
+cp --> json
+eo --> json
+solve --> nc : order.rs, where a choice is tied
+@enduml

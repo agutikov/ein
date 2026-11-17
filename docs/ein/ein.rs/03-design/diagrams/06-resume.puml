@@ -1,0 +1,24 @@
+@startuml
+participant "region::prepare" as prep
+participant "root's Saturator" as rs
+participant "Snapshot" as snap
+participant "the node function" as node
+participant "the node's Saturator" as ns
+
+prep -> rs : Saturator::new(root), saturate
+rs --> prep : root at its fixpoint
+prep -> rs : snapshot(root)
+rs --> snap : the plan list in its order, fired, seen,\nthe entries, the queue, the parked set\nwith its watch stamps, the tiebreaker,\nthe agenda, root's fact set
+loop each node
+  node -> node : fork = root.branch();\nwrite the commitment
+  node -> snap : new_facts_of(fork)
+  snap --> node : delta: the commitment,\nin the order written
+  node -> ns : Saturator::resume(snapshot, delta)
+  note right of ns
+    the first enqueue pass is a delta pass:
+    each plan seeded at the facts of delta
+  end note
+  node -> ns : saturate
+  ns --> node : the fork at its fixpoint,\nor at its first contradiction
+end
+@enduml

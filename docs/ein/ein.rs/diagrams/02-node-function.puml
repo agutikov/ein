@@ -1,0 +1,21 @@
+@startuml
+start
+:fork = root.branch();
+:write each fact of the commitment, in H's order,\nwith hypothesis provenance;
+:Saturator::resume(root's snapshot,\ndelta = the facts the snapshot lacks);
+if (a route's node, on a monotone program,\nand the commitment is not empty?) then (yes)
+  :saturate to the first contradiction,\nor to the fixpoint where there is none;
+else (no)
+  :saturate to the fixpoint;
+endif
+:contradiction::detect: dead?;
+:obligations::tally: what it owes;
+:closure = the candidates it holds;\ndenied = those whose negation it stores;
+:state key = its facts beyond root's, sorted;
+if (dead, and a core is asked of this node?) then (yes)
+  :go on to the fixpoint, silently, where it was stopped;
+  :explain::contradiction_frontier: the core;
+endif
+:NodeOut: dead, owes, closure, denied, state, its events;
+stop
+@enduml

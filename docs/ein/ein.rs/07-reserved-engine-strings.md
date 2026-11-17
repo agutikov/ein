@@ -14,32 +14,7 @@ fills and never edits ([Q-M1f.12](../../decisions/read-out/Q-M1f.12-natural-lang
 Each group of strings, and the one part of the engine that gives it its meaning: where a program is stopped from
 writing or binding it, and where the engine reads it.
 
-```dot
-digraph reserved {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  dunder [label="__closed__\n__symmetric__"];
-  wb     [label="<forced-positive>\n<monotonic-unconditional>\n<lookahead-dies-immediately>"];
-  hash   [label="#empty  #nested  #params\n#list  #query  #written"];
-  keys   [label=":hypothesis-relations\n:no-hypothesis"];
-
-  lexer  [label="the lexer, ein.l\nWRITEBACK is a token no production takes;\n# is no name character"];
-  loader [label="the loader\nein_core::terms::RESERVED:\na declarator may not bind it"];
-  sat    [label="saturator.rs\nthe native mirror"];
-  gen    [label="hypgen.rs\nno candidate for a closed relation;\nthe two lists scope the generator"];
-  parser [label="the parser's builder, the loader,\nthe compiler: they make the name up"];
-
-  wb -> lexer      [label="refused where written"];
-  hash -> lexer    [label="cannot be spelt"];
-  hash -> parser   [dir=back, label="made up by"];
-  dunder -> loader [label="may be used, not bound"];
-  dunder -> sat    [label="(__symmetric__ R)"];
-  dunder -> gen    [label="(__closed__ R)"];
-  keys -> gen      [label="read off (solve ...)"];
-}
-```
+![Each group of reserved strings and the part of the engine that gives it its meaning](diagrams/07-reserved-strings.svg)
 
 ## The engine's names
 

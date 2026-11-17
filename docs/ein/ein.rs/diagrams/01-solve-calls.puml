@@ -1,0 +1,39 @@
+@startuml
+actor user
+participant "ein-cli\nmodes::run" as cli
+participant "ein-ir" as ir
+participant "ein-infer\nexplore, region" as infer
+participant "ein-render" as render
+
+user -> cli : ein solve FILE
+cli -> ir : read::read_program(path)
+ir --> cli : Held::Text | Held::Container
+cli -> ir : parse(ast, text)
+ir --> cli : the top-level forms
+cli -> ir : load_query_with(ast, terms, forms, dir)
+note right of ir
+  resolve imports, expand macros,
+  relations, rules, facts, written,
+  the refusals, the indexes
+end note
+ir --> cli : Kb
+opt two mechanisms could conflict
+  cli -> infer : mechanisms::check(a second load)
+  infer --> cli : conflicts (refused) | notes
+end
+cli -> infer : read_out::run_with(kb, terms, ast, opts, events)
+group prepare
+  infer -> infer : Saturator::new, saturate\n(root's fixpoint, the snapshot)
+  infer -> infer : hypgen::generate_config_free\n(H, sorted and deduplicated)
+  infer -> infer : obligations::tally(root)
+  infer -> infer : monotone::classify, forbid::check
+end
+loop each batch of the route
+  infer -> infer : region::fan_out(sets)\nfork root, write the commitment,\nresume, saturate, tally
+end
+infer -> infer : Described; each listed state's model\nand each query's classes
+infer --> cli : ReadOut
+cli -> render : read_out::render(&ReadOut)
+render --> cli : Text
+cli --> user : stdout, and each artefact asked for
+@enduml

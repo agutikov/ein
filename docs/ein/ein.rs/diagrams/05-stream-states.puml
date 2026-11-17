@@ -1,0 +1,28 @@
+@startuml
+hide empty description
+state "run" as Run
+state "load" as Load
+state "root's saturation" as Sat : compile, enqueue, fire, mirror,\nquiesce, park, admit, retire, alt
+state "H is built" as Gen : hyp, hypskip (verbose),\nat most one rung
+state "root's obligation pass" as Owe : owe, one a debt
+state "monotonicity" as Mono : one line, a flagged program's
+state "a node" as Node : its saturation's kinds, as root's;\nthen owe, one a debt;\nthen enter, its last line
+state "layer" as Layer : route 1 and the state route:\none line at the end of a layer
+state "region" as Region
+
+[*] --> Run
+Run --> Load
+Load --> Sat
+Sat --> Gen
+Gen --> Owe
+Owe --> Mono : the static check\nfound a site
+Owe --> Node : a monotone program
+Mono --> Node
+Node --> Node : the next node,\nin visit order
+Node --> Layer
+Layer --> Node
+Layer --> Layer : a layer that\nvisited nothing
+Node --> Region
+Layer --> Region
+Region --> [*]
+@enduml

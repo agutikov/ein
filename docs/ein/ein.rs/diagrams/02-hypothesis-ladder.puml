@@ -1,0 +1,21 @@
+@startuml
+start
+if (the program states (solve :no-search)?) then (yes)
+  :no rung runs: H is empty;
+  stop
+elseif (the program declares an hrule?) then (yes)
+  :rung 1: each hrule plan's matches,\none candidate a match (Hrules::candidates);
+elseif (an obligation is activated at root?) then (yes)
+  :rung 2: oblgen::generate;
+  if (the rung declines the call?) then (yes)
+    :rung 3: the blind enumerator;
+  else (no)
+    :the facts that would discharge what root owes,\nand what a rule can bring a commitment to owe;
+  endif
+else (no)
+  :rung 3: the blind enumerator:\nevery eligible relation, every slot,\nover the program's object names;
+endif
+:each candidate through the filters, in this order:\na stored negation, a fact root holds, a repeat in the call;
+:sort the survivors by text, deduplicate: H;
+stop
+@enduml

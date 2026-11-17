@@ -1,0 +1,32 @@
+digraph ein_ir {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  file   [shape=note, label="program.ein\nor program.einb"];
+  read   [label="read.rs\nread_program"];
+  gram   [label="grammar.rs\nein.l, ein.y (generated)\ngrammar/build_ast.rs"];
+  ast    [shape=cylinder, label="ast.rs\nthe Ast arena"];
+  imp    [label="imports.rs\nResolver"];
+  std    [label="stdlib.rs\nSource"];
+  mac    [label="macros.rs"];
+  load   [label="from_ir.rs\nthe loader"];
+  claims [label="claim.rs, expect.rs"];
+  dump   [label="dump.rs"];
+  kb     [shape=cylinder, label="ein_core::Kb\nwith its Program"];
+  text   [shape=note, label="Ein text"];
+
+  file -> read  [label="bytes"];
+  read -> gram  [label="Held::Text"];
+  gram -> ast   [label="nodes"];
+  ast  -> imp   [label="forms"];
+  imp  -> read  [label="a module's path"];
+  imp  -> std   [label="std.*"];
+  imp  -> load  [label="one import-free list,\nfull names"];
+  load -> mac   [label="a rule's clauses,\na goal"];
+  mac  -> load  [label="expanded"];
+  claims -> load [label=":expect, parsed"];
+  load -> kb    [label="facts, registries,\n(written T)"];
+  ast  -> dump  [label="nodes"];
+  dump -> text;
+}

@@ -1,0 +1,15 @@
+@startuml
+hide empty description
+state "UNBOUND" as U
+state "bound to a Value,\non the trail" as B
+state "bound to a Value,\nnot on the trail" as P
+
+[*] --> U : reset
+U --> B : the activator's seed, before any step
+U --> B : unify_slot on a Reg slot:\nregs[r] = arg; trail.push(r)
+U --> B : an eq or neq guard binds\nits free side
+B --> B : unify_slot on a bound Reg slot:\na compare, no write
+B --> U : unwind(mark): the frame that bound it\nreturns, pass or fail
+U --> P : holds: a guard's register projected\nfrom the parent's through scope_of
+P --> [*] : the guard's run ends
+@enduml

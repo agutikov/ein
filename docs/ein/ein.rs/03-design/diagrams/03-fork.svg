@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: fork Pages: 1 -->
+<svg width="493pt" height="259pt"
+ viewBox="0.00 0.00 493.00 259.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 255)">
+<title>fork</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-255 488.5,-255 488.5,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_before</title>
+<polygon fill="none" stroke="#7f7f7f" points="8,-83 8,-210 209,-210 209,-83 8,-83"/>
+<text xml:space="preserve" text-anchor="middle" x="31.75" y="-196.5" font-family="Helvetica,sans-Serif" font-size="10.00">before</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_after</title>
+<polygon fill="none" stroke="#7f7f7f" points="229,-8 229,-243 476.5,-243 476.5,-8 229,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="302.62" y="-229.5" font-family="Helvetica,sans-Serif" font-size="10.00">after &#160;let child = root.fork()</text>
+</g>
+<!-- b_root -->
+<g id="node1" class="node">
+<title>b_root</title>
+<polygon fill="none" stroke="black" points="16,-106.75 16,-171.25 80,-171.25 80,-106.75 16,-106.75"/>
+<text xml:space="preserve" text-anchor="middle" x="48" y="-156.8" font-family="Helvetica,sans-Serif" font-size="11.00">root : Kb</text>
+<polyline fill="none" stroke="black" points="16,-149.75 80,-149.75"/>
+<text xml:space="preserve" text-anchor="middle" x="48" y="-135.3" font-family="Helvetica,sans-Serif" font-size="11.00">sealed</text>
+<polyline fill="none" stroke="black" points="16,-128.25 80,-128.25"/>
+<text xml:space="preserve" text-anchor="middle" x="48" y="-113.8" font-family="Helvetica,sans-Serif" font-size="11.00">top</text>
+</g>
+<!-- b_l0 -->
+<g id="node2" class="node">
+<title>b_l0</title>
+<polygon fill="#e5e5e5" stroke="black" points="193.5,-181 123.5,-181 123.5,-145 193.5,-145 193.5,-181"/>
+<text xml:space="preserve" text-anchor="middle" x="158.5" y="-166.05" font-family="Helvetica,sans-Serif" font-size="11.00">Layer 0</text>
+<text xml:space="preserve" text-anchor="middle" x="158.5" y="-152.55" font-family="Helvetica,sans-Serif" font-size="11.00">(the load)</text>
+</g>
+<!-- b_root&#45;&gt;b_l0 -->
+<g id="edge1" class="edge">
+<title>b_root:s&#45;&gt;b_l0</title>
+<path fill="none" stroke="black" d="M80,-139C90.65,-139 101.78,-141.1 112.16,-144.05"/>
+<polygon fill="black" stroke="black" points="111.06,-147.37 121.65,-147.07 113.18,-140.7 111.06,-147.37"/>
+</g>
+<!-- b_top -->
+<g id="node3" class="node">
+<title>b_top</title>
+<polygon fill="none" stroke="black" points="201,-127 116,-127 116,-91 201,-91 201,-127"/>
+<text xml:space="preserve" text-anchor="middle" x="158.5" y="-112.05" font-family="Helvetica,sans-Serif" font-size="11.00">Layer</text>
+<text xml:space="preserve" text-anchor="middle" x="158.5" y="-98.55" font-family="Helvetica,sans-Serif" font-size="11.00">root&#39;s writes</text>
+</g>
+<!-- b_root&#45;&gt;b_top -->
+<g id="edge2" class="edge">
+<title>b_root:t&#45;&gt;b_top</title>
+<path fill="none" stroke="black" d="M80,-117.5C87.91,-117.5 96.25,-117.06 104.41,-116.37"/>
+<polygon fill="black" stroke="black" points="104.64,-119.87 114.26,-115.41 103.96,-112.9 104.64,-119.87"/>
+</g>
+<!-- a_root -->
+<g id="node4" class="node">
+<title>a_root</title>
+<polygon fill="none" stroke="black" points="238.5,-44.75 238.5,-109.25 302.5,-109.25 302.5,-44.75 238.5,-44.75"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-94.8" font-family="Helvetica,sans-Serif" font-size="11.00">root : Kb</text>
+<polyline fill="none" stroke="black" points="238.5,-87.75 302.5,-87.75"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-73.3" font-family="Helvetica,sans-Serif" font-size="11.00">sealed</text>
+<polyline fill="none" stroke="black" points="238.5,-66.25 302.5,-66.25"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-51.8" font-family="Helvetica,sans-Serif" font-size="11.00">top</text>
+</g>
+<!-- b_top&#45;&gt;a_root -->
+<!-- a_child -->
+<g id="node5" class="node">
+<title>a_child</title>
+<polygon fill="none" stroke="black" points="237,-128.75 237,-193.25 304,-193.25 304,-128.75 237,-128.75"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-178.8" font-family="Helvetica,sans-Serif" font-size="11.00">child : Kb</text>
+<polyline fill="none" stroke="black" points="237,-171.75 304,-171.75"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-157.3" font-family="Helvetica,sans-Serif" font-size="11.00">sealed</text>
+<polyline fill="none" stroke="black" points="237,-150.25 304,-150.25"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-135.8" font-family="Helvetica,sans-Serif" font-size="11.00">top</text>
+</g>
+<!-- b_top&#45;&gt;a_child -->
+<!-- a_l0 -->
+<g id="node6" class="node">
+<title>a_l0</title>
+<polygon fill="#e5e5e5" stroke="black" points="439.25,-214 369.25,-214 369.25,-178 439.25,-178 439.25,-214"/>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-199.05" font-family="Helvetica,sans-Serif" font-size="11.00">Layer 0</text>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-185.55" font-family="Helvetica,sans-Serif" font-size="11.00">(the load)</text>
+</g>
+<!-- a_root&#45;&gt;a_l0 -->
+<g id="edge3" class="edge">
+<title>a_root:s&#45;&gt;a_l0</title>
+<path fill="none" stroke="black" d="M303.5,-77C347.49,-77 309.3,-137.5 340,-169 345.32,-174.46 351.92,-178.87 358.83,-182.42"/>
+<polygon fill="black" stroke="black" points="357.12,-185.5 367.68,-186.41 360,-179.11 357.12,-185.5"/>
+</g>
+<!-- a_l1 -->
+<g id="node7" class="node">
+<title>a_l1</title>
+<polygon fill="#e5e5e5" stroke="black" points="468.5,-160 340,-160 340,-124 468.5,-124 468.5,-160"/>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-145.05" font-family="Helvetica,sans-Serif" font-size="11.00">Layer 1</text>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-131.55" font-family="Helvetica,sans-Serif" font-size="11.00">root&#39;s writes, sealed</text>
+</g>
+<!-- a_root&#45;&gt;a_l1 -->
+<g id="edge4" class="edge">
+<title>a_root:s&#45;&gt;a_l1</title>
+<path fill="none" stroke="black" d="M303.5,-77C326.92,-77 320.73,-101.69 340,-115 341.55,-116.07 343.16,-117.12 344.8,-118.13"/>
+<polygon fill="black" stroke="black" points="342.77,-121 353.2,-122.86 346.2,-114.9 342.77,-121"/>
+</g>
+<!-- a_rt -->
+<g id="node8" class="node">
+<title>a_rt</title>
+<polygon fill="none" stroke="black" points="461.38,-52 347.12,-52 347.12,-16 461.38,-16 461.38,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-37.05" font-family="Helvetica,sans-Serif" font-size="11.00">empty Layer</text>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-23.55" font-family="Helvetica,sans-Serif" font-size="11.00">root&#39;s later writes</text>
+</g>
+<!-- a_root&#45;&gt;a_rt -->
+<g id="edge5" class="edge">
+<title>a_root:t&#45;&gt;a_rt</title>
+<path fill="none" stroke="black" d="M303.5,-55.5C314.02,-55.5 325.02,-54.34 335.72,-52.57"/>
+<polygon fill="black" stroke="black" points="336.05,-56.07 345.24,-50.79 334.77,-49.18 336.05,-56.07"/>
+</g>
+<!-- a_child&#45;&gt;a_l0 -->
+<g id="edge6" class="edge">
+<title>a_child:s&#45;&gt;a_l0</title>
+<path fill="none" stroke="black" d="M304,-161C314.97,-161 337.48,-168.7 358.3,-176.88"/>
+<polygon fill="black" stroke="black" points="356.97,-180.11 367.55,-180.59 359.58,-173.62 356.97,-180.11"/>
+</g>
+<!-- a_child&#45;&gt;a_l1 -->
+<g id="edge7" class="edge">
+<title>a_child:s&#45;&gt;a_l1</title>
+<path fill="none" stroke="black" d="M304,-161C311.87,-161 320.03,-160.42 328.14,-159.45"/>
+<polygon fill="black" stroke="black" points="328.61,-162.92 338.02,-158.07 327.64,-155.99 328.61,-162.92"/>
+</g>
+<!-- a_ct -->
+<g id="node9" class="node">
+<title>a_ct</title>
+<polygon fill="none" stroke="black" points="459.12,-106 349.38,-106 349.38,-70 459.12,-70 459.12,-106"/>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-91.05" font-family="Helvetica,sans-Serif" font-size="11.00">empty Layer</text>
+<text xml:space="preserve" text-anchor="middle" x="404.25" y="-77.55" font-family="Helvetica,sans-Serif" font-size="11.00">the child&#39;s writes</text>
+</g>
+<!-- a_child&#45;&gt;a_ct -->
+<g id="edge8" class="edge">
+<title>a_child:t&#45;&gt;a_ct</title>
+<path fill="none" stroke="black" d="M304,-139.5C323.35,-139.5 323.02,-124.29 340,-115 342.21,-113.79 344.49,-112.6 346.81,-111.42"/>
+<polygon fill="black" stroke="black" points="348.3,-114.59 355.78,-107.09 345.26,-108.29 348.3,-114.59"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: f36cb462dd2f6f0c516f9c03f0cd34c3b0feff5e79cd95bd3b920a90be6aed86 -->

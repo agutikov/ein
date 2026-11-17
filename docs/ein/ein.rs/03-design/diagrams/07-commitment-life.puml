@@ -1,0 +1,27 @@
+@startuml
+hide empty description
+state "not visited" as Unvisited
+state "known dead" as Known
+state "forked" as Forked
+state "saturating" as Sat
+state "stopped at its\nfirst contradiction" as Stopped
+state "quiescent" as Quiet
+state "dead" as Dead
+state "owing" as Owing
+state "in R" as InR
+
+[*] --> Unvisited
+Unvisited --> Known : a set known dead lies inside it\n(L1, L8): no saturation
+Unvisited --> Forked : the node function:\nroot.branch(), the commitment written
+Forked --> Sat : Saturator::resume(root's snapshot)
+Sat --> Stopped : a firing makes a contradiction\n(a route's node, monotone program)
+Sat --> Quiet : the fixpoint
+Stopped --> Dead
+Quiet --> Dead : contradiction::detect\nfinds (false), or X and (not X)
+Quiet --> Owing : alive, and obligations::tally\nreports an instance
+Quiet --> InR : alive, and it owes nothing
+Dead --> [*] : its core, where a surface prints one,\ntaken over its fixpoint
+Owing --> [*]
+InR --> [*]
+Known --> [*]
+@enduml

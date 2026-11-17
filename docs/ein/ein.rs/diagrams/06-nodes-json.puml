@@ -1,0 +1,33 @@
+@startuml
+hide empty methods
+skinparam classAttributeIconSize 0
+
+class "nodes.json" as Doc {
+  schema : "ein-lattice/2"
+  source : the file
+  asked : the command
+  route : the route's words
+  candidates : [fact, ...]
+  visited : the node count
+}
+class Step {
+  layer : number | null
+  from : index of its first node
+  visited, dead, owing, in_r, facts
+}
+class Node {
+  n : its place in the visit order
+  commitment : [fact, ...], sorted
+  kind : dead | owing | in-r
+  owes : number
+  owed : [text, ...]
+  core : [fact, ...] | null
+  core_status : text | null
+  refuted_by : [rule, ...] | null
+  closure : [fact, ...]
+  facts : number beyond root's
+}
+Doc *-- "*" Step : steps
+Doc *-- "*" Node : nodes, in visit order
+Step ..> Node : from, visited:\nthe nodes it covers
+@enduml

@@ -1,0 +1,37 @@
+digraph ein_render {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  forms   [shape=cylinder, label="the parsed forms\n(ein_ir::Ast)"];
+  kb      [shape=cylinder, label="a Kb\nwith its Terms"];
+  firings [shape=cylinder, label="firings\n(ein_infer::firing)"];
+  ro      [shape=cylinder, label="ReadOut\n(ein_infer::read_out)"];
+  cube    [shape=cylinder, label="Region, the oracle's cube\n(ein_infer::region)"];
+  hs      [shape=cylinder, label="the structure of H\n(ein_infer::structure)"];
+  visits  [shape=cylinder, label="the nodes a run visited\n(ein_infer::events::Watch)"];
+
+  prog  [label="rules.rs, constraints.rs,\nir_dot.rs"];
+  kbv   [label="kb_dot.rs, derivation.rs"];
+  trace [label="trace/, slice.rs,\nsentence.rs"];
+  text  [label="read_out.rs\ngrid.rs, models.rs"];
+  dans  [label="dump/region_answer.rs,\ndump/json.rs, dump/serialise.rs"];
+  dlat  [label="dump/region_lattice.rs"];
+  dreg  [label="dump/region.rs,\nregion_doc.rs, region_dot.rs"];
+  struc [label="structure.rs"];
+  dot   [label="builder.rs, dot_util.rs,\npalette.rs"];
+
+  o_dot  [shape=note, label="DOT"];
+  o_md   [shape=note, label="the trace, markdown"];
+  o_out  [shape=note, label="the read-out's text"];
+  o_ans  [shape=note, label="--dump-answer DIR,\n--json-summary"];
+  o_lat  [shape=note, label="nodes.json, nodes.md"];
+  o_reg  [shape=note, label="an oracle dump:\nregion.json, region.md"];
+  o_hs   [shape=note, label="h-space.json,\nits read-out"];
+
+  forms -> prog;  kb -> kbv;  firings -> trace;  ro -> trace;
+  ro -> text;  ro -> dans;  visits -> dlat;  cube -> dreg;  hs -> struc;
+  prog -> dot;  kbv -> dot;  trace -> dot;  dlat -> dot;  dreg -> dot;  struc -> dot;
+  dot -> o_dot;
+  trace -> o_md;  text -> o_out;  dans -> o_ans;  dlat -> o_lat;  dreg -> o_reg;  struc -> o_hs;
+}

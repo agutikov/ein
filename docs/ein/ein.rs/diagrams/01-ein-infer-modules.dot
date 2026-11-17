@@ -1,0 +1,51 @@
+digraph ein_infer {
+  rankdir=TB;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_closure {
+    label="the closure: one KB to its fixpoint"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    compile [label="compile.rs, plan.rs\na rule and an activator to a Plan;\nthe run's PlanMemo"];
+    engine  [label="engine.rs\nthe ordered plan list, fired"];
+    match   [label="match_.rs, predicates.rs\nthe register matcher; eq, neq"];
+    sat     [label="saturator.rs\nthe agenda, the closure step,\nthe NAF boundary, the mirror"];
+    firing  [label="firing.rs, contradiction.rs\none application; (false) and X, (not X)"];
+    obl     [label="obligations.rs\nwhat a quiescent KB owes"];
+  }
+
+  subgraph cluster_worlds {
+    label="the worlds: the lattice of commitments"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    hyp     [label="hypgen.rs\nhrule.rs, oblgen.rs\nthe ladder: H"];
+    region  [label="region.rs\nprepare; the node function;\nfan_out; the cube"];
+    explore [label="explore.rs\na question to its route"];
+    routes  [label="downset.rs, states.rs, tree.rs,\ntree_classes.rs\nknown_dead.rs, order.rs, transversal.rs"];
+    desc    [label="described.rs, count.rs\nR described once"];
+    readout [label="read_out.rs, verdict.rs,\nclaim.rs, expect.rs"];
+  }
+
+  static  [label="monotone.rs, detector.rs, forbid.rs\nthe static check over the compiled plans"];
+  explain [label="explain.rs\na dead node's core"];
+  events  [label="events.rs\nthe --events writer, the Watch"];
+
+  compile -> engine [label="PlanId"];
+  engine  -> sat    [label="plans, in order"];
+  sat     -> match  [label="run_one, run_seeded, holds"];
+  match   -> sat    [label="each Match"];
+  sat     -> firing [label="a popped candidate"];
+  firing  -> sat    [label="the derived facts"];
+  sat     -> obl    [label="the fixpoint"];
+
+  sat     -> region  [label="Snapshot of root"];
+  obl     -> region  [label="Owes"];
+  hyp     -> region  [label="candidates"];
+  region  -> static  [label="root's plans, H's relations"];
+  static  -> explore [label="monotone | flagged"];
+  explore -> routes  [label="Mode"];
+  routes  -> region  [label="sets to saturate"];
+  region  -> routes  [label="NodeOut"];
+  region  -> explain [label="a dead fork"];
+  routes  -> desc;
+  desc    -> readout [label="Described"];
+  sat     -> events  [style=dotted];
+  region  -> events  [style=dotted];
+}

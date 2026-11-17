@@ -1,0 +1,24 @@
+@startuml
+start
+:Header::read: the magic, the version;
+if (flags are 0, and the BLAKE3 of the bytes\nafter the header is the header's digest?) then (no)
+  :refused: Malformed, Digest;
+  stop
+endif
+:the section table: each entry's bounds; an unknown kind is skipped;
+:META, and Meta::freshness(engine, sources, stdlib);
+:SYMBOLS, then FACTS: re-intern entry i,\nlearn the live id of the file's i (tables::Maps);
+:PROGRAM's file names;
+:PROV: push the file's derivation records;
+:parse and load the stored program:\nthe registries, and the loader's own records after the file's;
+if (the file holds derived state,\nand it is not Fresh?) then (yes)
+  :return the loader's Kb;\nderived_dropped is true;
+  stop
+endif
+:PRESENT: Kb::restore_fact for each believed fact,\nwith its recorded primary;
+:CLOSURE, where the file has one;
+:Kb::rebuild_indexes_from;
+:SOLUTIONS, where the file has one;
+:Opened;
+stop
+@enduml

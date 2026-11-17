@@ -276,44 +276,7 @@ A program with one rule, one hrule and two candidates, small enough to follow ev
 alive, and the pair, dead. Each arrow below is one line of `OUT.jsonl`, with its `n`; the column it leaves is the
 part of the engine that wrote it, and a node's lines are written by the route as it takes the node.
 
-```plantuml
-@startuml
-participant "ein-cli" as cli
-participant "root's saturation" as sat
-participant "the generator" as gen
-participant "the route\n(a node's saturation,\nreplayed in visit order)" as route
-participant "OUT.jsonl" as out
-
-cli -> out : 0 run (version, level, impl, file, argv, config)
-cli -> out : 1 load (the counts and the names)
-== root ==
-sat -> out : 2 compile one-drink
-sat -> out : 3 quiesce (nothing to fire: no likes fact yet)
-gen -> out : 4 hyp (likes Ann Tea), emitted
-gen -> out : 5 hyp (likes Ann Coffee), emitted
-== layer 0: the empty commitment ==
-route -> out : 6 quiesce
-route -> out : 7 enter [ ], in-r
-route -> out : 8 layer 0
-== layer 1: each candidate alone ==
-route -> out : 9 quiesce
-route -> out : 10 enter [(likes Ann Coffee)], in-r
-route -> out : 11 quiesce
-route -> out : 12 enter [(likes Ann Tea)], in-r
-route -> out : 13 layer 1
-== layer 2: the pair ==
-route -> out : 14 enqueue one-drink, p = Ann
-route -> out : 15 fire one-drink, derived (false)
-note right of route
-  stopped at its first contradiction:
-  no quiesce line
-end note
-route -> out : 16 enter [both], dead, its core both candidates
-route -> out : 17 layer 2
-== the end ==
-cli -> out : 18 region (asked, region, verdict, work)
-@enduml
-```
+![One run's event lines in order, each from the part of the engine that wrote it](diagrams/05-one-run-line-by-line.svg)
 
 ### The orders a stream can take
 
@@ -321,36 +284,7 @@ The kinds of a region run's stream as a state machine: a state is the part of th
 in it are the ones it may write, and a transition is the first line of the next part. A stream of `ein saturate` is
 the first three states and nothing after them.
 
-```plantuml
-@startuml
-hide empty description
-state "run" as Run
-state "load" as Load
-state "root's saturation" as Sat : compile, enqueue, fire, mirror,\nquiesce, park, admit, retire, alt
-state "H is built" as Gen : hyp, hypskip (verbose),\nat most one rung
-state "root's obligation pass" as Owe : owe, one a debt
-state "monotonicity" as Mono : one line, a flagged program's
-state "a node" as Node : its saturation's kinds, as root's;\nthen owe, one a debt;\nthen enter, its last line
-state "layer" as Layer : route 1 and the state route:\none line at the end of a layer
-state "region" as Region
-
-[*] --> Run
-Run --> Load
-Load --> Sat
-Sat --> Gen
-Gen --> Owe
-Owe --> Mono : the static check\nfound a site
-Owe --> Node : a monotone program
-Mono --> Node
-Node --> Node : the next node,\nin visit order
-Node --> Layer
-Layer --> Node
-Layer --> Layer : a layer that\nvisited nothing
-Node --> Region
-Layer --> Region
-Region --> [*]
-@enduml
-```
+![The kinds of a region run's stream as a state machine](diagrams/05-stream-states.svg)
 
 A state may write little or nothing: a program none of whose rules fires has a root saturation of its `compile`
 lines and one `quiesce`, a program that states `(solve :no-search)` builds no H, and one that owes nothing has no

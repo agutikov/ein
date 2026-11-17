@@ -19,30 +19,4 @@ these pages say how `ein.rs` computes it.
 How the pages stand to one another: the map first, then what the engine does and the contracts it is built to,
 then the surfaces a program outside the engine reads, and last the bridge from the reasoning's pages to this code.
 
-```dot
-digraph pages {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  arch   [label="01 architecture\nthe crates and modules,\none run from file to read-out"];
-  alg    [label="02 algorithms\neach algorithm as a flow"];
-  design [label="03 design/\nthe ten contracts"];
-
-  subgraph cluster_surfaces {
-    label="what another program reads"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
-    api    [label="04 api\nthe crates as a library"];
-    events [label="05 events\nthe --events protocol"];
-    dump   [label="06 lattice dump\nevery node a run visited"];
-  }
-  names  [label="07 reserved engine strings"];
-  bridge [label="08 reasoning in code/\neach page of the reasoning,\nin this implementation"];
-
-  arch -> alg    [label="which algorithm"];
-  alg -> design  [label="its contract"];
-  arch -> design [label="a module's contract"];
-  design -> api; design -> events; design -> dump;
-  design -> names;
-  bridge -> alg; bridge -> design;
-}
-```
+![How the pages of ein.rs stand to one another](diagrams/00-page-map.svg)

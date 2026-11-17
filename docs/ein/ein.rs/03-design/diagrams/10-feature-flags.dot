@@ -1,0 +1,25 @@
+digraph features {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  cli_par  [peripheries=2, label="ein-cli / parallel"];
+  cli_einb [peripheries=2, label="ein-cli / einb"];
+  cli_snm  [peripheries=2, label="ein-cli / snmalloc"];
+  ren_par  [peripheries=2, label="ein-render / parallel"];
+  inf_par  [peripheries=2, label="ein-infer / parallel"];
+  inf_cnt  [label="ein-infer / counters"];
+  core_cnt [label="ein-core / counters"];
+
+  rayon [shape=ellipse, label="rayon"];
+  einb  [shape=ellipse, label="ein-einb"];
+  snm   [shape=ellipse, label="snmalloc-rs"];
+
+  cli_par -> inf_par;
+  cli_par -> ren_par;
+  ren_par -> inf_par;
+  inf_par -> rayon;
+  cli_einb -> einb;
+  cli_snm -> snm;
+  inf_cnt -> core_cnt;
+}

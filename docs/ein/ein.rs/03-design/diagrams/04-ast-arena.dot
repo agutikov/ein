@@ -1,0 +1,19 @@
+digraph ast {
+  rankdir=LR;
+  node [shape=record, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  nodes [label="nodes : Vec\<Node\> | <f> SForm \{ head, args \} | <h> Atom(SymId) | <a> Atom(SymId) | <v> Var(SymId)"];
+  locs  [label="locs : Vec\<Option\<Loc\>\> | <f> Some(file, line, col) | <h> ... | <a> ... | <v> ..."];
+  args  [label="args : Vec\<NodeId\> | <a0> NodeId | <a1> NodeId"];
+  strs  [label="the string table | <l> likes | <n> Ann | <x> x"];
+
+  nodes:f -> nodes:h [label="head"];
+  nodes:f -> args:a0 [label="args: ArgSpan \{ start, len: 2 \}"];
+  args:a0 -> nodes:a;
+  args:a1 -> nodes:v;
+  nodes:h -> strs:l;
+  nodes:a -> strs:n;
+  nodes:v -> strs:x [label="without its ?"];
+  nodes:f -> locs:f [style=dotted, label="same index"];
+}

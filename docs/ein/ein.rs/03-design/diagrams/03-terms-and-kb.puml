@@ -1,0 +1,61 @@
+@startuml
+hide empty methods
+skinparam classAttributeIconSize 0
+
+package "identity: one per run" {
+  class Terms {
+    syms : Table<Interner>
+    facts : Table<FactStore>
+    provs : ProvArena
+    kernel : Kernel
+  }
+  class Interner {
+    arena : String
+    spans : Vec<(u32, u32)>
+    lookup : FxHashMap<Box<str>, Symbol>
+    rank : OnceLock<Vec<u32>>
+  }
+  class FactStore {
+    rows : Vec<Row>
+    args : Vec<Value>
+    table : Vec<u32>
+  }
+  class ProvArena {
+    records : Arc<Vec<Prov>>
+    fork : Region
+  }
+}
+
+package "belief: one per branch" {
+  class Kb {
+    sealed : Vec<Arc<Layer>>
+    top : Layer
+    n_by_rel : FxHashMap<Symbol, u32>
+    classes : EqClasses
+    saturated_facts : usize
+  }
+  class Layer {
+    facts : Vec<FactId>
+    present, negated : BitSet
+    by_rel, by_rel_slot_val
+    rule_apps_by_rule, rule_apps_on_rel
+    names : Registry<NameEntry>
+    primary, alts, closure, best
+  }
+  class Program {
+    relations, rules, hrules,
+    obligations, macros : Registry
+    queries, solve, config
+  }
+}
+
+Terms *-- Interner
+Terms *-- FactStore
+Terms *-- ProvArena
+Kb o-- "0..*" Layer : sealed, shared by Arc
+Kb *-- "1" Layer : top, the only writable one
+Kb o-- "1" Program : shared by Arc
+Layer ..> FactStore : FactId
+Layer ..> ProvArena : ProvId
+Layer ..> Interner : Symbol
+@enduml

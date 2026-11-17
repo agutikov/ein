@@ -1,0 +1,23 @@
+digraph parser_build {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  l      [shape=note, label="ein-ir/src/ein.l"];
+  y      [shape=note, label="ein-ir/src/ein.y"];
+  build  [label="ein-ir/build.rs\nlrlex::CTLexerBuilder,\nRecoveryKind::CPCTPlus"];
+  gen    [shape=note, label="the generated lexer\nand parser tables"];
+  ir     [label="ein-ir\ngrammar.rs"];
+  lrlex  [shape=ellipse, label="lrlex 0.15.0\nas published"];
+  lrpar  [shape=ellipse, label="lrpar 0.15.0\nein.rs/vendor/lrpar/"];
+  patch  [shape=note, label="ein.patch\nthe whole difference"];
+  cratesio [shape=ellipse, style=dashed, label="the registry's lrpar"];
+
+  l -> build; y -> build;
+  build -> gen [label="at build time"];
+  gen -> ir;
+  ir -> lrlex [label="runs on"];
+  ir -> lrpar [label="runs on"];
+  patch -> lrpar;
+  lrpar -> cratesio [style=dashed, label="[patch.crates-io]\nstands in for"];
+}

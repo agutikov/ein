@@ -30,7 +30,8 @@ One section for each page of the reasoning, under that page's title, and in each
 - **The algorithm** is not told here: each page names it and links where it is told once, a flow or pseudocode of
   [`02-algorithms.md`](../02-algorithms.md) or a contract of the [design pages](../03-design/README.md).
 - **Commands that show it**: what to run to see the thing, and where a drawing on a page of the reasoning comes
-  from. Every drawing there that the engine can draw is the DOT one of these commands writes, trimmed.
+  from. Every drawing there that the engine can draw is the DOT one of these commands writes, trimmed, kept as a
+  file under the reasoning page's `diagrams/` folder with the picture drawn from it.
 
 A claim with no test is not listed as held: the reasoning states it as a definition or an argument
 ([Q-M1e.1](../../../decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md),

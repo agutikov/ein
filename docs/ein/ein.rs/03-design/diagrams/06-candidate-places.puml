@@ -1,0 +1,20 @@
+@startuml
+hide empty description
+state "a match" as Matched
+state "queued" as Queued
+state "parked" as Parked
+state "retired" as Retired
+state "applied" as Applied
+
+[*] --> Matched : an enqueue pass:\na full match, or a seeded one
+Matched --> [*] : (binding key, guard set) in seen,\nor the key in fired: dropped
+Matched --> Queued : its disjunct has no guard\n[enqueue, parked false]
+Matched --> Parked : its disjunct has guards\n[enqueue, parked true]
+Parked --> Parked : a guard with a nested absent\nfails: judged again when a\nwatched relation grows [park]
+Parked --> Queued : every guard passes, and it is\nthe first in rank order [admit]
+Parked --> Retired : a monotone guard fails: it can only\nkeep failing [retire]; or its key\nfired through another disjunct
+Retired --> [*]
+Queued --> Applied : popped, its key not in fired
+Queued --> [*] : popped, its key already fired
+Applied --> [*] : new facts written [fire], or every\nconclusion known: a redundant firing\n[alt where an alternative is recorded]
+@enduml

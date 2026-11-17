@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: design Pages: 1 -->
+<svg width="1390pt" height="97pt"
+ viewBox="0.00 0.00 1390.00 97.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 93)">
+<title>design</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-93 1385.75,-93 1385.75,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_contract</title>
+<polygon fill="none" stroke="#7f7f7f" points="8,-8 8,-81 273.75,-81 273.75,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="107.12" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">1. the contract: what may not change</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_machine</title>
+<polygon fill="none" stroke="#7f7f7f" points="340.25,-8 340.25,-81 932.25,-81 932.25,-8 340.25,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="455.5" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">2. the machine: what changes underneath it</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_scale</title>
+<polygon fill="none" stroke="#7f7f7f" points="998.75,-8 998.75,-81 1373.75,-81 1373.75,-8 998.75,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="1078" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">3. the scale&#45;out and the build</text>
+</g>
+<!-- det -->
+<g id="node1" class="node">
+<title>det</title>
+<polygon fill="none" stroke="black" points="118.25,-52 16,-52 16,-16 118.25,-16 118.25,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="67.12" y="-37.05" font-family="Helvetica,sans-Serif" font-size="11.00">01 determinism</text>
+<text xml:space="preserve" text-anchor="middle" x="67.12" y="-23.55" font-family="Helvetica,sans-Serif" font-size="11.00">and order</text>
+</g>
+<!-- assets -->
+<g id="node2" class="node">
+<title>assets</title>
+<polygon fill="none" stroke="black" points="265.75,-52 155.25,-52 155.25,-16 265.75,-16 265.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="210.5" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">02 shared assets</text>
+</g>
+<!-- det&#45;&gt;assets -->
+<g id="edge1" class="edge">
+<title>det&#45;&gt;assets</title>
+<path fill="none" stroke="black" d="M118.37,-34C126.55,-34 135.14,-34 143.63,-34"/>
+<polygon fill="black" stroke="black" points="143.59,-37.5 153.59,-34 143.59,-30.5 143.59,-37.5"/>
+</g>
+<!-- data -->
+<g id="node3" class="node">
+<title>data</title>
+<polygon fill="none" stroke="black" points="443.75,-52 348.25,-52 348.25,-16 443.75,-16 443.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="396" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">03 data model</text>
+</g>
+<!-- assets&#45;&gt;data -->
+<g id="edge8" class="edge">
+<title>assets&#45;&gt;data</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M273.75,-34C293.98,-34 316.36,-34 336.33,-34"/>
+<polygon fill="black" stroke="black" points="328.74,-37.5 338.74,-34 328.74,-30.5 328.74,-37.5"/>
+<text xml:space="preserve" text-anchor="middle" x="307" y="-36.7" font-family="Helvetica,sans-Serif" font-size="9.00">constrains</text>
+</g>
+<!-- ir -->
+<g id="node4" class="node">
+<title>ir</title>
+<polygon fill="none" stroke="black" points="574.75,-52 480.75,-52 480.75,-16 574.75,-16 574.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="527.75" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">04 IR frontend</text>
+</g>
+<!-- data&#45;&gt;ir -->
+<g id="edge2" class="edge">
+<title>data&#45;&gt;ir</title>
+<path fill="none" stroke="black" d="M444.21,-34C452.38,-34 460.95,-34 469.36,-34"/>
+<polygon fill="black" stroke="black" points="469.15,-37.5 479.15,-34 469.15,-30.5 469.15,-37.5"/>
+</g>
+<!-- match -->
+<g id="node5" class="node">
+<title>match</title>
+<polygon fill="none" stroke="black" points="690.75,-52 611.75,-52 611.75,-16 690.75,-16 690.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="651.25" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">05 matcher</text>
+</g>
+<!-- ir&#45;&gt;match -->
+<g id="edge3" class="edge">
+<title>ir&#45;&gt;match</title>
+<path fill="none" stroke="black" d="M575.03,-34C583.24,-34 591.81,-34 600.12,-34"/>
+<polygon fill="black" stroke="black" points="600.1,-37.5 610.1,-34 600.1,-30.5 600.1,-37.5"/>
+</g>
+<!-- sat -->
+<g id="node6" class="node">
+<title>sat</title>
+<polygon fill="none" stroke="black" points="817.25,-52 727.75,-52 727.75,-16 817.25,-16 817.25,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="772.5" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">06 saturation</text>
+</g>
+<!-- match&#45;&gt;sat -->
+<g id="edge4" class="edge">
+<title>match&#45;&gt;sat</title>
+<path fill="none" stroke="black" d="M690.97,-34C699.01,-34 707.63,-34 716.14,-34"/>
+<polygon fill="black" stroke="black" points="716.09,-37.5 726.09,-34 716.09,-30.5 716.09,-37.5"/>
+</g>
+<!-- search -->
+<g id="node7" class="node">
+<title>search</title>
+<polygon fill="none" stroke="black" points="924.25,-52 854.25,-52 854.25,-16 924.25,-16 924.25,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="889.25" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">07 search</text>
+</g>
+<!-- sat&#45;&gt;search -->
+<g id="edge5" class="edge">
+<title>sat&#45;&gt;search</title>
+<path fill="none" stroke="black" d="M817.54,-34C825.7,-34 834.24,-34 842.46,-34"/>
+<polygon fill="black" stroke="black" points="842.26,-37.5 852.26,-34 842.26,-30.5 842.26,-37.5"/>
+</g>
+<!-- par -->
+<g id="node8" class="node">
+<title>par</title>
+<polygon fill="none" stroke="black" points="1100,-52 1006.75,-52 1006.75,-16 1100,-16 1100,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1053.38" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">08 parallelism</text>
+</g>
+<!-- search&#45;&gt;par -->
+<g id="edge9" class="edge">
+<title>search&#45;&gt;par</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M932.25,-34C951.4,-34 974.37,-34 995.07,-34"/>
+<polygon fill="black" stroke="black" points="987.24,-37.5 997.24,-34 987.24,-30.5 987.24,-37.5"/>
+<text xml:space="preserve" text-anchor="middle" x="965.5" y="-36.7" font-family="Helvetica,sans-Serif" font-size="9.00">constrains</text>
+</g>
+<!-- einb -->
+<g id="node9" class="node">
+<title>einb</title>
+<polygon fill="none" stroke="black" points="1245.25,-52 1137,-52 1137,-16 1245.25,-16 1245.25,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1191.12" y="-30.3" font-family="Helvetica,sans-Serif" font-size="11.00">09 binary format</text>
+</g>
+<!-- par&#45;&gt;einb -->
+<g id="edge6" class="edge">
+<title>par&#45;&gt;einb</title>
+<path fill="none" stroke="black" d="M1100.33,-34C1108.37,-34 1116.87,-34 1125.3,-34"/>
+<polygon fill="black" stroke="black" points="1125.2,-37.5 1135.2,-34 1125.2,-30.5 1125.2,-37.5"/>
+</g>
+<!-- tool -->
+<g id="node10" class="node">
+<title>tool</title>
+<polygon fill="none" stroke="black" points="1365.75,-52 1282.25,-52 1282.25,-16 1365.75,-16 1365.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1324" y="-37.05" font-family="Helvetica,sans-Serif" font-size="11.00">10 toolchain</text>
+<text xml:space="preserve" text-anchor="middle" x="1324" y="-23.55" font-family="Helvetica,sans-Serif" font-size="11.00">and layout</text>
+</g>
+<!-- einb&#45;&gt;tool -->
+<g id="edge7" class="edge">
+<title>einb&#45;&gt;tool</title>
+<path fill="none" stroke="black" d="M1245.73,-34C1253.99,-34 1262.5,-34 1270.72,-34"/>
+<polygon fill="black" stroke="black" points="1270.58,-37.5 1280.58,-34 1270.58,-30.5 1270.58,-37.5"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 1c068961489c3f3c1b01cc3aa2c50a4b3dcd32aa9847d79804f079ef630a0fc1 -->

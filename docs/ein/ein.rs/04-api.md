@@ -29,28 +29,7 @@ ein-einb   = { path = "../ein/ein.rs/crates/ein-einb" }     # optional
 Six crates ship and two are dev-only (`ein-corpus`, `ein-narration`, both `publish = false`). They stack linearly up
 to `ein-infer` and fork there:
 
-```dot
-digraph stack {
-  rankdir=TB;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  app    [style=dashed, label="your program"];
-  cli    [label="ein-cli"];
-  render [label="ein-render\nDOT, the markdown trace, the dumps,\nthe read-out's rendering"];
-  einb   [label="ein-einb\nthe .einb container"];
-  infer  [label="ein-infer"];
-  ir     [label="ein-ir"];
-  core   [label="ein-core"];
-
-  cli -> render; cli -> einb;
-  render -> infer; einb -> infer;
-  infer -> ir; ir -> core;
-  app -> infer  [style=dashed];
-  app -> render [style=dashed, label="optional"];
-  app -> einb   [style=dashed, label="optional"];
-}
-```
+![The crates stacked up to ein-infer and forking there](diagrams/04-crate-stack.svg)
 
 An arrow is *depends on*; each crate also names the crates below the one it points at, and the full graph of the
 manifests is [`01-architecture.md` § 1.2](01-architecture.md#12-the-eight-crates).
@@ -78,30 +57,7 @@ the engine is synchronous and `Send`, and `--jobs N` is a `rayon` pool built ins
 The five steps as the calls of § 3's example, in order. The caller owns the two arenas and the KB and lends them
 to every call; nothing is kept between calls but what those three hold.
 
-```plantuml
-@startuml
-participant "your program" as app
-participant "ein-ir" as ir
-participant "ein-infer" as infer
-participant "ein-render" as render
-
-app -> app : Ast::new(), Terms::new()
-app -> ir : load_file(&mut ast, &mut terms, path)
-ir --> app : Kb, or KbLoadError
-opt a trace is wanted
-  app -> infer : region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
-  infer --> app : root's firings; root is now saturated
-end
-app -> app : explore::Options::new(Mode { which, ask })
-app -> infer : read_out::run(&mut kb, &mut terms, &ast, &opts)
-infer --> app : ReadOut { answer, states, queries, .. }, or SolveError
-app -> app : match r.answer.verdict:\nSolution, Ambiguity, Contradiction, Open, None
-opt a trace is wanted
-  app -> render : trace::region::of_read_out(&r, &mut kb, &mut terms, &ast, &firings, ...)
-  render --> app : the markdown
-end
-@enduml
-```
+![The five steps as the calls a program makes into ein-ir, ein-infer and ein-render](diagrams/04-five-steps.svg)
 
 ### 2.1 The two arenas
 

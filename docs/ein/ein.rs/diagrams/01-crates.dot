@@ -1,0 +1,22 @@
+digraph crates {
+  rankdir=TB; labelloc=t;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_shipped {
+    label="the six crates that ship"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    core   [label="ein-core\ninterning, Value, the layered KB,\nprovenance"];
+    ir     [label="ein-ir\nparse, imports, macros, load"];
+    infer  [label="ein-infer\ncompile, match, saturate,\nH, the routes over R, cores"];
+    einb   [label="ein-einb\nthe .einb container"];
+    render [label="ein-render\nDOT views, the read-out,\nthe trace, the dumps"];
+    cli    [label="ein-cli\nthe ein binary"];
+  }
+
+  ir -> core;
+  infer -> ir; infer -> core;
+  einb -> infer; einb -> ir; einb -> core;
+  render -> infer; render -> ir; render -> core;
+  cli -> render; cli -> infer; cli -> ir; cli -> core;
+  cli -> einb [style=dashed, label="feature einb"];
+}

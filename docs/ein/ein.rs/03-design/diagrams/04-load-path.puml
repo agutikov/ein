@@ -1,0 +1,52 @@
+@startuml
+start
+partition "read.rs" {
+  :read_program(path): the bytes;
+  if (the first eight bytes are EINB_MAGIC?) then (yes)
+    :Held::Container: opened by ein-einb,\nwhich parses and loads the program it stores;
+    stop
+  elseif (UTF-8?) then (no)
+    :refused at the first bad byte's line and column;
+    stop
+  else (yes)
+    :Held::Text;
+  endif
+}
+partition "grammar.rs" {
+  if (nested past NESTING_LIMIT?) then (yes)
+    :refused, one line;
+    stop
+  endif
+  :the generated lexer and parser\nappend the forms to the Ast;
+  if (a syntax error?) then (yes)
+    :ParseError: every error recovery reached,\neach with its ranked repairs;
+    stop
+  endif
+}
+partition "imports.rs" {
+  :read every module once (depth first),\nrename to full names, splice one import-free list,\ndrop repeated declarations, pick display names;
+  if (a cycle, a missing module,\na name bound twice, ...?) then (yes)
+    :LoadError, at once;
+    stop
+  endif
+}
+partition "from_ir.rs" {
+  :sort the forms by head;
+  :pass 0: the macros;
+  :pass 1: the relations, each storing its declaration fact;
+  :pass 2: the rules and hrules,\ntheir :match and :assert macro-expanded first;
+  :pass 3: the facts, with their provenance;
+  :state (written T) for every nested fact;
+  :the program-wide refusals, the queries,\nthe one (solve ...), the last (config ...);
+  :the unimported std.macro guard;
+  :intern every name a rule or a query mentions;
+  :Kb::rebuild_indexes, once;
+  :refuse a circular written :using chain;
+  if (any pass reported an error?) then (yes)
+    :KbLoadError: every line, in pass order;
+    stop
+  endif
+}
+:a loaded Kb, its Program, the Ast its rules point into;
+stop
+@enduml

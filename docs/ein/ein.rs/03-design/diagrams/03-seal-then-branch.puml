@@ -1,0 +1,18 @@
+@startuml
+participant "a route" as route
+participant "root : Kb" as root
+participant "node 1" as n1
+participant "node 2" as n2
+
+route -> root : sealed()
+note right of root : top moved behind an Arc,\nonce, by the one &mut
+route -> root : branch()
+root --> n1 : a Kb: root's layers, an empty top
+route -> root : branch()
+root --> n2 : a Kb: root's layers, an empty top
+route -> n1 : add_and_index_fact (the commitment),\nthen its saturation's facts
+route -> n2 : add_and_index_fact, ...
+note over n1, n2 : each append lands in the node's own top:\nroot and the other node read none of it
+route -> n1 : drop
+note right of n1 : retraction: the fork is discarded,\nand its top with it
+@enduml

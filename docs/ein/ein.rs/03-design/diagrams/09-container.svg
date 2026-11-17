@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: einb Pages: 1 -->
+<svg width="534pt" height="350pt"
+ viewBox="0.00 0.00 534.00 350.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 346.25)">
+<title>einb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-346.25 530.25,-346.25 530.25,4 -4,4"/>
+<!-- file -->
+<g id="node1" class="node">
+<title>file</title>
+<polygon fill="none" stroke="black" points="0,-52.5 0,-219.5 241.75,-219.5 241.75,-52.5 0,-52.5"/>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-205.05" font-family="Helvetica,sans-Serif" font-size="11.00">a .einb file</text>
+<polyline fill="none" stroke="black" points="0,-198 241.75,-198"/>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-183.55" font-family="Helvetica,sans-Serif" font-size="11.00">header</text>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-170.05" font-family="Helvetica,sans-Serif" font-size="11.00">64 bytes, at offset 0</text>
+<polyline fill="none" stroke="black" points="0,-163 241.75,-163"/>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-148.55" font-family="Helvetica,sans-Serif" font-size="11.00">section table</text>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-135.05" font-family="Helvetica,sans-Serif" font-size="11.00">n_sections x 32 bytes, at offset 64</text>
+<polyline fill="none" stroke="black" points="0,-128 241.75,-128"/>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-113.55" font-family="Helvetica,sans-Serif" font-size="11.00">sections</text>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-100.05" font-family="Helvetica,sans-Serif" font-size="11.00">each at a multiple of 8: META, SYMBOLS,</text>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-86.55" font-family="Helvetica,sans-Serif" font-size="11.00">FACTS, PRESENT, PROV, PROGRAM, then</text>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-73.05" font-family="Helvetica,sans-Serif" font-size="11.00">SOLUTIONS, UNIVERSAL, CLOSURE</text>
+<text xml:space="preserve" text-anchor="middle" x="120.88" y="-59.55" font-family="Helvetica,sans-Serif" font-size="11.00">where they are written</text>
+</g>
+<!-- header -->
+<g id="node2" class="node">
+<title>header</title>
+<polygon fill="none" stroke="black" points="393.25,-148.25 393.25,-341.75 519.5,-341.75 519.5,-148.25 393.25,-148.25"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-327.3" font-family="Helvetica,sans-Serif" font-size="11.00">header (§ 2.1)</text>
+<polyline fill="none" stroke="black" points="393.25,-320.25 519.5,-320.25"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-305.8" font-family="Helvetica,sans-Serif" font-size="11.00">0: magic [u8; 8]</text>
+<polyline fill="none" stroke="black" points="393.25,-298.75 519.5,-298.75"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-284.3" font-family="Helvetica,sans-Serif" font-size="11.00">8: major u16</text>
+<polyline fill="none" stroke="black" points="393.25,-277.25 519.5,-277.25"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-262.8" font-family="Helvetica,sans-Serif" font-size="11.00">10: minor u16</text>
+<polyline fill="none" stroke="black" points="393.25,-255.75 519.5,-255.75"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-241.3" font-family="Helvetica,sans-Serif" font-size="11.00">12: flags u32</text>
+<polyline fill="none" stroke="black" points="393.25,-234.25 519.5,-234.25"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-219.8" font-family="Helvetica,sans-Serif" font-size="11.00">16: n_sections u32</text>
+<polyline fill="none" stroke="black" points="393.25,-212.75 519.5,-212.75"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-198.3" font-family="Helvetica,sans-Serif" font-size="11.00">20: reserved u32</text>
+<polyline fill="none" stroke="black" points="393.25,-191.25 519.5,-191.25"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-176.8" font-family="Helvetica,sans-Serif" font-size="11.00">24: digest [u8; 32]</text>
+<polyline fill="none" stroke="black" points="393.25,-169.75 519.5,-169.75"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-155.3" font-family="Helvetica,sans-Serif" font-size="11.00">56: reserved [u8; 8]</text>
+</g>
+<!-- file&#45;&gt;header -->
+<g id="edge1" class="edge">
+<title>file:h&#45;&gt;header</title>
+<path fill="none" stroke="black" d="M241.75,-180.5C253.87,-180.5 249.32,-194.81 259.75,-201 296.67,-222.92 343.41,-233.93 381.95,-239.45"/>
+<polygon fill="black" stroke="black" points="381.24,-242.89 391.61,-240.74 382.16,-235.95 381.24,-242.89"/>
+</g>
+<!-- entry -->
+<g id="node3" class="node">
+<title>entry</title>
+<polygon fill="none" stroke="black" points="386.5,-0.5 386.5,-129.5 526.25,-129.5 526.25,-0.5 386.5,-0.5"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-115.05" font-family="Helvetica,sans-Serif" font-size="11.00">one table entry (§ 2.2)</text>
+<polyline fill="none" stroke="black" points="386.5,-108 526.25,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-93.55" font-family="Helvetica,sans-Serif" font-size="11.00">kind u32</text>
+<polyline fill="none" stroke="black" points="386.5,-86.5 526.25,-86.5"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-72.05" font-family="Helvetica,sans-Serif" font-size="11.00">flags u32</text>
+<polyline fill="none" stroke="black" points="386.5,-65 526.25,-65"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-50.55" font-family="Helvetica,sans-Serif" font-size="11.00">off u64</text>
+<polyline fill="none" stroke="black" points="386.5,-43.5 526.25,-43.5"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-29.05" font-family="Helvetica,sans-Serif" font-size="11.00">len u64</text>
+<polyline fill="none" stroke="black" points="386.5,-22 526.25,-22"/>
+<text xml:space="preserve" text-anchor="middle" x="456.38" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">raw_len u64</text>
+</g>
+<!-- file&#45;&gt;entry -->
+<g id="edge2" class="edge">
+<title>file:t&#45;&gt;entry</title>
+<path fill="none" stroke="black" d="M241.75,-145.5C249.14,-145.5 361.61,-107.68 368.5,-105 370.98,-104.04 373.49,-103.04 376.02,-102.01"/>
+<polygon fill="black" stroke="black" points="377.19,-105.31 385.07,-98.23 374.5,-98.85 377.19,-105.31"/>
+<text xml:space="preserve" text-anchor="middle" x="314.12" y="-142.67" font-family="Helvetica,sans-Serif" font-size="9.00">n_sections of these</text>
+</g>
+<!-- header&#45;&gt;file -->
+<g id="edge3" class="edge">
+<title>header:d&#45;&gt;file:t</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M392.25,-180.5C381.36,-180.5 379.11,-176.94 368.5,-174.5 320.4,-163.45 307.25,-165.42 259.75,-152 256.68,-151.13 254.58,-150 252.7,-148.93"/>
+<polygon fill="black" stroke="black" points="253.78,-145.6 243.19,-145.95 251.69,-152.28 253.78,-145.6"/>
+<text xml:space="preserve" text-anchor="middle" x="314.12" y="-188.45" font-family="Helvetica,sans-Serif" font-size="9.00">BLAKE3 of every byte</text>
+<text xml:space="preserve" text-anchor="middle" x="314.12" y="-177.2" font-family="Helvetica,sans-Serif" font-size="9.00">after the header</text>
+</g>
+<!-- entry&#45;&gt;file -->
+<g id="edge4" class="edge">
+<title>entry:o&#45;&gt;file:b</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M386.5,-54.25C329.14,-54.25 312.93,-57.03 259.75,-78.5 255.87,-80.06 253.77,-82.51 251.84,-84.76"/>
+<polygon fill="black" stroke="black" points="250.19,-81.67 243.08,-89.53 253.54,-87.82 250.19,-81.67"/>
+<text xml:space="preserve" text-anchor="middle" x="314.12" y="-92.45" font-family="Helvetica,sans-Serif" font-size="9.00">a section&#39;s offset</text>
+<text xml:space="preserve" text-anchor="middle" x="314.12" y="-81.2" font-family="Helvetica,sans-Serif" font-size="9.00">from the start of the file</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: b4c32d8b956fef7bd821f5122e856a24a57c9d74a0386a6229cd0269b0ad42f6 -->

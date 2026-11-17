@@ -1,0 +1,28 @@
+@startuml
+start
+if (stopping at the first contradiction,\nand the KB written so far holds one?) then (yes)
+  stop
+endif
+repeat
+  :closure step;
+  note right
+    the enqueue pass where one is due,
+    then the mirror, then the queue
+  end note
+  if (a firing?) then (yes)
+    :hand it to the caller;
+    if (stopping at the first contradiction,\nand a fact it derived makes one?) then (yes)
+      :return, the KB not marked saturated;
+      stop
+    endif
+  else (no: the closure is quiescent)
+    :boundary round: walk the parked candidates in rank order,\nadmit the first whose guards all pass;
+    if (one admitted?) then (yes)
+      :it joins the queue;
+    else (no)
+      :mark the KB saturated;
+      stop
+    endif
+  endif
+repeat while (next step)
+@enduml

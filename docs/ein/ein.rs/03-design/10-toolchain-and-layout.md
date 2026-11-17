@@ -41,32 +41,7 @@ Which of the six shipped crates takes which, from each manifest's `[dependencies
 dependency, behind the feature named on it. `lrpar` is the vendored copy (§ 6), and `ein-ir`'s build script takes
 `lrlex` and `lrpar` again as `[build-dependencies]`.
 
-```dot
-digraph deps {
-  rankdir=LR;
-  node [fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  node [shape=box];
-  core [label="ein-core"]; ir [label="ein-ir"]; infer [label="ein-infer"];
-  einb [label="ein-einb"]; render [label="ein-render"]; cli [label="ein-cli"];
-
-  node [shape=ellipse];
-  fx [label="rustc-hash"]; incl [label="include_dir"];
-  grm [label="cfgrammar, lrlex, lrpar\n=0.15.0"];
-  rayon; blake3; md5 [label="md-5"]; sha1; sha2; clap; libc;
-  snm [label="snmalloc-rs"];
-
-  core -> fx;
-  ir -> fx; ir -> incl; ir -> grm;
-  infer -> fx; infer -> rayon [style=dashed, label="parallel"];
-  einb -> blake3;
-  render -> fx; render -> md5; render -> sha1;
-  cli -> clap; cli -> sha2;
-  cli -> libc [label="unix"];
-  cli -> snm [style=dashed, label="snmalloc"];
-}
-```
+![Which of the six shipped crates takes which dependency](diagrams/10-dependencies.svg)
 
 **Every library crate is `#![forbid(unsafe_code)]`** but `ein-einb`, which is `deny` with one module allowed:
 [`cast.rs`](../../../../ein.rs/crates/ein-einb/src/cast.rs), the zero-copy reads of an aligned container, audited as
@@ -85,26 +60,7 @@ nothing to stdout, and none runs an async runtime: the engine is synchronous and
 | `gate` | `release` codegen with `debug_assert!` and overflow checks on, which every test tier builds: the tests run optimised and still check the engine's assertions |
 | `profiling` | `release` with line-level debug information and symbols kept, for a profiler |
 
-```dot
-digraph profiles {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  dev       [label="dev\nopt-level = 1"];
-  release   [label="release"];
-  gate      [label="gate\ndebug-assertions = true\noverflow-checks = true"];
-  profiling [label="profiling\ndebug = 1, strip = false"];
-  t_dev  [shape=folder, label="target/debug/"];
-  t_rel  [shape=folder, label="target/release/"];
-  t_gate [shape=folder, label="target/gate/"];
-  t_prof [shape=folder, label="target/profiling/"];
-
-  gate -> release      [label="inherits"];
-  profiling -> release [label="inherits"];
-  dev -> t_dev; release -> t_rel; gate -> t_gate; profiling -> t_prof;
-}
-```
+![The four build profiles: what inherits from release, and where each builds](diagrams/10-build-profiles.svg)
 
 The vendored allocator's C++ build keeps its own optimisation in every profile (the `snmalloc-sys` overrides), so a
 profile's assertions or debug information never slow the allocator.
@@ -122,33 +78,7 @@ What each feature turns on, read off the `[features]` tables. A double border is
 `default`; `ein-cli` takes `ein-infer` and `ein-render` with `default-features = false`, so its own `parallel` is
 the only switch on theirs in a build of the binary.
 
-```dot
-digraph features {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  cli_par  [peripheries=2, label="ein-cli / parallel"];
-  cli_einb [peripheries=2, label="ein-cli / einb"];
-  cli_snm  [peripheries=2, label="ein-cli / snmalloc"];
-  ren_par  [peripheries=2, label="ein-render / parallel"];
-  inf_par  [peripheries=2, label="ein-infer / parallel"];
-  inf_cnt  [label="ein-infer / counters"];
-  core_cnt [label="ein-core / counters"];
-
-  rayon [shape=ellipse, label="rayon"];
-  einb  [shape=ellipse, label="ein-einb"];
-  snm   [shape=ellipse, label="snmalloc-rs"];
-
-  cli_par -> inf_par;
-  cli_par -> ren_par;
-  ren_par -> inf_par;
-  inf_par -> rayon;
-  cli_einb -> einb;
-  cli_snm -> snm;
-  inf_cnt -> core_cnt;
-}
-```
+![What each feature flag turns on](diagrams/10-feature-flags.svg)
 
 **A crate that forwards a job count forwards `parallel`**, so that a build without the pool cannot accept a `jobs`
 argument and silently ignore it; `ein-cli` takes `ein-infer` and `ein-render` without their defaults and forwards
@@ -188,31 +118,7 @@ published release with one local patch, `ein.patch`, which makes error recovery 
 only through that patch. `lrlex` is used as published
 ([Q-M1f.8](../../../decisions/engine/Q-M1f.8-the-lexer-is-lrlexs-unpatched.md)).
 
-```dot
-digraph parser_build {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  l      [shape=note, label="ein-ir/src/ein.l"];
-  y      [shape=note, label="ein-ir/src/ein.y"];
-  build  [label="ein-ir/build.rs\nlrlex::CTLexerBuilder,\nRecoveryKind::CPCTPlus"];
-  gen    [shape=note, label="the generated lexer\nand parser tables"];
-  ir     [label="ein-ir\ngrammar.rs"];
-  lrlex  [shape=ellipse, label="lrlex 0.15.0\nas published"];
-  lrpar  [shape=ellipse, label="lrpar 0.15.0\nein.rs/vendor/lrpar/"];
-  patch  [shape=note, label="ein.patch\nthe whole difference"];
-  cratesio [shape=ellipse, style=dashed, label="the registry's lrpar"];
-
-  l -> build; y -> build;
-  build -> gen [label="at build time"];
-  gen -> ir;
-  ir -> lrlex [label="runs on"];
-  ir -> lrpar [label="runs on"];
-  patch -> lrpar;
-  lrpar -> cratesio [style=dashed, label="[patch.crates-io]\nstands in for"];
-}
-```
+![How the parser is built from ein.l and ein.y, and the runtime it runs on](diagrams/10-parser-build.svg)
 
 ## 7. What a binary says it is
 

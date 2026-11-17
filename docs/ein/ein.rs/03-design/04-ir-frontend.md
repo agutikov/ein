@@ -68,60 +68,7 @@ A text then goes through these phases, in this order:
 The same path as a flow, with where a program is refused. A refusal of the parse or of import resolution ends the
 load at once; the loader's own refusals accumulate through its passes and surface together (§ 9.1).
 
-```plantuml
-@startuml
-start
-partition "read.rs" {
-  :read_program(path): the bytes;
-  if (the first eight bytes are EINB_MAGIC?) then (yes)
-    :Held::Container: opened by ein-einb,\nwhich parses and loads the program it stores;
-    stop
-  elseif (UTF-8?) then (no)
-    :refused at the first bad byte's line and column;
-    stop
-  else (yes)
-    :Held::Text;
-  endif
-}
-partition "grammar.rs" {
-  if (nested past NESTING_LIMIT?) then (yes)
-    :refused, one line;
-    stop
-  endif
-  :the generated lexer and parser\nappend the forms to the Ast;
-  if (a syntax error?) then (yes)
-    :ParseError: every error recovery reached,\neach with its ranked repairs;
-    stop
-  endif
-}
-partition "imports.rs" {
-  :read every module once (depth first),\nrename to full names, splice one import-free list,\ndrop repeated declarations, pick display names;
-  if (a cycle, a missing module,\na name bound twice, ...?) then (yes)
-    :LoadError, at once;
-    stop
-  endif
-}
-partition "from_ir.rs" {
-  :sort the forms by head;
-  :pass 0: the macros;
-  :pass 1: the relations, each storing its declaration fact;
-  :pass 2: the rules and hrules,\ntheir :match and :assert macro-expanded first;
-  :pass 3: the facts, with their provenance;
-  :state (written T) for every nested fact;
-  :the program-wide refusals, the queries,\nthe one (solve ...), the last (config ...);
-  :the unimported std.macro guard;
-  :intern every name a rule or a query mentions;
-  :Kb::rebuild_indexes, once;
-  :refuse a circular written :using chain;
-  if (any pass reported an error?) then (yes)
-    :KbLoadError: every line, in pass order;
-    stop
-  endif
-}
-:a loaded Kb, its Program, the Ast its rules point into;
-stop
-@enduml
-```
+![The load path as a flow, with where a program is refused](diagrams/04-load-path.svg)
 
 Above `ein-ir`, `ein-cli`'s `common::load_held` judges the hypothesis mechanisms on root's fixpoint
 (`ein_infer::mechanisms::check`, over a second load) and opens a container by the program it stores, parsed again
@@ -250,27 +197,7 @@ How a premise `(likes Ann ?x)` sits in the arenas. A node is an entry of `nodes`
 the entry of `locs` at the same index; a form's arguments are one contiguous run of `args`, each a node's index;
 and a name's text is in the string table once, whichever nodes spell it.
 
-```dot
-digraph ast {
-  rankdir=LR;
-  node [shape=record, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=9];
-
-  nodes [label="nodes : Vec\<Node\> | <f> SForm \{ head, args \} | <h> Atom(SymId) | <a> Atom(SymId) | <v> Var(SymId)"];
-  locs  [label="locs : Vec\<Option\<Loc\>\> | <f> Some(file, line, col) | <h> ... | <a> ... | <v> ..."];
-  args  [label="args : Vec\<NodeId\> | <a0> NodeId | <a1> NodeId"];
-  strs  [label="the string table | <l> likes | <n> Ann | <x> x"];
-
-  nodes:f -> nodes:h [label="head"];
-  nodes:f -> args:a0 [label="args: ArgSpan \{ start, len: 2 \}"];
-  args:a0 -> nodes:a;
-  args:a1 -> nodes:v;
-  nodes:h -> strs:l;
-  nodes:a -> strs:n;
-  nodes:v -> strs:x [label="without its ?"];
-  nodes:f -> locs:f [style=dotted, label="same index"];
-}
-```
+![How the premise (likes Ann ?x) sits in the AST's arenas](diagrams/04-ast-arena.svg)
 
 `ast::Node` is one of:
 
@@ -528,7 +455,7 @@ $\operatorname{parse} \circ \operatorname{dump}$ is a fixed point on every progr
 | test | what it holds |
 |---|---|
 | [`ein-ir/tests/generated_parser.rs`](../../../../ein.rs/crates/ein-ir/tests/generated_parser.rs) | a report is the same twice (`a_report_is_the_same_twice`) and says where the budget cut it (`a_report_cut_at_the_budget_says_so`); the end of input is where the text ends; the string escapes; no name the loader makes up is a name; `the_nesting_limit`; the lexer's tokens with and without its start condition |
-| [`ein-ir/tests/grammar_pages.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_pages.rs) | the grammar page's two blocks are written from `ein.l` and `ein.y` (`the_pages_grammar_blocks_are_the_parsers`); the grammar's table, each row a shape refused at the parse with its line, banked in `tests/golden/grammar_table.txt`; the loader lines the grammar does not cover are still reached |
+| [`ein-ir/tests/grammar_pages.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_pages.rs) | the grammar page's two regions and the sources of its diagrams are written from `ein.l` and `ein.y` (`the_pages_grammar_blocks_are_the_parsers`); the grammar's table, each row a shape refused at the parse with its line, banked in `tests/golden/grammar_table.txt`; the loader lines the grammar does not cover are still reached |
 | [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | every `examples/broken/*.ein` against its `.expected` (`the_parse_negative_fixtures_reproduce_their_message`); a keyword is a whole word in every place |
 | [`ein-ir/tests/ir_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/ir_semantics.rs) | the language as data: what parses and what does not, the node a text becomes, $\operatorname{dump} \circ \operatorname{parse}$ on every syntactic shape, macro expansion and the names a macro may not take |
 | [`ein-ir/tests/fuzz_properties.rs`](../../../../ein.rs/crates/ein-ir/tests/fuzz_properties.rs) | over generated near-programs (`EIN_FUZZ_ITERS`, `EIN_FUZZ_SEED`) and the seeds and findings of `corpus/fuzz_findings/`: input is parsed or diagnosed, never a panic; what parses round-trips through the dumper; a refusal is the same twice and within its budget; no accepted program carries a keyword its form does not list; the compiler refuses nothing the loader accepts; no firing meets an unbound variable |

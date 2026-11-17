@@ -1,0 +1,27 @@
+@startuml
+participant "Saturator\nenqueue_pass" as sat
+participant "Engine\n(one per saturation)" as eng
+participant "PlanMemo\n(one per run, behind a Mutex)" as memo
+participant "compile_rule" as comp
+
+sat -> eng : compile_all(kb)
+alt Kb::n_rule_apps unchanged
+  eng --> sat : nothing to compile
+else an activator arrived
+  loop each rule, in registry order; each of its activators
+    eng -> eng : key = plan_key(rule, activator);\nby_key.get(key)
+    alt the engine has it
+      eng -> eng : its place in the list
+    else an engine miss
+      eng -> memo : lock; intern_keyed(key, rule, activator)
+      alt a memo miss
+        memo -> comp : compile_rule(ast, terms, rule, activator)
+        comp --> memo : Plan
+      end
+      memo --> eng : PlanId, Arc<Plan>
+      eng -> eng : push on plans, arcs, keys, activators;\n[compile]
+    end
+  end
+  eng --> sat : the list, grown in compilation order
+end
+@enduml

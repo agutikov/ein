@@ -1,0 +1,13 @@
+@startuml
+hide empty description
+[*] --> Closure : Saturator::new,\nor Saturator::resume
+Closure --> Closure : a firing [fire, mirror]\nits new facts are the next delta
+Closure --> Boundary : nothing left to fire [quiesce]
+Boundary --> Closure : the first candidate whose\nguards pass is admitted [admit]
+Boundary --> Fixpoint : no candidate admitted\n[park, retire for those judged]
+Fixpoint --> [*] : Kb::mark_saturated
+Closure --> Stopped : stopping at the first contradiction,\nand a firing made one
+Stopped --> Closure : run_to_quiescence,\nthen saturate again
+Closure --> StepLimit : max_steps firings\nwithout a fixpoint
+StepLimit --> [*] : SaturateError::StepLimit
+@enduml

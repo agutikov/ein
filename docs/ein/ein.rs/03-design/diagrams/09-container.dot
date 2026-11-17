@@ -1,0 +1,16 @@
+digraph einb {
+  rankdir=LR;
+  node [shape=record, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  file [label="a .einb file | <h> header\n64 bytes, at offset 0 | <t> section table\nn_sections x 32 bytes, at offset 64 | <b> sections\neach at a multiple of 8: META, SYMBOLS,\nFACTS, PRESENT, PROV, PROGRAM, then\nSOLUTIONS, UNIVERSAL, CLOSURE\nwhere they are written"];
+
+  header [label="header (§ 2.1) | 0: magic  [u8; 8] | 8: major  u16 | 10: minor  u16 | 12: flags  u32 | 16: n_sections  u32 | 20: reserved  u32 | <d> 24: digest  [u8; 32] | 56: reserved  [u8; 8]"];
+
+  entry [label="one table entry (§ 2.2) | kind  u32 | flags  u32 | <o> off  u64 | len  u64 | raw_len  u64"];
+
+  file:h -> header;
+  file:t -> entry [label="n_sections of these"];
+  header:d -> file:t [style=dashed, label="BLAKE3 of every byte\nafter the header"];
+  entry:o -> file:b [style=dashed, label="a section's offset\nfrom the start of the file"];
+}

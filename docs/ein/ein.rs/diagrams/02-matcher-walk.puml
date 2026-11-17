@@ -1,0 +1,43 @@
+@startuml
+start
+:walk(i): the step at index i of the disjunct;
+if (i is past the last step?) then (yes)
+  :emit the Match:\nthe registers, the trail, the premises;
+  stop
+elseif (step i is the seeded one?) then (yes)
+  :walk(i + 1);
+  stop
+endif
+switch (the step)
+case (Rel)
+  if (every slot bound?) then (yes)
+    if (FactStore::probe(rel, args) finds the fact,\nand Kb::contains it?) then (yes)
+      :prems[ordinal] = fact;\nwalk(i + 1);
+    endif
+  else (no)
+    if (a slot holds a known name?) then (yes)
+      :candidates = Kb::facts_with(SlotKey),\na bucket of the participation index;
+    else (no)
+      :candidates = Kb::facts_of(rel),\nthe whole extent;
+    endif
+    while (next candidate, in extent order?) is (one)
+      :mark = trail.len();
+      if (unify every slot with the fact's arguments?) then (yes)
+        :prems[ordinal] = fact;\nwalk(i + 1);
+      endif
+      :unwind the trail to mark;
+    endwhile (none)
+  endif
+case (Guard: eq, neq)
+  :both sides bound: test;\na free side: bind it over the program's names;
+  :walk(i + 1) for each binding that passes;
+case (Absent, inside a guard's sub-plan)
+  :walk the nested steps to their first match,\nthen unwind what they bound;
+  if (a match was found?) then (yes)
+    :fail this branch;
+  else (no)
+    :walk(i + 1);
+  endif
+endswitch
+stop
+@enduml

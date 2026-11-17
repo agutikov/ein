@@ -1,0 +1,28 @@
+digraph fork {
+  rankdir=LR;
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_before {
+    label="before"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    b_root [shape=record, label="root : Kb | <s> sealed | <t> top"];
+    b_l0   [shape=box, style=filled, fillcolor=gray90, label="Layer 0\n(the load)"];
+    b_top  [shape=box, label="Layer\nroot's writes"];
+    b_root:s -> b_l0;
+    b_root:t -> b_top;
+  }
+
+  subgraph cluster_after {
+    label="after  let child = root.fork()"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    a_root  [shape=record, label="root : Kb | <s> sealed | <t> top"];
+    a_child [shape=record, label="child : Kb | <s> sealed | <t> top"];
+    a_l0    [shape=box, style=filled, fillcolor=gray90, label="Layer 0\n(the load)"];
+    a_l1    [shape=box, style=filled, fillcolor=gray90, label="Layer 1\nroot's writes, sealed"];
+    a_rt    [shape=box, label="empty Layer\nroot's later writes"];
+    a_ct    [shape=box, label="empty Layer\nthe child's writes"];
+    a_root:s  -> a_l0;  a_root:s  -> a_l1;  a_root:t  -> a_rt;
+    a_child:s -> a_l0;  a_child:s -> a_l1;  a_child:t -> a_ct;
+  }
+  b_top -> a_root [style=invis];
+  b_top -> a_child [style=invis];
+}

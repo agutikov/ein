@@ -1,0 +1,14 @@
+digraph drift {
+  layout=circo;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9, dir=both];
+
+  manifest [label="stdlib/MANIFEST.sha256\none line a module"];
+  checkout [label="the checkout\nstdlib/**/*.ein"];
+  embedded [label="the embedded copy\nin a built ein"];
+  einb     [label="a .einb container\nmade under some stdlib"];
+
+  embedded -> manifest [label="the_embedded_copy_matches_the_manifest\nthe_embedded_copy_has_no_extra_modules"];
+  checkout -> manifest [label="the_checkout_has_no_module_\nthe_manifest_does_not_list"];
+  einb -> manifest     [label="META records the manifest's digest:\nanother digest is a cache miss"];
+}

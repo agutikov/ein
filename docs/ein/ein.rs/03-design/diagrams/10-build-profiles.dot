@@ -1,0 +1,18 @@
+digraph profiles {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  dev       [label="dev\nopt-level = 1"];
+  release   [label="release"];
+  gate      [label="gate\ndebug-assertions = true\noverflow-checks = true"];
+  profiling [label="profiling\ndebug = 1, strip = false"];
+  t_dev  [shape=folder, label="target/debug/"];
+  t_rel  [shape=folder, label="target/release/"];
+  t_gate [shape=folder, label="target/gate/"];
+  t_prof [shape=folder, label="target/profiling/"];
+
+  gate -> release      [label="inherits"];
+  profiling -> release [label="inherits"];
+  dev -> t_dev; release -> t_rel; gate -> t_gate; profiling -> t_prof;
+}

@@ -1,0 +1,22 @@
+digraph check {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  plans   [shape=cylinder, label="root's compiled plans,\nthe relations of H"];
+  classify [label="monotone::classify\na site: a read a commitment\ncan undo"];
+  mono    [label="monotone\nevery licence of § 3"];
+  flagged [label="flagged\nL7, the cube, alone"];
+  det     [label="detector.rs\nwhat each site puts at stake,\ncycles, order findings"];
+  forbid  [label="forbid::check\na refutation resting on an\nabsent a commitment can extend"];
+  refused [shape=note, label="the program is refused,\nbefore any node"];
+  warn    [shape=note, label="the read-out's warnings"];
+
+  plans -> classify;
+  classify -> mono    [label="no site"];
+  classify -> flagged [label="a site"];
+  flagged -> det;
+  det -> warn;
+  classify -> forbid  [label="the sites"];
+  forbid -> refused   [label="one found"];
+}

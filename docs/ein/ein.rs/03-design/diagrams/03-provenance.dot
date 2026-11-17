@@ -1,0 +1,23 @@
+digraph prov {
+  rankdir=BT;
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  f  [shape=box, label="fact F\n(the OR-node: Kb::justifications)"];
+  p1 [shape=ellipse, label="Prov #1  kind Rule\nrule r1\n(an AND-node)"];
+  p2 [shape=ellipse, label="Prov #2  kind Rule\nrule r2\n(an AND-node)"];
+  a  [shape=box, label="fact A"];
+  b  [shape=box, label="fact B"];
+  c  [shape=box, label="fact C"];
+  s1 [shape=ellipse, style=dashed, label="Prov  kind Source\n(terminal)"];
+  s2 [shape=ellipse, style=dashed, label="Prov  kind Source\n(terminal)"];
+  h  [shape=ellipse, style=dashed, label="Prov  kind Hypothesis\n(terminal)"];
+
+  p1 -> f [label="primary: the first recorded"];
+  p2 -> f [label="alts: kept by premise count"];
+  a -> p1 [label="premises[0]"];
+  b -> p1 [label="premises[1]"];
+  c -> p2 [label="premises[0]"];
+  s1 -> a [label="primary"];  s2 -> b [label="primary"];
+  h -> c  [label="primary"];
+}

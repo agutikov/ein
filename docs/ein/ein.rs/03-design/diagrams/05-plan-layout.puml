@@ -1,0 +1,58 @@
+@startuml
+hide empty methods
+skinparam classAttributeIconSize 0
+
+class Plan {
+  rule : Symbol
+  activator_args : Box<[Value]>
+  activator : Option<FactId>
+  seed : Box<[(Symbol, Value)]>
+  asserts : Box<[Slot]>
+  n_regs : u16
+  reg_names : Box<[Symbol]>
+  .. the arenas ..
+  steps, slots, guards, probes,
+  shared, guard_args, guard_keys
+}
+class Disjunct {
+  n_premises : u16
+  n_slots : u16
+}
+class NafGuard {
+  n_regs : u16
+  reg_names
+  scope_of : Box<[Option<Reg>]>
+  scope, watched : Box<[Symbol]>
+  monotone : bool
+}
+enum Step {
+  Rel(RelStep)
+  Guard { pred, args }
+  Absent { sub }
+}
+class RelStep {
+  rel : Symbol
+  join : bool
+}
+enum Slot {
+  Reg(Reg)
+  Const(Value)
+  Nested { rel, slots }
+  Opaque(NodeId)
+}
+class Probe {
+  slot : u16
+  inner : u16
+  src : Const(Value) | Reg(Reg)
+}
+
+Plan *-- "1..*" Disjunct : disjuncts
+Disjunct *-- "0..*" Step : steps
+Disjunct *-- "0..*" NafGuard : guards
+NafGuard *-- "1..*" Step : sub
+Step -- RelStep
+RelStep *-- "0..*" Slot : slots
+RelStep *-- "0..*" Probe : probe
+Slot *-- "0..*" Slot : Nested.slots
+Plan *-- "0..*" Slot : asserts
+@enduml

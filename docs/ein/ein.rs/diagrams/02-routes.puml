@@ -1,0 +1,32 @@
+@startuml
+start
+:prepare: root's fixpoint, H, root's debts,\nthe static check, forbid;
+if (~--no-search?) then (yes)
+  :root's node alone;
+  stop
+endif
+if (the program is monotone?) then (yes)
+  if (the question?) then (describe, ~--count)
+    if (root owes an instance L5 or L9 licenses,\nand ~--describe-route is tree?) then (yes)
+      :the tree and the classes;
+    else (no)
+      :the state route;
+    endif
+  else (-n N, ~--single, ~--minimal, ~--maximal)
+    if (root is dead?) then (yes)
+      :route 1, which visits root alone (L1);
+    else (no)
+      :the routes over states:\nthe obligation tree, the climb, the shrink;
+    endif
+  endif
+elseif (root is dead?) then (yes)
+  :route 1, which visits root alone:\na fork only adds, so every node is dead (L0);
+else (flagged)
+  if (-n N or ~--single over R or its minimal line,\nor more candidates than ~--region-limit,\nor a minimal question with ∅ in R?) then (yes)
+    :the cube in layer order,\nstopped when the question is decided;
+  else (no)
+    :the whole cube: route 2, the oracle's;
+  endif
+endif
+stop
+@enduml
