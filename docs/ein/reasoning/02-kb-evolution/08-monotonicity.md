@@ -385,11 +385,11 @@ reads the alive states and their extensions; on a flagged one it classifies ever
 | restrictions and obligations | owing from above, dead from below, and $R$ squeezed to isolated points, the shape of a well-posed puzzle |
 | merged states | saturation moves nodes: an arrow from each transient commitment to its closure, $C \mapsto \operatorname{cl}(C)$, and several commitments to a state |
 
-![restrictions only: a band above the empty commitment](diagrams/monotonicity_15_lookahead_two_step_on.svg)
+![restrictions only: a band above the empty commitment](diagrams/08-region-15-lookahead-two-step-on.svg)
 
-![restrictions and obligations: R squeezed to isolated points](diagrams/monotonicity_05_owed_seats_bounded.svg)
+![restrictions and obligations: R squeezed to isolated points](diagrams/08-region-05-owed-seats-bounded.svg)
 
-![merged states: saturation moves a commitment to its closure](diagrams/monotonicity_merged_states.svg)
+![merged states: saturation moves a commitment to its closure](diagrams/08-region-merged-states.svg)
 
 **Non-monotone**, one per cause, and one for dead holes.
 
@@ -400,13 +400,13 @@ reads the alive states and their extensions; on a flagged one it classifies ever
 | the kitchen opens | an activator (c6) | the same cube as the trigger's, by another mechanism: opening the kitchen declares that every guest owes a meal. The picture cannot tell the causes apart; the static check can |
 | three components | absences that refute (c2) | three components, two of them with dead holes, each revived by a repair edge. Its refutations rest on an absence over a relation a commitment extends, so the program is refused when it is read (§ 10): the drawing is the cube with that refusal set aside, the shape the refusal exists to rule out |
 
-![an absence takes a witness away: an owing hole](diagrams/monotonicity_08_absent_witness_hole.svg)
+![an absence takes a witness away: an owing hole](diagrams/08-region-08-absent-witness-hole.svg)
 
-![an obligation's trigger: an owing hole](diagrams/monotonicity_04_obligation_trigger_hole.svg)
+![an obligation's trigger: an owing hole](diagrams/08-region-04-obligation-trigger-hole.svg)
 
-![an activator applies an obligation: the same cube by another mechanism](diagrams/monotonicity_09_activator_hole.svg)
+![an activator applies an obligation: the same cube by another mechanism](diagrams/08-region-09-activator-hole.svg)
 
-![absences that refute: three components and dead holes](diagrams/monotonicity_three_components.svg)
+![absences that refute: three components and dead holes](diagrams/08-region-three-components.svg)
 
 ## 8. Paths and the state
 

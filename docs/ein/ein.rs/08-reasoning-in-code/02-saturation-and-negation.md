@@ -385,27 +385,32 @@ The detector's rows in the read-out are the `lattice` block of
 [`08-read-out.md`](../../user/04-reference/08-read-out.md), and the cube's files are
 [`11-region-dump.md`](../../user/04-reference/11-region-dump.md).
 
-**The images under the reasoning page's `diagrams/`.** Six of the seven are re-drawn with one command, from the
-repository's root with `ein` on `PATH`:
+**The images under the reasoning page's `diagrams/`.** Six of the seven sources are written again with one command,
+from the repository's root with `ein` on `PATH`:
 
 ```sh
 for p in branching/15_lookahead_two_step_on lattice/05_owed_seats_bounded lattice/synth/merged_states \
          lattice/08_absent_witness_hole lattice/04_obligation_trigger_hole lattice/09_activator_hole; do
-  f=examples/$p.ein; o=$(mktemp -d); d=docs/ein/reasoning/02-kb-evolution/diagrams/monotonicity_$(basename $p)
+  f=examples/$p.ein; o=$(mktemp -d)
+  d=docs/ein/reasoning/02-kb-evolution/diagrams/08-region-$(basename $p | tr _ -)
   ein oracle $f --dump $o/cube > /dev/null && ein solve $f --dump-lattice $o/lattice --dump-answer $o/answer > /dev/null &&
-  ein render region $o/cube --visited $o/lattice --answer $o/answer > $d.dot && dot -Tsvg $d.dot -o $d.svg && rm -r $o
+  ein render region $o/cube --visited $o/lattice --answer $o/answer > $d.dot && rm -r $o
 done
 ```
 
+The command writes each image's source, the `.dot`. The `.svg` beside it is Graphviz's drawing of that source, and
+its last line carries the source's hash, so a source that changes without its picture is found
+([Q-M1f.368](../../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)).
+
 | image | program |
 |---|---|
-| `monotonicity_15_lookahead_two_step_on` | [`examples/branching/15_lookahead_two_step_on.ein`](../../../../examples/branching/15_lookahead_two_step_on.ein) |
-| `monotonicity_05_owed_seats_bounded` | [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein) |
-| `monotonicity_merged_states` | [`examples/lattice/synth/merged_states.ein`](../../../../examples/lattice/synth/merged_states.ein) |
-| `monotonicity_08_absent_witness_hole` | [`examples/lattice/08_absent_witness_hole.ein`](../../../../examples/lattice/08_absent_witness_hole.ein) |
-| `monotonicity_04_obligation_trigger_hole` | [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein) |
-| `monotonicity_09_activator_hole` | [`examples/lattice/09_activator_hole.ein`](../../../../examples/lattice/09_activator_hole.ein) |
-| `monotonicity_three_components` | [`examples/lattice/synth/three_components.ein`](../../../../examples/lattice/synth/three_components.ein), which *forbid* refuses: `ein oracle` builds no cube of it, and the image is its cube with the refusal set aside, kept as it was drawn |
+| `08-region-15-lookahead-two-step-on` | [`examples/branching/15_lookahead_two_step_on.ein`](../../../../examples/branching/15_lookahead_two_step_on.ein) |
+| `08-region-05-owed-seats-bounded` | [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein) |
+| `08-region-merged-states` | [`examples/lattice/synth/merged_states.ein`](../../../../examples/lattice/synth/merged_states.ein) |
+| `08-region-08-absent-witness-hole` | [`examples/lattice/08_absent_witness_hole.ein`](../../../../examples/lattice/08_absent_witness_hole.ein) |
+| `08-region-04-obligation-trigger-hole` | [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein) |
+| `08-region-09-activator-hole` | [`examples/lattice/09_activator_hole.ein`](../../../../examples/lattice/09_activator_hole.ein) |
+| `08-region-three-components` | [`examples/lattice/synth/three_components.ein`](../../../../examples/lattice/synth/three_components.ein), which *forbid* refuses: `ein oracle` builds no cube of it, and the image is its cube with the refusal set aside, kept as it was drawn |
 
 **The two cubes in the page's § 6** are `ein oracle FILE --dump DIR` and `ein render region DIR` with no run
 overlaid, shown without the legend, the tooltips and the file's path. The non-monotone one is

@@ -657,7 +657,7 @@ with the tooltips, the legend and the file's name taken out.
 ### 3.3 Drawing a region
 
 The reasoning's picture of the conflict of three,
-[`region_02_genuine_3set_death.svg`](../../reasoning/02-kb-evolution/diagrams/region_02_genuine_3set_death.svg), is
+[`06-region-02-genuine-3set-death.svg`](../../reasoning/02-kb-evolution/diagrams/06-region-02-genuine-3set-death.svg), is
 `ein render region` ([`12-rendering.md`](../../user/04-reference/12-rendering.md#the-region--ein-render-region)) on
 the oracle's dump with a bare `ein solve` overlaid. It is re-made from the repository's root with:
 
@@ -665,10 +665,11 @@ the oracle's dump with a bare `ein solve` overlaid. It is re-made from the repos
 ein oracle examples/lattice/02_genuine_3set_death.ein --dump cube/
 ein solve  examples/lattice/02_genuine_3set_death.ein --dump-lattice run/lattice --dump-answer run/answer
 ein render region cube/ --visited run/lattice --answer run/answer \
-    > docs/ein/reasoning/02-kb-evolution/diagrams/region_02_genuine_3set_death.dot
-dot -Tsvg docs/ein/reasoning/02-kb-evolution/diagrams/region_02_genuine_3set_death.dot \
-    -o docs/ein/reasoning/02-kb-evolution/diagrams/region_02_genuine_3set_death.svg
+    > docs/ein/reasoning/02-kb-evolution/diagrams/06-region-02-genuine-3set-death.dot
 ```
+
+That writes the picture's source; the `.svg` is Graphviz's drawing of it, with the source's hash on its last line
+([Q-M1f.368](../../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)).
 
 The files the three commands write are the region dump
 ([`11-region-dump.md`](../../user/04-reference/11-region-dump.md)), the lattice dump

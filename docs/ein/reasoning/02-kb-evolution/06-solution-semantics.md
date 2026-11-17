@@ -650,9 +650,9 @@ the duality gives both lines: the complements of the three maximal alive sets ar
 minimal transversal is the triple. The conflict is of three and of no two: no pair is dead, and nothing smaller than
 the whole triple decides it.
 
-![the region of the conflict of three, with one computation of it overlaid](diagrams/region_02_genuine_3set_death.svg)
+![the region of the conflict of three, with one computation of it overlaid](diagrams/06-region-02-genuine-3set-death.svg)
 
-The picture is the engine's drawing of this region ([its source](diagrams/region_02_genuine_3set_death.dot);
+The picture is the engine's drawing of this region ([its source](diagrams/06-region-02-genuine-3set-death.dot);
 [rendering](../../user/04-reference/12-rendering.md) is the legend). Fill is the node's status in the lattice and
 border is the lines, as in § 1.5. This drawing also overlays one computation of $R$ on the lattice, by a node's
 shape: an octagon is a state the computation reported and a rounded box a node it evaluated. It reported the seven

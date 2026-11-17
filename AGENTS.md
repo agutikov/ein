@@ -78,7 +78,7 @@ constrained-reasoning research.
   a diagram is a fenced `dot` or `plantuml` block, never drawn in characters,
   and what `ein` prints is output, marked `<!-- output -->` where it could be
   read as a drawing
-  ([Q-M1f.368](docs/decisions/docs/Q-M1f.368-a-diagram-is-a-graphviz-or-a-plantuml-block.md));
+  ([Q-M1f.368](docs/decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md));
   a formula is TeX, between `$$` lines or inline `$`, never a `text` block
   ([Q-M1f.369](docs/decisions/docs/Q-M1f.369-a-formula-is-written-in-tex-displayed-or-inline.md));
   and each perspective has its languages

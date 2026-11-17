@@ -15,7 +15,7 @@ thing, and the tests that hold it there, are `ein.rs/`'s to state. A page of `re
 formulas; where a reader needs its Ein spelling, the page links the page of `user/` that has it.
 
 How a diagram and a formula are written is the same in all three
-([Q-M1f.368](Q-M1f.368-a-diagram-is-a-graphviz-or-a-plantuml-block.md),
+([Q-M1f.368](Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md),
 [Q-M1f.369](Q-M1f.369-a-formula-is-written-in-tex-displayed-or-inline.md)).
 
 **Why.** Each perspective has a reader. The one who writes programs reads Ein, and a formula helps only where it

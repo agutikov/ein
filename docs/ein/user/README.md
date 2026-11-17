@@ -46,7 +46,7 @@ claim on any of these pages settled.
   where it explains ([Q-M1f.370](../../decisions/docs/Q-M1f.370-each-perspective-of-the-documentation-is-written.md)).
 - A drawing is a ```` ```dot ```` block, which Graphviz renders, and the grammar's diagrams are
   ```` ```plantuml ```` blocks; none is drawn in characters
-  ([Q-M1f.368](../../decisions/docs/Q-M1f.368-a-diagram-is-a-graphviz-or-a-plantuml-block.md)). A drawing of a
+  ([Q-M1f.368](../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)). A drawing of a
   program is the one `ein render` writes for it, where a page names the command.
 - A formula is TeX, between `$` in a line and between two `$$` lines when displayed
   ([Q-M1f.369](../../decisions/docs/Q-M1f.369-a-formula-is-written-in-tex-displayed-or-inline.md)). A symbol `ein`
