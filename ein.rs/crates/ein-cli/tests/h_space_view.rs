@@ -1165,13 +1165,13 @@ fn jobs_and_the_container_move_no_byte() {
 
 fn page() -> String {
     std::fs::read_to_string(
-        repo_root().join("docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md"),
+        repo_root().join("docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md"),
     )
-    .expect("docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md")
+    .expect("docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md")
 }
 
 /// **The page's read-out is the binary's**: the block
-/// `docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md` shows of the declared control
+/// `docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md` shows of the declared control
 /// is what `ein render h-space examples/zebra2.ein` prints, so every number
 /// in it is taken again by this test. A read-out that moves fails here with
 /// the block to paste.
@@ -1186,7 +1186,7 @@ fn the_pages_read_out_is_the_binarys() {
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(
         text[start..end] == *r.out.trim_end_matches('\n'),
-        "docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md's read-out is not the binary's. Paste:\n\n{}",
+        "docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md's read-out is not the binary's. Paste:\n\n{}",
         r.out
     );
 }
@@ -1239,7 +1239,7 @@ fn the_page_names_every_key_a_document_holds() {
         .collect();
     assert!(
         missing.is_empty(),
-        "docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md does not name these keys of \
+        "docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md does not name these keys of \
          h-space.json: {missing:?}"
     );
 }
