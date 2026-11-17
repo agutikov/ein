@@ -200,28 +200,28 @@ kb load error: import-clash.ein:2:9: 'domain-elimination' is bound to two full n
 |---|---|---|---|---|
 | `std.macro` | `forall` and `unknown` | none | nothing more | [1](01-macros.md) |
 | `std.algebra` | the relation algebra: operators, property checks and closures, the totality obligations | none | `std.macro` | [2](02-relation-algebra.md), rules [3](03-relation-algebra-rules.md#stdalgebra) |
-| `std.typing` | a type hierarchy named once; the reflexive closure | none | `std.algebra` | [2](02-relation-algebra.md#stdtyping--a-hierarchy-named-once), rules [3](03-relation-algebra-rules.md#stdtyping) |
-| `std.closure` | functional and total, so closed: `(__closed__ R)` | none | `std.algebra` | [2](02-relation-algebra.md#stdclosure--closing-a-relation-that-is-a-total-function), rules [3](03-relation-algebra-rules.md#stdclosure) |
+| `std.typing` | a type hierarchy named once; the reflexive closure | none | `std.algebra` | [2](02-relation-algebra.md#using-stdtyping--a-hierarchy-named-once), rules [3](03-relation-algebra-rules.md#stdtyping) |
+| `std.closure` | functional and total, so closed: `(__closed__ R)` | none | `std.algebra` | [2](02-relation-algebra.md#using-stdclosure--closing-a-relation-that-is-a-total-function), rules [3](03-relation-algebra-rules.md#stdclosure) |
 | `std.bijection` | negative completion and elimination for a relation declared `(bijective R)` | none | `std.algebra`, `std.macro` | [4](04-bijections.md) |
-| `std.elim` | the same elimination, with the types named in the activator | none | `std.macro` | [4](04-bijections.md#stdelim--elimination-with-positional-markers) |
+| `std.elim` | the same elimination, with the types named in the activator | none | `std.macro` | [4](04-bijections.md#using-stdelim--elimination-with-positional-markers) |
 | `std.slots` | one co-location relation whose classes are slots | none | `std.macro` | [5](05-slots.md), rules [6](06-slots-rules.md) |
-| `std.math.digits` | the decimal digit tables, facts and no rule | none | nothing more | [8](08-natural-numbers.md#stdmathdigits--the-digit-tables) |
-| `std.math.arith` | `z`, zero; the division by zero's flag and its rule | `arith` | nothing more | [8](08-natural-numbers.md#stdmatharith--zero-and-the-division-by-zero), rules [9](09-natural-numbers-rules.md#stdmatharith) |
-| `std.math.decimal` | the decimal numeral `(n PREFIX DIGIT)` and its check | `decimal` | `arith`, `digits` | [8](08-natural-numbers.md#stdmathdecimal--the-decimal-numeral), rules [9](09-natural-numbers-rules.md#stdmathdecimal) |
-| `std.math.decimal-arith` | natural numbers of any length: `add`, `sub`, `cmp`, `mul`, `div`, `let` | `decimal-arith` | the three above, `positional` | [8](08-natural-numbers.md#stdmathdecimal-arith--school-arithmetic-on-natural-numbers), rules [9](09-natural-numbers-rules.md#stdmathdecimal-arith) |
+| `std.math.digits` | the decimal digit tables, facts and no rule | none | nothing more | [8](08-natural-numbers.md#using-stdmathdigits--the-digit-tables) |
+| `std.math.arith` | `z`, zero; the division by zero's flag and its rule | `arith` | nothing more | [8](08-natural-numbers.md#using-stdmatharith--zero-and-the-division-by-zero), rules [9](09-natural-numbers-rules.md#stdmatharith) |
+| `std.math.decimal` | the decimal numeral `(n PREFIX DIGIT)` and its check | `decimal` | `arith`, `digits` | [8](08-natural-numbers.md#using-stdmathdecimal--the-decimal-numeral), rules [9](09-natural-numbers-rules.md#stdmathdecimal) |
+| `std.math.decimal-arith` | natural numbers of any length: `add`, `sub`, `cmp`, `mul`, `div`, `let` | `decimal-arith` | the three above, `positional` | [8](08-natural-numbers.md#using-stdmathdecimal-arith--school-arithmetic-on-natural-numbers), rules [9](09-natural-numbers-rules.md#stdmathdecimal-arith) |
 | `std.math.positional` | the rules every positional base shares, and the macro that connects a base | the macro | `arith` | [10](10-positional-rules.md) |
-| `std.math.int` | integers `(int P N)` | `int-arith` | `decimal-arith` and below | [11](11-integers-rationals-gcd.md#stdmathint--integers), rules [12](12-integers-rules.md) |
-| `std.math.rat` | rationals `(rat Z D)`, reduced on request | `rat-arith` | `int`, `gcd`, `decimal-arith` and below | [11](11-integers-rationals-gcd.md#stdmathrat--rational-numbers), rules [13](13-rationals-and-gcd-rules.md#stdmathrat) |
-| `std.math.gcd` | `gcd` and `lcm` of natural numbers | `gcd` | `decimal-arith` and below | [11](11-integers-rationals-gcd.md#stdmathgcd--greatest-common-divisor-and-least-common-multiple), rules [13](13-rationals-and-gcd-rules.md#stdmathgcd) |
-| `std.math.bits` | binary's tables, facts and no rule | none | nothing more | [14](14-binary.md#stdmathbits--the-bit-tables) |
-| `std.math.binary` | the binary numeral `(b2 PREFIX BIT)` and its check | `binary` | `arith`, `bits` | [14](14-binary.md#stdmathbinary--the-binary-numeral), rules [15](15-binary-rules.md#stdmathbinary) |
-| `std.math.binary-arith` | binary arithmetic, every name `bin-` | `binary-arith` | `bits`, `arith`, `binary`, `positional` | [14](14-binary.md#stdmathbinary-arith--binary-arithmetic), rules [15](15-binary-rules.md#stdmathbinary-arith) |
-| `std.math.convert` | decimal to binary and back | `convert` | both bases | [14](14-binary.md#stdmathconvert--decimal-to-binary-and-back), rules [15](15-binary-rules.md#stdmathconvert) |
+| `std.math.int` | integers `(int P N)` | `int-arith` | `decimal-arith` and below | [11](11-integers-rationals-gcd.md#using-stdmathint--integers), rules [12](12-integers-rules.md) |
+| `std.math.rat` | rationals `(rat Z D)`, reduced on request | `rat-arith` | `int`, `gcd`, `decimal-arith` and below | [11](11-integers-rationals-gcd.md#using-stdmathrat--rational-numbers), rules [13](13-rationals-and-gcd-rules.md#stdmathrat) |
+| `std.math.gcd` | `gcd` and `lcm` of natural numbers | `gcd` | `decimal-arith` and below | [11](11-integers-rationals-gcd.md#using-stdmathgcd--greatest-common-divisor-and-least-common-multiple), rules [13](13-rationals-and-gcd-rules.md#stdmathgcd) |
+| `std.math.bits` | binary's tables, facts and no rule | none | nothing more | [14](14-binary.md#using-stdmathbits--the-bit-tables) |
+| `std.math.binary` | the binary numeral `(b2 PREFIX BIT)` and its check | `binary` | `arith`, `bits` | [14](14-binary.md#using-stdmathbinary--the-binary-numeral), rules [15](15-binary-rules.md#stdmathbinary) |
+| `std.math.binary-arith` | binary arithmetic, every name `bin-` | `binary-arith` | `bits`, `arith`, `binary`, `positional` | [14](14-binary.md#using-stdmathbinary-arith--binary-arithmetic), rules [15](15-binary-rules.md#stdmathbinary-arith) |
+| `std.math.convert` | decimal to binary and back | `convert` | both bases | [14](14-binary.md#using-stdmathconvert--decimal-to-binary-and-back), rules [15](15-binary-rules.md#stdmathconvert) |
 | `std.math.num9` | nine digits in one fact, a fixed width | `arith9` | `digits`, `decimal-arith` and below | [16](16-nine-digit-numbers.md), rules [17](17-nine-digit-numbers-rules.md) |
-| `std.bool.gates` | the sixteen Boolean functions of two inputs | `gates` | nothing more | [18](18-boolean-functions.md#stdboolgates--the-sixteen-functions), rules [19](19-boolean-rules.md#stdboolgates) |
-| `std.bool.props` | thirty relations known of the sixteen, derived by rules | `props` | `gates` | [18](18-boolean-functions.md#stdboolprops--what-is-known-of-the-sixteen), rules [19](19-boolean-rules.md#stdboolprops) |
-| `std.bool.circuit` | a circuit as facts, simulated by saturation | `circuit` | `gates` | [18](18-boolean-functions.md#stdboolcircuit--a-circuit-simulated-by-saturation), rules [19](19-boolean-rules.md#stdboolcircuit) |
-| `std.bool.inputs` | a circuit's inputs as hypotheses, and required values | `inputs` | `circuit`, `gates`, `std.algebra` | [18](18-boolean-functions.md#stdboolinputs--inputs-as-hypotheses), rules [19](19-boolean-rules.md#stdboolinputs) |
+| `std.bool.gates` | the sixteen Boolean functions of two inputs | `gates` | nothing more | [18](18-boolean-functions.md#using-stdboolgates--the-sixteen-functions), rules [19](19-boolean-rules.md#stdboolgates) |
+| `std.bool.props` | thirty relations known of the sixteen, derived by rules | `props` | `gates` | [18](18-boolean-functions.md#using-stdboolprops--what-is-known-of-the-sixteen), rules [19](19-boolean-rules.md#stdboolprops) |
+| `std.bool.circuit` | a circuit as facts, simulated by saturation | `circuit` | `gates` | [18](18-boolean-functions.md#using-stdboolcircuit--a-circuit-simulated-by-saturation), rules [19](19-boolean-rules.md#stdboolcircuit) |
+| `std.bool.inputs` | a circuit's inputs as hypotheses, and required values | `inputs` | `circuit`, `gates`, `std.algebra` | [18](18-boolean-functions.md#using-stdboolinputs--inputs-as-hypotheses), rules [19](19-boolean-rules.md#stdboolinputs) |
 
 An **entry** is a module's closing rule: a rule with an empty `:match` that closes every relation of the module
 and names every rule of it, so that nothing of the module is left for the search to guess. The relation-algebra

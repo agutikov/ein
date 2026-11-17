@@ -139,6 +139,34 @@ What the partition produces, rule by rule:
   as :expect        (model (co-loc Green H3))
 ```
 
+The state as `ein render kb` draws it, the declarations and the two `slot-` facts left out. The solid `right-of` arrows are the row and the
+clue; each dashed `co-loc` arrow is a placement a rule derived, labelled with the rule.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  // facts
+  "House" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Colour" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "H1" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "H2" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "H3" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Red" -> "Colour" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Green" -> "Colour" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Blue" -> "Colour" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "H2" -> "H1" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "H3" -> "H2" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "Green" -> "Red" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "Blue" -> "H1" [label="co-loc", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "H1" -> "Blue" [label="co-loc by symmetric", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Green" -> "H3" [label="co-loc by std.slots.slot-elimination", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "H3" -> "Green" [label="co-loc by symmetric", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Red" -> "H2" [label="co-loc by std.slots.slot-elimination", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "H2" -> "Red" [label="co-loc by symmetric", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+}
+```
+
 Blue is in house 1, so red is not; green is just to the right of red, and house 1 has nothing to its left, so
 green is not there either. Red in house 3 would put green off the row. So red is in house 2 and green in house 3.
 

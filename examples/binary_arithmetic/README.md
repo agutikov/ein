@@ -5,7 +5,7 @@ ways: programs over the stdlib's [`std.math.binary-arith`](../../stdlib/math/bin
 [`std.math.convert`](../../stdlib/math/convert.ein).
 
 The rules both bases share are written once, in [`std.math.positional`](../../stdlib/math/positional.ein), and each
-base connects them by one call. [`04-stdlib.md`](../../docs/ein/user/04-reference/04-stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)
+base connects them by one call. [`04-stdlib/14-binary.md`](../../docs/ein/user/04-reference/04-stdlib/14-binary.md)
 is the reference for the three binary modules, and [`stdlib/README.md`](../../stdlib/README.md) has the modules
 themselves.
 

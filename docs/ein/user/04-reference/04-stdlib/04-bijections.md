@@ -72,6 +72,41 @@ with the dual of each on the other side. Totality and its obligations are `std.a
   as :expect        (model (wears Ann Blue) (wears Bob Green) (wears Cid Red))
 ```
 
+`ein render kb` draws the state, here with the declarations left out. The two dashed `wears` arrows are the facts
+elimination forced, each labelled with the rule; the arrows from `wears` to `is-a` are two of the activators the
+setup derived. A stored negation is not drawn.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  // types
+  "Agent" [shape=box, label="Agent"];
+  "Colour" [shape=box, label="Colour"];
+  // instances
+  "Ann" [shape=oval, label="Ann"];
+  "Blue" [shape=oval, label="Blue"];
+  "Bob" [shape=oval, label="Bob"];
+  "Cid" [shape=oval, label="Cid"];
+  "Green" [shape=oval, label="Green"];
+  "Red" [shape=oval, label="Red"];
+  // facts
+  "Ann" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
+  "Bob" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
+  "Cid" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
+  "Red" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
+  "Green" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
+  "Blue" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
+  "wears" -> "wears" [label="bijective", color="#17becf", fontcolor="#17becf", style=solid];
+  "is-a" -> "is-a" [label="bijection-hierarchy", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Bob" -> "Green" [label="wears", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "wears" -> "is-a" [label="std.algebra.total-owed by std.bijection.bijective-setup", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "wears" -> "is-a" [label="std.algebra.surjective-owed by std.bijection.bijective-setup", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  "Ann" -> "Blue" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  "Cid" -> "Red" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+}
+```
+
 Bob's green excludes green for Ann; red was excluded for her by the program; blue is the one colour left, and it is
 forced. Then red is the one colour left for Cid. Nothing is guessed.
 [`examples/zebra2.ein`](../../../../../examples/zebra2.ein) is the Zebra puzzle in this encoding.

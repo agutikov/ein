@@ -134,7 +134,7 @@ experiment id.
   [F7 B](../../followups/f7_rule_induction.md#connection-to-m2), [F4 Q38](../../followups/f4_cross_cutting.md) —
   the LLM as fact / relation / type / rule extractor.
 - [`stdlib/`](../../../stdlib/README.md) — the catalogue's source;
-  [`04-stdlib.md`](../../../docs/ein/user/04-reference/04-stdlib.md).
+  [`04-stdlib/`](../../../docs/ein/user/04-reference/04-stdlib/README.md).
 - `/home/user/work/acva/packaging/compose/docker-compose.yml` — the `llama`
   service (`ghcr.io/ggml-org/llama.cpp:server-cuda`) the Compose file is
   lifted from; outside this repo.

@@ -17,7 +17,7 @@
 ;;;
 ;;; Both claims were computed in Python by enumeration.
 ;;;
-;;; `docs/ein/user/04-reference/04-stdlib.md` § Boolean functions and circuits.
+;;; `docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md`.
 (import std.bool.inputs :symbols (inputs is-a in require))
 (import std.bool.circuit :symbols (gate))
 (import std.bool.gates :symbols (Nfst Xnor))

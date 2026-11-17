@@ -1,5 +1,5 @@
 //! **`std.math.digits` and `std.math.bits`, every row held to the integers**
-//! ([`04-stdlib.md`](../../../../docs/ein/user/04-reference/04-stdlib.md#stdmathdigits--the-digit-tables)).
+//! ([`04-stdlib/08-natural-numbers.md`](../../../../docs/ein/user/04-reference/04-stdlib/08-natural-numbers.md#using-stdmathdigits--the-digit-tables)).
 //!
 //! `stdlib/math/digits.ein` is the calculator's gates: seven tables of plain
 //! facts, and `stdlib/math/bits.ein` binary's four, both written by one

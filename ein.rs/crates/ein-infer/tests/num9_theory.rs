@@ -1,5 +1,5 @@
 //! **`std.math.num9`, held to the integers and to its own rule**
-//! ([04-stdlib.md](../../../../docs/ein/user/04-reference/04-stdlib.md)).
+//! ([04-stdlib/16-nine-digit-numbers.md](../../../../docs/ein/user/04-reference/04-stdlib/16-nine-digit-numbers.md)).
 //!
 //! `stdlib/math/num9.ein` is school arithmetic on numbers of nine digits, the
 //! calculator's second module: wide rules, a premise a column, generated.

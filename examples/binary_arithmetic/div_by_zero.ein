@@ -13,7 +13,7 @@
 ;;; The sum beside it is a good request. It loses its answer with the rest of
 ;;; the program, so the only claim such a program can make is this one.
 ;;;
-;;; `docs/ein/user/04-reference/04-stdlib.md` § Binary has the modules this
+;;; `docs/ein/user/04-reference/04-stdlib/14-binary.md` has the modules this
 ;;; program imports.
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-div))
 (import std.math.binary :symbols (b2))

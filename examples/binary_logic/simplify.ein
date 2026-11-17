@@ -20,7 +20,7 @@
 ;;; Search-free: one saturation. The claims were computed in Python from the
 ;;; functions' columns.
 ;;;
-;;; `docs/ein/user/04-reference/04-stdlib.md` § `std.bool.props`.
+;;; `docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md` § Using `std.bool.props`.
 (import std.bool.props :symbols (identity-of absorbing-of commutative))
 (import std.bool.gates :symbols (And Or Xor Andn))
 

@@ -110,7 +110,7 @@ whether it is the program's meaning. A refutation that could rest on such an `ab
 [`stdlib/`](stdlib/README.md) is the single source of truth for `std.*`; the binary embeds a copy, identified by
 `MANIFEST.sha256`. A property is stated as a fact and the module's rules apply it: `(transitive left-of)` is a theory
 instantiated. Every rule has a program under [`tests/stdlib/`](tests/README.md) that activates it, and `ein test
-tests/` runs them all. The per-symbol reference is [`04-stdlib.md`](docs/ein/user/04-reference/04-stdlib.md).
+tests/` runs them all. The per-symbol reference is [`04-stdlib/`](docs/ein/user/04-reference/04-stdlib/README.md).
 
 | module | provides |
 |---|---|

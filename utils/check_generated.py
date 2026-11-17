@@ -8,7 +8,7 @@ script writes it is recorded here and in `utils/README.md`. This runs each
 generator's `--check`, which writes nothing and exits 1 where a file differs
 from what the script would write, so a hand edit, or an edit to a source the
 script reads that was not followed by a regeneration, fails the gate. It is a
-step of the gate after the tests, since one generator writes a page from the
+step of the gate after the tests, since two generators write pages from the
 binary the tests ran.
 
 | generator | what it writes |
@@ -21,6 +21,7 @@ binary the tests ran.
 | `gen_send_written.py` | `examples/beyond_arith/send_more_money_written.ein` |
 | `gen_random_programs.py` | `ein-infer/tests/golden/random_programs.txt`, the detector's random programs |
 | `read_out_examples.py` | `docs/ein/user/04-reference/09-read-out-examples.md`, from the binary (`--bin`) |
+| `gen_stdlib_rule_pages.py` | the rules' regions of the pages under `docs/ein/user/04-reference/04-stdlib/`, each rule as its module writes it and as the binary draws it (`--bin`) |
 
 A generator whose `--check` fails prints what differs; the fix is to run it
 without `--check` (and, for a stdlib module, `stdlib_manifest.py --write`).
@@ -56,6 +57,7 @@ def main() -> int:
     args = ap.parse_args()
     runs = [[script, "--check"] for script in STATIC]
     runs.append(["read_out_examples.py", "--check", "--bin", str(Path(args.bin).resolve())])
+    runs.append(["gen_stdlib_rule_pages.py", "--check", "--bin", str(Path(args.bin).resolve())])
     stale = []
     for run in runs:
         r = subprocess.run([sys.executable, str(UTILS / run[0]), *run[1:]], cwd=ROOT,

@@ -1,5 +1,5 @@
 //! **`std.math.binary-arith` and `std.math.convert`, held to the integers**
-//! ([04-stdlib.md](../../../../docs/ein/user/04-reference/04-stdlib.md), Q-M1f.321).
+//! ([04-stdlib/14-binary.md](../../../../docs/ein/user/04-reference/04-stdlib/14-binary.md), Q-M1f.321).
 //!
 //! `stdlib/math/binary-arith.ein` is school arithmetic on binary numerals,
 //! `(b2 PREFIX BIT)` of `std.math.binary`, over the four tables of

@@ -30,7 +30,7 @@
 ;;;
 ;;; Search-free: every relation is closed, one saturation.
 ;;;
-;;; `docs/ein/user/04-reference/04-stdlib.md` § `std.bool.props`.
+;;; `docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md` § Using `std.bool.props`.
 (import std.bool.props :symbols (escapes-zero escapes-one escapes-monotone escapes-affine
                                  escapes-self-dual preserves-zero preserves-one monotone affine
                                  self-dual))

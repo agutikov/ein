@@ -133,6 +133,37 @@ Read these before importing a relation-algebra module: they decide whether a rul
   as :expect        (model (same Ann Ann) (same Bob Bob) (same Cid Cid))
 ```
 
+The same state as `ein render kb` draws it, the declarations and the activators of three arguments left out: a fact the program wrote is a solid arrow,
+and one a rule derived is a dashed arrow labelled with the relation and the rule that derived it.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  // types
+  "Person" [shape=box, label="Person"];
+  // instances
+  "Ann" [shape=oval, label="Ann"];
+  "Bob" [shape=oval, label="Bob"];
+  "Cid" [shape=oval, label="Cid"];
+  // facts
+  "Ann" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
+  "Bob" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
+  "Cid" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
+  "Ann" -> "Bob" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bob" -> "Cid" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bob" -> "Ann" [label="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  "Cid" -> "Bob" [label="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  "Ann" -> "Cid" [label="grandparent by compose", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Ann" -> "Ann" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Bob" -> "Bob" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Cid" -> "Cid" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Ann" -> "Bob" [label="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Bob" -> "Cid" [label="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Ann" -> "Cid" [label="ancestor by compose", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+}
+```
+
 `(includes parent ancestor)`, a closure of [the section below](#closures), copies the two parent facts, and `(compose ancestor ancestor ancestor)` closes them:
 Ann is an ancestor of Cid. `imply1`, `imply2-fwd` and `imply2-reverse` copy a property or a relation into
 another:
@@ -685,7 +716,7 @@ other three cases.
 | `(converse-illtyped-dom R1 R2 isR*)`, `(converse-illtyped-ran R1 R2 isR*)` | `(converse R1 R2)` is stated and the labels of the two declarations do not reverse: the two labels of a side are neither equal nor related by `isR*`, either way |
 
 The labels are read off the two `(relation …)` declarations, and `isR*` is a relation of the program's that orders
-labels. `std.typing` derives these activators from one declaration ([below](#stdtyping--a-hierarchy-named-once)).
+labels. `std.typing` derives these activators from one declaration ([below](#using-stdtyping--a-hierarchy-named-once)).
 In [`tests/stdlib/algebra/16_converse_illtyped_dom.ein`](../../../../../tests/stdlib/algebra/16_converse_illtyped_dom.ein)
 `owns` runs from `Person` to `Pet` and its converse is declared from `Place`:
 
@@ -808,7 +839,7 @@ of each and probes that nothing more was excluded:
     (model))
 ```
 
-## `std.typing` — a hierarchy named once
+## Using `std.typing` — a hierarchy named once
 
 Two conveniences over `std.algebra`, which the import brings. Neither `type-hierarchy` nor `reflexive` is a rule's
 name, so a program writes both unlisted.
@@ -885,7 +916,7 @@ The reflexive closure:
                            (is-a* Cat Cat))
 ```
 
-## `std.closure` — closing a relation that is a total function
+## Using `std.closure` — closing a relation that is a total function
 
 | a program writes | it produces |
 |---|---|

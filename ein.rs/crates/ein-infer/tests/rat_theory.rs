@@ -1,5 +1,5 @@
 //! **`std.math.rat`, held to exact fractions and to the rule of the theory**
-//! ([04-stdlib.md](../../../../docs/ein/user/04-reference/04-stdlib.md)).
+//! ([04-stdlib/11-integers-rationals-gcd.md](../../../../docs/ein/user/04-reference/04-stdlib/11-integers-rationals-gcd.md#using-stdmathrat--rational-numbers)).
 //!
 //! `stdlib/math/rat.ein` is the calculator's second extension: a rational is
 //! `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith`

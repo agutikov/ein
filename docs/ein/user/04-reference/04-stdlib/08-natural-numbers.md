@@ -372,7 +372,9 @@ loader states every fact nested in a fact a file writes as `(written T)`
 inside an integer or a rational, as a `let`'s value nobody asks about, or in a fact of the program's own relation,
 and flag a malformed one in root's first layer, before any calculation, on its smallest `n` term at fault
 ([Q-M1f.274](../../../../decisions/stdlib/math/decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)).
-A named constant is told by `named`
+What it flags and what it leaves silent is
+[the calculator's page](07-calculator.md#malformed-numbers-what-is-flagged-and-where). A named constant is told by
+`named`
 ([Q-M1f.278](../../../../decisions/stdlib/math/decimal/Q-M1f.278-a-named-constant-is-told-by-named-the-numeral.md)).
 Entry `decimal`.
 

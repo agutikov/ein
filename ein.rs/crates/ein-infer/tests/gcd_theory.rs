@@ -1,5 +1,5 @@
 //! **`std.math.gcd`, held to Rust's integers and to the rule of the theory**
-//! ([04-stdlib.md](../../../../docs/ein/user/04-reference/04-stdlib.md), Q-M1f.336).
+//! ([04-stdlib/11-integers-rationals-gcd.md](../../../../docs/ein/user/04-reference/04-stdlib/11-integers-rationals-gcd.md#using-stdmathgcd--greatest-common-divisor-and-least-common-multiple), Q-M1f.336).
 //!
 //! `stdlib/math/gcd.ein` answers `(gcd X Y)` by `(gcd-of X Y G)` and `(lcm X
 //! Y)` by `(lcm-of X Y L)`, on natural numbers of `std.math.decimal-arith`, by

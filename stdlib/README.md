@@ -2,9 +2,10 @@
 
 The standard library, and its **single source of truth**: every `std.*` module
 is a file in this directory, and nothing holds a copy that can differ.
-[`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md) is the reference a
-program's author reads, module by module: what a program lists, every relation
-and rule it writes or reads, what each module flags. This page is the
+[`04-stdlib/`](../docs/ein/user/04-reference/04-stdlib/README.md) is the reference a
+program's author reads, a page a family of modules: what a program lists,
+every relation and rule it writes or reads and what each produces, what each
+module flags, and every rule as Ein and as the engine draws it. This page is the
 library's own, beside its files: where a module is read from, how the
 directory is laid out, how each theory computes, and what holds it.
 
@@ -213,7 +214,7 @@ take the puzzle's instance-type relation and argument types `(?isa Dom Ran)`
 as parameters and inherit the closed-world caveat: sound only where the
 operand is decided by saturation (the `std.closure` caveat), so not for a
 relation the search decides
-([`04-stdlib.md` § Three distinctions](../docs/ein/user/04-reference/04-stdlib.md#three-distinctions-that-govern-soundness)).
+([`04-stdlib/02-relation-algebra.md` § Three distinctions](../docs/ein/user/04-reference/04-stdlib/02-relation-algebra.md#three-distinctions-that-govern-soundness)).
 The module has no division residuals (`R\S`, `R/S`, `syq`), which would need
 a `forall` over the universe.
 
@@ -438,7 +439,7 @@ theory and writes one of them, so a call written with another count of
 arguments, or a walk started from another place, fails.
 
 **How it computes**
-([`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md#stdmathdecimal-arith--school-arithmetic-on-natural-numbers)
+([`04-stdlib/08-natural-numbers.md`](../docs/ein/user/04-reference/04-stdlib/08-natural-numbers.md#using-stdmathdecimal-arith--school-arithmetic-on-natural-numbers)
 has the protocol): each operand is looked up
 ([Q-M1f.157](../docs/decisions/stdlib/math/decimal/Q-M1f.157-each-request-looks-its-operands-up-by-rules.md));
 one walk from the units takes each column through the full adder's table and
@@ -766,7 +767,7 @@ activates it.
 Binary arithmetic as a theory of its own, beside decimal: its own numeral, its
 own names, the same rules where they are the same
 ([Q-M1f.321](../docs/decisions/stdlib/math/binary/Q-M1f.321-binary-arithmetic-is-a-theory-of-its-own-beside.md);
-[`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)
+[`04-stdlib/14-binary.md`](../docs/ein/user/04-reference/04-stdlib/14-binary.md)
 has every relation).
 
 | module | what it is |
@@ -1254,7 +1255,7 @@ and the entry `gcd`; everything of `std.math.decimal-arith` comes with it.
 
 Four modules under `bool/`
 ([Q-M1f.328](../docs/decisions/stdlib/bool/Q-M1f.328-boolean-functions-and-circuits-ship-as-four-std.md);
-[`04-stdlib.md`](../docs/ein/user/04-reference/04-stdlib.md#boolean-functions-and-circuits-stdbool)
+[`04-stdlib/18-boolean-functions.md`](../docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md)
 has every relation). The two bits are the names `0` and `1`, which are
 decimal's digits too: Ein has no truth values of its own, as it has no
 numbers. Each module comes whole with what it imports, and each has an entry,

@@ -1,5 +1,5 @@
 //! **`std.math.decimal-arith`, held to the integers and to its own rule**
-//! ([04-stdlib.md](../../../../docs/ein/user/04-reference/04-stdlib.md)).
+//! ([04-stdlib/08-natural-numbers.md](../../../../docs/ein/user/04-reference/04-stdlib/08-natural-numbers.md)).
 //!
 //! `stdlib/math/decimal-arith.ein` is school arithmetic written *in* Ein, over the digit
 //! tables of `std.math.digits`. Ein has no numbers, so the engine cannot say
