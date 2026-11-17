@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.21](README.md)
 **Status:** next.
-**Writes:** this file's § Record, [`design.md`](design.md) beside it, and nothing under `docs/`, `ein.rs/`,
+**Writes:** this file's § Record, `design.md` beside it, and nothing under `docs/`, `ein.rs/`,
 `stdlib/`, `examples/`, `tests/` or `corpus/`: it reads the engine and runs it.
 
 ## What it answers
