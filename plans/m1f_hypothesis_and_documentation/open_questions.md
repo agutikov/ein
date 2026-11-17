@@ -7667,6 +7667,13 @@ And three points that go with any of them, each with a default:
    (48 of 588 `--maximal` files read from another commitment than describe's). Or the class's first minimal
    generator in H's order, one file a state, at the cost of finding it where a question does not.
 
+**Ruled 2026-11-18: (a).** The user: *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*. A saved file states the choices made as one `(commit F …)` form after
+the program and its modules, each `F` a candidate of H, committed after root's fixpoint as a node commits it, with no
+`written` for what it has inside it. The three points under it take their defaults, which the user did not revise: a
+choice that is no candidate of H on load is refused; an owing node's file and a dead node's take the same form; the
+commitment written is the one the state was read from. Built by
+[S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+
 ### Q-M1f.401 — How the program and its modules are in one file, unchanged
 
 **Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
@@ -7710,6 +7717,13 @@ And, under any of them, each with a default:
    527 and larger for 740, those a small state of a program that imports a long module
    (`tests/region/04_owing.ein`: 9 684 B today, 29 164 B proposed).
 
+**Ruled 2026-11-18: (a).** The user: *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*. `(program …)` around the program file's bytes and `(module NAME …)`
+around each module's, as the run read them; imports resolved against the modules in the file and never the disk, so
+a saved file reads no other file. The four points under it take their defaults: the bytes the resolution chose (a
+`.einb`'s save carries the flattened program it stores); a carried standard-library module that differs from the
+binary's is loaded with a `note:`; every module the load reads, once, sorted by name in the file and read in the
+order the imports reach them. Built by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+
 ### Q-M1f.402 — What save and load are as commands, the dump they are held to, and a file's first lines
 
 **Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
@@ -7746,6 +7760,16 @@ dump can promise every fact, `written` among them, its origin, its first rule, a
   minimal generators, the path read from) is not reproduced by a second save, and moves to `index.json`, which has
   `state`, `lines`, `listed` and `source` now. **(b)** none. **(c)** today's, which no second save reproduces.
 
+**Ruled 2026-11-18: (C) for a save of a loaded file; the defaults for the rest.** The user: *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*. **A saved file
+is a node of its program's lattice**: `ein solve F` describes the part of the program's R above the node, H is the
+program's, and every saved file is the program with one commitment of H, so a state found above a saved file is saved
+as the program with that state's commitment, in one `(commit …)`. The default (A), a loaded file read as a program
+whose root is its state, is out. The other points take their defaults, which the user did not revise: no new command
+(save is `--dump-answer`; `ein solve F --no-search --dump-answer D` then `cmp F D/root.ein` checks the first
+invariance); the dump the second compares is `ein saturate --dump`'s KB section, byte for byte; one fixed first line,
+and what today's header says of the run moves to `index.json`. Built by
+[S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+
 ### Q-M1f.403 — The program's claims in a saved file
 
 **Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task. **Put, not
@@ -7761,3 +7785,7 @@ none, 2 exit 1 where their program exits 0, both N-30's, and 1 exits 1 as its pr
   it exits 0; a root's file checks them as the program does, since it loads to the program's root. **Default.**
 - **(b)** as today: checked against the loaded file's answer, exit 1 where a claim is about the program's R.
 - **(c)** checked against the program's R, by solving the program again from the file's text.
+
+**Ruled 2026-11-18: (a).** The user: *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*. A saved file with a commitment checks none of the program's claims: its
+read-out names them as the program's, NOT CHECKED, and it exits 0; a root's file checks them as the program does.
+Built by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.

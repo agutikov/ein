@@ -3,9 +3,14 @@
 **Phase:** [P1f.22](README.md)
 **Status:** planned 2026-11-17; **started 2026-11-17** on the user's word (*"start s1f.22.5"*). Its first task
 ends with the user's look at the format on real programs; nothing is built before it. **Task 1 is done
-(2026-11-18) and waits for that look**: [`s1f.22.5_the_format.md`](s1f.22.5_the_format.md), Q-M1f.400 to .403
-put; tasks 2 to 4 are not started.
-**Ruling:** [Q-M1f.392](../open_questions.md#q-m1f392--a-state-file-that-reads-back-dead-through-written).
+(2026-11-18)**: [`s1f.22.5_the_format.md`](s1f.22.5_the_format.md), Q-M1f.400 to .403 put. **The user looked and
+ruled** (2026-11-18, *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*): the defaults but for Q-M1f.402's save of a loaded file, which is (C), **a saved file is
+a node of its program's lattice**. Tasks 2 to 4 are started on that ruling.
+**Rulings:** [Q-M1f.392](../open_questions.md#q-m1f392--a-state-file-that-reads-back-dead-through-written);
+[Q-M1f.400](../open_questions.md#q-m1f400--how-a-saved-file-states-the-choices-made) (a),
+[Q-M1f.401](../open_questions.md#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) (a),
+[Q-M1f.402](../open_questions.md#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines)
+(C), [Q-M1f.403](../open_questions.md#q-m1f403--the-programs-claims-in-a-saved-file) (a).
 
 ## The requirement, in the user's words
 
@@ -90,3 +95,8 @@ since every dumped state of every program is read again.
   test does not see it (N-31).
 - **What it leaves for the user**: the look at the format, and the four questions. Task 2, the build, waits on
   them.
+
+**The user's look** (2026-11-18): *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*. Every default stands but Q-M1f.402's save of a loaded file: (C), a saved
+file is a node of its program's lattice, so `ein solve F` describes the part of the program's R above it, H is the
+program's, and a state found above it is saved as the program with that state's commitment in one `(commit …)`.
+Tasks 2 to 4 start on it.
