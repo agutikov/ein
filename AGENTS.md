@@ -330,11 +330,18 @@ paragraph, no register count, no measurement (the user's rule).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  Its one phase left is **P1f.20, the documentation tree**
+  Three phases are left. **P1f.20, the documentation tree**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)):
-  every stage is done, and the phase stops for **the user's review of the new
-  docs**; it is not closed, and its folder not deleted, before the user has
-  read them (the user's ruling).
+  the user reviewed and accepted the tree, and its last stage,
+  [S1f.20.10](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md),
+  carries out the review's rulings. **P1f.21, the kernel's verdicts as rules**
+  ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
+  and **P1f.22, nested facts**
+  ([its README](plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/README.md)):
+  each has its survey and waits on the user's rulings on its questions
+  (Q-M1f.390; Q-M1f.391 to .396). The milestone's plans are deleted when the
+  three are done, and **the work stops after M1f** (the user's rulings); the
+  close was started and is paused.
 - **A finished plan is deleted.** A milestone or phase whose README says
   *closed* or *done*, and a followup that says *done*, goes with its folder once
   what still reads it is re-aimed and what it still owns has moved to its owner;
@@ -346,9 +353,9 @@ paragraph, no register count, no measurement (the user's rule).
   taken, are
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
   (Q-M1f.n); a default stands until the user revises it. A phase keeps what
-  it finds outside its scope in a findings page of its own and shows it, as
+  it finds outside its scope in a findings page of its own and shows it:
   P1f.20's [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/findings.md)
-  (L-n) does.
+  (L-n), P1f.21's (V-n) and P1f.22's (N-n), beside each phase's README.
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
   open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);
