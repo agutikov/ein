@@ -845,8 +845,9 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
 ///
 /// Each of the four shapes below is a parse error at the place, every command
 /// exit 1, with the file, line and column: a keyword pair in a conclusion, a
-/// bare `_`, a name or a variable as a whole conclusion, and a string as a
-/// value. None is read as a symbol, and none reaches a firing.
+/// bare `_`, a name or a variable as a whole conclusion or a conjunct
+/// (Q-M1f.351), and a string as a value. None is read as a symbol, and none
+/// reaches a firing.
 #[test]
 fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
@@ -854,6 +855,7 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
         (r#"(tag ?x b :source "x")"#, 48, "unexpected `:source`"),
         ("(tag ?x _)", 46, "unexpected `_`: _ (reserved)"),
         ("foo", 38, "unexpected `foo`: a name"),
+        ("?x", 38, "unexpected `?x`: a variable"),
         ("(and (tag ?x b) ?x)", 54, "unexpected `?x`: a variable"),
         (r#"(tag ?x "lbl")"#, 46, r#"unexpected `"lbl"`: a string"#),
     ];

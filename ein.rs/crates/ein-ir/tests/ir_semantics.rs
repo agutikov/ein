@@ -292,7 +292,8 @@ fn equality_lowers_to_an_eq_headed_form() {
 /// `dump ∘ parse` breaks `--dump-states` and every trace that re-reads its own
 /// output. **A bare `_` is refused at the parse in every position**
 /// (Q-M1e2.22), so its half is the refusal, at the `_`; and the conclusion is
-/// `(q ?a)`, a variable being no whole conclusion (`ein.y`'s `Assert`).
+/// `(q ?a)`, a variable being no whole conclusion (`ein.y`'s `Assert`,
+/// Q-M1f.351).
 #[test]
 fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
     let e = rejected("(rule any () :match (_ ?a ?b) :assert (q ?a))");

@@ -32,7 +32,7 @@
 ;;;
 ;;; A rational is `(rat Z D)`: Z an integer of `std.math.int`, `(int P N)`, and D
 ;;; a natural number of `std.math.decimal-arith` that is not zero: an integer
-;;; numerator over a natural denominator.
+;;; numerator over a natural denominator (Q-M1f.353).
 ;;;
 ;;;     1/2      (rat (int (n z 1) z) (n z 2))
 ;;;     -3/4     (rat (int z (n z 3)) (n z 4))

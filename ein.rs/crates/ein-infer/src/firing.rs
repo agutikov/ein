@@ -241,7 +241,7 @@ fn not_a_fact(
              a variable or a fact",
             terms.sym(rel)
         ),
-        // A whole conclusion that is no fact, `?y` or a name: only a macro's
+        // A whole conclusion that is no fact, `?y` or a name (Q-M1f.351): only a macro's
         // body writes one (`(macro id (?x) ?x)` called as a conclusion). A
         // line here would stop only the firing that met it, so a rule only a
         // commitment activates would load and some commands would answer it,
