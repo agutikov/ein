@@ -23,7 +23,10 @@ one function, `rung`):
    obligation a state that owes nothing proposes nothing. The rung declines the whole call, and the blind enumerator
    runs instead, where an obligation's guard scans a relation the rung itself proposes, or reads one a commitment
    can change;
-3. else, **the blind enumerator**: every eligible relation, over the objects the program names, its fillers by type.
+3. else, **the blind enumerator**: every eligible relation of one or two arguments, every object the program names
+   in each of its slots (a binary fact of an object with itself left out). No slot is filtered by the name its
+   declaration gives it: Ein has no types, the names a declaration writes in its slots are only left out of the
+   objects, and a candidate the program's rules do not allow is refuted by those rules, in its own node.
    The objects are the names the alive-set invariant lists for the program
    ([`invariant.rs`](../../../../ein.rs/crates/ein-infer/src/invariant.rs): no rule asserts a name the program lacks),
    never `__closed__` or `__symmetric__`. The invariant is what lets H be taken once, at root, and it is enforced:

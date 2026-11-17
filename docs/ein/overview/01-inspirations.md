@@ -7,9 +7,45 @@ lineage: what was taken, and what Ein does instead.
 |---|---|---|
 | **SMT-LIB 2** | S-expressions; `;` and `#\| … \|#` comments; `:keyword` arguments; meaning carried by named atoms | rules are part of the program, with no separate form for a recursive definition; no theory annotations; no `(check-sat)`: a program states what it asks with `(query …)` and `(solve …)` |
 | **miniKanren** | relations over atoms; the `?var` convention; a body as a conjunction of patterns | no `fresh` and no unification syntax: a rule's variables are bound by its `:match` |
-| **AtomSpace** | explicit declarations of types and relations; typed atoms | no probabilistic truth values and no weights: a fact holds, its negation is stored, or neither is known |
+| **AtomSpace** | explicit declarations of relations, each slot given a name | no types: a slot's name is an ordinary name, a label with no meaning a rule does not give it; no probabilistic truth values and no weights: a fact holds, its negation is stored, or neither is known |
 | **Datalog** | a rule as a head and a body, which Ein writes as `:assert` and `:match`; derivation to a fixpoint | S-expressions rather than infix clauses; every rule carries a `:why` text, so a firing reads as a sentence |
 | **Double-pushout graph rewriting** | `:match` and `:assert` read as the sub-graph before and the sub-graph after | a rule is not written as a span `L ← K → R`, and the engine does not rewrite by pushouts: it adds facts |
+
+The same lineage as a picture. A solid arrow is what Ein takes; the dashed note under a source is the place where
+Ein does something else.
+
+```dot
+digraph lineage {
+  rankdir=LR;
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  ein [shape=box, style=bold, label="Ein\nfacts, rules, queries\nin one S-expression syntax"];
+
+  node [shape=box];
+  smt  [label="SMT-LIB 2"];
+  mk   [label="miniKanren"];
+  as   [label="AtomSpace"];
+  dl   [label="Datalog"];
+  dpo  [label="double-pushout\ngraph rewriting"];
+
+  node [shape=note, style=dashed];
+  d_smt [label="no (check-sat), no theory annotations:\n(query ...) and (solve ...) state what is asked"];
+  d_mk  [label="no fresh, no unification syntax:\n:match binds a rule's variables"];
+  d_as  [label="no types, no truth values, no weights:\na fact holds, its negation is stored,\nor neither is known"];
+  d_dl  [label="S-expressions, not infix clauses;\nevery rule carries a :why"];
+  d_dpo [label="no span, no pushout:\nthe engine adds facts"];
+
+  smt -> ein [label="S-expressions, comments,\n:keyword arguments"];
+  mk  -> ein [label="relations over atoms,\n?var, a body as a conjunction"];
+  as  -> ein [label="explicit declarations of relations,\neach slot given a name"];
+  dl  -> ein [label="head and body: :assert and :match;\nderivation to a fixpoint"];
+  dpo -> ein [label=":match and :assert as the\nsub-graph before and after"];
+
+  edge [style=dashed, arrowhead=none];
+  d_smt -> smt; d_mk -> mk; d_as -> as; d_dl -> dl; d_dpo -> dpo;
+}
+```
 
 ## Why S-expressions
 
@@ -23,7 +59,7 @@ for three properties:
   again, and a generator that writes Ein targets one grammar.
 - **A grammar short enough to hold.** The whole surface is one context-free grammar, short enough to be read in
   full, held to its parser by a test, and used to constrain a generator that writes Ein.
-- **Readable names.** Hyphenated relation names, capitalised types and `;` comments keep a hand-written program
+- **Readable names.** Hyphenated relation names, capitalised object names and `;` comments keep a hand-written program
   readable, and distinguish the kinds of name without a parser hint.
 
 ## Why patterns inside rules
