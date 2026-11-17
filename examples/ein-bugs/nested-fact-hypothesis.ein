@@ -1,21 +1,21 @@
-;;; M1a — two `Fact` arguments in one hypothesis slot.
+;;; Two `Fact` arguments in one hypothesis slot.
 ;;;
-;;; `mixed-type-hypothesis.ein` put an int and a symbol in the same slot of
-;;; two candidates (two names since M1f S1f.5.4 retired the int). This is the
-;;; *other* half of the same ordering question,
-;;; produced by the S1a.6.6 fuzzer: two candidates whose argument is a
-;;; nested fact, compared element-wise by the commitment search's content
-;;; order. `Value` is totally ordered (Sym < Fact, and a nested fact by its
-;;; own content; Int < Sym < Fact until M1f S1f.5.4), so the run answers
-;;; `Solution`.
+;;; `mixed-type-hypothesis.ein` puts two names in the same slot of two
+;;; candidates. This is the *other* half of the same ordering question, a
+;;; find of the engine fuzzer: two candidates whose argument is a nested
+;;; fact, compared element-wise by content. Values are totally ordered (a name
+;;; before a fact, and two facts by their relation's name, then their
+;;; arguments), so the pair sorts like any other, and R is four states, every
+;;; commitment of the two (`ein solve FILE`).
 ;;;
 ;;; **It needs no mixed slot types.** One hrule whose `:assert` head is a
-;;; `(not …)` is enough — the hypothesis's argument is then a nested fact, and
-;;; two of them reach the layer-1 sort of `alive`. That is an ordinary
-;;; puzzle idiom, so the case is wider than its first fixture suggested.
-;;; What stays true is the *scope* claim: blind generation still cannot get
-;;; here (its candidates are built from `kb.names()`, all symbols), so an
-;;; `(hrule …)` remains necessary.
+;;; `(not …)` is enough — the hypothesis's argument is then a nested fact,
+;;; and two of them are candidates. That is an ordinary puzzle idiom, so the
+;;; case is wider than its first fixture suggested. Blind generation cannot
+;;; get here: its candidates' arguments are the program's names, never a
+;;; fact, so an `(hrule …)` is necessary.
+;;;
+;;;
 
 (is-a o1 T)
 (is-a o2 T)

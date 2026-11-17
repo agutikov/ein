@@ -1,6 +1,6 @@
-;;; The alive-∅ record site at PHASE 1 — a state the engine called a model and
-;;; its own rules refute. **Fixed** at M1e S1e.3.1 (`CO-M1`); this is the
-;;; regression. Found and banked 2026-08-28 as M1e D1.
+;;; The alive-∅ record site at PHASE 1 — a state a search that wrote negatives
+;;; into root called a model and its own rules refute. Register rows
+;;; W9/alive-empty-phase1-K and W12/alive-empty-phase1.
 ;;
 ;; `phase1` checked `has_contradiction(root)` at solve.rs:1091, then called
 ;; `compute_alive` — which writes the lookahead kill cache INTO ROOT
@@ -10,36 +10,36 @@
 ;;
 ;; Zero enterings, zero layers, one saturation, and the state it recorded as
 ;; the model was one in which `totality` matched and had not fired: feed that
-;; model back in as a program and this engine answers `Contradiction`.
+;; model back in as a program and that engine answered `Contradiction`. Once
+;; it re-saturated before recording, it answered `Contradiction` on this
+;; file, and with its kill cache off it answered a solution, root keeping no
+;; negatives for `totality` to read.
 ;;
-;; `record_node` now re-saturates a KB written since its last saturation and
-;; declines to record one its own rules refute, so this file answers
-;; `Contradiction` — which is also what `-L` said all along, and what a hand
-;; derivation says.
+;; ── R is {∅} ──────────────────────────────────────────────────────────────
 ;;
-;; `-K` is the discriminator on the **old** behaviour and is kept because it
-;; still shows the mechanism: with the kill cache off, root keeps no negatives,
-;; `totality` has nothing to read, and the state is a genuine solution. So the
-;; two configurations answer differently, and that is a fact about the program
-;; rather than about the read-out.
+;; That `Contradiction` read the kill cache's negatives as root's. A node is
+;; `sat(root ∪ C)` with nothing a search wrote (Q-M1e2.7): root stores no
+;; `(not (p A))`, `totality` never fires, root is alive and discharged, and
+;; R is {∅}, which the `:expect` below states. So the `unsat core (0 facts)`
+;; that engine printed belonged to no answer of this program. `ein solve`
+;; lists the one state, root itself, minimal and maximal.
 ;;
-;; ── 2026-11-03 — R is {∅} ─────────────────────────────────────────────────
 ;;
-;; That `Contradiction` read the kill cache's negatives as root's (Q-M1e.7
-;; ruling A). Under R a node is `sat(root ∪ C)` with nothing the search wrote
-;; (solve_interface.md § 0, approved 2026-10-16): root stores no `(not (p A))`,
-;; `totality` never fires, root is alive and discharged, and R is {∅}, which
-;; the `:expect` below states and the `-K` run above already answered. So the
-;; `unsat core (0 facts)` it printed belonged to no answer of this program.
-;; Register rows W9/alive-empty-phase1-K and W12/alive-empty-phase1, confirmed
-;; at the revisit (M1e2 S1e2.1.7, 2026-11-03).
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
 ;;
 ;; ── The `:expect` ──────────────────────────────────────────────────────────
 ;;
-;; The banked claim was `(model (is-a A T) (is-a B T))`, with the goal moved off
-;; `p` because the recorded model contained no `p` fact at all. `(false)` names
-;; nothing, so the goal is back on the question the file is about; an answer
-;; with an empty goal extent is a claim like any other (Q-M1e.13).
+;; The `:expect` states R: one state, root itself, which holds no `p` fact.
+;; The query's goal is on `p`, the question the file is about, and has an
+;; empty extent there; an answer with an empty goal extent is a claim like
+;; any other (Q-M1e.13).
 ;;
 
 (relation is-a T T :why "{?1} is a {?2}")
@@ -47,17 +47,17 @@
 
 (is-a A T) (is-a B T)
 
-;; One candidate per object — reads only `is-a`, so the kill cache it triggers
-;; is not a fact this generator conditions on.
+;; One candidate per object — reads only `is-a`, so no negative of `p` is
+;; a fact this generator conditions on.
 (hrule guess () :match (is-a ?x T) :assert (p ?x) :why "guess that p holds of {?x}")
 
-;; One step from any (p ?x), so the pre-branch lookahead kills every candidate
-;; and the cache writes (not (p A)) / (not (p B)) into root.
+;; One step from any (p ?x), so a one-step lookahead kills every candidate;
+;; a kill cache would write (not (p A)) / (not (p B)) into root.
 (rule no-p () :match (p ?x) :assert (false) :why "p holds of {?x}, and p may hold of nothing")
 
 ;; Totality, on stored negatives alone — no `absent`, so no NAF boundary is in
-;; the argument. Dormant while root is saturated; refuting once the cache has
-;; written. Root is not re-saturated, so it never fires.
+;; the argument. Nothing stores `(not (p A))` or `(not (p B))`: each
+;; candidate's node dies, and root is not told so, so it never fires.
 (rule totality ()
   :match  (and (not (p A)) (not (p B)))
   :assert (false) :why "p is false of both A and B, yet something must have p")

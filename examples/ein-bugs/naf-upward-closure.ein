@@ -3,16 +3,16 @@
 ;;;
 ;;; ── The premise this refutes ───────────────────────────────────────────
 ;;;
-;;; design/08 § The objects:
+;;; An early design of the search read:
 ;;;
 ;;;   dead(X) — X holds a contradiction. Monotone: X ⊆ Y ∧ dead(X) ⇒ dead(Y),
 ;;;   because the KB is append-only and nothing retracts.
 ;;;
 ;;; *Append-only, nothing retracts* makes saturation **inflationary**. It does
 ;;; not make it **monotone in its input**, and `(absent P)` is exactly what
-;;; separates the two — which `absent-and-naf.md` § What follows says from the
-;;; other direction: removing a fact can flip an absent and *fabricate* a
-;;; contradiction the full KB never had.
+;;; separates the two — which `docs/ein/reasoning/kb-evolution/absent-and-naf.md`
+;;; § What follows says from the other direction: removing a fact can flip an
+;;; absent and *fabricate* a contradiction the full KB never had.
 ;;;
 ;;; Here `bad` fires only while `q` is missing:
 ;;;
@@ -21,61 +21,61 @@
 ;;;   {(p A), (q A)}  is ALIVE  — the guard's witness is present
 ;;;
 ;;; so the single maximal state is {(p A), (q A)} and dead is not upward-
-;;; closed. Three shipped mechanisms read the false premise, each sufficient
-;;; alone: the lookahead kill cache (writes `(not (p A))` with no premises),
-;;; the singleton writeback (design/08 claim (1) on its own terms), and the
-;;; width-1 no-good clause (subsumes the live superset, so it is never
-;;; generated). Five of the six shipped configurations answer wrongly, and
-;;; every one of them reports `exhausted = true`.
+;;; closed. Three mechanisms of a search that read the false premise, each
+;;; sufficient alone, answered wrongly on it: a lookahead kill cache (writing
+;;; `(not (p A))` with no premises), a singleton writeback, and a width-1
+;;; no-good clause (subsuming the live superset, so it was never generated).
+;;; Five of that search's six configurations answered wrongly, and every one
+;;; of them reported `exhausted = true`.
 ;;;
-;;; ── What this file is for ──────────────────────────────────────────────
+;;; ── What this file is ──────────────────────────────────────────────────
 ;;;
-;;; `(config :warn-derived-naf true)` turned on the S1e.2.3 diagnostic, so
-;;; the **warning was part of this file's recorded output** — that is what made
-;;; the containment a fixture rather than a claim. The rule `bad` was reported
-;;; as concluding `(false)` from an `(absent …)` over `q`, which this
-;;; program's generator can still propose. Since M1e2 S1e2.2.5 that sentence is
-;;; the refusal's, and the flag is retired: the line went.
+;;; A refusal's fixture: `bad` concludes `(false)` from `(absent (q ?x))`
+;;; over `q`, which a commitment can still extend, so the program is refused
+;;; at load (*forbid*, Q-M1e2.5). Every question about a commitment (`ein
+;;; solve` in every mode, `ein test`, `ein oracle`, `ein render lattice`)
+;;; exits 1 with one line naming `bad`, `(false)`, `q`, and the forms that
+;;; say what was meant; `ein saturate` still saturates. Register row
+;;; W3/naf-upward-closure.
 ;;;
-;;; Its `:expect` stated the answer of the day and was meant to break, and
-;;; it did: the shape is forbidden outright (below), and the claim went with
-;;; the answer it stated.
+;;; Loaded anyway, its R would be three states, `∅`, `{(q A)}` and
+;;; `{(p A), (q A)}`, with the dead hole `{(p A)}`: what *respect* would
+;;; answer, kept as the row's alternative and as the library-level fixture
+;;; the read-out's dead-hole line is held on (`forbid::studying`).
 ;;;
-;;; The goal is `is-a` rather than `p`, because the model the walk reached
-;;; contained no `p` fact at all. An answer with an empty goal extent is a
-;;; claim like any other, `(model)` the class of a state where the goal has no row (Q-M1e.13); the goal stays as it was written.
+;;; The goal is `is-a` rather than `p`. An answer with an empty goal extent
+;;; is a claim like any other, `(model)` the class of a state where the goal
+;;; has no row (Q-M1e.13); the goal stays as it was written.
 ;;;
-;;; ── The user's reading, 2026-08-28 ─────────────────────────────────────
+;;; ── A mis-encoded obligation ───────────────────────────────────────────
+;;;
+;;; The user's reading:
 ;;;
 ;;; > not any well-formed ein program is correct. An example with
 ;;; > `(rule bad () …)` is broken by design … there is no definition of `q`
 ;;; > and `p` relations, no obligations, only the rule that asserts `(false)`.
 ;;;
-;;; It is a **mis-encoded obligation**: it says *a world with p and without q
-;;; is false* and never says *q is required*, which is what M1d built
-;;; `(open ?R)` for. The engine's complaint is not wrong; the word is. That
-;;; reading is why the diagnostic names `(open ?R)` as one of its two
-;;; replacements — the other being `total`'s stored-negative discipline.
+;;; It says *a world with p and without q is false* and never says *q is
+;;; required*, which is what `(open ?R)` is for (Q-M1d.2). The engine's
+;;; complaint is not wrong; the word is. That reading is why the refusal
+;;; names `(open ?R)` as one of its replacements — beside `total`'s
+;;; stored-negative discipline, and closing the relation where no commitment
+;;; is meant to extend it.
 ;;;
-;;; ── 2026-11-02 — *forbid* ──────────────────────────────────────────────
 ;;;
-;;; The user ruled *forbid* (Q-M1e2.5, M1e2 S1e2.4.1 § 5): `bad` concludes
-;;; `(false)` from `(absent (q ?x))` over `q`, which a commitment can still
-;;; extend, so the right answer to this program is a refusal at load, the
-;;; error naming the replacement. Register row W3/naf-upward-closure, confirmed
-;;; at the revisit (S1e2.1.7, 2026-11-03).
 ;;;
-;;; ── 2026-11-04 — refused ───────────────────────────────────────────────
 ;;;
-;;; M1e2 S1e2.2.5 built the refusal. Every question about a commitment (`ein
-;;; solve` in every mode, `ein test`, `ein oracle`, `ein render lattice`)
-;;; exits 1 with one line naming `bad`, `(false)`, `q`, and the forms that say
-;;; what was meant; `ein saturate` still saturates. The row is fixed. Before
-;;; that the program loaded and its R was three states, `∅`, `{(q A)}` and
-;;; `{(p A), (q A)}`, with the dead hole `{(p A)}`: what *respect* would have
-;;; answered, kept as the row's alternative and as the library-level fixture
-;;; the read-out's dead-hole line is held on (`forbid::studying`). Its
-;;; `(solve :expect (region …))`, which stated that R, went with it.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation is-a T T :why "{?1} is a {?2}")
 (relation p T :why "{?1} has p")

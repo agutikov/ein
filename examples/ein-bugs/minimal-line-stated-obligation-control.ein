@@ -1,10 +1,10 @@
-;;; The control of `minimal-line-stated-obligation.ein` (M1f S1f.5.6, the M1e2 no-owner
-;;; inventory's F1 control, moved here from
-;;; that inventory's findings): the same program with the
-;;; `(total-owed likes is-a)` declaration and its import deleted. It states no obligation, so
-;;; until S1f.5.6 the clause `the trivial line: no obligation is stated` was true here and the
-;;; two files printed the same row; since S1f.5.6 both print `1 state — ∅`, and
-;;; `region.minimal.trivial` is true on both, ∅ being in R.
+;;; The control of `minimal-line-stated-obligation.ein`: the same program with the
+;;; `(total-owed likes is-a)` declaration and its import deleted. It states no obligation,
+;;; and both files print the minimal-line row `1 state — ∅`, with
+;;; `region.minimal.trivial` true on both, ∅ being in R: the row does not turn on whether
+;;; the program states an obligation.
+;;;
+;;;
 (relation is-a  T T
   :why "{?1} is a {?2}")
 (relation likes Person Food
