@@ -4,12 +4,19 @@
 //! `build.rs` compiles. This file keeps two things in step with them.
 //!
 //! - **The page.** `docs/ein/user/04-reference/01-grammar.md`'s two grammar
-//!   blocks are written here, from the two files, read through grmtools'
+//!   regions are written here, from the two files, read through grmtools'
 //!   public readers (`lrlex`'s `LRNonStreamingLexerDef` and `cfgrammar`'s
 //!   `YaccGrammar`), so the page cannot state a token or a production the
-//!   parser does not have. The test fails when the page differs, and
-//!   `EIN_BLESS=1` rewrites the two marked regions, as
-//!   `ein-cli/tests/embedding.rs` does for `docs/ein/ein.rs/04-api.md`.
+//!   parser does not have. A region is the file as EBNF, in `plantuml`
+//!   blocks of `@startebnf`, one diagram a group of rules: a production's
+//!   alternatives as they stand, a left-recursive list as the repetition it
+//!   derives ([`phrase_rule`]), and a lexer rule's regular expression
+//!   translated node for node of the syntax tree `regex-syntax` reads it as
+//!   ([`regex_ebnf`]). Nothing of a diagram is typed by hand: the two
+//!   tables here name only which rule each diagram starts at, and its
+//!   title. The test fails when the page differs, and `EIN_BLESS=1` rewrites
+//!   the two marked regions, as `ein-cli/tests/embedding.rs` does for
+//!   `docs/ein/ein.rs/04-api.md`.
 //! - **The grammar's table** ([`TABLE`]). One row for each shape the grammar
 //!   refuses at the parse, with the parse error it is refused with, banked in
 //!   `tests/golden/grammar_table.txt`. A row that names a refusal line
@@ -42,6 +49,11 @@ use ein_core::Terms;
 use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::{Ast, load, parse};
 use lrlex::{DefaultLexerTypes, LRNonStreamingLexerDef, LexerDef};
+use regex_syntax::ast::parse::ParserBuilder;
+use regex_syntax::ast::{
+    Ast as Regex, ClassBracketed, ClassPerlKind, ClassSet, ClassSetBinaryOpKind, ClassSetItem,
+    RepetitionKind, RepetitionRange,
+};
 
 // ── The page ───────────────────────────────────────────────────────
 
@@ -58,132 +70,714 @@ fn grammar() -> YaccGrammar<u32> {
     YaccGrammar::<u32>::from_str(&source("ein.y")).expect("ein.y reads through cfgrammar")
 }
 
-/// A token as the page writes it: one named for its text quoted, a class of
-/// tokens bare.
-fn token(name: &str) -> String {
-    if name.chars().all(|c| c.is_ascii_uppercase()) {
-        name.to_string()
-    } else {
-        format!("'{name}'")
+// ── EBNF, as the page's diagrams write it ──────────────────────────
+
+/// An EBNF expression in ISO 14977's notation, the one PlantUML draws
+/// between `@startebnf` and `@endebnf`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+enum Ebnf {
+    /// A terminal's text, written quoted.
+    Lit(String),
+    /// A rule's name, or the name of a class of tokens.
+    Ref(String),
+    /// A special sequence, `? … ?`: a set of characters, said in words.
+    Special(String),
+    Seq(Vec<Self>),
+    Alt(Vec<Self>),
+    /// `[ x ]`.
+    Opt(Box<Self>),
+    /// `{ x }`: none or more.
+    Rep0(Box<Self>),
+    /// `{ x }-`: one or more.
+    Rep1(Box<Self>),
+    /// `n * x`.
+    Times(u32, Box<Self>),
+}
+
+/// The width a rule is written within, where it can be.
+const EBNF_WIDTH: usize = 100;
+/// The width the page's own lines are written within.
+const PAGE_WIDTH: usize = 116;
+
+impl Ebnf {
+    /// A sequence, flat: a member that is a sequence gives its members, and a
+    /// sequence of one is that one.
+    fn seq(items: Vec<Self>) -> Self {
+        let mut flat: Vec<Self> = Vec::new();
+        for i in items {
+            match i {
+                Self::Seq(v) => flat.extend(v),
+                other => flat.push(other),
+            }
+        }
+        if flat.len() == 1 {
+            flat.remove(0)
+        } else {
+            Self::Seq(flat)
+        }
+    }
+
+    /// An alternation, flat, as [`Ebnf::seq`] is.
+    fn alt(items: Vec<Self>) -> Self {
+        let mut flat: Vec<Self> = Vec::new();
+        for i in items {
+            match i {
+                Self::Alt(v) => flat.extend(v),
+                other => flat.push(other),
+            }
+        }
+        if flat.len() == 1 {
+            flat.remove(0)
+        } else {
+            Self::Alt(flat)
+        }
+    }
+
+    /// `n` of `x`: one is `x` itself.
+    fn times(n: u32, x: Self) -> Self {
+        if n == 1 {
+            x
+        } else {
+            Self::Times(n, Box::new(x))
+        }
+    }
+
+    /// The expression on one line.
+    fn flat(&self) -> String {
+        match self {
+            // A terminal that holds `"` is quoted with `'`: no terminal of
+            // either grammar file holds both.
+            Self::Lit(s) => {
+                assert!(
+                    !(s.contains('"') && s.contains('\'')),
+                    "the terminal {s:?} holds both quotes, which no EBNF literal can"
+                );
+                if s.contains('"') {
+                    format!("'{s}'")
+                } else {
+                    format!("\"{s}\"")
+                }
+            }
+            Self::Ref(n) => n.clone(),
+            Self::Special(s) => format!("? {s} ?"),
+            Self::Seq(v) => v
+                .iter()
+                .map(|e| match e {
+                    Self::Alt(_) => format!("( {} )", e.flat()),
+                    _ => e.flat(),
+                })
+                .collect::<Vec<_>>()
+                .join(" , "),
+            Self::Alt(v) => v.iter().map(Self::flat).collect::<Vec<_>>().join(" | "),
+            Self::Opt(e) => format!("[ {} ]", e.flat()),
+            Self::Rep0(e) => format!("{{ {} }}", e.flat()),
+            Self::Rep1(e) => format!("{{ {} }}-", e.flat()),
+            Self::Times(n, e) => match **e {
+                Self::Seq(_) | Self::Alt(_) | Self::Times(..) => format!("{n} * ( {} )", e.flat()),
+                _ => format!("{n} * {}", e.flat()),
+            },
+        }
+    }
+
+    /// The expression from column `indent`: on one line where it fits within
+    /// [`EBNF_WIDTH`], and else broken at its alternatives and its members,
+    /// each line after the first carrying its own indentation.
+    fn laid_out(&self, indent: usize) -> String {
+        let flat = self.flat();
+        // Two columns are kept for the ` ;` that ends a rule.
+        if indent + flat.chars().count() + 2 <= EBNF_WIDTH {
+            return flat;
+        }
+        let pad = " ".repeat(indent);
+        let bracketed = |open: &str, close: &str, e: &Self| -> String {
+            format!("{open}\n{pad}  {}\n{pad}{close}", e.laid_out(indent + 2))
+        };
+        match self {
+            // Alternatives that are each a name or a terminal fill a line.
+            Self::Alt(v) if v.iter().all(|e| matches!(e, Self::Lit(_) | Self::Ref(_))) => {
+                let mut out = String::from(" ");
+                let mut col = indent + 1;
+                for (i, e) in v.iter().map(Self::flat).enumerate() {
+                    let w = e.chars().count();
+                    if i > 0 && col + 3 + w > EBNF_WIDTH {
+                        write!(out, "\n{pad}| {e}").unwrap();
+                        col = indent + 2 + w;
+                    } else {
+                        write!(out, "{}{e}", if i == 0 { " " } else { " | " }).unwrap();
+                        col += w + if i == 0 { 1 } else { 3 };
+                    }
+                }
+                out
+            }
+            Self::Alt(v) => {
+                let mut out = String::new();
+                for (i, e) in v.iter().enumerate() {
+                    if i == 0 {
+                        write!(out, "  {}", e.laid_out(indent + 2)).unwrap();
+                    } else {
+                        write!(out, "\n{pad}| {}", e.laid_out(indent + 2)).unwrap();
+                    }
+                }
+                out
+            }
+            Self::Seq(v) => v
+                .iter()
+                .map(|e| match e {
+                    Self::Alt(_) if indent + e.flat().chars().count() + 4 > EBNF_WIDTH => {
+                        bracketed("(", ")", e)
+                    }
+                    Self::Alt(_) => format!("( {} )", e.flat()),
+                    _ => e.laid_out(indent),
+                })
+                .collect::<Vec<_>>()
+                .join(&format!(" ,\n{pad}")),
+            Self::Opt(e) => bracketed("[", "]", e),
+            Self::Rep0(e) => bracketed("{", "}", e),
+            Self::Rep1(e) => bracketed("{", "}-", e),
+            Self::Lit(_) | Self::Ref(_) | Self::Special(_) | Self::Times(..) => flat,
+        }
+    }
+
+    /// The rule `name = self ;`. PlantUML reads a line that starts with `'`
+    /// as a comment and drops it, so a line that would start with a terminal
+    /// quoted that way is written at the end of the line before it.
+    fn rule(&self, name: &str) -> String {
+        let flat = format!("{name} = {} ;", self.flat());
+        if flat.chars().count() <= EBNF_WIDTH {
+            return flat;
+        }
+        let mut out = String::new();
+        for line in format!("{name} =\n  {} ;", self.laid_out(2)).lines() {
+            if out.is_empty() {
+                out.push_str(line);
+            } else if line.trim_start().starts_with('\'') {
+                out.push(' ');
+                out.push_str(line.trim_start());
+            } else {
+                out.push('\n');
+                out.push_str(line);
+            }
+        }
+        out
     }
 }
 
-/// `ein.l`, rule by rule, read through `lrlex`: each token's regular
-/// expression, the start conditions it is tried in and the one it enters, and
-/// the name an error gives it (`ein.y`'s `%epp`).
-fn lexical_block() -> String {
-    type Def = LRNonStreamingLexerDef<DefaultLexerTypes<u32>>;
-    let def = Def::from_str(&source("ein.l")).expect("ein.l reads through lrlex");
-    let states: Vec<&str> = def.iter_start_states().map(|s| s.name()).collect();
-    let state = |id: usize| -> &str { states.get(id).copied().expect("a declared start state") };
-    let grm = grammar();
-    let epp = |name: &str| -> Option<String> {
-        let t = grm.token_idx(name)?;
-        grm.token_epp(t)
-            .filter(|e| *e != name)
-            .map(|e| format!("\"{e}\""))
-    };
-    let rows: Vec<(String, String, String)> = def
-        .iter_rules()
-        .map(|r| {
-            let lhs = r.name().map_or_else(|| "(skipped)".to_string(), token);
-            let mut notes: Vec<String> = Vec::new();
-            if !r.start_states().is_empty() {
-                let s: Vec<&str> = r.start_states().iter().map(|&i| state(i)).collect();
-                notes.push(format!("in {}", s.join(", ")));
-            }
-            if let Some((to, _)) = r.target_state() {
-                notes.push(format!("then {}", state(to)));
-            }
-            notes.extend(r.name().and_then(epp));
-            (lhs, r.re_str().to_string(), notes.join("; "))
-        })
-        .collect();
-    let width = rows
-        .iter()
-        .map(|r| r.0.chars().count())
-        .filter(|&w| w <= 12)
-        .max()
-        .unwrap_or(0);
-    let mut out = String::new();
-    writeln!(
-        out,
-        "/* ein.l: a token's regular expression, the start conditions it is\n   \
-         tried in, the one it enters, and the name an error gives it.\n   \
-         Generated from the grammar file; not edited by hand. */"
-    )
-    .unwrap();
-    for s in def.iter_start_states().filter(|s| s.name() != "INITIAL") {
-        writeln!(out, "%x {}", s.name()).unwrap();
+/// One diagram: the rules between `@startebnf` and `@endebnf`, fenced. No
+/// line starts with a character PlantUML reads a line by before it reads the
+/// grammar: `'`, a comment, `!`, a directive, and `@`, a diagram's end.
+fn diagram(rules: &[String]) -> String {
+    for line in rules.iter().flat_map(|r| r.lines()) {
+        assert!(
+            !line.trim_start().starts_with(['\'', '!', '@']),
+            "PlantUML would not read this line as part of its rule: {line}"
+        );
     }
-    for (lhs, re, notes) in rows {
-        let pad = " ".repeat(width.saturating_sub(lhs.chars().count()));
-        if notes.is_empty() {
-            writeln!(out, "{lhs}{pad} ::= {re}").unwrap();
-        } else {
-            writeln!(out, "{lhs}{pad} ::= {re}    /* {notes} */").unwrap();
+    format!(
+        "```plantuml\n@startebnf\n{}\n@endebnf\n```\n",
+        rules.join("\n")
+    )
+}
+
+/// The page's link to a grammar file.
+fn file_link(name: &str) -> String {
+    format!("[`{name}`](../../../../ein.rs/crates/ein-ir/src/{name})")
+}
+
+// ── The lexical grammar ────────────────────────────────────────────
+
+/// A character as a special sequence names it: itself where it is a printing
+/// ASCII character other than `?`, which would end the sequence, and its code
+/// point otherwise.
+fn shown(c: char) -> String {
+    if c.is_ascii_graphic() && c != '?' {
+        c.to_string()
+    } else {
+        format!("U+{:04X}", u32::from(c))
+    }
+}
+
+/// The members of a character class, as words: a character, a range `a-b`,
+/// `whitespace` for `\s`, and a class inside the class as its own members.
+fn members(set: &ClassSet) -> Vec<String> {
+    fn item(i: &ClassSetItem, out: &mut Vec<String>) {
+        match i {
+            ClassSetItem::Empty(_) => {}
+            ClassSetItem::Literal(l) => out.push(shown(l.c)),
+            ClassSetItem::Range(r) => out.push(format!("{}-{}", shown(r.start.c), shown(r.end.c))),
+            ClassSetItem::Perl(p) if p.kind == ClassPerlKind::Space && !p.negated => {
+                out.push("whitespace".to_string());
+            }
+            ClassSetItem::Bracketed(b) if !b.negated => out.extend(members(&b.kind)),
+            ClassSetItem::Union(u) => u.items.iter().for_each(|i| item(i, out)),
+            other => panic!("ein.l writes a class member the page has no words for: {other:?}"),
         }
     }
+    let ClassSet::Item(i) = set else {
+        panic!("ein.l nests a class operator, which the page has no words for: {set:?}")
+    };
+    let mut out = Vec::new();
+    item(i, &mut out);
     out
 }
 
-/// `ein.y`, rule by rule, read through `cfgrammar`: each rule's alternatives,
-/// a token as [`token`] writes it.
-fn phrase_block() -> String {
-    const WIDTH: usize = 96;
-    let grm = grammar();
-    let sym = |s: &Symbol<u32>| -> String {
-        match s {
-            Symbol::Rule(r) => grm.rule_name_str(*r).to_string(),
-            Symbol::Token(t) => token(grm.token_name(*t).expect("a named token")),
-        }
-    };
-    let mut out = String::new();
-    writeln!(
-        out,
-        "/* ein.y: every rule and its alternatives. Generated from the grammar\n   \
-         file; not edited by hand. The start rule is Program. */"
-    )
-    .unwrap();
-    let start = grm.start_rule_idx();
-    for r in grm.iter_rules() {
-        if r == start || grm.implicit_rule() == Some(r) {
-            continue;
-        }
-        let name = grm.rule_name_str(r);
-        let alts: Vec<String> = grm
-            .rule_to_prods(r)
+/// A character class. A class of a few printing characters is their
+/// alternation, so each is drawn as the terminal it is; any other is a
+/// special sequence that lists its members, `one of: …`, `any character but:
+/// …` for a negated class, and `one of: …, but none of: …` for a difference,
+/// `[a--[b]]`.
+fn class(c: &ClassBracketed) -> Ebnf {
+    /// The most members a class is drawn as alternatives with.
+    const FEW: usize = 6;
+    if let (false, ClassSet::Item(ClassSetItem::Literal(l))) = (c.negated, &c.kind) {
+        return literal(l.c);
+    }
+    if let (false, ClassSet::Item(ClassSetItem::Union(u))) = (c.negated, &c.kind) {
+        let chars: Option<Vec<char>> = u
+            .items
             .iter()
-            .map(|&p| {
-                let syms: Vec<String> = grm.prod(p).iter().map(sym).collect();
-                if syms.is_empty() {
-                    "/* empty */".to_string()
-                } else {
-                    syms.join(" ")
-                }
+            .map(|i| match i {
+                ClassSetItem::Literal(l) if l.c.is_ascii_graphic() => Some(l.c),
+                _ => None,
             })
             .collect();
-        // Alternatives fill a line, and each line past the first starts `|`
-        // under the `::=`.
-        let indent = " ".repeat(name.chars().count() + 1);
-        let mut line = format!("{name} ::= {}", alts[0]);
-        for a in &alts[1..] {
-            if line.chars().count() + 3 + a.chars().count() > WIDTH {
-                writeln!(out, "{line}").unwrap();
-                line = format!("{indent}  | {a}");
-            } else {
-                write!(line, " | {a}").unwrap();
+        if let Some(chars) = chars.filter(|v| v.len() <= FEW) {
+            return Ebnf::alt(chars.into_iter().map(literal).collect());
+        }
+    }
+    let words = match (&c.kind, c.negated) {
+        (ClassSet::Item(_), false) => format!("one of: {}", members(&c.kind).join(" ")),
+        (ClassSet::Item(_), true) => format!("any character but: {}", members(&c.kind).join(" ")),
+        (ClassSet::BinaryOp(op), false) if op.kind == ClassSetBinaryOpKind::Difference => format!(
+            "one of: {}, but none of: {}",
+            members(&op.lhs).join(" "),
+            members(&op.rhs).join(" ")
+        ),
+        _ => panic!("ein.l writes a class the page has no words for: {c:?}"),
+    };
+    Ebnf::Special(words)
+}
+
+/// One character of a rule's text: a terminal, or its code point where it
+/// does not print.
+fn literal(c: char) -> Ebnf {
+    if c.is_ascii_graphic() {
+        Ebnf::Lit(c.to_string())
+    } else {
+        Ebnf::Special(shown(c))
+    }
+}
+
+/// A lexer rule's regular expression as EBNF, node for node of the syntax
+/// tree `regex` reads it as: a literal is a terminal and a run of them one
+/// terminal, a concatenation a sequence, `|` an alternation, `?` an option,
+/// `*` and `+` a repetition, `{m,n}` `m` of it and `n − m` options of it, and
+/// a class what [`class`] makes of it. A construct with no EBNF here fails
+/// the test, so the page never states less than the rule.
+fn regex_ebnf(ast: &Regex) -> Ebnf {
+    match ast {
+        Regex::Literal(l) => literal(l.c),
+        Regex::Concat(c) => {
+            // A run of characters is one terminal; `"` stays alone, so that
+            // the terminal it is in can be quoted.
+            let mut items: Vec<Ebnf> = Vec::new();
+            for e in c.asts.iter().map(regex_ebnf) {
+                match (items.last_mut(), &e) {
+                    (Some(Ebnf::Lit(a)), Ebnf::Lit(b)) if !a.contains('"') && !b.contains('"') => {
+                        a.push_str(b);
+                    }
+                    _ => items.push(e),
+                }
+            }
+            Ebnf::seq(items)
+        }
+        Regex::Alternation(a) => Ebnf::alt(a.asts.iter().map(regex_ebnf).collect()),
+        Regex::Group(g) => regex_ebnf(&g.ast),
+        Regex::Repetition(r) => {
+            assert!(r.greedy, "ein.l writes a lazy repetition: {ast}");
+            let x = regex_ebnf(&r.ast);
+            let opt = |x: &Ebnf| Ebnf::Opt(Box::new(x.clone()));
+            match r.op.kind {
+                RepetitionKind::ZeroOrOne => opt(&x),
+                RepetitionKind::ZeroOrMore => Ebnf::Rep0(Box::new(x)),
+                RepetitionKind::OneOrMore => Ebnf::Rep1(Box::new(x)),
+                RepetitionKind::Range(RepetitionRange::Exactly(n)) => Ebnf::times(n, x),
+                RepetitionKind::Range(RepetitionRange::AtLeast(n)) => {
+                    let mut parts = Vec::new();
+                    if n > 0 {
+                        parts.push(Ebnf::times(n, x.clone()));
+                    }
+                    parts.push(Ebnf::Rep0(Box::new(x)));
+                    Ebnf::seq(parts)
+                }
+                RepetitionKind::Range(RepetitionRange::Bounded(m, n)) => {
+                    let mut parts = Vec::new();
+                    if m > 0 {
+                        parts.push(Ebnf::times(m, x.clone()));
+                    }
+                    if n > m {
+                        parts.push(Ebnf::times(n - m, opt(&x)));
+                    }
+                    assert!(!parts.is_empty(), "ein.l repeats `{ast}` no times");
+                    Ebnf::seq(parts)
+                }
             }
         }
-        writeln!(out, "{line}").unwrap();
+        Regex::ClassBracketed(c) => class(c),
+        other => panic!("ein.l writes `{other}`, which the page's EBNF has no rule for"),
+    }
+}
+
+/// A lexer rule as the page shows it.
+struct Lexed {
+    /// Its EBNF name: the token's, or the name of the group of tokens it is
+    /// listed in.
+    name: String,
+    ebnf: Ebnf,
+    /// The start conditions it is tried in, the one it enters, and the name a
+    /// parse error gives its token.
+    tried: Vec<String>,
+    then: Option<String>,
+    error: Option<String>,
+}
+
+/// The names `ein.l` declares as exclusive start conditions, `%x`: a rule
+/// that names no condition is not tried in one.
+fn exclusive_states(src: &str) -> Vec<String> {
+    src.lines()
+        .take_while(|l| l.trim() != "%%")
+        .filter_map(|l| l.strip_prefix("%x"))
+        .flat_map(|l| l.split_whitespace().map(str::to_string))
+        .collect()
+}
+
+/// The lexer's rules, in the file's order but for the tokens that are their
+/// own text, which come first, gathered by kind: one alternation each for the
+/// punctuation, the words no name is spelt as (`reserved-word`), the words
+/// that are names too, which are those `ein.y`'s `Name` takes
+/// (`position-word`), and the keywords (`known-keyword`).
+fn lexed() -> Vec<Lexed> {
+    type Def = LRNonStreamingLexerDef<DefaultLexerTypes<u32>>;
+    let src = source("ein.l");
+    let def = Def::from_str(&src).expect("ein.l reads through lrlex");
+    let exclusive = exclusive_states(&src);
+    let states: Vec<&str> = def.iter_start_states().map(|s| s.name()).collect();
+    let state = |id: usize| -> String {
+        states
+            .get(id)
+            .copied()
+            .expect("a declared start state")
+            .to_string()
+    };
+    let grm = grammar();
+    // The words `Name` takes: its productions of one token.
+    let name_rule = grm.rule_idx("Name").expect("ein.y has the rule Name");
+    let names_too: Vec<&str> = grm
+        .rule_to_prods(name_rule)
+        .iter()
+        .filter_map(|&p| match grm.prod(p) {
+            [Symbol::Token(t)] => grm.token_name(*t),
+            _ => None,
+        })
+        .collect();
+    let mut own_text: Vec<Lexed> = Vec::new();
+    let mut classes: Vec<Lexed> = Vec::new();
+    for r in def.iter_rules() {
+        let ast = ParserBuilder::new()
+            .octal(true)
+            .build()
+            .parse(r.re_str())
+            .unwrap_or_else(|e| panic!("ein.l's rule `{}` does not read: {e}", r.re_str()));
+        let ebnf = regex_ebnf(&ast);
+        // No condition named: the initial one, and every one that is not
+        // exclusive.
+        let tried: Vec<String> = if r.start_states().is_empty() {
+            states
+                .iter()
+                .filter(|s| !exclusive.iter().any(|x| x == *s))
+                .map(|s| (*s).to_string())
+                .collect()
+        } else {
+            r.start_states().iter().map(|&i| state(i)).collect()
+        };
+        let then = r.target_state().map(|(to, _)| state(to));
+        let error = r.name().and_then(|n| {
+            let t = grm.token_idx(n)?;
+            grm.token_epp(t).filter(|e| *e != n).map(str::to_string)
+        });
+        match r.name() {
+            Some(n) if ebnf == Ebnf::Lit(n.to_string()) => {
+                // The page lists these before the classes, and the lexer
+                // takes the earlier of two rules that match one length: a
+                // word written after `NAME` would never be its own token.
+                assert!(
+                    classes.is_empty(),
+                    "ein.l writes the token `{n}` after a rule that is no fixed text: the page \
+                     lists the rules in another order than the file's"
+                );
+                let first = n.chars().next().expect("a token has a name");
+                let kind = if first == ':' {
+                    "known-keyword"
+                } else if !first.is_ascii_alphabetic() {
+                    "punctuation"
+                } else if names_too.contains(&n) {
+                    "position-word"
+                } else {
+                    "reserved-word"
+                };
+                if let Some(g) = own_text.iter_mut().find(|g| g.name == kind) {
+                    assert!(
+                        g.tried == tried && g.then == then && error.is_none(),
+                        "the token `{n}` is tried or named unlike the other `{kind}` tokens: \
+                         the page lists them as one rule"
+                    );
+                    let Ebnf::Alt(v) = &mut g.ebnf else {
+                        unreachable!()
+                    };
+                    v.push(ebnf);
+                } else {
+                    assert!(
+                        error.is_none(),
+                        "`{n}` is its own text and has another name"
+                    );
+                    own_text.push(Lexed {
+                        name: kind.to_string(),
+                        ebnf: Ebnf::Alt(vec![ebnf]),
+                        tried,
+                        then,
+                        error,
+                    });
+                }
+            }
+            n => classes.push(Lexed {
+                name: n.unwrap_or("skipped").to_string(),
+                ebnf,
+                tried,
+                then,
+                error,
+            }),
+        }
+    }
+    own_text.extend(classes);
+    own_text
+}
+
+/// The lexical grammar's diagrams: the title of each, and the rule it starts
+/// at. A diagram holds the rules from its first up to the next diagram's, in
+/// [`lexed`]'s order, so a rule added to `ein.l` is drawn with the rule it is
+/// written after.
+const LEXICAL_GROUPS: &[(&str, &str)] = &[
+    ("punctuation", "The tokens that are their own text"),
+    (
+        "UNDERSCORE",
+        "The reserved spellings, names, variables and keywords",
+    ),
+    ("TEXT", "Strings"),
+    ("BAD", "What is no token, and what separates tokens"),
+];
+
+/// The phrase grammar's diagrams, as [`LEXICAL_GROUPS`], in `ein.y`'s order.
+const PHRASE_GROUPS: &[(&str, &str)] = &[
+    ("Program", "A program and its forms"),
+    ("Name", "Names, and the name a form is headed by"),
+    ("Var", "Variables, strings, flags and lists of names"),
+    ("Fact", "A fact, a stored negation and a fact as a value"),
+    ("Relation", "A relation's declaration"),
+    ("Rule", "A rule and an hrule"),
+    ("Match", "A rule's `:match`: premises"),
+    ("Pattern", "A pattern and its terms"),
+    ("Assert", "A rule's `:assert`: conclusions"),
+    ("Query", "A query and its claim"),
+    ("Solve", "A solve and its claim"),
+    ("Config", "A config"),
+    ("Macro", "A macro"),
+    ("Import", "An import"),
+    ("Trace", "A trace"),
+];
+
+/// `rules`, cut into the diagrams `groups` names, each under a heading
+/// `### <section>.<n> <title>` and a line that lists its rules and links the
+/// grammar file.
+fn grouped(
+    section: usize,
+    file: &str,
+    groups: &[(&str, &str)],
+    rules: &[(String, Ebnf)],
+) -> String {
+    let starts: Vec<usize> = groups
+        .iter()
+        .map(|(first, _)| {
+            rules
+                .iter()
+                .position(|(n, _)| n == first)
+                .unwrap_or_else(|| panic!("{file} has no rule `{first}` to start a diagram at"))
+        })
+        .collect();
+    assert_eq!(
+        starts.first(),
+        Some(&0),
+        "the first diagram starts at {file}'s first rule"
+    );
+    assert!(
+        starts.windows(2).all(|w| w[0] < w[1]),
+        "the diagrams follow {file}'s order"
+    );
+    let mut out = String::new();
+    for (g, (_, title)) in groups.iter().enumerate() {
+        let end = starts.get(g + 1).copied().unwrap_or(rules.len());
+        let part = &rules[starts[g]..end];
+        let lines: Vec<String> = part.iter().map(|(n, e)| e.rule(n)).collect();
+        // The rules' names, filling the page's lines.
+        let mut names = String::new();
+        let mut col = 0;
+        for (i, (n, _)) in part.iter().enumerate() {
+            let word = format!("`{n}`{}", if i + 1 == part.len() { "." } else { "," });
+            if col > 0 && col + 1 + word.len() > PAGE_WIDTH {
+                names.push('\n');
+                col = 0;
+            } else if col > 0 {
+                names.push(' ');
+                col += 1;
+            }
+            names.push_str(&word);
+            col += word.len();
+        }
+        write!(
+            out,
+            "### {section}.{} {title}\n\nFrom {}:\n{names}\n\n{}\n",
+            g + 1,
+            file_link(file),
+            diagram(&lines)
+        )
+        .unwrap();
     }
     out
 }
 
-/// The page with each marked region holding `blocks`' text, fenced.
-fn page_with(page: &str, blocks: &[(&str, String)]) -> String {
+/// `ein.l` as the page shows it: every rule as EBNF, read through `lrlex` and
+/// [`regex_ebnf`], in [`LEXICAL_GROUPS`]' diagrams, and after them a table of
+/// what EBNF does not state: the start conditions each rule is tried in, the
+/// one it enters, and the name a parse error gives its token (`ein.y`'s
+/// `%epp`).
+fn lexical_region() -> String {
+    let lexed = lexed();
+    let rules: Vec<(String, Ebnf)> = lexed
+        .iter()
+        .map(|l| (l.name.clone(), l.ebnf.clone()))
+        .collect();
+    let mut out = grouped(1, "ein.l", LEXICAL_GROUPS, &rules);
+    let code = |v: &[String]| -> String {
+        v.iter()
+            .map(|s| format!("`{s}`"))
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    let src = source("ein.l");
+    let exclusive = exclusive_states(&src);
+    writeln!(
+        out,
+        "### 1.{} The start conditions, and a token's name in an error\n\n\
+         What the diagrams cannot state, from {}.\n\
+         The exclusive start conditions are {}: a rule that names no condition is not tried in \
+         one.\n\n\
+         | rule | tried in | then | a parse error calls its token |\n|---|---|---|---|",
+        LEXICAL_GROUPS.len() + 1,
+        file_link("ein.l"),
+        code(&exclusive),
+    )
+    .unwrap();
+    for l in &lexed {
+        let error = match (&l.error, l.name.as_str()) {
+            (Some(e), _) => format!("`{e}`"),
+            (None, "skipped") => "it makes no token".to_string(),
+            (None, _) => "by its text".to_string(),
+        };
+        writeln!(
+            out,
+            "| `{}` | {} | {} | {error} |",
+            l.name,
+            code(&l.tried),
+            l.then
+                .as_ref()
+                .map_or_else(|| "the same".to_string(), |s| format!("`{s}`")),
+        )
+        .unwrap();
+    }
+    out
+}
+
+/// A rule of `ein.y` as EBNF. A token named for its text is that terminal,
+/// a class of tokens its name, a rule its name; the alternatives are the
+/// rule's productions. A rule that is a list, written left-recursive,
+/// `R: B | R X`, is the repetition it derives: `{ X }` where `B` is empty,
+/// `{ X }-` where `B` is `X`, and `B , { X }` otherwise. Any other recursion
+/// is written as it stands, the rule naming itself.
+fn phrase_rule(grm: &YaccGrammar<u32>, r: cfgrammar::RIdx<u32>) -> Ebnf {
+    /// A production: its symbols.
+    type Prod<'a> = &'a [Symbol<u32>];
+    let sym = |s: &Symbol<u32>| -> Ebnf {
+        match s {
+            Symbol::Rule(r) => Ebnf::Ref(grm.rule_name_str(*r).to_string()),
+            Symbol::Token(t) => {
+                let name = grm.token_name(*t).expect("a named token");
+                if name.chars().all(|c| c.is_ascii_uppercase()) {
+                    Ebnf::Ref(name.to_string())
+                } else {
+                    Ebnf::Lit(name.to_string())
+                }
+            }
+        }
+    };
+    let me = Symbol::Rule(r);
+    let prods: Vec<Prod> = grm.rule_to_prods(r).iter().map(|&p| grm.prod(p)).collect();
+    let one = |p: Prod| Ebnf::seq(p.iter().map(&sym).collect());
+    // The alternatives of `ps`, an empty one making the others optional.
+    let any = |ps: &[Prod]| -> Option<Ebnf> {
+        let full: Vec<Ebnf> = ps
+            .iter()
+            .filter(|p| !p.is_empty())
+            .map(|p| one(p))
+            .collect();
+        match (full.is_empty(), full.len() < ps.len()) {
+            (true, _) => None,
+            (false, false) => Some(Ebnf::alt(full)),
+            (false, true) => Some(Ebnf::Opt(Box::new(Ebnf::alt(full)))),
+        }
+    };
+    let (again, base): (Vec<Prod>, Vec<Prod>) =
+        prods.iter().copied().partition(|p| p.first() == Some(&me));
+    let list = !again.is_empty()
+        && again.iter().all(|p| p.len() > 1 && !p[1..].contains(&me))
+        && base.iter().all(|p| !p.contains(&me));
+    if !list {
+        return any(&prods)
+            .unwrap_or_else(|| panic!("ein.y's rule {} derives nothing", grm.rule_name_str(r)));
+    }
+    let tails: Vec<Prod> = again.iter().map(|p| &p[1..]).collect();
+    let item = any(&tails).expect("a list's item is not empty");
+    match any(&base) {
+        None => Ebnf::Rep0(Box::new(item)),
+        Some(b) if b == item => Ebnf::Rep1(Box::new(item)),
+        Some(b) => Ebnf::seq(vec![b, Ebnf::Rep0(Box::new(item))]),
+    }
+}
+
+/// `ein.y` as the page shows it: every rule as EBNF, read through `cfgrammar`
+/// and [`phrase_rule`], in [`PHRASE_GROUPS`]' diagrams.
+fn phrase_region() -> String {
+    let grm = grammar();
+    let start = grm.start_rule_idx();
+    let rules: Vec<(String, Ebnf)> = grm
+        .iter_rules()
+        .filter(|&r| r != start && grm.implicit_rule() != Some(r))
+        .map(|r| (grm.rule_name_str(r).to_string(), phrase_rule(&grm, r)))
+        .collect();
+    grouped(2, "ein.y", PHRASE_GROUPS, &rules)
+}
+
+/// The page with each marked region holding `regions`' text.
+fn page_with(page: &str, regions: &[(&str, String)]) -> String {
     let mut out = page.to_string();
-    for (name, body) in blocks {
+    for (name, body) in regions {
         let open = format!("<!-- generated: {name} -->\n");
         let close = format!("<!-- /generated: {name} -->");
         let a = out
@@ -193,21 +787,21 @@ fn page_with(page: &str, blocks: &[(&str, String)]) -> String {
         let b = a + out[a..]
             .find(&close)
             .unwrap_or_else(|| panic!("{PAGE} has no {close:?} marker"));
-        out.replace_range(a..b, &format!("```text\n{body}```\n"));
+        out.replace_range(a..b, body);
     }
     out
 }
 
-/// **`01-grammar.md`'s blocks are the grammar's.** Each is generated from the
-/// file `build.rs` compiles; a page that differs fails, and `EIN_BLESS=1`
-/// writes the blocks into it.
+/// **`01-grammar.md`'s diagrams are the grammar's.** Each region is generated
+/// from the file `build.rs` compiles; a page that differs fails, and
+/// `EIN_BLESS=1` writes the regions into it.
 #[test]
 fn the_pages_grammar_blocks_are_the_parsers() {
     let path = repo_root().join(PAGE);
     let page = std::fs::read_to_string(&path).expect("the page reads");
     let want = page_with(
         &page,
-        &[("ein.l", lexical_block()), ("ein.y", phrase_block())],
+        &[("ein.l", lexical_region()), ("ein.y", phrase_region())],
     );
     if want == page {
         return;
@@ -222,9 +816,74 @@ fn the_pages_grammar_blocks_are_the_parsers() {
         .position(|(a, b)| a != b)
         .map_or(0, |i| i + 1);
     panic!(
-        "{PAGE}'s grammar blocks are not ein.l and ein.y as the parser reads them \
+        "{PAGE}'s grammar diagrams are not ein.l and ein.y as the parser reads them \
          (first difference at line {first}); EIN_BLESS=1 rewrites them"
     );
+}
+
+/// The translation's own shapes, on rules written here: what a list, a
+/// class, a counted repetition and a rule too long for a line become.
+#[test]
+fn the_ebnf_translation_reads_each_shape() {
+    let re = |s: &str| -> String {
+        let ast = ParserBuilder::new()
+            .octal(true)
+            .build()
+            .parse(s)
+            .expect("the rule reads");
+        regex_ebnf(&ast).flat()
+    };
+    for (rule, want) in [
+        (r"not", r#""not""#),
+        (r":goal\-text", r#"":goal-text""#),
+        (r"\?_", r#""?_""#),
+        (r"[<](a|b)[>]", r#""<" , ( "a" | "b" ) , ">""#),
+        (r"[A-Za-z0-9_]+", "{ ? one of: A-Z a-z 0-9 _ ? }-"),
+        (
+            r#""([^"\\]|\\[nt"])*""#,
+            r#"'"' , { ? any character but: " \ ? | "\" , ( "n" | "t" | '"' ) } , '"'"#,
+        ),
+        (
+            r"0{0,5}[0-9A-Fa-f]",
+            r#"5 * [ "0" ] , ? one of: 0-9 A-F a-f ?"#,
+        ),
+        (
+            r"0?[1-9][0-9]{4}",
+            r#"[ "0" ] , ? one of: 1-9 ? , 4 * ? one of: 0-9 ?"#,
+        ),
+        (r"a{2,}", r#"2 * "a" , { "a" }"#),
+        (
+            r"[\x00-\x7F--[\s();\x1c-\x1f]]",
+            "? one of: U+0000-U+007F, but none of: whitespace ( ) ; U+001C-U+001F ?",
+        ),
+        (r";[^\n]*", r#"";" , { ? any character but: U+000A ? }"#),
+        (r"[?]x", r#""?x""#),
+    ] {
+        assert_eq!(re(rule), want, "the lexer rule `{rule}`");
+    }
+    let long = Ebnf::Alt(
+        (0..12)
+            .map(|i| {
+                Ebnf::Seq(vec![
+                    Ebnf::Lit("(".into()),
+                    Ebnf::Ref(format!("Alternative{i}")),
+                    Ebnf::Lit(")".into()),
+                ])
+            })
+            .collect(),
+    );
+    // A terminal quoted with `'` never starts a line.
+    let quoted = Ebnf::Seq(vec![
+        Ebnf::Lit("\"".into()),
+        Ebnf::Rep0(Box::new(long.clone())),
+        Ebnf::Lit("\"".into()),
+    ])
+    .rule("Quoted");
+    assert!(quoted.starts_with("Quoted = '\"' ,\n  {\n"), "{quoted}");
+    assert!(quoted.ends_with("\n  } , '\"' ;"), "{quoted}");
+    let text = long.rule("Long");
+    assert!(text.starts_with("Long =\n    \"(\" , Alternative0 , \")\"\n  | \"(\" , Alternative1"));
+    assert!(text.lines().all(|l| l.chars().count() <= EBNF_WIDTH));
 }
 
 /// Every token `ein.y` names is a rule of `ein.l`, so the lexical block lists

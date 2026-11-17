@@ -1,19 +1,36 @@
 # The grammar
 
-Ein parses with a lexer and a parser generated from two grammar files, `ein.l` and `ein.y`, and the two blocks on
-this page are those files as the parser generator reads them. **They are what parses.** Each block is generated from
-its file and never edited by hand, and the test suite fails when a block and its file differ. The prose around them
-says what the blocks cannot show; where the two disagree, the block is right. What each form means, and what the
-loader holds it to, is [`02-syntax.md`](02-syntax.md).
+Ein parses with a lexer and a parser generated from two grammar files: the lexer's,
+[`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l), and the parser's,
+[`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y). The diagrams on this page are those two files, every rule of
+each, written as EBNF and drawn as railroad diagrams. **They are what parses.** Each diagram is generated from its
+file, rule by rule, and never edited by hand, and the test suite fails when a diagram and its file differ. The prose
+around them says what the diagrams cannot show; where the two disagree, the diagram is right. What each form means,
+and what the loader holds it to, is [`02-syntax.md`](02-syntax.md).
 
-**Notation.** The blocks write the two files this way:
+**Notation.** The diagrams are EBNF in the notation of ISO 14977:
 
 | | |
 |---|---|
-| §1, `NAME ::= regex` | a lexer rule: the token's name, and its regular expression in Rust's `regex` syntax (`[a-z]`, `[^"\\]`, `\(`, `{0,5}`, `?`, `\|`); a quoted name, `'rule'`, is a token that is its own text |
-| §1, `/* in …; then …; "…" */` | the start conditions the rule is tried in (every rule is tried in `INITIAL` unless it says otherwise), the one it enters, and the name a parse error gives the token |
-| §2, `A ::= B C \| D` | a production: concatenation, alternation, and `/* empty */` for the empty alternative; a list is a left-recursive rule, `Names ::= /* empty */ \| Names Name` |
-| §2, `'x'`, `NAME` | a token, by the name of the lexer rule that makes it |
+| `Name = … ;` | a rule: in §1 a token and what it matches, in §2 a production |
+| `a , b` | `a`, then `b` |
+| `a \| b` | `a` or `b` |
+| `{ a }`, `{ a }-` | `a` any number of times; `a` one or more times |
+| `[ a ]` | `a` or nothing |
+| `n * a` | `a`, `n` times, so `5 * [ "0" ]` is up to five `0` |
+| `( … )` | grouping |
+| `"rule"`, `'"'` | a terminal: in §1 the characters themselves, in §2 the token that is that text |
+| `NAME`, `Premise` | in §2, a class of tokens, by the name of the rule of §1 that makes it, or another production |
+| `? … ?` | a set of characters, in words: `one of:` and its members, each a character or a range `a-z`; `any character but:` and the members left out; `one of: …, but none of: …`, a set less another. `whitespace` is what a regular expression's `\s` matches, and a character that does not print is its code point, `U+000A` the newline and `U+0020` the space |
+
+**What is generated from what.** §1 writes each rule of `ein.l`, whose right side is a regular expression, as the
+EBNF that expression is, node for node: a run of characters is a terminal, a class of a few characters their
+alternation and any other class a `? … ?`, `*` and `+` the two repetitions, `?` an option and `{m,n}` a count. The
+lexer has one rule for each token; the rules of §1.1, in lower case, are the page's, each the list of the tokens
+that are their own text, and §2 writes such a token as the terminal. §2 writes each rule of `ein.y` with its
+productions as the alternatives. A list, which `ein.y` writes as a rule that names itself first,
+`Names: | Names Name`, is drawn as the repetition it derives, `Names = { Name } ;`. EBNF has no way to say which
+start conditions a lexer rule is tried in or what a parse error calls its token, so §1.5 is a table.
 
 The lexer and the parser are separate layers. The lexer turns the whole text into tokens before the parser reads one,
 and the parser is an LR(1) parser over those tokens, with no lookahead into the text and no token read by what is
@@ -22,76 +39,130 @@ being parsed: a word is the token the lexer makes of it wherever it is written.
 ## 1. Lexical grammar
 
 The lexer tries every rule its current start condition allows at each position and takes the **longest** match;
-between two matches of one length, the rule written first. Every terminal is ASCII: a character that is not ASCII is
-written only inside a string (`TEXT`) or a comment, and anywhere else no rule matches it, so the lexer stops there and
-the error names it (fact 6). Names are ASCII; a string is natural-language text in any Unicode (fact 4).
+between two matches of one length, the rule written first, and the diagrams list the rules in the file's order. Every
+terminal is ASCII: a character that is not ASCII is written only inside a string (`TEXT`) or a comment, and anywhere
+else no rule matches it, so the lexer stops there and the error names it (fact 6). Names are ASCII; a string is
+natural-language text in any Unicode (fact 4).
 
 <!-- generated: ein.l -->
-```text
-/* ein.l: a token's regular expression, the start conditions it is
-   tried in, the one it enters, and the name an error gives it.
-   Generated from the grammar file; not edited by hand. */
-%x AFTER_WORD
-'('          ::= \(    /* in INITIAL, AFTER_WORD; then INITIAL */
-')'          ::= \)    /* in INITIAL, AFTER_WORD; then INITIAL */
-'not'        ::= not    /* then AFTER_WORD */
-'and'        ::= and    /* then AFTER_WORD */
-'or'         ::= or    /* then AFTER_WORD */
-'neq'        ::= neq    /* then AFTER_WORD */
-'rule'       ::= rule    /* then AFTER_WORD */
-'hrule'      ::= hrule    /* then AFTER_WORD */
-'query'      ::= query    /* then AFTER_WORD */
-'solve'      ::= solve    /* then AFTER_WORD */
-'config'     ::= config    /* then AFTER_WORD */
-'trace'      ::= trace    /* then AFTER_WORD */
-'macro'      ::= macro    /* then AFTER_WORD */
-'import'     ::= import    /* then AFTER_WORD */
-'relation'   ::= relation    /* then AFTER_WORD */
-'step'       ::= step    /* then AFTER_WORD */
-'eq'         ::= eq    /* then AFTER_WORD */
-'absent'     ::= absent    /* then AFTER_WORD */
-'false'      ::= false    /* then AFTER_WORD */
-'true'       ::= true    /* then AFTER_WORD */
-'open'       ::= open    /* then AFTER_WORD */
-'model'      ::= model    /* then AFTER_WORD */
-'region'     ::= region    /* then AFTER_WORD */
-'merged'     ::= merged    /* then AFTER_WORD */
-'owing'      ::= owing    /* then AFTER_WORD */
-':why'       ::= :why    /* then AFTER_WORD */
-':source'    ::= :source    /* then AFTER_WORD */
-':goal-text' ::= :goal\-text    /* then AFTER_WORD */
-':match'     ::= :match    /* then AFTER_WORD */
-':assert'    ::= :assert    /* then AFTER_WORD */
-':rule'      ::= :rule    /* then AFTER_WORD */
-':using'     ::= :using    /* then AFTER_WORD */
-':goal'      ::= :goal    /* then AFTER_WORD */
-':over'      ::= :over    /* then AFTER_WORD */
-':expect'    ::= :expect    /* then AFTER_WORD */
-':hrules'    ::= :hrules    /* then AFTER_WORD */
-':hypothesis-relations' ::= :hypothesis\-relations    /* then AFTER_WORD */
-':no-hypothesis' ::= :no\-hypothesis    /* then AFTER_WORD */
-':no-search' ::= :no\-search    /* then AFTER_WORD */
-':lattice-sanity-check' ::= :lattice\-sanity\-check    /* then AFTER_WORD */
-':record-alternative-justifications' ::= :record\-alternative\-justifications    /* then AFTER_WORD */
-':symbols'   ::= :symbols    /* then AFTER_WORD */
-':as'        ::= :as    /* then AFTER_WORD */
-':derives'   ::= :derives    /* then AFTER_WORD */
-':assumes'   ::= :assumes    /* then AFTER_WORD */
-UNDERSCORE   ::= _    /* then AFTER_WORD; "_ (reserved)" */
-VARUNDERSCORE ::= \?_    /* then AFTER_WORD; "?_ (reserved)" */
-WRITEBACK    ::= [<](forced\-positive|monotonic\-unconditional|lookahead\-dies\-immediately)[>]    /* then AFTER_WORD; "the engine's writeback rule name (reserved)" */
-NAME         ::= [A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a name" */
-VAR          ::= \?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a variable" */
-KEYWORD      ::= :[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a keyword this form does not take" */
-TEXT         ::= "([^"\\]|\\[ntr"\\]|\\u\{(0{0,5}[0-9A-Fa-f]|0{0,4}[1-9A-Fa-f][0-9A-Fa-f]|0{0,3}[1-9A-Fa-f][0-9A-Fa-f]{2}|0{0,2}([1-9A-Ca-cEeFf][0-9A-Fa-f]{3}|[Dd][0-7][0-9A-Fa-f]{2})|0?[1-9A-Fa-f][0-9A-Fa-f]{4}|10[0-9A-Fa-f]{4})\})*"    /* then AFTER_WORD; "a string" */
-BADESCAPE    ::= "([^"\\]|\\[^\n])*"    /* then AFTER_WORD; "a string with an unknown escape" */
-BADTEXT      ::= "([^"\\]|\\[^\n])*"[\x00-\x7F--[\s();\x1c-\x1f]]+    /* then AFTER_WORD; "a string glued to what follows" */
-BAD          ::= ([\x00-\x7F--[\s();#\x1c-\x1f]]|#[\x00-\x7F--[|\s();\x1c-\x1f]])+    /* then AFTER_WORD; "a token that is not a name" */
-(skipped)    ::= ([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+    /* in INITIAL, AFTER_WORD; then INITIAL */
+### 1.1 The tokens that are their own text
+
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+`punctuation`, `reserved-word`, `position-word`, `known-keyword`.
+
+```plantuml
+@startebnf
+punctuation = "(" | ")" ;
+reserved-word =
+    "not" | "and" | "or" | "neq" | "rule" | "hrule" | "query" | "solve" | "config" | "trace"
+  | "macro" | "import" | "open" ;
+position-word =
+    "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
+  | "owing" ;
+known-keyword =
+    ":why" | ":source" | ":goal-text" | ":match" | ":assert" | ":rule" | ":using" | ":goal"
+  | ":over" | ":expect" | ":hrules" | ":hypothesis-relations" | ":no-hypothesis" | ":no-search"
+  | ":lattice-sanity-check" | ":record-alternative-justifications" | ":symbols" | ":as" | ":derives"
+  | ":assumes" ;
+@endebnf
 ```
+
+### 1.2 The reserved spellings, names, variables and keywords
+
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+`UNDERSCORE`, `VARUNDERSCORE`, `WRITEBACK`, `NAME`, `VAR`, `KEYWORD`.
+
+```plantuml
+@startebnf
+UNDERSCORE = "_" ;
+VARUNDERSCORE = "?_" ;
+WRITEBACK =
+  "<" , ( "forced-positive" | "monotonic-unconditional" | "lookahead-dies-immediately" ) , ">" ;
+NAME = { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
+VAR = "?" , { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
+KEYWORD = ":" , { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
+@endebnf
+```
+
+### 1.3 Strings
+
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+`TEXT`, `BADESCAPE`, `BADTEXT`.
+
+```plantuml
+@startebnf
+TEXT = '"' ,
+  {
+      ? any character but: " \ ?
+    | "\" , ( "n" | "t" | "r" | '"' | "\" )
+    | "\u{" ,
+      (
+          5 * [ "0" ] , ? one of: 0-9 A-F a-f ?
+        | 4 * [ "0" ] , ? one of: 1-9 A-F a-f ? , ? one of: 0-9 A-F a-f ?
+        | 3 * [ "0" ] , ? one of: 1-9 A-F a-f ? , 2 * ? one of: 0-9 A-F a-f ?
+        | 2 * [ "0" ] ,
+          (
+              ? one of: 1-9 A-C a-c E e F f ? , 3 * ? one of: 0-9 A-F a-f ?
+            | ( "D" | "d" ) , ? one of: 0-7 ? , 2 * ? one of: 0-9 A-F a-f ?
+          )
+        | [ "0" ] , ? one of: 1-9 A-F a-f ? , 4 * ? one of: 0-9 A-F a-f ?
+        | "10" , 4 * ? one of: 0-9 A-F a-f ?
+      ) ,
+      "}"
+  } , '"' ;
+BADESCAPE = '"' , { ? any character but: " \ ? | "\" , ? any character but: U+000A ? } , '"' ;
+BADTEXT = '"' ,
+  { ? any character but: " \ ? | "\" , ? any character but: U+000A ? } , '"' ,
+  { ? one of: U+0000-U+007F, but none of: whitespace ( ) ; U+001C-U+001F ? }- ;
+@endebnf
+```
+
+### 1.4 What is no token, and what separates tokens
+
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+`BAD`, `skipped`.
+
+```plantuml
+@startebnf
+BAD =
+  {
+      ? one of: U+0000-U+007F, but none of: whitespace ( ) ; # U+001C-U+001F ?
+    | "#" , ? one of: U+0000-U+007F, but none of: | whitespace ( ) ; U+001C-U+001F ?
+  }- ;
+skipped =
+  {
+      ? one of: U+0009-U+000D U+0020 U+001C-U+001F ?
+    | ";" , { ? any character but: U+000A ? }
+    | "#|" , { ? any character but: | ? | { "|" }- , ? any character but: | # ? } , { "|" }- , "#"
+  }- ;
+@endebnf
+```
+
+### 1.5 The start conditions, and a token's name in an error
+
+What the diagrams cannot state, from [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l).
+The exclusive start conditions are `AFTER_WORD`: a rule that names no condition is not tried in one.
+
+| rule | tried in | then | a parse error calls its token |
+|---|---|---|---|
+| `punctuation` | `INITIAL`, `AFTER_WORD` | `INITIAL` | by its text |
+| `reserved-word` | `INITIAL` | `AFTER_WORD` | by its text |
+| `position-word` | `INITIAL` | `AFTER_WORD` | by its text |
+| `known-keyword` | `INITIAL` | `AFTER_WORD` | by its text |
+| `UNDERSCORE` | `INITIAL` | `AFTER_WORD` | `_ (reserved)` |
+| `VARUNDERSCORE` | `INITIAL` | `AFTER_WORD` | `?_ (reserved)` |
+| `WRITEBACK` | `INITIAL` | `AFTER_WORD` | `the engine's writeback rule name (reserved)` |
+| `NAME` | `INITIAL` | `AFTER_WORD` | `a name` |
+| `VAR` | `INITIAL` | `AFTER_WORD` | `a variable` |
+| `KEYWORD` | `INITIAL` | `AFTER_WORD` | `a keyword this form does not take` |
+| `TEXT` | `INITIAL` | `AFTER_WORD` | `a string` |
+| `BADESCAPE` | `INITIAL` | `AFTER_WORD` | `a string with an unknown escape` |
+| `BADTEXT` | `INITIAL` | `AFTER_WORD` | `a string glued to what follows` |
+| `BAD` | `INITIAL` | `AFTER_WORD` | `a token that is not a name` |
+| `skipped` | `INITIAL`, `AFTER_WORD` | `INITIAL` | it makes no token |
 <!-- /generated: ein.l -->
 
-Six facts about the terminals that the block states and does not explain:
+Six facts about the terminals that the diagrams state and do not explain:
 
 1. **A reserved word is a token only as a whole word.** The thirteen reserved words, `not`, `and`, `or`, `neq`,
    `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro`, `import` and `open`, and the ten position words,
@@ -129,11 +200,11 @@ Six facts about the terminals that the block states and does not explain:
    is a parse error at the string, with a note saying so, and the name written bare is what it meant. It holds any
    character but `"` and `\` as itself, a raw newline among them, and reads `\n` `\t` `\r` `\"` `\\` and `\u{…}`, one
    to six hex digits naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF (`\u{1F993}` is 🦓). Any other
-   escape, `\x41`, `Ж`, `\u{}`, and a `\u{…}` that names no character, `\u{110000}` or a surrogate, make the
+   escape, `\x41`, `\Ж`, `\u{}`, and a `\u{…}` that names no character, `\u{110000}` or a surrogate, make the
    string a `BADESCAPE`, refused at its opening quote with a note per escape naming it and its line and column. A
    backslash before a newline is no escape: the string is a `BAD` token there.
 5. **A token ends at a separator.** After any token but `(` and `)` the lexer is in `AFTER_WORD`, where it tries `(`,
-   `)` and the skip rule alone: a space, a paren, a comment or the end of input ends a token, and any other ASCII
+   `)` and the skip rule, `skipped`, alone: a space, a paren, a comment or the end of input ends a token, and any other ASCII
    character continues it. So `a?x`, `?x?y` and `a,b` are each one `BAD` token, *a token that is not a name*, and
    `"a"b` one `BADTEXT`, *a string glued to what follows*, each a parse error at the token with the file, line and
    column; none splits in silence. **The name rule**: a `NAME` is a run of the ASCII name characters `ein.l` lists,
@@ -142,8 +213,8 @@ Six facts about the terminals that the block states and does not explain:
 6. **A character that is not ASCII is written only inside a string or a comment**
    ([Q-M1f.65](../../../decisions/language/Q-M1f.65-a-comment-may-hold-any-character.md)). `TEXT` and `BADESCAPE`
    take any character between their quotes, and the skip rule's comments any to their end; `BAD`, `BADTEXT`'s tail
-   and the skip rule's whitespace are ASCII, `\x00-\x7F` less the separators, which are `\x09-\x0D`, the space and
-   `\x1C-\x1F`. So no rule matches a character that is not ASCII anywhere else, in either start condition: the lexer
+   and the skip rule's whitespace are ASCII, `U+0000-U+007F` less the separators, which are `U+0009-U+000D`, the
+   space and `U+001C-U+001F`. So no rule matches a character that is not ASCII anywhere else, in either start condition: the lexer
    stops at the file's first one, and the report names it, its code point and where Unicode is allowed
    ([Q-M1f.95](../../../decisions/diagnostics/Q-M1f.95-a-file-is-refused-at-its-first-character-that-is.md)),
    quoting a character a reader cannot see as the escape a string writes it with
@@ -158,109 +229,286 @@ Six facts about the terminals that the block states and does not explain:
 
 ## 2. Phrase grammar
 
-`Program` is the start symbol. The skip rule's whitespace and comments may appear between any two tokens, and no
-production names them.
+`Program` is the start symbol. The skip rule's whitespace and comments (§1.4's `skipped`) may appear between any two
+tokens, and no production names them.
 
 <!-- generated: ein.y -->
-```text
-/* ein.y: every rule and its alternatives. Generated from the grammar
-   file; not edited by hand. The start rule is Program. */
-Program ::= /* empty */ | Program Form
-Form ::= Relation | Rule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact
-Name ::= NAME | 'relation' | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'model' | 'region'
-       | 'merged' | 'owing'
-DeclName ::= NAME | 'step' | 'true' | 'model' | 'region' | 'merged' | 'owing'
-FactHead ::= NAME | 'step' | 'eq' | 'true' | 'model'
-ValueHead ::= NAME | 'relation' | 'step' | 'true' | 'model' | 'region' | 'merged' | 'owing'
-PremiseHead ::= ValueHead | Var
-ConclusionHead ::= ValueHead | Var
-Var ::= VAR
-Text ::= TEXT
-Bool ::= 'true' | 'false'
-Names ::= /* empty */ | Names Name
-NamesPlus ::= Name | NamesPlus Name
-Vars ::= /* empty */ | Vars Var
-VarsPlus ::= Var | VarsPlus Var
-NameList ::= '(' ')' | '(' Name Names ')'
-NameListPlus ::= '(' Name Names ')'
-Fact ::= '(' FactHead FactArgs FactClauses ')' | '(' 'false' FactClauses ')'
-NotFact ::= '(' 'not' NestedFact FactClauses ')' | '(' 'not' EqFact FactClauses ')'
-NestedFact ::= '(' ValueHead FactArgs ')' | '(' 'false' ')'
-EqFact ::= '(' 'eq' FactArgs ')'
-FactArg ::= Name | NestedFact | '(' 'not' NestedFact ')'
-FactArgs ::= /* empty */ | FactArgs FactArg
-FactClause ::= ':source' Text | ':rule' Name | ':using' '(' NestedFacts ')'
-FactClauses ::= /* empty */ | FactClauses FactClause
-NestedFacts ::= NestedFact | NestedFacts NestedFact
-Relation ::= '(' 'relation' DeclName Names RelationClauses ')'
-RelationClauses ::= /* empty */ | RelationClauses ':why' Text
-Rule ::= '(' 'rule' DeclName Params RuleClauses ')'
-       | '(' 'hrule' DeclName Params RuleClauses ')'
-Params ::= '(' Vars ')'
-RuleClause ::= ':match' Match | ':assert' Assert | ':why' Text
-RuleClauses ::= /* empty */ | RuleClauses RuleClause
-Match ::= '(' ')' | Premise
-Premise ::= '(' PremiseHead Args ')' | '(' 'false' ')' | Connective
-Premises ::= Premise | Premises Premise
-Connective ::= '(' 'and' Premises ')' | '(' 'or' Premises ')' | '(' 'not' Negated ')'
-             | '(' 'absent' Premise ')' | Guard
-Negated ::= Pattern | '(' 'eq' Term Term ')'
-Guard ::= '(' 'eq' Term Term ')' | '(' 'neq' Term Term ')'
-Args ::= /* empty */ | Args Arg
-Arg ::= Name | Var | '(' ArgHead Args ')' | '(' 'false' ')' | Connective
-ArgHead ::= ValueHead | Var
-Pattern ::= '(' ValueHead Terms ')' | '(' Var Terms ')' | '(' 'false' ')'
-AnyHead ::= Name | Var
-Term ::= Name | Var | Pattern | '(' 'not' Pattern ')'
-Terms ::= /* empty */ | Terms Term
-Assert ::= '(' ')' | Conclusion | '(' 'open' ')' | '(' 'open' AnyHead ')'
-Conclusion ::= '(' ConclusionHead Terms ')' | '(' 'and' Conclusions ')' | '(' 'not' Negated ')'
-             | '(' 'not' Var ')' | '(' 'false' ')' | Guard
-Conclusions ::= Conclusion | Conclusions Conclusion
-Query ::= '(' 'query' QueryClausesPlus ')'
-QueryClause ::= ':goal' Premise | ':goal-text' Text | ':over' Name | ':expect' Claim
-QueryClausesPlus ::= QueryClause | QueryClausesPlus QueryClause
-Claim ::= Model | '(' 'or' Models ')' | '(' 'false' ')'
-Model ::= '(' 'model' ClaimFacts ')'
-Models ::= Model | Models Model
-ClaimFact ::= NestedFact | EqFact | '(' 'not' NestedFact ')' | '(' 'not' EqFact ')'
-            | '(' 'absent' ClaimAtom ')' | '(' 'neq' FactArg FactArg ')'
-ClaimAtom ::= NestedFact | EqFact | '(' 'not' NestedFact ')' | '(' 'not' EqFact ')'
-ClaimFacts ::= /* empty */ | ClaimFacts ClaimFact
-Solve ::= '(' 'solve' SolveClauses ')'
-SolveClause ::= ':hrules' Hrules | ':hypothesis-relations' NameList | ':no-hypothesis' NameList
-              | ':no-search' | ':expect' RegionClaim
-SolveClauses ::= /* empty */ | SolveClauses SolveClause
-Hrules ::= '(' ')' | '(' Name HruleItems ')'
-HruleItem ::= Name | NameListPlus
-HruleItems ::= /* empty */ | HruleItems HruleItem
-RegionClaim ::= '(' 'region' RegionItems ')' | '(' 'false' ')'
-RegionItem ::= Model | '(' 'merged' Model MergedFrom ')' | '(' 'owing' Models ')'
-RegionItems ::= /* empty */ | RegionItems RegionItem
-MergedFrom ::= Model | '(' 'or' Models ')'
-Config ::= '(' 'config' ConfigClauses ')'
-ConfigClause ::= ':lattice-sanity-check' Bool | ':record-alternative-justifications' Bool
-ConfigClauses ::= /* empty */ | ConfigClauses ConfigClause
-Macro ::= '(' 'macro' DeclName MacroParams Template ')'
-        | '(' 'macro' DeclName MacroParams Template ':why' Text ')'
-MacroParams ::= '(' VarsPlus ')'
-Template ::= Var | '(' 'and' Templates ')' | '(' 'or' Templates ')' | '(' 'not' Template ')'
-           | '(' 'neq' TemplateItem TemplateItem ')' | '(' AnyHead TemplateItems ')'
-Templates ::= Template | Templates Template
-TemplateItem ::= Name | Template
-TemplateItems ::= /* empty */ | TemplateItems TemplateItem
-Import ::= '(' 'import' Name ImportClauses ')'
-ImportClause ::= ':symbols' NameListPlus | ':as' DeclName
-ImportClauses ::= /* empty */ | ImportClauses ImportClause
-Trace ::= '(' 'trace' Steps ')'
-Steps ::= /* empty */ | Steps Step
-Step ::= '(' 'step' Name StepClauses ')'
-StepClause ::= ':rule' Name | ':using' StepUsing | ':derives' Derived | ':source' Text
-             | ':assumes' Derived
-StepClauses ::= /* empty */ | StepClauses StepClause
-StepUsing ::= NameListPlus | '(' 'and' NamesPlus ')'
-Derived ::= NestedFact | '(' 'not' NestedFact ')'
+### 2.1 A program and its forms
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Program`, `Form`.
+
+```plantuml
+@startebnf
+Program = { Form } ;
+Form = Relation | Rule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact ;
+@endebnf
 ```
+
+### 2.2 Names, and the name a form is headed by
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Name`, `DeclName`, `FactHead`, `ValueHead`, `PremiseHead`, `ConclusionHead`.
+
+```plantuml
+@startebnf
+Name =
+    NAME | "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
+  | "owing" ;
+DeclName = NAME | "step" | "true" | "model" | "region" | "merged" | "owing" ;
+FactHead = NAME | "step" | "eq" | "true" | "model" ;
+ValueHead = NAME | "relation" | "step" | "true" | "model" | "region" | "merged" | "owing" ;
+PremiseHead = ValueHead | Var ;
+ConclusionHead = ValueHead | Var ;
+@endebnf
+```
+
+### 2.3 Variables, strings, flags and lists of names
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Var`, `Text`, `Bool`, `Names`, `NamesPlus`, `Vars`, `VarsPlus`, `NameList`, `NameListPlus`.
+
+```plantuml
+@startebnf
+Var = VAR ;
+Text = TEXT ;
+Bool = "true" | "false" ;
+Names = { Name } ;
+NamesPlus = { Name }- ;
+Vars = { Var } ;
+VarsPlus = { Var }- ;
+NameList = "(" , ")" | "(" , Name , Names , ")" ;
+NameListPlus = "(" , Name , Names , ")" ;
+@endebnf
+```
+
+### 2.4 A fact, a stored negation and a fact as a value
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Fact`, `NotFact`, `NestedFact`, `EqFact`, `FactArg`, `FactArgs`, `FactClause`, `FactClauses`, `NestedFacts`.
+
+```plantuml
+@startebnf
+Fact = "(" , FactHead , FactArgs , FactClauses , ")" | "(" , "false" , FactClauses , ")" ;
+NotFact = "(" , "not" , NestedFact , FactClauses , ")" | "(" , "not" , EqFact , FactClauses , ")" ;
+NestedFact = "(" , ValueHead , FactArgs , ")" | "(" , "false" , ")" ;
+EqFact = "(" , "eq" , FactArgs , ")" ;
+FactArg = Name | NestedFact | "(" , "not" , NestedFact , ")" ;
+FactArgs = { FactArg } ;
+FactClause = ":source" , Text | ":rule" , Name | ":using" , "(" , NestedFacts , ")" ;
+FactClauses = { FactClause } ;
+NestedFacts = { NestedFact }- ;
+@endebnf
+```
+
+### 2.5 A relation's declaration
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Relation`, `RelationClauses`.
+
+```plantuml
+@startebnf
+Relation = "(" , "relation" , DeclName , Names , RelationClauses , ")" ;
+RelationClauses = { ":why" , Text } ;
+@endebnf
+```
+
+### 2.6 A rule and an hrule
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Rule`, `Params`, `RuleClause`, `RuleClauses`.
+
+```plantuml
+@startebnf
+Rule =
+    "(" , "rule" , DeclName , Params , RuleClauses , ")"
+  | "(" , "hrule" , DeclName , Params , RuleClauses , ")" ;
+Params = "(" , Vars , ")" ;
+RuleClause = ":match" , Match | ":assert" , Assert | ":why" , Text ;
+RuleClauses = { RuleClause } ;
+@endebnf
+```
+
+### 2.7 A rule's `:match`: premises
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Match`, `Premise`, `Premises`, `Connective`, `Negated`, `Guard`, `Args`, `Arg`, `ArgHead`.
+
+```plantuml
+@startebnf
+Match = "(" , ")" | Premise ;
+Premise = "(" , PremiseHead , Args , ")" | "(" , "false" , ")" | Connective ;
+Premises = { Premise }- ;
+Connective =
+    "(" , "and" , Premises , ")"
+  | "(" , "or" , Premises , ")"
+  | "(" , "not" , Negated , ")"
+  | "(" , "absent" , Premise , ")"
+  | Guard ;
+Negated = Pattern | "(" , "eq" , Term , Term , ")" ;
+Guard = "(" , "eq" , Term , Term , ")" | "(" , "neq" , Term , Term , ")" ;
+Args = { Arg } ;
+Arg = Name | Var | "(" , ArgHead , Args , ")" | "(" , "false" , ")" | Connective ;
+ArgHead = ValueHead | Var ;
+@endebnf
+```
+
+### 2.8 A pattern and its terms
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Pattern`, `AnyHead`, `Term`, `Terms`.
+
+```plantuml
+@startebnf
+Pattern = "(" , ValueHead , Terms , ")" | "(" , Var , Terms , ")" | "(" , "false" , ")" ;
+AnyHead = Name | Var ;
+Term = Name | Var | Pattern | "(" , "not" , Pattern , ")" ;
+Terms = { Term } ;
+@endebnf
+```
+
+### 2.9 A rule's `:assert`: conclusions
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Assert`, `Conclusion`, `Conclusions`.
+
+```plantuml
+@startebnf
+Assert = "(" , ")" | Conclusion | "(" , "open" , ")" | "(" , "open" , AnyHead , ")" ;
+Conclusion =
+    "(" , ConclusionHead , Terms , ")"
+  | "(" , "and" , Conclusions , ")"
+  | "(" , "not" , Negated , ")"
+  | "(" , "not" , Var , ")"
+  | "(" , "false" , ")"
+  | Guard ;
+Conclusions = { Conclusion }- ;
+@endebnf
+```
+
+### 2.10 A query and its claim
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Query`, `QueryClause`, `QueryClausesPlus`, `Claim`, `Model`, `Models`, `ClaimFact`, `ClaimAtom`, `ClaimFacts`.
+
+```plantuml
+@startebnf
+Query = "(" , "query" , QueryClausesPlus , ")" ;
+QueryClause = ":goal" , Premise | ":goal-text" , Text | ":over" , Name | ":expect" , Claim ;
+QueryClausesPlus = { QueryClause }- ;
+Claim = Model | "(" , "or" , Models , ")" | "(" , "false" , ")" ;
+Model = "(" , "model" , ClaimFacts , ")" ;
+Models = { Model }- ;
+ClaimFact =
+    NestedFact
+  | EqFact
+  | "(" , "not" , NestedFact , ")"
+  | "(" , "not" , EqFact , ")"
+  | "(" , "absent" , ClaimAtom , ")"
+  | "(" , "neq" , FactArg , FactArg , ")" ;
+ClaimAtom = NestedFact | EqFact | "(" , "not" , NestedFact , ")" | "(" , "not" , EqFact , ")" ;
+ClaimFacts = { ClaimFact } ;
+@endebnf
+```
+
+### 2.11 A solve and its claim
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Solve`, `SolveClause`, `SolveClauses`, `Hrules`, `HruleItem`, `HruleItems`, `RegionClaim`, `RegionItem`,
+`RegionItems`, `MergedFrom`.
+
+```plantuml
+@startebnf
+Solve = "(" , "solve" , SolveClauses , ")" ;
+SolveClause =
+    ":hrules" , Hrules
+  | ":hypothesis-relations" , NameList
+  | ":no-hypothesis" , NameList
+  | ":no-search"
+  | ":expect" , RegionClaim ;
+SolveClauses = { SolveClause } ;
+Hrules = "(" , ")" | "(" , Name , HruleItems , ")" ;
+HruleItem = Name | NameListPlus ;
+HruleItems = { HruleItem } ;
+RegionClaim = "(" , "region" , RegionItems , ")" | "(" , "false" , ")" ;
+RegionItem = Model | "(" , "merged" , Model , MergedFrom , ")" | "(" , "owing" , Models , ")" ;
+RegionItems = { RegionItem } ;
+MergedFrom = Model | "(" , "or" , Models , ")" ;
+@endebnf
+```
+
+### 2.12 A config
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Config`, `ConfigClause`, `ConfigClauses`.
+
+```plantuml
+@startebnf
+Config = "(" , "config" , ConfigClauses , ")" ;
+ConfigClause = ":lattice-sanity-check" , Bool | ":record-alternative-justifications" , Bool ;
+ConfigClauses = { ConfigClause } ;
+@endebnf
+```
+
+### 2.13 A macro
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Macro`, `MacroParams`, `Template`, `Templates`, `TemplateItem`, `TemplateItems`.
+
+```plantuml
+@startebnf
+Macro =
+    "(" , "macro" , DeclName , MacroParams , Template , ")"
+  | "(" , "macro" , DeclName , MacroParams , Template , ":why" , Text , ")" ;
+MacroParams = "(" , VarsPlus , ")" ;
+Template =
+    Var
+  | "(" , "and" , Templates , ")"
+  | "(" , "or" , Templates , ")"
+  | "(" , "not" , Template , ")"
+  | "(" , "neq" , TemplateItem , TemplateItem , ")"
+  | "(" , AnyHead , TemplateItems , ")" ;
+Templates = { Template }- ;
+TemplateItem = Name | Template ;
+TemplateItems = { TemplateItem } ;
+@endebnf
+```
+
+### 2.14 An import
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Import`, `ImportClause`, `ImportClauses`.
+
+```plantuml
+@startebnf
+Import = "(" , "import" , Name , ImportClauses , ")" ;
+ImportClause = ":symbols" , NameListPlus | ":as" , DeclName ;
+ImportClauses = { ImportClause } ;
+@endebnf
+```
+
+### 2.15 A trace
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+`Trace`, `Steps`, `Step`, `StepClause`, `StepClauses`, `StepUsing`, `Derived`.
+
+```plantuml
+@startebnf
+Trace = "(" , "trace" , Steps , ")" ;
+Steps = { Step } ;
+Step = "(" , "step" , Name , StepClauses , ")" ;
+StepClause =
+    ":rule" , Name
+  | ":using" , StepUsing
+  | ":derives" , Derived
+  | ":source" , Text
+  | ":assumes" , Derived ;
+StepClauses = { StepClause } ;
+StepUsing = NameListPlus | "(" , "and" , NamesPlus , ")" ;
+Derived = NestedFact | "(" , "not" , NestedFact , ")" ;
+@endebnf
+```
+
 <!-- /generated: ein.y -->
 
 Four things the productions say that are easy to read past:
@@ -293,8 +541,8 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
 - **What a claim names.** An expectation's facts have a fact's shape at the parse (`ClaimFact`); that the relations it
   names exist, and that it names the goal's, is the loader's.
 - **How many arguments a form of a declared relation has.** The loader holds every form of a declared relation to the
-  count of types its declaration lists ([`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). The types
-  themselves are not checked.
+  count of slots its declaration names ([`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). The
+  names it gives the slots are labels, ordinary names, and no argument is checked against one.
 - **Unbound variables**: a conclusion's variable that no way of satisfying the `:match` binds
   ([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert)).
 - **What a macro's body expands to.** A `Template` takes any head at any arity, and a call takes any premise as an
