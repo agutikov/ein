@@ -1,0 +1,18 @@
+digraph rule_rat_simplify_pos_lhs_rhs {
+  rankdir=TB;
+  label="rat-simplify-pos"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-low ?k ?d)_L" [label="(rat-low ?k ?d)", shape=rectangle];
+    "(int ?a z)_L" [label="(int ?a z)", shape=rectangle];
+    "(rat-low ?k ?d)_L" -> "(int ?a z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-g ?k pos ?a ?d)_R" [label="(rat-g ?k pos ?a ?d)", shape=rectangle];
+    "?a_R" [label="?a", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "h1_gcd-call_R" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_gcd-call_R" -> "(rat-g ?k pos ?a ?d)_R" [label="1", color="#2ca02c", style=dashed];
+    "h1_gcd-call_R" -> "?a_R" [label="2", color="#2ca02c", style=dashed];
+    "h1_gcd-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
+  }
+}

@@ -1,0 +1,22 @@
+digraph rule_div_multiple_2_lhs_rhs {
+  rankdir=TB;
+  label="div-multiple-2"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(div-m1 ?k ?u ?v)_L" [label="(div-m1 ?k ?u ?v)", shape=rectangle];
+    "(n ?p ?a)_L" [label="(n ?p ?a)", shape=rectangle];
+    "(div-m1 ?k ?u ?v)_L" -> "(n ?p ?a)_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(div-m2 ?k ?u (n ?p ?a))_R" [label="(div-m2 ?k ?u (n ?p ?a))", shape=rectangle];
+    "(n ?p ?a)_R" [label="(n ?p ?a)", shape=rectangle];
+    "2_R" [label="2", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_mul-walk_R" -> "(div-m2 ?k ?u (n ?p ?a))_R" [label="1", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "(n ?p ?a)_R" [label="2", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "2_R" [label="3", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
+  }
+}

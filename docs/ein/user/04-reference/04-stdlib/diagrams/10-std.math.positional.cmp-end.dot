@@ -1,0 +1,19 @@
+digraph rule_cmp_end_lhs_rhs {
+  rankdir=TB;
+  label="cmp-end"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    "?o_L" [label="?o", shape=diamond];
+    "h1_CMP-WALK_L" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "?k_L" [label="1", color="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "z_L" [label="2", color="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "z_L" [label="3", color="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "?o_L" [label="4", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?o_R" [label="?o", shape=diamond];
+    "?k_R" -> "?o_R" [label="?ORDER-IS", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+  }
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_rat_operand_lhs_rhs Pages: 1 -->
+<svg width="247pt" height="216pt"
+ viewBox="0.00 0.00 247.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_rat_operand_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 243.07,-211.75 243.07,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="119.54" y="-190.45" font-family="Times,serif" font-size="14.00">rat&#45;operand</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 110,-174.5 110,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="59" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="118,-8 118,-174.5 227,-174.5 227,-8 118,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="172.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?k_L -->
+<g id="node1" class="node">
+<title>?k_L</title>
+<polygon fill="none" stroke="black" points="47,-141.25 15.5,-123.25 47,-105.25 78.5,-123.25 47,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- (rat ?i ?d)_L -->
+<g id="node2" class="node">
+<title>(rat ?i ?d)_L</title>
+<polygon fill="none" stroke="black" points="101.5,-52 16.5,-52 16.5,-16 101.5,-16 101.5,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="59" y="-29.32" font-family="Times,serif" font-size="14.00">(rat ?i ?d)</text>
+</g>
+<!-- ?k_L&#45;&gt;(rat ?i ?d)_L -->
+<g id="edge1" class="edge">
+<title>?k_L&#45;&gt;(rat ?i ?d)_L</title>
+<path fill="none" stroke="#2ca02c" d="M49.2,-106.25C50.84,-94.33 53.12,-77.75 55.07,-63.58"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="58.51,-64.28 56.4,-53.9 51.57,-63.33 58.51,-64.28"/>
+<text xml:space="preserve" text-anchor="middle" x="83.32" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">operand</text>
+</g>
+<!-- ?k_R -->
+<g id="node3" class="node">
+<title>?k_R</title>
+<polygon fill="none" stroke="black" points="157,-141.25 125.5,-123.25 157,-105.25 188.5,-123.25 157,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="157" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- (rat ?i ?d)_R -->
+<g id="node4" class="node">
+<title>(rat ?i ?d)_R</title>
+<polygon fill="none" stroke="black" points="211.5,-52 126.5,-52 126.5,-16 211.5,-16 211.5,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="169" y="-29.32" font-family="Times,serif" font-size="14.00">(rat ?i ?d)</text>
+</g>
+<!-- ?k_R&#45;&gt;(rat ?i ?d)_R -->
+<g id="edge2" class="edge">
+<title>?k_R&#45;&gt;(rat ?i ?d)_R</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M159.2,-106.25C160.84,-94.33 163.12,-77.75 165.07,-63.58"/>
+<polygon fill="#17becf" stroke="#17becf" points="168.51,-64.28 166.4,-53.9 161.57,-63.33 168.51,-64.28"/>
+<text xml:space="preserve" text-anchor="middle" x="201.57" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#17becf">operand&#45;is</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 470529aa59cc494d6c958cca01d47f46175c7ce8517406fbb22a1a181b363e0c -->

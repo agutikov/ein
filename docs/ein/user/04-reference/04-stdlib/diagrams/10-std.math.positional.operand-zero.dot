@@ -1,0 +1,14 @@
+digraph rule_operand_zero_lhs_rhs {
+  rankdir=TB;
+  label="operand-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    "?k_L" -> "z_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "?k_R" -> "z_R" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  }
+}

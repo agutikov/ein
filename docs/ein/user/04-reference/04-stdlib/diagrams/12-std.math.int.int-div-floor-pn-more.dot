@@ -1,0 +1,26 @@
+digraph rule_int_div_floor_pn_more_lhs_rhs {
+  rankdir=TB;
+  label="int-div-floor-pn-more"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-div-m (int-div-floor ?x ?y) pos neg ?b)_L" [label="(int-div-m (int-div-floor ?x ?y) pos neg ?b)", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
+    "(n ?r ?d)_L" [label="(n ?r ?d)", shape=rectangle];
+    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
+    "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) pos neg ?b)_L" [label="1", color="#8c564b"];
+    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
+    "h1_div-done_L" -> "(n ?r ?d)_L" [label="3", color="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d))_R" [label="(int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d))", shape=rectangle];
+    "?q_R" [label="?q", shape=diamond];
+    "(n z 1)_R" [label="(n z 1)", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
+    "h2_add-walk_R" -> "(int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d))_R" [label="1", color="#17becf", style=dashed];
+    "h2_add-walk_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
+    "h2_add-walk_R" -> "(n z 1)_R" [label="3", color="#17becf", style=dashed];
+    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
+    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+  }
+}

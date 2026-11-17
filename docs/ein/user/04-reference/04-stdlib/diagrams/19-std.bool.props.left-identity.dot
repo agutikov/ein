@@ -1,0 +1,25 @@
+digraph rule_left_identity_lhs_rhs {
+  rankdir=TB;
+  label="left-identity"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?f_L" [label="?f", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
+    "0_L" [label="0", shape=rectangle];
+    "1_L" [label="1", shape=rectangle];
+    "h1_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h1_gate2_L" -> "?e_L" [label="2", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [label="3", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [label="4", color="#7f7f7f"];
+    "h2_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h2_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h2_gate2_L" -> "?e_L" [label="2", color="#7f7f7f"];
+    "h2_gate2_L" -> "1_L" [label="3", color="#7f7f7f"];
+    "h2_gate2_L" -> "1_L" [label="4", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?f_R" [label="?f", shape=diamond];
+    "?e_R" [label="?e", shape=diamond];
+    "?f_R" -> "?e_R" [label="left-identity-of", color="#17becf", fontcolor="#17becf", style=dashed];
+  }
+}

@@ -1,0 +1,17 @@
+digraph rule_rat_d_digit_lhs_rhs {
+  rankdir=TB;
+  label="rat-d-digit"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat ?i ?x)_L" [label="(rat ?i ?x)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
+    "h1_written_L" -> "(rat ?i ?x)_L" [label="1", color="#d62728"];
+    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
+    "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat ?i ?x)_R" [label="(rat ?i ?x)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "(rat ?i ?x)_R" -> "?x_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  }
+}

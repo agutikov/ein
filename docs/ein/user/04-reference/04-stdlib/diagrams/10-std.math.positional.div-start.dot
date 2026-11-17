@@ -1,0 +1,18 @@
+digraph rule_div_start_lhs_rhs {
+  rankdir=TB;
+  label="div-start"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?DIV-SECOND ?x ?y ?u)_L" [label="(?DIV-SECOND ?x ?y ?u)", shape=rectangle];
+    "?v_L" [label="?v", shape=diamond];
+    "(?DIV-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?QUOTIENT ?x ?y)_R" [label="(?QUOTIENT ?x ?y)", shape=rectangle];
+    "?u_R" [label="?u", shape=diamond];
+    "?v_R" [label="?v", shape=diamond];
+    "h1_DIV-CALL_R" [shape=octagon, label="?DIV-CALL", color="#e377c2", fontcolor="#e377c2"];
+    "h1_DIV-CALL_R" -> "(?QUOTIENT ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
+    "h1_DIV-CALL_R" -> "?u_R" [label="2", color="#e377c2", style=dashed];
+    "h1_DIV-CALL_R" -> "?v_R" [label="3", color="#e377c2", style=dashed];
+  }
+}

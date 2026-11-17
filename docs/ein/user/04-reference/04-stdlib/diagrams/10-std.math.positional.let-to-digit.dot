@@ -1,0 +1,16 @@
+digraph rule_let_to_digit_lhs_rhs {
+  rankdir=TB;
+  label="let-to-digit"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?x_L" [label="?x", shape=diamond];
+    "?v_L" [label="?v", shape=diamond];
+    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_NZ_L" -> "?v_L" [label="1", color="#ff7f0e"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?LET ?x ?v)_R" [label="(?LET ?x ?v)", shape=rectangle];
+    "h2_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h2_MALFORMED_R" -> "(?LET ?x ?v)_R" [label="1", color="#ff7f0e", style=dashed];
+  }
+}

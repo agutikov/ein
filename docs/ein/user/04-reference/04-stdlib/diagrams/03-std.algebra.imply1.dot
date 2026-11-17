@@ -1,0 +1,14 @@
+digraph rule_imply1_lhs_rhs {
+  rankdir=TB;
+  label="imply1"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "h1_R1_L" [shape=octagon, label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_R1_L" -> "?a_L" [label="1", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "h2_R2_R" [shape=octagon, label="?R2", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_R2_R" -> "?a_R" [label="1", color="#bcbd22", style=dashed];
+  }
+}

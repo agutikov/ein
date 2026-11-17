@@ -1,0 +1,24 @@
+digraph rule_div_answer_lhs_rhs {
+  rankdir=TB;
+  label="div-answer"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?QUOTIENT ?x ?y)_L" [label="(?QUOTIENT ?x ?y)", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
+    "h1_DIV-DONE_L" [shape=octagon, label="?DIV-DONE", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_DIV-DONE_L" -> "(?QUOTIENT ?x ?y)_L" [label="1", color="#2ca02c"];
+    "h1_DIV-DONE_L" -> "?q_L" [label="2", color="#2ca02c"];
+    "h1_DIV-DONE_L" -> "?r_L" [label="3", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?r_R" [label="?r", shape=diamond];
+    "h2_QUOT-OF_R" [shape=octagon, label="?QUOT-OF", color="#9467bd", fontcolor="#9467bd"];
+    "h2_QUOT-OF_R" -> "?x_R" [label="1", color="#9467bd", style=dashed];
+    "h2_QUOT-OF_R" -> "?y_R" [label="2", color="#9467bd", style=dashed];
+    "h2_QUOT-OF_R" -> "?q_R" [label="3", color="#9467bd", style=dashed];
+    "h2_QUOT-OF_R" -> "?r_R" [label="4", color="#9467bd", style=dashed];
+  }
+}

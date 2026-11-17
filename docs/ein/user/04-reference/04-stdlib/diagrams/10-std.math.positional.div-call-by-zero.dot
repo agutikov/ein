@@ -1,0 +1,14 @@
+digraph rule_div_call_by_zero_lhs_rhs {
+  rankdir=TB;
+  label="div-call-by-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?DIV-M1 ?k ?u ?v)_L" [label="(?DIV-M1 ?k ?u ?v)", shape=rectangle];
+    "z_L" [label="z", shape=rectangle];
+    "(?DIV-M1 ?k ?u ?v)_L" -> "z_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?DIV-CALL ?k ?u ?v)_R" [label="(?DIV-CALL ?k ?u ?v)", shape=rectangle];
+    "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
+    "h1_division-by-zero_R" -> "(?DIV-CALL ?k ?u ?v)_R" [label="1", color="#e377c2", style=dashed];
+  }
+}

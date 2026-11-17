@@ -1,0 +1,4 @@
+@startebnf
+Program = { Form } ;
+Form = Relation | Rule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact ;
+@endebnf

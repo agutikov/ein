@@ -7,16 +7,19 @@
 //!   regions are written here, from the two files, read through grmtools'
 //!   public readers (`lrlex`'s `LRNonStreamingLexerDef` and `cfgrammar`'s
 //!   `YaccGrammar`), so the page cannot state a token or a production the
-//!   parser does not have. A region is the file as EBNF, in `plantuml`
-//!   blocks of `@startebnf`, one diagram a group of rules: a production's
-//!   alternatives as they stand, a left-recursive list as the repetition it
-//!   derives ([`phrase_rule`]), and a lexer rule's regular expression
-//!   translated node for node of the syntax tree `regex-syntax` reads it as
-//!   ([`regex_ebnf`]). Nothing of a diagram is typed by hand: the two
-//!   tables here name only which rule each diagram starts at, and its
-//!   title (Q-M1f.378). The test fails when the page differs, and `EIN_BLESS=1` rewrites
-//!   the two marked regions, as `ein-cli/tests/embedding.rs` does for
-//!   `docs/ein/ein.rs/04-api.md`.
+//!   parser does not have. A region is the file as EBNF, one diagram a
+//!   group of rules: a production's alternatives as they stand, a
+//!   left-recursive list as the repetition it derives ([`phrase_rule`]), and
+//!   a lexer rule's regular expression translated node for node of the
+//!   syntax tree `regex-syntax` reads it as ([`regex_ebnf`]). A diagram's
+//!   source is a file beside the page, `diagrams/01-grammar-….puml`, the
+//!   rules between `@startebnf` and `@endebnf`, and the region shows the
+//!   picture drawn from it (Q-M1f.368). Nothing of a diagram is typed by
+//!   hand: the two tables here name only which rule each diagram starts at,
+//!   its title and its file (Q-M1f.378). The test fails when a region or a
+//!   source differs, or when a source is left that no group writes, and
+//!   `EIN_BLESS=1` rewrites the two marked regions and the sources, as
+//!   `ein-cli/tests/embedding.rs` does for `docs/ein/ein.rs/04-api.md`.
 //! - **The grammar's table** ([`TABLE`]). One row for each shape the grammar
 //!   refuses at the parse, with the parse error it is refused with, banked in
 //!   `tests/golden/grammar_table.txt`. A row that names a refusal line
@@ -57,8 +60,13 @@ use regex_syntax::ast::{
 
 // ── The page ───────────────────────────────────────────────────────
 
-/// The page the blocks are written into.
+/// The page the regions are written into.
 const PAGE: &str = "docs/ein/user/04-reference/01-grammar.md";
+
+/// The folder of the page's diagrams, and what every source this file
+/// writes there is named by.
+const DIAGRAMS: &str = "docs/ein/user/04-reference/diagrams";
+const SOURCE_PREFIX: &str = "01-grammar-";
 
 /// A grammar file, as `build.rs` reads it.
 fn source(name: &str) -> String {
@@ -262,7 +270,7 @@ impl Ebnf {
     }
 }
 
-/// One diagram: the rules between `@startebnf` and `@endebnf`, fenced. No
+/// One diagram's source: the rules between `@startebnf` and `@endebnf`. No
 /// line starts with a character PlantUML reads a line by before it reads the
 /// grammar: `'`, a comment, `!`, a directive, and `@`, a diagram's end.
 fn diagram(rules: &[String]) -> String {
@@ -272,11 +280,11 @@ fn diagram(rules: &[String]) -> String {
             "PlantUML would not read this line as part of its rule: {line}"
         );
     }
-    format!(
-        "```plantuml\n@startebnf\n{}\n@endebnf\n```\n",
-        rules.join("\n")
-    )
+    format!("@startebnf\n{}\n@endebnf\n", rules.join("\n"))
 }
+
+/// A diagram's source file: its name in [`DIAGRAMS`], and its text.
+type Source = (String, String);
 
 /// The page's link to a grammar file.
 fn file_link(name: &str) -> String {
@@ -561,51 +569,71 @@ fn lexed() -> Vec<Lexed> {
     own_text
 }
 
-/// The lexical grammar's diagrams: the title of each, and the rule it starts
-/// at. A diagram holds the rules from its first up to the next diagram's, in
-/// [`lexed`]'s order, so a rule added to `ein.l` is drawn with the rule it is
-/// written after.
-const LEXICAL_GROUPS: &[(&str, &str)] = &[
-    ("punctuation", "The tokens that are their own text"),
+/// The lexical grammar's diagrams: the rule each starts at, its title, and
+/// the name of its source file after `01-grammar-lexical-`. A diagram holds
+/// the rules from its first up to the next diagram's, in [`lexed`]'s order,
+/// so a rule added to `ein.l` is drawn with the rule it is written after.
+const LEXICAL_GROUPS: &[(&str, &str, &str)] = &[
+    (
+        "punctuation",
+        "The tokens that are their own text",
+        "own-text",
+    ),
     (
         "UNDERSCORE",
         "The reserved spellings, names, variables and keywords",
+        "names-variables-keywords",
     ),
-    ("TEXT", "Strings"),
-    ("BAD", "What is no token, and what separates tokens"),
+    ("TEXT", "Strings", "strings"),
+    (
+        "BAD",
+        "What is no token, and what separates tokens",
+        "no-token-and-separators",
+    ),
 ];
 
-/// The phrase grammar's diagrams, as [`LEXICAL_GROUPS`], in `ein.y`'s order.
-const PHRASE_GROUPS: &[(&str, &str)] = &[
-    ("Program", "A program and its forms"),
-    ("Name", "Names, and the name a form is headed by"),
-    ("Var", "Variables, strings, flags and lists of names"),
-    ("Fact", "A fact, a stored negation and a fact as a value"),
-    ("Relation", "A relation's declaration"),
-    ("Rule", "A rule and an hrule"),
-    ("Match", "A rule's `:match`: premises"),
-    ("Pattern", "A pattern and its terms"),
-    ("Assert", "A rule's `:assert`: conclusions"),
-    ("Query", "A query and its claim"),
-    ("Solve", "A solve and its claim"),
-    ("Config", "A config"),
-    ("Macro", "A macro"),
-    ("Import", "An import"),
-    ("Trace", "A trace"),
+/// The phrase grammar's diagrams, as [`LEXICAL_GROUPS`], in `ein.y`'s order;
+/// a source's name follows `01-grammar-phrase-`.
+const PHRASE_GROUPS: &[(&str, &str, &str)] = &[
+    ("Program", "A program and its forms", "program"),
+    ("Name", "Names, and the name a form is headed by", "names"),
+    (
+        "Var",
+        "Variables, strings, flags and lists of names",
+        "variables-strings-flags",
+    ),
+    (
+        "Fact",
+        "A fact, a stored negation and a fact as a value",
+        "fact",
+    ),
+    ("Relation", "A relation's declaration", "relation"),
+    ("Rule", "A rule and an hrule", "rule"),
+    ("Match", "A rule's `:match`: premises", "match"),
+    ("Pattern", "A pattern and its terms", "pattern"),
+    ("Assert", "A rule's `:assert`: conclusions", "assert"),
+    ("Query", "A query and its claim", "query"),
+    ("Solve", "A solve and its claim", "solve"),
+    ("Config", "A config", "config"),
+    ("Macro", "A macro", "macro"),
+    ("Import", "An import", "import"),
+    ("Trace", "A trace", "trace"),
 ];
 
-/// `rules`, cut into the diagrams `groups` names, each under a heading
-/// `### <section>.<n> <title>` and a line that lists its rules and links the
-/// grammar file.
+/// `rules`, cut into the diagrams `groups` names: the region's text, each
+/// diagram under a heading `### <section>.<n> <title>`, a line that links the
+/// grammar file and the diagram's source and lists its rules, and the
+/// picture; and the sources, each `01-grammar-<kind>-<name>.puml`.
 fn grouped(
     section: usize,
     file: &str,
-    groups: &[(&str, &str)],
+    kind: &str,
+    groups: &[(&str, &str, &str)],
     rules: &[(String, Ebnf)],
-) -> String {
+) -> (String, Vec<Source>) {
     let starts: Vec<usize> = groups
         .iter()
-        .map(|(first, _)| {
+        .map(|(first, _, _)| {
             rules
                 .iter()
                 .position(|(n, _)| n == first)
@@ -622,7 +650,8 @@ fn grouped(
         "the diagrams follow {file}'s order"
     );
     let mut out = String::new();
-    for (g, (_, title)) in groups.iter().enumerate() {
+    let mut sources = Vec::new();
+    for (g, (_, title, name)) in groups.iter().enumerate() {
         let end = starts.get(g + 1).copied().unwrap_or(rules.len());
         let part = &rules[starts[g]..end];
         let lines: Vec<String> = part.iter().map(|(n, e)| e.rule(n)).collect();
@@ -641,30 +670,40 @@ fn grouped(
             names.push_str(&word);
             col += word.len();
         }
+        let stem = format!("{SOURCE_PREFIX}{kind}-{name}");
+        assert!(
+            name.bytes()
+                .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-'),
+            "a source's name is lower case, digits and `-`: {name}"
+        );
+        // The picture's description: the title, as plain words.
+        let alt = title.replace('`', "");
         write!(
             out,
-            "### {section}.{} {title}\n\nFrom {}:\n{names}\n\n{}\n",
+            "### {section}.{} {title}\n\nFrom {}, as EBNF in\n\
+             [`{stem}.puml`](diagrams/{stem}.puml):\n{names}\n\n\
+             ![{alt}, as a railroad diagram](diagrams/{stem}.svg)\n\n",
             g + 1,
             file_link(file),
-            diagram(&lines)
         )
         .unwrap();
+        sources.push((format!("{stem}.puml"), diagram(&lines)));
     }
-    out
+    (out, sources)
 }
 
 /// `ein.l` as the page shows it: every rule as EBNF, read through `lrlex` and
 /// [`regex_ebnf`], in [`LEXICAL_GROUPS`]' diagrams, and after them a table of
 /// what EBNF does not state: the start conditions each rule is tried in, the
 /// one it enters, and the name a parse error gives its token (`ein.y`'s
-/// `%epp`).
-fn lexical_region() -> String {
+/// `%epp`). With it, the diagrams' sources.
+fn lexical_region() -> (String, Vec<Source>) {
     let lexed = lexed();
     let rules: Vec<(String, Ebnf)> = lexed
         .iter()
         .map(|l| (l.name.clone(), l.ebnf.clone()))
         .collect();
-    let mut out = grouped(1, "ein.l", LEXICAL_GROUPS, &rules);
+    let (mut out, sources) = grouped(1, "ein.l", "lexical", LEXICAL_GROUPS, &rules);
     let code = |v: &[String]| -> String {
         v.iter()
             .map(|s| format!("`{s}`"))
@@ -702,7 +741,7 @@ fn lexical_region() -> String {
         )
         .unwrap();
     }
-    out
+    (out, sources)
 }
 
 /// A rule of `ein.y` as EBNF. A token named for its text is that terminal,
@@ -762,8 +801,9 @@ fn phrase_rule(grm: &YaccGrammar<u32>, r: cfgrammar::RIdx<u32>) -> Ebnf {
 }
 
 /// `ein.y` as the page shows it: every rule as EBNF, read through `cfgrammar`
-/// and [`phrase_rule`], in [`PHRASE_GROUPS`]' diagrams.
-fn phrase_region() -> String {
+/// and [`phrase_rule`], in [`PHRASE_GROUPS`]' diagrams. With it, the
+/// diagrams' sources.
+fn phrase_region() -> (String, Vec<Source>) {
     let grm = grammar();
     let start = grm.start_rule_idx();
     let rules: Vec<(String, Ebnf)> = grm
@@ -771,7 +811,7 @@ fn phrase_region() -> String {
         .filter(|&r| r != start && grm.implicit_rule() != Some(r))
         .map(|r| (grm.rule_name_str(r).to_string(), phrase_rule(&grm, r)))
         .collect();
-    grouped(2, "ein.y", PHRASE_GROUPS, &rules)
+    grouped(2, "ein.y", "phrase", PHRASE_GROUPS, &rules)
 }
 
 /// The page with each marked region holding `regions`' text.
@@ -792,32 +832,92 @@ fn page_with(page: &str, regions: &[(&str, String)]) -> String {
     out
 }
 
-/// **`01-grammar.md`'s diagrams are the grammar's.** Each region is generated
-/// from the file `build.rs` compiles; a page that differs fails, and
-/// `EIN_BLESS=1` writes the regions into it.
+/// The sources of the grammar's diagrams that are on disk: the names in
+/// [`DIAGRAMS`] that start with [`SOURCE_PREFIX`] and end in `.puml`.
+fn sources_on_disk() -> Vec<String> {
+    let mut names: Vec<String> = std::fs::read_dir(repo_root().join(DIAGRAMS))
+        .into_iter()
+        .flatten()
+        .map(|entry| {
+            entry
+                .expect("a directory entry")
+                .file_name()
+                .to_string_lossy()
+                .into_owned()
+        })
+        .filter(|n| n.starts_with(SOURCE_PREFIX) && n.ends_with(".puml"))
+        .collect();
+    names.sort();
+    names
+}
+
+/// **`01-grammar.md`'s diagrams are the grammar's.** Each region, and the
+/// source of each diagram it shows, is generated from the file `build.rs`
+/// compiles. A region or a source that differs fails, and so does a source
+/// of the grammar's that no group writes; `EIN_BLESS=1` writes the regions
+/// and the sources, and removes such a source with its picture. A picture is
+/// drawn from its source and is not this test's.
 #[test]
 fn the_pages_grammar_blocks_are_the_parsers() {
     let path = repo_root().join(PAGE);
+    let dir = repo_root().join(DIAGRAMS);
     let page = std::fs::read_to_string(&path).expect("the page reads");
-    let want = page_with(
-        &page,
-        &[("ein.l", lexical_region()), ("ein.y", phrase_region())],
-    );
-    if want == page {
-        return;
+    let (lexical, mut sources) = lexical_region();
+    let (phrase, phrase_sources) = phrase_region();
+    sources.extend(phrase_sources);
+    let want = page_with(&page, &[("ein.l", lexical), ("ein.y", phrase)]);
+    let bless = std::env::var_os("EIN_BLESS").is_some();
+
+    let mut wrong = Vec::new();
+    if want != page {
+        if bless {
+            std::fs::write(&path, &want).expect("the page is written");
+        } else {
+            let first = page
+                .lines()
+                .zip(want.lines())
+                .position(|(a, b)| a != b)
+                .map_or(0, |i| i + 1);
+            wrong.push(format!(
+                "{PAGE}'s regions are not ein.l and ein.y as the parser reads them (first \
+                 difference at line {first})"
+            ));
+        }
     }
-    if std::env::var_os("EIN_BLESS").is_some() {
-        std::fs::write(&path, &want).expect("the page is written");
-        return;
+    for (name, text) in &sources {
+        let file = dir.join(name);
+        if std::fs::read_to_string(&file).is_ok_and(|on_disk| &on_disk == text) {
+            continue;
+        }
+        if bless {
+            std::fs::create_dir_all(&dir).expect("the diagrams' folder");
+            std::fs::write(&file, text).expect("a source is written");
+        } else {
+            wrong.push(format!(
+                "{DIAGRAMS}/{name} is not its rules as the parser reads them"
+            ));
+        }
     }
-    let first = page
-        .lines()
-        .zip(want.lines())
-        .position(|(a, b)| a != b)
-        .map_or(0, |i| i + 1);
-    panic!(
-        "{PAGE}'s grammar diagrams are not ein.l and ein.y as the parser reads them \
-         (first difference at line {first}); EIN_BLESS=1 rewrites them"
+    for name in sources_on_disk() {
+        if sources.iter().any(|(n, _)| n == &name) {
+            continue;
+        }
+        if bless {
+            let file = dir.join(&name);
+            std::fs::remove_file(&file).expect("a stale source is removed");
+            // Its picture, where one was drawn.
+            let _ = std::fs::remove_file(file.with_extension("svg"));
+        } else {
+            wrong.push(format!(
+                "{DIAGRAMS}/{name} is the source of no diagram of the page"
+            ));
+        }
+    }
+    assert!(
+        wrong.is_empty(),
+        "the grammar's diagrams are not the grammar files':\n  {}\nEIN_BLESS=1 rewrites the \
+         regions and the sources; a picture is then drawn again from its source",
+        wrong.join("\n  ")
     );
 }
 

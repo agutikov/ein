@@ -1,0 +1,14 @@
+digraph rule_int_p_zero_lhs_rhs {
+  rankdir=TB;
+  label="int-p-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int 0 ?n)_L" [label="(int 0 ?n)", shape=rectangle];
+    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
+    "h1_written_L" -> "(int 0 ?n)_L" [label="1", color="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int 0 ?n)_R" [label="(int 0 ?n)", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "(int 0 ?n)_R" -> "0_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

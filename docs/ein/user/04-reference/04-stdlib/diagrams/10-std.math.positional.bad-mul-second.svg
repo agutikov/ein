@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_bad_mul_second_lhs_rhs Pages: 1 -->
+<svg width="409pt" height="216pt"
+ viewBox="0.00 0.00 409.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_bad_mul_second_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 405.33,-211.75 405.33,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="200.66" y="-190.45" font-family="Times,serif" font-size="14.00">bad&#45;mul&#45;second</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 224,-174.5 224,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="116" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="232,-8 232,-174.5 383,-174.5 383,-8 232,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="307.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- (?MUL&#45;SECOND ?x ?y ?u)_L -->
+<g id="node1" class="node">
+<title>(?MUL&#45;SECOND ?x ?y ?u)_L</title>
+<polygon fill="none" stroke="black" points="216.25,-141.25 15.75,-141.25 15.75,-105.25 216.25,-105.25 216.25,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="116" y="-118.58" font-family="Times,serif" font-size="14.00">(?MUL&#45;SECOND ?x ?y ?u)</text>
+</g>
+<!-- ?f_L -->
+<g id="node2" class="node">
+<title>?f_L</title>
+<polygon fill="none" stroke="black" points="97,-52 68.48,-34 97,-16 125.52,-34 97,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="97" y="-29.32" font-family="Times,serif" font-size="14.00">?f</text>
+</g>
+<!-- (?MUL&#45;SECOND ?x ?y ?u)_L&#45;&gt;?f_L -->
+<g id="edge1" class="edge">
+<title>(?MUL&#45;SECOND ?x ?y ?u)_L&#45;&gt;?f_L</title>
+<path fill="none" stroke="#17becf" d="M112.25,-105.01C109.54,-92.6 105.84,-75.61 102.77,-61.48"/>
+<polygon fill="#17becf" stroke="#17becf" points="106.23,-60.95 100.69,-51.93 99.39,-62.44 106.23,-60.95"/>
+<text xml:space="preserve" text-anchor="middle" x="167.45" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#17becf">?BAD&#45;OPERAND</text>
+</g>
+<!-- (?MUL ?x ?y)_R -->
+<g id="node3" class="node">
+<title>(?MUL ?x ?y)_R</title>
+<polygon fill="none" stroke="black" points="349.88,-141.25 240.12,-141.25 240.12,-105.25 349.88,-105.25 349.88,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="295" y="-118.58" font-family="Times,serif" font-size="14.00">(?MUL ?x ?y)</text>
+</g>
+<!-- ?f_R -->
+<g id="node4" class="node">
+<title>?f_R</title>
+<polygon fill="none" stroke="black" points="269,-52 240.48,-34 269,-16 297.52,-34 269,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="269" y="-29.32" font-family="Times,serif" font-size="14.00">?f</text>
+</g>
+<!-- (?MUL ?x ?y)_R&#45;&gt;?f_R -->
+<g id="edge2" class="edge">
+<title>(?MUL ?x ?y)_R&#45;&gt;?f_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M289.86,-105.01C286.06,-92.24 280.81,-74.63 276.53,-60.26"/>
+<polygon fill="#d62728" stroke="#d62728" points="279.99,-59.63 273.78,-51.05 273.28,-61.63 279.99,-59.63"/>
+<text xml:space="preserve" text-anchor="middle" x="342.83" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#d62728">?BAD&#45;REQUEST</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: e2aac11ab322049039607df18e3b913b92fd7071cb80f3de83e0d9d3fc72cdf2 -->

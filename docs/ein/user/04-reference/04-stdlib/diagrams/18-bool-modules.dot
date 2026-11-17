@@ -1,0 +1,8 @@
+digraph bool {
+  rankdir=BT;
+  node [shape=box, fontname="monospace"];
+  "std.bool.props" -> "std.bool.gates";
+  "std.bool.circuit" -> "std.bool.gates";
+  "std.bool.inputs" -> "std.bool.circuit";
+  "std.bool.inputs" -> "std.algebra";
+}

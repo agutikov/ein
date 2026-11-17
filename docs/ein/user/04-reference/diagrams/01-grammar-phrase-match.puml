@@ -1,0 +1,16 @@
+@startebnf
+Match = "(" , ")" | Premise ;
+Premise = "(" , PremiseHead , Args , ")" | "(" , "false" , ")" | Connective ;
+Premises = { Premise }- ;
+Connective =
+    "(" , "and" , Premises , ")"
+  | "(" , "or" , Premises , ")"
+  | "(" , "not" , Negated , ")"
+  | "(" , "absent" , Premise , ")"
+  | Guard ;
+Negated = Pattern | "(" , "eq" , Term , Term , ")" ;
+Guard = "(" , "eq" , Term , Term , ")" | "(" , "neq" , Term , Term , ")" ;
+Args = { Arg } ;
+Arg = Name | Var | "(" , ArgHead , Args , ")" | "(" , "false" , ")" | Connective ;
+ArgHead = ValueHead | Var ;
+@endebnf

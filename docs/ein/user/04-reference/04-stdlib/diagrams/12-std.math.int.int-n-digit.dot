@@ -1,0 +1,17 @@
+digraph rule_int_n_digit_lhs_rhs {
+  rankdir=TB;
+  label="int-n-digit"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int ?p ?x)_L" [label="(int ?p ?x)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
+    "h1_written_L" -> "(int ?p ?x)_L" [label="1", color="#d62728"];
+    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
+    "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int ?p ?x)_R" [label="(int ?p ?x)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "(int ?p ?x)_R" -> "?x_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

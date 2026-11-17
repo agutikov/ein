@@ -1,0 +1,14 @@
+digraph rule_rat_operand_zero_lhs_rhs {
+  rankdir=TB;
+  label="rat-operand-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-den ?k ?p ?n ?d)_L" [label="(rat-den ?k ?p ?n ?d)", shape=rectangle];
+    "eq_L" [label="eq", shape=rectangle];
+    "(rat-den ?k ?p ?n ?d)_L" -> "eq_L" [label="order-is", color="#d62728", fontcolor="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "h1_rat-zero-den_R" [shape=octagon, label="rat-zero-den", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_rat-zero-den_R" -> "?k_R" [label="1", color="#bcbd22", style=dashed];
+  }
+}

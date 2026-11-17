@@ -1,0 +1,18 @@
+digraph rule_int_div_floor_pos_lhs_rhs {
+  rankdir=TB;
+  label="int-div-floor-pos"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" [label="(int-div-r (int-div-floor ?x ?y) pos ?q)", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
+    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
+    "(int ?t z)_R" [label="(int ?t z)", shape=rectangle];
+    "h1_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
+    "h1_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
+    "h1_int-div-done_R" -> "(int ?t z)_R" [label="3", color="#2ca02c", style=dashed];
+  }
+}

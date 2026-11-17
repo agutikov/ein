@@ -1,0 +1,12 @@
+digraph rule_not_binary_is_false_lhs_rhs {
+  rankdir=TB;
+  label="not-binary-is-false"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?x_L" [label="?x", shape=diamond];
+    "?thing_L" [label="?thing", shape=diamond];
+    "?x_L" -> "?thing_L" [label="not-binary", color="#bcbd22", fontcolor="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}

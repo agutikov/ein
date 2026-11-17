@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_add_answer_lhs_rhs Pages: 1 -->
+<svg width="397pt" height="216pt"
+ viewBox="0.00 0.00 397.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_add_answer_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 393,-211.75 393,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="194.5" y="-190.45" font-family="Times,serif" font-size="14.00">add&#45;answer</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 134,-174.5 134,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="142,-8 142,-174.5 381,-174.5 381,-8 142,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="261.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- (?SUM ?x ?y)_L -->
+<g id="node1" class="node">
+<title>(?SUM ?x ?y)_L</title>
+<polygon fill="none" stroke="black" points="126.25,-141.25 15.75,-141.25 15.75,-105.25 126.25,-105.25 126.25,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-118.58" font-family="Times,serif" font-size="14.00">(?SUM ?x ?y)</text>
+</g>
+<!-- ?s_L -->
+<g id="node2" class="node">
+<title>?s_L</title>
+<polygon fill="none" stroke="black" points="71,-52 40.25,-34 71,-16 101.75,-34 71,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-29.32" font-family="Times,serif" font-size="14.00">?s</text>
+</g>
+<!-- (?SUM ?x ?y)_L&#45;&gt;?s_L -->
+<g id="edge1" class="edge">
+<title>(?SUM ?x ?y)_L&#45;&gt;?s_L</title>
+<path fill="none" stroke="#9467bd" d="M71,-105.01C71,-93.26 71,-77.41 71,-63.77"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="74.5,-64.01 71,-54.01 67.5,-64.01 74.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="97.25" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#9467bd">?DONE</text>
+</g>
+<!-- ?x_R -->
+<g id="node3" class="node">
+<title>?x_R</title>
+<polygon fill="none" stroke="black" points="181,-52 149.5,-34 181,-16 212.5,-34 181,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="181" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- ?y_R -->
+<g id="node4" class="node">
+<title>?y_R</title>
+<polygon fill="none" stroke="black" points="262,-52 230.5,-34 262,-16 293.5,-34 262,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="262" y="-29.32" font-family="Times,serif" font-size="14.00">?y</text>
+</g>
+<!-- ?s_R -->
+<g id="node5" class="node">
+<title>?s_R</title>
+<polygon fill="none" stroke="black" points="342,-52 311.25,-34 342,-16 372.75,-34 342,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="342" y="-29.32" font-family="Times,serif" font-size="14.00">?s</text>
+</g>
+<!-- h1_SUM&#45;OF_R -->
+<g id="node6" class="node">
+<title>h1_SUM&#45;OF_R</title>
+<polygon fill="none" stroke="#bcbd22" points="326.54,-115.79 326.54,-130.71 288.73,-141.25 235.27,-141.25 197.46,-130.71 197.46,-115.79 235.27,-105.25 288.73,-105.25 326.54,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="262" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">?SUM&#45;OF</text>
+</g>
+<!-- h1_SUM&#45;OF_R&#45;&gt;?x_R -->
+<g id="edge2" class="edge">
+<title>h1_SUM&#45;OF_R&#45;&gt;?x_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M246,-105.01C232.51,-90.48 213.21,-69.7 199.15,-54.55"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="201.96,-52.43 192.59,-47.48 196.83,-57.19 201.96,-52.43"/>
+<text xml:space="preserve" text-anchor="middle" x="233.26" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h1_SUM&#45;OF_R&#45;&gt;?y_R -->
+<g id="edge3" class="edge">
+<title>h1_SUM&#45;OF_R&#45;&gt;?y_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M262,-105.01C262,-93.26 262,-77.41 262,-63.77"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="265.5,-64.01 262,-54.01 258.5,-64.01 265.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="266.5" y="-73.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h1_SUM&#45;OF_R&#45;&gt;?s_R -->
+<g id="edge4" class="edge">
+<title>h1_SUM&#45;OF_R&#45;&gt;?s_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M277.81,-105.01C291.13,-90.48 310.19,-69.7 324.08,-54.55"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="326.37,-57.22 330.55,-47.49 321.21,-52.49 326.37,-57.22"/>
+<text xml:space="preserve" text-anchor="middle" x="313.67" y="-73.95" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: ab5e7d13699febbe965e82b24f806f2a2a3580bafbd5c2639b61912be153df80 -->

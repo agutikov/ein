@@ -1,0 +1,14 @@
+digraph rule_let_zero_lhs_rhs {
+  rankdir=TB;
+  label="let-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "z_L" [label="z", shape=rectangle];
+    "?v_L" [label="?v", shape=diamond];
+    "z_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?LET z ?v)_R" [label="(?LET z ?v)", shape=rectangle];
+    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_MALFORMED_R" -> "(?LET z ?v)_R" [label="1", color="#ff7f0e", style=dashed];
+  }
+}

@@ -1,0 +1,9 @@
+@startebnf
+UNDERSCORE = "_" ;
+VARUNDERSCORE = "?_" ;
+WRITEBACK =
+  "<" , ( "forced-positive" | "monotonic-unconditional" | "lookahead-dies-immediately" ) , ">" ;
+NAME = { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
+VAR = "?" , { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
+KEYWORD = ":" , { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
+@endebnf

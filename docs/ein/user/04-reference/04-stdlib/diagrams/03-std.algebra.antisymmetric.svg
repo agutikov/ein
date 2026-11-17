@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_antisymmetric_lhs_rhs Pages: 1 -->
+<svg width="252pt" height="216pt"
+ viewBox="0.00 0.00 252.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_antisymmetric_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 248,-211.75 248,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="122" y="-190.45" font-family="Times,serif" font-size="14.00">antisymmetric</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 136,-174.5 136,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="72" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="144,-97.25 144,-174.5 236,-174.5 236,-97.25 144,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="190" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?a_L -->
+<g id="node1" class="node">
+<title>?a_L</title>
+<polygon fill="none" stroke="black" points="61,-141.25 29.5,-123.25 61,-105.25 92.5,-123.25 61,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="61" y="-118.58" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?b_L -->
+<g id="node2" class="node">
+<title>?b_L</title>
+<polygon fill="none" stroke="black" points="61,-52 28.76,-34 61,-16 93.24,-34 61,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="61" y="-29.32" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?a_L&#45;&gt;?b_L -->
+<g id="edge1" class="edge">
+<title>?a_L&#45;&gt;?b_L</title>
+<path fill="none" stroke="#1f77b4" d="M50.01,-111.35C44.34,-104.93 38,-96.31 35,-87.25 32.59,-79.97 32.59,-77.28 35,-70 36.75,-64.71 39.64,-59.57 42.88,-54.92"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="45.37,-57.42 48.81,-47.4 39.87,-53.09 45.37,-57.42"/>
+<text xml:space="preserve" text-anchor="middle" x="44" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#1f77b4">?R</text>
+</g>
+<!-- ?a_L&#45;&gt;?b_L -->
+<g id="edge3" class="edge">
+<title>?a_L&#45;&gt;?b_L</title>
+<path fill="none" stroke="#555555" stroke-dasharray="1,5" d="M61,-105.01C61,-89.82 61,-67.78 61,-52.5"/>
+<text xml:space="preserve" text-anchor="middle" x="67" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#555555">≠</text>
+</g>
+<!-- ?b_L&#45;&gt;?a_L -->
+<g id="edge2" class="edge">
+<title>?b_L&#45;&gt;?a_L</title>
+<path fill="none" stroke="#1f77b4" d="M72.4,-45.83C78.29,-52.23 84.88,-60.85 88,-70 90.47,-77.26 90.47,-79.99 88,-87.25 86.15,-92.68 83.07,-97.93 79.65,-102.64"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="77.03,-100.31 73.37,-110.25 82.43,-104.76 77.03,-100.31"/>
+<text xml:space="preserve" text-anchor="middle" x="98.86" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#1f77b4">?R</text>
+</g>
+<!-- h1_false_R -->
+<g id="node3" class="node">
+<title>h1_false_R</title>
+<polygon fill="none" stroke="#2ca02c" points="227.77,-115.79 227.77,-130.71 205.65,-141.25 174.35,-141.25 152.23,-130.71 152.23,-115.79 174.35,-105.25 205.65,-105.25 227.77,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="190" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">false</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: b564c8e3adedc23dd4e2c259bc327716a47e1386f6b9e3d76397ef5a8b636fe2 -->

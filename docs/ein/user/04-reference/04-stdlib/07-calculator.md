@@ -16,29 +16,7 @@ This page is what every module of the calculator shares. The modules themselves:
 
 Each module, and the modules it imports, which an import of it brings. An arrow reads *imports*:
 
-```dot
-digraph calculator {
-  rankdir=BT;
-  node [shape=box, fontname="monospace"];
-  "std.math.decimal" -> "std.math.arith";
-  "std.math.decimal" -> "std.math.digits";
-  "std.math.positional" -> "std.math.arith";
-  "std.math.decimal-arith" -> "std.math.decimal";
-  "std.math.decimal-arith" -> "std.math.positional";
-  "std.math.binary" -> "std.math.arith";
-  "std.math.binary" -> "std.math.bits";
-  "std.math.binary-arith" -> "std.math.binary";
-  "std.math.binary-arith" -> "std.math.positional";
-  "std.math.convert" -> "std.math.decimal-arith";
-  "std.math.convert" -> "std.math.binary-arith";
-  "std.math.int" -> "std.math.decimal-arith";
-  "std.math.gcd" -> "std.math.decimal-arith";
-  "std.math.rat" -> "std.math.int";
-  "std.math.rat" -> "std.math.gcd";
-  "std.math.num9" -> "std.math.digits";
-  "std.math.num9" -> "std.math.decimal-arith";
-}
-```
+![The calculator's modules, an arrow from each to a module it imports](diagrams/07-calculator-modules.svg)
 
 The guide's [word problems](../../02-guide/08-word-problems.md) are programs written over these modules.
 

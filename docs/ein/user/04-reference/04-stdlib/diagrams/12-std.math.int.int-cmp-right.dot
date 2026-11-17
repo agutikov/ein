@@ -1,0 +1,22 @@
+digraph rule_int_cmp_right_lhs_rhs {
+  rankdir=TB;
+  label="int-cmp-right"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-cmp-l ?k ?n ?q)_L" [label="(int-cmp-l ?k ?n ?q)", shape=rectangle];
+    "?l_L" [label="?l", shape=diamond];
+    "(int-cmp-l ?k ?n ?q)_L" -> "?l_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-cmp-r ?k ?l)_R" [label="(int-cmp-r ?k ?l)", shape=rectangle];
+    "?n_R" [label="?n", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
+    "h1_add-walk_R" -> "(int-cmp-r ?k ?l)_R" [label="1", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "?q_R" [label="3", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+  }
+}

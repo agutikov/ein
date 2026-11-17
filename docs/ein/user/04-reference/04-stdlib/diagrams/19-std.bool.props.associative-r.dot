@@ -1,0 +1,54 @@
+digraph rule_associative_r_lhs_rhs {
+  rankdir=TB;
+  label="associative-r"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?f_L" [label="?f", shape=diamond];
+    "0_L" [label="0", shape=rectangle];
+    "1_L" [label="1", shape=rectangle];
+    "h1_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h1_assoc-at_L" -> "0_L" [label="2", color="#7f7f7f"];
+    "h1_assoc-at_L" -> "0_L" [label="3", color="#7f7f7f"];
+    "h1_assoc-at_L" -> "0_L" [label="4", color="#7f7f7f"];
+    "h2_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h2_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h2_assoc-at_L" -> "0_L" [label="2", color="#7f7f7f"];
+    "h2_assoc-at_L" -> "0_L" [label="3", color="#7f7f7f"];
+    "h2_assoc-at_L" -> "1_L" [label="4", color="#7f7f7f"];
+    "h3_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h3_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h3_assoc-at_L" -> "0_L" [label="2", color="#7f7f7f"];
+    "h3_assoc-at_L" -> "1_L" [label="3", color="#7f7f7f"];
+    "h3_assoc-at_L" -> "0_L" [label="4", color="#7f7f7f"];
+    "h4_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h4_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h4_assoc-at_L" -> "0_L" [label="2", color="#7f7f7f"];
+    "h4_assoc-at_L" -> "1_L" [label="3", color="#7f7f7f"];
+    "h4_assoc-at_L" -> "1_L" [label="4", color="#7f7f7f"];
+    "h5_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h5_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h5_assoc-at_L" -> "1_L" [label="2", color="#7f7f7f"];
+    "h5_assoc-at_L" -> "0_L" [label="3", color="#7f7f7f"];
+    "h5_assoc-at_L" -> "0_L" [label="4", color="#7f7f7f"];
+    "h6_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h6_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h6_assoc-at_L" -> "1_L" [label="2", color="#7f7f7f"];
+    "h6_assoc-at_L" -> "0_L" [label="3", color="#7f7f7f"];
+    "h6_assoc-at_L" -> "1_L" [label="4", color="#7f7f7f"];
+    "h7_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h7_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h7_assoc-at_L" -> "1_L" [label="2", color="#7f7f7f"];
+    "h7_assoc-at_L" -> "1_L" [label="3", color="#7f7f7f"];
+    "h7_assoc-at_L" -> "0_L" [label="4", color="#7f7f7f"];
+    "h8_assoc-at_L" [shape=octagon, label="assoc-at", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h8_assoc-at_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h8_assoc-at_L" -> "1_L" [label="2", color="#7f7f7f"];
+    "h8_assoc-at_L" -> "1_L" [label="3", color="#7f7f7f"];
+    "h8_assoc-at_L" -> "1_L" [label="4", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?f_R" [label="?f", shape=diamond];
+    "h9_associative_R" [shape=octagon, label="associative", color="#2ca02c", fontcolor="#2ca02c"];
+    "h9_associative_R" -> "?f_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}

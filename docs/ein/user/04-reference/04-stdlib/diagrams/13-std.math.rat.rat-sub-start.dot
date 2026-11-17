@@ -1,0 +1,32 @@
+digraph rule_rat_sub_start_lhs_rhs {
+  rankdir=TB;
+  label="rat-sub-start"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-second (rat-sub ?x ?y) ?p ?n ?d)_L" [label="(rat-second (rat-sub ?x ?y) ?p ?n ?d)", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
+    "?m_L" [label="?m", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
+    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_rat-operand-is_L" -> "(rat-second (rat-sub ?x ?y) ?p ?n ?d)_L" [label="1", color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "?q_L" [label="2", color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "?m_L" [label="3", color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "?e_L" [label="4", color="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-sum-num (rat-sub ?x ?y) ?d ?e)_R" [label="(rat-sum-num (rat-sub ?x ?y) ?d ?e)", shape=rectangle];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?e_R" [label="?e", shape=diamond];
+    "h2_rat-cross_R" [shape=octagon, label="rat-cross", color="#d62728", fontcolor="#d62728"];
+    "h2_rat-cross_R" -> "(rat-sum-num (rat-sub ?x ?y) ?d ?e)_R" [label="1", color="#d62728", style=dashed];
+    "h2_rat-cross_R" -> "?p_R" [label="2", color="#d62728", style=dashed];
+    "h2_rat-cross_R" -> "?n_R" [label="3", color="#d62728", style=dashed];
+    "h2_rat-cross_R" -> "?d_R" [label="4", color="#d62728", style=dashed];
+    "h2_rat-cross_R" -> "?m_R" [label="5", color="#d62728", style=dashed];
+    "h2_rat-cross_R" -> "?q_R" [label="6", color="#d62728", style=dashed];
+    "h2_rat-cross_R" -> "?e_R" [label="7", color="#d62728", style=dashed];
+  }
+}

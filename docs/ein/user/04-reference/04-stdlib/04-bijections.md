@@ -76,36 +76,7 @@ with the dual of each on the other side. Totality and its obligations are `std.a
 elimination forced, each labelled with the rule; the arrows from `wears` to `is-a` are two of the activators the
 setup derived. The stored negations are not in the drawing.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  node [fontname="Inter"];
-  // types
-  "Agent" [shape=box, label="Agent"];
-  "Colour" [shape=box, label="Colour"];
-  // instances
-  "Ann" [shape=oval, label="Ann"];
-  "Blue" [shape=oval, label="Blue"];
-  "Bob" [shape=oval, label="Bob"];
-  "Cid" [shape=oval, label="Cid"];
-  "Green" [shape=oval, label="Green"];
-  "Red" [shape=oval, label="Red"];
-  // facts
-  "Ann" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
-  "Bob" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
-  "Cid" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
-  "Red" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
-  "Green" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
-  "Blue" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
-  "wears" -> "wears" [label="bijective", color="#17becf", fontcolor="#17becf", style=solid];
-  "is-a" -> "is-a" [label="bijection-hierarchy", color="#8c564b", fontcolor="#8c564b", style=solid];
-  "Bob" -> "Green" [label="wears", color="#8c564b", fontcolor="#8c564b", style=solid];
-  "wears" -> "is-a" [label="std.algebra.total-owed by std.bijection.bijective-setup", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "wears" -> "is-a" [label="std.algebra.surjective-owed by std.bijection.bijective-setup", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  "Ann" -> "Blue" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  "Cid" -> "Red" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
-}
-```
+![The state after elimination: the two wears facts it forced, dashed](diagrams/04-elimination-state.svg)
 
 Bob's green excludes green for Ann; red was excluded for her by the program; blue is the one colour left, and it is
 forced. Then red is the one colour left for Cid. Nothing is guessed.
@@ -399,32 +370,7 @@ obligations, and this module's two eliminations and two negative completions.
   :why    "(bijective {?R}) + hierarchy {?isa} ⟹ totality / obligations / elimination / negative-completion activators.")
 ```
 
-```dot
-digraph rule_bijective_setup_lhs_rhs {
-  rankdir=TB;
-  label="bijective-setup"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?isa_L" [label="?isa", shape=diamond];
-    "h1_bijective_L" [shape=octagon, label="bijective", color="#17becf", fontcolor="#17becf"];
-    "h1_bijective_L" -> "?R_L" [label="1", color="#17becf"];
-    "h2_bijection-hierarchy_L" [shape=octagon, label="bijection-hierarchy", color="#8c564b", fontcolor="#8c564b"];
-    "h2_bijection-hierarchy_L" -> "?isa_L" [label="1", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?R_R" [label="?R", shape=diamond];
-    "?isa_R" [label="?isa", shape=diamond];
-    "?R_R" -> "?isa_R" [label="total", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-    "?R_R" -> "?isa_R" [label="surjective", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "?R_R" -> "?isa_R" [label="total-owed", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "?R_R" -> "?isa_R" [label="surjective-owed", color="#17becf", fontcolor="#17becf", style=dashed];
-    "?R_R" -> "?isa_R" [label="domain-elimination", color="#17becf", fontcolor="#17becf", style=dashed];
-    "?R_R" -> "?isa_R" [label="range-elimination", color="#d62728", fontcolor="#d62728", style=dashed];
-    "?R_R" -> "?isa_R" [label="functional-negative", color="#8c564b", fontcolor="#8c564b", style=dashed];
-    "?R_R" -> "?isa_R" [label="injective-negative", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule bijective-setup of std.bijection, as the engine draws it](diagrams/04-std.bijection.bijective-setup.svg)
 <!-- /rule -->
 
 #### `typecheck-setup`
@@ -439,40 +385,7 @@ Reads the two labels off the declaration and activates the argument check of eac
   :why    "(bijective {?R}) typed {?A}×{?B} + hierarchy {?isa} ⟹ typecheck activators.")
 ```
 
-```dot
-digraph rule_typecheck_setup_lhs_rhs {
-  rankdir=TB;
-  label="typecheck-setup"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?isa_L" [label="?isa", shape=diamond];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "h2_bijective_L" [shape=octagon, label="bijective", color="#17becf", fontcolor="#17becf"];
-    "h2_bijective_L" -> "?R_L" [label="1", color="#17becf"];
-    "h3_typecheck-hierarchy_L" [shape=octagon, label="typecheck-hierarchy", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h3_typecheck-hierarchy_L" -> "?isa_L" [label="1", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?R_R" [label="?R", shape=diamond];
-    "?isa_R" [label="?isa", shape=diamond];
-    "?A_R" [label="?A", shape=diamond];
-    "?B_R" [label="?B", shape=diamond];
-    "h4_typecheck-arg-0_R" [shape=octagon, label="typecheck-arg-0", color="#17becf", fontcolor="#17becf"];
-    "h4_typecheck-arg-0_R" -> "?R_R" [label="1", color="#17becf", style=dashed];
-    "h4_typecheck-arg-0_R" -> "?isa_R" [label="2", color="#17becf", style=dashed];
-    "h4_typecheck-arg-0_R" -> "?A_R" [label="3", color="#17becf", style=dashed];
-    "h5_typecheck-arg-1_R" [shape=octagon, label="typecheck-arg-1", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h5_typecheck-arg-1_R" -> "?R_R" [label="1", color="#7f7f7f", style=dashed];
-    "h5_typecheck-arg-1_R" -> "?isa_R" [label="2", color="#7f7f7f", style=dashed];
-    "h5_typecheck-arg-1_R" -> "?B_R" [label="3", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule typecheck-setup of std.bijection, as the engine draws it](diagrams/04-std.bijection.typecheck-setup.svg)
 <!-- /rule -->
 
 #### `functional-negative`
@@ -490,32 +403,7 @@ A positive excludes every other member of the second label for the same first ar
   :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other})).")
 ```
 
-```dot
-digraph rule_functional_negative_lhs_rhs {
-  rankdir=TB;
-  label="functional-negative"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?b_other_L" [label="?b_other", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?b_other_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?b_other_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_other_R" [label="?b_other", shape=diamond];
-    "?a_R" -> "?b_other_R" [label="¬?R", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule functional-negative of std.bijection, as the engine draws it](diagrams/04-std.bijection.functional-negative.svg)
 <!-- /rule -->
 
 #### `injective-negative`
@@ -533,32 +421,7 @@ A positive excludes every other member of the first label for the same second ar
   :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b})).")
 ```
 
-```dot
-digraph rule_injective_negative_lhs_rhs {
-  rankdir=TB;
-  label="injective-negative"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?a_other_L" [label="?a_other", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?a_other_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?a_other_L" -> "?a_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_other_R" [label="?a_other", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_other_R" -> "?b_R" [label="¬?R", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule injective-negative of std.bijection, as the engine draws it](diagrams/04-std.bijection.injective-negative.svg)
 <!-- /rule -->
 
 #### `domain-elimination`
@@ -579,41 +442,7 @@ Forces the one partner left: the `forall` says that every other member of the se
   :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b}).")
 ```
 
-```dot
-digraph rule_domain_elimination_lhs_rhs {
-  rankdir=TB;
-  label="domain-elimination"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "h1_functional_L" [shape=octagon, label="functional", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_functional_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h2_total_L" [shape=octagon, label="total", color="#1f77b4", fontcolor="#1f77b4"];
-    "h2_total_L" -> "?R_L" [label="1", color="#1f77b4"];
-    "h3_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h3_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h3_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h3_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?a_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?b_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?b_other_L" [label="?b_other", shape=diamond];
-      "?b_other_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?b_other_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-      "?a_L" -> "?b_other_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule domain-elimination of std.bijection, as the engine draws it](diagrams/04-std.bijection.domain-elimination.svg)
 <!-- /rule -->
 
 #### `range-elimination`
@@ -634,41 +463,7 @@ The dual, on the first label.
   :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b}).")
 ```
 
-```dot
-digraph rule_range_elimination_lhs_rhs {
-  rankdir=TB;
-  label="range-elimination"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "h1_injective_L" [shape=octagon, label="injective", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_injective_L" -> "?R_L" [label="1", color="#ff7f0e"];
-    "h2_surjective_L" [shape=octagon, label="surjective", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_surjective_L" -> "?R_L" [label="1", color="#2ca02c"];
-    "h3_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h3_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h3_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h3_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?b_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?a_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?a_other_L" [label="?a_other", shape=diamond];
-      "?a_other_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?a_other_L" -> "?a_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-      "?a_other_L" -> "?b_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule range-elimination of std.bijection, as the engine draws it](diagrams/04-std.bijection.range-elimination.svg)
 <!-- /rule -->
 
 #### `typecheck-arg-0`
@@ -684,25 +479,7 @@ membership.
   :why    "{?R} arg 0 expects {?Dom} (via {?isa}); {?a} is not a {?Dom}.")
 ```
 
-```dot
-digraph rule_typecheck_arg_0_lhs_rhs {
-  rankdir=TB;
-  label="typecheck-arg-0"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?Dom_L" [label="?Dom", shape=diamond];
-      "?a_L" -> "?Dom_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule typecheck-arg-0 of std.bijection, as the engine draws it](diagrams/04-std.bijection.typecheck-arg-0.svg)
 <!-- /rule -->
 
 #### `typecheck-arg-1`
@@ -717,25 +494,7 @@ The same for the second argument.
   :why    "{?R} arg 1 expects {?Ran} (via {?isa}); {?b} is not a {?Ran}.")
 ```
 
-```dot
-digraph rule_typecheck_arg_1_lhs_rhs {
-  rankdir=TB;
-  label="typecheck-arg-1"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?Ran_L" [label="?Ran", shape=diamond];
-      "?b_L" -> "?Ran_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule typecheck-arg-1 of std.bijection, as the engine draws it](diagrams/04-std.bijection.typecheck-arg-1.svg)
 <!-- /rule -->
 
 ### `std.elim`
@@ -756,25 +515,7 @@ Refutes a fact whose first argument is no member of `?Dom`.
   :why    "{?R} arg 0 expects {?Dom} (via {?isa}); {?a} is not a {?Dom}")
 ```
 
-```dot
-digraph rule_typecheck_arg_0_lhs_rhs {
-  rankdir=TB;
-  label="typecheck-arg-0"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?Dom_L" [label="?Dom", shape=diamond];
-      "?a_L" -> "?Dom_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule typecheck-arg-0 of std.elim, as the engine draws it](diagrams/04-std.elim.typecheck-arg-0.svg)
 <!-- /rule -->
 
 #### `typecheck-arg-1`
@@ -790,25 +531,7 @@ Refutes a fact whose second argument is no member of `?Ran`.
   :why    "{?R} arg 1 expects {?Ran} (via {?isa}); {?b} is not a {?Ran}")
 ```
 
-```dot
-digraph rule_typecheck_arg_1_lhs_rhs {
-  rankdir=TB;
-  label="typecheck-arg-1"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?Ran_L" [label="?Ran", shape=diamond];
-      "?b_L" -> "?Ran_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule typecheck-arg-1 of std.elim, as the engine draws it](diagrams/04-std.elim.typecheck-arg-1.svg)
 <!-- /rule -->
 
 #### `domain-elimination`
@@ -829,40 +552,7 @@ Forces the one value left for an object.
   :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
 ```
 
-```dot
-digraph rule_domain_elimination_lhs_rhs {
-  rankdir=TB;
-  label="domain-elimination"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "?OT_L" [label="?OT", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "?VT_L" [label="?VT", shape=diamond];
-    "h1_functional_L" [shape=octagon, label="functional", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_functional_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_functional_L" -> "0_L" [label="2", color="#bcbd22"];
-    "h1_functional_L" -> "1_L" [label="3", color="#bcbd22"];
-    "?R_L" -> "0_L" [label="total", color="#1f77b4", fontcolor="#1f77b4"];
-    "?a_L" -> "?OT_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?v_L" -> "?VT_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?v_other_L" [label="?v_other", shape=diamond];
-      "?v_other_L" -> "?VT_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?v_other_L" -> "?v_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-      "?a_L" -> "?v_other_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "?a_R" -> "?v_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule domain-elimination of std.elim, as the engine draws it](diagrams/04-std.elim.domain-elimination.svg)
 <!-- /rule -->
 
 #### `no-room-left`
@@ -882,33 +572,5 @@ Refutes an object every value of which is excluded.
   :why    "{?a} has every {?VT} excluded — no value left")
 ```
 
-```dot
-digraph rule_no_room_left_lhs_rhs {
-  rankdir=TB;
-  label="no-room-left"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "?OT_L" [label="?OT", shape=diamond];
-    "h1_functional_L" [shape=octagon, label="functional", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_functional_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_functional_L" -> "0_L" [label="2", color="#bcbd22"];
-    "h1_functional_L" -> "1_L" [label="3", color="#bcbd22"];
-    "?R_L" -> "0_L" [label="total", color="#1f77b4", fontcolor="#1f77b4"];
-    "?a_L" -> "?OT_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?v_L" [label="?v", shape=diamond];
-      "?VT_L" [label="?VT", shape=diamond];
-      "?v_L" -> "?VT_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?a_L" -> "?v_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "h2_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule no-room-left of std.elim, as the engine draws it](diagrams/04-std.elim.no-room-left.svg)
 <!-- /rule -->

@@ -1,0 +1,13 @@
+digraph rule_self_dual_r_lhs_rhs {
+  rankdir=TB;
+  label="self-dual-r"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?f_L" [label="?f", shape=diamond];
+    "?f_L" -> "?f_L" [label="dual-of", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?f_R" [label="?f", shape=diamond];
+    "h1_self-dual_R" [shape=octagon, label="self-dual", color="#9467bd", fontcolor="#9467bd"];
+    "h1_self-dual_R" -> "?f_R" [label="1", color="#9467bd", style=dashed];
+  }
+}

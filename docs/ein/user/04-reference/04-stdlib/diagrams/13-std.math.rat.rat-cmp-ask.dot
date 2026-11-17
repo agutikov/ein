@@ -1,0 +1,14 @@
+digraph rule_rat_cmp_ask_lhs_rhs {
+  rankdir=TB;
+  label="rat-cmp-ask"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "?x_L" -> "?y_L" [label="rat-cmp", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-of (rat-first (rat-cmp ?x ?y) ?y))_R" [label="(rat-of (rat-first (rat-cmp ?x ?y) ?y))", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "(rat-of (rat-first (rat-cmp ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

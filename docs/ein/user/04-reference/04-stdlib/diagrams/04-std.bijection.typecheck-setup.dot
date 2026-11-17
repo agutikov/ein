@@ -1,0 +1,32 @@
+digraph rule_typecheck_setup_lhs_rhs {
+  rankdir=TB;
+  label="typecheck-setup"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "?isa_L" [label="?isa", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
+    "h2_bijective_L" [shape=octagon, label="bijective", color="#17becf", fontcolor="#17becf"];
+    "h2_bijective_L" -> "?R_L" [label="1", color="#17becf"];
+    "h3_typecheck-hierarchy_L" [shape=octagon, label="typecheck-hierarchy", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h3_typecheck-hierarchy_L" -> "?isa_L" [label="1", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "?isa_R" [label="?isa", shape=diamond];
+    "?A_R" [label="?A", shape=diamond];
+    "?B_R" [label="?B", shape=diamond];
+    "h4_typecheck-arg-0_R" [shape=octagon, label="typecheck-arg-0", color="#17becf", fontcolor="#17becf"];
+    "h4_typecheck-arg-0_R" -> "?R_R" [label="1", color="#17becf", style=dashed];
+    "h4_typecheck-arg-0_R" -> "?isa_R" [label="2", color="#17becf", style=dashed];
+    "h4_typecheck-arg-0_R" -> "?A_R" [label="3", color="#17becf", style=dashed];
+    "h5_typecheck-arg-1_R" [shape=octagon, label="typecheck-arg-1", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h5_typecheck-arg-1_R" -> "?R_R" [label="1", color="#7f7f7f", style=dashed];
+    "h5_typecheck-arg-1_R" -> "?isa_R" [label="2", color="#7f7f7f", style=dashed];
+    "h5_typecheck-arg-1_R" -> "?B_R" [label="3", color="#7f7f7f", style=dashed];
+  }
+}

@@ -1,0 +1,22 @@
+digraph rule_to_bin_halve_lhs_rhs {
+  rankdir=TB;
+  label="to-bin-halve"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?x_L" [label="?x", shape=diamond];
+    "(n ?p ?a)_L" [label="(n ?p ?a)", shape=rectangle];
+    "?acc_L" [label="?acc", shape=diamond];
+    "h1_to-bin-go_L" [shape=octagon, label="to-bin-go", color="#17becf", fontcolor="#17becf"];
+    "h1_to-bin-go_L" -> "?x_L" [label="1", color="#17becf"];
+    "h1_to-bin-go_L" -> "(n ?p ?a)_L" [label="2", color="#17becf"];
+    "h1_to-bin-go_L" -> "?acc_L" [label="3", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(halving ?x ?acc)_R" [label="(halving ?x ?acc)", shape=rectangle];
+    "(n ?p ?a)_R" [label="(n ?p ?a)", shape=rectangle];
+    "(n z 2)_R" [label="(n z 2)", shape=rectangle];
+    "h2_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_div-call_R" -> "(halving ?x ?acc)_R" [label="1", color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "(n ?p ?a)_R" [label="2", color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "(n z 2)_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

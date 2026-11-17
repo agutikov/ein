@@ -21,7 +21,7 @@ binary the tests ran.
 | `gen_send_written.py` | `examples/beyond_arith/send_more_money_written.ein` |
 | `gen_random_programs.py` | `ein-infer/tests/golden/random_programs.txt`, the detector's random programs |
 | `read_out_examples.py` | `docs/ein/user/04-reference/09-read-out-examples.md`, from the binary (`--bin`) |
-| `gen_stdlib_rule_pages.py` | the rules' regions of the pages under `docs/ein/user/04-reference/04-stdlib/`, each rule as its module writes it and as the binary draws it (`--bin`) |
+| `gen_stdlib_rule_pages.py` | the rules' regions of the pages under `docs/ein/user/04-reference/04-stdlib/`, each rule as its module writes it, and the sources of the rules' drawings under that folder's `diagrams/`, each as the binary draws its rule (`--bin`) |
 
 A generator whose `--check` fails prints what differs; the fix is to run it
 without `--check` (and, for a stdlib module, `stdlib_manifest.py --write`).

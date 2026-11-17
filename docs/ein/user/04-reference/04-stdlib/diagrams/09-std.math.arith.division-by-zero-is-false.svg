@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_division_by_zero_is_false_lhs_rhs Pages: 1 -->
+<svg width="336pt" height="216pt"
+ viewBox="0.00 0.00 336.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_division_by_zero_is_false_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 332,-211.75 332,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="164" y="-190.45" font-family="Times,serif" font-size="14.00">division&#45;by&#45;zero&#45;is&#45;false</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 220,-174.5 220,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="114" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="228,-97.25 228,-174.5 320,-174.5 320,-97.25 228,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="274" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?request_L -->
+<g id="node1" class="node">
+<title>?request_L</title>
+<polygon fill="none" stroke="black" points="114,-52 36.37,-34 114,-16 191.63,-34 114,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="114" y="-29.32" font-family="Times,serif" font-size="14.00">?request</text>
+</g>
+<!-- h1_division&#45;by&#45;zero_L -->
+<g id="node2" class="node">
+<title>h1_division&#45;by&#45;zero_L</title>
+<polygon fill="none" stroke="#e377c2" points="211.57,-115.79 211.57,-130.71 154.41,-141.25 73.59,-141.25 16.43,-130.71 16.43,-115.79 73.59,-105.25 154.41,-105.25 211.57,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="114" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#e377c2">division&#45;by&#45;zero</text>
+</g>
+<!-- h1_division&#45;by&#45;zero_L&#45;&gt;?request_L -->
+<g id="edge1" class="edge">
+<title>h1_division&#45;by&#45;zero_L&#45;&gt;?request_L</title>
+<path fill="none" stroke="#e377c2" d="M114,-105.01C114,-93.26 114,-77.41 114,-63.77"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="117.5,-64.01 114,-54.01 110.5,-64.01 117.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="118.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h2_false_R -->
+<g id="node3" class="node">
+<title>h2_false_R</title>
+<polygon fill="none" stroke="#2ca02c" points="311.77,-115.79 311.77,-130.71 289.65,-141.25 258.35,-141.25 236.23,-130.71 236.23,-115.79 258.35,-105.25 289.65,-105.25 311.77,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="274" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">false</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: cf0df8117db6034d5b06a18bc5e16a5a3a5b77159d7c898998f47135c612606c -->

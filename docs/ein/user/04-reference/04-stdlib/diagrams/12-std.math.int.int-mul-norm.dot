@@ -1,0 +1,18 @@
+digraph rule_int_mul_norm_lhs_rhs {
+  rankdir=TB;
+  label="int-mul-norm"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-mul-neg ?k ?s)_L" [label="(int-mul-neg ?k ?s)", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "(int-mul-neg ?k ?s)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?s_R" [label="?s", shape=diamond];
+    "?t_R" [label="?t", shape=diamond];
+    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
+    "h1_int-norm_R" -> "?k_R" [label="1", color="#e377c2", style=dashed];
+    "h1_int-norm_R" -> "?s_R" [label="2", color="#e377c2", style=dashed];
+    "h1_int-norm_R" -> "?t_R" [label="3", color="#e377c2", style=dashed];
+  }
+}

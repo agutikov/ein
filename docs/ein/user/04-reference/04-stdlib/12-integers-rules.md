@@ -24,22 +24,7 @@ looks up.
   :why    "an integer stands for itself")
 ```
 
-```dot
-digraph rule_int_operand_lhs_rhs {
-  rankdir=TB;
-  label="int-operand"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(int ?p ?n)_L" [label="(int ?p ?n)", shape=rectangle];
-    "?k_L" -> "(int ?p ?n)_L" [label="operand", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(int ?p ?n)_R" [label="(int ?p ?n)", shape=rectangle];
-    "?k_R" -> "(int ?p ?n)_R" [label="operand-is", color="#17becf", fontcolor="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-operand of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-operand.svg)
 <!-- /rule -->
 
 #### `int-operand-second`
@@ -52,22 +37,7 @@ digraph rule_int_operand_lhs_rhs {
   :why    "the first operand is {?p} less {?n}: now the integer {?y} stands for")
 ```
 
-```dot
-digraph rule_int_operand_second_lhs_rhs {
-  rankdir=TB;
-  label="int-operand-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-first ?k ?y)_L" [label="(int-first ?k ?y)", shape=rectangle];
-    "(int ?p ?n)_L" [label="(int ?p ?n)", shape=rectangle];
-    "(int-first ?k ?y)_L" -> "(int ?p ?n)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-second ?k ?p ?n)_R" [label="(int-second ?k ?p ?n)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(int-second ?k ?p ?n)_R" -> "?y_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-operand-second of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-operand-second.svg)
 <!-- /rule -->
 
 ## The normal form
@@ -90,41 +60,7 @@ $$
   :why    "take {?n} from {?p}, and {?p} from {?n}: one of the two has an answer")
 ```
 
-```dot
-digraph rule_int_norm_walks_lhs_rhs {
-  rankdir=TB;
-  label="int-norm-walks"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "h1_int-norm_L" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_L" -> "?k_L" [label="1", color="#e377c2"];
-    "h1_int-norm_L" -> "?p_L" [label="2", color="#e377c2"];
-    "h1_int-norm_L" -> "?n_L" [label="3", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-plus ?k)_R" [label="(int-plus ?k)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "(int-minus ?k)_R" [label="(int-minus ?k)", shape=rectangle];
-    "h2_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h2_sub-walk_R" -> "(int-plus ?k)_R" [label="1", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "?p_R" [label="2", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "?n_R" [label="3", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(int-minus ?k)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?n_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?p_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule int-norm-walks of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-norm-walks.svg)
 <!-- /rule -->
 
 #### `int-norm-plus`
@@ -137,22 +73,7 @@ digraph rule_int_norm_walks_lhs_rhs {
   :why    "the positive part is {?d}, and the negative part is zero")
 ```
 
-```dot
-digraph rule_int_norm_plus_lhs_rhs {
-  rankdir=TB;
-  label="int-norm-plus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-plus ?k)_L" [label="(int-plus ?k)", shape=rectangle];
-    "?d_L" [label="?d", shape=diamond];
-    "(int-plus ?k)_L" -> "?d_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(int ?d z)_R" [label="(int ?d z)", shape=rectangle];
-    "?k_R" -> "(int ?d z)_R" [label="int-done", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule int-norm-plus of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-norm-plus.svg)
 <!-- /rule -->
 
 #### `int-norm-minus`
@@ -165,22 +86,7 @@ digraph rule_int_norm_plus_lhs_rhs {
   :why    "the negative part is {?r}, and the positive part is zero")
 ```
 
-```dot
-digraph rule_int_norm_minus_lhs_rhs {
-  rankdir=TB;
-  label="int-norm-minus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-minus ?k)_L" [label="(int-minus ?k)", shape=rectangle];
-    "?r_L" [label="?r", shape=diamond];
-    "(int-minus ?k)_L" -> "?r_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(int z ?r)_R" [label="(int z ?r)", shape=rectangle];
-    "?k_R" -> "(int z ?r)_R" [label="int-done", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule int-norm-minus of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-norm-minus.svg)
 <!-- /rule -->
 
 ## Simplification, and negation
@@ -197,22 +103,7 @@ Simplifying is the normal form; negating is the normal form with the parts excha
   :why    "{?x} in normal form is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_simplify_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-simplify-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "h1_int-simplify_L" [shape=octagon, label="int-simplify", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-simplify_L" -> "?x_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-only (int-simplify ?x))_R" [label="(int-only (int-simplify ?x))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-only (int-simplify ?x))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-simplify-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-simplify-ask.svg)
 <!-- /rule -->
 
 #### `int-simplify-start`
@@ -225,26 +116,7 @@ digraph rule_int_simplify_ask_lhs_rhs {
   :why    "simplify {?p} less {?n}")
 ```
 
-```dot
-digraph rule_int_simplify_start_lhs_rhs {
-  rankdir=TB;
-  label="int-simplify-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-only (int-simplify ?x))_L" [label="(int-only (int-simplify ?x))", shape=rectangle];
-    "(int ?p ?n)_L" [label="(int ?p ?n)", shape=rectangle];
-    "(int-only (int-simplify ?x))_L" -> "(int ?p ?n)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-simplify ?x)_R" [label="(int-simplify ?x)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_R" -> "(int-simplify ?x)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-simplify-start of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-simplify-start.svg)
 <!-- /rule -->
 
 #### `int-simplify-answer`
@@ -257,22 +129,7 @@ digraph rule_int_simplify_start_lhs_rhs {
   :why    "{?x} is {?s}")
 ```
 
-```dot
-digraph rule_int_simplify_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-simplify-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-simplify ?x)_L" [label="(int-simplify ?x)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(int-simplify ?x)_L" -> "?s_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?x_R" -> "?s_R" [label="int-simple-of", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  }
-}
-```
+![The rule int-simplify-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-simplify-answer.svg)
 <!-- /rule -->
 
 #### `int-neg-ask`
@@ -285,22 +142,7 @@ digraph rule_int_simplify_answer_lhs_rhs {
   :why    "{?x} negated is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_neg_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-neg-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "h1_int-neg_L" [shape=octagon, label="int-neg", color="#9467bd", fontcolor="#9467bd"];
-    "h1_int-neg_L" -> "?x_L" [label="1", color="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-only (int-neg ?x))_R" [label="(int-only (int-neg ?x))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-only (int-neg ?x))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-neg-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-neg-ask.svg)
 <!-- /rule -->
 
 #### `int-neg-start`
@@ -313,26 +155,7 @@ digraph rule_int_neg_ask_lhs_rhs {
   :why    "the parts change places: simplify {?n} less {?p}")
 ```
 
-```dot
-digraph rule_int_neg_start_lhs_rhs {
-  rankdir=TB;
-  label="int-neg-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-only (int-neg ?x))_L" [label="(int-only (int-neg ?x))", shape=rectangle];
-    "(int ?p ?n)_L" [label="(int ?p ?n)", shape=rectangle];
-    "(int-only (int-neg ?x))_L" -> "(int ?p ?n)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-neg ?x)_R" [label="(int-neg ?x)", shape=rectangle];
-    "?n_R" [label="?n", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_R" -> "(int-neg ?x)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?n_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?p_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-neg-start of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-neg-start.svg)
 <!-- /rule -->
 
 #### `int-neg-answer`
@@ -345,22 +168,7 @@ digraph rule_int_neg_start_lhs_rhs {
   :why    "{?x} negated is {?s}")
 ```
 
-```dot
-digraph rule_int_neg_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-neg-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-neg ?x)_L" [label="(int-neg ?x)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(int-neg ?x)_L" -> "?s_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?x_R" -> "?s_R" [label="int-neg-of", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule int-neg-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-neg-answer.svg)
 <!-- /rule -->
 
 ## Addition, and subtraction
@@ -382,38 +190,7 @@ addition of the second operand with its parts exchanged.
   :why    "first the positive parts: {?p} + {?q}")
 ```
 
-```dot
-digraph rule_int_add_plus_lhs_rhs {
-  rankdir=TB;
-  label="int-add-plus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "h1_int-add-call_L" [shape=octagon, label="int-add-call", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-add-call_L" -> "?k_L" [label="1", color="#e377c2"];
-    "h1_int-add-call_L" -> "?p_L" [label="2", color="#e377c2"];
-    "h1_int-add-call_L" -> "?n_L" [label="3", color="#e377c2"];
-    "h1_int-add-call_L" -> "?q_L" [label="4", color="#e377c2"];
-    "h1_int-add-call_L" -> "?m_L" [label="5", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-add-p ?k ?n ?m)_R" [label="(int-add-p ?k ?n ?m)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h2_add-walk_R" -> "(int-add-p ?k ?n ?m)_R" [label="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?p_R" [label="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?q_R" [label="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-add-plus of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-add-plus.svg)
 <!-- /rule -->
 
 #### `int-add-minus`
@@ -426,30 +203,7 @@ digraph rule_int_add_plus_lhs_rhs {
   :why    "the positive parts make {?s}: now the negative parts, {?n} + {?m}")
 ```
 
-```dot
-digraph rule_int_add_minus_lhs_rhs {
-  rankdir=TB;
-  label="int-add-minus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-add-p ?k ?n ?m)_L" [label="(int-add-p ?k ?n ?m)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(int-add-p ?k ?n ?m)_L" -> "?s_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-add-n ?k ?s)_R" [label="(int-add-n ?k ?s)", shape=rectangle];
-    "?n_R" [label="?n", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(int-add-n ?k ?s)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?m_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-add-minus of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-add-minus.svg)
 <!-- /rule -->
 
 #### `int-add-norm`
@@ -462,26 +216,7 @@ digraph rule_int_add_minus_lhs_rhs {
   :why    "the negative parts make {?t}: simplify {?s} less {?t}")
 ```
 
-```dot
-digraph rule_int_add_norm_lhs_rhs {
-  rankdir=TB;
-  label="int-add-norm"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-add-n ?k ?s)_L" [label="(int-add-n ?k ?s)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(int-add-n ?k ?s)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_R" -> "?k_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?s_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?t_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-add-norm of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-add-norm.svg)
 <!-- /rule -->
 
 #### `int-add-ask`
@@ -494,22 +229,7 @@ digraph rule_int_add_norm_lhs_rhs {
   :why    "{?x} + {?y} is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_add_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-add-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-add", color="#ff7f0e", fontcolor="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-first (int-add ?x ?y) ?y)_R" [label="(int-first (int-add ?x ?y) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-first (int-add ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-add-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-add-ask.svg)
 <!-- /rule -->
 
 #### `int-add-start`
@@ -522,30 +242,7 @@ digraph rule_int_add_ask_lhs_rhs {
   :why    "add {?p} less {?n} and {?q} less {?m}")
 ```
 
-```dot
-digraph rule_int_add_start_lhs_rhs {
-  rankdir=TB;
-  label="int-add-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-second (int-add ?x ?y) ?p ?n)_L" [label="(int-second (int-add ?x ?y) ?p ?n)", shape=rectangle];
-    "(int ?q ?m)_L" [label="(int ?q ?m)", shape=rectangle];
-    "(int-second (int-add ?x ?y) ?p ?n)_L" -> "(int ?q ?m)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-add ?x ?y)_R" [label="(int-add ?x ?y)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h1_int-add-call_R" [shape=octagon, label="int-add-call", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-add-call_R" -> "(int-add ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?q_R" [label="4", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?m_R" [label="5", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-add-start of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-add-start.svg)
 <!-- /rule -->
 
 #### `int-add-answer`
@@ -558,26 +255,7 @@ digraph rule_int_add_start_lhs_rhs {
   :why    "{?x} + {?y} = {?s}")
 ```
 
-```dot
-digraph rule_int_add_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-add-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-add ?x ?y)_L" [label="(int-add ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(int-add ?x ?y)_L" -> "?s_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_int-sum-of_R" [shape=octagon, label="int-sum-of", color="#17becf", fontcolor="#17becf"];
-    "h1_int-sum-of_R" -> "?x_R" [label="1", color="#17becf", style=dashed];
-    "h1_int-sum-of_R" -> "?y_R" [label="2", color="#17becf", style=dashed];
-    "h1_int-sum-of_R" -> "?s_R" [label="3", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-add-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-add-answer.svg)
 <!-- /rule -->
 
 #### `int-sub-ask`
@@ -590,22 +268,7 @@ digraph rule_int_add_answer_lhs_rhs {
   :why    "{?x} - {?y} is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_sub_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-sub-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-sub", color="#8c564b", fontcolor="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-first (int-sub ?x ?y) ?y)_R" [label="(int-first (int-sub ?x ?y) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-first (int-sub ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-sub-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-sub-ask.svg)
 <!-- /rule -->
 
 #### `int-sub-start`
@@ -618,30 +281,7 @@ digraph rule_int_sub_ask_lhs_rhs {
   :why    "to take {?q} less {?m} away, add {?m} less {?q}")
 ```
 
-```dot
-digraph rule_int_sub_start_lhs_rhs {
-  rankdir=TB;
-  label="int-sub-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-second (int-sub ?x ?y) ?p ?n)_L" [label="(int-second (int-sub ?x ?y) ?p ?n)", shape=rectangle];
-    "(int ?q ?m)_L" [label="(int ?q ?m)", shape=rectangle];
-    "(int-second (int-sub ?x ?y) ?p ?n)_L" -> "(int ?q ?m)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-sub ?x ?y)_R" [label="(int-sub ?x ?y)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "h1_int-add-call_R" [shape=octagon, label="int-add-call", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-add-call_R" -> "(int-sub ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?m_R" [label="4", color="#e377c2", style=dashed];
-    "h1_int-add-call_R" -> "?q_R" [label="5", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-sub-start of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-sub-start.svg)
 <!-- /rule -->
 
 #### `int-sub-answer`
@@ -654,26 +294,7 @@ digraph rule_int_sub_start_lhs_rhs {
   :why    "{?x} - {?y} = {?s}")
 ```
 
-```dot
-digraph rule_int_sub_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-sub-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-sub ?x ?y)_L" [label="(int-sub ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(int-sub ?x ?y)_L" -> "?s_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_int-diff-of_R" [shape=octagon, label="int-diff-of", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_int-diff-of_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "h1_int-diff-of_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
-    "h1_int-diff-of_R" -> "?s_R" [label="3", color="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule int-sub-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-sub-answer.svg)
 <!-- /rule -->
 
 ## Multiplication
@@ -694,34 +315,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
   :why    "first the positive parts: {?p} x {?q}")
 ```
 
-```dot
-digraph rule_int_mul_first_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "h1_int-mul-call_L" [shape=octagon, label="int-mul-call", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-mul-call_L" -> "?k_L" [label="1", color="#e377c2"];
-    "h1_int-mul-call_L" -> "?p_L" [label="2", color="#e377c2"];
-    "h1_int-mul-call_L" -> "?n_L" [label="3", color="#e377c2"];
-    "h1_int-mul-call_L" -> "?q_L" [label="4", color="#e377c2"];
-    "h1_int-mul-call_L" -> "?m_L" [label="5", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-mul-pp ?k ?p ?n ?q ?m)_R" [label="(int-mul-pp ?k ?p ?n ?q ?m)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "h2_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_mul-call_R" -> "(int-mul-pp ?k ?p ?n ?q ?m)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?p_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?q_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-mul-first of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-first.svg)
 <!-- /rule -->
 
 #### `int-mul-second`
@@ -734,26 +328,7 @@ digraph rule_int_mul_first_lhs_rhs {
   :why    "the positive parts make {?a}: now the negative parts, {?n} x {?m}")
 ```
 
-```dot
-digraph rule_int_mul_second_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-mul-pp ?k ?p ?n ?q ?m)_L" [label="(int-mul-pp ?k ?p ?n ?q ?m)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [label="(int-mul-nn ?k ?p ?n ?q ?m ?a)", shape=rectangle];
-    "?n_R" [label="?n", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?n_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?m_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-mul-second of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-second.svg)
 <!-- /rule -->
 
 #### `int-mul-plus`
@@ -766,30 +341,7 @@ digraph rule_int_mul_second_lhs_rhs {
   :why    "the negative parts make {?b}: the product's positive part is {?a} + {?b}")
 ```
 
-```dot
-digraph rule_int_mul_plus_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-plus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_L" [label="(int-mul-nn ?k ?p ?n ?q ?m ?a)", shape=rectangle];
-    "?b_L" [label="?b", shape=diamond];
-    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_L" -> "?b_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-mul-pos ?k ?p ?n ?q ?m)_R" [label="(int-mul-pos ?k ?p ?n ?q ?m)", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(int-mul-pos ?k ?p ?n ?q ?m)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?a_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?b_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-mul-plus of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-plus.svg)
 <!-- /rule -->
 
 #### `int-mul-third`
@@ -802,26 +354,7 @@ digraph rule_int_mul_plus_lhs_rhs {
   :why    "the positive part is {?s}: now across, {?p} x {?m}")
 ```
 
-```dot
-digraph rule_int_mul_third_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-third"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-mul-pos ?k ?p ?n ?q ?m)_L" [label="(int-mul-pos ?k ?p ?n ?q ?m)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(int-mul-pos ?k ?p ?n ?q ?m)_L" -> "?s_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-mul-pn ?k ?n ?q ?s)_R" [label="(int-mul-pn ?k ?n ?q ?s)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(int-mul-pn ?k ?n ?q ?s)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?p_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?m_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-mul-third of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-third.svg)
 <!-- /rule -->
 
 #### `int-mul-fourth`
@@ -834,26 +367,7 @@ digraph rule_int_mul_third_lhs_rhs {
   :why    "that makes {?c}: and across the other way, {?n} x {?q}")
 ```
 
-```dot
-digraph rule_int_mul_fourth_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-fourth"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-mul-pn ?k ?n ?q ?s)_L" [label="(int-mul-pn ?k ?n ?q ?s)", shape=rectangle];
-    "?c_L" [label="?c", shape=diamond];
-    "(int-mul-pn ?k ?n ?q ?s)_L" -> "?c_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-mul-np ?k ?s ?c)_R" [label="(int-mul-np ?k ?s ?c)", shape=rectangle];
-    "?n_R" [label="?n", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(int-mul-np ?k ?s ?c)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?n_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?q_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-mul-fourth of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-fourth.svg)
 <!-- /rule -->
 
 #### `int-mul-minus`
@@ -866,30 +380,7 @@ digraph rule_int_mul_fourth_lhs_rhs {
   :why    "that makes {?d}: the product's negative part is {?c} + {?d}")
 ```
 
-```dot
-digraph rule_int_mul_minus_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-minus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-mul-np ?k ?s ?c)_L" [label="(int-mul-np ?k ?s ?c)", shape=rectangle];
-    "?d_L" [label="?d", shape=diamond];
-    "(int-mul-np ?k ?s ?c)_L" -> "?d_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-mul-neg ?k ?s)_R" [label="(int-mul-neg ?k ?s)", shape=rectangle];
-    "?c_R" [label="?c", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(int-mul-neg ?k ?s)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?c_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?d_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-mul-minus of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-minus.svg)
 <!-- /rule -->
 
 #### `int-mul-norm`
@@ -902,26 +393,7 @@ digraph rule_int_mul_minus_lhs_rhs {
   :why    "the negative part is {?t}: simplify {?s} less {?t}")
 ```
 
-```dot
-digraph rule_int_mul_norm_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-norm"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-mul-neg ?k ?s)_L" [label="(int-mul-neg ?k ?s)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(int-mul-neg ?k ?s)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_R" -> "?k_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?s_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?t_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-mul-norm of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-norm.svg)
 <!-- /rule -->
 
 #### `int-mul-ask`
@@ -934,22 +406,7 @@ digraph rule_int_mul_norm_lhs_rhs {
   :why    "{?x} x {?y} is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_mul_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-mul", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-first (int-mul ?x ?y) ?y)_R" [label="(int-first (int-mul ?x ?y) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-first (int-mul ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-mul-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-ask.svg)
 <!-- /rule -->
 
 #### `int-mul-start`
@@ -962,30 +419,7 @@ digraph rule_int_mul_ask_lhs_rhs {
   :why    "multiply {?p} less {?n} by {?q} less {?m}")
 ```
 
-```dot
-digraph rule_int_mul_start_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-second (int-mul ?x ?y) ?p ?n)_L" [label="(int-second (int-mul ?x ?y) ?p ?n)", shape=rectangle];
-    "(int ?q ?m)_L" [label="(int ?q ?m)", shape=rectangle];
-    "(int-second (int-mul ?x ?y) ?p ?n)_L" -> "(int ?q ?m)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-mul ?x ?y)_R" [label="(int-mul ?x ?y)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h1_int-mul-call_R" [shape=octagon, label="int-mul-call", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-mul-call_R" -> "(int-mul ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-mul-call_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-mul-call_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-    "h1_int-mul-call_R" -> "?q_R" [label="4", color="#e377c2", style=dashed];
-    "h1_int-mul-call_R" -> "?m_R" [label="5", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-mul-start of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-start.svg)
 <!-- /rule -->
 
 #### `int-mul-answer`
@@ -998,26 +432,7 @@ digraph rule_int_mul_start_lhs_rhs {
   :why    "{?x} x {?y} = {?s}")
 ```
 
-```dot
-digraph rule_int_mul_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-mul-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-mul ?x ?y)_L" [label="(int-mul ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(int-mul ?x ?y)_L" -> "?s_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_int-product-of_R" [shape=octagon, label="int-product-of", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-product-of_R" -> "?x_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_int-product-of_R" -> "?y_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_int-product-of_R" -> "?s_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-mul-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-answer.svg)
 <!-- /rule -->
 
 ## Comparison
@@ -1038,38 +453,7 @@ Two sums of natural numbers, and one comparison walk between them.
   :why    "add across: the left side is {?p} + {?m}")
 ```
 
-```dot
-digraph rule_int_cmp_left_lhs_rhs {
-  rankdir=TB;
-  label="int-cmp-left"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "h1_int-cmp-call_L" [shape=octagon, label="int-cmp-call", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?k_L" [label="1", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?p_L" [label="2", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?n_L" [label="3", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?q_L" [label="4", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?m_L" [label="5", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-cmp-l ?k ?n ?q)_R" [label="(int-cmp-l ?k ?n ?q)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h2_add-walk_R" -> "(int-cmp-l ?k ?n ?q)_R" [label="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?p_R" [label="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?m_R" [label="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-cmp-left of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-cmp-left.svg)
 <!-- /rule -->
 
 #### `int-cmp-right`
@@ -1082,30 +466,7 @@ digraph rule_int_cmp_left_lhs_rhs {
   :why    "the left side is {?l}: the right side is {?n} + {?q}")
 ```
 
-```dot
-digraph rule_int_cmp_right_lhs_rhs {
-  rankdir=TB;
-  label="int-cmp-right"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-cmp-l ?k ?n ?q)_L" [label="(int-cmp-l ?k ?n ?q)", shape=rectangle];
-    "?l_L" [label="?l", shape=diamond];
-    "(int-cmp-l ?k ?n ?q)_L" -> "?l_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-cmp-r ?k ?l)_R" [label="(int-cmp-r ?k ?l)", shape=rectangle];
-    "?n_R" [label="?n", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(int-cmp-r ?k ?l)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?q_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-cmp-right of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-cmp-right.svg)
 <!-- /rule -->
 
 #### `int-cmp-sides`
@@ -1118,28 +479,7 @@ digraph rule_int_cmp_right_lhs_rhs {
   :why    "the right side is {?r}: compare {?l} with {?r}")
 ```
 
-```dot
-digraph rule_int_cmp_sides_lhs_rhs {
-  rankdir=TB;
-  label="int-cmp-sides"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-cmp-r ?k ?l)_L" [label="(int-cmp-r ?k ?l)", shape=rectangle];
-    "?r_L" [label="?r", shape=diamond];
-    "(int-cmp-r ?k ?l)_L" -> "?r_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?l_R" [label="?l", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "eq_R" [label="eq", shape=rectangle];
-    "h1_cmp-walk_R" [shape=octagon, label="cmp-walk", color="#9467bd", fontcolor="#9467bd"];
-    "h1_cmp-walk_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "?l_R" [label="2", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "?r_R" [label="3", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "eq_R" [label="4", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule int-cmp-sides of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-cmp-sides.svg)
 <!-- /rule -->
 
 #### `int-cmp-ask`
@@ -1152,22 +492,7 @@ digraph rule_int_cmp_sides_lhs_rhs {
   :why    "{?x} compared with {?y} is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_cmp_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-cmp-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-cmp", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-first (int-cmp ?x ?y) ?y)_R" [label="(int-first (int-cmp ?x ?y) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-first (int-cmp ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-cmp-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-cmp-ask.svg)
 <!-- /rule -->
 
 #### `int-cmp-start`
@@ -1180,30 +505,7 @@ digraph rule_int_cmp_ask_lhs_rhs {
   :why    "compare {?p} less {?n} with {?q} less {?m}")
 ```
 
-```dot
-digraph rule_int_cmp_start_lhs_rhs {
-  rankdir=TB;
-  label="int-cmp-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-second (int-cmp ?x ?y) ?p ?n)_L" [label="(int-second (int-cmp ?x ?y) ?p ?n)", shape=rectangle];
-    "(int ?q ?m)_L" [label="(int ?q ?m)", shape=rectangle];
-    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "(int ?q ?m)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-cmp ?x ?y)_R" [label="(int-cmp ?x ?y)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h1_int-cmp-call_R" [shape=octagon, label="int-cmp-call", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_int-cmp-call_R" -> "(int-cmp ?x ?y)_R" [label="1", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?p_R" [label="2", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?n_R" [label="3", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?q_R" [label="4", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?m_R" [label="5", color="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule int-cmp-start of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-cmp-start.svg)
 <!-- /rule -->
 
 #### `int-cmp-answer`
@@ -1216,26 +518,7 @@ digraph rule_int_cmp_start_lhs_rhs {
   :why    "{?x} against {?y}: {?o}")
 ```
 
-```dot
-digraph rule_int_cmp_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-cmp-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-cmp ?x ?y)_L" [label="(int-cmp ?x ?y)", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
-    "(int-cmp ?x ?y)_L" -> "?o_L" [label="order-is", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?o_R" [label="?o", shape=diamond];
-    "h1_int-cmp-of_R" [shape=octagon, label="int-cmp-of", color="#d62728", fontcolor="#d62728"];
-    "h1_int-cmp-of_R" -> "?x_R" [label="1", color="#d62728", style=dashed];
-    "h1_int-cmp-of_R" -> "?y_R" [label="2", color="#d62728", style=dashed];
-    "h1_int-cmp-of_R" -> "?o_R" [label="3", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule int-cmp-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-cmp-answer.svg)
 <!-- /rule -->
 
 ## Division: the sizes
@@ -1256,26 +539,7 @@ need.
   :why    "first the dividend, simplified: {?p} less {?n}")
 ```
 
-```dot
-digraph rule_int_div_start_lhs_rhs {
-  rankdir=TB;
-  label="int-div-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-second (int-div-of ?k) ?p ?n)_L" [label="(int-second (int-div-of ?k) ?p ?n)", shape=rectangle];
-    "(int ?q ?m)_L" [label="(int ?q ?m)", shape=rectangle];
-    "(int-second (int-div-of ?k) ?p ?n)_L" -> "(int ?q ?m)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-a ?k ?q ?m)_R" [label="(int-div-a ?k ?q ?m)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_R" -> "(int-div-a ?k ?q ?m)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-div-start of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-start.svg)
 <!-- /rule -->
 
 #### `int-div-divisor`
@@ -1288,26 +552,7 @@ digraph rule_int_div_start_lhs_rhs {
   :why    "the dividend is {?a}: now the divisor, simplified, {?q} less {?m}")
 ```
 
-```dot
-digraph rule_int_div_divisor_lhs_rhs {
-  rankdir=TB;
-  label="int-div-divisor"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-a ?k ?q ?m)_L" [label="(int-div-a ?k ?q ?m)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "(int-div-a ?k ?q ?m)_L" -> "?a_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-b ?k ?a)_R" [label="(int-div-b ?k ?a)", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_R" -> "(int-div-b ?k ?a)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?q_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?m_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-div-divisor of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-divisor.svg)
 <!-- /rule -->
 
 #### `int-div-by-zero`
@@ -1320,22 +565,7 @@ digraph rule_int_div_divisor_lhs_rhs {
   :why    "the divisor of {?k} is zero")
 ```
 
-```dot
-digraph rule_int_div_by_zero_lhs_rhs {
-  rankdir=TB;
-  label="int-div-by-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-b ?k ?a)_L" [label="(int-div-b ?k ?a)", shape=rectangle];
-    "(int z z)_L" [label="(int z z)", shape=rectangle];
-    "(int-div-b ?k ?a)_L" -> "(int z z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h1_division-by-zero_R" -> "?k_R" [label="1", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-div-by-zero of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-by-zero.svg)
 <!-- /rule -->
 
 #### `int-div-pp`
@@ -1348,26 +578,7 @@ digraph rule_int_div_by_zero_lhs_rhs {
   :why    "neither is negative: divide the sizes, {?a} by (n {?b} {?c})")
 ```
 
-```dot
-digraph rule_int_div_pp_lhs_rhs {
-  rankdir=TB;
-  label="int-div-pp"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-b ?k (int ?a z))_L" [label="(int-div-b ?k (int ?a z))", shape=rectangle];
-    "(int (n ?b ?c) z)_L" [label="(int (n ?b ?c) z)", shape=rectangle];
-    "(int-div-b ?k (int ?a z))_L" -> "(int (n ?b ?c) z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-m ?k pos pos (n ?b ?c))_R" [label="(int-div-m ?k pos pos (n ?b ?c))", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "(n ?b ?c)_R" [label="(n ?b ?c)", shape=rectangle];
-    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_div-call_R" -> "(int-div-m ?k pos pos (n ?b ?c))_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "(n ?b ?c)_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule int-div-pp of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-pp.svg)
 <!-- /rule -->
 
 #### `int-div-pn`
@@ -1380,26 +591,7 @@ digraph rule_int_div_pp_lhs_rhs {
   :why    "the divisor is negative: divide the sizes, {?a} by (n {?b} {?c})")
 ```
 
-```dot
-digraph rule_int_div_pn_lhs_rhs {
-  rankdir=TB;
-  label="int-div-pn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-b ?k (int ?a z))_L" [label="(int-div-b ?k (int ?a z))", shape=rectangle];
-    "(int z (n ?b ?c))_L" [label="(int z (n ?b ?c))", shape=rectangle];
-    "(int-div-b ?k (int ?a z))_L" -> "(int z (n ?b ?c))_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-m ?k pos neg (n ?b ?c))_R" [label="(int-div-m ?k pos neg (n ?b ?c))", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "(n ?b ?c)_R" [label="(n ?b ?c)", shape=rectangle];
-    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_div-call_R" -> "(int-div-m ?k pos neg (n ?b ?c))_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "(n ?b ?c)_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule int-div-pn of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-pn.svg)
 <!-- /rule -->
 
 #### `int-div-np`
@@ -1412,26 +604,7 @@ digraph rule_int_div_pn_lhs_rhs {
   :why    "the dividend is negative: divide the sizes, (n {?a} {?d}) by (n {?b} {?c})")
 ```
 
-```dot
-digraph rule_int_div_np_lhs_rhs {
-  rankdir=TB;
-  label="int-div-np"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-b ?k (int z (n ?a ?d)))_L" [label="(int-div-b ?k (int z (n ?a ?d)))", shape=rectangle];
-    "(int (n ?b ?c) z)_L" [label="(int (n ?b ?c) z)", shape=rectangle];
-    "(int-div-b ?k (int z (n ?a ?d)))_L" -> "(int (n ?b ?c) z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-m ?k neg pos (n ?b ?c))_R" [label="(int-div-m ?k neg pos (n ?b ?c))", shape=rectangle];
-    "(n ?a ?d)_R" [label="(n ?a ?d)", shape=rectangle];
-    "(n ?b ?c)_R" [label="(n ?b ?c)", shape=rectangle];
-    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_div-call_R" -> "(int-div-m ?k neg pos (n ?b ?c))_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "(n ?a ?d)_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "(n ?b ?c)_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule int-div-np of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-np.svg)
 <!-- /rule -->
 
 #### `int-div-nn`
@@ -1444,26 +617,7 @@ digraph rule_int_div_np_lhs_rhs {
   :why    "both are negative: divide the sizes, (n {?a} {?d}) by (n {?b} {?c})")
 ```
 
-```dot
-digraph rule_int_div_nn_lhs_rhs {
-  rankdir=TB;
-  label="int-div-nn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-b ?k (int z (n ?a ?d)))_L" [label="(int-div-b ?k (int z (n ?a ?d)))", shape=rectangle];
-    "(int z (n ?b ?c))_L" [label="(int z (n ?b ?c))", shape=rectangle];
-    "(int-div-b ?k (int z (n ?a ?d)))_L" -> "(int z (n ?b ?c))_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-m ?k neg neg (n ?b ?c))_R" [label="(int-div-m ?k neg neg (n ?b ?c))", shape=rectangle];
-    "(n ?a ?d)_R" [label="(n ?a ?d)", shape=rectangle];
-    "(n ?b ?c)_R" [label="(n ?b ?c)", shape=rectangle];
-    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_div-call_R" -> "(int-div-m ?k neg neg (n ?b ?c))_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "(n ?a ?d)_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "(n ?b ?c)_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule int-div-nn of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-nn.svg)
 <!-- /rule -->
 
 #### `int-div-rest`
@@ -1476,30 +630,7 @@ digraph rule_int_div_nn_lhs_rhs {
   :why    "the quotient's size is {?q}: now the divisor's size less the remainder, {?b} - {?r}")
 ```
 
-```dot
-digraph rule_int_div_rest_lhs_rhs {
-  rankdir=TB;
-  label="int-div-rest"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-q ?k ?s ?b ?r)_L" [label="(int-div-q ?k ?s ?b ?r)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "(int-div-q ?k ?s ?b ?r)_L" -> "?q_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-r ?k ?s ?q)_R" [label="(int-div-r ?k ?s ?q)", shape=rectangle];
-    "?b_R" [label="?b", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h1_sub-walk_R" -> "(int-div-r ?k ?s ?q)_R" [label="1", color="#8c564b", style=dashed];
-    "h1_sub-walk_R" -> "?b_R" [label="2", color="#8c564b", style=dashed];
-    "h1_sub-walk_R" -> "?r_R" [label="3", color="#8c564b", style=dashed];
-    "h1_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h1_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule int-div-rest of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-rest.svg)
 <!-- /rule -->
 
 ## Division: the Euclidean convention
@@ -1521,22 +652,7 @@ divisor's size less the sizes' remainder.
   :why    "{?x} divided by {?y}, the remainder never negative, is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_div_euclid_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-div-euclid", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-first (int-div-of (int-div-euclid ?x ?y)) ?y)_R" [label="(int-first (int-div-of (int-div-euclid ?x ?y)) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-first (int-div-of (int-div-euclid ?x ?y)) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-ask.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-pp`
@@ -1549,30 +665,7 @@ digraph rule_int_div_euclid_ask_lhs_rhs {
   :why    "neither is negative: the sizes' quotient {?q} and remainder {?r} are the answer")
 ```
 
-```dot
-digraph rule_int_div_euclid_pp_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-pp"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-euclid ?x ?y) pos pos ?b)_L" [label="(int-div-m (int-div-euclid ?x ?y) pos pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-euclid ?x ?y) pos pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-euclid ?x ?y)_R" [label="(int-div-euclid ?x ?y)", shape=rectangle];
-    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
-    "?r_R" [label="?r", shape=diamond];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "?r_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-pp of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-pp.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-pn`
@@ -1585,30 +678,7 @@ digraph rule_int_div_euclid_pp_lhs_rhs {
   :why    "the divisor is negative: the quotient is {?q} negated, and the remainder {?r} stays")
 ```
 
-```dot
-digraph rule_int_div_euclid_pn_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-pn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-euclid ?x ?y) pos neg ?b)_L" [label="(int-div-m (int-div-euclid ?x ?y) pos neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-euclid ?x ?y) pos neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-euclid ?x ?y)_R" [label="(int-div-euclid ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "?r_R" [label="?r", shape=diamond];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "?r_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-pn of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-pn.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-np-exact`
@@ -1621,30 +691,7 @@ digraph rule_int_div_euclid_pn_lhs_rhs {
   :why    "the dividend is negative and nothing is left: the quotient is {?q} negated")
 ```
 
-```dot
-digraph rule_int_div_euclid_np_exact_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-np-exact"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-euclid ?x ?y) neg pos ?b)_L" [label="(int-div-m (int-div-euclid ?x ?y) neg pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-euclid ?x ?y) neg pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "z_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-euclid ?x ?y)_R" [label="(int-div-euclid ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "z_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-np-exact of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-np-exact.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-nn-exact`
@@ -1657,30 +704,7 @@ digraph rule_int_div_euclid_np_exact_lhs_rhs {
   :why    "both are negative and nothing is left: the quotient is {?q}")
 ```
 
-```dot
-digraph rule_int_div_euclid_nn_exact_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-nn-exact"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" [label="(int-div-m (int-div-euclid ?x ?y) neg neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "z_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-euclid ?x ?y)_R" [label="(int-div-euclid ?x ?y)", shape=rectangle];
-    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "z_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-nn-exact of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-nn-exact.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-np-more`
@@ -1693,34 +717,7 @@ digraph rule_int_div_euclid_nn_exact_lhs_rhs {
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
-```dot
-digraph rule_int_div_euclid_np_more_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-np-more"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-euclid ?x ?y) neg pos ?b)_L" [label="(int-div-m (int-div-euclid ?x ?y) neg pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "(n ?r ?d)_L" [label="(n ?r ?d)", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-euclid ?x ?y) neg pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "(n ?r ?d)_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" [label="(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "(n z 1)_R" [label="(n z 1)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h2_add-walk_R" -> "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" [label="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(n z 1)_R" [label="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-np-more of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-np-more.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-nn-more`
@@ -1733,34 +730,7 @@ digraph rule_int_div_euclid_np_more_lhs_rhs {
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
-```dot
-digraph rule_int_div_euclid_nn_more_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-nn-more"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" [label="(int-div-m (int-div-euclid ?x ?y) neg neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "(n ?r ?d)_L" [label="(n ?r ?d)", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "(n ?r ?d)_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" [label="(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "(n z 1)_R" [label="(n z 1)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h2_add-walk_R" -> "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" [label="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(n z 1)_R" [label="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-nn-more of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-nn-more.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-neg`
@@ -1773,26 +743,7 @@ digraph rule_int_div_euclid_nn_more_lhs_rhs {
   :why    "the quotient is {?q} negated, and the remainder is {?t}")
 ```
 
-```dot
-digraph rule_int_div_euclid_neg_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-neg"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-r (int-div-euclid ?x ?y) neg ?q)_L" [label="(int-div-r (int-div-euclid ?x ?y) neg ?q)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(int-div-r (int-div-euclid ?x ?y) neg ?q)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-euclid ?x ?y)_R" [label="(int-div-euclid ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "?t_R" [label="?t", shape=diamond];
-    "h1_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-div-done_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "?t_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-neg of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-neg.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-pos`
@@ -1805,26 +756,7 @@ digraph rule_int_div_euclid_neg_lhs_rhs {
   :why    "the quotient is {?q}, and the remainder is {?t}")
 ```
 
-```dot
-digraph rule_int_div_euclid_pos_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-pos"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-r (int-div-euclid ?x ?y) pos ?q)_L" [label="(int-div-r (int-div-euclid ?x ?y) pos ?q)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(int-div-r (int-div-euclid ?x ?y) pos ?q)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-euclid ?x ?y)_R" [label="(int-div-euclid ?x ?y)", shape=rectangle];
-    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
-    "?t_R" [label="?t", shape=diamond];
-    "h1_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-div-done_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "?t_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-pos of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-pos.svg)
 <!-- /rule -->
 
 #### `int-div-euclid-answer`
@@ -1837,32 +769,7 @@ digraph rule_int_div_euclid_pos_lhs_rhs {
   :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
 ```
 
-```dot
-digraph rule_int_div_euclid_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-div-euclid-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-euclid ?x ?y)_L" [label="(int-div-euclid ?x ?y)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_int-div-done_L" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-div-done_L" -> "(int-div-euclid ?x ?y)_L" [label="1", color="#2ca02c"];
-    "h1_int-div-done_L" -> "?q_L" [label="2", color="#2ca02c"];
-    "h1_int-div-done_L" -> "?r_L" [label="3", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "h2_int-quot-euclid-of_R" [shape=octagon, label="int-quot-euclid-of", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_int-quot-euclid-of_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
-    "h2_int-quot-euclid-of_R" -> "?y_R" [label="2", color="#7f7f7f", style=dashed];
-    "h2_int-quot-euclid-of_R" -> "?q_R" [label="3", color="#7f7f7f", style=dashed];
-    "h2_int-quot-euclid-of_R" -> "?r_R" [label="4", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule int-div-euclid-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-euclid-answer.svg)
 <!-- /rule -->
 
 ## Division: the truncated convention
@@ -1880,22 +787,7 @@ sign.
   :why    "{?x} divided by {?y}, rounded toward zero, is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_div_trunc_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-div-trunc-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-div-trunc", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" [label="(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-trunc-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-trunc-ask.svg)
 <!-- /rule -->
 
 #### `int-div-trunc-pp`
@@ -1908,30 +800,7 @@ digraph rule_int_div_trunc_ask_lhs_rhs {
   :why    "neither is negative: the sizes' quotient {?q} and remainder {?r} are the answer")
 ```
 
-```dot
-digraph rule_int_div_trunc_pp_lhs_rhs {
-  rankdir=TB;
-  label="int-div-trunc-pp"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" [label="(int-div-m (int-div-trunc ?x ?y) pos pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-trunc ?x ?y)_R" [label="(int-div-trunc ?x ?y)", shape=rectangle];
-    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
-    "(int ?r z)_R" [label="(int ?r z)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-trunc ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?r z)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-trunc-pp of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-trunc-pp.svg)
 <!-- /rule -->
 
 #### `int-div-trunc-pn`
@@ -1944,30 +813,7 @@ digraph rule_int_div_trunc_pp_lhs_rhs {
   :why    "the divisor is negative: the quotient is {?q} negated, and the remainder {?r} stays")
 ```
 
-```dot
-digraph rule_int_div_trunc_pn_lhs_rhs {
-  rankdir=TB;
-  label="int-div-trunc-pn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-trunc ?x ?y) pos neg ?b)_L" [label="(int-div-m (int-div-trunc ?x ?y) pos neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-trunc ?x ?y) pos neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-trunc ?x ?y)_R" [label="(int-div-trunc ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "(int ?r z)_R" [label="(int ?r z)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-trunc ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?r z)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-trunc-pn of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-trunc-pn.svg)
 <!-- /rule -->
 
 #### `int-div-trunc-np`
@@ -1980,30 +826,7 @@ digraph rule_int_div_trunc_pn_lhs_rhs {
   :why    "the dividend is negative: the quotient is {?q} negated, and the remainder {?r} negated")
 ```
 
-```dot
-digraph rule_int_div_trunc_np_lhs_rhs {
-  rankdir=TB;
-  label="int-div-trunc-np"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-trunc ?x ?y) neg pos ?b)_L" [label="(int-div-m (int-div-trunc ?x ?y) neg pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-trunc ?x ?y) neg pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-trunc ?x ?y)_R" [label="(int-div-trunc ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "(int z ?r)_R" [label="(int z ?r)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-trunc ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?r)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-trunc-np of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-trunc-np.svg)
 <!-- /rule -->
 
 #### `int-div-trunc-nn`
@@ -2016,30 +839,7 @@ digraph rule_int_div_trunc_np_lhs_rhs {
   :why    "both are negative: the quotient is {?q}, and the remainder {?r} negated")
 ```
 
-```dot
-digraph rule_int_div_trunc_nn_lhs_rhs {
-  rankdir=TB;
-  label="int-div-trunc-nn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-trunc ?x ?y) neg neg ?b)_L" [label="(int-div-m (int-div-trunc ?x ?y) neg neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-trunc ?x ?y) neg neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-trunc ?x ?y)_R" [label="(int-div-trunc ?x ?y)", shape=rectangle];
-    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
-    "(int z ?r)_R" [label="(int z ?r)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-trunc ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?r)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-trunc-nn of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-trunc-nn.svg)
 <!-- /rule -->
 
 #### `int-div-trunc-answer`
@@ -2052,32 +852,7 @@ digraph rule_int_div_trunc_nn_lhs_rhs {
   :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
 ```
 
-```dot
-digraph rule_int_div_trunc_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-div-trunc-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-trunc ?x ?y)_L" [label="(int-div-trunc ?x ?y)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_int-div-done_L" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-div-done_L" -> "(int-div-trunc ?x ?y)_L" [label="1", color="#2ca02c"];
-    "h1_int-div-done_L" -> "?q_L" [label="2", color="#2ca02c"];
-    "h1_int-div-done_L" -> "?r_L" [label="3", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "h2_int-quot-trunc-of_R" [shape=octagon, label="int-quot-trunc-of", color="#d62728", fontcolor="#d62728"];
-    "h2_int-quot-trunc-of_R" -> "?x_R" [label="1", color="#d62728", style=dashed];
-    "h2_int-quot-trunc-of_R" -> "?y_R" [label="2", color="#d62728", style=dashed];
-    "h2_int-quot-trunc-of_R" -> "?q_R" [label="3", color="#d62728", style=dashed];
-    "h2_int-quot-trunc-of_R" -> "?r_R" [label="4", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule int-div-trunc-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-trunc-answer.svg)
 <!-- /rule -->
 
 ## Division: the floored convention
@@ -2095,22 +870,7 @@ remainder has the divisor's sign.
   :why    "{?x} divided by {?y}, rounded down, is asked: first, the integer {?x} stands for")
 ```
 
-```dot
-digraph rule_int_div_floor_ask_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-div-floor", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-first (int-div-of (int-div-floor ?x ?y)) ?y)_R" [label="(int-first (int-div-of (int-div-floor ?x ?y)) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int-first (int-div-of (int-div-floor ?x ?y)) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-ask of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-ask.svg)
 <!-- /rule -->
 
 #### `int-div-floor-pp`
@@ -2123,30 +883,7 @@ digraph rule_int_div_floor_ask_lhs_rhs {
   :why    "neither is negative: the sizes' quotient {?q} and remainder {?r} are the answer")
 ```
 
-```dot
-digraph rule_int_div_floor_pp_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-pp"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-floor ?x ?y) pos pos ?b)_L" [label="(int-div-m (int-div-floor ?x ?y) pos pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) pos pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
-    "(int ?r z)_R" [label="(int ?r z)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?r z)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-pp of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-pp.svg)
 <!-- /rule -->
 
 #### `int-div-floor-nn`
@@ -2159,30 +896,7 @@ digraph rule_int_div_floor_pp_lhs_rhs {
   :why    "both are negative: the quotient is {?q}, and the remainder {?r} negated")
 ```
 
-```dot
-digraph rule_int_div_floor_nn_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-nn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" [label="(int-div-m (int-div-floor ?x ?y) neg neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
-    "(int z ?r)_R" [label="(int z ?r)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?r)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-nn of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-nn.svg)
 <!-- /rule -->
 
 #### `int-div-floor-pn-exact`
@@ -2195,30 +909,7 @@ digraph rule_int_div_floor_nn_lhs_rhs {
   :why    "the divisor is negative and nothing is left: the quotient is {?q} negated")
 ```
 
-```dot
-digraph rule_int_div_floor_pn_exact_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-pn-exact"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-floor ?x ?y) pos neg ?b)_L" [label="(int-div-m (int-div-floor ?x ?y) pos neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) pos neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "z_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "(int z z)_R" [label="(int z z)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z z)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-pn-exact of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-pn-exact.svg)
 <!-- /rule -->
 
 #### `int-div-floor-np-exact`
@@ -2231,30 +922,7 @@ digraph rule_int_div_floor_pn_exact_lhs_rhs {
   :why    "the dividend is negative and nothing is left: the quotient is {?q} negated")
 ```
 
-```dot
-digraph rule_int_div_floor_np_exact_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-np-exact"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-floor ?x ?y) neg pos ?b)_L" [label="(int-div-m (int-div-floor ?x ?y) neg pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) neg pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "z_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "(int z z)_R" [label="(int z z)", shape=rectangle];
-    "h2_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "(int z z)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-np-exact of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-np-exact.svg)
 <!-- /rule -->
 
 #### `int-div-floor-pn-more`
@@ -2267,34 +935,7 @@ digraph rule_int_div_floor_np_exact_lhs_rhs {
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
-```dot
-digraph rule_int_div_floor_pn_more_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-pn-more"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-floor ?x ?y) pos neg ?b)_L" [label="(int-div-m (int-div-floor ?x ?y) pos neg ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "(n ?r ?d)_L" [label="(n ?r ?d)", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) pos neg ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "(n ?r ?d)_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d))_R" [label="(int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d))", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "(n z 1)_R" [label="(n z 1)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h2_add-walk_R" -> "(int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d))_R" [label="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(n z 1)_R" [label="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-pn-more of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-pn-more.svg)
 <!-- /rule -->
 
 #### `int-div-floor-np-more`
@@ -2307,34 +948,7 @@ digraph rule_int_div_floor_pn_more_lhs_rhs {
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
-```dot
-digraph rule_int_div_floor_np_more_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-np-more"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-floor ?x ?y) neg pos ?b)_L" [label="(int-div-m (int-div-floor ?x ?y) neg pos ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "(n ?r ?d)_L" [label="(n ?r ?d)", shape=rectangle];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) neg pos ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "(n ?r ?d)_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-q (int-div-floor ?x ?y) pos ?b (n ?r ?d))_R" [label="(int-div-q (int-div-floor ?x ?y) pos ?b (n ?r ?d))", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "(n z 1)_R" [label="(n z 1)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h2_add-walk_R" -> "(int-div-q (int-div-floor ?x ?y) pos ?b (n ?r ?d))_R" [label="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(n z 1)_R" [label="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-np-more of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-np-more.svg)
 <!-- /rule -->
 
 #### `int-div-floor-neg`
@@ -2347,26 +961,7 @@ digraph rule_int_div_floor_np_more_lhs_rhs {
   :why    "the quotient is {?q} negated, and the remainder is {?t} negated")
 ```
 
-```dot
-digraph rule_int_div_floor_neg_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-neg"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-r (int-div-floor ?x ?y) neg ?q)_L" [label="(int-div-r (int-div-floor ?x ?y) neg ?q)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(int-div-r (int-div-floor ?x ?y) neg ?q)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "(int z ?t)_R" [label="(int z ?t)", shape=rectangle];
-    "h1_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "(int z ?t)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-neg of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-neg.svg)
 <!-- /rule -->
 
 #### `int-div-floor-pos`
@@ -2379,26 +974,7 @@ digraph rule_int_div_floor_neg_lhs_rhs {
   :why    "the quotient is {?q} negated, and the remainder is {?t}")
 ```
 
-```dot
-digraph rule_int_div_floor_pos_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-pos"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" [label="(int-div-r (int-div-floor ?x ?y) pos ?q)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "(int ?t z)_R" [label="(int ?t z)", shape=rectangle];
-    "h1_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_int-div-done_R" -> "(int ?t z)_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-pos of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-pos.svg)
 <!-- /rule -->
 
 #### `int-div-floor-answer`
@@ -2411,32 +987,7 @@ digraph rule_int_div_floor_pos_lhs_rhs {
   :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
 ```
 
-```dot
-digraph rule_int_div_floor_answer_lhs_rhs {
-  rankdir=TB;
-  label="int-div-floor-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-floor ?x ?y)_L" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_int-div-done_L" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-div-done_L" -> "(int-div-floor ?x ?y)_L" [label="1", color="#2ca02c"];
-    "h1_int-div-done_L" -> "?q_L" [label="2", color="#2ca02c"];
-    "h1_int-div-done_L" -> "?r_L" [label="3", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "h2_int-quot-floor-of_R" [shape=octagon, label="int-quot-floor-of", color="#1f77b4", fontcolor="#1f77b4"];
-    "h2_int-quot-floor-of_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "h2_int-quot-floor-of_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
-    "h2_int-quot-floor-of_R" -> "?q_R" [label="3", color="#1f77b4", style=dashed];
-    "h2_int-quot-floor-of_R" -> "?r_R" [label="4", color="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule int-div-floor-answer of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-div-floor-answer.svg)
 <!-- /rule -->
 
 ## An operand's faults
@@ -2454,22 +1005,7 @@ These four carry it from this module's tags to the request, where the shared rul
   :why    "the operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_int_bad_only_lhs_rhs {
-  rankdir=TB;
-  label="int-bad-only"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-only ?request)_L" [label="(int-only ?request)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(int-only ?request)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-bad-only of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-bad-only.svg)
 <!-- /rule -->
 
 #### `int-bad-first`
@@ -2482,22 +1018,7 @@ digraph rule_int_bad_only_lhs_rhs {
   :why    "the first operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_int_bad_first_lhs_rhs {
-  rankdir=TB;
-  label="int-bad-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-first ?request ?y)_L" [label="(int-first ?request ?y)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(int-first ?request ?y)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-bad-first of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-bad-first.svg)
 <!-- /rule -->
 
 #### `int-bad-second`
@@ -2510,22 +1031,7 @@ digraph rule_int_bad_first_lhs_rhs {
   :why    "the second operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_int_bad_second_lhs_rhs {
-  rankdir=TB;
-  label="int-bad-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-second ?request ?p ?n)_L" [label="(int-second ?request ?p ?n)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(int-second ?request ?p ?n)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-bad-second of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-bad-second.svg)
 <!-- /rule -->
 
 #### `int-bad-div`
@@ -2538,22 +1044,7 @@ digraph rule_int_bad_second_lhs_rhs {
   :why    "the division {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_int_bad_div_lhs_rhs {
-  rankdir=TB;
-  label="int-bad-div"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int-div-of ?request)_L" [label="(int-div-of ?request)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(int-div-of ?request)_L" -> "?f_L" [label="bad-request", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule int-bad-div of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-bad-div.svg)
 <!-- /rule -->
 
 ## An integer's own shape
@@ -2571,25 +1062,7 @@ A digit or a named constant where a part goes, checked where the integer is writ
   :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
 ```
 
-```dot
-digraph rule_int_p_digit_lhs_rhs {
-  rankdir=TB;
-  label="int-p-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int ?x ?n)_L" [label="(int ?x ?n)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(int ?x ?n)_L" [label="1", color="#d62728"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int ?x ?n)_R" [label="(int ?x ?n)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int ?x ?n)_R" -> "?x_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-p-digit of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-p-digit.svg)
 <!-- /rule -->
 
 #### `int-p-zero`
@@ -2602,22 +1075,7 @@ digraph rule_int_p_digit_lhs_rhs {
   :why    "the digit 0 stands where a natural number goes: zero is z")
 ```
 
-```dot
-digraph rule_int_p_zero_lhs_rhs {
-  rankdir=TB;
-  label="int-p-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int 0 ?n)_L" [label="(int 0 ?n)", shape=rectangle];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(int 0 ?n)_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int 0 ?n)_R" [label="(int 0 ?n)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "(int 0 ?n)_R" -> "0_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-p-zero of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-p-zero.svg)
 <!-- /rule -->
 
 #### `int-p-named`
@@ -2630,25 +1088,7 @@ digraph rule_int_p_zero_lhs_rhs {
   :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
 ```
 
-```dot
-digraph rule_int_p_named_lhs_rhs {
-  rankdir=TB;
-  label="int-p-named"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int ?x ?n)_L" [label="(int ?x ?n)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(int ?x ?n)_L" [label="1", color="#d62728"];
-    "h2_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
-    "h2_named_L" -> "?x_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int ?x ?n)_R" [label="(int ?x ?n)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int ?x ?n)_R" -> "?x_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-p-named of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-p-named.svg)
 <!-- /rule -->
 
 #### `int-n-digit`
@@ -2661,25 +1101,7 @@ digraph rule_int_p_named_lhs_rhs {
   :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
 ```
 
-```dot
-digraph rule_int_n_digit_lhs_rhs {
-  rankdir=TB;
-  label="int-n-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int ?p ?x)_L" [label="(int ?p ?x)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(int ?p ?x)_L" [label="1", color="#d62728"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int ?p ?x)_R" [label="(int ?p ?x)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int ?p ?x)_R" -> "?x_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-n-digit of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-n-digit.svg)
 <!-- /rule -->
 
 #### `int-n-zero`
@@ -2692,22 +1114,7 @@ digraph rule_int_n_digit_lhs_rhs {
   :why    "the digit 0 stands where a natural number goes: zero is z")
 ```
 
-```dot
-digraph rule_int_n_zero_lhs_rhs {
-  rankdir=TB;
-  label="int-n-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int ?p 0)_L" [label="(int ?p 0)", shape=rectangle];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(int ?p 0)_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int ?p 0)_R" [label="(int ?p 0)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "(int ?p 0)_R" -> "0_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-n-zero of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-n-zero.svg)
 <!-- /rule -->
 
 #### `int-n-named`
@@ -2720,25 +1127,7 @@ digraph rule_int_n_zero_lhs_rhs {
   :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
 ```
 
-```dot
-digraph rule_int_n_named_lhs_rhs {
-  rankdir=TB;
-  label="int-n-named"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(int ?p ?x)_L" [label="(int ?p ?x)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(int ?p ?x)_L" [label="1", color="#d62728"];
-    "h2_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
-    "h2_named_L" -> "?x_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(int ?p ?x)_R" [label="(int ?p ?x)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(int ?p ?x)_R" -> "?x_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule int-n-named of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-n-named.svg)
 <!-- /rule -->
 
 #### `not-integer-is-false`
@@ -2751,20 +1140,7 @@ digraph rule_int_n_named_lhs_rhs {
   :why    "{?x} is not an integer: the program cannot hold it")
 ```
 
-```dot
-digraph rule_not_integer_is_false_lhs_rhs {
-  rankdir=TB;
-  label="not-integer-is-false"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?thing_L" [label="?thing", shape=diamond];
-    "?x_L" -> "?thing_L" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule not-integer-is-false of std.math.int, as the engine draws it](diagrams/12-std.math.int.not-integer-is-false.svg)
 <!-- /rule -->
 
 ## The entry

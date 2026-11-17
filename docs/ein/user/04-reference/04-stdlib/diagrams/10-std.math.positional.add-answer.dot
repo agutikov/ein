@@ -1,0 +1,18 @@
+digraph rule_add_answer_lhs_rhs {
+  rankdir=TB;
+  label="add-answer"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?SUM ?x ?y)_L" [label="(?SUM ?x ?y)", shape=rectangle];
+    "?s_L" [label="?s", shape=diamond];
+    "(?SUM ?x ?y)_L" -> "?s_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "?s_R" [label="?s", shape=diamond];
+    "h1_SUM-OF_R" [shape=octagon, label="?SUM-OF", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_SUM-OF_R" -> "?x_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_SUM-OF_R" -> "?y_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_SUM-OF_R" -> "?s_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

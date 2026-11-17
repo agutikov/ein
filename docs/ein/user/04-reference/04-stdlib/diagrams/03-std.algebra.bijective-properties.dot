@@ -1,0 +1,20 @@
+digraph rule_bijective_properties_lhs_rhs {
+  rankdir=TB;
+  label="bijective-properties"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "h1_bijective_L" [shape=octagon, label="bijective", color="#17becf", fontcolor="#17becf"];
+    "h1_bijective_L" -> "?R_L" [label="1", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h2_functional_R" [shape=octagon, label="functional", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_functional_R" -> "?R_R" [label="1", color="#bcbd22", style=dashed];
+    "h3_injective_R" [shape=octagon, label="injective", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h3_injective_R" -> "?R_R" [label="1", color="#ff7f0e", style=dashed];
+    "h4_total_R" [shape=octagon, label="total", color="#1f77b4", fontcolor="#1f77b4"];
+    "h4_total_R" -> "?R_R" [label="1", color="#1f77b4", style=dashed];
+    "h5_surjective_R" [shape=octagon, label="surjective", color="#2ca02c", fontcolor="#2ca02c"];
+    "h5_surjective_R" -> "?R_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}

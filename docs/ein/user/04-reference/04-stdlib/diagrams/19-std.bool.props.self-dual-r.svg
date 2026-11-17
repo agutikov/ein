@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_self_dual_r_lhs_rhs Pages: 1 -->
+<svg width="304pt" height="216pt"
+ viewBox="0.00 0.00 304.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_self_dual_r_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 300,-211.75 300,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="148" y="-190.45" font-family="Times,serif" font-size="14.00">self&#45;dual&#45;r</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-97.25 8,-174.5 148,-174.5 148,-97.25 8,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="78" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="156,-8 156,-174.5 288,-174.5 288,-8 156,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="222" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?f_L -->
+<g id="node1" class="node">
+<title>?f_L</title>
+<polygon fill="none" stroke="black" points="45,-141.25 16.48,-123.25 45,-105.25 73.52,-123.25 45,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="45" y="-118.58" font-family="Times,serif" font-size="14.00">?f</text>
+</g>
+<!-- ?f_L&#45;&gt;?f_L -->
+<g id="edge1" class="edge">
+<title>?f_L&#45;&gt;?f_L</title>
+<path fill="none" stroke="#2ca02c" d="M62.66,-130.44C76.86,-133.32 91.52,-130.92 91.52,-123.25 91.52,-117.68 83.78,-114.89 74.1,-114.88"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="73.76,-111.4 64.17,-115.9 74.47,-118.36 73.76,-111.4"/>
+<text xml:space="preserve" text-anchor="middle" x="115.9" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">dual&#45;of</text>
+</g>
+<!-- ?f_R -->
+<g id="node2" class="node">
+<title>?f_R</title>
+<polygon fill="none" stroke="black" points="222,-52 193.48,-34 222,-16 250.52,-34 222,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="222" y="-29.32" font-family="Times,serif" font-size="14.00">?f</text>
+</g>
+<!-- h1_self&#45;dual_R -->
+<g id="node3" class="node">
+<title>h1_self&#45;dual_R</title>
+<polygon fill="none" stroke="#9467bd" points="279.71,-115.79 279.71,-130.71 245.9,-141.25 198.1,-141.25 164.29,-130.71 164.29,-115.79 198.1,-105.25 245.9,-105.25 279.71,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="222" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#9467bd">self&#45;dual</text>
+</g>
+<!-- h1_self&#45;dual_R&#45;&gt;?f_R -->
+<g id="edge2" class="edge">
+<title>h1_self&#45;dual_R&#45;&gt;?f_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M222,-105.01C222,-93.26 222,-77.41 222,-63.77"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="225.5,-64.01 222,-54.01 218.5,-64.01 225.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="226.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 858a93e97a7abb9b28dbac0b6675dca11bbd8a78f250458ab89bddf12d0d5f74 -->

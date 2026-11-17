@@ -1,0 +1,24 @@
+digraph rule_bijective_setup_lhs_rhs {
+  rankdir=TB;
+  label="bijective-setup"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?isa_L" [label="?isa", shape=diamond];
+    "h1_bijective_L" [shape=octagon, label="bijective", color="#17becf", fontcolor="#17becf"];
+    "h1_bijective_L" -> "?R_L" [label="1", color="#17becf"];
+    "h2_bijection-hierarchy_L" [shape=octagon, label="bijection-hierarchy", color="#8c564b", fontcolor="#8c564b"];
+    "h2_bijection-hierarchy_L" -> "?isa_L" [label="1", color="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "?isa_R" [label="?isa", shape=diamond];
+    "?R_R" -> "?isa_R" [label="total", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+    "?R_R" -> "?isa_R" [label="surjective", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "?R_R" -> "?isa_R" [label="total-owed", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "?R_R" -> "?isa_R" [label="surjective-owed", color="#17becf", fontcolor="#17becf", style=dashed];
+    "?R_R" -> "?isa_R" [label="domain-elimination", color="#17becf", fontcolor="#17becf", style=dashed];
+    "?R_R" -> "?isa_R" [label="range-elimination", color="#d62728", fontcolor="#d62728", style=dashed];
+    "?R_R" -> "?isa_R" [label="functional-negative", color="#8c564b", fontcolor="#8c564b", style=dashed];
+    "?R_R" -> "?isa_R" [label="injective-negative", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

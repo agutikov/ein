@@ -1,0 +1,13 @@
+@startebnf
+BAD =
+  {
+      ? one of: U+0000-U+007F, but none of: whitespace ( ) ; # U+001C-U+001F ?
+    | "#" , ? one of: U+0000-U+007F, but none of: | whitespace ( ) ; U+001C-U+001F ?
+  }- ;
+skipped =
+  {
+      ? one of: U+0009-U+000D U+0020 U+001C-U+001F ?
+    | ";" , { ? any character but: U+000A ? }
+    | "#|" , { ? any character but: | ? | { "|" }- , ? any character but: | # ? } , { "|" }- , "#"
+  }- ;
+@endebnf

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_commutative_r_lhs_rhs Pages: 1 -->
+<svg width="533pt" height="216pt"
+ viewBox="0.00 0.00 533.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_commutative_r_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 529,-211.75 529,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="262.5" y="-190.45" font-family="Times,serif" font-size="14.00">commutative&#45;r</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 327,-174.5 327,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="167.5" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="335,-8 335,-174.5 517,-174.5 517,-8 335,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="426" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?f_L -->
+<g id="node1" class="node">
+<title>?f_L</title>
+<polygon fill="none" stroke="black" points="45,-52 16.48,-34 45,-16 73.52,-34 45,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="45" y="-29.32" font-family="Times,serif" font-size="14.00">?f</text>
+</g>
+<!-- ?a_L -->
+<g id="node2" class="node">
+<title>?a_L</title>
+<polygon fill="none" stroke="black" points="123,-52 91.5,-34 123,-16 154.5,-34 123,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="123" y="-29.32" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?b_L -->
+<g id="node3" class="node">
+<title>?b_L</title>
+<polygon fill="none" stroke="black" points="205,-52 172.76,-34 205,-16 237.24,-34 205,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="205" y="-29.32" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?d_L -->
+<g id="node4" class="node">
+<title>?d_L</title>
+<polygon fill="none" stroke="black" points="287,-52 254.76,-34 287,-16 319.24,-34 287,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="287" y="-29.32" font-family="Times,serif" font-size="14.00">?d</text>
+</g>
+<!-- h1_column_L -->
+<g id="node5" class="node">
+<title>h1_column_L</title>
+<polygon fill="none" stroke="#d62728" points="224.44,-115.79 224.44,-130.71 194.31,-141.25 151.69,-141.25 121.56,-130.71 121.56,-115.79 151.69,-105.25 194.31,-105.25 224.44,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="173" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#d62728">column</text>
+</g>
+<!-- h1_column_L&#45;&gt;?f_L -->
+<g id="edge1" class="edge">
+<title>h1_column_L&#45;&gt;?f_L</title>
+<path fill="none" stroke="#d62728" d="M148.92,-105.84C125.58,-89.93 90.45,-65.98 67.61,-50.41"/>
+<polygon fill="#d62728" stroke="#d62728" points="69.85,-47.7 59.61,-44.96 65.91,-53.49 69.85,-47.7"/>
+<text xml:space="preserve" text-anchor="middle" x="124.96" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h1_column_L&#45;&gt;?a_L -->
+<g id="edge2" class="edge">
+<title>h1_column_L&#45;&gt;?a_L</title>
+<path fill="none" stroke="#d62728" d="M163.12,-105.01C155.43,-91.58 144.67,-72.81 136.23,-58.09"/>
+<polygon fill="#d62728" stroke="#d62728" points="139.33,-56.47 131.33,-49.53 133.26,-59.95 139.33,-56.47"/>
+<text xml:space="preserve" text-anchor="middle" x="156.98" y="-73.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h1_column_L&#45;&gt;?b_L -->
+<g id="edge3" class="edge">
+<title>h1_column_L&#45;&gt;?b_L</title>
+<path fill="none" stroke="#d62728" d="M170.41,-105.2C169.52,-94.7 169.65,-81.16 174,-70 176.36,-63.95 180.27,-58.26 184.54,-53.3"/>
+<polygon fill="#d62728" stroke="#d62728" points="186.85,-55.95 191.28,-46.33 181.81,-51.09 186.85,-55.95"/>
+<text xml:space="preserve" text-anchor="middle" x="178.5" y="-73.95" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h1_column_L&#45;&gt;?b_L -->
+<g id="edge4" class="edge">
+<title>h1_column_L&#45;&gt;?b_L</title>
+<path fill="none" stroke="#d62728" d="M179.32,-105.01C184.04,-92.16 190.55,-74.41 195.83,-60"/>
+<polygon fill="#d62728" stroke="#d62728" points="199.07,-61.33 199.23,-50.74 192.5,-58.92 199.07,-61.33"/>
+<text xml:space="preserve" text-anchor="middle" x="196.37" y="-73.95" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- h1_column_L&#45;&gt;?d_L -->
+<g id="edge5" class="edge">
+<title>h1_column_L&#45;&gt;?d_L</title>
+<path fill="none" stroke="#d62728" d="M195.25,-105.22C215.41,-89.79 244.94,-67.19 265.02,-51.82"/>
+<polygon fill="#d62728" stroke="#d62728" points="267.01,-54.7 272.83,-45.85 262.76,-49.15 267.01,-54.7"/>
+<text xml:space="preserve" text-anchor="middle" x="244.71" y="-73.95" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- ?f_R -->
+<g id="node6" class="node">
+<title>?f_R</title>
+<polygon fill="none" stroke="black" points="426,-52 397.48,-34 426,-16 454.52,-34 426,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="426" y="-29.32" font-family="Times,serif" font-size="14.00">?f</text>
+</g>
+<!-- h2_commutative_R -->
+<g id="node7" class="node">
+<title>h2_commutative_R</title>
+<polygon fill="none" stroke="#9467bd" points="508.76,-115.79 508.76,-130.71 460.28,-141.25 391.72,-141.25 343.24,-130.71 343.24,-115.79 391.72,-105.25 460.28,-105.25 508.76,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="426" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#9467bd">commutative</text>
+</g>
+<!-- h2_commutative_R&#45;&gt;?f_R -->
+<g id="edge6" class="edge">
+<title>h2_commutative_R&#45;&gt;?f_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M426,-105.01C426,-93.26 426,-77.41 426,-63.77"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="429.5,-64.01 426,-54.01 422.5,-64.01 429.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="430.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: ad5d84f3e3015e7279c575b5d4b1fd8c3e0631f2330f76ddeefb7aed8d85306e -->

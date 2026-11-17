@@ -85,29 +85,7 @@ other group, holds.
 The engine draws the call as a dashed cluster labelled `forall (∀)`: the variable it binds is inside, the ones it
 shares with the rest of the match are outside. This is `ein render rule --name complete-via-macro` of the program:
 
-```dot
-digraph rule_complete_via_macro_lhs_rhs {
-  rankdir=TB;
-  label="complete-via-macro"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?g_L" [label="?g", shape=diamond];
-    "h1_group_L" [shape=octagon, label="group", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_group_L" -> "?g_L" [label="1", color="#ff7f0e"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?y_L" [label="?y", shape=diamond];
-      "?y_L" -> "?g_L" [label="member", color="#ff7f0e", fontcolor="#ff7f0e"];
-      "h2_marked_L" [shape=octagon, label="marked", color="#2ca02c", fontcolor="#2ca02c"];
-      "h2_marked_L" -> "?y_L" [label="1", color="#2ca02c"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?g_R" [label="?g", shape=diamond];
-    "h3_complete_R" [shape=octagon, label="complete", color="#2ca02c", fontcolor="#2ca02c"];
-    "h3_complete_R" -> "?g_R" [label="1", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule complete-via-macro: the call of forall a dashed cluster](diagrams/01-rule-complete-via-macro.svg)
 
 Inside the cluster, the arrow from `?y` to `?g` labelled `member` is the guard, and the octagon `marked` over `?y` is the body.
 
@@ -178,28 +156,7 @@ a negation was *not* derived.
 
 The engine draws a call of `unknown` as a call: an octagon over the fact it asks about.
 
-```dot
-digraph rule_third_state_lhs_rhs {
-  rankdir=TB;
-  label="third-state"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "Person_L" [label="Person", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "Food_L" [label="Food", shape=rectangle];
-    "(likes ?p ?f)_L" [label="(likes ?p ?f)", shape=rectangle];
-    "?p_L" -> "Person_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?f_L" -> "Food_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_unknown_L" [shape=octagon, label="unknown", color="#e377c2", fontcolor="#e377c2"];
-    "h1_unknown_L" -> "(likes ?p ?f)_L" [label="1", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?p_R" [label="?p", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?p_R" -> "?f_R" [label="state-open", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule third-state: the call of unknown an octagon over the fact it asks about](diagrams/01-rule-third-state.svg)
 
 ## How it works
 
@@ -224,29 +181,7 @@ expansion when the program is loaded.
 The first program's second rule, `complete-via-expansion`, is `forall`'s expansion written by hand, and the engine
 draws it as what it is, an `absent` inside an `absent`:
 
-```dot
-digraph rule_complete_via_expansion_lhs_rhs {
-  rankdir=TB;
-  label="complete-via-expansion"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?g_L" [label="?g", shape=diamond];
-    "h1_group_L" [shape=octagon, label="group", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_group_L" -> "?g_L" [label="1", color="#ff7f0e"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?y_L" [label="?y", shape=diamond];
-      "?y_L" -> "?g_L" [label="member", color="#ff7f0e", fontcolor="#ff7f0e"];
-      "h2_marked_L" [shape=octagon, label="¬marked", color="#d62728", fontcolor="#d62728"];
-      "h2_marked_L" -> "?y_L" [label="1", color="#d62728"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?g_R" [label="?g", shape=diamond];
-    "h3_complete-raw_R" [shape=octagon, label="complete-raw", color="#9467bd", fontcolor="#9467bd"];
-    "h3_complete-raw_R" -> "?g_R" [label="1", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule complete-via-expansion: an absent inside an absent](diagrams/01-rule-complete-via-expansion.svg)
 
 `ein test` holds both programs to their claims:
 

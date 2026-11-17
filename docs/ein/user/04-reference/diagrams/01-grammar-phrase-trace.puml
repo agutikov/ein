@@ -1,0 +1,14 @@
+@startebnf
+Trace = "(" , "trace" , Steps , ")" ;
+Steps = { Step } ;
+Step = "(" , "step" , Name , StepClauses , ")" ;
+StepClause =
+    ":rule" , Name
+  | ":using" , StepUsing
+  | ":derives" , Derived
+  | ":source" , Text
+  | ":assumes" , Derived ;
+StepClauses = { StepClause } ;
+StepUsing = NameListPlus | "(" , "and" , NamesPlus , ")" ;
+Derived = NestedFact | "(" , "not" , NestedFact , ")" ;
+@endebnf

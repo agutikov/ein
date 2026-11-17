@@ -1,0 +1,28 @@
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  // types
+  "Agent" [shape=box, label="Agent"];
+  "Colour" [shape=box, label="Colour"];
+  // instances
+  "Ann" [shape=oval, label="Ann"];
+  "Blue" [shape=oval, label="Blue"];
+  "Bob" [shape=oval, label="Bob"];
+  "Cid" [shape=oval, label="Cid"];
+  "Green" [shape=oval, label="Green"];
+  "Red" [shape=oval, label="Red"];
+  // facts
+  "Ann" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
+  "Bob" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
+  "Cid" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
+  "Red" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
+  "Green" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
+  "Blue" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
+  "wears" -> "wears" [label="bijective", color="#17becf", fontcolor="#17becf", style=solid];
+  "is-a" -> "is-a" [label="bijection-hierarchy", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Bob" -> "Green" [label="wears", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "wears" -> "is-a" [label="std.algebra.total-owed by std.bijection.bijective-setup", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "wears" -> "is-a" [label="std.algebra.surjective-owed by std.bijection.bijective-setup", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  "Ann" -> "Blue" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  "Cid" -> "Red" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+}

@@ -1,0 +1,15 @@
+digraph rule_absorbing_lhs_rhs {
+  rankdir=TB;
+  label="absorbing"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?f_L" [label="?f", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
+    "?f_L" -> "?e_L" [label="right-absorbing-of", color="#2ca02c", fontcolor="#2ca02c"];
+    "?f_L" -> "?e_L" [label="left-absorbing-of", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?f_R" [label="?f", shape=diamond];
+    "?e_R" [label="?e", shape=diamond];
+    "?f_R" -> "?e_R" [label="absorbing-of", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+  }
+}

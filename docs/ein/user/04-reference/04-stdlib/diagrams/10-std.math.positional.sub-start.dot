@@ -1,0 +1,29 @@
+digraph rule_sub_start_lhs_rhs {
+  rankdir=TB;
+  label="sub-start"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?SUB-SECOND ?x ?y ?u)_L" [label="(?SUB-SECOND ?x ?y ?u)", shape=rectangle];
+    "?v_L" [label="?v", shape=diamond];
+    "(?SUB-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?DIFFERENCE ?x ?y)_R" [label="(?DIFFERENCE ?x ?y)", shape=rectangle];
+    "?u_R" [label="?u", shape=diamond];
+    "?v_R" [label="?v", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "(?SHORTFALL ?x ?y)_R" [label="(?SHORTFALL ?x ?y)", shape=rectangle];
+    "h1_SUB-WALK_R" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
+    "h1_SUB-WALK_R" -> "(?DIFFERENCE ?x ?y)_R" [label="1", color="#d62728", style=dashed];
+    "h1_SUB-WALK_R" -> "?u_R" [label="2", color="#d62728", style=dashed];
+    "h1_SUB-WALK_R" -> "?v_R" [label="3", color="#d62728", style=dashed];
+    "h1_SUB-WALK_R" -> "0_R" [label="4", color="#d62728", style=dashed];
+    "h1_SUB-WALK_R" -> "z_R" [label="5", color="#d62728", style=dashed];
+    "h2_SUB-WALK_R" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
+    "h2_SUB-WALK_R" -> "(?SHORTFALL ?x ?y)_R" [label="1", color="#d62728", style=dashed];
+    "h2_SUB-WALK_R" -> "?v_R" [label="2", color="#d62728", style=dashed];
+    "h2_SUB-WALK_R" -> "?u_R" [label="3", color="#d62728", style=dashed];
+    "h2_SUB-WALK_R" -> "0_R" [label="4", color="#d62728", style=dashed];
+    "h2_SUB-WALK_R" -> "z_R" [label="5", color="#d62728", style=dashed];
+  }
+}

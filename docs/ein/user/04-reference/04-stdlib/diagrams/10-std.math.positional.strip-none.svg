@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_strip_none_lhs_rhs Pages: 1 -->
+<svg width="205pt" height="216pt"
+ viewBox="0.00 0.00 205.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_strip_none_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 201,-211.75 201,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="98.5" y="-190.45" font-family="Times,serif" font-size="14.00">strip&#45;none</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 94,-174.5 94,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="51" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="102,-8 102,-174.5 189,-174.5 189,-8 102,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="145.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?k_L -->
+<g id="node1" class="node">
+<title>?k_L</title>
+<polygon fill="none" stroke="black" points="47,-141.25 15.5,-123.25 47,-105.25 78.5,-123.25 47,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- z_L -->
+<g id="node2" class="node">
+<title>z_L</title>
+<polygon fill="none" stroke="black" points="70,-52 16,-52 16,-16 70,-16 70,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="43" y="-29.32" font-family="Times,serif" font-size="14.00">z</text>
+</g>
+<!-- ?k_L&#45;&gt;z_L -->
+<g id="edge1" class="edge">
+<title>?k_L&#45;&gt;z_L</title>
+<path fill="none" stroke="#ff7f0e" d="M46.23,-105.43C45.69,-93.63 44.95,-77.57 44.32,-63.76"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="47.82,-63.71 43.87,-53.88 40.83,-64.03 47.82,-63.71"/>
+<text xml:space="preserve" text-anchor="middle" x="71.23" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">?STRIP</text>
+</g>
+<!-- ?k_R -->
+<g id="node3" class="node">
+<title>?k_R</title>
+<polygon fill="none" stroke="black" points="141,-141.25 109.5,-123.25 141,-105.25 172.5,-123.25 141,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="141" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- z_R -->
+<g id="node4" class="node">
+<title>z_R</title>
+<polygon fill="none" stroke="black" points="164,-52 110,-52 110,-16 164,-16 164,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-29.32" font-family="Times,serif" font-size="14.00">z</text>
+</g>
+<!-- ?k_R&#45;&gt;z_R -->
+<g id="edge2" class="edge">
+<title>?k_R&#45;&gt;z_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M140.23,-105.43C139.69,-93.63 138.95,-77.57 138.32,-63.76"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="141.82,-63.71 137.87,-53.88 134.83,-64.03 141.82,-63.71"/>
+<text xml:space="preserve" text-anchor="middle" x="165.61" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#9467bd">?DONE</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 1d26fde8de933e574b98cb0aba51d9a574cbcea7ec17a4a3bedb3edd2fe83b0d -->

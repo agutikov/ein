@@ -1,0 +1,20 @@
+digraph rule_third_state_lhs_rhs {
+  rankdir=TB;
+  label="third-state"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "Person_L" [label="Person", shape=rectangle];
+    "?f_L" [label="?f", shape=diamond];
+    "Food_L" [label="Food", shape=rectangle];
+    "(likes ?p ?f)_L" [label="(likes ?p ?f)", shape=rectangle];
+    "?p_L" -> "Person_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    "?f_L" -> "Food_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_unknown_L" [shape=octagon, label="unknown", color="#e377c2", fontcolor="#e377c2"];
+    "h1_unknown_L" -> "(likes ?p ?f)_L" [label="1", color="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?p_R" [label="?p", shape=diamond];
+    "?f_R" [label="?f", shape=diamond];
+    "?p_R" -> "?f_R" [label="state-open", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

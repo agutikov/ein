@@ -1,0 +1,27 @@
+digraph rule_slot_fill_lhs_rhs {
+  rankdir=TB;
+  label="slot-fill"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?i_L" [label="?i", shape=diamond];
+    "?index_L" [label="?index", shape=diamond];
+    "?Tv_L" [label="?Tv", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "?v_L" [label="?v", shape=diamond];
+    "?i_L" -> "?index_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    "?Tv_L" -> "?super_L" [label="?sub", color="#9467bd", fontcolor="#9467bd"];
+    "?Tv_L" -> "?index_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?v_L" -> "?Tv_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    subgraph cluster_forall_L_0 {
+      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?v_other_L" [label="?v_other", shape=diamond];
+      "?v_other_L" -> "?Tv_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+      "?v_other_L" -> "?v_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+      "?i_L" -> "?v_other_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?i_R" [label="?i", shape=diamond];
+    "?v_R" [label="?v", shape=diamond];
+    "?i_R" -> "?v_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  }
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_let_twice_lhs_rhs Pages: 1 -->
+<svg width="420pt" height="216pt"
+ viewBox="0.00 0.00 420.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_let_twice_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 416,-211.75 416,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="206" y="-190.45" font-family="Times,serif" font-size="14.00">let&#45;twice</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 192,-174.5 192,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="100" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="200,-8 200,-174.5 404,-174.5 404,-8 200,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="302" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?x_L -->
+<g id="node1" class="node">
+<title>?x_L</title>
+<polygon fill="none" stroke="black" points="86,-141.25 54.5,-123.25 86,-105.25 117.5,-123.25 86,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="86" y="-118.58" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- ?v_L -->
+<g id="node2" class="node">
+<title>?v_L</title>
+<polygon fill="none" stroke="black" points="47,-52 15.5,-34 47,-16 78.5,-34 47,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-29.32" font-family="Times,serif" font-size="14.00">?v</text>
+</g>
+<!-- ?x_L&#45;&gt;?v_L -->
+<g id="edge1" class="edge">
+<title>?x_L&#45;&gt;?v_L</title>
+<path fill="none" stroke="#7f7f7f" d="M79.91,-108.62C73.99,-95.38 64.88,-74.99 57.74,-59.03"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="61.07,-57.91 53.8,-50.21 54.68,-60.76 61.07,-57.91"/>
+<text xml:space="preserve" text-anchor="middle" x="87.99" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">?LET</text>
+</g>
+<!-- ?w_L -->
+<g id="node3" class="node">
+<title>?w_L</title>
+<polygon fill="none" stroke="black" points="149,-52 113.78,-34 149,-16 184.22,-34 149,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="149" y="-29.32" font-family="Times,serif" font-size="14.00">?w</text>
+</g>
+<!-- ?x_L&#45;&gt;?w_L -->
+<g id="edge2" class="edge">
+<title>?x_L&#45;&gt;?w_L</title>
+<path fill="none" stroke="#7f7f7f" d="M94.76,-110.12C104.71,-96.34 121.14,-73.59 133.31,-56.73"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="136,-58.98 139.02,-48.82 130.33,-54.88 136,-58.98"/>
+<text xml:space="preserve" text-anchor="middle" x="141.14" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">?LET</text>
+</g>
+<!-- ?v_L&#45;&gt;?w_L -->
+<g id="edge3" class="edge">
+<title>?v_L&#45;&gt;?w_L</title>
+<path fill="none" stroke="#555555" stroke-dasharray="1,5" d="M79.27,-34C90.01,-34 102.04,-34 113.04,-34"/>
+<text xml:space="preserve" text-anchor="middle" x="96.14" y="-40.95" font-family="Times,serif" font-size="14.00" fill="#555555">≠</text>
+</g>
+<!-- (?LET ?x ?v)_R -->
+<g id="node4" class="node">
+<title>(?LET ?x ?v)_R</title>
+<polygon fill="none" stroke="black" points="353.5,-52 250.5,-52 250.5,-16 353.5,-16 353.5,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="302" y="-29.32" font-family="Times,serif" font-size="14.00">(?LET ?x ?v)</text>
+</g>
+<!-- h1_MALFORMED_R -->
+<g id="node5" class="node">
+<title>h1_MALFORMED_R</title>
+<polygon fill="none" stroke="#ff7f0e" points="396.15,-115.79 396.15,-130.71 341,-141.25 263,-141.25 207.85,-130.71 207.85,-115.79 263,-105.25 341,-105.25 396.15,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="302" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">?MALFORMED</text>
+</g>
+<!-- h1_MALFORMED_R&#45;&gt;(?LET ?x ?v)_R -->
+<g id="edge4" class="edge">
+<title>h1_MALFORMED_R&#45;&gt;(?LET ?x ?v)_R</title>
+<path fill="none" stroke="#ff7f0e" stroke-dasharray="5,2" d="M302,-105.01C302,-93.18 302,-77.2 302,-63.5"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="305.5,-63.72 302,-53.72 298.5,-63.72 305.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="306.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: a15b4d76a59f11d9dee9313dda7acf3361bd8d078b46baca1481b6ededfa7117 -->

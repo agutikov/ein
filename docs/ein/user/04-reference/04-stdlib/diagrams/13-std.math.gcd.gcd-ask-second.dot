@@ -1,0 +1,14 @@
+digraph rule_gcd_ask_second_lhs_rhs {
+  rankdir=TB;
+  label="gcd-ask-second"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(gcd-first ?r ?y)_L" [label="(gcd-first ?r ?y)", shape=rectangle];
+    "?u_L" [label="?u", shape=diamond];
+    "(gcd-first ?r ?y)_L" -> "?u_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(gcd-second ?r ?u)_R" [label="(gcd-second ?r ?u)", shape=rectangle];
+    "?y_R" [label="?y", shape=diamond];
+    "(gcd-second ?r ?u)_R" -> "?y_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

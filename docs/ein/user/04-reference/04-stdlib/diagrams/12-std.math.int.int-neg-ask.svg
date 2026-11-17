@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_int_neg_ask_lhs_rhs Pages: 1 -->
+<svg width="330pt" height="216pt"
+ viewBox="0.00 0.00 330.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_int_neg_ask_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 326,-211.75 326,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="161" y="-190.45" font-family="Times,serif" font-size="14.00">int&#45;neg&#45;ask</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 124,-174.5 124,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="66" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="132,-8 132,-174.5 314,-174.5 314,-8 132,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="223" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?x_L -->
+<g id="node1" class="node">
+<title>?x_L</title>
+<polygon fill="none" stroke="black" points="66,-52 34.5,-34 66,-16 97.5,-34 66,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="66" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- h1_int&#45;neg_L -->
+<g id="node2" class="node">
+<title>h1_int&#45;neg_L</title>
+<polygon fill="none" stroke="#9467bd" points="116.3,-115.79 116.3,-130.71 86.84,-141.25 45.16,-141.25 15.7,-130.71 15.7,-115.79 45.16,-105.25 86.84,-105.25 116.3,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="66" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#9467bd">int&#45;neg</text>
+</g>
+<!-- h1_int&#45;neg_L&#45;&gt;?x_L -->
+<g id="edge1" class="edge">
+<title>h1_int&#45;neg_L&#45;&gt;?x_L</title>
+<path fill="none" stroke="#9467bd" d="M66,-105.01C66,-93.26 66,-77.41 66,-63.77"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="69.5,-64.01 66,-54.01 62.5,-64.01 69.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="70.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- (int&#45;only (int&#45;neg ?x))_R -->
+<g id="node3" class="node">
+<title>(int&#45;only (int&#45;neg ?x))_R</title>
+<polygon fill="none" stroke="black" points="306,-141.25 140,-141.25 140,-105.25 306,-105.25 306,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="223" y="-118.58" font-family="Times,serif" font-size="14.00">(int&#45;only (int&#45;neg ?x))</text>
+</g>
+<!-- ?x_R -->
+<g id="node4" class="node">
+<title>?x_R</title>
+<polygon fill="none" stroke="black" points="223,-52 191.5,-34 223,-16 254.5,-34 223,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="223" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- (int&#45;only (int&#45;neg ?x))_R&#45;&gt;?x_R -->
+<g id="edge2" class="edge">
+<title>(int&#45;only (int&#45;neg ?x))_R&#45;&gt;?x_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M223,-105.01C223,-93.26 223,-77.41 223,-63.77"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="226.5,-64.01 223,-54.01 219.5,-64.01 226.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="252.25" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">operand</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: b850d0828a254dda36462b1a2eb9671f51d196dddd42004a887f1b026b24fcec -->

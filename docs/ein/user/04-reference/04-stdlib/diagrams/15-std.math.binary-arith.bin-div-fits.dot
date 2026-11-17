@@ -1,0 +1,22 @@
+digraph rule_bin_div_fits_lhs_rhs {
+  rankdir=TB;
+  label="bin-div-fits"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" [label="(bin-div-trial ?k ?d ?rest ?w ?u)", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?t_L" [label="bin-done", color="#8c564b", fontcolor="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "?rest_R" [label="?rest", shape=diamond];
+    "?t_R" [label="?t", shape=diamond];
+    "(b2 ?w 1)_R" [label="(b2 ?w 1)", shape=rectangle];
+    "h1_bin-div-step_R" [shape=octagon, label="bin-div-step", color="#9467bd", fontcolor="#9467bd"];
+    "h1_bin-div-step_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
+    "h1_bin-div-step_R" -> "?d_R" [label="2", color="#9467bd", style=dashed];
+    "h1_bin-div-step_R" -> "?rest_R" [label="3", color="#9467bd", style=dashed];
+    "h1_bin-div-step_R" -> "?t_R" [label="4", color="#9467bd", style=dashed];
+    "h1_bin-div-step_R" -> "(b2 ?w 1)_R" [label="5", color="#9467bd", style=dashed];
+  }
+}

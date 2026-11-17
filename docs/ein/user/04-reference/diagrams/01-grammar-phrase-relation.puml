@@ -1,0 +1,4 @@
+@startebnf
+Relation = "(" , "relation" , DeclName , Names , RelationClauses , ")" ;
+RelationClauses = { ":why" , Text } ;
+@endebnf

@@ -1,0 +1,22 @@
+digraph rule_int_div_rest_lhs_rhs {
+  rankdir=TB;
+  label="int-div-rest"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-div-q ?k ?s ?b ?r)_L" [label="(int-div-q ?k ?s ?b ?r)", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
+    "(int-div-q ?k ?s ?b ?r)_L" -> "?q_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-div-r ?k ?s ?q)_R" [label="(int-div-r ?k ?s ?q)", shape=rectangle];
+    "?b_R" [label="?b", shape=diamond];
+    "?r_R" [label="?r", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h1_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
+    "h1_sub-walk_R" -> "(int-div-r ?k ?s ?q)_R" [label="1", color="#8c564b", style=dashed];
+    "h1_sub-walk_R" -> "?b_R" [label="2", color="#8c564b", style=dashed];
+    "h1_sub-walk_R" -> "?r_R" [label="3", color="#8c564b", style=dashed];
+    "h1_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
+    "h1_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
+  }
+}

@@ -1,0 +1,18 @@
+digraph rule_to_dec_next_lhs_rhs {
+  rankdir=TB;
+  label="to-dec-next"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(doubling ?b ?rest)_L" [label="(doubling ?b ?rest)", shape=rectangle];
+    "?s_L" [label="?s", shape=diamond];
+    "(doubling ?b ?rest)_L" -> "?s_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?b_R" [label="?b", shape=diamond];
+    "?rest_R" [label="?rest", shape=diamond];
+    "?s_R" [label="?s", shape=diamond];
+    "h1_to-dec-go_R" [shape=octagon, label="to-dec-go", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_to-dec-go_R" -> "?b_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_to-dec-go_R" -> "?rest_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_to-dec-go_R" -> "?s_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

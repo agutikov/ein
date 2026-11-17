@@ -1,0 +1,14 @@
+digraph rule_int_operand_second_lhs_rhs {
+  rankdir=TB;
+  label="int-operand-second"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-first ?k ?y)_L" [label="(int-first ?k ?y)", shape=rectangle];
+    "(int ?p ?n)_L" [label="(int ?p ?n)", shape=rectangle];
+    "(int-first ?k ?y)_L" -> "(int ?p ?n)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-second ?k ?p ?n)_R" [label="(int-second ?k ?p ?n)", shape=rectangle];
+    "?y_R" [label="?y", shape=diamond];
+    "(int-second ?k ?p ?n)_R" -> "?y_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

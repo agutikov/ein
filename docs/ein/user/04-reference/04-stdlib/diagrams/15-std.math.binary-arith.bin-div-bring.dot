@@ -1,0 +1,30 @@
+digraph rule_bin_div_bring_lhs_rhs {
+  rankdir=TB;
+  label="bin-div-bring"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "(bin-b ?a ?rest)_L" [label="(bin-b ?a ?rest)", shape=rectangle];
+    "(b2 ?p ?c)_L" [label="(b2 ?p ?c)", shape=rectangle];
+    "?w_L" [label="?w", shape=diamond];
+    "h1_bin-div-step_L" [shape=octagon, label="bin-div-step", color="#9467bd", fontcolor="#9467bd"];
+    "h1_bin-div-step_L" -> "?k_L" [label="1", color="#9467bd"];
+    "h1_bin-div-step_L" -> "?d_L" [label="2", color="#9467bd"];
+    "h1_bin-div-step_L" -> "(bin-b ?a ?rest)_L" [label="3", color="#9467bd"];
+    "h1_bin-div-step_L" -> "(b2 ?p ?c)_L" [label="4", color="#9467bd"];
+    "h1_bin-div-step_L" -> "?w_L" [label="5", color="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" [label="(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))", shape=rectangle];
+    "(b2 (b2 ?p ?c) ?a)_R" [label="(b2 (b2 ?p ?c) ?a)", shape=rectangle];
+    "?d_R" [label="?d", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h2_bin-sub-walk_R" [shape=octagon, label="bin-sub-walk", color="#9467bd", fontcolor="#9467bd"];
+    "h2_bin-sub-walk_R" -> "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" [label="1", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "(b2 (b2 ?p ?c) ?a)_R" [label="2", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "?d_R" [label="3", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "0_R" [label="4", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "z_R" [label="5", color="#9467bd", style=dashed];
+  }
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_int_simplify_answer_lhs_rhs Pages: 1 -->
+<svg width="299pt" height="216pt"
+ viewBox="0.00 0.00 299.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_int_simplify_answer_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 295,-211.75 295,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="145.5" y="-190.45" font-family="Times,serif" font-size="14.00">int&#45;simplify&#45;answer</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 152,-174.5 152,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="80" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="160,-8 160,-174.5 283,-174.5 283,-8 160,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="221.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- (int&#45;simplify ?x)_L -->
+<g id="node1" class="node">
+<title>(int&#45;simplify ?x)_L</title>
+<polygon fill="none" stroke="black" points="143.88,-141.25 16.12,-141.25 16.12,-105.25 143.88,-105.25 143.88,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="80" y="-118.58" font-family="Times,serif" font-size="14.00">(int&#45;simplify ?x)</text>
+</g>
+<!-- ?s_L -->
+<g id="node2" class="node">
+<title>?s_L</title>
+<polygon fill="none" stroke="black" points="80,-52 49.25,-34 80,-16 110.75,-34 80,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="80" y="-29.32" font-family="Times,serif" font-size="14.00">?s</text>
+</g>
+<!-- (int&#45;simplify ?x)_L&#45;&gt;?s_L -->
+<g id="edge1" class="edge">
+<title>(int&#45;simplify ?x)_L&#45;&gt;?s_L</title>
+<path fill="none" stroke="#1f77b4" d="M80,-105.01C80,-93.26 80,-77.41 80,-63.77"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="83.5,-64.01 80,-54.01 76.5,-64.01 83.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="109.25" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#1f77b4">int&#45;done</text>
+</g>
+<!-- ?x_R -->
+<g id="node3" class="node">
+<title>?x_R</title>
+<polygon fill="none" stroke="black" points="199,-141.25 167.5,-123.25 199,-105.25 230.5,-123.25 199,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="199" y="-118.58" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- ?s_R -->
+<g id="node4" class="node">
+<title>?s_R</title>
+<polygon fill="none" stroke="black" points="199,-52 168.25,-34 199,-16 229.75,-34 199,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="199" y="-29.32" font-family="Times,serif" font-size="14.00">?s</text>
+</g>
+<!-- ?x_R&#45;&gt;?s_R -->
+<g id="edge2" class="edge">
+<title>?x_R&#45;&gt;?s_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M199,-105.01C199,-93.26 199,-77.41 199,-63.77"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="202.5,-64.01 199,-54.01 195.5,-64.01 202.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#9467bd">int&#45;simple&#45;of</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: b0b323debc1454e9ad1ba44f29bf5ac5bf3da4b4cd0d0b4cafad6d103d40c2c2 -->

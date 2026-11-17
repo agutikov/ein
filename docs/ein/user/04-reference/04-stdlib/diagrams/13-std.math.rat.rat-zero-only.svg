@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_rat_zero_only_lhs_rhs Pages: 1 -->
+<svg width="416pt" height="216pt"
+ viewBox="0.00 0.00 416.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_rat_zero_only_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 412,-211.75 412,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="204" y="-190.45" font-family="Times,serif" font-size="14.00">rat&#45;zero&#45;only</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 180,-174.5 180,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="94" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="188,-8 188,-174.5 400,-174.5 400,-8 188,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="294" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- (rat&#45;only ?request)_L -->
+<g id="node1" class="node">
+<title>(rat&#45;only ?request)_L</title>
+<polygon fill="none" stroke="black" points="168.38,-52 19.62,-52 19.62,-16 168.38,-16 168.38,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="94" y="-29.32" font-family="Times,serif" font-size="14.00">(rat&#45;only ?request)</text>
+</g>
+<!-- h1_rat&#45;zero&#45;den_L -->
+<g id="node2" class="node">
+<title>h1_rat&#45;zero&#45;den_L</title>
+<polygon fill="none" stroke="#bcbd22" points="172.21,-115.79 172.21,-130.71 126.39,-141.25 61.61,-141.25 15.79,-130.71 15.79,-115.79 61.61,-105.25 126.39,-105.25 172.21,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="94" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">rat&#45;zero&#45;den</text>
+</g>
+<!-- h1_rat&#45;zero&#45;den_L&#45;&gt;(rat&#45;only ?request)_L -->
+<g id="edge1" class="edge">
+<title>h1_rat&#45;zero&#45;den_L&#45;&gt;(rat&#45;only ?request)_L</title>
+<path fill="none" stroke="#bcbd22" d="M94,-105.01C94,-93.18 94,-77.2 94,-63.5"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="97.5,-63.72 94,-53.72 90.5,-63.72 97.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="98.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?request_R -->
+<g id="node3" class="node">
+<title>?request_R</title>
+<polygon fill="none" stroke="black" points="294,-52 216.37,-34 294,-16 371.63,-34 294,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="294" y="-29.32" font-family="Times,serif" font-size="14.00">?request</text>
+</g>
+<!-- h2_division&#45;by&#45;zero_R -->
+<g id="node4" class="node">
+<title>h2_division&#45;by&#45;zero_R</title>
+<polygon fill="none" stroke="#e377c2" points="391.57,-115.79 391.57,-130.71 334.41,-141.25 253.59,-141.25 196.43,-130.71 196.43,-115.79 253.59,-105.25 334.41,-105.25 391.57,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="294" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#e377c2">division&#45;by&#45;zero</text>
+</g>
+<!-- h2_division&#45;by&#45;zero_R&#45;&gt;?request_R -->
+<g id="edge2" class="edge">
+<title>h2_division&#45;by&#45;zero_R&#45;&gt;?request_R</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="5,2" d="M294,-105.01C294,-93.26 294,-77.41 294,-63.77"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="297.5,-64.01 294,-54.01 290.5,-64.01 297.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="298.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: a977a3bbbd6bf707107fc3c5e9f1e34b7ca74183e4951216cbeab22e4e4d6c06 -->

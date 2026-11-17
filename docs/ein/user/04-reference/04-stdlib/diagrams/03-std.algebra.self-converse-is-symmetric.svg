@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_self_converse_is_symmetric_lhs_rhs Pages: 1 -->
+<svg width="353pt" height="216pt"
+ viewBox="0.00 0.00 353.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_self_converse_is_symmetric_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 349,-211.75 349,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="172.5" y="-190.45" font-family="Times,serif" font-size="14.00">self&#45;converse&#45;is&#45;symmetric</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-97.25 8,-174.5 173,-174.5 173,-97.25 8,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="90.5" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="181,-8 181,-174.5 337,-174.5 337,-8 181,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="259" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?R_L -->
+<g id="node1" class="node">
+<title>?R_L</title>
+<polygon fill="none" stroke="black" points="50,-141.25 16.27,-123.25 50,-105.25 83.73,-123.25 50,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="50" y="-118.58" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- ?R_L&#45;&gt;?R_L -->
+<g id="edge1" class="edge">
+<title>?R_L&#45;&gt;?R_L</title>
+<path fill="none" stroke="#2ca02c" d="M70.72,-130.63C86.16,-133.21 101.73,-130.75 101.73,-123.25 101.73,-117.63 92.97,-114.84 82.08,-114.88"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="81.88,-111.39 72.22,-115.74 82.49,-118.36 81.88,-111.39"/>
+<text xml:space="preserve" text-anchor="middle" x="133.6" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">converse</text>
+</g>
+<!-- ?R_R -->
+<g id="node2" class="node">
+<title>?R_R</title>
+<polygon fill="none" stroke="black" points="259,-52 225.27,-34 259,-16 292.73,-34 259,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="259" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- h1_symmetric_R -->
+<g id="node3" class="node">
+<title>h1_symmetric_R</title>
+<polygon fill="none" stroke="#7f7f7f" points="328.66,-115.79 328.66,-130.71 287.86,-141.25 230.14,-141.25 189.34,-130.71 189.34,-115.79 230.14,-105.25 287.86,-105.25 328.66,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="259" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">symmetric</text>
+</g>
+<!-- h1_symmetric_R&#45;&gt;?R_R -->
+<g id="edge2" class="edge">
+<title>h1_symmetric_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M259,-105.01C259,-93.26 259,-77.41 259,-63.77"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="262.5,-64.01 259,-54.01 255.5,-64.01 262.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="263.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 0c8f3f8450da536d66b6723dede143be099bb8c251d3d3b12375b915f47262e6 -->

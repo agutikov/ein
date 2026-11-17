@@ -1,0 +1,14 @@
+digraph rule_rat_simplify_ask_lhs_rhs {
+  rankdir=TB;
+  label="rat-simplify-ask"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?x_L" [label="?x", shape=diamond];
+    "h1_rat-simplify_L" [shape=octagon, label="rat-simplify", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_rat-simplify_L" -> "?x_L" [label="1", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-of (rat-only (rat-simplify ?x)))_R" [label="(rat-of (rat-only (rat-simplify ?x)))", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

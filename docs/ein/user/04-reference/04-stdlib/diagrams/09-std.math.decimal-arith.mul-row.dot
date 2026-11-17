@@ -1,0 +1,28 @@
+digraph rule_mul_row_lhs_rhs {
+  rankdir=TB;
+  label="mul-row"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "(b ?a ?rest)_L" [label="(b ?a ?rest)", shape=rectangle];
+    "?acc_L" [label="?acc", shape=diamond];
+    "h1_mul-step_L" [shape=octagon, label="mul-step", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_mul-step_L" -> "?k_L" [label="1", color="#bcbd22"];
+    "h1_mul-step_L" -> "?u_L" [label="2", color="#bcbd22"];
+    "h1_mul-step_L" -> "(b ?a ?rest)_L" [label="3", color="#bcbd22"];
+    "h1_mul-step_L" -> "?acc_L" [label="4", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(mul-row-of ?k ?u ?rest ?acc)_R" [label="(mul-row-of ?k ?u ?rest ?acc)", shape=rectangle];
+    "?u_R" [label="?u", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h2_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h2_mul-walk_R" -> "(mul-row-of ?k ?u ?rest ?acc)_R" [label="1", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "?u_R" [label="2", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "?a_R" [label="3", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
+  }
+}

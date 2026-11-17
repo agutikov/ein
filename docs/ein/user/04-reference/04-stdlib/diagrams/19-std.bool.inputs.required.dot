@@ -1,0 +1,15 @@
+digraph rule_required_lhs_rhs {
+  rankdir=TB;
+  label="required"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?w_L" [label="?w", shape=diamond];
+    "?v_L" [label="?v", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?w_L" -> "?v_L" [label="require", color="#d62728", fontcolor="#d62728"];
+    "?w_L" -> "?u_L" [label="val", color="#1f77b4", fontcolor="#1f77b4"];
+    "?u_L" -> "?v_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}

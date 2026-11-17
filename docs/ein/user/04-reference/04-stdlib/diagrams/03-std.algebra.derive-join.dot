@@ -1,0 +1,26 @@
+digraph rule_derive_join_lhs_rhs {
+  rankdir=TB;
+  label="derive-join"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R1_L" [label="?R1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?R3_L" [label="?R3", shape=diamond];
+    "h1_join_L" [shape=octagon, label="join", color="#9467bd", fontcolor="#9467bd"];
+    "h1_join_L" -> "?R1_L" [label="1", color="#9467bd"];
+    "h1_join_L" -> "?R2_L" [label="2", color="#9467bd"];
+    "h1_join_L" -> "?R3_L" [label="3", color="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R1_R" [label="?R1", shape=diamond];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?R3_R" [label="?R3", shape=diamond];
+    "h2_join-l_R" [shape=octagon, label="join-l", color="#2ca02c", fontcolor="#2ca02c"];
+    "h2_join-l_R" -> "?R1_R" [label="1", color="#2ca02c", style=dashed];
+    "h2_join-l_R" -> "?R2_R" [label="2", color="#2ca02c", style=dashed];
+    "h2_join-l_R" -> "?R3_R" [label="3", color="#2ca02c", style=dashed];
+    "h3_join-r_R" [shape=octagon, label="join-r", color="#bcbd22", fontcolor="#bcbd22"];
+    "h3_join-r_R" -> "?R1_R" [label="1", color="#bcbd22", style=dashed];
+    "h3_join-r_R" -> "?R2_R" [label="2", color="#bcbd22", style=dashed];
+    "h3_join-r_R" -> "?R3_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

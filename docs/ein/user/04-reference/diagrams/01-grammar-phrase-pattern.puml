@@ -1,0 +1,6 @@
+@startebnf
+Pattern = "(" , ValueHead , Terms , ")" | "(" , Var , Terms , ")" | "(" , "false" , ")" ;
+AnyHead = Name | Var ;
+Term = Name | Var | Pattern | "(" , "not" , Pattern , ")" ;
+Terms = { Term } ;
+@endebnf

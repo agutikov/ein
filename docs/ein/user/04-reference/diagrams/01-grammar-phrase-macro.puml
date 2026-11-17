@@ -1,0 +1,16 @@
+@startebnf
+Macro =
+    "(" , "macro" , DeclName , MacroParams , Template , ")"
+  | "(" , "macro" , DeclName , MacroParams , Template , ":why" , Text , ")" ;
+MacroParams = "(" , VarsPlus , ")" ;
+Template =
+    Var
+  | "(" , "and" , Templates , ")"
+  | "(" , "or" , Templates , ")"
+  | "(" , "not" , Template , ")"
+  | "(" , "neq" , TemplateItem , TemplateItem , ")"
+  | "(" , AnyHead , TemplateItems , ")" ;
+Templates = { Template }- ;
+TemplateItem = Name | Template ;
+TemplateItems = { TemplateItem } ;
+@endebnf

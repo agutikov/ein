@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_cmp_ask_second_lhs_rhs Pages: 1 -->
+<svg width="422pt" height="216pt"
+ viewBox="0.00 0.00 422.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_cmp_ask_second_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 418,-211.75 418,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="207" y="-190.45" font-family="Times,serif" font-size="14.00">cmp&#45;ask&#45;second</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 182,-174.5 182,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="95" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="190,-8 190,-174.5 406,-174.5 406,-8 190,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="298" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- (?CMP&#45;FIRST ?x ?y)_L -->
+<g id="node1" class="node">
+<title>(?CMP&#45;FIRST ?x ?y)_L</title>
+<polygon fill="none" stroke="black" points="173.5,-141.25 16.5,-141.25 16.5,-105.25 173.5,-105.25 173.5,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="95" y="-118.58" font-family="Times,serif" font-size="14.00">(?CMP&#45;FIRST ?x ?y)</text>
+</g>
+<!-- ?u_L -->
+<g id="node2" class="node">
+<title>?u_L</title>
+<polygon fill="none" stroke="black" points="72,-52 39.76,-34 72,-16 104.24,-34 72,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="72" y="-29.32" font-family="Times,serif" font-size="14.00">?u</text>
+</g>
+<!-- (?CMP&#45;FIRST ?x ?y)_L&#45;&gt;?u_L -->
+<g id="edge1" class="edge">
+<title>(?CMP&#45;FIRST ?x ?y)_L&#45;&gt;?u_L</title>
+<path fill="none" stroke="#bcbd22" d="M89.24,-104.88C87.47,-99.28 85.57,-93.03 84,-87.25 81.77,-79.04 79.61,-70.04 77.74,-61.85"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="81.16,-61.11 75.58,-52.1 74.33,-62.62 81.16,-61.11"/>
+<text xml:space="preserve" text-anchor="middle" x="135" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#bcbd22">?OPERAND&#45;IS</text>
+</g>
+<!-- (?CMP&#45;SECOND ?x ?y ?u)_R -->
+<g id="node3" class="node">
+<title>(?CMP&#45;SECOND ?x ?y ?u)_R</title>
+<polygon fill="none" stroke="black" points="397.5,-141.25 198.5,-141.25 198.5,-105.25 397.5,-105.25 397.5,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="298" y="-118.58" font-family="Times,serif" font-size="14.00">(?CMP&#45;SECOND ?x ?y ?u)</text>
+</g>
+<!-- ?y_R -->
+<g id="node4" class="node">
+<title>?y_R</title>
+<polygon fill="none" stroke="black" points="298,-52 266.5,-34 298,-16 329.5,-34 298,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="298" y="-29.32" font-family="Times,serif" font-size="14.00">?y</text>
+</g>
+<!-- (?CMP&#45;SECOND ?x ?y ?u)_R&#45;&gt;?y_R -->
+<g id="edge2" class="edge">
+<title>(?CMP&#45;SECOND ?x ?y ?u)_R&#45;&gt;?y_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M298,-105.01C298,-93.26 298,-77.41 298,-63.77"/>
+<polygon fill="#d62728" stroke="#d62728" points="301.5,-64.01 298,-54.01 294.5,-64.01 301.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="339.25" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#d62728">?OPERAND</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 32cce97c60eb5fcf578dfa1da9286ad13ca4c22d3ef7dd959fc5e71930b2da74 -->

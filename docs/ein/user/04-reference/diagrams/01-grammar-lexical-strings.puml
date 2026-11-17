@@ -1,0 +1,25 @@
+@startebnf
+TEXT = '"' ,
+  {
+      ? any character but: " \ ?
+    | "\" , ( "n" | "t" | "r" | '"' | "\" )
+    | "\u{" ,
+      (
+          5 * [ "0" ] , ? one of: 0-9 A-F a-f ?
+        | 4 * [ "0" ] , ? one of: 1-9 A-F a-f ? , ? one of: 0-9 A-F a-f ?
+        | 3 * [ "0" ] , ? one of: 1-9 A-F a-f ? , 2 * ? one of: 0-9 A-F a-f ?
+        | 2 * [ "0" ] ,
+          (
+              ? one of: 1-9 A-C a-c E e F f ? , 3 * ? one of: 0-9 A-F a-f ?
+            | ( "D" | "d" ) , ? one of: 0-7 ? , 2 * ? one of: 0-9 A-F a-f ?
+          )
+        | [ "0" ] , ? one of: 1-9 A-F a-f ? , 4 * ? one of: 0-9 A-F a-f ?
+        | "10" , 4 * ? one of: 0-9 A-F a-f ?
+      ) ,
+      "}"
+  } , '"' ;
+BADESCAPE = '"' , { ? any character but: " \ ? | "\" , ? any character but: U+000A ? } , '"' ;
+BADTEXT = '"' ,
+  { ? any character but: " \ ? | "\" , ? any character but: U+000A ? } , '"' ,
+  { ? one of: U+0000-U+007F, but none of: whitespace ( ) ; U+001C-U+001F ? }- ;
+@endebnf

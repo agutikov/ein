@@ -1,0 +1,18 @@
+digraph rule_rat_cross_end_lhs_rhs {
+  rankdir=TB;
+  label="rat-cross-end"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-x6 ?k ?s)_L" [label="(rat-x6 ?k ?s)", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "(rat-x6 ?k ?s)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?s_R" [label="?s", shape=diamond];
+    "?t_R" [label="?t", shape=diamond];
+    "h1_rat-cross-is_R" [shape=octagon, label="rat-cross-is", color="#17becf", fontcolor="#17becf"];
+    "h1_rat-cross-is_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
+    "h1_rat-cross-is_R" -> "?s_R" [label="2", color="#17becf", style=dashed];
+    "h1_rat-cross-is_R" -> "?t_R" [label="3", color="#17becf", style=dashed];
+  }
+}

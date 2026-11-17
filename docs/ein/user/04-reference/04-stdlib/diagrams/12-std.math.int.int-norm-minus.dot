@@ -1,0 +1,14 @@
+digraph rule_int_norm_minus_lhs_rhs {
+  rankdir=TB;
+  label="int-norm-minus"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-minus ?k)_L" [label="(int-minus ?k)", shape=rectangle];
+    "?r_L" [label="?r", shape=diamond];
+    "(int-minus ?k)_L" -> "?r_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "(int z ?r)_R" [label="(int z ?r)", shape=rectangle];
+    "?k_R" -> "(int z ?r)_R" [label="int-done", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  }
+}

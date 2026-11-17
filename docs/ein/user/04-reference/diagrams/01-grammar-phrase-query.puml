@@ -1,0 +1,17 @@
+@startebnf
+Query = "(" , "query" , QueryClausesPlus , ")" ;
+QueryClause = ":goal" , Premise | ":goal-text" , Text | ":over" , Name | ":expect" , Claim ;
+QueryClausesPlus = { QueryClause }- ;
+Claim = Model | "(" , "or" , Models , ")" | "(" , "false" , ")" ;
+Model = "(" , "model" , ClaimFacts , ")" ;
+Models = { Model }- ;
+ClaimFact =
+    NestedFact
+  | EqFact
+  | "(" , "not" , NestedFact , ")"
+  | "(" , "not" , EqFact , ")"
+  | "(" , "absent" , ClaimAtom , ")"
+  | "(" , "neq" , FactArg , FactArg , ")" ;
+ClaimAtom = NestedFact | EqFact | "(" , "not" , NestedFact , ")" | "(" , "not" , EqFact , ")" ;
+ClaimFacts = { ClaimFact } ;
+@endebnf

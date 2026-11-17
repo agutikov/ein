@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_compose_negative_r_lhs_rhs Pages: 1 -->
+<svg width="273pt" height="216pt"
+ viewBox="0.00 0.00 273.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_compose_negative_r_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 269,-211.75 269,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="132.5" y="-190.45" font-family="Times,serif" font-size="14.00">compose&#45;negative&#45;r</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 169,-174.5 169,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="88.5" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="177,-8 177,-174.5 257,-174.5 257,-8 177,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="217" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?b_L -->
+<g id="node1" class="node">
+<title>?b_L</title>
+<polygon fill="none" stroke="black" points="48,-141.25 15.76,-123.25 48,-105.25 80.24,-123.25 48,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="48" y="-118.58" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?c_L -->
+<g id="node2" class="node">
+<title>?c_L</title>
+<polygon fill="none" stroke="black" points="78,-52 47.25,-34 78,-16 108.75,-34 78,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="78" y="-29.32" font-family="Times,serif" font-size="14.00">?c</text>
+</g>
+<!-- ?b_L&#45;&gt;?c_L -->
+<g id="edge1" class="edge">
+<title>?b_L&#45;&gt;?c_L</title>
+<path fill="none" stroke="#2ca02c" d="M52.95,-107.84C57.43,-94.83 64.11,-75.41 69.44,-59.89"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="72.6,-61.45 72.55,-50.86 65.99,-59.18 72.6,-61.45"/>
+<text xml:space="preserve" text-anchor="middle" x="74.31" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">?S</text>
+</g>
+<!-- ?a_L -->
+<g id="node3" class="node">
+<title>?a_L</title>
+<polygon fill="none" stroke="black" points="130,-141.25 98.5,-123.25 130,-105.25 161.5,-123.25 130,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="130" y="-118.58" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?a_L&#45;&gt;?c_L -->
+<g id="edge2" class="edge">
+<title>?a_L&#45;&gt;?c_L</title>
+<path fill="none" stroke="#d62728" d="M122.33,-109.38C114.19,-95.72 101.17,-73.87 91.34,-57.38"/>
+<polygon fill="#d62728" stroke="#d62728" points="94.61,-56.03 86.48,-49.23 88.59,-59.61 94.61,-56.03"/>
+<text xml:space="preserve" text-anchor="middle" x="122.91" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#d62728">¬?T</text>
+</g>
+<!-- ?a_R -->
+<g id="node4" class="node">
+<title>?a_R</title>
+<polygon fill="none" stroke="black" points="217,-141.25 185.5,-123.25 217,-105.25 248.5,-123.25 217,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="217" y="-118.58" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?b_R -->
+<g id="node5" class="node">
+<title>?b_R</title>
+<polygon fill="none" stroke="black" points="217,-52 184.76,-34 217,-16 249.24,-34 217,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="217" y="-29.32" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?a_R&#45;&gt;?b_R -->
+<g id="edge3" class="edge">
+<title>?a_R&#45;&gt;?b_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M217,-105.01C217,-93.26 217,-77.41 217,-63.77"/>
+<polygon fill="#d62728" stroke="#d62728" points="220.5,-64.01 217,-54.01 213.5,-64.01 220.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="232" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#d62728">¬?R</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: acabd0f77c135e084f10c4beeb2899a93080dd550b625bb498751d5962f2fc19 -->

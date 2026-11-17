@@ -1,0 +1,22 @@
+digraph rule_gcd_next_lhs_rhs {
+  rankdir=TB;
+  label="gcd-next"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(gcd-rem ?k ?b)_L" [label="(gcd-rem ?k ?b)", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
+    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
+    "h1_div-done_L" -> "(gcd-rem ?k ?b)_L" [label="1", color="#8c564b"];
+    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
+    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?b_R" [label="?b", shape=diamond];
+    "?r_R" [label="?r", shape=diamond];
+    "h2_gcd-chain_R" [shape=octagon, label="gcd-chain", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h2_gcd-chain_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
+    "h2_gcd-chain_R" -> "?b_R" [label="2", color="#7f7f7f", style=dashed];
+    "h2_gcd-chain_R" -> "?r_R" [label="3", color="#7f7f7f", style=dashed];
+  }
+}

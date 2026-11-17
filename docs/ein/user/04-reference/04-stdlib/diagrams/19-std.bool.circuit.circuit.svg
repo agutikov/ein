@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_circuit_lhs_rhs Pages: 1 -->
+<svg width="1098pt" height="216pt"
+ viewBox="0.00 0.00 1098.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_circuit_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 1094,-211.75 1094,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="545" y="-190.45" font-family="Times,serif" font-size="14.00">circuit</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-97.25 8,-174.5 134,-174.5 134,-97.25 8,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="142,-8 142,-174.5 1082,-174.5 1082,-8 142,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="612" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- h1_#empty_L -->
+<g id="node1" class="node">
+<title>h1_#empty_L</title>
+<polygon fill="none" stroke="#17becf" points="126.43,-115.79 126.43,-130.71 93.96,-141.25 48.04,-141.25 15.57,-130.71 15.57,-115.79 48.04,-105.25 93.96,-105.25 126.43,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#17becf">#empty</text>
+</g>
+<!-- gate_R -->
+<g id="node2" class="node">
+<title>gate_R</title>
+<polygon fill="none" stroke="black" points="244,-52 190,-52 190,-16 244,-16 244,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="217" y="-29.32" font-family="Times,serif" font-size="14.00">gate</text>
+</g>
+<!-- val_R -->
+<g id="node3" class="node">
+<title>val_R</title>
+<polygon fill="none" stroke="black" points="396,-52 342,-52 342,-16 396,-16 396,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="369" y="-29.32" font-family="Times,serif" font-size="14.00">val</text>
+</g>
+<!-- circuit&#45;rule_R -->
+<g id="node4" class="node">
+<title>circuit&#45;rule_R</title>
+<polygon fill="none" stroke="black" points="568.38,-52 473.62,-52 473.62,-16 568.38,-16 568.38,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="521" y="-29.32" font-family="Times,serif" font-size="14.00">circuit&#45;rule</text>
+</g>
+<!-- propagate_R -->
+<g id="node5" class="node">
+<title>propagate_R</title>
+<polygon fill="none" stroke="black" points="722.38,-52 633.62,-52 633.62,-16 722.38,-16 722.38,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="678" y="-29.32" font-family="Times,serif" font-size="14.00">propagate</text>
+</g>
+<!-- one&#45;value_R -->
+<g id="node6" class="node">
+<title>one&#45;value_R</title>
+<polygon fill="none" stroke="black" points="882.12,-52 797.88,-52 797.88,-16 882.12,-16 882.12,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="840" y="-29.32" font-family="Times,serif" font-size="14.00">one&#45;value</text>
+</g>
+<!-- gates_R -->
+<g id="node7" class="node">
+<title>gates_R</title>
+<polygon fill="none" stroke="black" points="1029.5,-52 974.5,-52 974.5,-16 1029.5,-16 1029.5,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1002" y="-29.32" font-family="Times,serif" font-size="14.00">gates</text>
+</g>
+<!-- h2___closed___R -->
+<g id="node8" class="node">
+<title>h2___closed___R</title>
+<polygon fill="none" stroke="#e377c2" points="283.82,-115.79 283.82,-130.71 244.68,-141.25 189.32,-141.25 150.18,-130.71 150.18,-115.79 189.32,-105.25 244.68,-105.25 283.82,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="217" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#e377c2">__closed__</text>
+</g>
+<!-- h2___closed___R&#45;&gt;gate_R -->
+<g id="edge1" class="edge">
+<title>h2___closed___R&#45;&gt;gate_R</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="5,2" d="M217,-105.01C217,-93.18 217,-77.2 217,-63.5"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="220.5,-63.72 217,-53.72 213.5,-63.72 220.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="221.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h3___closed___R -->
+<g id="node9" class="node">
+<title>h3___closed___R</title>
+<polygon fill="none" stroke="#e377c2" points="435.82,-115.79 435.82,-130.71 396.68,-141.25 341.32,-141.25 302.18,-130.71 302.18,-115.79 341.32,-105.25 396.68,-105.25 435.82,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="369" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#e377c2">__closed__</text>
+</g>
+<!-- h3___closed___R&#45;&gt;val_R -->
+<g id="edge2" class="edge">
+<title>h3___closed___R&#45;&gt;val_R</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="5,2" d="M369,-105.01C369,-93.18 369,-77.2 369,-63.5"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="372.5,-63.72 369,-53.72 365.5,-63.72 372.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="373.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h4___closed___R -->
+<g id="node10" class="node">
+<title>h4___closed___R</title>
+<polygon fill="none" stroke="#e377c2" points="587.82,-115.79 587.82,-130.71 548.68,-141.25 493.32,-141.25 454.18,-130.71 454.18,-115.79 493.32,-105.25 548.68,-105.25 587.82,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="521" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#e377c2">__closed__</text>
+</g>
+<!-- h4___closed___R&#45;&gt;circuit&#45;rule_R -->
+<g id="edge3" class="edge">
+<title>h4___closed___R&#45;&gt;circuit&#45;rule_R</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="5,2" d="M521,-105.01C521,-93.18 521,-77.2 521,-63.5"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="524.5,-63.72 521,-53.72 517.5,-63.72 524.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="525.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h5_circuit&#45;rule_R -->
+<g id="node11" class="node">
+<title>h5_circuit&#45;rule_R</title>
+<polygon fill="none" stroke="#17becf" points="749.94,-115.79 749.94,-130.71 707.8,-141.25 648.2,-141.25 606.06,-130.71 606.06,-115.79 648.2,-105.25 707.8,-105.25 749.94,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="678" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#17becf">circuit&#45;rule</text>
+</g>
+<!-- h5_circuit&#45;rule_R&#45;&gt;propagate_R -->
+<g id="edge4" class="edge">
+<title>h5_circuit&#45;rule_R&#45;&gt;propagate_R</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M678,-105.01C678,-93.18 678,-77.2 678,-63.5"/>
+<polygon fill="#17becf" stroke="#17becf" points="681.5,-63.72 678,-53.72 674.5,-63.72 681.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="682.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h6_circuit&#45;rule_R -->
+<g id="node12" class="node">
+<title>h6_circuit&#45;rule_R</title>
+<polygon fill="none" stroke="#17becf" points="911.94,-115.79 911.94,-130.71 869.8,-141.25 810.2,-141.25 768.06,-130.71 768.06,-115.79 810.2,-105.25 869.8,-105.25 911.94,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="840" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#17becf">circuit&#45;rule</text>
+</g>
+<!-- h6_circuit&#45;rule_R&#45;&gt;one&#45;value_R -->
+<g id="edge5" class="edge">
+<title>h6_circuit&#45;rule_R&#45;&gt;one&#45;value_R</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M840,-105.01C840,-93.18 840,-77.2 840,-63.5"/>
+<polygon fill="#17becf" stroke="#17becf" points="843.5,-63.72 840,-53.72 836.5,-63.72 843.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="844.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h7_circuit&#45;rule_R -->
+<g id="node13" class="node">
+<title>h7_circuit&#45;rule_R</title>
+<polygon fill="none" stroke="#17becf" points="1073.94,-115.79 1073.94,-130.71 1031.8,-141.25 972.2,-141.25 930.06,-130.71 930.06,-115.79 972.2,-105.25 1031.8,-105.25 1073.94,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="1002" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#17becf">circuit&#45;rule</text>
+</g>
+<!-- h7_circuit&#45;rule_R&#45;&gt;gates_R -->
+<g id="edge6" class="edge">
+<title>h7_circuit&#45;rule_R&#45;&gt;gates_R</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M1002,-105.01C1002,-93.18 1002,-77.2 1002,-63.5"/>
+<polygon fill="#17becf" stroke="#17becf" points="1005.5,-63.72 1002,-53.72 998.5,-63.72 1005.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="1006.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: e62e5808fd2feacd825e1ed4eac3884aad932fea22bc1f3a45c2b4005db2edf0 -->

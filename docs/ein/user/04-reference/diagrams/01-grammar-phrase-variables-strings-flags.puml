@@ -1,0 +1,11 @@
+@startebnf
+Var = VAR ;
+Text = TEXT ;
+Bool = "true" | "false" ;
+Names = { Name } ;
+NamesPlus = { Name }- ;
+Vars = { Var } ;
+VarsPlus = { Var }- ;
+NameList = "(" , ")" | "(" , Name , Names , ")" ;
+NameListPlus = "(" , Name , Names , ")" ;
+@endebnf

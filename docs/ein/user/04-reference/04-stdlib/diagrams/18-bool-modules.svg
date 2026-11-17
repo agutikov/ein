@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: bool Pages: 1 -->
+<svg width="430pt" height="188pt"
+ viewBox="0.00 0.00 430.00 188.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+<title>bool</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-184 426.12,-184 426.12,4 -4,4"/>
+<!-- std.bool.props -->
+<g id="node1" class="node">
+<title>std.bool.props</title>
+<polygon fill="none" stroke="black" points="131.5,-108 0,-108 0,-72 131.5,-72 131.5,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="65.75" y="-86.45" font-family="monospace" font-size="14.00">std.bool.props</text>
+</g>
+<!-- std.bool.gates -->
+<g id="node2" class="node">
+<title>std.bool.gates</title>
+<polygon fill="none" stroke="black" points="210.5,-180 79,-180 79,-144 210.5,-144 210.5,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="144.75" y="-158.45" font-family="monospace" font-size="14.00">std.bool.gates</text>
+</g>
+<!-- std.bool.props&#45;&gt;std.bool.gates -->
+<g id="edge1" class="edge">
+<title>std.bool.props&#45;&gt;std.bool.gates</title>
+<path fill="none" stroke="black" d="M85.28,-108.3C94.77,-116.72 106.36,-126.98 116.77,-136.21"/>
+<polygon fill="black" stroke="black" points="114.23,-138.64 124.04,-142.65 118.88,-133.4 114.23,-138.64"/>
+</g>
+<!-- std.bool.circuit -->
+<g id="node3" class="node">
+<title>std.bool.circuit</title>
+<polygon fill="none" stroke="black" points="297.75,-108 149.75,-108 149.75,-72 297.75,-72 297.75,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="223.75" y="-86.45" font-family="monospace" font-size="14.00">std.bool.circuit</text>
+</g>
+<!-- std.bool.circuit&#45;&gt;std.bool.gates -->
+<g id="edge2" class="edge">
+<title>std.bool.circuit&#45;&gt;std.bool.gates</title>
+<path fill="none" stroke="black" d="M204.22,-108.3C194.73,-116.72 183.14,-126.98 172.73,-136.21"/>
+<polygon fill="black" stroke="black" points="170.62,-133.4 165.46,-142.65 175.27,-138.64 170.62,-133.4"/>
+</g>
+<!-- std.bool.inputs -->
+<g id="node4" class="node">
+<title>std.bool.inputs</title>
+<polygon fill="none" stroke="black" points="365.62,-36 225.88,-36 225.88,0 365.62,0 365.62,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="295.75" y="-14.45" font-family="monospace" font-size="14.00">std.bool.inputs</text>
+</g>
+<!-- std.bool.inputs&#45;&gt;std.bool.circuit -->
+<g id="edge3" class="edge">
+<title>std.bool.inputs&#45;&gt;std.bool.circuit</title>
+<path fill="none" stroke="black" d="M277.95,-36.3C269.47,-44.55 259.16,-54.57 249.82,-63.65"/>
+<polygon fill="black" stroke="black" points="247.41,-61.12 242.68,-70.6 252.29,-66.14 247.41,-61.12"/>
+</g>
+<!-- std.algebra -->
+<g id="node5" class="node">
+<title>std.algebra</title>
+<polygon fill="none" stroke="black" points="422.12,-108 315.38,-108 315.38,-72 422.12,-72 422.12,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="368.75" y="-86.45" font-family="monospace" font-size="14.00">std.algebra</text>
+</g>
+<!-- std.bool.inputs&#45;&gt;std.algebra -->
+<g id="edge4" class="edge">
+<title>std.bool.inputs&#45;&gt;std.algebra</title>
+<path fill="none" stroke="black" d="M313.79,-36.3C322.48,-44.63 333.06,-54.78 342.61,-63.93"/>
+<polygon fill="black" stroke="black" points="339.93,-66.21 349.57,-70.61 344.77,-61.16 339.93,-66.21"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: ca91463351a897d08f4be42031d7d5e7b0a4b0b2316d4e4915916e6340545a8c -->

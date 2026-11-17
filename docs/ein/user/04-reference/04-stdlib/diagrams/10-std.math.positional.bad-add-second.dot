@@ -1,0 +1,14 @@
+digraph rule_bad_add_second_lhs_rhs {
+  rankdir=TB;
+  label="bad-add-second"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?ADD-SECOND ?x ?y ?u)_L" [label="(?ADD-SECOND ?x ?y ?u)", shape=rectangle];
+    "?f_L" [label="?f", shape=diamond];
+    "(?ADD-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?ADD ?x ?y)_R" [label="(?ADD ?x ?y)", shape=rectangle];
+    "?f_R" [label="?f", shape=diamond];
+    "(?ADD ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

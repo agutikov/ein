@@ -1,0 +1,24 @@
+digraph rule_slot_owed_room_lhs_rhs {
+  rankdir=TB;
+  label="slot-owed-room"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?Ta_L" [label="?Ta", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "?index_L" [label="?index", shape=diamond];
+    "?a_L" -> "?Ta_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    "?Ta_L" -> "?super_L" [label="?sub", color="#9467bd", fontcolor="#9467bd"];
+    "?Ta_L" -> "?index_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?i_L" [label="?i", shape=diamond];
+      "?i_L" -> "?index_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+      "?a_L" -> "?i_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h1_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_open_R" -> "?R_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}

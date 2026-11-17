@@ -1,0 +1,24 @@
+digraph rule_int_div_floor_answer_lhs_rhs {
+  rankdir=TB;
+  label="int-div-floor-answer"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-div-floor ?x ?y)_L" [label="(int-div-floor ?x ?y)", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
+    "h1_int-div-done_L" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_int-div-done_L" -> "(int-div-floor ?x ?y)_L" [label="1", color="#2ca02c"];
+    "h1_int-div-done_L" -> "?q_L" [label="2", color="#2ca02c"];
+    "h1_int-div-done_L" -> "?r_L" [label="3", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?r_R" [label="?r", shape=diamond];
+    "h2_int-quot-floor-of_R" [shape=octagon, label="int-quot-floor-of", color="#1f77b4", fontcolor="#1f77b4"];
+    "h2_int-quot-floor-of_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
+    "h2_int-quot-floor-of_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
+    "h2_int-quot-floor-of_R" -> "?q_R" [label="3", color="#1f77b4", style=dashed];
+    "h2_int-quot-floor-of_R" -> "?r_R" [label="4", color="#1f77b4", style=dashed];
+  }
+}

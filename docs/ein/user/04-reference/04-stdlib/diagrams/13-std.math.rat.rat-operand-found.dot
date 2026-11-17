@@ -1,0 +1,20 @@
+digraph rule_rat_operand_found_lhs_rhs {
+  rankdir=TB;
+  label="rat-operand-found"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-den ?k ?p ?n ?d)_L" [label="(rat-den ?k ?p ?n ?d)", shape=rectangle];
+    "gt_L" [label="gt", shape=rectangle];
+    "(rat-den ?k ?p ?n ?d)_L" -> "gt_L" [label="order-is", color="#d62728", fontcolor="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "h1_rat-operand-is_R" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_rat-operand-is_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
+    "h1_rat-operand-is_R" -> "?p_R" [label="2", color="#1f77b4", style=dashed];
+    "h1_rat-operand-is_R" -> "?n_R" [label="3", color="#1f77b4", style=dashed];
+    "h1_rat-operand-is_R" -> "?d_R" [label="4", color="#1f77b4", style=dashed];
+  }
+}

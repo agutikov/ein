@@ -1,0 +1,22 @@
+digraph rule_int_cmp_start_lhs_rhs {
+  rankdir=TB;
+  label="int-cmp-start"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-second (int-cmp ?x ?y) ?p ?n)_L" [label="(int-second (int-cmp ?x ?y) ?p ?n)", shape=rectangle];
+    "(int ?q ?m)_L" [label="(int ?q ?m)", shape=rectangle];
+    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "(int ?q ?m)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-cmp ?x ?y)_R" [label="(int-cmp ?x ?y)", shape=rectangle];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
+    "h1_int-cmp-call_R" [shape=octagon, label="int-cmp-call", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_int-cmp-call_R" -> "(int-cmp ?x ?y)_R" [label="1", color="#1f77b4", style=dashed];
+    "h1_int-cmp-call_R" -> "?p_R" [label="2", color="#1f77b4", style=dashed];
+    "h1_int-cmp-call_R" -> "?n_R" [label="3", color="#1f77b4", style=dashed];
+    "h1_int-cmp-call_R" -> "?q_R" [label="4", color="#1f77b4", style=dashed];
+    "h1_int-cmp-call_R" -> "?m_R" [label="5", color="#1f77b4", style=dashed];
+  }
+}

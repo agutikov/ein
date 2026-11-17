@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_rat_norm_done_lhs_rhs Pages: 1 -->
+<svg width="306pt" height="216pt"
+ viewBox="0.00 0.00 306.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_rat_norm_done_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 302,-211.75 302,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="149" y="-190.45" font-family="Times,serif" font-size="14.00">rat&#45;norm&#45;done</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 182,-174.5 182,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="95" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="190,-8 190,-174.5 290,-174.5 290,-8 190,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="240" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- (rat&#45;den&#45;norm ?k ?i)_L -->
+<g id="node1" class="node">
+<title>(rat&#45;den&#45;norm ?k ?i)_L</title>
+<polygon fill="none" stroke="black" points="173.5,-141.25 16.5,-141.25 16.5,-105.25 173.5,-105.25 173.5,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="95" y="-118.58" font-family="Times,serif" font-size="14.00">(rat&#45;den&#45;norm ?k ?i)</text>
+</g>
+<!-- ?e_L -->
+<g id="node2" class="node">
+<title>?e_L</title>
+<polygon fill="none" stroke="black" points="95,-52 63.5,-34 95,-16 126.5,-34 95,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="95" y="-29.32" font-family="Times,serif" font-size="14.00">?e</text>
+</g>
+<!-- (rat&#45;den&#45;norm ?k ?i)_L&#45;&gt;?e_L -->
+<g id="edge1" class="edge">
+<title>(rat&#45;den&#45;norm ?k ?i)_L&#45;&gt;?e_L</title>
+<path fill="none" stroke="#e377c2" d="M95,-105.01C95,-93.26 95,-77.41 95,-63.77"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="98.5,-64.01 95,-54.01 91.5,-64.01 98.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="112.25" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#e377c2">done</text>
+</g>
+<!-- ?k_R -->
+<g id="node3" class="node">
+<title>?k_R</title>
+<polygon fill="none" stroke="black" points="229,-141.25 197.5,-123.25 229,-105.25 260.5,-123.25 229,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="229" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- (rat ?i ?e)_R -->
+<g id="node4" class="node">
+<title>(rat ?i ?e)_R</title>
+<polygon fill="none" stroke="black" points="282.12,-52 197.88,-52 197.88,-16 282.12,-16 282.12,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="240" y="-29.32" font-family="Times,serif" font-size="14.00">(rat ?i ?e)</text>
+</g>
+<!-- ?k_R&#45;&gt;(rat ?i ?e)_R -->
+<g id="edge2" class="edge">
+<title>?k_R&#45;&gt;(rat ?i ?e)_R</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="5,2" d="M231.02,-106.25C232.52,-94.33 234.61,-77.75 236.4,-63.58"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="239.84,-64.26 237.62,-53.9 232.89,-63.38 239.84,-64.26"/>
+<text xml:space="preserve" text-anchor="middle" x="265.49" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#e377c2">rat&#45;done</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 79f60896b23eaa0bdcdb9521f72e7325d3d4cd6579d27183772ca7851ffcaf5b -->

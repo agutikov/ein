@@ -1,0 +1,22 @@
+digraph rule_mul_add_row_lhs_rhs {
+  rankdir=TB;
+  label="mul-add-row"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" [label="(mul-row-of ?k ?u ?rest (n ?p ?a))", shape=rectangle];
+    "?row_L" [label="?row", shape=diamond];
+    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" -> "?row_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(mul-sum ?k ?u ?rest)_R" [label="(mul-sum ?k ?u ?rest)", shape=rectangle];
+    "(n (n ?p ?a) 0)_R" [label="(n (n ?p ?a) 0)", shape=rectangle];
+    "?row_R" [label="?row", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
+    "h1_add-walk_R" -> "(mul-sum ?k ?u ?rest)_R" [label="1", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "(n (n ?p ?a) 0)_R" [label="2", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "?row_R" [label="3", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+  }
+}

@@ -1,0 +1,22 @@
+digraph rule_add_start_lhs_rhs {
+  rankdir=TB;
+  label="add-start"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?ADD-SECOND ?x ?y ?u)_L" [label="(?ADD-SECOND ?x ?y ?u)", shape=rectangle];
+    "?v_L" [label="?v", shape=diamond];
+    "(?ADD-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?SUM ?x ?y)_R" [label="(?SUM ?x ?y)", shape=rectangle];
+    "?u_R" [label="?u", shape=diamond];
+    "?v_R" [label="?v", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h1_ADD-WALK_R" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
+    "h1_ADD-WALK_R" -> "(?SUM ?x ?y)_R" [label="1", color="#17becf", style=dashed];
+    "h1_ADD-WALK_R" -> "?u_R" [label="2", color="#17becf", style=dashed];
+    "h1_ADD-WALK_R" -> "?v_R" [label="3", color="#17becf", style=dashed];
+    "h1_ADD-WALK_R" -> "0_R" [label="4", color="#17becf", style=dashed];
+    "h1_ADD-WALK_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+  }
+}

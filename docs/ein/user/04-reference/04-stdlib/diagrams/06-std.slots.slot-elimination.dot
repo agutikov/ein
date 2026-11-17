@@ -1,0 +1,27 @@
+digraph rule_slot_elimination_lhs_rhs {
+  rankdir=TB;
+  label="slot-elimination"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?Ta_L" [label="?Ta", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "?index_L" [label="?index", shape=diamond];
+    "?i_L" [label="?i", shape=diamond];
+    "?a_L" -> "?Ta_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    "?Ta_L" -> "?super_L" [label="?sub", color="#9467bd", fontcolor="#9467bd"];
+    "?Ta_L" -> "?index_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?i_L" -> "?index_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    subgraph cluster_forall_L_0 {
+      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?i_other_L" [label="?i_other", shape=diamond];
+      "?i_other_L" -> "?index_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+      "?i_other_L" -> "?i_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+      "?a_L" -> "?i_other_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?i_R" [label="?i", shape=diamond];
+    "?a_R" -> "?i_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  }
+}

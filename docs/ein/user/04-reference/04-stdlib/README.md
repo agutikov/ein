@@ -237,7 +237,8 @@ below, a variable a diamond, a fact of two arguments an arrow, any other an octa
 argument, an `absent` a dashed cluster ([Rendering](../12-rendering.md#rules--ein-render-rules-and-ein-render-rule)
 is the legend). A closing rule, which names every relation and rule of its module, is shown as Ein alone: its
 drawing is a few hundred nodes. The text and the drawing of a rule on these pages are generated from the module's
-file and the engine, and are not edited by hand.
+file and the engine, and are not edited by hand: the drawing's source is the file `NN-MODULE.RULE.dot` under
+[`diagrams/`](diagrams/), `NN` the page's number, and the page shows the picture drawn from it.
 
 A rule with parameters, `(rule transitive (?rel) …)`, is **activated** by a fact headed by its name,
 `(transitive linked)`, once for each such fact. A rule with none, `(rule gcd-step () …)`, is active wherever its

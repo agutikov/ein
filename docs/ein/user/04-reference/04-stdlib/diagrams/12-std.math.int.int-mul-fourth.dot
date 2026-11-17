@@ -1,0 +1,18 @@
+digraph rule_int_mul_fourth_lhs_rhs {
+  rankdir=TB;
+  label="int-mul-fourth"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-mul-pn ?k ?n ?q ?s)_L" [label="(int-mul-pn ?k ?n ?q ?s)", shape=rectangle];
+    "?c_L" [label="?c", shape=diamond];
+    "(int-mul-pn ?k ?n ?q ?s)_L" -> "?c_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-mul-np ?k ?s ?c)_R" [label="(int-mul-np ?k ?s ?c)", shape=rectangle];
+    "?n_R" [label="?n", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_mul-call_R" -> "(int-mul-np ?k ?s ?c)_R" [label="1", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?n_R" [label="2", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?q_R" [label="3", color="#2ca02c", style=dashed];
+  }
+}

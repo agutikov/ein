@@ -1,0 +1,18 @@
+digraph rule_int_mul_third_lhs_rhs {
+  rankdir=TB;
+  label="int-mul-third"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-mul-pos ?k ?p ?n ?q ?m)_L" [label="(int-mul-pos ?k ?p ?n ?q ?m)", shape=rectangle];
+    "?s_L" [label="?s", shape=diamond];
+    "(int-mul-pos ?k ?p ?n ?q ?m)_L" -> "?s_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-mul-pn ?k ?n ?q ?s)_R" [label="(int-mul-pn ?k ?n ?q ?s)", shape=rectangle];
+    "?p_R" [label="?p", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
+    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_mul-call_R" -> "(int-mul-pn ?k ?n ?q ?s)_R" [label="1", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?p_R" [label="2", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?m_R" [label="3", color="#2ca02c", style=dashed];
+  }
+}

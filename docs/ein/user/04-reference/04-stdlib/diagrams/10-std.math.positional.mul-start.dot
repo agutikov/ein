@@ -1,0 +1,18 @@
+digraph rule_mul_start_lhs_rhs {
+  rankdir=TB;
+  label="mul-start"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?MUL-SECOND ?x ?y ?u)_L" [label="(?MUL-SECOND ?x ?y ?u)", shape=rectangle];
+    "?v_L" [label="?v", shape=diamond];
+    "(?MUL-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?PRODUCT ?x ?y)_R" [label="(?PRODUCT ?x ?y)", shape=rectangle];
+    "?u_R" [label="?u", shape=diamond];
+    "?v_R" [label="?v", shape=diamond];
+    "h1_MUL-CALL_R" [shape=octagon, label="?MUL-CALL", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_MUL-CALL_R" -> "(?PRODUCT ?x ?y)_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_MUL-CALL_R" -> "?u_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_MUL-CALL_R" -> "?v_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

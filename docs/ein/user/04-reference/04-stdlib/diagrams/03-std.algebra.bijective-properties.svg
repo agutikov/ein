@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_bijective_properties_lhs_rhs Pages: 1 -->
+<svg width="689pt" height="216pt"
+ viewBox="0.00 0.00 689.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_bijective_properties_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 685,-211.75 685,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="340.5" y="-190.45" font-family="Times,serif" font-size="14.00">bijective&#45;properties</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 140,-174.5 140,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="148,-8 148,-174.5 673,-174.5 673,-8 148,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="410.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?R_L -->
+<g id="node1" class="node">
+<title>?R_L</title>
+<polygon fill="none" stroke="black" points="74,-52 40.27,-34 74,-16 107.73,-34 74,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- h1_bijective_L -->
+<g id="node2" class="node">
+<title>h1_bijective_L</title>
+<polygon fill="none" stroke="#17becf" points="132.27,-115.79 132.27,-130.71 98.14,-141.25 49.86,-141.25 15.73,-130.71 15.73,-115.79 49.86,-105.25 98.14,-105.25 132.27,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#17becf">bijective</text>
+</g>
+<!-- h1_bijective_L&#45;&gt;?R_L -->
+<g id="edge1" class="edge">
+<title>h1_bijective_L&#45;&gt;?R_L</title>
+<path fill="none" stroke="#17becf" d="M74,-105.01C74,-93.26 74,-77.41 74,-63.77"/>
+<polygon fill="#17becf" stroke="#17becf" points="77.5,-64.01 74,-54.01 70.5,-64.01 77.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="78.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_R -->
+<g id="node3" class="node">
+<title>?R_R</title>
+<polygon fill="none" stroke="black" points="421,-52 387.27,-34 421,-16 454.73,-34 421,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="421" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- h2_functional_R -->
+<g id="node4" class="node">
+<title>h2_functional_R</title>
+<polygon fill="none" stroke="#bcbd22" points="288.25,-115.79 288.25,-130.71 249.44,-141.25 194.56,-141.25 155.75,-130.71 155.75,-115.79 194.56,-105.25 249.44,-105.25 288.25,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="222" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">functional</text>
+</g>
+<!-- h2_functional_R&#45;&gt;?R_R -->
+<g id="edge2" class="edge">
+<title>h2_functional_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M257.12,-106.85C295.85,-89.87 357.38,-62.89 393,-47.28"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="394.03,-50.65 401.78,-43.42 391.22,-44.23 394.03,-50.65"/>
+<text xml:space="preserve" text-anchor="middle" x="343.82" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h3_injective_R -->
+<g id="node5" class="node">
+<title>h3_injective_R</title>
+<polygon fill="none" stroke="#ff7f0e" points="423.27,-115.79 423.27,-130.71 389.14,-141.25 340.86,-141.25 306.73,-130.71 306.73,-115.79 340.86,-105.25 389.14,-105.25 423.27,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="365" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">injective</text>
+</g>
+<!-- h3_injective_R&#45;&gt;?R_R -->
+<g id="edge3" class="edge">
+<title>h3_injective_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#ff7f0e" stroke-dasharray="5,2" d="M376.06,-105.01C384.82,-91.37 397.11,-72.22 406.62,-57.4"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="409.42,-59.53 411.87,-49.22 403.53,-55.74 409.42,-59.53"/>
+<text xml:space="preserve" text-anchor="middle" x="402.52" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h4_total_R -->
+<g id="node6" class="node">
+<title>h4_total_R</title>
+<polygon fill="none" stroke="#1f77b4" points="515.2,-115.79 515.2,-130.71 493.41,-141.25 462.59,-141.25 440.8,-130.71 440.8,-115.79 462.59,-105.25 493.41,-105.25 515.2,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="478" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#1f77b4">total</text>
+</g>
+<!-- h4_total_R&#45;&gt;?R_R -->
+<g id="edge4" class="edge">
+<title>h4_total_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M466.74,-105.01C457.83,-91.37 445.32,-72.22 435.63,-57.4"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="438.68,-55.67 430.29,-49.21 432.82,-59.5 438.68,-55.67"/>
+<text xml:space="preserve" text-anchor="middle" x="459.11" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h5_surjective_R -->
+<g id="node7" class="node">
+<title>h5_surjective_R</title>
+<polygon fill="none" stroke="#2ca02c" points="664.68,-115.79 664.68,-130.71 626.2,-141.25 571.8,-141.25 533.32,-130.71 533.32,-115.79 571.8,-105.25 626.2,-105.25 664.68,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="599" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">surjective</text>
+</g>
+<!-- h5_surjective_R&#45;&gt;?R_R -->
+<g id="edge5" class="edge">
+<title>h5_surjective_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M566.35,-106.25C532.42,-89.61 479.91,-63.87 448.16,-48.31"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="449.74,-45.19 439.22,-43.93 446.66,-51.48 449.74,-45.19"/>
+<text xml:space="preserve" text-anchor="middle" x="530.44" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 4a288b158d914b4f92517071d1ae0e367c8d5f8cfe6f46ef311562415a61347c -->

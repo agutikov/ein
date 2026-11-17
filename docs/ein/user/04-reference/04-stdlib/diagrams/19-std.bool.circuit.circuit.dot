@@ -1,0 +1,27 @@
+digraph rule_circuit_lhs_rhs {
+  rankdir=TB;
+  label="circuit"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "gate_R" [label="gate", shape=rectangle];
+    "val_R" [label="val", shape=rectangle];
+    "circuit-rule_R" [label="circuit-rule", shape=rectangle];
+    "propagate_R" [label="propagate", shape=rectangle];
+    "one-value_R" [label="one-value", shape=rectangle];
+    "gates_R" [label="gates", shape=rectangle];
+    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h2___closed___R" -> "gate_R" [label="1", color="#e377c2", style=dashed];
+    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h3___closed___R" -> "val_R" [label="1", color="#e377c2", style=dashed];
+    "h4___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h4___closed___R" -> "circuit-rule_R" [label="1", color="#e377c2", style=dashed];
+    "h5_circuit-rule_R" [shape=octagon, label="circuit-rule", color="#17becf", fontcolor="#17becf"];
+    "h5_circuit-rule_R" -> "propagate_R" [label="1", color="#17becf", style=dashed];
+    "h6_circuit-rule_R" [shape=octagon, label="circuit-rule", color="#17becf", fontcolor="#17becf"];
+    "h6_circuit-rule_R" -> "one-value_R" [label="1", color="#17becf", style=dashed];
+    "h7_circuit-rule_R" [shape=octagon, label="circuit-rule", color="#17becf", fontcolor="#17becf"];
+    "h7_circuit-rule_R" -> "gates_R" [label="1", color="#17becf", style=dashed];
+  }
+}

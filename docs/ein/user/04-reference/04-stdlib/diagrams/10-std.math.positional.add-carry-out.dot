@@ -1,0 +1,25 @@
+digraph rule_add_carry_out_lhs_rhs {
+  rankdir=TB;
+  label="add-carry-out"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    "1_L" [label="1", shape=rectangle];
+    "?acc_L" [label="?acc", shape=diamond];
+    "h1_ADD-WALK_L" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
+    "h1_ADD-WALK_L" -> "?k_L" [label="1", color="#17becf"];
+    "h1_ADD-WALK_L" -> "z_L" [label="2", color="#17becf"];
+    "h1_ADD-WALK_L" -> "z_L" [label="3", color="#17becf"];
+    "h1_ADD-WALK_L" -> "1_L" [label="4", color="#17becf"];
+    "h1_ADD-WALK_L" -> "?acc_L" [label="5", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "(?B 1 ?acc)_R" [label="(?B 1 ?acc)", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h2_TURN_R" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
+    "h2_TURN_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
+    "h2_TURN_R" -> "(?B 1 ?acc)_R" [label="2", color="#9467bd", style=dashed];
+    "h2_TURN_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
+  }
+}

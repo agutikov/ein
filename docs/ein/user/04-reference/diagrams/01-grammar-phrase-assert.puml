@@ -1,0 +1,11 @@
+@startebnf
+Assert = "(" , ")" | Conclusion | "(" , "open" , ")" | "(" , "open" , AnyHead , ")" ;
+Conclusion =
+    "(" , ConclusionHead , Terms , ")"
+  | "(" , "and" , Conclusions , ")"
+  | "(" , "not" , Negated , ")"
+  | "(" , "not" , Var , ")"
+  | "(" , "false" , ")"
+  | Guard ;
+Conclusions = { Conclusion }- ;
+@endebnf

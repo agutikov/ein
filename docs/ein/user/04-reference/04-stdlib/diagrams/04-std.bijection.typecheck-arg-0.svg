@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_typecheck_arg_0_lhs_rhs Pages: 1 -->
+<svg width="342pt" height="257pt"
+ viewBox="0.00 0.00 342.00 257.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 253)">
+<title>rule_typecheck_arg_0_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-253 338,-253 338,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="167" y="-231.7" font-family="Times,serif" font-size="14.00">typecheck&#45;arg&#45;0</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-215.75 226,-215.75 226,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="117" y="-198.45" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_absent_L_0</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M28,-16C28,-16 132,-16 132,-16 138,-16 144,-22 144,-28 144,-28 144,-170.5 144,-170.5 144,-176.5 138,-182.5 132,-182.5 132,-182.5 28,-182.5 28,-182.5 22,-182.5 16,-176.5 16,-170.5 16,-170.5 16,-28 16,-28 16,-22 22,-16 28,-16"/>
+<text xml:space="preserve" text-anchor="middle" x="80" y="-165.2" font-family="Times,serif" font-size="14.00" fill="#888888">absent (∄)</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="234,-105.25 234,-182.5 326,-182.5 326,-105.25 234,-105.25"/>
+<text xml:space="preserve" text-anchor="middle" x="280" y="-165.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?a_L -->
+<g id="node1" class="node">
+<title>?a_L</title>
+<polygon fill="none" stroke="black" points="98,-149.25 66.5,-131.25 98,-113.25 129.5,-131.25 98,-149.25"/>
+<text xml:space="preserve" text-anchor="middle" x="98" y="-126.58" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?b_L -->
+<g id="node2" class="node">
+<title>?b_L</title>
+<polygon fill="none" stroke="black" points="186,-60 153.76,-42 186,-24 218.24,-42 186,-60"/>
+<text xml:space="preserve" text-anchor="middle" x="186" y="-37.33" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?a_L&#45;&gt;?b_L -->
+<g id="edge1" class="edge">
+<title>?a_L&#45;&gt;?b_L</title>
+<path fill="none" stroke="#1f77b4" d="M109.15,-119.2C123.61,-104.86 149.09,-79.6 166.72,-62.11"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="168.96,-64.83 173.59,-55.3 164.03,-59.86 168.96,-64.83"/>
+<text xml:space="preserve" text-anchor="middle" x="158.88" y="-81.95" font-family="Times,serif" font-size="14.00" fill="#1f77b4">?R</text>
+</g>
+<!-- ?Dom_L -->
+<g id="node3" class="node">
+<title>?Dom_L</title>
+<polygon fill="none" stroke="black" points="80,-60 23.95,-42 80,-24 136.05,-42 80,-60"/>
+<text xml:space="preserve" text-anchor="middle" x="80" y="-37.33" font-family="Times,serif" font-size="14.00">?Dom</text>
+</g>
+<!-- ?a_L&#45;&gt;?Dom_L -->
+<g id="edge2" class="edge">
+<title>?a_L&#45;&gt;?Dom_L</title>
+<path fill="none" stroke="#bcbd22" d="M85.77,-119.94C79.21,-113.58 71.77,-104.83 68.25,-95.25 65.13,-86.75 66.08,-77.17 68.46,-68.54"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="71.67,-69.96 71.68,-59.36 65.06,-67.64 71.67,-69.96"/>
+<text xml:space="preserve" text-anchor="middle" x="82.12" y="-81.95" font-family="Times,serif" font-size="14.00" fill="#bcbd22">?isa</text>
+</g>
+<!-- h1_false_R -->
+<g id="node4" class="node">
+<title>h1_false_R</title>
+<polygon fill="none" stroke="#2ca02c" points="317.77,-123.79 317.77,-138.71 295.65,-149.25 264.35,-149.25 242.23,-138.71 242.23,-123.79 264.35,-113.25 295.65,-113.25 317.77,-123.79"/>
+<text xml:space="preserve" text-anchor="middle" x="280" y="-126.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">false</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 0ffd0917f6c9a8ccdcec2293046f96eb328737a4d74f8528d65f08f93ef17917 -->

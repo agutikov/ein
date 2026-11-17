@@ -1,0 +1,17 @@
+digraph rule_numeral_prefix_digit_lhs_rhs {
+  rankdir=TB;
+  label="numeral-prefix-digit"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(n ?m ?a)_L" [label="(n ?m ?a)", shape=rectangle];
+    "?m_L" [label="?m", shape=diamond];
+    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
+    "h1_written_L" -> "(n ?m ?a)_L" [label="1", color="#d62728"];
+    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
+    "h2_nz_L" -> "?m_L" [label="1", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(n ?m ?a)_R" [label="(n ?m ?a)", shape=rectangle];
+    "?m_R" [label="?m", shape=diamond];
+    "(n ?m ?a)_R" -> "?m_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

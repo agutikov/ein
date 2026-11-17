@@ -1,0 +1,5 @@
+@startebnf
+Config = "(" , "config" , ConfigClauses , ")" ;
+ConfigClause = ":lattice-sanity-check" , Bool | ":record-alternative-justifications" , Bool ;
+ConfigClauses = { ConfigClause } ;
+@endebnf

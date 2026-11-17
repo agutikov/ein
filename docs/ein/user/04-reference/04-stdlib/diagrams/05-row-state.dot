@@ -1,0 +1,22 @@
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  // facts
+  "House" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Colour" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "H1" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "H2" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "H3" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Red" -> "Colour" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Green" -> "Colour" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Blue" -> "Colour" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "H2" -> "H1" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "H3" -> "H2" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "Green" -> "Red" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "Blue" -> "H1" [label="co-loc", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "H1" -> "Blue" [label="co-loc by symmetric", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Green" -> "H3" [label="co-loc by std.slots.slot-elimination", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "H3" -> "Green" [label="co-loc by symmetric", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Red" -> "H2" [label="co-loc by std.slots.slot-elimination", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "H2" -> "Red" [label="co-loc by symmetric", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+}

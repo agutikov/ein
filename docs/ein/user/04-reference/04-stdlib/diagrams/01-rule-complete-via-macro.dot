@@ -1,0 +1,21 @@
+digraph rule_complete_via_macro_lhs_rhs {
+  rankdir=TB;
+  label="complete-via-macro"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?g_L" [label="?g", shape=diamond];
+    "h1_group_L" [shape=octagon, label="group", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_group_L" -> "?g_L" [label="1", color="#ff7f0e"];
+    subgraph cluster_forall_L_0 {
+      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?y_L" [label="?y", shape=diamond];
+      "?y_L" -> "?g_L" [label="member", color="#ff7f0e", fontcolor="#ff7f0e"];
+      "h2_marked_L" [shape=octagon, label="marked", color="#2ca02c", fontcolor="#2ca02c"];
+      "h2_marked_L" -> "?y_L" [label="1", color="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?g_R" [label="?g", shape=diamond];
+    "h3_complete_R" [shape=octagon, label="complete", color="#2ca02c", fontcolor="#2ca02c"];
+    "h3_complete_R" -> "?g_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}

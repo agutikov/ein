@@ -1,0 +1,18 @@
+digraph rule_to_bin_end_lhs_rhs {
+  rankdir=TB;
+  label="to-bin-end"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?x_L" [label="?x", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    "?acc_L" [label="?acc", shape=diamond];
+    "h1_to-bin-go_L" [shape=octagon, label="to-bin-go", color="#17becf", fontcolor="#17becf"];
+    "h1_to-bin-go_L" -> "?x_L" [label="1", color="#17becf"];
+    "h1_to-bin-go_L" -> "z_L" [label="2", color="#17becf"];
+    "h1_to-bin-go_L" -> "?acc_L" [label="3", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(bits ?x)_R" [label="(bits ?x)", shape=rectangle];
+    "?acc_R" [label="?acc", shape=diamond];
+    "(bits ?x)_R" -> "?acc_R" [label="bin-strip", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

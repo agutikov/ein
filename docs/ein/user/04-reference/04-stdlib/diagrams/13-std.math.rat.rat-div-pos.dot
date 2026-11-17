@@ -1,0 +1,26 @@
+digraph rule_rat_div_pos_lhs_rhs {
+  rankdir=TB;
+  label="rat-div-pos"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-div-by ?k ?p ?n ?d ?e)_L" [label="(rat-div-by ?k ?p ?n ?d ?e)", shape=rectangle];
+    "(int (n ?a ?b) z)_L" [label="(int (n ?a ?b) z)", shape=rectangle];
+    "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "(int (n ?a ?b) z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "?e_R" [label="?e", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "(n ?a ?b)_R" [label="(n ?a ?b)", shape=rectangle];
+    "h1_rat-mul-call_R" [shape=octagon, label="rat-mul-call", color="#8c564b", fontcolor="#8c564b"];
+    "h1_rat-mul-call_R" -> "?k_R" [label="1", color="#8c564b", style=dashed];
+    "h1_rat-mul-call_R" -> "?p_R" [label="2", color="#8c564b", style=dashed];
+    "h1_rat-mul-call_R" -> "?n_R" [label="3", color="#8c564b", style=dashed];
+    "h1_rat-mul-call_R" -> "?d_R" [label="4", color="#8c564b", style=dashed];
+    "h1_rat-mul-call_R" -> "?e_R" [label="5", color="#8c564b", style=dashed];
+    "h1_rat-mul-call_R" -> "z_R" [label="6", color="#8c564b", style=dashed];
+    "h1_rat-mul-call_R" -> "(n ?a ?b)_R" [label="7", color="#8c564b", style=dashed];
+  }
+}

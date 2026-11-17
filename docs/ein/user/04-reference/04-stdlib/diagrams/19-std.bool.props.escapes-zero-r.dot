@@ -1,0 +1,19 @@
+digraph rule_escapes_zero_r_lhs_rhs {
+  rankdir=TB;
+  label="escapes-zero-r"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?f_L" [label="?f", shape=diamond];
+    "0_L" [label="0", shape=rectangle];
+    "1_L" [label="1", shape=rectangle];
+    "h1_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [label="2", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [label="3", color="#7f7f7f"];
+    "h1_gate2_L" -> "1_L" [label="4", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?f_R" [label="?f", shape=diamond];
+    "h2_escapes-zero_R" [shape=octagon, label="escapes-zero", color="#9467bd", fontcolor="#9467bd"];
+    "h2_escapes-zero_R" -> "?f_R" [label="1", color="#9467bd", style=dashed];
+  }
+}

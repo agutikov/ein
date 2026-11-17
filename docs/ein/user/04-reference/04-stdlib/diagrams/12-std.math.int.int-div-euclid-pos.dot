@@ -1,0 +1,18 @@
+digraph rule_int_div_euclid_pos_lhs_rhs {
+  rankdir=TB;
+  label="int-div-euclid-pos"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-div-r (int-div-euclid ?x ?y) pos ?q)_L" [label="(int-div-r (int-div-euclid ?x ?y) pos ?q)", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "(int-div-r (int-div-euclid ?x ?y) pos ?q)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-div-euclid ?x ?y)_R" [label="(int-div-euclid ?x ?y)", shape=rectangle];
+    "(int ?q z)_R" [label="(int ?q z)", shape=rectangle];
+    "?t_R" [label="?t", shape=diamond];
+    "h1_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_int-div-done_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
+    "h1_int-div-done_R" -> "(int ?q z)_R" [label="2", color="#2ca02c", style=dashed];
+    "h1_int-div-done_R" -> "?t_R" [label="3", color="#2ca02c", style=dashed];
+  }
+}

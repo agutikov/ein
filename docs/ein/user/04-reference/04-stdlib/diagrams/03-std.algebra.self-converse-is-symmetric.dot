@@ -1,0 +1,13 @@
+digraph rule_self_converse_is_symmetric_lhs_rhs {
+  rankdir=TB;
+  label="self-converse-is-symmetric"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?R_L" -> "?R_L" [label="converse", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h1_symmetric_R" [shape=octagon, label="symmetric", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_symmetric_R" -> "?R_R" [label="1", color="#7f7f7f", style=dashed];
+  }
+}

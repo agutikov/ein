@@ -1,0 +1,21 @@
+digraph rule_strip_top_lhs_rhs {
+  rankdir=TB;
+  label="strip-top"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "(?B ?a ?r)_L" [label="(?B ?a ?r)", shape=rectangle];
+    "?a_L" [label="?a", shape=diamond];
+    "?k_L" -> "(?B ?a ?r)_L" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_NZ_L" -> "?a_L" [label="1", color="#ff7f0e"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "(?B ?a ?r)_R" [label="(?B ?a ?r)", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h2_TURN_R" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
+    "h2_TURN_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
+    "h2_TURN_R" -> "(?B ?a ?r)_R" [label="2", color="#9467bd", style=dashed];
+    "h2_TURN_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
+  }
+}

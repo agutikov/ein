@@ -6,16 +6,7 @@ has no numbers. Four modules, each entered by its last name, which closes its re
 [Q-M1f.328](../../../../decisions/stdlib/bool/Q-M1f.328-boolean-functions-and-circuits-ship-as-four-std.md)). An
 arrow reads *imports*:
 
-```dot
-digraph bool {
-  rankdir=BT;
-  node [shape=box, fontname="monospace"];
-  "std.bool.props" -> "std.bool.gates";
-  "std.bool.circuit" -> "std.bool.gates";
-  "std.bool.inputs" -> "std.bool.circuit";
-  "std.bool.inputs" -> "std.algebra";
-}
-```
+![The modules of std.bool, an arrow from each to a module it imports](diagrams/18-bool-modules.svg)
 
 Nothing but `std.bool.inputs` guesses, and it guesses only an input's value. No rule of the four writes `absent`,
 `not` or `or`. Their rules are [the next page](19-boolean-rules.md).

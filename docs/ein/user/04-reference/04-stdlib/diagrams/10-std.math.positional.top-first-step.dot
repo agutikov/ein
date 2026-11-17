@@ -1,0 +1,22 @@
+digraph rule_top_first_step_lhs_rhs {
+  rankdir=TB;
+  label="top-first-step"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
+    "?acc_L" [label="?acc", shape=diamond];
+    "h1_TOP-FIRST_L" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?k_L" [label="1", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "(?N ?p ?a)_L" [label="2", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?acc_L" [label="3", color="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "(?B ?a ?acc)_R" [label="(?B ?a ?acc)", shape=rectangle];
+    "h2_TOP-FIRST_R" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
+    "h2_TOP-FIRST_R" -> "?k_R" [label="1", color="#e377c2", style=dashed];
+    "h2_TOP-FIRST_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
+    "h2_TOP-FIRST_R" -> "(?B ?a ?acc)_R" [label="3", color="#e377c2", style=dashed];
+  }
+}

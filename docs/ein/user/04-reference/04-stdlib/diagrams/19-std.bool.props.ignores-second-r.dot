@@ -1,0 +1,20 @@
+digraph rule_ignores_second_r_lhs_rhs {
+  rankdir=TB;
+  label="ignores-second-r"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?f_L" [label="?f", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    "h1_column_L" [shape=octagon, label="column", color="#d62728", fontcolor="#d62728"];
+    "h1_column_L" -> "?f_L" [label="1", color="#d62728"];
+    "h1_column_L" -> "?a_L" [label="2", color="#d62728"];
+    "h1_column_L" -> "?a_L" [label="3", color="#d62728"];
+    "h1_column_L" -> "?c_L" [label="4", color="#d62728"];
+    "h1_column_L" -> "?c_L" [label="5", color="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?f_R" [label="?f", shape=diamond];
+    "h2_ignores-second_R" [shape=octagon, label="ignores-second", color="#1f77b4", fontcolor="#1f77b4"];
+    "h2_ignores-second_R" -> "?f_R" [label="1", color="#1f77b4", style=dashed];
+  }
+}

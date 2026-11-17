@@ -1,0 +1,18 @@
+digraph rule_rat_mul_denominator_lhs_rhs {
+  rankdir=TB;
+  label="rat-mul-denominator"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-mul-num ?k ?d ?e)_L" [label="(rat-mul-num ?k ?d ?e)", shape=rectangle];
+    "?i_L" [label="?i", shape=diamond];
+    "(rat-mul-num ?k ?d ?e)_L" -> "?i_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-mul-den ?k ?i)_R" [label="(rat-mul-den ?k ?i)", shape=rectangle];
+    "?d_R" [label="?d", shape=diamond];
+    "?e_R" [label="?e", shape=diamond];
+    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_mul-call_R" -> "(rat-mul-den ?k ?i)_R" [label="1", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?d_R" [label="2", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?e_R" [label="3", color="#2ca02c", style=dashed];
+  }
+}

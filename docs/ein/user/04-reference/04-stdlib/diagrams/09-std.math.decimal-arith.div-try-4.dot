@@ -1,0 +1,41 @@
+digraph rule_div_try_4_lhs_rhs {
+  rankdir=TB;
+  label="div-try-4"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
+    "?rest_L" [label="?rest", shape=diamond];
+    "?w_L" [label="?w", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?lo_L" [label="?lo", shape=diamond];
+    "?hi_L" [label="?hi", shape=diamond];
+    "?left_L" [label="?left", shape=diamond];
+    "4_L" [label="4", shape=rectangle];
+    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
+    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
+    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
+    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
+    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
+    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
+    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
+    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
+    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
+    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
+    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
+    "h2_mid_L" -> "4_L" [label="3", color="#ff7f0e"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)", shape=rectangle];
+    "?u_R" [label="?u", shape=diamond];
+    "?m4_R" [label="?m4", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
+    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)_R" [label="1", color="#8c564b", style=dashed];
+    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
+    "h3_sub-walk_R" -> "?m4_R" [label="3", color="#8c564b", style=dashed];
+    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
+    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
+  }
+}

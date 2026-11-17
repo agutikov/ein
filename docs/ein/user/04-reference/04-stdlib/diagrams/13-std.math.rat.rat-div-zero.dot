@@ -1,0 +1,14 @@
+digraph rule_rat_div_zero_lhs_rhs {
+  rankdir=TB;
+  label="rat-div-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" [label="(rat-div-by ?request ?p ?n ?d ?e)", shape=rectangle];
+    "(int z z)_L" [label="(int z z)", shape=rectangle];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "(int z z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?request_R" [label="?request", shape=diamond];
+    "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
+    "h1_division-by-zero_R" -> "?request_R" [label="1", color="#e377c2", style=dashed];
+  }
+}

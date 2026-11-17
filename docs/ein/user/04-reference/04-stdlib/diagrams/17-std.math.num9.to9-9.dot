@@ -1,0 +1,14 @@
+digraph rule_to9_9_lhs_rhs {
+  rankdir=TB;
+  label="to9-9"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_L" [label="(n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)", shape=rectangle];
+    "h1_to9_L" [shape=octagon, label="to9", color="#9467bd", fontcolor="#9467bd"];
+    "h1_to9_L" -> "(n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_L" [label="1", color="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" [label="(n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)", shape=rectangle];
+    "(num9 ?a9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" [label="(num9 ?a9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)", shape=rectangle];
+    "(n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" -> "(num9 ?a9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" [label="as9", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

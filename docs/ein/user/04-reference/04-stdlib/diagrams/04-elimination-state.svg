@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="1683pt" height="228pt"
+ viewBox="0.00 0.00 1683.00 228.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 224.28)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-224.28 1679.46,-224.28 1679.46,4 -4,4"/>
+<!-- Agent -->
+<g id="node1" class="node">
+<title>Agent</title>
+<polygon fill="none" stroke="black" points="474.54,-129.59 418.79,-129.59 418.79,-93.59 474.54,-93.59 474.54,-129.59"/>
+<text xml:space="preserve" text-anchor="middle" x="446.66" y="-108.04" font-family="Inter" font-size="14.00">Agent</text>
+</g>
+<!-- Colour -->
+<g id="node2" class="node">
+<title>Colour</title>
+<polygon fill="none" stroke="black" points="390.79,-220.28 330.54,-220.28 330.54,-184.28 390.79,-184.28 390.79,-220.28"/>
+<text xml:space="preserve" text-anchor="middle" x="360.66" y="-198.73" font-family="Inter" font-size="14.00">Colour</text>
+</g>
+<!-- Ann -->
+<g id="node3" class="node">
+<title>Ann</title>
+<ellipse fill="none" stroke="black" cx="171.66" cy="-19.45" rx="30.41" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="171.66" y="-15.9" font-family="Inter" font-size="14.00">Ann</text>
+</g>
+<!-- Ann&#45;&gt;Agent -->
+<g id="edge1" class="edge">
+<title>Ann&#45;&gt;Agent</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M200.36,-26.68C227.81,-33.01 270.17,-43.74 305.66,-56.89 322.39,-63.09 325.16,-67.99 341.91,-74.14 368.19,-83.79 378.41,-81.75 407.86,-91.93"/>
+<polygon fill="none" stroke="black" points="406.63,-95.2 417.22,-95.36 409.04,-88.63 406.63,-95.2"/>
+<text xml:space="preserve" text-anchor="middle" x="354.29" y="-60.84" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Blue -->
+<g id="node4" class="node">
+<title>Blue</title>
+<ellipse fill="none" stroke="black" cx="140.66" cy="-111.59" rx="32.53" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="140.66" y="-108.04" font-family="Inter" font-size="14.00">Blue</text>
+</g>
+<!-- Ann&#45;&gt;Blue -->
+<g id="edge12" class="edge">
+<title>Ann&#45;&gt;Blue</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M141.35,-22.69C98.36,-26.58 23.02,-36.22 6.41,-56.89 -20.45,-90.31 48.3,-103.04 97.03,-107.81"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="96.53,-111.28 106.8,-108.68 97.15,-104.31 96.53,-111.28"/>
+<text xml:space="preserve" text-anchor="middle" x="156.04" y="-60.84" font-family="Times,serif" font-size="14.00" fill="#8c564b">wears by std.bijection.domain&#45;elimination</text>
+</g>
+<!-- Blue&#45;&gt;Colour -->
+<g id="edge6" class="edge">
+<title>Blue&#45;&gt;Colour</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M167.2,-123.29C205.1,-138.57 275.08,-166.78 319.67,-184.76"/>
+<polygon fill="none" stroke="black" points="318.16,-187.92 328.75,-188.41 320.78,-181.43 318.16,-187.92"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-152.98" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Bob -->
+<g id="node5" class="node">
+<title>Bob</title>
+<ellipse fill="none" stroke="black" cx="395.66" cy="-19.45" rx="29.34" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="395.66" y="-15.9" font-family="Inter" font-size="14.00">Bob</text>
+</g>
+<!-- Bob&#45;&gt;Agent -->
+<g id="edge2" class="edge">
+<title>Bob&#45;&gt;Agent</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M407.56,-37.61C411.56,-43.62 415.94,-50.46 419.66,-56.89 424.51,-65.28 429.39,-74.64 433.64,-83.17"/>
+<polygon fill="none" stroke="black" points="430.44,-84.59 437.98,-92.03 436.73,-81.51 430.44,-84.59"/>
+<text xml:space="preserve" text-anchor="middle" x="440.75" y="-60.84" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Green -->
+<g id="node7" class="node">
+<title>Green</title>
+<ellipse fill="none" stroke="black" cx="360.66" cy="-111.59" rx="40.48" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="360.66" y="-108.04" font-family="Inter" font-size="14.00">Green</text>
+</g>
+<!-- Bob&#45;&gt;Green -->
+<g id="edge9" class="edge">
+<title>Bob&#45;&gt;Green</title>
+<path fill="none" stroke="#8c564b" d="M385.85,-37.94C382.75,-43.85 379.47,-50.56 376.91,-56.89 373.82,-64.53 370.99,-72.99 368.6,-80.89"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="365.25,-79.88 365.84,-90.46 371.97,-81.82 365.25,-79.88"/>
+<text xml:space="preserve" text-anchor="middle" x="398.29" y="-60.84" font-family="Times,serif" font-size="14.00" fill="#8c564b">wears</text>
+</g>
+<!-- Cid -->
+<g id="node6" class="node">
+<title>Cid</title>
+<ellipse fill="none" stroke="black" cx="513.66" cy="-19.45" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="513.66" y="-15.9" font-family="Inter" font-size="14.00">Cid</text>
+</g>
+<!-- Cid&#45;&gt;Agent -->
+<g id="edge3" class="edge">
+<title>Cid&#45;&gt;Agent</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M501.37,-36.98C491.55,-50.2 477.59,-68.97 466.23,-84.25"/>
+<polygon fill="none" stroke="black" points="463.62,-81.91 460.46,-92.02 469.23,-86.08 463.62,-81.91"/>
+<text xml:space="preserve" text-anchor="middle" x="498.54" y="-60.84" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Red -->
+<g id="node8" class="node">
+<title>Red</title>
+<ellipse fill="none" stroke="black" cx="527.66" cy="-111.59" rx="29.34" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="527.66" y="-108.04" font-family="Inter" font-size="14.00">Red</text>
+</g>
+<!-- Cid&#45;&gt;Red -->
+<g id="edge13" class="edge">
+<title>Cid&#45;&gt;Red</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M516.56,-39.12C518.42,-51.09 520.87,-66.89 523,-80.58"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="519.54,-81.09 524.53,-90.44 526.45,-80.02 519.54,-81.09"/>
+<text xml:space="preserve" text-anchor="middle" x="671.54" y="-60.84" font-family="Times,serif" font-size="14.00" fill="#8c564b">wears by std.bijection.domain&#45;elimination</text>
+</g>
+<!-- Green&#45;&gt;Colour -->
+<g id="edge5" class="edge">
+<title>Green&#45;&gt;Colour</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M360.66,-131.4C360.66,-143.43 360.66,-159.27 360.66,-172.83"/>
+<polygon fill="none" stroke="black" points="357.16,-172.49 360.66,-182.49 364.16,-172.49 357.16,-172.49"/>
+<text xml:space="preserve" text-anchor="middle" x="373.04" y="-152.98" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Red&#45;&gt;Colour -->
+<g id="edge4" class="edge">
+<title>Red&#45;&gt;Colour</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M505.14,-124.55C478.55,-138.67 433.81,-162.43 401.15,-179.77"/>
+<polygon fill="none" stroke="black" points="399.54,-176.67 392.35,-184.45 402.82,-182.85 399.54,-176.67"/>
+<text xml:space="preserve" text-anchor="middle" x="466.53" y="-152.98" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- wears -->
+<g id="node9" class="node">
+<title>wears</title>
+<ellipse fill="none" stroke="black" cx="1063.66" cy="-19.45" rx="39.42" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="1063.66" y="-15.9" font-family="Inter" font-size="14.00">wears</text>
+</g>
+<!-- wears&#45;&gt;wears -->
+<g id="edge7" class="edge">
+<title>wears&#45;&gt;wears</title>
+<path fill="none" stroke="#17becf" d="M1099.55,-10.81C1111.51,-10.81 1121.08,-13.69 1121.08,-19.45 1121.08,-23.22 1116.96,-25.76 1110.75,-27.06"/>
+<polygon fill="#17becf" stroke="#17becf" points="1110.7,-23.55 1101.06,-27.95 1111.33,-30.52 1110.7,-23.55"/>
+<text xml:space="preserve" text-anchor="middle" x="1151.46" y="-14.77" font-family="Times,serif" font-size="14.00" fill="#17becf">bijective</text>
+</g>
+<!-- is&#45;a -->
+<g id="node10" class="node">
+<title>is&#45;a</title>
+<ellipse fill="none" stroke="black" cx="1063.66" cy="-111.59" rx="27.22" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="1063.66" y="-108.04" font-family="Inter" font-size="14.00">is&#45;a</text>
+</g>
+<!-- wears&#45;&gt;is&#45;a -->
+<g id="edge10" class="edge">
+<title>wears&#45;&gt;is&#45;a</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M1024.35,-21.73C971.38,-24.39 881.33,-32.47 860.91,-56.89 855.99,-62.77 855.99,-68.26 860.91,-74.14 881.39,-98.63 971.88,-106.69 1024.8,-109.32"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="1024.45,-112.81 1034.6,-109.76 1024.77,-105.82 1024.45,-112.81"/>
+<text xml:space="preserve" text-anchor="middle" x="1053.29" y="-60.84" font-family="Times,serif" font-size="14.00" fill="#9467bd">std.algebra.total&#45;owed by std.bijection.bijective&#45;setup</text>
+</g>
+<!-- wears&#45;&gt;is&#45;a -->
+<g id="edge11" class="edge">
+<title>wears&#45;&gt;is&#45;a</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M1103.41,-19.66C1168.05,-19.72 1284.97,-26.18 1245.66,-74.14 1227.87,-95.84 1150.07,-104.88 1102.13,-108.45"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="1102.18,-104.93 1092.44,-109.12 1102.66,-111.92 1102.18,-104.93"/>
+<text xml:space="preserve" text-anchor="middle" x="1464.34" y="-60.84" font-family="Times,serif" font-size="14.00" fill="#8c564b">std.algebra.surjective&#45;owed by std.bijection.bijective&#45;setup</text>
+</g>
+<!-- is&#45;a&#45;&gt;is&#45;a -->
+<g id="edge8" class="edge">
+<title>is&#45;a&#45;&gt;is&#45;a</title>
+<path fill="none" stroke="#8c564b" d="M1088.32,-103.08C1099.34,-102.27 1108.88,-105.11 1108.88,-111.59 1108.88,-115.64 1105.16,-118.26 1099.67,-119.46"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="1099.62,-115.96 1089.83,-120.01 1100,-122.95 1099.62,-115.96"/>
+<text xml:space="preserve" text-anchor="middle" x="1176.01" y="-106.91" font-family="Times,serif" font-size="14.00" fill="#8c564b">bijection&#45;hierarchy</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: fc9c030e59d6695a098afee7205e4d50b4ab7cc33f7fb9d39f88b7716252467c -->

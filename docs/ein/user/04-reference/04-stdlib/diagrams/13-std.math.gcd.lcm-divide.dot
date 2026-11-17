@@ -1,0 +1,18 @@
+digraph rule_lcm_divide_lhs_rhs {
+  rankdir=TB;
+  label="lcm-divide"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(lcm-p ?x ?y ?g)_L" [label="(lcm-p ?x ?y ?g)", shape=rectangle];
+    "?m_L" [label="?m", shape=diamond];
+    "(lcm-p ?x ?y ?g)_L" -> "?m_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(lcm-q ?x ?y)_R" [label="(lcm-q ?x ?y)", shape=rectangle];
+    "?m_R" [label="?m", shape=diamond];
+    "?g_R" [label="?g", shape=diamond];
+    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_div-call_R" -> "(lcm-q ?x ?y)_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_div-call_R" -> "?m_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

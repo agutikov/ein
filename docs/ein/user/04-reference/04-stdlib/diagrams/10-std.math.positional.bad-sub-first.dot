@@ -1,0 +1,14 @@
+digraph rule_bad_sub_first_lhs_rhs {
+  rankdir=TB;
+  label="bad-sub-first"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?SUB-FIRST ?x ?y)_L" [label="(?SUB-FIRST ?x ?y)", shape=rectangle];
+    "?f_L" [label="?f", shape=diamond];
+    "(?SUB-FIRST ?x ?y)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?SUB ?x ?y)_R" [label="(?SUB ?x ?y)", shape=rectangle];
+    "?f_R" [label="?f", shape=diamond];
+    "(?SUB ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

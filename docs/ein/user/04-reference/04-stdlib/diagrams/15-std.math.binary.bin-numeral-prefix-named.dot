@@ -1,0 +1,19 @@
+digraph rule_bin_numeral_prefix_named_lhs_rhs {
+  rankdir=TB;
+  label="bin-numeral-prefix-named"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(b2 ?m ?a)_L" [label="(b2 ?m ?a)", shape=rectangle];
+    "?m_L" [label="?m", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
+    "h1_written_L" -> "(b2 ?m ?a)_L" [label="1", color="#d62728"];
+    "?m_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "h2_bin-named_L" [shape=octagon, label="bin-named", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_bin-named_L" -> "?m_L" [label="1", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(b2 ?m ?a)_R" [label="(b2 ?m ?a)", shape=rectangle];
+    "?m_R" [label="?m", shape=diamond];
+    "(b2 ?m ?a)_R" -> "?m_R" [label="not-binary", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  }
+}

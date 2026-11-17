@@ -1,0 +1,22 @@
+digraph rule_rat_lowest_denominator_lhs_rhs {
+  rankdir=TB;
+  label="rat-lowest-denominator"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-q-num ?k ?s ?d ?g)_L" [label="(rat-q-num ?k ?s ?d ?g)", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
+    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
+    "h1_div-done_L" -> "(rat-q-num ?k ?s ?d ?g)_L" [label="1", color="#8c564b"];
+    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
+    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-q-den ?k ?s ?q)_R" [label="(rat-q-den ?k ?s ?q)", shape=rectangle];
+    "?d_R" [label="?d", shape=diamond];
+    "?g_R" [label="?g", shape=diamond];
+    "h2_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_div-call_R" -> "(rat-q-den ?k ?s ?q)_R" [label="1", color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "?d_R" [label="2", color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_not_integer_is_false_lhs_rhs Pages: 1 -->
+<svg width="262pt" height="216pt"
+ viewBox="0.00 0.00 262.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_not_integer_is_false_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 258,-211.75 258,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="127" y="-190.45" font-family="Times,serif" font-size="14.00">not&#45;integer&#45;is&#45;false</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 146,-174.5 146,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="77" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="154,-97.25 154,-174.5 246,-174.5 246,-97.25 154,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="200" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?x_L -->
+<g id="node1" class="node">
+<title>?x_L</title>
+<polygon fill="none" stroke="black" points="58,-141.25 26.5,-123.25 58,-105.25 89.5,-123.25 58,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="58" y="-118.58" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- ?thing_L -->
+<g id="node2" class="node">
+<title>?thing_L</title>
+<polygon fill="none" stroke="black" points="77,-52 16.49,-34 77,-16 137.51,-34 77,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="77" y="-29.32" font-family="Times,serif" font-size="14.00">?thing</text>
+</g>
+<!-- ?x_L&#45;&gt;?thing_L -->
+<g id="edge1" class="edge">
+<title>?x_L&#45;&gt;?thing_L</title>
+<path fill="none" stroke="#2ca02c" d="M61.4,-106.65C64.08,-94.35 67.88,-76.9 71.06,-62.3"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="74.41,-63.35 73.12,-52.83 67.57,-61.86 74.41,-63.35"/>
+<text xml:space="preserve" text-anchor="middle" x="108.95" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">not&#45;integer</text>
+</g>
+<!-- h1_false_R -->
+<g id="node3" class="node">
+<title>h1_false_R</title>
+<polygon fill="none" stroke="#2ca02c" points="237.77,-115.79 237.77,-130.71 215.65,-141.25 184.35,-141.25 162.23,-130.71 162.23,-115.79 184.35,-105.25 215.65,-105.25 237.77,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="200" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">false</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 925b43be5d744b82eaae86abb0b7d153e45ea9c73f02423c4c59301ce6c61909 -->

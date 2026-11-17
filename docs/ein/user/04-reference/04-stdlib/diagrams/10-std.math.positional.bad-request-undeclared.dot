@@ -1,0 +1,14 @@
+digraph rule_bad_request_undeclared_lhs_rhs {
+  rankdir=TB;
+  label="bad-request-undeclared"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?request_L" [label="?request", shape=diamond];
+    "(?NO-LET ?x)_L" [label="(?NO-LET ?x)", shape=rectangle];
+    "?request_L" -> "(?NO-LET ?x)_L" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?x_R" [label="?x", shape=diamond];
+    "?request_R" [label="?request", shape=diamond];
+    "?x_R" -> "?request_R" [label="?UNDECLARED", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

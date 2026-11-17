@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: calculator Pages: 1 -->
+<svg width="594pt" height="332pt"
+ viewBox="0.00 0.00 594.00 332.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 328)">
+<title>calculator</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-328 589.5,-328 589.5,4 -4,4"/>
+<!-- std.math.decimal -->
+<g id="node1" class="node">
+<title>std.math.decimal</title>
+<polygon fill="none" stroke="black" points="495.88,-252 347.88,-252 347.88,-216 495.88,-216 495.88,-252"/>
+<text xml:space="preserve" text-anchor="middle" x="421.88" y="-230.45" font-family="monospace" font-size="14.00">std.math.decimal</text>
+</g>
+<!-- std.math.arith -->
+<g id="node2" class="node">
+<title>std.math.arith</title>
+<polygon fill="none" stroke="black" points="309.62,-324 178.12,-324 178.12,-288 309.62,-288 309.62,-324"/>
+<text xml:space="preserve" text-anchor="middle" x="243.88" y="-302.45" font-family="monospace" font-size="14.00">std.math.arith</text>
+</g>
+<!-- std.math.decimal&#45;&gt;std.math.arith -->
+<g id="edge1" class="edge">
+<title>std.math.decimal&#45;&gt;std.math.arith</title>
+<path fill="none" stroke="black" d="M377.42,-252.48C353.54,-261.87 323.9,-273.53 298.61,-283.47"/>
+<polygon fill="black" stroke="black" points="297.51,-280.15 289.48,-287.06 300.07,-286.66 297.51,-280.15"/>
+</g>
+<!-- std.math.digits -->
+<g id="node3" class="node">
+<title>std.math.digits</title>
+<polygon fill="none" stroke="black" points="542.75,-324 403,-324 403,-288 542.75,-288 542.75,-324"/>
+<text xml:space="preserve" text-anchor="middle" x="472.88" y="-302.45" font-family="monospace" font-size="14.00">std.math.digits</text>
+</g>
+<!-- std.math.decimal&#45;&gt;std.math.digits -->
+<g id="edge2" class="edge">
+<title>std.math.decimal&#45;&gt;std.math.digits</title>
+<path fill="none" stroke="black" d="M434.48,-252.3C440.29,-260.27 447.3,-269.9 453.74,-278.74"/>
+<polygon fill="black" stroke="black" points="450.8,-280.65 459.52,-286.67 456.46,-276.53 450.8,-280.65"/>
+</g>
+<!-- std.math.positional -->
+<g id="node4" class="node">
+<title>std.math.positional</title>
+<polygon fill="none" stroke="black" points="330.25,-252 157.5,-252 157.5,-216 330.25,-216 330.25,-252"/>
+<text xml:space="preserve" text-anchor="middle" x="243.88" y="-230.45" font-family="monospace" font-size="14.00">std.math.positional</text>
+</g>
+<!-- std.math.positional&#45;&gt;std.math.arith -->
+<g id="edge3" class="edge">
+<title>std.math.positional&#45;&gt;std.math.arith</title>
+<path fill="none" stroke="black" d="M243.88,-252.3C243.88,-259.59 243.88,-268.27 243.88,-276.46"/>
+<polygon fill="black" stroke="black" points="240.38,-276.38 243.88,-286.38 247.38,-276.38 240.38,-276.38"/>
+</g>
+<!-- std.math.decimal&#45;arith -->
+<g id="node5" class="node">
+<title>std.math.decimal&#45;arith</title>
+<polygon fill="none" stroke="black" points="449.62,-180 252.12,-180 252.12,-144 449.62,-144 449.62,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="350.88" y="-158.45" font-family="monospace" font-size="14.00">std.math.decimal&#45;arith</text>
+</g>
+<!-- std.math.decimal&#45;arith&#45;&gt;std.math.decimal -->
+<g id="edge4" class="edge">
+<title>std.math.decimal&#45;arith&#45;&gt;std.math.decimal</title>
+<path fill="none" stroke="black" d="M368.43,-180.3C376.85,-188.61 387.11,-198.72 396.38,-207.86"/>
+<polygon fill="black" stroke="black" points="393.87,-210.3 403.45,-214.83 398.78,-205.32 393.87,-210.3"/>
+</g>
+<!-- std.math.decimal&#45;arith&#45;&gt;std.math.positional -->
+<g id="edge5" class="edge">
+<title>std.math.decimal&#45;arith&#45;&gt;std.math.positional</title>
+<path fill="none" stroke="black" d="M324.15,-180.48C310.64,-189.32 294.07,-200.16 279.5,-209.7"/>
+<polygon fill="black" stroke="black" points="277.98,-206.51 271.53,-214.91 281.81,-212.37 277.98,-206.51"/>
+</g>
+<!-- std.math.binary -->
+<g id="node6" class="node">
+<title>std.math.binary</title>
+<polygon fill="none" stroke="black" points="139.75,-252 0,-252 0,-216 139.75,-216 139.75,-252"/>
+<text xml:space="preserve" text-anchor="middle" x="69.88" y="-230.45" font-family="monospace" font-size="14.00">std.math.binary</text>
+</g>
+<!-- std.math.binary&#45;&gt;std.math.arith -->
+<g id="edge6" class="edge">
+<title>std.math.binary&#45;&gt;std.math.arith</title>
+<path fill="none" stroke="black" d="M113.33,-252.48C136.57,-261.83 165.39,-273.43 190.03,-283.34"/>
+<polygon fill="black" stroke="black" points="188.68,-286.57 199.26,-287.05 191.29,-280.07 188.68,-286.57"/>
+</g>
+<!-- std.math.bits -->
+<g id="node7" class="node">
+<title>std.math.bits</title>
+<polygon fill="none" stroke="black" points="131.5,-324 8.25,-324 8.25,-288 131.5,-288 131.5,-324"/>
+<text xml:space="preserve" text-anchor="middle" x="69.88" y="-302.45" font-family="monospace" font-size="14.00">std.math.bits</text>
+</g>
+<!-- std.math.binary&#45;&gt;std.math.bits -->
+<g id="edge7" class="edge">
+<title>std.math.binary&#45;&gt;std.math.bits</title>
+<path fill="none" stroke="black" d="M69.88,-252.3C69.88,-259.59 69.88,-268.27 69.88,-276.46"/>
+<polygon fill="black" stroke="black" points="66.38,-276.38 69.88,-286.38 73.38,-276.38 66.38,-276.38"/>
+</g>
+<!-- std.math.binary&#45;arith -->
+<g id="node8" class="node">
+<title>std.math.binary&#45;arith</title>
+<polygon fill="none" stroke="black" points="198.5,-180 9.25,-180 9.25,-144 198.5,-144 198.5,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="103.88" y="-158.45" font-family="monospace" font-size="14.00">std.math.binary&#45;arith</text>
+</g>
+<!-- std.math.binary&#45;arith&#45;&gt;std.math.positional -->
+<g id="edge9" class="edge">
+<title>std.math.binary&#45;arith&#45;&gt;std.math.positional</title>
+<path fill="none" stroke="black" d="M138.84,-180.48C157.1,-189.61 179.65,-200.89 199.17,-210.65"/>
+<polygon fill="black" stroke="black" points="197.49,-213.72 208,-215.06 200.62,-207.46 197.49,-213.72"/>
+</g>
+<!-- std.math.binary&#45;arith&#45;&gt;std.math.binary -->
+<g id="edge8" class="edge">
+<title>std.math.binary&#45;arith&#45;&gt;std.math.binary</title>
+<path fill="none" stroke="black" d="M95.47,-180.3C91.76,-187.93 87.32,-197.08 83.18,-205.6"/>
+<polygon fill="black" stroke="black" points="80.06,-204.01 78.84,-214.53 86.36,-207.07 80.06,-204.01"/>
+</g>
+<!-- std.math.convert -->
+<g id="node9" class="node">
+<title>std.math.convert</title>
+<polygon fill="none" stroke="black" points="177.88,-108 29.88,-108 29.88,-72 177.88,-72 177.88,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="103.88" y="-86.45" font-family="monospace" font-size="14.00">std.math.convert</text>
+</g>
+<!-- std.math.convert&#45;&gt;std.math.decimal&#45;arith -->
+<g id="edge10" class="edge">
+<title>std.math.convert&#45;&gt;std.math.decimal&#45;arith</title>
+<path fill="none" stroke="black" d="M165.57,-108.48C199.88,-118.21 242.78,-130.36 278.65,-140.53"/>
+<polygon fill="black" stroke="black" points="277.51,-143.85 288.09,-143.21 279.42,-137.11 277.51,-143.85"/>
+</g>
+<!-- std.math.convert&#45;&gt;std.math.binary&#45;arith -->
+<g id="edge11" class="edge">
+<title>std.math.convert&#45;&gt;std.math.binary&#45;arith</title>
+<path fill="none" stroke="black" d="M103.88,-108.3C103.88,-115.59 103.88,-124.27 103.88,-132.46"/>
+<polygon fill="black" stroke="black" points="100.38,-132.38 103.88,-142.38 107.38,-132.38 100.38,-132.38"/>
+</g>
+<!-- std.math.int -->
+<g id="node10" class="node">
+<title>std.math.int</title>
+<polygon fill="none" stroke="black" points="311.38,-108 196.38,-108 196.38,-72 311.38,-72 311.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="253.88" y="-86.45" font-family="monospace" font-size="14.00">std.math.int</text>
+</g>
+<!-- std.math.int&#45;&gt;std.math.decimal&#45;arith -->
+<g id="edge12" class="edge">
+<title>std.math.int&#45;&gt;std.math.decimal&#45;arith</title>
+<path fill="none" stroke="black" d="M277.85,-108.3C289.86,-116.97 304.59,-127.6 317.67,-137.04"/>
+<polygon fill="black" stroke="black" points="315.45,-139.75 325.61,-142.77 319.55,-134.08 315.45,-139.75"/>
+</g>
+<!-- std.math.gcd -->
+<g id="node11" class="node">
+<title>std.math.gcd</title>
+<polygon fill="none" stroke="black" points="444.38,-108 329.38,-108 329.38,-72 444.38,-72 444.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="386.88" y="-86.45" font-family="monospace" font-size="14.00">std.math.gcd</text>
+</g>
+<!-- std.math.gcd&#45;&gt;std.math.decimal&#45;arith -->
+<g id="edge13" class="edge">
+<title>std.math.gcd&#45;&gt;std.math.decimal&#45;arith</title>
+<path fill="none" stroke="black" d="M377.98,-108.3C374.01,-116.02 369.24,-125.29 364.82,-133.89"/>
+<polygon fill="black" stroke="black" points="361.82,-132.06 360.36,-142.55 368.05,-135.26 361.82,-132.06"/>
+</g>
+<!-- std.math.rat -->
+<g id="node12" class="node">
+<title>std.math.rat</title>
+<polygon fill="none" stroke="black" points="377.38,-36 262.38,-36 262.38,0 377.38,0 377.38,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="319.88" y="-14.45" font-family="monospace" font-size="14.00">std.math.rat</text>
+</g>
+<!-- std.math.rat&#45;&gt;std.math.int -->
+<g id="edge14" class="edge">
+<title>std.math.rat&#45;&gt;std.math.int</title>
+<path fill="none" stroke="black" d="M303.56,-36.3C295.81,-44.53 286.39,-54.52 277.84,-63.58"/>
+<polygon fill="black" stroke="black" points="275.35,-61.12 271.04,-70.79 280.45,-65.92 275.35,-61.12"/>
+</g>
+<!-- std.math.rat&#45;&gt;std.math.gcd -->
+<g id="edge15" class="edge">
+<title>std.math.rat&#45;&gt;std.math.gcd</title>
+<path fill="none" stroke="black" d="M336.44,-36.3C344.31,-44.53 353.87,-54.52 362.54,-63.58"/>
+<polygon fill="black" stroke="black" points="360.01,-66 369.46,-70.8 365.07,-61.16 360.01,-66"/>
+</g>
+<!-- std.math.num9 -->
+<g id="node13" class="node">
+<title>std.math.num9</title>
+<polygon fill="none" stroke="black" points="585.5,-108 462.25,-108 462.25,-72 585.5,-72 585.5,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="523.88" y="-86.45" font-family="monospace" font-size="14.00">std.math.num9</text>
+</g>
+<!-- std.math.num9&#45;&gt;std.math.digits -->
+<g id="edge16" class="edge">
+<title>std.math.num9&#45;&gt;std.math.digits</title>
+<path fill="none" stroke="black" d="M524.2,-108.45C524.24,-138.58 522.04,-201.95 504.88,-252 501.79,-261.01 497,-270.13 492.07,-278.2"/>
+<polygon fill="black" stroke="black" points="489.18,-276.23 486.68,-286.52 495.05,-280.03 489.18,-276.23"/>
+</g>
+<!-- std.math.num9&#45;&gt;std.math.decimal&#45;arith -->
+<g id="edge17" class="edge">
+<title>std.math.num9&#45;&gt;std.math.decimal&#45;arith</title>
+<path fill="none" stroke="black" d="M480.67,-108.48C457.56,-117.83 428.91,-129.43 404.41,-139.34"/>
+<polygon fill="black" stroke="black" points="403.19,-136.06 395.24,-143.05 405.82,-142.54 403.19,-136.06"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 9529a5a444dafc4eb49293e714856cb589c3f7d4e32e0d60efa2e3011f8dcc98 -->

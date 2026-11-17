@@ -1,0 +1,14 @@
+digraph rule_rat_operand_lhs_rhs {
+  rankdir=TB;
+  label="rat-operand"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "(rat ?i ?d)_L" [label="(rat ?i ?d)", shape=rectangle];
+    "?k_L" -> "(rat ?i ?d)_L" [label="operand", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "(rat ?i ?d)_R" [label="(rat ?i ?d)", shape=rectangle];
+    "?k_R" -> "(rat ?i ?d)_R" [label="operand-is", color="#17becf", fontcolor="#17becf", style=dashed];
+  }
+}

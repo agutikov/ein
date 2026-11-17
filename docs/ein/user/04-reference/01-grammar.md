@@ -3,7 +3,8 @@
 Ein parses with a lexer and a parser generated from two grammar files: the lexer's,
 [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l), and the parser's,
 [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y). The diagrams on this page are those two files, every rule of
-each, written as EBNF and drawn as railroad diagrams. **They are what parses.** Each diagram is generated from its
+each, written as EBNF and drawn as railroad diagrams; the EBNF of a diagram, as text, is the file linked above it,
+which is the picture's source. **They are what parses.** Each diagram is generated from its
 file, rule by rule, and never edited by hand, and the test suite fails when a diagram and its file differ
 ([Q-M1f.378](../../../decisions/docs/Q-M1f.378-the-grammar-page-is-the-two-grammar-files-as-ebnf.md)). The prose
 around them says what the diagrams cannot show; where the two disagree, the diagram is right. What each form means,
@@ -48,96 +49,35 @@ natural-language text in any Unicode (fact 4).
 <!-- generated: ein.l -->
 ### 1.1 The tokens that are their own text
 
-From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l), as EBNF in
+[`01-grammar-lexical-own-text.puml`](diagrams/01-grammar-lexical-own-text.puml):
 `punctuation`, `reserved-word`, `position-word`, `known-keyword`.
 
-```plantuml
-@startebnf
-punctuation = "(" | ")" ;
-reserved-word =
-    "not" | "and" | "or" | "neq" | "rule" | "hrule" | "query" | "solve" | "config" | "trace"
-  | "macro" | "import" | "open" ;
-position-word =
-    "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
-  | "owing" ;
-known-keyword =
-    ":why" | ":source" | ":goal-text" | ":match" | ":assert" | ":rule" | ":using" | ":goal"
-  | ":over" | ":expect" | ":hrules" | ":hypothesis-relations" | ":no-hypothesis" | ":no-search"
-  | ":lattice-sanity-check" | ":record-alternative-justifications" | ":symbols" | ":as" | ":derives"
-  | ":assumes" ;
-@endebnf
-```
+![The tokens that are their own text, as a railroad diagram](diagrams/01-grammar-lexical-own-text.svg)
 
 ### 1.2 The reserved spellings, names, variables and keywords
 
-From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l), as EBNF in
+[`01-grammar-lexical-names-variables-keywords.puml`](diagrams/01-grammar-lexical-names-variables-keywords.puml):
 `UNDERSCORE`, `VARUNDERSCORE`, `WRITEBACK`, `NAME`, `VAR`, `KEYWORD`.
 
-```plantuml
-@startebnf
-UNDERSCORE = "_" ;
-VARUNDERSCORE = "?_" ;
-WRITEBACK =
-  "<" , ( "forced-positive" | "monotonic-unconditional" | "lookahead-dies-immediately" ) , ">" ;
-NAME = { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
-VAR = "?" , { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
-KEYWORD = ":" , { ? one of: A-Z a-z 0-9 _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ? }- ;
-@endebnf
-```
+![The reserved spellings, names, variables and keywords, as a railroad diagram](diagrams/01-grammar-lexical-names-variables-keywords.svg)
 
 ### 1.3 Strings
 
-From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l), as EBNF in
+[`01-grammar-lexical-strings.puml`](diagrams/01-grammar-lexical-strings.puml):
 `TEXT`, `BADESCAPE`, `BADTEXT`.
 
-```plantuml
-@startebnf
-TEXT = '"' ,
-  {
-      ? any character but: " \ ?
-    | "\" , ( "n" | "t" | "r" | '"' | "\" )
-    | "\u{" ,
-      (
-          5 * [ "0" ] , ? one of: 0-9 A-F a-f ?
-        | 4 * [ "0" ] , ? one of: 1-9 A-F a-f ? , ? one of: 0-9 A-F a-f ?
-        | 3 * [ "0" ] , ? one of: 1-9 A-F a-f ? , 2 * ? one of: 0-9 A-F a-f ?
-        | 2 * [ "0" ] ,
-          (
-              ? one of: 1-9 A-C a-c E e F f ? , 3 * ? one of: 0-9 A-F a-f ?
-            | ( "D" | "d" ) , ? one of: 0-7 ? , 2 * ? one of: 0-9 A-F a-f ?
-          )
-        | [ "0" ] , ? one of: 1-9 A-F a-f ? , 4 * ? one of: 0-9 A-F a-f ?
-        | "10" , 4 * ? one of: 0-9 A-F a-f ?
-      ) ,
-      "}"
-  } , '"' ;
-BADESCAPE = '"' , { ? any character but: " \ ? | "\" , ? any character but: U+000A ? } , '"' ;
-BADTEXT = '"' ,
-  { ? any character but: " \ ? | "\" , ? any character but: U+000A ? } , '"' ,
-  { ? one of: U+0000-U+007F, but none of: whitespace ( ) ; U+001C-U+001F ? }- ;
-@endebnf
-```
+![Strings, as a railroad diagram](diagrams/01-grammar-lexical-strings.svg)
 
 ### 1.4 What is no token, and what separates tokens
 
-From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l):
+From [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l), as EBNF in
+[`01-grammar-lexical-no-token-and-separators.puml`](diagrams/01-grammar-lexical-no-token-and-separators.puml):
 `BAD`, `skipped`.
 
-```plantuml
-@startebnf
-BAD =
-  {
-      ? one of: U+0000-U+007F, but none of: whitespace ( ) ; # U+001C-U+001F ?
-    | "#" , ? one of: U+0000-U+007F, but none of: | whitespace ( ) ; U+001C-U+001F ?
-  }- ;
-skipped =
-  {
-      ? one of: U+0009-U+000D U+0020 U+001C-U+001F ?
-    | ";" , { ? any character but: U+000A ? }
-    | "#|" , { ? any character but: | ? | { "|" }- , ? any character but: | # ? } , { "|" }- , "#"
-  }- ;
-@endebnf
-```
+![What is no token, and what separates tokens, as a railroad diagram](diagrams/01-grammar-lexical-no-token-and-separators.svg)
 
 ### 1.5 The start conditions, and a token's name in an error
 
@@ -236,279 +176,124 @@ tokens, and no production names them.
 <!-- generated: ein.y -->
 ### 2.1 A program and its forms
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-program.puml`](diagrams/01-grammar-phrase-program.puml):
 `Program`, `Form`.
 
-```plantuml
-@startebnf
-Program = { Form } ;
-Form = Relation | Rule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact ;
-@endebnf
-```
+![A program and its forms, as a railroad diagram](diagrams/01-grammar-phrase-program.svg)
 
 ### 2.2 Names, and the name a form is headed by
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-names.puml`](diagrams/01-grammar-phrase-names.puml):
 `Name`, `DeclName`, `FactHead`, `ValueHead`, `PremiseHead`, `ConclusionHead`.
 
-```plantuml
-@startebnf
-Name =
-    NAME | "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
-  | "owing" ;
-DeclName = NAME | "step" | "true" | "model" | "region" | "merged" | "owing" ;
-FactHead = NAME | "step" | "eq" | "true" | "model" ;
-ValueHead = NAME | "relation" | "step" | "true" | "model" | "region" | "merged" | "owing" ;
-PremiseHead = ValueHead | Var ;
-ConclusionHead = ValueHead | Var ;
-@endebnf
-```
+![Names, and the name a form is headed by, as a railroad diagram](diagrams/01-grammar-phrase-names.svg)
 
 ### 2.3 Variables, strings, flags and lists of names
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-variables-strings-flags.puml`](diagrams/01-grammar-phrase-variables-strings-flags.puml):
 `Var`, `Text`, `Bool`, `Names`, `NamesPlus`, `Vars`, `VarsPlus`, `NameList`, `NameListPlus`.
 
-```plantuml
-@startebnf
-Var = VAR ;
-Text = TEXT ;
-Bool = "true" | "false" ;
-Names = { Name } ;
-NamesPlus = { Name }- ;
-Vars = { Var } ;
-VarsPlus = { Var }- ;
-NameList = "(" , ")" | "(" , Name , Names , ")" ;
-NameListPlus = "(" , Name , Names , ")" ;
-@endebnf
-```
+![Variables, strings, flags and lists of names, as a railroad diagram](diagrams/01-grammar-phrase-variables-strings-flags.svg)
 
 ### 2.4 A fact, a stored negation and a fact as a value
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-fact.puml`](diagrams/01-grammar-phrase-fact.puml):
 `Fact`, `NotFact`, `NestedFact`, `EqFact`, `FactArg`, `FactArgs`, `FactClause`, `FactClauses`, `NestedFacts`.
 
-```plantuml
-@startebnf
-Fact = "(" , FactHead , FactArgs , FactClauses , ")" | "(" , "false" , FactClauses , ")" ;
-NotFact = "(" , "not" , NestedFact , FactClauses , ")" | "(" , "not" , EqFact , FactClauses , ")" ;
-NestedFact = "(" , ValueHead , FactArgs , ")" | "(" , "false" , ")" ;
-EqFact = "(" , "eq" , FactArgs , ")" ;
-FactArg = Name | NestedFact | "(" , "not" , NestedFact , ")" ;
-FactArgs = { FactArg } ;
-FactClause = ":source" , Text | ":rule" , Name | ":using" , "(" , NestedFacts , ")" ;
-FactClauses = { FactClause } ;
-NestedFacts = { NestedFact }- ;
-@endebnf
-```
+![A fact, a stored negation and a fact as a value, as a railroad diagram](diagrams/01-grammar-phrase-fact.svg)
 
 ### 2.5 A relation's declaration
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-relation.puml`](diagrams/01-grammar-phrase-relation.puml):
 `Relation`, `RelationClauses`.
 
-```plantuml
-@startebnf
-Relation = "(" , "relation" , DeclName , Names , RelationClauses , ")" ;
-RelationClauses = { ":why" , Text } ;
-@endebnf
-```
+![A relation's declaration, as a railroad diagram](diagrams/01-grammar-phrase-relation.svg)
 
 ### 2.6 A rule and an hrule
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-rule.puml`](diagrams/01-grammar-phrase-rule.puml):
 `Rule`, `Params`, `RuleClause`, `RuleClauses`.
 
-```plantuml
-@startebnf
-Rule =
-    "(" , "rule" , DeclName , Params , RuleClauses , ")"
-  | "(" , "hrule" , DeclName , Params , RuleClauses , ")" ;
-Params = "(" , Vars , ")" ;
-RuleClause = ":match" , Match | ":assert" , Assert | ":why" , Text ;
-RuleClauses = { RuleClause } ;
-@endebnf
-```
+![A rule and an hrule, as a railroad diagram](diagrams/01-grammar-phrase-rule.svg)
 
 ### 2.7 A rule's `:match`: premises
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-match.puml`](diagrams/01-grammar-phrase-match.puml):
 `Match`, `Premise`, `Premises`, `Connective`, `Negated`, `Guard`, `Args`, `Arg`, `ArgHead`.
 
-```plantuml
-@startebnf
-Match = "(" , ")" | Premise ;
-Premise = "(" , PremiseHead , Args , ")" | "(" , "false" , ")" | Connective ;
-Premises = { Premise }- ;
-Connective =
-    "(" , "and" , Premises , ")"
-  | "(" , "or" , Premises , ")"
-  | "(" , "not" , Negated , ")"
-  | "(" , "absent" , Premise , ")"
-  | Guard ;
-Negated = Pattern | "(" , "eq" , Term , Term , ")" ;
-Guard = "(" , "eq" , Term , Term , ")" | "(" , "neq" , Term , Term , ")" ;
-Args = { Arg } ;
-Arg = Name | Var | "(" , ArgHead , Args , ")" | "(" , "false" , ")" | Connective ;
-ArgHead = ValueHead | Var ;
-@endebnf
-```
+![A rule's :match: premises, as a railroad diagram](diagrams/01-grammar-phrase-match.svg)
 
 ### 2.8 A pattern and its terms
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-pattern.puml`](diagrams/01-grammar-phrase-pattern.puml):
 `Pattern`, `AnyHead`, `Term`, `Terms`.
 
-```plantuml
-@startebnf
-Pattern = "(" , ValueHead , Terms , ")" | "(" , Var , Terms , ")" | "(" , "false" , ")" ;
-AnyHead = Name | Var ;
-Term = Name | Var | Pattern | "(" , "not" , Pattern , ")" ;
-Terms = { Term } ;
-@endebnf
-```
+![A pattern and its terms, as a railroad diagram](diagrams/01-grammar-phrase-pattern.svg)
 
 ### 2.9 A rule's `:assert`: conclusions
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-assert.puml`](diagrams/01-grammar-phrase-assert.puml):
 `Assert`, `Conclusion`, `Conclusions`.
 
-```plantuml
-@startebnf
-Assert = "(" , ")" | Conclusion | "(" , "open" , ")" | "(" , "open" , AnyHead , ")" ;
-Conclusion =
-    "(" , ConclusionHead , Terms , ")"
-  | "(" , "and" , Conclusions , ")"
-  | "(" , "not" , Negated , ")"
-  | "(" , "not" , Var , ")"
-  | "(" , "false" , ")"
-  | Guard ;
-Conclusions = { Conclusion }- ;
-@endebnf
-```
+![A rule's :assert: conclusions, as a railroad diagram](diagrams/01-grammar-phrase-assert.svg)
 
 ### 2.10 A query and its claim
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-query.puml`](diagrams/01-grammar-phrase-query.puml):
 `Query`, `QueryClause`, `QueryClausesPlus`, `Claim`, `Model`, `Models`, `ClaimFact`, `ClaimAtom`, `ClaimFacts`.
 
-```plantuml
-@startebnf
-Query = "(" , "query" , QueryClausesPlus , ")" ;
-QueryClause = ":goal" , Premise | ":goal-text" , Text | ":over" , Name | ":expect" , Claim ;
-QueryClausesPlus = { QueryClause }- ;
-Claim = Model | "(" , "or" , Models , ")" | "(" , "false" , ")" ;
-Model = "(" , "model" , ClaimFacts , ")" ;
-Models = { Model }- ;
-ClaimFact =
-    NestedFact
-  | EqFact
-  | "(" , "not" , NestedFact , ")"
-  | "(" , "not" , EqFact , ")"
-  | "(" , "absent" , ClaimAtom , ")"
-  | "(" , "neq" , FactArg , FactArg , ")" ;
-ClaimAtom = NestedFact | EqFact | "(" , "not" , NestedFact , ")" | "(" , "not" , EqFact , ")" ;
-ClaimFacts = { ClaimFact } ;
-@endebnf
-```
+![A query and its claim, as a railroad diagram](diagrams/01-grammar-phrase-query.svg)
 
 ### 2.11 A solve and its claim
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-solve.puml`](diagrams/01-grammar-phrase-solve.puml):
 `Solve`, `SolveClause`, `SolveClauses`, `Hrules`, `HruleItem`, `HruleItems`, `RegionClaim`, `RegionItem`,
 `RegionItems`, `MergedFrom`.
 
-```plantuml
-@startebnf
-Solve = "(" , "solve" , SolveClauses , ")" ;
-SolveClause =
-    ":hrules" , Hrules
-  | ":hypothesis-relations" , NameList
-  | ":no-hypothesis" , NameList
-  | ":no-search"
-  | ":expect" , RegionClaim ;
-SolveClauses = { SolveClause } ;
-Hrules = "(" , ")" | "(" , Name , HruleItems , ")" ;
-HruleItem = Name | NameListPlus ;
-HruleItems = { HruleItem } ;
-RegionClaim = "(" , "region" , RegionItems , ")" | "(" , "false" , ")" ;
-RegionItem = Model | "(" , "merged" , Model , MergedFrom , ")" | "(" , "owing" , Models , ")" ;
-RegionItems = { RegionItem } ;
-MergedFrom = Model | "(" , "or" , Models , ")" ;
-@endebnf
-```
+![A solve and its claim, as a railroad diagram](diagrams/01-grammar-phrase-solve.svg)
 
 ### 2.12 A config
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-config.puml`](diagrams/01-grammar-phrase-config.puml):
 `Config`, `ConfigClause`, `ConfigClauses`.
 
-```plantuml
-@startebnf
-Config = "(" , "config" , ConfigClauses , ")" ;
-ConfigClause = ":lattice-sanity-check" , Bool | ":record-alternative-justifications" , Bool ;
-ConfigClauses = { ConfigClause } ;
-@endebnf
-```
+![A config, as a railroad diagram](diagrams/01-grammar-phrase-config.svg)
 
 ### 2.13 A macro
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-macro.puml`](diagrams/01-grammar-phrase-macro.puml):
 `Macro`, `MacroParams`, `Template`, `Templates`, `TemplateItem`, `TemplateItems`.
 
-```plantuml
-@startebnf
-Macro =
-    "(" , "macro" , DeclName , MacroParams , Template , ")"
-  | "(" , "macro" , DeclName , MacroParams , Template , ":why" , Text , ")" ;
-MacroParams = "(" , VarsPlus , ")" ;
-Template =
-    Var
-  | "(" , "and" , Templates , ")"
-  | "(" , "or" , Templates , ")"
-  | "(" , "not" , Template , ")"
-  | "(" , "neq" , TemplateItem , TemplateItem , ")"
-  | "(" , AnyHead , TemplateItems , ")" ;
-Templates = { Template }- ;
-TemplateItem = Name | Template ;
-TemplateItems = { TemplateItem } ;
-@endebnf
-```
+![A macro, as a railroad diagram](diagrams/01-grammar-phrase-macro.svg)
 
 ### 2.14 An import
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-import.puml`](diagrams/01-grammar-phrase-import.puml):
 `Import`, `ImportClause`, `ImportClauses`.
 
-```plantuml
-@startebnf
-Import = "(" , "import" , Name , ImportClauses , ")" ;
-ImportClause = ":symbols" , NameListPlus | ":as" , DeclName ;
-ImportClauses = { ImportClause } ;
-@endebnf
-```
+![An import, as a railroad diagram](diagrams/01-grammar-phrase-import.svg)
 
 ### 2.15 A trace
 
-From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y):
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-trace.puml`](diagrams/01-grammar-phrase-trace.puml):
 `Trace`, `Steps`, `Step`, `StepClause`, `StepClauses`, `StepUsing`, `Derived`.
 
-```plantuml
-@startebnf
-Trace = "(" , "trace" , Steps , ")" ;
-Steps = { Step } ;
-Step = "(" , "step" , Name , StepClauses , ")" ;
-StepClause =
-    ":rule" , Name
-  | ":using" , StepUsing
-  | ":derives" , Derived
-  | ":source" , Text
-  | ":assumes" , Derived ;
-StepClauses = { StepClause } ;
-StepUsing = NameListPlus | "(" , "and" , NamesPlus , ")" ;
-Derived = NestedFact | "(" , "not" , NestedFact , ")" ;
-@endebnf
-```
+![A trace, as a railroad diagram](diagrams/01-grammar-phrase-trace.svg)
 
 <!-- /generated: ein.y -->
 

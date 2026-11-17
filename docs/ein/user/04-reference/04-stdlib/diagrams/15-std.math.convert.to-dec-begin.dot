@@ -1,0 +1,18 @@
+digraph rule_to_dec_begin_lhs_rhs {
+  rankdir=TB;
+  label="to-dec-begin"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(dec-bits ?b)_L" [label="(dec-bits ?b)", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "(dec-bits ?b)_L" -> "?t_L" [label="bin-top-first-is", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?b_R" [label="?b", shape=diamond];
+    "?t_R" [label="?t", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "h1_to-dec-go_R" [shape=octagon, label="to-dec-go", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_to-dec-go_R" -> "?b_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_to-dec-go_R" -> "?t_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_to-dec-go_R" -> "z_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

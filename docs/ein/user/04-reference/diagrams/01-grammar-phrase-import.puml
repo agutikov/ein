@@ -1,0 +1,5 @@
+@startebnf
+Import = "(" , "import" , Name , ImportClauses , ")" ;
+ImportClause = ":symbols" , NameListPlus | ":as" , DeclName ;
+ImportClauses = { ImportClause } ;
+@endebnf

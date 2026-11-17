@@ -1,0 +1,8 @@
+@startebnf
+Rule =
+    "(" , "rule" , DeclName , Params , RuleClauses , ")"
+  | "(" , "hrule" , DeclName , Params , RuleClauses , ")" ;
+Params = "(" , Vars , ")" ;
+RuleClause = ":match" , Match | ":assert" , Assert | ":why" , Text ;
+RuleClauses = { RuleClause } ;
+@endebnf

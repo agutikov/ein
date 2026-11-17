@@ -1,0 +1,22 @@
+digraph rule_int_mul_minus_lhs_rhs {
+  rankdir=TB;
+  label="int-mul-minus"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-mul-np ?k ?s ?c)_L" [label="(int-mul-np ?k ?s ?c)", shape=rectangle];
+    "?d_L" [label="?d", shape=diamond];
+    "(int-mul-np ?k ?s ?c)_L" -> "?d_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-mul-neg ?k ?s)_R" [label="(int-mul-neg ?k ?s)", shape=rectangle];
+    "?c_R" [label="?c", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
+    "h1_add-walk_R" -> "(int-mul-neg ?k ?s)_R" [label="1", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "?c_R" [label="2", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "?d_R" [label="3", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+  }
+}

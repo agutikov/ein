@@ -1,0 +1,21 @@
+digraph calculator {
+  rankdir=BT;
+  node [shape=box, fontname="monospace"];
+  "std.math.decimal" -> "std.math.arith";
+  "std.math.decimal" -> "std.math.digits";
+  "std.math.positional" -> "std.math.arith";
+  "std.math.decimal-arith" -> "std.math.decimal";
+  "std.math.decimal-arith" -> "std.math.positional";
+  "std.math.binary" -> "std.math.arith";
+  "std.math.binary" -> "std.math.bits";
+  "std.math.binary-arith" -> "std.math.binary";
+  "std.math.binary-arith" -> "std.math.positional";
+  "std.math.convert" -> "std.math.decimal-arith";
+  "std.math.convert" -> "std.math.binary-arith";
+  "std.math.int" -> "std.math.decimal-arith";
+  "std.math.gcd" -> "std.math.decimal-arith";
+  "std.math.rat" -> "std.math.int";
+  "std.math.rat" -> "std.math.gcd";
+  "std.math.num9" -> "std.math.digits";
+  "std.math.num9" -> "std.math.decimal-arith";
+}

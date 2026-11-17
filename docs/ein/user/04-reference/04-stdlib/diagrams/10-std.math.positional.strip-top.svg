@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_strip_top_lhs_rhs Pages: 1 -->
+<svg width="464pt" height="216pt"
+ viewBox="0.00 0.00 464.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_strip_top_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 460,-211.75 460,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="228" y="-190.45" font-family="Times,serif" font-size="14.00">strip&#45;top</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 188,-174.5 188,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="98" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="196,-8 196,-174.5 448,-174.5 448,-8 196,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="322" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?k_L -->
+<g id="node1" class="node">
+<title>?k_L</title>
+<polygon fill="none" stroke="black" points="58,-141.25 26.5,-123.25 58,-105.25 89.5,-123.25 58,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="58" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- (?B ?a ?r)_L -->
+<g id="node2" class="node">
+<title>(?B ?a ?r)_L</title>
+<polygon fill="none" stroke="black" points="99.75,-52 16.25,-52 16.25,-16 99.75,-16 99.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="58" y="-29.32" font-family="Times,serif" font-size="14.00">(?B ?a ?r)</text>
+</g>
+<!-- ?k_L&#45;&gt;(?B ?a ?r)_L -->
+<g id="edge1" class="edge">
+<title>?k_L&#45;&gt;(?B ?a ?r)_L</title>
+<path fill="none" stroke="#ff7f0e" d="M58,-105.01C58,-93.18 58,-77.2 58,-63.5"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="61.5,-63.72 58,-53.72 54.5,-63.72 61.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="83.88" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">?STRIP</text>
+</g>
+<!-- ?a_L -->
+<g id="node3" class="node">
+<title>?a_L</title>
+<polygon fill="none" stroke="black" points="149,-52 117.5,-34 149,-16 180.5,-34 149,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="149" y="-29.32" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- h1_NZ_L -->
+<g id="node4" class="node">
+<title>h1_NZ_L</title>
+<polygon fill="none" stroke="#ff7f0e" points="180.36,-115.79 180.36,-130.71 160.23,-141.25 131.77,-141.25 111.64,-130.71 111.64,-115.79 131.77,-105.25 160.23,-105.25 180.36,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="146" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">?NZ</text>
+</g>
+<!-- h1_NZ_L&#45;&gt;?a_L -->
+<g id="edge2" class="edge">
+<title>h1_NZ_L&#45;&gt;?a_L</title>
+<path fill="none" stroke="#ff7f0e" d="M146.59,-105.01C147,-93.18 147.55,-77.2 148.02,-63.5"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="151.51,-63.83 148.36,-53.71 144.51,-63.59 151.51,-63.83"/>
+<text xml:space="preserve" text-anchor="middle" x="152.27" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?k_R -->
+<g id="node5" class="node">
+<title>?k_R</title>
+<polygon fill="none" stroke="black" points="235,-52 203.5,-34 235,-16 266.5,-34 235,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="235" y="-29.32" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- (?B ?a ?r)_R -->
+<g id="node6" class="node">
+<title>(?B ?a ?r)_R</title>
+<polygon fill="none" stroke="black" points="367.75,-52 284.25,-52 284.25,-16 367.75,-16 367.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="326" y="-29.32" font-family="Times,serif" font-size="14.00">(?B ?a ?r)</text>
+</g>
+<!-- z_R -->
+<g id="node7" class="node">
+<title>z_R</title>
+<polygon fill="none" stroke="black" points="440,-52 386,-52 386,-16 440,-16 440,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="413" y="-29.32" font-family="Times,serif" font-size="14.00">z</text>
+</g>
+<!-- h2_TURN_R -->
+<g id="node8" class="node">
+<title>h2_TURN_R</title>
+<polygon fill="none" stroke="#9467bd" points="376.87,-115.79 376.87,-130.71 347.07,-141.25 304.93,-141.25 275.13,-130.71 275.13,-115.79 304.93,-105.25 347.07,-105.25 376.87,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="326" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#9467bd">?TURN</text>
+</g>
+<!-- h2_TURN_R&#45;&gt;?k_R -->
+<g id="edge3" class="edge">
+<title>h2_TURN_R&#45;&gt;?k_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M308.02,-105.01C292.55,-90.18 270.28,-68.83 254.41,-53.61"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="257.06,-51.31 247.42,-46.91 252.22,-56.36 257.06,-51.31"/>
+<text xml:space="preserve" text-anchor="middle" x="293.15" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h2_TURN_R&#45;&gt;(?B ?a ?r)_R -->
+<g id="edge4" class="edge">
+<title>h2_TURN_R&#45;&gt;(?B ?a ?r)_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M326,-105.01C326,-93.18 326,-77.2 326,-63.5"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="329.5,-63.72 326,-53.72 322.5,-63.72 329.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="330.5" y="-73.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h2_TURN_R&#45;&gt;z_R -->
+<g id="edge5" class="edge">
+<title>h2_TURN_R&#45;&gt;z_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M343.19,-105.01C355.94,-92.23 373.52,-74.59 387.85,-60.22"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="390.2,-62.83 394.78,-53.27 385.24,-57.88 390.2,-62.83"/>
+<text xml:space="preserve" text-anchor="middle" x="381.79" y="-73.95" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 9d394da57fe24258c4b24d01a1b245a14e1f7e6e56d472f9d854d52648e03410 -->

@@ -1,0 +1,17 @@
+digraph rule_from9_4_lhs_rhs {
+  rankdir=TB;
+  label="from9-4"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1)_L" [label="(num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1)", shape=rectangle];
+    "?a4_L" [label="?a4", shape=diamond];
+    "h1_from9_L" [shape=octagon, label="from9", color="#8c564b", fontcolor="#8c564b"];
+    "h1_from9_L" -> "(num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1)_L" [label="1", color="#8c564b"];
+    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
+    "h2_nz_L" -> "?a4_L" [label="1", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1)_R" [label="(num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1)", shape=rectangle];
+    "(n (n (n (n z ?a4) ?a3) ?a2) ?a1)_R" [label="(n (n (n (n z ?a4) ?a3) ?a2) ?a1)", shape=rectangle];
+    "(num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1)_R" -> "(n (n (n (n z ?a4) ?a3) ?a2) ?a1)_R" [label="of9", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

@@ -1,0 +1,16 @@
+digraph rule_operand_digit_lhs_rhs {
+  rankdir=TB;
+  label="operand-digit"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "?x_L" [label="?x", shape=diamond];
+    "?k_L" -> "?x_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
+    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_NZ_L" -> "?x_L" [label="1", color="#ff7f0e"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "(?NOT-A-NUMBER ?x)_R" [label="(?NOT-A-NUMBER ?x)", shape=rectangle];
+    "?k_R" -> "(?NOT-A-NUMBER ?x)_R" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf", style=dashed];
+  }
+}

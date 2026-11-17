@@ -1,0 +1,42 @@
+digraph rule_decimal_lhs_rhs {
+  rankdir=TB;
+  label="decimal"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "nz_R" [label="nz", shape=rectangle];
+    "n_R" [label="n", shape=rectangle];
+    "named_R" [label="named", shape=rectangle];
+    "not-decimal_R" [label="not-decimal", shape=rectangle];
+    "decimal-rule_R" [label="decimal-rule", shape=rectangle];
+    "arith_R" [label="arith", shape=rectangle];
+    "numeral-digit_R" [label="numeral-digit", shape=rectangle];
+    "numeral-prefix-digit_R" [label="numeral-prefix-digit", shape=rectangle];
+    "numeral-prefix-zero_R" [label="numeral-prefix-zero", shape=rectangle];
+    "numeral-prefix-named_R" [label="numeral-prefix-named", shape=rectangle];
+    "not-decimal-is-false_R" [label="not-decimal-is-false", shape=rectangle];
+    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h2___closed___R" -> "nz_R" [label="1", color="#e377c2", style=dashed];
+    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h3___closed___R" -> "n_R" [label="1", color="#e377c2", style=dashed];
+    "h4___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h4___closed___R" -> "named_R" [label="1", color="#e377c2", style=dashed];
+    "h5___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h5___closed___R" -> "not-decimal_R" [label="1", color="#e377c2", style=dashed];
+    "h6___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h6___closed___R" -> "decimal-rule_R" [label="1", color="#e377c2", style=dashed];
+    "h7_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
+    "h7_decimal-rule_R" -> "arith_R" [label="1", color="#17becf", style=dashed];
+    "h8_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
+    "h8_decimal-rule_R" -> "numeral-digit_R" [label="1", color="#17becf", style=dashed];
+    "h9_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
+    "h9_decimal-rule_R" -> "numeral-prefix-digit_R" [label="1", color="#17becf", style=dashed];
+    "h10_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
+    "h10_decimal-rule_R" -> "numeral-prefix-zero_R" [label="1", color="#17becf", style=dashed];
+    "h11_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
+    "h11_decimal-rule_R" -> "numeral-prefix-named_R" [label="1", color="#17becf", style=dashed];
+    "h12_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
+    "h12_decimal-rule_R" -> "not-decimal-is-false_R" [label="1", color="#17becf", style=dashed];
+  }
+}

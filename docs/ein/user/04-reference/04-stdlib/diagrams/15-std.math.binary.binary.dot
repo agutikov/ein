@@ -1,0 +1,42 @@
+digraph rule_binary_lhs_rhs {
+  rankdir=TB;
+  label="binary"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "bin-nz_R" [label="bin-nz", shape=rectangle];
+    "b2_R" [label="b2", shape=rectangle];
+    "bin-named_R" [label="bin-named", shape=rectangle];
+    "not-binary_R" [label="not-binary", shape=rectangle];
+    "binary-rule_R" [label="binary-rule", shape=rectangle];
+    "arith_R" [label="arith", shape=rectangle];
+    "bin-numeral-bit_R" [label="bin-numeral-bit", shape=rectangle];
+    "bin-numeral-prefix-bit_R" [label="bin-numeral-prefix-bit", shape=rectangle];
+    "bin-numeral-prefix-zero_R" [label="bin-numeral-prefix-zero", shape=rectangle];
+    "bin-numeral-prefix-named_R" [label="bin-numeral-prefix-named", shape=rectangle];
+    "not-binary-is-false_R" [label="not-binary-is-false", shape=rectangle];
+    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h2___closed___R" -> "bin-nz_R" [label="1", color="#e377c2", style=dashed];
+    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h3___closed___R" -> "b2_R" [label="1", color="#e377c2", style=dashed];
+    "h4___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h4___closed___R" -> "bin-named_R" [label="1", color="#e377c2", style=dashed];
+    "h5___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h5___closed___R" -> "not-binary_R" [label="1", color="#e377c2", style=dashed];
+    "h6___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h6___closed___R" -> "binary-rule_R" [label="1", color="#e377c2", style=dashed];
+    "h7_binary-rule_R" [shape=octagon, label="binary-rule", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h7_binary-rule_R" -> "arith_R" [label="1", color="#ff7f0e", style=dashed];
+    "h8_binary-rule_R" [shape=octagon, label="binary-rule", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h8_binary-rule_R" -> "bin-numeral-bit_R" [label="1", color="#ff7f0e", style=dashed];
+    "h9_binary-rule_R" [shape=octagon, label="binary-rule", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h9_binary-rule_R" -> "bin-numeral-prefix-bit_R" [label="1", color="#ff7f0e", style=dashed];
+    "h10_binary-rule_R" [shape=octagon, label="binary-rule", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h10_binary-rule_R" -> "bin-numeral-prefix-zero_R" [label="1", color="#ff7f0e", style=dashed];
+    "h11_binary-rule_R" [shape=octagon, label="binary-rule", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h11_binary-rule_R" -> "bin-numeral-prefix-named_R" [label="1", color="#ff7f0e", style=dashed];
+    "h12_binary-rule_R" [shape=octagon, label="binary-rule", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h12_binary-rule_R" -> "not-binary-is-false_R" [label="1", color="#ff7f0e", style=dashed];
+  }
+}

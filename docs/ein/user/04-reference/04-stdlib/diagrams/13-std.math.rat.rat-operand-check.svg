@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_rat_operand_check_lhs_rhs Pages: 1 -->
+<svg width="598pt" height="216pt"
+ viewBox="0.00 0.00 598.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_rat_operand_check_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 594,-211.75 594,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="295" y="-190.45" font-family="Times,serif" font-size="14.00">rat&#45;operand&#45;check</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 170,-174.5 170,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="89" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="178,-8 178,-174.5 582,-174.5 582,-8 178,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="380" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- (rat&#45;of ?k)_L -->
+<g id="node1" class="node">
+<title>(rat&#45;of ?k)_L</title>
+<polygon fill="none" stroke="black" points="129.88,-141.25 44.12,-141.25 44.12,-105.25 129.88,-105.25 129.88,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="87" y="-118.58" font-family="Times,serif" font-size="14.00">(rat&#45;of ?k)</text>
+</g>
+<!-- (rat (int ?p ?n) ?d)_L -->
+<g id="node2" class="node">
+<title>(rat (int ?p ?n) ?d)_L</title>
+<polygon fill="none" stroke="black" points="161.5,-52 16.5,-52 16.5,-16 161.5,-16 161.5,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="89" y="-29.32" font-family="Times,serif" font-size="14.00">(rat (int ?p ?n) ?d)</text>
+</g>
+<!-- (rat&#45;of ?k)_L&#45;&gt;(rat (int ?p ?n) ?d)_L -->
+<g id="edge1" class="edge">
+<title>(rat&#45;of ?k)_L&#45;&gt;(rat (int ?p ?n) ?d)_L</title>
+<path fill="none" stroke="#17becf" d="M87.4,-105.01C87.67,-93.18 88.03,-77.2 88.35,-63.5"/>
+<polygon fill="#17becf" stroke="#17becf" points="91.84,-63.79 88.57,-53.72 84.84,-63.63 91.84,-63.79"/>
+<text xml:space="preserve" text-anchor="middle" x="125.68" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#17becf">operand&#45;is</text>
+</g>
+<!-- (rat&#45;den ?k ?p ?n ?d)_R -->
+<g id="node3" class="node">
+<title>(rat&#45;den ?k ?p ?n ?d)_R</title>
+<polygon fill="none" stroke="black" points="347.75,-52 186.25,-52 186.25,-16 347.75,-16 347.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="267" y="-29.32" font-family="Times,serif" font-size="14.00">(rat&#45;den ?k ?p ?n ?d)</text>
+</g>
+<!-- ?d_R -->
+<g id="node4" class="node">
+<title>?d_R</title>
+<polygon fill="none" stroke="black" points="398,-52 365.76,-34 398,-16 430.24,-34 398,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="398" y="-29.32" font-family="Times,serif" font-size="14.00">?d</text>
+</g>
+<!-- z_R -->
+<g id="node5" class="node">
+<title>z_R</title>
+<polygon fill="none" stroke="black" points="502,-52 448,-52 448,-16 502,-16 502,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="475" y="-29.32" font-family="Times,serif" font-size="14.00">z</text>
+</g>
+<!-- eq_R -->
+<g id="node6" class="node">
+<title>eq_R</title>
+<polygon fill="none" stroke="black" points="574,-52 520,-52 520,-16 574,-16 574,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="547" y="-29.32" font-family="Times,serif" font-size="14.00">eq</text>
+</g>
+<!-- h1_cmp&#45;walk_R -->
+<g id="node7" class="node">
+<title>h1_cmp&#45;walk_R</title>
+<polygon fill="none" stroke="#9467bd" points="488.4,-115.79 488.4,-130.71 451.26,-141.25 398.74,-141.25 361.6,-130.71 361.6,-115.79 398.74,-105.25 451.26,-105.25 488.4,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="425" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#9467bd">cmp&#45;walk</text>
+</g>
+<!-- h1_cmp&#45;walk_R&#45;&gt;(rat&#45;den ?k ?p ?n ?d)_R -->
+<g id="edge2" class="edge">
+<title>h1_cmp&#45;walk_R&#45;&gt;(rat&#45;den ?k ?p ?n ?d)_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M395.28,-105.84C370.79,-92.31 335.77,-72.98 308.51,-57.92"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="310.25,-54.89 299.8,-53.12 306.87,-61.01 310.25,-54.89"/>
+<text xml:space="preserve" text-anchor="middle" x="364.65" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h1_cmp&#45;walk_R&#45;&gt;?d_R -->
+<g id="edge3" class="edge">
+<title>h1_cmp&#45;walk_R&#45;&gt;?d_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M419.67,-105.01C415.74,-92.32 410.33,-74.84 405.9,-60.53"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="409.35,-59.84 403.05,-51.32 402.66,-61.91 409.35,-59.84"/>
+<text xml:space="preserve" text-anchor="middle" x="418.42" y="-73.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h1_cmp&#45;walk_R&#45;&gt;z_R -->
+<g id="edge4" class="edge">
+<title>h1_cmp&#45;walk_R&#45;&gt;z_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M434.88,-105.01C441.93,-92.7 451.56,-75.91 459.61,-61.85"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="462.45,-63.93 464.39,-53.52 456.38,-60.45 462.45,-63.93"/>
+<text xml:space="preserve" text-anchor="middle" x="458.98" y="-73.95" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h1_cmp&#45;walk_R&#45;&gt;eq_R -->
+<g id="edge5" class="edge">
+<title>h1_cmp&#45;walk_R&#45;&gt;eq_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M449.4,-104.8C467.76,-91.67 493.16,-73.5 513.44,-59"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="515.32,-61.96 521.42,-53.3 511.25,-56.27 515.32,-61.96"/>
+<text xml:space="preserve" text-anchor="middle" x="501.43" y="-73.95" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: fba8ac8b61e19c9dd5692e52557155e0fa9e1e2f4fa97435deaaa3107c2f83d5 -->

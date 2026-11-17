@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_let_digit_zero_lhs_rhs Pages: 1 -->
+<svg width="314pt" height="216pt"
+ viewBox="0.00 0.00 314.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_let_digit_zero_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 310,-211.75 310,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="153" y="-190.45" font-family="Times,serif" font-size="14.00">let&#45;digit&#45;zero</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 86,-174.5 86,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="94,-8 94,-174.5 298,-174.5 298,-8 94,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="196" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- 0_L -->
+<g id="node1" class="node">
+<title>0_L</title>
+<polygon fill="none" stroke="black" points="70,-141.25 16,-141.25 16,-105.25 70,-105.25 70,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="43" y="-118.58" font-family="Times,serif" font-size="14.00">0</text>
+</g>
+<!-- ?v_L -->
+<g id="node2" class="node">
+<title>?v_L</title>
+<polygon fill="none" stroke="black" points="47,-52 15.5,-34 47,-16 78.5,-34 47,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-29.32" font-family="Times,serif" font-size="14.00">?v</text>
+</g>
+<!-- 0_L&#45;&gt;?v_L -->
+<g id="edge1" class="edge">
+<title>0_L&#45;&gt;?v_L</title>
+<path fill="none" stroke="#7f7f7f" d="M43.79,-105.01C44.34,-93.1 45.07,-77 45.71,-63.23"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="49.19,-63.57 46.16,-53.42 42.2,-63.25 49.19,-63.57"/>
+<text xml:space="preserve" text-anchor="middle" x="63.36" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">?LET</text>
+</g>
+<!-- (?LET 0 ?v)_R -->
+<g id="node3" class="node">
+<title>(?LET 0 ?v)_R</title>
+<polygon fill="none" stroke="black" points="244.12,-52 147.88,-52 147.88,-16 244.12,-16 244.12,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="196" y="-29.32" font-family="Times,serif" font-size="14.00">(?LET 0 ?v)</text>
+</g>
+<!-- h1_MALFORMED_R -->
+<g id="node4" class="node">
+<title>h1_MALFORMED_R</title>
+<polygon fill="none" stroke="#ff7f0e" points="290.15,-115.79 290.15,-130.71 235,-141.25 157,-141.25 101.85,-130.71 101.85,-115.79 157,-105.25 235,-105.25 290.15,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="196" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">?MALFORMED</text>
+</g>
+<!-- h1_MALFORMED_R&#45;&gt;(?LET 0 ?v)_R -->
+<g id="edge2" class="edge">
+<title>h1_MALFORMED_R&#45;&gt;(?LET 0 ?v)_R</title>
+<path fill="none" stroke="#ff7f0e" stroke-dasharray="5,2" d="M196,-105.01C196,-93.18 196,-77.2 196,-63.5"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="199.5,-63.72 196,-53.72 192.5,-63.72 199.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="200.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: e5b725b8cfc4fb3d0465a7e47d652dcc9f3c9f107c733fb8376c122a14bc0609 -->

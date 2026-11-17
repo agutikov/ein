@@ -170,22 +170,7 @@ tells a constant from a stray name.
   :why    "zero stands for itself")
 ```
 
-```dot
-digraph rule_operand_zero_lhs_rhs {
-  rankdir=TB;
-  label="operand-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?k_L" -> "z_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?k_R" -> "z_R" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule operand-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-zero.svg)
 <!-- /rule -->
 
 #### `operand-number`
@@ -198,22 +183,7 @@ digraph rule_operand_zero_lhs_rhs {
   :why    "a number stands for itself")
 ```
 
-```dot
-digraph rule_operand_number_lhs_rhs {
-  rankdir=TB;
-  label="operand-number"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "?k_L" -> "(?N ?p ?a)_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(?N ?p ?a)_R" [label="(?N ?p ?a)", shape=rectangle];
-    "?k_R" -> "(?N ?p ?a)_R" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule operand-number of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-number.svg)
 <!-- /rule -->
 
 #### `let-named`
@@ -226,22 +196,7 @@ digraph rule_operand_number_lhs_rhs {
   :why    "{?x} is the name of a number")
 ```
 
-```dot
-digraph rule_let_named_lhs_rhs {
-  rankdir=TB;
-  label="let-named"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "h1_NAMED_R" [shape=octagon, label="?NAMED", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_NAMED_R" -> "?x_R" [label="1", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule let-named of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-named.svg)
 <!-- /rule -->
 
 #### `operand-name`
@@ -254,26 +209,7 @@ digraph rule_let_named_lhs_rhs {
   :why    "{?x} names {?v}")
 ```
 
-```dot
-digraph rule_operand_name_lhs_rhs {
-  rankdir=TB;
-  label="operand-name"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?x_L" [label="?x", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "?k_L" -> "?x_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-    "h1_NAMED_L" [shape=octagon, label="?NAMED", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_NAMED_L" -> "?x_L" [label="1", color="#bcbd22"];
-    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "?k_R" -> "?v_R" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule operand-name of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-name.svg)
 <!-- /rule -->
 
 ### The addition walk
@@ -301,48 +237,7 @@ own.
   :why    "{?a} + {?c} + carry {?e} is {?s}, carry {?f}: {?s} goes in front of the digits so far")
 ```
 
-```dot
-digraph rule_add_column_lhs_rhs {
-  rankdir=TB;
-  label="add-column"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "(?N ?q ?c)_L" [label="(?N ?q ?c)", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?s_L" [label="?s", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "h1_ADD-WALK_L" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h1_ADD-WALK_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_ADD-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#17becf"];
-    "h1_ADD-WALK_L" -> "(?N ?q ?c)_L" [label="3", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?e_L" [label="4", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?acc_L" [label="5", color="#17becf"];
-    "h2_FA_L" [shape=octagon, label="?FA", color="#17becf", fontcolor="#17becf"];
-    "h2_FA_L" -> "?a_L" [label="1", color="#17becf"];
-    "h2_FA_L" -> "?c_L" [label="2", color="#17becf"];
-    "h2_FA_L" -> "?e_L" [label="3", color="#17becf"];
-    "h2_FA_L" -> "?s_L" [label="4", color="#17becf"];
-    "h2_FA_L" -> "?f_L" [label="5", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "(?B ?s ?acc)_R" [label="(?B ?s ?acc)", shape=rectangle];
-    "h3_ADD-WALK_R" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h3_ADD-WALK_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?p_R" [label="2", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?q_R" [label="3", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?f_R" [label="4", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "(?B ?s ?acc)_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule add-column of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-column.svg)
 <!-- /rule -->
 
 #### `add-column-first`
@@ -356,48 +251,7 @@ digraph rule_add_column_lhs_rhs {
   :why    "the second number has run out: {?a} + carry {?e} is {?s}, carry {?f}")
 ```
 
-```dot
-digraph rule_add_column_first_lhs_rhs {
-  rankdir=TB;
-  label="add-column-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "h1_ADD-WALK_L" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h1_ADD-WALK_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_ADD-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [label="3", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?e_L" [label="4", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?acc_L" [label="5", color="#17becf"];
-    "h2_FA_L" [shape=octagon, label="?FA", color="#17becf", fontcolor="#17becf"];
-    "h2_FA_L" -> "?a_L" [label="1", color="#17becf"];
-    "h2_FA_L" -> "0_L" [label="2", color="#17becf"];
-    "h2_FA_L" -> "?e_L" [label="3", color="#17becf"];
-    "h2_FA_L" -> "?s_L" [label="4", color="#17becf"];
-    "h2_FA_L" -> "?f_L" [label="5", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?B ?s ?acc)_R" [label="(?B ?s ?acc)", shape=rectangle];
-    "h3_ADD-WALK_R" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h3_ADD-WALK_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?p_R" [label="2", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "z_R" [label="3", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?f_R" [label="4", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "(?B ?s ?acc)_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule add-column-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-column-first.svg)
 <!-- /rule -->
 
 #### `add-column-second`
@@ -411,48 +265,7 @@ digraph rule_add_column_first_lhs_rhs {
   :why    "the first number has run out: {?c} + carry {?e} is {?s}, carry {?f}")
 ```
 
-```dot
-digraph rule_add_column_second_lhs_rhs {
-  rankdir=TB;
-  label="add-column-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "(?N ?q ?c)_L" [label="(?N ?q ?c)", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?c_L" [label="?c", shape=diamond];
-    "?s_L" [label="?s", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "h1_ADD-WALK_L" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h1_ADD-WALK_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [label="2", color="#17becf"];
-    "h1_ADD-WALK_L" -> "(?N ?q ?c)_L" [label="3", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?e_L" [label="4", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?acc_L" [label="5", color="#17becf"];
-    "h2_FA_L" [shape=octagon, label="?FA", color="#17becf", fontcolor="#17becf"];
-    "h2_FA_L" -> "0_L" [label="1", color="#17becf"];
-    "h2_FA_L" -> "?c_L" [label="2", color="#17becf"];
-    "h2_FA_L" -> "?e_L" [label="3", color="#17becf"];
-    "h2_FA_L" -> "?s_L" [label="4", color="#17becf"];
-    "h2_FA_L" -> "?f_L" [label="5", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "(?B ?s ?acc)_R" [label="(?B ?s ?acc)", shape=rectangle];
-    "h3_ADD-WALK_R" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h3_ADD-WALK_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "z_R" [label="2", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?q_R" [label="3", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?f_R" [label="4", color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "(?B ?s ?acc)_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule add-column-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-column-second.svg)
 <!-- /rule -->
 
 #### `add-end`
@@ -465,29 +278,7 @@ digraph rule_add_column_second_lhs_rhs {
   :why    "no column is left and no carry: the digits are {?acc}")
 ```
 
-```dot
-digraph rule_add_end_lhs_rhs {
-  rankdir=TB;
-  label="add-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "0_L" [label="0", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_ADD-WALK_L" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h1_ADD-WALK_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [label="2", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [label="3", color="#17becf"];
-    "h1_ADD-WALK_L" -> "0_L" [label="4", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?acc_L" [label="5", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule add-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-end.svg)
 <!-- /rule -->
 
 #### `add-carry-out`
@@ -500,33 +291,7 @@ digraph rule_add_end_lhs_rhs {
   :why    "no column is left: the carry is the top digit, in front of {?acc}")
 ```
 
-```dot
-digraph rule_add_carry_out_lhs_rhs {
-  rankdir=TB;
-  label="add-carry-out"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_ADD-WALK_L" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h1_ADD-WALK_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [label="2", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [label="3", color="#17becf"];
-    "h1_ADD-WALK_L" -> "1_L" [label="4", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?acc_L" [label="5", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(?B 1 ?acc)_R" [label="(?B 1 ?acc)", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_TURN_R" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
-    "h2_TURN_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "(?B 1 ?acc)_R" [label="2", color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule add-carry-out of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-carry-out.svg)
 <!-- /rule -->
 
 ### The normal form
@@ -544,22 +309,7 @@ what is left round into the numeral's shape and hands it over as `done`. Zero co
   :why    "a high zero is dropped")
 ```
 
-```dot
-digraph rule_strip_zero_lhs_rhs {
-  rankdir=TB;
-  label="strip-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?B 0 ?r)_L" [label="(?B 0 ?r)", shape=rectangle];
-    "?k_L" -> "(?B 0 ?r)_L" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "?k_R" -> "?r_R" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule strip-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.strip-zero.svg)
 <!-- /rule -->
 
 #### `strip-top`
@@ -572,29 +322,7 @@ digraph rule_strip_zero_lhs_rhs {
   :why    "the top digit {?a} is not zero: no high zero is left")
 ```
 
-```dot
-digraph rule_strip_top_lhs_rhs {
-  rankdir=TB;
-  label="strip-top"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?B ?a ?r)_L" [label="(?B ?a ?r)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "?k_L" -> "(?B ?a ?r)_L" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_NZ_L" -> "?a_L" [label="1", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(?B ?a ?r)_R" [label="(?B ?a ?r)", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_TURN_R" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
-    "h2_TURN_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "(?B ?a ?r)_R" [label="2", color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule strip-top of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.strip-top.svg)
 <!-- /rule -->
 
 #### `strip-none`
@@ -607,22 +335,7 @@ digraph rule_strip_top_lhs_rhs {
   :why    "no digit is left: the answer is zero")
 ```
 
-```dot
-digraph rule_strip_none_lhs_rhs {
-  rankdir=TB;
-  label="strip-none"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?k_L" -> "z_L" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?k_R" -> "z_R" [label="?DONE", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  }
-}
-```
+![The rule strip-none of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.strip-none.svg)
 <!-- /rule -->
 
 #### `turn-step`
@@ -635,30 +348,7 @@ digraph rule_strip_none_lhs_rhs {
   :why    "the digit {?a} goes after {?acc}")
 ```
 
-```dot
-digraph rule_turn_step_lhs_rhs {
-  rankdir=TB;
-  label="turn-step"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?B ?a ?r)_L" [label="(?B ?a ?r)", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_TURN_L" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
-    "h1_TURN_L" -> "?k_L" [label="1", color="#9467bd"];
-    "h1_TURN_L" -> "(?B ?a ?r)_L" [label="2", color="#9467bd"];
-    "h1_TURN_L" -> "?acc_L" [label="3", color="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "(?N ?acc ?a)_R" [label="(?N ?acc ?a)", shape=rectangle];
-    "h2_TURN_R" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
-    "h2_TURN_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "?r_R" [label="2", color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "(?N ?acc ?a)_R" [label="3", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule turn-step of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.turn-step.svg)
 <!-- /rule -->
 
 #### `turn-end`
@@ -671,26 +361,7 @@ digraph rule_turn_step_lhs_rhs {
   :why    "turned round: the answer is {?acc}")
 ```
 
-```dot
-digraph rule_turn_end_lhs_rhs {
-  rankdir=TB;
-  label="turn-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_TURN_L" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
-    "h1_TURN_L" -> "?k_L" [label="1", color="#9467bd"];
-    "h1_TURN_L" -> "z_L" [label="2", color="#9467bd"];
-    "h1_TURN_L" -> "?acc_L" [label="3", color="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?DONE", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  }
-}
-```
+![The rule turn-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.turn-end.svg)
 <!-- /rule -->
 
 ### Addition: the request
@@ -708,22 +379,7 @@ becomes the result fact with the operands as the request wrote them.
   :why    "{?x} + {?y} is asked: first, the number {?x} stands for")
 ```
 
-```dot
-digraph rule_add_ask_lhs_rhs {
-  rankdir=TB;
-  label="add-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="?ADD", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?ADD-FIRST ?x ?y)_R" [label="(?ADD-FIRST ?x ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(?ADD-FIRST ?x ?y)_R" -> "?x_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule add-ask of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-ask.svg)
 <!-- /rule -->
 
 #### `add-ask-second`
@@ -736,22 +392,7 @@ digraph rule_add_ask_lhs_rhs {
   :why    "the first operand is {?u}: now the number {?y} stands for")
 ```
 
-```dot
-digraph rule_add_ask_second_lhs_rhs {
-  rankdir=TB;
-  label="add-ask-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?ADD-FIRST ?x ?y)_L" [label="(?ADD-FIRST ?x ?y)", shape=rectangle];
-    "?u_L" [label="?u", shape=diamond];
-    "(?ADD-FIRST ?x ?y)_L" -> "?u_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?ADD-SECOND ?x ?y ?u)_R" [label="(?ADD-SECOND ?x ?y ?u)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(?ADD-SECOND ?x ?y ?u)_R" -> "?y_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule add-ask-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-ask-second.svg)
 <!-- /rule -->
 
 #### `add-start`
@@ -764,30 +405,7 @@ digraph rule_add_ask_second_lhs_rhs {
   :why    "add {?u} and {?v} from the units, with no carry in")
 ```
 
-```dot
-digraph rule_add_start_lhs_rhs {
-  rankdir=TB;
-  label="add-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?ADD-SECOND ?x ?y ?u)_L" [label="(?ADD-SECOND ?x ?y ?u)", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "(?ADD-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?SUM ?x ?y)_R" [label="(?SUM ?x ?y)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_ADD-WALK_R" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
-    "h1_ADD-WALK_R" -> "(?SUM ?x ?y)_R" [label="1", color="#17becf", style=dashed];
-    "h1_ADD-WALK_R" -> "?u_R" [label="2", color="#17becf", style=dashed];
-    "h1_ADD-WALK_R" -> "?v_R" [label="3", color="#17becf", style=dashed];
-    "h1_ADD-WALK_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_ADD-WALK_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule add-start of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-start.svg)
 <!-- /rule -->
 
 #### `add-answer`
@@ -800,26 +418,7 @@ digraph rule_add_start_lhs_rhs {
   :why    "{?x} + {?y} = {?s}")
 ```
 
-```dot
-digraph rule_add_answer_lhs_rhs {
-  rankdir=TB;
-  label="add-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?SUM ?x ?y)_L" [label="(?SUM ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(?SUM ?x ?y)_L" -> "?s_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_SUM-OF_R" [shape=octagon, label="?SUM-OF", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_SUM-OF_R" -> "?x_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_SUM-OF_R" -> "?y_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_SUM-OF_R" -> "?s_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule add-answer of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-answer.svg)
 <!-- /rule -->
 
 ### Subtraction
@@ -846,48 +445,7 @@ difference's place or in the shortfall's.
   :why    "{?a} - {?c} - borrow {?e} is {?s}, borrow {?f}: {?s} goes in front of the digits so far")
 ```
 
-```dot
-digraph rule_sub_column_lhs_rhs {
-  rankdir=TB;
-  label="sub-column"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "(?N ?q ?c)_L" [label="(?N ?q ?c)", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?s_L" [label="?s", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "h1_SUB-WALK_L" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h1_SUB-WALK_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_SUB-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#d62728"];
-    "h1_SUB-WALK_L" -> "(?N ?q ?c)_L" [label="3", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?e_L" [label="4", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?acc_L" [label="5", color="#d62728"];
-    "h2_FS_L" [shape=octagon, label="?FS", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_FS_L" -> "?a_L" [label="1", color="#7f7f7f"];
-    "h2_FS_L" -> "?c_L" [label="2", color="#7f7f7f"];
-    "h2_FS_L" -> "?e_L" [label="3", color="#7f7f7f"];
-    "h2_FS_L" -> "?s_L" [label="4", color="#7f7f7f"];
-    "h2_FS_L" -> "?f_L" [label="5", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "(?B ?s ?acc)_R" [label="(?B ?s ?acc)", shape=rectangle];
-    "h3_SUB-WALK_R" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h3_SUB-WALK_R" -> "?k_R" [label="1", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?p_R" [label="2", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?q_R" [label="3", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?f_R" [label="4", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "(?B ?s ?acc)_R" [label="5", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule sub-column of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-column.svg)
 <!-- /rule -->
 
 #### `sub-column-first`
@@ -901,48 +459,7 @@ digraph rule_sub_column_lhs_rhs {
   :why    "the number taken away has run out: {?a} - borrow {?e} is {?s}, borrow {?f}")
 ```
 
-```dot
-digraph rule_sub_column_first_lhs_rhs {
-  rankdir=TB;
-  label="sub-column-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "h1_SUB-WALK_L" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h1_SUB-WALK_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_SUB-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="3", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?e_L" [label="4", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?acc_L" [label="5", color="#d62728"];
-    "h2_FS_L" [shape=octagon, label="?FS", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_FS_L" -> "?a_L" [label="1", color="#7f7f7f"];
-    "h2_FS_L" -> "0_L" [label="2", color="#7f7f7f"];
-    "h2_FS_L" -> "?e_L" [label="3", color="#7f7f7f"];
-    "h2_FS_L" -> "?s_L" [label="4", color="#7f7f7f"];
-    "h2_FS_L" -> "?f_L" [label="5", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?B ?s ?acc)_R" [label="(?B ?s ?acc)", shape=rectangle];
-    "h3_SUB-WALK_R" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h3_SUB-WALK_R" -> "?k_R" [label="1", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?p_R" [label="2", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "z_R" [label="3", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?f_R" [label="4", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "(?B ?s ?acc)_R" [label="5", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule sub-column-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-column-first.svg)
 <!-- /rule -->
 
 #### `sub-column-second`
@@ -956,48 +473,7 @@ digraph rule_sub_column_first_lhs_rhs {
   :why    "the number taken from has run out: 0 - {?c} - borrow {?e} is {?s}, borrow {?f}")
 ```
 
-```dot
-digraph rule_sub_column_second_lhs_rhs {
-  rankdir=TB;
-  label="sub-column-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "(?N ?q ?c)_L" [label="(?N ?q ?c)", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?c_L" [label="?c", shape=diamond];
-    "?s_L" [label="?s", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "h1_SUB-WALK_L" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h1_SUB-WALK_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="2", color="#d62728"];
-    "h1_SUB-WALK_L" -> "(?N ?q ?c)_L" [label="3", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?e_L" [label="4", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?acc_L" [label="5", color="#d62728"];
-    "h2_FS_L" [shape=octagon, label="?FS", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_FS_L" -> "0_L" [label="1", color="#7f7f7f"];
-    "h2_FS_L" -> "?c_L" [label="2", color="#7f7f7f"];
-    "h2_FS_L" -> "?e_L" [label="3", color="#7f7f7f"];
-    "h2_FS_L" -> "?s_L" [label="4", color="#7f7f7f"];
-    "h2_FS_L" -> "?f_L" [label="5", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "(?B ?s ?acc)_R" [label="(?B ?s ?acc)", shape=rectangle];
-    "h3_SUB-WALK_R" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h3_SUB-WALK_R" -> "?k_R" [label="1", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "z_R" [label="2", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?q_R" [label="3", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?f_R" [label="4", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "(?B ?s ?acc)_R" [label="5", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule sub-column-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-column-second.svg)
 <!-- /rule -->
 
 #### `sub-end`
@@ -1010,29 +486,7 @@ digraph rule_sub_column_second_lhs_rhs {
   :why    "no column is left and no borrow: the digits are {?acc}")
 ```
 
-```dot
-digraph rule_sub_end_lhs_rhs {
-  rankdir=TB;
-  label="sub-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "0_L" [label="0", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_SUB-WALK_L" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h1_SUB-WALK_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="2", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="3", color="#d62728"];
-    "h1_SUB-WALK_L" -> "0_L" [label="4", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?acc_L" [label="5", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule sub-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-end.svg)
 <!-- /rule -->
 
 #### `sub-borrow-out`
@@ -1045,29 +499,7 @@ digraph rule_sub_end_lhs_rhs {
   :why    "no column is left and a borrow is: the number taken from is the smaller")
 ```
 
-```dot
-digraph rule_sub_borrow_out_lhs_rhs {
-  rankdir=TB;
-  label="sub-borrow-out"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_SUB-WALK_L" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h1_SUB-WALK_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="2", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="3", color="#d62728"];
-    "h1_SUB-WALK_L" -> "1_L" [label="4", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?acc_L" [label="5", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "h2_SHORT_R" [shape=octagon, label="?SHORT", color="#9467bd", fontcolor="#9467bd"];
-    "h2_SHORT_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule sub-borrow-out of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-borrow-out.svg)
 <!-- /rule -->
 
 #### `sub-ask`
@@ -1080,22 +512,7 @@ digraph rule_sub_borrow_out_lhs_rhs {
   :why    "{?x} - {?y} is asked: first, the number {?x} stands for")
 ```
 
-```dot
-digraph rule_sub_ask_lhs_rhs {
-  rankdir=TB;
-  label="sub-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="?SUB", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?SUB-FIRST ?x ?y)_R" [label="(?SUB-FIRST ?x ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(?SUB-FIRST ?x ?y)_R" -> "?x_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule sub-ask of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-ask.svg)
 <!-- /rule -->
 
 #### `sub-ask-second`
@@ -1108,22 +525,7 @@ digraph rule_sub_ask_lhs_rhs {
   :why    "the first operand is {?u}: now the number {?y} stands for")
 ```
 
-```dot
-digraph rule_sub_ask_second_lhs_rhs {
-  rankdir=TB;
-  label="sub-ask-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?SUB-FIRST ?x ?y)_L" [label="(?SUB-FIRST ?x ?y)", shape=rectangle];
-    "?u_L" [label="?u", shape=diamond];
-    "(?SUB-FIRST ?x ?y)_L" -> "?u_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?SUB-SECOND ?x ?y ?u)_R" [label="(?SUB-SECOND ?x ?y ?u)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(?SUB-SECOND ?x ?y ?u)_R" -> "?y_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule sub-ask-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-ask-second.svg)
 <!-- /rule -->
 
 #### `sub-start`
@@ -1137,37 +539,7 @@ digraph rule_sub_ask_second_lhs_rhs {
   :why    "take {?v} from {?u}, and {?u} from {?v}, from the units, with no borrow in: one of the two has an answer")
 ```
 
-```dot
-digraph rule_sub_start_lhs_rhs {
-  rankdir=TB;
-  label="sub-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?SUB-SECOND ?x ?y ?u)_L" [label="(?SUB-SECOND ?x ?y ?u)", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "(?SUB-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?DIFFERENCE ?x ?y)_R" [label="(?DIFFERENCE ?x ?y)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "(?SHORTFALL ?x ?y)_R" [label="(?SHORTFALL ?x ?y)", shape=rectangle];
-    "h1_SUB-WALK_R" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h1_SUB-WALK_R" -> "(?DIFFERENCE ?x ?y)_R" [label="1", color="#d62728", style=dashed];
-    "h1_SUB-WALK_R" -> "?u_R" [label="2", color="#d62728", style=dashed];
-    "h1_SUB-WALK_R" -> "?v_R" [label="3", color="#d62728", style=dashed];
-    "h1_SUB-WALK_R" -> "0_R" [label="4", color="#d62728", style=dashed];
-    "h1_SUB-WALK_R" -> "z_R" [label="5", color="#d62728", style=dashed];
-    "h2_SUB-WALK_R" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h2_SUB-WALK_R" -> "(?SHORTFALL ?x ?y)_R" [label="1", color="#d62728", style=dashed];
-    "h2_SUB-WALK_R" -> "?v_R" [label="2", color="#d62728", style=dashed];
-    "h2_SUB-WALK_R" -> "?u_R" [label="3", color="#d62728", style=dashed];
-    "h2_SUB-WALK_R" -> "0_R" [label="4", color="#d62728", style=dashed];
-    "h2_SUB-WALK_R" -> "z_R" [label="5", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule sub-start of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-start.svg)
 <!-- /rule -->
 
 #### `sub-answer`
@@ -1180,28 +552,7 @@ digraph rule_sub_start_lhs_rhs {
   :why    "{?x} - {?y} = {?d}, and nothing is short")
 ```
 
-```dot
-digraph rule_sub_answer_lhs_rhs {
-  rankdir=TB;
-  label="sub-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIFFERENCE ?x ?y)_L" [label="(?DIFFERENCE ?x ?y)", shape=rectangle];
-    "?d_L" [label="?d", shape=diamond];
-    "(?DIFFERENCE ?x ?y)_L" -> "?d_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h1_DIFF-OF_R" [shape=octagon, label="?DIFF-OF", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_DIFF-OF_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_DIFF-OF_R" -> "?y_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_DIFF-OF_R" -> "?d_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_DIFF-OF_R" -> "z_R" [label="4", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule sub-answer of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-answer.svg)
 <!-- /rule -->
 
 #### `sub-answer-short`
@@ -1214,28 +565,7 @@ digraph rule_sub_answer_lhs_rhs {
   :why    "{?x} is short of {?y} by {?r}: the difference is zero")
 ```
 
-```dot
-digraph rule_sub_answer_short_lhs_rhs {
-  rankdir=TB;
-  label="sub-answer-short"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?SHORTFALL ?x ?y)_L" [label="(?SHORTFALL ?x ?y)", shape=rectangle];
-    "?r_L" [label="?r", shape=diamond];
-    "(?SHORTFALL ?x ?y)_L" -> "?r_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?r_R" [label="?r", shape=diamond];
-    "h1_DIFF-OF_R" [shape=octagon, label="?DIFF-OF", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_DIFF-OF_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_DIFF-OF_R" -> "?y_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_DIFF-OF_R" -> "z_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_DIFF-OF_R" -> "?r_R" [label="4", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule sub-answer-short of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-answer-short.svg)
 <!-- /rule -->
 
 ### Comparison
@@ -1254,42 +584,7 @@ digit overrule it. It starts at `eq`.
   :why    "the order below is {?o}; {?a} against {?c} above it makes it {?t}")
 ```
 
-```dot
-digraph rule_cmp_column_lhs_rhs {
-  rankdir=TB;
-  label="cmp-column"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "(?N ?q ?c)_L" [label="(?N ?q ?c)", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_CMP-WALK_L" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "(?N ?q ?c)_L" [label="3", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?o_L" [label="4", color="#7f7f7f"];
-    "h2_CL_L" [shape=octagon, label="?CL", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_CL_L" -> "?o_L" [label="1", color="#ff7f0e"];
-    "h2_CL_L" -> "?a_L" [label="2", color="#ff7f0e"];
-    "h2_CL_L" -> "?c_L" [label="3", color="#ff7f0e"];
-    "h2_CL_L" -> "?t_L" [label="4", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "h3_CMP-WALK_R" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h3_CMP-WALK_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?p_R" [label="2", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?q_R" [label="3", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?t_R" [label="4", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule cmp-column of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-column.svg)
 <!-- /rule -->
 
 #### `cmp-column-first`
@@ -1303,42 +598,7 @@ digraph rule_cmp_column_lhs_rhs {
   :why    "the second number has run out: the order below is {?o}, and {?a} against nothing makes it {?t}")
 ```
 
-```dot
-digraph rule_cmp_column_first_lhs_rhs {
-  rankdir=TB;
-  label="cmp-column-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_CMP-WALK_L" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "z_L" [label="3", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?o_L" [label="4", color="#7f7f7f"];
-    "h2_CL_L" [shape=octagon, label="?CL", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_CL_L" -> "?o_L" [label="1", color="#ff7f0e"];
-    "h2_CL_L" -> "?a_L" [label="2", color="#ff7f0e"];
-    "h2_CL_L" -> "0_L" [label="3", color="#ff7f0e"];
-    "h2_CL_L" -> "?t_L" [label="4", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?t_R" [label="?t", shape=diamond];
-    "h3_CMP-WALK_R" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h3_CMP-WALK_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?p_R" [label="2", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "z_R" [label="3", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?t_R" [label="4", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule cmp-column-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-column-first.svg)
 <!-- /rule -->
 
 #### `cmp-column-second`
@@ -1352,42 +612,7 @@ digraph rule_cmp_column_first_lhs_rhs {
   :why    "the first number has run out: the order below is {?o}, and nothing against {?c} makes it {?t}")
 ```
 
-```dot
-digraph rule_cmp_column_second_lhs_rhs {
-  rankdir=TB;
-  label="cmp-column-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "(?N ?q ?c)_L" [label="(?N ?q ?c)", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?c_L" [label="?c", shape=diamond];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_CMP-WALK_L" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "z_L" [label="2", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "(?N ?q ?c)_L" [label="3", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?o_L" [label="4", color="#7f7f7f"];
-    "h2_CL_L" [shape=octagon, label="?CL", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_CL_L" -> "?o_L" [label="1", color="#ff7f0e"];
-    "h2_CL_L" -> "0_L" [label="2", color="#ff7f0e"];
-    "h2_CL_L" -> "?c_L" [label="3", color="#ff7f0e"];
-    "h2_CL_L" -> "?t_L" [label="4", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "h3_CMP-WALK_R" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h3_CMP-WALK_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "z_R" [label="2", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?q_R" [label="3", color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?t_R" [label="4", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule cmp-column-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-column-second.svg)
 <!-- /rule -->
 
 #### `cmp-end`
@@ -1400,27 +625,7 @@ digraph rule_cmp_column_second_lhs_rhs {
   :why    "no column is left: the order is {?o}")
 ```
 
-```dot
-digraph rule_cmp_end_lhs_rhs {
-  rankdir=TB;
-  label="cmp-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
-    "h1_CMP-WALK_L" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "z_L" [label="2", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "z_L" [label="3", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?o_L" [label="4", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?o_R" [label="?o", shape=diamond];
-    "?k_R" -> "?o_R" [label="?ORDER-IS", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule cmp-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-end.svg)
 <!-- /rule -->
 
 #### `cmp-ask`
@@ -1433,22 +638,7 @@ digraph rule_cmp_end_lhs_rhs {
   :why    "{?x} compared with {?y} is asked: first, the number {?x} stands for")
 ```
 
-```dot
-digraph rule_cmp_ask_lhs_rhs {
-  rankdir=TB;
-  label="cmp-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="?CMP", color="#ff7f0e", fontcolor="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?CMP-FIRST ?x ?y)_R" [label="(?CMP-FIRST ?x ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(?CMP-FIRST ?x ?y)_R" -> "?x_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule cmp-ask of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-ask.svg)
 <!-- /rule -->
 
 #### `cmp-ask-second`
@@ -1461,22 +651,7 @@ digraph rule_cmp_ask_lhs_rhs {
   :why    "the first operand is {?u}: now the number {?y} stands for")
 ```
 
-```dot
-digraph rule_cmp_ask_second_lhs_rhs {
-  rankdir=TB;
-  label="cmp-ask-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?CMP-FIRST ?x ?y)_L" [label="(?CMP-FIRST ?x ?y)", shape=rectangle];
-    "?u_L" [label="?u", shape=diamond];
-    "(?CMP-FIRST ?x ?y)_L" -> "?u_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?CMP-SECOND ?x ?y ?u)_R" [label="(?CMP-SECOND ?x ?y ?u)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(?CMP-SECOND ?x ?y ?u)_R" -> "?y_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule cmp-ask-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-ask-second.svg)
 <!-- /rule -->
 
 #### `cmp-start`
@@ -1489,28 +664,7 @@ digraph rule_cmp_ask_second_lhs_rhs {
   :why    "compare {?u} with {?v} from the units: equal so far")
 ```
 
-```dot
-digraph rule_cmp_start_lhs_rhs {
-  rankdir=TB;
-  label="cmp-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?CMP-SECOND ?x ?y ?u)_L" [label="(?CMP-SECOND ?x ?y ?u)", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "(?CMP-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?ORDER ?x ?y)_R" [label="(?ORDER ?x ?y)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "eq_R" [label="eq", shape=rectangle];
-    "h1_CMP-WALK_R" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_CMP-WALK_R" -> "(?ORDER ?x ?y)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_CMP-WALK_R" -> "?u_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_CMP-WALK_R" -> "?v_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_CMP-WALK_R" -> "eq_R" [label="4", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule cmp-start of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-start.svg)
 <!-- /rule -->
 
 #### `cmp-answer`
@@ -1523,26 +677,7 @@ digraph rule_cmp_start_lhs_rhs {
   :why    "{?x} against {?y}: {?o}")
 ```
 
-```dot
-digraph rule_cmp_answer_lhs_rhs {
-  rankdir=TB;
-  label="cmp-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?ORDER ?x ?y)_L" [label="(?ORDER ?x ?y)", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
-    "(?ORDER ?x ?y)_L" -> "?o_L" [label="?ORDER-IS", color="#ff7f0e", fontcolor="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?o_R" [label="?o", shape=diamond];
-    "h1_CMP-OF_R" [shape=octagon, label="?CMP-OF", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_CMP-OF_R" -> "?x_R" [label="1", color="#ff7f0e", style=dashed];
-    "h1_CMP-OF_R" -> "?y_R" [label="2", color="#ff7f0e", style=dashed];
-    "h1_CMP-OF_R" -> "?o_R" [label="3", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule cmp-answer of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-answer.svg)
 <!-- /rule -->
 
 ### Multiplication: the call
@@ -1561,30 +696,7 @@ decimal multiplies by a digit, binary adds the multiplicand or nothing.
   :why    "the digit {?a} goes in front of {?acc}")
 ```
 
-```dot
-digraph rule_top_first_step_lhs_rhs {
-  rankdir=TB;
-  label="top-first-step"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_TOP-FIRST_L" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?k_L" [label="1", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "(?N ?p ?a)_L" [label="2", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?acc_L" [label="3", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "(?B ?a ?acc)_R" [label="(?B ?a ?acc)", shape=rectangle];
-    "h2_TOP-FIRST_R" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
-    "h2_TOP-FIRST_R" -> "?k_R" [label="1", color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "(?B ?a ?acc)_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule top-first-step of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.top-first-step.svg)
 <!-- /rule -->
 
 #### `top-first-end`
@@ -1597,26 +709,7 @@ digraph rule_top_first_step_lhs_rhs {
   :why    "turned round: the digits, the top one first, are {?acc}")
 ```
 
-```dot
-digraph rule_top_first_end_lhs_rhs {
-  rankdir=TB;
-  label="top-first-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_TOP-FIRST_L" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?k_L" [label="1", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "z_L" [label="2", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?acc_L" [label="3", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?TOP-FIRST-IS", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule top-first-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.top-first-end.svg)
 <!-- /rule -->
 
 #### `mul-turn`
@@ -1629,30 +722,7 @@ digraph rule_top_first_end_lhs_rhs {
   :why    "to multiply {?u} by {?v}: first {?v}'s digits, the top one first")
 ```
 
-```dot
-digraph rule_mul_turn_lhs_rhs {
-  rankdir=TB;
-  label="mul-turn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "h1_MUL-CALL_L" [shape=octagon, label="?MUL-CALL", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?k_L" [label="1", color="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?u_L" [label="2", color="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?v_L" [label="3", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?MUL-DIGITS ?k ?u)_R" [label="(?MUL-DIGITS ?k ?u)", shape=rectangle];
-    "?v_R" [label="?v", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h2_TOP-FIRST_R" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
-    "h2_TOP-FIRST_R" -> "(?MUL-DIGITS ?k ?u)_R" [label="1", color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "?v_R" [label="2", color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "z_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule mul-turn of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-turn.svg)
 <!-- /rule -->
 
 #### `mul-begin`
@@ -1665,28 +735,7 @@ digraph rule_mul_turn_lhs_rhs {
   :why    "nothing is summed yet")
 ```
 
-```dot
-digraph rule_mul_begin_lhs_rhs {
-  rankdir=TB;
-  label="mul-begin"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?MUL-DIGITS ?k ?u)_L" [label="(?MUL-DIGITS ?k ?u)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(?MUL-DIGITS ?k ?u)_L" -> "?t_L" [label="?TOP-FIRST-IS", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?u_R" [label="?u", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h1_MUL-STEP_R" [shape=octagon, label="?MUL-STEP", color="#17becf", fontcolor="#17becf"];
-    "h1_MUL-STEP_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?u_R" [label="2", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?t_R" [label="3", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "z_R" [label="4", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule mul-begin of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-begin.svg)
 <!-- /rule -->
 
 #### `mul-next`
@@ -1699,28 +748,7 @@ digraph rule_mul_begin_lhs_rhs {
   :why    "the sum so far is {?s}")
 ```
 
-```dot
-digraph rule_mul_next_lhs_rhs {
-  rankdir=TB;
-  label="mul-next"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?MUL-SUM ?k ?u ?rest)_L" [label="(?MUL-SUM ?k ?u ?rest)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(?MUL-SUM ?k ?u ?rest)_L" -> "?s_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?u_R" [label="?u", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_MUL-STEP_R" [shape=octagon, label="?MUL-STEP", color="#17becf", fontcolor="#17becf"];
-    "h1_MUL-STEP_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?u_R" [label="2", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?rest_R" [label="3", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?s_R" [label="4", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule mul-next of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-next.svg)
 <!-- /rule -->
 
 #### `mul-end`
@@ -1733,28 +761,7 @@ digraph rule_mul_next_lhs_rhs {
   :why    "no digit of the multiplier is left: the product is {?acc}")
 ```
 
-```dot
-digraph rule_mul_end_lhs_rhs {
-  rankdir=TB;
-  label="mul-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_MUL-STEP_L" [shape=octagon, label="?MUL-STEP", color="#17becf", fontcolor="#17becf"];
-    "h1_MUL-STEP_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_MUL-STEP_L" -> "?u_L" [label="2", color="#17becf"];
-    "h1_MUL-STEP_L" -> "z_L" [label="3", color="#17becf"];
-    "h1_MUL-STEP_L" -> "?acc_L" [label="4", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?DONE", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  }
-}
-```
+![The rule mul-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-end.svg)
 <!-- /rule -->
 
 #### `mul-ask`
@@ -1767,22 +774,7 @@ digraph rule_mul_end_lhs_rhs {
   :why    "{?x} x {?y} is asked: first, the number {?x} stands for")
 ```
 
-```dot
-digraph rule_mul_ask_lhs_rhs {
-  rankdir=TB;
-  label="mul-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="?MUL", color="#8c564b", fontcolor="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?MUL-FIRST ?x ?y)_R" [label="(?MUL-FIRST ?x ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(?MUL-FIRST ?x ?y)_R" -> "?x_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule mul-ask of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-ask.svg)
 <!-- /rule -->
 
 #### `mul-ask-second`
@@ -1795,22 +787,7 @@ digraph rule_mul_ask_lhs_rhs {
   :why    "the first operand is {?u}: now the number {?y} stands for")
 ```
 
-```dot
-digraph rule_mul_ask_second_lhs_rhs {
-  rankdir=TB;
-  label="mul-ask-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?MUL-FIRST ?x ?y)_L" [label="(?MUL-FIRST ?x ?y)", shape=rectangle];
-    "?u_L" [label="?u", shape=diamond];
-    "(?MUL-FIRST ?x ?y)_L" -> "?u_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?MUL-SECOND ?x ?y ?u)_R" [label="(?MUL-SECOND ?x ?y ?u)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(?MUL-SECOND ?x ?y ?u)_R" -> "?y_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule mul-ask-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-ask-second.svg)
 <!-- /rule -->
 
 #### `mul-start`
@@ -1823,26 +800,7 @@ digraph rule_mul_ask_second_lhs_rhs {
   :why    "multiply {?u} by {?v}")
 ```
 
-```dot
-digraph rule_mul_start_lhs_rhs {
-  rankdir=TB;
-  label="mul-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?MUL-SECOND ?x ?y ?u)_L" [label="(?MUL-SECOND ?x ?y ?u)", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "(?MUL-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?PRODUCT ?x ?y)_R" [label="(?PRODUCT ?x ?y)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "h1_MUL-CALL_R" [shape=octagon, label="?MUL-CALL", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_MUL-CALL_R" -> "(?PRODUCT ?x ?y)_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_MUL-CALL_R" -> "?u_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_MUL-CALL_R" -> "?v_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule mul-start of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-start.svg)
 <!-- /rule -->
 
 #### `mul-answer`
@@ -1855,26 +813,7 @@ digraph rule_mul_start_lhs_rhs {
   :why    "{?x} x {?y} = {?p}")
 ```
 
-```dot
-digraph rule_mul_answer_lhs_rhs {
-  rankdir=TB;
-  label="mul-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?PRODUCT ?x ?y)_L" [label="(?PRODUCT ?x ?y)", shape=rectangle];
-    "?p_L" [label="?p", shape=diamond];
-    "(?PRODUCT ?x ?y)_L" -> "?p_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "h1_PRODUCT-OF_R" [shape=octagon, label="?PRODUCT-OF", color="#e377c2", fontcolor="#e377c2"];
-    "h1_PRODUCT-OF_R" -> "?x_R" [label="1", color="#e377c2", style=dashed];
-    "h1_PRODUCT-OF_R" -> "?y_R" [label="2", color="#e377c2", style=dashed];
-    "h1_PRODUCT-OF_R" -> "?p_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule mul-answer of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-answer.svg)
 <!-- /rule -->
 
 ### Division: the call
@@ -1892,29 +831,7 @@ digit of the quotient, are the base's own.
   :why    "start at the top digit: nothing is left over yet, and the quotient is zero")
 ```
 
-```dot
-digraph rule_div_begin_lhs_rhs {
-  rankdir=TB;
-  label="div-begin"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIV-DIGITS ?k ?ms)_L" [label="(?DIV-DIGITS ?k ?ms)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(?DIV-DIGITS ?k ?ms)_L" -> "?t_L" [label="?TOP-FIRST-IS", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h1_DIV-STEP_R" [shape=octagon, label="?DIV-STEP", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_DIV-STEP_R" -> "?k_R" [label="1", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "?ms_R" [label="2", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "?t_R" [label="3", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "z_R" [label="4", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "z_R" [label="5", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule div-begin of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-begin.svg)
 <!-- /rule -->
 
 #### `div-end`
@@ -1927,34 +844,7 @@ digraph rule_div_begin_lhs_rhs {
   :why    "no digit is left: the quotient is {?w} and the remainder {?t}")
 ```
 
-```dot
-digraph rule_div_end_lhs_rhs {
-  rankdir=TB;
-  label="div-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "h1_DIV-STEP_L" [shape=octagon, label="?DIV-STEP", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_DIV-STEP_L" -> "?k_L" [label="1", color="#ff7f0e"];
-    "h1_DIV-STEP_L" -> "?ms_L" [label="2", color="#ff7f0e"];
-    "h1_DIV-STEP_L" -> "z_L" [label="3", color="#ff7f0e"];
-    "h1_DIV-STEP_L" -> "?t_L" [label="4", color="#ff7f0e"];
-    "h1_DIV-STEP_L" -> "?w_L" [label="5", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?w_R" [label="?w", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "h2_DIV-DONE_R" [shape=octagon, label="?DIV-DONE", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_DIV-DONE_R" -> "?k_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_DIV-DONE_R" -> "?w_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_DIV-DONE_R" -> "?t_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule div-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-end.svg)
 <!-- /rule -->
 
 #### `div-ask`
@@ -1967,22 +857,7 @@ digraph rule_div_end_lhs_rhs {
   :why    "{?x} divided by {?y} is asked: first, the number {?x} stands for")
 ```
 
-```dot
-digraph rule_div_ask_lhs_rhs {
-  rankdir=TB;
-  label="div-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="?DIV", color="#ff7f0e", fontcolor="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?DIV-FIRST ?x ?y)_R" [label="(?DIV-FIRST ?x ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(?DIV-FIRST ?x ?y)_R" -> "?x_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule div-ask of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-ask.svg)
 <!-- /rule -->
 
 #### `div-ask-second`
@@ -1995,22 +870,7 @@ digraph rule_div_ask_lhs_rhs {
   :why    "the first operand is {?u}: now the number {?y} stands for")
 ```
 
-```dot
-digraph rule_div_ask_second_lhs_rhs {
-  rankdir=TB;
-  label="div-ask-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIV-FIRST ?x ?y)_L" [label="(?DIV-FIRST ?x ?y)", shape=rectangle];
-    "?u_L" [label="?u", shape=diamond];
-    "(?DIV-FIRST ?x ?y)_L" -> "?u_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?DIV-SECOND ?x ?y ?u)_R" [label="(?DIV-SECOND ?x ?y ?u)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(?DIV-SECOND ?x ?y ?u)_R" -> "?y_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule div-ask-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-ask-second.svg)
 <!-- /rule -->
 
 #### `div-start`
@@ -2023,26 +883,7 @@ digraph rule_div_ask_second_lhs_rhs {
   :why    "divide {?u} by {?v}")
 ```
 
-```dot
-digraph rule_div_start_lhs_rhs {
-  rankdir=TB;
-  label="div-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIV-SECOND ?x ?y ?u)_L" [label="(?DIV-SECOND ?x ?y ?u)", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "(?DIV-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?QUOTIENT ?x ?y)_R" [label="(?QUOTIENT ?x ?y)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "h1_DIV-CALL_R" [shape=octagon, label="?DIV-CALL", color="#e377c2", fontcolor="#e377c2"];
-    "h1_DIV-CALL_R" -> "(?QUOTIENT ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_DIV-CALL_R" -> "?u_R" [label="2", color="#e377c2", style=dashed];
-    "h1_DIV-CALL_R" -> "?v_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule div-start of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-start.svg)
 <!-- /rule -->
 
 #### `div-answer`
@@ -2055,32 +896,7 @@ digraph rule_div_start_lhs_rhs {
   :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
 ```
 
-```dot
-digraph rule_div_answer_lhs_rhs {
-  rankdir=TB;
-  label="div-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?QUOTIENT ?x ?y)_L" [label="(?QUOTIENT ?x ?y)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_DIV-DONE_L" [shape=octagon, label="?DIV-DONE", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_DIV-DONE_L" -> "(?QUOTIENT ?x ?y)_L" [label="1", color="#2ca02c"];
-    "h1_DIV-DONE_L" -> "?q_L" [label="2", color="#2ca02c"];
-    "h1_DIV-DONE_L" -> "?r_L" [label="3", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "h2_QUOT-OF_R" [shape=octagon, label="?QUOT-OF", color="#9467bd", fontcolor="#9467bd"];
-    "h2_QUOT-OF_R" -> "?x_R" [label="1", color="#9467bd", style=dashed];
-    "h2_QUOT-OF_R" -> "?y_R" [label="2", color="#9467bd", style=dashed];
-    "h2_QUOT-OF_R" -> "?q_R" [label="3", color="#9467bd", style=dashed];
-    "h2_QUOT-OF_R" -> "?r_R" [label="4", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule div-answer of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-answer.svg)
 <!-- /rule -->
 
 ### Division by zero
@@ -2097,22 +913,7 @@ The divisor times one is zero: the flag, at the request and at the call.
   :why    "the divisor of {?x} divided by {?y} is zero")
 ```
 
-```dot
-digraph rule_div_by_zero_lhs_rhs {
-  rankdir=TB;
-  label="div-by-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" [label="(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" -> "z_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?DIV ?x ?y)_R" [label="(?DIV ?x ?y)", shape=rectangle];
-    "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h1_division-by-zero_R" -> "(?DIV ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule div-by-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-by-zero.svg)
 <!-- /rule -->
 
 #### `div-call-by-zero`
@@ -2125,22 +926,7 @@ digraph rule_div_by_zero_lhs_rhs {
   :why    "the divisor of {?u} divided by {?v}, wanted for {?k}, is zero")
 ```
 
-```dot
-digraph rule_div_call_by_zero_lhs_rhs {
-  rankdir=TB;
-  label="div-call-by-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIV-M1 ?k ?u ?v)_L" [label="(?DIV-M1 ?k ?u ?v)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "(?DIV-M1 ?k ?u ?v)_L" -> "z_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?DIV-CALL ?k ?u ?v)_R" [label="(?DIV-CALL ?k ?u ?v)", shape=rectangle];
-    "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h1_division-by-zero_R" -> "(?DIV-CALL ?k ?u ?v)_R" [label="1", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule div-call-by-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-call-by-zero.svg)
 <!-- /rule -->
 
 ### An operand's faults, and a `let`'s
@@ -2160,24 +946,7 @@ rules make each flag a contradiction.
   :why    "the digit {?x} is not a number: the number is ({?N} z {?x})")
 ```
 
-```dot
-digraph rule_operand_digit_lhs_rhs {
-  rankdir=TB;
-  label="operand-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?x_L" [label="?x", shape=diamond];
-    "?k_L" -> "?x_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_NZ_L" -> "?x_L" [label="1", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(?NOT-A-NUMBER ?x)_R" [label="(?NOT-A-NUMBER ?x)", shape=rectangle];
-    "?k_R" -> "(?NOT-A-NUMBER ?x)_R" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf", style=dashed];
-  }
-}
-```
+![The rule operand-digit of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-digit.svg)
 <!-- /rule -->
 
 #### `operand-digit-zero`
@@ -2190,22 +959,7 @@ digraph rule_operand_digit_lhs_rhs {
   :why    "the digit 0 is not a number: zero is z")
 ```
 
-```dot
-digraph rule_operand_digit_zero_lhs_rhs {
-  rankdir=TB;
-  label="operand-digit-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?k_L" -> "0_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(?NOT-A-NUMBER 0)_R" [label="(?NOT-A-NUMBER 0)", shape=rectangle];
-    "?k_R" -> "(?NOT-A-NUMBER 0)_R" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf", style=dashed];
-  }
-}
-```
+![The rule operand-digit-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-digit-zero.svg)
 <!-- /rule -->
 
 #### `let-twice`
@@ -2218,25 +972,7 @@ digraph rule_operand_digit_zero_lhs_rhs {
   :why    "{?x} is named twice: {?v}, and {?w}")
 ```
 
-```dot
-digraph rule_let_twice_lhs_rhs {
-  rankdir=TB;
-  label="let-twice"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?x_L" -> "?w_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?v_L" -> "?w_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?LET ?x ?v)_R" [label="(?LET ?x ?v)", shape=rectangle];
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "(?LET ?x ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule let-twice of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-twice.svg)
 <!-- /rule -->
 
 #### `let-zero`
@@ -2249,22 +985,7 @@ digraph rule_let_twice_lhs_rhs {
   :why    "z is zero, and cannot name another number")
 ```
 
-```dot
-digraph rule_let_zero_lhs_rhs {
-  rankdir=TB;
-  label="let-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "z_L" [label="z", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "z_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?LET z ?v)_R" [label="(?LET z ?v)", shape=rectangle];
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "(?LET z ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule let-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-zero.svg)
 <!-- /rule -->
 
 #### `let-digit`
@@ -2277,24 +998,7 @@ digraph rule_let_zero_lhs_rhs {
   :why    "{?x} is a digit, and cannot name a number")
 ```
 
-```dot
-digraph rule_let_digit_lhs_rhs {
-  rankdir=TB;
-  label="let-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_NZ_L" -> "?x_L" [label="1", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?LET ?x ?v)_R" [label="(?LET ?x ?v)", shape=rectangle];
-    "h2_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_MALFORMED_R" -> "(?LET ?x ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule let-digit of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-digit.svg)
 <!-- /rule -->
 
 #### `let-digit-zero`
@@ -2307,22 +1011,7 @@ digraph rule_let_digit_lhs_rhs {
   :why    "0 is a digit, and cannot name a number")
 ```
 
-```dot
-digraph rule_let_digit_zero_lhs_rhs {
-  rankdir=TB;
-  label="let-digit-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "0_L" [label="0", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "0_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?LET 0 ?v)_R" [label="(?LET 0 ?v)", shape=rectangle];
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "(?LET 0 ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule let-digit-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-digit-zero.svg)
 <!-- /rule -->
 
 #### `let-to-name`
@@ -2335,24 +1024,7 @@ digraph rule_let_digit_zero_lhs_rhs {
   :why    "{?v} is a named constant: a let names a number, not another name")
 ```
 
-```dot
-digraph rule_let_to_name_lhs_rhs {
-  rankdir=TB;
-  label="let-to-name"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_NAMED_L" [shape=octagon, label="?NAMED", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_NAMED_L" -> "?v_L" [label="1", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?LET ?x ?v)_R" [label="(?LET ?x ?v)", shape=rectangle];
-    "h2_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_MALFORMED_R" -> "(?LET ?x ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule let-to-name of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-to-name.svg)
 <!-- /rule -->
 
 #### `let-to-digit`
@@ -2365,24 +1037,7 @@ digraph rule_let_to_name_lhs_rhs {
   :why    "{?v} is a digit, not a number: the number is ({?N} z {?v})")
 ```
 
-```dot
-digraph rule_let_to_digit_lhs_rhs {
-  rankdir=TB;
-  label="let-to-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_NZ_L" -> "?v_L" [label="1", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?LET ?x ?v)_R" [label="(?LET ?x ?v)", shape=rectangle];
-    "h2_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_MALFORMED_R" -> "(?LET ?x ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule let-to-digit of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-to-digit.svg)
 <!-- /rule -->
 
 #### `let-to-digit-zero`
@@ -2395,22 +1050,7 @@ digraph rule_let_to_digit_lhs_rhs {
   :why    "0 is a digit, not a number: zero is z")
 ```
 
-```dot
-digraph rule_let_to_digit_zero_lhs_rhs {
-  rankdir=TB;
-  label="let-to-digit-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?x_L" -> "0_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?LET ?x 0)_R" [label="(?LET ?x 0)", shape=rectangle];
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "(?LET ?x 0)_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule let-to-digit-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.let-to-digit-zero.svg)
 <!-- /rule -->
 
 #### `bad-add-first`
@@ -2423,22 +1063,7 @@ digraph rule_let_to_digit_zero_lhs_rhs {
   :why    "the first operand of {?x} + {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_add_first_lhs_rhs {
-  rankdir=TB;
-  label="bad-add-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?ADD-FIRST ?x ?y)_L" [label="(?ADD-FIRST ?x ?y)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?ADD-FIRST ?x ?y)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?ADD ?x ?y)_R" [label="(?ADD ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?ADD ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-add-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-add-first.svg)
 <!-- /rule -->
 
 #### `bad-add-second`
@@ -2451,22 +1076,7 @@ digraph rule_bad_add_first_lhs_rhs {
   :why    "the second operand of {?x} + {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_add_second_lhs_rhs {
-  rankdir=TB;
-  label="bad-add-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?ADD-SECOND ?x ?y ?u)_L" [label="(?ADD-SECOND ?x ?y ?u)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?ADD-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?ADD ?x ?y)_R" [label="(?ADD ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?ADD ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-add-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-add-second.svg)
 <!-- /rule -->
 
 #### `bad-sub-first`
@@ -2479,22 +1089,7 @@ digraph rule_bad_add_second_lhs_rhs {
   :why    "the first operand of {?x} - {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_sub_first_lhs_rhs {
-  rankdir=TB;
-  label="bad-sub-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?SUB-FIRST ?x ?y)_L" [label="(?SUB-FIRST ?x ?y)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?SUB-FIRST ?x ?y)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?SUB ?x ?y)_R" [label="(?SUB ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?SUB ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-sub-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-sub-first.svg)
 <!-- /rule -->
 
 #### `bad-sub-second`
@@ -2507,22 +1102,7 @@ digraph rule_bad_sub_first_lhs_rhs {
   :why    "the second operand of {?x} - {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_sub_second_lhs_rhs {
-  rankdir=TB;
-  label="bad-sub-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?SUB-SECOND ?x ?y ?u)_L" [label="(?SUB-SECOND ?x ?y ?u)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?SUB-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?SUB ?x ?y)_R" [label="(?SUB ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?SUB ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-sub-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-sub-second.svg)
 <!-- /rule -->
 
 #### `bad-cmp-first`
@@ -2535,22 +1115,7 @@ digraph rule_bad_sub_second_lhs_rhs {
   :why    "the first operand of {?x} compared with {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_cmp_first_lhs_rhs {
-  rankdir=TB;
-  label="bad-cmp-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?CMP-FIRST ?x ?y)_L" [label="(?CMP-FIRST ?x ?y)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?CMP-FIRST ?x ?y)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?CMP ?x ?y)_R" [label="(?CMP ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?CMP ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-cmp-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-cmp-first.svg)
 <!-- /rule -->
 
 #### `bad-cmp-second`
@@ -2563,22 +1128,7 @@ digraph rule_bad_cmp_first_lhs_rhs {
   :why    "the second operand of {?x} compared with {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_cmp_second_lhs_rhs {
-  rankdir=TB;
-  label="bad-cmp-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?CMP-SECOND ?x ?y ?u)_L" [label="(?CMP-SECOND ?x ?y ?u)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?CMP-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?CMP ?x ?y)_R" [label="(?CMP ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?CMP ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-cmp-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-cmp-second.svg)
 <!-- /rule -->
 
 #### `bad-mul-first`
@@ -2591,22 +1141,7 @@ digraph rule_bad_cmp_second_lhs_rhs {
   :why    "the first operand of {?x} x {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_mul_first_lhs_rhs {
-  rankdir=TB;
-  label="bad-mul-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?MUL-FIRST ?x ?y)_L" [label="(?MUL-FIRST ?x ?y)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?MUL-FIRST ?x ?y)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?MUL ?x ?y)_R" [label="(?MUL ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?MUL ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-mul-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-mul-first.svg)
 <!-- /rule -->
 
 #### `bad-mul-second`
@@ -2619,22 +1154,7 @@ digraph rule_bad_mul_first_lhs_rhs {
   :why    "the second operand of {?x} x {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_mul_second_lhs_rhs {
-  rankdir=TB;
-  label="bad-mul-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?MUL-SECOND ?x ?y ?u)_L" [label="(?MUL-SECOND ?x ?y ?u)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?MUL-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?MUL ?x ?y)_R" [label="(?MUL ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?MUL ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-mul-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-mul-second.svg)
 <!-- /rule -->
 
 #### `bad-div-first`
@@ -2647,22 +1167,7 @@ digraph rule_bad_mul_second_lhs_rhs {
   :why    "the first operand of {?x} divided by {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_div_first_lhs_rhs {
-  rankdir=TB;
-  label="bad-div-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIV-FIRST ?x ?y)_L" [label="(?DIV-FIRST ?x ?y)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?DIV-FIRST ?x ?y)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?DIV ?x ?y)_R" [label="(?DIV ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?DIV ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-div-first of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-div-first.svg)
 <!-- /rule -->
 
 #### `bad-div-second`
@@ -2675,22 +1180,7 @@ digraph rule_bad_div_first_lhs_rhs {
   :why    "the second operand of {?x} divided by {?y} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_bad_div_second_lhs_rhs {
-  rankdir=TB;
-  label="bad-div-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(?DIV-SECOND ?x ?y ?u)_L" [label="(?DIV-SECOND ?x ?y ?u)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(?DIV-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?DIV ?x ?y)_R" [label="(?DIV ?x ?y)", shape=rectangle];
-    "?f_R" [label="?f", shape=diamond];
-    "(?DIV ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-div-second of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-div-second.svg)
 <!-- /rule -->
 
 #### `bad-request-malformed`
@@ -2703,22 +1193,7 @@ digraph rule_bad_div_second_lhs_rhs {
   :why    "an operand of {?request} is not a number: it holds {?thing}")
 ```
 
-```dot
-digraph rule_bad_request_malformed_lhs_rhs {
-  rankdir=TB;
-  label="bad-request-malformed"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?request_L" [label="?request", shape=diamond];
-    "(?NOT-A-NUMBER ?thing)_L" [label="(?NOT-A-NUMBER ?thing)", shape=rectangle];
-    "?request_L" -> "(?NOT-A-NUMBER ?thing)_L" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "?request_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule bad-request-malformed of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-request-malformed.svg)
 <!-- /rule -->
 
 #### `bad-request-undeclared`
@@ -2731,22 +1206,7 @@ digraph rule_bad_request_malformed_lhs_rhs {
   :why    "{?request} uses the name {?x}, and no let states it")
 ```
 
-```dot
-digraph rule_bad_request_undeclared_lhs_rhs {
-  rankdir=TB;
-  label="bad-request-undeclared"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?request_L" [label="?request", shape=diamond];
-    "(?NO-LET ?x)_L" [label="(?NO-LET ?x)", shape=rectangle];
-    "?request_L" -> "(?NO-LET ?x)_L" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?request_R" [label="?request", shape=diamond];
-    "?x_R" -> "?request_R" [label="?UNDECLARED", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule bad-request-undeclared of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.bad-request-undeclared.svg)
 <!-- /rule -->
 
 #### `malformed-is-false`
@@ -2759,20 +1219,7 @@ digraph rule_bad_request_undeclared_lhs_rhs {
   :why    "{?request} holds something that is not a number: the theory cannot read it")
 ```
 
-```dot
-digraph rule_malformed_is_false_lhs_rhs {
-  rankdir=TB;
-  label="malformed-is-false"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?request_L" [label="?request", shape=diamond];
-    "h1_MALFORMED_L" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_L" -> "?request_L" [label="1", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h2_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule malformed-is-false of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.malformed-is-false.svg)
 <!-- /rule -->
 
 #### `undeclared-is-false`
@@ -2785,18 +1232,5 @@ digraph rule_malformed_is_false_lhs_rhs {
   :why    "{?request} uses the name {?x}, which names no number")
 ```
 
-```dot
-digraph rule_undeclared_is_false_lhs_rhs {
-  rankdir=TB;
-  label="undeclared-is-false"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?request_L" [label="?request", shape=diamond];
-    "?x_L" -> "?request_L" [label="?UNDECLARED", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule undeclared-is-false of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.undeclared-is-false.svg)
 <!-- /rule -->

@@ -26,20 +26,7 @@ The flag is a contradiction.
   :why    "{?request} divides by zero: no number is the answer")
 ```
 
-```dot
-digraph rule_division_by_zero_is_false_lhs_rhs {
-  rankdir=TB;
-  label="division-by-zero-is-false"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?request_L" [label="?request", shape=diamond];
-    "h1_division-by-zero_L" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h1_division-by-zero_L" -> "?request_L" [label="1", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h2_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule division-by-zero-is-false of std.math.arith, as the engine draws it](diagrams/09-std.math.arith.division-by-zero-is-false.svg)
 <!-- /rule -->
 
 #### `arith`
@@ -56,26 +43,7 @@ The entry: it closes the flag's relation and names the module's one rule.
   :why    "arithmetic is computed and never guessed: its flag is closed")
 ```
 
-```dot
-digraph rule_arith_lhs_rhs {
-  rankdir=TB;
-  label="arith"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "division-by-zero_R" [label="division-by-zero", shape=rectangle];
-    "arith-module-rule_R" [label="arith-module-rule", shape=rectangle];
-    "division-by-zero-is-false_R" [label="division-by-zero-is-false", shape=rectangle];
-    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h2___closed___R" -> "division-by-zero_R" [label="1", color="#e377c2", style=dashed];
-    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h3___closed___R" -> "arith-module-rule_R" [label="1", color="#e377c2", style=dashed];
-    "h4_arith-module-rule_R" [shape=octagon, label="arith-module-rule", color="#d62728", fontcolor="#d62728"];
-    "h4_arith-module-rule_R" -> "division-by-zero-is-false_R" [label="1", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule arith of std.math.arith, as the engine draws it](diagrams/09-std.math.arith.arith.svg)
 <!-- /rule -->
 
 ## `std.math.decimal`
@@ -97,43 +65,7 @@ The last place of a numeral holds something that is none of the ten digits: one 
   :why    "{?a} stands where a digit goes and is none of the ten")
 ```
 
-```dot
-digraph rule_numeral_digit_lhs_rhs {
-  rankdir=TB;
-  label="numeral-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(n ?p ?a)_L" [label="(n ?p ?a)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "2_L" [label="2", shape=rectangle];
-    "3_L" [label="3", shape=rectangle];
-    "4_L" [label="4", shape=rectangle];
-    "5_L" [label="5", shape=rectangle];
-    "6_L" [label="6", shape=rectangle];
-    "7_L" [label="7", shape=rectangle];
-    "8_L" [label="8", shape=rectangle];
-    "9_L" [label="9", shape=rectangle];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(n ?p ?a)_L" [label="1", color="#d62728"];
-    "?a_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "3_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "4_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "5_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "6_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "7_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "8_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "9_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(n ?p ?a)_R" [label="(n ?p ?a)", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "(n ?p ?a)_R" -> "?a_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule numeral-digit of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-digit.svg)
 <!-- /rule -->
 
 #### `numeral-prefix-digit`
@@ -148,25 +80,7 @@ The prefix is a digit that is not zero, `(n 1 2)`.
   :why    "the digit {?m} stands where a number goes: a number ends in z")
 ```
 
-```dot
-digraph rule_numeral_prefix_digit_lhs_rhs {
-  rankdir=TB;
-  label="numeral-prefix-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(n ?m ?a)_L" [label="(n ?m ?a)", shape=rectangle];
-    "?m_L" [label="?m", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(n ?m ?a)_L" [label="1", color="#d62728"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?m_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(n ?m ?a)_R" [label="(n ?m ?a)", shape=rectangle];
-    "?m_R" [label="?m", shape=diamond];
-    "(n ?m ?a)_R" -> "?m_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule numeral-prefix-digit of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-prefix-digit.svg)
 <!-- /rule -->
 
 #### `numeral-prefix-zero`
@@ -181,22 +95,7 @@ The prefix is the digit `0`, `(n 0 2)`.
   :why    "the digit 0 stands where a number goes: a number ends in z")
 ```
 
-```dot
-digraph rule_numeral_prefix_zero_lhs_rhs {
-  rankdir=TB;
-  label="numeral-prefix-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(n 0 ?a)_L" [label="(n 0 ?a)", shape=rectangle];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(n 0 ?a)_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(n 0 ?a)_R" [label="(n 0 ?a)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "(n 0 ?a)_R" -> "0_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule numeral-prefix-zero of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-prefix-zero.svg)
 <!-- /rule -->
 
 #### `numeral-prefix-named`
@@ -211,27 +110,7 @@ The prefix is a named constant, `(n price 1)`.
   :why    "the name {?m} stands where a number goes: a name stands for a number as an operand, not inside one")
 ```
 
-```dot
-digraph rule_numeral_prefix_named_lhs_rhs {
-  rankdir=TB;
-  label="numeral-prefix-named"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(n ?m ?a)_L" [label="(n ?m ?a)", shape=rectangle];
-    "?m_L" [label="?m", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(n ?m ?a)_L" [label="1", color="#d62728"];
-    "?m_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "h2_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
-    "h2_named_L" -> "?m_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(n ?m ?a)_R" [label="(n ?m ?a)", shape=rectangle];
-    "?m_R" [label="?m", shape=diamond];
-    "(n ?m ?a)_R" -> "?m_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule numeral-prefix-named of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-prefix-named.svg)
 <!-- /rule -->
 
 #### `not-decimal-is-false`
@@ -246,20 +125,7 @@ The flag is a contradiction.
   :why    "{?x} is not a decimal number: the program cannot hold it")
 ```
 
-```dot
-digraph rule_not_decimal_is_false_lhs_rhs {
-  rankdir=TB;
-  label="not-decimal-is-false"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?thing_L" [label="?thing", shape=diamond];
-    "?x_L" -> "?thing_L" [label="not-decimal", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule not-decimal-is-false of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.not-decimal-is-false.svg)
 <!-- /rule -->
 
 #### `decimal`
@@ -281,50 +147,7 @@ The entry: it closes the module's relations, names its rules, and names `arith`.
   :why    "a numeral is written, and never guessed: every relation of the module is closed")
 ```
 
-```dot
-digraph rule_decimal_lhs_rhs {
-  rankdir=TB;
-  label="decimal"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "nz_R" [label="nz", shape=rectangle];
-    "n_R" [label="n", shape=rectangle];
-    "named_R" [label="named", shape=rectangle];
-    "not-decimal_R" [label="not-decimal", shape=rectangle];
-    "decimal-rule_R" [label="decimal-rule", shape=rectangle];
-    "arith_R" [label="arith", shape=rectangle];
-    "numeral-digit_R" [label="numeral-digit", shape=rectangle];
-    "numeral-prefix-digit_R" [label="numeral-prefix-digit", shape=rectangle];
-    "numeral-prefix-zero_R" [label="numeral-prefix-zero", shape=rectangle];
-    "numeral-prefix-named_R" [label="numeral-prefix-named", shape=rectangle];
-    "not-decimal-is-false_R" [label="not-decimal-is-false", shape=rectangle];
-    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h2___closed___R" -> "nz_R" [label="1", color="#e377c2", style=dashed];
-    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h3___closed___R" -> "n_R" [label="1", color="#e377c2", style=dashed];
-    "h4___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h4___closed___R" -> "named_R" [label="1", color="#e377c2", style=dashed];
-    "h5___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h5___closed___R" -> "not-decimal_R" [label="1", color="#e377c2", style=dashed];
-    "h6___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h6___closed___R" -> "decimal-rule_R" [label="1", color="#e377c2", style=dashed];
-    "h7_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
-    "h7_decimal-rule_R" -> "arith_R" [label="1", color="#17becf", style=dashed];
-    "h8_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
-    "h8_decimal-rule_R" -> "numeral-digit_R" [label="1", color="#17becf", style=dashed];
-    "h9_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
-    "h9_decimal-rule_R" -> "numeral-prefix-digit_R" [label="1", color="#17becf", style=dashed];
-    "h10_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
-    "h10_decimal-rule_R" -> "numeral-prefix-zero_R" [label="1", color="#17becf", style=dashed];
-    "h11_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
-    "h11_decimal-rule_R" -> "numeral-prefix-named_R" [label="1", color="#17becf", style=dashed];
-    "h12_decimal-rule_R" [shape=octagon, label="decimal-rule", color="#17becf", fontcolor="#17becf"];
-    "h12_decimal-rule_R" -> "not-decimal-is-false_R" [label="1", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule decimal of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.decimal.svg)
 <!-- /rule -->
 
 ## `std.math.decimal-arith`
@@ -354,47 +177,7 @@ with $m$ the multiplier's digit and $c_i$ a carry from `0` to `8`.
   :why    "{?a} x {?m} + carry {?e} is {?s}, carry {?f}: {?s} goes in front of the digits so far")
 ```
 
-```dot
-digraph rule_mul_column_lhs_rhs {
-  rankdir=TB;
-  label="mul-column"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(n ?p ?a)_L" [label="(n ?p ?a)", shape=rectangle];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "?s_L" [label="?s", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "h1_mul-walk_L" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "(n ?p ?a)_L" [label="2", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?m_L" [label="3", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?e_L" [label="4", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?acc_L" [label="5", color="#7f7f7f"];
-    "h2_md_L" [shape=octagon, label="md", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_md_L" -> "?a_L" [label="1", color="#bcbd22"];
-    "h2_md_L" -> "?m_L" [label="2", color="#bcbd22"];
-    "h2_md_L" -> "?e_L" [label="3", color="#bcbd22"];
-    "h2_md_L" -> "?s_L" [label="4", color="#bcbd22"];
-    "h2_md_L" -> "?f_L" [label="5", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "(b ?s ?acc)_R" [label="(b ?s ?acc)", shape=rectangle];
-    "h3_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h3_mul-walk_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
-    "h3_mul-walk_R" -> "?p_R" [label="2", color="#7f7f7f", style=dashed];
-    "h3_mul-walk_R" -> "?m_R" [label="3", color="#7f7f7f", style=dashed];
-    "h3_mul-walk_R" -> "?f_R" [label="4", color="#7f7f7f", style=dashed];
-    "h3_mul-walk_R" -> "(b ?s ?acc)_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule mul-column of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.mul-column.svg)
 <!-- /rule -->
 
 #### `mul-walk-end`
@@ -407,30 +190,7 @@ digraph rule_mul_column_lhs_rhs {
   :why    "no column is left and no carry: the digits are {?acc}")
 ```
 
-```dot
-digraph rule_mul_walk_end_lhs_rhs {
-  rankdir=TB;
-  label="mul-walk-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?m_L" [label="?m", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_mul-walk_L" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "z_L" [label="2", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?m_L" [label="3", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "0_L" [label="4", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?acc_L" [label="5", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="strip", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule mul-walk-end of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.mul-walk-end.svg)
 <!-- /rule -->
 
 #### `mul-carry-out`
@@ -443,36 +203,7 @@ digraph rule_mul_walk_end_lhs_rhs {
   :why    "no column is left: the carry {?e} is the top digit, in front of {?acc}")
 ```
 
-```dot
-digraph rule_mul_carry_out_lhs_rhs {
-  rankdir=TB;
-  label="mul-carry-out"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_mul-walk_L" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "z_L" [label="2", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?m_L" [label="3", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?e_L" [label="4", color="#7f7f7f"];
-    "h1_mul-walk_L" -> "?acc_L" [label="5", color="#7f7f7f"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?e_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(b ?e ?acc)_R" [label="(b ?e ?acc)", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_turn_R" [shape=octagon, label="turn", color="#17becf", fontcolor="#17becf"];
-    "h3_turn_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h3_turn_R" -> "(b ?e ?acc)_R" [label="2", color="#17becf", style=dashed];
-    "h3_turn_R" -> "z_R" [label="3", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule mul-carry-out of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.mul-carry-out.svg)
 <!-- /rule -->
 
 #### `mul-row`
@@ -485,36 +216,7 @@ digraph rule_mul_carry_out_lhs_rhs {
   :why    "the next digit of the multiplier is {?a}: the row {?u} x {?a}")
 ```
 
-```dot
-digraph rule_mul_row_lhs_rhs {
-  rankdir=TB;
-  label="mul-row"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "(b ?a ?rest)_L" [label="(b ?a ?rest)", shape=rectangle];
-    "?acc_L" [label="?acc", shape=diamond];
-    "h1_mul-step_L" [shape=octagon, label="mul-step", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_mul-step_L" -> "?k_L" [label="1", color="#bcbd22"];
-    "h1_mul-step_L" -> "?u_L" [label="2", color="#bcbd22"];
-    "h1_mul-step_L" -> "(b ?a ?rest)_L" [label="3", color="#bcbd22"];
-    "h1_mul-step_L" -> "?acc_L" [label="4", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(mul-row-of ?k ?u ?rest ?acc)_R" [label="(mul-row-of ?k ?u ?rest ?acc)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_mul-walk_R" -> "(mul-row-of ?k ?u ?rest ?acc)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "?u_R" [label="2", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "?a_R" [label="3", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule mul-row of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.mul-row.svg)
 <!-- /rule -->
 
 #### `mul-first-row`
@@ -527,28 +229,7 @@ digraph rule_mul_row_lhs_rhs {
   :why    "nothing was summed yet: the row {?row} is the sum so far")
 ```
 
-```dot
-digraph rule_mul_first_row_lhs_rhs {
-  rankdir=TB;
-  label="mul-first-row"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(mul-row-of ?k ?u ?rest z)_L" [label="(mul-row-of ?k ?u ?rest z)", shape=rectangle];
-    "?row_L" [label="?row", shape=diamond];
-    "(mul-row-of ?k ?u ?rest z)_L" -> "?row_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?u_R" [label="?u", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?row_R" [label="?row", shape=diamond];
-    "h1_mul-step_R" [shape=octagon, label="mul-step", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_mul-step_R" -> "?k_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_mul-step_R" -> "?u_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_mul-step_R" -> "?rest_R" [label="3", color="#bcbd22", style=dashed];
-    "h1_mul-step_R" -> "?row_R" [label="4", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule mul-first-row of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.mul-first-row.svg)
 <!-- /rule -->
 
 #### `mul-add-row`
@@ -561,30 +242,7 @@ digraph rule_mul_first_row_lhs_rhs {
   :why    "ten times the sum so far, plus the row {?row}")
 ```
 
-```dot
-digraph rule_mul_add_row_lhs_rhs {
-  rankdir=TB;
-  label="mul-add-row"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" [label="(mul-row-of ?k ?u ?rest (n ?p ?a))", shape=rectangle];
-    "?row_L" [label="?row", shape=diamond];
-    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" -> "?row_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(mul-sum ?k ?u ?rest)_R" [label="(mul-sum ?k ?u ?rest)", shape=rectangle];
-    "(n (n ?p ?a) 0)_R" [label="(n (n ?p ?a) 0)", shape=rectangle];
-    "?row_R" [label="?row", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(mul-sum ?k ?u ?rest)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "(n (n ?p ?a) 0)_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?row_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule mul-add-row of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.mul-add-row.svg)
 <!-- /rule -->
 
 ### Division: the divisor's multiples
@@ -602,34 +260,7 @@ one after another, and `div-turn` then turns the dividend's digits round so that
   :why    "to divide {?u} by {?v}: first {?v} x 1, the divisor in normal form")
 ```
 
-```dot
-digraph rule_div_multiples_lhs_rhs {
-  rankdir=TB;
-  label="div-multiples"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "h1_div-call_L" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_div-call_L" -> "?k_L" [label="1", color="#bcbd22"];
-    "h1_div-call_L" -> "?u_L" [label="2", color="#bcbd22"];
-    "h1_div-call_L" -> "?v_L" [label="3", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m1 ?k ?u ?v)_R" [label="(div-m1 ?k ?u ?v)", shape=rectangle];
-    "?v_R" [label="?v", shape=diamond];
-    "1_R" [label="1", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_mul-walk_R" -> "(div-m1 ?k ?u ?v)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "?v_R" [label="2", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "1_R" [label="3", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiples of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiples.svg)
 <!-- /rule -->
 
 #### `div-multiple-2`
@@ -642,30 +273,7 @@ digraph rule_div_multiples_lhs_rhs {
   :why    "the divisor is not zero: next, 2 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_2_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-2"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m1 ?k ?u ?v)_L" [label="(div-m1 ?k ?u ?v)", shape=rectangle];
-    "(n ?p ?a)_L" [label="(n ?p ?a)", shape=rectangle];
-    "(div-m1 ?k ?u ?v)_L" -> "(n ?p ?a)_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m2 ?k ?u (n ?p ?a))_R" [label="(div-m2 ?k ?u (n ?p ?a))", shape=rectangle];
-    "(n ?p ?a)_R" [label="(n ?p ?a)", shape=rectangle];
-    "2_R" [label="2", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m2 ?k ?u (n ?p ?a))_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "(n ?p ?a)_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "2_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-2 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-2.svg)
 <!-- /rule -->
 
 #### `div-multiple-3`
@@ -678,30 +286,7 @@ digraph rule_div_multiple_2_lhs_rhs {
   :why    "2 times the divisor is {?m2}: next, 3 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_3_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-3"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m2 ?k ?u ?m1)_L" [label="(div-m2 ?k ?u ?m1)", shape=rectangle];
-    "?m2_L" [label="?m2", shape=diamond];
-    "(div-m2 ?k ?u ?m1)_L" -> "?m2_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m3 ?k ?u ?m1 ?m2)_R" [label="(div-m3 ?k ?u ?m1 ?m2)", shape=rectangle];
-    "?m1_R" [label="?m1", shape=diamond];
-    "3_R" [label="3", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m3 ?k ?u ?m1 ?m2)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "3_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-3 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-3.svg)
 <!-- /rule -->
 
 #### `div-multiple-4`
@@ -714,30 +299,7 @@ digraph rule_div_multiple_3_lhs_rhs {
   :why    "3 times the divisor is {?m3}: next, 4 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_4_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-4"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m3 ?k ?u ?m1 ?m2)_L" [label="(div-m3 ?k ?u ?m1 ?m2)", shape=rectangle];
-    "?m3_L" [label="?m3", shape=diamond];
-    "(div-m3 ?k ?u ?m1 ?m2)_L" -> "?m3_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m4 ?k ?u ?m1 ?m2 ?m3)_R" [label="(div-m4 ?k ?u ?m1 ?m2 ?m3)", shape=rectangle];
-    "?m1_R" [label="?m1", shape=diamond];
-    "4_R" [label="4", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m4 ?k ?u ?m1 ?m2 ?m3)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "4_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-4 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-4.svg)
 <!-- /rule -->
 
 #### `div-multiple-5`
@@ -750,30 +312,7 @@ digraph rule_div_multiple_4_lhs_rhs {
   :why    "4 times the divisor is {?m4}: next, 5 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_5_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-5"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m4 ?k ?u ?m1 ?m2 ?m3)_L" [label="(div-m4 ?k ?u ?m1 ?m2 ?m3)", shape=rectangle];
-    "?m4_L" [label="?m4", shape=diamond];
-    "(div-m4 ?k ?u ?m1 ?m2 ?m3)_L" -> "?m4_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_R" [label="(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)", shape=rectangle];
-    "?m1_R" [label="?m1", shape=diamond];
-    "5_R" [label="5", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "5_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-5 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-5.svg)
 <!-- /rule -->
 
 #### `div-multiple-6`
@@ -786,30 +325,7 @@ digraph rule_div_multiple_5_lhs_rhs {
   :why    "5 times the divisor is {?m5}: next, 6 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_6_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-6"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" [label="(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)", shape=rectangle];
-    "?m5_L" [label="?m5", shape=diamond];
-    "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" -> "?m5_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" [label="(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)", shape=rectangle];
-    "?m1_R" [label="?m1", shape=diamond];
-    "6_R" [label="6", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "6_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-6 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-6.svg)
 <!-- /rule -->
 
 #### `div-multiple-7`
@@ -822,30 +338,7 @@ digraph rule_div_multiple_6_lhs_rhs {
   :why    "6 times the divisor is {?m6}: next, 7 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_7_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-7"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_L" [label="(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)", shape=rectangle];
-    "?m6_L" [label="?m6", shape=diamond];
-    "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_L" -> "?m6_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6)_R" [label="(div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6)", shape=rectangle];
-    "?m1_R" [label="?m1", shape=diamond];
-    "7_R" [label="7", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "7_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-7 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-7.svg)
 <!-- /rule -->
 
 #### `div-multiple-8`
@@ -858,30 +351,7 @@ digraph rule_div_multiple_7_lhs_rhs {
   :why    "7 times the divisor is {?m7}: next, 8 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_8_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-8"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6)_L" [label="(div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6)", shape=rectangle];
-    "?m7_L" [label="?m7", shape=diamond];
-    "(div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6)_L" -> "?m7_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_R" [label="(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)", shape=rectangle];
-    "?m1_R" [label="?m1", shape=diamond];
-    "8_R" [label="8", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "8_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-8 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-8.svg)
 <!-- /rule -->
 
 #### `div-multiple-9`
@@ -894,30 +364,7 @@ digraph rule_div_multiple_8_lhs_rhs {
   :why    "8 times the divisor is {?m8}: next, 9 times the divisor")
 ```
 
-```dot
-digraph rule_div_multiple_9_lhs_rhs {
-  rankdir=TB;
-  label="div-multiple-9"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" [label="(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)", shape=rectangle];
-    "?m8_L" [label="?m8", shape=diamond];
-    "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" -> "?m8_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" [label="(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)", shape=rectangle];
-    "?m1_R" [label="?m1", shape=diamond];
-    "9_R" [label="9", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "9_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule div-multiple-9 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-multiple-9.svg)
 <!-- /rule -->
 
 #### `div-turn`
@@ -930,26 +377,7 @@ digraph rule_div_multiple_9_lhs_rhs {
   :why    "9 times the divisor is {?m9}: the nine multiples are known. Now the digits of {?u}, the top one first")
 ```
 
-```dot
-digraph rule_div_turn_lhs_rhs {
-  rankdir=TB;
-  label="div-turn"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" [label="(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)", shape=rectangle];
-    "?m9_L" [label="?m9", shape=diamond];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m9_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [label="(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h1_top-first_R" [shape=octagon, label="top-first", color="#9467bd", fontcolor="#9467bd"];
-    "h1_top-first_R" -> "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [label="1", color="#9467bd", style=dashed];
-    "h1_top-first_R" -> "?u_R" [label="2", color="#9467bd", style=dashed];
-    "h1_top-first_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule div-turn of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-turn.svg)
 <!-- /rule -->
 
 ### Division: bringing a digit down
@@ -967,43 +395,7 @@ quotient is known to lie between `0` and `10`.
   :why    "bring down {?a} beside what is left over: the next digit of the quotient is at least 0 and less than 10")
 ```
 
-```dot
-digraph rule_div_bring_lhs_rhs {
-  rankdir=TB;
-  label="div-bring"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "(b ?a ?rest)_L" [label="(b ?a ?rest)", shape=rectangle];
-    "(n ?p ?c)_L" [label="(n ?p ?c)", shape=rectangle];
-    "?w_L" [label="?w", shape=diamond];
-    "h1_div-step_L" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
-    "h1_div-step_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_div-step_L" -> "?ms_L" [label="2", color="#d62728"];
-    "h1_div-step_L" -> "(b ?a ?rest)_L" [label="3", color="#d62728"];
-    "h1_div-step_L" -> "(n ?p ?c)_L" [label="4", color="#d62728"];
-    "h1_div-step_L" -> "?w_L" [label="5", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?w_R" [label="?w", shape=diamond];
-    "(n (n ?p ?c) ?a)_R" [label="(n (n ?p ?c) ?a)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "10_R" [label="10", shape=rectangle];
-    "h2_div-choose_R" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h2_div-choose_R" -> "?k_R" [label="1", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?ms_R" [label="2", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?rest_R" [label="3", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?w_R" [label="4", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "(n (n ?p ?c) ?a)_R" [label="5", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "0_R" [label="6", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "10_R" [label="7", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "(n (n ?p ?c) ?a)_R" [label="8", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-bring of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-bring.svg)
 <!-- /rule -->
 
 #### `div-bring-first`
@@ -1016,46 +408,7 @@ digraph rule_div_bring_lhs_rhs {
   :why    "nothing was left over: bring down {?a}. The next digit of the quotient is at least 0 and less than 10")
 ```
 
-```dot
-digraph rule_div_bring_first_lhs_rhs {
-  rankdir=TB;
-  label="div-bring-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "(b ?a ?rest)_L" [label="(b ?a ?rest)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "?w_L" [label="?w", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "h1_div-step_L" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
-    "h1_div-step_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_div-step_L" -> "?ms_L" [label="2", color="#d62728"];
-    "h1_div-step_L" -> "(b ?a ?rest)_L" [label="3", color="#d62728"];
-    "h1_div-step_L" -> "z_L" [label="4", color="#d62728"];
-    "h1_div-step_L" -> "?w_L" [label="5", color="#d62728"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?a_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?w_R" [label="?w", shape=diamond];
-    "(n z ?a)_R" [label="(n z ?a)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "10_R" [label="10", shape=rectangle];
-    "h3_div-choose_R" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h3_div-choose_R" -> "?k_R" [label="1", color="#8c564b", style=dashed];
-    "h3_div-choose_R" -> "?ms_R" [label="2", color="#8c564b", style=dashed];
-    "h3_div-choose_R" -> "?rest_R" [label="3", color="#8c564b", style=dashed];
-    "h3_div-choose_R" -> "?w_R" [label="4", color="#8c564b", style=dashed];
-    "h3_div-choose_R" -> "(n z ?a)_R" [label="5", color="#8c564b", style=dashed];
-    "h3_div-choose_R" -> "0_R" [label="6", color="#8c564b", style=dashed];
-    "h3_div-choose_R" -> "10_R" [label="7", color="#8c564b", style=dashed];
-    "h3_div-choose_R" -> "(n z ?a)_R" [label="8", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-bring-first of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-bring-first.svg)
 <!-- /rule -->
 
 #### `div-bring-zero`
@@ -1068,40 +421,7 @@ digraph rule_div_bring_first_lhs_rhs {
   :why    "nothing was left over and the digit brought down is 0: the next digit of the quotient is 0")
 ```
 
-```dot
-digraph rule_div_bring_zero_lhs_rhs {
-  rankdir=TB;
-  label="div-bring-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "(b 0 ?rest)_L" [label="(b 0 ?rest)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "?w_L" [label="?w", shape=diamond];
-    "h1_div-step_L" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
-    "h1_div-step_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_div-step_L" -> "?ms_L" [label="2", color="#d62728"];
-    "h1_div-step_L" -> "(b 0 ?rest)_L" [label="3", color="#d62728"];
-    "h1_div-step_L" -> "z_L" [label="4", color="#d62728"];
-    "h1_div-step_L" -> "?w_L" [label="5", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?w_R" [label="?w", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_div-digit_R" [shape=octagon, label="div-digit", color="#9467bd", fontcolor="#9467bd"];
-    "h2_div-digit_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?ms_R" [label="2", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?rest_R" [label="3", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?w_R" [label="4", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "0_R" [label="5", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "z_R" [label="6", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule div-bring-zero of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-bring-zero.svg)
 <!-- /rule -->
 
 ### Division: a quotient's digit by bisection
@@ -1124,49 +444,7 @@ different place of the `multiples` fact for each.
   :why    "the digit is at least {?lo} and less than {?hi}: try 1, and take 1 times the divisor, {?m1}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_1_lhs_rhs {
-  rankdir=TB;
-  label="div-try-1"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "1_L" [label="1", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "1_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m1_R" [label="?m1", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m1_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-1 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-1.svg)
 <!-- /rule -->
 
 #### `div-try-2`
@@ -1181,49 +459,7 @@ digraph rule_div_try_1_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 2, and take 2 times the divisor, {?m2}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_2_lhs_rhs {
-  rankdir=TB;
-  label="div-try-2"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "2_L" [label="2", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "2_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m2_R" [label="?m2", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m2_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-2 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-2.svg)
 <!-- /rule -->
 
 #### `div-try-3`
@@ -1238,49 +474,7 @@ digraph rule_div_try_2_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 3, and take 3 times the divisor, {?m3}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_3_lhs_rhs {
-  rankdir=TB;
-  label="div-try-3"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "3_L" [label="3", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "3_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m3_R" [label="?m3", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m3_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-3 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-3.svg)
 <!-- /rule -->
 
 #### `div-try-4`
@@ -1295,49 +489,7 @@ digraph rule_div_try_3_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 4, and take 4 times the divisor, {?m4}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_4_lhs_rhs {
-  rankdir=TB;
-  label="div-try-4"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "4_L" [label="4", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "4_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m4_R" [label="?m4", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m4_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-4 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-4.svg)
 <!-- /rule -->
 
 #### `div-try-5`
@@ -1352,49 +504,7 @@ digraph rule_div_try_4_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 5, and take 5 times the divisor, {?m5}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_5_lhs_rhs {
-  rankdir=TB;
-  label="div-try-5"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "5_L" [label="5", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "5_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m5_R" [label="?m5", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m5_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-5 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-5.svg)
 <!-- /rule -->
 
 #### `div-try-6`
@@ -1409,49 +519,7 @@ digraph rule_div_try_5_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 6, and take 6 times the divisor, {?m6}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_6_lhs_rhs {
-  rankdir=TB;
-  label="div-try-6"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "6_L" [label="6", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "6_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m6_R" [label="?m6", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m6_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-6 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-6.svg)
 <!-- /rule -->
 
 #### `div-try-7`
@@ -1466,49 +534,7 @@ digraph rule_div_try_6_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 7, and take 7 times the divisor, {?m7}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_7_lhs_rhs {
-  rankdir=TB;
-  label="div-try-7"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "7_L" [label="7", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "7_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m7_R" [label="?m7", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m7_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-7 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-7.svg)
 <!-- /rule -->
 
 #### `div-try-8`
@@ -1523,49 +549,7 @@ digraph rule_div_try_7_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 8, and take 8 times the divisor, {?m8}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_8_lhs_rhs {
-  rankdir=TB;
-  label="div-try-8"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "8_L" [label="8", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "8_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m8_R" [label="?m8", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m8_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-8 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-8.svg)
 <!-- /rule -->
 
 #### `div-try-9`
@@ -1580,49 +564,7 @@ digraph rule_div_try_8_lhs_rhs {
   :why    "the digit is at least {?lo} and less than {?hi}: try 9, and take 9 times the divisor, {?m9}, from {?u}")
 ```
 
-```dot
-digraph rule_div_try_9_lhs_rhs {
-  rankdir=TB;
-  label="div-try-9"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)", shape=rectangle];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "9_L" [label="9", shape=rectangle];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "h2_mid_L" [shape=octagon, label="mid", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h2_mid_L" -> "?lo_L" [label="1", color="#ff7f0e"];
-    "h2_mid_L" -> "?hi_L" [label="2", color="#ff7f0e"];
-    "h2_mid_L" -> "9_L" [label="3", color="#ff7f0e"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)_R" [label="(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?m9_R" [label="?m9", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h3_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
-    "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)_R" [label="1", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?u_R" [label="2", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "?m9_R" [label="3", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-try-9 of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-try-9.svg)
 <!-- /rule -->
 
 #### `div-fits`
@@ -1635,36 +577,7 @@ digraph rule_div_try_9_lhs_rhs {
   :why    "{?j} times the divisor fits, and leaves {?t}: the digit is at least {?j}")
 ```
 
-```dot
-digraph rule_div_fits_lhs_rhs {
-  rankdir=TB;
-  label="div-fits"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [label="(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?w_R" [label="?w", shape=diamond];
-    "?u_R" [label="?u", shape=diamond];
-    "?j_R" [label="?j", shape=diamond];
-    "?hi_R" [label="?hi", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "h1_div-choose_R" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_R" -> "?k_R" [label="1", color="#8c564b", style=dashed];
-    "h1_div-choose_R" -> "?ms_R" [label="2", color="#8c564b", style=dashed];
-    "h1_div-choose_R" -> "?rest_R" [label="3", color="#8c564b", style=dashed];
-    "h1_div-choose_R" -> "?w_R" [label="4", color="#8c564b", style=dashed];
-    "h1_div-choose_R" -> "?u_R" [label="5", color="#8c564b", style=dashed];
-    "h1_div-choose_R" -> "?j_R" [label="6", color="#8c564b", style=dashed];
-    "h1_div-choose_R" -> "?hi_R" [label="7", color="#8c564b", style=dashed];
-    "h1_div-choose_R" -> "?t_R" [label="8", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-fits of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-fits.svg)
 <!-- /rule -->
 
 #### `div-too-big`
@@ -1677,36 +590,7 @@ digraph rule_div_fits_lhs_rhs {
   :why    "{?j} times the divisor does not fit: the digit is less than {?j}")
 ```
 
-```dot
-digraph rule_div_too_big_lhs_rhs {
-  rankdir=TB;
-  label="div-too-big"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [label="(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)", shape=rectangle];
-    "h1_short_L" [shape=octagon, label="short", color="#9467bd", fontcolor="#9467bd"];
-    "h1_short_L" -> "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [label="1", color="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?w_R" [label="?w", shape=diamond];
-    "?u_R" [label="?u", shape=diamond];
-    "?lo_R" [label="?lo", shape=diamond];
-    "?j_R" [label="?j", shape=diamond];
-    "?left_R" [label="?left", shape=diamond];
-    "h2_div-choose_R" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h2_div-choose_R" -> "?k_R" [label="1", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?ms_R" [label="2", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?rest_R" [label="3", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?w_R" [label="4", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?u_R" [label="5", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?lo_R" [label="6", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?j_R" [label="7", color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "?left_R" [label="8", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule div-too-big of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-too-big.svg)
 <!-- /rule -->
 
 #### `div-digit-found`
@@ -1719,47 +603,7 @@ digraph rule_div_too_big_lhs_rhs {
   :why    "nothing lies between {?lo} and {?hi}: the digit is {?lo}, and {?left} is left over")
 ```
 
-```dot
-digraph rule_div_digit_found_lhs_rhs {
-  rankdir=TB;
-  label="div-digit-found"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "?lo_L" [label="?lo", shape=diamond];
-    "?hi_L" [label="?hi", shape=diamond];
-    "?left_L" [label="?left", shape=diamond];
-    "h1_div-choose_L" [shape=octagon, label="div-choose", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-choose_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_div-choose_L" -> "?ms_L" [label="2", color="#8c564b"];
-    "h1_div-choose_L" -> "?rest_L" [label="3", color="#8c564b"];
-    "h1_div-choose_L" -> "?w_L" [label="4", color="#8c564b"];
-    "h1_div-choose_L" -> "?u_L" [label="5", color="#8c564b"];
-    "h1_div-choose_L" -> "?lo_L" [label="6", color="#8c564b"];
-    "h1_div-choose_L" -> "?hi_L" [label="7", color="#8c564b"];
-    "h1_div-choose_L" -> "?left_L" [label="8", color="#8c564b"];
-    "?lo_L" -> "?hi_L" [label="adj", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?w_R" [label="?w", shape=diamond];
-    "?lo_R" [label="?lo", shape=diamond];
-    "?left_R" [label="?left", shape=diamond];
-    "h2_div-digit_R" [shape=octagon, label="div-digit", color="#9467bd", fontcolor="#9467bd"];
-    "h2_div-digit_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?ms_R" [label="2", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?rest_R" [label="3", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?w_R" [label="4", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?lo_R" [label="5", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?left_R" [label="6", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule div-digit-found of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-digit-found.svg)
 <!-- /rule -->
 
 ### Division: the quotient grows
@@ -1774,42 +618,7 @@ digraph rule_div_digit_found_lhs_rhs {
   :why    "the digit {?j} goes after the quotient so far")
 ```
 
-```dot
-digraph rule_div_next_lhs_rhs {
-  rankdir=TB;
-  label="div-next"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "?rest_L" [label="?rest", shape=diamond];
-    "?w_L" [label="?w", shape=diamond];
-    "?j_L" [label="?j", shape=diamond];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_div-digit_L" [shape=octagon, label="div-digit", color="#9467bd", fontcolor="#9467bd"];
-    "h1_div-digit_L" -> "?k_L" [label="1", color="#9467bd"];
-    "h1_div-digit_L" -> "?ms_L" [label="2", color="#9467bd"];
-    "h1_div-digit_L" -> "?rest_L" [label="3", color="#9467bd"];
-    "h1_div-digit_L" -> "?w_L" [label="4", color="#9467bd"];
-    "h1_div-digit_L" -> "?j_L" [label="5", color="#9467bd"];
-    "h1_div-digit_L" -> "?t_L" [label="6", color="#9467bd"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?j_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "(n ?w ?j)_R" [label="(n ?w ?j)", shape=rectangle];
-    "h3_div-step_R" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
-    "h3_div-step_R" -> "?k_R" [label="1", color="#d62728", style=dashed];
-    "h3_div-step_R" -> "?ms_R" [label="2", color="#d62728", style=dashed];
-    "h3_div-step_R" -> "?rest_R" [label="3", color="#d62728", style=dashed];
-    "h3_div-step_R" -> "?t_R" [label="4", color="#d62728", style=dashed];
-    "h3_div-step_R" -> "(n ?w ?j)_R" [label="5", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule div-next of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-next.svg)
 <!-- /rule -->
 
 #### `div-next-zero`
@@ -1822,40 +631,7 @@ digraph rule_div_next_lhs_rhs {
   :why    "the digit 0 goes after a quotient that is not zero")
 ```
 
-```dot
-digraph rule_div_next_zero_lhs_rhs {
-  rankdir=TB;
-  label="div-next-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "?rest_L" [label="?rest", shape=diamond];
-    "(n ?p ?c)_L" [label="(n ?p ?c)", shape=rectangle];
-    "0_L" [label="0", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_div-digit_L" [shape=octagon, label="div-digit", color="#9467bd", fontcolor="#9467bd"];
-    "h1_div-digit_L" -> "?k_L" [label="1", color="#9467bd"];
-    "h1_div-digit_L" -> "?ms_L" [label="2", color="#9467bd"];
-    "h1_div-digit_L" -> "?rest_L" [label="3", color="#9467bd"];
-    "h1_div-digit_L" -> "(n ?p ?c)_L" [label="4", color="#9467bd"];
-    "h1_div-digit_L" -> "0_L" [label="5", color="#9467bd"];
-    "h1_div-digit_L" -> "?t_L" [label="6", color="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "(n (n ?p ?c) 0)_R" [label="(n (n ?p ?c) 0)", shape=rectangle];
-    "h2_div-step_R" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
-    "h2_div-step_R" -> "?k_R" [label="1", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "?ms_R" [label="2", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "?rest_R" [label="3", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "?t_R" [label="4", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "(n (n ?p ?c) 0)_R" [label="5", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule div-next-zero of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-next-zero.svg)
 <!-- /rule -->
 
 #### `div-next-none`
@@ -1868,40 +644,7 @@ digraph rule_div_next_zero_lhs_rhs {
   :why    "the digit is 0 and the quotient so far is zero: no high zero is written")
 ```
 
-```dot
-digraph rule_div_next_none_lhs_rhs {
-  rankdir=TB;
-  label="div-next-none"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?ms_L" [label="?ms", shape=diamond];
-    "?rest_L" [label="?rest", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "0_L" [label="0", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_div-digit_L" [shape=octagon, label="div-digit", color="#9467bd", fontcolor="#9467bd"];
-    "h1_div-digit_L" -> "?k_L" [label="1", color="#9467bd"];
-    "h1_div-digit_L" -> "?ms_L" [label="2", color="#9467bd"];
-    "h1_div-digit_L" -> "?rest_L" [label="3", color="#9467bd"];
-    "h1_div-digit_L" -> "z_L" [label="4", color="#9467bd"];
-    "h1_div-digit_L" -> "0_L" [label="5", color="#9467bd"];
-    "h1_div-digit_L" -> "?t_L" [label="6", color="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?ms_R" [label="?ms", shape=diamond];
-    "?rest_R" [label="?rest", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h2_div-step_R" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
-    "h2_div-step_R" -> "?k_R" [label="1", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "?ms_R" [label="2", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "?rest_R" [label="3", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "?t_R" [label="4", color="#d62728", style=dashed];
-    "h2_div-step_R" -> "z_R" [label="5", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule div-next-none of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.div-next-none.svg)
 <!-- /rule -->
 
 ### An operand that is a name no `let` states
@@ -1922,51 +665,7 @@ The one `absent` of the theory, over its own `let`, which no rule may derive.
   :why    "{?x} is a name, and no let states it")
 ```
 
-```dot
-digraph rule_operand_undeclared_lhs_rhs {
-  rankdir=TB;
-  label="operand-undeclared"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?x_L" [label="?x", shape=diamond];
-    "?v_L" [label="?v", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "2_L" [label="2", shape=rectangle];
-    "3_L" [label="3", shape=rectangle];
-    "4_L" [label="4", shape=rectangle];
-    "5_L" [label="5", shape=rectangle];
-    "6_L" [label="6", shape=rectangle];
-    "7_L" [label="7", shape=rectangle];
-    "8_L" [label="8", shape=rectangle];
-    "9_L" [label="9", shape=rectangle];
-    "?k_L" -> "?x_L" [label="operand", color="#2ca02c", fontcolor="#2ca02c"];
-    "?v_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?v_L" -> "?x_L" [label="=", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "3_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "4_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "5_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "6_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "7_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "8_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "9_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?w_L" [label="?w", shape=diamond];
-      "?x_L" -> "?w_L" [label="let", color="#7f7f7f", fontcolor="#7f7f7f"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(no-let ?x)_R" [label="(no-let ?x)", shape=rectangle];
-    "?k_R" -> "(no-let ?x)_R" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule operand-undeclared of std.math.decimal-arith, as the engine draws it](diagrams/09-std.math.decimal-arith.operand-undeclared.svg)
 <!-- /rule -->
 
 ### The entry

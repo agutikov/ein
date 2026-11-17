@@ -1,0 +1,33 @@
+digraph rule_converse_illtyped_ran_lhs_rhs {
+  rankdir=TB;
+  label="converse-illtyped-ran"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R1_L" [label="?R1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?D1_L" [label="?D1", shape=diamond];
+    "?Rn1_L" [label="?Rn1", shape=diamond];
+    "?D2_L" [label="?D2", shape=diamond];
+    "?Rn2_L" [label="?Rn2", shape=diamond];
+    "?R1_L" -> "?R2_L" [label="converse", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R1_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?D1_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?Rn1_L" [label="3", color="#bcbd22"];
+    "h2_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_relation_L" -> "?R2_L" [label="1", color="#bcbd22"];
+    "h2_relation_L" -> "?D2_L" [label="2", color="#bcbd22"];
+    "h2_relation_L" -> "?Rn2_L" [label="3", color="#bcbd22"];
+    "?D1_L" -> "?Rn2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?D1_L" -> "?Rn2_L" [label="?isR*", color="#1f77b4", fontcolor="#1f77b4"];
+    }
+    subgraph cluster_absent_L_1 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?Rn2_L" -> "?D1_L" [label="?isR*", color="#1f77b4", fontcolor="#1f77b4"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "h3_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}

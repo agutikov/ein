@@ -1,0 +1,28 @@
+digraph rule_reads_second_r_lhs_rhs {
+  rankdir=TB;
+  label="reads-second-r"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?f_L" [label="?f", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "0_L" [label="0", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "1_L" [label="1", shape=rectangle];
+    "?y_L" [label="?y", shape=diamond];
+    "h1_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h1_gate2_L" -> "?a_L" [label="2", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [label="3", color="#7f7f7f"];
+    "h1_gate2_L" -> "?x_L" [label="4", color="#7f7f7f"];
+    "h2_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h2_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
+    "h2_gate2_L" -> "?a_L" [label="2", color="#7f7f7f"];
+    "h2_gate2_L" -> "1_L" [label="3", color="#7f7f7f"];
+    "h2_gate2_L" -> "?y_L" [label="4", color="#7f7f7f"];
+    "?x_L" -> "?y_L" [label="inv", color="#9467bd", fontcolor="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?f_R" [label="?f", shape=diamond];
+    "h3_reads-second_R" [shape=octagon, label="reads-second", color="#2ca02c", fontcolor="#2ca02c"];
+    "h3_reads-second_R" -> "?f_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}

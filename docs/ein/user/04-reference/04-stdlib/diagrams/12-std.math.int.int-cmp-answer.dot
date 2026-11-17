@@ -1,0 +1,18 @@
+digraph rule_int_cmp_answer_lhs_rhs {
+  rankdir=TB;
+  label="int-cmp-answer"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-cmp ?x ?y)_L" [label="(int-cmp ?x ?y)", shape=rectangle];
+    "?o_L" [label="?o", shape=diamond];
+    "(int-cmp ?x ?y)_L" -> "?o_L" [label="order-is", color="#d62728", fontcolor="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "?o_R" [label="?o", shape=diamond];
+    "h1_int-cmp-of_R" [shape=octagon, label="int-cmp-of", color="#d62728", fontcolor="#d62728"];
+    "h1_int-cmp-of_R" -> "?x_R" [label="1", color="#d62728", style=dashed];
+    "h1_int-cmp-of_R" -> "?y_R" [label="2", color="#d62728", style=dashed];
+    "h1_int-cmp-of_R" -> "?o_R" [label="3", color="#d62728", style=dashed];
+  }
+}

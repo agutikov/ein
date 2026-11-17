@@ -1,0 +1,20 @@
+digraph rule_mul_first_row_lhs_rhs {
+  rankdir=TB;
+  label="mul-first-row"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(mul-row-of ?k ?u ?rest z)_L" [label="(mul-row-of ?k ?u ?rest z)", shape=rectangle];
+    "?row_L" [label="?row", shape=diamond];
+    "(mul-row-of ?k ?u ?rest z)_L" -> "?row_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?u_R" [label="?u", shape=diamond];
+    "?rest_R" [label="?rest", shape=diamond];
+    "?row_R" [label="?row", shape=diamond];
+    "h1_mul-step_R" [shape=octagon, label="mul-step", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_mul-step_R" -> "?k_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_mul-step_R" -> "?u_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_mul-step_R" -> "?rest_R" [label="3", color="#bcbd22", style=dashed];
+    "h1_mul-step_R" -> "?row_R" [label="4", color="#bcbd22", style=dashed];
+  }
+}

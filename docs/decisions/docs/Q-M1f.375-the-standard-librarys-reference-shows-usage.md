@@ -20,4 +20,6 @@ drawing of it are the rule, and a drawing is how a pattern over a graph is read.
 
 **Held by.** The pages of the folder, whose index, [`README.md`](../../ein/user/04-reference/04-stdlib/README.md),
 lists each module with its two pages. The text and the drawing of a rule on a page are generated from the module's
-file and the engine, and are not edited by hand.
+file and the engine, and are not edited by hand; the drawing's source is a file of the folder's `diagrams/`,
+named for the page, the module and the rule, and the page shows the picture drawn from it
+([Q-M1f.368](Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)).

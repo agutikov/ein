@@ -1,0 +1,25 @@
+digraph rule_type_hierarchy_converse_lhs_rhs {
+  rankdir=TB;
+  label="type-hierarchy-converse"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R1_L" [label="?R1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?isR*_L" [label="?isR*", shape=diamond];
+    "?R1_L" -> "?R2_L" [label="converse", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_type-hierarchy_L" [shape=octagon, label="type-hierarchy", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_type-hierarchy_L" -> "?isR*_L" [label="1", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R1_R" [label="?R1", shape=diamond];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?isR*_R" [label="?isR*", shape=diamond];
+    "h2_converse-illtyped-dom_R" [shape=octagon, label="converse-illtyped-dom", color="#d62728", fontcolor="#d62728"];
+    "h2_converse-illtyped-dom_R" -> "?R1_R" [label="1", color="#d62728", style=dashed];
+    "h2_converse-illtyped-dom_R" -> "?R2_R" [label="2", color="#d62728", style=dashed];
+    "h2_converse-illtyped-dom_R" -> "?isR*_R" [label="3", color="#d62728", style=dashed];
+    "h3_converse-illtyped-ran_R" [shape=octagon, label="converse-illtyped-ran", color="#1f77b4", fontcolor="#1f77b4"];
+    "h3_converse-illtyped-ran_R" -> "?R1_R" [label="1", color="#1f77b4", style=dashed];
+    "h3_converse-illtyped-ran_R" -> "?R2_R" [label="2", color="#1f77b4", style=dashed];
+    "h3_converse-illtyped-ran_R" -> "?isR*_R" [label="3", color="#1f77b4", style=dashed];
+  }
+}

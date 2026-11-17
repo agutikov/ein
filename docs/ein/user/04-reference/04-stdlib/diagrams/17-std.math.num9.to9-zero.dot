@@ -1,0 +1,14 @@
+digraph rule_to9_zero_lhs_rhs {
+  rankdir=TB;
+  label="to9-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "z_L" [label="z", shape=rectangle];
+    "h1_to9_L" [shape=octagon, label="to9", color="#9467bd", fontcolor="#9467bd"];
+    "h1_to9_L" -> "z_L" [label="1", color="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "z_R" [label="z", shape=rectangle];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" [label="(num9 0 0 0 0 0 0 0 0 0)", shape=rectangle];
+    "z_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [label="as9", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}

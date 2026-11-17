@@ -1,0 +1,11 @@
+@startebnf
+Fact = "(" , FactHead , FactArgs , FactClauses , ")" | "(" , "false" , FactClauses , ")" ;
+NotFact = "(" , "not" , NestedFact , FactClauses , ")" | "(" , "not" , EqFact , FactClauses , ")" ;
+NestedFact = "(" , ValueHead , FactArgs , ")" | "(" , "false" , ")" ;
+EqFact = "(" , "eq" , FactArgs , ")" ;
+FactArg = Name | NestedFact | "(" , "not" , NestedFact , ")" ;
+FactArgs = { FactArg } ;
+FactClause = ":source" , Text | ":rule" , Name | ":using" , "(" , NestedFacts , ")" ;
+FactClauses = { FactClause } ;
+NestedFacts = { NestedFact }- ;
+@endebnf

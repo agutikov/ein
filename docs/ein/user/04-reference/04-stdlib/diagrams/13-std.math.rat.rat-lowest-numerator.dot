@@ -1,0 +1,18 @@
+digraph rule_rat_lowest_numerator_lhs_rhs {
+  rankdir=TB;
+  label="rat-lowest-numerator"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-g ?k ?s ?a ?d)_L" [label="(rat-g ?k ?s ?a ?d)", shape=rectangle];
+    "?g_L" [label="?g", shape=diamond];
+    "(rat-g ?k ?s ?a ?d)_L" -> "?g_L" [label="gcd-done", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-q-num ?k ?s ?d ?g)_R" [label="(rat-q-num ?k ?s ?d ?g)", shape=rectangle];
+    "?a_R" [label="?a", shape=diamond];
+    "?g_R" [label="?g", shape=diamond];
+    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_div-call_R" -> "(rat-q-num ?k ?s ?d ?g)_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_div-call_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

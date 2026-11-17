@@ -1,0 +1,14 @@
+digraph rule_int_operand_lhs_rhs {
+  rankdir=TB;
+  label="int-operand"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "(int ?p ?n)_L" [label="(int ?p ?n)", shape=rectangle];
+    "?k_L" -> "(int ?p ?n)_L" [label="operand", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "(int ?p ?n)_R" [label="(int ?p ?n)", shape=rectangle];
+    "?k_R" -> "(int ?p ?n)_R" [label="operand-is", color="#17becf", fontcolor="#17becf", style=dashed];
+  }
+}

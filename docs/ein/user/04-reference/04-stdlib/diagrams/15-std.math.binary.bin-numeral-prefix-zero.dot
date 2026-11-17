@@ -1,0 +1,14 @@
+digraph rule_bin_numeral_prefix_zero_lhs_rhs {
+  rankdir=TB;
+  label="bin-numeral-prefix-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(b2 0 ?a)_L" [label="(b2 0 ?a)", shape=rectangle];
+    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
+    "h1_written_L" -> "(b2 0 ?a)_L" [label="1", color="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(b2 0 ?a)_R" [label="(b2 0 ?a)", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "(b2 0 ?a)_R" -> "0_R" [label="not-binary", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  }
+}

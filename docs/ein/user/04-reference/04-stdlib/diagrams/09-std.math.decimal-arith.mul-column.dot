@@ -1,0 +1,39 @@
+digraph rule_mul_column_lhs_rhs {
+  rankdir=TB;
+  label="mul-column"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "(n ?p ?a)_L" [label="(n ?p ?a)", shape=rectangle];
+    "?m_L" [label="?m", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
+    "?acc_L" [label="?acc", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?s_L" [label="?s", shape=diamond];
+    "?f_L" [label="?f", shape=diamond];
+    "h1_mul-walk_L" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_mul-walk_L" -> "?k_L" [label="1", color="#7f7f7f"];
+    "h1_mul-walk_L" -> "(n ?p ?a)_L" [label="2", color="#7f7f7f"];
+    "h1_mul-walk_L" -> "?m_L" [label="3", color="#7f7f7f"];
+    "h1_mul-walk_L" -> "?e_L" [label="4", color="#7f7f7f"];
+    "h1_mul-walk_L" -> "?acc_L" [label="5", color="#7f7f7f"];
+    "h2_md_L" [shape=octagon, label="md", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_md_L" -> "?a_L" [label="1", color="#bcbd22"];
+    "h2_md_L" -> "?m_L" [label="2", color="#bcbd22"];
+    "h2_md_L" -> "?e_L" [label="3", color="#bcbd22"];
+    "h2_md_L" -> "?s_L" [label="4", color="#bcbd22"];
+    "h2_md_L" -> "?f_L" [label="5", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
+    "?f_R" [label="?f", shape=diamond];
+    "(b ?s ?acc)_R" [label="(b ?s ?acc)", shape=rectangle];
+    "h3_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h3_mul-walk_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
+    "h3_mul-walk_R" -> "?p_R" [label="2", color="#7f7f7f", style=dashed];
+    "h3_mul-walk_R" -> "?m_R" [label="3", color="#7f7f7f", style=dashed];
+    "h3_mul-walk_R" -> "?f_R" [label="4", color="#7f7f7f", style=dashed];
+    "h3_mul-walk_R" -> "(b ?s ?acc)_R" [label="5", color="#7f7f7f", style=dashed];
+  }
+}

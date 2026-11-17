@@ -1,0 +1,25 @@
+digraph rule_bin_div_multiples_lhs_rhs {
+  rankdir=TB;
+  label="bin-div-multiples"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?v_L" [label="?v", shape=diamond];
+    "h1_bin-div-call_L" [shape=octagon, label="bin-div-call", color="#17becf", fontcolor="#17becf"];
+    "h1_bin-div-call_L" -> "?k_L" [label="1", color="#17becf"];
+    "h1_bin-div-call_L" -> "?u_L" [label="2", color="#17becf"];
+    "h1_bin-div-call_L" -> "?v_L" [label="3", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(bin-div-m1 ?k ?u ?v)_R" [label="(bin-div-m1 ?k ?u ?v)", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "?v_R" [label="?v", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    "h2_bin-add-walk_R" [shape=octagon, label="bin-add-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h2_bin-add-walk_R" -> "(bin-div-m1 ?k ?u ?v)_R" [label="1", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "z_R" [label="2", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "?v_R" [label="3", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
+  }
+}

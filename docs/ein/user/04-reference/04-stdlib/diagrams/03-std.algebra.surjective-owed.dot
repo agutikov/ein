@@ -1,0 +1,26 @@
+digraph rule_surjective_owed_lhs_rhs {
+  rankdir=TB;
+  label="surjective-owed"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
+    "?b_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?a_L" [label="?a", shape=diamond];
+      "?a_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+      "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h2_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
+    "h2_open_R" -> "?R_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}

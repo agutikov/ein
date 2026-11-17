@@ -1,0 +1,28 @@
+digraph rule_compose_contravariant_lhs_rhs {
+  rankdir=TB;
+  label="compose-contravariant"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?S_L" [label="?S", shape=diamond];
+    "?T_L" [label="?T", shape=diamond];
+    "?Rc_L" [label="?Rc", shape=diamond];
+    "?Sc_L" [label="?Sc", shape=diamond];
+    "?Tc_L" [label="?Tc", shape=diamond];
+    "h1_compose_L" [shape=octagon, label="compose", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_compose_L" -> "?R_L" [label="1", color="#bcbd22"];
+    "h1_compose_L" -> "?S_L" [label="2", color="#bcbd22"];
+    "h1_compose_L" -> "?T_L" [label="3", color="#bcbd22"];
+    "?R_L" -> "?Rc_L" [label="converse", color="#2ca02c", fontcolor="#2ca02c"];
+    "?S_L" -> "?Sc_L" [label="converse", color="#2ca02c", fontcolor="#2ca02c"];
+    "?T_L" -> "?Tc_L" [label="converse", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?Sc_R" [label="?Sc", shape=diamond];
+    "?Rc_R" [label="?Rc", shape=diamond];
+    "?Tc_R" [label="?Tc", shape=diamond];
+    "h2_compose_R" [shape=octagon, label="compose", color="#bcbd22", fontcolor="#bcbd22"];
+    "h2_compose_R" -> "?Sc_R" [label="1", color="#bcbd22", style=dashed];
+    "h2_compose_R" -> "?Rc_R" [label="2", color="#bcbd22", style=dashed];
+    "h2_compose_R" -> "?Tc_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

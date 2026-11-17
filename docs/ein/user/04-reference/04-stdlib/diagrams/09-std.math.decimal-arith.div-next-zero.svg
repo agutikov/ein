@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_div_next_zero_lhs_rhs Pages: 1 -->
+<svg width="1096pt" height="216pt"
+ viewBox="0.00 0.00 1096.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_div_next_zero_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 1092,-211.75 1092,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="544" y="-190.45" font-family="Times,serif" font-size="14.00">div&#45;next&#45;zero</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 557,-174.5 557,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="282.5" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="565,-8 565,-174.5 1080,-174.5 1080,-8 565,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="822.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?k_L -->
+<g id="node1" class="node">
+<title>?k_L</title>
+<polygon fill="none" stroke="black" points="47,-52 15.5,-34 47,-16 78.5,-34 47,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-29.32" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- ?ms_L -->
+<g id="node2" class="node">
+<title>?ms_L</title>
+<polygon fill="none" stroke="black" points="141,-52 96.85,-34 141,-16 185.15,-34 141,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="141" y="-29.32" font-family="Times,serif" font-size="14.00">?ms</text>
+</g>
+<!-- ?rest_L -->
+<g id="node3" class="node">
+<title>?rest_L</title>
+<polygon fill="none" stroke="black" points="255,-52 203.41,-34 255,-16 306.59,-34 255,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="255" y="-29.32" font-family="Times,serif" font-size="14.00">?rest</text>
+</g>
+<!-- (n ?p ?c)_L -->
+<g id="node4" class="node">
+<title>(n ?p ?c)_L</title>
+<polygon fill="none" stroke="black" points="401,-52 325,-52 325,-16 401,-16 401,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="363" y="-29.32" font-family="Times,serif" font-size="14.00">(n ?p ?c)</text>
+</g>
+<!-- 0_L -->
+<g id="node5" class="node">
+<title>0_L</title>
+<polygon fill="none" stroke="black" points="473,-52 419,-52 419,-16 473,-16 473,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="446" y="-29.32" font-family="Times,serif" font-size="14.00">0</text>
+</g>
+<!-- ?t_L -->
+<g id="node6" class="node">
+<title>?t_L</title>
+<polygon fill="none" stroke="black" points="520,-52 490.73,-34 520,-16 549.27,-34 520,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="520" y="-29.32" font-family="Times,serif" font-size="14.00">?t</text>
+</g>
+<!-- h1_div&#45;digit_L -->
+<g id="node7" class="node">
+<title>h1_div&#45;digit_L</title>
+<polygon fill="none" stroke="#9467bd" points="366.14,-115.79 366.14,-130.71 332.67,-141.25 285.33,-141.25 251.86,-130.71 251.86,-115.79 285.33,-105.25 332.67,-105.25 366.14,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="309" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#9467bd">div&#45;digit</text>
+</g>
+<!-- h1_div&#45;digit_L&#45;&gt;?k_L -->
+<g id="edge1" class="edge">
+<title>h1_div&#45;digit_L&#45;&gt;?k_L</title>
+<path fill="none" stroke="#9467bd" d="M267.89,-110.39C223.23,-97.23 149.96,-74.82 88,-52 83.73,-50.43 79.25,-48.67 74.88,-46.91"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="76.41,-43.76 65.83,-43.17 73.74,-50.23 76.41,-43.76"/>
+<text xml:space="preserve" text-anchor="middle" x="194.74" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h1_div&#45;digit_L&#45;&gt;?ms_L -->
+<g id="edge2" class="edge">
+<title>h1_div&#45;digit_L&#45;&gt;?ms_L</title>
+<path fill="none" stroke="#9467bd" d="M279.35,-106.85C248.34,-90.75 200.02,-65.65 169.46,-49.78"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="171.28,-46.78 160.79,-45.28 168.05,-52.99 171.28,-46.78"/>
+<text xml:space="preserve" text-anchor="middle" x="244.55" y="-73.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h1_div&#45;digit_L&#45;&gt;?rest_L -->
+<g id="edge3" class="edge">
+<title>h1_div&#45;digit_L&#45;&gt;?rest_L</title>
+<path fill="none" stroke="#9467bd" d="M298.33,-105.01C290.14,-91.78 278.74,-73.35 269.68,-58.72"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="272.9,-57.26 264.66,-50.6 266.94,-60.95 272.9,-57.26"/>
+<text xml:space="preserve" text-anchor="middle" x="291.34" y="-73.95" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h1_div&#45;digit_L&#45;&gt;(n ?p ?c)_L -->
+<g id="edge4" class="edge">
+<title>h1_div&#45;digit_L&#45;&gt;(n ?p ?c)_L</title>
+<path fill="none" stroke="#9467bd" d="M319.67,-105.01C327.29,-92.7 337.68,-75.91 346.38,-61.85"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="349.27,-63.83 351.56,-53.49 343.32,-60.15 349.27,-63.83"/>
+<text xml:space="preserve" text-anchor="middle" x="345.34" y="-73.95" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- h1_div&#45;digit_L&#45;&gt;0_L -->
+<g id="edge5" class="edge">
+<title>h1_div&#45;digit_L&#45;&gt;0_L</title>
+<path fill="none" stroke="#9467bd" d="M335.09,-105.63C356.01,-92.31 385.64,-73.44 409.01,-58.56"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="410.77,-61.59 417.32,-53.26 407.01,-55.68 410.77,-61.59"/>
+<text xml:space="preserve" text-anchor="middle" x="394.27" y="-73.95" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- h1_div&#45;digit_L&#45;&gt;?t_L -->
+<g id="edge6" class="edge">
+<title>h1_div&#45;digit_L&#45;&gt;?t_L</title>
+<path fill="none" stroke="#9467bd" d="M345.81,-109.15C363.25,-102.8 384.3,-94.89 403,-87.25 438.59,-72.7 446.9,-67.68 482,-52 485.67,-50.36 489.55,-48.63 493.36,-46.92"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="494.65,-50.18 502.35,-42.9 491.79,-43.79 494.65,-50.18"/>
+<text xml:space="preserve" text-anchor="middle" x="447.18" y="-73.95" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+<!-- ?k_R -->
+<g id="node8" class="node">
+<title>?k_R</title>
+<polygon fill="none" stroke="black" points="604,-52 572.5,-34 604,-16 635.5,-34 604,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="604" y="-29.32" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- ?ms_R -->
+<g id="node9" class="node">
+<title>?ms_R</title>
+<polygon fill="none" stroke="black" points="698,-52 653.85,-34 698,-16 742.15,-34 698,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="698" y="-29.32" font-family="Times,serif" font-size="14.00">?ms</text>
+</g>
+<!-- ?rest_R -->
+<g id="node10" class="node">
+<title>?rest_R</title>
+<polygon fill="none" stroke="black" points="812,-52 760.41,-34 812,-16 863.59,-34 812,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="812" y="-29.32" font-family="Times,serif" font-size="14.00">?rest</text>
+</g>
+<!-- ?t_R -->
+<g id="node11" class="node">
+<title>?t_R</title>
+<polygon fill="none" stroke="black" points="911,-52 881.73,-34 911,-16 940.27,-34 911,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="911" y="-29.32" font-family="Times,serif" font-size="14.00">?t</text>
+</g>
+<!-- (n (n ?p ?c) 0)_R -->
+<g id="node12" class="node">
+<title>(n (n ?p ?c) 0)_R</title>
+<polygon fill="none" stroke="black" points="1071.75,-52 958.25,-52 958.25,-16 1071.75,-16 1071.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1015" y="-29.32" font-family="Times,serif" font-size="14.00">(n (n ?p ?c) 0)</text>
+</g>
+<!-- h2_div&#45;step_R -->
+<g id="node13" class="node">
+<title>h2_div&#45;step_R</title>
+<polygon fill="none" stroke="#d62728" points="867.43,-115.79 867.43,-130.71 834.96,-141.25 789.04,-141.25 756.57,-130.71 756.57,-115.79 789.04,-105.25 834.96,-105.25 867.43,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="812" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#d62728">div&#45;step</text>
+</g>
+<!-- h2_div&#45;step_R&#45;&gt;?k_R -->
+<g id="edge7" class="edge">
+<title>h2_div&#45;step_R&#45;&gt;?k_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M778.58,-108.23C737.92,-91.18 670.01,-62.69 631.98,-46.74"/>
+<polygon fill="#d62728" stroke="#d62728" points="633.62,-43.63 623.05,-42.99 630.91,-50.09 633.62,-43.63"/>
+<text xml:space="preserve" text-anchor="middle" x="731.13" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h2_div&#45;step_R&#45;&gt;?ms_R -->
+<g id="edge8" class="edge">
+<title>h2_div&#45;step_R&#45;&gt;?ms_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M789.2,-104.8C769.66,-89.85 741.6,-68.37 721.78,-53.2"/>
+<polygon fill="#d62728" stroke="#d62728" points="724.05,-50.53 713.99,-47.23 719.8,-56.09 724.05,-50.53"/>
+<text xml:space="preserve" text-anchor="middle" x="769.71" y="-73.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h2_div&#45;step_R&#45;&gt;?rest_R -->
+<g id="edge9" class="edge">
+<title>h2_div&#45;step_R&#45;&gt;?rest_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M812,-105.01C812,-93.26 812,-77.41 812,-63.77"/>
+<polygon fill="#d62728" stroke="#d62728" points="815.5,-64.01 812,-54.01 808.5,-64.01 815.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="816.5" y="-73.95" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h2_div&#45;step_R&#45;&gt;?t_R -->
+<g id="edge10" class="edge">
+<title>h2_div&#45;step_R&#45;&gt;?t_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M831.56,-105.01C848.83,-89.79 873.9,-67.69 891.24,-52.42"/>
+<polygon fill="#d62728" stroke="#d62728" points="893.19,-55.36 898.38,-46.12 888.56,-50.11 893.19,-55.36"/>
+<text xml:space="preserve" text-anchor="middle" x="874.87" y="-73.95" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- h2_div&#45;step_R&#45;&gt;(n (n ?p ?c) 0)_R -->
+<g id="edge11" class="edge">
+<title>h2_div&#45;step_R&#45;&gt;(n (n ?p ?c) 0)_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M845.07,-108.04C877.42,-94.13 927.12,-72.77 964.43,-56.73"/>
+<polygon fill="#d62728" stroke="#d62728" points="965.41,-60.12 973.21,-52.96 962.64,-53.69 965.41,-60.12"/>
+<text xml:space="preserve" text-anchor="middle" x="936.18" y="-73.95" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 0811a136b5401fda910db4697aaef99a9af65a403a7c42e344fd99f547ebc39c -->

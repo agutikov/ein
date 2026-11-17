@@ -1,0 +1,18 @@
+digraph rule_rat_cross_second_lhs_rhs {
+  rankdir=TB;
+  label="rat-cross-second"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_L" [label="(rat-x1 ?k ?n ?d ?q ?m ?e)", shape=rectangle];
+    "?a_L" [label="?a", shape=diamond];
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-x2 ?k ?n ?d ?m ?e ?a)_R" [label="(rat-x2 ?k ?n ?d ?m ?e ?a)", shape=rectangle];
+    "?q_R" [label="?q", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_mul-call_R" -> "(rat-x2 ?k ?n ?d ?m ?e ?a)_R" [label="1", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?q_R" [label="2", color="#2ca02c", style=dashed];
+    "h1_mul-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
+  }
+}

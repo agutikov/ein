@@ -1,0 +1,34 @@
+digraph rule_cmp_column_first_lhs_rhs {
+  rankdir=TB;
+  label="cmp-column-first"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
+    "z_L" [label="z", shape=rectangle];
+    "?o_L" [label="?o", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "0_L" [label="0", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "h1_CMP-WALK_L" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "?k_L" [label="1", color="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "z_L" [label="3", color="#7f7f7f"];
+    "h1_CMP-WALK_L" -> "?o_L" [label="4", color="#7f7f7f"];
+    "h2_CL_L" [shape=octagon, label="?CL", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h2_CL_L" -> "?o_L" [label="1", color="#ff7f0e"];
+    "h2_CL_L" -> "?a_L" [label="2", color="#ff7f0e"];
+    "h2_CL_L" -> "0_L" [label="3", color="#ff7f0e"];
+    "h2_CL_L" -> "?t_L" [label="4", color="#ff7f0e"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "?t_R" [label="?t", shape=diamond];
+    "h3_CMP-WALK_R" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h3_CMP-WALK_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
+    "h3_CMP-WALK_R" -> "?p_R" [label="2", color="#7f7f7f", style=dashed];
+    "h3_CMP-WALK_R" -> "z_R" [label="3", color="#7f7f7f", style=dashed];
+    "h3_CMP-WALK_R" -> "?t_R" [label="4", color="#7f7f7f", style=dashed];
+  }
+}

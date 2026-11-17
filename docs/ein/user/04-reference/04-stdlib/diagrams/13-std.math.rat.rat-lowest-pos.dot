@@ -1,0 +1,18 @@
+digraph rule_rat_lowest_pos_lhs_rhs {
+  rankdir=TB;
+  label="rat-lowest-pos"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-q-den ?k pos ?q)_L" [label="(rat-q-den ?k pos ?q)", shape=rectangle];
+    "?e_L" [label="?e", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
+    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
+    "h1_div-done_L" -> "(rat-q-den ?k pos ?q)_L" [label="1", color="#8c564b"];
+    "h1_div-done_L" -> "?e_L" [label="2", color="#8c564b"];
+    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "(rat (int ?q z) ?e)_R" [label="(rat (int ?q z) ?e)", shape=rectangle];
+    "?k_R" -> "(rat (int ?q z) ?e)_R" [label="rat-done", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  }
+}

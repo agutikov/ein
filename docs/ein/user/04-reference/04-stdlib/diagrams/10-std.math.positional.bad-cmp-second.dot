@@ -1,0 +1,14 @@
+digraph rule_bad_cmp_second_lhs_rhs {
+  rankdir=TB;
+  label="bad-cmp-second"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?CMP-SECOND ?x ?y ?u)_L" [label="(?CMP-SECOND ?x ?y ?u)", shape=rectangle];
+    "?f_L" [label="?f", shape=diamond];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?CMP ?x ?y)_R" [label="(?CMP ?x ?y)", shape=rectangle];
+    "?f_R" [label="?f", shape=diamond];
+    "(?CMP ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

@@ -1,0 +1,18 @@
+digraph rule_int_div_np_lhs_rhs {
+  rankdir=TB;
+  label="int-div-np"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(int-div-b ?k (int z (n ?a ?d)))_L" [label="(int-div-b ?k (int z (n ?a ?d)))", shape=rectangle];
+    "(int (n ?b ?c) z)_L" [label="(int (n ?b ?c) z)", shape=rectangle];
+    "(int-div-b ?k (int z (n ?a ?d)))_L" -> "(int (n ?b ?c) z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(int-div-m ?k neg pos (n ?b ?c))_R" [label="(int-div-m ?k neg pos (n ?b ?c))", shape=rectangle];
+    "(n ?a ?d)_R" [label="(n ?a ?d)", shape=rectangle];
+    "(n ?b ?c)_R" [label="(n ?b ?c)", shape=rectangle];
+    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_div-call_R" -> "(int-div-m ?k neg pos (n ?b ?c))_R" [label="1", color="#bcbd22", style=dashed];
+    "h1_div-call_R" -> "(n ?a ?d)_R" [label="2", color="#bcbd22", style=dashed];
+    "h1_div-call_R" -> "(n ?b ?c)_R" [label="3", color="#bcbd22", style=dashed];
+  }
+}

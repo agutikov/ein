@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_operand_digit_zero_lhs_rhs Pages: 1 -->
+<svg width="336pt" height="216pt"
+ viewBox="0.00 0.00 336.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_operand_digit_zero_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 331.72,-211.75 331.72,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="163.86" y="-190.45" font-family="Times,serif" font-size="14.00">operand&#45;digit&#45;zero</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 125,-174.5 125,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="66.5" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="133,-8 133,-174.5 315,-174.5 315,-8 133,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="224" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?k_L -->
+<g id="node1" class="node">
+<title>?k_L</title>
+<polygon fill="none" stroke="black" points="47,-141.25 15.5,-123.25 47,-105.25 78.5,-123.25 47,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- 0_L -->
+<g id="node2" class="node">
+<title>0_L</title>
+<polygon fill="none" stroke="black" points="70,-52 16,-52 16,-16 70,-16 70,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="43" y="-29.32" font-family="Times,serif" font-size="14.00">0</text>
+</g>
+<!-- ?k_L&#45;&gt;0_L -->
+<g id="edge1" class="edge">
+<title>?k_L&#45;&gt;0_L</title>
+<path fill="none" stroke="#d62728" d="M46.23,-105.43C45.69,-93.63 44.95,-77.57 44.32,-63.76"/>
+<polygon fill="#d62728" stroke="#d62728" points="47.82,-63.71 43.87,-53.88 40.83,-64.03 47.82,-63.71"/>
+<text xml:space="preserve" text-anchor="middle" x="86.61" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#d62728">?OPERAND</text>
+</g>
+<!-- ?k_R -->
+<g id="node3" class="node">
+<title>?k_R</title>
+<polygon fill="none" stroke="black" points="188,-141.25 156.5,-123.25 188,-105.25 219.5,-123.25 188,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="188" y="-118.58" font-family="Times,serif" font-size="14.00">?k</text>
+</g>
+<!-- (?NOT&#45;A&#45;NUMBER 0)_R -->
+<g id="node4" class="node">
+<title>(?NOT&#45;A&#45;NUMBER 0)_R</title>
+<polygon fill="none" stroke="black" points="307.38,-52 140.62,-52 140.62,-16 307.38,-16 307.38,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="224" y="-29.32" font-family="Times,serif" font-size="14.00">(?NOT&#45;A&#45;NUMBER 0)</text>
+</g>
+<!-- ?k_R&#45;&gt;(?NOT&#45;A&#45;NUMBER 0)_R -->
+<g id="edge2" class="edge">
+<title>?k_R&#45;&gt;(?NOT&#45;A&#45;NUMBER 0)_R</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M193.78,-108.23C198.84,-95.98 206.32,-77.84 212.58,-62.67"/>
+<polygon fill="#17becf" stroke="#17becf" points="215.71,-64.26 216.29,-53.69 209.24,-61.59 215.71,-64.26"/>
+<text xml:space="preserve" text-anchor="middle" x="268.47" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#17becf">?BAD&#45;OPERAND</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: b15b677297efea401370c32072cbdd805ea7d1bdb761934210a396ef6b8332f0 -->

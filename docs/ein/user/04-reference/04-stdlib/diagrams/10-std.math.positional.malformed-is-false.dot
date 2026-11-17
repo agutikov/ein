@@ -1,0 +1,12 @@
+digraph rule_malformed_is_false_lhs_rhs {
+  rankdir=TB;
+  label="malformed-is-false"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?request_L" [label="?request", shape=diamond];
+    "h1_MALFORMED_L" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_MALFORMED_L" -> "?request_L" [label="1", color="#ff7f0e"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h2_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}

@@ -138,33 +138,7 @@ Read these before importing a relation-algebra module: they decide whether a rul
 The same state as `ein render kb` draws it, the declarations left out: a fact the program wrote is a solid arrow,
 and one a rule derived is a dashed arrow labelled with the relation and the rule that derived it.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  node [fontname="Inter"];
-  // types
-  "Person" [shape=box, label="Person"];
-  // instances
-  "Ann" [shape=oval, label="Ann"];
-  "Bob" [shape=oval, label="Bob"];
-  "Cid" [shape=oval, label="Cid"];
-  // facts
-  "Ann" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "Bob" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "Cid" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "Ann" -> "Bob" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Cid" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Ann" [label="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  "Cid" -> "Bob" [label="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  "Ann" -> "Cid" [label="grandparent by compose", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Ann" -> "Ann" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Bob" -> "Bob" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Cid" -> "Cid" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Ann" -> "Bob" [label="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  "Bob" -> "Cid" [label="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  "Ann" -> "Cid" [label="ancestor by compose", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-}
-```
+![The state of the operators' example: written facts solid, derived ones dashed](diagrams/02-operators-state.svg)
 
 `(includes parent ancestor)`, a closure of [the section below](#closures), copies the two parent facts, and `(compose ancestor ancestor ancestor)` closes them:
 Ann is an ancestor of Cid. `imply1`, `imply2-fwd` and `imply2-reverse` copy a property or a relation into

@@ -29,22 +29,7 @@ walk against `z`, before anything is computed.
   :why    "a rational stands for itself")
 ```
 
-```dot
-digraph rule_rat_operand_lhs_rhs {
-  rankdir=TB;
-  label="rat-operand"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "(rat ?i ?d)_L" [label="(rat ?i ?d)", shape=rectangle];
-    "?k_L" -> "(rat ?i ?d)_L" [label="operand", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(rat ?i ?d)_R" [label="(rat ?i ?d)", shape=rectangle];
-    "?k_R" -> "(rat ?i ?d)_R" [label="operand-is", color="#17becf", fontcolor="#17becf", style=dashed];
-  }
-}
-```
+![The rule rat-operand of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-operand.svg)
 <!-- /rule -->
 
 #### `rat-operand-check`
@@ -57,28 +42,7 @@ digraph rule_rat_operand_lhs_rhs {
   :why    "the operand is {?p} less {?n}, over {?d}: is the denominator zero?")
 ```
 
-```dot
-digraph rule_rat_operand_check_lhs_rhs {
-  rankdir=TB;
-  label="rat-operand-check"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-of ?k)_L" [label="(rat-of ?k)", shape=rectangle];
-    "(rat (int ?p ?n) ?d)_L" [label="(rat (int ?p ?n) ?d)", shape=rectangle];
-    "(rat-of ?k)_L" -> "(rat (int ?p ?n) ?d)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-den ?k ?p ?n ?d)_R" [label="(rat-den ?k ?p ?n ?d)", shape=rectangle];
-    "?d_R" [label="?d", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "eq_R" [label="eq", shape=rectangle];
-    "h1_cmp-walk_R" [shape=octagon, label="cmp-walk", color="#9467bd", fontcolor="#9467bd"];
-    "h1_cmp-walk_R" -> "(rat-den ?k ?p ?n ?d)_R" [label="1", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "?d_R" [label="2", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "eq_R" [label="4", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule rat-operand-check of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-operand-check.svg)
 <!-- /rule -->
 
 #### `rat-operand-found`
@@ -91,28 +55,7 @@ digraph rule_rat_operand_check_lhs_rhs {
   :why    "the denominator {?d} is not zero")
 ```
 
-```dot
-digraph rule_rat_operand_found_lhs_rhs {
-  rankdir=TB;
-  label="rat-operand-found"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-den ?k ?p ?n ?d)_L" [label="(rat-den ?k ?p ?n ?d)", shape=rectangle];
-    "gt_L" [label="gt", shape=rectangle];
-    "(rat-den ?k ?p ?n ?d)_L" -> "gt_L" [label="order-is", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "h1_rat-operand-is_R" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
-    "h1_rat-operand-is_R" -> "?p_R" [label="2", color="#1f77b4", style=dashed];
-    "h1_rat-operand-is_R" -> "?n_R" [label="3", color="#1f77b4", style=dashed];
-    "h1_rat-operand-is_R" -> "?d_R" [label="4", color="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-operand-found of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-operand-found.svg)
 <!-- /rule -->
 
 #### `rat-operand-zero`
@@ -125,22 +68,7 @@ digraph rule_rat_operand_found_lhs_rhs {
   :why    "the denominator {?d} is zero")
 ```
 
-```dot
-digraph rule_rat_operand_zero_lhs_rhs {
-  rankdir=TB;
-  label="rat-operand-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-den ?k ?p ?n ?d)_L" [label="(rat-den ?k ?p ?n ?d)", shape=rectangle];
-    "eq_L" [label="eq", shape=rectangle];
-    "(rat-den ?k ?p ?n ?d)_L" -> "eq_L" [label="order-is", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "h1_rat-zero-den_R" [shape=octagon, label="rat-zero-den", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_rat-zero-den_R" -> "?k_R" [label="1", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule rat-operand-zero of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-operand-zero.svg)
 <!-- /rule -->
 
 #### `rat-operand-second`
@@ -153,28 +81,7 @@ digraph rule_rat_operand_zero_lhs_rhs {
   :why    "the first operand is {?p} less {?n}, over {?d}: now the rational {?y} stands for")
 ```
 
-```dot
-digraph rule_rat_operand_second_lhs_rhs {
-  rankdir=TB;
-  label="rat-operand-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-first ?k ?y)_L" [label="(rat-first ?k ?y)", shape=rectangle];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?d_L" [label="?d", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-first ?k ?y)_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?p_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?n_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?d_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-second ?k ?p ?n ?d))_R" [label="(rat-of (rat-second ?k ?p ?n ?d))", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(rat-of (rat-second ?k ?p ?n ?d))_R" -> "?y_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-operand-second of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-operand-second.svg)
 <!-- /rule -->
 
 ### A zero denominator
@@ -191,22 +98,7 @@ The flag is `std.math.arith`'s `division-by-zero`, on the request.
   :why    "the operand of {?request} has a denominator of zero")
 ```
 
-```dot
-digraph rule_rat_zero_only_lhs_rhs {
-  rankdir=TB;
-  label="rat-zero-only"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-only ?request)_L" [label="(rat-only ?request)", shape=rectangle];
-    "h1_rat-zero-den_L" [shape=octagon, label="rat-zero-den", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_rat-zero-den_L" -> "(rat-only ?request)_L" [label="1", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "h2_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h2_division-by-zero_R" -> "?request_R" [label="1", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-zero-only of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-zero-only.svg)
 <!-- /rule -->
 
 #### `rat-zero-first`
@@ -219,22 +111,7 @@ digraph rule_rat_zero_only_lhs_rhs {
   :why    "the first operand of {?request} has a denominator of zero")
 ```
 
-```dot
-digraph rule_rat_zero_first_lhs_rhs {
-  rankdir=TB;
-  label="rat-zero-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-first ?request ?y)_L" [label="(rat-first ?request ?y)", shape=rectangle];
-    "h1_rat-zero-den_L" [shape=octagon, label="rat-zero-den", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_rat-zero-den_L" -> "(rat-first ?request ?y)_L" [label="1", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "h2_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h2_division-by-zero_R" -> "?request_R" [label="1", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-zero-first of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-zero-first.svg)
 <!-- /rule -->
 
 #### `rat-zero-second`
@@ -247,22 +124,7 @@ digraph rule_rat_zero_first_lhs_rhs {
   :why    "the second operand of {?request} has a denominator of zero")
 ```
 
-```dot
-digraph rule_rat_zero_second_lhs_rhs {
-  rankdir=TB;
-  label="rat-zero-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-second ?request ?p ?n ?d)_L" [label="(rat-second ?request ?p ?n ?d)", shape=rectangle];
-    "h1_rat-zero-den_L" [shape=octagon, label="rat-zero-den", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_rat-zero-den_L" -> "(rat-second ?request ?p ?n ?d)_L" [label="1", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "h2_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h2_division-by-zero_R" -> "?request_R" [label="1", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-zero-second of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-zero-second.svg)
 <!-- /rule -->
 
 ### An answer, not reduced
@@ -279,32 +141,7 @@ The numerator in the integers' normal form, the denominator with no high zero, a
   :why    "first the numerator, {?p} less {?n}, simplified")
 ```
 
-```dot
-digraph rule_rat_norm_numerator_lhs_rhs {
-  rankdir=TB;
-  label="rat-norm-numerator"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?d_L" [label="?d", shape=diamond];
-    "h1_rat-norm_L" [shape=octagon, label="rat-norm", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_rat-norm_L" -> "?k_L" [label="1", color="#bcbd22"];
-    "h1_rat-norm_L" -> "?p_L" [label="2", color="#bcbd22"];
-    "h1_rat-norm_L" -> "?n_L" [label="3", color="#bcbd22"];
-    "h1_rat-norm_L" -> "?d_L" [label="4", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-num ?k ?d)_R" [label="(rat-num ?k ?d)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "h2_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h2_int-norm_R" -> "(rat-num ?k ?d)_R" [label="1", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-norm-numerator of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-norm-numerator.svg)
 <!-- /rule -->
 
 #### `rat-norm-denominator`
@@ -317,29 +154,7 @@ digraph rule_rat_norm_numerator_lhs_rhs {
   :why    "the numerator is {?i}: now {?d} with no high zero")
 ```
 
-```dot
-digraph rule_rat_norm_denominator_lhs_rhs {
-  rankdir=TB;
-  label="rat-norm-denominator"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-num ?k ?d)_L" [label="(rat-num ?k ?d)", shape=rectangle];
-    "?i_L" [label="?i", shape=diamond];
-    "(rat-num ?k ?d)_L" -> "?i_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-den-norm ?k ?i)_R" [label="(rat-den-norm ?k ?i)", shape=rectangle];
-    "?d_R" [label="?d", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(rat-den-norm ?k ?i)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?d_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule rat-norm-denominator of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-norm-denominator.svg)
 <!-- /rule -->
 
 #### `rat-norm-done`
@@ -352,22 +167,7 @@ digraph rule_rat_norm_denominator_lhs_rhs {
   :why    "{?i} over {?e}, not reduced")
 ```
 
-```dot
-digraph rule_rat_norm_done_lhs_rhs {
-  rankdir=TB;
-  label="rat-norm-done"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-den-norm ?k ?i)_L" [label="(rat-den-norm ?k ?i)", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "(rat-den-norm ?k ?i)_L" -> "?e_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(rat ?i ?e)_R" [label="(rat ?i ?e)", shape=rectangle];
-    "?k_R" -> "(rat ?i ?e)_R" [label="rat-done", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-norm-done of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-norm-done.svg)
 <!-- /rule -->
 
 ### Lowest terms, on request
@@ -389,26 +189,7 @@ divisions.
   :why    "the numerator is not negative: the greatest common divisor of {?a} and {?d}")
 ```
 
-```dot
-digraph rule_rat_simplify_pos_lhs_rhs {
-  rankdir=TB;
-  label="rat-simplify-pos"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-low ?k ?d)_L" [label="(rat-low ?k ?d)", shape=rectangle];
-    "(int ?a z)_L" [label="(int ?a z)", shape=rectangle];
-    "(rat-low ?k ?d)_L" -> "(int ?a z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-g ?k pos ?a ?d)_R" [label="(rat-g ?k pos ?a ?d)", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "h1_gcd-call_R" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_gcd-call_R" -> "(rat-g ?k pos ?a ?d)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?a_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-simplify-pos of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-simplify-pos.svg)
 <!-- /rule -->
 
 #### `rat-simplify-neg`
@@ -421,26 +202,7 @@ digraph rule_rat_simplify_pos_lhs_rhs {
   :why    "the numerator is negative: the greatest common divisor of its size and {?d}")
 ```
 
-```dot
-digraph rule_rat_simplify_neg_lhs_rhs {
-  rankdir=TB;
-  label="rat-simplify-neg"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-low ?k ?d)_L" [label="(rat-low ?k ?d)", shape=rectangle];
-    "(int z (n ?b ?c))_L" [label="(int z (n ?b ?c))", shape=rectangle];
-    "(rat-low ?k ?d)_L" -> "(int z (n ?b ?c))_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-g ?k neg (n ?b ?c) ?d)_R" [label="(rat-g ?k neg (n ?b ?c) ?d)", shape=rectangle];
-    "(n ?b ?c)_R" [label="(n ?b ?c)", shape=rectangle];
-    "?d_R" [label="?d", shape=diamond];
-    "h1_gcd-call_R" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_gcd-call_R" -> "(rat-g ?k neg (n ?b ?c) ?d)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "(n ?b ?c)_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-simplify-neg of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-simplify-neg.svg)
 <!-- /rule -->
 
 #### `rat-lowest-numerator`
@@ -453,26 +215,7 @@ digraph rule_rat_simplify_neg_lhs_rhs {
   :why    "the common divisor is {?g}: divide the numerator's size, {?a}, by it")
 ```
 
-```dot
-digraph rule_rat_lowest_numerator_lhs_rhs {
-  rankdir=TB;
-  label="rat-lowest-numerator"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-g ?k ?s ?a ?d)_L" [label="(rat-g ?k ?s ?a ?d)", shape=rectangle];
-    "?g_L" [label="?g", shape=diamond];
-    "(rat-g ?k ?s ?a ?d)_L" -> "?g_L" [label="gcd-done", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-q-num ?k ?s ?d ?g)_R" [label="(rat-q-num ?k ?s ?d ?g)", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "?g_R" [label="?g", shape=diamond];
-    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_div-call_R" -> "(rat-q-num ?k ?s ?d ?g)_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule rat-lowest-numerator of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-lowest-numerator.svg)
 <!-- /rule -->
 
 #### `rat-lowest-denominator`
@@ -485,30 +228,7 @@ digraph rule_rat_lowest_numerator_lhs_rhs {
   :why    "that makes {?q}: divide the denominator, {?d}, by {?g}")
 ```
 
-```dot
-digraph rule_rat_lowest_denominator_lhs_rhs {
-  rankdir=TB;
-  label="rat-lowest-denominator"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-q-num ?k ?s ?d ?g)_L" [label="(rat-q-num ?k ?s ?d ?g)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(rat-q-num ?k ?s ?d ?g)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-q-den ?k ?s ?q)_R" [label="(rat-q-den ?k ?s ?q)", shape=rectangle];
-    "?d_R" [label="?d", shape=diamond];
-    "?g_R" [label="?g", shape=diamond];
-    "h2_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_div-call_R" -> "(rat-q-den ?k ?s ?q)_R" [label="1", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?d_R" [label="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule rat-lowest-denominator of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-lowest-denominator.svg)
 <!-- /rule -->
 
 #### `rat-lowest-pos`
@@ -521,26 +241,7 @@ digraph rule_rat_lowest_denominator_lhs_rhs {
   :why    "in lowest terms: {?q} over {?e}")
 ```
 
-```dot
-digraph rule_rat_lowest_pos_lhs_rhs {
-  rankdir=TB;
-  label="rat-lowest-pos"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-q-den ?k pos ?q)_L" [label="(rat-q-den ?k pos ?q)", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(rat-q-den ?k pos ?q)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?e_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(rat (int ?q z) ?e)_R" [label="(rat (int ?q z) ?e)", shape=rectangle];
-    "?k_R" -> "(rat (int ?q z) ?e)_R" [label="rat-done", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-lowest-pos of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-lowest-pos.svg)
 <!-- /rule -->
 
 #### `rat-lowest-neg`
@@ -553,26 +254,7 @@ digraph rule_rat_lowest_pos_lhs_rhs {
   :why    "in lowest terms: {?q} over {?e}, negative")
 ```
 
-```dot
-digraph rule_rat_lowest_neg_lhs_rhs {
-  rankdir=TB;
-  label="rat-lowest-neg"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-q-den ?k neg ?q)_L" [label="(rat-q-den ?k neg ?q)", shape=rectangle];
-    "?e_L" [label="?e", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(rat-q-den ?k neg ?q)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?e_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(rat (int z ?q) ?e)_R" [label="(rat (int z ?q) ?e)", shape=rectangle];
-    "?k_R" -> "(rat (int z ?q) ?e)_R" [label="rat-done", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-lowest-neg of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-lowest-neg.svg)
 <!-- /rule -->
 
 ### The cross products
@@ -595,38 +277,7 @@ Four products and two sums of natural numbers. A sum, a difference and a compari
   :why    "the first cross product: {?p} x {?e}")
 ```
 
-```dot
-digraph rule_rat_cross_first_lhs_rhs {
-  rankdir=TB;
-  label="rat-cross-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?d_L" [label="?d", shape=diamond];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "h1_rat-cross_L" [shape=octagon, label="rat-cross", color="#d62728", fontcolor="#d62728"];
-    "h1_rat-cross_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_rat-cross_L" -> "?p_L" [label="2", color="#d62728"];
-    "h1_rat-cross_L" -> "?n_L" [label="3", color="#d62728"];
-    "h1_rat-cross_L" -> "?d_L" [label="4", color="#d62728"];
-    "h1_rat-cross_L" -> "?q_L" [label="5", color="#d62728"];
-    "h1_rat-cross_L" -> "?m_L" [label="6", color="#d62728"];
-    "h1_rat-cross_L" -> "?e_L" [label="7", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [label="(rat-x1 ?k ?n ?d ?q ?m ?e)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h2_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_mul-call_R" -> "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?p_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?e_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-cross-first of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cross-first.svg)
 <!-- /rule -->
 
 #### `rat-cross-second`
@@ -639,26 +290,7 @@ digraph rule_rat_cross_first_lhs_rhs {
   :why    "that makes {?a}: the second, {?q} x {?d}")
 ```
 
-```dot
-digraph rule_rat_cross_second_lhs_rhs {
-  rankdir=TB;
-  label="rat-cross-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-x1 ?k ?n ?d ?q ?m ?e)_L" [label="(rat-x1 ?k ?n ?d ?q ?m ?e)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "(rat-x1 ?k ?n ?d ?q ?m ?e)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-x2 ?k ?n ?d ?m ?e ?a)_R" [label="(rat-x2 ?k ?n ?d ?m ?e ?a)", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(rat-x2 ?k ?n ?d ?m ?e ?a)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?q_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-cross-second of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cross-second.svg)
 <!-- /rule -->
 
 #### `rat-cross-plus`
@@ -671,30 +303,7 @@ digraph rule_rat_cross_second_lhs_rhs {
   :why    "that makes {?b}: the positive part is {?a} + {?b}")
 ```
 
-```dot
-digraph rule_rat_cross_plus_lhs_rhs {
-  rankdir=TB;
-  label="rat-cross-plus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-x2 ?k ?n ?d ?m ?e ?a)_L" [label="(rat-x2 ?k ?n ?d ?m ?e ?a)", shape=rectangle];
-    "?b_L" [label="?b", shape=diamond];
-    "(rat-x2 ?k ?n ?d ?m ?e ?a)_L" -> "?b_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-x3 ?k ?n ?d ?m ?e)_R" [label="(rat-x3 ?k ?n ?d ?m ?e)", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(rat-x3 ?k ?n ?d ?m ?e)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?a_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?b_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule rat-cross-plus of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cross-plus.svg)
 <!-- /rule -->
 
 #### `rat-cross-third`
@@ -707,26 +316,7 @@ digraph rule_rat_cross_plus_lhs_rhs {
   :why    "the positive part is {?s}: the third cross product, {?n} x {?e}")
 ```
 
-```dot
-digraph rule_rat_cross_third_lhs_rhs {
-  rankdir=TB;
-  label="rat-cross-third"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-x3 ?k ?n ?d ?m ?e)_L" [label="(rat-x3 ?k ?n ?d ?m ?e)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?s_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-x4 ?k ?d ?m ?s)_R" [label="(rat-x4 ?k ?d ?m ?s)", shape=rectangle];
-    "?n_R" [label="?n", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(rat-x4 ?k ?d ?m ?s)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?n_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?e_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-cross-third of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cross-third.svg)
 <!-- /rule -->
 
 #### `rat-cross-fourth`
@@ -739,26 +329,7 @@ digraph rule_rat_cross_third_lhs_rhs {
   :why    "that makes {?a}: the fourth, {?m} x {?d}")
 ```
 
-```dot
-digraph rule_rat_cross_fourth_lhs_rhs {
-  rankdir=TB;
-  label="rat-cross-fourth"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-x4 ?k ?d ?m ?s)_L" [label="(rat-x4 ?k ?d ?m ?s)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "(rat-x4 ?k ?d ?m ?s)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-x5 ?k ?s ?a)_R" [label="(rat-x5 ?k ?s ?a)", shape=rectangle];
-    "?m_R" [label="?m", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(rat-x5 ?k ?s ?a)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?m_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-cross-fourth of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cross-fourth.svg)
 <!-- /rule -->
 
 #### `rat-cross-minus`
@@ -771,30 +342,7 @@ digraph rule_rat_cross_fourth_lhs_rhs {
   :why    "that makes {?b}: the negative part is {?a} + {?b}")
 ```
 
-```dot
-digraph rule_rat_cross_minus_lhs_rhs {
-  rankdir=TB;
-  label="rat-cross-minus"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-x5 ?k ?s ?a)_L" [label="(rat-x5 ?k ?s ?a)", shape=rectangle];
-    "?b_L" [label="?b", shape=diamond];
-    "(rat-x5 ?k ?s ?a)_L" -> "?b_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-x6 ?k ?s)_R" [label="(rat-x6 ?k ?s)", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(rat-x6 ?k ?s)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?a_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?b_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule rat-cross-minus of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cross-minus.svg)
 <!-- /rule -->
 
 #### `rat-cross-end`
@@ -807,26 +355,7 @@ digraph rule_rat_cross_minus_lhs_rhs {
   :why    "the cross products make {?s} less {?t}")
 ```
 
-```dot
-digraph rule_rat_cross_end_lhs_rhs {
-  rankdir=TB;
-  label="rat-cross-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-x6 ?k ?s)_L" [label="(rat-x6 ?k ?s)", shape=rectangle];
-    "?t_L" [label="?t", shape=diamond];
-    "(rat-x6 ?k ?s)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "h1_rat-cross-is_R" [shape=octagon, label="rat-cross-is", color="#17becf", fontcolor="#17becf"];
-    "h1_rat-cross-is_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h1_rat-cross-is_R" -> "?s_R" [label="2", color="#17becf", style=dashed];
-    "h1_rat-cross-is_R" -> "?t_R" [label="3", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule rat-cross-end of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cross-end.svg)
 <!-- /rule -->
 
 ### Simplification, and negation
@@ -841,22 +370,7 @@ digraph rule_rat_cross_end_lhs_rhs {
   :why    "{?x} in lowest terms is asked: first, the rational {?x} stands for")
 ```
 
-```dot
-digraph rule_rat_simplify_ask_lhs_rhs {
-  rankdir=TB;
-  label="rat-simplify-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "h1_rat-simplify_L" [shape=octagon, label="rat-simplify", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_rat-simplify_L" -> "?x_L" [label="1", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-only (rat-simplify ?x)))_R" [label="(rat-of (rat-only (rat-simplify ?x)))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-simplify-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-simplify-ask.svg)
 <!-- /rule -->
 
 #### `rat-simplify-start`
@@ -869,32 +383,7 @@ digraph rule_rat_simplify_ask_lhs_rhs {
   :why    "{?p} less {?n}, over {?d}, in lowest terms: first the numerator, simplified")
 ```
 
-```dot
-digraph rule_rat_simplify_start_lhs_rhs {
-  rankdir=TB;
-  label="rat-simplify-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-only (rat-simplify ?x))_L" [label="(rat-only (rat-simplify ?x))", shape=rectangle];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?d_L" [label="?d", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-only (rat-simplify ?x))_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?p_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?n_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?d_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-low (rat-simplify ?x) ?d)_R" [label="(rat-low (rat-simplify ?x) ?d)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "h2_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h2_int-norm_R" -> "(rat-low (rat-simplify ?x) ?d)_R" [label="1", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-simplify-start of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-simplify-start.svg)
 <!-- /rule -->
 
 #### `rat-simplify-answer`
@@ -907,22 +396,7 @@ digraph rule_rat_simplify_start_lhs_rhs {
   :why    "{?x} is {?s}")
 ```
 
-```dot
-digraph rule_rat_simplify_answer_lhs_rhs {
-  rankdir=TB;
-  label="rat-simplify-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-simplify ?x)_L" [label="(rat-simplify ?x)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(rat-simplify ?x)_L" -> "?s_L" [label="rat-done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?x_R" -> "?s_R" [label="rat-simple-of", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  }
-}
-```
+![The rule rat-simplify-answer of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-simplify-answer.svg)
 <!-- /rule -->
 
 #### `rat-neg-ask`
@@ -935,22 +409,7 @@ digraph rule_rat_simplify_answer_lhs_rhs {
   :why    "{?x} negated is asked: first, the rational {?x} stands for")
 ```
 
-```dot
-digraph rule_rat_neg_ask_lhs_rhs {
-  rankdir=TB;
-  label="rat-neg-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "h1_rat-neg_L" [shape=octagon, label="rat-neg", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_rat-neg_L" -> "?x_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-only (rat-neg ?x)))_R" [label="(rat-of (rat-only (rat-neg ?x)))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat-of (rat-only (rat-neg ?x)))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-neg-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-neg-ask.svg)
 <!-- /rule -->
 
 #### `rat-neg-start`
@@ -963,34 +422,7 @@ digraph rule_rat_neg_ask_lhs_rhs {
   :why    "the numerator's parts change places: {?n} less {?p}, over {?d}")
 ```
 
-```dot
-digraph rule_rat_neg_start_lhs_rhs {
-  rankdir=TB;
-  label="rat-neg-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-only (rat-neg ?x))_L" [label="(rat-only (rat-neg ?x))", shape=rectangle];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?d_L" [label="?d", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-only (rat-neg ?x))_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?p_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?n_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?d_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-neg ?x)_R" [label="(rat-neg ?x)", shape=rectangle];
-    "?n_R" [label="?n", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "h2_rat-norm_R" [shape=octagon, label="rat-norm", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_rat-norm_R" -> "(rat-neg ?x)_R" [label="1", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?n_R" [label="2", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?p_R" [label="3", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?d_R" [label="4", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule rat-neg-start of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-neg-start.svg)
 <!-- /rule -->
 
 #### `rat-neg-answer`
@@ -1003,22 +435,7 @@ digraph rule_rat_neg_start_lhs_rhs {
   :why    "{?x} negated is {?s}")
 ```
 
-```dot
-digraph rule_rat_neg_answer_lhs_rhs {
-  rankdir=TB;
-  label="rat-neg-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-neg ?x)_L" [label="(rat-neg ?x)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(rat-neg ?x)_L" -> "?s_L" [label="rat-done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?x_R" -> "?s_R" [label="rat-neg-of", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule rat-neg-answer of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-neg-answer.svg)
 <!-- /rule -->
 
 ### Addition, and subtraction
@@ -1036,30 +453,7 @@ with its numerator's parts exchanged.
   :why    "the numerator is {?s} less {?t}: the denominator is {?d} x {?e}")
 ```
 
-```dot
-digraph rule_rat_sum_denominator_lhs_rhs {
-  rankdir=TB;
-  label="rat-sum-denominator"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-sum-num ?k ?d ?e)_L" [label="(rat-sum-num ?k ?d ?e)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_rat-cross-is_L" [shape=octagon, label="rat-cross-is", color="#17becf", fontcolor="#17becf"];
-    "h1_rat-cross-is_L" -> "(rat-sum-num ?k ?d ?e)_L" [label="1", color="#17becf"];
-    "h1_rat-cross-is_L" -> "?s_L" [label="2", color="#17becf"];
-    "h1_rat-cross-is_L" -> "?t_L" [label="3", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-sum-den ?k ?s ?t)_R" [label="(rat-sum-den ?k ?s ?t)", shape=rectangle];
-    "?d_R" [label="?d", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h2_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_mul-call_R" -> "(rat-sum-den ?k ?s ?t)_R" [label="1", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?d_R" [label="2", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?e_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-sum-denominator of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-sum-denominator.svg)
 <!-- /rule -->
 
 #### `rat-sum-norm`
@@ -1072,28 +466,7 @@ digraph rule_rat_sum_denominator_lhs_rhs {
   :why    "the denominator is {?f}: now the numerator, {?s} less {?t}, simplified")
 ```
 
-```dot
-digraph rule_rat_sum_norm_lhs_rhs {
-  rankdir=TB;
-  label="rat-sum-norm"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-sum-den ?k ?s ?t)_L" [label="(rat-sum-den ?k ?s ?t)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(rat-sum-den ?k ?s ?t)_L" -> "?f_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "h1_rat-norm_R" [shape=octagon, label="rat-norm", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_rat-norm_R" -> "?k_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_rat-norm_R" -> "?s_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_rat-norm_R" -> "?t_R" [label="3", color="#bcbd22", style=dashed];
-    "h1_rat-norm_R" -> "?f_R" [label="4", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule rat-sum-norm of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-sum-norm.svg)
 <!-- /rule -->
 
 #### `rat-add-ask`
@@ -1106,22 +479,7 @@ digraph rule_rat_sum_norm_lhs_rhs {
   :why    "{?x} + {?y} is asked: first, the rational {?x} stands for")
 ```
 
-```dot
-digraph rule_rat_add_ask_lhs_rhs {
-  rankdir=TB;
-  label="rat-add-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="rat-add", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-first (rat-add ?x ?y) ?y))_R" [label="(rat-of (rat-first (rat-add ?x ?y) ?y))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat-of (rat-first (rat-add ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-add-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-add-ask.svg)
 <!-- /rule -->
 
 #### `rat-add-start`
@@ -1134,40 +492,7 @@ digraph rule_rat_add_ask_lhs_rhs {
   :why    "add {?p} less {?n} over {?d} and {?q} less {?m} over {?e}: first the cross products")
 ```
 
-```dot
-digraph rule_rat_add_start_lhs_rhs {
-  rankdir=TB;
-  label="rat-add-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-second (rat-add ?x ?y) ?p ?n ?d)_L" [label="(rat-second (rat-add ?x ?y) ?p ?n ?d)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-second (rat-add ?x ?y) ?p ?n ?d)_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?q_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?m_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?e_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" [label="(rat-sum-num (rat-add ?x ?y) ?d ?e)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h2_rat-cross_R" [shape=octagon, label="rat-cross", color="#d62728", fontcolor="#d62728"];
-    "h2_rat-cross_R" -> "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" [label="1", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?p_R" [label="2", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?n_R" [label="3", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?d_R" [label="4", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?q_R" [label="5", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?m_R" [label="6", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?e_R" [label="7", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule rat-add-start of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-add-start.svg)
 <!-- /rule -->
 
 #### `rat-add-answer`
@@ -1180,26 +505,7 @@ digraph rule_rat_add_start_lhs_rhs {
   :why    "{?x} + {?y} = {?s}")
 ```
 
-```dot
-digraph rule_rat_add_answer_lhs_rhs {
-  rankdir=TB;
-  label="rat-add-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-add ?x ?y)_L" [label="(rat-add ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(rat-add ?x ?y)_L" -> "?s_L" [label="rat-done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_rat-sum-of_R" [shape=octagon, label="rat-sum-of", color="#9467bd", fontcolor="#9467bd"];
-    "h1_rat-sum-of_R" -> "?x_R" [label="1", color="#9467bd", style=dashed];
-    "h1_rat-sum-of_R" -> "?y_R" [label="2", color="#9467bd", style=dashed];
-    "h1_rat-sum-of_R" -> "?s_R" [label="3", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule rat-add-answer of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-add-answer.svg)
 <!-- /rule -->
 
 #### `rat-sub-ask`
@@ -1212,22 +518,7 @@ digraph rule_rat_add_answer_lhs_rhs {
   :why    "{?x} - {?y} is asked: first, the rational {?x} stands for")
 ```
 
-```dot
-digraph rule_rat_sub_ask_lhs_rhs {
-  rankdir=TB;
-  label="rat-sub-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="rat-sub", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-first (rat-sub ?x ?y) ?y))_R" [label="(rat-of (rat-first (rat-sub ?x ?y) ?y))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat-of (rat-first (rat-sub ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-sub-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-sub-ask.svg)
 <!-- /rule -->
 
 #### `rat-sub-start`
@@ -1240,40 +531,7 @@ digraph rule_rat_sub_ask_lhs_rhs {
   :why    "to take {?q} less {?m} over {?e} away, add {?m} less {?q} over {?e}")
 ```
 
-```dot
-digraph rule_rat_sub_start_lhs_rhs {
-  rankdir=TB;
-  label="rat-sub-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-second (rat-sub ?x ?y) ?p ?n ?d)_L" [label="(rat-second (rat-sub ?x ?y) ?p ?n ?d)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-second (rat-sub ?x ?y) ?p ?n ?d)_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?q_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?m_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?e_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-sum-num (rat-sub ?x ?y) ?d ?e)_R" [label="(rat-sum-num (rat-sub ?x ?y) ?d ?e)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h2_rat-cross_R" [shape=octagon, label="rat-cross", color="#d62728", fontcolor="#d62728"];
-    "h2_rat-cross_R" -> "(rat-sum-num (rat-sub ?x ?y) ?d ?e)_R" [label="1", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?p_R" [label="2", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?n_R" [label="3", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?d_R" [label="4", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?m_R" [label="5", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?q_R" [label="6", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?e_R" [label="7", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule rat-sub-start of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-sub-start.svg)
 <!-- /rule -->
 
 #### `rat-sub-answer`
@@ -1286,26 +544,7 @@ digraph rule_rat_sub_start_lhs_rhs {
   :why    "{?x} - {?y} = {?s}")
 ```
 
-```dot
-digraph rule_rat_sub_answer_lhs_rhs {
-  rankdir=TB;
-  label="rat-sub-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-sub ?x ?y)_L" [label="(rat-sub ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(rat-sub ?x ?y)_L" -> "?s_L" [label="rat-done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_rat-diff-of_R" [shape=octagon, label="rat-diff-of", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_rat-diff-of_R" -> "?x_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_rat-diff-of_R" -> "?y_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_rat-diff-of_R" -> "?s_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule rat-sub-answer of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-sub-answer.svg)
 <!-- /rule -->
 
 ### Comparison
@@ -1323,32 +562,7 @@ numerator, one comparison walk. Nothing is reduced for it.
   :why    "compare {?s} with {?t}")
 ```
 
-```dot
-digraph rule_rat_cmp_sides_lhs_rhs {
-  rankdir=TB;
-  label="rat-cmp-sides"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-cmp-num ?k)_L" [label="(rat-cmp-num ?k)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "?t_L" [label="?t", shape=diamond];
-    "h1_rat-cross-is_L" [shape=octagon, label="rat-cross-is", color="#17becf", fontcolor="#17becf"];
-    "h1_rat-cross-is_L" -> "(rat-cmp-num ?k)_L" [label="1", color="#17becf"];
-    "h1_rat-cross-is_L" -> "?s_L" [label="2", color="#17becf"];
-    "h1_rat-cross-is_L" -> "?t_L" [label="3", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "?t_R" [label="?t", shape=diamond];
-    "eq_R" [label="eq", shape=rectangle];
-    "h2_cmp-walk_R" [shape=octagon, label="cmp-walk", color="#9467bd", fontcolor="#9467bd"];
-    "h2_cmp-walk_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "?s_R" [label="2", color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "?t_R" [label="3", color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "eq_R" [label="4", color="#9467bd", style=dashed];
-  }
-}
-```
+![The rule rat-cmp-sides of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cmp-sides.svg)
 <!-- /rule -->
 
 #### `rat-cmp-ask`
@@ -1361,22 +575,7 @@ digraph rule_rat_cmp_sides_lhs_rhs {
   :why    "{?x} compared with {?y} is asked: first, the rational {?x} stands for")
 ```
 
-```dot
-digraph rule_rat_cmp_ask_lhs_rhs {
-  rankdir=TB;
-  label="rat-cmp-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="rat-cmp", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-first (rat-cmp ?x ?y) ?y))_R" [label="(rat-of (rat-first (rat-cmp ?x ?y) ?y))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat-of (rat-first (rat-cmp ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-cmp-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cmp-ask.svg)
 <!-- /rule -->
 
 #### `rat-cmp-start`
@@ -1389,40 +588,7 @@ digraph rule_rat_cmp_ask_lhs_rhs {
   :why    "compare {?p} less {?n} over {?d} with {?q} less {?m} over {?e}: the cross products of their difference")
 ```
 
-```dot
-digraph rule_rat_cmp_start_lhs_rhs {
-  rankdir=TB;
-  label="rat-cmp-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-second (rat-cmp ?x ?y) ?p ?n ?d)_L" [label="(rat-second (rat-cmp ?x ?y) ?p ?n ?d)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-second (rat-cmp ?x ?y) ?p ?n ?d)_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?q_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?m_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?e_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-cmp-num (rat-cmp ?x ?y))_R" [label="(rat-cmp-num (rat-cmp ?x ?y))", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h2_rat-cross_R" [shape=octagon, label="rat-cross", color="#d62728", fontcolor="#d62728"];
-    "h2_rat-cross_R" -> "(rat-cmp-num (rat-cmp ?x ?y))_R" [label="1", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?p_R" [label="2", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?n_R" [label="3", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?d_R" [label="4", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?m_R" [label="5", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?q_R" [label="6", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?e_R" [label="7", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule rat-cmp-start of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cmp-start.svg)
 <!-- /rule -->
 
 #### `rat-cmp-answer`
@@ -1435,26 +601,7 @@ digraph rule_rat_cmp_start_lhs_rhs {
   :why    "{?x} against {?y}: {?o}")
 ```
 
-```dot
-digraph rule_rat_cmp_answer_lhs_rhs {
-  rankdir=TB;
-  label="rat-cmp-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-cmp ?x ?y)_L" [label="(rat-cmp ?x ?y)", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
-    "(rat-cmp ?x ?y)_L" -> "?o_L" [label="order-is", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?o_R" [label="?o", shape=diamond];
-    "h1_rat-cmp-of_R" [shape=octagon, label="rat-cmp-of", color="#d62728", fontcolor="#d62728"];
-    "h1_rat-cmp-of_R" -> "?x_R" [label="1", color="#d62728", style=dashed];
-    "h1_rat-cmp-of_R" -> "?y_R" [label="2", color="#d62728", style=dashed];
-    "h1_rat-cmp-of_R" -> "?o_R" [label="3", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule rat-cmp-answer of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-cmp-answer.svg)
 <!-- /rule -->
 
 ### Multiplication
@@ -1471,42 +618,7 @@ The numerators' product, an integer product, over the denominators' product.
   :why    "first the numerators: {?p} less {?n}, times {?q} less {?m}")
 ```
 
-```dot
-digraph rule_rat_mul_numerator_lhs_rhs {
-  rankdir=TB;
-  label="rat-mul-numerator"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?p_L" [label="?p", shape=diamond];
-    "?n_L" [label="?n", shape=diamond];
-    "?d_L" [label="?d", shape=diamond];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "h1_rat-mul-call_L" [shape=octagon, label="rat-mul-call", color="#8c564b", fontcolor="#8c564b"];
-    "h1_rat-mul-call_L" -> "?k_L" [label="1", color="#8c564b"];
-    "h1_rat-mul-call_L" -> "?p_L" [label="2", color="#8c564b"];
-    "h1_rat-mul-call_L" -> "?n_L" [label="3", color="#8c564b"];
-    "h1_rat-mul-call_L" -> "?d_L" [label="4", color="#8c564b"];
-    "h1_rat-mul-call_L" -> "?q_L" [label="5", color="#8c564b"];
-    "h1_rat-mul-call_L" -> "?m_L" [label="6", color="#8c564b"];
-    "h1_rat-mul-call_L" -> "?e_L" [label="7", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-mul-num ?k ?d ?e)_R" [label="(rat-mul-num ?k ?d ?e)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h2_int-mul-call_R" [shape=octagon, label="int-mul-call", color="#e377c2", fontcolor="#e377c2"];
-    "h2_int-mul-call_R" -> "(rat-mul-num ?k ?d ?e)_R" [label="1", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?q_R" [label="4", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?m_R" [label="5", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-mul-numerator of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-mul-numerator.svg)
 <!-- /rule -->
 
 #### `rat-mul-denominator`
@@ -1519,26 +631,7 @@ digraph rule_rat_mul_numerator_lhs_rhs {
   :why    "the numerator is {?i}: the denominator is {?d} x {?e}")
 ```
 
-```dot
-digraph rule_rat_mul_denominator_lhs_rhs {
-  rankdir=TB;
-  label="rat-mul-denominator"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-mul-num ?k ?d ?e)_L" [label="(rat-mul-num ?k ?d ?e)", shape=rectangle];
-    "?i_L" [label="?i", shape=diamond];
-    "(rat-mul-num ?k ?d ?e)_L" -> "?i_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-mul-den ?k ?i)_R" [label="(rat-mul-den ?k ?i)", shape=rectangle];
-    "?d_R" [label="?d", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(rat-mul-den ?k ?i)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?d_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?e_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-mul-denominator of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-mul-denominator.svg)
 <!-- /rule -->
 
 #### `rat-mul-done`
@@ -1551,22 +644,7 @@ digraph rule_rat_mul_denominator_lhs_rhs {
   :why    "the denominator is {?f}: {?i} over {?f}, not reduced")
 ```
 
-```dot
-digraph rule_rat_mul_done_lhs_rhs {
-  rankdir=TB;
-  label="rat-mul-done"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-mul-den ?k ?i)_L" [label="(rat-mul-den ?k ?i)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(rat-mul-den ?k ?i)_L" -> "?f_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "(rat ?i ?f)_R" [label="(rat ?i ?f)", shape=rectangle];
-    "?k_R" -> "(rat ?i ?f)_R" [label="rat-done", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-mul-done of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-mul-done.svg)
 <!-- /rule -->
 
 #### `rat-mul-ask`
@@ -1579,22 +657,7 @@ digraph rule_rat_mul_done_lhs_rhs {
   :why    "{?x} x {?y} is asked: first, the rational {?x} stands for")
 ```
 
-```dot
-digraph rule_rat_mul_ask_lhs_rhs {
-  rankdir=TB;
-  label="rat-mul-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="rat-mul", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-first (rat-mul ?x ?y) ?y))_R" [label="(rat-of (rat-first (rat-mul ?x ?y) ?y))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat-of (rat-first (rat-mul ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-mul-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-mul-ask.svg)
 <!-- /rule -->
 
 #### `rat-mul-start`
@@ -1607,40 +670,7 @@ digraph rule_rat_mul_ask_lhs_rhs {
   :why    "multiply {?p} less {?n} over {?d} by {?q} less {?m} over {?e}")
 ```
 
-```dot
-digraph rule_rat_mul_start_lhs_rhs {
-  rankdir=TB;
-  label="rat-mul-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-second (rat-mul ?x ?y) ?p ?n ?d)_L" [label="(rat-second (rat-mul ?x ?y) ?p ?n ?d)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-second (rat-mul ?x ?y) ?p ?n ?d)_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?q_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?m_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?e_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-mul ?x ?y)_R" [label="(rat-mul ?x ?y)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "h2_rat-mul-call_R" [shape=octagon, label="rat-mul-call", color="#8c564b", fontcolor="#8c564b"];
-    "h2_rat-mul-call_R" -> "(rat-mul ?x ?y)_R" [label="1", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?p_R" [label="2", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?n_R" [label="3", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?d_R" [label="4", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?q_R" [label="5", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?m_R" [label="6", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?e_R" [label="7", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule rat-mul-start of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-mul-start.svg)
 <!-- /rule -->
 
 #### `rat-mul-answer`
@@ -1653,26 +683,7 @@ digraph rule_rat_mul_start_lhs_rhs {
   :why    "{?x} x {?y} = {?s}")
 ```
 
-```dot
-digraph rule_rat_mul_answer_lhs_rhs {
-  rankdir=TB;
-  label="rat-mul-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-mul ?x ?y)_L" [label="(rat-mul ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(rat-mul ?x ?y)_L" -> "?s_L" [label="rat-done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_rat-product-of_R" [shape=octagon, label="rat-product-of", color="#8c564b", fontcolor="#8c564b"];
-    "h1_rat-product-of_R" -> "?x_R" [label="1", color="#8c564b", style=dashed];
-    "h1_rat-product-of_R" -> "?y_R" [label="2", color="#8c564b", style=dashed];
-    "h1_rat-product-of_R" -> "?s_R" [label="3", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule rat-mul-answer of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-mul-answer.svg)
 <!-- /rule -->
 
 ### Division
@@ -1690,22 +701,7 @@ flagged.
   :why    "{?x} divided by {?y} is asked: first, the rational {?x} stands for")
 ```
 
-```dot
-digraph rule_rat_div_ask_lhs_rhs {
-  rankdir=TB;
-  label="rat-div-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="rat-div", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" [label="(rat-of (rat-first (rat-div ?x ?y) ?y))", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule rat-div-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-div-ask.svg)
 <!-- /rule -->
 
 #### `rat-div-start`
@@ -1718,32 +714,7 @@ digraph rule_rat_div_ask_lhs_rhs {
   :why    "to divide by {?q} less {?m} over {?e}: first its numerator, simplified")
 ```
 
-```dot
-digraph rule_rat_div_start_lhs_rhs {
-  rankdir=TB;
-  label="rat-div-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" [label="(rat-second (rat-div ?x ?y) ?p ?n ?d)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?m_L" [label="?m", shape=diamond];
-    "?e_L" [label="?e", shape=diamond];
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?q_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?m_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?e_L" [label="4", color="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" [label="(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)", shape=rectangle];
-    "?q_R" [label="?q", shape=diamond];
-    "?m_R" [label="?m", shape=diamond];
-    "h2_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h2_int-norm_R" -> "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" [label="1", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?q_R" [label="2", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?m_R" [label="3", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-div-start of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-div-start.svg)
 <!-- /rule -->
 
 #### `rat-div-pos`
@@ -1756,34 +727,7 @@ digraph rule_rat_div_start_lhs_rhs {
   :why    "the divisor is positive: multiply by {?e} over {?a}{?b}")
 ```
 
-```dot
-digraph rule_rat_div_pos_lhs_rhs {
-  rankdir=TB;
-  label="rat-div-pos"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-div-by ?k ?p ?n ?d ?e)_L" [label="(rat-div-by ?k ?p ?n ?d ?e)", shape=rectangle];
-    "(int (n ?a ?b) z)_L" [label="(int (n ?a ?b) z)", shape=rectangle];
-    "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "(int (n ?a ?b) z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "?e_R" [label="?e", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "(n ?a ?b)_R" [label="(n ?a ?b)", shape=rectangle];
-    "h1_rat-mul-call_R" [shape=octagon, label="rat-mul-call", color="#8c564b", fontcolor="#8c564b"];
-    "h1_rat-mul-call_R" -> "?k_R" [label="1", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?p_R" [label="2", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?n_R" [label="3", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?d_R" [label="4", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?e_R" [label="5", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "z_R" [label="6", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "(n ?a ?b)_R" [label="7", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule rat-div-pos of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-div-pos.svg)
 <!-- /rule -->
 
 #### `rat-div-neg`
@@ -1796,34 +740,7 @@ digraph rule_rat_div_pos_lhs_rhs {
   :why    "the divisor is negative: multiply by {?e} negated, over {?a}{?b}")
 ```
 
-```dot
-digraph rule_rat_div_neg_lhs_rhs {
-  rankdir=TB;
-  label="rat-div-neg"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-div-by ?k ?p ?n ?d ?e)_L" [label="(rat-div-by ?k ?p ?n ?d ?e)", shape=rectangle];
-    "(int z (n ?a ?b))_L" [label="(int z (n ?a ?b))", shape=rectangle];
-    "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "(int z (n ?a ?b))_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?p_R" [label="?p", shape=diamond];
-    "?n_R" [label="?n", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "?e_R" [label="?e", shape=diamond];
-    "(n ?a ?b)_R" [label="(n ?a ?b)", shape=rectangle];
-    "h1_rat-mul-call_R" [shape=octagon, label="rat-mul-call", color="#8c564b", fontcolor="#8c564b"];
-    "h1_rat-mul-call_R" -> "?k_R" [label="1", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?p_R" [label="2", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?n_R" [label="3", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?d_R" [label="4", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "?e_R" [label="6", color="#8c564b", style=dashed];
-    "h1_rat-mul-call_R" -> "(n ?a ?b)_R" [label="7", color="#8c564b", style=dashed];
-  }
-}
-```
+![The rule rat-div-neg of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-div-neg.svg)
 <!-- /rule -->
 
 #### `rat-div-zero`
@@ -1836,22 +753,7 @@ digraph rule_rat_div_neg_lhs_rhs {
   :why    "the divisor of {?request} is zero")
 ```
 
-```dot
-digraph rule_rat_div_zero_lhs_rhs {
-  rankdir=TB;
-  label="rat-div-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" [label="(rat-div-by ?request ?p ?n ?d ?e)", shape=rectangle];
-    "(int z z)_L" [label="(int z z)", shape=rectangle];
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "(int z z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h1_division-by-zero_R" -> "?request_R" [label="1", color="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-div-zero of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-div-zero.svg)
 <!-- /rule -->
 
 #### `rat-div-answer`
@@ -1864,26 +766,7 @@ digraph rule_rat_div_zero_lhs_rhs {
   :why    "{?x} divided by {?y} = {?s}")
 ```
 
-```dot
-digraph rule_rat_div_answer_lhs_rhs {
-  rankdir=TB;
-  label="rat-div-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-div ?x ?y)_L" [label="(rat-div ?x ?y)", shape=rectangle];
-    "?s_L" [label="?s", shape=diamond];
-    "(rat-div ?x ?y)_L" -> "?s_L" [label="rat-done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?s_R" [label="?s", shape=diamond];
-    "h1_rat-quot-of_R" [shape=octagon, label="rat-quot-of", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-quot-of_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "h1_rat-quot-of_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
-    "h1_rat-quot-of_R" -> "?s_R" [label="3", color="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-div-answer of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-div-answer.svg)
 <!-- /rule -->
 
 ### An operand's faults
@@ -1900,22 +783,7 @@ The rules that carry a fault found below from this module's tags to the request.
   :why    "the operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_rat_bad_only_lhs_rhs {
-  rankdir=TB;
-  label="rat-bad-only"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-of (rat-only ?request))_L" [label="(rat-of (rat-only ?request))", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(rat-of (rat-only ?request))_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-bad-only of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-bad-only.svg)
 <!-- /rule -->
 
 #### `rat-bad-first`
@@ -1928,22 +796,7 @@ digraph rule_rat_bad_only_lhs_rhs {
   :why    "the first operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_rat_bad_first_lhs_rhs {
-  rankdir=TB;
-  label="rat-bad-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-of (rat-first ?request ?y))_L" [label="(rat-of (rat-first ?request ?y))", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(rat-of (rat-first ?request ?y))_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-bad-first of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-bad-first.svg)
 <!-- /rule -->
 
 #### `rat-bad-second`
@@ -1956,22 +809,7 @@ digraph rule_rat_bad_first_lhs_rhs {
   :why    "the second operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_rat_bad_second_lhs_rhs {
-  rankdir=TB;
-  label="rat-bad-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat-of (rat-second ?request ?p ?n ?d))_L" [label="(rat-of (rat-second ?request ?p ?n ?d))", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(rat-of (rat-second ?request ?p ?n ?d))_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule rat-bad-second of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-bad-second.svg)
 <!-- /rule -->
 
 ### A rational's own shape
@@ -1988,25 +826,7 @@ A digit or a named constant where the integer or the denominator goes, checked w
   :why    "the digit {?x} stands where an integer goes: it is (int (n z {?x}) z)")
 ```
 
-```dot
-digraph rule_rat_z_digit_lhs_rhs {
-  rankdir=TB;
-  label="rat-z-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat ?x ?d)_L" [label="(rat ?x ?d)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(rat ?x ?d)_L" [label="1", color="#d62728"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat ?x ?d)_R" [label="(rat ?x ?d)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat ?x ?d)_R" -> "?x_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-z-digit of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-z-digit.svg)
 <!-- /rule -->
 
 #### `rat-z-zero`
@@ -2019,22 +839,7 @@ digraph rule_rat_z_digit_lhs_rhs {
   :why    "the digit 0 stands where an integer goes: zero is (int z z)")
 ```
 
-```dot
-digraph rule_rat_z_zero_lhs_rhs {
-  rankdir=TB;
-  label="rat-z-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat 0 ?d)_L" [label="(rat 0 ?d)", shape=rectangle];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(rat 0 ?d)_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat 0 ?d)_R" [label="(rat 0 ?d)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "(rat 0 ?d)_R" -> "0_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-z-zero of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-z-zero.svg)
 <!-- /rule -->
 
 #### `rat-z-named`
@@ -2047,25 +852,7 @@ digraph rule_rat_z_zero_lhs_rhs {
   :why    "the name {?x} stands where an integer goes: a name stands for a number as an operand, not inside one")
 ```
 
-```dot
-digraph rule_rat_z_named_lhs_rhs {
-  rankdir=TB;
-  label="rat-z-named"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat ?x ?d)_L" [label="(rat ?x ?d)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(rat ?x ?d)_L" [label="1", color="#d62728"];
-    "h2_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
-    "h2_named_L" -> "?x_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat ?x ?d)_R" [label="(rat ?x ?d)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat ?x ?d)_R" -> "?x_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-z-named of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-z-named.svg)
 <!-- /rule -->
 
 #### `rat-d-digit`
@@ -2078,25 +865,7 @@ digraph rule_rat_z_named_lhs_rhs {
   :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
 ```
 
-```dot
-digraph rule_rat_d_digit_lhs_rhs {
-  rankdir=TB;
-  label="rat-d-digit"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat ?i ?x)_L" [label="(rat ?i ?x)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(rat ?i ?x)_L" [label="1", color="#d62728"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat ?i ?x)_R" [label="(rat ?i ?x)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat ?i ?x)_R" -> "?x_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-d-digit of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-d-digit.svg)
 <!-- /rule -->
 
 #### `rat-d-zero`
@@ -2109,22 +878,7 @@ digraph rule_rat_d_digit_lhs_rhs {
   :why    "the digit 0 stands where a natural number goes: zero is z")
 ```
 
-```dot
-digraph rule_rat_d_zero_lhs_rhs {
-  rankdir=TB;
-  label="rat-d-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat ?i 0)_L" [label="(rat ?i 0)", shape=rectangle];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(rat ?i 0)_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat ?i 0)_R" [label="(rat ?i 0)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "(rat ?i 0)_R" -> "0_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-d-zero of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-d-zero.svg)
 <!-- /rule -->
 
 #### `rat-d-named`
@@ -2137,25 +891,7 @@ digraph rule_rat_d_zero_lhs_rhs {
   :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
 ```
 
-```dot
-digraph rule_rat_d_named_lhs_rhs {
-  rankdir=TB;
-  label="rat-d-named"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(rat ?i ?x)_L" [label="(rat ?i ?x)", shape=rectangle];
-    "?x_L" [label="?x", shape=diamond];
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(rat ?i ?x)_L" [label="1", color="#d62728"];
-    "h2_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
-    "h2_named_L" -> "?x_L" [label="1", color="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(rat ?i ?x)_R" [label="(rat ?i ?x)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(rat ?i ?x)_R" -> "?x_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule rat-d-named of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-d-named.svg)
 <!-- /rule -->
 
 #### `not-rational-is-false`
@@ -2168,20 +904,7 @@ digraph rule_rat_d_named_lhs_rhs {
   :why    "{?x} is not a rational: the program cannot hold it")
 ```
 
-```dot
-digraph rule_not_rational_is_false_lhs_rhs {
-  rankdir=TB;
-  label="not-rational-is-false"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?thing_L" [label="?thing", shape=diamond];
-    "?x_L" -> "?thing_L" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule not-rational-is-false of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.not-rational-is-false.svg)
 <!-- /rule -->
 
 ### The entry
@@ -2277,33 +1000,7 @@ is one tagged division, whose remainder goes on.
   :why    "the greatest common divisor of {?x} and {?y} is wanted: first {?x} in normal form")
 ```
 
-```dot
-digraph rule_gcd_call_first_lhs_rhs {
-  rankdir=TB;
-  label="gcd-call-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "h1_gcd-call_L" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_gcd-call_L" -> "?k_L" [label="1", color="#2ca02c"];
-    "h1_gcd-call_L" -> "?x_L" [label="2", color="#2ca02c"];
-    "h1_gcd-call_L" -> "?y_L" [label="3", color="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(gcd-norm ?k ?y)_R" [label="(gcd-norm ?k ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h2_add-walk_R" -> "(gcd-norm ?k ?y)_R" [label="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?x_R" [label="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule gcd-call-first of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-call-first.svg)
 <!-- /rule -->
 
 #### `gcd-call-second`
@@ -2316,29 +1013,7 @@ digraph rule_gcd_call_first_lhs_rhs {
   :why    "the first is {?a}: now {?y} in normal form")
 ```
 
-```dot
-digraph rule_gcd_call_second_lhs_rhs {
-  rankdir=TB;
-  label="gcd-call-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-norm ?k ?y)_L" [label="(gcd-norm ?k ?y)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "(gcd-norm ?k ?y)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(gcd-norm-of ?k ?a)_R" [label="(gcd-norm-of ?k ?a)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
-    "h1_add-walk_R" -> "(gcd-norm-of ?k ?a)_R" [label="1", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "?y_R" [label="2", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="3", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
-    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule gcd-call-second of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-call-second.svg)
 <!-- /rule -->
 
 #### `gcd-call-chain`
@@ -2351,26 +1026,7 @@ digraph rule_gcd_call_second_lhs_rhs {
   :why    "the second is {?b}: Euclid's chain on {?a} and {?b}")
 ```
 
-```dot
-digraph rule_gcd_call_chain_lhs_rhs {
-  rankdir=TB;
-  label="gcd-call-chain"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-norm-of ?k ?a)_L" [label="(gcd-norm-of ?k ?a)", shape=rectangle];
-    "?b_L" [label="?b", shape=diamond];
-    "(gcd-norm-of ?k ?a)_L" -> "?b_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "h1_gcd-chain_R" [shape=octagon, label="gcd-chain", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_gcd-chain_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_gcd-chain_R" -> "?a_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_gcd-chain_R" -> "?b_R" [label="3", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule gcd-call-chain of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-call-chain.svg)
 <!-- /rule -->
 
 #### `gcd-step`
@@ -2383,30 +1039,7 @@ digraph rule_gcd_call_chain_lhs_rhs {
   :why    "{?b}{?c} is not zero: divide {?a} by it, and the remainder is what goes on")
 ```
 
-```dot
-digraph rule_gcd_step_lhs_rhs {
-  rankdir=TB;
-  label="gcd-step"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "(n ?b ?c)_L" [label="(n ?b ?c)", shape=rectangle];
-    "h1_gcd-chain_L" [shape=octagon, label="gcd-chain", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_gcd-chain_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_gcd-chain_L" -> "?a_L" [label="2", color="#7f7f7f"];
-    "h1_gcd-chain_L" -> "(n ?b ?c)_L" [label="3", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(gcd-rem ?k (n ?b ?c))_R" [label="(gcd-rem ?k (n ?b ?c))", shape=rectangle];
-    "?a_R" [label="?a", shape=diamond];
-    "(n ?b ?c)_R" [label="(n ?b ?c)", shape=rectangle];
-    "h2_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_div-call_R" -> "(gcd-rem ?k (n ?b ?c))_R" [label="1", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(n ?b ?c)_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule gcd-step of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-step.svg)
 <!-- /rule -->
 
 #### `gcd-next`
@@ -2419,30 +1052,7 @@ digraph rule_gcd_step_lhs_rhs {
   :why    "the remainder is {?r}: now the greatest common divisor of {?b} and {?r}")
 ```
 
-```dot
-digraph rule_gcd_next_lhs_rhs {
-  rankdir=TB;
-  label="gcd-next"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-rem ?k ?b)_L" [label="(gcd-rem ?k ?b)", shape=rectangle];
-    "?q_L" [label="?q", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(gcd-rem ?k ?b)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?r_R" [label="?r", shape=diamond];
-    "h2_gcd-chain_R" [shape=octagon, label="gcd-chain", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_gcd-chain_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
-    "h2_gcd-chain_R" -> "?b_R" [label="2", color="#7f7f7f", style=dashed];
-    "h2_gcd-chain_R" -> "?r_R" [label="3", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule gcd-next of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-next.svg)
 <!-- /rule -->
 
 #### `gcd-end`
@@ -2455,26 +1065,7 @@ digraph rule_gcd_next_lhs_rhs {
   :why    "nothing is left over: the greatest common divisor is {?a}")
 ```
 
-```dot
-digraph rule_gcd_end_lhs_rhs {
-  rankdir=TB;
-  label="gcd-end"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?k_L" [label="?k", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "h1_gcd-chain_L" [shape=octagon, label="gcd-chain", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_gcd-chain_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_gcd-chain_L" -> "?a_L" [label="2", color="#7f7f7f"];
-    "h1_gcd-chain_L" -> "z_L" [label="3", color="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?k_R" [label="?k", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "?k_R" -> "?a_R" [label="gcd-done", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule gcd-end of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-end.svg)
 <!-- /rule -->
 
 ### The requests
@@ -2498,22 +1089,7 @@ and zero where the divisor is zero, which is where both operands are.
   :why    "the greatest common divisor of {?x} and {?y} is asked: first, the number {?x} stands for")
 ```
 
-```dot
-digraph rule_gcd_ask_lhs_rhs {
-  rankdir=TB;
-  label="gcd-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="gcd", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(gcd-first (gcd ?x ?y) ?y)_R" [label="(gcd-first (gcd ?x ?y) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(gcd-first (gcd ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule gcd-ask of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-ask.svg)
 <!-- /rule -->
 
 #### `lcm-ask`
@@ -2526,22 +1102,7 @@ digraph rule_gcd_ask_lhs_rhs {
   :why    "the least common multiple of {?x} and {?y} is asked: first, the number {?x} stands for")
 ```
 
-```dot
-digraph rule_lcm_ask_lhs_rhs {
-  rankdir=TB;
-  label="lcm-ask"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="lcm", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(gcd-first (lcm ?x ?y) ?y)_R" [label="(gcd-first (lcm ?x ?y) ?y)", shape=rectangle];
-    "?x_R" [label="?x", shape=diamond];
-    "(gcd-first (lcm ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule lcm-ask of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.lcm-ask.svg)
 <!-- /rule -->
 
 #### `gcd-ask-second`
@@ -2554,22 +1115,7 @@ digraph rule_lcm_ask_lhs_rhs {
   :why    "the first operand is {?u}: now the number {?y} stands for")
 ```
 
-```dot
-digraph rule_gcd_ask_second_lhs_rhs {
-  rankdir=TB;
-  label="gcd-ask-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-first ?r ?y)_L" [label="(gcd-first ?r ?y)", shape=rectangle];
-    "?u_L" [label="?u", shape=diamond];
-    "(gcd-first ?r ?y)_L" -> "?u_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(gcd-second ?r ?u)_R" [label="(gcd-second ?r ?u)", shape=rectangle];
-    "?y_R" [label="?y", shape=diamond];
-    "(gcd-second ?r ?u)_R" -> "?y_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule gcd-ask-second of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-ask-second.svg)
 <!-- /rule -->
 
 #### `gcd-start`
@@ -2582,26 +1128,7 @@ digraph rule_gcd_ask_second_lhs_rhs {
   :why    "the greatest common divisor of {?u} and {?v}")
 ```
 
-```dot
-digraph rule_gcd_start_lhs_rhs {
-  rankdir=TB;
-  label="gcd-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-second (gcd ?x ?y) ?u)_L" [label="(gcd-second (gcd ?x ?y) ?u)", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "(gcd-second (gcd ?x ?y) ?u)_L" -> "?v_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(gcd ?x ?y)_R" [label="(gcd ?x ?y)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "h1_gcd-call_R" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_gcd-call_R" -> "(gcd ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?u_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?v_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule gcd-start of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-start.svg)
 <!-- /rule -->
 
 #### `gcd-answer`
@@ -2614,26 +1141,7 @@ digraph rule_gcd_start_lhs_rhs {
   :why    "the greatest common divisor of {?x} and {?y} is {?g}")
 ```
 
-```dot
-digraph rule_gcd_answer_lhs_rhs {
-  rankdir=TB;
-  label="gcd-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd ?x ?y)_L" [label="(gcd ?x ?y)", shape=rectangle];
-    "?g_L" [label="?g", shape=diamond];
-    "(gcd ?x ?y)_L" -> "?g_L" [label="gcd-done", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?g_R" [label="?g", shape=diamond];
-    "h1_gcd-of_R" [shape=octagon, label="gcd-of", color="#17becf", fontcolor="#17becf"];
-    "h1_gcd-of_R" -> "?x_R" [label="1", color="#17becf", style=dashed];
-    "h1_gcd-of_R" -> "?y_R" [label="2", color="#17becf", style=dashed];
-    "h1_gcd-of_R" -> "?g_R" [label="3", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule gcd-answer of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-answer.svg)
 <!-- /rule -->
 
 #### `lcm-start`
@@ -2646,26 +1154,7 @@ digraph rule_gcd_answer_lhs_rhs {
   :why    "first the greatest common divisor of {?u} and {?v}")
 ```
 
-```dot
-digraph rule_lcm_start_lhs_rhs {
-  rankdir=TB;
-  label="lcm-start"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-second (lcm ?x ?y) ?u)_L" [label="(gcd-second (lcm ?x ?y) ?u)", shape=rectangle];
-    "?v_L" [label="?v", shape=diamond];
-    "(gcd-second (lcm ?x ?y) ?u)_L" -> "?v_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(lcm-g ?x ?y ?u ?v)_R" [label="(lcm-g ?x ?y ?u ?v)", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "h1_gcd-call_R" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_gcd-call_R" -> "(lcm-g ?x ?y ?u ?v)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?u_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?v_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule lcm-start of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.lcm-start.svg)
 <!-- /rule -->
 
 #### `lcm-zero`
@@ -2678,26 +1167,7 @@ digraph rule_lcm_start_lhs_rhs {
   :why    "the greatest common divisor is zero, so both are: the least common multiple of {?x} and {?y} is zero")
 ```
 
-```dot
-digraph rule_lcm_zero_lhs_rhs {
-  rankdir=TB;
-  label="lcm-zero"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(lcm-g ?x ?y ?u ?v)_L" [label="(lcm-g ?x ?y ?u ?v)", shape=rectangle];
-    "z_L" [label="z", shape=rectangle];
-    "(lcm-g ?x ?y ?u ?v)_L" -> "z_L" [label="gcd-done", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h1_lcm-of_R" [shape=octagon, label="lcm-of", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_lcm-of_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "h1_lcm-of_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
-    "h1_lcm-of_R" -> "z_R" [label="3", color="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule lcm-zero of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.lcm-zero.svg)
 <!-- /rule -->
 
 #### `lcm-product`
@@ -2710,26 +1180,7 @@ digraph rule_lcm_zero_lhs_rhs {
   :why    "the greatest common divisor is {?p}{?d}: multiply {?u} by {?v}")
 ```
 
-```dot
-digraph rule_lcm_product_lhs_rhs {
-  rankdir=TB;
-  label="lcm-product"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(lcm-g ?x ?y ?u ?v)_L" [label="(lcm-g ?x ?y ?u ?v)", shape=rectangle];
-    "(n ?p ?d)_L" [label="(n ?p ?d)", shape=rectangle];
-    "(lcm-g ?x ?y ?u ?v)_L" -> "(n ?p ?d)_L" [label="gcd-done", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(lcm-p ?x ?y (n ?p ?d))_R" [label="(lcm-p ?x ?y (n ?p ?d))", shape=rectangle];
-    "?u_R" [label="?u", shape=diamond];
-    "?v_R" [label="?v", shape=diamond];
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(lcm-p ?x ?y (n ?p ?d))_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?u_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?v_R" [label="3", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule lcm-product of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.lcm-product.svg)
 <!-- /rule -->
 
 #### `lcm-divide`
@@ -2742,26 +1193,7 @@ digraph rule_lcm_product_lhs_rhs {
   :why    "the product is {?m}: divide it by {?g}, which is not zero")
 ```
 
-```dot
-digraph rule_lcm_divide_lhs_rhs {
-  rankdir=TB;
-  label="lcm-divide"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(lcm-p ?x ?y ?g)_L" [label="(lcm-p ?x ?y ?g)", shape=rectangle];
-    "?m_L" [label="?m", shape=diamond];
-    "(lcm-p ?x ?y ?g)_L" -> "?m_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(lcm-q ?x ?y)_R" [label="(lcm-q ?x ?y)", shape=rectangle];
-    "?m_R" [label="?m", shape=diamond];
-    "?g_R" [label="?g", shape=diamond];
-    "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_div-call_R" -> "(lcm-q ?x ?y)_R" [label="1", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "?m_R" [label="2", color="#bcbd22", style=dashed];
-    "h1_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule lcm-divide of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.lcm-divide.svg)
 <!-- /rule -->
 
 #### `lcm-answer`
@@ -2774,30 +1206,7 @@ digraph rule_lcm_divide_lhs_rhs {
   :why    "the least common multiple of {?x} and {?y} is {?l}")
 ```
 
-```dot
-digraph rule_lcm_answer_lhs_rhs {
-  rankdir=TB;
-  label="lcm-answer"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(lcm-q ?x ?y)_L" [label="(lcm-q ?x ?y)", shape=rectangle];
-    "?l_L" [label="?l", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(lcm-q ?x ?y)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?l_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?y_R" [label="?y", shape=diamond];
-    "?l_R" [label="?l", shape=diamond];
-    "h2_lcm-of_R" [shape=octagon, label="lcm-of", color="#1f77b4", fontcolor="#1f77b4"];
-    "h2_lcm-of_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "h2_lcm-of_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
-    "h2_lcm-of_R" -> "?l_R" [label="3", color="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule lcm-answer of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.lcm-answer.svg)
 <!-- /rule -->
 
 ### An operand's faults
@@ -2812,22 +1221,7 @@ digraph rule_lcm_answer_lhs_rhs {
   :why    "the first operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_gcd_bad_first_lhs_rhs {
-  rankdir=TB;
-  label="gcd-bad-first"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-first ?request ?y)_L" [label="(gcd-first ?request ?y)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(gcd-first ?request ?y)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule gcd-bad-first of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-bad-first.svg)
 <!-- /rule -->
 
 #### `gcd-bad-second`
@@ -2840,22 +1234,7 @@ digraph rule_gcd_bad_first_lhs_rhs {
   :why    "the second operand of {?request} is at fault: {?f}")
 ```
 
-```dot
-digraph rule_gcd_bad_second_lhs_rhs {
-  rankdir=TB;
-  label="gcd-bad-second"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(gcd-second ?request ?u)_L" [label="(gcd-second ?request ?u)", shape=rectangle];
-    "?f_L" [label="?f", shape=diamond];
-    "(gcd-second ?request ?u)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?request_R" [label="?request", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The rule gcd-bad-second of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd-bad-second.svg)
 <!-- /rule -->
 
 ### The entry
@@ -2885,126 +1264,5 @@ above, and names the entries `decimal-arith`, `decimal` and `arith`.
   :why    "a greatest common divisor is computed and never guessed: every relation of the module is closed")
 ```
 
-```dot
-digraph rule_gcd_lhs_rhs {
-  rankdir=TB;
-  label="gcd"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "gcd_R" [label="gcd", shape=rectangle];
-    "gcd-of_R" [label="gcd-of", shape=rectangle];
-    "lcm_R" [label="lcm", shape=rectangle];
-    "lcm-of_R" [label="lcm-of", shape=rectangle];
-    "gcd-call_R" [label="gcd-call", shape=rectangle];
-    "gcd-done_R" [label="gcd-done", shape=rectangle];
-    "gcd-chain_R" [label="gcd-chain", shape=rectangle];
-    "gcd-first_R" [label="gcd-first", shape=rectangle];
-    "gcd-second_R" [label="gcd-second", shape=rectangle];
-    "gcd-norm_R" [label="gcd-norm", shape=rectangle];
-    "gcd-norm-of_R" [label="gcd-norm-of", shape=rectangle];
-    "gcd-rem_R" [label="gcd-rem", shape=rectangle];
-    "lcm-g_R" [label="lcm-g", shape=rectangle];
-    "lcm-p_R" [label="lcm-p", shape=rectangle];
-    "lcm-q_R" [label="lcm-q", shape=rectangle];
-    "gcd-rule_R" [label="gcd-rule", shape=rectangle];
-    "decimal-arith_R" [label="decimal-arith", shape=rectangle];
-    "decimal_R" [label="decimal", shape=rectangle];
-    "arith_R" [label="arith", shape=rectangle];
-    "gcd-call-first_R" [label="gcd-call-first", shape=rectangle];
-    "gcd-call-second_R" [label="gcd-call-second", shape=rectangle];
-    "gcd-call-chain_R" [label="gcd-call-chain", shape=rectangle];
-    "gcd-step_R" [label="gcd-step", shape=rectangle];
-    "gcd-next_R" [label="gcd-next", shape=rectangle];
-    "gcd-end_R" [label="gcd-end", shape=rectangle];
-    "gcd-ask_R" [label="gcd-ask", shape=rectangle];
-    "lcm-ask_R" [label="lcm-ask", shape=rectangle];
-    "gcd-ask-second_R" [label="gcd-ask-second", shape=rectangle];
-    "gcd-start_R" [label="gcd-start", shape=rectangle];
-    "gcd-answer_R" [label="gcd-answer", shape=rectangle];
-    "lcm-start_R" [label="lcm-start", shape=rectangle];
-    "lcm-zero_R" [label="lcm-zero", shape=rectangle];
-    "lcm-product_R" [label="lcm-product", shape=rectangle];
-    "lcm-divide_R" [label="lcm-divide", shape=rectangle];
-    "lcm-answer_R" [label="lcm-answer", shape=rectangle];
-    "gcd-bad-first_R" [label="gcd-bad-first", shape=rectangle];
-    "gcd-bad-second_R" [label="gcd-bad-second", shape=rectangle];
-    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h2___closed___R" -> "gcd_R" [label="1", color="#e377c2", style=dashed];
-    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h3___closed___R" -> "gcd-of_R" [label="1", color="#e377c2", style=dashed];
-    "h4___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h4___closed___R" -> "lcm_R" [label="1", color="#e377c2", style=dashed];
-    "h5___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h5___closed___R" -> "lcm-of_R" [label="1", color="#e377c2", style=dashed];
-    "h6___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h6___closed___R" -> "gcd-call_R" [label="1", color="#e377c2", style=dashed];
-    "h7___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h7___closed___R" -> "gcd-done_R" [label="1", color="#e377c2", style=dashed];
-    "h8___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h8___closed___R" -> "gcd-chain_R" [label="1", color="#e377c2", style=dashed];
-    "h9___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h9___closed___R" -> "gcd-first_R" [label="1", color="#e377c2", style=dashed];
-    "h10___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h10___closed___R" -> "gcd-second_R" [label="1", color="#e377c2", style=dashed];
-    "h11___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h11___closed___R" -> "gcd-norm_R" [label="1", color="#e377c2", style=dashed];
-    "h12___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h12___closed___R" -> "gcd-norm-of_R" [label="1", color="#e377c2", style=dashed];
-    "h13___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h13___closed___R" -> "gcd-rem_R" [label="1", color="#e377c2", style=dashed];
-    "h14___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h14___closed___R" -> "lcm-g_R" [label="1", color="#e377c2", style=dashed];
-    "h15___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h15___closed___R" -> "lcm-p_R" [label="1", color="#e377c2", style=dashed];
-    "h16___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h16___closed___R" -> "lcm-q_R" [label="1", color="#e377c2", style=dashed];
-    "h17___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h17___closed___R" -> "gcd-rule_R" [label="1", color="#e377c2", style=dashed];
-    "h18_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h18_gcd-rule_R" -> "decimal-arith_R" [label="1", color="#bcbd22", style=dashed];
-    "h19_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h19_gcd-rule_R" -> "decimal_R" [label="1", color="#bcbd22", style=dashed];
-    "h20_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h20_gcd-rule_R" -> "arith_R" [label="1", color="#bcbd22", style=dashed];
-    "h21_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h21_gcd-rule_R" -> "gcd-call-first_R" [label="1", color="#bcbd22", style=dashed];
-    "h22_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h22_gcd-rule_R" -> "gcd-call-second_R" [label="1", color="#bcbd22", style=dashed];
-    "h23_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h23_gcd-rule_R" -> "gcd-call-chain_R" [label="1", color="#bcbd22", style=dashed];
-    "h24_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h24_gcd-rule_R" -> "gcd-step_R" [label="1", color="#bcbd22", style=dashed];
-    "h25_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h25_gcd-rule_R" -> "gcd-next_R" [label="1", color="#bcbd22", style=dashed];
-    "h26_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h26_gcd-rule_R" -> "gcd-end_R" [label="1", color="#bcbd22", style=dashed];
-    "h27_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h27_gcd-rule_R" -> "gcd-ask_R" [label="1", color="#bcbd22", style=dashed];
-    "h28_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h28_gcd-rule_R" -> "lcm-ask_R" [label="1", color="#bcbd22", style=dashed];
-    "h29_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h29_gcd-rule_R" -> "gcd-ask-second_R" [label="1", color="#bcbd22", style=dashed];
-    "h30_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h30_gcd-rule_R" -> "gcd-start_R" [label="1", color="#bcbd22", style=dashed];
-    "h31_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h31_gcd-rule_R" -> "gcd-answer_R" [label="1", color="#bcbd22", style=dashed];
-    "h32_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h32_gcd-rule_R" -> "lcm-start_R" [label="1", color="#bcbd22", style=dashed];
-    "h33_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h33_gcd-rule_R" -> "lcm-zero_R" [label="1", color="#bcbd22", style=dashed];
-    "h34_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h34_gcd-rule_R" -> "lcm-product_R" [label="1", color="#bcbd22", style=dashed];
-    "h35_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h35_gcd-rule_R" -> "lcm-divide_R" [label="1", color="#bcbd22", style=dashed];
-    "h36_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h36_gcd-rule_R" -> "lcm-answer_R" [label="1", color="#bcbd22", style=dashed];
-    "h37_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h37_gcd-rule_R" -> "gcd-bad-first_R" [label="1", color="#bcbd22", style=dashed];
-    "h38_gcd-rule_R" [shape=octagon, label="gcd-rule", color="#bcbd22", fontcolor="#bcbd22"];
-    "h38_gcd-rule_R" -> "gcd-bad-second_R" [label="1", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule gcd of std.math.gcd, as the engine draws it](diagrams/13-std.math.gcd.gcd.svg)
 <!-- /rule -->

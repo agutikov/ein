@@ -1,0 +1,21 @@
+digraph rule_gcd_call_second_lhs_rhs {
+  rankdir=TB;
+  label="gcd-call-second"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(gcd-norm ?k ?y)_L" [label="(gcd-norm ?k ?y)", shape=rectangle];
+    "?a_L" [label="?a", shape=diamond];
+    "(gcd-norm ?k ?y)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(gcd-norm-of ?k ?a)_R" [label="(gcd-norm-of ?k ?a)", shape=rectangle];
+    "?y_R" [label="?y", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
+    "h1_add-walk_R" -> "(gcd-norm-of ?k ?a)_R" [label="1", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "?y_R" [label="2", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "z_R" [label="3", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+  }
+}

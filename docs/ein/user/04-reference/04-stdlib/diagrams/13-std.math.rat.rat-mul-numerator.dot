@@ -1,0 +1,34 @@
+digraph rule_rat_mul_numerator_lhs_rhs {
+  rankdir=TB;
+  label="rat-mul-numerator"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
+    "?m_L" [label="?m", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
+    "h1_rat-mul-call_L" [shape=octagon, label="rat-mul-call", color="#8c564b", fontcolor="#8c564b"];
+    "h1_rat-mul-call_L" -> "?k_L" [label="1", color="#8c564b"];
+    "h1_rat-mul-call_L" -> "?p_L" [label="2", color="#8c564b"];
+    "h1_rat-mul-call_L" -> "?n_L" [label="3", color="#8c564b"];
+    "h1_rat-mul-call_L" -> "?d_L" [label="4", color="#8c564b"];
+    "h1_rat-mul-call_L" -> "?q_L" [label="5", color="#8c564b"];
+    "h1_rat-mul-call_L" -> "?m_L" [label="6", color="#8c564b"];
+    "h1_rat-mul-call_L" -> "?e_L" [label="7", color="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-mul-num ?k ?d ?e)_R" [label="(rat-mul-num ?k ?d ?e)", shape=rectangle];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
+    "h2_int-mul-call_R" [shape=octagon, label="int-mul-call", color="#e377c2", fontcolor="#e377c2"];
+    "h2_int-mul-call_R" -> "(rat-mul-num ?k ?d ?e)_R" [label="1", color="#e377c2", style=dashed];
+    "h2_int-mul-call_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
+    "h2_int-mul-call_R" -> "?n_R" [label="3", color="#e377c2", style=dashed];
+    "h2_int-mul-call_R" -> "?q_R" [label="4", color="#e377c2", style=dashed];
+    "h2_int-mul-call_R" -> "?m_R" [label="5", color="#e377c2", style=dashed];
+  }
+}

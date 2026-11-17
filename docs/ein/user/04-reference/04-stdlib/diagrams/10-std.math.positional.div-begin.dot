@@ -1,0 +1,21 @@
+digraph rule_div_begin_lhs_rhs {
+  rankdir=TB;
+  label="div-begin"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(?DIV-DIGITS ?k ?ms)_L" [label="(?DIV-DIGITS ?k ?ms)", shape=rectangle];
+    "?t_L" [label="?t", shape=diamond];
+    "(?DIV-DIGITS ?k ?ms)_L" -> "?t_L" [label="?TOP-FIRST-IS", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?k_R" [label="?k", shape=diamond];
+    "?ms_R" [label="?ms", shape=diamond];
+    "?t_R" [label="?t", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "h1_DIV-STEP_R" [shape=octagon, label="?DIV-STEP", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_DIV-STEP_R" -> "?k_R" [label="1", color="#ff7f0e", style=dashed];
+    "h1_DIV-STEP_R" -> "?ms_R" [label="2", color="#ff7f0e", style=dashed];
+    "h1_DIV-STEP_R" -> "?t_R" [label="3", color="#ff7f0e", style=dashed];
+    "h1_DIV-STEP_R" -> "z_R" [label="4", color="#ff7f0e", style=dashed];
+    "h1_DIV-STEP_R" -> "z_R" [label="5", color="#ff7f0e", style=dashed];
+  }
+}

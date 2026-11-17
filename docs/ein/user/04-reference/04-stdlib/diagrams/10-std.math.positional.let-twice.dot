@@ -1,0 +1,17 @@
+digraph rule_let_twice_lhs_rhs {
+  rankdir=TB;
+  label="let-twice"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?x_L" [label="?x", shape=diamond];
+    "?v_L" [label="?v", shape=diamond];
+    "?w_L" [label="?w", shape=diamond];
+    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "?x_L" -> "?w_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "?v_L" -> "?w_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(?LET ?x ?v)_R" [label="(?LET ?x ?v)", shape=rectangle];
+    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_MALFORMED_R" -> "(?LET ?x ?v)_R" [label="1", color="#ff7f0e", style=dashed];
+  }
+}

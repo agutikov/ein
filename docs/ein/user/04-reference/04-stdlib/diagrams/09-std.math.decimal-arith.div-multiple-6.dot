@@ -1,0 +1,22 @@
+digraph rule_div_multiple_6_lhs_rhs {
+  rankdir=TB;
+  label="div-multiple-6"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" [label="(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)", shape=rectangle];
+    "?m5_L" [label="?m5", shape=diamond];
+    "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" -> "?m5_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" [label="(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)", shape=rectangle];
+    "?m1_R" [label="?m1", shape=diamond];
+    "6_R" [label="6", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=rectangle];
+    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_mul-walk_R" -> "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" [label="1", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "6_R" [label="3", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
+    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
+  }
+}

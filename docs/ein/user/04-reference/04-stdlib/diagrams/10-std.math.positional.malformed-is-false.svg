@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_malformed_is_false_lhs_rhs Pages: 1 -->
+<svg width="328pt" height="216pt"
+ viewBox="0.00 0.00 328.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_malformed_is_false_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 324,-211.75 324,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="160" y="-190.45" font-family="Times,serif" font-size="14.00">malformed&#45;is&#45;false</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 212,-174.5 212,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="110" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="220,-97.25 220,-174.5 312,-174.5 312,-97.25 220,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="266" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?request_L -->
+<g id="node1" class="node">
+<title>?request_L</title>
+<polygon fill="none" stroke="black" points="110,-52 32.37,-34 110,-16 187.63,-34 110,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="110" y="-29.32" font-family="Times,serif" font-size="14.00">?request</text>
+</g>
+<!-- h1_MALFORMED_L -->
+<g id="node2" class="node">
+<title>h1_MALFORMED_L</title>
+<polygon fill="none" stroke="#ff7f0e" points="204.15,-115.79 204.15,-130.71 149,-141.25 71,-141.25 15.85,-130.71 15.85,-115.79 71,-105.25 149,-105.25 204.15,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="110" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">?MALFORMED</text>
+</g>
+<!-- h1_MALFORMED_L&#45;&gt;?request_L -->
+<g id="edge1" class="edge">
+<title>h1_MALFORMED_L&#45;&gt;?request_L</title>
+<path fill="none" stroke="#ff7f0e" d="M110,-105.01C110,-93.26 110,-77.41 110,-63.77"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="113.5,-64.01 110,-54.01 106.5,-64.01 113.5,-64.01"/>
+<text xml:space="preserve" text-anchor="middle" x="114.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h2_false_R -->
+<g id="node3" class="node">
+<title>h2_false_R</title>
+<polygon fill="none" stroke="#2ca02c" points="303.77,-115.79 303.77,-130.71 281.65,-141.25 250.35,-141.25 228.23,-130.71 228.23,-115.79 250.35,-105.25 281.65,-105.25 303.77,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="266" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">false</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 3dbe47e434e186e04e6a2284d5709cd1e1370586e5b0124c1e2b2623afed4e58 -->

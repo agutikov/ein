@@ -1,0 +1,21 @@
+digraph rule_rat_norm_denominator_lhs_rhs {
+  rankdir=TB;
+  label="rat-norm-denominator"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(rat-num ?k ?d)_L" [label="(rat-num ?k ?d)", shape=rectangle];
+    "?i_L" [label="?i", shape=diamond];
+    "(rat-num ?k ?d)_L" -> "?i_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "(rat-den-norm ?k ?i)_R" [label="(rat-den-norm ?k ?i)", shape=rectangle];
+    "?d_R" [label="?d", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
+    "h1_add-walk_R" -> "(rat-den-norm ?k ?i)_R" [label="1", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "?d_R" [label="2", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "z_R" [label="3", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
+    "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+  }
+}
