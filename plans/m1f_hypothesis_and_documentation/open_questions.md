@@ -318,6 +318,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **ruled 2026-11-16: (e)**, both ops removed and what only they read deleted; the user's choice at the phase's close; **built 2026-11-16** by S1f.10.16's record as ruled (`26d0bc56`, the pages `ff63da53`): the golden's 1 322 `hyp` and `hyp+closed` lines gone, nothing else moved, and the walk's generator pass deleted with K-29 and K-30 |
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. **Built** by S1f.10.19: `pairs` everywhere, the engine's order |
 | [Q-M1f.314](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) | what the release-voice check reads, and what fails a line: the readings S1f.20.1 took where the stage file left them open | **ruled 2026-11-17 as defaulted** ([P1f.20 § The user's rulings at S1f.20.2's review](p1f.20_docs_refactor/README.md#the-users-rulings-at-s1f202s-review-2026-11-17), item 13): every doc comment of a shipped crate, tests included; every `.ein` comment; every ISO date; the folder `plans/` named alone passes; a count that falls is reported, not failed; F-, E-, W-, K- and review ids and `:why` strings not read yet; **readings revised by S1f.20.9 part C2** (the check now reads every crate comment, every project `.md`, `corpus/regressions.toml`, plan finding, followup and review ids, register cases and process paths, has no baseline and does not read itself; [its record](p1f.20_docs_refactor/s1f.20.9_the_history_sweep.md#record-part-c2-2026-11-17)) |
+| [Q-M1f.391](#q-m1f391--the-negation-of-a-negation-that-a-rule-builds) | the negation of a negation that a rule builds: a conclusion `(not ?x)` whose variable holds a stored negation stores `(not (not g))`, which the pages say is no fact and no file can write | **not ruled**; default **(a)**, the firing concludes nothing for it, as for a name (Q-M1f.128), with a `note:` at load; raised by S1f.22.1, [`analysis.md` § 4.1](p1f.22_nested_facts/analysis.md#41-q-m1f391--the-negation-of-a-negation-that-a-rule-builds). Nothing is built until it is ruled |
+| [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written) | a state file that reads back dead, through `written`: the reload states `written` for a fact a rule assembled under an arrow, and a rule over `written` fires | **not ruled**; default **(c)**, the answer-dump page, the rendering page and the file's header say so, and the engine is not changed; raised by S1f.22.1, [§ 4.2](p1f.22_nested_facts/analysis.md#42-q-m1f392--a-state-file-that-reads-back-dead-through-written) |
+| [Q-M1f.393](#q-m1f393--a-fact-held-in-a-variable-as-a-conclusion-or-a-premise) | a fact held in a variable, as a conclusion or a premise: a rule denies whatever fact a variable holds, `(not ?f)`, and can neither hold it nor ask whether it is held | **not ruled**; default **(a)**, as it is: a rule unpacks by spelling the fact's shape, and Q-M1f.351 stands; raised by S1f.22.1, [§ 4.3](p1f.22_nested_facts/analysis.md#43-q-m1f393--a-fact-held-in-a-variable-as-a-conclusion-or-a-premise) |
+| [Q-M1f.394](#q-m1f394--the-words-for-a-fact-under-an-arrow) | the words for a fact under an arrow: the three cases' names, whether a denied fact is in its negation's context, and *value* and *term* beside *fact* | **not ruled**; default **(a)** on each: *held* and *in a context*; a negation is a context; *fact* everywhere, *term* kept for the standard library's pages; raised by S1f.22.1, [§ 4.4](p1f.22_nested_facts/analysis.md#44-q-m1f394--the-words-for-a-fact-under-an-arrow) |
+| [Q-M1f.395](#q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow) | what `ein render` draws of a fact under an arrow: `kb` draws a fact that is held and nested twice, `rule` a nested pattern as one box | **not ruled**; default **(a)**, the rendering page says what the drawing leaves out and no writer changes; raised by S1f.22.1, [§ 4.5](p1f.22_nested_facts/analysis.md#45-q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow) |
+| [Q-M1f.396](#q-m1f396--where-the-explanation-stands-and-which-example-it-uses) | where the explanation of nested facts stands in `docs/ein/reasoning/`, and which example it is told on | **not ruled**; default **(a)** sections of the two pages of `01-static-ir/` and no page of its own, and **(c)** the user's example for the cases and the two rewritings beside the page's `says`; raised by S1f.22.1, [§ 4.6](p1f.22_nested_facts/analysis.md#46-q-m1f396--where-the-explanation-stands-and-which-example-it-uses) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -7302,3 +7308,84 @@ baseline, 6 743 lines in 1 041 files, is of these readings.
 7. **The check reads itself**, so its own docstring is held to the voice it enforces; its two lines of examples
    carry the escape, which were its first findings.
 
+
+### Q-M1f.391 — The negation of a negation that a rule builds
+
+**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), finding N-1 of
+[P1f.22's findings](p1f.22_nested_facts/findings.md). **Not ruled.** The programs, the commands and the options'
+costs are [`analysis.md` § 4.1](p1f.22_nested_facts/analysis.md#41-q-m1f391--the-negation-of-a-negation-that-a-rule-builds)
+and [§ 1.8](p1f.22_nested_facts/analysis.md#18-where-the-engine-is-not-consistent).
+
+A conclusion `(not ?x)` whose variable holds a stored negation, bound under an arrow of a fact such as
+`(think Alice (not (= 5 (+ 2 2))))`, stores `(not (not (= 5 (+ 2 2))))`. The knowledge-base page, the user's
+objects page and Q-M1f.113 say no such fact exists, the grammar refuses it where a file writes it, and the state
+file of a state that holds one does not load.
+
+- **(a)** nothing is concluded where `?x` holds a negation, as where it holds a name (Q-M1f.128), and the loader
+  notes where the text shows that it can. **Default.**
+- **(b)** the denial of a denial holds the fact: `(not ?x)` with `?x` the negation of `g` concludes `g`.
+- **(c)** it is a fact: the grammar, Q-M1f.113 and the knowledge-base page admit `(not (not g))`.
+- **(d)** as it is, documented.
+
+### Q-M1f.392 — A state file that reads back dead, through `written`
+
+**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), finding N-2. **Not ruled.**
+[`analysis.md` § 4.2](p1f.22_nested_facts/analysis.md#42-q-m1f392--a-state-file-that-reads-back-dead-through-written).
+
+A state file writes a derived fact as a fact, so its reload states `written` for a fact a rule assembled under an
+arrow, which the run that wrote the file did not; where a rule reads `written`, the reload can be dead. The
+answer-dump page says a reload derives no fact and no `(false)`.
+
+- **(a)** the state file marks what the state derived or committed, and the loader states no `written` for a
+  marked fact.
+- **(b)** `written` follows every held fact, derived and committed ones too.
+- **(c)** the answer-dump page, the rendering page and the file's header say it, as Q-M1f.185 says of a state
+  nested past the parser's limit; the engine is not changed. **Default.**
+
+### Q-M1f.393 — A fact held in a variable, as a conclusion or a premise
+
+**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md). **Not ruled.**
+[`analysis.md` § 4.3](p1f.22_nested_facts/analysis.md#43-q-m1f393--a-fact-held-in-a-variable-as-a-conclusion-or-a-premise).
+
+A rule unpacks a fact from under an arrow by spelling its relation and its count. It cannot conclude `?f` for a
+variable bound to a whole fact (Q-M1f.351), nor write `?f`, `(not ?f)` or `(absent ?f)` as a premise; it can
+conclude `(not ?f)`.
+
+- **(a)** as it is. **Default.**
+- **(b)** a variable is a literal of a conclusion and a premise.
+- **(c)** a variable is a premise and no conclusion.
+
+### Q-M1f.394 — The words for a fact under an arrow
+
+**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md). **Not ruled.**
+[`analysis.md` § 4.4](p1f.22_nested_facts/analysis.md#44-q-m1f394--the-words-for-a-fact-under-an-arrow), with the
+pages' words in [§ 2.5](p1f.22_nested_facts/analysis.md#25-where-the-pages-disagree-with-one-another).
+
+1. The three cases: **(a)** *held* and *in a context*, the context of a fact being the held facts that point at
+   it at any depth (**default**); **(b)** the knowledge-base page's *held* and *only pointed at*, the third case
+   unnamed.
+2. The fact a stored negation denies: **(a)** is in the negation's context, the nesting function of the
+   knowledge-base page staying as it is (**default**); **(b)** is not.
+3. *Value* and *term*: **(a)** the reasoning's and the user's pages say *fact* wherever it stands; *value* stays
+   in Q-M1f.113's title and the diagnostics; *term* stays in the standard library's pages, defined once in the
+   glossary (**default**); **(b)** *value* is the user's word and *object* the reasoning's, each page saying once
+   that they are one.
+
+### Q-M1f.395 — What `ein render` draws of a fact under an arrow
+
+**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), findings N-3 and N-4. **Not
+ruled.** [`analysis.md` § 4.5](p1f.22_nested_facts/analysis.md#45-q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow).
+
+- **(a)** the rendering page says what the drawing leaves out; no writer changes. **Default.**
+- **(b)** the node of a nested fact is filled where the knowledge base holds the fact.
+- **(c)** a view that draws the graph as the reasoning defines it.
+
+### Q-M1f.396 — Where the explanation stands, and which example it uses
+
+**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md). **Not ruled.**
+[`analysis.md` § 4.6](p1f.22_nested_facts/analysis.md#46-q-m1f396--where-the-explanation-stands-and-which-example-it-uses).
+
+- Where: **(a)** sections of `01-knowledge-base.md` and `02-rewriting-rules.md`, a sentence each on the pages of
+  `02-kb-evolution/` (**default**); **(b)** a third page of `01-static-ir/`.
+- The example: **(a)** the user's, `(think Alice (= 5 (+ 2 2)))`; **(b)** the three-house example's `says`;
+  **(c)** both (**default**).

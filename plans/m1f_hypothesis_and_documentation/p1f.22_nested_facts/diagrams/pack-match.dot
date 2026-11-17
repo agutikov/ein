@@ -1,0 +1,35 @@
+digraph pack_match {
+  rankdir=TB; nodesep=0.45; ranksep=0.8;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "think"; "Alice"; "=";
+  subgraph cluster_rule { label="the rule: its premise q, its conclusion c"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    node [shape=diamond];
+    "?a"; "?b";
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    q [xlabel="q"];
+    c [xlabel="c", style="filled,dashed"];
+  }
+  subgraph cluster_kb { label="the knowledge base"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    "+"; "5"; "2";
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    e [xlabel="e"];
+    s [xlabel="s", style=solid];
+  }
+  "=" -> q [label="1", dir=back];
+  q -> "?a" [label="2"];
+  q -> "?b" [label="3"];
+  "think" -> c [label="1", dir=back, style=dashed];
+  "Alice" -> c [label="2", dir=back, style=dashed];
+  c -> q [label="3", style=dashed];
+  "=" -> e [label="1", dir=back];
+  e -> "5" [label="2"];
+  e -> s [label="3"];
+  s -> "+" [label="1"];
+  s -> "2" [label="2"];
+  s -> "2" [label="3"];
+  edge [style=dotted, color="#1f77b4", fontcolor="#1f77b4", constraint=false, arrowhead=vee];
+  q -> e [label="m"];
+  "?a" -> "5" [label="m"];
+  "?b" -> s [label="m"];
+}

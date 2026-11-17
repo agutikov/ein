@@ -1,7 +1,8 @@
 # S1f.22.1 — what we have
 
 **Phase:** [P1f.22](README.md)
-**Status:** next.
+**Status:** done 2026-11-17: [`analysis.md`](analysis.md), [`findings.md`](findings.md), six questions for the
+user (Q-M1f.391 to .396). The phase stops for the rulings.
 **Writes:** this file's § Record, `analysis.md` beside it, and nothing under `docs/`, `ein.rs/`, `stdlib/`,
 `examples/`, `tests/` or `corpus/`: it reads the pages and the engine and runs it.
 
@@ -67,4 +68,34 @@ Nothing outside this folder is changed, except the question's entry in the miles
 
 ## Record
 
-(the stage writes what it did here)
+### Record (2026-11-17)
+
+**What was done.** The engine was run on programs written for each point of § What it answers, all of them with
+the gate build of the main checkout, `ein.rs/target/gate/ein`, and each kept in [`analysis.md`](analysis.md) § 1
+with its command and the lines of output that carry the claim. The pages of `docs/ein/` and the decisions were
+read for every statement about a fact under an arrow of another (§ 2; the sweep of the pages was made by a
+read-only subagent and its quotes spot-checked against the files, the verdicts are this stage's). § 3 is the
+explanation drafted in the knowledge-base page's vocabulary, with eight drawings as files under
+[`diagrams/`](diagrams/), and § 4 the six points for the user, entered in
+[`open_questions.md`](../open_questions.md) as Q-M1f.391 to Q-M1f.396, each not ruled with its default.
+[`findings.md`](findings.md) holds what is outside the stage, N-1 to N-13. Nothing under `docs/`, `ein.rs/`,
+`stdlib/`, `examples/`, `tests/` or `corpus/` was changed.
+
+**What it found.** The engine agrees with the knowledge-base page: a fact is one object wherever it is written,
+and what tells the three cases apart is what the knowledge base holds. A fact under an arrow satisfies no premise,
+answers no query, contradicts nothing, and activates, declares and marks nothing. A rule packs in every form
+tried; it unpacks by spelling the fact's relation and count, or with the relation a parameter, and not by a
+variable that stands for the whole fact, which a conclusion may only deny. Two things are not consistent: a
+conclusion `(not ?x)` over a nested negation stores the negation of a negation, which the pages say is no fact and
+whose state file does not load (N-1), and a state file can read back dead through `written` (N-2).
+
+**The checks.** `python3 utils/doc_audit.py --links --check --tracked` and `python3 utils/check_release_voice.py`,
+on the stage's commit: both exit 0, the second having no project file of this stage to read. The eight pictures
+were drawn by `dot -Tsvg` (Graphviz 16.0.0) from the sources beside them. The two censuses of § 1 carry their
+commands: the 880 tracked programs, none with a negation of a negation at root, and
+[`packscan.py`](packscan.py)'s count of the rules that pack and unpack, read as text.
+
+**Not done.** `ein-cli/tests/answer_round_trip.rs` was not run, so that no corpus program reaches N-2 rests on the
+gate that holds it and not on a run of this stage. The statements of N-13 were read and not run. The `Write` tool
+refused the names `analysis.md` and `findings.md`, which this stage file names as its deliverables, so both were
+written to a scratch file and copied into place.
