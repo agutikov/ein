@@ -126,3 +126,10 @@ Q-M1f.348's *Held by* names the file; `AGENTS.md`'s generated list and `utils/RE
 --workspace --no-deps`; `python3 utils/review_bundle.py --smoke`, exit 0 and its link check 0; `cargo test --profile
 gate`: `ein-ir`'s `grammar_pages`, `ein-core` whole, `ein-cli`'s `gate_steps` and `nightly_steps`;
 `python3 utils/decision_census.py --check`. No gate, by the brief.
+
+### The gate on the stage's batch (2026-11-17)
+
+**Green on `d55cae51`**: `./run_tests.sh` exit 0, 163 test binaries, none failed — the six lanes merged, the
+release-voice baseline at 0 lines, `fuzz_seeds.txt` re-blessed for 21 seeds' comments, `docs/kernel/` deleted, and
+the findings filed. The batch before it (the three perspectives) was green step by step on `5fc616d3` and
+`4a097cfb`: a fmt drift and the review bundle's anchors were fixed on the way.
