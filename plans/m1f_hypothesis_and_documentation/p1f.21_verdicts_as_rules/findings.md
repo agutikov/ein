@@ -16,7 +16,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | open |
 | [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
 | [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
-| [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | open: for S1f.21.4's item 6 |
+| [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | **ruled (a)** 2026-11-18: the row is dropped, built after S1f.22.6 |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -186,4 +186,16 @@ row speaks for one convention and not the other.
 - (c) Keep it as it is.
 
 **Leaning: (a)**, and (b) where a program wants the warning. S1f.21.4 takes it with the reserved names (its item 6).
+
+**Ruled 2026-11-18**, the user verbatim: *"V-6 (a), drop the is-a row"*. **The build** comes after S1f.22.6, which is
+running its verification on the same tree; a second build and gate beside it would share the machine with its
+nightly. It is its own change, outside S1f.21.4, in a subagent, on master. It drops:
+- `types_as_objects.rs`, and the `types` row on every surface;
+- the summary's `root.hypgen.types_as_objects`;
+- Q-M1e.12's second half. Its decision file is rewritten to the answer that stands, *the blind enumerator is
+  untyped*, and the ruling takes the next free id after S1f.22.6's;
+- every page, test and golden that names them: about twenty files outside `plans/` (`git grep -l
+  'types_as_objects\|TypesAsObjects\|a_type_bound_as_an_object'` and `git grep -l 'Q-M1e\.12'` list them).
+
+Then the gate, on its last commit.
 

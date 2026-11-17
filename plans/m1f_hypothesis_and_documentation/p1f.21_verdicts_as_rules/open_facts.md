@@ -213,7 +213,7 @@ search?*
 | a fact headed by a rule's name, `(symmetric R)`, `(total-owed seats is-a)` | the rule's instances: the **activator** binds its parameters. No name is reserved for it, and a module's rules are switched on so | `compile.rs` |
 | an obligation's guard, on the fixpoint | what the state owes, and rung 2's candidates | `obligations.rs`, `oblgen.rs` |
 | the program's names | `neq`'s free side; the blind rung's candidate objects | `predicates.rs`, `hypgen.rs` |
-| `is-a`, by its name | nothing: one line of the read-out, the types the blind rung bound as objects ([V-6](findings.md#v-6--the-read-out-reads-is-a-by-its-name)) | `types_as_objects.rs` |
+| `is-a`, by its name | nothing: one line of the read-out, the types the blind rung bound as objects; **dropped** on the user's ruling of [V-6](findings.md#v-6--the-read-out-reads-is-a-by-its-name) (a) | `types_as_objects.rs` |
 
 **From the program, not from a state:**
 - the rules' plans (the third row);
