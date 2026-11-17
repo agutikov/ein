@@ -1,7 +1,7 @@
 # S1f.22.4 — `ein render` draws every object once
 
 **Phase:** [P1f.22](README.md)
-**Status:** planned 2026-11-17; **not started**: it follows [S1f.22.3](s1f.22.3_the_negation_of_a_negation.md).
+**Status:** planned 2026-11-17; **started 2026-11-17**, [S1f.22.3](s1f.22.3_the_negation_of_a_negation.md) being done.
 **Rulings:** [Q-M1f.395](../open_questions.md#q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow) (every
 object is drawn once; a fact of three arrows is a labelled arrow only when nothing points at it) and
 [Q-M1f.398](../open_questions.md#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context)
