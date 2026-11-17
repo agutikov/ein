@@ -454,7 +454,7 @@ nothing takes it away, and the meal is paid. The owing hole of the fork is in $R
 computation that extended a parent's fixpoint would build a node other than the definition's, which is why every
 node is built from root.
 
-### 8.2 Path-independent ⇔ monotone, given cumulativity
+### 8.2 Path-independent if and only if monotone, given cumulativity
 
 Three properties of the construction, for commitments $C \subseteq C'$ and knowledge bases $X \subseteq Y$:
 

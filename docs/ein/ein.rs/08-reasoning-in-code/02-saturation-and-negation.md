@@ -1,0 +1,551 @@
+# Saturation and negation in code
+
+Six pages of the reasoning state what a firing, a fixpoint, an absence, a monotone program, a core and a claim
+are, with no word about this engine:
+[firing a rule](../../reasoning/02-kb-evolution/01-firing.md),
+[saturation](../../reasoning/02-kb-evolution/02-saturation.md),
+[absence](../../reasoning/02-kb-evolution/03-absent-and-naf.md),
+[monotone and non-monotone programs](../../reasoning/02-kb-evolution/08-monotonicity.md),
+[cores](../../reasoning/02-kb-evolution/09-cores.md) and
+[satisfiability](../../reasoning/02-kb-evolution/10-satisfiability.md). This page is their other half: for each
+notion, **where it lives** in `ein.rs`, **the algorithm** the engine uses for it, **the tests** that fail when the
+engine stops doing what the reasoning says, and **the commands** that show it. The design contracts carry the
+algorithms in full ([`03-design/06-saturation.md`](../03-design/06-saturation.md),
+[`05-matcher.md`](../03-design/05-matcher.md), [`07-search.md`](../03-design/07-search.md)); this page is the map
+from a statement of the reasoning to them.
+
+Every test below is run as its file, from the repository's root:
+
+```sh
+cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p ein-infer --test naf_semantics
+```
+
+with the crate after `-p` and the file's name after `--test`. In the commands, `ein` is the built binary.
+
+---
+
+## 1. Firing a rule
+
+The reasoning: [firing a rule](../../reasoning/02-kb-evolution/01-firing.md).
+
+### 1.1 Where it lives
+
+| notion | code |
+|---|---|
+| a value, a fact, a stored negation | [`ein-core/src/value.rs`](../../../../ein.rs/crates/ein-core/src/value.rs), [`terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs), [`facts.rs`](../../../../ein.rs/crates/ein-core/src/facts.rs): names and facts interned together, a fact a row of relation and arguments, `(not F)` a fact of `not` |
+| a knowledge base, a fork | [`ein-core/src/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs): a stack of immutable layers under one writable top ([`03-data-model.md`](../03-design/03-data-model.md)) |
+| a derivation record | [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs), `Prov`: kind, source, rule, premises, bindings in bind order, the absences, the branch |
+| an application: a rule and its activator | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs) compiles one plan per (rule, activator) pair, [`plan.rs`](../../../../ein.rs/crates/ein-infer/src/plan.rs) is the plan, [`engine.rs`](../../../../ein.rs/crates/ein-infer/src/engine.rs) the cache of plans and the record of what fired |
+| satisfaction, $K \models M\theta$ | [`ein-infer/src/match_.rs`](../../../../ein.rs/crates/ein-infer/src/match_.rs), the register matcher; `eq` and `neq` in [`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs) |
+| a firing and its effect | [`ein-infer/src/firing.rs`](../../../../ein.rs/crates/ein-infer/src/firing.rs): the conclusion instantiated, one `Prov` shared by every fact of one firing, and the key that says an identity already fired |
+| dead | [`ein-infer/src/contradiction.rs`](../../../../ein.rs/crates/ein-infer/src/contradiction.rs): `detect`, `has_contradiction`, and `contradicts` for one new fact |
+| a state's identity | [`ein-infer/src/canon.rs`](../../../../ein.rs/crates/ein-infer/src/canon.rs): the sorted fact list, never a hash of it |
+
+### 1.2 The algorithm
+
+A rule is compiled once for each activator: the activator's arguments are substituted for the parameters and
+the pattern is lowered to a plan of scan, join, guard and absent-guard steps over registers
+([`05-matcher.md` § 2](../03-design/05-matcher.md#2-from-a-rule-to-a-plan)). The matcher runs a plan and hands
+each match to a callback; the saturator turns a match into a firing, looks every conclusion up, and inserts the
+ones the knowledge base lacks with one shared derivation record
+([`06-saturation.md` § 6](../03-design/06-saturation.md#6-firing-redundancy-alternatives)). A firing whose every
+conclusion is present inserts nothing and is recorded as an alternative derivation.
+
+### 1.3 What holds it
+
+| claim | test |
+|---|---|
+| one engine, three readings, chosen by the input and never by which question was asked; a contradiction's core names the culprit | `ein-infer/tests/acceptance.rs`: `the_three_readings_agree_with_the_input`, `the_contradictions_view_is_the_verdict_explained` |
+| a satisfiable puzzle is never reported unsatisfiable, and an unsatisfiable one never solved | `ein-infer/tests/acceptance.rs`: `a_satisfiable_puzzle_is_never_unsat_and_an_unsat_one_is_never_solved` |
+| the two Zebra encodings, [`examples/zebra.ein`](../../../../examples/zebra.ein) with one generic relation and [`examples/zebra2.ein`](../../../../examples/zebra2.ein) with five, reach the same model | `ein-infer/tests/acceptance.rs`: `both_ontologies_reach_the_same_model`; `ein-cli/tests/acceptance_cli.rs`: `solve_zebra_prints_the_same_answer_through_the_generic_encoding` |
+| every route computes the R the definition gives | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
+| matching is structural, and two names are never resolved as one | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
+| nothing is retracted | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
+| a rule written once with a relation parameter fires for each relation its activators name | `ein-infer/tests/stdlib_semantics.rs`: `a_bijective_declaration_fans_out_into_the_operational_activators` |
+
+### 1.4 The drawings of the page
+
+The rule and the two knowledge bases of the reasoning page are the engine's drawings of this program, the
+second knowledge base with the rule and the first without it:
+
+```lisp
+(relation is-a T T :why "{?1} is a {?2}")
+(relation lives-in Person House :why "{?1} lives in {?2}")
+(relation next-to House House :why "{?1} is next to {?2}")
+(relation near Person House :why "{?1} lives near {?2}")
+
+(is-a Norwegian Person) (is-a House-1 House) (is-a House-2 House)
+
+(rule neighbour ()
+  :match  (and (lives-in ?p ?h) (next-to ?h ?g))
+  :assert (near ?p ?g)
+  :why    "{?p} lives in {?h}, which is next to {?g}, so {?p} lives near {?g}")
+
+(lives-in Norwegian House-1)
+(next-to House-1 House-2)
+```
+
+```sh
+ein render rule --name neighbour FILE     # the rule, its match and its conclusion
+ein render kb FILE                        # the knowledge base, saturated
+```
+
+The page shows `ein render kb`'s graph without the four declarations' own facts, which the view draws as
+`(relation)` octagons.
+
+---
+
+## 2. Saturation
+
+The reasoning: [saturation](../../reasoning/02-kb-evolution/02-saturation.md).
+
+### 2.1 Where it lives
+
+| notion | code |
+|---|---|
+| $\operatorname{sat}$, the two phases | [`ein-infer/src/saturator.rs`](../../../../ein.rs/crates/ein-infer/src/saturator.rs): `Saturator::step` returns one firing, `Saturator::saturate` runs to the fixpoint |
+| the agenda | `saturator::AGENDA`, which is `FailFirst::Pairs`; the switches `saturator::fifo` and `saturator::fail_first` exist for a test and a measurement, and no option reaches them |
+| a node continues root's saturation | `Saturator::snapshot` and `Saturator::resume` |
+| a dead node stopped at its first contradiction | `Saturator::stop_at_first_contradiction` |
+| the alive-set invariant | [`ein-infer/src/invariant.rs`](../../../../ein.rs/crates/ein-infer/src/invariant.rs): `program_names`, `rule_constants`, and `Universe::breaches`, the predicate a run can be held to |
+| negative completion | Ein rules, not engine code: `std.bijection` and `std.elim` over a relation's declared properties, `std.slots` over one generic relation, in [`stdlib/`](../../../../stdlib/) |
+
+### 2.2 The algorithm
+
+```plantuml
+@startuml
+[*] --> Closure
+Closure : fire the least positive candidate\nof the queue, in the agenda's order
+Closure --> Closure : a firing added facts:\nseed the plans that read them
+Closure --> Boundary : the queue is empty
+Boundary : judge the parked candidates whose\nwatched relations grew, in the agenda's order
+Boundary --> Closure : the first that passes\nis admitted and fires
+Boundary --> [*] : none passes: the fixpoint
+Closure --> [*] : a contradiction, where the\nsaturation stops at the first
+@enduml
+```
+
+- **The closure is semi-naive.** After a productive firing the next enqueue pass reads only the facts just
+  derived, seeding each plan whose positive premises name one of their relations; a full pass runs only where no
+  delta is known. A match is enqueued once per binding key and guard set.
+- **The queue** is a binary heap ranked by the agenda's half and then a monotone tiebreaker, which is the
+  arrival order; the **parked set** is ordered by the same tiebreaker.
+- **The boundary judges only what can have changed.** A parked candidate records when it was last judged; it is
+  judged again only where a relation one of its guards reads grew. The knowledge base only grows, so an equal
+  extent size is an equal extent.
+- **A node** takes root's snapshot (what fired, the parked set with its stamps, the tiebreaker's high-water
+  mark) and resumes over a fork of root's knowledge base, seeded with the commitment's facts.
+
+[`06-saturation.md`](../03-design/06-saturation.md) states each of these as a contract, with the events
+`park`, `admit` and `retire` ([`05-events.md`](../05-events.md)).
+
+### 2.3 What holds it
+
+| claim | test |
+|---|---|
+| saturating a fixpoint again fires nothing | `ein-infer/tests/explain_semantics.rs`: `saturation_is_idempotent` |
+| nothing is retracted: a fact enabled by a firing stays | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
+| a world with a parked match that would pass is not at its fixpoint | `ein-infer/tests/naf_semantics.rs`: `the_boundary_decides_whether_a_saturator_is_stalled` |
+| a rule with no `absent` parks nothing and never reaches the boundary | `ein-infer/tests/naf_semantics.rs`: `a_guard_free_rule_parks_nothing` |
+| within each half of the agenda, rules fire first in, first out, in their written order | `ein-infer/tests/explain_semantics.rs`: `the_agenda_is_fifo_in_the_written_order` |
+| every question and every claim of every monotone corpus program answers alike under the agenda and under the written order alone | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
+| a node saturated from root's snapshot and the same facts saturated afresh reach one state, at the boundary too | `ein-infer/tests/explain_semantics.rs`: `fork_and_direct_saturation_agree`, `fork_and_direct_agree_at_the_naf_boundary`; the saturator's unit test `a_resumed_saturation_reaches_the_same_fixpoint` |
+| an activator first derived in a node gets its rule applied in that node | `ein-infer/tests/explain_semantics.rs`: `a_runtime_derived_activator_gets_a_plan_on_a_fork` |
+| a dead node stopped at its first contradiction gives every question the answer the node run to quiescence gives | `ein-infer/tests/first_contradiction.rs`: `every_question_answers_alike_with_the_stop_and_without` |
+| a functional or injective positive excludes every other value or object; elimination forces the last survivor and says nothing while two survive | `ein-infer/tests/stdlib_semantics.rs`: `a_functional_positive_excludes_every_other_value`, `an_injective_positive_excludes_every_other_object`, `domain_elimination_forces_the_last_surviving_value`, `range_elimination_forces_the_last_surviving_object`, `domain_elimination_says_nothing_while_two_values_survive` |
+| both Zebra encodings define and use the walkthrough's rules and reach the same walkthrough | `ein-render/tests/idea08_acceptance.rs`: `the_zebra2_trace_exhibits_the_walkthrough_rules`, `the_generic_trace_exhibits_the_walkthrough_rules`, `both_encodings_reach_the_same_walkthrough` |
+| every name of the program is a candidate object | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object` |
+| no run reaches a name the program does not have, against either baseline | `ein-infer/tests/alive_invariant.rs`: `no_run_reaches_a_name_the_program_does_not_have` |
+| a program and its twin that writes the same name in a fact answer one R | `ein-infer/tests/alive_invariant.rs`: `the_pair_answers_one_region` |
+| a relation parameter bound to a fact, written or derivable, is refused at load | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused` |
+| the search interns no name the load did not | `ein-infer/tests/interning.rs`: `the_search_interns_no_names`, `a_rule_only_constant_is_interned_at_load` |
+| a dunder is a name of the program where it is written as a value, and no object | `ein-infer/tests/dunder_objects.rs`: `the_programs_names_hold_a_dunder_where_it_is_written_as_a_value`, `a_dunder_written_as_a_value_is_no_object` |
+
+The agenda's row is a sweep of the corpus: it holds the order to deciding no answer on the monotone programs
+the corpus has, not on every program the static check calls monotone.
+
+### 2.4 Commands and drawings
+
+```sh
+ein saturate FILE                 # root's saturation alone: the counts before and after, the phase timings
+ein solve FILE --trace OUT.md     # the region trace: root's derivation step by step, a drawing a step
+ein solve FILE --events OUT.jsonl # every firing, park, admit and retire, one JSON object a line
+```
+
+The derivation drawn on the reasoning page is the two steps `ein solve --trace` draws for this program, joined
+at the fact they share and with each firing labelled by its rule alone; the cores page marks its terminals:
+
+```lisp
+(relation is-a T T :why "{?1} is a {?2}")
+(relation lives-in Person House :why "{?1} lives in {?2}")
+(relation next-to House House :why "{?1} is next to {?2}")
+(relation near Person House :why "{?1} lives near {?2}")
+(relation owns Person Pet :why "{?1} owns {?2}")
+
+(is-a Norwegian Person) (is-a House-1 House) (is-a House-2 House) (is-a Fox Pet)
+
+(rule neighbour ()
+  :match  (and (lives-in ?p ?h) (next-to ?h ?g))
+  :assert (near ?p ?g)
+  :why    "{?p} lives in {?h}, which is next to {?g}, so {?p} lives near {?g}")
+
+(rule fox-keeps-away ()
+  :match  (and (owns ?p Fox) (near ?p House-2))
+  :assert (false)
+  :why    "{?p} owns the fox and lives near the second house, which cannot be")
+
+(lives-in Norwegian House-1 :source "the Norwegian lives in the first house")
+(next-to House-1 House-2 :source "the first house is next to the second")
+(owns Norwegian Fox :source "the Norwegian owns the fox")
+```
+
+Its read-out names the three stated facts as the core and `fox-keeps-away` as what refutes root.
+
+---
+
+## 3. Absence
+
+The reasoning: [absence](../../reasoning/02-kb-evolution/03-absent-and-naf.md).
+
+### 3.1 Where it lives
+
+| notion | code |
+|---|---|
+| a guard set aside | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs): every top-level `(absent …)` is lifted out of its disjunct into the plan's guards, so a plan's steps are a positive program ([`05-matcher.md` § 4](../03-design/05-matcher.md#4-predicates-and-guards)) |
+| parked, admitted, dropped | [`ein-infer/src/saturator.rs`](../../../../ein.rs/crates/ein-infer/src/saturator.rs): the parked set and the boundary's round, one admission each |
+| the absences a derivation rested on | `Prov::absent` in [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs); no walk for a core follows them ([`ein-core/src/walks.rs`](../../../../ein.rs/crates/ein-core/src/walks.rs)) |
+| a refutation resting on an `absent` | [`ein-infer/src/forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs): `check` refuses, `extendable` is the set of relations a commitment can extend, `message` the text; [`naf_deps.rs`](../../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the advisory map of which guards read what |
+| the dependency graph and its strata | [`ein-infer/src/strata.rs`](../../../../ein.rs/crates/ein-infer/src/strata.rs) |
+| the universal and the *unknown* test | the macros `forall` and `unknown` of `std.macro`, which expand to nested `(absent …)` before a rule is compiled ([`02-syntax.md`](../../user/04-reference/02-syntax.md)) |
+
+### 3.2 The algorithm
+
+The compiler splits a match into disjuncts and each disjunct into its positive steps and its guards. A match of
+the positive steps of a disjunct with guards is parked with its bindings; the boundary evaluates each guard as a
+query over the quiescent knowledge base under those bindings, variables the guard alone holds left free. A guard
+with no nested `absent` that fails is retired; one with a nested `absent` stays parked with a stamp of the sizes
+of the relations it reads, and is judged again when one of them grew. A candidate a node inherits parked from
+root keeps its stamp, so it is judged again in the node exactly where what its guard reads grew.
+
+*Forbid* runs at load, over root's compiled plans and, from its pattern, every rule with parameters whose
+activator relation a commitment can change. It computes the relations a plan writes when it reads an extendable
+relation inside an odd number of `absent`s, closed under *a plan that reads one of them positively, or is
+compiled from an activator among them, writes into the set*, and refuses each plan concluding `(false)` or a
+stored negation that reads an extendable relation inside an odd number of `absent`s, reads a relation of that
+set positively, or is compiled from an activator in it (`forbid::Cause`). The refused shape is
+[`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein).
+
+### 3.3 What holds it
+
+| claim | test |
+|---|---|
+| a guard is judged against the positive fixpoint; the rules' written order decides nothing derivable where the guarded relation is produced by a positive rule | `ein-infer/tests/naf_semantics.rs`: `the_order_does_not_decide_what_is_derivable` |
+| an unstratifiable loop converges to a supported fixpoint, and nothing is retracted | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
+| exactly one of `p` and `q` is derived on [`examples/features/07_unstratifiable.ein`](../../../../examples/features/07_unstratifiable.ein) | the corpus shape digest of its `saturate` run, `ein-render/tests/id_order_invariance.rs` |
+| a guard over a conjunction is a negated existential over its unbound variables | `ein-infer/tests/naf_semantics.rs`: `a_guard_over_a_conjunction_is_a_negated_existential` |
+| a disjunct's guards are judged at the boundary with that disjunct | `ein-infer/tests/naf_semantics.rs`: `an_or_disjuncts_guard_is_judged_on_the_boundary` |
+| a guard sees the closed extent of the relation it reads | `ein-infer/tests/naf_semantics.rs`: `a_guard_sees_the_closed_extent_of_its_watched_relation` |
+| where a guard is written decides which question it asks | `ein-infer/tests/rule_semantics.rs`: `a_binding_guard_binds_where_it_is_written` |
+| a rule's parameter is bound when its guards are judged | `ein-infer/tests/naf_semantics.rs`: `a_rule_parameter_is_in_scope_for_its_guards` |
+| `(unknown P)` admits exactly the pairs neither stored nor negated | `ein-infer/tests/naf_semantics.rs`: `unknown_admits_exactly_the_undecided_pairs` |
+| a world whose closure quiesced while a parked match would pass is not at its fixpoint | `ein-infer/tests/naf_semantics.rs`: `the_boundary_decides_whether_a_saturator_is_stalled` |
+| a `forall` that turns from failing to passing is judged again and admitted; a node and a fresh saturation agree at the boundary | `ein-infer/tests/explain_semantics.rs`: `fork_and_direct_agree_at_the_naf_boundary` |
+| a match inherited parked from root is judged again in the node exactly where what its guard reads grew | `ein-infer/tests/naf_semantics.rs`: `a_forked_candidate_is_rejudged_exactly_when_its_watched_extent_grew` |
+| an admitted firing records the absences it rested on, a free position as free, and a positive firing records none | `ein-infer/tests/naf_semantics.rs`: `a_boundary_admitted_firing_records_what_was_absent`, `a_free_position_in_a_negative_premise_is_recorded_as_free`, `a_nested_guard_records_both_levels` |
+| a refutation resting on an extendable `absent` is refused, and the line names the forms that say what was meant | `ein-infer/tests/refutation_under_absent.rs`: `the_probe_is_refused_and_the_message_names_the_replacements`, `the_written_activator_programs_are_refused` |
+| every node is root's fixpoint and its commitment, as the oracle builds it | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
+| a negative cycle is reported and the program still answered | `ein-cli/tests/strata_diagnostic.rs`: `solve_names_each_negative_cycle_and_still_answers` |
+
+The reasoning page's worked examples are the programs `naf_semantics.rs` writes inline, in the table's order.
+
+### 3.4 Commands and drawings
+
+The rule with its `absent` cluster and the saturated knowledge base of the reasoning page are
+`ein render rule --name soup-unless-allergic FILE` and `ein render kb FILE` on:
+
+```lisp
+(relation is-a     T T         :why "{?1} is a {?2}")
+(relation seats    Guest Chair :why "{?1} is seated at {?2}")
+(relation allergic Guest       :why "{?1} is allergic")
+(relation meal     Guest Food  :why "{?1} is served {?2}")
+
+(is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair) (is-a C2 Chair) (is-a Soup Food)
+
+(rule soup-unless-allergic ()
+  :match  (and (seats ?g ?c) (absent (allergic ?g)))
+  :assert (meal ?g Soup)
+  :why    "{?g} is seated and not allergic, so {?g} has the soup")
+
+(seats Ann C1)
+(seats Bob C2)
+(allergic Bob)
+```
+
+`ein solve FILE` prints a `strata` row for a program with a cycle through an `absent`, one `negative cycle` line
+a cycle with its parity ([`08-read-out.md`](../../user/04-reference/08-read-out.md)).
+
+---
+
+## 4. Monotone and non-monotone programs
+
+The reasoning: [monotone and non-monotone programs](../../reasoning/02-kb-evolution/08-monotonicity.md).
+
+### 4.1 Where it lives
+
+| notion | code |
+|---|---|
+| the static check: $D$, a read's class, a site | [`ein-infer/src/monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs): `monotone::classify` over the compiled plans, `Site`, `SiteKind`, `ReadClass`, `Monotonicity::is_monotone` |
+| fact grain | a prototype beside the engine, [`ein-infer/examples/shared/fact_grain.rs`](../../../../ein.rs/crates/ein-infer/examples/shared/fact_grain.rs), which `ein-infer/tests/region.rs` holds to the cubes; no route reads it |
+| the cube | [`ein-infer/src/region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs), the oracle: every subset of the candidates saturated as a fork of root |
+| what is refused at load | [`ein-infer/src/forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs) |
+| the detector | [`ein-infer/src/detector.rs`](../../../../ein.rs/crates/ein-infer/src/detector.rs): the static half off root's plans, the dynamic half off the nodes a run computes; `SPOT_PARENTS` is the number of one-step parents it builds for each printed state, three |
+| what a route learns from a dead node | [`ein-infer/src/known_dead.rs`](../../../../ein.rs/crates/ein-infer/src/known_dead.rs), asked only on a monotone program |
+| the static question alone | `explore::Checked` in [`ein-infer/src/explore.rs`](../../../../ein.rs/crates/ein-infer/src/explore.rs) |
+
+### 4.2 The algorithm
+
+`monotone::classify` reads root's compiled plans: it closes the candidates' relations under *a saturation plan
+that reads one concludes into the set*, classifies every read by that set and its `absent` depth, and reports a
+site for each dynamic read at non-monotone polarity and for each rule whose activator relation is in the set. It
+costs root's saturation and builds no node. A program with no site takes the routes with their licences; a
+flagged one takes the cube ([`07-search.md` § 7](../03-design/07-search.md#7-monotone-and-flagged-programs)).
+
+The detector's dynamic half reads what the run computes anyway: each node's derivation records for a guard the
+node's fixpoint now falsifies (a stale fact), and for each printed state of two commitments or more up to
+`SPOT_PARENTS` of its one-step parents, each built, the missing candidate written, saturated, and compared.
+
+### 4.3 The witnesses
+
+The reasoning page states each cause by the shape of a program; these are the corpus programs of those shapes.
+
+| cause | program |
+|---|---|
+| c1, an `absent` that concludes a positive fact | [`examples/features/07_unstratifiable.ein`](../../../../examples/features/07_unstratifiable.ein)'s `derive-p` |
+| c2, an `absent` that refutes | [`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein)'s `bad` |
+| c3, a refutation through a fact derived under an `absent` | [`examples/ein-bugs/wrong-answers/stale-naf-fork.ein`](../../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein)'s `p-and-q-clash` |
+| c4, an `absent` that takes a witness away | [`examples/lattice/08_absent_witness_hole.ein`](../../../../examples/lattice/08_absent_witness_hole.ein) |
+| c5, an obligation's trigger | [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein), [`06_friends_tables.ein`](../../../../examples/lattice/06_friends_tables.ein) with its monotone twin [`06_friends_tables_everyone_sits.ein`](../../../../examples/lattice/06_friends_tables_everyone_sits.ein) |
+| c6, an activator that applies an obligation | [`examples/lattice/09_activator_hole.ein`](../../../../examples/lattice/09_activator_hole.ein) |
+| c7, c11, an activator that hides the `absent` | no corpus program: the two written in [`ein-infer/examples/shared/written.rs`](../../../../ein.rs/crates/ein-infer/examples/shared/written.rs), `ACTIVATOR_REFUTES` and `ACTIVATOR_UNDER_ABSENT`, which `ein-infer/tests/refutation_under_absent.rs` loads |
+| c8, an even cycle through an `absent` | `07_unstratifiable.ein` and [`examples/ein-bugs/wrong-answers/f07-rules-swapped.ein`](../../../../examples/ein-bugs/wrong-answers/f07-rules-swapped.ein), the same program with its two rules in the other order |
+| c9, an odd cycle through an `absent` | [`examples/ein-bugs/d3-unsat-core.ein`](../../../../examples/ein-bugs/d3-unsat-core.ein) |
+| c10, the FIFO gap | [`examples/lattice/10_fifo_gap.ein`](../../../../examples/lattice/10_fifo_gap.ein) |
+| c12, a FIFO race over a static read | [`examples/lattice/11_fifo_gap_static.ein`](../../../../examples/lattice/11_fifo_gap_static.ein) |
+| a chain of activators that first appears at a node | [`examples/ein-bugs/wrong-answers/forbid-chain-1.ein`](../../../../examples/ein-bugs/wrong-answers/forbid-chain-1.ein) and its siblings |
+| what is no site | [`examples/zebra2.ein`](../../../../examples/zebra2.ein)'s spatial reads; `total-owed`'s witness in [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein); a stored negative of a hypothesised relation in [`examples/ein-bugs/complete-records-stale.ein`](../../../../examples/ein-bugs/complete-records-stale.ein) |
+| the one-fact test misreads the lines | [`examples/lattice/synth/local_not_global.ein`](../../../../examples/lattice/synth/local_not_global.ein) |
+| the duality fails with no hole | [`examples/lattice/synth/maximal_not_top.ein`](../../../../examples/lattice/synth/maximal_not_top.ein) |
+
+### 4.4 What holds it
+
+| claim | test |
+|---|---|
+| a program written for a target region has that region, node for node, and the static check calls it monotone exactly when the target is | `ein-infer/tests/region.rs`: `every_synthetic_program_has_the_region_it_was_written_for` |
+| `ein solve FILE --monotone` answers from root's fixpoint and the static check, and describes no region | `ein-cli/tests/region_modes.rs`: `the_monotone_question_is_about_the_program` |
+| the theorem on the cube: a program the check calls monotone shows no violation of either upward closure; the non-monotone witnesses are flagged, each for its cause | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
+| a *monotone* verdict beside a cube violation fails, on every corpus program and regression witness within the oracle's limit | `ein-infer/tests/region.rs`: `fact_grain_never_calls_a_violated_cube_monotone` |
+| the check reads at relation grain: a program whose dynamic reads no commitment can match is flagged all the same | `ein-infer/tests/region.rs`: `fact_grain_on_programs_written_to_test_it` |
+| fact grain calls no violated cube monotone, and leaves the set only where no commitment can match a read | `ein-infer/tests/region.rs`: `fact_grain_never_calls_a_violated_cube_monotone`, `fact_grain_on_programs_written_to_test_it` |
+| a *monotone* verdict is one state per node by fork and by every split from a fixpoint that holds root's, with no stale fact; from scratch it departs on `11_fifo_gap_static`'s `{b}` alone | `ein-infer/tests/detector.rs`: `a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`, `a_monotone_verdict_is_one_state_per_node_on_random_programs` |
+| zebra2's `absent`s read static relations, so the check calls it monotone | `ein-infer/tests/region.rs`: `zebra2_is_monotone_by_construction` |
+| an obligation's witness `absent` is no site | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
+| one witness per cause, each its program's only site, with the hole its cause makes; an activator hides the refutation's `absent` from root's rules | `ein-infer/tests/region.rs`: `each_cause_has_a_fixture_whose_cube_shows_its_hole` |
+| without holes the minimal and maximal lines are E's and N's, and across a dead hole the N side fails | `ein-infer/tests/region.rs`: `the_duality_holds_without_holes_and_fails_on_the_hole` |
+| across a hole the one-fact test misreads the lines | `ein-infer/tests/region.rs`: `across_a_hole_the_one_fact_test_misreads_the_lines` |
+| on a monotone cube saturation is a closure operator, and on a flagged program written for the test it is not | `ein-infer/tests/region.rs`: `a_monotone_verdict_makes_saturation_a_closure_operator` |
+| a death that rests on no `absent` over an extendable relation, the activator of each rule followed, is dead in every superset, and read off premises alone it is not | `ein-infer/tests/region.rs`: `an_untainted_death_is_dead_in_every_superset` |
+| what an alive state denies is dead above it on every monotone cube, and a flagged program spends no denial | `ein-infer/tests/known_dead.rs`: `what_an_alive_node_denies_is_dead_above_it_on_every_monotone_cube`, `a_flagged_program_spends_no_denial` |
+| a one-step parent path reaches another state on `lattice/08` and `lattice/10_fifo_gap`, and on no node of `lattice/04` or `lattice/09` the spot check reads | `ein-infer/tests/detector.rs`: `the_spot_check_reads_three_parents_of_each_printed_state` |
+| `lattice/10_fifo_gap`'s `{a, b}` holds a stale `p` and is in R; `features/07`'s `{(q one)}` and `stale-naf-fork`'s dead `{(q one)}` hold one | `ein-infer/tests/detector.rs`: `the_stale_check_reads_every_node_the_run_computes` |
+| the rule order of `features/07` moves its universe | no test states it: a known wrong answer on a flagged program, whose answer the engine claims nothing of; `ein-render/tests/golden/corpus_shapes.md5` digests both programs' read-outs, so either one moving changes the golden |
+| *forbid* refuses exactly the corpus programs and regression witnesses it names, and the written programs whose activator hides the `absent`; its message names what to write instead | `ein-infer/tests/refutation_under_absent.rs`: `the_refused_set_is_exactly_these`, `the_written_activator_programs_are_refused`, `the_probe_is_refused_and_the_message_names_the_replacements` |
+| the static half is empty on every monotone corpus program, and names each site's stake, each cycle with its parity and each order finding on a flagged one | `ein-infer/tests/detector.rs`: `the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one`, `each_site_names_what_it_concludes_and_puts_at_stake`, `a_cycle_through_an_absent_is_found_with_its_parity`, `the_order_check_finds_every_fifo_race` |
+| the status names the sites its violations are attributed to, and *not known* where the run did not read the cube | `ein-infer/tests/detector.rs`: `the_status_names_the_sites_its_violations_are_attributed_to` |
+| every route on a flagged program gives the oracle's R, and every mode agrees with it | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
+| a line mode past the limit certifies what describe certifies | `ein-render/tests/line_modes_past_the_limit.rs`: `past_the_limit_a_line_mode_certifies_what_describe_does` |
+
+### 4.5 Commands and drawings
+
+```sh
+ein solve FILE --monotone          # the static check alone, on root's fixpoint: the sites, cycles and order findings
+ein oracle FILE --dump DIR         # the cube: every node classified, as region.json and region.md
+ein render region DIR              # the cube drawn; --visited and --answer overlay a solve run's dumps
+```
+
+The detector's rows in the read-out are the `lattice` block of
+[`08-read-out.md`](../../user/04-reference/08-read-out.md), and the cube's files are
+[`11-region-dump.md`](../../user/04-reference/11-region-dump.md).
+
+**The images under the reasoning page's `diagrams/`.** Six of the seven are re-drawn with one command, from the
+repository's root with `ein` on `PATH`:
+
+```sh
+for p in branching/15_lookahead_two_step_on lattice/05_owed_seats_bounded lattice/synth/merged_states \
+         lattice/08_absent_witness_hole lattice/04_obligation_trigger_hole lattice/09_activator_hole; do
+  f=examples/$p.ein; o=$(mktemp -d); d=docs/ein/reasoning/02-kb-evolution/diagrams/monotonicity_$(basename $p)
+  ein oracle $f --dump $o/cube > /dev/null && ein solve $f --dump-lattice $o/lattice --dump-answer $o/answer > /dev/null &&
+  ein render region $o/cube --visited $o/lattice --answer $o/answer > $d.dot && dot -Tsvg $d.dot -o $d.svg && rm -r $o
+done
+```
+
+| image | program |
+|---|---|
+| `monotonicity_15_lookahead_two_step_on` | [`examples/branching/15_lookahead_two_step_on.ein`](../../../../examples/branching/15_lookahead_two_step_on.ein) |
+| `monotonicity_05_owed_seats_bounded` | [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein) |
+| `monotonicity_merged_states` | [`examples/lattice/synth/merged_states.ein`](../../../../examples/lattice/synth/merged_states.ein) |
+| `monotonicity_08_absent_witness_hole` | [`examples/lattice/08_absent_witness_hole.ein`](../../../../examples/lattice/08_absent_witness_hole.ein) |
+| `monotonicity_04_obligation_trigger_hole` | [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein) |
+| `monotonicity_09_activator_hole` | [`examples/lattice/09_activator_hole.ein`](../../../../examples/lattice/09_activator_hole.ein) |
+| `monotonicity_three_components` | [`examples/lattice/synth/three_components.ein`](../../../../examples/lattice/synth/three_components.ein), which *forbid* refuses: `ein oracle` builds no cube of it, and the image is its cube with the refusal set aside, kept as it was drawn |
+
+**The two cubes in the page's § 6** are `ein oracle FILE --dump DIR` and `ein render region DIR` with no run
+overlaid, shown without the legend, the tooltips and the file's path. The non-monotone one is
+`examples/lattice/04_obligation_trigger_hole.ein`. The monotone one is this program, whose two rules the
+satisfiability page draws with `ein render rule`:
+
+```lisp
+(relation is-a   T T         :why "{?1} is a {?2}")
+(relation seats  Guest Chair :why "{?1} is seated at {?2}")
+
+(is-a Ann Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(rule guest-owes-seat ()
+  :match  (and (is-a ?g Guest) (absent (seats ?g ?c)))
+  :assert (open seats)
+  :why    "{?g} is a guest with no seat, so a seat is owed")
+
+(rule one-seat ()
+  :match  (and (seats ?g ?c) (seats ?g ?d) (neq ?c ?d))
+  :assert (false)
+  :why    "{?g} is seated at {?c} and at {?d}, which cannot be")
+
+(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why "guess that {?g} is seated at {?c}")
+
+(query :goal (seats ?g ?c))
+```
+
+---
+
+## 5. Cores
+
+The reasoning: [cores](../../reasoning/02-kb-evolution/09-cores.md).
+
+### 5.1 Where it lives
+
+| notion | code |
+|---|---|
+| the records of a fact, primary and alternatives | [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs) and the per-knowledge-base table in [`kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs), `Kb::record_justification` |
+| what a derivation rests on: premises, a universal's facts, a node's activator | [`ein-core/src/walks.rs`](../../../../ein.rs/crates/ein-core/src/walks.rs) |
+| a core | [`ein-infer/src/explain.rs`](../../../../ein.rs/crates/ein-infer/src/explain.rs): the label search, `ExplanationBudget` |
+| which cores a run takes | `region::Cores` in [`ein-infer/src/region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs) |
+| keeping the first derivation alone | `(config :record-alternative-justifications false)` ([`06-config.md`](../../user/04-reference/06-config.md)), the one option that may change a core |
+
+### 5.2 The algorithm
+
+The search computes, for each fact reachable from the contradiction, a **label**: the smallest sets of terminals
+it follows from, over every derivation the store holds for it, by a least fixpoint from the terminals up, so a
+cycle of derivations costs nothing. A derivation's label is the pairwise union of its premises' labels; a fact's
+is the smallest of its derivations'. The store keeps a bounded list of derivations a fact, those with the fewest
+premises and beside them the arrival with the smallest closure. The budget has four caps, the environments kept
+per label, the rounds, the largest environment and the largest premise closure
+(`ExplanationBudget`'s `max_environments`, `max_rounds`, `max_env_size`, `max_facts`), and a core carries its
+status: `within-budget`, or `cut-` and the caps its search stopped at
+([`07-search.md` § 6](../03-design/07-search.md#6-cores-and-explanations)). In the JSON a node that is not dead
+has `null` for its core and a dead node with the empty core `[]`.
+
+### 5.3 What holds it
+
+| claim | test |
+|---|---|
+| every core a run prints names a fact of its commitment and, with root, derives its contradiction; `refuted by` names its derivation's last step | `ein-infer/tests/corpus_cores.rs`: `every_core_names_its_commitment_and_derives_its_contradiction` |
+| a rule with no premise refutes root with the empty core | `ein-infer/tests/corpus_cores.rs`: `a_rule_with_no_premise_refutes_root_with_the_empty_core` |
+| a node that is not dead has no core | `ein-cli/tests/answer_round_trip.rs`: its `no_core_unless_dead` check, in `every_state_file_reloads_to_its_own_facts_by_value_0` to `_7`, over every corpus dump |
+| no core is printed unqualified from a cut search | `ein-infer/tests/corpus_cores.rs`: `no_core_is_printed_unqualified_from_a_cut_search` |
+| every budget cap stays sound and reports itself, each by name | `ein-infer/tests/explain_semantics.rs`: `every_budget_cap_stays_sound_and_reports_itself`, `each_cap_a_search_stops_at_is_named` |
+| the search finds a saving between two facts that a per-fact choice misses | `ein-infer/tests/explain_semantics.rs`: `the_search_finds_a_shared_optimum_a_greedy_pick_would_miss` |
+| the search terminates on a cyclic graph and grounds out on givens | `ein-infer/tests/explain_semantics.rs`: `the_search_terminates_and_grounds_out_on_a_cyclic_justification_graph` |
+| a given explains itself; a consistent world and an underivable fact explain to nothing | `ein-infer/tests/explain_semantics.rs`: `a_given_explains_itself`, `a_consistent_kb_and_an_underivable_target_explain_to_nothing` |
+| a full list keeps the smallest-closure arrival, and a pair's two sides report one core | `ein-infer/tests/explain_semantics.rs`: `a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core` |
+| a bounded store can hide a smaller core: a saving between two facts behind a full list is refused | `ein-infer/tests/explain_semantics.rs`: `a_saving_between_two_facts_behind_a_full_list_is_still_refused` |
+| a core follows an activator only a node derives, and covers both sides of a pair and what a `forall` read | `ein-infer/tests/region.rs`: `a_dead_nodes_core_follows_an_activator_only_a_node_derives`, `a_contradictions_core_covers_both_sides_and_what_a_forall_read` |
+| the core is the one option-sensitive output: every line of every mode is the same under every flag but the core's under `:record-alternative-justifications` | `ein-cli/tests/lever_invariance.rs`: `no_config_flag_moves_a_line_of_any_mode`, `the_core_exemption_is_one_flag_and_the_core_rows` |
+| every question and claim answers alike under two orders, a core held as a valid explanation | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
+| a run that prints no core takes none and answers alike | `ein-infer/tests/explore.rs`: `a_run_that_prints_no_core_takes_none_and_answers_alike` |
+| a member of N's core is the one an eager run takes | `ein-cli/tests/answer_round_trip.rs`: its `eager_cores` check, in the same tests |
+| a dead root's core names the injected clue, with its `:source` | `ein-infer/tests/acceptance.rs`: `the_contradictions_view_is_the_verdict_explained`, `the_injected_clash_carries_the_source_that_names_it` |
+
+### 5.4 Commands
+
+```sh
+ein solve FILE                      # a dead root: the rows `unsat core`, `source`, `refuted by`
+ein solve FILE --trace OUT.md       # N, each minimal dead set with its core and what refutes it
+ein solve FILE --dump-answer DIR    # the members of N with their cores, as files
+ein solve FILE --dump-lattice DIR   # every node the run visited, a dead one with its core
+```
+
+---
+
+## 6. Satisfiability
+
+The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiability.md).
+
+### 6.1 Where it lives
+
+| notion | code |
+|---|---|
+| what a state owes | [`ein-infer/src/obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): `tally`, one pass over a quiescent knowledge base, its result `Owes`, a tally on the node and never a fact |
+| a claim and its outcome | [`ein-infer/src/claim.rs`](../../../../ein.rs/crates/ein-infer/src/claim.rs) compares, [`expect.rs`](../../../../ein.rs/crates/ein-infer/src/expect.rs) is the outcome and its report, [`ein-cli/src/test.rs`](../../../../ein.rs/crates/ein-cli/src/test.rs) the runner and its exit codes |
+| a goal's rows over a state | [`ein-infer/src/verdict.rs`](../../../../ein.rs/crates/ein-infer/src/verdict.rs) |
+| the branch on an owed instance | [`ein-infer/src/tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs), the obligation tree, under the licences of [`07-search.md` § 3](../03-design/07-search.md#3-the-licences) |
+| what the universe leaves out | [`ein-infer/src/scope.rs`](../../../../ein.rs/crates/ein-infer/src/scope.rs) |
+| the determining key | [`ein-render/src/models.rs`](../../../../ein.rs/crates/ein-render/src/models.rs) |
+
+### 6.2 The algorithm
+
+An obligation rule is compiled like any other and kept out of the agenda. After a node's fixpoint the pass runs
+each obligation plan once and counts its matches; the event is `owe`
+([`06-saturation.md` § 6.3](../03-design/06-saturation.md#63-obligations)).
+
+`ein test` asks a file the least question that decides the claims it states, and reads every claim off that
+run: **held**, **FAILED**, or **NOT CHECKED**. A failed claim exits 1, and so does one not checked, except under
+`--no-search`, where a claim root does not decide moves no exit code
+([`05-cli.md`](../../user/04-reference/05-cli.md)). A claim is written `:expect`, on a `(query …)` or on the
+`(solve …)` form.
+
+The key is a minimum hitting set over the pairs of listed states, searched within a budget on the pair table
+and declined with the reason past it. The count of what a listed state leaves open is the leftover probe,
+`EIN_LEFTOVER=1`, read on a copy of the state ([`06-config.md`](../../user/04-reference/06-config.md)).
+
+The program of the reasoning page's § 5 is
+[`examples/ein-bugs/wrong-answers/uncovered.ein`](../../../../examples/ein-bugs/wrong-answers/uncovered.ein), and
+[`uncovered-knows.ein`](../../../../examples/ein-bugs/wrong-answers/uncovered-knows.ein) is the same program with
+`(knows Ann Bob)` added; its read-out's `outside` row is the sentence that names the relation. The neighbours of
+its § 2.3 are in the catalogue:
+[answer set programming](../../../lib/02-solvers-csp-sat-smt.md#answer-set-programming-asp) and
+[clingo](../../../lib/02-solvers-csp-sat-smt.md#clingo),
+[Alloy](../../../lib/03-theorem-proving-formal-methods.md#alloy),
+[Z3](../../../lib/02-solvers-csp-sat-smt.md#z3). Ein's analogue of Alloy's scope is `--region-budget`.
+
+### 6.3 What holds it
+
+| claim | test |
+|---|---|
+| an obligation rule derives nothing and never reaches the firing stream; a state that owes is not a solution | `ein-infer/tests/obligation_reports.rs`: `an_obligation_rule_never_reaches_the_firing_stream`, `a_state_that_owes_is_open_and_not_a_solution` |
+| no option, lever or flag changes what is derived or which states are in R | `ein-cli/tests/lever_invariance.rs`: `every_declared_lever_cell_moves_no_line_of_any_mode` |
+| no order of the search, interning order or number of workers moves an answer | `ein-infer/tests/explore.rs`: `every_order_of_the_tree_is_the_oracle`; `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`; `ein-render/tests/jobs_invariance.rs`: `jobs_does_not_move_any_observable` |
+| naming a relation closes it in every state a claim lists | `ein-infer/tests/claim_semantics.rs`: `naming_a_relation_closes_it_in_every_model` |
+| a claim the run did not decide is not checked; a run a budget stopped leaves its claim not checked and says why; under `--no-search` a claim not checked moves no exit code | `ein-infer/tests/expect_semantics.rs`: `a_claim_the_run_did_not_decide_is_not_checked`; `ein-cli/tests/test_cli.rs`: `a_budget_stopped_run_is_not_checked_and_says_why`; `ein-cli/tests/no_search.rs`: `test_decides_what_root_decides_and_a_claim_not_checked_exits_0` |
+| every route that branches on an owed instance's alternatives finds the oracle's R | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
+| on the zebra family, branching on what the obligations owe finds what the hrule finds | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |
+| every question names a relation H holds no fact of, in one sentence | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
+| what the blind enumerator would still propose at a listed state is a read, off unless asked | `ein-cli/tests/leftover_probe.rs`: `the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says` |
+| an exhausted run reports the states, an unexhausted one the states found; the key changes stdout and nothing recorded, names its size and one row per state, and an unaffordable key says why | `ein-cli/tests/model_set_report.rs`: `an_exhausted_run_reports_the_states`, `an_unexhausted_run_reports_states_found`, `the_key_form_changes_stdout_and_nothing_recorded`, `the_key_table_names_its_size_its_alternatives_and_one_row_per_state`, `an_unaffordable_key_says_why` |
+
+### 6.4 Commands
+
+```sh
+ein test FILE                        # every claim the file states: held, FAILED or NOT CHECKED
+ein solve FILE --maximal --models key  # the determining key of the states listed
+ein render rule --name NAME FILE     # an obligation or a restriction as its match and its conclusion
+```
