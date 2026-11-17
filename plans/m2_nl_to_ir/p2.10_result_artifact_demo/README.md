@@ -89,7 +89,7 @@ of this milestone a reader meets first.
   sentence `test` supports; the supporting table and the refuting table.
 - **S2.10.2** — the release: the seven layers checked as a list, each with
   its URL or path; the record index; the loop's architecture page; the
-  `pip install` trip-wire of [Q-M1a.23](../../../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  `pip install` trip-wire of [Q-M1a.23](../../../docs/decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)
   re-read, because *a paper's artifact package* was the one most likely to
   fire it.
 - **S2.10.3** — the demo: the instance chosen, the command, the output as a
@@ -112,7 +112,7 @@ of this milestone a reader meets first.
   [§ Level progression](../EinAf.md#level-progression).
 - [M5](../../m5_presentation/README.md) — the paper; its § 9.3
   *Faithfulness vs satisfiability* is this phase's result read twice.
-- [`docs/history/m1a_rust/`](../../../docs/history/m1a_rust/README.md) —
+- `docs/history/m1a_rust/` —
   the precedent for what a closed milestone leaves behind: the record, the
   measurements, the ledgers; this milestone's records are the same kind of
   artefact and go to `docs/history/` the same way when it closes.

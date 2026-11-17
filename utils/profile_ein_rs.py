@@ -40,7 +40,7 @@ Unwinding is **LBR** (`--call-graph lbr`), and that choice is load-bearing.
 `fp` loses the stack the moment a sample lands inside glibc, which is compiled
 without frame pointers: 18 % of an exhaustive `zebra2` profile arrived as
 `[libc.so.6]` with no caller, i.e. exactly the allocator cost
-[S1a.6.2](../docs/history/m1a_rust/README.md#s1a62--memory-layout) needs
+the memory layout's work needs
 attributed. `dwarf,8192` truncated at two frames on this tree. LBR recovers
 `malloc ← Vec::from_iter ← compile::plan_key ← Engine::compile_for ← …` in full,
 and its known weakness — stale branch history in the *outer* frames — does not

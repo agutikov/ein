@@ -139,7 +139,7 @@ Each premise of [§ The finding](#the-finding) was read against the sources and 
   by every program that imports `std.algebra`, `std.bijection`, `std.closure`, `std.typing` or
   `std.bool.inputs`, and `std.slots` brings its own two (the census's `rules` column on the stdlib's files).
 - **What M1d ruled.** The decision table of
-  [M1d's README](../../../docs/history/m1d_satisfiability/README.md#the-decisions-and-who-took-them) has two
+  M1d's README has two
   rows: *obligations supersede `:hrules` as the generator, as a ladder* (user, 2026-08-24), and *the read-out
   is scoped — discharge where stated, exhaustion where not* (2026-08-25, with no name in its *taken* column).
   The second was a rule about the verdict, and
@@ -620,7 +620,7 @@ print("raw %d emitted %d skipped %s" % (h["raw"], h["emitted"], skips or "none")
 6. ***M1d's scope rule* was the read-out's**, and R has replaced it (the fourth bullet of
    [§ What the engine does](#what-the-engine-does-which-is-what-the-three-options-differ-on)). The ruling
    (b) restates is the ladder's middle row as `oblgen.rs`'s header words it; its table in
-   [`hypotheses_from_obligations.md`](../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
+   `hypotheses_from_obligations.md`
    has no row for a rule loaded and nothing owed.
 7. **The re-plan's witness could not be rebuilt to the letter**: its program is nowhere, and a program of its
    description with `connex` activated has a dead root.

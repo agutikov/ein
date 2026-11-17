@@ -85,7 +85,7 @@ user's ruling of 2026-11-15); `std.math.crypt`, the cryptarithm theory, which wa
 [S1f.10.5](s1f.10.5_ordering.md); M1g's
 [S1g.6.6](../../m1g_logic/p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md), which starts from
 the groups.
-**Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+**Owns:** Q-M1e.11,
 ruled 2026-11-16, and the register's `W26/oblig-derived-activator`, fixed that day
 ([S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)): no open row of the register has a stage of this phase
 for an owner; and five findings of the calculator's

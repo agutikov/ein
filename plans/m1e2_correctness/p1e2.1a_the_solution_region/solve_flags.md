@@ -67,7 +67,7 @@ asked**.
   `Solution`, exit 0. **≥ 2** is `Ambiguity`, exit 1. **0** is
   `Contradiction`, or `Open` when every alive node owes, exit 1. It exits the
   way a false `:expect` does, with the same one stderr line
-  ([M1d S1d.4.3](../../../docs/history/m1d_satisfiability/the_vocabulary.md)).
+  (M1d S1d.4.3).
 - **`--minimal` / `--maximal`** restrict the set. They are mutually exclusive,
   and so are `-n` and `--single`.
 - **`--maximal --single`** is the uniqueness question for a program that

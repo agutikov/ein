@@ -45,7 +45,7 @@ blocks by hand (`9c06414f`), and nothing checks those either.
 - **Pinned.** Default: a test beside `guide_transcripts.rs` that does the reading above on every `lisp` block of
   `docs/guide/`, so a retired flag, a keyword or a missing `:why` fails `cargo test`. It is held both ways: a
   planted retired flag in a scratch copy fails it. The precedent is S1f.5.14's doc-block migration, and
-  [Q-M1e.4](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)'s
+  Q-M1e.4's
   rule that a page is pinned by something that runs. Recorded as a Q-M1f row, taken by default.
 
 ## Tasks

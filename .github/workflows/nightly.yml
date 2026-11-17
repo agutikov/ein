@@ -1,4 +1,4 @@
-# Tier 2 of three — docs/history/m1a_rust/design/12_toolchain_and_layout.md §4.
+# Tier 2 of three: per-commit, nightly, release.
 #
 # Everything the per-commit tier cannot afford **that guards an answer or a
 # contract no per-commit step guards**, each step at a budget that fits in

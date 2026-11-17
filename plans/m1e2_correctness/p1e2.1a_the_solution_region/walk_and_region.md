@@ -82,7 +82,7 @@ commitment, because k_c and the merged form are defined over commitments.
 | **what is visited** | route 1: every alive commitment and `N`. The oracle: all 2ⁿ | every alive commitment that is **not complete**, and their joins, minus what a learned clause or the kill cache rules out |
 | **what is recorded** | every node, with both bits | an alive complete node: a model if discharged, an open state if it owes. Open states are reported only when there is no model |
 | **when it stops** | when the down-set is exhausted, or at the budget | at `-n` models (1 by default), at `-m` (5), or when the frontier empties |
-| **`exhausted`** | R is complete | the walk ran out of frontier inside `-m` ([Q-M1e.8](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)) |
+| **`exhausted`** | R is complete | the walk ran out of frontier inside `-m` (Q-M1e.8) |
 | **cost** | \|alive\| + \|N\| saturations | enterings up to completion, typically far fewer |
 
 `solution_semantics.md` § 6

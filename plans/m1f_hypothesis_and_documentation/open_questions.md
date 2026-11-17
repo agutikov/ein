@@ -4,7 +4,7 @@ Questions **this milestone raises**, with sticky `Q-M1f.<n>` ids. Do not reuse
 a closed id.
 
 M1f was created on 2026-08-29 by moving two phases out of
-[M1e](../../docs/history/m1e_review_processing/README.md). The first questions it raised came from
+M1e. The first questions it raised came from
 [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s paper grammar on 2026-11-08.
 
 **Every row marked *defaulted* was accepted by the user on 2026-11-10, without review**, at P1f.5's close
@@ -325,11 +325,11 @@ them across the milestone boundary, which is what a sticky id is for:
 
 | id | what it is | who owns it here |
 |---|---|---|
-| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | is *experimental* a licence to ship a surface whose read-out is false? | closed in M1e2 (the user's (a), 2026-11-03: no). [S1f.10.7](p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md), whose `--traversal` flag waited on it, was dropped at P1f.10's re-plan of 2026-11-15; its learning half is a source [S1f.10.13](p1f.10_hypothesis_structure/s1f.10.13_the_price_list.md) prices |
-| [Q-M1e.6](../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model) | what is a **solution**, and what is a **model**? | decided 2026-08-28; [P1f.10](p1f.10_hypothesis_structure/README.md) is its first consumer |
-| [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent) | is `dead` really upward-closed under `absent`? | the **language** half was [S1f.10.8](p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s: ruled *forbid* on 2026-11-02 and built in M1e2; the stage is closed |
-| [Q-M1e.10](../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) | two `(config …)` flags are **inert** | raised by the shipped `S1e.5.1`; owner unassigned |
-| [Q-M1e.11](../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | what happens to an obligation **derived under a hypothesis**? | **owned** by [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md), which since the re-plan of 2026-11-15 asks it over R, with register row W26 as its witness |
+| [Q-M1e.5](../../docs/decisions/answer/Q-M1e.5-no-surface-disagrees-with-the-oracle.md) | is *experimental* a licence to ship a surface whose read-out is false? | closed in M1e2 (the user's (a), 2026-11-03: no). [S1f.10.7](p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md), whose `--traversal` flag waited on it, was dropped at P1f.10's re-plan of 2026-11-15; its learning half is a source [S1f.10.13](p1f.10_hypothesis_structure/s1f.10.13_the_price_list.md) prices |
+| [Q-M1e.6](../../docs/decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md) | what is a **solution**, and what is a **model**? | decided 2026-08-28; [P1f.10](p1f.10_hypothesis_structure/README.md) is its first consumer |
+| Q-M1e.9 | is `dead` really upward-closed under `absent`? | the **language** half was [S1f.10.8](p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s: ruled *forbid* on 2026-11-02 and built in M1e2; the stage is closed |
+| [Q-M1e.10](../../docs/decisions/language/Q-M1e.10-two-inert-config-flags-are-refused.md) | two `(config …)` flags are **inert** | raised by the shipped `S1e.5.1`; owner unassigned |
+| [Q-M1e.11](../../docs/decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md) | what happens to an obligation **derived under a hypothesis**? | **owned** by [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md), which since the re-plan of 2026-11-15 asks it over R, with register row W26 as its witness |
 
 A question raised by an M1f stage from now on gets a `Q-M1f.<n>` here.
 
@@ -863,7 +863,7 @@ holds. `program_read` holds each view's drawing of a container to the `.ein`'s o
 **Decision file:** [`docs/decisions/read-out/Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md`](../../docs/decisions/read-out/Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md)
 
 **Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, as its Q1: M1e's
-[Q-M1e.7](../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+[Q-M1e.7](../../docs/decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)
 ruled that a state's model, [`solution-semantics.md` § 3](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)'s
 *positive part minus the positive initial KB*, is printed by `ein solve` and `--json-summary` *"under that name"*, and
 gave that half to this stage. Today a listing's `(model …)` is the region language's claim form, a state's facts over the
@@ -1702,7 +1702,7 @@ names `--json-summary`'s `verdict.solutions[i].facts`, which M1e2's switch remov
 stdlib-derived, kernel), where its acceptance asks for "the four registers".
 
 - **(a) The whole state**: every fact of every state file `ein solve FILE --dump-answer DIR` writes, root's facts
-  included, the set [Q-M1e.7](../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+  included, the set [Q-M1e.7](../../docs/decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)
   is about; and four registers, the stage's three and **undeclared** (a relation written or derived and never
   declared, and no rule's), the small set T1f.5.14.3 says the census prints.
 - **(b) The listed projection**: `region.states[i].facts`, the facts over H's relations the read-out prints (25 on
@@ -1798,7 +1798,7 @@ default is true.
 
 **Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** Every boolean option the CLI has is a set-true
 flag, and a negative one is spelled `--no-…`; `--require-why` would be inert with the default true, and an inert
-option is what [Q-M1e.10](../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)
+option is what [Q-M1e.10](../../docs/decisions/language/Q-M1e.10-two-inert-config-flags-are-refused.md)
 retired. The option count stays 78.
 
 ### Q-M1f.63 — What each program generator does about `:why`
@@ -6604,7 +6604,7 @@ task 4.
 **Raised** 2026-11-15 by
 [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s
 tasks 1 to 3, for the register's `W26/oblig-derived-activator`, `open` and owned by that stage, and for
-[Q-M1e.11](../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+[Q-M1e.11](../../docs/decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md),
 *what happens to an obligation derived under a hypothesis*, which P1f.10 owns. **Q-M1e.11 stays open**: this
 entry restates it over R, with what was measured, and the ruling given here is recorded there by the stage's
 task 4. **It is put at P1f.10's one stop**

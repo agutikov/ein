@@ -526,7 +526,7 @@ The instruction's last question, and how this plan answered it, under the schema
 - **[M10](../m10_external_benchmarks/README.md):** the same problems for Z3, CVC5, Prolog, Clingo and Lean.
   P1g.2's satisfiability programs and P1g.4's fragment say which TPTP and SAT classes Ein can state; M10 runs
   them.
-- **[M1d](../../docs/history/m1d_satisfiability/README.md):** *from saturation to satisfiability* is this
+- **M1d:** *from saturation to satisfiability* is this
   milestone's distinction between derivation and model, drawn for puzzles.
 - **[P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** the request protocol, the
   search-free test, the harness against Rust's integers, and

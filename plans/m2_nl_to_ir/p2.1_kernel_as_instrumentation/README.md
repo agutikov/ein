@@ -1,8 +1,8 @@
 # P2.1 — The kernel as instrumentation (Stage A)
 
 **Estimate:** 1.5 weeks — 3 stages, 8 days.
-**Depends on:** [M1a](../../../docs/history/m1a_rust/README.md), shipped. Not
-on [M1d](../../../docs/history/m1d_satisfiability/README.md): the one word M2 needs from it
+**Depends on:** M1a, shipped. Not
+on M1d: the one word M2 needs from it
 (`unknown`) is computed here from fields the engine already emits, and
 replaced by the engine's own the day M1d gives it one
 ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)).
@@ -38,7 +38,7 @@ named owner.
 | **A2** kernel invariants as tests | every fact justified; every contradiction derived; every solution satisfies the constraints; *unique* = one model **and** exhausted; *ambiguous* = two distinct models; *unsat* = exhaustion with zero | the gate — 619 tests, the thirteen counter identities `summary_properties.rs` holds the summary to, the id-order and `--jobs` invariance sweeps, the six-property fuzzer; provenance on every derived fact (O6); `-e` as the certification of uniqueness | the invariants are *held* but not *listed*: a page that states each of the plan's six in one line and names the test that holds it — S2.1.1 T2.1.1.3 writes it into `defined_behaviour.md`, where the thirteen behaviours already live |
 | **A3** a stable machine interface, versioned | structured input / output; structured errors; a protocol version | `--json-summary` is **`ein-summary/1`**: `verdict {type, k, exhausted, unsat_core, solutions[{facts, goal_bindings}]}` — the models sorted, the core as s-expressions — plus `stats`, `root`, `config`; `--events` is **`ein-events/1`**, the fifteen kinds [`events.md`](../../../docs/ein/ein.rs/events.md) tables plus `admit` and `warn` at the call sites, `fire` carrying `rule / bindings / premises / derived`; `ein --version` names the engine, the protocol, the features and the stdlib manifest SHA | a **feedback** object: the summary is a *run* record, additive and order-free; it has no diagnostics block at all (a parse or load failure never reaches it — the process exits 1 with a line of text), no `unknown`, and the exit code for a budget abort is **2, the usage-error code, by design** — so a loop reading exit codes cannot tell a typo from a timeout. [S2.1.2](s2.1.2_feedback_object.md) |
 | **A4** a diagnostic vocabulary apart from presentation | `syntax_error … arity_mismatch / contradiction, unsat_core / ambiguous … alternative_models / unused_fact, unreachable_query, dead_relation / resource_limit, search_limit` | `ParseError` is a struct — `file, line, col, context` — and the only typed one; [`diagnostics.md` § 1](../../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics) pins the parse and load *messages* as normative strings; the unsat core is a value (`verdict.unsat_core`); `warn` events carry a `category` | `KbLoadError`, `LoadError`, `MacroError`, `CompileError` are **`String` newtypes** — the accumulated problems `; `-joined, no kind, no location, no id; no `dead_relation` / `unreachable_query` / `unused_fact` analysis anywhere (S2.1.1 T2.1.1.2 checks whether the *matcher* already knows which rules never fired — `fire` events say which did). The vocabulary is S2.1.2's, as an enum with every field optional |
-| **A5** validation suites | parser, types, saturation, constraints, search, provenance, unsat core, model count, determinism, performance regression; *deliberately pathological cases* | the corpus: 128 entries in six groups (`positive`, `stdlib`, `parse-negative`, `load-negative`, `compile-negative`, `regression`), the negative fixtures under `examples/broken/` with their `.expected` messages (37 today, in three groups), `ein-bugs/`, the fuzz findings; [`corpus-cost.md`](../../../utils/censuses/corpus-cost.md) as the performance ledger; [design/02](../../../docs/history/m1a_rust/design/02_determinism_and_order.md) for determinism | **unsat-core correctness and model-count correctness have no external check** — every test compares the engine to its own past. That is [M1c](../../../docs/history/m1c_external_validation/README.md)'s thesis and [M10](../../m10_external_benchmarks/README.md)'s job, named here and **not scheduled here** |
+| **A5** validation suites | parser, types, saturation, constraints, search, provenance, unsat core, model count, determinism, performance regression; *deliberately pathological cases* | the corpus: 128 entries in six groups (`positive`, `stdlib`, `parse-negative`, `load-negative`, `compile-negative`, `regression`), the negative fixtures under `examples/broken/` with their `.expected` messages (37 today, in three groups), `ein-bugs/`, the fuzz findings; [`corpus-cost.md`](../../../utils/censuses/corpus-cost.md) as the performance ledger; [design/02](../../../docs/ein/ein.rs/design/determinism-and-order.md) for determinism | **unsat-core correctness and model-count correctness have no external check** — every test compares the engine to its own past. That is M1c's thesis and [M10](../../m10_external_benchmarks/README.md)'s job, named here and **not scheduled here** |
 
 ### The sixth outcome, today
 
@@ -49,7 +49,7 @@ engine has two caps and they say different things:
 | cap | what the engine reports | exit | what the loop would read |
 |---|---|---:|---|
 | `--max-time`, `--max-enterings` | `** aborted: <reason> **`; with the summary, `verdict.type = "Aborted"`, `reason`, empty core and models | **2** | *unknown* — correctly, if it reads the summary; *usage error*, if it reads the exit code |
-| `--max-set-size` (default 5) with a non-empty frontier | **`Contradiction`**, `k = 0`, `exhausted = false`, **empty unsat core** | 0 | *inconsistent* — wrongly. This is [Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false): ten corpus entries end this way, and `Contradiction` with an empty core is the tell |
+| `--max-set-size` (default 5) with a non-empty frontier | **`Contradiction`**, `k = 0`, `exhausted = false`, **empty unsat core** | 0 | *inconsistent* — wrongly. This is [Q-M1d.6](../../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md): ten corpus entries end this way, and `Contradiction` with an empty core is the tell |
 
 The rendering makes the asymmetry visible: a truncated `Solution` prints
 *(not certified — pass `--exhaustive`)* and a truncated `Contradiction`
@@ -86,7 +86,7 @@ the function changes and the field does not.
   location where the source has one, not only the pinned message.
 - The loop's language is decided and written down, with the measurement or
   argument it rests on, and the three trip-wires of
-  [Q-M1a.23](../../../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  [Q-M1a.23](../../../docs/decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)
   re-checked against the decision.
 - **Nothing in `ein-infer`'s semantics changes.** The phase adds a
   consumer-side object — or, as [S2.1.3](s2.1.3_boundary.md) recommends, an
@@ -119,9 +119,9 @@ the function changes and the field does not.
   `ein-events/1`; [`ein-cli/src/summary.rs`](../../../ein.rs/crates/ein-cli/src/summary.rs) —
   `ein-summary/1`; [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md) — the crate
   surface a Rust loop would link.
-- [M1d Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
-  [Q-M1d.1](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) —
-  the verdict vocabulary's owner; [M1c](../../../docs/history/m1c_external_validation/README.md) /
+- [M1d Q-M1d.6](../../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md),
+  [Q-M1d.1](../../../docs/decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md) —
+  the verdict vocabulary's owner; M1c /
   [M10](../../m10_external_benchmarks/README.md) — A5's external check.
 - [F16](../../followups/f16_autoformalization/ideas.md) — the list of
   diagnostics *a reasoning engine can return that a compiler cannot*, which is

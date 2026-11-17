@@ -26,7 +26,7 @@ Two halves, and both run the engine ($EIN_BIN or --bin, default
    with `--slow`, the `heavy_dump` ones with `--heavy`), solved as `ein solve FILE
    --dump-answer DIR`, and every fact of every state file the run writes
    (`DIR/models/NN.ein`: the whole state, root's facts included — the fact
-   set [Q-M1e.7](../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+   set [Q-M1e.7](../docs/decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)
    is about, and not the read-out's listed projection). Each fact is read with
    the program the state file re-writes above it (imports inlined) and the
    provenance comment after it, and is counted three ways:

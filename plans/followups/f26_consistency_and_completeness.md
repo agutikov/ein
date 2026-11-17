@@ -11,7 +11,7 @@
 **It was not written anywhere.** A search of `plans/` and `docs/` that day found Gödel named twice, both in
 passing, in [idea 09](../ideas/09-puzzles-beyond-zebra.md) (the liar's sentence as a puzzle, and *Gödel, Escher,
 Bach* as reading); *incompleteness* used only for a relation that owes a witness (M1d's
-[`the_boundary.md`](../../docs/history/m1d_satisfiability/the_boundary.md)) and for M2's *semantic
+`the_boundary.md`, now [`satisfiability.md`](../../docs/ein/reasoning/kb-evolution/satisfiability.md)) and for M2's *semantic
 incompleteness* ([P2.8](../m2_nl_to_ir/p2.8_representations/README.md)); and
 [idea 06](../ideas/06-inference-rules-completeness.md) asking whether the *rule set* is complete, a third sense.
 [F1b](f1b_logical_formulation.md) asks which fragment of first-order logic Ein covers and does not ask this.
@@ -148,7 +148,7 @@ problem's text, and where Ein's verdicts are meant to be read as plain statement
 - [F1b](f1b_logical_formulation.md), the fragment; [F1](f1_categorical_formulation.md), the categorical reading.
 - [F21](f21_non_monotone_programs_decided.md), programs with no stable reading; [F17](f17_formal_verification/ideas.md),
   `Spec ≠ Intent`, which is *the model is not the world* said of programs.
-- [M1d](../../docs/history/m1d_satisfiability/README.md), where *no model* was separated from *not yet a model*.
+- M1d, where *no model* was separated from *not yet a model*.
 - [M2](../m2_nl_to_ir/README.md), whose benchmark holds instances whose right answer is *ambiguous*, and whose
   faithfulness question is completeness against the text.
 - [Idea 06](../ideas/06-inference-rules-completeness.md) and [idea 09](../ideas/09-puzzles-beyond-zebra.md).

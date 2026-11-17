@@ -488,7 +488,7 @@ reproduces: `-1:-1` at end of input, a ±40-character window cut before the line
 column held back past a pending comment match, and ambiguity resolved to the earlier alternative.
 **Default: all four go.** Each parse error reports its true token position and the tokens expected there,
 with `%epp` giving each token a readable name. This takes
-[Q-M1a.3](../../../docs/history/m1a_rust/open_questions.md#q-m1a3--parse-error-messages) option (c).
+Q-M1a.3 option (c).
 
 **With recovery on, a refused file reports every error recovery reaches**, in file order, each with its
 ranked repairs: *insert `)`*, *delete `a?x`*. The parse goes on after each error with the first repair, as

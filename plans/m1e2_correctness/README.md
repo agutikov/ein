@@ -66,7 +66,7 @@ M1f's P1f.5, which files them first.
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
 solutions and initial problems."* It comes out of
-[M1e](../../docs/history/m1e_review_processing/README.md)'s close, whose probes found wrong
+M1e's close, whose probes found wrong
 answers that the review never listed and that M1e's own rule filed rather than
 fixed, and out of a survey taken the same day,
 [`inventory.md`](inventory.md), which re-ran every known case and found
@@ -133,7 +133,7 @@ by looking at what the engine answered, and the engine makes that hard.
 A model is a block of facts on stdout, a refutation is a ` ```dot ` fence no
 viewer draws, and the program has no picture at all. Its two graph renderers
 are built, tested and reachable from no command
-([Q-M1e.20](../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)).
+(Q-M1e.20).
 And the right answers were also derived by reading. A fix stage that starts
 from a misread case fixes the wrong thing in a way no test can catch, because
 the test was written from the same misreading.
@@ -253,7 +253,7 @@ S1e2.2.8 is done the same day: on the user's ruling of 2026-11-03,
 program can conclude or ask about, W6's `knows` and `r3`, and no answer moved;
 W6's two rows are fixed.
 S1e2.2.10 is done the same day: on the user's ruling of 2026-11-03 on
-[Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)
+Q-M1e.12
 (a), `branching/06` and `/07` type `co-located`, so their R is two states,
 Blue in H5, and every read-out names a type the blind enumerator binds as an
 object, a `types` row under `universe`; C1 stays not wrong, and its row and
@@ -603,14 +603,14 @@ P1f.5 the no-owner items, with S1f.5.0 filing the twenty wrong answers first.
 
 | question | here |
 |---|---|
-| [Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set): `exhausted` certifies the lattice, not the model set | W1, S1e2.2.1 |
-| [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent): `dead` and `absent` | W3, S1e2.2.5; the language ruling moved here from M1f's S1f.10.8 on 2026-11-01, as P1e2.4's S1e2.4.1, and was ruled *forbid* on 2026-11-02 |
-| [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object): the untyped blind rung | C1, S1e2.2.10; ruled (a) 2026-11-03, C1 not wrong; built 2026-11-04 |
-| [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported): the alternatives cap | W10, S1e2.2.11; closed 2026-11-04 by fix (3) on the user's rulings on Q-M1e2.11, the residual `W10/alt-cap-shared` deferred to F22 |
-| [Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one): the binding key | W7, S1e2.2.7; closed 2026-11-04 by fix (1), the binding key's activator half the compile key's every argument |
-| [Q-M1e.21](../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about): fresh constants | W4, S1e2.2.4 |
-| [Q-M1e.20](../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable): two renderers unreachable | S1e2.1.3, answered (a) |
-| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) and [Q-M1e.17](../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md)'s S1e2.3.4: **both closed 2026-11-03**, Q-M1e.5 by the ruling of 2026-10-16 (the learning half to M1f's S1f.10.7), Q-M1e.17 by `-g`'s ruling (b) |
+| Q-M1e.8: `exhausted` certifies the lattice, not the model set | W1, S1e2.2.1 |
+| Q-M1e.9: `dead` and `absent` | W3, S1e2.2.5; the language ruling moved here from M1f's S1f.10.8 on 2026-11-01, as P1e2.4's S1e2.4.1, and was ruled *forbid* on 2026-11-02 |
+| Q-M1e.12: the untyped blind rung | C1, S1e2.2.10; ruled (a) 2026-11-03, C1 not wrong; built 2026-11-04 |
+| Q-M1e.15: the alternatives cap | W10, S1e2.2.11; closed 2026-11-04 by fix (3) on the user's rulings on Q-M1e2.11, the residual `W10/alt-cap-shared` deferred to F22 |
+| Q-M1e.16: the binding key | W7, S1e2.2.7; closed 2026-11-04 by fix (1), the binding key's activator half the compile key's every argument |
+| Q-M1e.21: fresh constants | W4, S1e2.2.4 |
+| Q-M1e.20: two renderers unreachable | S1e2.1.3, answered (a) |
+| Q-M1e.5 and Q-M1e.17 | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md)'s S1e2.3.4: **both closed 2026-11-03**, Q-M1e.5 by the ruling of 2026-10-16 (the learning half to M1f's S1f.10.7), Q-M1e.17 by `-g`'s ruling (b) |
 
 The ids stay `Q-M1e.<n>`. An id is sticky and is never reused, so this
 milestone cites them across the boundary, as M1f does.
@@ -736,7 +736,7 @@ milestone cites them across the boundary, as M1f does.
 - [`corpus/wrong_answers.toml`](../wrong_answers/register.toml): the
   register — every case's witnesses, wrong runs and right answers as data,
   held by `ein-cli/tests/wrong_answers.rs`.
-- [M1e](../../docs/history/m1e_review_processing/README.md): where most of these were found
+- M1e: where most of these were found
   and filed.
 - [`docs/ein/reasoning/kb-evolution/solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md):
   the definition every right answer is derived against.

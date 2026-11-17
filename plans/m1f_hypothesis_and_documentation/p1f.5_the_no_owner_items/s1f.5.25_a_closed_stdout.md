@@ -87,7 +87,7 @@ do not hold:
   libc::SIG_DFL)` call at the top of `main`, with a `// SAFETY:` comment: it runs before any thread exists and
   installs the default disposition. `libc` becomes a direct dependency of the binary (it is in `Cargo.lock`
   already). It is a no-op on targets that are not Unix. It is the second audited `unsafe` site beside `ein-einb`'s
-  `cast.rs`, which [design/12](../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) § 2 permits. design/12
+  `cast.rs`, which design/12 § 2 permits. design/12
   is a record and is not edited. The live pages that state the policy name the binary's call: AGENTS.md's
   `ein-einb` line, and `docs/api/rust.md` or `docs/kernel/architecture.md` where they state it.
 - **The 141.** A process the kernel ends by `SIGPIPE` does not choose an exit code. It behaves as `cat`, `grep`

@@ -4,7 +4,7 @@
 `docs/ein/` is the only statement of intent in this repo that is not also
 the implementation, so a claim there is checked by `cargo test --workspace` and
 by nothing else — which means a page nothing runs is a page nothing checks.
-[S1a.10.6] was a doc pass and it missed **every** page of `CD-H1`, for a reason
+M1a's S1a.10.6 was a doc pass and it missed **every** page of `CD-H1`, for a reason
 worth naming: a pass driven by *what the milestone changed* cannot catch a page
 describing machinery removed two milestones ago, because nothing in the
 milestone touched it.
@@ -123,8 +123,6 @@ What this cannot check, and what `AGENTS.md` asks a reader to do by hand:
 run the commands a page shows. Four of S1e.2.2's findings were *invocations* — a CLI line producing
 neither artifact it names, `(instnce ?a ?T)` claimed to be a parse error — and
 the only instrument for those is a shell.
-
-[S1a.10.6]: docs/history/m1a_rust/README.md#s1a106--defined-behaviour
 """
 
 from __future__ import annotations

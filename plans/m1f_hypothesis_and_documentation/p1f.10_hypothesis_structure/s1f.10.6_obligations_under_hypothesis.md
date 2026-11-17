@@ -11,7 +11,7 @@ the question, put at the phase's one stop ([S1f.10.12](s1f.10.12_the_structure_s
 bring would, the register's row is `fixed`, the witness alone moved, the read-out has a `later debt` row,
 Q-M1e.11 is recorded as ruled. **The stage is done**, but for the gate the main session runs on the batch.
 **Depends on:** nothing in the phase.
-**Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+**Owns:** Q-M1e.11,
 *what happens to an obligation derived under a hypothesis*, ruled 2026-11-16, and the register row
 **`W26/oblig-derived-activator`**, `fixed` that day by this stage, `open` and reviewed `deferred` until then
 ([`corpus/wrong_answers.toml`](../../wrong_answers/register.toml)).
@@ -928,7 +928,7 @@ A tenth program, the witness under two hrules that propose a relation where its 
   [`architecture.md`](../../../docs/ein/ein.rs/architecture.md), the glossary and
   `06_reserved_names.md`'s ladder sentence say the rung proposes for a later debt too.
 - **Q-M1e.11 is recorded as ruled** in
-  [`open_questions.md`](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+  `open_questions.md`,
   its table row and its entry, in the form Q-M1e.12's ruling took there: *Ruled 2026-11-16*, the user's words,
   then *Built 2026-11-16*.
 - `AGENTS.md`, in place: the ladder sentence, and the register's owners (no open row is a stage's).

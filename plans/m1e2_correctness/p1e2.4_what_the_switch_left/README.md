@@ -52,7 +52,7 @@ asked whether M1f's S1f.10.8 ruling moves into M1e2. The user ruled
 - **forbid** (S1f.10.8's option A): a `(false)` or `(not …)` conclusion may
   not rest on an `(absent P)` whose relation is still extendable. It is a load
   error naming the replacement, so W3's witnesses are **refused**, not
-  answered. [S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)'s
+  answered. S1e.2.3's
   census counted 9 exposed rules over 7 corpus entries, each to be rewritten
   or refused. That is a stdlib change.
 - **respect**: the engine never learns from a refutation whose derivation

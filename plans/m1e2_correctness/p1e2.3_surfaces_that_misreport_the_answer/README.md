@@ -208,7 +208,7 @@ stage takes one cause:
   the six forms printed after it (`--models key|grid`, `-p`, `-P`, `-f`,
   `--diff-models`, `-H`) are not under it. One ruling and one stage.
 - **S5** has no stage of its own. What `-g` should do with 0 and a negative is
-  [Q-M1e.17](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative)'s
+  Q-M1e.17's
   ruling, so it goes with the inherited questions. Q-M1e.5 goes there too,
   because its fourth instance was S1, which is gone. The same stage closes
   the phase.
@@ -506,8 +506,8 @@ record does not claim it.
 | from | what | here |
 |---|---|---|
 | [Q-M1e2.6](../open_questions.md#q-m1e26--does-p1e23-become-a-phase) | the question whether this is a phase, ruled 2026-11-02; its notes of 2026-10-18 (eight gone), 2026-11-01 (S4 back) and 2026-11-02 (the forms) | this page's re-take; S1e2.3.1; S1e2.3.3; closed in S1e2.3.4 |
-| [Q-M1e.5](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | *is experimental a licence to ship a lying surface?* Its fourth instance was S1, which is gone. `EIN_TRAVERSAL=tree` reaches no command, and `configuration.md` calls it the one experimental surface in the past tense | Q4, S1e2.3.4 |
-| [Q-M1e.17](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | three `int_arg` options clamp a negative. `-m` and `-E` are retired. The clamp lives on in `-g` | Q5, S1e2.3.4 |
+| Q-M1e.5 | *is experimental a licence to ship a lying surface?* Its fourth instance was S1, which is gone. `EIN_TRAVERSAL=tree` reaches no command, and `configuration.md` calls it the one experimental surface in the past tense | Q4, S1e2.3.4 |
+| Q-M1e.17 | three `int_arg` options clamp a negative. `-m` and `-E` are retired. The clamp lives on in `-g` | Q5, S1e2.3.4 |
 | the milestone README's S4 paragraph, a pointer since 2026-11-03 ([§ P1e2.3](../README.md#p1e23--surfaces-that-misreport-the-answer)) | S1e2.1a.6's re-finding: `root_block` runs the walk's `hypgen::generate` on a fork, `root.facts` and `root.hypgen` move with the program's flags and `EIN_OBLIGATION_CHOICE`, and `lever_invariance.rs` leaves the three fields out. *"Whether the block should describe H, root's fixpoint, or neither is this phase's to rule."* | Q1, S1e2.3.1 |
 | [S1e2.4.2's notes](../p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md#notes) | the forms are outside `read_out.md` § 4.1's 100 lines | S10, S1e2.3.3 |
 

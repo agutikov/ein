@@ -7,9 +7,9 @@ estimates; **Level B at ~8 weeks**, Level C at ~19, Level D at the end plus
 [`EinAf.md`](EinAf.md), at the user's direction; nothing started. The folder
 keeps its name — *NL → IR* is Level B of this milestone, and the links into
 `m2_nl_to_ir/` are many.
-**Depends on:** [M1a](../../docs/history/m1a_rust/README.md) — the kernel,
-shipped. [M1d](../../docs/history/m1d_satisfiability/README.md) for one word:
-[Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+**Depends on:** M1a — the kernel,
+shipped. M1d for one word:
+[Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)
 is the engine saying *Contradiction* where the research plan's Stage A
 forbids it to (§ A1 — *`unknown` must never silently become `false`,
 `ambiguous`, or `contradiction`*); [P2.1](p2.1_kernel_as_instrumentation/README.md)
@@ -80,7 +80,7 @@ order, each with a gate that the phases before it have to pass.
 
 | level | the plan's definition | reached by | gate |
 |---|---|---|---|
-| **A — symbolic engine** | representation, saturation, constraints, model search, provenance, diagnostics, testing | M1 + [M1a](../../docs/history/m1a_rust/README.md), shipped; [P2.1](p2.1_kernel_as_instrumentation/README.md) closes the interface gap Stage A names | the kernel treated as *instrumentation*: a versioned structured protocol, a diagnostic vocabulary, and the six outcomes distinguished — with `unknown` distinct from the other five |
+| **A — symbolic engine** | representation, saturation, constraints, model search, provenance, diagnostics, testing | M1 + M1a, shipped; [P2.1](p2.1_kernel_as_instrumentation/README.md) closes the interface gap Stage A names | the kernel treated as *instrumentation*: a versioned structured protocol, a diagnostic vocabulary, and the six outcomes distinguished — with `unknown` distinct from the other five |
 | **B — autoformalization system** | previously unseen NL tasks automatically become executable Ein theories and answers | [P2.2](p2.2_formalizer/README.md) + [P2.3](p2.3_benchmark/README.md) | one-shot `einaf from-text` on the benchmark's *test* split — unseen by prompt development, three or more reasoning families, every run recorded |
 | **C — research system** | iterative feedback, several domains, credible baselines, quantitative benchmarks, ablations, failure analysis; *supports an empirical claim* | [P2.4](p2.4_loop/README.md) – [P2.7](p2.7_failure_scaling_generalization/README.md) | the main table (B0–B5 under matched budget), the feedback ablations, a classified failure sample, and one claim of the three admissible shapes in § Stage O |
 | **D — complete research artifact** | C plus formal treatment, a heterogeneous frozen benchmark, generalization and scaling, faithfulness analysis, reproducible infrastructure, released raw results, a paper, a minimal demo | [P2.8](p2.8_representations/README.md) – [P2.10](p2.10_result_artifact_demo/README.md) + [M5](../m5_presentation/README.md) | the seven layers of § Stage Q, each independently usable; the paper is M5's |
@@ -100,7 +100,7 @@ table is the map from the plan to the folder.
 
 | stage | what it asks for | where it lives |
 |---|---|---|
-| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1/A2/A5 are the kernel's and exist — [`docs/ein/`](../../docs/ein/README.md), the gate, [`diagnostics.md`](../../docs/ein/user/reference/diagnostics.md); what is missing is named in [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_census.md). A3/A4 are **[P2.1](p2.1_kernel_as_instrumentation/README.md)**. A1's sixth outcome, `unknown`, is [M1d Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s |
+| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1/A2/A5 are the kernel's and exist — [`docs/ein/`](../../docs/ein/README.md), the gate, [`diagnostics.md`](../../docs/ein/user/reference/diagnostics.md); what is missing is named in [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_census.md). A3/A4 are **[P2.1](p2.1_kernel_as_instrumentation/README.md)**. A1's sixth outcome, `unknown`, is [M1d Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)'s |
 | **B** autoformalization as an explicit task | the contract (B1), source vs generated (B2), what the model may know (B3), prompt versioning (B4) | **[P2.2](p2.2_formalizer/README.md)** |
 | **C** a heterogeneous benchmark | eight families (C1), external + synthetic (C2), unique / ambiguous / unsat (C3), difficulty knobs (C4), frozen splits (C5) | **[P2.3](p2.3_benchmark/README.md)** |
 | **D** baselines | B0 direct answer … B5 full loop, under a matched inference budget | [S2.5.2](p2.5_harness/s2.5.2_baselines.md) |
@@ -143,7 +143,7 @@ the ones that are new written from the research plan. **P2.6 has one stage
 file**, [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md), because
 it carries the old P2.5 link-grammar experiment whole; its other three stages
 are paragraphs in the phase README. **P2.7 – P2.10 are phase READMEs only.**
-That is on purpose and follows [M1d](../../docs/history/m1d_satisfiability/README.md)'s
+That is on purpose and follows M1d's
 precedent: a stage file for G7 written before the first main table exists
 would be a guess about which depth matters, and the plan says what the
 guess-free version is — *plot marginal improvement against cost* — which is
@@ -295,10 +295,10 @@ and whether the fixed point is syntactic or semantic
   [F2](../followups/f2_self_modifying_language.md) — GBNF; the grammar *in*
   the loop is rung 1 and stays a followup, this milestone ships static
   grammars.
-- [M1d](../../docs/history/m1d_satisfiability/README.md) — the verdict vocabulary
-  ([Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
-  [Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted));
-  [M1c](../../docs/history/m1c_external_validation/README.md) — `:expect`, the form a
+- M1d — the verdict vocabulary
+  ([Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md),
+  [Q-M1d.1](../../docs/decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md));
+  M1c — `:expect`, the form a
   benchmark instance's gold verdict is written in;
   [M10](../m10_external_benchmarks/README.md) — the hand-written encodings
   P2.8 starts from, and the benchmark direction that is *not* this one

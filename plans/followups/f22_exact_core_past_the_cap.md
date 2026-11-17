@@ -191,7 +191,7 @@ Any one:
 
 ## Read before deciding
 
-- [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported):
+- Q-M1e.15:
   the three fixes, priced 2026-08-29.
 - [Q-M1e2.11](../m1e2_correctness/open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it):
   why (3) is not exact, and the ruling.

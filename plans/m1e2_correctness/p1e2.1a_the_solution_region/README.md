@@ -82,7 +82,7 @@ program is a **region** of its hypothesis lattice, *R = the nodes that are
 alive and discharged*. R lies between a **minimal line**, which the
 obligations set, and a **maximal line**, which the restrictions set, and it
 may have **holes** where `absent` breaks monotonicity. Under
-[Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+Q-M1e.6
 a solution was one kind of node. Under Q-M1e2.7 the answer is R's shape,
 and `{none, one, several}` becomes *R is empty*, *R has one node on the line
 that matters*, *R has several*.
@@ -314,13 +314,13 @@ among them, is the re-scoping P1e2.1c's last stage does.
 
 - [Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)
   is the reading. Its sub-questions are S1e2.1a.3's.
-- [Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+- Q-M1e.6
   becomes a special case, and
   [Q-M1e2.1](../open_questions.md#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model)
   becomes sub-question (a).
-- [Q-M1e.8](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set):
+- Q-M1e.8:
   `exhausted` certifies the walk. Sub-question (g) makes it certify the lines.
-- [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
+- Q-M1e.9
   and [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
   are two of the ways R gets holes, and an obligation trigger is the third.
   All three are [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md)'s.

@@ -2,7 +2,7 @@
 
 **Status:** planned 2026-11-12, on the user's note of that day. Not started. **A placeholder:** the note is
 one line, and this page adds no design to it. It carries no estimate (the user's ruling of 2026-11-08).
-**Depends on:** the engine that ships, [`ein.rs`](../../ein.rs/) ([M1a](../../docs/history/m1a_rust/README.md)).
+**Depends on:** the engine that ships, [`ein.rs`](../../ein.rs/) (M1a).
 Nothing else is known to be needed.
 **Blocks:** nothing.
 

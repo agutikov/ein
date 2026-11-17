@@ -32,7 +32,7 @@ All three of its subjects went with the walk, which M1e2 deleted on 2026-11-03:
 | what | where |
 |---|---|
 | `hypgen::generate_one_branch` and the `one_branch` argument, the walk's tree's generator, `pub` and uncalled | [S1f.10.16](s1f.10.16_what_the_walk_left.md) |
-| learning from a death, the half of [Q-M1e.5](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) M1e2 handed here | a source [S1f.10.13](s1f.10.13_the_price_list.md) prices, *the pair of a death*, and [S1f.10.3](s1f.10.3_the_restricted_join.md) builds if it pays |
+| learning from a death, the half of Q-M1e.5 M1e2 handed here | a source [S1f.10.13](s1f.10.13_the_price_list.md) prices, *the pair of a death*, and [S1f.10.3](s1f.10.3_the_restricted_join.md) builds if it pays |
 | whether describe should take what the tree reaches | a question with numbers, [S1f.10.14](s1f.10.14_exactly_one_spent.md)'s T4 |
 
 The stage file as planned is in `git log -- plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md`.

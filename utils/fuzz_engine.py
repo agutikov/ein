@@ -37,7 +37,7 @@ that needs `cargo`, so `--no-id-order` turns it off — explicitly, because a
 property that skips itself when a tool is missing passes while asserting
 nothing.
 
-`jobs` is [M1a P1a.7](../docs/history/m1a_rust/README.md#p1a7--parallelism)'s, and it
+`jobs` is the parallel routes' property, and it
 is the one property whose *subject* is the engine's execution rather than its
 input: `--jobs N` fans a layer's enterings out across a `rayon` pool and
 commits them in candidate order, and the promise is that the run is **the same
@@ -65,7 +65,7 @@ generated program that loads, terminates, is deterministic, permutation-
 invariant and job-count-invariant can still derive the wrong facts, and nothing
 here would notice.
 Its only mitigation is
-[P1c.1](../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)'s
+`tests/stdlib/`'s
 stated expectations — a stdlib rule whose result is written down.
 
 ## The generator

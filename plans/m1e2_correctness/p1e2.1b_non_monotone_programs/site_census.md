@@ -323,7 +323,7 @@ blocks and their stdout's `lattice` row.
 ### 5.4 What C1 would reach
 
 C1 is [S1e2.2.10](../p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md), and
-its three readings are [Q-M1e.12](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s.
+its three readings are Q-M1e.12's.
 The census asks the shipped check what each would do to the flag.
 
 - **(c), `candidate_objects` excludes types.** S1e2.2.10 defines a type as an

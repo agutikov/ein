@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
 **Was S1f.5.3**, proposed in the old P1f.5 (*Documentation, and other*), until 2026-11-08, and **S1e.5.3**, proposed
-in M1e's [P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--documentation-and-other), until
+in M1e's P1e.5, until
 2026-08-29 ([§ The ids](README.md#the-ids)).
 **Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Done 2026-11-09**, in
 five commits: T1f.5.16.1, the census ([its record](#t1-record-2026-11-09)), Q1 defaulted (a) and three findings;
@@ -22,18 +22,18 @@ changes the live page in the commit that changes the output, and the page's test
 
 The old phase's row, until 2026-11-08: *one page for every number `ein solve` prints, and which of them counts
 models and which what the search did.* Three of M1e's findings are about that confusion
-([the ledger](../../../docs/history/m1e_review_processing/README.md#the-findings)):
+(the ledger):
 
 - **SE-M1**: `k` and `stats.solution_nodes` under one label. `--stats` printed `solutions (k)` above
   `solution_nodes`, so one `ein solve … --stats` printed `solutions (k) 0` and `solutions (k) 1` a screen apart.
 - **AR-M2**: the count was read out by three crates, each choosing its own number. M1e
-  [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium) gave it one
+  S1e.3.4 gave it one
   builder, and since M1e2 R's counts have one too, `ein_infer::described`.
 - **AR-M1**: hand-maintained parallel copies as the tree's recurring drift mechanism, whose rule is now
   [`architecture.md` § One artifact, one owner](../../../docs/ein/ein.rs/architecture.md#6-one-artefact-one-owner).
 
 A fourth item came to this stage by name. M1e's
-[Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+Q-M1e.7,
 ruled 2026-08-28, gave its read-out half (*a projection has to exist, `model`, and `ein solve` and
 `--json-summary` print it under that name*) to *P1e.5's S1e.5.3*, which is this stage.
 

@@ -257,7 +257,7 @@ it, the 17 fields:
 | `enable-symmetric-mirror` | **unchanged here**; **retired at S1e2.1a.6** (2026-11-01) | it changes R. Its question is S1e2.1a.6's, and the user ruled to retire it: the mirror is always on |
 | `enable-singleton-writeback`, `enable-forced-positive` | **retired** | they write into root, which no mode does. What they knew survives as licence L1: a candidate dead alone leaves the universe, always |
 | `lattice-order`, `lattice-order-seed`, `hypgen-scoring`, `hypgen-rel-weight`, `hypgen-obj-weight` | **retired** | order levers, as `-o` (C4) |
-| `print-alive`, `candidate-order-seed` | **retired** | inert ([Q-M1e.10](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)) |
+| `print-alive`, `candidate-order-seed` | **retired** | inert (Q-M1e.10) |
 
 A retired field is a load error that names why. Six corpus files set one:
 `examples/zebra.ein`, `syntax/config.ein`, and four register witnesses

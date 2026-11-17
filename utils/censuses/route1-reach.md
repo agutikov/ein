@@ -247,7 +247,7 @@ What it says, in R's terms:
   static verdict, `N` (458 minimal dead sets, every one of size ≤ 3) and the
   minimal line. Today `ein solve -e zebra.ein` says the same by the walk, and
   the walk's `exhausted` certifies the walk
-  ([Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)).
+  (Q-M1e.8).
   This certifies R.
 - **∅ owes, so ∅ ∉ R**. The maximal line is one commitment of 18 facts: the
   18 candidates the solution makes true. Layers 13–18 are exactly C(18, k):
@@ -300,7 +300,7 @@ timeout. Enterings, verdict, k and `exhausted` are from `--json-summary`.
 | `zebra2`, `zebra2-obligations` | 0.019 s | 0.048 s | 11 / 101 | Solution, k = 1 | false / true |
 
 † flagged non-monotone. The `zebra2-minus-15` row is
-[M1d's](../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
+M1d's
 measurement and was not re-taken.
 
 What it says for the default:

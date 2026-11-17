@@ -14,9 +14,9 @@ and [S1f.20.8](s1f.20.8_decisions.md) are done, and on 2026-11-17 [S1f.20.3](s1f
 was written on 2026-08-28, its § How to cut it had proposed splitting it into seven stages and left taking
 the split to the user. This phase takes it. No stage had run, so nothing shipped is renumbered:
 `T1f.5.20.1`–`.7` are `S1f.20.1`–`.7`, in the same order.
-**Depends on:** M1e's [S1e.2.2](../../../docs/history/m1e_review_processing/README.md#s1e22--code--doc-the-canonical-tree),
-[S1e.3.7](../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium) and
-[S1e.3.8](../../../docs/history/m1e_review_processing/README.md#s1e38--documentation-medium). The dependency
+**Depends on:** M1e's S1e.2.2,
+S1e.3.7 and
+S1e.3.8. The dependency
 was hard: those three stages triaged and fixed 38 pages, and a page fixed and then moved is cheap, where a
 move followed by a re-triage of 38 renamed files is not. **Satisfied 2026-08-31**: all three ran. It runs
 after [P1f.5](../p1f.5_the_no_owner_items/README.md), which edits kernel pages this phase moves. M1f follows
@@ -286,7 +286,7 @@ statement of intent that is not the implementation.
 
 So: deleting the directory as a directory is right, and deleting its contents
 is not. The rule this phase applies — and it is the repo's own, from
-[Q-M1e.3](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
+Q-M1e.3
 — is **dissolve, don't delete**: every page is triaged into
 
 - **(a) becomes a `docs/ein/` page**, rewritten as an as-built design document
@@ -502,10 +502,10 @@ twice. That is satisfied. The same rule holds for M1e2's edits to kernel pages: 
   current tree, and the file that will read most differently afterwards. `CLAUDE.md` is the same file.
 - [`README.md`](../../../README.md) — the root page, which already keeps
   **Ein** and **EinAf** apart and is the natural top of `docs/ein/`.
-- [Q-M1e.3](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
+- Q-M1e.3
   — *who owns a page that should be neither fixed nor deleted* — the ruling
   this phase's triage is an application of, at scale.
-- [S1e.5.1](../../../docs/history/m1e_review_processing/README.md#s1e51--the-configuration-reference) and
+- S1e.5.1 and
   [S1e.5.2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md) — two pages
   written into the *old* tree; both are `docs/ein/user/` pages by this
   phase's map, and both are cited by anchor text rather than section number so

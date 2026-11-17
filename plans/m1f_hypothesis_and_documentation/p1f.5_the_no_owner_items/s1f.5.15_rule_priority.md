@@ -46,8 +46,8 @@ docs ([§ T6 record](#t6-record-2026-11-08)). **The stage is done.** **T1f.5.15.
 `utils/` that still wrote `:priority` lose it, on the user's ruling on S1f.5.5's review stop, moving no answer.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
 stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
-And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
-[S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — **hard.**
+And on P1e.1
+S1e.1.3 — **hard.**
 Q2 asks whether `MAX_ALT_JUSTIFICATIONS = 32` ever changes which unsat core is
 reported; § The one place it still decides an answer shows it doing so, and a
 removal taken before that question is answered is a semantics change dressed as
@@ -62,7 +62,7 @@ a cleanup.
 > all. So the corpus has *two* order-dependencies of the core and this stage's
 > § 2 is the other one: which derivations get **recorded at all**, not which of
 > the recorded ones survive the cap. A removal has to hold both, and only the
-> second has a fixture ([Q-M1e.15](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+> second has a fixture (Q-M1e.15).
 >
 > **A dated note, 2026-11-04, nothing re-scoped** (M1e2
 > [S1e2.2.11](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md)):
@@ -181,7 +181,7 @@ construction* — over **the justifications that were recorded**. A fact keeps a
 most `MAX_ALT_JUSTIFICATIONS = 32`
 ([`kb.rs:49`](../../../ein.rs/crates/ein-core/src/kb.rs)), and which 32 those
 are is firing order, which is priority. **That is
-[Q2](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) with a witness
+Q2 with a witness
 attached**, and it is why this stage depends on S1e.1.3 rather than merely
 citing it.
 
@@ -204,7 +204,7 @@ Every one is a disposition this stage owes an answer for.
 | 4 | the **KB-shape digest** — `RULE … priority={} why={}` | [`shape.rs:64`](../../../ein.rs/crates/ein-core/src/shape.rs) | `corpus_shapes.md5` re-blesses, all 197 entries |
 | 5 | `ein saturate --dump`'s rule listing — `:priority N (band)` | `saturate.rs` `band_label` | a column disappears from a user-visible read-out |
 | 6a | which derivations are **recorded at all** → the reported **unsat core** | `saturator.rs` `record_alternative` + `explain.rs` | measured above: −8 facts on `branching/07`. **This is what § 2 measured**, and the cap is not in it: that entry's longest alternatives list is 1 (S1e.1.3, 2026-08-29) |
-| 6b | which ≤ 32 of them a full list **keeps** → the same core | `kb.rs` + `explain.rs` | reachable, and reached by exactly one corpus entry (`zebra2-bad`), where it costs nothing. Fixture: `examples/ein-bugs/alt-cap-core{,-reordered}.ein`, 3 facts against 2 — S1e.1.3 / [Q-M1e.15](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) |
+| 6b | which ≤ 32 of them a full list **keeps** → the same core | `kb.rs` + `explain.rs` | reachable, and reached by exactly one corpus entry (`zebra2-bad`), where it costs nothing. Fixture: `examples/ein-bugs/alt-cap-core{,-reordered}.ein`, 3 facts against 2 — S1e.1.3 / Q-M1e.15 |
 
 Consumers 1, 4 and 5 are presentation and bookkeeping. Consumer 3 is a
 read-out. **Consumers 2, 6a and 6b are the only three that can change an
@@ -267,9 +267,9 @@ that, and three things become derivable that a typed integer never was:
   pre-refactor equivalent — states the graph, the strata, the derived bands and
   the diagnostic. That page is [S1f.20.4](../p1f.20_docs_refactor/s1f.20.4_reasoning.md)'s only
   otherwise-empty file.
-- ~~[`MA-L1`](../../../docs/history/m1e_review_processing/README.md#the-findings) — is
+- ~~`MA-L1` — is
   dispositioned **fixed by removal**, and
-  [S1e.4.8](../../../docs/history/m1e_review_processing/README.md#s1e48--maintainability-low)
+  S1e.4.8
   is told so rather than fixing a comment on a constant that is leaving.~~
   **Overtaken 2026-09-01**: S1e.4.8 fixed it. Under
   [`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md) Rule 2 the
@@ -485,7 +485,7 @@ The two that matter:
   a program whose answer depends on admission order should be *told so*, which
   is T4, rather than silently steered by an integer.
 - **The unsat core (6).** Blocked on
-  [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2). Hand
+  S1e.1.3. Hand
   it the `branching/07` witness — 220 → 212, strict subset, reproducible — as
   input; it is a concrete instance of the question and the stage should not
   have had to find it.
@@ -913,7 +913,7 @@ move.
 - **The graph is not free.** A dependency graph over the compile cache, built
   per run, on programs whose plan count is in the hundreds. Measure it; if it
   costs, it is a read-out and a check, not something every `ein solve` builds.
-- **Doing it before [Q2](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2).**
+- **Doing it before Q2.**
   The `branching/07` witness shows priority changing a printed core by eight
   facts. Removing the input to a truncation nobody has characterised means the
   next core change has no baseline to be compared against. Hence the hard
@@ -952,9 +952,9 @@ first code commit, T1f.5.15.7's, which writes the ruling there.
 - [`docs/ein/reasoning/kb-evolution/absent-and-naf.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)
   — P1/P2, the normative statement that the guard is judged at the closure
   boundary, which is *why* priority stopped deciding derivability.
-- [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — Q2,
+- S1e.1.3 — Q2,
   the blocking question, now with a witness.
-- [S1e.4.8](../../../docs/history/m1e_review_processing/README.md#s1e48--maintainability-low) — [MA-L1](../../../docs/history/m1e_review_processing/README.md#the-findings),
+- S1e.4.8 — MA-L1,
   which this stage closes by deleting the constant.
 - [S1f.20.4](../p1f.20_docs_refactor/s1f.20.4_reasoning.md) (was S1f.5.20's T4) — `rule-evolution/analysis-of-rules.md`,
   the page this stage writes the content of.

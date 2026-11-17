@@ -50,7 +50,7 @@ without contradicting its negations, closed under its assertions.**
   (Groenendijk and Roelofsen) treats a question as a set of possibilities to
   be resolved. Both are close to *an obligation is the disjunction of its
   alternatives, discharged by one of them*
-  ([`completeness.md`](../../docs/history/m1d_satisfiability/completeness.md)).
+  ([`satisfiability.md`](../../docs/ein/reasoning/kb-evolution/satisfiability.md)).
 - **Answer set programming** has the same three forms:
   - normal rules are assertions;
   - integrity constraints (`:- body.`) are negations;

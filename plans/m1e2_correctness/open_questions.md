@@ -2,7 +2,7 @@
 
 Questions this milestone **raises**, as `Q-M1e2.<n>`. The M1e questions it
 carries keep their `Q-M1e.<n>` ids and live in
-[M1e's register](../../docs/history/m1e_review_processing/open_questions.md). An id is sticky
+M1e's register. An id is sticky
 and is never reused.
 
 Each of the first five is a **reading** a contested stage needs before it can
@@ -43,7 +43,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.27](#q-m1e227--what-do--and-null-mean-in-eins-json) | What do `[]` and `null` mean in Ein's JSON? | [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (D-14) | **ruled 2026-11-07**: `[]` is the empty set, `null` an object that does not exist; a node that is not dead has `core: null`; **built 2026-11-09** by S1f.5.8 (`c4708638`) |
 | [Q-M1e2.28](#q-m1e228--which-keywords-does-each-form-take) | Which keywords does each form take? | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md) (D-15, G-15, G-22) | **ruled 2026-11-07**: a fixed list per form, and any other keyword is an error; a term and a nested fact take none, so `:where` is refused wherever written; `:cardinality` and `:mode` retired, a fact keeps `:rule` and `:using`, and `:why` on a fact is refused; supersedes Q32's drop; not built |
 
-C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
+C1's reading is Q-M1e.12's
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
 
 ---
@@ -479,7 +479,7 @@ treats an obligation as if it were a restriction.
   terms W1 is one defect, *a node on the maximal line is never recorded*,
   and layer 0 is the case where the maximal line is `{∅}`. The four lever rows are
   wrong by the config principle alone.
-- [Q-M1e.6](../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
+- Q-M1e.6's
   definition becomes a special case. Its maximality arm is the maximal line,
   right where no obligation is stated. Its *owes nothing* arm makes every
   node of R a solution, which is Q-M1e2.1's literal k = 7.
@@ -590,7 +590,7 @@ facts, a set H of possible hypotheses, and constraints.
   minimal line is the explanations, with the obligations as the goal.
 - Theorist's **skeptical / credulous** distinction maps onto a line:
   facts true at every node of it, or at some node. M1d's *certain core*
-  ([representations.md](../../docs/history/m1d_satisfiability/representations.md))
+  (representations.md)
   is the skeptical reading of a model set.
 
 Measured with the merged `probes/region.py` (now [`utils/region.py`](../../utils/region.py)), same
@@ -672,7 +672,7 @@ question into phase p1e2.1b"*. Sub-question (d) moved with it.
   exponentially far down, and the user called it trivial. Is it reported,
   named as trivial, or left out?
 - **(g) What `exhausted` certifies.** The lines reported, not the walk
-  ([Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)).
+  (Q-M1e.8).
 - **(h) The universe.** R is over the generator's candidate list at root.
   W4 (a fresh constant never becomes a candidate) and W6 (relations never
   hypothesised) are cases where that list is too small. The oracle checks the
@@ -936,7 +936,7 @@ an exhausted run, stays. **Not built**:
 **(g) Yes, with one correction to today's word.**
 
 - *Today* `exhausted = true` certifies the **walk**, not R
-  ([Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)).
+  (Q-M1e.8).
   W1 is a run that is `exhausted` and still misses a node of R.
 - Under the ruling, `exhausted = true` means *the reported region is R*.
 - A limited run reports what it found as a lower bound, and every node in it
@@ -1382,7 +1382,7 @@ Put to the user on 2026-11-04 by
 W10: `Kb::record_justification` keeps at most 32 alternatives per fact, by
 premise count, and `explain.rs` minimises frontier size over what it kept, so
 `examples/ein-bugs/alt-cap-core.ein` reports a 3-fact core where every
-derivation gives a 2-fact one. [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)
+derivation gives a 2-fact one. Q-M1e.15
 was never ruled, and the stage took its recommendation, (3): keep beside the
 capped list the arrival with the smallest closure, *bounded and exact for
 what the search asks*.

@@ -563,7 +563,7 @@ milestone folder under `plans/m_followups_<topic>/`.
 ## May a performance lever decide what a complete model is? (Q40)
 
 **Found by measurement, 2026-08-20, M1a
-[S1a.6.7](../../docs/history/m1a_rust/README.md#s1a67--re-measure-the-lever-matrix)** — the
+S1a.6.7** — the
 stage that re-measured the lever matrix. This is a *kernel semantics*
 question, not an implementation one.
 
