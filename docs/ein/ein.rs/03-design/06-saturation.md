@@ -26,13 +26,35 @@ step():
 - **Boundary.** At quiescence every parked candidate, a match whose NAF guards were not yet judged or failed, is
   judged against that fixpoint, and **at most one is admitted per round**. That is a soundness requirement, not a
   throttle: admitting a batch would let one admission invalidate another's guard after its verdict was taken, which
-  on `p ← absent q; q ← absent p` derives both, and `{p, q}` is a model of that program under no reading. A
+  on the two rules $p \leftarrow \operatorname{absent} q$ and $q \leftarrow \operatorname{absent} p$ derives both, and
+  $\{p, q\}$ is a model of that program under no reading. A
   candidate whose guard fails **stays parked**, since a `forall`'s nested absent can flip from failing to passing as
   the KB grows; one whose guard can only keep failing is **retired**. The events are `park`, `admit` and `retire`
   ([`../05-events.md`](../05-events.md)).
 
 `Saturator::step` returns one firing at a time and `Saturator::saturate` runs it to the end. A runaway program is
 stopped by the configured step limit, `SaturateError::StepLimit`, an error and never an answer.
+
+The loop as a state machine. The saturator is in the closure while the queue or a pending delta can still yield a
+firing, at the boundary for one round each time the closure is quiescent, and at the fixpoint when a round admits
+nothing; the events a transition writes are in brackets. `Stopped` is reached only by a saturation that stops at
+its first contradiction (§ 5), and is left by running the same saturator on.
+
+```plantuml
+@startuml
+hide empty description
+[*] --> Closure : Saturator::new,\nor Saturator::resume
+Closure --> Closure : a firing [fire, mirror]\nits new facts are the next delta
+Closure --> Boundary : nothing left to fire [quiesce]
+Boundary --> Closure : the first candidate whose\nguards pass is admitted [admit]
+Boundary --> Fixpoint : no candidate admitted\n[park, retire for those judged]
+Fixpoint --> [*] : Kb::mark_saturated
+Closure --> Stopped : stopping at the first contradiction,\nand a firing made one
+Stopped --> Closure : run_to_quiescence,\nthen saturate again
+Closure --> StepLimit : max_steps firings\nwithout a fixpoint
+StepLimit --> [*] : SaturateError::StepLimit
+@enduml
+```
 
 ## 2. The agenda
 
@@ -59,6 +81,32 @@ name reaches them.
 | `seen` | a hash set of (binding key, guard set): a match is enqueued once per disjunct's guards |
 | the delta | the facts derived since the last enqueue pass, or none, which means a full pass |
 | the matched plans | one flag per plan of the engine's list, in its order |
+
+A candidate, one match of one plan's disjunct, lives in exactly one of these places from the enqueue pass that
+found it to the application that fires it. Only the boundary moves a parked candidate, and nothing moves one back:
+
+```plantuml
+@startuml
+hide empty description
+state "a match" as Matched
+state "queued" as Queued
+state "parked" as Parked
+state "retired" as Retired
+state "applied" as Applied
+
+[*] --> Matched : an enqueue pass:\na full match, or a seeded one
+Matched --> [*] : (binding key, guard set) in seen,\nor the key in fired: dropped
+Matched --> Queued : its disjunct has no guard\n[enqueue, parked false]
+Matched --> Parked : its disjunct has guards\n[enqueue, parked true]
+Parked --> Parked : a guard with a nested absent\nfails: judged again when a\nwatched relation grows [park]
+Parked --> Queued : every guard passes, and it is\nthe first in rank order [admit]
+Parked --> Retired : a monotone guard fails: it can only\nkeep failing [retire]; or its key\nfired through another disjunct
+Retired --> [*]
+Queued --> Applied : popped, its key not in fired
+Queued --> [*] : popped, its key already fired
+Applied --> [*] : new facts written [fire], or every\nconclusion known: a redundant firing\n[alt where an alternative is recorded]
+@enduml
+```
 
 **The closure is semi-naive.** After a productive firing, the next enqueue pass reads only the derived facts,
 seeding each plan whose positive premises name a delta fact's relation at that premise (`run_seeded`); a full pass
@@ -88,6 +136,33 @@ fixpoint grown by the commitment:
   node rather than forgotten;
 - the tiebreaker continues from root's high-water mark, so the node's own candidates sort after the inherited ones
   within a half, which is what FIFO means for a queue not built from scratch.
+
+```plantuml
+@startuml
+participant "region::prepare" as prep
+participant "root's Saturator" as rs
+participant "Snapshot" as snap
+participant "the node function" as node
+participant "the node's Saturator" as ns
+
+prep -> rs : Saturator::new(root), saturate
+rs --> prep : root at its fixpoint
+prep -> rs : snapshot(root)
+rs --> snap : the plan list in its order, fired, seen,\nthe entries, the queue, the parked set\nwith its watch stamps, the tiebreaker,\nthe agenda, root's fact set
+loop each node
+  node -> node : fork = root.branch();\nwrite the commitment
+  node -> snap : new_facts_of(fork)
+  snap --> node : delta: the commitment,\nin the order written
+  node -> ns : Saturator::resume(snapshot, delta)
+  note right of ns
+    the first enqueue pass is a delta pass:
+    each plan seeded at the facts of delta
+  end note
+  node -> ns : saturate
+  ns --> node : the fork at its fixpoint,\nor at its first contradiction
+end
+@enduml
+```
 
 The node's plans are the run's plan memo's ([`05-matcher.md`](05-matcher.md)), so a node compiles nothing root compiled.
 `saturator.rs`'s `a_resumed_saturation_reaches_the_same_fixpoint` holds the fixpoint equal to a fresh saturation's.

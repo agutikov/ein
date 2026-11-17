@@ -29,12 +29,31 @@ ein-einb   = { path = "../ein/ein.rs/crates/ein-einb" }     # optional
 Six crates ship and two are dev-only (`ein-corpus`, `ein-narration`, both `publish = false`). They stack linearly up
 to `ein-infer` and fork there:
 
-```text
-ein-core  ← ein-ir ← ein-infer ← ein-einb    (the .einb container)
-                              ← ein-render   (DOT, the markdown trace, dumps,
-                                              the read-out's rendering)
-                                    ← ein-cli
+```dot
+digraph stack {
+  rankdir=TB;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  app    [style=dashed, label="your program"];
+  cli    [label="ein-cli"];
+  render [label="ein-render\nDOT, the markdown trace, the dumps,\nthe read-out's rendering"];
+  einb   [label="ein-einb\nthe .einb container"];
+  infer  [label="ein-infer"];
+  ir     [label="ein-ir"];
+  core   [label="ein-core"];
+
+  cli -> render; cli -> einb;
+  render -> infer; einb -> infer;
+  infer -> ir; ir -> core;
+  app -> infer  [style=dashed];
+  app -> render [style=dashed, label="optional"];
+  app -> einb   [style=dashed, label="optional"];
+}
 ```
+
+An arrow is *depends on*; each crate also names the crates below the one it points at, and the full graph of the
+manifests is [`01-architecture.md` § 1.2](01-architecture.md#12-the-eight-crates).
 
 Every library crate is `#![forbid(unsafe_code)]` except `ein-einb`, which is `deny` with one module allowed,
 `cast.rs`, the zero-copy reads ([`03-design/09-binary-format.md`](03-design/09-binary-format.md)). The one other `unsafe` the
@@ -55,6 +74,34 @@ the engine is synchronous and `Send`, and `--jobs N` is a `rayon` pool built ins
 | 3. saturate *(optional)* | `ein_infer::region::root_firings`, or `Saturator::new(&mut session)` and `.saturate(…)` | `ein-infer` |
 | 4. ask | `ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)`, or `ein_infer::explore::run` for the answer without its states read | `ein-infer` |
 | 5. read | `ReadOut` (`answer`, `states`, `queries`); `ein_render::trace::region::of_read_out` for the trace | `ein-infer`, `ein-render` |
+
+The five steps as the calls of § 3's example, in order. The caller owns the two arenas and the KB and lends them
+to every call; nothing is kept between calls but what those three hold.
+
+```plantuml
+@startuml
+participant "your program" as app
+participant "ein-ir" as ir
+participant "ein-infer" as infer
+participant "ein-render" as render
+
+app -> app : Ast::new(), Terms::new()
+app -> ir : load_file(&mut ast, &mut terms, path)
+ir --> app : Kb, or KbLoadError
+opt a trace is wanted
+  app -> infer : region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
+  infer --> app : root's firings; root is now saturated
+end
+app -> app : explore::Options::new(Mode { which, ask })
+app -> infer : read_out::run(&mut kb, &mut terms, &ast, &opts)
+infer --> app : ReadOut { answer, states, queries, .. }, or SolveError
+app -> app : match r.answer.verdict:\nSolution, Ambiguity, Contradiction, Open, None
+opt a trace is wanted
+  app -> render : trace::region::of_read_out(&r, &mut kb, &mut terms, &ast, &firings, ...)
+  render --> app : the markdown
+end
+@enduml
+```
 
 ### 2.1 The two arenas
 
@@ -109,7 +156,7 @@ answering path, the one `ein solve` takes.
 
 | field | |
 |---|---|
-| `budget` | facts beyond root, summed over every fixpoint the run computes: `--region-budget`, [2^20 by default](../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md). A run that reaches it stops and says what it established, with `exhausted` false; it never changes an answer |
+| `budget` | facts beyond root, summed over every fixpoint the run computes: `--region-budget`, [$2^{20}$ by default](../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md). A run that reaches it stops and says what it established, with `exhausted` false; it never changes an answer |
 | `limit` | the largest `n` whose whole cube a program the static check flags gets: `--region-limit` |
 | `jobs` | `> 1` fans the nodes out over threads, with the same answer. Inert without the `parallel` feature |
 | `deadline` | `-T`: an `Instant`, past which the run is an error, never an answer |
@@ -272,11 +319,11 @@ still has to name it.
 
 `ein-einb` writes a loaded, optionally saturated, KB as a binary container and maps it back without parsing again:
 
-```text
-ein_einb::save(path, &kb, &terms, &mut ast, &forms, base_dir, &opts)  →  a .einb file
-ein_einb::open(path, &mut terms, &opts)                              →  Opened { kb, ast, forms, meta, .. }
-ein_einb::is_einb(&bytes)                                            →  dispatch on the magic
-```
+| call | gives |
+|---|---|
+| `ein_einb::save(path, &kb, &terms, &mut ast, &forms, base_dir, &opts)` | a `.einb` file |
+| `ein_einb::open(path, &mut terms, &opts)` | `Opened { kb, ast, forms, meta, .. }` |
+| `ein_einb::is_einb(&bytes)` | whether the bytes start with the container's magic |
 
 **It is a private cache format, never an interchange one.** Anything crossing a tool boundary is `.ein` text or the
 event protocol's JSON. A reader refuses a newer `FORMAT_MAJOR` rather than guessing, and `ein --version` prints the

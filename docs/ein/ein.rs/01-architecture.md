@@ -7,13 +7,105 @@ dependency policy are [`03-design/10-toolchain-and-layout.md`](03-design/10-tool
 
 ## 1. The crates
 
-```text
-ein-core  ← ein-ir ← ein-infer ← ein-einb    (the .einb container)
-                              ← ein-render   (views, the read-out, the trace, the dumps)
-                                    ← ein-cli    (the ein binary; takes ein-einb under `einb`)
+### 1.1 The system in its context
+
+`ein` is one binary, and everything it works on is a file. It starts no other program and opens no connection: the
+standard library is read from the first of three places that holds it
+([`03-design/02-shared-assets.md`](03-design/02-shared-assets.md#3-resolution)), and a drawing leaves `ein` as DOT
+text, which the reader hands to Graphviz.
+
+```plantuml
+@startuml
+left to right direction
+skinparam componentStyle rectangle
+
+actor "user" as user
+rectangle "ein\n(one binary)" as ein
+
+file "program.ein\nand the modules it imports\nfrom its own directory" as prog
+database "program.einb\na private cache of one\nloaded program" as einb
+package "the standard library: the first source that answers" as std {
+  folder "1. $EIN_STDLIB" as s1
+  folder "2. stdlib/ of a checkout,\nfound from the executable" as s2
+  artifact "3. the copy compiled\ninto ein" as s3
+}
+file "the answer\nthe read-out on stdout; as files:\n~--dump-answer, ~--json-summary,\n~--events, ~--trace, ~--dump-lattice" as out
+file "DOT text\nein render …" as dot
+rectangle "Graphviz" as gv
+
+user --> prog : writes
+user --> ein : runs a command on a file
+ein --> prog : reads
+ein --> std : resolves std.*
+ein --> einb : ein kb save writes it
+einb --> ein : read wherever a .ein is
+ein --> out : writes
+ein --> dot : writes
+dot --> gv : the user draws it
+@enduml
 ```
 
-The stack is linear up to `ein-infer` and forks there; a crate depends on the crates below it and on nothing above.
+### 1.2 The eight crates
+
+An arrow runs from a crate to a crate it names under `[dependencies]` in its `Cargo.toml`; every edge of the
+manifests is drawn. The six shipped crates stack linearly up to `ein-infer` and fork there; a crate depends on the
+crates below it and on nothing above. `ein-cli` takes `ein-einb` under its `einb` feature.
+
+```dot
+digraph crates {
+  rankdir=TB; labelloc=t;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_shipped {
+    label="the six crates that ship"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    core   [label="ein-core\ninterning, Value, the layered KB,\nprovenance"];
+    ir     [label="ein-ir\nparse, imports, macros, load"];
+    infer  [label="ein-infer\ncompile, match, saturate,\nH, the routes over R, cores"];
+    einb   [label="ein-einb\nthe .einb container"];
+    render [label="ein-render\nDOT views, the read-out,\nthe trace, the dumps"];
+    cli    [label="ein-cli\nthe ein binary"];
+  }
+
+  ir -> core;
+  infer -> ir; infer -> core;
+  einb -> infer; einb -> ir; einb -> core;
+  render -> infer; render -> ir; render -> core;
+  cli -> render; cli -> infer; cli -> ir; cli -> core;
+  cli -> einb [style=dashed, label="feature einb"];
+}
+```
+
+Two crates are dev-only (`publish = false`), `ein-corpus` and `ein-narration`, and neither library depends on a
+crate of the workspace. No shipped crate names one under `[dependencies]`; the edges below are every
+`[dev-dependencies]` edge between two crates that is not a `[dependencies]` edge already, the ones a test or a
+bench build adds. Two of them run against the stack, a lower crate's tests reading a higher crate: `ein-ir`'s tests
+compile and saturate with `ein-infer`, and `ein-infer`'s tests render with `ein-render`.
+
+```dot
+digraph dev_edges {
+  rankdir=TB; labelloc=t;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [style=dashed, fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_dev {
+    label="dev-only crates"; labeljust=l; fontname="Helvetica"; fontsize=10; style=dashed; color=gray50;
+    corpus    [label="ein-corpus\nthe corpus manifest, fixture helpers,\nthe sweeps' worker pool, the bench set"];
+    narration [label="ein-narration\nwhat of a derivation is narration"];
+  }
+  core [label="ein-core"]; ir [label="ein-ir"]; infer [label="ein-infer"];
+  einb [label="ein-einb"]; render [label="ein-render"]; cli [label="ein-cli"];
+
+  core -> corpus; ir -> corpus; infer -> corpus; einb -> corpus; render -> corpus; cli -> corpus;
+  infer -> narration; render -> narration;
+  ir -> infer     [label="tests only"];
+  infer -> render [label="tests only"];
+  corpus -> core; corpus -> ir; corpus -> infer;
+}
+```
+
+The last three edges are `ein-corpus`'s own `[dev-dependencies]`, for its bench set
+(`ein-corpus/benches/engine.rs`): its library depends on none of the three.
 
 - **`ein-core`** depends on no other crate of the workspace: interning, `Value` and `FactId`, the layered
   copy-on-write KB, provenance and its walks, the value printers, and `:why` template substitution, which the
@@ -32,7 +124,6 @@ The stack is linear up to `ein-infer` and forks there; a crate depends on the cr
   **`ein render` draws and `ein show` lists**: `render` writes DOT, `show` writes Ein text a `.ein` file could hold.
 
 `stdlib/` is Ein *data* that `ein-ir` resolves and embeds ([`03-design/02-shared-assets.md`](03-design/02-shared-assets.md)).
-Two crates are dev-only and no shipped crate links them: `ein-corpus` and `ein-narration`.
 
 ## 2. One `ein solve`, from file to read-out
 
@@ -40,15 +131,62 @@ Two crates are dev-only and no shipped crate links them: `ein-corpus` and `ein-n
 |---|---|---|
 | read | the file's bytes, `.ein` text or a `.einb` container by its magic | `ein-cli/src/common.rs` (`read_program`), `ein-ir/src/read.rs` |
 | parse | text to the AST arena, by the parser generated from `ein.l` and `ein.y` | `ein_ir::grammar` |
-| expand, resolve | macros rewritten; imports read, each module once, names to full names | `ein_ir::macros`, `ein_ir::imports` |
+| resolve, expand | imports read, each module once, names to full names; macros rewritten | `ein_ir::imports`, `ein_ir::macros` |
 | load | the AST to the KB: registries, written facts, `(written T)`, the loader's refusals | `ein_ir::from_ir` |
-| check | forbid, the hypothesis mechanisms, the static monotonicity check | `ein_infer::{forbid, mechanisms, monotone}` |
+| judge the mechanisms | where two hypothesis mechanisms could conflict, a second load is saturated and they are read together on root's fixpoint | `ein-cli/src/common.rs` (`load_held`), `ein_infer::mechanisms` |
 | compile | each rule, per activator, to a plan, memoised for the run | `ein_infer::{compile, plan, engine}` |
-| saturate root | the closure, the boundary, the obligation pass | `ein_infer::{saturator, match_, firing, contradiction, obligations}` |
+| saturate root | the closure and the boundary, to root's fixpoint | `ein_infer::{saturator, match_, firing, contradiction}` |
 | build H | the generation ladder at root | `ein_infer::{hypgen, hrule, oblgen}` |
+| check | what root owes, the static monotonicity check, forbid | `ein_infer::{obligations, monotone, forbid}` |
 | answer | the question's route over `R`, each node through the node function | `ein_infer::{explore, tree, tree_classes, states, downset, region}` |
 | read | `R` described once; each listed state's model and each query's projection | `ein_infer::{described, read_out, verdict}` |
 | print | the read-out, and whatever artefact was asked for | `ein_render::{read_out, trace, dump}`, `ein-cli/src/{solve, modes, summary}.rs` |
+
+The same run as the calls one crate makes into the next. `prepare` is `ein_infer::region::prepare_with`, which every
+question starts with; the loop is the route's, and its body is the node function of
+[`03-design/07-search.md` § 2](03-design/07-search.md#2-the-node).
+
+```plantuml
+@startuml
+actor user
+participant "ein-cli\nmodes::run" as cli
+participant "ein-ir" as ir
+participant "ein-infer\nexplore, region" as infer
+participant "ein-render" as render
+
+user -> cli : ein solve FILE
+cli -> ir : read::read_program(path)
+ir --> cli : Held::Text | Held::Container
+cli -> ir : parse(ast, text)
+ir --> cli : the top-level forms
+cli -> ir : load_query_with(ast, terms, forms, dir)
+note right of ir
+  resolve imports, expand macros,
+  relations, rules, facts, written,
+  the refusals, the indexes
+end note
+ir --> cli : Kb
+opt two mechanisms could conflict
+  cli -> infer : mechanisms::check(a second load)
+  infer --> cli : conflicts (refused) | notes
+end
+cli -> infer : read_out::run_with(kb, terms, ast, opts, events)
+group prepare
+  infer -> infer : Saturator::new, saturate\n(root's fixpoint, the snapshot)
+  infer -> infer : hypgen::generate_config_free\n(H, sorted and deduplicated)
+  infer -> infer : obligations::tally(root)
+  infer -> infer : monotone::classify, forbid::check
+end
+loop each batch of the route
+  infer -> infer : region::fan_out(sets)\nfork root, write the commitment,\nresume, saturate, tally
+end
+infer -> infer : Described; each listed state's model\nand each query's classes
+infer --> cli : ReadOut
+cli -> render : read_out::render(&ReadOut)
+render --> cli : Text
+cli --> user : stdout, and each artefact asked for
+@enduml
+```
 
 `ein oracle` runs the same load and root, then route 2, the whole cube. `ein test` loads a file, asks it the least
 question that decides its claims, and checks them (`ein-cli/src/test.rs`, `ein_infer::claim`). `ein saturate` stops
@@ -86,6 +224,44 @@ after root.
 | `dump.rs` | the canonical IR printer |
 | `claim.rs`, `expect.rs` | the parsed forms of a `(solve … :expect …)` region claim and a query's `:expect` |
 
+The modules as the path a program's bytes take through them; an arrow is what one hands the next
+([`03-design/04-ir-frontend.md`](03-design/04-ir-frontend.md#2-the-load-path)).
+
+```dot
+digraph ein_ir {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  file   [shape=note, label="program.ein\nor program.einb"];
+  read   [label="read.rs\nread_program"];
+  gram   [label="grammar.rs\nein.l, ein.y (generated)\ngrammar/build_ast.rs"];
+  ast    [shape=cylinder, label="ast.rs\nthe Ast arena"];
+  imp    [label="imports.rs\nResolver"];
+  std    [label="stdlib.rs\nSource"];
+  mac    [label="macros.rs"];
+  load   [label="from_ir.rs\nthe loader"];
+  claims [label="claim.rs, expect.rs"];
+  dump   [label="dump.rs"];
+  kb     [shape=cylinder, label="ein_core::Kb\nwith its Program"];
+  text   [shape=note, label="Ein text"];
+
+  file -> read  [label="bytes"];
+  read -> gram  [label="Held::Text"];
+  gram -> ast   [label="nodes"];
+  ast  -> imp   [label="forms"];
+  imp  -> read  [label="a module's path"];
+  imp  -> std   [label="std.*"];
+  imp  -> load  [label="one import-free list,\nfull names"];
+  load -> mac   [label="a rule's clauses,\na goal"];
+  mac  -> load  [label="expanded"];
+  claims -> load [label=":expect, parsed"];
+  load -> kb    [label="facts, registries,\n(written T)"];
+  ast  -> dump  [label="nodes"];
+  dump -> text;
+}
+```
+
 ### 3.3 `ein-infer`
 
 | module | owns |
@@ -105,6 +281,64 @@ after root.
 | `structure.rs`, `structure/` | the structure of H, read from the program's rules |
 | `events.rs`, `error.rs`, `build.rs`, `mt19937.rs` | the `--events` writer; why a question was not answered; what the build compiled in; the seeded generator tests draw from (no command takes a seed) |
 
+The modules by what each computes for the next: plans for the matcher, matches for the saturator, a fixpoint for
+the node function, nodes for the routes, `R` for the read-out. The static check and the cores stand beside the
+line: one reads the compiled plans, the other a dead node's derivations.
+
+```dot
+digraph ein_infer {
+  rankdir=TB;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_closure {
+    label="the closure: one KB to its fixpoint"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    compile [label="compile.rs, plan.rs\na rule and an activator to a Plan;\nthe run's PlanMemo"];
+    engine  [label="engine.rs\nthe ordered plan list, fired"];
+    match   [label="match_.rs, predicates.rs\nthe register matcher; eq, neq"];
+    sat     [label="saturator.rs\nthe agenda, the closure step,\nthe NAF boundary, the mirror"];
+    firing  [label="firing.rs, contradiction.rs\none application; (false) and X, (not X)"];
+    obl     [label="obligations.rs\nwhat a quiescent KB owes"];
+  }
+
+  subgraph cluster_worlds {
+    label="the worlds: the lattice of commitments"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    hyp     [label="hypgen.rs\nhrule.rs, oblgen.rs\nthe ladder: H"];
+    region  [label="region.rs\nprepare; the node function;\nfan_out; the cube"];
+    explore [label="explore.rs\na question to its route"];
+    routes  [label="downset.rs, states.rs, tree.rs,\ntree_classes.rs\nknown_dead.rs, order.rs, transversal.rs"];
+    desc    [label="described.rs, count.rs\nR described once"];
+    readout [label="read_out.rs, verdict.rs,\nclaim.rs, expect.rs"];
+  }
+
+  static  [label="monotone.rs, detector.rs, forbid.rs\nthe static check over the compiled plans"];
+  explain [label="explain.rs\na dead node's core"];
+  events  [label="events.rs\nthe --events writer, the Watch"];
+
+  compile -> engine [label="PlanId"];
+  engine  -> sat    [label="plans, in order"];
+  sat     -> match  [label="run_one, run_seeded, holds"];
+  match   -> sat    [label="each Match"];
+  sat     -> firing [label="a popped candidate"];
+  firing  -> sat    [label="the derived facts"];
+  sat     -> obl    [label="the fixpoint"];
+
+  sat     -> region  [label="Snapshot of root"];
+  obl     -> region  [label="Owes"];
+  hyp     -> region  [label="candidates"];
+  region  -> static  [label="root's plans, H's relations"];
+  static  -> explore [label="monotone | flagged"];
+  explore -> routes  [label="Mode"];
+  routes  -> region  [label="sets to saturate"];
+  region  -> routes  [label="NodeOut"];
+  region  -> explain [label="a dead fork"];
+  routes  -> desc;
+  desc    -> readout [label="Described"];
+  sat     -> events  [style=dotted];
+  region  -> events  [style=dotted];
+}
+```
+
 ### 3.4 `ein-einb`, `ein-render`, `ein-cli`
 
 | crate | modules |
@@ -112,6 +346,50 @@ after root.
 | `ein-einb` | `header.rs` (the header and the section table), `sections.rs`, `tables.rs` (ids across the boundary), `meta.rs` (what a file was made from), `solutions.rs`, `wire.rs`, `cast.rs` (the audited zero-copy casts) |
 | `ein-render` | `read_out.rs` (the read-out as text), `trace/` (the trace: its AST, its steps, relevance, the region trace), `dump/` (the answer, the lattice, the oracle's cube, `--json-summary`), `rules.rs`, `constraints.rs`, `ir_dot.rs`, `kb_dot.rs`, `derivation.rs`, `slice.rs`, `region_dot.rs`, `region_doc.rs` (the views), `structure.rs` (the hypothesis space written out), `grid.rs`, `models.rs`, `sentence.rs` (a fact in English), `shape.rs` |
 | `ein-cli` | `cmdline.rs` (the argument surface), `common.rs`, one module per command (`solve.rs` and `modes.rs`, `oracle.rs`, `test.rs`, `render.rs`, `show.rs`, `saturate.rs`, `kb.rs`), `summary.rs`, `factdump.rs`, `printers.rs`, `version.rs`, `help_shape.rs` |
+
+`ein-render` by what each module is handed and what it writes. A view is DOT text and the read-out is text, both
+returned to the caller, and a dump is files in a directory the caller names; no module of the crate writes to
+stdout, which is `ein-cli`'s.
+
+```dot
+digraph ein_render {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  forms   [shape=cylinder, label="the parsed forms\n(ein_ir::Ast)"];
+  kb      [shape=cylinder, label="a Kb\nwith its Terms"];
+  firings [shape=cylinder, label="firings\n(ein_infer::firing)"];
+  ro      [shape=cylinder, label="ReadOut\n(ein_infer::read_out)"];
+  cube    [shape=cylinder, label="Region, the oracle's cube\n(ein_infer::region)"];
+  hs      [shape=cylinder, label="the structure of H\n(ein_infer::structure)"];
+  visits  [shape=cylinder, label="the nodes a run visited\n(ein_infer::events::Watch)"];
+
+  prog  [label="rules.rs, constraints.rs,\nir_dot.rs"];
+  kbv   [label="kb_dot.rs, derivation.rs"];
+  trace [label="trace/, slice.rs,\nsentence.rs"];
+  text  [label="read_out.rs\ngrid.rs, models.rs"];
+  dans  [label="dump/region_answer.rs,\ndump/json.rs, dump/serialise.rs"];
+  dlat  [label="dump/region_lattice.rs"];
+  dreg  [label="dump/region.rs,\nregion_doc.rs, region_dot.rs"];
+  struc [label="structure.rs"];
+  dot   [label="builder.rs, dot_util.rs,\npalette.rs"];
+
+  o_dot  [shape=note, label="DOT"];
+  o_md   [shape=note, label="the trace, markdown"];
+  o_out  [shape=note, label="the read-out's text"];
+  o_ans  [shape=note, label="--dump-answer DIR,\n--json-summary"];
+  o_lat  [shape=note, label="nodes.json, nodes.md"];
+  o_reg  [shape=note, label="an oracle dump:\nregion.json, region.md"];
+  o_hs   [shape=note, label="h-space.json,\nits read-out"];
+
+  forms -> prog;  kb -> kbv;  firings -> trace;  ro -> trace;
+  ro -> text;  ro -> dans;  visits -> dlat;  cube -> dreg;  hs -> struc;
+  prog -> dot;  kbv -> dot;  trace -> dot;  dlat -> dot;  dreg -> dot;  struc -> dot;
+  dot -> o_dot;
+  trace -> o_md;  text -> o_out;  dans -> o_ans;  dlat -> o_lat;  dreg -> o_reg;  struc -> o_hs;
+}
+```
 
 ## 4. Where the language lives
 

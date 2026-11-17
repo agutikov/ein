@@ -104,11 +104,11 @@ asks for it alone. The corpus fixture that emits it is `examples/lattice/04_obli
 
 **Three of `compile`'s six numbers are not what they are named**, and they stay as they are because the event is a
 comparison surface: a changed field meaning is a schema version ([§ Versioning](#versioning)), not a fix
-([`engine.rs`](../../../ein.rs/crates/ein-infer/src/engine.rs)). On a plan with *d* disjuncts:
+([`engine.rs`](../../../ein.rs/crates/ein-infer/src/engine.rs)). On a plan with $d$ disjuncts:
 
-- **`n_guards` is *d***: one guard tuple per disjunct, whether or not the disjunct has a guard in it. It is the
+- **`n_guards` is $d$**: one guard tuple per disjunct, whether or not the disjunct has a guard in it. It is the
   disjunct count and not the guard count, and it is the field a consumer is most likely to sum;
-- **`n_disjuncts` is *d* − 1**: the *extra* disjuncts, so a rule with no `(or …)` reports `n_disjuncts 0` and
+- **`n_disjuncts` is $d - 1$**: the *extra* disjuncts, so a rule with no `(or …)` reports `n_disjuncts 0` and
   `n_guards 1`;
 - **`n_steps` is the first disjunct's** step count alone, not the plan's.
 
@@ -143,14 +143,14 @@ makes the queue's pop order checkable rather than inferred.
 | `e` | emitted at | payload |
 |---|---|---|
 | `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered`; and `later_debts`, `later_candidates` where the call read a debt the state does not owe |
-| `hyp` | each candidate the generator constructs | `fact`, `verdict` ∈ {`emitted`, the name of the filter that dropped it} |
+| `hyp` | each candidate the generator constructs | `fact`; `verdict`, which is `emitted` or the name of the filter that dropped it |
 | `hypskip` | a skip **before** a candidate exists; *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
-| `enter` | each node a route visits, after the node's own events, in visit order | `layer` (the commitment's size), `commitment` (sorted), `kind` ∈ {`dead`, `owing`, `in-r`}, `owes`, `core` (a dead node's, a list; `null` on a node that is not dead, which has no core), `core_status` (`within-budget`, or `cut-` and the caps the core's search stopped at; `null` where no core was taken) |
+| `enter` | each node a route visits, after the node's own events, in visit order | `layer` (the commitment's size), `commitment` (sorted), `kind`, one of `dead`, `owing` and `in-r`, `owes`, `core` (a dead node's, a list; `null` on a node that is not dead, which has no core), `core_status` (`within-budget`, or `cut-` and the caps the core's search stopped at; `null` where no core was taken) |
 | `layer` | the end of each layer of route 1 or of the state route | `layer`, `visited`, `dead`, `owing`, `r`, `facts`: the layer's own counters. On route 1 `layer` is the commitments' size, from 0; on the state route it is the layer's index, root's 0, then one per state size extended, and the counters are its saturations |
 
-`hyp`'s `verdict` is the *name of the thing that dropped the candidate*, not a boolean: `raw == emitted + Σ
-filtered` is the invariant the generator's statistics assert, and naming the filter makes a counter difference
-locate itself (`hypgen::apply_filters` returns that name for this reason).
+`hyp`'s `verdict` is the *name of the thing that dropped the candidate*, not a boolean:
+$\operatorname{raw} = \operatorname{emitted} + \sum_{f} \operatorname{dropped}_f$ over the filters $f$ is the
+invariant the generator's statistics assert, and naming the filter makes a counter difference locate itself (`hypgen::apply_filters` returns that name for this reason).
 
 A skip before any candidate exists gets its own kind rather than a `hyp` with an invented `fact`:
 `closed_relation`, `relation_not_whitelisted` and `no_hypothesis_relation` are decisions about a *relation*, and
@@ -235,9 +235,10 @@ stream is one run's, the last question asked, and its `region` event's `asked` s
 is, in order:
 
 1. `run` and `load`, as above;
-2. **root**: root's saturation (`compile`, `enqueue`, `fire`, …), its obligation pass (`owe`), **how H was built**
-   (the generator's `rung` line where it reached the obligations rung, one `hyp` per candidate and, at `verbose`,
-   the `hypskip`s) and, on a program the static check flags, one `monotonicity` line;
+2. **root**, in this order: root's saturation (`compile`, `enqueue`, `fire`, …); **how H was built** (one `hyp` per
+   candidate and, at `verbose`, the `hypskip`s, with the generator's `rung` line where it reached the obligations
+   rung: after the candidates of a call that generated, before the blind enumerator's of a call that declined);
+   root's obligation pass (`owe`); and, on a program the static check flags, one `monotonicity` line;
 3. **every node the route visits**, in visit order whatever `-j` is: that node's saturation and obligation events,
    then one `enter` line. A dead node on a monotone program's route narrates its saturation up to the firing that
    makes its first contradiction, where the route stops it, and its debts there; the `enter` line's core is taken
@@ -247,6 +248,113 @@ is, in order:
 5. **`region`**, last.
 
 `region_modes.rs`'s `the_event_stream_is_the_runs_and_jobs_move_no_line` holds the shape and the `-j` invariance.
+
+### One run, line by line
+
+A program with one rule, one hrule and two candidates, small enough to follow every line of:
+
+```lisp
+(relation person Person      :why "{?1} is a person")
+(relation drink  Drink       :why "{?1} is a drink")
+(relation likes  Person Drink :why "{?1} likes {?2}")
+
+(person Ann)
+(drink Tea) (drink Coffee)
+
+(hrule guess ()
+  :match  (and (person ?p) (drink ?d))
+  :assert (likes ?p ?d)
+  :why    "guess that {?p} likes {?d}")
+
+(rule one-drink ()
+  :match  (and (likes ?p Tea) (likes ?p Coffee))
+  :assert (false)
+  :why    "{?p} cannot like both Tea and Coffee")
+```
+
+`ein solve FILE --events OUT.jsonl` describes its region by the state route: root, the two candidates alone, both
+alive, and the pair, dead. Each arrow below is one line of `OUT.jsonl`, with its `n`; the column it leaves is the
+part of the engine that wrote it, and a node's lines are written by the route as it takes the node.
+
+```plantuml
+@startuml
+participant "ein-cli" as cli
+participant "root's saturation" as sat
+participant "the generator" as gen
+participant "the route\n(a node's saturation,\nreplayed in visit order)" as route
+participant "OUT.jsonl" as out
+
+cli -> out : 0 run (version, level, impl, file, argv, config)
+cli -> out : 1 load (the counts and the names)
+== root ==
+sat -> out : 2 compile one-drink
+sat -> out : 3 quiesce (nothing to fire: no likes fact yet)
+gen -> out : 4 hyp (likes Ann Tea), emitted
+gen -> out : 5 hyp (likes Ann Coffee), emitted
+== layer 0: the empty commitment ==
+route -> out : 6 quiesce
+route -> out : 7 enter [ ], in-r
+route -> out : 8 layer 0
+== layer 1: each candidate alone ==
+route -> out : 9 quiesce
+route -> out : 10 enter [(likes Ann Coffee)], in-r
+route -> out : 11 quiesce
+route -> out : 12 enter [(likes Ann Tea)], in-r
+route -> out : 13 layer 1
+== layer 2: the pair ==
+route -> out : 14 enqueue one-drink, p = Ann
+route -> out : 15 fire one-drink, derived (false)
+note right of route
+  stopped at its first contradiction:
+  no quiesce line
+end note
+route -> out : 16 enter [both], dead, its core both candidates
+route -> out : 17 layer 2
+== the end ==
+cli -> out : 18 region (asked, region, verdict, work)
+@enduml
+```
+
+### The orders a stream can take
+
+The kinds of a region run's stream as a state machine: a state is the part of the run that is writing, the kinds
+in it are the ones it may write, and a transition is the first line of the next part. A stream of `ein saturate` is
+the first three states and nothing after them.
+
+```plantuml
+@startuml
+hide empty description
+state "run" as Run
+state "load" as Load
+state "root's saturation" as Sat : compile, enqueue, fire, mirror,\nquiesce, park, admit, retire, alt
+state "H is built" as Gen : hyp, hypskip (verbose),\nat most one rung
+state "root's obligation pass" as Owe : owe, one a debt
+state "monotonicity" as Mono : one line, a flagged program's
+state "a node" as Node : its saturation's kinds, as root's;\nthen owe, one a debt;\nthen enter, its last line
+state "layer" as Layer : route 1 and the state route:\none line at the end of a layer
+state "region" as Region
+
+[*] --> Run
+Run --> Load
+Load --> Sat
+Sat --> Gen
+Gen --> Owe
+Owe --> Mono : the static check\nfound a site
+Owe --> Node : a monotone program
+Mono --> Node
+Node --> Node : the next node,\nin visit order
+Node --> Layer
+Layer --> Node
+Layer --> Layer : a layer that\nvisited nothing
+Node --> Region
+Layer --> Region
+Region --> [*]
+@enduml
+```
+
+A state may write little or nothing: a program none of whose rules fires has a root saturation of its `compile`
+lines and one `quiesce`, a program that states `(solve :no-search)` builds no H, and one that owes nothing has no
+`owe`. The first node is root's own, the empty commitment, and under `--no-search` it is the only one.
 
 ## Versioning
 

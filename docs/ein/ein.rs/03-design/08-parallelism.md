@@ -43,6 +43,45 @@ interner cannot grow (§ 3). A node whose saturation would intern a fact the run
 committing thread computes it after the batch, in order, which is where its new facts get their numbers. So the
 numbering, and every order that follows from it, is the sequential run's at any job count.
 
+One batch of three nodes at `--jobs 2`, of which the second would have to number a new fact. The committing thread
+is the only one that writes the intern tables, the event stream and the route's memory; a worker writes its own
+fork, its own derivation records and its own event buffer.
+
+```plantuml
+@startuml
+participant "the committing thread\n(the route)" as main
+participant "Terms" as terms
+participant "worker 1" as w1
+participant "worker 2" as w2
+participant "--events sink" as sink
+
+main -> terms : lend()
+note right of terms : both tables shared for the batch:\nreadable from every thread,\ngrowable from none
+main -> w1 : node 1 (pool.install, par_iter)
+main -> w2 : node 2
+activate w1
+activate w2
+w1 -> terms : worker(): a view;\nprovs.open_fork()
+w2 -> terms : worker(): a view;\nprovs.open_fork()
+w1 -> w1 : root.branch(), resume, saturate,\ntally: every fact already interned
+w2 -> w2 : root.branch(), resume, saturate:\na new fact
+terms --> w2 : Overflow::Shared; refused is set
+w1 --> main : Some(NodeOut), its events buffered
+deactivate w1
+w2 --> main : None: handed back
+deactivate w2
+main -> w1 : node 3
+activate w1
+w1 --> main : Some(NodeOut)
+deactivate w1
+main -> terms : the Lent guard drops: the tables are owned again
+main -> main : node 2 computed here, in the batch's order:\nits new facts get their numbers
+loop the batch's order: node 1, node 2, node 3
+  main -> sink : Events::replay(the node's buffer),\neach line numbered now; then its enter line
+end
+@enduml
+```
+
 A node's narration is buffered per worker: a worker builds each event line with a hole where its sequence number goes,
 and `Events::replay` fills the holes as the committing thread replays the node's events in visit order, so the stream
 at `-j 4` is the stream at `-j 1` ([`../05-events.md`](../05-events.md)). A route's workers share nothing they write
@@ -59,7 +98,7 @@ divides. Root's saturation is sequential, and so is the load.
 |---|---|
 | the program and the KB's core | immutable once published, behind an `Arc`; no lock |
 | root's KB and the snapshot a node resumes from | read by `&`; each worker forks its own KB from root ([`03-data-model.md`](03-data-model.md)) and owns its saturator outright |
-| the interner and the fact store (`Terms`) | **lent**: `Terms::lend` turns each table into its shared state for the batch, every worker takes a view (`Lent::worker`), and a lent table is readable from every thread and growable from none; the committing thread takes the tables back when the batch ends |
+| the interner and the fact store (`Terms`) | **lent**: `Terms::lend` turns each table into its shared state for the batch, every worker takes a view (`Terms::worker`, over the `&Terms` that `Lent::get` hands out), and a lent table is readable from every thread and growable from none; the committing thread takes the tables back when the batch ends |
 | the provenance arena | **per worker**: each view opens a fork region of its own (`ProvArena::open_fork`) and records its derivations there; nothing is shared |
 | the plan memo | append-only, keyed by rule and activator, behind one lock; a worker almost always hits ([`05-matcher.md`](05-matcher.md)) |
 | the work counters | thread-local (`ein_core::counters`), merged on the committing thread |

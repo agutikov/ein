@@ -8,13 +8,50 @@ cite these pages as their specification; each states the engine as it is and nam
 Three groups, each constraining the next:
 
 1. **The contract**: what may not change.
-   [Determinism and order](01-determinism-and-order.md) → [Shared assets](02-shared-assets.md)
+   [Determinism and order](01-determinism-and-order.md), then [Shared assets](02-shared-assets.md).
 2. **The machine**: what changes underneath it.
-   [Data model](03-data-model.md) → [IR frontend](04-ir-frontend.md) → [Matcher](05-matcher.md) →
-   [Saturation](06-saturation.md) → [Search](07-search.md)
+   [Data model](03-data-model.md), [IR frontend](04-ir-frontend.md), [Matcher](05-matcher.md),
+   [Saturation](06-saturation.md), then [Search](07-search.md).
 3. **The scale-out and the build.**
-   [Parallelism](08-parallelism.md) → [Binary format](09-binary-format.md) →
-   [Toolchain and layout](10-toolchain-and-layout.md)
+   [Parallelism](08-parallelism.md), [Binary format](09-binary-format.md), then
+   [Toolchain and layout](10-toolchain-and-layout.md).
+
+The same order as a picture: a solid arrow is *read next*, and a dashed one is a group constraining the group
+after it.
+
+```dot
+digraph design {
+  rankdir=LR; compound=true;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_contract {
+    label="1. the contract: what may not change"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    det    [label="01 determinism\nand order"];
+    assets [label="02 shared assets"];
+    det -> assets;
+  }
+  subgraph cluster_machine {
+    label="2. the machine: what changes underneath it"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    data   [label="03 data model"];
+    ir     [label="04 IR frontend"];
+    match  [label="05 matcher"];
+    sat    [label="06 saturation"];
+    search [label="07 search"];
+    data -> ir -> match -> sat -> search;
+  }
+  subgraph cluster_scale {
+    label="3. the scale-out and the build"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    par  [label="08 parallelism"];
+    einb [label="09 binary format"];
+    tool [label="10 toolchain\nand layout"];
+    par -> einb -> tool;
+  }
+
+  assets -> data [style=dashed, ltail=cluster_contract, lhead=cluster_machine, label="constrains"];
+  search -> par  [style=dashed, ltail=cluster_machine, lhead=cluster_scale, label="constrains"];
+}
+```
 
 The first group is not a preamble: every choice in the second is legal only because the first can prove it changed
 nothing, so a claim such as *this preserves the match order* in [`05-matcher.md`](05-matcher.md) is enforced by

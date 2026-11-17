@@ -13,15 +13,20 @@ computes it.
 H is built once, at root, by the generation **ladder** ([`hypgen.rs`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs),
 one function, `rung`):
 
-1. **the program's `(hrule …)`s**, where it activates any (`(solve :hrules …)`; [`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs)):
-   each active hrule is a plan whose `:assert`, one fact, is a candidate per match;
+1. **the program's `(hrule …)`s**, where it declares any ([`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs)):
+   an hrule without parameters is one plan, an hrule with them one plan per activator `(solve :hrules …)` names,
+   and each plan's `:assert`, one fact, is a candidate per match. The rung is chosen by the declaration: a program
+   whose only hrule has parameters and no activator takes this rung and proposes nothing;
 2. else, **the obligations rung**, where an obligation is activated at root
    ([`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)): the facts that would discharge what root owes,
    and, read off the rules with no saturation, what a rule can bring a commitment to owe. Under an activated
    obligation a state that owes nothing proposes nothing. The rung declines the whole call, and the blind enumerator
    runs instead, where an obligation's guard scans a relation the rung itself proposes, or reads one a commitment
    can change;
-3. else, **the blind enumerator**: every eligible relation, over the objects the program names, its fillers by type.
+3. else, **the blind enumerator**: every eligible relation of one or two arguments, every object the program names
+   in each of its slots (a binary fact of an object with itself left out). No slot is filtered by the name its
+   declaration gives it: Ein has no types, the names a declaration writes in its slots are only left out of the
+   objects, and a candidate the program's rules do not allow is refuted by those rules, in its own node.
    The objects are the names the alive-set invariant lists for the program
    ([`invariant.rs`](../../../../ein.rs/crates/ein-infer/src/invariant.rs): no rule asserts a name the program lacks),
    never `__closed__` or `__symmetric__`. The invariant is what lets H be taken once, at root, and it is enforced:
@@ -31,8 +36,45 @@ one function, `rung`):
    outside root's fixpoint and the rules' constants.
 
 An obligation rule the program loads and nothing activates chooses no rung, so a module imported for another of its
-names takes nothing off the blind enumerator. Candidates then pass a pipeline of filters, each named, so that
-`raw = emitted + Σ filtered` and a dropped candidate's `hyp` event names its filter ([`../05-events.md`](../05-events.md)).
+names takes nothing off the blind enumerator. Candidates then pass a pipeline of filters, each named, and a dropped
+candidate's `hyp` event names its filter ([`../05-events.md`](../05-events.md)), so that every candidate a rung
+built is accounted for:
+
+$$
+\operatorname{raw} = \operatorname{emitted} + \sum_{f \in \text{filters}} \operatorname{dropped}_f
+$$
+
+From the program to the bit order of every node mask; the choice between the rungs is drawn as a flow in
+[`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-ladder):
+
+```dot
+digraph h {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  root  [shape=cylinder, label="root's fixpoint"];
+  rung  [shape=diamond, label="hypgen::rung"];
+  r1    [label="rung 1\nhrule.rs\nthe hrule plans' matches"];
+  r2    [label="rung 2\noblgen.rs\nwhat pays root's debts,\nand a commitment's"];
+  r3    [label="rung 3\nthe blind enumerator\nrelations x slots x objects"];
+  scope [shape=note, label=":hypothesis-relations\n:no-hypothesis\n(__closed__ R)"];
+  filt  [label="the filters, in order\nnegated_fact\nfact_already_exists\nseen_in_call"];
+  sort  [label="region::prepare\nsort by order_key,\ndeduplicate"];
+  H     [shape=cylinder, label="H: Vec<Candidate>\nbit i of every node mask"];
+
+  root -> rung;
+  rung -> r1 [label="an hrule is declared"];
+  rung -> r2 [label="an obligation is\nactivated at root"];
+  rung -> r3 [label="neither"];
+  r2 -> r3   [style=dashed, label="declined"];
+  scope -> r2 [style=dotted];
+  scope -> r3 [style=dotted];
+  r1 -> filt; r2 -> filt; r3 -> filt;
+  filt -> sort [label="emitted"];
+  sort -> H;
+}
+```
 `(solve :hypothesis-relations …)`, `(solve :no-hypothesis …)` and `(__closed__ R)` scope the blind enumerator
 ([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)).
 
@@ -40,7 +82,7 @@ names takes nothing off the blind enumerator. Candidates then pass a pipeline of
 ([`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs)): no active hrule proposes a relation a list or
 a closure takes out, no obligation owes one, and no relation is in both lists or listed and closed; a conflict is
 refused before any search, and a list an hrule leaves filtering nothing, or a redundant name, is a note.
-**`(solve :no-search)`** states that H is empty: no rung runs, and `R` is {∅} where root is alive and discharged,
+**`(solve :no-search)`** states that H is empty: no rung runs, and `R` is $\{\emptyset\}$ where root is alive and discharged,
 empty otherwise. `ein show hyps FILE` prints H, one candidate per line, with no search.
 
 ## 2. The node
@@ -53,6 +95,39 @@ search ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-a
 its kind, `dead` (its fixpoint is contradictory), `owing` (alive, with an undischarged obligation) or `in-r`, with what
 it owes, its closure, and its facts beyond root's. So a route and the oracle may visit different nodes and cannot
 read one differently.
+
+A commitment's life in one run. Its kind is one of three, `region::Class`: `Dead`, `Owing` or `R`, printed `dead`,
+`owing` and `in-r`. A set a route knows to be dead is never forked, and has no `enter` line (§ 3).
+
+```plantuml
+@startuml
+hide empty description
+state "not visited" as Unvisited
+state "known dead" as Known
+state "forked" as Forked
+state "saturating" as Sat
+state "stopped at its\nfirst contradiction" as Stopped
+state "quiescent" as Quiet
+state "dead" as Dead
+state "owing" as Owing
+state "in R" as InR
+
+[*] --> Unvisited
+Unvisited --> Known : a set known dead lies inside it\n(L1, L8): no saturation
+Unvisited --> Forked : the node function:\nroot.branch(), the commitment written
+Forked --> Sat : Saturator::resume(root's snapshot)
+Sat --> Stopped : a firing makes a contradiction\n(a route's node, monotone program)
+Sat --> Quiet : the fixpoint
+Stopped --> Dead
+Quiet --> Dead : contradiction::detect\nfinds (false), or X and (not X)
+Quiet --> Owing : alive, and obligations::tally\nreports an instance
+Quiet --> InR : alive, and it owes nothing
+Dead --> [*] : its core, where a surface prints one,\ntaken over its fixpoint
+Owing --> [*]
+InR --> [*]
+Known --> [*]
+@enduml
+```
 
 On a monotone program a route's node is saturated with the **stop at its first contradiction**: its dead bit is all
 a route reads of a dead node, and the agenda puts first what can make the contradiction. A node a route reads whole,
@@ -88,20 +163,80 @@ expect exactly one, or count it). `explore::run` answers each with the least wor
 
 | program | question | route |
 |---|---|---|
-| root dead | any | **route 1** ([`downset.rs`](../../../../ein.rs/crates/ein-infer/src/downset.rs)), one saturation (L0, L1) |
+| root dead | any | one saturation, root's: **route 1** ([`downset.rs`](../../../../ein.rs/crates/ein-infer/src/downset.rs)), which visits root alone (L0, L1); a monotone program's describe is answered by the state route, which stops at root the same way |
 | monotone | describe, `--count` | **the tree and the classes** ([`tree_classes.rs`](../../../../ein.rs/crates/ein-infer/src/tree_classes.rs)), the default, where root owes an instance L5 or L9 licenses: `R`'s states by the obligation tree, and each state's class by dualising and advancing inside it; it computes neither `N` nor an empty `R`'s owing frontier, and says so. Elsewhere, or with `--describe-route states`, **the state route** ([`states.rs`](../../../../ein.rs/crates/ein-infer/src/states.rs)) |
 | monotone | `-n`, `--single`, a line's first state | **the obligation tree** ([`tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs)): an owing state branches on one owed instance's alternatives (L5) |
 | monotone | the maximal line | a climb, and dualise and advance |
 | monotone | the minimal line | a shrink, and the duality against the maximal owing states |
 | flagged | any | **route 2, the cube** (L7): in layer order where the question can be decided early (`-n`, `--single`, over all of `R` or the minimal line), whole where it cannot |
 
+How a question reaches its route is drawn as one flow in
+[`02-algorithms.md` § 8](../02-algorithms.md#8-the-routes-over-r), with each route's steps.
+
 **The state route** visits each alive state once and saturates its one-up extensions, and nothing else: on a monotone
 program a commitment's state is its closure's (L3), so the alive commitments fall into far fewer states than there are
 commitments. It reads every row of the description off the states it met: a state's minimal generators are the
 minimal transversals of its complements against the states below it, `N`, the minimal dead sets, the minimal
-transversals of the complements of the maximal alive states, and `k_c`, the commitments over a state `T`, is
-`f(T) = 2^|T| − Σ f(S)` over the alive states `S ⊊ T`
-([`transversal.rs`](../../../../ein.rs/crates/ein-infer/src/transversal.rs)). The alive commitments it saturates are
+transversals of the complements of the maximal alive states, and `k_c`, the commitments over a state $T$, is
+counted over the alive states strictly inside it
+([`transversal.rs`](../../../../ein.rs/crates/ein-infer/src/transversal.rs)):
+
+$$
+f(T) = 2^{|T|} - \sum_{S \subsetneq T,\; S \text{ alive}} f(S)
+$$
+
+What the route visits on [`examples/lattice/01_subset_pruned.ein`](../../../../examples/lattice/01_subset_pruned.ein),
+whose four candidates make a cube of sixteen commitments, as `ein render lattice FILE --view full` draws it: `R`
+green, the one dead node red. The three commitments above the dead pair are not drawn, because the route never
+saturated them (L1).
+
+```dot
+digraph lattice {
+  rankdir=BT;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10];
+  label="examples/lattice/01_subset_pruned.ein — 13 of 13 nodes visited by the state route, every alive state once";
+  labelloc=t;
+  n0 [label="∅", color="#2ca02c", fillcolor="#e8f6e8"];
+  n1 [label="(proposed a)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n2 [label="(proposed b)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n3 [label="(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n4 [label="(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n5 [label="(proposed a)\n(proposed b)", color="#d62728", fillcolor="#fdeaea"];
+  n6 [label="(proposed a)\n(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n7 [label="(proposed a)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n8 [label="(proposed b)\n(proposed c)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n9 [label="(proposed b)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n10 [label="(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n11 [label="(proposed a)\n(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  n12 [label="(proposed b)\n(proposed c)\n(proposed d)", color="#2ca02c", fillcolor="#e8f6e8"];
+  { rank=same; n1; n2; n3; n4; }
+  { rank=same; n5; n6; n7; n8; n9; n10; }
+  { rank=same; n11; n12; }
+  n0 -> n1;
+  n0 -> n2;
+  n0 -> n3;
+  n0 -> n4;
+  n2 -> n5;
+  n1 -> n5;
+  n3 -> n6;
+  n1 -> n6;
+  n4 -> n7;
+  n1 -> n7;
+  n3 -> n8;
+  n2 -> n8;
+  n4 -> n9;
+  n2 -> n9;
+  n4 -> n10;
+  n3 -> n10;
+  n10 -> n11;
+  n7 -> n11;
+  n6 -> n11;
+  n10 -> n12;
+  n9 -> n12;
+  n8 -> n12;
+}
+```
+ The alive commitments it saturates are
 distinct, so they are at most route 1's, and a dead extension it saturates prunes every superset (L1); where both
 routes finish, their read-outs are identical but for the `route` and `work` rows (`ein-infer/tests/explore.rs`).
 
@@ -110,12 +245,12 @@ indices: a commitment of size `k + 1` is visited only when each of its `k`-subse
 saturates every commitment; it is the oracle's route.
 
 A minimal question where ∅ is in `R` is decided at root on every route: ∅ is below every commitment, so the minimal
-line is {∅}.
+line is $\{\emptyset\}$.
 
 ### 4.1 Budgets
 
 A run has two bounds: the **region budget**, facts beyond root summed over every fixpoint the run computes
-(`--region-budget`, [2^20 by default](../../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md)),
+(`--region-budget`, [$2^{20}$ by default](../../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md)),
 checked before each step, and on the cube the **region limit**, the largest `n` whose whole cube a flagged program
 gets (`--region-limit`). **A budget stops work and never changes an answer**: a stopped run says what it established,
 members found, a line's members found, a verdict reached, with `exhausted` false, and no more
@@ -123,7 +258,7 @@ members found, a line's members found, a verdict reached, with `exhausted` false
 question that needs the whole cube meets `R`'s members in layer order up to the limit, and describe certifies what it
 can of them; a line mode answers from the same description
 ([Q-M1e2.19](../../../decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md)). `-T` is a deadline, past
-which the run is an error. A count is exact at any size and reported up to 2^63 − 1
+which the run is an error. A count is exact at any size and reported up to $2^{63} - 1$
 ([`count.rs`](../../../../ein.rs/crates/ein-infer/src/count.rs),
 [Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)).
 
@@ -185,6 +320,31 @@ commitment that grows and takes a conclusion away, or grows and adds a debt; a *
 an `(absent …)` at odd depth in a saturation rule over a relation a commitment changes, an obligation's trigger over
 one, or a rule whose activator a commitment can derive. A program with no site is monotone, and its routes take every
 licence of § 3; a program with a site is **flagged**, and gets the cube alone.
+
+```dot
+digraph check {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  plans   [shape=cylinder, label="root's compiled plans,\nthe relations of H"];
+  classify [label="monotone::classify\na site: a read a commitment\ncan undo"];
+  mono    [label="monotone\nevery licence of § 3"];
+  flagged [label="flagged\nL7, the cube, alone"];
+  det     [label="detector.rs\nwhat each site puts at stake,\ncycles, order findings"];
+  forbid  [label="forbid::check\na refutation resting on an\nabsent a commitment can extend"];
+  refused [shape=note, label="the program is refused,\nbefore any node"];
+  warn    [shape=note, label="the read-out's warnings"];
+
+  plans -> classify;
+  classify -> mono    [label="no site"];
+  classify -> flagged [label="a site"];
+  flagged -> det;
+  det -> warn;
+  classify -> forbid  [label="the sites"];
+  forbid -> refused   [label="one found"];
+}
+```
 
 **The detector** ([`detector.rs`](../../../../ein.rs/crates/ein-infer/src/detector.rs)) says more of a flagged program:
 its static half, read off root's plans before any node, is which property of a node each site puts at stake (the

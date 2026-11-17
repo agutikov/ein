@@ -101,7 +101,7 @@ itself one of the fixed orders below.
 | a relation's extent, `Kb::facts_of` | append order | `Layer::by_rel`, one `Vec<FactId>` per relation |
 | a participation bucket `(relation, slot, value)` | append order | `Layer::by_rel_slot_val`, keyed by `SlotKey` |
 | `Kb::names` | first-seen order, which no consumer relies on: each sorts | a bitset dedup over each layer's name registry |
-| an engine's plan list | compilation order: `rules × activators`, each engine its own list over the shared memo | `Engine::plans: Vec<PlanId>` with `by_key` |
+| an engine's plan list | compilation order: each rule with each of its activators, each engine its own list over the shared memo | `Engine::plans: Vec<PlanId>` with `by_key` |
 | plans by premise relation | plan-list order | `Saturator::pos_index`, built by walking the plan list |
 | a match's bindings, `Prov::bindings` | bind order, the matcher's trail | `Box<[(Symbol, Value)]>` |
 | a match's premises, `Prov::premises` | plan-step order, a seeded fact at its own step | `Box<[FactId]>` |
@@ -125,6 +125,50 @@ within each half, and re-ranks what it inherits under its own agenda. The mechan
 
 ## 4. Order-sensitive sites
 
+Every observable order is derived from the program's text by a chain of the structures below, and no link of a
+chain reads an id's number or a hash's order. An arrow reads *fixes the order of*; the three sources on the left are
+orders the program's text gives, and the notes on the right are what a run prints.
+
+```dot
+digraph orders {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  written [shape=cylinder, label="the order forms are written in\n(the registries, a file's facts)"];
+  names   [shape=cylinder, label="the text of names\n(Interner::rank, repr)"];
+  argv    [shape=cylinder, label="the command and its options"];
+
+  extent  [label="a relation's extent,\nappend order"];
+  plans   [label="the engine's plan list\nrules x activators"];
+  matches [label="the match sequence\nleft-deep, steps in plan order"];
+  rank    [label="the agenda's rank\nhalf, then the tiebreaker"];
+  firing  [label="the firing sequence"];
+  first   [label="which derivation a fact\nrecords first"];
+  gen     [label="the generator's list\nobjects by name rank"];
+  H       [label="H, sorted by order_key:\nthe bit order of every node mask"];
+  visit   [label="the route's visit order"];
+  sorted  [label="every printed set,\nsorted by rendered text"];
+
+  o_trace [shape=note, label="the trace,\nthe event stream"];
+  o_core  [shape=note, label="a dead node's core"];
+  o_list  [shape=note, label="the read-out's listings,\nthe dumps, DOT"];
+
+  written -> extent; written -> plans;
+  extent -> matches; plans -> matches;
+  matches -> rank; rank -> firing;
+  firing -> extent [style=dashed, label="derived facts append"];
+  firing -> plans  [style=dashed, label="a derived activator's plan appends"];
+  firing -> first; firing -> o_trace;
+  first -> o_core;
+  names -> gen; written -> gen;
+  gen -> H; names -> H;
+  H -> visit; argv -> visit;
+  visit -> o_trace;
+  names -> sorted; sorted -> o_list; H -> o_list;
+}
+```
+
 ### 4.1 The firing sequence
 
 What fires first decides the trace, the event stream, which derivation of a fact is recorded first, and so the
@@ -135,7 +179,7 @@ core of a dead node.
 | candidate selection, `Matcher` | the bucket of the first slot, left to right, holding a usable value (`plan.probes`, checked against `candidates_scan` in debug builds); a bucket yields in extent order, so narrowing changes no match sequence: `match_.rs`' `narrowing_never_changes_the_match_sequence` |
 | the join | left-deep, steps in plan order; no join is reordered ([`05-matcher.md`](05-matcher.md)) |
 | a seeded match | the delta fact at each matching step, in step order, at its own premise position |
-| compilation, `Engine` | `rules × activators` in registry and append order; the memo shares plans, never the order |
+| compilation, `Engine` | each rule with each of its activators, in registry and append order; the memo shares plans, never the order |
 | the enqueue pass | a full pass walks the plan list; a delta pass walks the delta facts in order, then `pos_index[rel]` |
 | the closure step | the symmetric mirror before rule firings, its queue a stack |
 | the mirror's seed | the relations marked `(__symmetric__ R)` sorted by name, each extent in store order: `saturator.rs`' `the_mirror_seeds_its_relations_in_name_order` |

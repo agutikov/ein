@@ -65,6 +65,64 @@ A text then goes through these phases, in this order:
 | 12 | build the KB's indexes, once | `ein_core::Kb::rebuild_indexes` |
 | 13 | refuse a circular written `:using` chain | `ein_core::detect_provenance_cycles` |
 
+The same path as a flow, with where a program is refused. A refusal of the parse or of import resolution ends the
+load at once; the loader's own refusals accumulate through its passes and surface together (§ 9.1).
+
+```plantuml
+@startuml
+start
+partition "read.rs" {
+  :read_program(path): the bytes;
+  if (the first eight bytes are EINB_MAGIC?) then (yes)
+    :Held::Container: opened by ein-einb,\nwhich parses and loads the program it stores;
+    stop
+  elseif (UTF-8?) then (no)
+    :refused at the first bad byte's line and column;
+    stop
+  else (yes)
+    :Held::Text;
+  endif
+}
+partition "grammar.rs" {
+  if (nested past NESTING_LIMIT?) then (yes)
+    :refused, one line;
+    stop
+  endif
+  :the generated lexer and parser\nappend the forms to the Ast;
+  if (a syntax error?) then (yes)
+    :ParseError: every error recovery reached,\neach with its ranked repairs;
+    stop
+  endif
+}
+partition "imports.rs" {
+  :read every module once (depth first),\nrename to full names, splice one import-free list,\ndrop repeated declarations, pick display names;
+  if (a cycle, a missing module,\na name bound twice, ...?) then (yes)
+    :LoadError, at once;
+    stop
+  endif
+}
+partition "from_ir.rs" {
+  :sort the forms by head;
+  :pass 0: the macros;
+  :pass 1: the relations, each storing its declaration fact;
+  :pass 2: the rules and hrules,\ntheir :match and :assert macro-expanded first;
+  :pass 3: the facts, with their provenance;
+  :state (written T) for every nested fact;
+  :the program-wide refusals, the queries,\nthe one (solve ...), the last (config ...);
+  :the unimported std.macro guard;
+  :intern every name a rule or a query mentions;
+  :Kb::rebuild_indexes, once;
+  :refuse a circular written :using chain;
+  if (any pass reported an error?) then (yes)
+    :KbLoadError: every line, in pass order;
+    stop
+  endif
+}
+:a loaded Kb, its Program, the Ast its rules point into;
+stop
+@enduml
+```
+
 Above `ein-ir`, `ein-cli`'s `common::load_held` judges the hypothesis mechanisms on root's fixpoint
 (`ein_infer::mechanisms::check`, over a second load) and opens a container by the program it stores, parsed again
 with no import left to resolve ([09-binary-format.md](09-binary-format.md)).
@@ -187,6 +245,32 @@ variable is stored without its `?`, a keyword without its `:`.
 in which a form's arguments are one contiguous `ArgSpan`; beside them a string table (`SymId`, indexed by an
 `FxHashMap` that is never iterated, so its order reaches nothing) and the file table. Everything is a `u32` index: no
 `Rc`, no recursive drop, and a subtree copy, which macro expansion and renaming make, is a walk over integers.
+
+How a premise `(likes Ann ?x)` sits in the arenas. A node is an entry of `nodes`; its position, if it has one, is
+the entry of `locs` at the same index; a form's arguments are one contiguous run of `args`, each a node's index;
+and a name's text is in the string table once, whichever nodes spell it.
+
+```dot
+digraph ast {
+  rankdir=LR;
+  node [shape=record, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  nodes [label="nodes : Vec\<Node\> | <f> SForm \{ head, args \} | <h> Atom(SymId) | <a> Atom(SymId) | <v> Var(SymId)"];
+  locs  [label="locs : Vec\<Option\<Loc\>\> | <f> Some(file, line, col) | <h> ... | <a> ... | <v> ..."];
+  args  [label="args : Vec\<NodeId\> | <a0> NodeId | <a1> NodeId"];
+  strs  [label="the string table | <l> likes | <n> Ann | <x> x"];
+
+  nodes:f -> nodes:h [label="head"];
+  nodes:f -> args:a0 [label="args: ArgSpan \{ start, len: 2 \}"];
+  args:a0 -> nodes:a;
+  args:a1 -> nodes:v;
+  nodes:h -> strs:l;
+  nodes:a -> strs:n;
+  nodes:v -> strs:x [label="without its ?"];
+  nodes:f -> locs:f [style=dotted, label="same index"];
+}
+```
 
 `ast::Node` is one of:
 
@@ -437,7 +521,7 @@ output is rendered the same way ([05-matcher.md](05-matcher.md)).
 Its bytes are observable: they are `ein-ir/tests/golden/zebra2.golden` and `zebra.golden`, the resolved program at
 the head of each `--dump-answer` file, the program a `.einb` stores
 ([09-binary-format.md](09-binary-format.md#23-the-sections)), and the goal text `ein test` prints. Unescaping and escaping are inverse and positions are not compared, so
-`parse ∘ dump` is a fixed point on every program the parser accepts.
+$\operatorname{parse} \circ \operatorname{dump}$ is a fixed point on every program the parser accepts.
 
 ## 11. The tests that hold it
 
@@ -446,7 +530,7 @@ the head of each `--dump-answer` file, the program a `.einb` stores
 | [`ein-ir/tests/generated_parser.rs`](../../../../ein.rs/crates/ein-ir/tests/generated_parser.rs) | a report is the same twice (`a_report_is_the_same_twice`) and says where the budget cut it (`a_report_cut_at_the_budget_says_so`); the end of input is where the text ends; the string escapes; no name the loader makes up is a name; `the_nesting_limit`; the lexer's tokens with and without its start condition |
 | [`ein-ir/tests/grammar_pages.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_pages.rs) | the grammar page's two blocks are written from `ein.l` and `ein.y` (`the_pages_grammar_blocks_are_the_parsers`); the grammar's table, each row a shape refused at the parse with its line, banked in `tests/golden/grammar_table.txt`; the loader lines the grammar does not cover are still reached |
 | [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | every `examples/broken/*.ein` against its `.expected` (`the_parse_negative_fixtures_reproduce_their_message`); a keyword is a whole word in every place |
-| [`ein-ir/tests/ir_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/ir_semantics.rs) | the language as data: what parses and what does not, the node a text becomes, `dump ∘ parse` on every syntactic shape, macro expansion and the names a macro may not take |
+| [`ein-ir/tests/ir_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/ir_semantics.rs) | the language as data: what parses and what does not, the node a text becomes, $\operatorname{dump} \circ \operatorname{parse}$ on every syntactic shape, macro expansion and the names a macro may not take |
 | [`ein-ir/tests/fuzz_properties.rs`](../../../../ein.rs/crates/ein-ir/tests/fuzz_properties.rs) | over generated near-programs (`EIN_FUZZ_ITERS`, `EIN_FUZZ_SEED`) and the seeds and findings of `corpus/fuzz_findings/`: input is parsed or diagnosed, never a panic; what parses round-trips through the dumper; a refusal is the same twice and within its budget; no accepted program carries a keyword its form does not list; the compiler refuses nothing the loader accepts; no firing meets an unbound variable |
 | [`ein-ir/tests/dump_goldens.rs`](../../../../ein.rs/crates/ein-ir/tests/dump_goldens.rs) | `zebra2.golden` and `zebra.golden`; `dump_then_parse_is_a_fixed_point` over the corpus |
 | [`ein-ir/tests/load_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/load_semantics.rs) | every `examples/broken/load/` refusal against its `.expected`; the pass order of accumulated errors; `require_why` decides loading only |
