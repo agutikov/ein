@@ -9,7 +9,9 @@ A relation's algebraic properties are facts written beside its declaration, neve
 ```
 
 Each property fact is the activator of a stdlib rule, `std.algebra`'s `symmetric`, `transitive`, `includes` and the
-rest, and a fact of the graph like any other. A declaration takes a name, its types and `:why`, and nothing else.
+rest, and a fact of the graph like any other, with the relation's atom as its argument: it speaks of the relation as
+one object ([Q-M1f.381](Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md)). A declaration takes a name,
+its labels and `:why`, and nothing else.
 
 **Why.** A property that is a fact is a node rules can match, derive and explain, and one more property is one more
 fact, with no change to the declarator. Bundled into the declaration, it would be hidden in a form no pattern

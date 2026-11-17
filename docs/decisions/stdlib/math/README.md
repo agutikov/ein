@@ -25,5 +25,5 @@ Decisions about the calculator as a whole: its rule, its tables, `std.math.arith
 - [Q-M1f.323](Q-M1f.323-conversion-between-the-bases-is-a-module.md) — Conversion between the bases is a module of its own
 - [Q-M1f.362](Q-M1f.362-no-rule-of-the-calculator-joins-two-facts-on.md) — No rule of the calculator joins two facts on a number
 - [Q-M1f.363](Q-M1f.363-a-calculation-is-a-request-fact-answered.md) — A calculation is a request fact, answered by a result fact that repeats its operands
-- [Q-M1f.365](Q-M1f.365-the-calculator-closes-its-own-relations-so.md) — The calculator closes its own relations, so arithmetic searches nothing
+- [Q-M1f.365](Q-M1f.365-the-calculator-closes-its-own-relations-so.md) — The calculator closes the held extents of its own relations, so arithmetic searches nothing
 - [Q-M1f.366](Q-M1f.366-the-calculators-tables-are-generated-facts-every.md) — The calculator's tables are generated facts, every row held to the integers

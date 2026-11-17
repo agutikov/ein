@@ -1,7 +1,7 @@
 # Q-M1e.16 — A firing's identity keys on every activator argument
 
-A rule application is identified by its rule, its activator and the values of its register file, and the activator
-half is the compile key's list: every argument of the activator fact, as values, names and nested facts alike. Two
+A rule application is identified by its rule, its activator and the objects in its register file, and the activator
+half is the compile key's list: every argument of the activator fact, as objects, atoms and nested facts alike. Two
 plans of one rule therefore share an identity only where they share a compile key, and so a register layout; two
 activators that differ anywhere, a nested fact included, each fire.
 

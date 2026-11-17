@@ -7,9 +7,9 @@ activator a library's fan-out rule concludes, is a relation of the program once 
 imported, and a claim names it by the short name the file lists. A name the program writes nowhere is refused at
 load: `(solve … :expect …) names <r>, and the program names no relation <r> — …`.
 
-**Why.** The refusal exists to catch a misspelt relation, which would close a relation no state can hold and
-pass for ever. A misspelling is written in no rule as well as in no declaration, so counting what rules write
-keeps the refusal and admits every derived relation, which is often the one a test is about.
+**Why.** The refusal exists to catch a misspelt relation, which would close the held extent of a relation no state
+holds a fact of, and pass for ever. A misspelling is written in no rule as well as in no declaration, so counting
+what rules write keeps the refusal and admits every derived relation, which is often the one a test is about.
 
 **Held by.** `program_relations` (`ein-ir/src/from_ir.rs`), the one list a goal and a claim are held to;
 `ein-cli/tests/goal_premises.rs`: `a_goal_is_answered_as_a_rules_match_would_be` (its region claim over a rule's

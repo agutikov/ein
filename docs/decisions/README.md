@@ -42,7 +42,7 @@ one with an answer: where Ein postpones something, the decision says what it doe
 
 | folder | what its decisions are about |
 |---|---|
-| [`language/`](language/README.md) | the language: grammar, names, values, strings, keywords, rules, macros, and what the loader refuses |
+| [`language/`](language/README.md) | the language: the graph and its objects, grammar, names, strings, keywords, rules, macros, and what the loader refuses |
 | [`imports/`](imports/README.md) | modules and imports: full and short names, and what an import brings |
 | [`diagnostics/`](diagnostics/README.md) | the line a refusal prints: its place, its wording, its note |
 | [`answer/`](answer/README.md) | the region R, a node's status, cores, claims, and the questions about R |

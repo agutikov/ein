@@ -1,11 +1,11 @@
 # Q-M1f.243 — An obligation is read as activated, owed or not
 
-Wherever Ein reads which obligations a program has, the hypothesis mechanisms' check and the generation ladder alike,
-an obligation is a plan root's activators compile, and one with no parameters always: it is read whether or not root
-owes anything under it, as an hrule is active whether or not its `:match` has a row. So a list that takes out, or a
-closure that closes, a relation an activated obligation owes is refused even where root has already paid every
-instance. One reading serves both readers, `ein_infer::mechanisms`' `obligation_plans`. An activator only a
-commitment derives is not read by the check, which judges root.
+Wherever Ein reads which obligations a program has, the hypothesis mechanisms' check and the generation ladder
+alike, an obligation is a plan root's activators compile, and one with no parameters always: it is read whether or
+not root owes anything under it, as an hrule is active whether or not its `:match` has a row. So a list that takes
+out a relation an activated obligation owes, or a closure of that relation's held extent, is refused even where root
+has already paid every instance. One reading serves both readers, `ein_infer::mechanisms`' `obligation_plans`. An
+activator only a commitment derives is not read by the check, which judges root.
 
 **Why.** A declaration says what the program means, not what one state happens to owe. Read as owed, the same list
 would conflict or not by the facts of root, and the ladder and the check would read one declaration two ways.

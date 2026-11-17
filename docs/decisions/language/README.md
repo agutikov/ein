@@ -1,18 +1,18 @@
 # Decisions: the language
 
-What Ein is written in and what a program may say: names and values, forms and keywords, rules and macros, and the
-shapes the parser and the loader refuse.
+What Ein is written in and what a program may say: the graph and its objects, names, forms and keywords, rules and
+macros, and the shapes the parser and the loader refuse.
 
-- [Q1](Q1-the-knowledge-base-is-a-typed-labelled.md) — The knowledge base is a typed labelled hypergraph with provenance
+- [Q1](Q1-the-knowledge-base-is-a-typed-labelled.md) — The knowledge base is a hypergraph of atoms and facts, with provenance
 - [Q3](Q3-ein-is-an-s-expression-language.md) — Ein is an S-expression language
 - [Q4](Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md) — A rule is a pattern, a conclusion and a reason, written in Ein
 - [Q17](Q17-spatial-structure-is-facts-and-rules-with-no.md) — Spatial structure is facts and rules, with no position arithmetic
-- [Q23](Q23-a-premise-types-a-variable-and-no-entity-has.md) — A premise types a variable, and no entity has a type slot
+- [Q23](Q23-a-premise-types-a-variable-and-no-entity-has.md) — A premise says what a variable ranges over, and nothing has a type slot
 - [Q27](Q27-a-relations-properties-are-facts-beside.md) — A relation's properties are facts beside its declaration
 - [Q31](Q31-a-why-template-refers-to-a-variable-as-var.md) — A `:why` template refers to a variable as `{?var}`
 - [Q40](Q40-a-fact-may-hold-a-fact-as-an-argument.md) — A fact may hold a fact as an argument
 - [Q-M1c.1](Q-M1c.1-a-query-states-the-answer-it-expects-with-expect.md) — A query states the answer it expects with `:expect`
-- [Q-M1c.2](Q-M1c.2-an-expectation-is-ground-and-naming-a-relation.md) — An expectation is ground, and naming a relation closes it
+- [Q-M1c.2](Q-M1c.2-an-expectation-is-ground-and-naming-a-relation.md) — An expectation is ground, and naming a relation closes its held extent
 - [Q-M1d.7](Q-M1d.7-a-rule-is-a-sentence-about-the-state-it-fires.md) — A rule is a sentence about the state it fires in
 - [Q-M1e.10](Q-M1e.10-two-inert-config-flags-are-refused.md) — Two inert config flags are refused
 - [Q-M1e.18](Q-M1e.18-eq-neq-and-absent-are-read-only-at-their-own.md) — `eq`, `neq` and `absent` are read only at their own arity
@@ -21,7 +21,7 @@ shapes the parser and the loader refuse.
 - [Q-M1e2.17](Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md) — A reserved word is a keyword only as a whole token
 - [Q-M1e2.18](Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md) — A keyword pair is no guard's argument, and a fact names no relation
 - [Q-M1e2.22](Q-M1e2.22-a-bare-is-reserved-and-refused.md) — A bare `_` is reserved and refused
-- [Q-M1e2.23](Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md) — A string is natural-language text, never a value
+- [Q-M1e2.23](Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md) — A string is natural-language text, never an object
 - [Q-M1e2.24](Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md) — Ein has no numbers and no ranges
 - [Q-M1e2.26](Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md) — `eq` and `neq` are the relations of equality and non-equality
 - [Q-M1e2.28](Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md) — Each form takes a closed list of keywords
@@ -46,7 +46,7 @@ shapes the parser and the loader refuse.
 - [Q-M1f.81](Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md) — A malformed primitive is a form the grammar would refuse where it stands
 - [Q-M1f.86](Q-M1f.86-a-macros-body-never-writes-open.md) — A macro's body never writes `open`
 - [Q-M1f.96](Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md) — A byte-order mark is refused as any character that is not ASCII
-- [Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md) — A value is a name, or a fact a state could hold
+- [Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md) — An object is an atom, or a fact a state could hold
 - [Q-M1f.114](Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md) — A relation a `(solve …)` list names is one the program writes elsewhere
 - [Q-M1f.115](Q-M1f.115-an-hrules-list-names-declared-hrules.md) — An `:hrules` list names declared hrules, and an activator has its hrule's count of arguments
 - [Q-M1f.116](Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md) — An activator's argument at a parameter that names no relation is not checked
@@ -54,8 +54,8 @@ shapes the parser and the loader refuse.
 - [Q-M1f.118](Q-M1f.118-a-claim-is-not-expanded-so-a-claim-headed.md) — A claim is not expanded, so a claim headed by a macro's call is refused
 - [Q-M1f.119](Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md) — A goal and a claim ask only about relations of the program
 - [Q-M1f.120](Q-M1f.120-a-rule-may-read-a-relation-nothing-makes.md) — A rule may read a relation nothing makes
-- [Q-M1f.122](Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md) — `absent` heads a premise and a claim's class atom, and nothing else
-- [Q-M1f.123](Q-M1f.123-false-with-no-argument-is-a-value.md) — `(false)` with no argument is a value
+- [Q-M1f.122](Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md) — `absent` heads a premise and a member of a claim's class, and nothing else
+- [Q-M1f.123](Q-M1f.123-false-with-no-argument-is-a-value.md) — `(false)` with no argument is an object
 - [Q-M1f.124](Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md) — `(eq a b)` is written only as a form of its own, never inside another
 - [Q-M1f.125](Q-M1f.125-a-connective-as-a-patterns-argument-is-refused.md) — A connective as a pattern's argument is refused by the loader, after expansion
 - [Q-M1f.126](Q-M1f.126-a-relation-parameter-bound-to-absent-false-or-eq.md) — A relation parameter bound to `absent`, `false` or `eq` is refused where the form it heads would be
@@ -74,7 +74,11 @@ shapes the parser and the loader refuse.
 - [Q-M1f.275](Q-M1f.275-written-states-every-fact-a-file-nests.md) — `written` states every fact a file nests, and a conclusion's ground ones
 - [Q-M1f.279](Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md) — A `written` fact is derived by the loader's step `#written`
 - [Q-M1f.280](Q-M1f.280-a-program-does-not-write-written.md) — A program does not write `written`
-- [Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md) — A form of a declared relation has as many arguments as its declaration has types
+- [Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md) — A form of a declared relation has as many arguments as its declaration has labels
 - [Q-M1f.339](Q-M1f.339-every-name-the-loader-makes-up-starts-with.md) — Every name the loader makes up starts with `#`
 - [Q-M1f.351](Q-M1f.351-a-bare-variable-or-name-is-no-whole-conclusion.md) — A bare variable or name is no whole conclusion
 - [Q-M1f.372](Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md) — Ein has no types: a declaration's slot names are labels
+- [Q-M1f.379](Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md) — An object is a node of the knowledge-base graph: an atom or a fact
+- [Q-M1f.380](Q-M1f.380-an-objects-identity-is-its-name-or-its-tuple.md) — An object's identity is its name or its tuple, and the graph is the representation
+- [Q-M1f.381](Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md) — A relation is the atom under a fact's first arrow, and its extent is every fact of it
+- [Q-M1f.382](Q-M1f.382-a-labelled-arrow-draws-a-fact-of-two-arguments.md) — A labelled arrow draws a fact of two arguments and is never the representation

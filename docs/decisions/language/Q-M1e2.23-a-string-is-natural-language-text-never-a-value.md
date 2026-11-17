@@ -1,4 +1,4 @@
-# Q-M1e2.23 — A string is natural-language text, never a value
+# Q-M1e2.23 — A string is natural-language text, never an object
 
 A string is written only as the value of `:why`, `:source` and `:goal-text`, the three keywords that hold natural
 language. Anywhere else, a fact's argument, a pattern, a guard, a conclusion, a claim, it is refused at the parse,
@@ -8,7 +8,7 @@ refused the same way. A string may hold any Unicode text, with the escapes `\n`,
 
 **Why.** A name needs no quotes: every character a name may hold is written bare
 ([Q-M1e2.24](Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)). A string that spelled a name would be a second
-spelling of one value, and the text a program shows a reader is the one place where any character belongs.
+spelling of one atom, and the text a program shows a reader is the one place where any character belongs.
 
 **Held by.** The lexer, `ein-ir/src/ein.l` (`TEXT`). `ein-cli/tests/cli_semantics.rs`:
 `a_string_is_natural_language_and_no_value`; `ein-ir/tests/generated_parser.rs`:

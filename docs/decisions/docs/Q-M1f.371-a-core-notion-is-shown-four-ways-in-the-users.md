@@ -6,10 +6,9 @@ mathematics**, what it is. The core notions are objects, relations, facts, rules
 obligations and the answer.
 
 A page on special syntax does not owe a graph or a formula. `:why` and the other natural-language texts are the
-built-in connection between a form and its English, the macro form is a pattern and its expansion, and an import
-is a file brought in under a name: none has a drawing or a mathematical object of its own. A specific macro that
-means something does: `forall` states a quantified rule, and is shown as its graph and its formula like the notion
-it states.
+built-in connection between a form and its English, the macro form is a pattern and its expansion, and an import is
+a file brought in under a name: none has a drawing or a formula of its own. A specific macro that means something
+does: `forall` states a quantified rule, and is shown as its graph and its formula like the notion it states.
 
 **Why.** The four answer four questions about one thing: what to type, what the knowledge base then holds, how it
 reads back, and what it is apart from how it is written or drawn. A core notion has all four because the

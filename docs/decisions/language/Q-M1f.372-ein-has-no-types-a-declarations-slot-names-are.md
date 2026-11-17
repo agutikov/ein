@@ -1,9 +1,9 @@
 # Q-M1f.372 — Ein has no types: a declaration's slot names are labels
 
-Ein has no types. No name, variable, relation, rule or fact has one, and the engine never asks whether a value is
+Ein has no types. No atom, variable, relation, rule or fact has one, and the engine never asks whether an object is
 of a kind. `(relation is-instance Object Type :why "…")` is almost an ordinary fact: the loader stores it as
 `(relation is-instance Object Type)` beside `(relation is-instance)`, and `Object` and `Type` are its second and
-third arguments, ordinary names. They are **labels**: they say to a reader what an argument is meant to be, mean
+third arguments, ordinary atoms. They are **labels**: they say to a reader what an argument is meant to be, mean
 what the program's rules make them mean, and mean nothing where no rule reads them. No argument is held to a label:
 `(lives-in House-1 Norwegian)` loads beside `(relation lives-in Person House :why "…")`.
 
@@ -16,7 +16,7 @@ A rule gives labels a meaning by matching the declaration as it matches any fact
   :why    "{?x1} is an instance of {?T1}, the label {?R} declares for its first argument")
 ```
 
-It finds a declaration of `?R`, a fact of `?R`, and an `is-instance` arrow from that fact's first argument to the
+It finds a declaration of `?R`, a fact of `?R`, and an `is-instance` fact from that fact's first argument to the
 declaration's first label, which a program may call *the type of `?x1` is `?T1`*. A relation written as a variable
 is a parameter of its rule, so an activator names the relation, `(first-argument-fits lives-in)`, and a second rule
 that matches `(relation ?R ?T1 ?T2)` and concludes `(first-argument-fits ?R)` supplies one for every declaration of
@@ -26,11 +26,11 @@ built in.
 A declaration is *almost* an ordinary fact, in four things. It fixes the count of arguments a form of the relation
 has ([Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). It carries the `:why` a fact of the
 relation reads as. It is written once for a relation. And it tells the blind enumerator what to guess about: that
-rung proposes facts of declared relations of one or two arguments, over the program's names less those some
-declaration writes as a label
+rung proposes facts of declared relations of one or two arguments, over the guessable atoms, which are the program's
+names less those some declaration writes as a label
 ([Q-M1e.12](../hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md),
 [Q-M1f.306](../hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)). That is the one place the
-engine itself reads which names are labels, and it reads them as names not to guess about, never as a kind a value
+engine itself reads which names are labels, and it reads them as names not to guess about, never as a kind an object
 has. A fact of `relation` that a rule concludes is a fact and declares nothing.
 
 Where a drawing shows a box, it is a drawing convention: `ein render kb` draws the second argument of a fact of a
