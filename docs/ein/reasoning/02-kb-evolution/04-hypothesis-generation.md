@@ -128,12 +128,12 @@ written $\varphi_h(a, \theta)$ and $\psi_h(a, \theta)$ for $\varphi_h[a]\theta$ 
 ([rules as statements](../01-static-ir/04-rules-as-statements.md) has the kinds of rule). A conclusion of more than
 one fact is no hypothesis rule
 ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). It is **active** under the
-activators $\operatorname{Act}_{\mathrm{root}}(h)$: the empty one where $h$ has no parameter, and otherwise each activator the
+activators $\operatorname{listed}(h)$: the empty one where $h$ has no parameter, and otherwise each activator the
 program lists for it. At root it proposes, for each activator $a$ and each match $\theta$ of its premise, the one
 fact its conclusion makes:
 
 $$
-\Pi_{\mathrm{hr}} \;=\; \lbrace\, \psi_h(a, \theta) \;:\; h \in \operatorname{Hr}(P),\; a \in \operatorname{Act}_{\mathrm{root}}(h),\; \mathrm{root} \models \varphi_h(a, \theta) \,\rbrace,
+\Pi_{\mathrm{hr}} \;=\; \lbrace\, \psi_h(a, \theta) \;:\; h \in \operatorname{Hr}(P),\; a \in \operatorname{listed}(h),\; \mathrm{root} \models \varphi_h(a, \theta) \,\rbrace,
 \qquad
 H_{\mathrm{hr}} \;=\; \operatorname{unsettled} \big( \lbrace\, f \in \Pi_{\mathrm{hr}} : \operatorname{rel}(f) \notin \lbrace \operatorname{eq}, \operatorname{neq} \rbrace \,\rbrace \big)
 $$
