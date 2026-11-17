@@ -295,8 +295,8 @@ impl Layer {
     /// and the hash maps are counted at their bucket cost, so an index of ten
     /// one-element vectors is not mistaken for ten bytes. It is an estimate —
     /// `hashbrown`'s control bytes and the allocator's rounding are not
-    /// visible from here — and `alloc_cost.rs` cross-checks the total against a
-    /// counting allocator, which is why an estimate is good enough.
+    /// visible from here. What a fork costs is held with a counting allocator
+    /// by `ein-core/tests/fork_cost.rs`, not through this estimate.
     pub fn footprint(&self) -> usize {
         fn vec_map<K, V>(m: &FxHashMap<K, Vec<V>>) -> usize {
             // One bucket per slot plus each vector's own allocation.
@@ -1558,8 +1558,7 @@ impl Kb {
     /// Does anything this KB believes cite a record that died with a fork?
     ///
     /// Always `false` on a KB the engine has finished with — which is the
-    /// claim, and which `ein-infer/tests/provenance.rs` asks of every corpus
-    /// file that solves, of root and of every recorded solution.
+    /// claim, of root and of every recorded solution.
     pub fn cites_fork_provenance(&self) -> bool {
         self.layers().any(Layer::cites_fork_provenance)
     }

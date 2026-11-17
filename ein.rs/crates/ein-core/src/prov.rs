@@ -74,8 +74,9 @@ impl ProvId {
     /// Was this record derived inside a fork region, and does it therefore die
     /// with the fork that created it?
     ///
-    /// The predicate `ein-infer/tests/provenance.rs` states the arena's
-    /// central claim with: nothing a finished solve believes may cite one.
+    /// The predicate the arena's central claim is stated with: nothing a
+    /// finished solve believes may cite one
+    /// ([`crate::kb::Kb::cites_fork_provenance`]).
     pub fn is_fork(self) -> bool {
         self.0 & ProvId::FORK != 0
     }
@@ -313,10 +314,9 @@ pub struct ProvArena {
     /// for the whole run.
     ///
     /// A plain counter rather than a `counters.rs` one, because it is the
-    /// evidence that the promoting path *runs*: `ein-infer/tests/provenance.rs`
-    /// asserts that no live fact cites a fork's record, and a promotion that
-    /// silently never happened would satisfy that assertion for the wrong
-    /// reason.
+    /// evidence that the promoting path *runs*: a promotion that silently
+    /// never happened would satisfy *no live fact cites a fork's record*
+    /// ([`crate::kb::Kb::cites_fork_provenance`]) for the wrong reason.
     promoted: u32,
     /// Does [`ProvArena::push`] belong to the fork in hand?
     ///
