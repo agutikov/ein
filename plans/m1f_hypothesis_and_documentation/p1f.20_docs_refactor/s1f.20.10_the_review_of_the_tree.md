@@ -461,3 +461,42 @@ golden moved.
 with the tool that draws them and the check that holds them, the generated pages among them; every other
 multi-statement formula one statement a row; *object* for *value* in `user/`, the rest of `ein.rs/`, the
 decisions and `AGENTS.md`; *relation* said of an extent on other pages of the reasoning.
+
+**The extent** (`c38b4048`). The user, on the lane's choice of the held facts for a relation's extent: *"relation's
+extent means every fact where relation atom is at first arrow, also including open and hypothetical facts that
+are not yet in KB"*. The knowledge-base page defines the extent so, with the held extent, `ext_K(r)`, as what a
+knowledge base holds of it, and its drawing shows a fact of the relation that is not held.
+
+### Diagrams as files
+
+The user's ruling (*"inline dot and plantuml sometimes doesn't work - so need to put all diagrams in subfolder,
+render to svg and insert svg"*) carried across `docs/`: six commits, `3c9e4c22` to `cd05a0f5`. Every diagram is
+a source, `NN-name.dot` or `NN-name.puml`, in the `diagrams/` folder beside its page, `NN` the page's number
+(`00` a `README.md`), with `NN-name.svg` drawn from it, and the page shows the image; no page holds a fenced
+`dot` or `plantuml` block. 734 diagrams, 683 Graphviz and 51 PlantUML, in eleven folders
+(`python3 utils/render_diagrams.py --check`): 198 moved from hand-written blocks byte for byte and named for what
+each shows, 492 rule drawings of the standard library, 19 of the grammar, the 17 of `01-static-ir/` and the 8
+engine-drawn regions of `02-kb-evolution/`, renamed to the convention.
+
+**The tool**, `utils/render_diagrams.py`: draws what is missing or stale and stamps each picture's last line
+with the SHA-256 of its source. `--check` draws nothing, since a picture's bytes depend on the Graphviz that
+drew it, and holds the pairs, the stamps, the names, that every picture is shown and every shown picture
+exists. **The check** is rule 1 of `utils/check_doc_blocks.py`, the same gate step: no fenced diagram block,
+the tool's `--check`, and every `.dot` laid out by the Graphviz at hand; rule 3 allows `reasoning/` no fenced
+block; rule 6, the dev host's, draws every `.puml`. No step list changed; the step was run once in the runner's
+image, whose Graphviz 14.1.2 lays out all 683 sources. The workflow's comment above the step says so (the
+coordinator's commit with this record).
+
+**The generators.** `gen_stdlib_rule_pages.py` writes `04-stdlib/diagrams/NN-MODULE.RULE.dot` and the image
+line, checks the regions and the sources and fails on the source of a rule no region shows.
+`ein-ir/tests/grammar_pages.rs` writes `04-reference/diagrams/01-grammar-{lexical,phrase}-<name>.puml` and
+regions that link the source and show the picture, and fails on a region, a source or a stale source.
+`ein-cli/tests/guide_programs.rs` copies the guide's pages and not its diagrams' folder. Q-M1f.368 is the
+ruling, renamed for its title; Q-M1f.375 and Q-M1f.378 say where a rule's drawing and a grammar diagram are
+kept; `AGENTS.md`, `run_tests.sh`'s comments and `utils/README.md` in place.
+
+**Found.** Thirty-five rule drawings of the standard library are wider than 2000 px (the nine `div9-step`
+rules of `std.math.num9` the widest), a strip when fitted to a page: the engine lays a rule's premises in one
+row. Not changed: the source is the engine's, and which rules are drawn is Q-M1f.375's. **The gate** on
+`cd05a0f5`: `./run_tests.sh` exit 0, 160 test binaries ok, none failed.
+
