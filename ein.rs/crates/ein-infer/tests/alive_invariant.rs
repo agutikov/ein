@@ -509,7 +509,7 @@ const SEEDED: [(&str, &[&str]); 138] = [
     ),
     (
         "tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein",
-        &["`2`, in (bin-add (b2 (b2 z 1) 2) (b2 z 1))"],
+        &["`2`, in (bin-add (b2 (b2 (b2 z 1) 2) 1) (b2 z 1))"],
     ),
     (
         "tests/stdlib/math/binary/06_what_stays_silent.ein",
