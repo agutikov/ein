@@ -2,9 +2,16 @@ digraph rule_int_cmp_sides_lhs_rhs {
   rankdir=TB;
   label="int-cmp-sides"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-cmp-r ?k ?l)_L" [label="(int-cmp-r ?k ?l)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?l_L" [label="?l", shape=diamond];
     "?r_L" [label="?r", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-cmp-r ?k ?l)_L" [shape=octagon, label="int-cmp-r", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
     "(int-cmp-r ?k ?l)_L" -> "?r_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(int-cmp-r ?k ?l)_L" -> "?k_L" [label="1", color="#ff7f0e"];
+    "(int-cmp-r ?k ?l)_L" -> "?l_L" [label="2", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

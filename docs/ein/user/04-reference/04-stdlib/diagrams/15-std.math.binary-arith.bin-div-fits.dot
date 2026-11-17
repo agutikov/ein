@@ -2,21 +2,41 @@ digraph rule_bin_div_fits_lhs_rhs {
   rankdir=TB;
   label="bin-div-fits"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" [label="(bin-div-trial ?k ?d ?rest ?w ?u)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "?rest_L" [label="?rest", shape=diamond];
+    "?w_L" [label="?w", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="bin-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-div-trial ?k ?d ?rest ?w ?u)_L" [shape=octagon, label="bin-div-trial", color="#17becf", fontcolor="#17becf"];
+    }
     "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?t_L" [label="bin-done", color="#8c564b", fontcolor="#8c564b"];
+    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?k_L" [label="1", color="#17becf"];
+    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?d_L" [label="2", color="#17becf"];
+    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?rest_L" [label="3", color="#17becf"];
+    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?w_L" [label="4", color="#17becf"];
+    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?u_L" [label="5", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
     "?t_R" [label="?t", shape=diamond];
-    "(b2 ?w 1)_R" [label="(b2 ?w 1)", shape=rectangle];
+    "?w_R" [label="?w", shape=diamond];
+    "1_R" [label="1", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="bin-div-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(b2 ?w 1)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "h1_bin-div-step_R" [shape=octagon, label="bin-div-step", color="#9467bd", fontcolor="#9467bd"];
     "h1_bin-div-step_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
     "h1_bin-div-step_R" -> "?d_R" [label="2", color="#9467bd", style=dashed];
     "h1_bin-div-step_R" -> "?rest_R" [label="3", color="#9467bd", style=dashed];
     "h1_bin-div-step_R" -> "?t_R" [label="4", color="#9467bd", style=dashed];
     "h1_bin-div-step_R" -> "(b2 ?w 1)_R" [label="5", color="#9467bd", style=dashed];
+    "(b2 ?w 1)_R" -> "?w_R" [label="1", color="#bcbd22", style=dashed];
+    "(b2 ?w 1)_R" -> "1_R" [label="2", color="#bcbd22", style=dashed];
   }
 }

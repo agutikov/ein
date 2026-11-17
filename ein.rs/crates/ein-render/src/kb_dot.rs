@@ -9,12 +9,24 @@
 //! **No head is special-cased.** The type-box / instance-oval split is read
 //! from the puzzle's own `is-a` facts; a puzzle that spells membership some
 //! other way gets ordinary fact rendering, not a second convention.
+//!
+//! **Every object is drawn once** (Q-M1f.395). A fact that a
+//! drawn fact points at is its own node, an octagon with its argument arrows
+//! numbered, whatever its count and held or not: never a node labelled with
+//! the fact's text, and never an arrow beside its node. It is filled where
+//! the knowledge base holds it, and stands in a dashed frame named for the
+//! relations of the facts that point at it (Q-M1f.398;
+//! [`dot_util::ctx_frames`](crate::dot_util::ctx_frames)). A held fact that
+//! nothing points at is drawn as it was: an arrow, a loop, or an octagon
+//! outside every frame.
 
-use std::collections::HashSet;
+use std::collections::{BTreeSet, HashMap, HashSet, VecDeque};
 
-use ein_core::{FactId, Kb, Prov, ProvKind, Tag, Terms};
+use ein_core::{FactId, Kb, Prov, ProvKind, Tag, Terms, Value};
 
-use crate::dot_util::{fact_key, hashed_id, quote};
+use crate::dot_util::{
+    FRAMED_RANKING, HELD_FILL, ctx_frames, ctx_label, fact_key, hashed_id, quote,
+};
 use crate::palette::hash_color;
 
 /// Per-relation deterministic colour (the default), per-origin colour, or no
@@ -136,11 +148,7 @@ fn emit_instance_node(name: &str) -> String {
 /// The dashed empty-arrow type edge.
 fn emit_is_a_edge(child: &str, parent: &str, penwidth: Option<u32>) -> String {
     let pw = penwidth.map_or(String::new(), |p| format!(", penwidth={p}"));
-    format!(
-        "  {} -> {} [style=dashed, arrowhead=empty, label=\"is-a\"{pw}];",
-        quote(child),
-        quote(parent)
-    )
+    format!("  {child} -> {parent} [style=dashed, arrowhead=empty, label=\"is-a\"{pw}];")
 }
 
 struct Styling {
@@ -148,6 +156,15 @@ struct Styling {
     style: &'static str,
     label_extra: Option<String>,
     penwidth: Option<u32>,
+}
+
+/// The DOT id of what stands under an argument arrow: a name's, quoted, or
+/// the node of the fact that stands there.
+fn arg_id(terms: &Terms, a: Value) -> String {
+    match a.as_fact() {
+        Some(g) => fact_node_id(terms, g),
+        None => quote(&terms.display(a)),
+    }
 }
 
 fn emit_binary_fact(terms: &Terms, f: FactId, s: &Styling) -> String {
@@ -167,8 +184,8 @@ fn emit_binary_fact(terms: &Terms, f: FactId, s: &Styling) -> String {
     }
     format!(
         "  {} -> {} [{}];",
-        quote(&terms.display(args[0])),
-        quote(&terms.display(args[1])),
+        arg_id(terms, args[0]),
+        arg_id(terms, args[1]),
         attrs.join(", ")
     )
 }
@@ -195,11 +212,11 @@ fn emit_unary_fact(terms: &Terms, f: FactId, s: &Styling) -> String {
     format!("  {only} -> {only} [{}];", attrs.join(", "))
 }
 
-/// A non-binary fact: one octagon node plus a labelled edge per argument.
-/// Arity 0 lands here too, with no participants.
-fn emit_hyperedge(terms: &Terms, f: FactId, s: &Styling) -> Vec<String> {
+/// A fact's octagon: its node's declaration, with no indent. `filled` is a
+/// fact in a frame that the knowledge base holds.
+fn hyperedge_node(terms: &Terms, f: FactId, s: &Styling, filled: bool) -> String {
     let nid = fact_node_id(terms, f);
-    let (rel, args) = terms.fact(f);
+    let (rel, _) = terms.fact(f);
     let mut head_label = format!("({})", terms.sym(rel));
     if let Some(extra) = &s.label_extra {
         head_label.push_str(&format!("\\n{extra}"));
@@ -208,18 +225,43 @@ fn emit_hyperedge(terms: &Terms, f: FactId, s: &Styling) -> Vec<String> {
         .penwidth
         .map_or(String::new(), |p| format!(", penwidth={p}"));
     let (colour, style) = (s.colour, s.style);
-    let mut lines = vec![format!(
-        "  {nid} [shape=octagon, label={}, color=\"{colour}\", fontcolor=\"{colour}\", \
+    let style = if filled {
+        format!("\"filled,{style}\", fillcolor=\"{HELD_FILL}\"")
+    } else {
+        style.to_string()
+    };
+    format!(
+        "{nid} [shape=octagon, label={}, color=\"{colour}\", fontcolor=\"{colour}\", \
          style={style}{pw}];",
         quote(&head_label)
-    )];
-    for (i, a) in args.iter().enumerate() {
-        lines.push(format!(
-            "  {nid} -> {} [label=\"#{}\", color=\"{colour}\", style={style}{pw}];",
-            quote(&terms.display(*a)),
-            i + 1
-        ));
-    }
+    )
+}
+
+/// The numbered argument arrows of a fact's octagon.
+fn hyperedge_arrows(terms: &Terms, f: FactId, s: &Styling) -> Vec<String> {
+    let nid = fact_node_id(terms, f);
+    let (_, args) = terms.fact(f);
+    let pw = s
+        .penwidth
+        .map_or(String::new(), |p| format!(", penwidth={p}"));
+    let (colour, style) = (s.colour, s.style);
+    args.iter()
+        .enumerate()
+        .map(|(i, a)| {
+            format!(
+                "  {nid} -> {} [label=\"#{}\", color=\"{colour}\", style={style}{pw}];",
+                arg_id(terms, *a),
+                i + 1
+            )
+        })
+        .collect()
+}
+
+/// A non-binary fact: one octagon node plus a labelled edge per argument.
+/// Arity 0 lands here too, with no participants.
+fn emit_hyperedge(terms: &Terms, f: FactId, s: &Styling) -> Vec<String> {
+    let mut lines = vec![format!("  {}", hyperedge_node(terms, f, s, false))];
+    lines.extend(hyperedge_arrows(terms, f, s));
     lines
 }
 
@@ -285,14 +327,10 @@ fn label_extra(kb: &Kb, terms: &Terms, f: FactId) -> Option<String> {
     None
 }
 
-fn emit_fact_line(
-    kb: &Kb,
-    terms: &Terms,
-    f: FactId,
-    colour_by: ColourBy,
-    new: bool,
-) -> Vec<String> {
-    let s = Styling {
+/// How a held fact is drawn: by its relation or its origin, dashed where a
+/// rule derived it, with the short text of where it comes from.
+fn styling(kb: &Kb, terms: &Terms, f: FactId, colour_by: ColourBy, new: bool) -> Styling {
+    Styling {
         colour: pick_colour(kb, terms, f, colour_by),
         style: if is_derived(kb, terms, f) {
             "dashed"
@@ -301,12 +339,22 @@ fn emit_fact_line(
         },
         label_extra: label_extra(kb, terms, f),
         penwidth: if new { Some(3) } else { None },
-    };
+    }
+}
+
+fn emit_fact_line(
+    kb: &Kb,
+    terms: &Terms,
+    f: FactId,
+    colour_by: ColourBy,
+    new: bool,
+) -> Vec<String> {
+    let s = styling(kb, terms, f, colour_by, new);
     let (rel, args) = terms.fact(f);
     if terms.sym(rel) == "is-a" && args.len() == 2 {
         return vec![emit_is_a_edge(
-            &terms.display(args[0]),
-            &terms.display(args[1]),
+            &arg_id(terms, args[0]),
+            &arg_id(terms, args[1]),
             s.penwidth,
         )];
     }
@@ -317,6 +365,38 @@ fn emit_fact_line(
         return vec![emit_unary_fact(terms, f, &s)];
     }
     emit_hyperedge(terms, f, &s)
+}
+
+// ── facts in a context ─────────────────────────────────────────────
+
+/// The facts that a drawn fact points at, in the order they are first met,
+/// each with the relations of the facts that point at it.
+///
+/// A drawn fact is one of `drawn`, the held facts the view draws, or a fact
+/// one of them points at, at any depth: such a fact is drawn as its node, so
+/// what it points at is pointed at by a drawn fact too. The order is the
+/// order of `drawn` and, under one fact, of its arguments, so it does not
+/// depend on the ids the facts were interned under.
+fn in_contexts(terms: &Terms, drawn: &[FactId]) -> Vec<(FactId, BTreeSet<String>)> {
+    let mut found: Vec<(FactId, BTreeSet<String>)> = Vec::new();
+    let mut at: HashMap<FactId, usize> = HashMap::new();
+    let mut walked: HashSet<FactId> = HashSet::new();
+    let mut queue: VecDeque<FactId> = drawn.iter().copied().collect();
+    while let Some(f) = queue.pop_front() {
+        if !walked.insert(f) {
+            continue;
+        }
+        let (rel, args) = terms.fact(f);
+        for g in args.iter().filter_map(|a| a.as_fact()) {
+            let i = *at.entry(g).or_insert_with(|| {
+                found.push((g, BTreeSet::new()));
+                queue.push_back(g);
+                found.len() - 1
+            });
+            found[i].1.insert(terms.sym(rel).to_string());
+        }
+    }
+    found
 }
 
 // ── the entry point ────────────────────────────────────────────────
@@ -364,12 +444,48 @@ pub fn to_dot(kb: &Kb, terms: &Terms, opts: &KbDotOpts) -> String {
         lines.push(String::new());
         lines.push("  // facts".to_string());
     }
-    for f in kb.facts() {
-        if suppress(kb, terms, f) {
+    let drawn: Vec<FactId> = kb.facts().filter(|f| !suppress(kb, terms, *f)).collect();
+    let nested = in_contexts(terms, &drawn);
+    let is_nested: HashSet<FactId> = nested.iter().map(|(g, _)| *g).collect();
+    let is_new = |f: FactId| since_keys.as_ref().is_some_and(|k| !k.contains(&f));
+    for &f in &drawn {
+        // A fact that a fact points at is its node, below, and no arrow.
+        if is_nested.contains(&f) {
             continue;
         }
-        let new = since_keys.as_ref().is_some_and(|k| !k.contains(&f));
-        lines.extend(emit_fact_line(kb, terms, f, opts.colour_by, new));
+        lines.extend(emit_fact_line(kb, terms, f, opts.colour_by, is_new(f)));
+    }
+    if !nested.is_empty() {
+        lines.push(String::new());
+        lines.push("  // facts in a context".to_string());
+        lines.push(format!("  {FRAMED_RANKING};"));
+        // A fact in a frame is drawn as a held fact is where the knowledge
+        // base holds it, and filled; one it does not hold has no origin.
+        let style_of = |g: FactId| {
+            if kb.contains(g) {
+                styling(kb, terms, g, opts.colour_by, is_new(g))
+            } else {
+                Styling {
+                    colour: pick_colour(kb, terms, g, opts.colour_by),
+                    style: "solid",
+                    label_extra: None,
+                    penwidth: None,
+                }
+            }
+        };
+        let members: Vec<(String, String)> = nested
+            .iter()
+            .map(|(g, by)| {
+                (
+                    ctx_label(by),
+                    hyperedge_node(terms, *g, &style_of(*g), kb.contains(*g)),
+                )
+            })
+            .collect();
+        lines.extend(ctx_frames("", "  ", &members));
+        for (g, _) in &nested {
+            lines.extend(hyperedge_arrows(terms, *g, &style_of(*g)));
+        }
     }
     lines.push("}".to_string());
     lines.join("\n")

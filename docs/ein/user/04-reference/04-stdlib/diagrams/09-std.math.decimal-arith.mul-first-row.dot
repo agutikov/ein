@@ -2,9 +2,20 @@ digraph rule_mul_first_row_lhs_rhs {
   rankdir=TB;
   label="mul-first-row"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(mul-row-of ?k ?u ?rest z)_L" [label="(mul-row-of ?k ?u ?rest z)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?rest_L" [label="?rest", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
     "?row_L" [label="?row", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(mul-row-of ?k ?u ?rest z)_L" [shape=octagon, label="mul-row-of", color="#17becf", fontcolor="#17becf"];
+    }
     "(mul-row-of ?k ?u ?rest z)_L" -> "?row_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(mul-row-of ?k ?u ?rest z)_L" -> "?k_L" [label="1", color="#17becf"];
+    "(mul-row-of ?k ?u ?rest z)_L" -> "?u_L" [label="2", color="#17becf"];
+    "(mul-row-of ?k ?u ?rest z)_L" -> "?rest_L" [label="3", color="#17becf"];
+    "(mul-row-of ?k ?u ?rest z)_L" -> "z_L" [label="4", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

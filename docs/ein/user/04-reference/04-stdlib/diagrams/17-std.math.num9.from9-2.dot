@@ -2,16 +2,54 @@ digraph rule_from9_2_lhs_rhs {
   rankdir=TB;
   label="from9-2"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" [label="(num9 0 0 0 0 0 0 0 ?a2 ?a1)", shape=rectangle];
+    "0_L" [label="0", shape=rectangle];
     "?a2_L" [label="?a2", shape=diamond];
+    "?a1_L" [label="?a1", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="from9 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" [shape=octagon, label="num9", color="#d62728", fontcolor="#d62728"];
+    }
     "h1_from9_L" [shape=octagon, label="from9", color="#8c564b", fontcolor="#8c564b"];
     "h1_from9_L" -> "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" [label="1", color="#8c564b"];
     "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
     "h2_nz_L" -> "?a2_L" [label="1", color="#2ca02c"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "0_L" [label="1", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "0_L" [label="2", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "0_L" [label="3", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "0_L" [label="4", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "0_L" [label="5", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "0_L" [label="6", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "0_L" [label="7", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "?a2_L" [label="8", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_L" -> "?a1_L" [label="9", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" [label="(num9 0 0 0 0 0 0 0 ?a2 ?a1)", shape=rectangle];
-    "(n (n z ?a2) ?a1)_R" [label="(n (n z ?a2) ?a1)", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    "?a2_R" [label="?a2", shape=diamond];
+    "?a1_R" [label="?a1", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="n ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n z ?a2)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="of9 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" [shape=octagon, label="num9", color="#d62728", fontcolor="#d62728"];
+      "(n (n z ?a2) ?a1)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "(n (n z ?a2) ?a1)_R" [label="of9", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="1", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="2", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="3", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="4", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="5", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="6", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="7", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "?a2_R" [label="8", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "?a1_R" [label="9", color="#d62728", style=dashed];
+    "(n (n z ?a2) ?a1)_R" -> "(n z ?a2)_R" [label="1", color="#9467bd", style=dashed];
+    "(n (n z ?a2) ?a1)_R" -> "?a1_R" [label="2", color="#9467bd", style=dashed];
+    "(n z ?a2)_R" -> "z_R" [label="1", color="#9467bd", style=dashed];
+    "(n z ?a2)_R" -> "?a2_R" [label="2", color="#9467bd", style=dashed];
   }
 }

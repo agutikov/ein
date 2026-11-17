@@ -2,21 +2,41 @@ digraph rule_rat_lowest_denominator_lhs_rhs {
   rankdir=TB;
   label="rat-lowest-denominator"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-q-num ?k ?s ?d ?g)_L" [label="(rat-q-num ?k ?s ?d ?g)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?s_L" [label="?s", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "?g_L" [label="?g", shape=diamond];
     "?q_L" [label="?q", shape=diamond];
     "?r_L" [label="?r", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="div-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-q-num ?k ?s ?d ?g)_L" [shape=octagon, label="rat-q-num", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
     "h1_div-done_L" -> "(rat-q-num ?k ?s ?d ?g)_L" [label="1", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
     "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
+    "(rat-q-num ?k ?s ?d ?g)_L" -> "?k_L" [label="1", color="#bcbd22"];
+    "(rat-q-num ?k ?s ?d ?g)_L" -> "?s_L" [label="2", color="#bcbd22"];
+    "(rat-q-num ?k ?s ?d ?g)_L" -> "?d_L" [label="3", color="#bcbd22"];
+    "(rat-q-num ?k ?s ?d ?g)_L" -> "?g_L" [label="4", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat-q-den ?k ?s ?q)_R" [label="(rat-q-den ?k ?s ?q)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?s_R" [label="?s", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "?g_R" [label="?g", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-q-den ?k ?s ?q)_R" [shape=octagon, label="rat-q-den", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h2_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
     "h2_div-call_R" -> "(rat-q-den ?k ?s ?q)_R" [label="1", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "?d_R" [label="2", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
+    "(rat-q-den ?k ?s ?q)_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
+    "(rat-q-den ?k ?s ?q)_R" -> "?s_R" [label="2", color="#1f77b4", style=dashed];
+    "(rat-q-den ?k ?s ?q)_R" -> "?q_R" [label="3", color="#1f77b4", style=dashed];
   }
 }

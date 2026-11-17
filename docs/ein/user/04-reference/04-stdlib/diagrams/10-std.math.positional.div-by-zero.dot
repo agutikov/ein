@@ -2,13 +2,36 @@ digraph rule_div_by_zero_lhs_rhs {
   rankdir=TB;
   label="div-by-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" [label="(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?v_L" [label="?v", shape=diamond];
     "z_L" [label="z", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="?DIV-M1 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?QUOTIENT ?x ?y)_L" [shape=octagon, label="?QUOTIENT", color="#9467bd", fontcolor="#9467bd"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="?DONE ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" [shape=octagon, label="?DIV-M1", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" -> "z_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
+    "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" -> "(?QUOTIENT ?x ?y)_L" [label="1", color="#bcbd22"];
+    "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" -> "?u_L" [label="2", color="#bcbd22"];
+    "(?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v)_L" -> "?v_L" [label="3", color="#bcbd22"];
+    "(?QUOTIENT ?x ?y)_L" -> "?x_L" [label="1", color="#9467bd"];
+    "(?QUOTIENT ?x ?y)_L" -> "?y_L" [label="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "(?DIV ?x ?y)_R" [label="(?DIV ?x ?y)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="division-by-zero ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?DIV ?x ?y)_R" [shape=octagon, label="?DIV", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
     "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
     "h1_division-by-zero_R" -> "(?DIV ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
+    "(?DIV ?x ?y)_R" -> "?x_R" [label="1", color="#ff7f0e", style=dashed];
+    "(?DIV ?x ?y)_R" -> "?y_R" [label="2", color="#ff7f0e", style=dashed];
   }
 }

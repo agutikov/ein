@@ -4,27 +4,52 @@ digraph rule_bin_div_bring_zero_lhs_rhs {
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
-    "(bin-b 0 ?rest)_L" [label="(bin-b 0 ?rest)", shape=rectangle];
+    "0_L" [label="0", shape=rectangle];
+    "?rest_L" [label="?rest", shape=diamond];
     "z_L" [label="z", shape=rectangle];
-    "(b2 ?p ?c)_L" [label="(b2 ?p ?c)", shape=rectangle];
+    "?p_L" [label="?p", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="bin-div-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-b 0 ?rest)_L" [shape=octagon, label="bin-b", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(b2 ?p ?c)_L" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "h1_bin-div-step_L" [shape=octagon, label="bin-div-step", color="#9467bd", fontcolor="#9467bd"];
     "h1_bin-div-step_L" -> "?k_L" [label="1", color="#9467bd"];
     "h1_bin-div-step_L" -> "?d_L" [label="2", color="#9467bd"];
     "h1_bin-div-step_L" -> "(bin-b 0 ?rest)_L" [label="3", color="#9467bd"];
     "h1_bin-div-step_L" -> "z_L" [label="4", color="#9467bd"];
     "h1_bin-div-step_L" -> "(b2 ?p ?c)_L" [label="5", color="#9467bd"];
+    "(bin-b 0 ?rest)_L" -> "0_L" [label="1", color="#7f7f7f"];
+    "(bin-b 0 ?rest)_L" -> "?rest_L" [label="2", color="#7f7f7f"];
+    "(b2 ?p ?c)_L" -> "?p_L" [label="1", color="#bcbd22"];
+    "(b2 ?p ?c)_L" -> "?c_L" [label="2", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
     "z_R" [label="z", shape=rectangle];
-    "(b2 (b2 ?p ?c) 0)_R" [label="(b2 (b2 ?p ?c) 0)", shape=rectangle];
+    "?p_R" [label="?p", shape=diamond];
+    "?c_R" [label="?c", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="b2 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(b2 ?p ?c)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="bin-div-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(b2 (b2 ?p ?c) 0)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "h2_bin-div-step_R" [shape=octagon, label="bin-div-step", color="#9467bd", fontcolor="#9467bd"];
     "h2_bin-div-step_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?d_R" [label="2", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?rest_R" [label="3", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "z_R" [label="4", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "(b2 (b2 ?p ?c) 0)_R" [label="5", color="#9467bd", style=dashed];
+    "(b2 (b2 ?p ?c) 0)_R" -> "(b2 ?p ?c)_R" [label="1", color="#bcbd22", style=dashed];
+    "(b2 (b2 ?p ?c) 0)_R" -> "0_R" [label="2", color="#bcbd22", style=dashed];
+    "(b2 ?p ?c)_R" -> "?p_R" [label="1", color="#bcbd22", style=dashed];
+    "(b2 ?p ?c)_R" -> "?c_R" [label="2", color="#bcbd22", style=dashed];
   }
 }

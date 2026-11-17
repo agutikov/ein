@@ -2,16 +2,28 @@ digraph rule_numeral_prefix_digit_lhs_rhs {
   rankdir=TB;
   label="numeral-prefix-digit"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(n ?m ?a)_L" [label="(n ?m ?a)", shape=rectangle];
     "?m_L" [label="?m", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?m ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
     "h1_written_L" -> "(n ?m ?a)_L" [label="1", color="#d62728"];
     "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
     "h2_nz_L" -> "?m_L" [label="1", color="#2ca02c"];
+    "(n ?m ?a)_L" -> "?m_L" [label="1", color="#9467bd"];
+    "(n ?m ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "(n ?m ?a)_R" [label="(n ?m ?a)", shape=rectangle];
     "?m_R" [label="?m", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not-decimal ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?m ?a)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(n ?m ?a)_R" -> "?m_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
+    "(n ?m ?a)_R" -> "?m_R" [label="1", color="#9467bd", style=dashed];
+    "(n ?m ?a)_R" -> "?a_R" [label="2", color="#9467bd", style=dashed];
   }
 }

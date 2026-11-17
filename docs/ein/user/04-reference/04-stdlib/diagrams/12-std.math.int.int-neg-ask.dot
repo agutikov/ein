@@ -7,8 +7,17 @@ digraph rule_int_neg_ask_lhs_rhs {
     "h1_int-neg_L" -> "?x_L" [label="1", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-only (int-neg ?x))_R" [label="(int-only (int-neg ?x))", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="int-only ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-neg ?x)_R" [shape=octagon, label="int-neg", color="#9467bd", fontcolor="#9467bd"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-only (int-neg ?x))_R" [shape=octagon, label="int-only", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(int-only (int-neg ?x))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(int-only (int-neg ?x))_R" -> "(int-neg ?x)_R" [label="1", color="#9467bd", style=dashed];
+    "(int-neg ?x)_R" -> "?x_R" [label="1", color="#9467bd", style=dashed];
   }
 }

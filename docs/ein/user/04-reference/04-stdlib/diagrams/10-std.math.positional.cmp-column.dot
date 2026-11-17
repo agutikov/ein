@@ -3,12 +3,17 @@ digraph rule_cmp_column_lhs_rhs {
   label="cmp-column"; labelloc=t;
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
-    "(?N ?q ?c)_L" [label="(?N ?q ?c)", shape=rectangle];
-    "?o_L" [label="?o", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
     "?c_L" [label="?c", shape=diamond];
+    "?o_L" [label="?o", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?CMP-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p ?a)_L" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(?N ?q ?c)_L" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "h1_CMP-WALK_L" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
     "h1_CMP-WALK_L" -> "?k_L" [label="1", color="#7f7f7f"];
     "h1_CMP-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#7f7f7f"];
@@ -19,6 +24,10 @@ digraph rule_cmp_column_lhs_rhs {
     "h2_CL_L" -> "?a_L" [label="2", color="#ff7f0e"];
     "h2_CL_L" -> "?c_L" [label="3", color="#ff7f0e"];
     "h2_CL_L" -> "?t_L" [label="4", color="#ff7f0e"];
+    "(?N ?p ?a)_L" -> "?p_L" [label="1", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?a_L" [label="2", color="#7f7f7f"];
+    "(?N ?q ?c)_L" -> "?q_L" [label="1", color="#7f7f7f"];
+    "(?N ?q ?c)_L" -> "?c_L" [label="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

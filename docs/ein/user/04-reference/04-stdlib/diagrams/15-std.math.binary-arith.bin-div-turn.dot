@@ -2,17 +2,44 @@ digraph rule_bin_div_turn_lhs_rhs {
   rankdir=TB;
   label="bin-div-turn"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(bin-div-m1 ?k ?u ?v)_L" [label="(bin-div-m1 ?k ?u ?v)", shape=rectangle];
-    "(b2 ?p ?a)_L" [label="(b2 ?p ?a)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?v_L" [label="?v", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="bin-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-div-m1 ?k ?u ?v)_L" [shape=octagon, label="bin-div-m1", color="#ff7f0e", fontcolor="#ff7f0e"];
+      "(b2 ?p ?a)_L" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "(bin-div-m1 ?k ?u ?v)_L" -> "(b2 ?p ?a)_L" [label="bin-done", color="#8c564b", fontcolor="#8c564b"];
+    "(bin-div-m1 ?k ?u ?v)_L" -> "?k_L" [label="1", color="#ff7f0e"];
+    "(bin-div-m1 ?k ?u ?v)_L" -> "?u_L" [label="2", color="#ff7f0e"];
+    "(bin-div-m1 ?k ?u ?v)_L" -> "?v_L" [label="3", color="#ff7f0e"];
+    "(b2 ?p ?a)_L" -> "?p_L" [label="1", color="#bcbd22"];
+    "(b2 ?p ?a)_L" -> "?a_L" [label="2", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
-    "(bin-div-digits ?k (b2 ?p ?a))_R" [label="(bin-div-digits ?k (b2 ?p ?a))", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="bin-div-digits ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(b2 ?p ?a)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="bin-top-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-div-digits ?k (b2 ?p ?a))_R" [shape=octagon, label="bin-div-digits", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "h1_bin-top-first_R" [shape=octagon, label="bin-top-first", color="#ff7f0e", fontcolor="#ff7f0e"];
     "h1_bin-top-first_R" -> "(bin-div-digits ?k (b2 ?p ?a))_R" [label="1", color="#ff7f0e", style=dashed];
     "h1_bin-top-first_R" -> "?u_R" [label="2", color="#ff7f0e", style=dashed];
     "h1_bin-top-first_R" -> "z_R" [label="3", color="#ff7f0e", style=dashed];
+    "(bin-div-digits ?k (b2 ?p ?a))_R" -> "?k_R" [label="1", color="#bcbd22", style=dashed];
+    "(bin-div-digits ?k (b2 ?p ?a))_R" -> "(b2 ?p ?a)_R" [label="2", color="#bcbd22", style=dashed];
+    "(b2 ?p ?a)_R" -> "?p_R" [label="1", color="#bcbd22", style=dashed];
+    "(b2 ?p ?a)_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
   }
 }

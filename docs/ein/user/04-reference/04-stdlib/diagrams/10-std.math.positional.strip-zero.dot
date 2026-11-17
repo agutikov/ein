@@ -3,8 +3,15 @@ digraph rule_strip_zero_lhs_rhs {
   label="strip-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
-    "(?B 0 ?r)_L" [label="(?B 0 ?r)", shape=rectangle];
+    "0_L" [label="0", shape=rectangle];
+    "?r_L" [label="?r", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?STRIP ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?B 0 ?r)_L" [shape=octagon, label="?B", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "?k_L" -> "(?B 0 ?r)_L" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "(?B 0 ?r)_L" -> "0_L" [label="1", color="#2ca02c"];
+    "(?B 0 ?r)_L" -> "?r_L" [label="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_believe_the_reliable_lhs_rhs Pages: 1 -->
+<svg width="269pt" height="418pt"
+ viewBox="0.00 0.00 269.00 418.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 413.5)">
+<title>rule_believe_the_reliable_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-413.5 265,-413.5 265,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="130.5" y="-392.2" font-family="Times,serif" font-size="14.00">believe&#45;the&#45;reliable</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-376.25 167,-376.25 167,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="87.5" y="-358.95" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_ctx_L_0</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M38,-97.25C38,-97.25 110,-97.25 110,-97.25 116,-97.25 122,-103.25 122,-109.25 122,-109.25 122,-162.5 122,-162.5 122,-168.5 116,-174.5 110,-174.5 110,-174.5 38,-174.5 38,-174.5 32,-174.5 26,-168.5 26,-162.5 26,-162.5 26,-109.25 26,-109.25 26,-103.25 32,-97.25 38,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-157.2" font-family="Times,serif" font-size="14.00" fill="#888888">claims ctx</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="175,-209.75 175,-376.25 253,-376.25 253,-209.75 175,-209.75"/>
+<text xml:space="preserve" text-anchor="middle" x="214" y="-358.95" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?p_L -->
+<g id="node1" class="node">
+<title>?p_L</title>
+<polygon fill="none" stroke="black" points="74,-253.75 41.76,-235.75 74,-217.75 106.24,-235.75 74,-253.75"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-231.07" font-family="Times,serif" font-size="14.00">?p</text>
+</g>
+<!-- (owns ?x ?y)_L -->
+<g id="node4" class="node">
+<title>(owns ?x ?y)_L</title>
+<polygon fill="none" stroke="#ff7f0e" points="114.05,-115.79 114.05,-130.71 90.59,-141.25 57.41,-141.25 33.95,-130.71 33.95,-115.79 57.41,-105.25 90.59,-105.25 114.05,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">owns</text>
+</g>
+<!-- ?p_L&#45;&gt;(owns ?x ?y)_L -->
+<g id="edge2" class="edge">
+<title>?p_L&#45;&gt;(owns ?x ?y)_L</title>
+<path fill="none" stroke="#bcbd22" d="M74,-217.48C74,-200.21 74,-173.34 74,-152.87"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="77.5,-152.91 74,-142.91 70.5,-152.91 77.5,-152.91"/>
+<text xml:space="preserve" text-anchor="middle" x="96.88" y="-186.45" font-family="Times,serif" font-size="14.00" fill="#bcbd22">claims</text>
+</g>
+<!-- ?x_L -->
+<g id="node2" class="node">
+<title>?x_L</title>
+<polygon fill="none" stroke="black" points="47,-52 15.5,-34 47,-16 78.5,-34 47,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- ?y_L -->
+<g id="node3" class="node">
+<title>?y_L</title>
+<polygon fill="none" stroke="black" points="128,-52 96.5,-34 128,-16 159.5,-34 128,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="128" y="-29.32" font-family="Times,serif" font-size="14.00">?y</text>
+</g>
+<!-- (owns ?x ?y)_L&#45;&gt;?x_L -->
+<g id="edge3" class="edge">
+<title>(owns ?x ?y)_L&#45;&gt;?x_L</title>
+<path fill="none" stroke="#ff7f0e" d="M68.67,-105.01C64.74,-92.32 59.33,-74.84 54.9,-60.53"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="58.35,-59.84 52.05,-51.32 51.66,-61.91 58.35,-59.84"/>
+<text xml:space="preserve" text-anchor="middle" x="67.42" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- (owns ?x ?y)_L&#45;&gt;?y_L -->
+<g id="edge4" class="edge">
+<title>(owns ?x ?y)_L&#45;&gt;?y_L</title>
+<path fill="none" stroke="#ff7f0e" d="M84.67,-105.01C93.11,-91.37 104.96,-72.22 114.14,-57.4"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="116.9,-59.58 119.19,-49.23 110.95,-55.89 116.9,-59.58"/>
+<text xml:space="preserve" text-anchor="middle" x="110.34" y="-73.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h1_reliable_L -->
+<g id="node5" class="node">
+<title>h1_reliable_L</title>
+<polygon fill="none" stroke="#2ca02c" points="127.15,-317.54 127.15,-332.46 96.02,-343 51.98,-343 20.85,-332.46 20.85,-317.54 51.98,-307 96.02,-307 127.15,-317.54"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-320.32" font-family="Times,serif" font-size="14.00" fill="#2ca02c">reliable</text>
+</g>
+<!-- h1_reliable_L&#45;&gt;?p_L -->
+<g id="edge1" class="edge">
+<title>h1_reliable_L&#45;&gt;?p_L</title>
+<path fill="none" stroke="#2ca02c" d="M74,-306.76C74,-295.01 74,-279.16 74,-265.52"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="77.5,-265.76 74,-255.76 70.5,-265.76 77.5,-265.76"/>
+<text xml:space="preserve" text-anchor="middle" x="78.5" y="-275.7" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?x_R -->
+<g id="node6" class="node">
+<title>?x_R</title>
+<polygon fill="none" stroke="black" points="214,-343 182.5,-325 214,-307 245.5,-325 214,-343"/>
+<text xml:space="preserve" text-anchor="middle" x="214" y="-320.32" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- ?y_R -->
+<g id="node7" class="node">
+<title>?y_R</title>
+<polygon fill="none" stroke="black" points="214,-253.75 182.5,-235.75 214,-217.75 245.5,-235.75 214,-253.75"/>
+<text xml:space="preserve" text-anchor="middle" x="214" y="-231.07" font-family="Times,serif" font-size="14.00">?y</text>
+</g>
+<!-- ?x_R&#45;&gt;?y_R -->
+<g id="edge5" class="edge">
+<title>?x_R&#45;&gt;?y_R</title>
+<path fill="none" stroke="#ff7f0e" stroke-dasharray="5,2" d="M214,-306.76C214,-295.01 214,-279.16 214,-265.52"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="217.5,-265.76 214,-255.76 210.5,-265.76 217.5,-265.76"/>
+<text xml:space="preserve" text-anchor="middle" x="232.38" y="-275.7" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">owns</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: ea309cec22ce367e68c2878a1b50dd76ca165171808a01f92e7191ec386c1837 -->

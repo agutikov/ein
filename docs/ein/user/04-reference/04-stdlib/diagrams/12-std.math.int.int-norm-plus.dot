@@ -2,13 +2,25 @@ digraph rule_int_norm_plus_lhs_rhs {
   rankdir=TB;
   label="int-norm-plus"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-plus ?k)_L" [label="(int-plus ?k)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-plus ?k)_L" [shape=octagon, label="int-plus", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(int-plus ?k)_L" -> "?d_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(int-plus ?k)_L" -> "?k_L" [label="1", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
-    "(int ?d z)_R" [label="(int ?d z)", shape=rectangle];
+    "?d_R" [label="?d", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?d z)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+    }
     "?k_R" -> "(int ?d z)_R" [label="int-done", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+    "(int ?d z)_R" -> "?d_R" [label="1", color="#17becf", style=dashed];
+    "(int ?d z)_R" -> "z_R" [label="2", color="#17becf", style=dashed];
   }
 }

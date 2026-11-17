@@ -63,7 +63,12 @@ above, its declarations' facts left out:
 
 A **given** fact is a solid arrow whose label carries its source, the short `(N)` where the source has one and the
 whole sentence otherwise; a **background** fact is a plain solid arrow; a **derived** fact is dashed, labelled with
-the rule that derived it. A fact that is an argument of another is a node of its own, with its text in it.
+the rule that derived it. A fact that is an argument of another is a node of its own, an octagon with its
+relation's name in it and a numbered arrow to each of its arguments, in a dashed frame named for the relations of
+the facts that point at it, and filled where the knowledge base holds it; it is drawn once, and as no arrow
+([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)). Here the frame reads
+`claims, written ctx`: Carol's claim points at `(knows Carol Dan)`, and so does the fact the loader states of what
+a file nests, the dashed octagon ([below](#a-fact-inside-a-fact)).
 `--colour-by origin`
 colours the arrows by the same three origins instead of by relation, and `--since OTHER` draws thick every fact that
 `OTHER` lacks, which is how a state is drawn against root. The view leaves out a rule's activator facts and stored
@@ -252,7 +257,8 @@ a context, and the frame is named for the relation of the facts that point into 
 ![Two held facts of claims, c and d, point into a frame named claims ctx: at g, empty, which only Carol claims, and at f, filled, which is held too](diagrams/03-facts-in-contexts.svg)
 
 $c$ and $d$ are the two claims, $g$ is `(knows Carol Dan)` and $f$ is `(knows Bob Carol)`. `ein render kb` draws
-a fact that is an argument as a node labelled with its text, as [above](#as-a-graph).
+the two the same way, each an octagon in a frame and $f$ filled, with the relation's name written in the octagon
+and on the arrows of the facts that nothing points at, as [above](#as-a-graph).
 
 **In words.** A fact in a context is read inside the statement of the fact that speaks about it. `ein solve FILE
 --dump-answer DIR` writes the state's three facts:

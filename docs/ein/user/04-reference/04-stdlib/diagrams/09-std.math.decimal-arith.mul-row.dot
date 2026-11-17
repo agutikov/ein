@@ -4,25 +4,42 @@ digraph rule_mul_row_lhs_rhs {
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
-    "(b ?a ?rest)_L" [label="(b ?a ?rest)", shape=rectangle];
+    "?a_L" [label="?a", shape=diamond];
+    "?rest_L" [label="?rest", shape=diamond];
     "?acc_L" [label="?acc", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="mul-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(b ?a ?rest)_L" [shape=octagon, label="b", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h1_mul-step_L" [shape=octagon, label="mul-step", color="#bcbd22", fontcolor="#bcbd22"];
     "h1_mul-step_L" -> "?k_L" [label="1", color="#bcbd22"];
     "h1_mul-step_L" -> "?u_L" [label="2", color="#bcbd22"];
     "h1_mul-step_L" -> "(b ?a ?rest)_L" [label="3", color="#bcbd22"];
     "h1_mul-step_L" -> "?acc_L" [label="4", color="#bcbd22"];
+    "(b ?a ?rest)_L" -> "?a_L" [label="1", color="#1f77b4"];
+    "(b ?a ?rest)_L" -> "?rest_L" [label="2", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "(mul-row-of ?k ?u ?rest ?acc)_R" [label="(mul-row-of ?k ?u ?rest ?acc)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
+    "?rest_R" [label="?rest", shape=diamond];
+    "?acc_R" [label="?acc", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     "0_R" [label="0", shape=rectangle];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="mul-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(mul-row-of ?k ?u ?rest ?acc)_R" [shape=octagon, label="mul-row-of", color="#17becf", fontcolor="#17becf"];
+    }
     "h2_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
     "h2_mul-walk_R" -> "(mul-row-of ?k ?u ?rest ?acc)_R" [label="1", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "?u_R" [label="2", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "?a_R" [label="3", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
+    "(mul-row-of ?k ?u ?rest ?acc)_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
+    "(mul-row-of ?k ?u ?rest ?acc)_R" -> "?u_R" [label="2", color="#17becf", style=dashed];
+    "(mul-row-of ?k ?u ?rest ?acc)_R" -> "?rest_R" [label="3", color="#17becf", style=dashed];
+    "(mul-row-of ?k ?u ?rest ?acc)_R" -> "?acc_R" [label="4", color="#17becf", style=dashed];
   }
 }

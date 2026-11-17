@@ -7,8 +7,20 @@ digraph rule_int_cmp_ask_lhs_rhs {
     "?x_L" -> "?y_L" [label="int-cmp", color="#7f7f7f", fontcolor="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-first (int-cmp ?x ?y) ?y)_R" [label="(int-first (int-cmp ?x ?y) ?y)", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="int-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-cmp ?x ?y)_R" [shape=octagon, label="int-cmp", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-first (int-cmp ?x ?y) ?y)_R" [shape=octagon, label="int-first", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
     "(int-first (int-cmp ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(int-first (int-cmp ?x ?y) ?y)_R" -> "(int-cmp ?x ?y)_R" [label="1", color="#ff7f0e", style=dashed];
+    "(int-first (int-cmp ?x ?y) ?y)_R" -> "?y_R" [label="2", color="#ff7f0e", style=dashed];
+    "(int-cmp ?x ?y)_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
+    "(int-cmp ?x ?y)_R" -> "?y_R" [label="2", color="#7f7f7f", style=dashed];
   }
 }

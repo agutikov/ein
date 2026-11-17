@@ -2,9 +2,14 @@ digraph rule_int_bad_only_lhs_rhs {
   rankdir=TB;
   label="int-bad-only"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-only ?request)_L" [label="(int-only ?request)", shape=rectangle];
+    "?request_L" [label="?request", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="bad-operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-only ?request)_L" [shape=octagon, label="int-only", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(int-only ?request)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
+    "(int-only ?request)_L" -> "?request_L" [label="1", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
     "?request_R" [label="?request", shape=diamond];

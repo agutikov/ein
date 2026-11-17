@@ -9,10 +9,15 @@
 //!
 //! A digraph that holds a hyperedge node sets
 //! [`POLYGON_RANKSEP`].
+//!
+//! A node may be declared **in a frame**, the frame of a context
+//! ([`ctx_frames`]): it is then written inside that
+//! frame's subgraph, after the nodes that stand in none and before the
+//! edges, and a digraph with no framed node is written as it always was.
 
 use std::collections::HashMap;
 
-use crate::dot_util::{HYPER_SHAPE, POLYGON_RANKSEP, quote};
+use crate::dot_util::{FRAMED_RANKING, HYPER_SHAPE, POLYGON_RANKSEP, ctx_frames, quote};
 
 #[derive(Default)]
 pub struct Builder {
@@ -24,6 +29,8 @@ pub struct Builder {
     index: HashMap<String, usize>,
     edges: Vec<String>,
     hcount: u32,
+    /// Id → the label of the frame it is declared in. Lookups only.
+    frames: HashMap<String, String>,
 }
 
 impl Builder {
@@ -50,6 +57,15 @@ impl Builder {
         }
     }
 
+    /// Declare a node in the frame labelled `frame`: a fact that a drawn
+    /// fact points at. A node is in one frame, the first it is given.
+    pub fn framed(&mut self, node_id: &str, attrs: &str, frame: &str) {
+        self.node(node_id, Some(attrs));
+        self.frames
+            .entry(node_id.to_string())
+            .or_insert_with(|| frame.to_string());
+    }
+
     pub fn edge(&mut self, src: &str, dst: &str, attrs: Option<&str>) {
         let mut line = format!("  {src} -> {dst}");
         // An empty attribute string emits no brackets — not the same as
@@ -74,18 +90,30 @@ impl Builder {
     }
 
     pub fn build(self) -> String {
-        // A hyperedge is an octagon, and `fresh_h` is the only door to one.
+        // A hyperedge is an octagon, and `fresh_h` and `framed` are the only
+        // doors to one.
         let mut lines: Vec<String> = Vec::new();
-        if self.hcount > 0 {
+        if self.hcount > 0 || !self.frames.is_empty() {
             lines.push(format!("  {POLYGON_RANKSEP};"));
         }
-        lines.extend(self.nodes.iter().map(|(id, attrs)| {
+        if !self.frames.is_empty() {
+            lines.push(format!("  {FRAMED_RANKING};"));
+        }
+        let decl = |id: &str, attrs: &str| {
             if attrs.is_empty() {
-                format!("  {id};")
+                format!("{id};")
             } else {
-                format!("  {id} [{attrs}];")
+                format!("{id} [{attrs}];")
             }
-        }));
+        };
+        let mut framed: Vec<(String, String)> = Vec::new();
+        for (id, attrs) in &self.nodes {
+            match self.frames.get(id) {
+                Some(frame) => framed.push((frame.clone(), decl(id, attrs))),
+                None => lines.push(format!("  {}", decl(id, attrs))),
+            }
+        }
+        lines.extend(ctx_frames("", "  ", &framed));
         lines.extend(self.edges);
         format!("digraph {} {{\n{}\n}}", self.name, lines.join("\n"))
     }

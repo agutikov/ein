@@ -2,9 +2,16 @@ digraph rule_rat_div_answer_lhs_rhs {
   rankdir=TB;
   label="rat-div-answer"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-div ?x ?y)_L" [label="(rat-div ?x ?y)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
     "?s_L" [label="?s", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="rat-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-div ?x ?y)_L" [shape=octagon, label="rat-div", color="#d62728", fontcolor="#d62728"];
+    }
     "(rat-div ?x ?y)_L" -> "?s_L" [label="rat-done", color="#e377c2", fontcolor="#e377c2"];
+    "(rat-div ?x ?y)_L" -> "?x_L" [label="1", color="#d62728"];
+    "(rat-div ?x ?y)_L" -> "?y_L" [label="2", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
     "?x_R" [label="?x", shape=diamond];

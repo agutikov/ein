@@ -2,9 +2,18 @@ digraph rule_rat_sum_norm_lhs_rhs {
   rankdir=TB;
   label="rat-sum-norm"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-sum-den ?k ?s ?t)_L" [label="(rat-sum-den ?k ?s ?t)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?s_L" [label="?s", shape=diamond];
+    "?t_L" [label="?t", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-sum-den ?k ?s ?t)_L" [shape=octagon, label="rat-sum-den", color="#8c564b", fontcolor="#8c564b"];
+    }
     "(rat-sum-den ?k ?s ?t)_L" -> "?f_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(rat-sum-den ?k ?s ?t)_L" -> "?k_L" [label="1", color="#8c564b"];
+    "(rat-sum-den ?k ?s ?t)_L" -> "?s_L" [label="2", color="#8c564b"];
+    "(rat-sum-den ?k ?s ?t)_L" -> "?t_L" [label="3", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

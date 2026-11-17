@@ -4,13 +4,20 @@ digraph rule_bin_mul_zero_first_lhs_rhs {
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
-    "(bin-b 0 ?rest)_L" [label="(bin-b 0 ?rest)", shape=rectangle];
+    "0_L" [label="0", shape=rectangle];
+    "?rest_L" [label="?rest", shape=diamond];
     "z_L" [label="z", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="bin-mul-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-b 0 ?rest)_L" [shape=octagon, label="bin-b", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "h1_bin-mul-step_L" [shape=octagon, label="bin-mul-step", color="#7f7f7f", fontcolor="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?k_L" [label="1", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?u_L" [label="2", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "(bin-b 0 ?rest)_L" [label="3", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "z_L" [label="4", color="#7f7f7f"];
+    "(bin-b 0 ?rest)_L" -> "0_L" [label="1", color="#7f7f7f"];
+    "(bin-b 0 ?rest)_L" -> "?rest_L" [label="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

@@ -2,16 +2,28 @@ digraph rule_int_p_digit_lhs_rhs {
   rankdir=TB;
   label="int-p-digit"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int ?x ?n)_L" [label="(int ?x ?n)", shape=rectangle];
     "?x_L" [label="?x", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?x ?n)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+    }
     "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
     "h1_written_L" -> "(int ?x ?n)_L" [label="1", color="#d62728"];
     "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
     "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
+    "(int ?x ?n)_L" -> "?x_L" [label="1", color="#17becf"];
+    "(int ?x ?n)_L" -> "?n_L" [label="2", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int ?x ?n)_R" [label="(int ?x ?n)", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not-integer ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?x ?n)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+    }
     "(int ?x ?n)_R" -> "?x_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(int ?x ?n)_R" -> "?x_R" [label="1", color="#17becf", style=dashed];
+    "(int ?x ?n)_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
   }
 }

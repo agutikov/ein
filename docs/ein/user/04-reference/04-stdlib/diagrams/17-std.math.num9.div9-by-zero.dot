@@ -3,12 +3,45 @@ digraph rule_div9_by_zero_lhs_rhs {
   label="div9-by-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
     "?n_L" [label="?n", shape=diamond];
-    "(num9 0 0 0 0 0 0 0 0 0)_L" [label="(num9 0 0 0 0 0 0 0 0 0)", shape=rectangle];
+    "0_L" [label="0", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="div9 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(num9 0 0 0 0 0 0 0 0 0)_L" [shape=octagon, label="num9", color="#d62728", fontcolor="#d62728"];
+    }
     "?n_L" -> "(num9 0 0 0 0 0 0 0 0 0)_L" [label="div9", color="#d62728", fontcolor="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="1", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="2", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="3", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="4", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="5", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="6", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="7", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="8", color="#d62728"];
+    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [label="9", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" [label="(div9 ?n (num9 0 0 0 0 0 0 0 0 0))", shape=rectangle];
+    "?n_R" [label="?n", shape=diamond];
+    "0_R" [label="0", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="div9 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(num9 0 0 0 0 0 0 0 0 0)_R" [shape=octagon, label="num9", color="#d62728", fontcolor="#d62728"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="division-by-zero ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" [shape=octagon, label="div9", color="#d62728", fontcolor="#d62728"];
+    }
     "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
     "h1_division-by-zero_R" -> "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" [label="1", color="#e377c2", style=dashed];
+    "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" -> "?n_R" [label="1", color="#d62728", style=dashed];
+    "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [label="2", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="1", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="2", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="3", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="4", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="5", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="6", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="7", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="8", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [label="9", color="#d62728", style=dashed];
   }
 }

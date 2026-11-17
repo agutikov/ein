@@ -2,13 +2,28 @@ digraph rule_sub_ask_second_lhs_rhs {
   rankdir=TB;
   label="sub-ask-second"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(?SUB-FIRST ?x ?y)_L" [label="(?SUB-FIRST ?x ?y)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?OPERAND-IS ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?SUB-FIRST ?x ?y)_L" [shape=octagon, label="?SUB-FIRST", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "(?SUB-FIRST ?x ?y)_L" -> "?u_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
+    "(?SUB-FIRST ?x ?y)_L" -> "?x_L" [label="1", color="#1f77b4"];
+    "(?SUB-FIRST ?x ?y)_L" -> "?y_L" [label="2", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "(?SUB-SECOND ?x ?y ?u)_R" [label="(?SUB-SECOND ?x ?y ?u)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
+    "?u_R" [label="?u", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="?OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?SUB-SECOND ?x ?y ?u)_R" [shape=octagon, label="?SUB-SECOND", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(?SUB-SECOND ?x ?y ?u)_R" -> "?y_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
+    "(?SUB-SECOND ?x ?y ?u)_R" -> "?x_R" [label="1", color="#9467bd", style=dashed];
+    "(?SUB-SECOND ?x ?y ?u)_R" -> "?y_R" [label="2", color="#9467bd", style=dashed];
+    "(?SUB-SECOND ?x ?y ?u)_R" -> "?u_R" [label="3", color="#9467bd", style=dashed];
   }
 }

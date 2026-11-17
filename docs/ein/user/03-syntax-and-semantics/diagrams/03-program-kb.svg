@@ -2,11 +2,16 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: kb Pages: 1 -->
-<svg width="403pt" height="341pt"
- viewBox="0.00 0.00 403.00 341.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 336.81)">
+<svg width="403pt" height="453pt"
+ viewBox="0.00 0.00 403.00 453.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 449.31)">
 <title>kb</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-336.81 398.94,-336.81 398.94,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-449.31 398.94,-449.31 398.94,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_ctx_0</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M137.73,-286.81C137.73,-286.81 263.73,-286.81 263.73,-286.81 269.73,-286.81 275.73,-292.81 275.73,-298.81 275.73,-298.81 275.73,-352.06 275.73,-352.06 275.73,-358.06 269.73,-364.06 263.73,-364.06 263.73,-364.06 137.73,-364.06 137.73,-364.06 131.73,-364.06 125.73,-358.06 125.73,-352.06 125.73,-352.06 125.73,-298.81 125.73,-298.81 125.73,-292.81 131.73,-286.81 137.73,-286.81"/>
+<text xml:space="preserve" text-anchor="middle" x="200.73" y="-294.76" font-family="Times,serif" font-size="14.00" fill="#888888">claims, written ctx</text>
+</g>
 <!-- Alice -->
 <g id="node1" class="node">
 <title>Alice</title>
@@ -53,18 +58,38 @@
 <polygon fill="#17becf" stroke="#17becf" points="145.51,-135 139.19,-126.49 138.83,-137.08 145.51,-135"/>
 <text xml:space="preserve" text-anchor="middle" x="221.51" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#17becf">knows by knows&#45;back</text>
 </g>
-<!-- (knows Carol Dan) -->
+<!-- f_49646612cf -->
 <g id="node4" class="node">
-<title>(knows Carol Dan)</title>
-<ellipse fill="none" stroke="black" cx="198.73" cy="-314.81" rx="103.29" ry="18"/>
-<text xml:space="preserve" text-anchor="middle" x="198.73" y="-310.13" font-family="Times,serif" font-size="14.00">(knows Carol Dan)</text>
+<title>f_49646612cf</title>
+<polygon fill="none" stroke="#17becf" points="255.02,-330.6 255.02,-345.51 223.21,-356.06 178.24,-356.06 146.44,-345.51 146.44,-330.6 178.24,-320.06 223.21,-320.06 255.02,-330.6"/>
+<text xml:space="preserve" text-anchor="middle" x="200.73" y="-333.38" font-family="Times,serif" font-size="14.00" fill="#17becf">(knows)</text>
 </g>
-<!-- Carol&#45;&gt;(knows Carol Dan) -->
+<!-- Carol&#45;&gt;f_49646612cf -->
 <g id="edge3" class="edge">
-<title>Carol&#45;&gt;(knows Carol Dan)</title>
-<path fill="none" stroke="#bcbd22" d="M142.49,-228.38C152.9,-244.19 168.86,-268.43 181.12,-287.06"/>
-<polygon fill="#bcbd22" stroke="#bcbd22" points="178.06,-288.78 186.48,-295.21 183.91,-284.93 178.06,-288.78"/>
-<text xml:space="preserve" text-anchor="middle" x="198.02" y="-265.51" font-family="Times,serif" font-size="14.00" fill="#bcbd22">claims</text>
+<title>Carol&#45;&gt;f_49646612cf</title>
+<path fill="none" stroke="#bcbd22" d="M128.31,-229.36C126.4,-243.38 125.67,-263.28 132.98,-278.81 139.71,-293.12 151.84,-305.28 163.98,-314.72"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="161.82,-317.47 171.97,-320.52 165.93,-311.81 161.82,-317.47"/>
+<text xml:space="preserve" text-anchor="middle" x="155.85" y="-265.51" font-family="Times,serif" font-size="14.00" fill="#bcbd22">claims</text>
+</g>
+<!-- f_49646612cf&#45;&gt;Carol -->
+<g id="edge7" class="edge">
+<title>f_49646612cf&#45;&gt;Carol</title>
+<path fill="none" stroke="#17becf" d="M198.08,-319.64C195.11,-303.71 189.27,-279.91 178.73,-261.56 173.18,-251.89 165.37,-242.65 157.7,-234.82"/>
+<polygon fill="#17becf" stroke="#17becf" points="160.26,-232.43 150.65,-227.98 155.39,-237.45 160.26,-232.43"/>
+<text xml:space="preserve" text-anchor="middle" x="196.63" y="-265.51" font-family="Times,serif" font-size="14.00">#1</text>
+</g>
+<!-- Dan -->
+<g id="node6" class="node">
+<title>Dan</title>
+<ellipse fill="none" stroke="black" cx="200.73" cy="-427.31" rx="31.22" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="200.73" y="-422.63" font-family="Times,serif" font-size="14.00">Dan</text>
+</g>
+<!-- f_49646612cf&#45;&gt;Dan -->
+<g id="edge8" class="edge">
+<title>f_49646612cf&#45;&gt;Dan</title>
+<path fill="none" stroke="#17becf" d="M200.73,-356.29C200.73,-368.12 200.73,-384.1 200.73,-397.81"/>
+<polygon fill="#17becf" stroke="#17becf" points="197.23,-397.59 200.73,-407.59 204.23,-397.59 197.23,-397.59"/>
+<text xml:space="preserve" text-anchor="middle" x="211.23" y="-378.01" font-family="Times,serif" font-size="14.00">#2</text>
 </g>
 <!-- f_2b1fa186fb -->
 <g id="node5" class="node">
@@ -73,13 +98,13 @@
 <text xml:space="preserve" text-anchor="middle" x="265.73" y="-214.98" font-family="Times,serif" font-size="14.00" fill="#d62728">(written)</text>
 <text xml:space="preserve" text-anchor="middle" x="265.73" y="-197.73" font-family="Times,serif" font-size="14.00" fill="#d62728">by #written</text>
 </g>
-<!-- f_2b1fa186fb&#45;&gt;(knows Carol Dan) -->
+<!-- f_2b1fa186fb&#45;&gt;f_49646612cf -->
 <g id="edge4" class="edge">
-<title>f_2b1fa186fb&#45;&gt;(knows Carol Dan)</title>
-<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M246.89,-243.98C240.12,-255.14 232.27,-267.65 224.73,-278.81 222.8,-281.66 220.73,-284.61 218.64,-287.52"/>
-<polygon fill="#d62728" stroke="#d62728" points="215.98,-285.22 212.89,-295.36 221.63,-289.36 215.98,-285.22"/>
-<text xml:space="preserve" text-anchor="middle" x="245.82" y="-265.51" font-family="Times,serif" font-size="14.00">#1</text>
+<title>f_2b1fa186fb&#45;&gt;f_49646612cf</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M249.16,-243.9C238.56,-264.29 224.95,-290.46 214.86,-309.86"/>
+<polygon fill="#d62728" stroke="#d62728" points="211.87,-308.04 210.36,-318.53 218.08,-311.27 211.87,-308.04"/>
+<text xml:space="preserve" text-anchor="middle" x="249.55" y="-265.51" font-family="Times,serif" font-size="14.00">#1</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: e13a3e762fccc34852ef4f716655791a24ccced30c388cf8e81e87abe3c30b0b -->
+<!-- source sha256: 3994e3f0878b712437ec5d337b1aba54fff8693fcdec86a859c7512f3e9f0093 -->

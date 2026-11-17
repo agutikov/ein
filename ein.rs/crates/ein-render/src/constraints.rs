@@ -9,11 +9,67 @@
 //! `bijective` while excluding relation data such as `(is-a House Attribute)`
 //! — no hardcoded property list, so the view tracks whatever rules a puzzle
 //! declares.
+//!
+//! **A fact under an arrow of a drawn fact is its own node**
+//! (Q-M1f.395), as in every drawing of facts: an octagon
+//! with the relation's name in it and its argument arrows numbered, filled
+//! where the program states the fact, in a dashed frame named for the
+//! relations of the facts that point at it (Q-M1f.398).
+
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use ein_ir::{Ast, Node, NodeId};
 
-use crate::dot_util::{GROUND_SHAPE, HYPER_SHAPE, TYPE_SHAPE, digraph_open, quote, value_label};
+use crate::dot_util::{
+    FRAMED_RANKING, GROUND_SHAPE, HELD_FILL, HYPER_SHAPE, TYPE_SHAPE, ctx_frames, ctx_label,
+    digraph_open, quote, value_label,
+};
 use crate::palette::hash_color;
+
+/// A form's arguments but its clauses.
+fn positional(ast: &Ast, form: NodeId) -> Vec<NodeId> {
+    ast.form_args(form)
+        .iter()
+        .copied()
+        .filter(|a| !matches!(ast.node(*a), Node::KwPair { .. }))
+        .collect()
+}
+
+/// The facts under an arrow of a drawn fact, by their text, in the order
+/// first met, each with the relations of the facts that point at it.
+#[derive(Default)]
+struct Nested {
+    found: Vec<(NodeId, BTreeSet<String>)>,
+    at: HashMap<String, usize>,
+}
+
+impl Nested {
+    /// Everything `fact` points at is pointed at by a drawn fact, at any
+    /// depth; `names` gathers the names met on the way, which are nodes.
+    fn walk(&mut self, ast: &Ast, fact: NodeId, by: &str, names: &mut Vec<String>) {
+        for arg in positional(ast, fact) {
+            let text = value_label(ast, arg);
+            if !matches!(ast.node(arg), Node::SForm { .. }) {
+                if !names.contains(&text) {
+                    names.push(text);
+                }
+                continue;
+            }
+            let i = match self.at.get(&text) {
+                Some(&i) => i,
+                None => {
+                    let i = self.found.len();
+                    self.at.insert(text, i);
+                    self.found.push((arg, BTreeSet::new()));
+                    let inner = ast.head_name(arg).unwrap_or("").to_string();
+                    self.walk(ast, arg, &inner, names);
+                    i
+                }
+            };
+            self.found[i].1.insert(by.to_string());
+        }
+    }
+}
 
 /// Kernel ontology keywords — declarations, not constraint facts.
 const KERNEL_ONTOLOGY_HEADS: [&str; 3] = ["relation", "type", "instance"];
@@ -111,6 +167,10 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str) -> String {
     let mut nary: Vec<(String, Vec<String>)> = Vec::new();
     let mut relations: Vec<String> = Vec::new(); // node labels, first-seen
     let mut types: Vec<String> = Vec::new(); // binary-edge targets, drawn as types
+    let mut nested = Nested::default();
+    // The names under the arrows of a fact that is under an arrow: nodes,
+    // declared after the facts' own.
+    let mut inner_names: Vec<String> = Vec::new();
 
     for decl in &decls {
         let Node::SForm { head, .. } = ast.node(*decl) else {
@@ -123,13 +183,11 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str) -> String {
         if KERNEL_ONTOLOGY_HEADS.contains(&prop.as_str()) || declared_rel.contains(&prop.as_str()) {
             continue;
         }
-        let labels: Vec<String> = ast
-            .form_args(*decl)
+        let labels: Vec<String> = positional(ast, *decl)
             .iter()
-            .copied()
-            .filter(|a| !matches!(ast.node(*a), Node::KwPair { .. }))
-            .map(|a| value_label(ast, a))
+            .map(|a| value_label(ast, *a))
             .collect();
+        nested.walk(ast, *decl, &prop, &mut inner_names);
         let note = |label: &str, relations: &mut Vec<String>| {
             if !relations.iter().any(|r| r == label) {
                 relations.push(label.to_string());
@@ -170,9 +228,66 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str) -> String {
         return lines.join("\n");
     }
 
-    // Nodes — relations as boxes, badged with their unary properties.
+    // A fact under an arrow is a node of its own, and so is each fact and
+    // each name under its arrows, whether or not a drawn fact names it.
+    for (fact, _) in &nested.found {
+        let text = value_label(ast, *fact);
+        if !relations.contains(&text) {
+            relations.push(text);
+        }
+    }
+    for name in &inner_names {
+        if !relations.contains(name) {
+            relations.push(name.clone());
+        }
+    }
+    // What the program states: a fact in a frame is filled where it is one.
+    let stated: HashSet<String> = forms
+        .iter()
+        .filter(|f| matches!(ast.node(**f), Node::SForm { .. }))
+        .map(|f| {
+            let head = ast.head_name(*f).unwrap_or("");
+            let args: Vec<String> = positional(ast, *f)
+                .iter()
+                .map(|a| value_label(ast, *a))
+                .collect();
+            if args.is_empty() {
+                format!("({head})")
+            } else {
+                format!("({head} {})", args.join(" "))
+            }
+        })
+        .collect();
+
+    // Nodes — relations as boxes, badged with their unary properties; a fact
+    // under an arrow as an octagon in its frame.
+    let mut framed: Vec<(String, String)> = Vec::new();
     for rel in &relations {
         let props = unary.iter().find(|(k, _)| k == rel).map(|(_, v)| v);
+        if let Some(&i) = nested.at.get(rel) {
+            let (fact, by) = &nested.found[i];
+            let head = ast.head_name(*fact).unwrap_or("");
+            let colour = hash_color(head);
+            let label = match props {
+                Some(props) => format!("{head}\\n«{}»", props.join(", ")),
+                None => head.to_string(),
+            };
+            let fill = if stated.contains(rel) {
+                format!(", style=filled, fillcolor=\"{HELD_FILL}\"")
+            } else {
+                String::new()
+            };
+            framed.push((
+                ctx_label(by),
+                format!(
+                    "{} [shape={HYPER_SHAPE}, label={}, color=\"{colour}\", \
+                     fontcolor=\"{colour}\"{fill}];",
+                    quote(rel),
+                    quote(&label)
+                ),
+            ));
+            continue;
+        }
         let shape = if types.contains(rel) && props.is_none() {
             TYPE_SHAPE
         } else {
@@ -187,6 +302,21 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str) -> String {
             quote(rel),
             quote(&label)
         ));
+    }
+    if !framed.is_empty() {
+        lines.push(format!("  {FRAMED_RANKING};"));
+    }
+    lines.extend(ctx_frames("", "  ", &framed));
+    for (fact, _) in &nested.found {
+        let colour = hash_color(ast.head_name(*fact).unwrap_or(""));
+        let from = quote(&value_label(ast, *fact));
+        for (i, arg) in positional(ast, *fact).iter().enumerate() {
+            lines.push(format!(
+                "  {from} -> {} [label=\"{}\", color=\"{colour}\"];",
+                quote(&value_label(ast, *arg)),
+                i + 1
+            ));
+        }
     }
 
     // Binary properties → labelled, property-coloured edges.

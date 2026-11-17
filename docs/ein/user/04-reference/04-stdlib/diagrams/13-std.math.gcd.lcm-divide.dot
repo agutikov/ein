@@ -2,17 +2,33 @@ digraph rule_lcm_divide_lhs_rhs {
   rankdir=TB;
   label="lcm-divide"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(lcm-p ?x ?y ?g)_L" [label="(lcm-p ?x ?y ?g)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "?g_L" [label="?g", shape=diamond];
     "?m_L" [label="?m", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(lcm-p ?x ?y ?g)_L" [shape=octagon, label="lcm-p", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(lcm-p ?x ?y ?g)_L" -> "?m_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(lcm-p ?x ?y ?g)_L" -> "?x_L" [label="1", color="#9467bd"];
+    "(lcm-p ?x ?y ?g)_L" -> "?y_L" [label="2", color="#9467bd"];
+    "(lcm-p ?x ?y ?g)_L" -> "?g_L" [label="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "(lcm-q ?x ?y)_R" [label="(lcm-q ?x ?y)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
     "?m_R" [label="?m", shape=diamond];
     "?g_R" [label="?g", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(lcm-q ?x ?y)_R" [shape=octagon, label="lcm-q", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "h1_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
     "h1_div-call_R" -> "(lcm-q ?x ?y)_R" [label="1", color="#bcbd22", style=dashed];
     "h1_div-call_R" -> "?m_R" [label="2", color="#bcbd22", style=dashed];
     "h1_div-call_R" -> "?g_R" [label="3", color="#bcbd22", style=dashed];
+    "(lcm-q ?x ?y)_R" -> "?x_R" [label="1", color="#bcbd22", style=dashed];
+    "(lcm-q ?x ?y)_R" -> "?y_R" [label="2", color="#bcbd22", style=dashed];
   }
 }

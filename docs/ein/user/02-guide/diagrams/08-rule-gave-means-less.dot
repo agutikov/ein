@@ -2,15 +2,21 @@ digraph rule_gave_means_less_lhs_rhs {
   rankdir=TB;
   label="gave-means-less"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(amount ?p ?k ?u)_L" [label="(amount ?p ?k ?u)", shape=rectangle];
     "?p_L" [label="?p", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "(amount ?p ?k ?t)_L" [label="(amount ?p ?k ?t)", shape=rectangle];
     "?a_L" [label="?a", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="value ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(amount ?p ?k ?t)_L" [shape=octagon, label="amount", color="#9467bd", fontcolor="#9467bd"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="wanted ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(amount ?p ?k ?u)_L" [shape=octagon, label="amount", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h1_wanted_L" [shape=octagon, label="wanted", color="#7f7f7f", fontcolor="#7f7f7f"];
     "h1_wanted_L" -> "(amount ?p ?k ?u)_L" [label="1", color="#7f7f7f"];
     "h2_gave_L" [shape=octagon, label="gave", color="#1f77b4", fontcolor="#1f77b4"];
@@ -21,6 +27,12 @@ digraph rule_gave_means_less_lhs_rhs {
     "h2_gave_L" -> "?t_L" [label="5", color="#1f77b4"];
     "h2_gave_L" -> "?u_L" [label="6", color="#1f77b4"];
     "(amount ?p ?k ?t)_L" -> "?a_L" [label="value", color="#17becf", fontcolor="#17becf"];
+    "(amount ?p ?k ?u)_L" -> "?p_L" [label="1", color="#9467bd"];
+    "(amount ?p ?k ?u)_L" -> "?k_L" [label="2", color="#9467bd"];
+    "(amount ?p ?k ?u)_L" -> "?u_L" [label="3", color="#9467bd"];
+    "(amount ?p ?k ?t)_L" -> "?p_L" [label="1", color="#9467bd"];
+    "(amount ?p ?k ?t)_L" -> "?k_L" [label="2", color="#9467bd"];
+    "(amount ?p ?k ?t)_L" -> "?t_L" [label="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
     "?a_R" [label="?a", shape=diamond];

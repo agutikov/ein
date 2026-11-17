@@ -1,0 +1,27 @@
+digraph kb {
+  rankdir=BT;
+
+  // facts
+  "Carol" -> f_5b3adbf9bf [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Dan" -> f_5b3adbf9bf [label="doubts", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Dan" -> f_59aa5edda0 [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_7e4c4b22b6 [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
+  f_7e4c4b22b6 -> f_5b3adbf9bf [label="#1", color="#d62728", style=dashed];
+  f_5005a4ef9d [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
+  f_5005a4ef9d -> f_59aa5edda0 [label="#1", color="#d62728", style=dashed];
+
+  // facts in a context
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="claims, doubts, written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_5b3adbf9bf [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style="filled,solid", fillcolor="#d9d9d9"];
+  }
+  subgraph cluster_ctx_1 {
+    label="claims, written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_59aa5edda0 [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  }
+  f_5b3adbf9bf -> "Bob" [label="#1", color="#ff7f0e", style=solid];
+  f_5b3adbf9bf -> "Dog" [label="#2", color="#ff7f0e", style=solid];
+  f_59aa5edda0 -> "Carol" [label="#1", color="#ff7f0e", style=solid];
+  f_59aa5edda0 -> "Cat" [label="#2", color="#ff7f0e", style=solid];
+}

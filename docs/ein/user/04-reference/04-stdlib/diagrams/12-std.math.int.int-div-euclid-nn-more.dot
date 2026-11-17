@@ -2,25 +2,71 @@ digraph rule_int_div_euclid_nn_more_lhs_rhs {
   rankdir=TB;
   label="int-div-euclid-nn-more"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" [label="(int-div-m (int-div-euclid ?x ?y) neg neg ?b)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "neg_L" [label="neg", shape=rectangle];
+    "?b_L" [label="?b", shape=diamond];
     "?q_L" [label="?q", shape=diamond];
-    "(n ?r ?d)_L" [label="(n ?r ?d)", shape=rectangle];
+    "?r_L" [label="?r", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="div-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" [shape=octagon, label="int-div-m", color="#ff7f0e", fontcolor="#ff7f0e"];
+      "(n ?r ?d)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="int-div-m ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-euclid ?x ?y)_L" [shape=octagon, label="int-div-euclid", color="#e377c2", fontcolor="#e377c2"];
+    }
     "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
     "h1_div-done_L" -> "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" [label="1", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
     "h1_div-done_L" -> "(n ?r ?d)_L" [label="3", color="#8c564b"];
+    "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" -> "(int-div-euclid ?x ?y)_L" [label="1", color="#ff7f0e"];
+    "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" -> "neg_L" [label="2", color="#ff7f0e"];
+    "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" -> "neg_L" [label="3", color="#ff7f0e"];
+    "(int-div-m (int-div-euclid ?x ?y) neg neg ?b)_L" -> "?b_L" [label="4", color="#ff7f0e"];
+    "(int-div-euclid ?x ?y)_L" -> "?x_L" [label="1", color="#e377c2"];
+    "(int-div-euclid ?x ?y)_L" -> "?y_L" [label="2", color="#e377c2"];
+    "(n ?r ?d)_L" -> "?r_L" [label="1", color="#9467bd"];
+    "(n ?r ?d)_L" -> "?d_L" [label="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" [label="(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "pos_R" [label="pos", shape=rectangle];
+    "?b_R" [label="?b", shape=diamond];
+    "?r_R" [label="?r", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
     "?q_R" [label="?q", shape=diamond];
-    "(n z 1)_R" [label="(n z 1)", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
     "z_R" [label="z", shape=rectangle];
+    "1_R" [label="1", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" [shape=octagon, label="int-div-q", color="#1f77b4", fontcolor="#1f77b4"];
+      "(n z 1)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="int-div-q ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-euclid ?x ?y)_R" [shape=octagon, label="int-div-euclid", color="#e377c2", fontcolor="#e377c2"];
+      "(n ?r ?d)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h2_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
     "h2_add-walk_R" -> "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" [label="1", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "(n z 1)_R" [label="3", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+    "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" -> "(int-div-euclid ?x ?y)_R" [label="1", color="#1f77b4", style=dashed];
+    "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" -> "pos_R" [label="2", color="#1f77b4", style=dashed];
+    "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" -> "?b_R" [label="3", color="#1f77b4", style=dashed];
+    "(int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d))_R" -> "(n ?r ?d)_R" [label="4", color="#1f77b4", style=dashed];
+    "(int-div-euclid ?x ?y)_R" -> "?x_R" [label="1", color="#e377c2", style=dashed];
+    "(int-div-euclid ?x ?y)_R" -> "?y_R" [label="2", color="#e377c2", style=dashed];
+    "(n ?r ?d)_R" -> "?r_R" [label="1", color="#9467bd", style=dashed];
+    "(n ?r ?d)_R" -> "?d_R" [label="2", color="#9467bd", style=dashed];
+    "(n z 1)_R" -> "z_R" [label="1", color="#9467bd", style=dashed];
+    "(n z 1)_R" -> "1_R" [label="2", color="#9467bd", style=dashed];
   }
 }

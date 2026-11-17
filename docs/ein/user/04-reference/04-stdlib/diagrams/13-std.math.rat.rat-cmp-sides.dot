@@ -2,13 +2,18 @@ digraph rule_rat_cmp_sides_lhs_rhs {
   rankdir=TB;
   label="rat-cmp-sides"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-cmp-num ?k)_L" [label="(rat-cmp-num ?k)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
     "?s_L" [label="?s", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="rat-cross-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-cmp-num ?k)_L" [shape=octagon, label="rat-cmp-num", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h1_rat-cross-is_L" [shape=octagon, label="rat-cross-is", color="#17becf", fontcolor="#17becf"];
     "h1_rat-cross-is_L" -> "(rat-cmp-num ?k)_L" [label="1", color="#17becf"];
     "h1_rat-cross-is_L" -> "?s_L" [label="2", color="#17becf"];
     "h1_rat-cross-is_L" -> "?t_L" [label="3", color="#17becf"];
+    "(rat-cmp-num ?k)_L" -> "?k_L" [label="1", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

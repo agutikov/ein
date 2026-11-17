@@ -15,11 +15,18 @@ digraph rule_add_carry_out_lhs_rhs {
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
-    "(?B 1 ?acc)_R" [label="(?B 1 ?acc)", shape=rectangle];
+    "1_R" [label="1", shape=rectangle];
+    "?acc_R" [label="?acc", shape=diamond];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="?TURN ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?B 1 ?acc)_R" [shape=octagon, label="?B", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "h2_TURN_R" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
     "h2_TURN_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
     "h2_TURN_R" -> "(?B 1 ?acc)_R" [label="2", color="#9467bd", style=dashed];
     "h2_TURN_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
+    "(?B 1 ?acc)_R" -> "1_R" [label="1", color="#2ca02c", style=dashed];
+    "(?B 1 ?acc)_R" -> "?acc_R" [label="2", color="#2ca02c", style=dashed];
   }
 }

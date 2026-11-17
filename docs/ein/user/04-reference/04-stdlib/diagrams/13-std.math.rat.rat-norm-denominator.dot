@@ -2,20 +2,34 @@ digraph rule_rat_norm_denominator_lhs_rhs {
   rankdir=TB;
   label="rat-norm-denominator"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-num ?k ?d)_L" [label="(rat-num ?k ?d)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
     "?i_L" [label="?i", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-num ?k ?d)_L" [shape=octagon, label="rat-num", color="#8c564b", fontcolor="#8c564b"];
+    }
     "(rat-num ?k ?d)_L" -> "?i_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+    "(rat-num ?k ?d)_L" -> "?k_L" [label="1", color="#8c564b"];
+    "(rat-num ?k ?d)_L" -> "?d_L" [label="2", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat-den-norm ?k ?i)_R" [label="(rat-den-norm ?k ?i)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?i_R" [label="?i", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "z_R" [label="z", shape=rectangle];
     "0_R" [label="0", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-den-norm ?k ?i)_R" [shape=octagon, label="rat-den-norm", color="#17becf", fontcolor="#17becf"];
+    }
     "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
     "h1_add-walk_R" -> "(rat-den-norm ?k ?i)_R" [label="1", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "?d_R" [label="2", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "z_R" [label="3", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+    "(rat-den-norm ?k ?i)_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
+    "(rat-den-norm ?k ?i)_R" -> "?i_R" [label="2", color="#17becf", style=dashed];
   }
 }

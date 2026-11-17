@@ -2,9 +2,19 @@ digraph rule_rat_bad_only_lhs_rhs {
   rankdir=TB;
   label="rat-bad-only"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-of (rat-only ?request))_L" [label="(rat-of (rat-only ?request))", shape=rectangle];
+    "?request_L" [label="?request", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="bad-operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-of (rat-only ?request))_L" [shape=octagon, label="rat-of", color="#2ca02c", fontcolor="#2ca02c"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="rat-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-only ?request)_L" [shape=octagon, label="rat-only", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "(rat-of (rat-only ?request))_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
+    "(rat-of (rat-only ?request))_L" -> "(rat-only ?request)_L" [label="1", color="#2ca02c"];
+    "(rat-only ?request)_L" -> "?request_L" [label="1", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
     "?request_R" [label="?request", shape=diamond];

@@ -4,24 +4,39 @@ digraph rule_bin_mul_one_first_lhs_rhs {
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
-    "(bin-b 1 ?rest)_L" [label="(bin-b 1 ?rest)", shape=rectangle];
+    "1_L" [label="1", shape=rectangle];
+    "?rest_L" [label="?rest", shape=diamond];
     "z_L" [label="z", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="bin-mul-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-b 1 ?rest)_L" [shape=octagon, label="bin-b", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "h1_bin-mul-step_L" [shape=octagon, label="bin-mul-step", color="#7f7f7f", fontcolor="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?k_L" [label="1", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?u_L" [label="2", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "(bin-b 1 ?rest)_L" [label="3", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "z_L" [label="4", color="#7f7f7f"];
+    "(bin-b 1 ?rest)_L" -> "1_L" [label="1", color="#7f7f7f"];
+    "(bin-b 1 ?rest)_L" -> "?rest_L" [label="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "(bin-mul-sum ?k ?u ?rest)_R" [label="(bin-mul-sum ?k ?u ?rest)", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
+    "?rest_R" [label="?rest", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
     "0_R" [label="0", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="bin-add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-mul-sum ?k ?u ?rest)_R" [shape=octagon, label="bin-mul-sum", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h2_bin-add-walk_R" [shape=octagon, label="bin-add-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
     "h2_bin-add-walk_R" -> "(bin-mul-sum ?k ?u ?rest)_R" [label="1", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "z_R" [label="2", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "?u_R" [label="3", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
+    "(bin-mul-sum ?k ?u ?rest)_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
+    "(bin-mul-sum ?k ?u ?rest)_R" -> "?u_R" [label="2", color="#1f77b4", style=dashed];
+    "(bin-mul-sum ?k ?u ?rest)_R" -> "?rest_R" [label="3", color="#1f77b4", style=dashed];
   }
 }

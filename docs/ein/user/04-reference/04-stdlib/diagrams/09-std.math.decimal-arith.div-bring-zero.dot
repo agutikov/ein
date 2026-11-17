@@ -4,15 +4,22 @@ digraph rule_div_bring_zero_lhs_rhs {
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
     "?ms_L" [label="?ms", shape=diamond];
-    "(b 0 ?rest)_L" [label="(b 0 ?rest)", shape=rectangle];
+    "0_L" [label="0", shape=rectangle];
+    "?rest_L" [label="?rest", shape=diamond];
     "z_L" [label="z", shape=rectangle];
     "?w_L" [label="?w", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="div-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(b 0 ?rest)_L" [shape=octagon, label="b", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h1_div-step_L" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
     "h1_div-step_L" -> "?k_L" [label="1", color="#d62728"];
     "h1_div-step_L" -> "?ms_L" [label="2", color="#d62728"];
     "h1_div-step_L" -> "(b 0 ?rest)_L" [label="3", color="#d62728"];
     "h1_div-step_L" -> "z_L" [label="4", color="#d62728"];
     "h1_div-step_L" -> "?w_L" [label="5", color="#d62728"];
+    "(b 0 ?rest)_L" -> "0_L" [label="1", color="#1f77b4"];
+    "(b 0 ?rest)_L" -> "?rest_L" [label="2", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

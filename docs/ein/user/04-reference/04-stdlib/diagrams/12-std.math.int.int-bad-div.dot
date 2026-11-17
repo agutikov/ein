@@ -2,9 +2,14 @@ digraph rule_int_bad_div_lhs_rhs {
   rankdir=TB;
   label="int-bad-div"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-div-of ?request)_L" [label="(int-div-of ?request)", shape=rectangle];
+    "?request_L" [label="?request", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="bad-request ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-of ?request)_L" [shape=octagon, label="int-div-of", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(int-div-of ?request)_L" -> "?f_L" [label="bad-request", color="#e377c2", fontcolor="#e377c2"];
+    "(int-div-of ?request)_L" -> "?request_L" [label="1", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
     "?request_R" [label="?request", shape=diamond];

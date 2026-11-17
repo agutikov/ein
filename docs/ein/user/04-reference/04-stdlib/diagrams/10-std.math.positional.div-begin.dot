@@ -2,9 +2,16 @@ digraph rule_div_begin_lhs_rhs {
   rankdir=TB;
   label="div-begin"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(?DIV-DIGITS ?k ?ms)_L" [label="(?DIV-DIGITS ?k ?ms)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?ms_L" [label="?ms", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?TOP-FIRST-IS ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?DIV-DIGITS ?k ?ms)_L" [shape=octagon, label="?DIV-DIGITS", color="#17becf", fontcolor="#17becf"];
+    }
     "(?DIV-DIGITS ?k ?ms)_L" -> "?t_L" [label="?TOP-FIRST-IS", color="#2ca02c", fontcolor="#2ca02c"];
+    "(?DIV-DIGITS ?k ?ms)_L" -> "?k_L" [label="1", color="#17becf"];
+    "(?DIV-DIGITS ?k ?ms)_L" -> "?ms_L" [label="2", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

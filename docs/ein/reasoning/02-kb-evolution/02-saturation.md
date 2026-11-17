@@ -261,10 +261,11 @@ is the same:
 
 ![The fixpoint of the rule note, the same in either order of its two activators](diagrams/02-note-fixpoint.svg)
 
-The two dashed arrows labelled with the rule are the two conclusions. The octagon is the fact that reading the
-program states of the nested fact the second activator writes
-([the knowledge base](../01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program)); the activators and
-the declarations' facts are left out of the drawing.
+The two dashed arrows labelled with the rule are the two conclusions. The dashed octagon is the fact that reading
+the program states of the nested fact the second activator writes
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program)), and it points at that
+fact, $\operatorname{src}(\mathsf{Y})$: an octagon of its own in the frame *written ctx*, empty, since nothing
+holds it. The activators and the declarations' facts are left out of the drawing.
 
 So on such a program every question and every claim answers alike under the agenda and under the written order
 alone. Taking first what can make a contradiction finds a dead node's contradiction sooner, and that is all the

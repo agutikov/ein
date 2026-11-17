@@ -8,7 +8,12 @@ digraph rule_operand_digit_zero_lhs_rhs {
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
-    "(?NOT-A-NUMBER 0)_R" [label="(?NOT-A-NUMBER 0)", shape=rectangle];
+    "0_R" [label="0", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="?BAD-OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?NOT-A-NUMBER 0)_R" [shape=octagon, label="?NOT-A-NUMBER", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "?k_R" -> "(?NOT-A-NUMBER 0)_R" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf", style=dashed];
+    "(?NOT-A-NUMBER 0)_R" -> "0_R" [label="1", color="#1f77b4", style=dashed];
   }
 }

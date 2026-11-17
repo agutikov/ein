@@ -7,12 +7,16 @@ digraph rule_to_dec_ask_lhs_rhs {
     "h1_to-dec_L" -> "?b_L" [label="1", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "(dec-bits ?b)_R" [label="(dec-bits ?b)", shape=rectangle];
     "?b_R" [label="?b", shape=diamond];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="bin-top-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(dec-bits ?b)_R" [shape=octagon, label="dec-bits", color="#8c564b", fontcolor="#8c564b"];
+    }
     "h2_bin-top-first_R" [shape=octagon, label="bin-top-first", color="#ff7f0e", fontcolor="#ff7f0e"];
     "h2_bin-top-first_R" -> "(dec-bits ?b)_R" [label="1", color="#ff7f0e", style=dashed];
     "h2_bin-top-first_R" -> "?b_R" [label="2", color="#ff7f0e", style=dashed];
     "h2_bin-top-first_R" -> "z_R" [label="3", color="#ff7f0e", style=dashed];
+    "(dec-bits ?b)_R" -> "?b_R" [label="1", color="#8c564b", style=dashed];
   }
 }

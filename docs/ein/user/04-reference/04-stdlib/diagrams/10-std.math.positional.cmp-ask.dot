@@ -7,8 +7,14 @@ digraph rule_cmp_ask_lhs_rhs {
     "?x_L" -> "?y_L" [label="?CMP", color="#ff7f0e", fontcolor="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
-    "(?CMP-FIRST ?x ?y)_R" [label="(?CMP-FIRST ?x ?y)", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="?OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?CMP-FIRST ?x ?y)_R" [shape=octagon, label="?CMP-FIRST", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "(?CMP-FIRST ?x ?y)_R" -> "?x_R" [label="?OPERAND", color="#d62728", fontcolor="#d62728", style=dashed];
+    "(?CMP-FIRST ?x ?y)_R" -> "?x_R" [label="1", color="#bcbd22", style=dashed];
+    "(?CMP-FIRST ?x ?y)_R" -> "?y_R" [label="2", color="#bcbd22", style=dashed];
   }
 }

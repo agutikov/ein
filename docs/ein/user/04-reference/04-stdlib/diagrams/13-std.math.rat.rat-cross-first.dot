@@ -19,12 +19,26 @@ digraph rule_rat_cross_first_lhs_rhs {
     "h1_rat-cross_L" -> "?e_L" [label="7", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [label="(rat-x1 ?k ?n ?d ?q ?m ?e)", shape=rectangle];
-    "?p_R" [label="?p", shape=diamond];
+    "?k_R" [label="?k", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [shape=octagon, label="rat-x1", color="#17becf", fontcolor="#17becf"];
+    }
     "h2_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
     "h2_mul-call_R" -> "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [label="1", color="#2ca02c", style=dashed];
     "h2_mul-call_R" -> "?p_R" [label="2", color="#2ca02c", style=dashed];
     "h2_mul-call_R" -> "?e_R" [label="3", color="#2ca02c", style=dashed];
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?d_R" [label="3", color="#17becf", style=dashed];
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?q_R" [label="4", color="#17becf", style=dashed];
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?m_R" [label="5", color="#17becf", style=dashed];
+    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?e_R" [label="6", color="#17becf", style=dashed];
   }
 }

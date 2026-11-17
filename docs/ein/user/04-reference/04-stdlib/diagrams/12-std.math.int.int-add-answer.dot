@@ -2,9 +2,16 @@ digraph rule_int_add_answer_lhs_rhs {
   rankdir=TB;
   label="int-add-answer"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-add ?x ?y)_L" [label="(int-add ?x ?y)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
     "?s_L" [label="?s", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-add ?x ?y)_L" [shape=octagon, label="int-add", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
     "(int-add ?x ?y)_L" -> "?s_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+    "(int-add ?x ?y)_L" -> "?x_L" [label="1", color="#ff7f0e"];
+    "(int-add ?x ?y)_L" -> "?y_L" [label="2", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
     "?x_R" [label="?x", shape=diamond];

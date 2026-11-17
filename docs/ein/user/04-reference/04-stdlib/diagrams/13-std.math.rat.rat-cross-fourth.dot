@@ -2,17 +2,37 @@ digraph rule_rat_cross_fourth_lhs_rhs {
   rankdir=TB;
   label="rat-cross-fourth"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-x4 ?k ?d ?m ?s)_L" [label="(rat-x4 ?k ?d ?m ?s)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "?m_L" [label="?m", shape=diamond];
+    "?s_L" [label="?s", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-x4 ?k ?d ?m ?s)_L" [shape=octagon, label="rat-x4", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "(rat-x4 ?k ?d ?m ?s)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?k_L" [label="1", color="#2ca02c"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?d_L" [label="2", color="#2ca02c"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?m_L" [label="3", color="#2ca02c"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?s_L" [label="4", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat-x5 ?k ?s ?a)_R" [label="(rat-x5 ?k ?s ?a)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?s_R" [label="?s", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
     "?m_R" [label="?m", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-x5 ?k ?s ?a)_R" [shape=octagon, label="rat-x5", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
     "h1_mul-call_R" -> "(rat-x5 ?k ?s ?a)_R" [label="1", color="#2ca02c", style=dashed];
     "h1_mul-call_R" -> "?m_R" [label="2", color="#2ca02c", style=dashed];
     "h1_mul-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
+    "(rat-x5 ?k ?s ?a)_R" -> "?k_R" [label="1", color="#2ca02c", style=dashed];
+    "(rat-x5 ?k ?s ?a)_R" -> "?s_R" [label="2", color="#2ca02c", style=dashed];
+    "(rat-x5 ?k ?s ?a)_R" -> "?a_R" [label="3", color="#2ca02c", style=dashed];
   }
 }

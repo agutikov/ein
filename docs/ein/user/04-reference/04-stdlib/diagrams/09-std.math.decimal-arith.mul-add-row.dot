@@ -2,21 +2,58 @@ digraph rule_mul_add_row_lhs_rhs {
   rankdir=TB;
   label="mul-add-row"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" [label="(mul-row-of ?k ?u ?rest (n ?p ?a))", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?rest_L" [label="?rest", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
     "?row_L" [label="?row", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" [shape=octagon, label="mul-row-of", color="#17becf", fontcolor="#17becf"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="mul-row-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?p ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" -> "?row_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" -> "?k_L" [label="1", color="#17becf"];
+    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" -> "?u_L" [label="2", color="#17becf"];
+    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" -> "?rest_L" [label="3", color="#17becf"];
+    "(mul-row-of ?k ?u ?rest (n ?p ?a))_L" -> "(n ?p ?a)_L" [label="4", color="#17becf"];
+    "(n ?p ?a)_L" -> "?p_L" [label="1", color="#9467bd"];
+    "(n ?p ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "(mul-sum ?k ?u ?rest)_R" [label="(mul-sum ?k ?u ?rest)", shape=rectangle];
-    "(n (n ?p ?a) 0)_R" [label="(n (n ?p ?a) 0)", shape=rectangle];
-    "?row_R" [label="?row", shape=diamond];
+    "?k_R" [label="?k", shape=diamond];
+    "?u_R" [label="?u", shape=diamond];
+    "?rest_R" [label="?rest", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
     "0_R" [label="0", shape=rectangle];
+    "?row_R" [label="?row", shape=diamond];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(mul-sum ?k ?u ?rest)_R" [shape=octagon, label="mul-sum", color="#1f77b4", fontcolor="#1f77b4"];
+      "(n (n ?p ?a) 0)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="n ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?p ?a)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
     "h1_add-walk_R" -> "(mul-sum ?k ?u ?rest)_R" [label="1", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "(n (n ?p ?a) 0)_R" [label="2", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "?row_R" [label="3", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+    "(mul-sum ?k ?u ?rest)_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
+    "(mul-sum ?k ?u ?rest)_R" -> "?u_R" [label="2", color="#1f77b4", style=dashed];
+    "(mul-sum ?k ?u ?rest)_R" -> "?rest_R" [label="3", color="#1f77b4", style=dashed];
+    "(n (n ?p ?a) 0)_R" -> "(n ?p ?a)_R" [label="1", color="#9467bd", style=dashed];
+    "(n (n ?p ?a) 0)_R" -> "0_R" [label="2", color="#9467bd", style=dashed];
+    "(n ?p ?a)_R" -> "?p_R" [label="1", color="#9467bd", style=dashed];
+    "(n ?p ?a)_R" -> "?a_R" [label="2", color="#9467bd", style=dashed];
   }
 }

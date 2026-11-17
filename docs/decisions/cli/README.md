@@ -21,3 +21,4 @@ Decisions on the `ein` commands: their options, their exit codes, and the views 
 - [Q-M1f.257](Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md) — Under `--no-search`, a claim not checked moves no exit code
 - [Q-M1f.258](Q-M1f.258-ein-solve-and-ein-test-take-no-search-and-ein.md) — `ein solve` and `ein test` take `--no-search`, and `ein oracle` refuses it
 - [Q-M1f.309](Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md) — `ein render h-space` shows the hypothesis space, and `ein show hyps` lists it
+- [Q-M1f.395](Q-M1f.395-ein-render-draws-every-object-once.md) — `ein render` draws every object once

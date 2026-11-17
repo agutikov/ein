@@ -11,8 +11,13 @@ digraph rule_to_bin_end_lhs_rhs {
     "h1_to-bin-go_L" -> "?acc_L" [label="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "(bits ?x)_R" [label="(bits ?x)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="bin-strip ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bits ?x)_R" [shape=octagon, label="bits", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "(bits ?x)_R" -> "?acc_R" [label="bin-strip", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(bits ?x)_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
   }
 }

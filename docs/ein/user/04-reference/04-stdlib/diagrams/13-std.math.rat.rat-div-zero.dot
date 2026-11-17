@@ -2,9 +2,25 @@ digraph rule_rat_div_zero_lhs_rhs {
   rankdir=TB;
   label="rat-div-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" [label="(rat-div-by ?request ?p ?n ?d ?e)", shape=rectangle];
-    "(int z z)_L" [label="(int z z)", shape=rectangle];
+    "?request_L" [label="?request", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-div-by ?request ?p ?n ?d ?e)_L" [shape=octagon, label="rat-div-by", color="#9467bd", fontcolor="#9467bd"];
+      "(int z z)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+    }
     "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "(int z z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?request_L" [label="1", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?p_L" [label="2", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?n_L" [label="3", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?d_L" [label="4", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?e_L" [label="5", color="#9467bd"];
+    "(int z z)_L" -> "z_L" [label="1", color="#17becf"];
+    "(int z z)_L" -> "z_L" [label="2", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
     "?request_R" [label="?request", shape=diamond];

@@ -2,7 +2,7 @@ digraph rule_numeral_digit_lhs_rhs {
   rankdir=TB;
   label="numeral-digit"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(n ?p ?a)_L" [label="(n ?p ?a)", shape=rectangle];
+    "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "0_L" [label="0", shape=rectangle];
     "1_L" [label="1", shape=rectangle];
@@ -14,6 +14,10 @@ digraph rule_numeral_digit_lhs_rhs {
     "7_L" [label="7", shape=rectangle];
     "8_L" [label="8", shape=rectangle];
     "9_L" [label="9", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?p ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
     "h1_written_L" -> "(n ?p ?a)_L" [label="1", color="#d62728"];
     "?a_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
@@ -26,10 +30,18 @@ digraph rule_numeral_digit_lhs_rhs {
     "?a_L" -> "7_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?a_L" -> "8_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?a_L" -> "9_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "(n ?p ?a)_L" -> "?p_L" [label="1", color="#9467bd"];
+    "(n ?p ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "(n ?p ?a)_R" [label="(n ?p ?a)", shape=rectangle];
+    "?p_R" [label="?p", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not-decimal ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?p ?a)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(n ?p ?a)_R" -> "?a_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
+    "(n ?p ?a)_R" -> "?p_R" [label="1", color="#9467bd", style=dashed];
+    "(n ?p ?a)_R" -> "?a_R" [label="2", color="#9467bd", style=dashed];
   }
 }

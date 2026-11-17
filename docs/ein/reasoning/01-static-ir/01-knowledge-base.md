@@ -431,15 +431,19 @@ On the left there are two facts, and that they are of one relation is in the gra
 one atom. On the right each fact has become an arrow, and the relation has become a word written on it. **The
 drawing loses the relation's identity**: $\mathsf{left\text{-}of}$ is no longer a node, and the same label is
 written on as many arrows as the extent has facts. So it has no place for a fact about the relation, a
-declaration or a property, which points at that node, nor for a fact that points at one of the two facts. So the labelled-arrow form is a way of drawing facts with
-three arrows, for a reader, and never the representation: what it draws stands for the graph, by these rules.
+declaration or a property, which points at that node. Nor can an arrow be pointed at: a fact that a fact points
+at keeps its node, in this form too. So the labelled-arrow form is a way of drawing facts with three arrows, for
+a reader, and never the representation: what it draws stands for the graph, by these rules.
 
 | in the graph | drawn |
 |---|---|
-| a held fact with three arrows: its node, its arrows, and its relation's atom as far as this fact goes | **one arrow** from the object under the second arrow to the object under the third, labelled with the relation's name |
-| a held fact with two arrows | one arrow from its argument to itself, a loop, labelled with the relation's name |
-| a held fact with any other count of arrows | its node, an octagon, with **the relation's name written in it**: the first arrow and the atom under it are folded into that label. The arrows that stay are numbered by argument, $1$ on the arrow to the first argument |
-| a fact under an arrow of another | one node labelled with the fact's [text](#the-text-of-an-object), its own arrows not drawn |
+| a held fact with three arrows that no fact points at: its node, its arrows, and its relation's atom as far as this fact goes | **one arrow** from the object under the second arrow to the object under the third, labelled with the relation's name |
+| a held fact with two arrows that no fact points at | one arrow from its argument to itself, a loop, labelled with the relation's name |
+| a held fact with any other count of arrows that no fact points at | its node, an octagon, with **the relation's name written in it**: the first arrow and the atom under it are folded into that label. The arrows that stay are numbered by argument, $1$ on the arrow to the first argument |
+| a fact that a fact points at, held or not, whatever its count | **its node, once**: that octagon, with the relation's name in it and its argument arrows numbered. It is filled where the knowledge base holds it and stands in the dashed frame of its context, as in the graph ([the global context, and the context of a fact](#the-global-context-and-the-context-of-a-fact)). It is never an arrow, and no node carries a fact's text |
+
+So every object is drawn once in this form too, and what is drawn outside a frame is held
+([Q-M1f.395](../../../decisions/cli/Q-M1f.395-ein-render-draws-every-object-once.md)).
 
 The four facts of the first drawing are then five nodes and four arrows, where the graph has twelve nodes and
 twelve arrows. The drawings of the pages after this one are of this form, and add to it only what each says: an

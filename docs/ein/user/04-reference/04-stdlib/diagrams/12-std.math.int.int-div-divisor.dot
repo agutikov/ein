@@ -2,17 +2,33 @@ digraph rule_int_div_divisor_lhs_rhs {
   rankdir=TB;
   label="int-div-divisor"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-div-a ?k ?q ?m)_L" [label="(int-div-a ?k ?q ?m)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
+    "?m_L" [label="?m", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-a ?k ?q ?m)_L" [shape=octagon, label="int-div-a", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "(int-div-a ?k ?q ?m)_L" -> "?a_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
+    "(int-div-a ?k ?q ?m)_L" -> "?k_L" [label="1", color="#bcbd22"];
+    "(int-div-a ?k ?q ?m)_L" -> "?q_L" [label="2", color="#bcbd22"];
+    "(int-div-a ?k ?q ?m)_L" -> "?m_L" [label="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-div-b ?k ?a)_R" [label="(int-div-b ?k ?a)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
     "?q_R" [label="?q", shape=diamond];
     "?m_R" [label="?m", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="int-norm ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-b ?k ?a)_R" [shape=octagon, label="int-div-b", color="#17becf", fontcolor="#17becf"];
+    }
     "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
     "h1_int-norm_R" -> "(int-div-b ?k ?a)_R" [label="1", color="#e377c2", style=dashed];
     "h1_int-norm_R" -> "?q_R" [label="2", color="#e377c2", style=dashed];
     "h1_int-norm_R" -> "?m_R" [label="3", color="#e377c2", style=dashed];
+    "(int-div-b ?k ?a)_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
+    "(int-div-b ?k ?a)_R" -> "?a_R" [label="2", color="#17becf", style=dashed];
   }
 }

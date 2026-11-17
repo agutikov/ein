@@ -2,9 +2,16 @@ digraph rule_int_bad_first_lhs_rhs {
   rankdir=TB;
   label="int-bad-first"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-first ?request ?y)_L" [label="(int-first ?request ?y)", shape=rectangle];
+    "?request_L" [label="?request", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="bad-operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-first ?request ?y)_L" [shape=octagon, label="int-first", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
     "(int-first ?request ?y)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
+    "(int-first ?request ?y)_L" -> "?request_L" [label="1", color="#ff7f0e"];
+    "(int-first ?request ?y)_L" -> "?y_L" [label="2", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
     "?request_R" [label="?request", shape=diamond];

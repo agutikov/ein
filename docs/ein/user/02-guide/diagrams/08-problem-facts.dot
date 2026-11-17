@@ -1,5 +1,6 @@
 digraph facts {
   ranksep=0.55;
+  newrank=true;
   "h_1_has" [shape=octagon, label="has"];
   "Bob" [shape=rectangle];
   "apples" [shape=rectangle];
@@ -8,6 +9,21 @@ digraph facts {
   "Alice" [shape=rectangle];
   "t1" [shape=rectangle];
   "h_3_asked" [shape=octagon, label="asked"];
+  "z" [shape=rectangle];
+  "5" [shape=rectangle];
+  "2" [shape=rectangle];
+  subgraph cluster_ctx_0 {
+    label="asked ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "(amount Bob apples t1)" [shape=octagon, label="amount"];
+  }
+  subgraph cluster_ctx_1 {
+    label="gave ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "(n z 2)" [shape=octagon, label="n"];
+  }
+  subgraph cluster_ctx_2 {
+    label="has ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "(n z 5)" [shape=octagon, label="n"];
+  }
   "h_1_has" -> "Bob" [label="1"];
   "h_1_has" -> "apples" [label="2"];
   "h_1_has" -> "(n z 5)" [label="3"];
@@ -19,4 +35,11 @@ digraph facts {
   "h_2_gave" -> "t0" [label="5"];
   "h_2_gave" -> "t1" [label="6"];
   "h_3_asked" -> "(amount Bob apples t1)" [label="1"];
+  "(n z 5)" -> "z" [label="1"];
+  "(n z 5)" -> "5" [label="2"];
+  "(n z 2)" -> "z" [label="1"];
+  "(n z 2)" -> "2" [label="2"];
+  "(amount Bob apples t1)" -> "Bob" [label="1"];
+  "(amount Bob apples t1)" -> "apples" [label="2"];
+  "(amount Bob apples t1)" -> "t1" [label="3"];
 }

@@ -23,12 +23,19 @@ digraph rule_div_next_lhs_rhs {
     "?ms_R" [label="?ms", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
     "?t_R" [label="?t", shape=diamond];
-    "(n ?w ?j)_R" [label="(n ?w ?j)", shape=rectangle];
+    "?w_R" [label="?w", shape=diamond];
+    "?j_R" [label="?j", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="div-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?w ?j)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h3_div-step_R" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
     "h3_div-step_R" -> "?k_R" [label="1", color="#d62728", style=dashed];
     "h3_div-step_R" -> "?ms_R" [label="2", color="#d62728", style=dashed];
     "h3_div-step_R" -> "?rest_R" [label="3", color="#d62728", style=dashed];
     "h3_div-step_R" -> "?t_R" [label="4", color="#d62728", style=dashed];
     "h3_div-step_R" -> "(n ?w ?j)_R" [label="5", color="#d62728", style=dashed];
+    "(n ?w ?j)_R" -> "?w_R" [label="1", color="#9467bd", style=dashed];
+    "(n ?w ?j)_R" -> "?j_R" [label="2", color="#9467bd", style=dashed];
   }
 }

@@ -2,17 +2,40 @@ digraph rule_rat_lowest_pos_lhs_rhs {
   rankdir=TB;
   label="rat-lowest-pos"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-q-den ?k pos ?q)_L" [label="(rat-q-den ?k pos ?q)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "pos_L" [label="pos", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
     "?e_L" [label="?e", shape=diamond];
     "?r_L" [label="?r", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="div-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-q-den ?k pos ?q)_L" [shape=octagon, label="rat-q-den", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
     "h1_div-done_L" -> "(rat-q-den ?k pos ?q)_L" [label="1", color="#8c564b"];
     "h1_div-done_L" -> "?e_L" [label="2", color="#8c564b"];
     "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
+    "(rat-q-den ?k pos ?q)_L" -> "?k_L" [label="1", color="#1f77b4"];
+    "(rat-q-den ?k pos ?q)_L" -> "pos_L" [label="2", color="#1f77b4"];
+    "(rat-q-den ?k pos ?q)_L" -> "?q_L" [label="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
-    "(rat (int ?q z) ?e)_R" [label="(rat (int ?q z) ?e)", shape=rectangle];
+    "?q_R" [label="?q", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "?e_R" [label="?e", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="rat ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?q z)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="rat-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat (int ?q z) ?e)_R" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
+    }
     "?k_R" -> "(rat (int ?q z) ?e)_R" [label="rat-done", color="#e377c2", fontcolor="#e377c2", style=dashed];
+    "(rat (int ?q z) ?e)_R" -> "(int ?q z)_R" [label="1", color="#d62728", style=dashed];
+    "(rat (int ?q z) ?e)_R" -> "?e_R" [label="2", color="#d62728", style=dashed];
+    "(int ?q z)_R" -> "?q_R" [label="1", color="#17becf", style=dashed];
+    "(int ?q z)_R" -> "z_R" [label="2", color="#17becf", style=dashed];
   }
 }

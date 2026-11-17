@@ -2,21 +2,37 @@ digraph rule_int_cmp_right_lhs_rhs {
   rankdir=TB;
   label="int-cmp-right"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-cmp-l ?k ?n ?q)_L" [label="(int-cmp-l ?k ?n ?q)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
     "?l_L" [label="?l", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-cmp-l ?k ?n ?q)_L" [shape=octagon, label="int-cmp-l", color="#d62728", fontcolor="#d62728"];
+    }
     "(int-cmp-l ?k ?n ?q)_L" -> "?l_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(int-cmp-l ?k ?n ?q)_L" -> "?k_L" [label="1", color="#d62728"];
+    "(int-cmp-l ?k ?n ?q)_L" -> "?n_L" [label="2", color="#d62728"];
+    "(int-cmp-l ?k ?n ?q)_L" -> "?q_L" [label="3", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-cmp-r ?k ?l)_R" [label="(int-cmp-r ?k ?l)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?l_R" [label="?l", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?q_R" [label="?q", shape=diamond];
     "0_R" [label="0", shape=rectangle];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-cmp-r ?k ?l)_R" [shape=octagon, label="int-cmp-r", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
     "h1_add-walk_R" [shape=octagon, label="add-walk", color="#17becf", fontcolor="#17becf"];
     "h1_add-walk_R" -> "(int-cmp-r ?k ?l)_R" [label="1", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "?q_R" [label="3", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "0_R" [label="4", color="#17becf", style=dashed];
     "h1_add-walk_R" -> "z_R" [label="5", color="#17becf", style=dashed];
+    "(int-cmp-r ?k ?l)_R" -> "?k_R" [label="1", color="#ff7f0e", style=dashed];
+    "(int-cmp-r ?k ?l)_R" -> "?l_R" [label="2", color="#ff7f0e", style=dashed];
   }
 }

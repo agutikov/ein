@@ -15,8 +15,15 @@ digraph rule_first_argument_fits_lhs_rhs {
     "?x1_L" -> "?T1_L" [label="is-instance", color="#7f7f7f", fontcolor="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "(?R ?x1 ?x2)_R" [label="(?R ?x1 ?x2)", shape=rectangle];
+    "?x1_R" [label="?x1", shape=diamond];
+    "?x2_R" [label="?x2", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="fits ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R ?x1 ?x2)_R" [shape=octagon, label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h2_fits_R" [shape=octagon, label="fits", color="#bcbd22", fontcolor="#bcbd22"];
     "h2_fits_R" -> "(?R ?x1 ?x2)_R" [label="1", color="#bcbd22", style=dashed];
+    "(?R ?x1 ?x2)_R" -> "?x1_R" [label="1", color="#1f77b4", style=dashed];
+    "(?R ?x1 ?x2)_R" -> "?x2_R" [label="2", color="#1f77b4", style=dashed];
   }
 }

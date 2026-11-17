@@ -2,9 +2,16 @@ digraph rule_rat_zero_first_lhs_rhs {
   rankdir=TB;
   label="rat-zero-first"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-first ?request ?y)_L" [label="(rat-first ?request ?y)", shape=rectangle];
+    "?request_L" [label="?request", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="rat-zero-den ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-first ?request ?y)_L" [shape=octagon, label="rat-first", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "h1_rat-zero-den_L" [shape=octagon, label="rat-zero-den", color="#bcbd22", fontcolor="#bcbd22"];
     "h1_rat-zero-den_L" -> "(rat-first ?request ?y)_L" [label="1", color="#bcbd22"];
+    "(rat-first ?request ?y)_L" -> "?request_L" [label="1", color="#bcbd22"];
+    "(rat-first ?request ?y)_L" -> "?y_L" [label="2", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
     "?request_R" [label="?request", shape=diamond];

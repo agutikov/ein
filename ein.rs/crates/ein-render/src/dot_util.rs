@@ -75,6 +75,76 @@ pub const VAR_SHAPE: &str = "diamond";
 /// that true.
 pub const POLYGON_RANKSEP: &str = "ranksep=0.55";
 
+// ── A fact in a context ────────────────────────────────────────────
+//
+// Every drawing of facts draws an object once
+// (Q-M1f.395). A fact that a drawn fact points at is its own
+// node, an octagon with the relation's name in it and its argument arrows
+// numbered, never a node labelled with the fact's text and never also an
+// arrow. It is filled where the knowledge base holds it, and it stands in a
+// dashed frame named for the relations of the facts that point at it
+// (Q-M1f.398). The frame's chrome and the filling are named here because
+// four writers draw them: the KB view, the program view, the rule view and
+// the constraint view.
+
+/// The fill of a fact in a frame that the knowledge base also holds.
+pub const HELD_FILL: &str = "#d9d9d9";
+
+/// The grey of a frame's line and label, an absence's in a rule's drawing.
+pub const FRAME_COLOUR: &str = "#888888";
+
+/// The ranking of a digraph that holds a frame and whose arrows cross it:
+/// the KB view's, the program view's and the constraint view's.
+///
+/// `dot` ranks a graph with clusters one cluster at a time unless told
+/// otherwise, and where arrows run both into a frame and out of it, between
+/// frames and to the names outside every one, that ranking can end in
+/// *trouble in init_rank* or in *Unable to reclaim box space in spline
+/// routing*: Graphviz 16.0.0 says one or the other of eight views of four
+/// corpus programs, the calculator's, whose numerals nest. `newrank` ranks
+/// the whole graph at once and then draws the frames around their members,
+/// and none of those views is refused under it. A rule's drawing does not
+/// set it: its frames stand inside its panels, and no corpus rule is
+/// refused. `dot_wellformed.rs` keeps both true.
+pub const FRAMED_RANKING: &str = "newrank=true";
+
+/// The label of the frame of the facts that facts of `relations` point at:
+/// the relations' names in order, comma-separated, and ` ctx`.
+pub fn ctx_label(relations: &std::collections::BTreeSet<String>) -> String {
+    let names: Vec<&str> = relations.iter().map(String::as_str).collect();
+    format!("{} ctx", names.join(", "))
+}
+
+/// The frames of one drawing, as DOT lines: one `subgraph cluster_ctx_…` a
+/// label, the labels in order, each holding its members' node declarations
+/// in the order given. Frames stand side by side; none holds another.
+///
+/// `members` is `(label, node declaration)`, the declaration a whole DOT
+/// statement with no indent. `scope` keeps the subgraphs' names apart where
+/// one digraph holds several drawings, a rule's two panels or an absence's
+/// own frame: two subgraphs of one name are one subgraph to Graphviz. A node
+/// is in a frame by being declared in it, so no edge is written here: an
+/// edge in a subgraph would take both its ends into the frame.
+pub fn ctx_frames(scope: &str, indent: &str, members: &[(String, String)]) -> Vec<String> {
+    let mut labels: Vec<&str> = members.iter().map(|(l, _)| l.as_str()).collect();
+    labels.sort_unstable();
+    labels.dedup();
+    let mut out = Vec::new();
+    for (i, label) in labels.iter().enumerate() {
+        out.push(format!("{indent}subgraph cluster_ctx_{scope}{i} {{"));
+        out.push(format!(
+            "{indent}  label={}; style=\"dashed,rounded\"; color=\"{FRAME_COLOUR}\"; \
+             fontcolor=\"{FRAME_COLOUR}\";",
+            quote(label)
+        ));
+        for (_, decl) in members.iter().filter(|(l, _)| l == label) {
+            out.push(format!("{indent}  {decl}"));
+        }
+        out.push(format!("{indent}}}"));
+    }
+    out
+}
+
 /// A quoted DOT label whose non-empty parts are joined by the two-character
 /// `\n` line break, each escaped.
 ///

@@ -2,9 +2,30 @@ digraph rule_div_fits_lhs_rhs {
   rankdir=TB;
   label="div-fits"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [label="(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?ms_L" [label="?ms", shape=diamond];
+    "?rest_L" [label="?rest", shape=diamond];
+    "?w_L" [label="?w", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?lo_L" [label="?lo", shape=diamond];
+    "?hi_L" [label="?hi", shape=diamond];
+    "?left_L" [label="?left", shape=diamond];
+    "?j_L" [label="?j", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [shape=octagon, label="div-trial", color="#9467bd", fontcolor="#9467bd"];
+    }
     "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?k_L" [label="1", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?ms_L" [label="2", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?rest_L" [label="3", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?w_L" [label="4", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?u_L" [label="5", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?lo_L" [label="6", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?hi_L" [label="7", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?left_L" [label="8", color="#9467bd"];
+    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?j_L" [label="9", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];

@@ -2,21 +2,40 @@ digraph rule_div_multiple_3_lhs_rhs {
   rankdir=TB;
   label="div-multiple-3"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(div-m2 ?k ?u ?m1)_L" [label="(div-m2 ?k ?u ?m1)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?m1_L" [label="?m1", shape=diamond];
     "?m2_L" [label="?m2", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(div-m2 ?k ?u ?m1)_L" [shape=octagon, label="div-m2", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "(div-m2 ?k ?u ?m1)_L" -> "?m2_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(div-m2 ?k ?u ?m1)_L" -> "?k_L" [label="1", color="#2ca02c"];
+    "(div-m2 ?k ?u ?m1)_L" -> "?u_L" [label="2", color="#2ca02c"];
+    "(div-m2 ?k ?u ?m1)_L" -> "?m1_L" [label="3", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
-    "(div-m3 ?k ?u ?m1 ?m2)_R" [label="(div-m3 ?k ?u ?m1 ?m2)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?u_R" [label="?u", shape=diamond];
     "?m1_R" [label="?m1", shape=diamond];
+    "?m2_R" [label="?m2", shape=diamond];
     "3_R" [label="3", shape=rectangle];
     "0_R" [label="0", shape=rectangle];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="mul-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(div-m3 ?k ?u ?m1 ?m2)_R" [shape=octagon, label="div-m3", color="#17becf", fontcolor="#17becf"];
+    }
     "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
     "h1_mul-walk_R" -> "(div-m3 ?k ?u ?m1 ?m2)_R" [label="1", color="#7f7f7f", style=dashed];
     "h1_mul-walk_R" -> "?m1_R" [label="2", color="#7f7f7f", style=dashed];
     "h1_mul-walk_R" -> "3_R" [label="3", color="#7f7f7f", style=dashed];
     "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
     "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
+    "(div-m3 ?k ?u ?m1 ?m2)_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
+    "(div-m3 ?k ?u ?m1 ?m2)_R" -> "?u_R" [label="2", color="#17becf", style=dashed];
+    "(div-m3 ?k ?u ?m1 ?m2)_R" -> "?m1_R" [label="3", color="#17becf", style=dashed];
+    "(div-m3 ?k ?u ?m1 ?m2)_R" -> "?m2_R" [label="4", color="#17becf", style=dashed];
   }
 }

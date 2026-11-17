@@ -2,17 +2,47 @@ digraph rule_int_div_floor_pos_lhs_rhs {
   rankdir=TB;
   label="int-div-floor-pos"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" [label="(int-div-r (int-div-floor ?x ?y) pos ?q)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "pos_L" [label="pos", shape=rectangle];
+    "?q_L" [label="?q", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" [shape=octagon, label="int-div-r", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="int-div-r ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-floor ?x ?y)_L" [shape=octagon, label="int-div-floor", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" -> "?t_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" -> "(int-div-floor ?x ?y)_L" [label="1", color="#ff7f0e"];
+    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" -> "pos_L" [label="2", color="#ff7f0e"];
+    "(int-div-r (int-div-floor ?x ?y) pos ?q)_L" -> "?q_L" [label="3", color="#ff7f0e"];
+    "(int-div-floor ?x ?y)_L" -> "?x_L" [label="1", color="#7f7f7f"];
+    "(int-div-floor ?x ?y)_L" -> "?y_L" [label="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-div-floor ?x ?y)_R" [label="(int-div-floor ?x ?y)", shape=rectangle];
-    "(int z ?q)_R" [label="(int z ?q)", shape=rectangle];
-    "(int ?t z)_R" [label="(int ?t z)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "z_R" [label="z", shape=rectangle];
+    "?q_R" [label="?q", shape=diamond];
+    "?t_R" [label="?t", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="int-div-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-div-floor ?x ?y)_R" [shape=octagon, label="int-div-floor", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(int z ?q)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int ?t z)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+    }
     "h1_int-div-done_R" [shape=octagon, label="int-div-done", color="#2ca02c", fontcolor="#2ca02c"];
     "h1_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [label="1", color="#2ca02c", style=dashed];
     "h1_int-div-done_R" -> "(int z ?q)_R" [label="2", color="#2ca02c", style=dashed];
     "h1_int-div-done_R" -> "(int ?t z)_R" [label="3", color="#2ca02c", style=dashed];
+    "(int-div-floor ?x ?y)_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
+    "(int-div-floor ?x ?y)_R" -> "?y_R" [label="2", color="#7f7f7f", style=dashed];
+    "(int z ?q)_R" -> "z_R" [label="1", color="#17becf", style=dashed];
+    "(int z ?q)_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
+    "(int ?t z)_R" -> "?t_R" [label="1", color="#17becf", style=dashed];
+    "(int ?t z)_R" -> "z_R" [label="2", color="#17becf", style=dashed];
   }
 }

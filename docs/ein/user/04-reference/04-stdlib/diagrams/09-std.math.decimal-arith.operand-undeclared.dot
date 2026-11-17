@@ -37,7 +37,12 @@ digraph rule_operand_undeclared_lhs_rhs {
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
-    "(no-let ?x)_R" [label="(no-let ?x)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="bad-operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(no-let ?x)_R" [shape=octagon, label="no-let", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "?k_R" -> "(no-let ?x)_R" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+    "(no-let ?x)_R" -> "?x_R" [label="1", color="#2ca02c", style=dashed];
   }
 }

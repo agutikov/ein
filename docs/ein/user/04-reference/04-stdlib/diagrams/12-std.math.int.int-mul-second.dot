@@ -2,17 +2,43 @@ digraph rule_int_mul_second_lhs_rhs {
   rankdir=TB;
   label="int-mul-second"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(int-mul-pp ?k ?p ?n ?q ?m)_L" [label="(int-mul-pp ?k ?p ?n ?q ?m)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
+    "?m_L" [label="?m", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-mul-pp ?k ?p ?n ?q ?m)_L" [shape=octagon, label="int-mul-pp", color="#e377c2", fontcolor="#e377c2"];
+    }
     "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?k_L" [label="1", color="#e377c2"];
+    "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?p_L" [label="2", color="#e377c2"];
+    "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?n_L" [label="3", color="#e377c2"];
+    "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?q_L" [label="4", color="#e377c2"];
+    "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?m_L" [label="5", color="#e377c2"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [label="(int-mul-nn ?k ?p ?n ?q ?m ?a)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
     "?m_R" [label="?m", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [shape=octagon, label="int-mul-nn", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
     "h1_mul-call_R" -> "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [label="1", color="#2ca02c", style=dashed];
     "h1_mul-call_R" -> "?n_R" [label="2", color="#2ca02c", style=dashed];
     "h1_mul-call_R" -> "?m_R" [label="3", color="#2ca02c", style=dashed];
+    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?k_R" [label="1", color="#2ca02c", style=dashed];
+    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?p_R" [label="2", color="#2ca02c", style=dashed];
+    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?n_R" [label="3", color="#2ca02c", style=dashed];
+    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?q_R" [label="4", color="#2ca02c", style=dashed];
+    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?m_R" [label="5", color="#2ca02c", style=dashed];
+    "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?a_R" [label="6", color="#2ca02c", style=dashed];
   }
 }

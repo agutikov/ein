@@ -2,60 +2,108 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: rule_rat_neg_ask_lhs_rhs Pages: 1 -->
-<svg width="390pt" height="216pt"
- viewBox="0.00 0.00 390.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<svg width="302pt" height="474pt"
+ viewBox="0.00 0.00 302.00 474.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 470)">
 <title>rule_rat_neg_ask_lhs_rhs</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 386,-211.75 386,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="191" y="-190.45" font-family="Times,serif" font-size="14.00">rat&#45;neg&#45;ask</text>
+<polygon fill="white" stroke="none" points="-4,4 -4,-470 298,-470 298,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="147" y="-448.7" font-family="Times,serif" font-size="14.00">rat&#45;neg&#45;ask</text>
 <g id="clust1" class="cluster">
 <title>cluster_lhs</title>
-<polygon fill="none" stroke="black" points="8,-8 8,-174.5 126,-174.5 126,-8 8,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="67" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+<polygon fill="none" stroke="black" points="8,-209.75 8,-399.5 126,-399.5 126,-209.75 8,-209.75"/>
+<text xml:space="preserve" text-anchor="middle" x="67" y="-382.2" font-family="Times,serif" font-size="14.00">match</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_rhs</title>
-<polygon fill="none" stroke="black" points="134,-8 134,-174.5 374,-174.5 374,-8 134,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="254" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+<polygon fill="none" stroke="black" points="134,-8 134,-432.75 286,-432.75 286,-8 134,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="210" y="-415.45" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_ctx_R_0</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M166,-322.25C166,-322.25 243,-322.25 243,-322.25 249,-322.25 255,-328.25 255,-334.25 255,-334.25 255,-387.5 255,-387.5 255,-393.5 249,-399.5 243,-399.5 243,-399.5 166,-399.5 166,-399.5 160,-399.5 154,-393.5 154,-387.5 154,-387.5 154,-334.25 154,-334.25 154,-328.25 160,-322.25 166,-322.25"/>
+<text xml:space="preserve" text-anchor="middle" x="204.5" y="-382.2" font-family="Times,serif" font-size="14.00" fill="#888888">operand ctx</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_ctx_R_1</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M166,-209.75C166,-209.75 266,-209.75 266,-209.75 272,-209.75 278,-215.75 278,-221.75 278,-221.75 278,-275 278,-275 278,-281 272,-287 266,-287 266,-287 166,-287 166,-287 160,-287 154,-281 154,-275 154,-275 154,-221.75 154,-221.75 154,-215.75 160,-209.75 166,-209.75"/>
+<text xml:space="preserve" text-anchor="middle" x="216" y="-269.7" font-family="Times,serif" font-size="14.00" fill="#888888">rat&#45;of ctx</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_ctx_R_2</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M172,-97.25C172,-97.25 266,-97.25 266,-97.25 272,-97.25 278,-103.25 278,-109.25 278,-109.25 278,-162.5 278,-162.5 278,-168.5 272,-174.5 266,-174.5 266,-174.5 172,-174.5 172,-174.5 166,-174.5 160,-168.5 160,-162.5 160,-162.5 160,-109.25 160,-109.25 160,-103.25 166,-97.25 172,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="219" y="-157.2" font-family="Times,serif" font-size="14.00" fill="#888888">rat&#45;only ctx</text>
 </g>
 <!-- ?x_L -->
 <g id="node1" class="node">
 <title>?x_L</title>
-<polygon fill="none" stroke="black" points="67,-52 35.5,-34 67,-16 98.5,-34 67,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="67" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
+<polygon fill="none" stroke="black" points="67,-253.75 35.5,-235.75 67,-217.75 98.5,-235.75 67,-253.75"/>
+<text xml:space="preserve" text-anchor="middle" x="67" y="-231.07" font-family="Times,serif" font-size="14.00">?x</text>
 </g>
 <!-- h1_rat&#45;neg_L -->
 <g id="node2" class="node">
 <title>h1_rat&#45;neg_L</title>
-<polygon fill="none" stroke="#2ca02c" points="118.44,-115.79 118.44,-130.71 88.31,-141.25 45.69,-141.25 15.56,-130.71 15.56,-115.79 45.69,-105.25 88.31,-105.25 118.44,-115.79"/>
-<text xml:space="preserve" text-anchor="middle" x="67" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">rat&#45;neg</text>
+<polygon fill="none" stroke="#2ca02c" points="118.44,-340.79 118.44,-355.71 88.31,-366.25 45.69,-366.25 15.56,-355.71 15.56,-340.79 45.69,-330.25 88.31,-330.25 118.44,-340.79"/>
+<text xml:space="preserve" text-anchor="middle" x="67" y="-343.57" font-family="Times,serif" font-size="14.00" fill="#2ca02c">rat&#45;neg</text>
 </g>
 <!-- h1_rat&#45;neg_L&#45;&gt;?x_L -->
 <g id="edge1" class="edge">
 <title>h1_rat&#45;neg_L&#45;&gt;?x_L</title>
-<path fill="none" stroke="#2ca02c" d="M67,-105.01C67,-93.26 67,-77.41 67,-63.77"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="70.5,-64.01 67,-54.01 63.5,-64.01 70.5,-64.01"/>
-<text xml:space="preserve" text-anchor="middle" x="71.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
-</g>
-<!-- (rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R -->
-<g id="node3" class="node">
-<title>(rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R</title>
-<polygon fill="none" stroke="black" points="365.5,-141.25 142.5,-141.25 142.5,-105.25 365.5,-105.25 365.5,-141.25"/>
-<text xml:space="preserve" text-anchor="middle" x="254" y="-118.58" font-family="Times,serif" font-size="14.00">(rat&#45;of (rat&#45;only (rat&#45;neg ?x)))</text>
+<path fill="none" stroke="#2ca02c" d="M67,-329.98C67,-312.81 67,-286.15 67,-265.73"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="70.5,-265.77 67,-255.77 63.5,-265.77 70.5,-265.77"/>
+<text xml:space="preserve" text-anchor="middle" x="71.5" y="-298.95" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 <!-- ?x_R -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>?x_R</title>
-<polygon fill="none" stroke="black" points="254,-52 222.5,-34 254,-16 285.5,-34 254,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="254" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
+<polygon fill="none" stroke="black" points="196,-52 164.5,-34 196,-16 227.5,-34 196,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="196" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
+</g>
+<!-- (rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R -->
+<g id="node4" class="node">
+<title>(rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R</title>
+<polygon fill="none" stroke="#2ca02c" points="245.76,-340.79 245.76,-355.71 221.3,-366.25 186.7,-366.25 162.24,-355.71 162.24,-340.79 186.7,-330.25 221.3,-330.25 245.76,-340.79"/>
+<text xml:space="preserve" text-anchor="middle" x="204" y="-343.57" font-family="Times,serif" font-size="14.00" fill="#2ca02c">rat&#45;of</text>
 </g>
 <!-- (rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R&#45;&gt;?x_R -->
 <g id="edge2" class="edge">
 <title>(rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R&#45;&gt;?x_R</title>
-<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M254,-105.01C254,-93.26 254,-77.41 254,-63.77"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="257.5,-64.01 254,-54.01 250.5,-64.01 257.5,-64.01"/>
-<text xml:space="preserve" text-anchor="middle" x="283.25" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">operand</text>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M183.48,-331.22C171.21,-320.26 156.73,-304.58 150,-287 141.67,-265.22 153.68,-104.44 156,-97.25 160.93,-81.97 170.58,-66.77 179.17,-55.21"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="181.69,-57.68 185.08,-47.64 176.17,-53.37 181.69,-57.68"/>
+<text xml:space="preserve" text-anchor="middle" x="178.47" y="-186.45" font-family="Times,serif" font-size="14.00" fill="#2ca02c">operand</text>
+</g>
+<!-- (rat&#45;only (rat&#45;neg ?x))_R -->
+<g id="node5" class="node">
+<title>(rat&#45;only (rat&#45;neg ?x))_R</title>
+<polygon fill="none" stroke="#2ca02c" points="270.29,-228.29 270.29,-243.21 238.49,-253.75 193.51,-253.75 161.71,-243.21 161.71,-228.29 193.51,-217.75 238.49,-217.75 270.29,-228.29"/>
+<text xml:space="preserve" text-anchor="middle" x="216" y="-231.07" font-family="Times,serif" font-size="14.00" fill="#2ca02c">rat&#45;only</text>
+</g>
+<!-- (rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R&#45;&gt;(rat&#45;only (rat&#45;neg ?x))_R -->
+<g id="edge3" class="edge">
+<title>(rat&#45;of (rat&#45;only (rat&#45;neg ?x)))_R&#45;&gt;(rat&#45;only (rat&#45;neg ?x))_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M205.88,-329.98C207.76,-312.63 210.7,-285.59 212.92,-265.09"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="216.37,-265.72 213.97,-255.4 209.42,-264.96 216.37,-265.72"/>
+<text xml:space="preserve" text-anchor="middle" x="214.14" y="-298.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- (rat&#45;neg ?x)_R -->
+<g id="node6" class="node">
+<title>(rat&#45;neg ?x)_R</title>
+<polygon fill="none" stroke="#2ca02c" points="270.44,-115.79 270.44,-130.71 240.31,-141.25 197.69,-141.25 167.56,-130.71 167.56,-115.79 197.69,-105.25 240.31,-105.25 270.44,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="219" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">rat&#45;neg</text>
+</g>
+<!-- (rat&#45;only (rat&#45;neg ?x))_R&#45;&gt;(rat&#45;neg ?x)_R -->
+<g id="edge4" class="edge">
+<title>(rat&#45;only (rat&#45;neg ?x))_R&#45;&gt;(rat&#45;neg ?x)_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M218.39,-217.34C219.05,-211.73 219.67,-205.49 220,-199.75 220.88,-184.36 220.74,-167.19 220.33,-153.11"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="223.83,-153.04 219.98,-143.17 216.83,-153.29 223.83,-153.04"/>
+<text xml:space="preserve" text-anchor="middle" x="225.08" y="-186.45" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- (rat&#45;neg ?x)_R&#45;&gt;?x_R -->
+<g id="edge5" class="edge">
+<title>(rat&#45;neg ?x)_R&#45;&gt;?x_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M214.46,-105.01C211.16,-92.52 206.65,-75.4 202.91,-61.22"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="206.32,-60.4 200.38,-51.63 199.55,-62.19 206.32,-60.4"/>
+<text xml:space="preserve" text-anchor="middle" x="214.06" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 785cac358a87ff234533ac84ad6ceb196a3ef5921976a07459ac26c2d97cda03 -->
+<!-- source sha256: 50f7d23c4dd15328f55db0a452281760a8e882b9a79c2885b16ac8c2ea6db248 -->

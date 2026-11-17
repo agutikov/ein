@@ -2,21 +2,39 @@ digraph rule_to_bin_bit_1_lhs_rhs {
   rankdir=TB;
   label="to-bin-bit-1"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(halving ?x ?acc)_L" [label="(halving ?x ?acc)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?acc_L" [label="?acc", shape=diamond];
     "?q_L" [label="?q", shape=diamond];
-    "(n z 1)_L" [label="(n z 1)", shape=rectangle];
+    "z_L" [label="z", shape=rectangle];
+    "1_L" [label="1", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="div-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(halving ?x ?acc)_L" [shape=octagon, label="halving", color="#bcbd22", fontcolor="#bcbd22"];
+      "(n z 1)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
     "h1_div-done_L" -> "(halving ?x ?acc)_L" [label="1", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [label="2", color="#8c564b"];
     "h1_div-done_L" -> "(n z 1)_L" [label="3", color="#8c564b"];
+    "(halving ?x ?acc)_L" -> "?x_L" [label="1", color="#bcbd22"];
+    "(halving ?x ?acc)_L" -> "?acc_L" [label="2", color="#bcbd22"];
+    "(n z 1)_L" -> "z_L" [label="1", color="#9467bd"];
+    "(n z 1)_L" -> "1_L" [label="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
     "?x_R" [label="?x", shape=diamond];
     "?q_R" [label="?q", shape=diamond];
-    "(bin-b 1 ?acc)_R" [label="(bin-b 1 ?acc)", shape=rectangle];
+    "1_R" [label="1", shape=rectangle];
+    "?acc_R" [label="?acc", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="to-bin-go ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(bin-b 1 ?acc)_R" [shape=octagon, label="bin-b", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "h2_to-bin-go_R" [shape=octagon, label="to-bin-go", color="#17becf", fontcolor="#17becf"];
     "h2_to-bin-go_R" -> "?x_R" [label="1", color="#17becf", style=dashed];
     "h2_to-bin-go_R" -> "?q_R" [label="2", color="#17becf", style=dashed];
     "h2_to-bin-go_R" -> "(bin-b 1 ?acc)_R" [label="3", color="#17becf", style=dashed];
+    "(bin-b 1 ?acc)_R" -> "1_R" [label="1", color="#7f7f7f", style=dashed];
+    "(bin-b 1 ?acc)_R" -> "?acc_R" [label="2", color="#7f7f7f", style=dashed];
   }
 }

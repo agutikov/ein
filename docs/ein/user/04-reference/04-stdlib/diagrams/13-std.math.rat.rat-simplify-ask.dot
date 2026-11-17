@@ -7,8 +7,22 @@ digraph rule_rat_simplify_ask_lhs_rhs {
     "h1_rat-simplify_L" -> "?x_L" [label="1", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-only (rat-simplify ?x)))_R" [label="(rat-of (rat-only (rat-simplify ?x)))", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-of (rat-only (rat-simplify ?x)))_R" [shape=octagon, label="rat-of", color="#2ca02c", fontcolor="#2ca02c"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="rat-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-only (rat-simplify ?x))_R" [shape=octagon, label="rat-only", color="#2ca02c", fontcolor="#2ca02c"];
+    }
+    subgraph cluster_ctx_R_2 {
+      label="rat-only ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-simplify ?x)_R" [shape=octagon, label="rat-simplify", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "(rat-of (rat-only (rat-simplify ?x)))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "(rat-only (rat-simplify ?x))_R" [label="1", color="#2ca02c", style=dashed];
+    "(rat-only (rat-simplify ?x))_R" -> "(rat-simplify ?x)_R" [label="1", color="#2ca02c", style=dashed];
+    "(rat-simplify ?x)_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
   }
 }

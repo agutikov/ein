@@ -2,16 +2,28 @@ digraph rule_rat_z_digit_lhs_rhs {
   rankdir=TB;
   label="rat-z-digit"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat ?x ?d)_L" [label="(rat ?x ?d)", shape=rectangle];
     "?x_L" [label="?x", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat ?x ?d)_L" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
+    }
     "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
     "h1_written_L" -> "(rat ?x ?d)_L" [label="1", color="#d62728"];
     "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
     "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
+    "(rat ?x ?d)_L" -> "?x_L" [label="1", color="#d62728"];
+    "(rat ?x ?d)_L" -> "?d_L" [label="2", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat ?x ?d)_R" [label="(rat ?x ?d)", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not-rational ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat ?x ?d)_R" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
+    }
     "(rat ?x ?d)_R" -> "?x_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+    "(rat ?x ?d)_R" -> "?x_R" [label="1", color="#d62728", style=dashed];
+    "(rat ?x ?d)_R" -> "?d_R" [label="2", color="#d62728", style=dashed];
   }
 }

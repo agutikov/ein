@@ -2,17 +2,68 @@ digraph rule_div_turn_lhs_rhs {
   rankdir=TB;
   label="div-turn"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" [label="(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "?m1_L" [label="?m1", shape=diamond];
+    "?m2_L" [label="?m2", shape=diamond];
+    "?m3_L" [label="?m3", shape=diamond];
+    "?m4_L" [label="?m4", shape=diamond];
+    "?m5_L" [label="?m5", shape=diamond];
+    "?m6_L" [label="?m6", shape=diamond];
+    "?m7_L" [label="?m7", shape=diamond];
+    "?m8_L" [label="?m8", shape=diamond];
     "?m9_L" [label="?m9", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" [shape=octagon, label="div-m9", color="#d62728", fontcolor="#d62728"];
+    }
     "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m9_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?k_L" [label="1", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?u_L" [label="2", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m1_L" [label="3", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m2_L" [label="4", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m3_L" [label="5", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m4_L" [label="6", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m5_L" [label="7", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m6_L" [label="8", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m7_L" [label="9", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m8_L" [label="10", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [label="(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?m1_R" [label="?m1", shape=diamond];
+    "?m2_R" [label="?m2", shape=diamond];
+    "?m3_R" [label="?m3", shape=diamond];
+    "?m4_R" [label="?m4", shape=diamond];
+    "?m5_R" [label="?m5", shape=diamond];
+    "?m6_R" [label="?m6", shape=diamond];
+    "?m7_R" [label="?m7", shape=diamond];
+    "?m8_R" [label="?m8", shape=diamond];
+    "?m9_R" [label="?m9", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "z_R" [label="z", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="div-digits ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [shape=octagon, label="multiples", color="#17becf", fontcolor="#17becf"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="top-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [shape=octagon, label="div-digits", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "h1_top-first_R" [shape=octagon, label="top-first", color="#9467bd", fontcolor="#9467bd"];
     "h1_top-first_R" -> "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [label="1", color="#9467bd", style=dashed];
     "h1_top-first_R" -> "?u_R" [label="2", color="#9467bd", style=dashed];
     "h1_top-first_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
+    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
+    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [label="2", color="#1f77b4", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m1_R" [label="1", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m2_R" [label="2", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m3_R" [label="3", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m4_R" [label="4", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m5_R" [label="5", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m6_R" [label="6", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m7_R" [label="7", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m8_R" [label="8", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m9_R" [label="9", color="#17becf", style=dashed];
   }
 }

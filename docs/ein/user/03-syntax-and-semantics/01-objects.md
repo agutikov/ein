@@ -288,7 +288,8 @@ its activator binds*. `ein solve FILE`:
 
 `(lives-in House-1 Norwegian)` holds as before, and does not fit: nothing says `House-1` is an instance of
 `Person`. The rule, as `ein render rule --name first-argument-fits FILE` draws it, the declaration an octagon over
-the relation and its two labels, the fact an arrow labelled with the relation's variable:
+the relation and its two labels, the fact an arrow labelled with the relation's variable, and, in the conclusion,
+the same pattern under the arrow of `fits`, an octagon in the frame `fits ctx`:
 
 ![The rule first-argument-fits: a declaration, a fact and a membership, and the fact it asserts](diagrams/01-rule-first-argument-fits.svg)
 

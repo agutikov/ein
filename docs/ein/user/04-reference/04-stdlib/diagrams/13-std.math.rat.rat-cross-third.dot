@@ -2,17 +2,41 @@ digraph rule_rat_cross_third_lhs_rhs {
   rankdir=TB;
   label="rat-cross-third"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-x3 ?k ?n ?d ?m ?e)_L" [label="(rat-x3 ?k ?n ?d ?m ?e)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "?m_L" [label="?m", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
     "?s_L" [label="?s", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-x3 ?k ?n ?d ?m ?e)_L" [shape=octagon, label="rat-x3", color="#1f77b4", fontcolor="#1f77b4"];
+    }
     "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?s_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?k_L" [label="1", color="#1f77b4"];
+    "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?n_L" [label="2", color="#1f77b4"];
+    "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?d_L" [label="3", color="#1f77b4"];
+    "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?m_L" [label="4", color="#1f77b4"];
+    "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?e_L" [label="5", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat-x4 ?k ?d ?m ?s)_R" [label="(rat-x4 ?k ?d ?m ?s)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
+    "?s_R" [label="?s", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-x4 ?k ?d ?m ?s)_R" [shape=octagon, label="rat-x4", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
     "h1_mul-call_R" -> "(rat-x4 ?k ?d ?m ?s)_R" [label="1", color="#2ca02c", style=dashed];
     "h1_mul-call_R" -> "?n_R" [label="2", color="#2ca02c", style=dashed];
     "h1_mul-call_R" -> "?e_R" [label="3", color="#2ca02c", style=dashed];
+    "(rat-x4 ?k ?d ?m ?s)_R" -> "?k_R" [label="1", color="#2ca02c", style=dashed];
+    "(rat-x4 ?k ?d ?m ?s)_R" -> "?d_R" [label="2", color="#2ca02c", style=dashed];
+    "(rat-x4 ?k ?d ?m ?s)_R" -> "?m_R" [label="3", color="#2ca02c", style=dashed];
+    "(rat-x4 ?k ?d ?m ?s)_R" -> "?s_R" [label="4", color="#2ca02c", style=dashed];
   }
 }

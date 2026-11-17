@@ -2,13 +2,29 @@ digraph rule_bad_cmp_second_lhs_rhs {
   rankdir=TB;
   label="bad-cmp-second"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(?CMP-SECOND ?x ?y ?u)_L" [label="(?CMP-SECOND ?x ?y ?u)", shape=rectangle];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?BAD-OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?CMP-SECOND ?x ?y ?u)_L" [shape=octagon, label="?CMP-SECOND", color="#8c564b", fontcolor="#8c564b"];
+    }
     "(?CMP-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?x_L" [label="1", color="#8c564b"];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?y_L" [label="2", color="#8c564b"];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?u_L" [label="3", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
-    "(?CMP ?x ?y)_R" [label="(?CMP ?x ?y)", shape=rectangle];
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
     "?f_R" [label="?f", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="?BAD-REQUEST ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?CMP ?x ?y)_R" [shape=octagon, label="?CMP", color="#ff7f0e", fontcolor="#ff7f0e"];
+    }
     "(?CMP ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
+    "(?CMP ?x ?y)_R" -> "?x_R" [label="1", color="#ff7f0e", style=dashed];
+    "(?CMP ?x ?y)_R" -> "?y_R" [label="2", color="#ff7f0e", style=dashed];
   }
 }

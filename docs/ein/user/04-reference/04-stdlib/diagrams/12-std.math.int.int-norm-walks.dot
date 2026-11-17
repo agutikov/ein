@@ -11,12 +11,16 @@ digraph rule_int_norm_walks_lhs_rhs {
     "h1_int-norm_L" -> "?n_L" [label="3", color="#e377c2"];
   }
   subgraph cluster_rhs { label="assert";
-    "(int-plus ?k)_R" [label="(int-plus ?k)", shape=rectangle];
+    "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "0_R" [label="0", shape=rectangle];
     "z_R" [label="z", shape=rectangle];
-    "(int-minus ?k)_R" [label="(int-minus ?k)", shape=rectangle];
+    subgraph cluster_ctx_R_0 {
+      label="sub-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int-plus ?k)_R" [shape=octagon, label="int-plus", color="#9467bd", fontcolor="#9467bd"];
+      "(int-minus ?k)_R" [shape=octagon, label="int-minus", color="#9467bd", fontcolor="#9467bd"];
+    }
     "h2_sub-walk_R" [shape=octagon, label="sub-walk", color="#8c564b", fontcolor="#8c564b"];
     "h2_sub-walk_R" -> "(int-plus ?k)_R" [label="1", color="#8c564b", style=dashed];
     "h2_sub-walk_R" -> "?p_R" [label="2", color="#8c564b", style=dashed];
@@ -29,5 +33,7 @@ digraph rule_int_norm_walks_lhs_rhs {
     "h3_sub-walk_R" -> "?p_R" [label="3", color="#8c564b", style=dashed];
     "h3_sub-walk_R" -> "0_R" [label="4", color="#8c564b", style=dashed];
     "h3_sub-walk_R" -> "z_R" [label="5", color="#8c564b", style=dashed];
+    "(int-plus ?k)_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
+    "(int-minus ?k)_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
   }
 }

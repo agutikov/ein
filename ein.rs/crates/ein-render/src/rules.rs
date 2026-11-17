@@ -13,11 +13,27 @@
 //! as its own `cluster_absent`, with the guard's binder-local variables
 //! declared *inside* it and shared variables left outside — so "no such match
 //! exists" survives instead of flattening into overlay arrows.
+//!
+//! **A pattern under an arrow of a pattern is its own node**
+//! (Q-M1f.395): an octagon with the relation's name in it and
+//! its argument arrows numbered, to its variables, its names and the patterns
+//! under its own arrows, so that what a nested pattern binds is drawn. It
+//! stands in a dashed frame named for the relations of the patterns that
+//! point at it (Q-M1f.398), and is filled where it is also a premise, or a
+//! literal of the conclusion: the pattern's own *held*. A pattern that is
+//! pointed at is that node and no arrow, in the panel it is pointed at in;
+//! the overlay is one drawing, so there a conclusion that the match points
+//! at is the node the match draws.
+
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use ein_core::is_predicate;
 use ein_ir::{Ast, Node, NodeId};
 
-use crate::dot_util::{GROUND_SHAPE, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, quote, value_label};
+use crate::dot_util::{
+    GROUND_SHAPE, HELD_FILL, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, ctx_frames, ctx_label, quote,
+    value_label,
+};
 use crate::palette::hash_color;
 
 const NEG_COLOUR: &str = "#d62728"; // red — negated premises / conclusions
@@ -94,11 +110,24 @@ fn is_sform(ast: &Ast, id: NodeId) -> bool {
 
 // ── node-occurrence analysis (for absent-cluster scoping) ──────────
 
+/// The label of what stands under an arrow, and of everything under the
+/// arrows of a pattern that stands there, at any depth, in the order met: a
+/// nested pattern is a node, and so is each variable and name it points at.
+fn value_nodes(ast: &Ast, arg: NodeId, out: &mut Vec<String>) {
+    out.push(value_label(ast, arg));
+    if is_sform(ast, arg) {
+        for inner in positional(ast, arg) {
+            value_nodes(ast, inner, out);
+        }
+    }
+}
+
 /// Value-labels of every argument position in this clause tree.
 ///
 /// Relation and predicate *heads* are edge labels, not nodes, so they are
 /// excluded; the walk recurses through `and` / `or` / `not` / `absent` /
-/// `forall` so a guard's inner argument nodes surface.
+/// `forall` so a guard's inner argument nodes surface, and into a pattern
+/// under an arrow, whose own arguments are nodes too.
 fn arg_nodes(ast: &Ast, expr: NodeId) -> Vec<String> {
     match head_name(ast, expr) {
         Some("and" | "or" | "absent" | "forall") => {
@@ -114,11 +143,134 @@ fn arg_nodes(ast: &Ast, expr: NodeId) -> Vec<String> {
             Some(first) if is_sform(ast, first) => arg_nodes(ast, first),
             _ => Vec::new(),
         },
-        _ => positional(ast, expr)
-            .iter()
-            .map(|a| value_label(ast, *a))
-            .collect(),
+        _ => {
+            let mut out = Vec::new();
+            for a in positional(ast, expr) {
+                value_nodes(ast, a, &mut out);
+            }
+            out
+        }
     }
+}
+
+// ── the patterns under an arrow ────────────────────────────────────
+
+/// What one drawing of a rule draws under an arrow: every pattern that a
+/// drawn pattern points at, by its text, in the order it is first met, with
+/// the relations of the patterns that point at it; and the texts of the
+/// drawing's premises and of its conclusion's literals, which are what a
+/// pattern has for *held*.
+///
+/// One drawing is a panel of the side-by-side view, or the whole overlay.
+#[derive(Default)]
+struct Scene {
+    nested: Vec<(NodeId, BTreeSet<String>)>,
+    at: HashMap<String, usize>,
+    premises: HashSet<String>,
+    conclusions: HashSet<String>,
+}
+
+impl Scene {
+    fn is_nested(&self, ast: &Ast, clause: NodeId) -> bool {
+        self.at.contains_key(&value_label(ast, clause))
+    }
+
+    /// Everything `form` points at is pointed at by a drawn pattern, `by`
+    /// the name its arrows are read under.
+    fn walk(&mut self, ast: &Ast, form: NodeId, by: &str) {
+        for arg in positional(ast, form) {
+            if !is_sform(ast, arg) {
+                continue;
+            }
+            let text = value_label(ast, arg);
+            let i = match self.at.get(&text) {
+                Some(&i) => i,
+                None => {
+                    let i = self.nested.len();
+                    self.at.insert(text, i);
+                    self.nested.push((arg, BTreeSet::new()));
+                    let inner = value_label(ast, form_head(ast, arg));
+                    self.walk(ast, arg, &inner);
+                    i
+                }
+            };
+            self.nested[i].1.insert(by.to_string());
+        }
+    }
+
+    /// One clause of a pattern, read as the drawing reads it. `held` is the
+    /// set the clause's own text joins where it is a premise or a literal:
+    /// none under a negation or an absence.
+    fn clause(
+        &mut self,
+        ast: &Ast,
+        clause: NodeId,
+        conclusion: bool,
+        positive: bool,
+        negations: &mut Vec<NodeId>,
+    ) {
+        match head_name(ast, clause) {
+            Some("and" | "or") => {
+                for child in ast.form_args(clause).to_vec() {
+                    if is_sform(ast, child) {
+                        self.clause(ast, child, conclusion, positive, negations);
+                    }
+                }
+            }
+            Some("absent" | "forall") => {
+                for child in ast.form_args(clause).to_vec() {
+                    if is_sform(ast, child) {
+                        self.clause(ast, child, conclusion, false, negations);
+                    }
+                }
+            }
+            Some("not") => {
+                if let Some(inner) = ast.form_args(clause).first().copied()
+                    && is_sform(ast, inner)
+                {
+                    negations.push(inner);
+                    self.clause(ast, inner, conclusion, false, negations);
+                }
+            }
+            _ => {
+                if positive {
+                    let text = value_label(ast, clause);
+                    if conclusion {
+                        self.conclusions.insert(text);
+                    } else {
+                        self.premises.insert(text);
+                    }
+                }
+                let by = value_label(ast, form_head(ast, clause));
+                self.walk(ast, clause, &by);
+            }
+        }
+    }
+}
+
+/// The scene of one drawing: `matched` and `asserted` are the patterns it
+/// draws, either of which a panel leaves out.
+fn scene(ast: &Ast, matched: Option<NodeId>, asserted: Option<NodeId>) -> Scene {
+    let mut s = Scene::default();
+    let mut negations: Vec<NodeId> = Vec::new();
+    for (pattern, conclusion) in [(matched, false), (asserted, true)] {
+        let Some(pattern) = pattern else { continue };
+        for clause in ast.conjuncts(pattern) {
+            if is_sform(ast, clause) {
+                s.clause(ast, clause, conclusion, true, &mut negations);
+            }
+        }
+    }
+    // A denied pattern that another drawn pattern points at is that
+    // pattern's node, and the negation is then a node that points at it:
+    // read once every other arrow is known, so the reading does not depend
+    // on the order the clauses are written in.
+    for inner in negations {
+        if let Some(&i) = s.at.get(&value_label(ast, inner)) {
+            s.nested[i].1.insert("not".to_string());
+        }
+    }
+    s
 }
 
 /// First-seen order of argument-node labels across `clauses`.
@@ -211,6 +363,9 @@ fn nid(nodelabel: &str, suffix: &str) -> String {
 #[derive(Default)]
 struct RuleRenderer {
     hcount: u32,
+    /// The ids of the nested patterns already drawn: the overlay draws its
+    /// two patterns on one graph, and a pattern both hold is drawn once.
+    drawn: HashSet<String>,
 }
 
 /// A panel's node declarations, in first-declaration order.
@@ -231,6 +386,7 @@ impl RuleRenderer {
     fn clause_lines(
         &mut self,
         ast: &Ast,
+        scene: &Scene,
         clause: NodeId,
         suffix: &str,
         dashed: bool,
@@ -241,14 +397,30 @@ impl RuleRenderer {
                 let mut out = Vec::new();
                 for child in ast.form_args(clause).to_vec() {
                     if is_sform(ast, child) {
-                        out.extend(self.clause_lines(ast, child, suffix, dashed, negative));
+                        out.extend(self.clause_lines(ast, scene, child, suffix, dashed, negative));
                     }
                 }
                 out
             }
             Some("not") => match ast.form_args(clause).first().copied() {
+                // A denied pattern that is a node of the drawing is drawn
+                // once, there, and its negation is a node that points at it.
+                Some(inner) if is_sform(ast, inner) && scene.is_nested(ast, inner) => {
+                    let h = self.fresh_hyper("not", suffix);
+                    let style = if dashed { ", style=dashed" } else { "" };
+                    vec![
+                        format!(
+                            "{h} [shape={HYPER_SHAPE}, label=\"not\", color=\"{NEG_COLOUR}\", \
+                             fontcolor=\"{NEG_COLOUR}\"];"
+                        ),
+                        format!(
+                            "{h} -> {} [label=\"1\", color=\"{NEG_COLOUR}\"{style}];",
+                            nid(&value_label(ast, inner), suffix)
+                        ),
+                    ]
+                }
                 Some(inner) if is_sform(ast, inner) => {
-                    self.clause_lines(ast, inner, suffix, dashed, true)
+                    self.clause_lines(ast, scene, inner, suffix, dashed, true)
                 }
                 _ => Vec::new(),
             },
@@ -260,13 +432,67 @@ impl RuleRenderer {
                 let mut out = Vec::new();
                 for child in ast.form_args(clause).to_vec() {
                     if is_sform(ast, child) {
-                        out.extend(self.clause_lines(ast, child, suffix, dashed, true));
+                        out.extend(self.clause_lines(ast, scene, child, suffix, dashed, true));
                     }
                 }
                 out
             }
+            // A pattern that a drawn pattern points at is its node, drawn
+            // with the scene's, and no arrow.
+            _ if scene.is_nested(ast, clause) => Vec::new(),
             _ => self.relation_lines(ast, clause, suffix, dashed, negative),
         }
+    }
+
+    /// The node of one pattern under an arrow, as `(frame, declaration)`,
+    /// and its numbered argument arrows; nothing where the drawing has it
+    /// already.
+    fn nested_lines(
+        &mut self,
+        ast: &Ast,
+        scene: &Scene,
+        label: &str,
+        suffix: &str,
+        dashed: bool,
+    ) -> Option<((String, String), Vec<String>)> {
+        let &i = scene.at.get(label)?;
+        let (pattern, by) = &scene.nested[i];
+        let id = nid(label, suffix);
+        if !self.drawn.insert(id.clone()) {
+            return None;
+        }
+        let head_label = value_label(ast, form_head(ast, *pattern));
+        let colour = if head_label == "not" {
+            NEG_COLOUR
+        } else {
+            hash_color(head_label.trim_start_matches('?'))
+        };
+        // Filled where the pattern is a premise; filled and dashed where it
+        // is a literal of the conclusion and no premise.
+        let fill = if scene.premises.contains(label) {
+            format!(", style=filled, fillcolor=\"{HELD_FILL}\"")
+        } else if scene.conclusions.contains(label) {
+            format!(", style=\"filled,dashed\", fillcolor=\"{HELD_FILL}\"")
+        } else {
+            String::new()
+        };
+        let decl = format!(
+            "{id} [shape={HYPER_SHAPE}, label={}, color=\"{colour}\", fontcolor=\"{colour}\"{fill}];",
+            quote(&head_label)
+        );
+        let edge_style = if dashed { ", style=dashed" } else { "" };
+        let arrows = positional(ast, *pattern)
+            .iter()
+            .enumerate()
+            .map(|(i, arg)| {
+                format!(
+                    "{id} -> {} [label=\"{}\", color=\"{colour}\"{edge_style}];",
+                    nid(&value_label(ast, *arg), suffix),
+                    i + 1
+                )
+            })
+            .collect();
+        Some(((ctx_label(by), decl), arrows))
     }
 
     fn relation_lines(
@@ -342,22 +568,27 @@ impl RuleRenderer {
         )
     }
 
-    /// One pattern → (node-decl map, ordered body lines).
+    /// One pattern → (node-decl map, ordered body lines, framed nodes).
     ///
     /// Top-home nodes come back in the decl map, for the caller to emit at
     /// panel scope; guard-local nodes are declared inside their
-    /// `cluster_absent` block within the body lines.
+    /// `cluster_absent` block within the body lines. A pattern under an
+    /// arrow comes back as a framed node, `(frame, declaration)`, for the
+    /// caller to write its frames; one that is an absence's own is framed
+    /// inside the absence's block.
     fn panel(
         &mut self,
         ast: &Ast,
+        scene: &Scene,
         pattern: Option<NodeId>,
         suffix: &str,
         dashed: bool,
-    ) -> (Decls, Vec<String>) {
+    ) -> (Decls, Vec<String>, Vec<(String, String)>) {
         let mut decls: Decls = Vec::new();
         let mut body: Vec<String> = Vec::new();
+        let mut framed: Vec<(String, String)> = Vec::new();
         let Some(pattern) = pattern else {
-            return (decls, body);
+            return (decls, body, framed);
         };
         // The clause's conjuncts, an `(and …)` read flat at any depth
         // (`ein_ir::Ast::conjuncts`): the compiler's reading of a premise and
@@ -379,20 +610,32 @@ impl RuleRenderer {
             .collect();
         let homes = node_homes(ast, &top, &guards);
 
-        // Panel-scope node declarations (shared / top-home nodes).
+        // Panel-scope node declarations (shared / top-home nodes), and the
+        // arrows of the patterns under an arrow among them, after the
+        // clauses'.
+        let mut nested_arrows: Vec<String> = Vec::new();
         for nl in ordered_nodes(ast, &clauses) {
-            if home_of(&homes, &nl) == Some(Home::Top) {
-                decls_setdefault(
-                    &mut decls,
-                    nid(&nl, suffix),
-                    format!("label={}, {}", quote(&nl), shape_attrs(&nl)),
-                );
+            if home_of(&homes, &nl) != Some(Home::Top) {
+                continue;
             }
+            if scene.at.contains_key(&nl) {
+                if let Some((node, arrows)) = self.nested_lines(ast, scene, &nl, suffix, dashed) {
+                    framed.push(node);
+                    nested_arrows.extend(arrows);
+                }
+                continue;
+            }
+            decls_setdefault(
+                &mut decls,
+                nid(&nl, suffix),
+                format!("label={}, {}", quote(&nl), shape_attrs(&nl)),
+            );
         }
 
         for c in &top {
-            body.extend(self.clause_lines(ast, *c, suffix, dashed, false));
+            body.extend(self.clause_lines(ast, scene, *c, suffix, dashed, false));
         }
+        body.extend(nested_arrows);
 
         // Each guard → its own cluster (local decls + inner lines).
         for (gi, guard) in guards.iter().enumerate() {
@@ -408,27 +651,44 @@ impl RuleRenderer {
                      color=\"{GUARD_COLOUR}\"; fontcolor=\"{GUARD_COLOUR}\";"
                 ),
             ];
+            let mut local_framed: Vec<(String, String)> = Vec::new();
+            let mut local_arrows: Vec<String> = Vec::new();
             for nl in ordered_nodes(ast, &[*guard]) {
-                if home_of(&homes, &nl) == Some(Home::Guard(gi)) {
-                    block.push(format!(
-                        "  {} [label={}, {}];",
-                        nid(&nl, suffix),
-                        quote(&nl),
-                        shape_attrs(&nl)
-                    ));
+                if home_of(&homes, &nl) != Some(Home::Guard(gi)) {
+                    continue;
                 }
+                if scene.at.contains_key(&nl) {
+                    if let Some((node, arrows)) = self.nested_lines(ast, scene, &nl, suffix, dashed)
+                    {
+                        local_framed.push(node);
+                        local_arrows.extend(arrows);
+                    }
+                    continue;
+                }
+                block.push(format!(
+                    "  {} [label={}, {}];",
+                    nid(&nl, suffix),
+                    quote(&nl),
+                    shape_attrs(&nl)
+                ));
             }
+            block.extend(ctx_frames(
+                &format!("{kind}_{scope}_{gi}_"),
+                "  ",
+                &local_framed,
+            ));
             for child in ast.form_args(*guard).to_vec() {
                 if is_sform(ast, child) {
-                    for ln in self.clause_lines(ast, child, suffix, dashed, false) {
+                    for ln in self.clause_lines(ast, scene, child, suffix, dashed, false) {
                         block.push(format!("  {ln}"));
                     }
                 }
             }
+            block.extend(local_arrows.iter().map(|ln| format!("  {ln}")));
             block.push("}".to_string());
             body.extend(block);
         }
-        (decls, body)
+        (decls, body, framed)
     }
 }
 
@@ -486,8 +746,11 @@ fn render_sidebyside(
     assert_expr: Option<NodeId>,
 ) -> String {
     let mut r = RuleRenderer::default();
-    let (m_decls, m_body) = r.panel(ast, match_expr, "_L", false);
-    let (a_decls, a_body) = r.panel(ast, assert_expr, "_R", true);
+    // Each panel is a drawing of its own: what a pattern points at is read
+    // in the panel it is drawn in.
+    let (m_scene, a_scene) = (scene(ast, match_expr, None), scene(ast, None, assert_expr));
+    let (m_decls, m_body, m_framed) = r.panel(ast, &m_scene, match_expr, "_L", false);
+    let (a_decls, a_body, a_framed) = r.panel(ast, &a_scene, assert_expr, "_R", true);
     let mut out = vec![
         format!("digraph rule_{safe}_lhs_rhs {{"),
         "  rankdir=TB;".to_string(),
@@ -495,10 +758,12 @@ fn render_sidebyside(
         "  subgraph cluster_lhs { label=\"match\";".to_string(),
     ];
     out.extend(decl_lines(&m_decls).iter().map(|ln| format!("    {ln}")));
+    out.extend(ctx_frames("L_", "    ", &m_framed));
     out.extend(m_body.iter().map(|ln| format!("    {ln}")));
     out.push("  }".to_string());
     out.push("  subgraph cluster_rhs { label=\"assert\";".to_string());
     out.extend(decl_lines(&a_decls).iter().map(|ln| format!("    {ln}")));
+    out.extend(ctx_frames("R_", "    ", &a_framed));
     out.extend(a_body.iter().map(|ln| format!("    {ln}")));
     out.push("  }".to_string());
     out.push("}".to_string());
@@ -513,8 +778,12 @@ fn render_overlay(
     assert_expr: Option<NodeId>,
 ) -> String {
     let mut r = RuleRenderer::default();
-    let (m_decls, m_body) = r.panel(ast, match_expr, "", false);
-    let (a_decls, a_body) = r.panel(ast, assert_expr, "", true);
+    // The overlay is one drawing of both patterns: a conclusion that the
+    // match points at is the node the match draws.
+    let both = scene(ast, match_expr, assert_expr);
+    let (m_decls, m_body, mut framed) = r.panel(ast, &both, match_expr, "", false);
+    let (a_decls, a_body, a_framed) = r.panel(ast, &both, assert_expr, "", true);
+    framed.extend(a_framed);
     let mut merged = m_decls.clone();
     for (k, v) in a_decls {
         decls_setdefault(&mut merged, k, v);
@@ -528,6 +797,7 @@ fn render_overlay(
         format!("  {POLYGON_RANKSEP};"),
     ];
     out.extend(decl_lines(&merged).iter().map(|ln| format!("  {ln}")));
+    out.extend(ctx_frames("o_", "  ", &framed));
     out.extend(m_body.iter().map(|ln| format!("  {ln}")));
     out.extend(a_body.iter().map(|ln| format!("  {ln}")));
     out.push("}".to_string());

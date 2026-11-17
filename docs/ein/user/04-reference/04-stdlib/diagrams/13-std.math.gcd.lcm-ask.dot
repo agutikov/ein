@@ -7,8 +7,20 @@ digraph rule_lcm_ask_lhs_rhs {
     "?x_L" -> "?y_L" [label="lcm", color="#1f77b4", fontcolor="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "(gcd-first (lcm ?x ?y) ?y)_R" [label="(gcd-first (lcm ?x ?y) ?y)", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="gcd-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(lcm ?x ?y)_R" [shape=octagon, label="lcm", color="#1f77b4", fontcolor="#1f77b4"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(gcd-first (lcm ?x ?y) ?y)_R" [shape=octagon, label="gcd-first", color="#e377c2", fontcolor="#e377c2"];
+    }
     "(gcd-first (lcm ?x ?y) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(gcd-first (lcm ?x ?y) ?y)_R" -> "(lcm ?x ?y)_R" [label="1", color="#e377c2", style=dashed];
+    "(gcd-first (lcm ?x ?y) ?y)_R" -> "?y_R" [label="2", color="#e377c2", style=dashed];
+    "(lcm ?x ?y)_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
+    "(lcm ?x ?y)_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
   }
 }

@@ -424,8 +424,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 1))
   :why    "bring down {?n8}: 1 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 1")
 ```
-
-![The rule div9-step-1 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-1.svg)
 <!-- /rule -->
 
 #### `div9-step-2`
@@ -457,8 +455,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 2))
   :why    "bring down {?n8}: 2 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 2")
 ```
-
-![The rule div9-step-2 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-2.svg)
 <!-- /rule -->
 
 #### `div9-step-3`
@@ -490,8 +486,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 ?m2 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 3))
   :why    "bring down {?n8}: 3 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 3")
 ```
-
-![The rule div9-step-3 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-3.svg)
 <!-- /rule -->
 
 #### `div9-step-4`
@@ -523,8 +517,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 ?m2 ?m3 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 4))
   :why    "bring down {?n8}: 4 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 4")
 ```
-
-![The rule div9-step-4 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-4.svg)
 <!-- /rule -->
 
 #### `div9-step-5`
@@ -556,8 +548,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 ?m2 ?m3 ?m4 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m6 ?m7 ?m8 ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 5))
   :why    "bring down {?n8}: 5 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 5")
 ```
-
-![The rule div9-step-5 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-5.svg)
 <!-- /rule -->
 
 #### `div9-step-6`
@@ -589,8 +579,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 ?m2 ?m3 ?m4 ?m5 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m7 ?m8 ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 6))
   :why    "bring down {?n8}: 6 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 6")
 ```
-
-![The rule div9-step-6 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-6.svg)
 <!-- /rule -->
 
 #### `div9-step-7`
@@ -622,8 +610,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m8 ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 7))
   :why    "bring down {?n8}: 7 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 7")
 ```
-
-![The rule div9-step-7 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-7.svg)
 <!-- /rule -->
 
 #### `div9-step-8`
@@ -655,8 +641,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0) ?m9) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 8))
   :why    "bring down {?n8}: 8 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 8")
 ```
-
-![The rule div9-step-8 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-8.svg)
 <!-- /rule -->
 
 #### `div9-step-9`
@@ -688,8 +672,6 @@ one rule a digit.
   :assert (div9-at ?n (num9 ?d8 ?d7 ?d6 ?d5 ?d4 ?d3 ?d2 ?d1 ?d0) (multiples9 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 (row9 ?pc ?p8 ?p7 ?p6 ?p5 ?p4 ?p3 ?p2 ?p1 ?p0)) ?j (num9 ?n7 ?n6 ?n5 ?n4 ?n3 ?n2 ?n1 ?n0 0) (num9 ?t8 ?t7 ?t6 ?t5 ?t4 ?t3 ?t2 ?t1 ?t0) (num9 ?q7 ?q6 ?q5 ?q4 ?q3 ?q2 ?q1 ?q0 9))
   :why    "bring down {?n8}: 9 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 9")
 ```
-
-![The rule div9-step-9 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-9.svg)
 <!-- /rule -->
 
 #### `div9-done`

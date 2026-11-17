@@ -2,13 +2,27 @@ digraph rule_rat_mul_done_lhs_rhs {
   rankdir=TB;
   label="rat-mul-done"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "(rat-mul-den ?k ?i)_L" [label="(rat-mul-den ?k ?i)", shape=rectangle];
+    "?k_L" [label="?k", shape=diamond];
+    "?i_L" [label="?i", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-mul-den ?k ?i)_L" [shape=octagon, label="rat-mul-den", color="#17becf", fontcolor="#17becf"];
+    }
     "(rat-mul-den ?k ?i)_L" -> "?f_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
+    "(rat-mul-den ?k ?i)_L" -> "?k_L" [label="1", color="#17becf"];
+    "(rat-mul-den ?k ?i)_L" -> "?i_L" [label="2", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
-    "(rat ?i ?f)_R" [label="(rat ?i ?f)", shape=rectangle];
+    "?i_R" [label="?i", shape=diamond];
+    "?f_R" [label="?f", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="rat-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat ?i ?f)_R" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
+    }
     "?k_R" -> "(rat ?i ?f)_R" [label="rat-done", color="#e377c2", fontcolor="#e377c2", style=dashed];
+    "(rat ?i ?f)_R" -> "?i_R" [label="1", color="#d62728", style=dashed];
+    "(rat ?i ?f)_R" -> "?f_R" [label="2", color="#d62728", style=dashed];
   }
 }

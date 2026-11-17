@@ -7,8 +7,25 @@ digraph rule_rat_mul_ask_lhs_rhs {
     "?x_L" -> "?y_L" [label="rat-mul", color="#17becf", fontcolor="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "(rat-of (rat-first (rat-mul ?x ?y) ?y))_R" [label="(rat-of (rat-first (rat-mul ?x ?y) ?y))", shape=rectangle];
     "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-of (rat-first (rat-mul ?x ?y) ?y))_R" [shape=octagon, label="rat-of", color="#2ca02c", fontcolor="#2ca02c"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="rat-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-mul ?x ?y)_R" [shape=octagon, label="rat-mul", color="#17becf", fontcolor="#17becf"];
+    }
+    subgraph cluster_ctx_R_2 {
+      label="rat-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat-first (rat-mul ?x ?y) ?y)_R" [shape=octagon, label="rat-first", color="#bcbd22", fontcolor="#bcbd22"];
+    }
     "(rat-of (rat-first (rat-mul ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "(rat-of (rat-first (rat-mul ?x ?y) ?y))_R" -> "(rat-first (rat-mul ?x ?y) ?y)_R" [label="1", color="#2ca02c", style=dashed];
+    "(rat-first (rat-mul ?x ?y) ?y)_R" -> "(rat-mul ?x ?y)_R" [label="1", color="#bcbd22", style=dashed];
+    "(rat-first (rat-mul ?x ?y) ?y)_R" -> "?y_R" [label="2", color="#bcbd22", style=dashed];
+    "(rat-mul ?x ?y)_R" -> "?x_R" [label="1", color="#17becf", style=dashed];
+    "(rat-mul ?x ?y)_R" -> "?y_R" [label="2", color="#17becf", style=dashed];
   }
 }

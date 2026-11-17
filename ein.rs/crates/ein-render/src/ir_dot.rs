@@ -15,12 +15,14 @@
 //! unwrap their argument into one. The emitted bytes are a wrapper form's,
 //! because a wrapper only ever contributes the digraph name.
 
+use std::collections::{BTreeSet, HashMap, HashSet};
+
 use ein_ir::{Ast, Node, NodeId};
 
 use crate::builder::Builder;
 use crate::dot_util::{
-    EQUALITY_SHAPE, GROUND_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE, multiline, quote,
-    value_label,
+    EQUALITY_SHAPE, GROUND_SHAPE, HELD_FILL, HYPER_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE,
+    ctx_label, multiline, quote, value_label,
 };
 use crate::palette::hash_color;
 use crate::rules::{RuleMode, render_rule_form, render_rules_forms};
@@ -168,9 +170,167 @@ fn leading_symbol(ast: &Ast, form: NodeId) -> Option<&str> {
     })
 }
 
+// ── the facts of one digraph that stand under an arrow ─────────────
+
+/// What one digraph of facts draws under an arrow
+/// (Q-M1f.395): every fact that a drawn fact points at, in
+/// the order it is first met, with the relations of the facts that point at
+/// it. Each is drawn once, as its node, and a fact the digraph also states
+/// is that node and no arrow.
+///
+/// A fact is told by its text, which is what makes two written forms one
+/// object: the one printer's, [`value_label`].
+#[derive(Default)]
+struct Scene {
+    nested: Vec<(NodeId, BTreeSet<String>)>,
+    at: HashMap<String, usize>,
+    /// The texts of the facts the program states: a fact in a frame is
+    /// filled where it is one of them.
+    held: HashSet<String>,
+    /// The texts of the facts this digraph states.
+    stated: HashSet<String>,
+}
+
+impl Scene {
+    /// A fact that a drawn fact points at.
+    fn is_nested(&self, ast: &Ast, fact: NodeId) -> bool {
+        self.at.contains_key(&fact_text(ast, fact))
+    }
+
+    /// Everything `fact` points at, at any depth, is pointed at by a drawn
+    /// fact: `fact` is drawn, and so is each fact found under it.
+    fn walk(&mut self, ast: &Ast, fact: NodeId) {
+        let by = ast.head_name(fact).unwrap_or("").to_string();
+        for arg in positional(ast, fact) {
+            if !is_sform(ast, arg) {
+                continue;
+            }
+            let text = value_label(ast, arg);
+            let i = match self.at.get(&text) {
+                Some(&i) => i,
+                None => {
+                    let i = self.nested.len();
+                    self.at.insert(text, i);
+                    self.nested.push((arg, BTreeSet::new()));
+                    self.walk(ast, arg);
+                    i
+                }
+            };
+            self.nested[i].1.insert(by.clone());
+        }
+    }
+}
+
+/// The text of a fact as an object: its relation and its arguments, the
+/// clauses a written fact carries left out, so that a fact stated with a
+/// source and the same fact under an arrow are one text. It is
+/// [`value_label`]'s text for a fact that carries none.
+fn fact_text(ast: &Ast, fact: NodeId) -> String {
+    let head = ast.head_name(fact).unwrap_or("");
+    let args: Vec<String> = positional(ast, fact)
+        .iter()
+        .map(|a| value_label(ast, *a))
+        .collect();
+    if args.is_empty() {
+        format!("({head})")
+    } else {
+        format!("({head} {})", args.join(" "))
+    }
+}
+
+/// The fact a stored negation denies, through every `not` it is written
+/// under, where `fact` is a negation; the program view draws a negation as
+/// the fact denied, dashed.
+fn denied(ast: &Ast, fact: NodeId) -> Option<NodeId> {
+    let mut inner = fact;
+    let mut found = None;
+    while ast.head_name(inner) == Some("not") {
+        let pos = positional(ast, inner);
+        if pos.len() != 1 || !is_sform(ast, pos[0]) {
+            break;
+        }
+        inner = pos[0];
+        found = Some(inner);
+    }
+    found
+}
+
+/// The scene of the facts `facts`, one digraph's. `held` is the texts of
+/// every fact the program states, for the filling; a digraph drawn by itself
+/// passes none, and holds what it states.
+fn scene(ast: &Ast, facts: &[NodeId], held: &HashSet<String>) -> Scene {
+    let mut s = Scene {
+        held: held.clone(),
+        ..Scene::default()
+    };
+    let mut negations: Vec<NodeId> = Vec::new();
+    for &fact in facts {
+        if !is_sform(ast, fact) {
+            continue;
+        }
+        let text = fact_text(ast, fact);
+        s.held.insert(text.clone());
+        s.stated.insert(text);
+        // A negation is drawn as the fact it denies, which is then a drawn
+        // fact and points at what stands under its own arrows.
+        let drawn = denied(ast, fact).unwrap_or(fact);
+        if drawn != fact {
+            negations.push(drawn);
+        }
+        s.walk(ast, drawn);
+    }
+    // A denied fact that some other drawn fact points at is that fact's
+    // node, and the negation is then a node that points at it, read once
+    // every other arrow is known, so the reading does not depend on the
+    // order the facts are written in.
+    for inner in negations {
+        if let Some(&i) = s.at.get(&value_label(ast, inner)) {
+            s.nested[i].1.insert("not".to_string());
+        }
+    }
+    s
+}
+
+/// The nodes of the facts under an arrow, each in the frame of the relations
+/// that point at it, with its numbered argument arrows.
+fn emit_nested(b: &mut Builder, ast: &Ast, scene: &Scene, derived: bool) {
+    for (fact, by) in &scene.nested {
+        let text = value_label(ast, *fact);
+        let head = ast.head_name(*fact).unwrap_or("");
+        let fill = if scene.held.contains(&text) {
+            format!(", style=filled, fillcolor=\"{HELD_FILL}\"")
+        } else {
+            String::new()
+        };
+        let id = quote(&text);
+        b.framed(
+            &id,
+            &format!("shape={HYPER_SHAPE}, label={}{fill}", quote(head)),
+            &ctx_label(by),
+        );
+        // A fact this digraph states among its derived ones is dashed, as
+        // its arrow would have been.
+        let style = if derived && scene.stated.contains(&text) {
+            ", style=dashed"
+        } else {
+            ""
+        };
+        for (i, arg) in positional(ast, *fact).iter().enumerate() {
+            emit_atom(b, ast, *arg);
+            let to = atom_id_for_value(ast, *arg);
+            b.edge(&id, &to, Some(&format!("label=\"{}\"{style}", i + 1)));
+        }
+    }
+}
+
 // ── one fact ───────────────────────────────────────────────────────
 
-fn emit_fact(b: &mut Builder, ast: &Ast, fact: NodeId, derived: bool, levi: bool) {
+fn emit_fact(b: &mut Builder, ast: &Ast, scene: &Scene, fact: NodeId, derived: bool, levi: bool) {
+    // A fact that a drawn fact points at is its node, drawn with the nodes
+    // of the scene, and nothing more.
+    if scene.is_nested(ast, fact) {
+        return;
+    }
     let head = ast.head_name(fact).unwrap_or("");
     let pos = positional(ast, fact);
 
@@ -214,9 +374,17 @@ fn emit_fact(b: &mut Builder, ast: &Ast, fact: NodeId, derived: bool, levi: bool
         return;
     }
 
-    // Negative fact → recurse into the wrapped expression, mark dashed.
+    // Negative fact → recurse into the wrapped expression, mark dashed. One
+    // whose denied fact is a node of the scene is a node of its own, which
+    // points at it: the denied fact is drawn once.
     if head == "not" && pos.len() == 1 && is_sform(ast, pos[0]) {
-        emit_fact(b, ast, pos[0], true, levi);
+        if scene.is_nested(ast, pos[0]) {
+            let h_id = b.fresh_h("not");
+            let to = atom_id_for_value(ast, pos[0]);
+            b.edge(&h_id, &to, Some("label=\"1\", style=dashed"));
+            return;
+        }
+        emit_fact(b, ast, scene, pos[0], true, levi);
         return;
     }
 
@@ -275,7 +443,22 @@ fn emit_fact(b: &mut Builder, ast: &Ast, fact: NodeId, derived: bool, levi: bool
 /// Type and relation declarations render identically in both modes (they are
 /// schema, already direct labelled edges); only implicit facts honour `levi`.
 pub fn render_ontology_forms(ast: &Ast, decls: &[NodeId], levi: bool) -> String {
+    ontology_digraph(ast, decls, levi, &HashSet::new())
+}
+
+/// The facts among a group's forms: every form but a declaration, which is
+/// drawn as schema and points at no fact.
+fn facts_of(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
+    forms
+        .iter()
+        .copied()
+        .filter(|f| is_sform(ast, *f) && ast.head_name(*f) != Some("relation"))
+        .collect()
+}
+
+fn ontology_digraph(ast: &Ast, decls: &[NodeId], levi: bool, held: &HashSet<String>) -> String {
     let mut b = Builder::new("ontology");
+    let scene = scene(ast, &facts_of(ast, decls), held);
     for decl in decls {
         if !is_sform(ast, *decl) {
             continue;
@@ -306,22 +489,35 @@ pub fn render_ontology_forms(ast: &Ast, decls: &[NodeId], levi: bool) -> String 
                 );
             }
         } else {
-            emit_fact(&mut b, ast, *decl, false, levi);
+            emit_fact(&mut b, ast, &scene, *decl, false, levi);
         }
     }
+    emit_nested(&mut b, ast, &scene, false);
     b.build()
 }
 
 /// `(facts …)` / `(reasoning …)` — the latter with `derived`, which dashes
 /// every edge.
 pub fn render_facts_forms(ast: &Ast, facts: &[NodeId], derived: bool, levi: bool) -> String {
+    facts_digraph(ast, facts, derived, levi, &HashSet::new())
+}
+
+fn facts_digraph(
+    ast: &Ast,
+    facts: &[NodeId],
+    derived: bool,
+    levi: bool,
+    held: &HashSet<String>,
+) -> String {
     let name = if derived { "reasoning" } else { "facts" };
     let mut b = Builder::new(name);
+    let scene = scene(ast, &facts_of(ast, facts), held);
     for fact in facts {
         if is_sform(ast, *fact) {
-            emit_fact(&mut b, ast, *fact, derived, levi);
+            emit_fact(&mut b, ast, &scene, *fact, derived, levi);
         }
     }
+    emit_nested(&mut b, ast, &scene, derived);
     b.build()
 }
 
@@ -549,18 +745,28 @@ pub fn to_dot(ast: &Ast, forms: &[NodeId], opts: DotOpts) -> String {
             },
         }
     }
+    // What the program states, whichever group draws it: a fact in a frame
+    // is filled where the program holds it, and the three groups are three
+    // digraphs of one program.
+    let held: HashSet<String> = ontology
+        .iter()
+        .chain(&facts)
+        .chain(&reasoning)
+        .filter(|f| ast.head_name(**f) != Some("relation"))
+        .map(|f| fact_text(ast, *f))
+        .collect();
     let mut rendered: Vec<String> = Vec::new();
     if !rules.is_empty() {
         rendered.push(render_rules_forms(ast, &rules, opts.rule_mode));
     }
     if !ontology.is_empty() {
-        rendered.push(render_ontology_forms(ast, &ontology, opts.levi));
+        rendered.push(ontology_digraph(ast, &ontology, opts.levi, &held));
     }
     if !facts.is_empty() {
-        rendered.push(render_facts_forms(ast, &facts, false, opts.levi));
+        rendered.push(facts_digraph(ast, &facts, false, opts.levi, &held));
     }
     if !reasoning.is_empty() {
-        rendered.push(render_facts_forms(ast, &reasoning, true, opts.levi));
+        rendered.push(facts_digraph(ast, &reasoning, true, opts.levi, &held));
     }
     rendered.extend(chunks);
     rendered.retain(|c| !c.is_empty());

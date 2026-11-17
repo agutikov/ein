@@ -3,14 +3,18 @@ digraph rule_add_column_first_lhs_rhs {
   label="add-column-first"; labelloc=t;
   subgraph cluster_lhs { label="match";
     "?k_L" [label="?k", shape=diamond];
-    "(?N ?p ?a)_L" [label="(?N ?p ?a)", shape=rectangle];
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
     "z_L" [label="z", shape=rectangle];
     "?e_L" [label="?e", shape=diamond];
     "?acc_L" [label="?acc", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
     "0_L" [label="0", shape=rectangle];
     "?s_L" [label="?s", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?ADD-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p ?a)_L" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
     "h1_ADD-WALK_L" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
     "h1_ADD-WALK_L" -> "?k_L" [label="1", color="#17becf"];
     "h1_ADD-WALK_L" -> "(?N ?p ?a)_L" [label="2", color="#17becf"];
@@ -23,18 +27,27 @@ digraph rule_add_column_first_lhs_rhs {
     "h2_FA_L" -> "?e_L" [label="3", color="#17becf"];
     "h2_FA_L" -> "?s_L" [label="4", color="#17becf"];
     "h2_FA_L" -> "?f_L" [label="5", color="#17becf"];
+    "(?N ?p ?a)_L" -> "?p_L" [label="1", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?a_L" [label="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "z_R" [label="z", shape=rectangle];
     "?f_R" [label="?f", shape=diamond];
-    "(?B ?s ?acc)_R" [label="(?B ?s ?acc)", shape=rectangle];
+    "?s_R" [label="?s", shape=diamond];
+    "?acc_R" [label="?acc", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="?ADD-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?B ?s ?acc)_R" [shape=octagon, label="?B", color="#2ca02c", fontcolor="#2ca02c"];
+    }
     "h3_ADD-WALK_R" [shape=octagon, label="?ADD-WALK", color="#17becf", fontcolor="#17becf"];
     "h3_ADD-WALK_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "?p_R" [label="2", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "z_R" [label="3", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "?f_R" [label="4", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "(?B ?s ?acc)_R" [label="5", color="#17becf", style=dashed];
+    "(?B ?s ?acc)_R" -> "?s_R" [label="1", color="#2ca02c", style=dashed];
+    "(?B ?s ?acc)_R" -> "?acc_R" [label="2", color="#2ca02c", style=dashed];
   }
 }
