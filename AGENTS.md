@@ -337,11 +337,12 @@ paragraph, no register count, no measurement (the user's rule).
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   and **P1f.22, nested facts**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/README.md)).
-  Each has its survey and its questions put (Q-M1f.390; Q-M1f.391 to .396)
-  and is not started further; **neither is started without the user's
-  word**. The milestone's plans are deleted when both are done, and **the
-  work stops after M1f** (the user's rulings); the close of M1f was started
-  and is paused.
+  Each has its survey and its questions put (Q-M1f.390; Q-M1f.391 to .396).
+  **P1f.22 is started on the user's word**: its second stage waits for the
+  rulings on its six questions and for nothing else. **P1f.21 is not
+  started without the user's word.** The milestone's plans are deleted
+  when both are done, and **the work stops after M1f** (the user's rulings);
+  the close of M1f was started and is paused.
 - **A finished plan is deleted.** A milestone or phase whose README says
   *closed* or *done*, and a followup that says *done*, goes with its folder once
   what still reads it is re-aimed and what it still owns has moved to its owner;

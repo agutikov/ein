@@ -3,8 +3,10 @@
 **Milestone:** [M1f](../README.md)
 **Status:** created 2026-11-17 on the user's instruction (below). [S1f.22.1](s1f.22.1_what_we_have.md) is done:
 [`analysis.md`](analysis.md) is what the engine and the pages do, the explanation drafted, and the six points for
-the user (Q-M1f.391 to .396); [`findings.md`](findings.md) is what it found outside its scope. **The phase waits
-for the user's rulings**; S1f.22.2 is next after them.
+the user (Q-M1f.391 to .396); [`findings.md`](findings.md) is what it found outside its scope. **Started
+2026-11-17 on the user's word** (*"start p1f.22"*), with the survey's two inconsistencies, the three cases and the
+two forms of unpacking run again on the gate build, each as the analysis says. **The phase waits for the user's
+rulings** on the six questions; S1f.22.2 is next after them.
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/` that S1f.20.10, the
 last stage of P1f.20, was still moving; that stage is done and P1f.20 is closed (2026-11-17). What P1f.20 found
 on those pages and left is [the milestone's findings page](../findings.md); its N-14 here came from there. Its

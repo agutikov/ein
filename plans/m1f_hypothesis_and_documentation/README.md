@@ -28,8 +28,9 @@ thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
 **Phases left** (2026-11-17): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, and
 [P1f.22](p1f.22_nested_facts/README.md), nested facts, both created 2026-11-17 on the user's instructions. Each has
-its survey done and its questions put (Q-M1f.390; Q-M1f.391 to .396), is not started further, and **is not started
-without the user's word**. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's word, *"go ahead
+its survey done and its questions put (Q-M1f.390; Q-M1f.391 to .396). **P1f.22 is started** (2026-11-17, on the
+user's word, *"start p1f.22"*) and waits for the rulings on its six questions; **P1f.21 is not started without the
+user's word**. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's word, *"go ahead
 to close p1f.20"*) and its folder deleted; what it found and left is [`findings.md`](findings.md). The user accepted
 the tree on 2026-11-17 and asked for M1f's plans to be deleted on completion and for the work to stop after M1f; the
 close of the milestone was started, then paused on the user's word, and resumes when the two phases are done.
@@ -52,7 +53,7 @@ M1e2's no-owner items ahead of its own two stages, and the user added a fourth, 
 | P1f.10 | The structure of the hypothesis set — **closed 2026-11-16**, its close | 14 (**re-planned 2026-11-15** on the user's two ideas, against the engine after the walk's deletion: seven re-scoped in place, seven added; one dropped and one closed in M1e2 beside them) | — | **track S**, the structure as information: what one candidate and two decide at root, held to N; groups as a **cover**, not a partition; which exclusions are the theory's and which the puzzle's; *exactly one* and the grids, found beside declared; what couples the groups; all of it **shown on real programs**, then by a surface the user rules. **Track R**, independent of it: a price list first, and only where it says *go*, an excluded pair spent in the extension step and an order on the obligation tree read from the structure, with R identical on every corpus program and SEND + MORE = MONEY as written decided within the default budget; a *no* is a full result. **Track H**: the three owned findings about what H is (W26 and Q-M1e.11, E-1/E-7/E-54, E-51), each ruled |
 | P1f.20 | `docs/ein/`: the tree a released system would have — **closed 2026-11-17** | 10, every one done; the user reviewed the tree, and its last stage carried out the review's rulings | 25 d | every decision a file under `docs/decisions/`; `docs/history/` and every finished plan deleted, what is true of them rewritten into `docs/ein/`; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
 | [P1f.21](p1f.21_verdicts_as_rules/README.md) | The kernel's verdicts as rules | 4 planned; the first, the survey and the design, done | — | the contradiction, alive and dead, owed and discharged each stated as a rule on the reasoning pages; and `(open R <justification>)` built or not, on the user's ruling of Q-M1f.390. **Not started further without the user's word** |
-| [P1f.22](p1f.22_nested_facts/README.md) | Nested facts | 4 planned; the first, what we have, done | — | one consistent explanation of how a fact under an arrow of another is represented and how rules pack and unpack it, on the user's rulings of Q-M1f.391 to .396. **Not started further without the user's word** |
+| [P1f.22](p1f.22_nested_facts/README.md) | Nested facts | 4 planned; the first, what we have, done | — | one consistent explanation of how a fact under an arrow of another is represented and how rules pack and unpack it, on the user's rulings of Q-M1f.391 to .396. **Started 2026-11-17 on the user's word; waits for those rulings** |
 
 **P1f.5, P1f.6, P1f.7, P1f.8 and P1f.10 are finished, and their folders were deleted by
 P1f.20's history sweep, S1f.20.9**: their records are in git
