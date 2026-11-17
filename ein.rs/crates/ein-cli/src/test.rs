@@ -1,17 +1,15 @@
 //! `ein test` — the expectations a program states about itself, run.
 //!
-//! The fourth subcommand, and M1c
-//! [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test).
-//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
-//! gave a `(query …)` a way to state its own answer; this is the runner that
-//! turns a directory of them into a status code, so that **nothing reads
-//! output**. Checking that a rule works used to mean running `solve` and
-//! looking, or diffing against a golden.
+//! [`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test).
+//! A `(query …)` and a `(solve …)` may state their own answer
+//! ([claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims));
+//! this is the runner that turns a directory of them into a status code, so
+//! that **nothing reads output**: checking that a rule works is not running
+//! `solve` and looking, nor diffing against a golden.
 //!
 //! ## Three things it does that `solve` does not
 //!
-//! **It asks the question the claims are, and no more** (`solve_interface.md`
-//! § 2.3; M1f S1f.6.27, the user's reply (a) of 2026-11-12 on question 39).
+//! **It asks the question the claims are, and no more** (Q-M1f.221).
 //! A file's claims are read by their shapes and asked **the least question
 //! that can decide them** ([`ein_infer::read_out::least`]): a `(solve …
 //! :expect …)` asks for the description of R, whose route on a dead root is
@@ -21,8 +19,8 @@
 //! the whole part and decides every claim; one that finds k + 1 refutes a
 //! claim where a state found gives a class the claim does not list. **What
 //! that question leaves undecided is asked the describing one**
-//! ([`ein_infer::read_out::describing`]), which was the one question from
-//! M1e2 S1e2.1a.5 until then: all of R, or the one line every claim is over.
+//! ([`ein_infer::read_out::describing`]): all of R, or the one line every
+//! claim is over.
 //! So a file is one run where one run decides it and two where it does not,
 //! and no claim a description decides is left unchecked. Each claim is read
 //! off the run that decided it ([`ein_infer::read_out::stands`]), the solve
@@ -30,7 +28,7 @@
 //! `-v` and `--json-report` say which question that was. A claim neither
 //! question decided, a budget or a flagged program past the cube's limit, is
 //! `NOT CHECKED`, and says what was asked first and why it did not decide.
-//! No option chooses the question; `--no-search` (M1f S1f.6.36) asks none
+//! No option chooses the question; `--no-search` asks none
 //! about R: each file is read at root alone, as `ein solve --no-search` reads
 //! it, with no fallback, and a claim root does not decide is `NOT CHECKED`
 //! and moves no exit code (Q-M1f.257).
@@ -52,8 +50,8 @@
 //!
 //! `solve` exits **1** on a load error. Here 1 is taken: it means *a claim is
 //! false*. A test
-//! runner that cannot tell a broken file from a false claim is precisely the
-//! failure T1c.1.3.5 is written against, so a load error takes 2 — the code
+//! runner that cannot tell a broken file from a false claim fails at its one
+//! job, so a load error takes 2 — the code
 //! that already means "this run is not a verdict" (a usage error, a budget
 //! abort). **2 dominates 1** in the summary for the same reason: if any file
 //! failed to load, "every expectation was checked and some are false" would be
@@ -63,30 +61,26 @@
 //!
 //! The runner's own output, machine-readable: **one row per `(query …)` of
 //! the whole selection**, whether or not it claims anything, and one per
-//! region claim. Since M1e2 S1e2.1a.5 it is `ein-test-report/3`: a query
-//! row's `ran` (the walk's counters) became `answer`, what its classes are
-//! over and how many. Since M1e2 S1e2.3.10 it is `ein-test-report/4`,
-//! additively: every row carries `outside` and `types_as_objects`, what the
-//! universe leaves out beside a claim the run checked, as the summary's
-//! `root.hypgen` writes them, `null` on a row no run checked. Since M1f
-//! S1f.6.27 it is `ein-test-report/5`, additively: every row carries `route`,
-//! the question its claim's outcome was read off, as `ein solve`'s flags
-//! spell it and `describe` for the bare run, and `fell_back_from`, the
-//! question asked first where it left the claim undecided; both `null` on a
-//! row no run checked. `--json-summary`
+//! region claim, `ein-test-report/5`. A query row's `answer` says what its
+//! classes are over and how many. Every row carries `outside` and
+//! `types_as_objects`, what the universe leaves out beside a claim the run
+//! checked, as the summary's `root.hypgen` writes them; `route`, the question
+//! its claim's outcome was read off, as `ein solve`'s flags spell it and
+//! `describe` for the bare run; and `fell_back_from`, the question asked
+//! first where it left the claim undecided; each `null` on a row no run
+//! checked. `--json-summary`
 //! is a *run*'s summary — verdict, counters, config — and is refused over a
 //! selection of more than one run for the reason every artefact flag is: it
 //! names one path. A report is the other shape. It has no run to be more than
 //! one of, so it takes any selection, and one invocation over the three
 //! corpus roots is the whole census.
 //!
-//! What it publishes that nothing else could: the **shape** of a claim. M1c's
-//! rule is that *nothing reads output*, and there was no other way to ask a
+//! What it publishes that nothing else could: the **shape** of a claim. The
+//! rule is that *nothing reads output*, and there is no other way to ask a
 //! corpus what fraction of it states a closure claim — `:expect` is a query
 //! keyword, and a grep cannot tell a keyword from a comment about one. That
 //! is the transport of
-//! [the claims about a set of states](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states),
-//!  and `utils/closure_census.py` is what reads it.
+//! [the claims about a set of states](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states).
 //!
 //! Additive, in the sense the other artefact flags are: stdout, stderr, the
 //! exit code and what is solved are identical with the flag and without it. A
@@ -196,7 +190,7 @@ struct Tally {
     not_checked: usize,
     /// Load errors, budget aborts: the run did not happen.
     errors: usize,
-    /// `--no-search` (M1f S1f.6.36): a claim root does not decide is not
+    /// `--no-search` (Q-M1f.257): a claim root does not decide is not
     /// checked because the run was asked not to search, which is no failure
     /// to check, so it moves no exit code.
     no_search: bool,
@@ -255,8 +249,8 @@ impl Tally {
 /// What one `(query …)` **claims**, read off the loaded program.
 ///
 /// Not the comparison — that is [`Outcome`] — but the claim's *shape*, which
-/// is the one thing about `:expect` no surface published before and the
-/// column M1d S1d.4.1's census is built on. `models` is the number of
+/// is the one thing about `:expect` no other surface publishes, and what a
+/// census of the corpus's claims is built on. `models` is the number of
 /// `(model …)` disjuncts: 0 for `(false)`, 1 for a bare `(model …)`, and for
 /// `(or …)` the k it asserts.
 struct Claim {
@@ -274,9 +268,9 @@ struct Claim {
     /// closes it*, so this is the set whose extent the claim pins.
     relations: Vec<String>,
     /// A `(solve … :expect (region …))` claim's `(merged …)` and `(owing …)`
-    /// counts — M1e2 S1e2.1a.4. `None` on a query's claim, which has neither.
+    /// counts. `None` on a query's claim, which has neither.
     region_parts: Option<(usize, usize)>,
-    /// A query's `:over` — M1e2 S1e2.1a.5. `None` on the region claim.
+    /// A query's `:over`. `None` on the region claim.
     over: Option<Over>,
 }
 
@@ -288,7 +282,7 @@ struct RegionRan {
     k_s: u64,
     k_c: u64,
     ms: f64,
-    /// On a flagged program, the detector's three findings (M1e2 S1e2.1b.5):
+    /// On a flagged program, the detector's three findings:
     /// the status's word, how many nodes hold a stale fact, how many parent
     /// paths reach another state.
     warning: Option<(&'static str, u64, u64)>,
@@ -296,8 +290,8 @@ struct RegionRan {
 
 /// What H leaves out, beside every claim a run checked, as the text surface
 /// prints it there (`outside the universe: …`, `a type as an object: …`) and
-/// `--json-summary` writes it in `root.hypgen` (M1e2 S1e2.3.10, P1e2.3's N8):
-/// `outside` (M1e2 S1e2.2.8) and `types_as_objects` (S1e2.2.10), under the
+/// `--json-summary` writes it in `root.hypgen`: `outside` (Q-M1e2.3) and
+/// `types_as_objects` (Q-M1e.12), under the
 /// summary's field names and in its shapes, `[]` and empty lists when H
 /// leaves nothing out.
 #[derive(Clone)]
@@ -335,17 +329,16 @@ struct Row {
     outcome: &'static str,
     answer: Option<Answered>,
     /// `solve` for the row of a `(solve … :expect …)` claim, `query` for every
-    /// other — M1e2 S1e2.1a.4, where a file gained a claim that is not a
-    /// query's.
+    /// other: a file may state a claim that is not a query's.
     place: &'static str,
     /// The solve claim's run: R as it described it. A query's is
     /// [`Self::answer`].
     region: Option<RegionRan>,
-    /// What H leaves out, where a run checked the row's claim (M1e2
-    /// S1e2.3.10): the lines `ein test` prints beside that claim, as data.
+    /// What H leaves out, where a run checked the row's claim: the lines
+    /// `ein test` prints beside that claim, as data.
     scope: Option<Scope>,
     /// The question the row's claim was read off ([`Mode::flags`]), where a
-    /// run checked it (M1f S1f.6.27).
+    /// run checked it (Q-M1f.221).
     route: Option<String>,
     /// The question asked first, where it left the claim undecided and the
     /// outcome is the describing question's.
@@ -446,7 +439,7 @@ fn over_key(over: Over) -> &'static str {
 }
 
 /// The claim a query states, or `None` where it states none — read from the
-/// **loaded** program, whose claim's shape is the grammar's (M1f S1f.5.5).
+/// **loaded** program, whose claim's shape is the grammar's.
 fn claim_of(ast: &Ast, query: &ein_core::Query) -> Option<Claim> {
     let node = ein_infer::query_value(ast, query, "expect")?;
     let e = ein_ir::expect::parse(ast, node);
@@ -658,8 +651,8 @@ pub fn run(m: &ArgMatches) -> i32 {
         crate::solve::artefact_failed("json-report", out, e);
     }
     println!("{}", tally.line(t0.elapsed().as_secs_f64()));
-    // **Reported, never skipped past** — M1c's acceptance, in the shape this
-    // command can fail in. A selection that checked nothing has said nothing
+    // **Reported, never skipped past**, in the shape this command can fail
+    // in. A selection that checked nothing has said nothing
     // about anything, and a green exit there is the one result a test runner
     // must never produce. Only when nothing *errored*, though: a file that
     // failed to load has already said why, and diagnosing it a second time as
@@ -761,7 +754,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         let goal = ein_infer::query_value(&ast, query, "goal");
         let mut r = row(i + 1, n_queries, "query", "no-expect");
         // The goal as written; its relations, and what is matched, are the
-        // expansion's (M1f S1f.7.5).
+        // expansion's.
         r.goal = ein_infer::goal_written(&ast, query).map(|g| ein_ir::dump_compact(&ast, g));
         r.goal_relations = goal
             .map(|g| ein_ir::pattern_relations(&ast, g))
@@ -782,7 +775,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
 
     // The question the claims are, and the describing one it falls back to
     // (the module header). One deadline for the file, whatever is asked.
-    // Under `--no-search` (M1f S1f.6.36) one question, root alone, and no
+    // Under `--no-search` one question, root alone, and no
     // fallback: what root does not decide stays NOT CHECKED.
     let no_search = m.get_flag("no-search");
     let (least, describing) = if no_search {
@@ -987,7 +980,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         };
         if volume == Volume::Verbose || came != Came::Held {
             lines.push(match volume {
-                // `--no-search` counts no state of R (M1f S1f.6.36).
+                // `--no-search` counts no state of R.
                 Volume::Verbose if r.answer.route == explore::Route::Root => format!(
                     "  solve · :expect {shape} — {} (--no-search: root alone)",
                     came.verb()
@@ -1095,7 +1088,7 @@ struct Asked {
 
 impl Asked {
     /// The question as `ein solve`'s flags spell it: `--no-search` where the
-    /// run read root alone (M1f S1f.6.36), else the mode's.
+    /// run read root alone, else the mode's.
     fn flags(&self) -> String {
         if self.r.answer.route == explore::Route::Root {
             "--no-search".to_string()
@@ -1127,15 +1120,14 @@ fn ask(
     opts.refute = true;
     opts.no_search = m.get_flag("no-search");
     // A claim states no core: the run takes one only where `--events` prints
-    // it, at each node visited (M1e2 S1e2.2.21, the user's ruling of
-    // 2026-11-05; M1f S1f.5.12). `ein test` prints no `N`.
+    // it, at each node visited. `ein test` prints no `N`.
     opts.cores = ein_infer::region::Cores {
         visited: m.get_one::<String>("events").is_some(),
         nogoods: false,
     };
     // Nor does a claim read `N`, and no line here prints it or its count:
     // the description is asked without it, but where an artefact that
-    // carries the count is written (M1f S1f.6.27, E-31).
+    // carries the count is written.
     opts.nogoods =
         m.get_one::<String>("events").is_some() || m.get_one::<String>("json-summary").is_some();
     let config = kb.program().config.clone().unwrap_or_default();
@@ -1175,16 +1167,16 @@ fn ask(
 /// What is printed beside each claim read off one run, and written on its
 /// row.
 struct Beside {
-    /// The warning, beside each claim printed on a flagged program (the
-    /// proposal's § 4.3, approved 2026-11-03): under `-v`, and under a claim
+    /// The warning, beside each claim printed on a flagged program: under
+    /// `-v`, and under a claim
     /// that FAILED or was NOT CHECKED.
     warning: Option<String>,
-    /// What the universe leaves out (M1e2 S1e2.2.8, Q-M1e2.3 (a)), beside
+    /// What the universe leaves out (Q-M1e2.3), beside
     /// each claim printed as the warning is: a claim is checked over R, and R
     /// is over H.
     outside: Option<String>,
-    /// What the untyped rung bound as an object (M1e2 S1e2.2.10, Q-M1e.12
-    /// (a)), beside each claim printed as the scope is.
+    /// What the untyped rung bound as an object (Q-M1e.12), beside each
+    /// claim printed as the scope is.
     types: Option<String>,
     /// The same two, as data, on the row of every claim the run checked.
     scope: Scope,

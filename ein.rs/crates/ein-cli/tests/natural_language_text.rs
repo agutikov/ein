@@ -1,9 +1,6 @@
 //! **Natural-language text reaches every surface that carries it, byte for
-//! byte** — M1f S1f.5.2's T1f.5.2.2, on the user's ruling of 2026-11-06:
-//! *"strings literals are unicode with reasonable escape symbols, so
-//! potentially ein program can emit unicode text, use it in test, dont force
-//! using it in examples but place a couple of examples just to show that
-//! option"*.
+//! byte**: a string literal is Unicode with escapes, so a program can emit
+//! any text, and the examples hold a couple to show it.
 //!
 //! A string is natural-language text, written only after `:why`, `:source`
 //! and `:goal-text` (Q-M1e2.23). `tests/text/01_unicode.ein` writes each of
@@ -15,17 +12,16 @@
 //! | surface | which text | as |
 //! |---|---|---|
 //! | the read-out, `ein solve` and `--dump-answer`'s `answer.txt` | `:goal-text`, filled | the characters, in `“…”`, each line after a line break at the sentence's column |
-//! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and since M1f S1f.5.14 the derived fact's relation's `:why`, filled | the characters, each line break (`\n`, `\r`) a markdown hard break and the line after it in the same block, `> ` in the `:why`'s quote (since M1f S1f.5.28, Q-M1f.109) |
+//! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and the derived fact's relation's `:why`, filled | the characters, each line break (`\n`, `\r`) a markdown hard break and the line after it in the same block, `> ` in the `:why`'s quote (Q-M1f.109) |
 //! | `ein saturate --dump` | `:source`, `:goal-text` | quoted, as the printer quotes |
 //! | a `--dump-answer` state file | all three, the program re-written | quoted, and it reloads to the same text |
-//! | a `--dump-answer` state file's fact comments (M1f S1f.5.14) | a rule's `:why` filled at the fact's first recorded justification, and the relation's `:why` filled with the fact's arguments | the characters, each line after a line break a comment line of its own (`;   `) |
+//! | a `--dump-answer` state file's fact comments (Q-M1f.58) | a rule's `:why` filled at the fact's first recorded justification, and the relation's `:why` filled with the fact's arguments | the characters, each line after a line break a comment line of its own (`;   `) |
 //! | `ein render program` | `:goal-text` | quoted, inside a DOT label |
 //! | a `.einb` | all three | `ein solve` of it prints what `ein solve` of the `.ein` does |
 //!
-//! Which surfaces carry a text is what they did before the swap (S1f.5.5's T9
-//! review, its § Unicode on every surface): `ein render rules`, `--events`
-//! and the JSON summary carry none, and this test does not add one (taken by
-//! default on the user's instruction of 2026-11-09, Q-M1f.12).
+//! Which surfaces carry a text is a fixed set (Q-M1f.12): `ein render
+//! rules`, `--events` and the JSON summary carry none, and this test does
+//! not add one.
 
 use std::path::Path;
 use std::process::Command;
@@ -64,7 +60,7 @@ fn ein(args: &[&str]) -> Run {
 
 /// The read-out's sentence for `who`: the `:goal-text` filled, in `“…”`, each
 /// line after a line break started at the sentence's column, 25, where its
-/// first character is printed (M1f S1f.5.16's T1f.5.16.5, Q-M1f.19 (a)): the
+/// first character is printed (Q-M1f.19): the
 /// text's `\n` and its `\r` each start a line, and nothing else moves.
 fn sentence(who: &str) -> String {
     let filled = GOAL_TEXT.replace("{?who}", who);
@@ -139,7 +135,7 @@ fn the_read_out_prints_the_goal_text_as_written() {
 
 /// A text as the trace's markdown writes it: each line break, `\n` and `\r`
 /// alike, a hard break, two spaces before it, and the line after it led by
-/// `lead`, its block's marker (M1f S1f.5.28's item 5, Q-M1f.109): the
+/// `lead`, its block's marker (Q-M1f.109): the
 /// characters otherwise, byte for byte.
 fn markdown(text: &str, lead: &str) -> String {
     text.split(['\n', '\r'])
@@ -149,8 +145,8 @@ fn markdown(text: &str, lead: &str) -> String {
 
 /// `--trace` prints the rule's `:why` filled at each firing, as a quote, and
 /// each premise's `:source` beside it, each line of each a line of the
-/// rendered page: until M1f S1f.5.28 a text's line break was written as it
-/// stands, which markdown reads as a soft break.
+/// rendered page: a line break written as it stands would be a soft break
+/// to markdown.
 #[test]
 fn the_trace_prints_the_rules_why_and_the_premises_source() {
     let scratch = Scratch::new("ein-nl-text-trace");
@@ -166,7 +162,7 @@ fn the_trace_prints_the_rules_why_and_the_premises_source() {
         assert!(page.contains(&why), "the trace: no {why:?}");
         let source = markdown(source, "");
         assert!(page.contains(&source), "the trace: no {source:?}");
-        // What the derived fact says, its relation's `:why` (M1f S1f.5.14).
+        // What the derived fact says, its relation's `:why`.
         let derives = format!("Derives `housed({p})` — {}", HOUSED_WHY.replace("{?1}", p));
         assert!(page.contains(&derives), "the trace: no {derives:?}");
     }
@@ -217,8 +213,8 @@ fn a_state_file_writes_every_text_and_reads_back_to_it() {
     assert_eq!(got, want);
 }
 
-/// Each fact of a state file is written in English after it (M1f S1f.5.14's
-/// T1f.5.14.2): a given's `:source` quoted, a derived fact's rule and its
+/// Each fact of a state file is written in English after it (Q-M1f.58): a
+/// given's `:source` quoted, a derived fact's rule and its
 /// `:why` filled with the firing's bindings, then ` — ` and the relation's
 /// `:why` filled with the fact's arguments, every line break in either a new
 /// comment line. The file still reloads to its facts (the test above).

@@ -1,10 +1,11 @@
-//! `ein kb` — the container's CLI surface (T1a.8.1.7).
+//! `ein kb` — the container's CLI surface.
 //!
 //! One verb, `save`, because the other direction is not a command: a `.einb`
 //! is read *wherever a `.ein` path is accepted*, by
 //! [`crate::common::read_program`], which sniffs the magic bytes. There is
-//! deliberately no `ein kb load`, and no `.einb → .ein` exporter — the stage's
-//! own note says why, and `--dump-states` already prints a KB as text.
+//! deliberately no `ein kb load`, and no `.einb → .ein` exporter: `.einb` is
+//! a private cache and `.ein` the only authoring format, and
+//! `--dump-answer` already writes each state as text.
 
 use std::path::{Path, PathBuf};
 
@@ -16,10 +17,10 @@ use crate::common::{How, load_held, read_program};
 
 /// `ein kb save <file> <out.einb> [--saturate]`.
 ///
-/// `file` is read as every command reads a program (M1f S1f.5.5,
-/// T1f.5.5.13): a `.ein` is parsed and loaded against its own directory, and a
-/// `.einb` is opened and saved again, its sources and its state carried over,
-/// where until then it was refused as text that is not UTF-8 (W40).
+/// `file` is read as every command reads a program: a `.ein` is parsed and
+/// loaded against its own directory, and a `.einb` is opened and saved
+/// again, its sources and its state carried over, not refused as text that
+/// is not UTF-8 (W40).
 pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOptions) -> i32 {
     let path = PathBuf::from(file);
     let mut ast = Ast::new();

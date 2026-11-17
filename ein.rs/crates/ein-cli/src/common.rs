@@ -1,23 +1,20 @@
-//! Shared loaders, and **the one read of a program from a path** (M1f
-//! S1f.5.5, T1f.5.5.13).
+//! Shared loaders, and **the one read of a program from a path**.
 //!
 //! Every command that takes a program reads it here: [`read_program`] reads
 //! the bytes and tells a `.einb` container from UTF-8 text by the magic bytes
-//! (through `ein_ir::read` since M1f S1f.5.22, which the import resolver
-//! reads a module through too), [`load_held`] loads either (a text against its own directory, so a
+//! (through `ein_ir::read`, which the import resolver reads a module through
+//! too), [`load_held`] loads either (a text against its own directory, so a
 //! file-relative `(import …)` resolves; a container opened), and
 //! [`parse_held`] parses either without loading (a container's stored
-//! program). Until that task `ein saturate` read text only and loaded it with
-//! no base directory, and the `render` views that parse and `ein kb save` read
-//! text only, so each refused a `.einb` another command answered (W40) and
-//! `saturate` a file-relative import (W41); and a file that is not UTF-8 was
-//! refused with a Python line, `UnicodeDecodeError: …`, by a `process::exit`
-//! that took `ein test`'s whole selection down with it, exit 1.
+//! program). So no command refuses a `.einb` another answers (W40) or a
+//! file-relative import another resolves (W41), and a file that is not UTF-8
+//! is one line, never a process exit that takes `ein test`'s whole selection
+//! down with it.
 //!
 //! The convention: nothing here exits. A failure comes back as the text the
 //! command prints to stderr, and the exit code is the command's to choose —
 //! 1 for `solve`, `saturate`, `oracle`, `render` and `kb save`, and for `ein
-//! test` an `ERROR` row and 2 (`defined_behaviour.md` § 4).
+//! test` an `ERROR` row and 2 (`docs/ein/user/reference/diagnostics.md` § 2).
 
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -30,10 +27,9 @@ pub use ein_ir::read::Held;
 /// Read a program from `path`: the one read every command makes of one,
 /// [`ein_ir::read::read_program`], its failure the line the command prints.
 ///
-/// The read moved to `ein-ir` at M1f S1f.5.22, so that the import resolver
-/// reads an imported module through it too and refuses one as this refuses
-/// the program it is given, naming the module's path (the close review's
-/// finding 2, W74): a file that cannot be read gives one line naming the
+/// The read is `ein-ir`'s, so that the import resolver reads an imported
+/// module through it too and refuses one as this refuses the program it is
+/// given, naming the module's path (W74): a file that cannot be read gives one line naming the
 /// error class, the errno text and the quoted path, and a file that is
 /// neither a `.einb` container nor UTF-8 gives
 /// [`ein_ir::read::not_utf8_line`].
@@ -55,9 +51,8 @@ pub struct ProgramText {
 /// resolved against its directory; or the program a `.einb` stores, the
 /// resolved and import-flattened text `ein kb save` wrote, named
 /// `<program stored in x.einb>` (`ein_einb::program_name`) and with nothing
-/// left to resolve. Until M1f S1f.5.12 (T1f.5.12.5, W43) a container was
-/// refused here, and `ein solve x.einb --dump-answer DIR` exited 2 where the
-/// `.ein` answered.
+/// left to resolve. A container is not refused here (W43): `ein solve x.einb
+/// --dump-answer DIR` answers where the `.ein` does (Q-M1f.27).
 pub fn program_text(path: &Path) -> Result<ProgramText, String> {
     match read_program(path)? {
         Held::Text(text) => Ok(ProgramText {
@@ -105,8 +100,8 @@ pub enum How {
 }
 
 /// What a command's argv asks of the load: a `:why` on every declaration, the
-/// default since M1f T1f.5.14.7, unless `--no-require-why`, on every command
-/// that loads a program (T1f.5.14.6 gave it `--require-why`, default off). A
+/// default, unless `--no-require-why` (Q-M1f.62), on every command that loads
+/// a program. A
 /// command that does not define it loads as the default does.
 pub fn load_options(m: &clap::ArgMatches) -> ein_ir::LoadOptions {
     ein_ir::LoadOptions {
@@ -128,20 +123,21 @@ fn no_einb_line(path: &Path) -> String {
     )
 }
 
-/// Load what [`read_program`] read, about query number `query` — M1c
-/// S1c.1.2's plural `(query …)`, in both formats, because a container stores
-/// its program as text and therefore carries every query the source had.
+/// Load what [`read_program`] read, about query number `query` — a program
+/// holds every `(query …)` it writes, in both formats, because a container
+/// stores its program as text and therefore carries every query the source
+/// had.
 ///
 /// A text is parsed under its path and loaded with its own directory as the
-/// base, so a file-relative `(import …)` resolves against it (S1.8.A3) on
-/// every command. A container is opened (T1a.8.1.7): the fork is on the
+/// base, so a file-relative `(import …)` resolves against it on every
+/// command. A container is opened: the fork is on the
 /// **magic bytes** and not on the extension, so a container renamed
 /// `puzzle.ein` is still a container. `ast` must be empty, because a
 /// container carries its own program and replaces it.
 ///
 /// A container whose *inputs* have moved is opened anyway and said so on
 /// stderr. There is nothing else to do — the caller was handed the `.einb` and
-/// not the `.ein`, so "re-parse the source" (design/10 §4) is not available to
+/// not the `.ein`, so "re-parse the source" (`binary-format.md` § 4.3) is not available to
 /// it — and the one thing that must not happen is believing it silently.
 pub fn load_held(
     ast: &mut Ast,
@@ -184,10 +180,8 @@ pub fn load_held(
 
 /// **What the load noticed and did not refuse**, said once: each line on
 /// stderr as `note: <line>`, on every command, since every command that
-/// loads a program loads it through [`load_held`]. Today the hypothesis
-/// mechanisms' notes (M1f S1f.6.34); until M1f S1f.6.35 also the resolver's
-/// *a selection left a rule behind* (E-20), which imports that bring every
-/// module whole retired. A command may load one file several times, once a
+/// loads a program loads it through [`load_held`]: the hypothesis
+/// mechanisms' notes (Q-M1f.242). A command may load one file several times, once a
 /// query and once a question, and each line carries its file and position,
 /// so a line is printed the first time the process meets it and never again.
 /// No answer and no exit code moves.
@@ -202,8 +196,8 @@ fn say_notes(notes: &[String]) {
     }
 }
 
-/// **A conflict between the hypothesis mechanisms refuses the program** (M1f
-/// S1f.6.34, the user's ruling of 2026-11-13 on E-47), on every command, since
+/// **A conflict between the hypothesis mechanisms refuses the program**
+/// (Q-M1f.245), on every command, since
 /// every command that loads a program loads it here: one line per conflict,
 /// each `kb load error: …`, at the command's load-error exit. A list that
 /// filters no candidate, or a name another declaration already says, is one
@@ -331,8 +325,8 @@ fn open_einb(
             .unwrap_or_default(),
         query,
         load: *load,
-        // Every position in the stored program names the container (M1f
-        // T1f.5.5.13), where it named `<string>`.
+        // Every position in the stored program names the container
+        // (Q-M1f.15), not `<string>`.
         name: Some(path.display().to_string()),
         ..ein_einb::OpenOptions::default()
     };
@@ -380,32 +374,23 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
 ///
 /// A class is named qualified, and a conclusion no fact can hold names no
 /// class: it is the rule and the slot as the program writes them, the line
-/// `ein solve` prints too (it was `TypeError: …` until M1e2 S1e2.2.18).
+/// `ein solve` prints too.
 ///
-/// **`KeyError` was the other unqualified class until M1f S1f.5.18**: an
-/// unbound `:assert` variable ended the run as `KeyError: "unbound var ?v1 in
-/// :assert — bindings: {…}"`, quotes and all, the message quoted the way
-/// [`repr_str`](ein_core::repr::repr_str) quotes a string. The message was
-/// printed alone until 2026-08-20, when
-/// [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)'s
-/// fuzzer produced the first input that reaches it.
-/// `examples/ein-bugs/unbound-assert-var.ein` was the fixture until M1f
-/// S1f.5.10, which refuses its program at load (F13); the one input left, a
-/// parameter its activator binds to a nested fact read only by a conclusion
-/// (`W58/parameter-nested-assert`), answers since S1f.5.18 seeds the
-/// parameter, which retired `ein_infer::firing::FireError`'s `UnboundVar` and
-/// this line ([`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)).
+/// No line is an unbound `:assert` variable's: the loader refuses a
+/// conclusion's variable nothing binds
+/// ([`diagnostics.md` § 2.13](../../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds);
+/// `examples/ein-bugs/unbound-assert-var.ein`), and a parameter its activator
+/// binds to a nested fact read only by a conclusion is seeded
+/// (`W58/parameter-nested-assert`), so `ein_infer::firing::FireError` has no
+/// such case.
 pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
     use ein_infer::firing::FireError;
     use ein_infer::saturator::SaturateError;
     match e {
-        // The compiler's line as `ein solve` prints it, in Ein's words, since
-        // M1f S1f.5.21; it was `ein.inference.compile.CompileError: <message>`
-        // here and the message alone there until then (the close review's
-        // finding 1).
+        // The compiler's line as `ein solve` prints it, in Ein's words.
         SaturateError::Compile(c) => c.to_string(),
-        // Ein's spelling since M1e2 S1e2.2.18: the rule and the slot as the
-        // program writes them, the line `ein solve` prints too.
+        // Ein's spelling: the rule and the slot as the program writes them,
+        // the line `ein solve` prints too.
         SaturateError::Fire(FireError::NotAFact(m)) => m.clone(),
         SaturateError::StepLimit(m) => {
             format!("ein.inference.saturator.SaturatorStepLimitError: {m}")

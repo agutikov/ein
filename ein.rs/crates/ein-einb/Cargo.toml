@@ -1,11 +1,12 @@
-# `.einb` — the binary knowledge-base container (P1a.8, design/10).
+# `.einb` — the binary knowledge-base container
+# (docs/ein/ein.rs/design/binary-format.md).
 #
-# The **eighth** workspace member and the one crate that is not
-# `#![forbid(unsafe_code)]`: design/12 §2 permits `unsafe` in exactly one
-# audited module, the zero-copy casts in `src/cast.rs`, and a crate boundary is
-# how "exactly one" is enforced rather than asserted — `forbid` cannot be
-# lifted per-module, so a container module inside `ein-infer` would have had to
-# unforbid the whole engine.
+# The one library crate that is not `#![forbid(unsafe_code)]`: the dependency
+# policy (docs/ein/ein.rs/design/toolchain-and-layout.md § 2) permits `unsafe`
+# in exactly one audited module, the zero-copy casts in `src/cast.rs`, and a
+# crate boundary is how "exactly one" is enforced rather than asserted —
+# `forbid` cannot be lifted per-module, so a container module inside
+# `ein-infer` would have to unforbid the whole engine.
 [package]
 name    = "ein-einb"
 version.workspace    = true
@@ -19,7 +20,7 @@ ein-ir    = { path = "../ein-ir" }
 # `SOLUTIONS` stores what a solve produced — `Answer`, `MonotonicStats`, the
 # unsat core. Nothing else here needs the engine.
 # The container never fans out — `default-features = false` for the reason
-# `ein-render` gives (S1a.9.3 T1a.9.3.2).
+# `ein-render` gives.
 ein-infer = { path = "../ein-infer", default-features = false }
 blake3.workspace = true
 

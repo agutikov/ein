@@ -1,13 +1,11 @@
-//! **A closed stdout ends `ein` by `SIGPIPE`, as it ends `cat`** — M1f
-//! S1f.5.25, on the user's ruling of 2026-11-10 on the close review's finding
-//! 5 and Q-M1f.68, (b): *"why not handle sigpipe properly?"*.
+//! **A closed stdout ends `ein` by `SIGPIPE`, as it ends `cat`** (Q-M1f.68).
 //!
 //! Rust's runtime sets `SIGPIPE` to *ignored* before `main` runs, so a write
-//! to a pipe whose reader had gone failed with `EPIPE`, and every stdout write
-//! in `ein-cli` is a `print!` or a `println!`, which panic on a failed write:
-//! `ein saturate … | head` printed *failed printing to stdout: Broken pipe (os
-//! error 32)* and exited 101 (register rows W75). Since S1f.5.25 the binary's
-//! `main` restores the default disposition first (`ein-cli/src/main.rs`'s
+//! to a pipe whose reader has gone would fail with `EPIPE`, and every stdout
+//! write in `ein-cli` is a `print!` or a `println!`, which panic on a failed
+//! write: `ein saturate … | head` would print *failed printing to stdout:
+//! Broken pipe (os error 32)* and exit 101 (W75). So the binary's `main`
+//! restores the default disposition first (`ein-cli/src/main.rs`'s
 //! `restore_sigpipe`), so the kernel ends the process at that write, with
 //! nothing on stderr, and a shell reports 141, 128 + 13.
 //!
@@ -322,8 +320,8 @@ fn every_run_listed_writes_stdout_and_nothing_on_stderr() {
 
 /// **A reader closed before the run ends every run by `SIGPIPE`**, at its
 /// first write, with nothing on stderr: never the panic, *failed printing to
-/// stdout*, exit 101 (W75), and never exit 0 with the output lost, as `clap`'s
-/// help did, its write's error ignored, until S1f.5.25.
+/// stdout*, exit 101 (W75), and never exit 0 with the output lost, as a
+/// help that ignored its write's error would.
 #[test]
 fn a_reader_closed_before_the_run_ends_every_run_by_sigpipe() {
     let scratch = Scratch::new("ein-closed-stdout");
@@ -375,8 +373,8 @@ fn a_reader_that_closes_after_the_first_line_ends_a_run_that_writes_again() {
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
     // Where the pipe can be made one page, the strict arm is not empty: the
-    // census of T1f.5.25.2 had saturate's, the help of `solve`, the artefacts
-    // on `/dev/stdout` and the region's views over a page.
+    // runs whose stdout is over a page, saturate's, the help of `solve`, the
+    // artefacts on `/dev/stdout` and the region's views, are in it.
     if cfg!(target_os = "linux") {
         assert!(
             strict > 0,

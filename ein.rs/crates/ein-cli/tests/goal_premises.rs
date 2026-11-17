@@ -1,21 +1,19 @@
-//! **A query's `:goal` is held to what a rule's `:match` is held to** — M1f
-//! S1f.7.5 (W77), S1f.7.11 (W78) and S1f.7.1 (W79), Q-M1f.117 to .121.
+//! **A query's `:goal` is held to what a rule's `:match` is held to** (W77,
+//! W78, W79, Q-M1f.117 to .121).
 //!
-//! A goal is a premise, and until these stages the loader read it less
-//! closely than a rule's:
+//! A goal is a premise, and read less closely than a rule's it would mislead:
 //!
-//! - **a macro call in a goal was never expanded** (S1f.7.5): `(unknown (p
-//!   ?x))` was a pattern over a relation `unknown`, so the goal had no row,
-//!   `:expect (model)` held of it and the claim listing what the macro means
-//!   was refused; without the import, in silence, where a rule is refused;
-//! - **a goal over a relation the program names nowhere had no row**, and
-//!   under an `(absent …)` held of everything (S1f.7.11), while a claim over a
-//!   relation only a rule's `:assert` derives was refused;
-//! - **a pattern inside a pattern whose relation is a variable matched
-//!   nothing** (S1f.7.1), and under an `(absent …)` the goal held in every
+//! - **a macro call in a goal left unexpanded** (W77): `(unknown (p ?x))`
+//!   would be a pattern over a relation `unknown`, so the goal would have no
+//!   row, `:expect (model)` would hold of it and the claim listing what the
+//!   macro means would be refused;
+//! - **a goal over a relation the program names nowhere** (W78) would have no
+//!   row, and under an `(absent …)` hold of everything;
+//! - **a pattern inside a pattern whose relation is a variable** (W79) would
+//!   match nothing, and under an `(absent …)` the goal would hold in every
 //!   state, where a rule writing the shape is refused (W24).
 //!
-//! Since then the loader expands a goal's macro calls (`ein_ir::from_ir`'s
+//! So the loader expands a goal's macro calls (`ein_ir::from_ir`'s
 //! `expand_goal`), reads the expanded goal with the walks a rule's `:match`
 //! gets, and holds the relations a goal and a claim name to the relations of
 //! the program (`program_relations`). Each refusal is one first line, the
@@ -72,7 +70,7 @@ const NO_H: &str = "(solve :hypothesis-relations ())\n";
 
 /// `(shape, the query, what the first line holds)`.
 const REFUSED: [(&str, &str, &str); 19] = [
-    // S1f.7.5: a call that cannot be expanded, and an expansion a rule's
+    // W77: a call that cannot be expanded, and an expansion a rule's
     // `:match` would be refused for.
     (
         "macro-unimported-unknown",
@@ -115,7 +113,7 @@ const REFUSED: [(&str, &str, &str); 19] = [
         "(query :goal (settled ?g) :expect (model (settled Ann)))",
         ":expect names settled, and the program names no relation settled",
     ),
-    // S1f.7.11: a relation the program names nowhere.
+    // W78: a relation the program names nowhere.
     (
         "goal-relation",
         "(query :goal (payed ?g))",
@@ -159,7 +157,7 @@ const REFUSED: [(&str, &str, &str); 19] = [
         "(solve … :expect …) names payed, and the program names no relation payed — a relation \
          of the program is one it declares, states a fact of, or writes in a rule or an hrule",
     ),
-    // S1f.7.1: a relation written as a variable, at any depth.
+    // W79: a relation written as a variable, at any depth.
     (
         "relation-variable-inside-a-pattern",
         "(query :goal (says (?R ?g)))",
@@ -497,7 +495,7 @@ fn a_goal_over_a_relation_of_the_program_loads() {
     // A relation only an imported rule concludes, and an unused macro whose
     // expansion no goal could hold (Q-M1f.67: one no rule or goal calls loads).
     // The goal's `injective` is listed: a name the program writes and does
-    // not list is its own since M1f S1f.6.35.
+    // not list is its own.
     programs.push((
         "an-imported-rules-conclusion".to_string(),
         "(import std.algebra :symbols (bijective-properties functional injective))\n\

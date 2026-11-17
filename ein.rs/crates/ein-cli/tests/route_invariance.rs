@@ -1,11 +1,11 @@
-//! **Two routes, one read-out** — M1e2
-//! [S1e2.1c.2](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md)
-//! T1e2.1c.2.4, in the form of C4
+//! **Two routes, one read-out**, in the form of C4
 //! ([`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract)).
 //!
-//! Since this stage, describe on a monotone program takes the state route
-//! ([`ein_infer::states`]) and route 1 ([`ein_infer::downset`]) answers it no
-//! more. The rule that picks it reads the static verdict and nothing else
+//! On a monotone program describe takes the state route
+//! ([`ein_infer::states`]), with `--describe-route states` or where the tree
+//! and the classes have nothing to branch on, and route 1
+//! ([`ein_infer::downset`]) answers no describe there. The rule that picks
+//! route 1 reads the static verdict and nothing else
 //! (`explore`'s § *Describe's route*), so no option can make the two meet on
 //! one program. This file makes them meet, through
 //! [`explore::describe_by`], and holds two things on every monotone corpus
@@ -15,7 +15,7 @@
 //! - **one read-out**: what `ein solve` prints, uncut, with its stderr lines
 //!   and exit code, and its `--json-summary`, are identical apart from the
 //!   `route` and `work` rows and the summary's `route`, `licences` and `work`
-//!   — the user's *one tool, consistent answers* (2026-10-16);
+//!   — no two commands disagree (Q-M1e2.32);
 //! - **the premise of the rule**: the state route saturates no more nodes and
 //!   derives no more facts than route 1. The day a program breaks it, the rule
 //!   is revisited, which is what lets the rule rest on a measurement
@@ -26,28 +26,20 @@
 //! cut: the state route finished in no more saturations and facts than route
 //! 1 spent before it stopped, so no more than route 1 would have spent to
 //! finish. The test names each such program on stderr with its counts:
-//! `zebra.ein`, `zebra2.ein`, `zebra2-obligations.ein` and the
-//! register's `count-past-2-64.ein` and `count-past-2-128.ein`
-//! (`EIN_CORPUS_SLOW=1 cargo test -p ein-cli --profile gate --test
-//! route_invariance -- --nocapture`, 2026-11-15). Where neither route
-//! finishes nothing is read, and the test names those too: the six
-//! `square-bwd` and `square-fwd` programs, `send_more_money.ein`, and
-//! `zebra2-minus-15.ein` with its `-obligations` twin, the same day.
-//! `syntax/arg-kinds`, skipped so until S1f.6.39 for a cube of 41 candidates
-//! no budget described, is compared: its R is {∅} today.
+//! the zebra family and the register's `count-past-2-64.ein` and
+//! `count-past-2-128.ein` among them (`EIN_CORPUS_SLOW=1 cargo test -p
+//! ein-cli --profile gate --test route_invariance -- --nocapture` lists
+//! them). Where neither route finishes nothing is read, and the test names
+//! those too: the `square-bwd` and `square-fwd` programs,
+//! `send_more_money.ein` and `zebra2-minus-15.ein` with its `-obligations`
+//! twin among them.
 //!
-//! **No run here passes the default budget**, as no test does. Until then a
-//! second test, the dev host's, compared the
-//! programs route 1 describes only past the default at `--region-budget` 2²⁵:
-//! `explore::describe_by` at 32 times the 2²⁰ the user ruled on 2026-11-03,
-//! after 2²⁴ ran the gate out of memory, on a route no command sends a
-//! monotone program.
+//! **No run here passes the default budget**, as no test does (Q-M1e2.35):
+//! a program route 1 describes only past it is not compared.
 //!
-//! **Per commit, every program but the manifest's `slow` entries** (M1f
-//! S1f.6.39): the zebra family
-//! and `send_more_money` were most of the per-commit time.
-//! `EIN_CORPUS_SLOW=1` reads them too; the CI nightly runs the test with the
-//! flag, by name.
+//! **By default, every program but the manifest's `slow` entries**: the zebra
+//! family and `send_more_money` would be most of the time.
+//! `EIN_CORPUS_SLOW=1` reads them too, by name.
 //!
 //! ```text
 //! cargo test -p ein-cli --profile gate --test route_invariance
@@ -135,9 +127,8 @@ fn printed(path: &Path, route: Route, budget: u64) -> Option<Printed> {
 }
 
 /// Every corpus file and register witness, once, but the manifest's `slow`
-/// entries unless `slow`; this run's shard of them. A debug
-/// build left out W7's two witnesses, which it aborted on, until M1e2
-/// S1e2.2.7 fixed W7, and W16's order pair until M1e2 S1e2.2.16 fixed W16.
+/// entries unless `slow`; this run's shard of them, W7's two witnesses and
+/// W16's order pair among them in a debug build too.
 fn programs(slow_too: bool) -> Vec<PathBuf> {
     let root = repo_root();
     let slow: std::collections::BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -206,8 +197,7 @@ fn the_state_route_and_route_1_print_one_read_out() {
             .collect::<String>()
     );
     assert!(bad.is_empty(), "{}", bad.join("\n"));
-    // 2026-11-03: 171 monotone programs route 1 describes at the default
-    // budget. A sweep that compared none would pass the loop above.
+    // A floor: a sweep that compared none would pass the loop above.
     assert!(
         compared >= ein_corpus::shard::share(160),
         "compared {compared} programs"
@@ -226,8 +216,8 @@ struct Compared {
 /// The comparison over [`programs`] at one budget, the `slow` entries too if
 /// `slow`.
 ///
-/// Each (program, route) is a unit of its own on the pool since M1f
-/// S1f.6.39, so a program's two routes run side by side; the fold reads them
+/// Each (program, route) is a unit of its own on the pool, so a program's
+/// two routes run side by side; the fold reads them
 /// in the programs' order. A program on which neither route finishes is
 /// skipped.
 fn compare(budget: u64, slow: bool) -> Compared {
@@ -243,9 +233,8 @@ fn compare(budget: u64, slow: bool) -> Compared {
             .display()
             .to_string()
     };
-    // On the corpus sweeps' pool (M1f S1f.6.39; eight threads of its own
-    // until then, its failures in the order they finished), read back in the
-    // units' order.
+    // On the corpus sweeps' pool, read back in the units' order, not in the
+    // order the failures finished.
     let mut done = ein_corpus::pool::map(
         "route_invariance",
         &units,

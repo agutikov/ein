@@ -1,5 +1,4 @@
-//! The remap — [design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary),
-//! task T1a.8.1.3.
+//! The remap — [design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary).
 //!
 //! `Symbol`, `FactId` and `ProvId` are process-local integers, so a
 //! file must be loadable into a process whose tables already hold other
@@ -74,9 +73,9 @@ impl Maps {
     /// The tag survives untouched and only the payload moves, which is what
     /// makes the pass linear. [`Value::UNBOUND`] is special-cased rather than
     /// decoded: its bit pattern is the fourth tag state, so reading it as a
-    /// tag would call it a fact and remap a payload it does not have. An
-    /// int's tag bits, which a file written before M1f S1f.5.4 may hold, are
-    /// refused ([`EinbError::Int`]): there is no value to read them as.
+    /// tag would call it a fact and remap a payload it does not have. The tag
+    /// bits `0b01`, which no value has, are refused ([`EinbError::Int`]):
+    /// there is no value to read them as.
     pub fn value(&self, bits: u32) -> Result<Value> {
         if bits == Value::UNBOUND.bits() {
             return Ok(Value::UNBOUND);
@@ -126,8 +125,8 @@ mod tests {
         );
         assert_eq!(m.value(Value::UNBOUND.bits()).unwrap(), Value::UNBOUND);
         assert!(m.value(Value::sym(Symbol(9)).bits()).is_err());
-        // An int's tag bits (`0b01`), which no writer since M1f S1f.5.4
-        // writes: refused, never read as a name or a fact.
+        // The tag bits `0b01`, which no writer writes: refused, never read
+        // as a name or a fact.
         assert!(matches!(m.value(1 << 30), Err(EinbError::Int)));
     }
 }

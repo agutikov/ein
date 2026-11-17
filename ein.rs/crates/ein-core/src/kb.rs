@@ -1,12 +1,10 @@
 //! The knowledge base — a stack of immutable layers and one writable top.
 //!
-//! A `fork()` that copied the fact list and the index maps would be cheap at
-//! an exhaustive `zebra2`'s hundred enterings — but
+//! A `fork()` that copied the fact list and the index maps would cost every
+//! node a copy of root's store, and
 //! [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
-//! wants hundreds live at once, and [design/data-model.md § 5.1](../../../../docs/ein/ein.rs/design/data-model.md#51-the-fork)'s
-//! beta-memories are only affordable if a fork does not copy them, which is
-//! the exact objection [F11](../../../../plans/followups/f11_deductive_layer_perf.md)
-//! parks them on.
+//! keeps several nodes live at once
+//! ([design/data-model.md § 5.1](../../../../docs/ein/ein.rs/design/data-model.md#51-the-fork)).
 //!
 //! So a `Kb` is `Vec<Arc<Layer>>` plus a writable [`Layer`]
 //! ([design/data-model.md § 5](../../../../docs/ein/ein.rs/design/data-model.md#5-the-layered-kb)):
@@ -21,8 +19,8 @@
 //!
 //! ### Why this is trivially correct
 //!
-//! The KB is **append-only within a run** — the property S1.9.E23's fail-fast
-//! and S1.21.8's monotone-growth argument already lean on. A layer that only
+//! The KB is **append-only within a run** — the property the saturator's
+//! stop at a contradiction and the `absent` boundary lean on too. A layer that only
 //! adds, over layers that never change, cannot disagree with a copy that was
 //! mutated in place. [`Kb::materialise`] is that copy, and the tests assert
 //! the two agree.
@@ -38,61 +36,52 @@ use crate::value::{Tag, Value};
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::sync::Arc;
 
-/// S1.21.7 — the per-fact cap on recorded **alternative** justifications.
+/// The per-fact cap on recorded **alternative** justifications.
 ///
-/// A hot fact can be re-derived hundreds of times (an exhaustive `zebra2`
-/// makes ~194 k redundant firings) and keeping every one costs memory for
+/// A hot fact can be re-derived hundreds of times, and keeping every one costs memory for
 /// environments that repeat. The list is kept sorted by premise count, and at
 /// the cap an arrival with fewer premises evicts the longest.
 ///
 /// # What it costs, and what is kept beside it
 ///
-/// **M1e S1e.1.3, answering the review's Q2: the cap could change which unsat
-/// core is reported.** Retention is by **premise count**, which is local;
+/// **The cap alone could change which core is reported.** Retention is by
+/// **premise count**, which is local;
 /// `ein-infer`'s label search minimises **frontier size**, which is
 /// transitive. A one-premise step whose premise unfolds into a deep chain wins
-/// the first and loses the second, so a full list refused the derivation with
-/// the smaller frontier: `examples/ein-bugs/alt-cap-core.ein` reported a
-/// 3-fact core where a 2-fact one exists, and its `-reordered` twin, one
-/// `:priority` apart, the 2-fact one (W10).
+/// the first and loses the second, so a full list alone would refuse the
+/// derivation with the smaller frontier: `examples/ein-bugs/alt-cap-core.ein`
+/// and its `-reordered` twin, which writes one rule in another place, are the
+/// witness (W10).
 ///
-/// **Since M1e2 S1e2.2.11 a fact also keeps, beside the list, the arrival with
-/// the smallest closure** ([`Kb::closure`], [`Kb::best`]; Q-M1e2.11), so
-/// the pair report the same 2-fact core. The list is unchanged: every list a
-/// corpus program keeps is kept as it was.
+/// **So a fact also keeps, beside the list, the arrival with the smallest
+/// closure** ([`Kb::closure`], [`Kb::best`]; Q-M1e2.11), and the pair report
+/// the same 2-fact core.
 ///
 /// That is not every derivation, and no list of fixed length is: where the
 /// saving lies *between* two facts, the derivation a target needs is its own
 /// fact's worst, and a full list refuses it
-/// (`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`, `W10/alt-cap-shared`,
-/// deferred to F22, which re-derives what a full list refused when the
-/// search reaches it). So the promise is *the smallest frontier over every
-/// derivation the program records*, and that row is where it does not hold.
+/// (`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`, `W10/alt-cap-shared`).
+/// So the promise is *the smallest frontier over every derivation the
+/// program records*, and that row is where it does not hold.
 ///
-/// **Where the cap is reached**, 2026-11-04 (`ein solve FILE --events`, every
-/// `alt` event counted per entering and fact, the corpus's 310 files): ten
-/// programs, always on `(false)` in a dead node — the `zebra2` family's dead
-/// nodes, `lattice/06_friends_tables`, `branching/12_typed_blind_solve`,
-/// `zebra2-bad`'s root and the `alt-cap-core` pair. Uncapped, the longest list
-/// is 1 049, on `zebra2-bad` and on `zebra2`'s dead nodes. An uncapped store
-/// moves no core on any of them but `alt-cap-core.ein`'s, and costs `zebra2`
-/// ×2.15 (M1e2 S1e2.2.11 T1, `build/s1e2.2.11/`).
+/// **Where the cap is reached** is read off `ein solve FILE --events`, an
+/// `alt` event for every alternative a fact records, per entering: on a
+/// refutation's `(false)`, which a dead node derives many ways.
 pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 
-/// A key of the participation index (S1.8.B-idx): relation, argument
+/// A key of the participation index: relation, argument
 /// position, and the value in it — or, since
 /// [design/data-model.md § 6.1](../../../../docs/ein/ein.rs/design/data-model.md#61-the-participation-key),
 /// a position *inside* the fact in that argument.
 ///
-/// 12 bytes with padding. design/03 §6 notes that packing it into a `u64`
-/// does not fit — the `Value` needs 32 bits and the symbol another 32 — so
+/// 12 bytes with padding. Packing it into a `u64` does not fit — the
+/// `Value` needs 32 bits and the symbol another 32 — so
 /// this stays a struct key, and `inner` fits in the padding that was already
 /// there.
 ///
 /// **Why the second level exists.** Keyed on the join-key types only, a
 /// `Fact`-valued argument is not indexed, so a `(not (R ?a ?b))` premise
-/// scans `not`'s whole extent. On an exhaustive `zebra` that is **99.1 %** of
-/// 25.16 M candidates walking a 368-fact extent to reject all but a handful
+/// scans `not`'s whole extent to reject all but a handful
 /// ([design/data-model.md § 5](../../../../docs/ein/ein.rs/design/data-model.md#5-the-layered-kb)).
 /// Keying one level in turns that scan into a bucket lookup. It is a
 /// *narrowing* — the matcher re-checks every slot regardless — so it changes
@@ -187,8 +176,8 @@ pub struct Layer {
     /// concatenation would be wrong here where it is right everywhere else.
     alts: FxHashMap<FactId, Box<[ProvId]>>,
     /// The smallest **closure** a fact has been given so far — the frontier
-    /// estimate [`Kb::record_justification`] compares arrivals by (M1e2
-    /// S1e2.2.11, Q-M1e2.11). Set for a derived fact, a writeback's 0
+    /// estimate [`Kb::record_justification`] compares arrivals by
+    /// (Q-M1e2.11). Set for a derived fact, a writeback's 0
     /// among them, when it is first derived; lowered by an arrival with a
     /// smaller one. A fact with no entry is a leaf, 1. Last layer wins, as
     /// `primary` does.
@@ -306,8 +295,8 @@ impl Layer {
     /// and the hash maps are counted at their bucket cost, so an index of ten
     /// one-element vectors is not mistaken for ten bytes. It is an estimate —
     /// `hashbrown`'s control bytes and the allocator's rounding are not
-    /// visible from here — and `alloc_cost.rs` cross-checks the total against a
-    /// counting allocator, which is why an estimate is good enough.
+    /// visible from here. What a fork costs is held with a counting allocator
+    /// by `ein-core/tests/fork_cost.rs`, not through this estimate.
     pub fn footprint(&self) -> usize {
         fn vec_map<K, V>(m: &FxHashMap<K, Vec<V>>) -> usize {
             // One bucket per slot plus each vector's own allocation.
@@ -340,7 +329,8 @@ impl Layer {
     ///
     /// `names` is compared **as a set** rather than in order, and that is not
     /// laziness: its order is in no contract, and every consumer sorts
-    /// (design/02 §2). Every other list here is append-ordered and is compared
+    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
+    /// Every other list here is append-ordered and is compared
     /// exactly.
     fn diff(&self, other: &Layer) -> Result<(), String> {
         if self.facts != other.facts {
@@ -421,40 +411,34 @@ fn diff_map<K: Eq + std::hash::Hash + std::fmt::Debug>(
     Ok(())
 }
 
-/// A union-find over names — the M1 placeholder, reserved for F4's e-graph.
+/// A union-find over names, **inert**: names are never merged and `eq` is
+/// name identity (Q1). Nothing in the engine calls `union` (the only callers
+/// are tests), no matcher reads a class, and a `.einb` does not store it; a
+/// KB still copies it on every `fork()` / `snapshot()`, and the copy is
+/// observable through [`EqClasses::classes`]
+/// ([design/data-model.md § 10](../../../../docs/ein/ein.rs/design/data-model.md#10-equality-classes)).
 ///
-/// The engine fires no equality propagation, so this stays inert; it exists
-/// because `fork()` / `snapshot()` copy it and the copy is observable through
-/// [`EqClasses::classes`].
+/// # Reading it does not write it
 ///
-/// # Reading it does not write it — M1e S1e.4.3
+/// [`EqClasses::find`] is a lookup: `equivalent(a, c)` on an unrecorded `c`
+/// inserts nothing, so `classes()` is a function of the unions alone and not
+/// of what was asked earlier (`asking_a_question_does_not_move_the_answer`).
+/// That matters twice:
 ///
-/// [`EqClasses::find`] auto-vivified until then, so `equivalent(a, c)` on an
-/// unrecorded `c` **inserted** it and `classes()` reported a different order
-/// depending on what had been asked earlier. Two things make that worth ten
-/// lines rather than a comment, and neither is the one the plan expected:
+/// - **for what holds it.** `naf_semantics::matching_does_not_resolve_equality_classes`
+///   unions by hand and asserts the **matcher** ignores the class; it does
+///   not hold that nothing fires equality propagation. What would catch an
+///   engine that unions on every stored fact is [`fork_cost.rs`][fc], and
+///   only because a growing map breaks an O(1) fork, so it holds the weaker
+///   *propagation does not scale with the fact count*.
+/// - **for the fork's cost, not only determinism.** [`Kb::branch`]
+///   deep-copies this map, so a name a question inserted would be per-fork
+///   bytes on every node the search keeps live.
 ///
-/// - **The premise the *comment* route rested on was misattributed.**
-///   [`standard-of-proof.md`] cited
-///   `naf_semantics::matching_does_not_resolve_equality_classes` as enforcing
-///   *nothing fires equality propagation*. It does not: it unions by hand and
-///   then asserts the **matcher** ignores the class, which is a different
-///   claim, and a probe that made the engine union on every stored fact left
-///   it green. What would have caught that probe is
-///   [`fork_cost.rs`][fc] — and only because a growing map breaks an O(1)
-///   fork, so it enforces the weaker *propagation does not scale with the
-///   fact count*.
-/// - **It is a fork-cost hazard, not only a determinism one.** [`Kb::branch`]
-///   deep-copies this map, so every name ever merely *asked about* became
-///   permanent per-fork bytes on the path P1a.7 wants hundreds of live copies
-///   of.
+/// `fork()` copies, so for `union` a merge in a parent is inherited by every
+/// fork made afterwards, and a merge in a fork is invisible to its siblings.
+/// A *question* changes neither.
 ///
-/// `fork()` copies, so the asymmetry a future consumer is least likely to work
-/// out for itself still holds for `union`: a merge in a parent is inherited by
-/// every fork made afterwards, and a merge in a fork is invisible to its
-/// siblings. What no longer holds is that a *question* can do it.
-///
-/// [`standard-of-proof.md`]: ../../../../docs/ein/standard-of-proof.md
 /// [fc]: ../../../../ein.rs/crates/ein-core/tests/fork_cost.rs
 #[derive(Clone, Default, Debug)]
 pub struct EqClasses {
@@ -470,13 +454,11 @@ impl EqClasses {
     /// The class root — a **lookup**. An element the map has never seen is
     /// its own root and is *not* inserted.
     ///
-    /// It auto-vivified until M1e S1e.4.3 (`ST-L1`): merely asking
-    /// `equivalent(a, c)` inserted `c`, so [`Self::classes`]'s output was a
-    /// function of **query history** and [`Kb::branch`] copied whatever the
-    /// questions had left behind. Path compression stays, and so does
-    /// union-by-first-argument — those are the two behaviours [design/data-model.md]
-    /// § 10 names. Vivification is in no contract, and it is the shape
-    /// `design/02`'s determinism rules exist to keep away from observables.
+    /// Asking `equivalent(a, c)` does not insert `c`, so [`Self::classes`]'s
+    /// output is no function of **query history** and [`Kb::branch`] copies
+    /// nothing a question left behind. Path compression and
+    /// union-by-first-argument are the two behaviours [design/data-model.md]
+    /// § 10 names.
     ///
     /// [design/data-model.md]: ../../../../docs/ein/ein.rs/design/data-model.md#10-equality-classes
     pub fn find(&mut self, x: Symbol) -> Symbol {
@@ -497,7 +479,7 @@ impl EqClasses {
     }
 
     /// The class root, inserting `x` as its own root if the map has not seen
-    /// it. The vivifying half of what [`Self::find`] used to be, kept where it
+    /// it. The vivifying half kept apart from [`Self::find`], where it
     /// belongs: a *write* is the only operation entitled to grow the map.
     fn record(&mut self, x: Symbol) -> Symbol {
         if self.parent.get(x).is_none() {
@@ -593,14 +575,12 @@ pub struct Kb {
     classes: EqClasses,
     /// [`Kb::n_facts`] as of this KB's last saturation — the *clean* mark.
     ///
-    /// M1e `CO-M1`. A state the search records is supposed to be a fixpoint,
-    /// and three of the four sites the walk recorded one at handed over a KB
-    /// written **after** its last saturation: its lookahead kill cache and
-    /// its singleton writeback both put `(not h)` into a KB nobody re-ran the
-    /// rules over, and a rule reading a stored negative then had a match
-    /// nothing fired. `examples/ein-bugs/alive-empty-phase1.ein` records a
-    /// state that, fed back as a program, this engine answers `Contradiction`
-    /// on — in ten lines and zero enterings.
+    /// A state the search records must be a fixpoint, and a KB written
+    /// **after** its last saturation is not one: a fact written since, a
+    /// stored `(not h)` among them, can give a rule a match nothing fired.
+    /// `examples/ein-bugs/alive-empty-phase1.ein` is the witness: a state
+    /// recorded without its re-saturation is, fed back as a program, a
+    /// contradiction.
     ///
     /// A count rather than a flag, and it works because a KB's fact list only
     /// ever grows: `push_fact` appends, nothing retracts, and `materialise`
@@ -616,7 +596,7 @@ pub struct Kb {
 /// no layer, so the copy reads, layer for layer, as the KB it was taken from,
 /// and the copy's [`Kb::program_mut`] works as the original's did. For a
 /// caller that loads a program once and runs several things over it, each on
-/// its own copy (M1f S1f.6.39, the corpus sweeps' one load a program); the
+/// its own copy (the corpus sweeps, which load a program once); the
 /// engine forks.
 impl Clone for Kb {
     fn clone(&self) -> Kb {
@@ -721,13 +701,11 @@ impl Kb {
 
     /// Has this KB been written since its last saturation?
     ///
-    /// The question the four [record sites] have to ask, and the reason
+    /// The question a site that records a state has to ask, and the reason
     /// `Kb::saturated_facts` exists: a state recorded dirty is not a
     /// fixpoint, and *saturated* is the first conjunct of what a solution is.
     /// `true` for a KB nothing has saturated yet, which is the honest answer
     /// — a loaded, unsaturated KB owes exactly the same re-run.
-    ///
-    /// [record sites]: `docs/kernel/inference/solution_semantics.md`
     pub fn written_since_saturation(&self) -> bool {
         self.n_facts() != self.saturated_facts
     }
@@ -806,12 +784,9 @@ impl Kb {
         self.fork()
     }
 
-    /// Collapse the layer stack into one — the operation design/03 §5 calls
-    /// flatten, used when a branch is promoted to a root, as the check that
-    /// layering changed nothing, and — since
-    /// [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
-    /// — at the search's layer barrier, because every fork inherits the whole
-    /// stack and a mid-layer root write seals another one.
+    /// Collapse the layer stack into one. No route calls it; a test holds it
+    /// to the invariant below, and it is there for a caller that wants a
+    /// shallow stack under a KB every fork inherits whole.
     ///
     /// Content-neutral and order-neutral, which is what makes it safe to call
     /// mid-search: [`Kb::materialise`] concatenates the layers oldest-first,
@@ -960,9 +935,8 @@ impl Kb {
     /// `rel`.
     pub fn facts_with(&self, key: SlotKey) -> impl Iterator<Item = FactId> + '_ {
         // Hash once, then a bit test per layer instead of a lookup per layer:
-        // a fork 24 layers deep asks 24 times for a key one or two of them
-        // have, and the walk was 15.6 % of an exhaustive `zebra` after
-        // T1a.6.3.0 made the lookup the common case.
+        // a fork many layers deep asks each layer for a key one or two of
+        // them have.
         let at = bloom_at(&key);
         self.layers()
             .filter(move |l| {
@@ -1013,13 +987,14 @@ impl Kb {
 
     /// Every name that appears anywhere, in first-seen order.
     ///
-    /// Every consumer sorts (design/02 §2). This order is deterministic; it
-    /// is still not something to depend on.
+    /// Every consumer sorts
+    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
+    /// This order is deterministic; it is still not something to depend on.
     pub fn names(&self) -> Vec<Symbol> {
         let mut out = Vec::new();
         // A `Symbol` is a dense `u32`, so the dedup is a bit test rather than
         // a hash — the same set in the same first-seen order, at the cost of
-        // one `Vec<u64>` (T1a.6.4.2). It is called once per hypothesis-
+        // one `Vec<u64>`. It is called once per hypothesis-
         // generation pass, and the deeper the fork the more layers it walks.
         let mut seen = crate::bitset::BitSet::new();
         for layer in self.layers() {
@@ -1060,15 +1035,15 @@ impl Kb {
         self.rules_by_relation.get(rel).map_or(&[], |v| v)
     }
 
-    /// The equality classes — **the F4 e-graph seam, and the place to read
-    /// [`EqClasses`]'s own docs before wiring a consumer.**
+    /// The equality classes — **read [`EqClasses`]'s own docs before wiring
+    /// a consumer.**
     ///
-    /// Nothing in the engine calls this; the only caller in the tree is a
-    /// test. The day one arrives, `classes()`'s output becomes an observable,
+    /// Nothing in the engine calls this; the only callers in the tree are
+    /// tests. The day one arrives, `classes()`'s output becomes an observable,
     /// and two properties of it are worth knowing first: a fork copies the
     /// map, so a parent's merges are inherited and a fork's are invisible to
-    /// its siblings; and reading no longer writes, which is what M1e S1e.4.3
-    /// changed and what `asking_a_question_does_not_move_the_answer` holds.
+    /// its siblings; and reading does not write, which
+    /// `asking_a_question_does_not_move_the_answer` holds.
     pub fn classes(&mut self) -> &mut EqClasses {
         &mut self.classes
     }
@@ -1102,7 +1077,7 @@ impl Kb {
     /// A fact re-derived by a second rule lands in the indexes exactly once —
     /// unlike the `add_fact` + unconditional `_index_fact` pattern's silent
     /// double-index — and the arriving derivation is kept as an alternative
-    /// justification rather than discarded (S1.21.7's dedup drop).
+    /// justification rather than discarded.
     pub fn add_and_index_fact(
         &mut self,
         terms: &mut Terms,
@@ -1123,7 +1098,7 @@ impl Kb {
             return Ok(Added::Existing { id, alt });
         }
         // A derivation's closure, from its premises' as they stand, and a
-        // writeback's 0 (M1e2 S1e2.2.11); a leaf takes no entry.
+        // writeback's 0; a leaf takes no entry.
         if let Some(p) = prov {
             let p = terms.provs.get(p);
             if p.kind == ProvKind::Rule {
@@ -1148,10 +1123,10 @@ impl Kb {
     ///
     /// Both registries that a fact can activate, and only those. A saturation
     /// rule and an obligation rule find their activators the same way — by
-    /// name, in this index — because M1d
-    /// [S1d.2.3](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)
-    /// split them into two registries over **one name-space**: which pass
-    /// walks a rule is not a fact about its activator. `hrules` are absent
+    /// name, in this index — because the two registries share **one
+    /// name-space**
+    /// ([obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)):
+    /// which pass walks a rule is not a fact about its activator. `hrules` are absent
     /// and stay absent — a generic hrule takes its activators from the query's
     /// `:hrules` keyword and never from the store, because an hrule activator
     /// steers the search.
@@ -1180,7 +1155,7 @@ impl Kb {
                 self.top.by_rel_slot_val.entry(key).or_default().push(id);
                 self.top.bloom_add(&key);
             } else if let Some(nested) = value.as_fact() {
-                // …so key one level in instead (T1a.6.3.0). Only one level:
+                // …so key one level in instead. Only one level:
                 // the corpus's nesting is `(not (R …))` and a second would
                 // cost entries nothing asks for.
                 for (inner, deep) in terms.facts.args(nested).iter().enumerate() {
@@ -1301,8 +1276,7 @@ impl Kb {
         // Registry names are unioned in, so a relation declared with no facts
         // yet still has an entry. An obligation's name is a rule's
         // (`Program::categorise`), so it is unioned in as a rule's is, and a
-        // rule that names one as a value seeds nothing (M1f Q-M1f.226 (b),
-        // E-48).
+        // rule that names one as a value seeds nothing (Q-M1f.226).
         for name in self.program.relations.keys() {
             layer.names.entry(name);
         }
@@ -1315,11 +1289,6 @@ impl Kb {
         layer
     }
 
-    /// The invariant the whole layered design rests on: the concatenated view
-    /// is what a mutated-in-place copy would have been.
-    ///
-    /// `Err` carries the first disagreement. Cheap enough to call after every
-    /// saturation in a debug build, which is where design/03 §10 puts it.
     /// The four index-entry totals `ein saturate`'s snapshot reports —
     /// `facts_by_relation`, `facts_by_rel_slot_val`, `rule_apps_by_rule`,
     /// `rule_apps_on_relation`, in that order.
@@ -1328,16 +1297,15 @@ impl Kb {
     /// materialised view, which is every entry with the copy-on-write seams
     /// closed.
     ///
-    /// **`facts_by_rel_slot_val` counts the `DIRECT` postings only.** Since
-    /// T1a.6.3.0 the index also holds keys *inside* a nested argument — 897
-    /// postings against 743 on `zebra2-hints`. This line is a report about
+    /// **`facts_by_rel_slot_val` counts the `DIRECT` postings only.** The
+    /// index also holds keys *inside* a nested argument. This line is a report about
     /// the **knowledge base**: how many `(relation, slot, value)` join keys
     /// its facts produce, which is a property of the data. How the engine
     /// additionally indexes those facts to answer a query faster is not what
     /// a reader of
     /// `saturate`'s snapshot is being told, and letting it leak in would make
-    /// 43 corpus entries disagree about the *data* because the *engine*
-    /// changed.
+    /// a report about the *data* change whenever the *engine*'s indexing
+    /// does.
     pub fn index_sizes(&self) -> [usize; 4] {
         let m = self.materialise();
         [
@@ -1363,6 +1331,11 @@ impl Kb {
         )
     }
 
+    /// The invariant the whole layered design rests on: the concatenated view
+    /// is what a mutated-in-place copy would have been.
+    ///
+    /// `Err` carries the first disagreement. Cheap enough for a test to call
+    /// after a load or a fork (`ein-ir`'s `load_semantics`, `fork_cost`).
     pub fn check_layering(&self, terms: &Terms) -> Result<(), String> {
         let mut flat = self.materialise();
         // A rebuild unions the registry names in, so a relation declared with
@@ -1406,8 +1379,8 @@ impl Kb {
 
     /// `n_by_rel` against a full walk of the layer stack — the invariant the
     /// O(1) [`Kb::n_facts_of`] rests on, checked rather than argued
-    /// ([design/data-model.md § 7](../../../../docs/ein/ein.rs/design/data-model.md#7-per-relation-extent-counts)
-    /// T1a.6.8.2). Part of `check_layering` because that is where every
+    /// ([design/data-model.md § 7](../../../../docs/ein/ein.rs/design/data-model.md#7-per-relation-extent-counts)).
+    /// Part of `check_layering` because that is where every
     /// KB-shape fixture already asks whether the layer stack still adds up.
     pub fn check_extent_counts(&self) -> Result<(), String> {
         let mut walked: FxHashMap<Symbol, u32> = FxHashMap::default();
@@ -1509,7 +1482,7 @@ impl Kb {
 
     /// A fact's **closure** — the size of the smallest frontier any of its
     /// recorded derivations has shown, as [`Kb::record_justification`]
-    /// estimates it (M1e2 S1e2.2.11): 1 for a leaf ([`crate::walks::is_frontier`]'s:
+    /// estimates it: 1 for a leaf ([`crate::walks::is_frontier`]'s:
     /// no primary, a `source`, a `hypothesis`), 0 for a writeback, and for a
     /// derived fact the smallest [`Kb::closure_of`] its arrivals have had.
     ///
@@ -1585,8 +1558,7 @@ impl Kb {
     /// Does anything this KB believes cite a record that died with a fork?
     ///
     /// Always `false` on a KB the engine has finished with — which is the
-    /// claim, and which `ein-infer/tests/provenance.rs` asks of every corpus
-    /// file that solves, of root and of every recorded solution.
+    /// claim, of root and of every recorded solution.
     pub fn cites_fork_provenance(&self) -> bool {
         self.layers().any(Layer::cites_fork_provenance)
     }
@@ -1646,9 +1618,9 @@ impl Kb {
     }
 
     /// Set a closure entry for every believed fact whose primary is a
-    /// derivation and that has none, in insertion order, from its primary:
-    /// what a `.einb` written before M1e2 S1e2.2.11 restores, since a
-    /// primary's premises were believed before it.
+    /// derivation and that has none, in insertion order, from its primary,
+    /// since a primary's premises were believed before it. Nothing calls it:
+    /// a `.einb` carries its KB's closures in its `CLOSURE` section.
     pub fn rebuild_closures(&mut self, terms: &Terms) {
         let facts: Vec<FactId> = self.facts().collect();
         for f in facts {
@@ -1719,7 +1691,7 @@ impl Kb {
     /// still a clue. A derivation the fact already holds, in the list or
     /// beside it, is not recorded twice.
     ///
-    /// What is kept is two things (M1e2 S1e2.2.11, Q-M1e2.11):
+    /// What is kept is two things (Q-M1e2.11):
     ///
     /// - **The list**, capped at [`MAX_ALT_JUSTIFICATIONS`] and kept **sorted
     ///   by premise count**, so at the cap an arrival with fewer premises
@@ -1736,7 +1708,7 @@ impl Kb {
     /// Neither is every derivation. A saving that lies *between* two facts
     /// makes the derivation a target needs its own fact's worst, so a full
     /// list can still refuse it: `examples/ein-bugs/wrong-answers/alt-cap-shared.ein`,
-    /// `W10/alt-cap-shared`, deferred to F22.
+    /// `W10/alt-cap-shared`.
     pub fn record_justification(&mut self, terms: &Terms, fact: FactId, prov: ProvId) -> bool {
         let p = terms.provs.get(prov);
         if p.is_terminal() {
@@ -2032,7 +2004,7 @@ mod tests {
         // A nested-fact argument still has no key of its *own* — there is no
         // single value at that position…
         assert_eq!(kb.facts_with(SlotKey::direct(not, 0, inner)).count(), 0);
-        // …but since T1a.6.3.0 its contents do, one level in, which is what a
+        // …but its contents do, one level in, which is what a
         // `(not (co-located ?x ?y))` premise probes with `?x` bound.
         assert_eq!(
             kb.facts_with(SlotKey {
@@ -2157,19 +2129,18 @@ mod tests {
         // itself: a merge in a parent is seen by every fork made afterwards,
         // a merge in a fork by no sibling.
         assert!(!kb.classes().equivalent(a, c), "the copy is the fork's own");
-        // …and *asking* left nothing behind. `find` auto-vivified until M1e
-        // S1e.4.3, so this line used to read `[(a, [a, b]), (c, [c])]`.
+        // …and *asking* left nothing behind: a `find` that inserted what it
+        // was asked about would make this `[(a, [a, b]), (c, [c])]`.
         assert_eq!(kb.classes().classes(), vec![(a, vec![a, b])]);
     }
 
-    /// **Asking a question does not move the answer** — M1e S1e.4.3,
-    /// `ST-L1`.
+    /// **Asking a question does not move the answer.**
     ///
     /// The property, not the example: the same unions produce the same
-    /// `classes()` whether or not anything was asked first. It fails on the
-    /// pre-S1e.4.3 engine, where the two vectors differ both in length and in
-    /// order, because `equivalent` inserted what it was asked about and
-    /// `classes()` walks the parent map in insertion order.
+    /// `classes()` whether or not anything was asked first. It fails on a
+    /// `find` that inserts what it is asked about, where the two vectors
+    /// differ both in length and in order, because `classes()` walks the
+    /// parent map in insertion order.
     #[test]
     fn asking_a_question_does_not_move_the_answer() {
         let (mut terms, _) = fixture();
@@ -2312,8 +2283,8 @@ mod tests {
         assert!(!after.contains(kept.last().expect("non-empty")));
     }
 
-    /// **A full list keeps the smallest-closure arrival beside it** — M1e2
-    /// S1e2.2.11, Q-M1e2.11, `alt-cap-core.ein`'s shape in miniature.
+    /// **A full list keeps the smallest-closure arrival beside it**
+    /// (Q-M1e2.11): `alt-cap-core.ein`'s shape in miniature.
     /// The primary and 32 alternatives each rest on one derived premise three
     /// leaves deep (closure 3); a two-premise arrival over two leaves
     /// (closure 2) is refused by the list's premise count and kept beside it.
@@ -2448,14 +2419,13 @@ mod tests {
         assert_eq!(view.by_rule(rule).collect::<Vec<_>>(), vec![b]);
     }
 
-    /// S1a.6.8 T1a.6.8.2 — the extent count is one probe at any depth.
+    /// The extent count is one probe at any depth.
     ///
     /// The boundary asks `n_facts_of` once per watched relation per parked
-    /// candidate — 644 166 times on an exhaustive `zebra2` — and the search
-    /// reaches depth 35, so folding the answer over the layer stack was a
-    /// 35× multiplier on 9.5 % of the run. The probe counter is what makes
-    /// "one lookup" checkable rather than asserted: the previous
-    /// implementation would have made it grow with `depth()`.
+    /// candidate, and a node's KB is many layers deep, so folding the answer
+    /// over the layer stack would multiply its cost by the depth. The probe
+    /// counter is what makes "one lookup" checkable rather than asserted: a
+    /// fold over the layers would make it grow with `depth()`.
     #[test]
     fn n_facts_of_costs_one_probe_at_any_depth() {
         let (mut terms, mut kb) = fixture();

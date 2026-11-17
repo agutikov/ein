@@ -1,14 +1,12 @@
-//! **The world-anchor list is the grep's own answer** — M1e `TE-L2`.
+//! **The world-anchor list is the grep's own answer.**
 //!
 //! `examples/zebra.ein` and `examples/zebra2.ein` are hard-coded into tests
-//! across six crates. They are deliberate anchor tests and their own docs say
-//! so; what nobody had was the **list**, so a reviewer editing `zebra2.ein`
-//! could not tell what would fire. The review said four crates, M1e S1e.1.6
-//! measured six and 26 files, and by the time this stage re-took it two days
-//! later it was 28 — both additions from this milestone's own commits.
+//! across several crates. They are deliberate anchor tests and their own docs
+//! say so; without the **list**, a reviewer editing `zebra2.ein` could not
+//! tell what would fire, and the list grows with every test that names them.
 //!
 //! That is why the list is generated rather than written: a hand-copied one
-//! was stale before the phase closed. It lives in
+//! goes stale. It lives in
 //! [`examples/README.md`](../../../../examples/README.md) § What an edit to
 //! these two files fans out into, in a marked block this test diffs, on
 //! `config_reference.rs`'s pattern — *edit the code, run the test, paste;
@@ -19,7 +17,7 @@
 //! ```
 //!
 //! What the test cannot re-derive is in the page's rings 3 and 4 — the
-//! `utils/` scripts, `docs/ein/ein.rs/api.md`, `corpus.toml`, and the three byte
+//! scripts beside the tree, `docs/ein/ein.rs/api.md`, `corpus.toml`, and the three byte
 //! goldens of the two puzzles, which an edit changing the *parse* moves and
 //! `EIN_BLESS=1` re-banks like any other golden.
 

@@ -1,4 +1,4 @@
-//! T1a.9.3.4 — **`ein --version` reports the four things a version number
+//! **`ein --version` reports the four things a version number
 //! does not**: the event protocol, the container format, the features
 //! compiled in, and the stdlib this binary would load.
 //!

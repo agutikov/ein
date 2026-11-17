@@ -33,26 +33,20 @@ pub enum FieldKind {
     Str,
 }
 
-/// The flags a `(config …)` takes, in declaration order: the eight
-/// `solve_interface.md` § 2.4 kept at M1e2 S1e2.1a.5's switch, less
-/// `enable-symmetric-mirror`, retired at S1e2.1a.6, less the four `enable-*`
-/// levers retired at S1e2.1c.5 (the user's ruling of 2026-11-03), and less
-/// `warn-derived-naf`, retired at S1e2.2.5 (the user's of 2026-11-04). What
-/// `--dump-config` prints and what the loader parses.
+/// The flags a `(config …)` takes, in declaration order
+/// (`docs/ein/user/reference/config.md` § 2.2): what `--dump-config` prints
+/// and what the loader parses.
 pub const FLAGS: &[(&str, FieldKind)] = &[
     ("lattice-sanity-check", FieldKind::Bool),
     ("record-alternative-justifications", FieldKind::Bool),
 ];
 
-/// The retired flags, each with the M1e2 stage that retired it and why — the
-/// loader's error, so a program that sets one is refused with the reason
-/// rather than as an unknown flag. Nine went with the walk at S1e2.1a.5's
-/// switch (`solve_interface.md` § 2.4), `enable-symmetric-mirror` at
-/// S1e2.1a.6, the one flag that changed R (the user's ruling of 2026-11-01),
-/// the four `enable-*` levers no route reads at S1e2.1c.5 (the user's
-/// ruling of 2026-11-03, which reversed § 2.4's *kept, speed only*), and
-/// `warn-derived-naf` at S1e2.2.5, when its refutation half became *forbid*'s
-/// refusal (the user's ruling of 2026-11-04). Their
+/// The retired flags, each with the tag the loader's error prints beside it
+/// and why it went (`docs/ein/user/reference/config.md` § 2.4), so a program
+/// that sets one is refused with the reason rather than as an unknown flag:
+/// the walk's levers and order seeds, which no route reads;
+/// `enable-symmetric-mirror`, the one flag that changed R (Q-M1e2.30); and
+/// `warn-derived-naf`, whose refutation half is *forbid*'s refusal. Their
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
 /// container, which writes and reads every entry of [`FIELDS`] in order, so
 /// removing one is a change of its layout. No engine code reads any of them.
@@ -172,67 +166,52 @@ pub const FIELDS: &[(&str, FieldKind)] = &[
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SolverConfig {
-    /// The walk's one-step rule simulator, deleted with the walk's generator
-    /// pass. **Retired**: a program that sets it is refused at load, and no
-    /// code reads it. Kept at its default for the `.einb` layout.
+    /// A one-step pre-filter of candidates, which no route runs. **Retired**:
+    /// a program that sets it is refused at load, and no code reads it. Kept
+    /// at its default for the `.einb` layout.
     pub enable_pre_branch_lookahead: bool,
-    /// The walk's cache of a lookahead kill as a `(not h)` fact, deleted with
-    /// the lookahead. **Retired**, read by nothing, and kept as the field
-    /// above is.
+    /// A cache of the pre-filter's kills as `(not h)` facts written into
+    /// root, which no route writes. **Retired**, read by nothing, and kept as
+    /// the field above is.
     pub enable_lookahead_kill_cache: bool,
-    /// **Retired**, as are the two weights below, and read by nothing: the
-    /// walk's scoring of a candidate, which ordered its lattice, went with it.
-    /// Kept at its default for the `.einb` layout.
+    /// **Retired**, as are the two weights below, and read by nothing: a
+    /// scoring of candidates to order a search, where every route's order is
+    /// part of its definition. Kept at its default for the `.einb` layout.
     pub hypgen_scoring: String,
     pub hypgen_rel_weight: f64,
     pub hypgen_obj_weight: f64,
     /// **Retired**, and read by nothing; kept at its default for the `.einb`
-    /// layout. It was inert before it was retired, which
-    /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)
-    /// recorded.
+    /// layout. No code ever read it (Q-M1e.10).
     pub print_alive: bool,
-    /// **Retired at M1e2 S1e2.2.5** (the user's ruling of 2026-11-04): a
-    /// program cannot set it, and nothing reads it. It was: warn about an
-    /// `(absent …)` guard — **two questions behind one flag**, emitted once
-    /// each after root's saturation.
+    /// **Retired**: a program cannot set it, and nothing reads it; kept at
+    /// its default for the `.einb` layout. It asked **two questions behind
+    /// one flag**, each answered elsewhere:
     ///
-    /// - `DerivedNafWarning`: the guard watches a **rule-derived**
-    ///   relation. Since S1.21.8 a *stratification* signal, not a soundness
-    ///   one — the guard is judged at a fixpoint either way.
-    /// - `RefutationUnderAbsentWarning`, M1e S1e.2.3's: the rule concludes
-    ///   `(false)` or a `(not …)` from a guard over a relation the program's
-    ///   **hypothesis generator can still propose**. That one *is* a
-    ///   soundness signal — `dead` is not upward-closed under `absent`, which
-    ///   is why such a program is refused ([Q-M1e2.5]) — and it rides this
-    ///   flag rather than an eighteenth
-    ///   field because `SolverConfig` is rendered into the KB-shape digest,
-    ///   so a new field re-blesses every shape golden in the corpus.
-    ///
-    /// Off by default, and the second is why that is a decision rather than
-    /// an inheritance: the corpus is **not** silent — ten rules over eight
-    /// entries carry the shape (nine over seven when S1e.2.3 measured it; the
-    /// tenth is M1e2's banked twin of the probe), four of them stdlib scans
-    /// over a membership relation, and a warning that fires on a working
-    /// example is one that gets turned off. The set is named and pinned in
-    /// `ein-infer/tests/refutation_under_absent.rs`.
-    ///
-    /// [Q-M1e2.5]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
+    /// - a guard that watches a **rule-derived** relation is a
+    ///   *stratification* signal, not a soundness one — the guard is judged
+    ///   at a fixpoint either way — and the static check reports it;
+    /// - a rule that concludes `(false)` or a `(not …)` from a guard over a
+    ///   relation the program's **hypothesis generator can still propose** is
+    ///   a soundness signal — `dead` is not upward-closed under `absent` —
+    ///   and such a program is refused (Q-M1e2.5;
+    ///   `ein-infer/tests/refutation_under_absent.rs` names the corpus rules
+    ///   with the shape).
     pub warn_derived_naf: bool,
     /// **Retired**, and read by nothing; kept at its default for the `.einb`
     /// layout. Meant as: negative means the walk's content sort of a layer's
     /// candidates, non-negative a per-branch deterministic permutation of it.
-    /// Nothing ever implemented that, and it was inert before it was retired,
-    /// as [`print_alive`] was
-    /// ([Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
+    /// Nothing ever implemented that, and no code read it, as none read
+    /// [`print_alive`] (Q-M1e.10).
     ///
     /// [`print_alive`]: SolverConfig::print_alive
     pub candidate_order_seed: i64,
     /// `-y`: the detector's parent-path spot check, **unbounded and on every
-    /// program** — the user's ruling of 2026-11-03 (M1e2 S1e2.1c.5). Every
+    /// program**. Every
     /// one-step parent of every printed state of two commitments or more is
     /// built and saturated again. On a program the static check flags it fills
     /// the warning's `paths` row and never fails the run; on a monotone one a
-    /// parent path that reaches another state contradicts the § 5.1 theorem,
+    /// parent path that reaches another state contradicts the static check's
+    /// theorem (`docs/ein/reasoning/kb-evolution/monotonicity.md` § 3.2),
     /// and the run is an engine error. Its cost is outside the `work` block.
     pub lattice_sanity_check: bool,
     /// **Retired**, as is the seed below, and read by nothing; kept at its
@@ -242,13 +221,13 @@ pub struct SolverConfig {
     /// **Retired**, and read by nothing; kept at its default, `None`, for the
     /// `.einb` layout. It seeded a shuffle of the walk's layers.
     pub lattice_order_seed: Option<i64>,
-    /// **Retired at M1e2 S1e2.1c.5, and read by nothing**: the walk's learned
-    /// clauses.
+    /// **Retired, and read by nothing**: learned clauses, which no route
+    /// keeps.
     pub enable_path_nogoods: bool,
-    /// **Retired at M1e2 S1e2.1a.6, and read by nothing.** The saturator
+    /// **Retired, and read by nothing.** The saturator
     /// mirrors every relation marked `(__symmetric__ R)`, always; off, this
     /// flag took the mirror's facts out of root's fixpoint and so changed R,
-    /// which no config option may (`config.md` § 2.5). The field stays,
+    /// which no config option may (Q-M1e2.30). The field stays,
     /// at `true`, because the `.einb` container round-trips [`FIELDS`].
     pub enable_symmetric_mirror: bool,
     /// **Retired**, as is the next, and read by nothing; kept at its default
@@ -256,12 +235,12 @@ pub struct SolverConfig {
     /// which no route does.
     pub enable_singleton_writeback: bool,
     pub enable_forced_positive: bool,
-    /// S1.21.7 — record a re-derivation as an alternative justification
+    /// Record a re-derivation as an alternative justification
     /// rather than dropping it, making the proof structure an AND/OR graph.
     pub record_alternative_justifications: bool,
-    /// S1.9.E23 — stop a fork's saturation at the firing that makes it
-    /// inconsistent. **Retired at M1e2 S1e2.1c.5, and read by nothing**: a
-    /// route's node is never stopped early.
+    /// Stop a fork's saturation at the firing that makes it inconsistent.
+    /// **Retired, and read by nothing**: a route's node is never stopped
+    /// early.
     pub enable_fail_fast_fork: bool,
 }
 

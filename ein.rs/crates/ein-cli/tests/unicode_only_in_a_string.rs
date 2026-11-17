@@ -1,8 +1,6 @@
 //! **Unicode only inside a string literal or a comment, and a module read as
-//! the program is** — M1f S1f.5.22, on the user's ruling of 2026-11-10 on the
-//! close review's finding 2: *"Unicode is not allowed anywhere else than
-//! inside string literals, and the error must say it explicitely"*, and
-//! Q-M1f.65 (b), *"Comments may hold Unicode"*.
+//! the program is** (Q-M1f.65): Unicode is allowed only inside string
+//! literals and comments, and the error says so explicitly.
 //!
 //! A character that is not ASCII is written only inside a string literal,
 //! after `:why`, `:source` or `:goal-text`, or in a `;` or `#| … |#` comment.
@@ -14,17 +12,16 @@
 //! x.ein:7:4: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
 //! ```
 //!
-//! Until S1f.5.22 such a character was taken into a `BAD` token, *a token that
-//! is not a name*, wherever it was glued to one, and a Unicode space, a
-//! no-break space, U+3000, U+2028 or U+0085, was a separator, `\s` being
-//! Unicode's in the skip rule, so a program writing one loaded and was
-//! answered as if it were a space (W73).
+//! Such a character is never taken into a token that is not a name, and a
+//! Unicode space, a no-break space, U+3000, U+2028 or U+0085, is no
+//! separator: a program writing one is not answered as if it were a space
+//! (W73).
 //!
 //! And an imported module is read through the read every command makes of
 //! the program it is given (`ein_ir::read`), so a module that is not UTF-8,
 //! one that cannot be read, a directory and a `.einb` container are refused
-//! with that read's line, naming the module's path, where until then each was
-//! `module not found at … (None)` (the close review's finding 2, W74).
+//! with that read's line, naming the module's path, not `module not found at
+//! … (None)` (W74).
 //!
 //! Every place a token can stand, each on every command that reads a
 //! program, and every character this file names in every place through the
@@ -102,7 +99,7 @@ fn rule(m: &str, a: &str) -> String {
 }
 
 /// `(place, the program after HEAD with `X` where the character goes)`: every
-/// place a token can stand, as the stage's census wrote them (T1f.5.22.2).
+/// place a token can stand.
 /// `@FIRST` is the file's first character, before HEAD.
 fn places() -> Vec<(&'static str, String)> {
     vec![
@@ -492,7 +489,7 @@ fn every_command(dir: &Path, file: &str) -> Vec<(String, Run)> {
 }
 
 /// **An imported module is read as the program a command is given is read**
-/// — the close review's finding 2. A module that is not UTF-8, one that is a
+/// (W74). A module that is not UTF-8, one that is a
 /// directory, one that cannot be read and one that is a `.einb` container,
 /// each imported by a file-relative name, on every command: one first line,
 /// the line the module's own path gives as the program a command is given

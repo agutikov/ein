@@ -1,10 +1,9 @@
-//! S1a.2.2 acceptance — a fork costs the same whether the KB holds ten facts
-//! or ten thousand.
+//! A fork costs the same whether the KB holds ten facts or ten thousand.
 //!
-//! The claim design/03 §5 makes is not "forking is fast". It is that a fork is
-//! not *proportional to the KB*, because [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
-//! wants hundreds live at once and design/05's beta-memories are only
-//! affordable if a fork does not copy them. A counting allocator is how that
+//! The claim [design/data-model.md § 5.1](../../../../docs/ein/ein.rs/design/data-model.md#51-the-fork)
+//! makes is not "forking is fast". It is that a fork is not *proportional to
+//! the KB*, because [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
+//! keeps several nodes live at once. A counting allocator is how that
 //! claim is checked rather than asserted: it measures both the number of
 //! allocations and the bytes, so an O(|facts|) copy that happens to be *one*
 //! allocation — a bitset clone, say — cannot pass.

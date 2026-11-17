@@ -1,4 +1,4 @@
-//! Work counters — what the engine *did*, not how long it took (T1a.6.1.3).
+//! Work counters — what the engine *did*, not how long it took.
 //!
 //! Wall-clock is machine-dependent; work is not. A speed-up splits into two
 //! very different statements — *did less* and *did the same, faster* — and
@@ -10,7 +10,8 @@
 //! and only when asked:
 //!
 //! ```sh
-//! cargo run --release --features counters -p ein-infer --example counter_cost
+//! cargo run --release --features counters -p ein-infer --example frontend_cost
+//! cargo test -p ein-infer --features counters --test arith_batch
 //! ```
 //!
 //! **Compiled out by default.** Without the `counters` feature [`bump`] has no
@@ -18,11 +19,11 @@
 //! disappears; the shipped binary is byte-for-byte the one it was without this
 //! module. That is not politeness, it is a measurement requirement: an
 //! always-on counter in `unify_slot` would be an increment on the single
-//! hottest path in the engine — 6.0 M of them on an exhaustive `zebra2`, 60 M
-//! on `zebra` — and would perturb the very profile it exists to explain.
+//! hottest path in the engine, and would perturb the very profile it exists to
+//! explain.
 //!
 //! Thread-local, because [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
-//! will run several searches at once and a shared counter would either race or
+//! runs several nodes at once and a shared counter would either race or
 //! serialise. [`snapshot`] reads the calling thread's; a parallel run sums them
 //! at the join.
 
@@ -108,14 +109,11 @@ pub struct Counters {
     // ── saturation ─────────────────────────────────────────────────
     /// Firing binding keys built.
     pub binding_key: u64,
-    /// Rule plans compiled. A cache per `Engine`, with one engine per
-    /// saturation, compiles the same plan many times over — **17 430** on an
-    /// exhaustive `zebra2`, which is what the engine did until
-    /// [design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)
-    /// built design/06 § Win A's per-run memo. It is **305** on that run now,
-    /// and 305 is the number of distinct `(rule, activator)` pairs rather than
-    /// a target — design/06 guessed ~170, and the forks derive activators the
-    /// root never had. The `compile` **event** count (17 250) is a different
+    /// Rule plans compiled. The per-run memo
+    /// ([design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache))
+    /// compiles each distinct `(rule, activator)` pair once, so this is the
+    /// number of pairs a run meets, the activators the nodes derive and root
+    /// never had among them. The `compile` **event** count is a different
     /// number, because that fires on an *engine* miss and not a memo miss.
     pub plan_compile: u64,
     /// Facts written and indexed.
@@ -125,8 +123,7 @@ pub struct Counters {
     /// The four reads on [`crate::facts::FactStore`] that hand out a borrow —
     /// `rel`, `args`, `row`, `get`. This counts the thing that decides
     /// whether the store can be shared at all, because a
-    /// `&[Value]` into the argument arena is what no lock can return
-    /// (T1a.7.1.0).
+    /// `&[Value]` into the argument arena is what no lock can return.
     pub fact_read: u64,
     /// Lookups that create nothing — `FactStore::probe`, the hypothesis
     /// generator's "does this proposition already have a number".
@@ -146,8 +143,7 @@ pub struct Counters {
     pub prov_push: u64,
     /// Records **read** — `ProvArena::get`, which returns a `&Prov`. The
     /// counterpart to [`Self::fact_read`], and what prices a branch on the
-    /// read path if the arena ever splits into a global half and a fork-local
-    /// one (T1a.7.1.7).
+    /// read path between the arena proper and the fork region.
     pub prov_read: u64,
 
     // ── and the same two questions, *per entering* ─────────────────
@@ -174,8 +170,8 @@ pub struct Counters {
     pub entering_fact_new_max_i: u64,
     /// Records pushed **from inside** an entering — the fork's own, as against
     /// root's. `prov_push - prov_push_in_entering` is what the committing
-    /// thread wrote, and the split is the whole of T1a.7.1.7's question: a
-    /// fork's records die with the fork, root's do not.
+    /// thread wrote, and the split says how much of the arena's traffic the
+    /// fork region takes: a fork's records die with the fork, root's do not.
     pub prov_push_in_entering: u64,
 
     // ── the enqueue pass ───────────────────────────────────────────
@@ -187,8 +183,8 @@ pub struct Counters {
     pub enqueue_pass: u64,
     /// The units such a fan-out would schedule: one `full_match` (a plan) or
     /// one `seed_match` (a `(delta fact, plan)` pair). `enqueue_task /
-    /// enqueue_pass` is the mean width of the fan-out T1a.7.4.1 describes, and
-    /// a mean near 1 is a fan-out with nothing in it.
+    /// enqueue_pass` is the mean width of such a fan-out, and a mean near 1 is
+    /// a fan-out with nothing in it.
     pub enqueue_task: u64,
     /// …of which `full_match` — the whole-plan-list kind, which a fresh
     /// saturator runs once and a reflective rule's freshly-compiled plan runs
@@ -237,21 +233,18 @@ pub struct Counters {
     pub hypgen_call: u64,
     /// Guard sub-plan queries actually **run**, and the monotone half of them.
     ///
-    /// Equal to `guard_query` since
-    /// [design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)
-    /// removed the per-round memo that used to sit between them: its hit rate
-    /// was 0–1.2 %, because the watch stamp had already filtered out the
-    /// candidates that would have shared a question. The two counters are kept
-    /// apart because the *difference* is the measurement — a memo reinstated
-    /// here would have to earn the gap back.
+    /// Equal to `guard_query`: no per-round memo sits between them
+    /// ([design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)),
+    /// because the watch stamp already filters out the candidates that would
+    /// share a question. The two counters are kept apart because the
+    /// *difference* is the measurement — a memo put between them would have to
+    /// earn the gap.
     ///
     /// The `Saturator` counts both per saturation
     /// (`guard_evals` / `guard_evals_monotone`); these are the same two summed
     /// over every fork of a whole solve, which is what a memo for monotone
-    /// guards would be judged by and no per-saturation field can answer:
-    /// design/06 § Win B's
-    /// mechanism only reaches a *monotone* guard, its projection is ≥ 80 %, and
-    /// at root scale the measured mix was 11–30 % the other way.
+    /// guards would be judged by and no per-saturation field can answer: such
+    /// a memo reaches only a *monotone* guard.
     pub guard_eval: u64,
     pub guard_eval_monotone: u64,
 
@@ -262,11 +255,10 @@ pub struct Counters {
     /// `std.algebra` again.
     pub parse_call: u64,
     pub parse_bytes: u64,
-    /// Terminal match *attempts* — the denominator a backtracking parser
-    /// needs, since it asks several terminals about the same position and most
-    /// of the asks fail. `lex_symbol` is the subset that ran `SYMBOL`'s
-    /// eleven-word reserved-name walk, which is how S1a.6.5 priced replacing
-    /// it (1 250 runs per load: not worth replacing).
+    /// Terminal match *attempts*, and of them `lex_symbol`, the ones that ran
+    /// `SYMBOL`'s reserved-name walk. **Nothing increments either**: the
+    /// parser `ein-ir` generates and the lexer it runs are not instrumented,
+    /// so both read 0, and `frontend_cost` prints them as such.
     pub lex_match: u64,
     pub lex_symbol: u64,
     /// Interner calls and misses. A miss is the only one that allocates, which
@@ -277,8 +269,8 @@ pub struct Counters {
 
     /// Compile-cache keys built — [`crate::terms::Terms`]-level bookkeeping,
     /// like [`Self::extent_probe`]: a `PlanKey` copies its activator's
-    /// arguments, and until M1e2 S1e2.2.16 it interned the text of every one
-    /// that was not a symbol. It counts the *engine walk*, not the compiler:
+    /// interned arguments and renders none of them. It counts the *engine
+    /// walk*, not the compiler:
     /// `plan_compile` is what a key that missed the memo cost.
     pub plan_key: u64,
 
@@ -287,10 +279,9 @@ pub struct Counters {
     /// of the program** where a free side ranges over
     /// `ein_infer::predicates::domain`. [`Self::candidates`] counts the facts
     /// offered to a *relation* premise and a guard is none, so a rule whose
-    /// guard walks the program's names reads as free there (E-27 of P1f.6's
-    /// `findings.md`); this is the count that sees it, and
-    /// `ein-infer/tests/arith_batch.rs` holds it beside the other (M1f
-    /// S1f.6.12).
+    /// guard walks the program's names reads as free there; this is the count
+    /// that sees it, and `ein-infer/tests/arith_batch.rs` holds it beside the
+    /// other.
     pub predicate_value: u64,
 }
 
@@ -489,13 +480,12 @@ mod tests {
 
     #[test]
     fn rows_covers_every_field() {
-        // **Both halves are checked by the compiler or by the assertion, and
-        // neither used to be.** The literal has no `..` on purpose: adding a
-        // field to `Counters` breaks *this* line until it is listed, which is
-        // the half `assert_eq!(c, Counters { ..c })` only appeared to do. And
-        // with every field at 1, a field missing from `rows()` shows up as a
-        // row count below the field count — which is how `flatten` and
-        // `flatten_facts` were unreportable for the whole of M1a.
+        // **Both halves are checked, by the compiler or by the assertion.**
+        // The literal has no `..` on purpose: adding a field to `Counters`
+        // breaks *this* line until it is listed, which
+        // `assert_eq!(c, Counters { ..c })` would not. And with every field at
+        // 1, a field missing from `rows()` shows up as a row count below the
+        // field count, a field no report prints.
         let c = Counters {
             unify_slot: 1,
             unify: 1,

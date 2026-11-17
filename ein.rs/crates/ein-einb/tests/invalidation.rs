@@ -1,4 +1,4 @@
-//! When not to believe a file — T1a.8.1.5, [design/binary-format.md § 4](../../../../docs/ein/ein.rs/design/binary-format.md#4-versioning-and-invalidation).
+//! When not to believe a file — [design/binary-format.md § 4](../../../../docs/ein/ein.rs/design/binary-format.md#4-versioning-and-invalidation).
 //!
 //! The rule the tests here pin is that **a stale cache can never change a
 //! verdict**. Two ways that could happen and neither is allowed: believing
@@ -221,19 +221,16 @@ fn file_of(sections: &[(u32, Vec<u8>)]) -> Vec<u8> {
     out.into_vec()
 }
 
-/// **A file that holds an integer is refused, never misread** — M1f S1f.5.4,
-/// at format 2.0.
+/// **A file that holds an integer is refused, never misread** (Q-M1f.10).
 ///
-/// Ein has had no int since the kind was retired: a run of digits is a name
-/// since S1f.5.5's swap. Through format 1.2 an empty `INTS` section (kind 3)
-/// stayed in every file; 2.0 dropped it (Q-M1f.10 (b)), so what this writer
-/// writes has no section of kind 3. What a writer before S1f.5.4 wrote from a
-/// program with an int is refused on two grounds, each built here on a file
-/// this writer wrote, its digest good: its header says 1.x, refused with the
-/// version line; and a value tagged `0b01` in `FACTS`, refused with
+/// Ein has no integers: a run of digits is a name, and what this writer
+/// writes has no section of kind 3, the integer table's number. A file that
+/// holds an integer is refused on two grounds, each built here on a file
+/// this writer wrote, its digest good: a header that says 1.x, refused with
+/// the version line; and a value tagged `0b01` in `FACTS`, refused with
 /// [`EinbError::Int`]'s sentence, where reading it as a name or a fact would
-/// have been a wrong answer. The file as written opens, and a name of digits in
-/// it is a name.
+/// be a wrong answer. The file as written opens, and a name of digits in it
+/// is a name.
 #[test]
 fn a_file_that_holds_an_integer_is_refused() {
     let text = "(relation p T :why \"p holds of {?1}\")\n(p 7)\n(p 07)\n";

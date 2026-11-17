@@ -497,7 +497,7 @@ fn dump_kb(
                 }
             );
         }
-        // M1f S1f.5.15's T4: whether a stratification exists, and where not,
+        // Whether a stratification exists, and where not,
         // each negative cycle by its relations and the rules on its edges.
         println!();
         if graph.stratified() {
@@ -592,8 +592,8 @@ fn tally_key(rule: &str, redundant: bool) -> String {
     format!("{rule}\u{0}{redundant}")
 }
 
-/// The step limit's line, in Ein's spelling (M1e2 S1e2.3.7's N3, the user's
-/// ruling of 2026-11-03): the flag as typed, the firings it let run, and the
+/// The step limit's line, in Ein's spelling: the flag as typed, the firings
+/// it let run, and the
 /// last of them as a program would write it — its activation `(rule args…)`,
 /// its bindings as `?v = value`, its facts as s-expressions.
 ///
@@ -675,11 +675,9 @@ fn bench(
     load: &ein_ir::LoadOptions,
     open_log: impl FnOnce(Option<&SolverConfig>) -> Events,
 ) -> Result<(), String> {
-    // The one read every command makes of a program (M1f S1f.5.5,
-    // T1f.5.5.13): a `.einb` is opened, and a text is loaded against its own
-    // directory, so a file-relative `(import …)` resolves as `solve` resolves
-    // it. Until then this command read text only and loaded it with no base
-    // directory, refusing both (W40, W41).
+    // The one read every command makes of a program: a `.einb` is opened,
+    // and a text is loaded against its own directory, so a file-relative
+    // `(import …)` resolves as `solve` resolves it (W40, W41).
     let held = crate::common::read_program(path)?;
     println!("input:   {}", path.display());
     println!("         {}", held.size_line());
@@ -739,7 +737,7 @@ fn bench(
     // The saturator builds its own `Engine` rather than taking the one
     // compiled above, so the after-snapshot reads that one back out.
     let sat_engine: Option<Engine>;
-    // The run's plans, which the listing's derived band reads (M1f S1f.5.15).
+    // The run's plans, which the listing's derived band reads.
     let memo = SharedMemo::default();
     {
         let mut s = Session {

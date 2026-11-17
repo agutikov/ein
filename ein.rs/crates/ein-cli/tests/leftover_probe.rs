@@ -1,4 +1,4 @@
-//! M1d S1d.3.1 — **the leftover-open probe, and the claim that it is a read.**
+//! **The leftover-open probe, and the claim that it is a read.**
 //!
 //! One test in a file of its own: `EIN_LEFTOVER` is read from the process
 //! environment, so nothing that asserts the default may share a binary — or a
@@ -9,12 +9,12 @@
 //!
 //! What the probe answers is the question a state's model cannot be asked:
 //! how many facts the **blind** enumerator would still propose there, outside
-//! H. Since M1e2 S1e2.1a.5 it is read per state the read-out lists
-//! (`read-out.md` § 12) — a question about the universe, not about a route.
+//! H. It is read per state the read-out lists (`config.md`'s `EIN_LEFTOVER`
+//! row) — a question about the universe, not about a route.
 //! Running it on a fork of the state's fixpoint is what makes it a read, and
 //! *that* is the claim worth a test, because it is the one that would fail
-//! silently. Since M1e2 S1e2.3.1 (the user's ruling of 2026-11-03) the pass is
-//! **config-free**, as H's is: no lookahead filter drops a candidate before it
+//! silently. The pass is **config-free**, as H's is: no lookahead filter
+//! drops a candidate before it
 //! is counted, and § 3 holds that too.
 
 use ein_core::Terms;
@@ -92,8 +92,8 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     // writes would move what the read-out lists. Everything outside
     // `leftover` — R, every state, the work, the root block — is compared
     // whole, so a probe that leaks is caught wherever it leaks. The entry is
-    // `branching/04`, whose maximal line is two states; it was `branching/06`
-    // until M1e2 S1e2.2.10 typed that fixture, which left it one.
+    // `branching/04`, whose maximal line is two states (`branching/06`'s,
+    // typed, is one).
     assert_eq!(after["leftover"]["taken"], J::Bool(true), "the lever took");
     let mut a = before.clone();
     let mut b = after.clone();
@@ -121,15 +121,14 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     //   pair the blind enumerator builds and no rule decides. Under an
     //   open-world reading that state is 2ⁿ models; the puzzle means the
     //   closed-world one, and nothing in the file says so. (`zebra2`'s one
-    //   state leaves 8 203 config-free, at seconds per run; M1d's 3 678 was
-    //   the count through the walk's lookahead, until 2026-11-03.)
+    //   state leaves thousands.)
     //
-    // And the pass is config-free (M1e2 S1e2.3.1). `branching/12_typed_blind_solve`
-    // decides every well-typed `color-of` atom at each state of its maximal
-    // line, and leaves the type-wrong fillers — `(color-of Red Blue)` — that
-    // its `typecheck-arg-*` rules refute only once one is added. The walk's
-    // one-step lookahead dropped exactly those, and the count read 0; H keeps
-    // them, so the count outside H does too.
+    // And the pass is config-free. `branching/12_typed_blind_solve` decides
+    // every well-typed `color-of` atom at each state of its maximal line, and
+    // leaves the type-wrong fillers — `(color-of Red Blue)` — that its
+    // `typecheck-arg-*` rules refute only once one is added. A one-step
+    // lookahead would drop exactly those and read 0; H keeps them, so the
+    // count outside H does too.
     //
     // No half is a golden — the bounds are `= 0` and `> 0`, not the counts
     // this engine reports today.

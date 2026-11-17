@@ -1,4 +1,4 @@
-//! The sections — T1a.8.1.2.
+//! The sections.
 //!
 //! Every one of them is written in **id order** and read back by re-interning
 //! in the same order, which is what makes the translation tables of
@@ -210,7 +210,7 @@ fn u32_array<'a>(r: &mut Reader<'a>, n: usize) -> Result<Cow<'a, [u32]>> {
 
 /// The believed facts, in insertion order.
 ///
-/// The presence bitset design/10 §2 names is **not** stored beside it: a fact
+/// A presence bitset is **not** stored beside it: a fact
 /// is present exactly when it is in this list, because the only writer of
 /// either is `push_fact`, which writes both, and nothing removes. Storing the
 /// bitset would be storing the list's own membership twice, with a way for the
@@ -273,18 +273,17 @@ impl ProvTables {
 
 /// The records a file writes: the arena up to the last record the KB
 /// references, a believed fact's primary or alternative or a closure's
-/// smallest arrival (M1f S1f.5.28's item 9). Each keeps its position, so
+/// smallest arrival. Each keeps its position, so
 /// every id a section stores is the one the KB holds.
 ///
-/// **Until S1f.5.28 the writer wrote the whole arena.** Opening a container
+/// **Not the whole arena** (Q-M1f.110). Opening a container
 /// pushes the file's records and then the loader's own, rebuilding the
 /// registries ([`read_program_names`] says why in that order), and where the
-/// derived state is kept the loader's are referenced by nothing. So `ein kb
-/// save` of a container wrote them too, after the file's, and each save of a
-/// save grew: 40 bytes a given fact, 1 248 → 1 288 → 1 328 bytes on
-/// `examples/ein-bugs/wrong-answers/einb-every-command.ein`, and a saturated
-/// `zebra2.einb` saved again passed design/10 §6's 64 KB (2026-11-10), with
-/// the same answers. Only the records past the last one referenced go, so no
+/// derived state is kept the loader's are referenced by nothing. Writing the
+/// whole arena would write them too, after the file's, so each save of a
+/// save would grow by a record a given fact
+/// (`examples/ein-bugs/wrong-answers/einb-every-command.ein` is the witness),
+/// with the same answers. Only the records past the last one referenced go, so no
 /// id moves: a record inside the prefix that nothing references, a fact
 /// stated twice, is written as before, and a first save of a program whose
 /// arena ends on one is that record shorter.
@@ -533,7 +532,7 @@ fn read_record(r: &mut Reader<'_>, maps: &Maps) -> Result<Prov> {
         absent: absent.into_boxed_slice(),
         branch,
         loc,
-        // Not stored (M1e2 S1e2.2.19): a `.einb` holds root's KB, and a
+        // Not stored: a `.einb` holds root's KB, and a
         // core follows only an activator a node derived or committed
         // (`ein_core::walks::node_activator`), never root's.
         activator: None,
@@ -612,12 +611,11 @@ fn read_naf_arg(r: &mut Reader<'_>, maps: &Maps, depth: u32) -> Result<NafArg> {
 /// The resolved, import-flattened form list, as canonical text, plus the file
 /// names its provenance refers to.
 ///
-/// **Text, and not the AST arenas.** Two reasons, one of them measured: the
-/// arenas for a resolved `zebra2` are 3 024 nodes and 3 024 optional `Loc`s —
-/// past 60 KB before a fact is stored, against a design budget of 64 KB for
-/// the whole file — while the canonical dump of the same forms is 11 KB. The
-/// other is the stage's own note: `dump_canonical` is already the frontend's
-/// serialiser, and a second one is a second thing to keep in step.
+/// **Text, and not the AST arenas.** Two reasons: the arenas, a node and an
+/// optional `Loc` for every node of the resolved program, are several times
+/// the size of the canonical dump of the same forms, and the whole file has a
+/// size ceiling (`tests/roundtrip.rs`); and `dump_canonical` is already the
+/// frontend's serialiser, and a second one is a second thing to keep in step.
 ///
 /// What it costs is a parse of already-resolved text on open — no imports, no
 /// filesystem, no macro invocations left to chase — and what it buys, beyond
@@ -702,14 +700,13 @@ pub fn read_program_names<'a>(
 /// facts it declares. A fresh file's reader throws the facts away and installs
 /// the ones the file stored; a reader that has decided not to believe the
 /// derived sections keeps this one, because re-loading `PROGRAM` is exactly
-/// what reading the `.ein` would have done (design/10 §4).
+/// what reading the `.ein` would have done
+/// ([design/binary-format.md § 4.3](../../../../docs/ein/ein.rs/design/binary-format.md#43-a-file-not-believed)).
 ///
 /// The text is parsed under `name`, [`crate::program_name`]'s, so every
 /// position in it, a parse error's or a rule's `Loc` in a compile error, says
-/// it is a line of the program the container stores (M1f S1f.5.5,
-/// T1f.5.5.13). It was the first file name the provenance table holds, or
-/// `<string>` where that table is empty, which is the common case, until
-/// then: a line of the stored text under the source's name, or under no name.
+/// it is a line of the program the container stores (Q-M1f.15), not a line
+/// of the stored text under the source's name or under no name.
 pub fn load_program(
     section: &ProgramSection<'_>,
     ast: &mut Ast,
@@ -728,7 +725,7 @@ pub fn load_program(
 // ── UNIVERSAL ──────────────────────────────────────────────────────
 
 /// The facts each derivation record's universals read
-/// ([`ein_core::Prov::universal`], M1e2 S1e2.2.21): a row per record that
+/// ([`ein_core::Prov::universal`]): a row per record that
 /// has some, by its position in the file as `PROV` writes it, ascending.
 /// Root's derivations carry them as a node's do, and a node's core follows
 /// root's facts down to their frontiers, so a `.einb` that dropped them would
@@ -778,7 +775,7 @@ fn read_universal(body: &[u8], maps: &Maps) -> Result<Vec<(u32, Box<[FactId]>)>>
 // ── CLOSURE ────────────────────────────────────────────────────────
 
 /// Each derived fact's closure, in the order of the believed facts, and the
-/// arrival that gave it where one did (M1e2 S1e2.2.11): what
+/// arrival that gave it where one did: what
 /// [`Kb::record_justification`] compares a later arrival against, so a KB
 /// read back keeps the same arrivals a saturation of the `.ein` would.
 /// Empty when the KB has no closure entry, and then not written.

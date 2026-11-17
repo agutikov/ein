@@ -1,7 +1,5 @@
 //! `--json-summary` (`ein-summary/2`) and `--dump-answer DIR` (`ein-answer/2`)
-//! under the region modes — M1e2
-//! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! fifth step, the fields
+//! under the region modes, the fields
 //! [`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)
 //! defines (the directory is
 //! [`answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md)'s).
@@ -55,9 +53,9 @@ fn json(path: &Path) -> J {
 
 /// One run per arm of the read-out: exhausted, the owing and the dead kind of
 /// an empty R, a hole, a partial route-1 run, a flagged run past the limit,
-/// and the modes. The hole was `ein-bugs/naf-upward-closure.ein`'s, dead,
-/// until *forbid* refused that program (M1e2 S1e2.2.5); it is an
-/// obligation's, owing.
+/// and the modes. The hole is an obligation's, owing:
+/// `ein-bugs/naf-upward-closure.ein`'s dead one is refused by *forbid*
+/// (Q-M1e2.5).
 const ARMS: [(&str, &[&str]); 9] = [
     (
         "examples/branching/05_mini_zebra.ein",

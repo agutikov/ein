@@ -1,4 +1,4 @@
-//! M1e2 S1e2.1.4 — **a model you can read**: `ein solve --models grid` and
+//! **A model you can read**: `ein solve --models grid` and
 //! `--diff-models FILE`.
 //!
 //! The grid's one claim that matters is that it is *the published table*.
@@ -10,9 +10,8 @@
 //!
 //! The diff's claims are the three shapes `ein-render::models`' unit tests pin,
 //! seen through the CLI: a missing model, a spurious one, and one a fact off.
-//! Until M1e2 S1e2.1a.5 they were the register's own witnesses, the walk's
-//! wrong answers; the region read-out answers those rows right, so the shapes
-//! are made here by writing the file wrong, over W1's witness.
+//! The region read-out answers the register's rows right, so the shapes are
+//! made here by writing the file wrong, over W1's witness.
 
 use std::collections::BTreeSet;
 use std::process::Command;
@@ -118,11 +117,10 @@ fn no_licence_is_one_line_and_the_models_still_print() {
 
 /// An owing node gets its grid too — and the cell its debt is about is the
 /// empty one. On an empty R of the owing kind the frontier is what the
-/// read-out lists, and since M1e2 S1e2.1a.5 it is what the forms draw, where
-/// the walk drew its `Open` state.
+/// read-out lists, and it is what the forms draw.
 ///
-/// The program was `tests/stdlib/closure/03_closed_and_owing.ein` until M1f
-/// S1f.6.34 refused an obligation on a closed relation: `a1` owes `r` a `B`
+/// The program is written here, since an obligation on a closed relation is
+/// refused (Q-M1f.245): `a1` owes `r` a `B`
 /// and `r` is functional, which is what makes a row of the grid; here the
 /// debt cannot be paid because both `B`s are stored false.
 #[test]

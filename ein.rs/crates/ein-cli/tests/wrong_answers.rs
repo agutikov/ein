@@ -1,15 +1,15 @@
-//! M1e2 S1e2.1.1 — **the wrong-answer register, as a test.**
+//! **The wrong-answer register, as a test.**
 //!
 //! `corpus/wrong_answers.toml` holds one row per witness of every known wrong
 //! answer: what the engine says and what it should say. This file runs what a
 //! row records and holds the engine to it, so that the register is a test from
 //! the day it exists.
 //!
-//! **Since M1e2 S1e2.1a.5's switch what is run is each row's `[case.now]`**:
-//! the region run that asks the row's question (`solve --maximal` for a
-//! model-set row), compared field for field with the `--json-summary` it
-//! writes (`ein-summary/2`). The walk's `wrong`, `control` and `twin` blocks
-//! are the record of what the walk said, and no command runs the walk. What
+//! **What is run is each row's `[case.now]`**: the region run that asks the
+//! row's question (`solve --maximal` for a model-set row), compared field for
+//! field with the `--json-summary` it writes (`ein-summary/2`). A row's
+//! `wrong`, `control` and `twin` blocks record what was answered when the row
+//! was filed, and nothing runs them. What
 //! a row's status means is data, held without a run by `ein-corpus`'s
 //! `the_register_is_well_formed`:
 //!
@@ -17,48 +17,48 @@
 //! - an **open** row says why its `now` is still not `right` — what R shares
 //!   with the case, or the reading the case waits on.
 //!
-//! **Since M1e2 S1e2.2.5 a `now` can be a refusal** (*forbid*): the run exits
+//! **A `now` can be a refusal** (*forbid*, Q-M1e2.5): the run exits
 //! 1, its stderr's first line is the recorded one, and it writes no summary.
 //!
-//! **Since M1e2 S1e2.2.19 a `now` can record `N`'s cores** (schema /8, W19):
+//! **A `now` can record `N`'s cores** (W19):
 //! a dead node's core is not in the summary, whose `region.core` is root's,
 //! so the run also writes `--dump-answer`, and its `nogoods.json` is read.
 //!
-//! **Since M1e2 S1e2.2.23 a `now` can record the status beside root's core**
-//! (schema /9, W23): the summary's `region.core_status`, and where `right`
+//! **A `now` can record the status beside root's core** (W23): the summary's
+//! `region.core_status`, and where `right`
 //! states it with a `qualifier`, the read-out's `core search` row.
 //!
-//! **Since M1e2 S1e2.2.25 a `now` can record how many members of R hold a
-//! stale fact** (schema /10, W8's rows past the oracle's limit): the
+//! **A `now` can record how many members of R hold a stale fact** (W8's rows
+//! past the oracle's limit): the
 //! summary's `monotonicity.state`. It can also compare `N` on the sets it
 //! lists alone (`nogoods_listed`, `W10/second-preparation`'s `zebra2.ein`,
 //! whose `N` is 366 sets).
 //!
-//! **Since M1e2 S1e2.2.26 a `now` can record the members it met and does not
-//! list** (schema /11, W27's rows): the summary's states with `listed =
+//! **A `now` can record the members it met and does not list** (W27's rows):
+//! the summary's states with `listed =
 //! false`, what a line mode past `--region-limit` leaves to `--dump-answer`.
 //!
-//! **Since M1e2 S1e2.3.8 a `now` can record a claim's outcome and a query's
-//! classes** (schema /12, W28's rows): the summary's `claim.outcome`, and
+//! **A `now` can record a claim's outcome and a query's classes** (W28's
+//! rows): the summary's `claim.outcome`, and
 //! each query's class count and `expect.outcome`. A row whose recorded claim
 //! is `failed` expects the run's exit 1, as a refuted claim exits.
 //!
-//! **Since M1f S1f.5.0 a `now` beside a refusal can record what the refusal
-//! replaces** (schema /13, W29's and W32's rows): the core and the claims
+//! **A `now` beside a refusal can record what the refusal replaces** (W29's
+//! and W32's rows): the core and the claims
 //! today's answer reports, read from the summary as above, where `right`
 //! states none of them.
 //!
-//! **Since M1f S1f.5.15 a `now` can record what root's `refuted by` names**
-//! (schema /14, W36): the summary's `region.refuted_by`, in the order the
+//! **A `now` can record what root's `refuted by` names** (W36): the
+//! summary's `region.refuted_by`, in the order the
 //! read-out prints it.
 //!
-//! **Since M1f S1f.5.5 a `now` can record what a query's `:goal-text` prints**
-//! (schema /15, W37): the read-out's `“…”` sentences, one per row of a
+//! **A `now` can record what a query's `:goal-text` prints** (W37): the
+//! read-out's `“…”` sentences, one per row of a
 //! projection class, in the order printed. The summary carries the rows and
 //! not the sentences, so they are read off stdout, as `-H`'s relations are.
 //!
-//! **Since M1f S1f.5.5 (T1f.5.5.13) a `now` can be a command's run that is
-//! not a solve** (schema /16, W40, W41): it writes no summary, and its answer
+//! **A `now` can be a command's run that is not a solve** (W40, W41): it
+//! writes no summary, and its answer
 //! is a refusal, an error or that it answered, exit 0 with nothing on stderr.
 //! A `container` row saves the witness with `ein kb save` first and runs on
 //! the `.einb`; one that answered prints what the same run prints on the
@@ -66,19 +66,19 @@
 //! what the run read aside. `{FILE}` in a recorded line is the path the run
 //! was handed.
 //!
-//! **Since M1f S1f.5.6 a `now` can record a line the run prints** (schema
-//! /17, W42): the first line that begins, past its indent, with a label, on
-//! stdout or in `--dump-answer`'s `answer.txt`, which the run then writes. A
-//! label as long as its column glued to its value until S1f.5.6's
-//! T1f.5.6.6, so the line, and not a field of the summary, is the answer.
+//! **A `now` can record a line the run prints** (W42): the first line that
+//! begins, past its indent, with a label, on stdout or in `--dump-answer`'s
+//! `answer.txt`, which the run then writes. A label as long as its column
+//! could glue to its value, so the line, and not a field of the summary, is
+//! the answer.
 //!
-//! **Since M1f S1f.5.12 a solve's refusal can exit 2** (schema /19, W43): a
+//! **A solve's refusal can exit 2** (W43): a
 //! usage refusal of what the run was asked to write, `exit = 2` beside
 //! `refused`; and `{out}` in a recorded line is the run's scratch directory,
 //! as `run`'s `{out}` is.
 //!
-//! **Since M1f S1f.5.25 a `now` can run with its stdout closed** (schema
-//! /21, W75): the run's stdout is a pipe whose reader was dropped before the
+//! **A `now` can run with its stdout closed** (W75): the run's stdout is a
+//! pipe whose reader was dropped before the
 //! run was spawned, so every write the run makes meets no reader, whatever
 //! the timing. Its answer is how it ended: by a signal, `SIGPIPE`, with
 //! nothing on stderr, or by a panic, exit 101, whose message is the line
@@ -153,8 +153,8 @@ fn run(row: &Row, dir: &Path) -> Got {
     if !row.now.is_command() {
         argv.push("-H".to_string());
     }
-    // A dead node's core is the answer directory's (M1e2 S1e2.2.19, W19), and
-    // so is `answer.txt` (schema /17, W42).
+    // A dead node's core is the answer directory's (W19), and so is
+    // `answer.txt` (W42).
     let answer = dir.join("answer");
     let reads_answer = row.now.printed.iter().flatten().any(|p| p.file != "stdout");
     if row.now.nogoods.is_some() || reads_answer {
@@ -235,7 +235,7 @@ fn panic_message(stderr: &str) -> Option<&str> {
     lines.next()
 }
 
-/// How a run whose stdout is closed ended (schema /21, M1f S1f.5.25, W75):
+/// How a run whose stdout is closed ended (W75):
 /// by the signal `now` records, with nothing on stderr, or by the panic it
 /// records, exit 101.
 fn closed(row: &Row, got: &Got) -> Vec<String> {
@@ -410,7 +410,7 @@ fn relations(stdout: &str) -> Vec<String> {
 }
 
 /// The sentences the read-out prints for a query's `:goal-text`, in order —
-/// its `“…”` lines (schema /15, M1f S1f.5.5, W37), which nothing else on the
+/// its `“…”` lines (W37), which nothing else on the
 /// read-out writes.
 fn goal_text(stdout: &str) -> Vec<String> {
     stdout
@@ -425,7 +425,7 @@ fn goal_text(stdout: &str) -> Vec<String> {
 }
 
 /// The first line of `text` that begins, past its indent, with `label`, its
-/// trailing spaces aside (schema /17, M1f S1f.5.6, W42); empty where none does.
+/// trailing spaces aside (W42); empty where none does.
 fn printed_line(text: &str, label: &str) -> String {
     text.lines()
         .find(|l| l.trim_start().starts_with(label))
@@ -465,7 +465,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     models.sort();
     let asked = &s["asked"];
     let line = asked["which"].as_str().unwrap_or("?").to_string();
-    // What the universe leaves out (M1e2 S1e2.2.8): on every run.
+    // What the universe leaves out (Q-M1e2.3): on every run.
     let mut outside: Vec<String> = s["root"]["hypgen"]["outside"]
         .as_array()
         .ok_or("no root.hypgen.outside")?
@@ -473,7 +473,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         .filter_map(|o| o["relation"].as_str().map(str::to_string))
         .collect();
     outside.sort();
-    // The core, where the row records one (M1e2 S1e2.2.11, W10).
+    // The core, where the row records one (W10).
     let core = row.now.core.as_ref().map(|_| {
         let mut c: Vec<String> = region["core"]
             .as_array()
@@ -486,7 +486,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         c.sort();
         c
     });
-    // The core's status, where the row records one (M1e2 S1e2.2.23, W23):
+    // The core's status, where the row records one (W23):
     // `none` where the summary states none.
     let core_status = row.now.core_status.as_ref().map(|_| {
         region
@@ -495,9 +495,8 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             .unwrap_or("none")
             .to_string()
     });
-    // N's cores, where the row records them (M1e2 S1e2.2.19, W19); on the
-    // sets the row lists alone where it says so (schema /10, M1e2
-    // S1e2.2.25), each of which the run must report.
+    // N's cores, where the row records them (W19); on the sets the row lists
+    // alone where it says so, each of which the run must report.
     let nogoods = match (&row.now.nogoods, &got.nogoods) {
         (None, _) => None,
         (Some(want), Some(j)) if row.now.nogoods_listed => {
@@ -514,8 +513,8 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         (Some(_), Some(j)) => Some(nogoods_of(j)),
         (Some(_), None) => return Err("no nogoods.json was written".to_string()),
     };
-    // Stale members of R, where the row records them (schema /10, M1e2
-    // S1e2.2.25): the summary's `monotonicity.state`, its `stale` entries of
+    // Stale members of R, where the row records them (W8): the summary's
+    // `monotonicity.state`, its `stale` entries of
     // class `R` and its `nodes`.
     let stale = row.now.stale.as_ref().map(|_| {
         let st = &s["monotonicity"]["state"];
@@ -526,19 +525,19 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             nodes: st["nodes"].as_u64().unwrap_or(0),
         }
     });
-    // The members met and not listed, where the row records them (schema
-    // /11, M1e2 S1e2.2.26, W27): the summary's states with `listed = false`.
+    // The members met and not listed, where the row records them (W27): the
+    // summary's states with `listed = false`.
     let others = row.now.others.map(|_| {
         region["states"].as_array().map_or(0, |v| {
             v.iter().filter(|x| x["listed"] == false).count() as u64
         })
     });
     // The solve form's claim and each query's classes and claim, where the
-    // row records them (schema /12, M1e2 S1e2.3.8, W28).
+    // row records them (W28).
     let outcome = |e: &J| e["outcome"].as_str().unwrap_or("none").to_string();
     let claim = row.now.claim.as_ref().map(|_| outcome(&s["claim"]));
-    // What root's `refuted by` names, where the row records it (schema /14,
-    // M1f S1f.5.15, W36): in the order printed, empty where none is stated.
+    // What root's `refuted by` names, where the row records it (W36): in the
+    // order printed, empty where none is stated.
     let refuted_by = row.now.refuted_by.as_ref().map(|_| {
         region["refuted_by"]
             .as_array()
@@ -549,12 +548,12 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             })
             .unwrap_or_default()
     });
-    // What a query's `:goal-text` prints, where the row records it (schema
-    // /15, M1f S1f.5.5, W37): off stdout, in the order printed.
+    // What a query's `:goal-text` prints, where the row records it (W37):
+    // off stdout, in the order printed.
     let goal_text = row.now.goal_text.as_ref().map(|_| goal_text(&got.stdout));
-    // The lines printed, where the row records them (schema /17, M1f S1f.5.6,
-    // W42): each found by its label, on stdout, in `answer.txt`, or in a state
-    // file (schema /22, W91), where an empty line says none begins with it.
+    // The lines printed, where the row records them (W42): each found by its
+    // label, on stdout, in `answer.txt`, or in a state file (W91), where an
+    // empty line says none begins with it.
     let printed = match &row.now.printed {
         None => None,
         Some(want) => {
@@ -725,9 +724,9 @@ fn every_row_answers_what_the_register_records() {
             .lines()
             .find(|l| !l.is_empty())
             .unwrap_or("<empty>");
-        // A refusal (M1e2 S1e2.2.5, *forbid*) is exit 1 and its first line,
-        // and no summary; so is a run that ended in an error before it
-        // answered (M1e2 S1e2.2.18, W18).
+        // A refusal (*forbid*, Q-M1e2.5) is exit 1 and its first line, and no
+        // summary; so is a run that ended in an error before it answered
+        // (W18).
         let ended = match (&row.now.refused, &row.now.error) {
             (Some(want), _) => Some(("refused", "a refusal", want)),
             (None, Some(want)) => Some(("error", "an error", want)),
@@ -769,10 +768,10 @@ fn every_row_answers_what_the_register_records() {
                 Ok(now) => {
                     let mut d = differences(&row.now, &now);
                     // A right that names what the universe leaves out states
-                    // the sentence too (M1e2 S1e2.2.8, W6): the `outside` row,
-                    // wherever `now` records that `outside` — an open row
-                    // whose read-out names nothing yet (M1e2 S1e2.2.22,
-                    // `W22/kw-neq-in-goal`) is open on that field.
+                    // the sentence too (W6): the `outside` row, wherever
+                    // `now` records that `outside` — an open row whose
+                    // read-out names nothing (`W22/kw-neq-in-goal`) is open
+                    // on that field.
                     if row.right.outside.as_ref() == Some(&row.now.outside)
                         && let Some(q) = &row.right.qualifier
                         && !got.stdout.contains(&format!("    outside         {q}\n"))
@@ -780,7 +779,7 @@ fn every_row_answers_what_the_register_records() {
                         d.push(format!("the read-out does not print {q:?}"));
                     }
                     // A right that states a core's status states the read-out's
-                    // `core search` row too (M1e2 S1e2.2.23, W23), wherever
+                    // `core search` row too (W23), wherever
                     // `now` records that status.
                     if row.right.core_status.is_some()
                         && row.right.core_status == row.now.core_status

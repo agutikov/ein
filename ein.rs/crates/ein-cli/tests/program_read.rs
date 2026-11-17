@@ -1,14 +1,13 @@
-//! **Every command reads a program the same way** — M1f S1f.5.5, T1f.5.5.13.
+//! **Every command reads a program the same way.**
 //!
 //! One path reads a program from a path, `common::read_program`, and every
 //! command that takes one goes through it: a `.einb` container is told from
 //! UTF-8 text by its first bytes, a text is loaded against its own directory
 //! so a file-relative `(import …)` resolves, and a file that is neither is
-//! refused with one line in Ein's words. Until that task `ein saturate`, the
-//! `render` views that parse a program and `ein kb save` read text only (W40),
-//! `saturate` loaded with no base directory (W41), and the line for a file
-//! that is not UTF-8 was Python's, `UnicodeDecodeError: …`, from a
-//! `process::exit` that took `ein test`'s whole selection down, exit 1.
+//! refused with one line in Ein's words. No command reads text only (W40) or
+//! loads with no base directory (W41), and a file that is not UTF-8 is never
+//! a Python line, `UnicodeDecodeError: …`, from a `process::exit` that takes
+//! `ein test`'s whole selection down.
 //!
 //! Each command is held to four programs: the same `.ein`, its `.einb`, a
 //! program with a file-relative import, and a file that is not UTF-8. It
@@ -88,8 +87,7 @@ fn argv<'a>(
 /// aside, which a header or a label echoes, and the lines that say what the
 /// run read and how long it took (`saturate`'s `input:`, its size, `parse:`,
 /// `kb load:` or `open:`), each number a line times masked: one before `ms`,
-/// and `ein test`'s `(0.01 s)`, which T1f.5.5.13's first gate read as the
-/// same twice by chance and T7's did not.
+/// and `ein test`'s `(0.01 s)`, which two runs print alike only by chance.
 fn comparable(text: &str, path: &str) -> String {
     let mut out = Vec::new();
     for line in text.replace(path, "{FILE}").lines() {
@@ -237,19 +235,13 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
 /// provenance table held) and the same line (Q-M1f.15).
 ///
 /// The program is one whose error names a position: a macro whose template
-/// writes `eq` with one argument (`syntax.md`). Since M1f S1f.5.24 the
-/// loader refuses it, `g.ein:3:18:` first, the macro body's position (W66,
-/// Q-M1f.80), so `ein kb save` does too, and the container is written here
-/// through `ein_einb::save` with that program stored beside a KB that loads:
-/// what a command reads back from a container is its stored program, which it
-/// loads as it loads a `.ein`. Until S1f.5.24 `kb save` wrote it, the compiler
-/// refusing the rule only where it compiled it (Q-M1f.67); until M1f S1f.5.18
-/// this test wrote G-14's residue, a relation parameter an activator a rule
-/// derives binds to a nested fact, which the loader refuses since (W59); and
-/// until M1f S1f.5.9 a pattern whose relation a parameter binds to `eq`,
-/// `(?R ?x)` under `(r eq)`, which the loader refuses since (W60). Since M1f
-/// S1f.5.21 the line names the position in Ein's words, `g.ein:3:18:`, where
-/// it wrote `at Loc(file='g.ein', line=3, col=18)`.
+/// writes `eq` with one argument (`syntax.md`). The loader refuses it,
+/// `g.ein:3:18:` first, the macro body's position (W66, Q-M1f.80), so `ein kb
+/// save` does too, and the container is written here through
+/// `ein_einb::save` with that program stored beside a KB that loads: what a
+/// command reads back from a container is its stored program, which it loads
+/// as it loads a `.ein`. The line names the position in Ein's words,
+/// `g.ein:3:18:`, never `at Loc(file='g.ein', line=3, col=18)`.
 #[test]
 fn a_containers_positions_name_its_stored_program() {
     let scratch = Scratch::new("ein-program-read");

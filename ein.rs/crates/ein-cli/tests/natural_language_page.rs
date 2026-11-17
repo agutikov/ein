@@ -1,6 +1,5 @@
 //! **[`natural-language.md`](../../../../docs/ein/user/syntax-and-semantics/natural-language.md)
-//! is held to the engine** — M1f S1f.5.14's T1f.5.14.4, under the phase's rule
-//! that a page the stage adds is pinned by something that runs.
+//! is held to the engine**: a page is pinned by something that runs.
 //!
 //! Three of its claims are checked here:
 //!
@@ -9,7 +8,8 @@
 //!   --dump-answer DIR` writes, each one verbatim;
 //! - its § 4 registers are the four `utils/nl_census.py` assigns, and the
 //!   census's `kernel` register is [`ein_core::RESERVED`], name for name;
-//! - every `Q-M1f.<n>` it cites is a heading of M1f's `open_questions.md`.
+//! - every decision id it cites is a heading of the open-questions ledger
+//!   this test reads.
 
 use std::process::Command;
 

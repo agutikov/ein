@@ -1,7 +1,7 @@
 //! Little-endian primitives, and a cursor that cannot walk off the end.
 //!
 //! Every read is checked and returns [`EinbError::Truncated`] rather than
-//! panicking, because the acceptance for this stage is that *arbitrary bytes*
+//! panicking, because the container's contract is that *arbitrary bytes*
 //! are rejected and never mis-parsed: a reader that indexes a slice is one
 //! fuzz case away from a panic, and a panic in a library is a denial of
 //! service in whatever embeds it.

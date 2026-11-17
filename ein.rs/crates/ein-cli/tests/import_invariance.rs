@@ -1,8 +1,6 @@
-//! **The answer does not depend on how a program imports** — M1f S1f.6.35's
-//! acceptance, the user's criterion of 2026-11-14: *"the answer MUST be
-//! invarian of import type - write 2 same programs with different imports and
-//! check that both have equivalent solution (up to names prefixes). If they
-//! move - then import works not correclty"*.
+//! **The answer does not depend on how a program imports** (Q-M1f.247): two
+//! programs that differ only in their imports have one answer, up to name
+//! prefixes, or the import is wrong.
 //!
 //! Every corpus program that imports, in three forms, each solved by the `ein`
 //! binary with `--json-summary`:
@@ -16,10 +14,10 @@
 //!
 //! R — the states as sets of facts, `k_s`, `k_c`, root's verdict and debts,
 //! whether the run exhausted — every query's classes, and every claim's
-//! outcome, are compared with every module prefix and alias taken off. Since
-//! the user's ruling of that day (*"in all cases we import everything, the
-//! difference only in names"*) the three are one program by construction:
-//! this is the guard that keeps them so. A program S refuses is held to be
+//! outcome, are compared with every module prefix and alias taken off. Every
+//! import brings its module whole and the forms differ only in names, so the
+//! three are one program by construction: this is the guard that keeps them
+//! so. A program S refuses is held to be
 //! refused in W and A too.
 //!
 //! **And the work of a search, where a form leaves the universe's order as
@@ -308,9 +306,8 @@ fn programs() -> Vec<PathBuf> {
 
 #[test]
 fn every_corpus_program_answers_alike_under_every_import_form() {
-    // On the pool (M1f S1f.6.39), read back in the manifest's order: until
-    // S1f.6.39 this test ran its own sixteen threads and listed its failures
-    // in the order they finished. Two passes, so that no unit runs a
+    // On the pool, read back in the manifest's order, not in the order the
+    // failures finished. Two passes, so that no unit runs a
     // program's every form: each program as written, then one unit per
     // (program, form), each asked `--single` where the first pass found the
     // tree.

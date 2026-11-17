@@ -10,13 +10,10 @@
 //!   Fact → a FactId   — a nested relational node (0b10)
 //! ```
 //!
-//! **`0b01` is no value.** It was the tag of an int, an entry in an integer
-//! pool, until M1f S1f.5.4 retired the kind: since S1f.5.5's swap a run of
-//! digits is a name (Q-M1e2.24, the user's ruling of 2026-11-06: *"digits are
-//! not numbers, digits are plain names"*), so nothing built one. The two other
-//! tags keep their bits, so a `.einb` stores a value as it did, and the one
-//! reader of stored bits, [`Value::from_bits`], refuses `0b01` rather than
-//! reading it as something else. `0b11` is [`Value::UNBOUND`]'s.
+//! **`0b01` is no value.** Ein has no integers: a run of digits is a name
+//! (Q-M1e2.24), so nothing builds one, and the one reader of stored bits,
+//! [`Value::from_bits`], refuses `0b01` rather than reading it as something
+//! else. `0b11` is [`Value::UNBOUND`]'s.
 //!
 //! **Ordering trap.** A `Value`'s numeric order is (tag, then assignment
 //! order) — identity order, not semantic order — so this type deliberately has
@@ -33,14 +30,14 @@ const PAYLOAD_BITS: u32 = 30;
 const PAYLOAD_MASK: u32 = (1 << PAYLOAD_BITS) - 1;
 
 /// Which of the two shapes a [`Value`] holds. The numbers are the tag bits,
-/// and `1`, an int's until M1f S1f.5.4, is no shape (the module docs).
+/// and `1` is no shape (the module docs).
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum Tag {
     Sym = 0,
     Fact = 2,
 }
 
-/// The tag bits an int had, which no value has had since M1f S1f.5.4.
+/// The tag bits no value has: `0b01` (the module docs).
 const RETIRED_INT: u32 = 1;
 
 /// A fact argument. 4 bytes, `Copy`, no `Ord` — see the module docs.
@@ -70,7 +67,7 @@ impl Value {
     /// rather than named: [`Tag`] has two members and the sentinel is a bit
     /// pattern neither has, so any answer here would be a lie. Ask
     /// [`Value::is_unbound`] first — every caller that can see a register
-    /// value does, and the assertion is what keeps that true (M1e `CO-M3`).
+    /// value does, and the assertion is what keeps that true.
     pub fn tag(self) -> Tag {
         debug_assert!(
             !self.is_unbound(),
@@ -104,9 +101,9 @@ impl Value {
     /// why the container checks every payload against its table before it
     /// trusts one.
     ///
-    /// **`None` for an int's tag bits** (M1f S1f.5.4): a `.einb` written
-    /// before the int kind was retired may hold one, and there is no value it
-    /// could be read as, so the container refuses the file instead.
+    /// **`None` for the tag bits no value has**, `0b01`: a stored word that
+    /// holds them can be read as no value, so the container refuses the file
+    /// instead.
     pub fn from_bits(bits: u32) -> Option<Value> {
         (bits >> PAYLOAD_BITS != RETIRED_INT).then_some(Value(bits))
     }
@@ -117,20 +114,17 @@ impl Value {
 
     /// The `FactId` this value names — **`None` for the sentinel**.
     ///
-    /// M1e `CO-M3`. `UNBOUND` is `u32::MAX`, whose two tag bits are `0b11` and
-    /// whose payload is `CAPACITY - 1` — an id [`crate::facts`] will
-    /// legitimately assign, since it refuses only at `>= CAPACITY`. So
-    /// `tag()`'s `_ => Tag::Fact` fallthrough made this hand back a **phantom
-    /// fact**, and the type's own test proved only that `pack` cannot
-    /// *produce* the sentinel, which is a different claim: the safety rested
-    /// on every caller asking `is_unbound()` first.
+    /// `UNBOUND` is `u32::MAX`, whose two tag bits are `0b11` and whose
+    /// payload is `CAPACITY - 1` — an id [`crate::facts`] will legitimately
+    /// assign, since it refuses only at `>= CAPACITY`. So a `tag()` that fell
+    /// through to `Tag::Fact` would hand back a **phantom fact**, and a test
+    /// that `pack` cannot *produce* the sentinel is a different claim: the
+    /// safety would rest on every caller asking `is_unbound()` first.
     ///
-    /// They all did — 29 `as_fact` sites at the audit, and the three that can
-    /// see a register value (`match_.rs`'s two guard readers and
-    /// `saturator.rs`'s boundary scan) test it explicitly. That is the reason
-    /// this is a hardening and not a bug fix, and the reason it is worth
-    /// doing anyway: the discipline was a convention, and the next caller is
-    /// the one it fails.
+    /// The callers that can see a register value (`match_.rs`'s two guard
+    /// readers and `saturator.rs`'s boundary scan) test it explicitly; this
+    /// guard makes the discipline a property of the type rather than a
+    /// convention the next caller can miss.
     ///
     /// `as_sym` is guarded for the same reason, though the sentinel could
     /// never have passed its tag test: it would have asked [`Value::tag`],
@@ -139,7 +133,7 @@ impl Value {
         (!self.is_unbound() && self.tag() == Tag::Fact).then(|| FactId(self.payload()))
     }
 
-    /// The register file's "nothing bound here yet" sentinel — S1a.3.2.
+    /// The register file's "nothing bound here yet" sentinel.
     ///
     /// It is not a third shape: the two tag bits have four states and
     /// [`Tag`] uses two, so `0b11` is a bit pattern `Value::pack` can
@@ -194,10 +188,9 @@ mod tests {
         assert_ne!(s, f);
     }
 
-    /// **An int's tag bits are no value** — M1f S1f.5.4. `from_bits` is the
-    /// one way in for stored bits, and it reads every word `bits` gives back
-    /// and refuses a word tagged `0b01`, an int's until the kind was retired,
-    /// whatever its payload: a `.einb` written before may hold one.
+    /// **The tag bits `0b01` are no value.** `from_bits` is the one way in
+    /// for stored bits, and it reads every word `bits` gives back and refuses
+    /// a word tagged `0b01`, whatever its payload.
     #[test]
     fn an_ints_tag_bits_are_no_value() {
         for v in [
@@ -228,15 +221,15 @@ mod tests {
         assert!(!Value::sym(Symbol(0)).is_unbound());
     }
 
-    /// **The sentinel names no fact** — M1e `CO-M3`.
+    /// **The sentinel names no fact.**
     ///
     /// The test above proves `pack` cannot *produce* `UNBOUND`, which is a
     /// weaker claim than it reads as: the sentinel's payload is
-    /// `CAPACITY - 1`, an id the fact store will assign, and `tag()`'s
-    /// `_ => Tag::Fact` fallthrough used to hand it back as
+    /// `CAPACITY - 1`, an id the fact store will assign, and a `tag()` that
+    /// fell through to `Tag::Fact` would hand it back as
     /// `Some(FactId(CAPACITY - 1))`. So a consumer that called `as_fact()`
-    /// without asking `is_unbound()` first got a **phantom fact** — a real id
-    /// naming somebody else's row. This assertion failed before S1e.3.1.
+    /// without asking `is_unbound()` first would get a **phantom fact** — a
+    /// real id naming somebody else's row. This assertion is what catches it.
     #[test]
     fn the_sentinel_names_no_fact() {
         assert_eq!(Value::UNBOUND.as_fact(), None);

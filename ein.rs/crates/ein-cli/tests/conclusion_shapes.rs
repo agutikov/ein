@@ -1,26 +1,23 @@
-//! **What a rule may conclude** — M1f S1f.6.37, E-63 and W94, the user's
-//! question of 2026-11-14: *"The rule can assert some arbitrary complext fact
-//! built from simple facts with `and` and `or` - how engine handles this?"*
+//! **What a rule may conclude** (W94): may a rule assert an arbitrary
+//! compound fact built from simple facts with `and` and `or`?
 //!
 //! A rule concludes **a conjunction of literals** (facts and stored negations),
 //! `(false)`, a check (`eq`, `neq`, `(not (eq …))`), `()` or an obligation,
 //! and nothing else: no disjunction, and no compound fact. An `(and …)` is read
-//! flat at any depth, as a premise is (`ein_ir::Ast::conjuncts`; the user's
-//! ruling of 2026-11-14, *"ok, flatten is fine, continue"*), so `(and (r a)
-//! (and (p a) (q a)))` concludes what `(and (r a) (p a) (q a))` concludes, and
-//! no fact is ever headed `and`. Until S1f.6.37 the compiler split the top
-//! `(and …)` alone and stored the inner one as one fact headed `and` (W94).
+//! flat at any depth, as a premise is (`ein_ir::Ast::conjuncts`), so `(and (r
+//! a) (and (p a) (q a)))` concludes what `(and (r a) (p a) (q a))` concludes,
+//! and no fact is ever headed `and`: a compiler that split the top `(and …)`
+//! alone would store the inner one as one fact headed `and` (W94).
 //!
-//! Each row of the stage file's table is pinned, here or where the row's kind of
-//! answer is pinned:
+//! Each row is pinned, here or where the row's kind of answer is pinned:
 //!
 //! | the conclusion | where |
 //! |---|---|
 //! | a fact, a stored negation, an `(and …)` of them, an `and` inside an `and`, `(false)`, a check, `()`, `(open)` | [`every_shape_a_rule_concludes`], through `ein saturate --dump` and `ein solve` |
-//! | an `and` inside an `and`, written and through a macro | [`an_and_inside_an_and_is_read_flat`], [`a_macros_and_inside_an_and_is_read_flat`], [`the_witnesses_answer_as_their_flat_twins`]: the same answer, facts and read-out as the flat conclusion (the user's rule of 2026-11-14, *verify by invariance*) |
-//! | `(or …)`, an `(or …)` inside an `(and …)`, a connective as a conclusion's argument or under its `not` | refused at the parse: the grammar's table, `ein-ir/tests/grammar_pages.rs` (S1f.6.37's rows at its end), and [`no_disjunction_and_no_compound_fact_is_a_conclusion`] here |
-//! | the same written by a macro's expansion | refused at load: `defined_behaviour.md` § 4.16, `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes` |
-//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271's default, E-65, W95): `defined_behaviour.md` § 4.29, [`an_hrule_concludes_one_fact`], on every command |
+//! | an `and` inside an `and`, written and through a macro | [`an_and_inside_an_and_is_read_flat`], [`a_macros_and_inside_an_and_is_read_flat`], [`the_witnesses_answer_as_their_flat_twins`]: the same answer, facts and read-out as the flat conclusion, held by invariance |
+//! | `(or …)`, an `(or …)` inside an `(and …)`, a connective as a conclusion's argument or under its `not` | refused at the parse: the grammar's table, `ein-ir/tests/grammar_pages.rs`, and [`no_disjunction_and_no_compound_fact_is_a_conclusion`] here |
+//! | the same written by a macro's expansion | refused at load: `docs/ein/user/reference/diagnostics.md` § 2.16, `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes` |
+//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271, W95): `diagnostics.md` § 2.29, [`an_hrule_concludes_one_fact`], on every command |
 //!
 //! ```text
 //! cargo test -p ein-cli --test conclusion_shapes
@@ -365,16 +362,16 @@ fn no_disjunction_and_no_compound_fact_is_a_conclusion() {
 
 /// **An hrule proposes one fact per match**, so its conclusion, read flat, is
 /// one conjunct, and one of more is refused at load, on every command, one
-/// line placed where the `:assert` is written (M1f S1f.6.37, Q-M1f.271's
-/// default, `defined_behaviour.md` § 4.29). Until then the hypothesis layer
-/// proposed the first conjunct alone and dropped the others in silence (E-65,
-/// W95). An `(and …)` of one conjunct is one conclusion, and loads.
+/// line placed where the `:assert` is written (Q-M1f.271,
+/// `docs/ein/user/reference/diagnostics.md` § 2.29), never the first conjunct
+/// proposed alone and the others dropped in silence (W95). An `(and …)` of
+/// one conjunct is one conclusion, and loads.
 #[test]
 fn an_hrule_concludes_one_fact() {
     let both = "(macro both (?x) (and (p ?x) (q ?x)) :why \"both p and q of {?x}\")\n";
     let hrule = |assert: &str| {
         // Its relations open: an hrule proposing a closed one is refused too
-        // (`defined_behaviour.md` § 4.27).
+        // (`docs/ein/user/reference/diagnostics.md` § 2.27).
         let decls = DECLS.lines().take(3).collect::<Vec<_>>().join("\n");
         format!("{decls}\n{both}(hrule h () :match () :assert {assert} :why \"the guess\")\n")
     };

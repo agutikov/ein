@@ -1,6 +1,5 @@
 //! [`docs/ein/user/reference/config.md`] — the configuration reference, pinned.
 //!
-//! M1e [S1e.5.1](../../../../docs/history/m1e_review_processing/README.md#s1e51--the-configuration-reference).
 //! The page enumerates three surfaces — the 17 `(config …)` flags, the CLI
 //! options, and the `EIN_*` environment — and a reference page is the most
 //! drift-prone shape there is: a list of names and defaults that nothing runs.
@@ -15,7 +14,7 @@
 //!    *Edit nothing by hand: `EIN_BLESS=1` rewrites the block in place.*
 //! 2. [`every_flag_has_a_row_and_no_row_is_orphaned`] — the judgement table
 //!    outside the markers lists the same flags, in the same order, with the
-//!    same types and the same defaults. This is T3's cheap guard, and it is
+//!    same types and the same defaults. This is the cheap guard, and it is
 //!    what makes the prose columns safe to hand-write.
 //! 3. [`the_cli_counts_come_from_the_golden`] — the per-subcommand option
 //!    counts are read off `golden/help_shape.txt`, which already owns the
@@ -24,7 +23,7 @@
 //! 4. [`the_shipped_environment_set_is_what_the_page_lists`] — every
 //!    `EIN_*` name a *shipping* crate reads from the process environment has a
 //!    row, and every row names one. The classification is the result: a grep
-//!    census lists `EIN_RS`, which is a constant in two `utils/` scripts.
+//!    over the whole tree lists names no crate reads.
 //! 5. [`the_retired_flags_are_refused_with_why`] — each of the fifteen
 //!    retired flags is a load error that names why it went, which is what a
 //!    program that sets one gets. `print-alive` and `candidate-order-seed`,
@@ -34,16 +33,15 @@
 //!    sections below own. Two hundred lines apart inside one file is still a
 //!    parallel copy.
 //! 7. [`require_why_decides_loading_only`] — § 3.4's `--no-require-why` is on
-//!    the eleven commands that load a program (seven until M1f S1f.5.21), the default refuses there what
+//!    the commands that load a program, the default refuses there what
 //!    its row says and the option loads it, and it moves nothing a program
-//!    prints (M1f T1f.5.14.6, T1f.5.14.7).
+//!    prints (Q-M1f.62).
 //! 8. [`the_leftover_row_names_every_key_of_its_block`] — the `EIN_LEFTOVER`
 //!    row names every key of `--json-summary`'s `leftover` block, and the
-//!    block is what the row says, with the variable and without (M1f
-//!    S1f.5.28's item 2: the row named none of them until then).
+//!    block is what the row says, with the variable and without.
 //! 9. [`the_dev_crates_environment_is_in_the_harness_class`] — every `EIN_*`
 //!    name the two dev-only crates read has a row in the page's harness
-//!    class: the worker pool's `EIN_TEST_JOBS` among them (M1f S1f.6.39).
+//!    class: the worker pool's `EIN_TEST_JOBS` among them.
 //!
 //! [`docs/ein/user/reference/config.md`]: ../../../../docs/ein/user/reference/config.md
 
@@ -71,8 +69,8 @@ fn page() -> String {
 }
 
 /// A fixture `<tag>.ein` in `dir`, a [`Scratch`] the calling test owns, so it
-/// goes when the test does. Until M1e2 S1e2.3.5 they went to one directory per
-/// process that nothing removed, nineteen fixtures a run.
+/// goes when the test does, and no fixture is left in a directory nothing
+/// removes.
 fn write_fixture(dir: &Path, tag: &str, body: &str) -> PathBuf {
     let path = dir.join(format!("{tag}.ein"));
     std::fs::write(&path, body).expect("writes");
@@ -318,11 +316,10 @@ fn golden_option_counts() -> Vec<(String, usize)> {
 /// The page's CLI counts are the golden's, per subcommand and in total.
 ///
 /// The page does not re-enumerate the options: `--help` and the golden are the
-/// surface's owners and a third list would be [AR-M1]'s parallel copy. What it
-/// states is a *shape* — how many options each subcommand has — and that is a
-/// number, so it is read off the owner rather than typed.
-///
-/// [AR-M1]: ../../../../docs/history/m1e_review_processing/README.md
+/// surface's owners and a third list would be a parallel copy, the shape
+/// that drifts. What it states is a *shape* — how many options each
+/// subcommand has — and that is a number, so it is read off the owner rather
+/// than typed.
 #[test]
 fn the_cli_counts_come_from_the_golden() {
     let text = page();
@@ -441,10 +438,7 @@ fn env_names_read_by(crates: &[&str]) -> Vec<String> {
 fn the_shipped_environment_set_is_what_the_page_lists() {
     let text = page();
     let read = env_names_read_by_shipping_crates();
-    // Two since M1e2 S1e2.3.1 retired `EIN_OBLIGATION_CHOICE`, whose last
-    // reader was the summary's `root` block (three after S1e2.1c.5 deleted the
-    // walk and the five names only it read, eight before): `EIN_STDLIB` and
-    // `EIN_LEFTOVER`.
+    // Two: `EIN_STDLIB` and `EIN_LEFTOVER`.
     assert!(
         read.len() >= 2,
         "the scanner found only {read:?} — it stopped seeing the call sites"
@@ -486,10 +480,10 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
 /// The two dev-only crates, whose environment is the harness's.
 const DEV_ONLY: [&str; 2] = ["ein-corpus", "ein-narration"];
 
-/// **What the dev-only crates read is in the page's harness class** (M1f
-/// S1f.6.39): every `EIN_*` name `ein-corpus` or `ein-narration` reads from
-/// the process environment — `EIN_BLESS`, `EIN_NARRATION_STRICT`, and since
-/// S1f.6.39 the worker pool's `EIN_TEST_JOBS` and `EIN_TEST_UNITS` — has a
+/// **What the dev-only crates read is in the page's harness class**: every
+/// `EIN_*` name `ein-corpus` or `ein-narration` reads from the process
+/// environment — `EIN_BLESS`, `EIN_NARRATION_STRICT`, and the worker pool's
+/// `EIN_TEST_JOBS` and `EIN_TEST_UNITS` — has a
 /// row under *Read by the test harness*. One direction only: that class also
 /// lists names a `tests/` target reads, which no `src/` scan sees.
 #[test]
@@ -518,11 +512,9 @@ fn the_dev_crates_environment_is_in_the_harness_class() {
 // ── 5. The sanity flag, and the retired ones ────────────────────────
 
 /// **`:lattice-sanity-check true` is `-y`, and adds its row and nothing
-/// else.** Until M1e2 S1e2.1c.5 this test held five flags *unread*, settable
-/// and changing nothing printed. The user's ruling of 2026-11-03 retired four
-/// of them (the fourteen retired ones are the next test's) and gave the fifth
-/// a meaning: the detector's parent-path spot check, unbounded, on every
-/// program. So nothing on the page is unread any more, and what is held here
+/// else.** No flag on the page is unread: the retired ones are the next
+/// test's, and this one means the detector's parent-path spot check,
+/// unbounded, on every program. What is held here
 /// is the one flag's claim from the outside: on a monotone fixture and a
 /// flagged one, the run exits as the default does and prints what it prints,
 /// plus one `paths` row that says it read every parent — on the flagged one
@@ -530,8 +522,8 @@ fn the_dev_crates_environment_is_in_the_harness_class() {
 /// under every question on every program whose R is known.
 #[test]
 fn the_sanity_flag_adds_its_row_and_nothing_else() {
-    // The flagged one was `ein-bugs/naf-upward-closure.ein` until *forbid*
-    // refused it (M1e2 S1e2.2.5); `lattice/04`'s hole is an obligation's.
+    // The flagged one is not `ein-bugs/naf-upward-closure.ein`, which
+    // *forbid* refuses (Q-M1e2.5); `lattice/04`'s hole is an obligation's.
     let fixtures = [
         "examples/branching/04_two_levels.ein",
         "examples/lattice/04_obligation_trigger_hole.ein",
@@ -587,10 +579,9 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
     }
 }
 
-/// The fifteen retired flags (nine at S1e2.1a.5, the mirror at S1e2.1a.6, the
-/// four `enable-*` levers at S1e2.1c.5, `warn-derived-naf` at S1e2.2.5) are
-/// load errors that say why, and which stage retired them, and none is offered
-/// among the valid names.
+/// The fifteen retired flags (`config.md` § 2.4) are load errors that say
+/// why, each with the tag its refusal prints, and none is offered among the
+/// valid names.
 #[test]
 fn the_retired_flags_are_refused_with_why() {
     let dir = Scratch::new("ein-config-reference");
@@ -625,10 +616,10 @@ const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?1} is q\")\
                       (solve :expect (region (model (p a) (q a))))\n";
 
 /// The commands that load a program: every one takes `--no-require-why`.
-/// Thirteen: eleven since M1f S1f.5.21, which has the four views that draw a
-/// program as written read it through the loader first (Q-M1f.71), seven
-/// until then, `ein render h-space`, which reads the loaded program's
-/// lattice, and `ein show hyps`, which lists its hypothesis set. `render
+/// Thirteen, among them the four views that draw a program as written,
+/// which read it through the loader first (Q-M1f.71), `ein render h-space`,
+/// which reads the loaded program's lattice, and `ein show hyps`, which lists
+/// its hypothesis set. `render
 /// rule` names the rule it draws, `--name r1`, which comes after the
 /// command's own words here and is no part of its name in the golden.
 const LOADING: [&[&str]; 13] = [
@@ -648,16 +639,11 @@ const LOADING: [&[&str]; 13] = [
 ];
 
 /// **A `:why` is required by default, and `--no-require-why` decides whether a
-/// program without one loads, and nothing a loaded one answers** — M1f
-/// S1f.5.14: T1f.5.14.6 gave the loader the flag, `--require-why`, default
-/// off, on the user's rulings of 2026-11-08 (*":why is optional in grammar and
-/// loader has a flag that makes it required, start with default false"*; *"yes,
-/// the flag only decides loading"*), and T1f.5.14.7 turned the default (*"then
-/// after other stages finished swith to default true"*), the option becoming
-/// `--no-require-why` (Q-M1f.62). Held from the outside, on every command that
-/// loads a program: the page has its row; the golden gives the option to those
-/// thirteen commands and no other (seven until M1f S1f.5.21, eleven until
-/// `ein render h-space`, twelve until `ein show hyps`); by default a program
+/// program without one loads, and nothing a loaded one answers**
+/// (Q-M1f.62): a `:why` is optional in the grammar, and the loader requires
+/// it by default. Held from the outside, on every command that loads a
+/// program: the page has its row; the golden gives the option to those
+/// thirteen commands and no other; by default a program
 /// missing three `:why`s is
 /// refused with one line for each, at the exit code that command gives every
 /// load error, and with the option it runs; a container saved with the option
@@ -782,12 +768,9 @@ fn require_why_decides_loading_only() {
 /// § 1's flag count and environment count, against the sections that own them.
 ///
 /// The three-row table at the top is what most readers will take away, and all
-/// three of its numbers are stated a second time further down — which is the
-/// parallel-copy shape [AR-M1] is about, two hundred lines apart inside one
-/// file. The CLI row is [`the_cli_counts_come_from_the_golden`]'s; these are
-/// the other two.
-///
-/// [AR-M1]: ../../../../docs/history/m1e_review_processing/README.md
+/// three of its numbers are stated a second time further down — a parallel
+/// copy, two hundred lines apart inside one file. The CLI row is
+/// [`the_cli_counts_come_from_the_golden`]'s; these are the other two.
 #[test]
 fn the_surface_table_agrees_with_the_sections_it_summarises() {
     let text = page();
@@ -803,10 +786,9 @@ fn the_surface_table_agrees_with_the_sections_it_summarises() {
     );
 }
 
-/// **The `EIN_LEFTOVER` row names every key of its block** (M1f S1f.5.28's
-/// item 2). The page owns `--json-summary`'s `leftover` block
-/// (`read-out.md`'s owners table), and its row described the block without
-/// naming a key, `states_by_relation` among them. Both directions: every key
+/// **The `EIN_LEFTOVER` row names every key of its block.** The page owns
+/// `--json-summary`'s `leftover` block (`read-out.md`'s owners table), so its
+/// row names each key, `states_by_relation` among them. Both directions: every key
 /// a summary writes is a backticked name in the row, and the block is what the
 /// row says, `taken` the variable, `states` one count per listed state and
 /// `states_by_relation` one object per listed state whose counts sum to it,

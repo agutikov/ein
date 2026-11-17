@@ -1,15 +1,9 @@
-//! **An import brings a module's facts, on every command** — M1f S1f.6.11
-//! (W88), and since S1f.6.35 the whole module (Q-M1f.247).
+//! **An import brings a module's facts, on every command** (W88): every
+//! import brings its module whole, and a list only names (Q-M1f.247).
 //!
-//! `(import M :symbols (…))` kept the listed declarations and their closure
-//! and dropped every fact of `M`, in silence, so a library of facts, an
-//! ontology or a table, arrived empty, and a relation `M` only states facts
-//! of could not be listed at all. The user ruled on 2026-11-11 that
-//! *importing facts is mandatory*. From S1f.6.11 a name in the selection's
-//! closure selected the module's declaration of it, if any, and every
-//! top-level fact whose relation it is; since S1f.6.35 every import brings
-//! its module whole and a list only names (*"in all cases we import
-//! everything, the difference only in names"*, the user, 2026-11-14).
+//! An import that kept the listed declarations and dropped every fact of `M`,
+//! in silence, would bring a library of facts, an ontology or a table, empty,
+//! and a relation `M` only states facts of could not be listed at all.
 //!
 //! What an import brings, form for form, is `ein-ir`'s
 //! `imports_semantics.rs`. This file holds the other half of the acceptance,
@@ -142,12 +136,13 @@ fn witnesses() -> Vec<Witness> {
     ]
 }
 
-/// **What the import brings, written in place** (M1f S1f.6.35): the module
+/// **What the import brings, written in place** (Q-M1f.247): the module
 /// whole, its comments and its `(solve …)` left out, each name it declares
 /// that the program does not list under its full name, `module.unused`, as
 /// the program prints it. A dotted name the main file declares where no
 /// module of the program has its prefix is the program's own
-/// (`defined_behaviour.md` § 4.28), so the twin loads. Strings are left as
+/// (`docs/ein/user/reference/diagnostics.md` § 2.28), so the twin loads.
+/// Strings are left as
 /// they are.
 fn in_place(text: &str, module: &str, listed: &[&str]) -> String {
     let declared: Vec<&str> = text
@@ -295,8 +290,8 @@ fn a_flat_import_of_facts_answers_as_the_facts_written_in_place_on_every_command
 }
 
 /// The claim each witness's goal makes holds: `ein test` checks it, exit 0.
-/// The same claim over the library's facts fails where the import brings
-/// none, which is what the stage fixed.
+/// The same claim over the library's facts would fail where the import
+/// brought none.
 #[test]
 fn the_claims_over_imported_facts_hold() {
     let scratch = Scratch::new("ein-import-facts-claims");

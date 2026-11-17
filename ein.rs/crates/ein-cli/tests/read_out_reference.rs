@@ -1,7 +1,6 @@
 //! [`docs/ein/user/reference/read-out.md`] — the read-out reference, pinned.
 //!
-//! M1f [S1f.5.16](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md),
-//! T1f.5.16.3. The page defines every row `ein solve` and `ein oracle` print:
+//! The page defines every row `ein solve` and `ein oracle` print:
 //! its label, what it says, what its numbers count, and the summary field that
 //! holds the same number. A reference page is the most drift-prone shape there
 //! is, so its labels, its summary paths and its numbers are held here, both
@@ -30,11 +29,11 @@
 //!    number — *one label, one number*.
 //! 5. [`the_clock_and_the_cube_group_their_counts`]: `-t`'s `route` row and
 //!    `ein oracle`'s `the cube` print their counts in digit groups of three,
-//!    as every other row does (M1f S1f.5.28's item 3).
+//!    as every other row does.
 //! 6. [`route_1_never_stops_on_an_ein_run`]: the page's § 4 says no `ein`
 //!    run prints route 1's *stopped before layer L*; the one program shape
 //!    describe takes route 1 on, at the smallest budget the command takes,
-//!    is exhausted (M1f S1f.5.28's item 4).
+//!    is exhausted.
 //!
 //! [`docs/ein/user/reference/read-out.md`]: ../../../../docs/ein/user/reference/read-out.md
 //! [`docs/ein/user/reference/read-out-examples.md`]: ../../../../docs/ein/user/reference/read-out-examples.md
@@ -48,8 +47,8 @@ use ein_corpus::{Scratch, repo_root};
 use ein_render::read_out::{Layout, Row};
 use serde_json::Value as J;
 
-/// The page, at one path, as `embedding.rs` reads `rust.md`: S1f.20.5's
-/// rule moves a page and its test together.
+/// The page, at one path, as `embedding.rs` reads `api.md`: a page and its
+/// test move together.
 const PAGE: &str = "docs/ein/user/reference/read-out.md";
 const EXAMPLES: &str = "docs/ein/user/reference/read-out-examples.md";
 
@@ -257,7 +256,7 @@ fn ein(args: &[String]) -> std::process::Output {
 }
 
 /// Every example block's run, with its summary: run once for tests 2–4, on
-/// the corpus sweeps' pool (M1f S1f.6.39), in the page's order.
+/// the corpus sweeps' pool, in the page's order.
 fn runs() -> &'static [Run] {
     static RUNS: OnceLock<Vec<Run>> = OnceLock::new();
     RUNS.get_or_init(|| {
@@ -785,10 +784,9 @@ fn each_row_prints_its_summary_fields_number() {
     assert!(failures.is_empty(), "{PAGE}:\n{}", failures.join("\n"));
 }
 
-/// **The clock and the cube group their counts** (M1f S1f.5.28's item 3, the
-/// page's § 9): `-t`'s `route` row and `the cube`'s two counts print in digit
-/// groups of three, as every row of the read-out does, where until S1f.5.28
-/// they printed plain digits. No corpus run prints a count past a thousand on
+/// **The clock and the cube group their counts** (the page's § 9): `-t`'s
+/// `route` row and `the cube`'s two counts print in digit groups of three,
+/// as every row of the read-out does. No corpus run prints a count past a thousand on
 /// either, so the program is written here: eleven slots an hrule guesses, and
 /// an obligation `(h A)` triggers that nothing pays, so the cube is 2^11
 /// nodes, 2 048 saturations, and each of the 1 024 nodes without `(h A)` is
@@ -839,8 +837,8 @@ fn the_clock_and_the_cube_group_their_counts() {
     );
 }
 
-/// **Route 1 never stops on an `ein` run** (M1f S1f.5.28's item 4, the page's
-/// § 4): describe takes route 1 only on a flagged program whose root is dead,
+/// **Route 1 never stops on an `ein` run** (the page's § 4): describe takes
+/// route 1 only on a flagged program whose root is dead,
 /// whose layer 0 is root, projected at one fact, which the smallest
 /// `--region-budget` the command takes admits, and a dead root leaves layer 1
 /// empty. So on that shape, at `--region-budget 1`, the route exhausts, and

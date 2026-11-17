@@ -1,18 +1,18 @@
-//! **A value is a name, or a fact a state could hold** — M1f S1f.7.7,
-//! S1f.7.6, S1f.7.10 and S1f.7.3 (W80 to W83, Q-M1f.113, the user's ruling of
-//! 2026-11-11, and Q-M1f.122 to .126).
+//! **A value is a name, or a fact a state could hold** (W80 to W83,
+//! Q-M1f.113, and Q-M1f.122 to .126).
 //!
 //! *A value is a name, or a fact a state could hold: an atom of an ordinary
 //! relation, or its negation.* So no fact, value or conclusion is headed
-//! `absent`, which is negation as failure, a premise's test (S1f.7.7);
-//! `false` takes no argument anywhere (S1f.7.6); `(eq …)`, computed and never
-//! stored, is no value, as `(neq …)` never was (S1f.7.10); and a pattern's
-//! argument is what a value can be, so a connective there is refused once the
-//! macros are expanded (S1f.7.3). Until then each loaded: `(absent (p a))`
-//! written where `(not (p a))` was meant left the state alive, `(false k)`
-//! was stored and killed root, a pattern's argument `(eq ?a ?b)` matched a
-//! stored `(eq k j)` by its shape, and `(q (and (p ?x)))` matched nothing, so
-//! under an `(absent …)` the rule fired.
+//! `absent`, which is negation as failure, a premise's test (Q-M1f.122);
+//! `false` takes no argument anywhere (Q-M1f.123); `(eq …)`, computed and
+//! never stored, is no value, as `(neq …)` is none (Q-M1f.124); and a
+//! pattern's argument is what a value can be, so a connective there is
+//! refused once the macros are expanded (Q-M1f.125). Loaded, each would
+//! mislead: `(absent (p a))` written where `(not (p a))` was meant would
+//! leave the state alive, `(false k)` would be stored and kill root, a
+//! pattern's argument `(eq ?a ?b)` would match a stored `(eq k j)` by its
+//! shape, and `(q (and (p ?x)))` would match nothing, so under an
+//! `(absent …)` the rule would fire.
 //!
 //! The grammar refuses each shape a program writes (`ein.y`'s `FactHead`,
 //! `ValueHead`, `Premise`, `Negated`), with a note; the loader refuses what
@@ -62,7 +62,7 @@ const NEQ_NOTE: &str = "note: neq is computed and never stored";
 /// `(shape, the forms after HEAD, what the first line of stderr holds, what
 /// stderr holds besides)`.
 const REFUSED: [(&str, &str, &str, &str); 52] = [
-    // ── S1f.7.7: `absent` heads no fact, value or conclusion ──
+    // ── `absent` heads no fact, value or conclusion (Q-M1f.122) ──
     (
         "absent-fact",
         "(absent k)",
@@ -160,7 +160,7 @@ const REFUSED: [(&str, &str, &str, &str); 52] = [
          (mk absent) binds ?R to absent",
         "",
     ),
-    // ── S1f.7.6: `false` takes no argument ──
+    // ── `false` takes no argument (Q-M1f.123) ──
     (
         "false-fact",
         "(false k)",
@@ -262,7 +262,7 @@ const REFUSED: [(&str, &str, &str, &str); 52] = [
          false) binds ?R to false",
         "",
     ),
-    // ── S1f.7.10: `(eq …)` is no value, as `(neq …)` is none ──
+    // ── `(eq …)` is no value, as `(neq …)` is none (Q-M1f.124) ──
     ("eq-nested", "(q (eq k j))", "unexpected `eq`", EQ_NOTE),
     ("neq-nested", "(q (neq k j))", "unexpected `neq`", NEQ_NOTE),
     (
@@ -344,7 +344,7 @@ const REFUSED: [(&str, &str, &str, &str); 52] = [
          fact (mk eq) binds ?R to eq",
         "",
     ),
-    // ── S1f.7.3: a connective as a pattern's argument ──
+    // ── a connective as a pattern's argument (Q-M1f.125) ──
     (
         "and-pattern-argument",
         "(rule r () :match (and (p ?x) (q (and (p ?x)))) :assert (won ?x) :why \"w\")",
@@ -462,8 +462,7 @@ const ACCEPTED: [(&str, &str); 19] = [
     ),
     (
         // `h` is held out of the hypotheses: a commitment's `(h a)` would
-        // bind `?s` to a name, which is refused since M1f S1f.7.4
-        // (`negated_names.rs`).
+        // bind `?s` to a name, which is refused (`negated_names.rs`).
         "the-negation-of-a-bound-fact",
         "(h (q a))\n(solve :no-hypothesis (h))\n\
          (rule r () :match (h ?s) :assert (not ?s) :why \"w\")",
@@ -710,8 +709,8 @@ fn what_a_state_could_hold_loads() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// A stored negation as a pattern's argument still matches, and a dead
-/// pattern no longer makes an `(absent …)` hold: the rule of
+/// A stored negation as a pattern's argument matches, and a dead pattern
+/// does not make an `(absent …)` hold: the rule of
 /// `pattern-argument-and-under-absent`, written as it was meant, welcomes Bob
 /// alone.
 #[test]

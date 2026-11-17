@@ -1,20 +1,20 @@
-//! **A `(solve …)` list names what the program has** — M1f S1f.7.8 (W76,
-//! Q-M1f.114 to .116).
+//! **A `(solve …)` list names what the program has** (W76, Q-M1f.114 to
+//! .116).
 //!
 //! The three lists of a `(solve …)` choose the candidates, so the lattice the
-//! answer is a region of. Until S1f.7.8 a name in one that matched nothing was
-//! read as one that matches none: `:hrules (gues …)` beside an hrule `guess`
-//! proposed nothing, an activator `(att Color House)` proposed facts of a
-//! relation nothing else names, an activator of another arity was skipped,
-//! `:hypothesis-relations (like)` left H empty and `:no-hypothesis (like)`
-//! restricted nothing, each in silence. Since then the loader refuses each
+//! answer is a region of. A name in one that matched nothing, read as one
+//! that matches none, would act in silence: `:hrules (gues …)` beside an
+//! hrule `guess` would propose nothing, an activator `(att Color House)`
+//! facts of a relation nothing else names, an activator of another arity
+//! would be skipped, `:hypothesis-relations (like)` would leave H empty and
+//! `:no-hypothesis (like)` restrict nothing. The loader refuses each
 //! (`ein_ir::from_ir`'s `refuse_solve_names`), one line at the name, the same
 //! on every command.
 //!
 //! What must keep loading is held beside it: a relation only a rule's or an
 //! hrule's `:assert` derives, one named only by a goal that an activator of
-//! the list has its hrule propose (since S1f.7.11 a goal over a relation
-//! nothing else names is itself refused), one the
+//! the list has its hrule propose (a goal over a relation nothing else
+//! names is itself refused, Q-M1f.119), one the
 //! program only passes to a rule (`(functional at)`), an imported rule's,
 //! `is-a`, `eq`, the empty list, and an activator's argument that is a value.
 
@@ -128,7 +128,7 @@ const ACCEPTED: [(&str, &str); 12] = [
     ("a-rules-conclusion", "(solve :hypothesis-relations (glad))"),
     ("an-hrules-conclusion", "(solve :no-hypothesis (seen is-a))"),
     // Named only by the goal below, which may ask about it because this
-    // activator has `guess` propose it (M1f S1f.7.11).
+    // activator has `guess` propose it (Q-M1f.119).
     (
         "a-premise-of-a-goal",
         "(solve :hrules (guess (wanted Color House)))",
@@ -280,11 +280,11 @@ fn a_list_naming_what_the_program_has_loads() {
     let scratch = Scratch::new("ein-solve-lists-accepted");
     let mut bad = Vec::new();
     // `wanted` is named only by this goal, and a goal may ask about it only
-    // where the list's activator has `guess` propose it (M1f S1f.7.11).
+    // where the list's activator has `guess` propose it (Q-M1f.119).
     let wanted = "(query :goal (and (at Red ?h) (absent (wanted Red ?h))))\n";
     let goal = "(query :goal (and (at Red ?h) (absent (glad ?h))))\n";
     // A list beside an hrule that proposes what it filters is a conflict
-    // since M1f S1f.6.34 (`mechanism_conflicts.rs`), and `plain`, which has
+    // (`mechanism_conflicts.rs`), and `plain`, which has
     // no parameter, always proposes `seen`: the shapes that write a list are
     // read beside a `plain` with a parameter and no activator, which proposes
     // nothing and still writes `seen` in an hrule's `:assert`, so the list is
@@ -316,10 +316,9 @@ fn a_list_naming_what_the_program_has_loads() {
         .collect();
     // A relation only an imported rule concludes, and `eq` given to a
     // parameter that names a relation. `functional` is listed: a name the
-    // program writes and does not list is its own since M1f S1f.6.35. The
-    // list held `injective` too until then; with `std.algebra` whole, its
-    // generic `imply1` could write `(injective <fact>)`, and S1f.5.18's check
-    // refuses the program, as today's whole import did (E-55).
+    // program writes and does not list is its own. `injective` is not
+    // listed: with `std.algebra` whole, its generic `imply1` could write
+    // `(injective <fact>)`, and the loader refuses that program (Q-M1f.1).
     programs.push((
         "an-imported-rules-conclusion".to_string(),
         "(import std.algebra :symbols (bijective-properties functional))\n\

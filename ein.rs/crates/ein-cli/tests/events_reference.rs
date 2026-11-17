@@ -1,13 +1,9 @@
 //! [`docs/ein/ein.rs/events.md`] — the `--events` schema, pinned to its
 //! emitters.
 //!
-//! M1e [S1e.3.7](../../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium)
-//! `CD-M2`. The page sells itself as the schema an external observer codes to
-//! — [M20](../../../../plans/m20_gui/README.md)'s likely feed — and it had **no
-//! mechanical check against the emitters at all**. What that cost, in one
-//! review: `admit` was documented as carrying a `watched` field it has never
-//! carried, and a whole kind (`warn`, in the stream since M1e S1e.2.3) had no
-//! row.
+//! The page is the schema an external observer codes to — a front end's
+//! feed — and a schema with **no mechanical check against the emitters** can
+//! document a field a kind never carries, or have no row for a whole kind.
 //!
 //! This is the cheap half of the check, and it is deliberately the *set* of
 //! kinds rather than their payloads. A payload checker would have to model
@@ -101,11 +97,10 @@ fn emitted_kinds() -> BTreeSet<String> {
                     // callers are matched above — and a second would make this
                     // check quietly incomplete, so it is an error rather than
                     // a skip.
-                    // The **file**, not the line: this used to bank
-                    // `saturator.rs:1586` and broke on any edit above it —
-                    // M1e S1e.4.8 moved it to :1623 by growing a doc comment
-                    // thirty lines earlier, which is a test failing for a
-                    // reason unrelated to what it checks. What the check needs
+                    // The **file**, not the line: a banked line number
+                    // breaks on any edit above it, a doc comment grown thirty
+                    // lines earlier, which is a test failing for a reason
+                    // unrelated to what it checks. What the check needs
                     // is *there is exactly one, and it is the known one*.
                     None if !rest.starts_with(')') => non_literal.push(
                         path.strip_prefix(repo_root())
@@ -159,9 +154,8 @@ fn documented_kinds() -> BTreeSet<String> {
 
 /// Every kind the emitters produce has a row on the page.
 ///
-/// This is the direction that failed in M1e: `warn` had been emitted since
-/// S1e.2.3 and named only in § Comparison, which is a list of what is
-/// *diffed*, not a schema.
+/// This is the direction that fails quietly: a kind named only in
+/// § Comparison, which is a list of what is *diffed*, is not in the schema.
 #[test]
 fn every_emitted_kind_has_a_row() {
     let missing: Vec<_> = emitted_kinds()
@@ -196,12 +190,7 @@ fn every_row_has_an_emitter() {
 /// The count, stated once so a reader of either side has a number to check
 /// against. It is a floor and an exact value at the same time: both tests
 /// above already force the two sets equal, so this only guards against both
-/// halves shrinking together. 23 since M1e2 S1e2.1a.1 added `monotonicity`,
-/// 24 since T1e2.1a.5.2 added `region`, 23 since S1e2.1a.5's switch took
-/// the walk's `verdict` with its CLI path, 20 since S1e2.1c.5 deleted the
-/// walk and its `nogood`, `writeback` and `traversal`, and 19 since S1e2.2.5
-/// retired `warn-derived-naf`, the flag that gated `warn`, the kind's last
-/// emitter.
+/// halves shrinking together.
 #[test]
 fn the_protocol_has_nineteen_kinds() {
     assert_eq!(emitted_kinds().len(), 19, "{:?}", emitted_kinds());

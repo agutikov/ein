@@ -1,5 +1,5 @@
 //! `META` — what the file was made from, and therefore when to disbelieve it
-//! (T1a.8.1.5, [design/binary-format.md § 4](../../../../docs/ein/ein.rs/design/binary-format.md#4-versioning-and-invalidation)).
+//! ([design/binary-format.md § 4](../../../../docs/ein/ein.rs/design/binary-format.md#4-versioning-and-invalidation)).
 //!
 //! Two different questions live here and they have different answers.
 //!

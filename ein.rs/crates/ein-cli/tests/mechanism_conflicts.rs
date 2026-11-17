@@ -1,9 +1,6 @@
 //! **A conflict between the hypothesis mechanisms is refused, on every
-//! command** — M1f
-//! [S1f.6.34](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md),
-//! the user's ruling of 2026-11-13 on E-47, *"report conflict if any
-//! hypothesis mechanism constradicts itself"*, and their table of the pairs of
-//! that day.
+//! command** (Q-M1f.245, Q-M1f.242;
+//! [`diagnostics.md` § 2.27](../../../../docs/ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)).
 //!
 //! Five declarations steer what a commitment may be about: an hrule (H), an
 //! obligation (O), `:hypothesis-relations` (HR), `:no-hypothesis` (NH) and a
@@ -14,8 +11,8 @@
 //! one line per conflict, at the command's load-error exit; a **dead** list
 //! (one an hrule makes filter nothing) or a **redundant** name is one `note:`
 //! line on stderr and moves nothing; H + O, the Zebra puzzle's form, is
-//! silent. Held here on witnesses of every pair, on E-47's own witness, whose
-//! refusal by *forbid* named the one remedy that does nothing beside an hrule,
+//! silent. Held here on witnesses of every pair, on a program whose refusal
+//! by *forbid* would name the one remedy that does nothing beside an hrule,
 //! and on the corpus's fixture of the refusal.
 
 use std::path::Path;
@@ -399,12 +396,12 @@ fn a_dead_or_redundant_list_is_a_note_and_a_silent_pair_says_nothing() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// **E-47's witness** (S1f.6.28's T4): *what is not listed is zero* adopted
-/// for `has`, an hrule supposing Alice has an apple, and `(solve :hrules
-/// (maybe-apples) :no-hypothesis (has))`. Until S1f.6.34 *forbid* refused it
-/// with four lines whose first remedy was `(solve :no-hypothesis (has))`,
-/// which the program already wrote and which does nothing beside an hrule.
-/// Since, it is refused for what it says: two conflicts, `maybe-apples`
+/// **A program *forbid* would misdiagnose**: *what is not listed is zero*
+/// adopted for `has`, an hrule supposing Alice has an apple, and `(solve
+/// :hrules (maybe-apples) :no-hypothesis (has))`. *Forbid*'s refusal would
+/// name `(solve :no-hypothesis (has))` as its remedy, which the program
+/// already writes and which does nothing beside an hrule. It is refused for
+/// what it says: two conflicts, `maybe-apples`
 /// proposing `has` against the list that names it and against the closure
 /// `words` derives, and no line of *forbid*'s. Its twin without
 /// `listed_is_all`, which answered two states, is refused for the same two.
@@ -428,7 +425,7 @@ fn e47s_witness_is_refused_for_the_conflict_and_not_by_forbid() {
          :expect (model (asked (together Bob Alice apples now))\n\
          (value (together Bob Alice apples now) (n z 5))))\n";
     // The names the program writes, each listed from the module that declares
-    // it (M1f S1f.6.35).
+    // it.
     const IMPORTS: &str = "(import words :symbols (words has asked together value))\n\
          (import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\
          (import gaps :symbols (gaps))\n";
@@ -463,9 +460,8 @@ fn e47s_witness_is_refused_for_the_conflict_and_not_by_forbid() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The corpus's fixture of the refusal, `examples/ein-bugs/closed-and-owing.ein`
-/// (until S1f.6.34 `tests/stdlib/closure/03_closed_and_owing.ein`): an
-/// obligation on a relation `infer-closure` closes.
+/// The corpus's fixture of the refusal, `examples/ein-bugs/closed-and-owing.ein`:
+/// an obligation on a relation `infer-closure` closes.
 #[test]
 fn the_corpus_fixture_is_refused_on_every_command() {
     let scratch = Scratch::new("ein-mechanism-fixture");
@@ -485,7 +481,7 @@ fn the_corpus_fixture_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-// ── `(solve :no-search)` beside each mechanism — M1f S1f.6.36 ───────────
+// ── `(solve :no-search)` beside each mechanism ───────────────────────
 
 /// `text` with ` :no-search` written last in its `(solve …)`, which every
 /// position before it keeps; a `(solve …)` form is written where it has none.
@@ -510,8 +506,8 @@ fn with_no_search(text: &str) -> String {
     unreachable!("a (solve …) form closes")
 }
 
-/// **`:no-search` relaxes no conflict** (the stage's *must not*, Q-M1f.254):
-/// every shape S1f.6.34 refuses is refused beside it with the same line, the
+/// **`:no-search` relaxes no conflict** (Q-M1f.254): every shape the check
+/// refuses is refused beside it with the same line, the
 /// hrule read as declared as an obligation is.
 #[test]
 fn no_search_relaxes_no_conflict() {
@@ -545,7 +541,8 @@ fn bare(parts: &[&str]) -> String {
 
 /// **What `:no-search` makes dead is one note each, and beside an obligation
 /// or a closure it is silent**: an hrule *proposes no candidate*, a list
-/// *filters no candidate*, the notes S1f.6.34 prints beside an hrule replaced.
+/// *filters no candidate*, in place of the notes the check prints beside an
+/// hrule.
 /// Each answers R as root alone: {∅}, or empty where root owes.
 #[test]
 fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead() {

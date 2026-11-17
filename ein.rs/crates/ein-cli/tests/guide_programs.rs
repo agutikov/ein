@@ -1,14 +1,10 @@
-//! **Every program block in the guide runs on today's engine** — M1f S1f.5.26.
+//! **Every program block in the guide runs on the engine.**
 //!
 //! [`docs/ein/user/guide/`](../../../../docs/ein/user/guide/) is the newcomer's first contact
-//! with Ein, and until S1f.5.26 nothing read its `lisp` blocks:
-//! [`guide_transcripts.rs`](guide_transcripts.rs) diffs the *marked
-//! transcripts* and nothing else. So chapter 4's block went on writing
-//! `(config :enable-pre-branch-lookahead true)` after M1e2 S1e2.1c.5 retired
-//! the flag, and a reader who copied it got a refusal; chapter 3's
-//! `adjacent-via-fwd` and `disjunctive-prune-fwd` carried no `:why` once
-//! S1f.5.14's flip required one. The close review's finding 6 found the
-//! first, and the user ruled *"fix the tutorial, new stage"* (2026-11-10).
+//! with Ein, and [`guide_transcripts.rs`](guide_transcripts.rs) diffs the
+//! *marked transcripts* and nothing else, so without this a block could go on
+//! writing a retired `(config …)` flag, or a rule with no `:why`, and a reader
+//! who copied it would get a refusal.
 //!
 //! ## What is read, and how
 //!
@@ -35,13 +31,11 @@
 //! it is from; [`docs/ein/user/guide/README.md`](../../../../docs/ein/user/guide/README.md) says
 //! so where a reader of the guide will look. The choices above, that `…`
 //! decides the kind and that an excerpt's whole forms load together, are
-//! [Q-M1f.69]'s, taken by default.
+//! Q-M1f.69's.
 //!
 //! ```sh
 //! cargo test -p ein-cli --test guide_programs
 //! ```
-//!
-//! [Q-M1f.69]: ../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f69--what-the-guides-pin-reads-in-a-program-block
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -364,7 +358,7 @@ fn every_program_block_in_the_guide_runs() {
 }
 
 /// **The reading fails on what it exists to catch**, held on a copy of the
-/// guide: chapter 4's block with the retired flag it used to write, an
+/// guide: chapter 4's block with a retired `(config …)` flag planted, an
 /// excerpt's form with no `:why`, a whole program's form with a keyword it
 /// does not take, and a whole program whose `:expect` the engine refutes,
 /// which loads and only the solve can fail. Each is one finding on its page

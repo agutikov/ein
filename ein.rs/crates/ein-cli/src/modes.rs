@@ -1,14 +1,12 @@
-//! `ein solve`'s region run, the only one since M1e2
-//! [S1e2.1a.5](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! switch: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
+//! `ein solve`'s region run, its only run: bare `ein solve FILE` describes
+//! R, and `--minimal`, `--maximal`,
 //! `--single` and `-n N` each ask one question about it, answered by
 //! [`ein_infer::explore`] and printed in the read-out
 //! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines, by
-//! [`ein_render::read_out`]. The modes were built at S1e2.1a.9's
-//! T1e2.1a.9.4, and reached through a region flag until the switch.
+//! [`ein_render::read_out`].
 //!
 //! The program is loaded and solved **once**, and every `(query …)` it holds
-//! is answered from that one solve (the diff's § 7.1).
+//! is answered from that one solve.
 
 use std::path::Path;
 use std::sync::{Arc, Mutex};
@@ -62,9 +60,9 @@ const UNSHOWN: [&str; 9] = [
 /// [`UNSHOWN`]'s flags with no value: the trace's shape and stderr's
 /// progress change nothing stdout prints. `-y` adds its own row, the spot
 /// check's, and changes no answer, so the header leaves it out as it leaves
-/// `-j` (C4). `--no-require-why` decides whether the program loads, and a
+/// `-j`. `--no-require-why` decides whether the program loads, and a
 /// program loads to what it loads to with it, so a run that prints a header
-/// prints the same one (M1f T1f.5.14.6, T1f.5.14.7).
+/// prints the same one (Q-M1f.62).
 const UNSHOWN_FLAGS: [&str; 13] = [
     "-y",
     "--lattice-sanity-check",
@@ -113,7 +111,7 @@ pub fn header_argv(command: &str) -> String {
 /// What `--count` refuses beside it, each with the sentence its refusal
 /// prints: the command that answers what the other option asks. `--count`
 /// answers one question, *how many?*, over all of R, and reads no state
-/// (M1e2 T1e2.1c.4.6), so an option that asks for a line, a listed state, a
+/// (Q-M1f.218), so an option that asks for a line, a listed state, a
 /// claim or another question is a usage error, exit 2, as a retired option
 /// is (`crate::solve::RETIRED`).
 const COUNT_REFUSES: [(&str, &str); 12] = [
@@ -193,7 +191,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     if let Some(&b) = m.get_one::<i64>("region-budget") {
         opts.budget = b as u64;
     }
-    // Root alone (M1f S1f.6.36): no node past root is built.
+    // Root alone (Q-M1f.258): no node past root is built.
     opts.no_search = m.get_flag("no-search");
     // Describe's route on a monotone program: the tree and the classes by
     // default, the state route when asked. No part of R depends on it.
@@ -205,11 +203,10 @@ pub fn run(m: &ArgMatches) -> i32 {
     let max_time = m.get_one::<f64>("max-time").copied();
     opts.deadline = max_time.map(|s| Instant::now() + Duration::from_secs_f64(s.max(0.0)));
 
-    // `--dump-answer` makes its directory before the run, as the walk's
-    // does, so a path that cannot be written fails before the work. Every
-    // state file starts with the program, which a `.einb` stores: since M1f
-    // S1f.5.12 (T1f.5.12.5, W43) the dump writes that one, where it refused
-    // the container, exit 2 (`solve::inlined_program`).
+    // `--dump-answer` makes its directory before the run, so a path that
+    // cannot be written fails before the work. Every state file starts with
+    // the program, which a `.einb` stores, and the dump writes that one
+    // (Q-M1f.27, W43; `solve::inlined_program`).
     let dump = m.get_one::<String>("dump-answer").cloned();
     if let Some(dir) = dump.as_deref()
         && let Err(e) = std::fs::create_dir_all(dir)
@@ -226,9 +223,8 @@ pub fn run(m: &ArgMatches) -> i32 {
         return 1;
     }
     let summary_path = m.get_one::<String>("json-summary").cloned();
-    // A dead node's core only where a surface prints one (M1e2 S1e2.2.21, the
-    // user's ruling of 2026-11-05, *minimum work per question*), and the two
-    // asks apart (M1f S1f.5.12, the user's ruling of 2026-11-08 on P-15):
+    // A dead node's core only where a surface prints one (Q-M1e2.31, each
+    // question does the least work it needs), and the two asks apart:
     // `--dump-lattice`'s `nodes.json` and `--events`' `enter` lines print a
     // core at every dead node the run visits, which the walk takes as it
     // goes; `--dump-answer`'s `nogoods.json` and `--trace`'s *N* print one
@@ -245,8 +241,8 @@ pub fn run(m: &ArgMatches) -> i32 {
         visited: lattice_dir.is_some() || m.get_one::<String>("events").is_some(),
         nogoods: describing && (dump.is_some() || m.get_one::<String>("trace").is_some()),
     };
-    // `N` only where a surface prints it or its count (M1f S1f.6.27, E-31,
-    // *minimum work per question*): `--count`'s rows print neither, so a
+    // `N` only where a surface prints it or its count (Q-M1e2.31): `--count`'s
+    // rows print neither, so a
     // `--count` that writes none of the artefacts that carry the count, the
     // summary, `--dump-answer`'s and `--events`' `region` event, asks the
     // description without it. `--dump-lattice`'s files are the nodes the walk
@@ -256,10 +252,9 @@ pub fn run(m: &ArgMatches) -> i32 {
         || summary_path.is_some()
         || dump.is_some()
         || m.get_one::<String>("events").is_some();
-    // `--diff-models FILE` is read before the run, as the walk's is: a file
-    // it cannot read, or whose facts the parser refuses (M1f S1f.5.5,
-    // T1f.5.5.6: every error recovery reaches, each with the file's line and
-    // column), is a usage error, and nothing runs.
+    // `--diff-models FILE` is read before the run: a file it cannot read, or
+    // whose facts the parser refuses (every error recovery reaches, each with
+    // the file's line and column), is a usage error, and nothing runs.
     let want = match m.get_one::<String>("diff-models") {
         None => None,
         Some(path) => match std::fs::read_to_string(path)
@@ -285,8 +280,8 @@ pub fn run(m: &ArgMatches) -> i32 {
     };
     let load = t_load.elapsed();
     // The program's config with `-y` on it: what `-c` prints and the `run`
-    // event carries. `-y` is the read-out's (the spot check, unbounded, M1e2
-    // S1e2.1c.5); no route reads it, so it moves no answer and no `work` row,
+    // event carries. `-y` is the read-out's (the spot check, unbounded); no
+    // route reads it, so it moves no answer and no `work` row,
     // which the corpus's `levers` cells check.
     let cfg = crate::solve::resolved_config(&kb, m);
     opts.sanity = cfg.lattice_sanity_check;
@@ -294,10 +289,11 @@ pub fn run(m: &ArgMatches) -> i32 {
         crate::printers::print_resolved_config(&cfg);
     }
     // `--trace` tells root's derivation first, taken on a copy of root, so
-    // the run's own preparation is root's one saturation, as without it (M1e2
-    // S1e2.2.21: a root saturated twice moved cores).
-    // `--events FILE`: the walk's `run` and `load` lines, then root and every
-    // node the route visits, then one `region` line (`read_out.md` § 8.6).
+    // the run's own preparation is root's one saturation, as without it: a
+    // root saturated twice would move cores.
+    // `--events FILE`: the `run` and `load` lines, then root and every node
+    // the route visits, then one `region` line
+    // (`docs/ein/ein.rs/events.md` § Region runs).
     let mut events = crate::solve::events_start(m, &file, &cfg);
     // `-v`, `--layer-progress` and `--dump-lattice` read the route's nodes
     // and steps as it visits them.
@@ -336,7 +332,7 @@ pub fn run(m: &ArgMatches) -> i32 {
             return 2;
         }
         // `-y` found a parent path that reaches another state on a monotone
-        // program: the engine's error, never an answer (M1e2 S1e2.1c.5).
+        // program: the engine's error, never an answer.
         Err(ein_infer::SolveError::SpotCheck(e)) => {
             eprintln!("error: {e}");
             return 2;
@@ -423,7 +419,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         .and_then(|md| std::fs::write(path, md).map_err(|e| e.to_string()));
         // Additive: a file that could not be written says so, and the answer
         // printed above stands with its exit code
-        // (`defined_behaviour.md` § 4.4).
+        // (`docs/ein/user/reference/diagnostics.md` § 2.4, Q-M1e.22).
         if let Err(e) = written {
             crate::solve::artefact_failed("trace", path, e);
         }
@@ -465,8 +461,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         && opts.no_search
     {
         // `--no-search`'s answer is root: its read-out, the summary, root's
-        // state as a loadable file and the forms; no state of R (M1f
-        // S1f.6.36).
+        // state as a loadable file and the forms; no state of R (Q-M1f.255).
         let program = crate::solve::inlined_program(&file);
         let answer_txt = uncut(&r, &file, opts.budget);
         let inputs = ein_render::dump::region_answer::Inputs {
@@ -510,8 +505,8 @@ pub fn run(m: &ArgMatches) -> i32 {
     code
 }
 
-/// `ein solve FILE --monotone` — M1e2 S1e2.1b.5, the form the user approved
-/// on 2026-11-03: a question about the **program**. Root's fixpoint and the
+/// `ein solve FILE --monotone` — a question about the **program**. Root's
+/// fixpoint and the
 /// static check, [`ein_infer::explore::check_monotone`], and nothing else, so
 /// it has no R to disagree with a bare `ein solve` about, and its verdict and
 /// sites are the `lattice` block's. `--json-summary` writes `ein-summary/2`
@@ -632,11 +627,11 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
 }
 
 /// What a region run prints after its read-out when asked — `read-out.md`
-/// § 8.3 and § 8.6: `-H`, then `--models key|grid`, then `-p`, `-P` and `-f`,
+/// § 8: `-H`, then `--models key|grid`, then `-p`, `-P` and `-f`,
 /// each its own form, then `--diff-models FILE`.
 ///
-/// **They share stdout's 100 lines with the read-out** (M1e2 S1e2.3.3, the
-/// user's ruling (a) of 2026-11-03). Each is drawn from the states stdout
+/// **They share stdout's 100 lines with the read-out** (Q-M1e2.34). Each is
+/// drawn from the states stdout
 /// showed, so the screen and the forms agree; each prints its items while
 /// what the read-out left of the lines lasts, and at least one; and its last
 /// line says what it left out and where that is. `--dump-answer DIR` writes
@@ -775,7 +770,7 @@ impl Form {
 
 /// Where a form's rest is, as the cut's line names it: the read-out's own
 /// [`ein_render::read_out::dump_hint`], so a form and the listings above it
-/// name one writer (M1e2 S1e2.3.7).
+/// name one writer.
 pub(crate) fn dump_hint(command: &str) -> &'static str {
     ein_render::read_out::dump_hint(command)
 }
@@ -814,7 +809,7 @@ pub(crate) fn extras(
         return Ok(uncut);
     }
     let a = &r.answer;
-    // `--no-search` (M1f S1f.6.36): the forms draw root, whatever it is, and
+    // `--no-search`: the forms draw root, whatever it is, and
     // nothing else: the one state the run read.
     let root_only = a.route == ein_infer::explore::Route::Root;
     let listed: Vec<(usize, &ein_infer::read_out::Listed)> = if root_only {
@@ -940,8 +935,7 @@ pub(crate) fn extras(
                 let mut out: Vec<Form> = Vec::new();
                 match form {
                     // A key tells states apart, so one state or none has no
-                    // key, and the flag is inert there, as it was on the
-                    // walk's single-model verdicts (M1d S1d.3.3).
+                    // key, and the flag is inert there.
                     Some("key") if all < 2 => {}
                     Some("key") => {
                         let mut head = vec![
@@ -1104,7 +1098,7 @@ pub(crate) fn extras(
 }
 
 /// `-H`: H, the universe — every candidate, by relation, and those dead
-/// alone, which no state of R can hold (`read_out.md` § 8.6, P1e2.3's S4).
+/// alone, which no state of R can hold (`read-out.md` § 8).
 /// A relation's line is never cut; its candidates are the form's items.
 fn universe(r: &ReadOut, terms: &Terms) -> Form {
     let a = &r.answer;
@@ -1141,8 +1135,8 @@ fn universe(r: &ReadOut, terms: &Terms) -> Form {
     let mut groups: Vec<(Option<String>, Vec<Vec<String>>)> = Vec::new();
     for (rel, cands) in &by_rel {
         let d = cands.iter().filter(|(i, _)| is_dead(*i)).count();
-        // One space at least after the relation (M1f S1f.5.6, W42): a name of
-        // sixteen characters or more touched its count, `lives-next-door-to2
+        // One space at least after the relation (W42): a name of sixteen
+        // characters or more would touch its count, `lives-next-door-to2
         // candidates`.
         let w = 16.max(rel.chars().count() + 1);
         let line = format!(
@@ -1198,8 +1192,7 @@ impl Progress {
             return None;
         }
         // `-g 0` logs no node line, and a negative never reaches here: the
-        // parser refuses it (M1e2 S1e2.3.4, the user's ruling (b) of
-        // 2026-11-03).
+        // parser refuses it (Q-M1e.17).
         let every = *m.get_one::<i64>("progress-every").unwrap_or(&100);
         Some(Progress {
             every: (verbose && every > 0).then_some(every as u64),
@@ -1230,7 +1223,7 @@ impl Watcher {
 
 /// `1, the alive down-set` or `2, the cube`: the route an answer took, as the
 /// read-out names it. A mode on the state route meets only the states its
-/// question needs (M1e2 S1e2.1c.4); describe meets every alive one.
+/// question needs (Q-M1e2.31); describe meets every alive one.
 pub(crate) fn route_words(answer: &explore::Answer) -> &'static str {
     // `--count` takes describe's route.
     let describe = answer.mode.which == explore::Which::All
@@ -1351,7 +1344,7 @@ fn timing(r: &ReadOut, load: Duration, run: Duration, print: Duration) {
 }
 
 /// `answer.txt`: the read-out with no listing cut — where stdout's cut says
-/// the rest is (the user's ruling of 2026-10-16, the diff's § 4.1).
+/// the rest is (Q-M1e2.34).
 fn uncut(r: &ReadOut, file: &str, budget: u64) -> String {
     let argv = header_argv("solve");
     ein_render::read_out::render(

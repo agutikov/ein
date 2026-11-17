@@ -1,20 +1,20 @@
-//! **A macro's call is no fact** — M1f S1f.7.12 (W86, Q-M1f.130 to .133).
+//! **A macro's call is no fact** (W86, Q-M1f.130 to .133).
 //!
 //! The loader expands a macro's call in a rule's or an hrule's `:match` and
-//! `:assert` and in a query's `:goal`, and nowhere else. Until S1f.7.12 a
-//! fact headed by a macro's name, `(settled Ann)` beside `(macro settled (?g)
-//! (paid ?g))`, was stored as a fact of a relation `settled`: the fact the
-//! body spells was not stored, and no premise could read the one that was,
-//! since `(settled ?g)` in a `:match` is the call. The same held inside a
+//! `:assert` and in a query's `:goal`, and nowhere else. Stored, a fact
+//! headed by a macro's name, `(settled Ann)` beside `(macro settled (?g)
+//! (paid ?g))`, would be a fact of a relation `settled`: the fact the body
+//! spells would not be stored, and no premise could read the one that was,
+//! since `(settled ?g)` in a `:match` is the call. The same holds inside a
 //! fact, under `(not …)`, in a fact's `:using`, inside a fact a claim lists,
 //! of an imported `std.macro` macro and of one the program does not import,
-//! and a relation could be declared under a macro's name. Since then the
-//! loader refuses each (`ein_ir::from_ir`'s `refuse_macro_facts` and
+//! and of a relation declared under a macro's name. The loader refuses each
+//! (`ein_ir::from_ir`'s `refuse_macro_facts` and
 //! `refuse_macro_claims`), one line at the call, the same on every command.
 //!
 //! What must keep loading is held beside it: a call in a `:match`, inside a
-//! pattern, in a rule's and an hrule's `:assert` (expanded, as before the
-//! stage: Q-M1f.130) and in a goal, a macro's name written as a value, and a
+//! pattern, in a rule's and an hrule's `:assert` (expanded: Q-M1f.130) and
+//! in a goal, a macro's name written as a value, and a
 //! macro nothing calls.
 
 use std::path::Path;
@@ -352,7 +352,7 @@ fn a_macro_called_where_it_is_expanded_loads() {
                 .to_string(),
             "(welcome Ann :rule greet)",
         ),
-        // A conclusion's call is expanded, as before S1f.7.12 (Q-M1f.130).
+        // A conclusion's call is expanded (Q-M1f.130).
         (
             "a-call-in-an-assert",
             "(welcome Ann)\n(rule pay () :match (welcome ?g) :assert (settled ?g) :why \"{?g} \
@@ -416,7 +416,7 @@ fn a_macro_called_where_it_is_expanded_loads() {
                     "{shape}: `ein saturate --dump` does not print {stored}"
                 ));
             }
-            // No fact of the macro's name is stored (the stage's acceptance).
+            // No fact of the macro's name is stored.
             if argv[0] == "saturate"
                 && r.out
                     .lines()

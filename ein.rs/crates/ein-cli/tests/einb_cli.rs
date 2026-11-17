@@ -1,18 +1,18 @@
-//! `ein kb save` and `ein solve <file.einb>` — T1a.8.1.7, and the phase's
-//! strongest acceptance:
+//! `ein kb save` and `ein solve <file.einb>`, and the container's strongest
+//! check:
 //!
 //! > `ein solve zebra2.einb` is byte-identical to `ein solve zebra2.ein` —
 //! > the strongest evidence the round-trip is faithful.
 //!
 //! It is the strongest because it does not compare a KB to a KB through an
-//! instrument this stage also wrote. It runs the *engine* over both, through
-//! the same command, and compares what came out — 378 facts, a verdict, a
+//! instrument the container's authors also wrote. It runs the *engine* over
+//! both, through the same command, and compares what came out — the facts, a verdict, a
 //! table, an exit code — none of which the container has any way to influence
 //! except by having restored the KB exactly.
 //!
 //! **Gated on the feature it tests.** `einb` is a default feature and `ein kb`
-//! is registered only with it ([design/toolchain-and-layout.md](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md)
-//! §3), so without it every case below asks a binary that has no `kb`
+//! is registered only with it ([design/toolchain-and-layout.md § 4](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#4-feature-flags)),
+//! so without it every case below asks a binary that has no `kb`
 //! subcommand and gets exit 2 — eight failures that say nothing about the
 //! container. `help_surface.rs` already holds the *other* direction, that a
 //! build without the feature renders a smaller surface on purpose, which is
@@ -130,10 +130,9 @@ fn a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source() {
 }
 
 /// **`--dump-answer` on a container writes the directory its source writes**
-/// — M1f S1f.5.12 (T1f.5.12.5), W43's fix. Until then `ein solve X.einb
-/// --dump-answer DIR` was refused before the run, exit 2, *a .einb container
-/// carries no program source*, where the same run on the `.ein` answered and
-/// every other command read the program the container stores. The same files,
+/// (W43): not refused before the run, as a container carrying no program
+/// source would be, while the same run on the `.ein` answers and every other
+/// command reads the program the container stores. The same files,
 /// each the source's byte for byte but for the path it names; on a program
 /// that imports, a state file's program is the one the container stores,
 /// every declaration its imports brought (Q-M1f.27), and its header and its
@@ -304,7 +303,8 @@ fn a_saturated_container_reaches_the_same_verdict() {
 }
 
 /// The stdlib is the input whose divergence nothing else would notice
-/// (design/11 §3), so a container written against one stdlib and opened
+/// ([design/shared-assets.md § 4](../../../../docs/ein/ein.rs/design/shared-assets.md#4-drift)),
+/// so a container written against one stdlib and opened
 /// against another is a **cache miss**: said out loud, and with the derived
 /// state dropped rather than believed.
 ///
@@ -330,8 +330,8 @@ fn an_edited_stdlib_is_a_cache_miss_rather_than_a_stale_hit() {
     let copy = dir.join("stdlib");
     std::fs::create_dir_all(&copy).expect("a stdlib copy");
     let real = repo_root().join("stdlib");
-    // Every file at any depth: the calculator's modules are under `math/`
-    // since M1f S1f.6.31, and the manifest lists them by that path.
+    // Every file at any depth: the calculator's modules are under `math/`,
+    // and the manifest lists them by that path.
     let mut stack = vec![real.clone()];
     while let Some(dir) = stack.pop() {
         for entry in std::fs::read_dir(&dir).expect("the stdlib") {
@@ -379,7 +379,7 @@ fn an_edited_stdlib_is_a_cache_miss_rather_than_a_stale_hit() {
     assert_eq!(moved.code, 0, "a cache miss is not an error");
 }
 
-/// The dispatch is on the magic bytes, not on the name (T1a.8.1.7).
+/// The dispatch is on the magic bytes, not on the name.
 #[test]
 fn a_container_is_recognised_under_any_name() {
     let dir = scratch("named");
@@ -503,32 +503,28 @@ fn what_the_cli_writes_is_a_file_the_library_recognises() {
     assert!(!looks_like_einb(Path::new("examples/zebra.ein")));
 }
 
-/// Named for what it returns, which the previous name (`ein_is_text`) was the
-/// negation of — M1e S1e.4.4, `EH-L2`. It sniffed five bytes too.
+/// Named for what it returns, a container, and not for its negation; it
+/// sniffs all eight bytes.
 fn looks_like_einb(rel: &Path) -> bool {
     let bytes = std::fs::read(repo_root().join(rel)).expect("readable");
     bytes.starts_with(&ein_einb::header::MAGIC)
 }
 
-/// **The two magic constants agree** — M1e S1e.4.4, `EH-L2`.
+/// **The two magic constants agree.**
 ///
-/// `ein-ir` carries its own copy (`ein_ir::read::EINB_MAGIC`, `ein-cli`'s
-/// `common::EINB_MAGIC` until M1f S1f.5.22 moved the read there) because
+/// `ein-ir` carries its own copy (`ein_ir::read::EINB_MAGIC`) because
 /// `ein-einb` is an optional dependency of `ein-cli` and a
 /// `--no-default-features` build must still recognise a container in order
-/// to refuse it. That is the state
-/// [`AR-M1`] permits for a pair too small to share a crate — *compared by a
-/// test* — and this is the test. It can only run in the default build, which
+/// to refuse it. Two copies of a pair too small to share a crate are allowed
+/// only *compared by a test*, and this is the test. It can only run in the default build, which
 /// is the one where both constants exist; the **behaviour** half, which has to
 /// run in both, is
 /// `cli_semantics::a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build`.
 ///
-/// The copy sniffed **five** of the eight bytes until this stage.
-///
-/// [`AR-M1`]: ../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium
+/// The copy sniffs all eight bytes, not **five**.
 #[test]
 fn the_two_magic_constants_agree() {
-    // The reader's copy is public since M1f S1f.5.22, `ein_ir::read`'s, so it
+    // The reader's copy is public, `ein_ir::read`'s, so it
     // is compared directly; and through the one thing both builds ship, a
     // container the writer just wrote, opened by the reader through the CLI's
     // own sniff.
@@ -553,23 +549,19 @@ fn next_second() {
     ));
 }
 
-/// **A container saved again is the container** (M1f S1f.5.28's item 9).
+/// **A container saved again is the container** (Q-M1f.110).
 /// `ein kb save` of a `.einb` writes the bytes the first save wrote, the
 /// loaded state and the saturated one alike, however many times, and each
 /// answers as the program it was saved from: the loaded one prints its
 /// source's read-out byte for byte, and the saturated one, another starting
-/// point, its source's but for the facts its `work` row counts. Until S1f.5.28 each save of a
-/// save also wrote the provenance records the open had pushed and nothing
-/// referenced, the loader's for each given fact: the witness's container went
-/// 1 248 → 1 288 → 1 328 bytes, and a saturated `zebra2.einb` saved once more
-/// passed design/10 §6's 64 KB, with the same answers.
+/// point, its source's but for the facts its `work` row counts. A save writes
+/// no provenance record the open pushed and nothing references (the loader's
+/// for each given fact), so a save of a save does not grow.
 ///
-/// **The second save is taken in a later second than the first.** Until format
-/// 2.0 `META` held the second a file was written in, under the header's
-/// digest, so this test failed only where two saves crossed a second, which
-/// the CI runner did and this machine seldom did (per-commit runs 43396694686
-/// and 43433241494, 2026-11-13). Waiting for the clock makes a time in the
-/// bytes fail here every run.
+/// **The second save is taken in a later second than the first.** A time in
+/// `META`, under the header's digest, would fail only where two saves cross
+/// a second; waiting for the clock makes a time in the bytes fail here every
+/// run.
 #[test]
 fn a_container_saved_again_is_the_container() {
     let dir = scratch("saved-again");

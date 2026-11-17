@@ -1,4 +1,4 @@
-//! T1a.10.2.3 — the acceptance gate's **CLI** half.
+//! The acceptance gate's **CLI** half.
 //!
 //! These tests do not ask the engine anything: they run `ein solve <puzzle>`
 //! and read what a person would see. The acceptance gate's engine claims live
@@ -12,10 +12,9 @@
 //! | [`solve_on_an_unsat_puzzle_says_no_solution_and_names_the_culprit`] | the unsat fixture says R is empty, says why, and **names the injected `:source`** — and still exits 0, because classifying an unsat puzzle correctly is a success |
 //! | [`solve_zebra_prints_the_same_answer_through_the_generic_encoding`] | the same, through the *other* encoding, so the English cannot be hardcoded per ontology |
 //!
-//! Since M1e2 S1e2.1a.5's switch bare `ein solve` describes R, and on both
-//! puzzles it stops at the default `--region-budget` with R's one state found:
-//! an answer, so exit 0, with one `note:` on stderr saying it is partial. That
-//! note is the only stderr a successful run here may write.
+//! Bare `ein solve` describes R, and an answer exits 0. A `note:` on stderr,
+//! such as a budget's word that an answer is partial, is the only stderr a
+//! successful run here may write.
 //!
 //! They run the built binary (`CARGO_BIN_EXE_ein`) rather than calling the
 //! library, because what is under test is the *presentation*: the exit code,
@@ -144,8 +143,8 @@ fn solve_single_certifies_that_the_answer_is_the_only_one() {
     );
     // The control: a describe its budget stops finds no more and does *not*
     // certify it. Without this, the test above would pass on a build that
-    // hardcoded the word. (Since M1e2 S1e2.1c.2 a bare describe exhausts
-    // zebra2, by the state route, so the control names a budget.)
+    // hardcoded the word. (A bare describe exhausts zebra2, so the control
+    // names a budget.)
     let (_, plain) = ein(&["solve", "examples/zebra2.ein", "--region-budget", "4096"]);
     assert_eq!(field(&plain, "exhausted"), Some("no".into()));
 }

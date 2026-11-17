@@ -1,6 +1,5 @@
-//! `ein oracle` — the region by brute force. M1e2
-//! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
-//! T1e2.1a.9.4.
+//! `ein oracle` — the region by brute force
+//! ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
 //!
 //! Every subset of the root candidates is saturated by
 //! [`ein_infer::region::compute`], with no licence and nothing skipped, and
@@ -21,8 +20,8 @@ use ein_infer::read_out;
 use ein_infer::region::{self, LOUD_FROM, Outcome, PROBE_NODES, Projection};
 use ein_ir::Ast;
 
-/// What `ein oracle` refuses, with the sentence its refusal prints (M1f
-/// S1f.6.36): `--no-search` declines to discover R, and the oracle is R by
+/// What `ein oracle` refuses, with the sentence its refusal prints
+/// (Q-M1f.258): `--no-search` declines to discover R, and the oracle is R by
 /// brute force, the reference every mode is held to, so the two ask opposite
 /// things. `ein solve FILE --no-search` reports root.
 pub(crate) const REFUSED: [(&str, &str); 1] = [(
@@ -47,8 +46,8 @@ pub fn run(m: &ArgMatches) -> i32 {
         jobs,
         deadline: max_time.map(|s| Instant::now() + std::time::Duration::from_secs_f64(s.max(0.0))),
         // Every dead node's core where `--dump` writes them; else root's and
-        // the minimal holes', which the read-out and the summary print (M1e2
-        // S1e2.2.21, the user's ruling of 2026-11-05). The cube visits every
+        // the minimal holes', which the read-out and the summary print
+        // (Q-M1e2.31). The cube visits every
         // node, so `N`'s are among the visited.
         cores: if dir.is_some() {
             region::Cores::ALL
@@ -59,8 +58,8 @@ pub fn run(m: &ArgMatches) -> i32 {
     let summary_path = m.get_one::<String>("json-summary").cloned();
     // `--dump DIR` is made before the cube, as `solve`'s directories are: a
     // path that cannot be made fails before the work, exit 1, and a write that
-    // fails after it leaves the answer's exit code (`defined_behaviour.md`
-    // § 4.4).
+    // fails after it leaves the answer's exit code (Q-M1e.22,
+    // `docs/ein/user/reference/diagnostics.md` § 2.4).
     if let Some(dir) = dir.as_deref()
         && let Err(e) = std::fs::create_dir_all(dir)
     {
@@ -137,7 +136,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     let monotone = r.monotonicity.is_monotone();
     // What the closing line concludes, on a flagged program, from the
     // detector: the status the cube shows, and whether a node's state holds a
-    // stale fact, which the status cannot show (M1e2 S1e2.1b.5).
+    // stale fact, which the status cannot show.
     let flagged_close = r.warning.as_deref().map(|w| match &w.status {
         ein_infer::detector::Status::Exercised { by, .. } => {
             format!(

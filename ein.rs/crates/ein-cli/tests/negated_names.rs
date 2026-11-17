@@ -1,12 +1,12 @@
-//! **`not` of a name is the negation of no fact** — M1f S1f.7.4 (W84,
-//! Q-M1f.127 and Q-M1f.128), under the value rule (Q-M1f.113, the user's
-//! ruling of 2026-11-11: *a value is a name, or a fact a state could hold: an
-//! atom of an ordinary relation, or its negation*).
+//! **`not` of a name is the negation of no fact** (W84, Q-M1f.127 and
+//! Q-M1f.128), under the value rule (Q-M1f.113: *a value is a name, or a
+//! fact a state could hold: an atom of an ordinary relation, or its
+//! negation*).
 //!
 //! The grammar takes `(not ?x)` as a conclusion, for a variable bound to a
-//! fact. Until S1f.7.4 a rule whose variable held a name stored `(not k)`,
-//! which no program can write and whose `--dump-answer` state file did not
-//! reload, and an hrule proposed it, so R held two states that differed in a
+//! fact. A rule whose variable held a name would store `(not k)`, which no
+//! program can write and whose `--dump-answer` state file would not reload,
+//! and an hrule would propose it, so R would hold two states that differ in a
 //! fact nothing can read.
 //!
 //! Two halves, both held here. **The loader** refuses the conclusion wherever
@@ -439,7 +439,7 @@ fn states(out: &str) -> Option<usize> {
 /// None is a corpus program, so none is a register row: a state file writes
 /// the derived activator as a fact, the loader then reads the parameter's
 /// relation through it and refuses the file, and `answer_round_trip.rs` holds
-/// every corpus program's state files to reload (F25's R-1).
+/// every corpus program's state files to reload.
 #[test]
 fn a_name_only_a_run_meets_is_not_negated() {
     let scratch = Scratch::new("ein-negated-names-unforeseen");
