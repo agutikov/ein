@@ -110,7 +110,7 @@ python3 utils/structure_bundle.py            # writes build/structure/index.html
 python3 utils/structure_bundle.py --check    # every link, every fragment, every table's JSON, every picture's DOT
 ```
 
-[`utils/structure_bundle.py`](../../../utils/structure_bundle.py), one script, the standard library and Graphviz;
+`utils/structure_bundle.py`, one script, the standard library and Graphviz;
 a row of [`utils/README.md`](../../../utils/README.md)'s renderers. **It computes no structure**: it reads the
 files `pair_layer` and `price_list` wrote under `build/structure/`, track H's censuses under `build/s1f.10.9/`,
 `build/s1f.10.6/` and `build/s1f.10.15/`, and this phase's Markdown; it joins the engine's lists by a candidate's
