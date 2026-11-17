@@ -76,6 +76,41 @@ colours the arrows by the same three origins instead of by relation, and `--sinc
 `OTHER` lacks, which is how a state is drawn against root. The view leaves out a rule's activator facts and stored
 negations; `ein render program FILE` draws a program's written negations.
 
+The two dashed arrows are firings of the program's one rule, which `ein render rule --name knows-back FILE` draws as
+what it matches and what it asserts ([rules](05-rules.md)):
+
+```dot
+digraph rule_knows_back_lhs_rhs {
+  rankdir=TB;
+  label="knows-back"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?a_L" -> "?b_L" [label="knows", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?b_R" [label="?b", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" -> "?a_R" [label="knows", color="#17becf", fontcolor="#17becf", style=dashed];
+  }
+}
+```
+
+and where a derived fact came from is itself a graph, the fact's record drawn: `ein solve FILE --trace OUT.md`
+writes one drawing per firing, the premises on the left, the rule with its reason in the middle, the fact it added
+on the right. The first step of this program:
+
+```dot
+digraph step1 {
+  rankdir=LR;
+  "f_976d7e7ab9" [label="knows(Alice, Bob)", shape=box, style=rounded];
+  "f_884e5d5933" [label="knows(Bob, Alice)", shape=box, style=rounded, penwidth=2];
+  "fire0_knows-back" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="knows-back\nAlice knows Bob, so Bob knows Alice"];
+  "f_976d7e7ab9" -> "fire0_knows-back" [color="#8c564b"];
+  "fire0_knows-back" -> "f_884e5d5933" [color="#8c564b", style=bold];
+}
+```
+
 ## In words
 
 A fact has two texts. Its **statement**, what it says, is its relation's `:why` filled with its arguments. Its
@@ -95,20 +130,37 @@ background fact has no reason, only its statement. [Natural language](14-natural
 
 ## In mathematics
 
-A fact is a ground atom `r(v₁, …, vₙ)` with each `vᵢ` a value, a name or a fact. A knowledge base is a finite set
-`K` of facts, with a record of justifications for each:
+A fact is a ground atom $r(v_1, \dots, v_n)$ with each $v_i$ a value, a name or a fact. A knowledge base is a finite
+set $K$ of facts. Two facts are one exactly when their relations and argument lists are equal, so $K$ is a set and
+a fact has one node however often it is stated or derived. The program above describes
 
-```text
-J(f) = [ j₁, j₂, … ]                  the ways f was reached, in the order they were recorded
-j    = (kind, rule, premises ⊆ K, bindings, absences)
-kind ∈ { source, rule, hypothesis }
-```
+$$
+K = \lbrace \mathsf{knows}(\mathsf{Alice}, \mathsf{Bob}),\ \mathsf{knows}(\mathsf{Bob}, \mathsf{Carol}),\ \mathsf{claims}(\mathsf{Carol}, \mathsf{knows}(\mathsf{Carol}, \mathsf{Dan})),\ \mathsf{knows}(\mathsf{Bob}, \mathsf{Alice}),\ \mathsf{knows}(\mathsf{Carol}, \mathsf{Bob}),\ \dots \rbrace
+$$
 
-`f` holds if any of its justifications holds, and a justification holds if all of its premises do: the provenance
-of a knowledge base is an AND/OR graph, a fact an OR over its justifications and each justification an AND over its
-premises. Its terminals are the facts with a `source` or `hypothesis` justification. Two facts are one exactly when
-their relations and argument lists are equal, so `K` is a set and a fact has one node however often it is stated or
-derived.
+where the dots are the declarations' facts and the loader's `written`; $\mathsf{knows}(\mathsf{Carol},
+\mathsf{Dan})$ is an argument of a member of $K$ and not a member. Each fact $f \in K$ has a record of
+justifications, the ways it was reached, in the order they were recorded:
+
+$$
+J(f) = (j_1, j_2, \dots), \qquad j = (\operatorname{kind}, \rho, P, \theta, A), \qquad \operatorname{kind} \in \lbrace \text{source}, \text{rule}, \text{hypothesis} \rbrace
+$$
+
+with $\rho$ the rule that fired, $P \subseteq K$ the premises it read, $\theta$ its bindings and $A$ the absences
+it relied on. A fact holds if any of its justifications holds, and a justification holds if all of its premises do:
+
+$$
+\operatorname{holds}(f) \iff \bigvee_{j \in J(f)} \ \bigwedge_{p \in P_j} \operatorname{holds}(p)
+$$
+
+so the provenance of a knowledge base is an AND/OR graph, a fact an OR over its justifications and each
+justification an AND over its premises, with the facts of a `source` or `hypothesis` justification, and those a
+file writes with no source, as its terminals. For $f = \mathsf{knows}(\mathsf{Bob}, \mathsf{Alice})$ the record is
+one firing, the step drawn above:
+
+$$
+J(f) = \bigl( (\text{rule},\ \text{knows-back},\ \lbrace \mathsf{knows}(\mathsf{Alice}, \mathsf{Bob}) \rbrace,\ \lbrace a \mapsto \mathsf{Alice},\ b \mapsto \mathsf{Bob} \rbrace,\ \emptyset) \bigr)
+$$
 
 ## Where a fact came from
 
