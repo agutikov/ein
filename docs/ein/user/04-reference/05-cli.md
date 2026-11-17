@@ -10,9 +10,9 @@ prints is [`08-read-out.md`](08-read-out.md); every refusal is [`07-diagnostics.
 | command | answers | what it costs |
 |---|---|---|
 | **`ein solve FILE`** | a question about R, chosen by flags (§ [2.1](#21-ein-solve)); bare, it describes R | the least work the question needs |
-| **`ein oracle FILE`** | R by brute force: every one of the 2ⁿ commitments saturated (§ [2.2](#22-ein-oracle)) | 2ⁿ saturations, always |
+| **`ein oracle FILE`** | R by brute force: every one of the $2^n$ commitments over the $n$ candidates saturated (§ [2.2](#22-ein-oracle)) | $2^n$ saturations, always |
 | `ein test PATH…` | the claims programs state about themselves (§ [2.3](#23-ein-test)) | per file, the least question that decides its claims |
-| `ein saturate FILE` | root, the node ∅: the program's least fixpoint (§ [2.4](#24-ein-saturate)) | one saturation |
+| `ein saturate FILE` | root, the node $\emptyset$: the program's least fixpoint (§ [2.4](#24-ein-saturate)) | one saturation |
 | `ein render VIEW …` | a drawing, as DOT (§ [2.5](#25-ein-render-and-ein-show)) | what the view reads |
 | `ein show hyps FILE` | the hypothesis set H, as Ein facts (§ [2.5](#25-ein-render-and-ein-show)) | root's saturation and the generator |
 | `ein kb save FILE OUT` | a `.einb` container of the program (§ [2.6](#26-ein-kb)) | one load |
@@ -33,7 +33,7 @@ means what `ein oracle FILE` prints for the same program
 |---|---|---|
 | **C1** | **Every state a run prints is a member of the oracle's R.** It is printed *as* minimal or maximal only when it is on that line of the oracle's R | a superset printed as a solution; a state printed as maximal while an alive extension exists |
 | **C2** | **A claim printed as certified equals the oracle's**: k_s, k_c, a line, *one state*, *none* | a certified line with one of its states missing |
-| **C3** | **A run a budget stopped prints bounds, never a different answer**: k_s ≥ …, a line ⊇ what it printed, no verdict word, `exhausted no` | *no solution* said of a region that holds every commitment of its cube |
+| **C3** | **A run a budget stopped prints bounds, never a different answer**: $k_s$ is at least the count printed, a line holds at least the states printed, no verdict word, `exhausted no` | *no solution* said of a region that holds every commitment of its cube |
 | **C4** | **No lever changes what is printed**, work counters aside, and that includes *which* states `-n` prints ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)) | an option that changes R, or picks a different witness |
 
 **Why it holds whether or not the program is monotone.** Every question evaluates a commitment the way the oracle
@@ -64,7 +64,7 @@ ASK     (describe, the default) | -n N | --single | --count (over all of R only)
 
 | | **describe** (default) | **`-n N`** | **`--single`** |
 |---|---|---|---|
-| **all of R** (default) | R in full: k_s, k_c, both lines, components, maximal sub-cubes, merged classes, `N` | N states of R | is k_s = 1? |
+| **all of R** (default) | R in full: k_s, k_c, both lines, components, maximal sub-cubes, merged classes, `N` | N states of R | is $k_s = 1$? |
 | **`--minimal`** | the minimal line: its commitments, their states, their sizes | N of them | is the minimal line one state? |
 | **`--maximal`** | the maximal line: the states nothing can be added to | N of them | is the maximal line one state? |
 
@@ -81,7 +81,7 @@ ASK     (describe, the default) | -n N | --single | --count (over all of R only)
   qualify them (`exhausted`, `∅`, `lattice` with a flagged program's warning, `universe`, `route`, `work`), and
   nothing listed. No state is read, so no query is answered and no claim checked, and one `claims` row says so. It
   is over all of R only: beside `--minimal`, `--maximal`, `-n` or `--single` it is a usage error that names the
-  command that answers the other question. A count is exact, and is reported up to 2⁶³ − 1, which every surface
+  command that answers the other question. A count is exact, and is reported up to $2^{63} - 1$, which every surface
   reads as *this many or more* ([Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)).
 - **`--monotone`** asks about the program instead of R: root's fixpoint and the static check, the sites that make
   the program not monotone and what each puts at stake, no node built. Every verdict exits 0, and it excludes the
@@ -108,7 +108,7 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
 - **What it does:** saturates every subset of H, the program's candidates, with no licence and no pruning. It
   prints `ein solve FILE`'s description, in the same layout, plus what only the cube has: the holes, and the static
   verdict checked against the cube.
-- **Why it is a command of its own:** it is the reference every question is held to. It costs 2ⁿ saturations on
+- **Why it is a command of its own:** it is the reference every question is held to. It costs $2^n$ saturations on
   every program, including those where a question needs one, so it runs only when asked by name.
 - **`--region-limit N`** (default 16): above it the command refuses, exit 2, naming the cube's size and the limit
   that would compute it. Passing a larger N is the request; from 17 the command warns, and from 20 it warns with
@@ -167,7 +167,7 @@ two questions, they hold the last. `--json-report` is § [5](#5-what-is-fixed-ab
 
 ### 2.4 `ein saturate`
 
-`ein saturate FILE` loads the program and saturates it: root, the node ∅, the program's least fixpoint with no
+`ein saturate FILE` loads the program and saturates it: root, the node $\emptyset$, the program's least fixpoint with no
 hypothesis taken. It prints the input, the time of each phase, the state before and after saturation and the
 firings by rule; `--dump` adds the saturated knowledge base grouped by origin. It is how a commitment is checked by
 hand, too: add its facts to a copy of the program and saturate the copy (§ [4.4](#44-checking)). `--max-steps N`
@@ -287,7 +287,7 @@ share 100 lines, and `--dump-answer DIR` writes each uncut
 | Is the minimal guess unique? | `ein solve F --minimal --single` | the same, about the minimal line |
 | The same check, stated in the program | a `(solve … :expect …)` or `(query … :expect …)` in F, then `ein test F` | `ok` or `FAILED`, and an exit code; the runner picks the question (§ [2.3](#23-ein-test)) |
 
-Plain `--single` on a program with restrictions only answers `Ambiguity` whenever any candidate is alive: ∅, root
+Plain `--single` on a program with restrictions only answers `Ambiguity` whenever any candidate is alive: $\emptyset$, root
 itself, is in R there, and every alive extension is a second state. That is what the second row is for.
 
 ### 4.3 How many, and what shape?

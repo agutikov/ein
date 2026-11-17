@@ -134,7 +134,7 @@ digraph kb {
 The three dashed `can-drink` arrows are the *inheritance closure* of the stated fact `(can-drink Human Drink)` across
 the `is-a` arrows: every pair of $\lbrace \mathsf{Human}, \mathsf{Jack} \rbrace \times \lbrace \mathsf{Drink},
 \mathsf{Coffee} \rbrace$ but the one it starts from. The compact view puts *two* relations,
-`can-drink` and `drinks`, on the same pair Jack → Coffee; only the labels tell them apart.
+`can-drink` and `drinks`, on the same pair, from Jack to Coffee; only the labels tell them apart.
 
 The **detailed** view draws every fact as its own node, joined to its relation and to each argument by a numbered
 edge, the way [facts](../03-syntax-and-semantics/03-facts.md) states a fact and the way `ein render kb` draws a fact of any

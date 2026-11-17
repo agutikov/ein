@@ -1,7 +1,7 @@
 # Reserved names
 
 The names a program may *write* but not *redefine*: the language gives each a fixed meaning. A name is reserved
-**if and only if** this page lists it, and nothing else is special. Ein imposes **no type system**, `is-a` and `T`
+**if and only if** this page lists it, and nothing else is special. Ein has **no types**, `is-a` and `T`
 being an ordinary relation and an ordinary name
 ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)), and **no symmetry**,
 `symmetric` being a property a rule gives meaning to
@@ -9,14 +9,14 @@ being an ordinary relation and an ordinary name
 its own records, which no program writes, are
 [`07-reserved-engine-strings.md`](../../ein.rs/07-reserved-engine-strings.md).
 
-## Quick reference — intent → word
+## Quick reference — from intent to word
 
 *"I want to express X: what do I write?"* With this table, [`02-syntax.md`](02-syntax.md) and its § 3 on patterns, a
 program can be written without reading anything else.
 
 | I want to… | write | see |
 |---|---|---|
-| declare a relation and its argument types | `(relation R A B :why "…")` | [§ Top-level declarators](#top-level-declarators--the-closed-set); [what the signature means](02-syntax.md#what-the-signature-means--userspace-types-kernel-structure) |
+| declare a relation, with a label for each argument slot | `(relation R A B :why "…")` | [§ Top-level declarators](#top-level-declarators--the-closed-set); [what the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine) |
 | state a fact | `(R a b)`, any head that is no declarator | [§ Top-level declarators](#top-level-declarators--the-closed-set) |
 | deny a fact | `(not (R a b))`, a stored negation | [§ Rule-body primitives](#rule-body-primitives) |
 | declare a saturation rule | `(rule N (?p…) :match … :assert … :why "…")` | [§ Top-level declarators](#top-level-declarators--the-closed-set) |
@@ -48,7 +48,7 @@ malformed form is a parse error too.
 
 | name | form | meaning |
 |---|---|---|
-| `relation` | `(relation R [A B …] :why "…")` | declare a relation and its signature, a name and **zero or more** type names; the declaration is also stored as the fact `(relation R A B …)` and the membership fact `(relation R)` ([what the signature means](02-syntax.md#what-the-signature-means--userspace-types-kernel-structure)) |
+| `relation` | `(relation R [A B …] :why "…")` | declare a relation and its signature, a name and **zero or more** slot labels, each an ordinary name; the declaration is also stored as the fact `(relation R A B …)` and the membership fact `(relation R)` ([what the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)) |
 | `rule` | `(rule N (?p…) :match … :assert … :why "…")` | a saturation rule |
 | `hrule` | `(hrule N (?p…) :match … :assert … :why "…")` | a hypothesis rule: it proposes what may be guessed, and never fires during saturation |
 | `query` | `(query :goal … …)` | a question about the answer |
@@ -156,7 +156,7 @@ owing node is stated in a region claim as `(owing (model …))` ([`02-syntax.md`
 `std.algebra` declares `total-owed` and `surjective-owed`, the obligation duals of the totality checks beside them,
 activated by `bijective-setup`. `std.slots` declares `slot-owed-room` and `slot-owed-fill`, activated by
 `slot-partition-setup`. All four assert `(open ?R)` and nothing else, and the *direction* is nowhere in the head: it
-falls out of which slot the rule's own `absent` leaves free ([`04-stdlib.md`](04-stdlib.md)).
+falls out of which slot the rule's own `absent` leaves free ([`04-stdlib/`](04-stdlib/README.md)).
 
 ## `written` — what a file writes, stated by the loader
 
@@ -214,8 +214,8 @@ declare its own under either name. A program that wants them imports them:
 | `unknown` | `(unknown P)` | `(and (absent P) (absent (not P)))`: P is neither stated nor denied |
 | `forall` | `(forall ?b G B)` | `(absent (and G (absent B)))`: for every `?b` with `G`, `B` holds |
 
-Both expand to nested `absent`s, so they mean what `absent` means: the ∀ is ¬∃¬ over the state at the closure
-boundary, and a nested `absent` is the one guard that can turn from false to true as saturation goes on, so it is asked
+Both expand to nested `absent`s, so they mean what `absent` means: the $\forall$ is $\lnot\exists\lnot$ over the
+state at the closure boundary, and a nested `absent` is the one guard that can turn from false to true as saturation goes on, so it is asked
 again at every later quiescence.
 
 **What a call expands to is held to the grammar**
@@ -235,10 +235,10 @@ does, a stored negation being a fact.
 | name | form | meaning |
 |---|---|---|
 | `__closed__` | `(__closed__ R)` | no hypothesis is generated about R: its extension is fixed. Written by a program, or derived by `std.closure` or a module's closing rule; the engine infers it for no relation. Used as a relation or a value, never bound, and never an object the blind enumerator proposes about. No hrule proposes a closed relation and no obligation owes one ([below](#the-mechanisms-and-each-pair)) |
-| `__symmetric__` | `(__symmetric__ R)` | R's extension is closed under swapping its two arguments, `(R a b)` ⇒ `(R b a)`, in the saturation the mark comes to hold in, whether written or derived: the closure the `symmetric` rule of `std.algebra` derives, with no rule firing per mirror. Used as a relation or a value, never bound, and never an object the blind enumerator proposes about |
+| `__symmetric__` | `(__symmetric__ R)` | R's extension is closed under swapping its two arguments, $R(a, b) \implies R(b, a)$, in the saturation the mark comes to hold in, whether written or derived: the closure the `symmetric` rule of `std.algebra` derives, with no rule firing per mirror. Used as a relation or a value, never bound, and never an object the blind enumerator proposes about |
 | `:hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | the blind enumerator and the obligations rung guess only the listed relations; the hrule rung reads no list. Every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are |
 | `:no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual: never guess on the listed relations, while saturation rules on them still fire; read by the blind enumerator and the obligations rung, never the hrule rung |
-| `:no-search` | `(solve … :no-search)` | a flag, no value: the lattice is root alone, nothing is proposed whatever else the program declares, so R is {∅} where root is alive and discharged and empty otherwise. The way to say *judge root alone* |
+| `:no-search` | `(solve … :no-search)` | a flag, no value: the lattice is root alone, nothing is proposed whatever else the program declares, so R is $\lbrace \emptyset \rbrace$ where root is alive and discharged and empty otherwise. The way to say *judge root alone* |
 | `:expect` on a query | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be: the query's own claim, checked by the engine, and `ein solve` exits 1 when it is false ([`02-syntax.md` § Query](02-syntax.md#query)) |
 | `:expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region: R's states, `(merged …)` states, `(owing …)`, written only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a parse error; `model` is a name ([`02-syntax.md` § Solve](02-syntax.md#solve)) |
 
@@ -305,15 +305,17 @@ row of the table stands beside it
 - **`model`**, the head of an `:expect` value. It is read in that one position and nowhere else, so a relation, rule
   or name called `model` is unaffected: a position word, a name wherever a name goes.
 - **`closed`**, bare: free for a program or the standard library to define. The engine reads `__closed__`.
-- **`is-a` and `T`**: an ordinary relation and an ordinary name. A program's membership rules *are* its type system.
-  `T` is the conventional *don't care* type for a signature slot, and any name behaves the same. The slot may be
-  dropped, `(relation R)` being a legal bare declaration, but that changes what is guessed: only a relation with a
-  non-empty signature is guessed, so `T` is what to write for a guessable relation with no meaningful type
-  ([`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). Because nothing is reserved here, **type
-  systems coexist**: [`zebra.ein`](../../../../examples/zebra.ein) writes membership as `type` and `instance`
+- **`is-a` and `T`**: an ordinary relation and an ordinary name. Ein has no types: what a program calls a type is a
+  name its membership facts point at or a declaration labels a slot with, and it means what the program's rules,
+  and the library's it imports, make of those facts. `T` is the conventional label for a slot that needs none that
+  says something, and any name behaves the same. The slot may be dropped, `(relation R)` being a legal bare
+  declaration, but that changes what is guessed: only a relation with a non-empty signature is guessed, so `T` is
+  what to write for such a slot of a guessable relation
+  ([`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). Because nothing is reserved here, **two
+  conventions coexist**: [`zebra.ein`](../../../../examples/zebra.ein) writes membership as `type` and `instance`
   relations, and [`zebra2.ein`](../../../../examples/zebra2.ein) as one `is-a`, and both are declared relations. A
-  type *of a relation* is legal for the same reason: `(is-a co-located EquivalenceRelation)` loads and is stored, and
-  only a rule gives it meaning.
+  membership fact *about a relation* is legal for the same reason: `(is-a co-located EquivalenceRelation)` loads and
+  is stored, and only a rule gives it meaning.
 - **`symmetric`**, `transitive`, `functional` and the rest: property tags the program states, each given meaning by a
   rule that reads it, the standard library's or the program's
   ([`../03-syntax-and-semantics/07-properties-and-operators.md`](../03-syntax-and-semantics/07-properties-and-operators.md)).

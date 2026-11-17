@@ -202,7 +202,7 @@ Five arguments, and each carries weight. The membership relation (`instance`) an
 attributes (`type`) are *parameters*, so the rules name no `is-a` and the module works for either membership
 convention. `Attribute` names the family, so adding an attribute category is adding one `(type T Attribute)` fact,
 not a declaration for every pair of attributes. `House` is the **index**: the member that names a slot, which lets the derived facts be anchored on
-value × index instead of enumerating the whole equivalence.
+a value and an index instead of enumerating the whole equivalence.
 
 ```lisp
 (slot-spatial co-located right-of instance House)

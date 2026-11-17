@@ -2,7 +2,7 @@
 
 Every Ein model is built from three things: **objects**, **relations**, and **facts**. This chapter introduces each
 one *three ways at once*: in **ein-lang** (the text you write), as a **graph** (what Ein reasons over), and in plain
-English (what the Ein says). That ein-lang ↔ graph ↔ English triad is the habit the rest of the guide leans on.
+English (what the Ein says). That triad, ein-lang, graph and English, is the habit the rest of the guide leans on.
 
 We'll use a two-house slice of the Zebra puzzle.
 

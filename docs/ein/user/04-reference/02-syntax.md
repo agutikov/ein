@@ -12,7 +12,7 @@ are [`03-reserved-names.md`](03-reserved-names.md), and every refusal's line is 
 
 | terminal | regex | examples | role |
 |---|---|---|---|
-| `NAME` | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | an atom: a value, a relation, a rule, a type, a step. **The name rule**: a run of ASCII name characters, each name printed as written and reloading to itself, so `7` and `07` are two names. No character has a meaning of its own, `*` among them. A reserved word is never a name, and a position word is one wherever a name goes ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar), fact 1). A token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused |
+| `NAME` | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | an atom: a value, a relation, a rule, a slot's label, a step. **The name rule**: a run of ASCII name characters, each name printed as written and reloading to itself, so `7` and `07` are two names. No character has a meaning of its own, `*` among them. A reserved word is never a name, and a position word is one wherever a name goes ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar), fact 1). A token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused |
 | `VAR` | ``\?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `?a`, `?house`, `?T`, `?R*`, `?_x`, `?a.b` | a variable: `?` and a name's characters, bound by a `:match` and reused in an `:assert` |
 | `KEYWORD` | `:` and a name's characters | `:match`, `:rule`, `:source` | a form's clause marker, followed by its value, but `(solve …)`'s `:no-search`, a flag. **Each form takes a fixed set** ([below](#the-keywords-each-form-takes)), and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)) |
 | `TEXT` | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else**: the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, carried byte for byte by every surface that prints it ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). Written anywhere else, as a fact's or a rule's argument, a name or a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact |
@@ -23,7 +23,7 @@ note *_ is reserved and names nothing: where any value will do, write a variable
 what to write where any value will do, and `_` anywhere else in a word is a name character, so `_a_in_b_` is a name
 and `?_x` a variable. Ein has no numbers and no ranges
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)): `1..5`, `7` and `07` are
-three names, and arithmetic is a theory in the standard library ([`04-stdlib.md`](04-stdlib.md)).
+three names, and arithmetic is a theory in the standard library ([`04-stdlib/`](04-stdlib/README.md)).
 
 The regexes above are the readable form; [`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar) is the exact one, with the
 order that settles a tie between a reserved word and `NAME` and the start condition that ends a token at a separator.
@@ -64,8 +64,8 @@ with a line of its own; a module that holds a character that is not ASCII outsid
 that does not exist is `kb load error: (import m) — module not found at m.ein (None)`.
 
 **Naming convention**: hyphenated lower case for relations and rules (`has-color`, `triangle-composition`), and
-PascalCase or `Foo-N` for types and instances (`Person`, `House-1`, `Norwegian`). A convention only; the grammar
-takes either.
+PascalCase or `Foo-N` for the names of things and of the groups a program puts them in (`Person`, `House-1`,
+`Norwegian`). A convention only; the grammar takes either.
 
 ## 2. Top-level forms
 
@@ -138,23 +138,26 @@ property tag gets nothing.
 ### Relation declarator
 
 ```text
-(relation <name> [<T1> <T2> …]           ; the signature: zero or more type names
+(relation <name> [<L1> <L2> …]           ; the signature: a label for each argument slot, zero or more
   :why "<template>")                      ; the one keyword a relation takes
 ```
 
 `relation` declares a relation and its signature. The loader also stores each declaration as an ordinary fact,
-`(relation R T1 T2 …)`, its **mirror**, so that a rule can read a signature with a `(relation ?R ?A ?B)` pattern.
+`(relation R L1 L2 …)`, its **mirror**, so that a rule can read a signature with a `(relation ?R ?A ?B)` pattern.
 That is why `relation` is a position word: a name wherever a name goes, `(relation ?R ?A ?B)` a pattern, and as a
 form's head the declarator, so `(relation)` and the wrapped form `(relation R (T1 T2))` are parse errors.
 
-**A name and zero or more type names.** `(relation adult Person)` is a legal **unary** declaration, and
+**A name and zero or more slot labels.** Ein has no types. A label is an ordinary name, an argument of the mirror
+fact like the relation's own name, and it means what the rules that read the mirror make it mean
+([§ What the signature means](#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)).
+`(relation adult Person)` is a legal **unary** declaration, and
 `(relation opaque)` a legal **bare** one, a relation with no argument
 ([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)): `(opaque)` is its one
 form.
 
 **A declaration's count is held**
-([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). The number of type
-names is the number of arguments every form of the relation has, and the loader refuses a program that writes one
+([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). The number of
+labels is the number of arguments every form of the relation has, and the loader refuses a program that writes one
 with another count, a fact, a fact inside a fact at any depth, a pattern or a conclusion of a rule or an hrule, a
 goal's pattern and a fact a claim lists alike
 ([Q-M1f.204](../../../decisions/language/Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md)), one line a
@@ -166,8 +169,8 @@ kb load error: t.ein:2:2: the fact (likes Bob) gives likes 1 argument, and (rela
 
 A keyword pair is no argument. A relation nothing declares has no count and is not held, a relation written as a
 variable, `(?R ?a ?b)`, is not read
-([Q-M1f.202](../../../decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)), and the type
-names are not checked: `(likes Tea Ann)` loads.
+([Q-M1f.202](../../../decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)), and no
+argument is held to a label: `(likes Tea Ann)` loads. The line's last word, *types*, is the count of labels.
 
 **The membership fact.** A pattern matches facts of its own count, so `(relation ?R ?A ?B)` sees only binary
 declarations. Every declaration therefore also stores `(relation R)`, the pattern for *is `?R` a declared relation?*
@@ -223,25 +226,50 @@ so they read as background:
 (right-of House-2 House-1 :source "condition (1)")  ; "five in a row": structural, and condition (1)
 ```
 
-#### What the signature means — userspace types, kernel structure
+#### What the signature means — labels for rules, a shape for the engine
 
-Ein imposes **no type system**
+Ein has **no types**
 ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)), and yet a signature is not
-inert. It plays two roles that never mix: rules read the signature's *content* as types, and the engine reads its
-*shape* as structure.
+inert. It is read in two ways that never mix: rules read its *labels*, and the engine reads its *shape*.
 
-**As types, in rules only.** Everything type-like keys off the mirror fact `(relation ?R ?A ?B)` in a rule:
-`std.bijection`'s type check, `std.algebra`'s converse domain and range check, `std.typing`'s hierarchy
-([`04-stdlib.md`](04-stdlib.md)). The engine never resolves a type name to anything: a signature holds opaque names.
+**The labels, by rules only.** A rule reads a signature through the mirror fact, `(relation ?R ?A ?B)`, and a label
+means what that rule does with it. Here `first-slot` reads the label of a relation's first slot and says which facts
+put there a name with no `is-a` fact into it:
 
-**As structure, in the engine**, in three places and no other, each about what may be guessed
+```lisp
+(relation is-a T T :why "{?1} is a {?2}")
+(relation likes Person Drink :why "{?1} likes {?2}")
+(relation misplaced Thing Label :why "{?1} is written where a {?2} goes, and is none")
+
+;; A rule that reads a declaration: ?A is the label of ?R's first slot.
+(rule first-slot (?R)
+  :match  (and (relation ?R ?A ?B) (?R ?a ?b) (absent (is-a ?a ?A)))
+  :assert (misplaced ?a ?A)
+  :why    "{?a} is the first argument of a {?R} fact, and no {?A}")
+(first-slot likes)
+
+(is-a Ann Person) (is-a Tea Drink)
+(likes Ann Tea)
+(likes Tea Ann)
+
+(solve :no-search)
+(query :goal (misplaced ?x ?label))
+```
+
+`ein solve` answers the query with `?label = Person · ?x = Tea`. Without the line `(first-slot likes)` the query
+has no row: both `likes` facts load either way, and `Person` and `Drink` say nothing. Everything type-like in the
+standard library is such a rule: `std.bijection`'s check, `std.algebra`'s converse domain and range check,
+`std.typing`'s hierarchy ([`04-stdlib/`](04-stdlib/README.md)). The engine never resolves a label to anything: a
+signature holds opaque names.
+
+**The shape, by the engine**, in three places and no other, each about what may be guessed
 ([`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)):
 
 | the signature is… | so the blind enumerator… |
 |---|---|
-| **not empty** | may guess the relation's facts: a declaration with no type is never guessed, so write `(relation R T)`, `T` any name, for a guessable relation with no meaningful type |
-| **one or two types long** | proposes one candidate per object for a unary relation, and one per pair of objects for a binary one; a relation of three arguments or more loads, stores facts and saturates, and is never guessed |
-| **its type names** | never proposes a fact *about* a name a signature declares as a type ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)) |
+| **not empty** | may guess the relation's facts: a declaration with no label is never guessed, so write `(relation R T)`, `T` any name, for a guessable relation whose slot needs no label that says something |
+| **one or two labels long** | proposes one candidate per object for a unary relation, and one per pair of objects for a binary one; a relation of three arguments or more loads, stores facts and saturates, and is never guessed |
+| **its labels** | never proposes a fact *about* a name a signature lists as a label ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)) |
 
 The `:why` template and the signature column of `ein saturate`'s relation table read a declaration too, as
 presentation.
@@ -431,7 +459,7 @@ A conclusion is ordinarily a fact pattern, with `(and …)` concluding several a
 **`open` is written there and nowhere else**
 ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): a rule's or an
 hrule's whole `:assert`, `(open)` or `(open ?R)`, `?R` a parameter or a relation's name. It is one of the words that
-are never a name, so no fact, nested fact, stored negation, pattern, value, type, object, activator argument, goal,
+are never a name, so no fact, nested fact, stored negation, pattern, value, label, object, activator argument, goal,
 claim, `(solve …)` list, `:over`, import, trace step or macro body writes it
 ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)); each is refused at the
 parse, at the `open`, with the note *open is reserved: it is the verdict a rule's :assert states, written as the whole
@@ -547,7 +575,7 @@ has one lattice and one answer, and every query asks about it. What each list do
 - **It takes five keywords**, and any other is refused at the parse. On a `(query …)` each of the four that choose the
   lattice is refused at the parse, with a note that names `(solve …)`.
 - **`:no-search` is a flag**, the one keyword that takes no value: **the program states that its lattice is root
-  alone**. Nothing is proposed, whatever hrules, obligations or lists it also declares, so R is {∅} where root is alive
+  alone**. Nothing is proposed, whatever hrules, obligations or lists it also declares, so R is $\lbrace \emptyset \rbrace$ where root is alive
   and discharged and empty otherwise; an obligation judges root and proposes nothing. It is part of the program, so
   every command reads it, and `ein solve`'s `universe` row says *the program states :no-search*. A value after it is
   refused at the parse. `ein solve --no-search` is another thing, a command declining to discover R
@@ -571,7 +599,7 @@ has one lattice and one answer, and every query asks about it. What each list do
     ([Q-M1f.115](../../../decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md)). Each `(a b)` is an
     activator, which binds `h`'s parameters once, so it has as many arguments as `h` has parameters. An argument at a
     parameter that names a relation, one that heads a form of the hrule as `?R` does in `(?R ?a ?b)`, is a relation of
-    the program; an argument at any other parameter is a value, a type or an object, and is not checked
+    the program; an argument at any other parameter is a value, a label or an object, and is not checked
     ([Q-M1f.116](../../../decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)).
   - `:hypothesis-relations` and `:no-hypothesis`: every name is a relation of the program. `()` names none.
   - **A relation of the program** is a name the program writes as a relation outside the three lists: one it declares
@@ -581,16 +609,19 @@ has one lattice and one answer, and every query asks about it. What each list do
 
 #### The expected region — `(solve … :expect …)`
 
-```text
-<claim> ::= (region <item>*)              ; R, by its nodes
-          | (false)                       ; every node dead
-<item>  ::= (model <fact>*)               ; one state of R
-          | (merged <to> <from>)          ; a state several commitments reach
-          | (owing (model <fact>*) …)     ; R empty, and these alive nodes owe
-<to>    ::= (model <fact>*)               ; one of the states listed
-<from>  ::= (model <fact>*)               ; its one minimal commitment
-          | (or (model <fact>*) …)        ; …or its several
-```
+| | is written | and says |
+|---|---|---|
+| the claim | `(region <item>*)` | R, by its nodes |
+| | `(false)` | every node dead |
+| an item | `(model <fact>*)` | one state of R |
+| | `(merged <to> <from>)` | a state several commitments reach |
+| | `(owing (model <fact>*) …)` | R empty, and these alive nodes owe |
+| `<to>` | `(model <fact>*)` | one of the states listed |
+| `<from>` | `(model <fact>*)` | its one minimal commitment |
+| | `(or (model <fact>*) …)` | or its several |
+
+The productions are `RegionClaim`, `RegionItem` and `MergedFrom` of
+[the grammar, § 2.11](01-grammar.md#211-a-solve-and-its-claim).
 
 A `(model …)` is a state of R, root's facts included; the models are R's states, one to one, in any order; naming a
 relation closes it, across the whole claim, and stored negatives are not closed; `(merged …)` is all or nothing;
@@ -715,10 +746,10 @@ name**, the module's name and the name, `std.math.decimal-arith.add`, `onto.is-a
 ([Q-M1f.231](../../../decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md)): the same through
 every import path, so a module read by two imports, under two aliases, is one copy. A full name is global: any file
 may write one of a module the program brings. The main file has no module name, so what it declares keeps its name. A
-name no file declares, a type, a digit, a relation a module states facts of and never declares, has no full name and
+name no file declares, a slot's label, a digit, a relation a module states facts of and never declares, has no full name and
 is one name in every file.
 
-**A module's name is its path.** `std.x.y` is `x/y.ein` under the [standard library](04-stdlib.md); any other name is a
+**A module's name is its path.** `std.x.y` is `x/y.ein` under the [standard library](04-stdlib/README.md); any other name is a
 path **from the program file's directory**, a dot per directory, for the imports a module writes too
 ([Q-M1f.235](../../../decisions/imports/Q-M1f.235-a-module-has-one-path-from-the-program-files.md)): from a program in
 `examples/word_problems/`, `(import word-theory.gaps :as gaps)` reads `word-theory/gaps.ein`, and that module imports
@@ -902,7 +933,7 @@ shows.
   or a cardinality has no spelling at all, and none is planned: Ein has no numbers
   ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)). *Only one candidate
   remains* is ordinary rules: `std.bijection`'s `domain-elimination` and `range-elimination`, and `std.slots`'
-  `slot-elimination` and `slot-fill`, each a `forall` decided at the closure boundary ([`04-stdlib.md`](04-stdlib.md)).
+  `slot-elimination` and `slot-fill`, each a `forall` decided at the closure boundary ([`04-stdlib/`](04-stdlib/README.md)).
 - **A host-language escape.** Every step the matcher takes is one the trace can name, and an opaque predicate would
   be an unexplained firing.
 

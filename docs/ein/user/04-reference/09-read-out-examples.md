@@ -1727,8 +1727,8 @@ one. The region comes first and takes them: stdout lists states 1–37 outside a
 in one would claim to be all of R, then says what it left out and that `--dump-answer DIR` writes the whole
 `(region …)` to `DIR/answer.txt`. The query still gets its `over` row, its one class and its one-line `as :expect`.
 The rows are never cut. Stdout is 126 lines, and `answer.txt` is 562. The state numbers are the
-same in both, so *state 37* on the screen is *state 37* in the file. The blind enumerator binds the type
-`Color` as an object, and the `types` row says so.
+same in both, so *state 37* on the screen is *state 37* in the file. The blind enumerator proposes facts about
+`Color`, the name the program's `is-a` facts point at, and the `types` row says so.
 
 `ein solve examples/saturation/type-exclusivity/colors.ein`
 

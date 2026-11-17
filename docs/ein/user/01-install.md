@@ -3,7 +3,7 @@
 **There are two channels:** a binary from a release, or `cargo install` from a checkout.
 
 `ein` is one self-contained executable. The `std.*` standard library is compiled into it
-([the standard library](04-reference/04-stdlib.md)), so a downloaded binary solves `zebra2.ein` on a machine with nothing
+([the standard library](04-reference/04-stdlib/README.md)), so a downloaded binary solves `zebra2.ein` on a machine with nothing
 else on it. What can differ between a binary and a checkout beside it is *which* standard library a run reads, and
 `ein --version` answers that in one line ([§ Verify what you got](#verify-what-you-got)).
 
@@ -13,7 +13,7 @@ A release carries one executable per platform, and `SHA256SUMS`:
 
 | file | platform | notes |
 |---|---|---|
-| `ein-linux-x86_64` | Linux x86_64 | glibc ≥ 2.35 (built on Ubuntu 22.04) |
+| `ein-linux-x86_64` | Linux x86_64 | glibc 2.35 or later (built on Ubuntu 22.04) |
 | `ein-linux-aarch64` | Linux aarch64 | the same |
 | `ein-macos-universal2` | macOS | one file, both architectures |
 | `ein-windows-x86_64.exe` | Windows x86_64 | |
@@ -144,4 +144,4 @@ package. To drive Ein from Python, or from any language, run the binary and read
 
 - [`README.md`](../../../README.md): what Ein is, and the quickstart.
 - [The guide](02-guide/README.md): learn Ein by solving the Zebra puzzle.
-- [The standard library](04-reference/04-stdlib.md): what `std.*` holds.
+- [The standard library](04-reference/04-stdlib/README.md): what `std.*` holds.

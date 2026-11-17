@@ -7,13 +7,15 @@ states one surface completely. What a concept means, in four representations, is
 
 ## The language
 
-- [`01-grammar.md`](01-grammar.md): **the grammar**, the lexer's rules and the parser's productions, generated from the
-  grammar files; what parses, exactly, and what the grammar leaves to the loader.
+- [`01-grammar.md`](01-grammar.md): **the grammar**, every rule of the lexer and every production of the parser as
+  EBNF, drawn as railroad diagrams and generated from the two grammar files, which the page links; what parses,
+  exactly, and what the grammar leaves to the loader.
 - [`02-syntax.md`](02-syntax.md): the lexical rules, every top-level form, the keywords each takes and what the loader holds
   it to, and the pattern language of a rule's `:match` and `:assert`.
-- [`03-reserved-names.md`](03-reserved-names.md): the names a program writes and does not redefine, an *intent → word*
+- [`03-reserved-names.md`](03-reserved-names.md): the names a program writes and does not redefine, an *intent to word*
   card, the verdict atom `open`, `written`, and the hypothesis mechanisms and how each pair reads.
-- [`04-stdlib.md`](04-stdlib.md): every module of the standard library, `std.*`, and what each symbol does.
+- [`04-stdlib/`](04-stdlib/README.md): the standard library, `std.*`, a page a family of modules: what a program
+  imports and writes, what each symbol produces, and the module's rules apart.
 
 ## Running Ein
 
@@ -37,7 +39,7 @@ states one surface completely. What a concept means, in four representations, is
 ## Conventions
 
 - `;` line comments, `#| block |#` block comments, not nesting.
-- Hyphenated lower case for relations and rules (`has-color`, `triangle-composition`); PascalCase or `Foo-N` for types
-  and instances (`Person`, `House-1`).
-- A block of Ein is fenced ```` ```lisp ````, a drawing ```` ```dot ````, a command ```` ```sh ```` and printed output
-  ```` ```text ````.
+- Hyphenated lower case for relations and rules (`has-color`, `triangle-composition`); PascalCase or `Foo-N` for the
+  names of things and of the groups a program puts them in (`Person`, `House-1`).
+- A block of Ein is fenced ```` ```lisp ````, a drawing ```` ```dot ````, a diagram of the grammar
+  ```` ```plantuml ````, a command ```` ```sh ```` and printed output ```` ```text ````; a formula is TeX between `$`.
