@@ -205,7 +205,8 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-fact.puml`](diagrams/01-grammar-phrase-fact.puml):
-`Fact`, `NotFact`, `NestedFact`, `EqFact`, `FactArg`, `FactArgs`, `FactClause`, `FactClauses`, `NestedFacts`.
+`Fact`, `NotFact`, `NegFact`, `NestedFact`, `EqFact`, `FactArg`, `FactArgs`, `FactClause`, `FactClauses`,
+`NestedFacts`.
 
 ![A fact, a stored negation and a fact as an argument, as a railroad diagram](diagrams/01-grammar-phrase-fact.svg)
 
@@ -237,7 +238,7 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-pattern.puml`](diagrams/01-grammar-phrase-pattern.puml):
-`Pattern`, `AnyHead`, `Term`, `Terms`.
+`Pattern`, `AnyHead`, `Term`, `NegPattern`, `Terms`.
 
 ![A pattern and its terms, as a railroad diagram](diagrams/01-grammar-phrase-pattern.svg)
 
@@ -300,7 +301,7 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 <!-- /generated: ein.y -->
 
-Four things the productions say that are easy to read past:
+Five things the productions say that are easy to read past:
 
 - **A `Conclusion` is a conjunction of literals, read flat.** `Conclusions` nests, and an `(and …)` inside an
   `(and …)` concludes each of its members, as the outer one does, at any depth. No production takes `or` in a
@@ -309,6 +310,10 @@ Four things the productions say that are easy to read past:
 - **A stored negative, `NotFact`, takes a fact's clauses**, so a derived `(not …)` fact's provenance, `:rule
   type-exclusivity :using ((c10 a))`, attaches as a fact's does. A `(not …)` in a `:match` or an `:assert` is a
   `Connective` or a `Conclusion` and takes no clause: a keyword pair there is a parse error.
+- **A stored negation may be of a stored negation**, at any depth: `NegFact`, where a fact is written, and
+  `NegPattern`, where a pattern is, each take themselves under `not`
+  ([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)). Neither takes a
+  name, an equality or a variable there: `(not ?x)` is a `Conclusion` of its own and stands nowhere else.
 - **Each form's keywords are its own productions**, `RelationClauses`, `RuleClause`, `QueryClause`, `SolveClause`,
   `ConfigClause`, `ImportClause`, `StepClause` and `FactClause`, and each keyword's value is the production after it:
   a claim is a `Claim` or a `RegionClaim`, a flag a `Bool`, a `:hrules` value `Hrules`, and `:no-search` takes none

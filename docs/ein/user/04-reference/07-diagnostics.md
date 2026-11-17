@@ -581,7 +581,7 @@ calls is not read**, so it loads whatever its body.
 |---|---|
 | `eq` or `neq` at any arity but 2, in a `:match` or as a conclusion | `eq takes exactly 2 arguments, not <n> — it compares two values, so write one guard per pair` |
 | `absent` at any arity but 1 | `absent takes exactly 1 argument, not <n> — negation as failure is over one premise, so wrap several in an (and …)` |
-| `not` of what is no pattern: a conjunction, a disjunction, a `not`, a `neq`, a name, or in a `:match` a variable (`std.macro`'s `unknown` called with a conjunction among them) | `not takes a pattern (relation argument …), not <arg> — it is the stored negation of one fact; negation as failure is (absent …)`; as a conclusion, *a pattern (relation argument …) or a variable* |
+| `not` of what is no pattern: a conjunction, a disjunction, a `neq`, a name, or a variable in a `:match` or under another `not` (`std.macro`'s `unknown` called with a conjunction among them). A `not` of a `not` of a pattern is a pattern, the negation of a negation | `not takes a pattern (relation argument …), not <arg> — it is the stored negation of one fact; negation as failure is (absent …)`; as a conclusion, *a pattern (relation argument …) or a variable* |
 | a connective where an argument goes: an `(and …)`, an `(or …)` or a `(neq …)` as a guard's argument, a conclusion's or a negated pattern's | `<value> is a connective where a value goes — <c> heads no fact, and a value is a name, a variable or a fact (relation argument …)` |
 | `false` with an argument, as a conclusion | `false takes no argument, not <n> — (false) concludes that the state is impossible, and names nothing` |
 | an `(or …)` as a conclusion | `an (or …) is no conclusion — a rule concludes every conclusion it writes, and a disjunction is a :match's, one way it holds per premise: write one rule per disjunct` |
@@ -739,7 +739,8 @@ premises one by one, as the loader reads them for a claim.
 
 ### 2.22 An object is an atom, or a fact a state could hold
 
-*An object is an atom, or a fact a state could hold: a fact of an ordinary relation, or its negation*
+*An object is an atom, or a fact a state could hold: a fact of an ordinary relation, or the stored negation of a
+fact a state could hold*
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)). A fact
 inside a fact, a pattern inside a pattern, and a conclusion's or a guard's argument are objects, or patterns of
 them, and the lines below call each a *value*. Four rules hold the language to it:
@@ -1075,7 +1076,7 @@ is placed as § 2.16 places a form a body writes, at the macro's body.
 [Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)): for each fact stored
 from a file, a program's, a local module's or a stdlib module's, each fact nested among its arguments at any depth is
 stated once, `(written T)`; for a stored negation `(not P)`, the facts nested in P's arguments, P being the fact it
-denies and no term the file writes. And the facts nested in every rule's and hrule's conclusion that hold no
+denies and no term the file writes, and where P is itself a stored negation the same again of the fact P denies. And the facts nested in every rule's and hrule's conclusion that hold no
 variable: a nested fact a rule assembles from a variable is stated by nothing. A fact of `eq`, which is checked and
 never stored, states nothing.
 
@@ -1083,6 +1084,7 @@ never stored, states nothing.
 |---|---|
 | `(add (n (n z 1) 2) (n z 5))` | `(written (n (n z 1) 2))`, `(written (n z 1))`, `(written (n z 5))` |
 | `(not (p (q (k a))))` | `(written (q (k a)))`, `(written (k a))`: P's arguments' facts, and nothing of `(p (q (k a)))`, the fact denied |
+| `(not (not (p (q a))))` | `(written (q a))`: nothing of `(not (p (q a)))` nor of `(p (q a))`, the two facts denied |
 | `(rule r () :match (s ?x) :assert (p (q a) (k ?x)) …)` | `(written (q a))`, from the rule's text |
 
 `written` is a **kernel relation**, as `relation` is: reserved, so no declarator binds it

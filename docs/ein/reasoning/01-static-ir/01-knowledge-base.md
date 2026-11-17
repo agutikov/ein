@@ -306,15 +306,19 @@ The atoms $\mathsf{not}$ and $\mathsf{false}$ are reserved, and the facts under 
 
 $$
 \begin{aligned}
-\operatorname{rel}(f) = \mathsf{not} &\implies \operatorname{ar}(f) = 1 \ \land\ \operatorname{arg}_1(f) \in F \ \land\ \operatorname{rel}(\operatorname{arg}_1(f)) \neq \mathsf{not} \\
+\operatorname{rel}(f) = \mathsf{not} &\implies \operatorname{ar}(f) = 1 \ \land\ \operatorname{arg}_1(f) \in F \\
 \operatorname{rel}(f) = \mathsf{false} &\implies \operatorname{ar}(f) = 0
 \end{aligned}
 $$
 
-So $\lnot a$ of an atom $a$ is no fact, and $\lnot\lnot g$ is no fact; $\lnot\bot$ is one, and $\bot$ may be an
-argument ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md),
-[Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)). What reads the two
-relations is [below](#a-fact-its-negation-both-or-neither).
+So $\lnot a$ of an atom $a$ is no fact; $\lnot\bot$ is one, and $\bot$ may be an argument
+([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md),
+[Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)). **A stored negation is
+a fact, so it has a stored negation of its own**: $\lnot\lnot g$ is the fact of $\mathsf{not}$ whose one argument
+is the fact $\lnot g$, and so at any depth
+([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)). It is a third fact
+beside $g$ and $\lnot g$, and says that $\lnot g$ does not hold. What reads the two relations is
+[below](#a-fact-its-negation-both-or-neither).
 
 ### The global context, and the context of a fact
 
@@ -684,7 +688,8 @@ $$
 $$
 
 The second equation is the one exception to the arrows: a stored negation and the fact it denies are read as
-one, so a negation nests what the fact it denies nests, and not that fact itself. The
+one, so a negation nests what the fact it denies nests, and not that fact itself. It is applied at each
+negation, so $\operatorname{sub}(\lnot\lnot g) = \operatorname{sub}(\lnot g) = \operatorname{sub}(g)$. The
 [context](#the-global-context-and-the-context-of-a-fact) of a fact makes no such exception and follows every
 argument arrow, the negation's too:
 
@@ -712,7 +717,7 @@ arrow, identified by its own arrows at every depth, whether or not the knowledge
 
 ### A fact, its negation, both, or neither
 
-For a fact $f$ that is no stored negation, a set $K$ of facts holds $f$, or $\lnot f$, or neither, or both:
+For a fact $f$, a set $K$ of facts holds $f$, or $\lnot f$, or neither, or both:
 
 $$
 \operatorname{status}_K(f) =
@@ -740,6 +745,22 @@ $$
 A set of facts that holds a contradiction is **dead**, and one that holds none is **alive**. Both are properties
 of the set: a set that includes a dead set is dead. This is all the two reserved relations mean, and it is what
 the reasoning reads them for.
+
+**The fact $f$ may itself be a stored negation**, and the definitions read it as they read any fact. With
+$f = \lnot g$, the pair they compare is $\lnot g$ and $\lnot\lnot g$:
+
+$$
+\begin{aligned}
+\lnot g \in K \ \land\ \lnot\lnot g \in K &\implies \operatorname{dead}(K) \\
+g \in K \ \land\ \lnot\lnot g \in K &\ \not\Longrightarrow\ \operatorname{dead}(K) \\
+\lnot\lnot g \in K &\ \not\Longrightarrow\ g \in K
+\end{aligned}
+$$
+
+A set that holds $\lnot\lnot g$ holds the denial of a denial, and no definition of this page takes it for $g$:
+the two are different nodes, and no pair of the three facts $g$, $\lnot g$, $\lnot\lnot g$ is compared but a fact
+with its own negation. That $g$ holds where $\lnot\lnot g$ does is a step of classical logic, and here it is a
+rule that a program states, [written like any other](02-rewriting-rules.md#packing-and-unpacking).
 
 ### A context gives a fact no truth
 
@@ -798,7 +819,8 @@ complement of $K$: the four statuses are the four ways a fact can be in the two,
 | contradicted | yes | yes |
 
 A mirror would leave no fact open. So a fact that is denied is no more held than one that somebody says: it is
-in a context, and a pattern finds it there and not in the global one.
+in a context, and a pattern finds it there and not in the global one. Nor does denying twice lead back:
+$\lnot\lnot g \in K$ puts $\lnot g$ in $N_K$, and says nothing of whether $g$ is in the global context.
 
 **The same holds of every fact that is read where it is held.** A declaration is a held fact of
 $\mathsf{relation}$, and the facts that apply a rule are held facts of its name

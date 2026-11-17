@@ -301,8 +301,9 @@ writing it out ([rules and contexts](05-rules.md#rules-and-contexts)).
 ### What may be an argument
 
 What may be written as an argument is an object: an atom, or a fact a state could hold, which is a fact of an
-ordinary relation, its stored negation `(not F)`, or `(false)`
-([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)). `eq`, `neq`,
+ordinary relation, a stored negation `(not F)` of such a fact or of a stored negation, or `(false)`
+([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md),
+[Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)). `eq`, `neq`,
 `absent`, `and`, `or`, and `false` with an argument never head a nested form, since none of them is a fact any
 state holds, and each is refused where it is written
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)).

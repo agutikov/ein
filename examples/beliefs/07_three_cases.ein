@@ -1,0 +1,48 @@
+;;; 07_three_cases — one fact, held, in a fact's context, or both.
+;;;
+;;; A fact is one object wherever it is written. What differs is where it
+;;; stands: **in the global context**, which is what a state holds; **in a
+;;; fact's context**, under an arrow of a fact that speaks about it; or in
+;;; both. The three, for three equalities:
+;;;
+;;;     (= 4 (+ 2 2))    held, and in no fact's context
+;;;     (= 5 (+ 2 2))    in the context of what Alice thinks, and not held
+;;;     (= 6 (+ 3 3))    held, and in the context of what Alice thinks
+;;;
+;;; The two questions a program asks of a fact are two patterns, and each
+;;; reads one of the two:
+;;;
+;;; - **is it held?** `(= ?a ?b)`, a pattern of its own, is matched among the
+;;;   facts the state holds: 4 and 6, and not 5, which only Alice thinks;
+;;; - **does Alice think it?** `(think Alice (= ?a ?b))` is matched against
+;;;   what stands under the arrow of a held fact of `think`, held or not: 5
+;;;   and 6.
+;;;
+;;; A rule is held to the same: `stated` reads the global context and fires
+;;; for 4 and 6. And the sums, `(+ 2 2)` and `(+ 3 3)`, are facts that nobody
+;;; states and nothing concludes: each stands only in the context of an
+;;; equality, so the last question has no answer.
+
+(relation think  Person Claim :why "{?1} thinks that {?2}")
+(relation stated Number       :why "what {?1} is, is stated")
+
+(= 4 (+ 2 2))
+(think Alice (= 5 (+ 2 2)))
+(= 6 (+ 3 3))
+(think Alice (= 6 (+ 3 3)))
+
+(rule stated-of ()
+  :match  (= ?a ?b)
+  :assert (stated ?a)
+  :why    "{?a} is {?b}")
+
+(solve :no-search)
+
+(query :goal (= ?a ?b)
+  :expect (model (= 4 (+ 2 2)) (= 6 (+ 3 3))))
+(query :goal (think Alice (= ?a ?b))
+  :expect (model (think Alice (= 5 (+ 2 2))) (think Alice (= 6 (+ 3 3)))))
+(query :goal (stated ?a)
+  :expect (model (stated 4) (stated 6)))
+(query :goal (+ ?a ?b)
+  :expect (model))

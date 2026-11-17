@@ -1,0 +1,42 @@
+;;; 03_liar_denial — a liar's denial, and the negation of a negation.
+;;;
+;;; Alice thinks that five is not two plus two, and Alice lies. The rule
+;;; `distrust` denies whatever a liar thinks: its conclusion `(not ?f)` is the
+;;; negation of the fact `?f` is bound to. Here that fact is itself a stored
+;;; negation, `(not (= 5 (+ 2 2)))`, so the rule concludes
+;;;
+;;;     (not (not (= 5 (+ 2 2))))
+;;;
+;;; **the negation of a negation, which is a fact like any other**: the fact
+;;; of `not` whose one argument is the fact `(not (= 5 (+ 2 2)))`. A file may
+;;; write it and a rule may match it.
+;;;
+;;; - **It says only that the denial does not hold.** Nothing here concludes
+;;;   `(= 5 (+ 2 2))` from it: that step is a rule a program states, and
+;;;   `06_double_negation.ein` states it. So `(= 5 (+ 2 2))` is neither held
+;;;   nor denied, and its denial is not held either: Alice only thinks it.
+;;; - **`=`, `+`, `5` and `2` are names.** Ein has no numbers, and its own
+;;;   equality is spelt `eq`.
+;;;
+;;; `04_liar_denial_contradicted.ein` and `05_liar_denial_beside_the_fact.ein`
+;;; are this program with one more fact each.
+
+(relation liar  Person       :why "{?1} lies")
+(relation think Person Claim :why "{?1} thinks that {?2}")
+
+(think Alice (not (= 5 (+ 2 2))))
+(liar Alice)
+
+(rule distrust ()
+  :match  (and (liar ?p) (think ?p ?f))
+  :assert (not ?f)
+  :why    "{?p} lies and thinks {?f}")
+
+(solve :no-search)
+
+(query :goal (not (not (= ?a ?b)))
+  :expect (model (not (not (= 5 (+ 2 2))))))
+(query :goal (= ?a ?b)
+  :expect (model))
+(query :goal (not (= ?a ?b))
+  :expect (model))

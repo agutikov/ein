@@ -35,13 +35,67 @@ schema = "ein-corpus/2"
 path   = "examples/beliefs/01_common_belief.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "render kb"]
-note   = "A fact as another fact's argument: `(believes Ann (likes Dan Soup))` states a belief, its content a value no state holds until a rule says when it is true. The rule here: what every person believes is true, one rule per shape of content (`likes`, `(not (likes …))`), \"every person\" a `forall` over `person`, which `(__closed__ person)` closes so the program is monotone and *forbid* does not refuse the negative one; `(solve :no-search)`, root alone. Two claims, computed by hand: `(likes Dan Soup)` and `(not (likes Dan Fish))`, and nothing Ann alone or two of three believe. Its KB drawn beside it, `01_common_belief.kb.dot` and `.svg` (`ein render kb`)."
+note   = "A fact as another fact's argument: `(believes Ann (likes Dan Soup))` states a belief, its content a fact in the belief's context, which no state holds until a rule says when it is true. The rule here: what every person believes is true, one rule per shape of content (`likes`, `(not (likes …))`), \"every person\" a `forall` over `person`, which `(__closed__ person)` closes so the program is monotone and *forbid* does not refuse the negative one; `(solve :no-search)`, root alone. Two claims, computed by hand: `(likes Dan Soup)` and `(not (likes Dan Fish))`, and nothing Ann alone or two of three believe. Its KB drawn beside it, `01_common_belief.kb.dot` and `.svg` (`ein render kb`)."
 
 [[entry]]
 path   = "examples/beliefs/02_packing.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "render kb"]
-note   = "A rule that packs a fact into another fact's argument: `witnessed` writes `(knows Ann (likes Dan Soup))` for each fact Ann witnesses, a value built from names the program has, no new name; `confirm` joins that derived value with the same value Bob's `claims` writes in the file, and confirms it, while Bob's `(likes Dan Tea)`, which no one knows, stays a value only. `(solve :no-search)`, root alone. Three claims, computed by hand. Its KB drawn beside it, `02_packing.kb.dot` and `.svg` (`ein render kb`)."
+note   = "A rule that packs a fact into another fact's argument: `witnessed` writes `(knows Ann (likes Dan Soup))` for each fact Ann witnesses, a fact under an arrow built from names the program has, no new name; `confirm` joins the fact the rule packed with the same fact Bob's `claims` writes in the file, and confirms it, while Bob's `(likes Dan Tea)`, which no one knows, stays in the claim's context only. `(solve :no-search)`, root alone. Three claims, computed by hand. Its KB drawn beside it, `02_packing.kb.dot` and `.svg` (`ein render kb`)."
+
+[[entry]]
+path   = "examples/beliefs/03_liar_denial.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "The negation of a negation, built by a rule: Alice lies and thinks `(not (= 5 (+ 2 2)))`, and `distrust`'s conclusion `(not ?f)` denies whatever a liar thinks, so root holds `(not (not (= 5 (+ 2 2))))`, a fact of `not` whose argument is a stored negation. Nothing concludes `(= 5 (+ 2 2))` from it. `(solve :no-search)`, root alone. Three claims, computed by hand: the double negation held; no fact of `=` and no stored negation of one, each the empty class."
+
+[[entry]]
+path   = "examples/beliefs/04_liar_denial_contradicted.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "`03_liar_denial.ein` with the denial itself stated, `(not (= 5 (+ 2 2)))`: the rule concludes the negation of that fact, and a fact held with its negation is a contradiction whatever the fact, here a stored negation beside the negation of a negation. Root is dead: `(solve :no-search :expect (false))`."
+
+[[entry]]
+path   = "examples/beliefs/05_liar_denial_beside_the_fact.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "`03_liar_denial.ein` with `(= 5 (+ 2 2))` stated: root holds the fact and the negation of its negation, and is alive, since what the second denies is `(not (= 5 (+ 2 2)))`, which root does not hold. Three claims, computed by hand; the second writes the negation of a negation in the file, the fact the rule built."
+
+[[entry]]
+path   = "examples/beliefs/06_double_negation.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "The elimination of a double negation as a rule the program states: `eliminate`, one rule for facts of two arguments with the relation a parameter, activated for `=` and not for `likes`; and `eliminate-in`, the same rule wrapped in `(think ?p …)`, which concludes a fact Bob thinks and nothing held. `(solve :no-search)`. Three claims, computed by hand: `(= 5 (+ 2 2))` concluded; no fact of `likes`, though its double negation is held alike; `(think Bob (= 7 (+ 3 4)))`."
+
+[[entry]]
+path   = "examples/beliefs/07_three_cases.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "One fact in the global context, in a fact's context, or in both: `(= 4 (+ 2 2))` held, `(= 5 (+ 2 2))` only in the context of what Alice thinks, `(= 6 (+ 3 3))` both. The two questions read one each: `(= ?a ?b)` the facts held (4 and 6), `(think Alice (= ?a ?b))` what stands under the arrow (5 and 6); a rule over `(= ?a ?b)` fires for 4 and 6; and `(+ ?a ?b)` has no row, the sums standing only in a context. `(solve :no-search)`. Four claims, computed by hand."
+
+[[entry]]
+path   = "examples/beliefs/08_global_and_wrapped.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "A rule of the global context beside the same rule for a fact's context: `symmetric` reads `(= a b)`, held, and never `(= c d)`, which only Ann thinks; `symmetric-in` is the same patterns under the macro `in`, `(think ?p …)`, and concludes `(think Ann (= d c))`, nothing held. Neither reads the other's facts. `(solve :no-search)`. Two claims, computed by hand."
+
+[[entry]]
+path   = "examples/beliefs/09_false_in_a_context.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "A contradiction inside a context stays there: `contradicts`, the context's relation and the fact's both parameters, concludes `(think Ann (false))` and `(says Bob (false))`, facts of `think` and `says` that point at `(false)`, and root is alive; `muddled-in` reads them; `everybody-muddled`, a `forall` over a closed `person`, would conclude root's own `(false)` and does not fire, Cy being consistent. `(solve :no-search)`. Three claims, computed by hand."
+
+[[entry]]
+path   = "examples/beliefs/10_everybody_contradicts.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "`09_false_in_a_context.ein` with Cy contradicting themself too: every person's `(false)` is still in a context, and the rule `everybody-muddled` concludes root's own. A `(false)` in a context reaches the global one by a rule that says so. Root is dead: `(solve :no-search :expect (false))`."
+
+[[entry]]
+path   = "examples/beliefs/11_nothing_acts_in_a_context.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "What a fact does, it does where it is held: under an arrow of `think`, a declaration `(relation near Place)` declares nothing (`near` is used with two arguments), an activator `(chain near)` applies no rule (`(near a c)` is not concluded, where `(chain above)`, held, gives `(above a c)`), `(false)` refutes nothing, and `(not (near a b))` contradicts nothing beside the held `(near a b)`. `(solve :no-search)`. Three claims, computed by hand."
 
 [[entry]]
 path   = "examples/branching/01_saturate_only.ein"

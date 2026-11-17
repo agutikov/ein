@@ -109,8 +109,9 @@ impl From<Overflow> for FireError {
 ///
 /// **`None` is the negation of a name**, which is no fact (under the value
 /// rule: *an object is an atom, or a fact a state could hold: a fact of
-/// an ordinary relation, or its negation*). A conclusion `(not ?x)` is of a
-/// variable bound to a fact;
+/// an ordinary relation, or the stored negation of a fact a state could
+/// hold*). A conclusion `(not ?x)` is of a variable bound to a fact, a
+/// stored negation among them, whose negation is a fact too (Q-M1f.391);
 /// where a binding gives it a name there is nothing to conclude, so the
 /// firing stores nothing for it and an hrule proposes nothing, as a true `eq`
 /// conclusion adds nothing ([`build_conclusion`]). The loader refuses the

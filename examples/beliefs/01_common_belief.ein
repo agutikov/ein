@@ -1,9 +1,9 @@
 ;;; 01_common_belief — a fact every person believes is true.
 ;;;
 ;;; A fact can be another fact's argument: `(believes Ann (likes Dan Soup))`
-;;; states Ann's belief, and its second argument is a value, not a fact the
-;;; state holds. Nothing makes `(likes Dan Soup)` true but a rule that says
-;;; when a belief's content holds. This one says: **what every person
+;;; states Ann's belief, and its second argument is a fact in the context of
+;;; that belief, not one the state holds. Nothing makes `(likes Dan Soup)`
+;;; held but a rule that says when a belief's content holds. This one says: **what every person
 ;;; believes is true**.
 ;;;
 ;;; Two things the language asks of such a rule:

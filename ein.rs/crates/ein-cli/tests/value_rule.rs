@@ -2,7 +2,7 @@
 //! Q-M1f.122 to .126).
 //!
 //! *An object is an atom, or a fact a state could hold: a fact of an ordinary
-//! relation, or its negation.* So no fact, value or conclusion is headed
+//! relation, or the stored negation of a fact a state could hold.* So no fact, value or conclusion is headed
 //! `absent`, which is negation as failure, a premise's test (Q-M1f.122);
 //! `false` takes no argument anywhere (Q-M1f.123); `(eq …)`, computed and
 //! never stored, is no value, as `(neq …)` is none (Q-M1f.124); and a

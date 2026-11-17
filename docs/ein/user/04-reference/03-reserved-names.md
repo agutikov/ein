@@ -191,7 +191,7 @@ state file writes none of it, since the loader states it again when the file is 
 
 | name | arguments | meaning |
 |---|---|---|
-| `not` | 1 | the negation of one fact: `(not X)` is a stored fact whose argument is the fact denied. In a `:match` it matches a stored negation, and with `X` it is a contradiction |
+| `not` | 1 | the negation of one fact: `(not X)` is a stored fact whose argument is the fact denied, which may itself be a stored negation. In a `:match` it matches a stored negation, and with `X` it is a contradiction |
 | `false` | 0 | `(false)`: the state is contradictory. It takes no argument, as a fact, an argument of a fact, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)) |
 | `and` | 1 or more | conjunction: every premise holds, or every conclusion is derived |
 | `or` | 1 or more | disjunction, in a `:match` only: a top-level `(or …)` is one rule per disjunct, and an `(or …)` anywhere else in a `:match` is refused at load |

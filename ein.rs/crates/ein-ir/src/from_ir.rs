@@ -1366,6 +1366,14 @@ pub fn written_in_conclusions(
             match ast.head_name(c) {
                 Some("not") => {
                     for &p in ast.form_args(c) {
+                        // The fact denied, under every negation the literal
+                        // writes over it: none of them is a term.
+                        let mut p = p;
+                        while ast.head_name(p) == Some("not")
+                            && let [inner] = ast.form_args(p)
+                        {
+                            p = *inner;
+                        }
                         if matches!(ast.node(p), Node::SForm { .. }) {
                             ground_nested(ast, ast.form_args(p), &mut ground);
                         }
@@ -1442,6 +1450,9 @@ fn nested(
 }
 
 /// The facts nested in the arguments of `p`, the fact a negation denies.
+/// Where `p` is itself a stored negation (Q-M1f.391), the fact it denies is
+/// no term either: a negation nests what the fact it denies nests, at any
+/// depth of negation.
 fn denied(
     terms: &Terms,
     p: Value,
@@ -1449,8 +1460,15 @@ fn denied(
     seen: &mut rustc_hash::FxHashSet<Value>,
 ) {
     if let Some(id) = p.as_fact() {
-        let inner = terms.fact(id).1.to_vec();
-        nested(terms, inner, found, seen);
+        let (rel, inner) = terms.fact(id);
+        let inner = inner.to_vec();
+        if rel == terms.kernel.not {
+            for d in inner {
+                denied(terms, d, found, seen);
+            }
+        } else {
+            nested(terms, inner, found, seen);
+        }
     }
 }
 
@@ -2381,7 +2399,8 @@ impl<'a> Shapes<'a> {
 
     /// Why the form `node` is no value, where it is one of the heads no value
     /// has (the value rule, Q-M1f.113: *an object is an atom, or a fact a state
-    /// could hold: a fact of an ordinary relation, or its negation*): a
+    /// could hold: a fact of an ordinary relation, or the stored negation of a
+    /// fact a state could hold*): a
     /// connective, `and`, `or` or `neq`; `eq`, computed and never stored;
     /// `absent`, a premise's test; and `false` with an argument.
     fn no_value(&self, node: NodeId) -> Option<String> {
@@ -2441,7 +2460,8 @@ impl<'a> Shapes<'a> {
     }
 
     /// `(not P)`: the stored negation of one fact (`ein.y`'s `(not Pattern)`),
-    /// and, as a conclusion, of a variable bound to one (`(not Var)`). Written
+    /// a stored negation among them (`NegPattern`, Q-M1f.391), and, as a
+    /// conclusion, of a variable bound to one (`(not Var)`). Written
     /// as a premise or a conclusion of its own it may negate an equality,
     /// `(not (eq a b))`, which is computed (`ein.y`'s `Negated`); as a `value`,
     /// inside a pattern or a conclusion, it negates a fact a state could hold.
@@ -2469,7 +2489,11 @@ impl<'a> Shapes<'a> {
         }
         let fits = match (self.ast.node(p), self.shape(p)) {
             (Node::Var(_), _) => conclusion,
-            (_, Shape::Form(Some("and" | "or" | "not" | "neq"))) => false,
+            // The negation of a negation is a fact (Q-M1f.391): what it
+            // denies is a stored negation, held to what a negation written
+            // as a value is, so never one of a variable or of an equality.
+            (_, Shape::Form(Some("not"))) => return self.negation(p, false, true),
+            (_, Shape::Form(Some("and" | "or" | "neq"))) => false,
             (_, Shape::Form(_)) => true,
             _ => false,
         };
@@ -3708,8 +3732,8 @@ fn refuse_derived_relation_activators(
 
 /// **A conclusion `(not ?x)` whose variable can hold a name**, under the
 /// value rule (Q-M1f.113: *an object is an atom, or a fact a state could hold: a
-/// fact of an ordinary relation, or its negation*). `not` of a name is the
-/// negation of no fact.
+/// fact of an ordinary relation, or the stored negation of a fact a state
+/// could hold*). `not` of a name is the negation of no fact.
 ///
 /// The grammar takes `(not Var)` as a conclusion, for a variable bound to a
 /// fact, `(hypothesis ?h)` then `(not ?h)`; whether it is bound to one depends

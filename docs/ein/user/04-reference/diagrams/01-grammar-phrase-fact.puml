@@ -1,9 +1,13 @@
 @startebnf
 Fact = "(" , FactHead , FactArgs , FactClauses , ")" | "(" , "false" , FactClauses , ")" ;
-NotFact = "(" , "not" , NestedFact , FactClauses , ")" | "(" , "not" , EqFact , FactClauses , ")" ;
+NotFact =
+    "(" , "not" , NestedFact , FactClauses , ")"
+  | "(" , "not" , NegFact , FactClauses , ")"
+  | "(" , "not" , EqFact , FactClauses , ")" ;
+NegFact = "(" , "not" , NestedFact , ")" | "(" , "not" , NegFact , ")" ;
 NestedFact = "(" , ValueHead , FactArgs , ")" | "(" , "false" , ")" ;
 EqFact = "(" , "eq" , FactArgs , ")" ;
-FactArg = Name | NestedFact | "(" , "not" , NestedFact , ")" ;
+FactArg = Name | NestedFact | NegFact ;
 FactArgs = { FactArg } ;
 FactClause = ":source" , Text | ":rule" , Name | ":using" , "(" , NestedFacts , ")" ;
 FactClauses = { FactClause } ;

@@ -8,7 +8,7 @@ Connective =
   | "(" , "not" , Negated , ")"
   | "(" , "absent" , Premise , ")"
   | Guard ;
-Negated = Pattern | "(" , "eq" , Term , Term , ")" ;
+Negated = Pattern | NegPattern | "(" , "eq" , Term , Term , ")" ;
 Guard = "(" , "eq" , Term , Term , ")" | "(" , "neq" , Term , Term , ")" ;
 Args = { Arg } ;
 Arg = Name | Var | "(" , ArgHead , Args , ")" | "(" , "false" , ")" | Connective ;

@@ -341,7 +341,8 @@ in the global context; one in a context is reached by a rule that reads it, and 
 of arguments; its relation may be a parameter. A variable that stands for the whole fact is no conclusion,
 `:assert ?f`, and no premise, `?f`, `(not ?f)`, `(absent ?f)`; the one thing written over it is the conclusion
 `(not ?f)`, which denies whatever fact `?f` is bound to
-([Q-M1f.393](../../../decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)). In mathematics, with
+([Q-M1f.393](../../../decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)); bound to a stored
+negation, it concludes [the negation of that negation](06-constraints.md#the-negation-of-a-negation). In mathematics, with
 $K$ the facts held:
 
 $$

@@ -141,8 +141,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - a rule a program does not list is named by its full name,
 ///   `std.math.int.int-div-pn`; `elim/03` and `04` hold `std.elim` whole
 ///   and meet `0` and `1` in its `domain-elimination`.
-/// - `beliefs/01` and `02` write a belief's or a claim's content only as
-///   another fact's argument, so its names are no top-level argument.
+/// - `beliefs/01` to `11` write a belief's, a claim's or a thought's content
+///   only as another fact's argument, or under a stored negation, so its
+///   names are no top-level argument.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
@@ -152,7 +153,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// another arity) and the loader's refusals (a premise that is no form, a
 /// relation variable no parameter binds, a relation parameter bound to a
 /// fact, an hrule concluding more than one fact).
-const SEEDED: [(&str, &[&str]); 128] = [
+const SEEDED: [(&str, &[&str]); 137] = [
     (
         "examples/arith/int.ein",
         &[
@@ -180,6 +181,70 @@ const SEEDED: [(&str, &[&str]); 128] = [
     (
         "examples/beliefs/02_packing.ein",
         &["`Tea`, in (claims Bob (likes Dan Tea))"],
+    ),
+    (
+        "examples/beliefs/03_liar_denial.ein",
+        &[
+            "`2`, in (think Alice (not (= 5 (+ 2 2))))",
+            "`5`, in (think Alice (not (= 5 (+ 2 2))))",
+        ],
+    ),
+    (
+        "examples/beliefs/04_liar_denial_contradicted.ein",
+        &[
+            "`2`, in (think Alice (not (= 5 (+ 2 2))))",
+            "`5`, in (think Alice (not (= 5 (+ 2 2))))",
+        ],
+    ),
+    (
+        "examples/beliefs/05_liar_denial_beside_the_fact.ein",
+        &["`2`, in (think Alice (not (= 5 (+ 2 2))))"],
+    ),
+    (
+        "examples/beliefs/06_double_negation.ein",
+        &[
+            "`2`, in (not (not (= 5 (+ 2 2))))",
+            "`3`, in (think Bob (not (not (= 7 (+ 3 4)))))",
+            "`4`, in (think Bob (not (not (= 7 (+ 3 4)))))",
+            "`5`, in (not (not (= 5 (+ 2 2))))",
+            "`7`, in (think Bob (not (not (= 7 (+ 3 4)))))",
+            "`Dan`, in (not (not (likes Dan Soup)))",
+            "`Soup`, in (not (not (likes Dan Soup)))",
+        ],
+    ),
+    (
+        "examples/beliefs/07_three_cases.ein",
+        &[
+            "`2`, in (= 4 (+ 2 2))",
+            "`3`, in (= 6 (+ 3 3))",
+            "`5`, in (think Alice (= 5 (+ 2 2)))",
+        ],
+    ),
+    (
+        "examples/beliefs/08_global_and_wrapped.ein",
+        &["`c`, in (think Ann (= c d))", "`d`, in (think Ann (= c d))"],
+    ),
+    (
+        "examples/beliefs/09_false_in_a_context.ein",
+        &[
+            "`2`, in (think Ann (= 5 (+ 2 2)))",
+            "`4`, in (think Cy (= 4 (+ 2 2)))",
+            "`5`, in (think Ann (= 5 (+ 2 2)))",
+            "`Carol`, in (says Bob (likes Bob Carol))",
+        ],
+    ),
+    (
+        "examples/beliefs/10_everybody_contradicts.ein",
+        &[
+            "`2`, in (think Ann (= 5 (+ 2 2)))",
+            "`4`, in (think Cy (= 4 (+ 2 2)))",
+            "`5`, in (think Ann (= 5 (+ 2 2)))",
+            "`Carol`, in (says Bob (likes Bob Carol))",
+        ],
+    ),
+    (
+        "examples/beliefs/11_nothing_acts_in_a_context.ein",
+        &["`Place`, in (think Alice (relation near Place))"],
     ),
     (
         "examples/beyond_arith/equation_refuted.ein",

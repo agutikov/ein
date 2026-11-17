@@ -1,0 +1,31 @@
+;;; 05_liar_denial_beside_the_fact — a fact beside the negation of its negation.
+;;;
+;;; `03_liar_denial.ein` with one more fact: the program states that five is
+;;; two plus two. The rule `distrust` concludes
+;;; `(not (not (= 5 (+ 2 2))))`, and the state holds both. They do not
+;;; contradict: what the second denies is `(not (= 5 (+ 2 2)))`, which the
+;;; state does not hold.
+;;;
+;;; The last claim writes the negation of a negation in the file, as the first
+;;; states the one the rule concluded: one fact, written or derived.
+
+(relation liar  Person       :why "{?1} lies")
+(relation think Person Claim :why "{?1} thinks that {?2}")
+
+(think Alice (not (= 5 (+ 2 2))))
+(liar Alice)
+(= 5 (+ 2 2))
+
+(rule distrust ()
+  :match  (and (liar ?p) (think ?p ?f))
+  :assert (not ?f)
+  :why    "{?p} lies and thinks {?f}")
+
+(solve :no-search)
+
+(query :goal (= ?a ?b)
+  :expect (model (= 5 (+ 2 2))))
+(query :goal (not (not (= ?a ?b)))
+  :expect (model (not (not (= 5 (+ 2 2))))))
+(query :goal (not (= ?a ?b))
+  :expect (model))

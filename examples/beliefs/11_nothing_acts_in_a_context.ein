@@ -1,0 +1,49 @@
+;;; 11_nothing_acts_in_a_context — what a fact does, it does where it is held.
+;;;
+;;; A declaration declares, a rule's activator turns the rule on, `(false)`
+;;; makes a state impossible, and a fact contradicts its negation: each of
+;;; these is read **where the fact is held**. Under an arrow of another fact
+;;; it is a fact about which something is said, and it does none of them.
+;;; Here Alice thinks four such things, and nothing follows from any:
+;;;
+;;; - `(think Alice (relation near Place))` declares nothing: `near` is used
+;;;   below with two arguments, which a declaration of one would refuse;
+;;; - `(think Alice (chain near))` turns no rule on: `chain` is a rule, and
+;;;   only a held `(chain near)` is its activator, so `near` is not chained
+;;;   and `(near a c)` is not concluded;
+;;; - `(think Alice (false))` is a held fact of `think`, and the state is
+;;;   alive;
+;;; - `(think Alice (not (near a b)))` stands beside the held `(near a b)`,
+;;;   and nothing is contradicted.
+;;;
+;;; `chain` does work where its activator is held: `(chain above)` is, and
+;;; `(above a c)` is concluded.
+
+(relation think Person Claim :why "{?1} thinks that {?2}")
+(relation above Thing Thing  :why "{?1} is above {?2}")
+
+(think Alice (relation near Place))
+(think Alice (chain near))
+(think Alice (false))
+(think Alice (not (near a b)))
+
+(near a b)
+(near b c)
+(above a b)
+(above b c)
+
+(rule chain (?R)
+  :match  (and (?R ?x ?y) (?R ?y ?z))
+  :assert (?R ?x ?z)
+  :why    "{?x} {?R} {?y}, and {?y} {?R} {?z}")
+(chain above)
+
+(solve :no-search)
+
+(query :goal (near ?x ?y)
+  :expect (model (near a b) (near b c)))
+(query :goal (above a ?y)
+  :expect (model (above a b) (above a c)))
+(query :goal (think Alice ?what)
+  :expect (model (think Alice (relation near Place)) (think Alice (chain near))
+                 (think Alice (false)) (think Alice (not (near a b)))))

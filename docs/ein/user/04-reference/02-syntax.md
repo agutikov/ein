@@ -300,10 +300,13 @@ A fact is any top-level form whose head is **not** a declarator:
 
 An argument is an object, an atom or a fact, `(hypothesis (co-located Norwegian House-2))`
 ([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)). **An object is an atom, or a fact
-a state could hold**, a fact of an ordinary relation or its negation
+a state could hold**, a fact of an ordinary relation or the stored negation of a fact a state could hold
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)), so:
 
-- `not` is shape-pinned: `(not <fact>)`, one fact; a wrong count is a parse error.
+- `not` is shape-pinned: `(not <fact>)`, one fact; a wrong count is a parse error. The fact may be a stored
+  negation, `(not (not (paid Ann)))`, at any depth
+  ([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)); it is never an
+  atom, and never an equality.
 - `and`, `or`, `neq` and `absent` are premises of a rule's `:match`, never a fact's head, and never an argument. A
   guard is a premise, `(neq ?a ?c)`; there is no `:where` clause.
 - **`eq` and `neq` are relations whose facts are computed**
@@ -485,7 +488,8 @@ those premises and `refuted by` the rule. A firing whose every conclusion holds 
 fact of either that an hrule proposes is no hypothesis
 ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)).
 
-**A conclusion `(not ?x)` negates the fact `?x` is bound to**, and an atom has no negation: where the program shows
+**A conclusion `(not ?x)` negates the fact `?x` is bound to**, a stored negation among them, which gives the
+negation of a negation, and an atom has no negation: where the program shows
 that `?x` can be bound to an atom, the rule or the hrule is refused at load
 ([Q-M1f.127](../../../decisions/language/Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md)), and where
 only a run meets the atom, the firing concludes nothing for it

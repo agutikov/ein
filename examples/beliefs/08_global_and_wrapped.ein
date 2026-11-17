@@ -1,0 +1,41 @@
+;;; 08_global_and_wrapped — a rule of the global context, and the same rule
+;;; for a fact's context.
+;;;
+;;; **Every rule is global**: a premise is matched among the facts the state
+;;; holds. So `symmetric` reads `(= a b)`, which is held, and never
+;;; `(= c d)`, which only Ann thinks.
+;;;
+;;; **The same rule for a context is the same patterns, each wrapped in the
+;;; context.** `symmetric-in` reads what stands under the arrow of a held
+;;; fact of `think`, and concludes a fact that person thinks: `(think Ann
+;;; (= d c))`. It concludes nothing about the world, and `(= d c)` is not
+;;; held.
+;;;
+;;; The macro `in` is the wrapping, written once: `(in ?p F)` is
+;;; `(think ?p F)`, in a `:match`, in an `:assert` and in a `:goal` alike.
+;;; Neither rule reads the other's facts.
+
+(relation think Person Claim :why "{?1} thinks that {?2}")
+
+(macro in (?p ?F) (think ?p ?F)
+  :why "{?p} thinks that {?F}")
+
+(= a b)
+(think Ann (= c d))
+
+(rule symmetric ()
+  :match  (= ?x ?y)
+  :assert (= ?y ?x)
+  :why    "{?x} is {?y}")
+
+(rule symmetric-in ()
+  :match  (in ?p (= ?x ?y))
+  :assert (in ?p (= ?y ?x))
+  :why    "{?p} thinks that {?x} is {?y}")
+
+(solve :no-search)
+
+(query :goal (= ?x ?y)
+  :expect (model (= a b) (= b a)))
+(query :goal (in ?p (= ?x ?y))
+  :expect (model (think Ann (= c d)) (think Ann (= d c))))

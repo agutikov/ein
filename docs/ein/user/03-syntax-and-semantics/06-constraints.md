@@ -169,6 +169,57 @@ so it is the remaining one* is a rule whose premise is a `forall` over stored ne
 bijection and slot theories are written so ([bijections](../04-reference/04-stdlib/04-bijections.md#root-decides-negatives-and-elimination),
 [slots](../04-reference/04-stdlib/05-slots.md)).
 
+## The negation of a negation
+
+A stored negation is a fact, so it can be denied in its turn: `(not (not P))` is the fact of `not` whose one
+argument is the fact `(not P)`. A program writes it, a rule matches it and concludes it, and a query asks for it,
+as for any fact ([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)). One
+arises without being written wherever a rule denies whatever a variable is bound to, and the variable is bound to
+a negation:
+
+```lisp
+;; Alice lies, and thinks that five is not two plus two.
+(relation = Thing Thing :why "{?1} is {?2}")
+(think Alice (not (= 5 (+ 2 2))))
+(liar Alice)
+
+(rule distrust ()
+  :match  (and (liar ?p) (think ?p ?f))
+  :assert (not ?f)
+  :why    "{?p} lies and thinks {?f}")
+
+(query :goal (not (not (= ?a ?b))))
+(query :goal (= ?a ?b))
+(solve :no-search)
+```
+
+`ein solve` answers the first question `?a = 5 · ?b = (+ 2 2)` and the second with no row. **The denial of a
+denial says that the denial does not hold, and nothing more.** With $K$ the facts held:
+
+$$
+\begin{aligned}
+\lnot P \in K \ \land\ \lnot\lnot P \in K &\implies \operatorname{dead}(K) \\
+\lnot\lnot P \in K &\ \not\Longrightarrow\ P \in K
+\end{aligned}
+$$
+
+So `(not P)` beside `(not (not P))` is a contradiction, a fact with its own negation, and `P` beside
+`(not (not P))` is not one. **That `P` then holds is a rule a program states**, one rule for a count of arguments
+with the relation a parameter, turned on for the relations it is meant for:
+
+```lisp
+(rule eliminate (?R)
+  :match  (not (not (?R ?a ?b)))
+  :assert (?R ?a ?b)
+  :why    "it is not so that {?a} {?R} {?b} is not so")
+(eliminate =)
+```
+
+With those two forms added the second question answers `?a = 5 · ?b = (+ 2 2)`. What `not` may not deny is
+unchanged: an atom, an equality, and a bare variable anywhere but as a conclusion of its own, `(not ?f)`. The
+programs are under [`examples/beliefs/`](../../../../examples/beliefs/), `03_liar_denial.ein` to
+`06_double_negation.ein`.
+
 ## What a constraint is not
 
 A constraint narrows what a state may hold; it never chooses among possibilities. *One of these* is a hypothesis,

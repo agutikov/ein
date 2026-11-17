@@ -76,6 +76,42 @@
 0    examples/beliefs/02_packing.ein :: saturate
 0    examples/beliefs/02_packing.ein :: solve
 0    examples/beliefs/02_packing.ein :: test
+0    examples/beliefs/03_liar_denial.ein :: render kb
+0    examples/beliefs/03_liar_denial.ein :: saturate
+0    examples/beliefs/03_liar_denial.ein :: solve
+0    examples/beliefs/03_liar_denial.ein :: test
+0    examples/beliefs/04_liar_denial_contradicted.ein :: render kb
+0    examples/beliefs/04_liar_denial_contradicted.ein :: saturate
+0    examples/beliefs/04_liar_denial_contradicted.ein :: solve
+0    examples/beliefs/04_liar_denial_contradicted.ein :: test
+0    examples/beliefs/05_liar_denial_beside_the_fact.ein :: render kb
+0    examples/beliefs/05_liar_denial_beside_the_fact.ein :: saturate
+0    examples/beliefs/05_liar_denial_beside_the_fact.ein :: solve
+0    examples/beliefs/05_liar_denial_beside_the_fact.ein :: test
+0    examples/beliefs/06_double_negation.ein :: render kb
+0    examples/beliefs/06_double_negation.ein :: saturate
+0    examples/beliefs/06_double_negation.ein :: solve
+0    examples/beliefs/06_double_negation.ein :: test
+0    examples/beliefs/07_three_cases.ein :: render kb
+0    examples/beliefs/07_three_cases.ein :: saturate
+0    examples/beliefs/07_three_cases.ein :: solve
+0    examples/beliefs/07_three_cases.ein :: test
+0    examples/beliefs/08_global_and_wrapped.ein :: render kb
+0    examples/beliefs/08_global_and_wrapped.ein :: saturate
+0    examples/beliefs/08_global_and_wrapped.ein :: solve
+0    examples/beliefs/08_global_and_wrapped.ein :: test
+0    examples/beliefs/09_false_in_a_context.ein :: render kb
+0    examples/beliefs/09_false_in_a_context.ein :: saturate
+0    examples/beliefs/09_false_in_a_context.ein :: solve
+0    examples/beliefs/09_false_in_a_context.ein :: test
+0    examples/beliefs/10_everybody_contradicts.ein :: render kb
+0    examples/beliefs/10_everybody_contradicts.ein :: saturate
+0    examples/beliefs/10_everybody_contradicts.ein :: solve
+0    examples/beliefs/10_everybody_contradicts.ein :: test
+0    examples/beliefs/11_nothing_acts_in_a_context.ein :: render kb
+0    examples/beliefs/11_nothing_acts_in_a_context.ein :: saturate
+0    examples/beliefs/11_nothing_acts_in_a_context.ein :: solve
+0    examples/beliefs/11_nothing_acts_in_a_context.ein :: test
 0    examples/beyond_arith/casting_out_nines.ein :: saturate
 0    examples/beyond_arith/casting_out_nines.ein :: solve
 0    examples/beyond_arith/casting_out_nines.ein :: test

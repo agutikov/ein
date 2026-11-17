@@ -338,8 +338,8 @@ fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
 /// (Q-M1e2.28); a conclusion is a fact, never `?a` or a name; a trace takes
 /// `step` alone; `_` is no name (Q-M1e2.22); a fact's `:using` lists facts; a
 /// rule's three kw-pair orderings are `:match`, `:assert` and `:why`; a run
-/// of digits is a name (Q-M1e2.24); `(not (not …))` is refused (`not`
-/// negates a fact); a rule named `eq` is refused (`eq` is no declarator's
+/// of digits is a name (Q-M1e2.24); `(not (not …))` is the negation of a
+/// negation (Q-M1f.391); a rule named `eq` is refused (`eq` is no declarator's
 /// name); and the name rule's decorators and a macro's `:why` are written.
 ///
 /// The property is stronger than "it prints something readable": `Loc` lives
@@ -348,7 +348,7 @@ fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
 /// decorative.
 #[test]
 fn every_syntactic_shape_survives_dump_then_parse() {
-    let cases: [&str; 46] = [
+    let cases: [&str; 48] = [
         "(type Person) (type Engineer Person)",
         "(= (color House-1) Red)",
         "(lives-in Norwegian House-1 :source \"condition (10)\")",
@@ -386,6 +386,10 @@ fn every_syntactic_shape_survives_dump_then_parse() {
         // Negation, a nullary one, and one with a sentence.
         "(not (lives-in Spaniard Coffee))",
         "(not (plain))",
+        // The negation of a negation, as a fact, an argument, a premise and
+        // a conclusion (Q-M1f.391).
+        "(not (not (lives-in Spaniard Coffee)))",
+        "(rule nn () :match (said ?w (not (not (p ?x)))) :assert (not (not (q ?x))) :why \"nn\")",
         "(not (lives-in a b) :source \"s\")",
         "(rule n () :match (rel ?a ?b) :assert (not (rel ?b ?a)) :why \"n\")",
         "(not (co-located N H) :rule type-exclusivity :using ((s1)))",

@@ -27,7 +27,7 @@ s &\in (\Sigma^{+} \setminus W_{\!c}) \cup X
 $$
 
 within the shapes the reserved atoms fix: $\lnot t$ is the fact pattern $\operatorname{not}(t)$ with $t$ a fact
-pattern that is no negation, and $\bot$ is $\operatorname{false}()$. A fact pattern with no variable under any of
+pattern, a negation among them and never a variable, and $\bot$ is $\operatorname{false}()$. A fact pattern with no variable under any of
 its arrows, at any depth, is a fact. Some of the fact patterns of a pattern graph are its **premises**, as some
 of the facts of a knowledge base are held.
 
@@ -223,7 +223,9 @@ $$
 
 An atom has no negation, so the second literal adds nothing where its variable holds one
 ([Q-M1f.128](../../../decisions/language/Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md)), and a check
-that fails is a contradiction, as $\bot$ is.
+that fails is a contradiction, as $\bot$ is. A stored negation has one: where $\theta(x) = \lnot g$, the literal
+gives $\lnot\lnot g$, a fact
+([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)).
 
 **The result of rewriting** a knowledge base $K$ by a pattern $\varphi$ and a conclusion $\psi$ **at a match**
 $\theta$ of $\varphi$ in $K$ is the knowledge base
@@ -479,7 +481,8 @@ negation of a variable, or a check. So:
 |---|---|---|
 | hold a fact found in a context | $\operatorname{says}(w, \operatorname{owns}(p, x)) \implies \operatorname{owns}(p, x)$ | spelling the fact's relation and its count |
 | the same for any relation of one count | $\operatorname{says}(w, R(p, x)) \implies R(p, x)$, with $R$ a parameter | one application for each activator that names a relation |
-| deny a fact found in a context, whatever it is | $\operatorname{says}(w, z) \implies \lnot z$ | the literal $\lnot z$ |
+| deny a fact found in a context, whatever it is | $\operatorname{says}(w, z) \implies \lnot z$ | the literal $\lnot z$; where $z$ is itself a stored negation $\lnot g$, the fact concluded is $\lnot\lnot g$ |
+| hold a fact whose double negation is held | $\lnot\lnot R(p, x) \implies R(p, x)$, with $R$ a parameter | spelling the count, as any unpacking does: the denied fact stands under two arrows of $\mathsf{not}$ |
 | hold a fact found in a context, whatever it is | not a rule | a variable is no literal |
 | ask whether the fact a variable stands for is held, denied or absent | not a rule | a variable is no premise; the fact's shape is spelt, $\operatorname{says}(w, \operatorname{owns}(p, x)) \land \operatorname{owns}(p, x)$ |
 

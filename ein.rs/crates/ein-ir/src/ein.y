@@ -77,9 +77,10 @@ FactHead -> b::Id:
   ;
 // The relation of a value: of a fact inside a fact, a pattern inside a
 // pattern, a conclusion's or a guard's argument. An object is an atom, or a fact
-// a state could hold, a fact of an ordinary relation or its negation
-// (Q-M1f.113): so never `eq`, which is computed, `absent`, a test, or
-// `false`, which takes no argument and is shaped where it is written.
+// a state could hold, a fact of an ordinary relation or the stored negation
+// of a fact a state could hold (Q-M1f.113, Q-M1f.391): so never `eq`, which
+// is computed, `absent`, a test, or `false`, which takes no argument and is
+// shaped where it is written.
 ValueHead -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
@@ -116,11 +117,18 @@ Fact -> b::Id:
     "(" FactHead FactArgs FactClauses ")" { b::top(p, $2, $3, $4) }
   | "(" "false" FactClauses ")" { b::top(p, b::name(p, $lexer, $2), b::none(), $3) }
   ;
-// The stored negation of a fact, or `(not (eq a b))`, which is checked as a
-// written `(eq a b)` is.
+// The stored negation of a fact, a negation among them, or `(not (eq a b))`,
+// which is checked as a written `(eq a b)` is.
 NotFact -> b::Id:
     "(" "not" NestedFact FactClauses ")" { b::named(p, "not", b::cat(b::one($3), $4)) }
+  | "(" "not" NegFact FactClauses ")" { b::named(p, "not", b::cat(b::one($3), $4)) }
   | "(" "not" EqFact FactClauses ")" { b::named(p, "not", b::cat(b::one($3), $4)) }
+  ;
+// A stored negation as a value: of a fact, or of a stored negation, at any
+// depth (Q-M1f.391). Never of a name, and never of an equality.
+NegFact -> b::Id:
+    "(" "not" NestedFact ")" { b::named(p, "not", b::one($3)) }
+  | "(" "not" NegFact ")" { b::named(p, "not", b::one($3)) }
   ;
 // A fact as a value: its relation is an ordinary one, or it is `(false)`.
 NestedFact -> b::Id:
@@ -133,7 +141,7 @@ EqFact -> b::Id: "(" "eq" FactArgs ")" { b::list(p, b::name(p, $lexer, $2), $3) 
 FactArg -> b::Id:
     Name { $1 }
   | NestedFact { $1 }
-  | "(" "not" NestedFact ")" { b::named(p, "not", b::one($3)) }
+  | NegFact { $1 }
   ;
 FactArgs -> Vec<b::Id>: { b::none() } | FactArgs FactArg { b::push($1, $2) } ;
 // A fact says where it came from: given (`:source`) or derived (`:rule`,
@@ -187,10 +195,12 @@ Connective -> b::Id:
   | "(" "absent" Premise ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
   | Guard { $1 }
   ;
-// What a premise's or a conclusion's `(not …)` negates: a pattern, or an
-// equality, `(not (eq a b))`, which is computed as `(neq a b)` is.
+// What a premise's or a conclusion's `(not …)` negates: a pattern, the
+// negation of one, or an equality, `(not (eq a b))`, which is computed as
+// `(neq a b)` is.
 Negated -> b::Id:
     Pattern { $1 }
+  | NegPattern { $1 }
   | "(" "eq" Term Term ")" { b::list(p, b::name(p, $lexer, $2), vec![$3, $4]) }
   ;
 // `eq` and `neq` compare two values: a name, a variable, or a fact, which is
@@ -223,9 +233,13 @@ Pattern -> b::Id:
   | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
   ;
 AnyHead -> b::Id: Name { $1 } | Var { $1 } ;
-Term -> b::Id:
-    Name { $1 } | Var { $1 } | Pattern { $1 }
-  | "(" "not" Pattern ")" { b::named(p, "not", b::one($3)) }
+Term -> b::Id: Name { $1 } | Var { $1 } | Pattern { $1 } | NegPattern { $1 } ;
+// The stored negation of a pattern, or of the negation of one, at any depth
+// (Q-M1f.391). Never of a variable: `(not ?x)` is a conclusion's own
+// literal, and stands nowhere else.
+NegPattern -> b::Id:
+    "(" "not" Pattern ")" { b::named(p, "not", b::one($3)) }
+  | "(" "not" NegPattern ")" { b::named(p, "not", b::one($3)) }
   ;
 Terms -> Vec<b::Id>: { b::none() } | Terms Term { b::push($1, $2) } ;
 
@@ -270,7 +284,7 @@ Models -> Vec<b::Id>: Model { b::one($1) } | Models Model { b::push($1, $2) } ;
 ClaimFact -> b::Id:
     NestedFact { $1 }
   | EqFact { $1 }
-  | "(" "not" NestedFact ")" { b::named(p, "not", b::one($3)) }
+  | NegFact { $1 }
   | "(" "not" EqFact ")" { b::named(p, "not", b::one($3)) }
   | "(" "absent" ClaimAtom ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
   | "(" "neq" FactArg FactArg ")" { b::named(p, "neq", vec![$3, $4]) }
@@ -281,7 +295,7 @@ ClaimFact -> b::Id:
 ClaimAtom -> b::Id:
     NestedFact { $1 }
   | EqFact { $1 }
-  | "(" "not" NestedFact ")" { b::named(p, "not", b::one($3)) }
+  | NegFact { $1 }
   | "(" "not" EqFact ")" { b::named(p, "not", b::one($3)) }
   ;
 ClaimFacts -> Vec<b::Id>: { b::none() } | ClaimFacts ClaimFact { b::push($1, $2) } ;
@@ -367,6 +381,6 @@ StepClause -> b::Id:
 StepClauses -> Vec<b::Id>: { b::none() } | StepClauses StepClause { b::push($1, $2) } ;
 // The steps and givens a step used: `(c10)`, `(s1 s2)`, `(and s1 c15)`.
 StepUsing -> b::Id: NameListPlus { $1 } | "(" "and" NamesPlus ")" { b::named(p, "and", $3) } ;
-Derived -> b::Id: NestedFact { $1 } | "(" "not" NestedFact ")" { b::named(p, "not", b::one($3)) } ;
+Derived -> b::Id: NestedFact { $1 } | NegFact { $1 } ;
 %%
 use super::b;

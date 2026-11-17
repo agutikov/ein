@@ -1,0 +1,22 @@
+;;; 04_liar_denial_contradicted — a negation held beside its own negation.
+;;;
+;;; `03_liar_denial.ein` with one more fact: the program itself states that
+;;; five is not two plus two. The rule `distrust` then concludes the negation
+;;; of that very fact, `(not (not (= 5 (+ 2 2))))`, and **a fact held with its
+;;; negation is a contradiction, whatever the fact is**: here the fact is the
+;;; stored negation `(not (= 5 (+ 2 2)))`, and its negation is the negation of
+;;; a negation. Root is dead and R is empty.
+
+(relation liar  Person       :why "{?1} lies")
+(relation think Person Claim :why "{?1} thinks that {?2}")
+
+(think Alice (not (= 5 (+ 2 2))))
+(liar Alice)
+(not (= 5 (+ 2 2)))
+
+(rule distrust ()
+  :match  (and (liar ?p) (think ?p ?f))
+  :assert (not ?f)
+  :why    "{?p} lies and thinks {?f}")
+
+(solve :no-search :expect (false))
