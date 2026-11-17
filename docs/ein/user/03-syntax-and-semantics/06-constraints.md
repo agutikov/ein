@@ -107,21 +107,23 @@ which one may depend on the order rules fire in
 
 ## In mathematics
 
-A constraint is an implication whose conclusion is falsity, or a negated atom. The two above:
+A constraint is an implication whose conclusion is falsity, or a negated fact. The two above:
 
 $$
-\operatorname{in}(p, b) \land \operatorname{in}(p, c) \land b \ne c \implies \bot
-$$
-
-$$
-\top \implies \lnot \operatorname{in}(\mathsf{Cat}, \mathsf{B2})
+\begin{aligned}
+\operatorname{in}(p, b) \land \operatorname{in}(p, c) \land b \ne c &\implies \bot \\
+\top &\implies \lnot \operatorname{in}(\mathsf{Cat}, \mathsf{B2})
+\end{aligned}
 $$
 
 Let $\operatorname{sat}(S)$ be the fixpoint of a state $S$ under the program's rules ([rules](05-rules.md)). $S$ is
 **dead** when its fixpoint holds the contradiction, or a fact beside its negation:
 
 $$
-\operatorname{dead}(S) \iff \bot \in \operatorname{sat}(S) \ \lor\ \exists f.\ f \in \operatorname{sat}(S) \land \lnot f \in \operatorname{sat}(S)
+\begin{aligned}
+\operatorname{dead}(S) \iff\ & \bot \in \operatorname{sat}(S) \\
+\lor\ & \exists f.\ f \in \operatorname{sat}(S) \land \lnot f \in \operatorname{sat}(S)
+\end{aligned}
 $$
 
 and **alive** otherwise. On a program whose rules read no `absent` a hypothesis can change, $\operatorname{sat}$ is
@@ -145,8 +147,8 @@ where the state is impossible as a whole rather than one proposition false, as `
 
 **`(not P)`** is a fact whose one argument is the fact it denies. It is stored like any fact, by a rule's conclusion
 or written by the program, and it is a contradiction only beside `P`: the pair is one wherever either half came
-from, a statement, a rule or a hypothesis. A negation is of a fact; a name has none, so a conclusion `(not ?x)` where
-`?x` can hold a name is refused at load.
+from, a statement, a rule or a hypothesis. A negation is of a fact; an atom has none, so a conclusion `(not ?x)` where
+`?x` can be bound to an atom is refused at load.
 
 ## The three states of a fact
 

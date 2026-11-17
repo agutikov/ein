@@ -115,14 +115,22 @@ a sentence with a gap: *for every person, some chair is theirs; until one is, th
 
 ## In mathematics
 
-The requirement `everyone-sits` states is a sentence with two quantifiers, and the rule matches where it fails:
+The requirement `everyone-sits` states is a sentence with two quantifiers:
 
 $$
-\forall p.\ \text{is-a}(p, \mathsf{Person}) \implies \exists c.\ \text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c)
+\begin{aligned}
+\forall p.\ \ & \text{is-a}(p, \mathsf{Person}) \\
+\implies\ & \exists c.\ \text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c)
+\end{aligned}
 $$
 
+and the rule matches where it fails:
+
 $$
-\text{is-a}(p, \mathsf{Person}) \land \lnot \exists c.\ \bigl( \text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c) \bigr) \implies \operatorname{open}(\mathsf{seat})
+\begin{aligned}
+& \text{is-a}(p, \mathsf{Person}) \land \lnot \exists c.\ \bigl( \text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c) \bigr) \\
+& \implies \operatorname{open}(\mathsf{seat})
+\end{aligned}
 $$
 
 In general an obligation rule $o$, activated by $a$, has a trigger $T$ and a witness $W$, and matches a state $S$
@@ -133,8 +141,10 @@ $$
 $$
 
 $$
-\operatorname{owes}(S) = \bigl| \lbrace (o, a, \theta) \mid \operatorname{owes}(o, a, \theta, S) \rbrace \bigr|, \qquad
-\operatorname{discharged}(S) \iff \operatorname{owes}(S) = 0
+\begin{aligned}
+\operatorname{owes}(S) &= \bigl| \lbrace (o, a, \theta) \mid \operatorname{owes}(o, a, \theta, S) \rbrace \bigr| \\
+\operatorname{discharged}(S) &\iff \operatorname{owes}(S) = 0
+\end{aligned}
 $$
 
 `(open ?R)` names the relation of the one premise of $W$ that binds $\bar{y}$, the slot a payment fills. In the
@@ -143,7 +153,10 @@ $\text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c)$, and at root $\
 instance $p = \mathsf{Bob}$. A state of the answer is alive and discharged:
 
 $$
-R = \lbrace C \subseteq H \mid \bot \notin \operatorname{sat}(\mathrm{root} \cup C) \ \land\ \operatorname{owes}(\operatorname{sat}(\mathrm{root} \cup C)) = 0 \rbrace
+\begin{aligned}
+R = \lbrace\, C \subseteq H \mid\ & \bot \notin \operatorname{sat}(\mathrm{root} \cup C) \\
+\land\ & \operatorname{owes}(\operatorname{sat}(\mathrm{root} \cup C)) = 0 \,\rbrace
+\end{aligned}
 $$
 
 Discharge is a positive test, $\exists \bar{y}.\ W$, so on a program where commitments cannot grow $T$, a state
@@ -156,18 +169,18 @@ An obligation is a `rule` whose **whole** `:assert` is `(open ?R)` or `(open)`:
 
 | form | says |
 |---|---|
-| `(open ?R)` | the facts of `?R` are incomplete. `?R` is a parameter of the rule, bound by its activator, or a relation's name |
+| `(open ?R)` | the facts of `?R` are incomplete. `?R` is a parameter of the rule, bound by its activator, or a relation written by name |
 | `(open)` | the state owes something, and names no relation: it counts, and the `:why` is the whole report |
 
-`open` is written there and nowhere else: not in a `:match`, not beside another conclusion, not inside a fact, a
-value or a macro's body ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md),
+`open` is written there and nowhere else: not in a `:match`, not beside another conclusion, not inside a fact, as an
+argument or in a macro's body ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md),
 [Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)). The requirement is stated once,
 in the guard; `(open ?R)` restates nothing of it
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)):
 
 - **the witness** is the premise of `?R` inside the rule's one `(absent …)` that binds a variable the rest of the
   guard does not, `?c` in `(seat ?p ?c)`;
-- **the domain** is everything else inside that `absent`, `(is-a ?c Chair)`: the values a payment may take;
+- **the domain** is everything else inside that `absent`, `(is-a ?c Chair)`: the objects a payment may take;
 - **the direction** falls out of which slot is free. `total-owed` leaves the image `?b` free, so it owes each member
   of the domain an image; `surjective-owed` leaves `?a` free, so it owes each member of the range a preimage. Neither
   carries a position number.
@@ -198,16 +211,16 @@ obligation rules are written in.
 
 ## What an obligation quantifies over
 
-An obligation needs no closed domain, no closed relation and no type system
+An obligation needs no closed domain, no relation whose held extent is closed and no type system
 ([Q-M1d.3](../../../decisions/hypotheses/Q-M1d.3-an-obligation-needs-no-closed-domain.md)). Four things hold of every
 obligation, and they are what makes it safe to state in an open world.
 
 ### The domain is the guard
 
-The domain of a debt is written nowhere but in the rule's own `absent`: the values the premise beside the witness
+The domain of a debt is written nowhere but in the rule's own `absent`: the objects the premise beside the witness
 matches. A library takes the membership relation as a parameter, `?isa`, never as a literal `is-a`, so a program may
-pass `is-a`, `is-a*` or a relation of its own, and stating an obligation asks nothing about whether that extent is
-closed or complete.
+pass `is-a`, `is-a*` or a relation of its own, and stating an obligation asks nothing about whether that
+relation's held extent is closed or complete.
 
 ### Paying a debt needs no closure
 
@@ -222,8 +235,8 @@ restriction's: a rule that scans every candidate for a **stored negation** and c
 excluded. The stdlib pairs each obligation with such a scan: `total` and `surjective` beside `total-owed` and
 `surjective-owed` in `std.algebra`, `slot-no-room` and `slot-no-fill` beside `slot-owed-room` and `slot-owed-fill`
 in `std.slots`; `std.elim`'s `no-room-left` is another. A scan for stored negations is safe in an open world, since it fires
-only on a genuine exclusion; the one scan in the stdlib that reads absence instead, `connex`, is sound only where its
-relation is fully determined by saturation, and its module says so.
+only on a genuine exclusion; the one scan in the stdlib that reads absence instead, `connex`, is sound only where
+the held extent of its relation is fully determined by saturation, and its module says so.
 
 | candidates left for an owed slot | which rule speaks | the state is |
 |---|---|---|
@@ -234,10 +247,10 @@ relation is fully determined by saturation, and its module says so.
 ### What would pay a debt
 
 The facts that would pay a debt are read off the same guard with the witness step left out: every binding of the
-domain premise for which the witness is neither present nor negated. Nothing is stored, so a value that arrives later
-is seen. Choosing among those facts is exhaustive only while the set cannot grow under the choice, so where an
-obligation's domain could grow, because the guard scans a relation that is itself guessed, or a relation a commitment
-can change, the engine does not trust the set and proposes as it would with no obligation
+domain premise for which the witness is neither present nor negated. Nothing is stored, so an object that arrives
+later is seen. Choosing among those facts is exhaustive only while the set cannot grow under the choice, so where an
+obligation's domain could grow, because the guard scans facts of a relation that are themselves guessed, or facts
+of a relation a commitment can add to, the engine does not trust the set and proposes as it would with no obligation
 ([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md)). The `universe`
 row of the read-out says which way H was built.
 
@@ -253,8 +266,8 @@ An obligation plays two parts ([hypotheses](09-hypotheses.md)):
   would pay the debts. A root that owes nothing then proposes nothing and is the one state. An obligation rule that a
   program loads and nothing activates, as an import of a whole library brings its obligation rules, does neither.
 
-An obligation that owes a relation the program also keeps out of the guessing, by `(__closed__ R)` or, with no hrule,
-by a `(solve …)` list, is refused at load: a state that owed it could never be paid
+An obligation that owes facts of a relation the program also keeps out of the guessing, by `(__closed__ R)` or,
+with no hrule, by a `(solve …)` list, is refused at load: a state that owed one could never be paid
 ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)).
 To judge root alone, with nothing proposed, a program states `(solve :no-search)` ([query](12-query.md)).
 
@@ -313,7 +326,7 @@ bound is not `1..1` or `at least 2`: it is a relation to another set, said with 
 | as many as `S` or more | a pairing from `S`: `total` on it, `functional` and `injective` |
 | exactly as many as `S` | a bijection: `(bijective R)` |
 
-*At least two* is an injection from a set of two the program declares: the two is an extent of objects, not a number.
+*At least two* is an injection from a set of two the program declares: the two is a set of two atoms, not a number.
 The cost is ontology, one relation per bound, and the gain is that every bound is something the rules can read.
 
 ## What is refused
@@ -324,8 +337,8 @@ Each of these is refused before anything runs, on every command, with the line u
 - `open` anywhere but a rule's whole `:assert`, at the parse;
 - `(open …)` with more than one argument, or beside another conclusion, at the parse;
 - `(open ?R)` whose `?R` is no parameter of the rule, or whose witness the guard does not give one way, at load;
-- an obligation owing a relation that is closed, or, with no hrule, one a `(solve …)` list leaves out or names in
-  `:no-hypothesis`, at load.
+- an obligation owing facts of a relation that a `(__closed__ R)` closes, or, with no hrule, of one a `(solve …)`
+  list leaves out or names in `:no-hypothesis`, at load.
 
 ## See also
 

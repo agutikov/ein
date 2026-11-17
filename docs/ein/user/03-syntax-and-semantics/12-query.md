@@ -109,34 +109,41 @@ region is itself a claim, so a run's answer reads back as its own expectation.
 
 ## In mathematics
 
-A query's goal $g$ has atoms $a_1, \dots, a_m$, and asks about a part $P$ of R: all of it, its minimal members or
-its maximal ones, by `:over all`, `minimal` or `maximal`.
+A query's goal $g$ is made of patterns $a_1, \dots, a_m$, each a fact written with variables, and asks about a
+part $P$ of R: all of it, its minimal members or its maximal ones, by `:over all`, `minimal` or `maximal`.
 
 $$
 P \in \lbrace R,\ \min(R),\ \max(R) \rbrace
 $$
 
-In a state $S$ the goal's **projection** is every atom instantiated under every binding that satisfies the whole
-goal, and the query's classes are the projections over $P$, each once:
+In a state $S$ the goal's **projection** is the fact each pattern becomes under every binding that satisfies the
+whole goal, and the query's classes are the projections over $P$, each once:
 
 $$
-\pi_g(S) = \lbrace a_i\theta \mid 1 \le i \le m,\ \theta \text{ a binding under which } g \text{ holds in } S \rbrace, \qquad
-\operatorname{classes}(g, P) = \lbrace \pi_g(S) \mid S \in P \rbrace
+\begin{aligned}
+\pi_g(S) &= \lbrace a_i\theta \mid 1 \le i \le m,\ \theta \text{ a binding under which } g \text{ holds in } S \rbrace \\
+\operatorname{classes}(g, P) &= \lbrace \pi_g(S) \mid S \in P \rbrace
+\end{aligned}
 $$
 
 A state where the goal has no binding gives $\pi_g(S) = \emptyset$, the class a claim writes `(model)`. For the
 query above,
 
 $$
-\operatorname{classes}\bigl(\operatorname{seat}(w, \mathsf{C1}),\ \max(R)\bigr) = \bigl\lbrace \lbrace \operatorname{seat}(\mathsf{Ann}, \mathsf{C1}) \rbrace,\ \lbrace \operatorname{seat}(\mathsf{Bob}, \mathsf{C1}) \rbrace \bigr\rbrace
+\begin{aligned}
+\operatorname{classes}\bigl(\operatorname{seat}(w, \mathsf{C1}),\ \max(R)\bigr) = \bigl\lbrace\ & \lbrace \operatorname{seat}(\mathsf{Ann}, \mathsf{C1}) \rbrace, \\
+& \lbrace \operatorname{seat}(\mathsf{Bob}, \mathsf{C1}) \rbrace\ \bigr\rbrace
+\end{aligned}
 $$
 
 A query's claim lists classes $M_1, \dots, M_k$, and holds when they are the classes; its `(false)` holds when
 there is none:
 
 $$
-\operatorname{holds}\bigl(\text{:expect } (\text{or } M_1 \dots M_k)\bigr) \iff \lbrace M_1, \dots, M_k \rbrace = \operatorname{classes}(g, P), \qquad
-\operatorname{holds}\bigl(\text{:expect } (\text{false})\bigr) \iff \operatorname{classes}(g, P) = \emptyset
+\begin{aligned}
+\operatorname{holds}\bigl(\text{:expect } (\text{or } M_1 \dots M_k)\bigr) &\iff \lbrace M_1, \dots, M_k \rbrace = \operatorname{classes}(g, P) \\
+\operatorname{holds}\bigl(\text{:expect } (\text{false})\bigr) &\iff \operatorname{classes}(g, P) = \emptyset
+\end{aligned}
 $$
 
 A region claim lists models $M_1, \dots, M_k$. Let $N$ be the relations it names, positively, anywhere. It holds
@@ -144,16 +151,19 @@ when the models are R's states one to one: there is a bijection
 $\beta : \operatorname{states}(R) \to \lbrace M_1, \dots, M_k \rbrace$ such that, for every state $S$,
 
 $$
-\lbrace f \in S \mid \operatorname{rel}(f) \in N,\ f \text{ positive} \rbrace = \lbrace f \in \beta(S) \mid f \text{ positive} \rbrace
-\quad \text{and} \quad
-\lnot f \in \beta(S) \implies \lnot f \in S
+\begin{aligned}
+\lbrace f \in S \mid \operatorname{rel}(f) \in N,\ f \text{ positive} \rbrace &= \lbrace f \in \beta(S) \mid f \text{ positive} \rbrace \\
+\lnot f \in \beta(S) &\implies \lnot f \in S
+\end{aligned}
 $$
 
-and the two claims of an empty answer are
+The first row is the held extent of every named relation, claimed whole. The two claims of an empty answer are
 
 $$
-\operatorname{holds}\bigl((\text{region})\bigr) \iff R = \emptyset, \qquad
-\operatorname{holds}\bigl((\text{false})\bigr) \iff \text{every node is dead}
+\begin{aligned}
+\operatorname{holds}\bigl((\text{region})\bigr) &\iff R = \emptyset \\
+\operatorname{holds}\bigl((\text{false})\bigr) &\iff \text{every node is dead}
+\end{aligned}
 $$
 
 ## `(solve …)`: the lattice, stated once
@@ -230,10 +240,11 @@ How a region claim reads:
 
 1. **A `(model …)` is a state of R.** Root's facts are part of it: a state is everything that holds there, not only
    what was guessed.
-2. **Naming a relation closes it, across the whole claim.** Every relation the claim names positively is listed at
-   its complete extent in every model, so `(model)` beside `(model (seat Ann C1))` is a state with no `seat` fact.
-   Stored negatives are not closed: a listed `(not …)` is checked for presence, and the extent of `(not (seat …))`
-   is not claimed. A relation the claim never names is not constrained.
+2. **Naming a relation closes its held extent, across the whole claim.** Every relation the claim names positively
+   is listed at its whole held extent in every model, every fact of it the state holds, so `(model)` beside
+   `(model (seat Ann C1))` is a state with no `seat` fact. Stored negatives are not closed: a listed `(not …)` is
+   checked for presence, and the whole of the stored `(not (seat …))` facts is not claimed. A relation the claim
+   never names is not constrained.
 3. **The models are R's states, one to one**, in any order. Their number is the claimed `k_s`, the count of
    states. A state of R no model matches, or a model no state matches, makes the claim false.
 4. **`(merged …)` is all or nothing.** A claim with none is about states and claims no `k_c`, the count of
@@ -245,7 +256,7 @@ How a region claim reads:
 6. **`(false)` says every node is dead**, the first kind of empty R. **`(region)`** with nothing in it says R is
    empty, of either kind.
 
-Under rule 2 a claim can say a relation is empty
+Under rule 2 a claim can say that a state holds no fact of a relation
 ([Q-M1c.6](../../../decisions/answer/Q-M1c.6-a-claim-can-say-that-a-relation-is-empty.md)), and it may name a relation
 only a rule derives ([Q-M1c.7](../../../decisions/answer/Q-M1c.7-a-claim-may-name-a-relation-only-a-rule-derives.md)).
 It may not name `eq` or `neq`, which a state never stores. A `(merged …)` whose state is not one the claim lists, and
@@ -257,10 +268,11 @@ A query's `:expect` lists **projection classes**, deduplicated:
 
 - `(model …)` is one class, `(or (model …) …)` several, and `(false)` no class at all;
 - `(model)` is the class where the goal has no row;
-- **only goal facts**: a listed fact that no atom of the goal matches is refused at load, with a line that names the
-  region claim as the place for it;
-- **naming a relation closes it** over the class, as in a region claim; a class lists the goal's instances only, so
-  an `eq` or `neq` the goal asks about is closed over them.
+- **only goal facts**: a listed fact that no pattern of the goal matches is refused at load, with a line that names
+  the region claim as the place for it (the line says *no atom of the query's :goal*: the engine's word for a
+  pattern of the goal);
+- **naming a relation closes its held extent** over the class, as in a region claim; a class lists the goal's
+  instances only, so an `eq` or `neq` the goal asks about is closed over them.
 
 It holds when the classes it lists are exactly the classes of the part asked. A query's `(false)` holds over either
 kind of empty R, since a query with no state to answer from has no class
@@ -387,10 +399,10 @@ Its region claim would list the state's twenty-five `*-loc` facts; with no `(mer
 ### What the examples show
 
 - **Root's facts repeat in every model** whose relations the claim names: six of every model's facts are root's in
-  the mini zebra. A claim cannot leave them out, since naming a relation closes it.
+  the mini zebra. A claim cannot leave them out, since naming a relation closes its held extent.
 - **A derived mirror is listed beside its candidate**: `(co-located Bob Coffee)` and `(co-located Coffee Bob)`.
 - **`<to>` repeats a listed state in full**, so each `(merged …)` reads on its own.
-- **A goal's membership atoms are part of its class**: `(is-a Dog Pet)` is in the mini zebra's answer because the goal
+- **A goal's membership patterns are part of its class**: `(is-a Dog Pet)` is in the mini zebra's answer because the goal
   names `(is-a ?p Pet)`.
 - **`:over all` and `:over maximal` can give the same classes from different states**: seven states and three, two
   classes each, on `01_states.ein`'s program.
@@ -472,8 +484,8 @@ Each with its line in [diagnostics](../04-reference/07-diagnostics.md):
   or a region item not of its shape, a variable or a `_` in a claim, a top-level `(region …)`, `(merged …)` or
   `(owing …)`;
 - at load: a second `(solve …)`; a list name the program does not have; a goal or a claim naming a relation the
-  program does not have; a relation written as a variable in a goal; a query's claim listing a fact no goal atom
-  matches; a region claim naming `eq` or `neq`; a `(merged …)` whose state the region does not list; `(owing …)` beside
+  program does not have; a relation written as a variable in a goal; a query's claim listing a fact no pattern of
+  the goal matches; a region claim naming `eq` or `neq`; a `(merged …)` whose state the region does not list; `(owing …)` beside
   states.
 
 ## See also

@@ -1,0 +1,34 @@
+digraph knowledge_base {
+  rankdir=TB; nodesep=0.3; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  { rank=min; "relation"; }
+  { rank=same; "is-instance"; "lives-in"; }
+  { rank=max; "Object"; "Type"; "Norwegian"; "Person"; "House-1"; "House"; }
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  d1 [xlabel="d1"]; d2 [xlabel="d2"]; d3 [xlabel="d3"]; d4 [xlabel="d4"];
+  m1 [xlabel="m1"]; m2 [xlabel="m2"]; f [xlabel="f"];
+  { rank=same; d1; d2; d3; d4; }
+  { rank=same; m1; m2; f; }
+  "relation" -> d1 [label="1", dir=back];
+  "relation" -> d2 [label="1", dir=back];
+  "relation" -> d3 [label="1", dir=back];
+  "relation" -> d4 [label="1", dir=back];
+  d1 -> "is-instance" [label="2"];
+  d1 -> "Object" [label="3"];
+  d1 -> "Type" [label="4"];
+  d2 -> "is-instance" [label="2"];
+  d3 -> "lives-in" [label="2"];
+  d3 -> "Person" [label="3"];
+  d3 -> "House" [label="4"];
+  d4 -> "lives-in" [label="2"];
+  "is-instance" -> m1 [label="1", dir=back];
+  m1 -> "Norwegian" [label="2"];
+  m1 -> "Person" [label="3"];
+  "is-instance" -> m2 [label="1", dir=back];
+  m2 -> "House-1" [label="2"];
+  m2 -> "House" [label="3"];
+  "lives-in" -> f [label="1", dir=back];
+  f -> "Norwegian" [label="2"];
+  f -> "House-1" [label="3"];
+}

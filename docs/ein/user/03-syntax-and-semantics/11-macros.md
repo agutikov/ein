@@ -287,7 +287,7 @@ The form is `(macro NAME (PARAMETER…) BODY :why "TEXT")`, with one parameter o
   A body that needs a variable of its own per call takes it as a parameter.
 - **Where it is not**: a fact, a claim, a `:using`. A fact is what a state holds, and no state holds a call, so a
   fact headed by a macro's name, or holding a call at any depth, is refused at load, and so is a claim that lists
-  one. Write the fact itself, `(lives-in Ann Elm-St)`. A macro's name written as a value is a name like another.
+  one. Write the fact itself, `(lives-in Ann Elm-St)`. A macro's name written as an argument is an atom like another.
 - **The expansion is read as if written out.** It is held to every rule the language has for the place it lands, and
   a shape the grammar would refuse there is refused at load, its line placed at the call
   ([Q-M1f.80](../../../decisions/language/Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md)). A macro no
@@ -359,8 +359,8 @@ depend on which is used**
   name: the module's name and the name, `std.math.decimal-arith.add`, `seating.rules.one-chair-each`. It is the same
   through every import, and any file of the program may write it
   ([Q-M1f.231](../../../decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md)). What the main
-  file declares keeps its own name. A name no file declares, a label, a value, a digit, has no full name and is one
-  name in every file.
+  file declares keeps its own name. A name no file declares, a label, a fact's argument, a digit, has no full name
+  and is one atom in every file.
 - **A short name is local to the file that binds it.** A file writes short what it declares itself, the names its
   imports list in `:symbols`, and, under `:as a`, `a.` before a name the module declares. A bare `(import M)` binds no
   short name. Nothing is re-exported: a module's short names are its own, and a name a module only imports is listed
@@ -399,7 +399,8 @@ depend on which is used**
   `:source` ([Q-M1f.138](../../../decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)). Their
   constants are names of the program, so the blind enumerator proposes about them
   ([Q-M1f.137](../../../decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)): a program that wants
-  no guesses about a library's relation closes it. A fact a module states arrives once, however many imports reach it
+  no fact of a library's relation guessed closes the relation. A fact a module states arrives once, however many
+  imports reach it
   ([Q-M1f.143](../../../decisions/imports/Q-M1f.143-a-modules-fact-arrives-once-however-many-imports.md)).
 - **No import brings a `(query …)`, `(solve …)`, `(config …)` or `(trace …)`**: those are what a program asks, how
   it is solved and how it is configured, and a module that is also a program keeps them to itself

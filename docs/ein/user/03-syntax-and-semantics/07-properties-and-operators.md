@@ -1,10 +1,11 @@
 # Properties and operators
 
 A relation's algebraic **properties**, symmetric, transitive, functional, bijective, and the **operators** that make
-one relation from others, converse, composition, intersection, union, are not built into Ein. Each is a fact about a
-relation, `(symmetric knows)`, given its meaning by an ordinary rule of the standard library's `std.algebra`, the
-relation algebra written in Ein. A program imports the module, lists the rules whose facts it writes, and states the
-facts; the rules derive what the property implies, or refute a state that breaks it.
+the facts of one relation from the facts of others, converse, composition, intersection, union, are not built into
+Ein. Each is a fact about a relation, `(symmetric knows)`: its argument is the relation, one atom, and it speaks
+of all the relation's facts at once. It is given its meaning by an ordinary rule of the standard library's
+`std.algebra`, the relation algebra written in Ein. A program imports the module, lists the rules whose facts it
+writes, and states the facts; the rules derive what the property implies, or refute a state that breaks it.
 
 ## In Ein
 
@@ -35,7 +36,8 @@ facts; the rules derive what the property implies, or refute a state that breaks
   :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 ```
 
-`symmetric` and `transitive` together close `knows`: Carol knows Alice and Bob, though neither fact is written.
+`symmetric` and `transitive` together close the facts of `knows` under both: Carol knows Alice and Bob, though
+neither fact is written.
 `asymmetric` is a check: it derives nothing, and refutes any state with both `(above a b)` and `(above b a)`.
 
 ```text
@@ -55,8 +57,9 @@ facts; the rules derive what the property implies, or refute a state that breaks
 
 ![Each relation with the properties the program states of it](diagrams/07-constraints-view.svg)
 
-`ein render program FILE` draws each property fact as what it is, a unary fact about a relation's name: a labelled
-self-loop on that name, beside the relation's own facts (the view trimmed to `knows`):
+`ein render program FILE` draws each property fact as what it is, a fact of one argument about a relation: a loop
+on the relation's node with the property's name on it, beside the relation's own facts, which carry the relation's
+name on their arrows (the view trimmed to `knows`):
 
 ![The property facts as self-loops on knows, beside its own facts](diagrams/07-property-facts.svg)
 
@@ -106,68 +109,77 @@ activation, and no declaration carries a sentence for it.
 
 ## In mathematics
 
-A binary relation is a set of pairs, and `std.algebra` is Tarski's relation algebra
+The held extent of a relation of two arguments, read by the argument lists of its facts, is a set of pairs. Write
+$R$ for that set, for a relation $r$ and a state $W$:
+
+$$
+R = \lbrace (a, b) \mid r(a, b) \in W \rbrace
+$$
+
+`std.algebra` is Tarski's relation algebra
 $\langle \cup, \cap, {}^{-}, 0, 1, {;}, {}^{\smile}, 1' \rangle$ over those sets, with
 
 $$
-R^{\smile} = \lbrace (b, a) \mid (a, b) \in R \rbrace \qquad \text{(converse)}
-$$
-
-$$
-R \mathbin{;} S = \lbrace (a, c) \mid \exists b.\ (a, b) \in R \land (b, c) \in S \rbrace \qquad \text{(composition)}
-$$
-
-$$
-1' = \lbrace (a, a) \rbrace \qquad \text{(identity)}
+\begin{aligned}
+R^{\smile} &= \lbrace (b, a) \mid (a, b) \in R \rbrace && \text{(converse)} \\
+R \mathbin{;} S &= \lbrace (a, c) \mid \exists b.\ (a, b) \in R \land (b, c) \in S \rbrace && \text{(composition)} \\
+1' &= \lbrace (a, a) \rbrace && \text{(identity)}
+\end{aligned}
 $$
 
 The properties are inclusions. The three the program above states:
 
 $$
-\operatorname{symmetric}(R) \iff R^{\smile} \subseteq R, \qquad
-\operatorname{transitive}(R) \iff R \mathbin{;} R \subseteq R, \qquad
-\operatorname{asymmetric}(R) \iff R \cap R^{\smile} = \emptyset
+\begin{aligned}
+\operatorname{symmetric}(R) &\iff R^{\smile} \subseteq R \\
+\operatorname{transitive}(R) &\iff R \mathbin{;} R \subseteq R \\
+\operatorname{asymmetric}(R) &\iff R \cap R^{\smile} = \emptyset
+\end{aligned}
 $$
 
 and the others of the same family:
 
 $$
-\operatorname{functional}(R) \iff R^{\smile} \mathbin{;} R \subseteq 1', \qquad
-\operatorname{injective}(R) \iff R \mathbin{;} R^{\smile} \subseteq 1', \qquad
-\operatorname{irreflexive}(R) \iff R \cap 1' = \emptyset
+\begin{aligned}
+\operatorname{functional}(R) &\iff R^{\smile} \mathbin{;} R \subseteq 1' \\
+\operatorname{injective}(R) &\iff R \mathbin{;} R^{\smile} \subseteq 1' \\
+\operatorname{irreflexive}(R) &\iff R \cap 1' = \emptyset \\
+\operatorname{total}(R) &\iff \forall a \in \operatorname{dom}.\ \exists b.\ (a, b) \in R \\
+\operatorname{surjective}(R) &\iff \forall b \in \operatorname{ran}.\ \exists a.\ (a, b) \in R
+\end{aligned}
 $$
 
-$$
-\operatorname{total}(R) \iff \forall a \in \operatorname{dom}.\ \exists b.\ (a, b) \in R, \qquad
-\operatorname{surjective}(R) \iff \forall b \in \operatorname{ran}.\ \exists a.\ (a, b) \in R
-$$
-
-A **closure** rule makes an inclusion hold by deriving the pairs it lacks, so its fixpoint is the least relation
-containing $R$ with the property. For the program above, `symmetric` and `transitive` together give
+A **closure** rule makes an inclusion hold by deriving the pairs it lacks, so its fixpoint is the least set of
+pairs containing $R$ with the property. For the program above, `symmetric` and `transitive` together give the
+relation `knows` the pairs
 
 $$
-\operatorname{ext}(\mathsf{knows}) = \lbrace \mathsf{Alice}, \mathsf{Bob}, \mathsf{Carol} \rbrace^2 \setminus 1'
+\lbrace \mathsf{Alice}, \mathsf{Bob}, \mathsf{Carol} \rbrace^2 \setminus 1'
 $$
 
-since `transitive` is guarded by $a \ne c$, so an irreflexive relation's closure stays irreflexive. A **check** rule
+since `transitive` is guarded by $a \ne c$, so the closure of an irreflexive set of pairs stays irreflexive. A **check** rule
 makes a state that breaks the inclusion dead. The relation algebra is as expressive as first-order logic with three
 variables, so most constraints over at most three variables can be written with it; one over more is a rule of the
 program's own.
 
 ## Three distinctions that decide whether a rule is safe
 
+On the rest of this page *a pair of `R`* is the argument list of a fact of `R` that the state holds, and *`R`
+holds a pair* says that the state holds that fact.
+
 - **Intrinsic or extensive.** An intrinsic operator reads only the pairs a relation has: `converse`, `compose`,
   `meet`, `difference`, `join`, `difunctional`. An extensive one ranges over every pair of the domain and the range,
-  to reach the pairs a relation lacks, so it takes the program's membership relation and the two names its members
+  to reach the pairs a relation lacks, so it takes the program's membership relation and the two atoms its members
   are classified under as parameters,
   `(complement R S is-a Dom Ran)`: `complement`, `top`, `identity`, `connex`.
 - **Check or closure.** A check concludes `(false)` on a violation: `functional`, `injective`, `total`, `surjective`,
   `empty`, `irreflexive`, `antisymmetric`, `asymmetric`, `connex`. A closure derives the pairs that make the
   property hold: `symmetric`, `transitive`, `includes`, `difunctional`, `reflexive`.
 - **Closed world.** A rule that reads an absence, the extensive operators, `difference`, the `compose-negative`
-  pair and `infer-closure`, is sound only where its operand is decided by saturation alone. On a relation the
-  answer is searched for, as the attribute relations of a Zebra puzzle are, an absence at root is not an absence in
-  every state, and such a rule would conclude too much. Each is opted into per use, never implied.
+  pair and `infer-closure`, is sound only where the held extent of its operand is decided by saturation alone. On
+  a relation whose facts the answer is searched for, as those of the attribute relations of a Zebra puzzle are, an
+  absence at root is not an absence in every state, and such a rule would conclude too much. Each is opted into
+  per use, never implied.
 
 ## `std.algebra`, activator by activator
 
@@ -176,7 +188,7 @@ program's own.
 | activator | effect | class |
 |---|---|---|
 | `(converse R1 R2)` | `R2` is `R1`'s converse: `R1(a,b)` derives `R2(b,a)` | intrinsic |
-| `(imply1 R1 R2)` | `(R1 a)` derives `(R2 a)`: one unary property implies another, `(imply1 functional __closed__)` | intrinsic |
+| `(imply1 R1 R2)` | `(R1 a)` derives `(R2 a)`: one property of one argument implies another, `(imply1 functional __closed__)` | intrinsic |
 | `(imply2-fwd R1 R2)` | `(R1 a b)` derives `(R2 a b)` | intrinsic |
 | `(imply2-reverse R1 R2)` | `(R1 a b)` derives `(R2 b a)`, the same as `converse` | intrinsic |
 | `(compose R1 R2 R3)` | `R1(a,b)` and `R2(b,c)` derive `R3(a,c)`; `(compose R R R)` is the transitive closure | intrinsic |
@@ -203,8 +215,9 @@ program's own.
 | `(surjective R isa)` | the dual of `total` |
 | `(bijective R)` | shorthand: it derives `(functional R)`, `(injective R)`, `(total R)` and `(surjective R)` |
 
-`total` and `surjective` fire only where every partner carries a stored negation: an empty-yet relation is not a
-violation. What an empty-yet relation still **owes** is the pair of obligations `total-owed` and `surjective-owed`,
+`total` and `surjective` fire only where every partner carries a stored negation: a relation of which the state
+holds no fact yet is not a violation. What such a relation still **owes** is the pair of obligations `total-owed`
+and `surjective-owed`,
 activated beside them, which report a debt and refute nothing ([obligations](08-obligations.md)).
 
 **Other checks.**
@@ -230,12 +243,12 @@ declarations' labels do not mirror each other under the hierarchy `isR*`. A hand
 facts to one another, so a program states each fact once: `symmetric-is-self-converse` and
 `self-converse-is-symmetric` (a symmetric relation is its own converse, and back), `converse-pair-symmetric`,
 `compose-contravariant` and `join-converse`. `(compose-negative-s R S T)` and `(compose-negative-r R S T)`, for a
-composite `T` that is closed, turn a missing composite into a missing factor; closed world.
+composite `T` whose held extent is closed, turn a missing composite into a missing factor; closed world.
 
 ## A direct relation beside its closure
 
-`(transitive R)` makes `R` its own transitive closure. Where both the direct relation and its closure are wanted, a
-second relation holds the closure, fed by `includes`:
+`(transitive R)` makes the pairs of `R` their own transitive closure. Where both the direct pairs and their closure
+are wanted, a second relation has the closure as its facts, fed by `includes`:
 
 ```lisp
 (import std.algebra :symbols (includes transitive))
@@ -264,7 +277,7 @@ imply another: `bijective-properties` reads `(bijective R)` and concludes four p
 `total` and `surjective` take the domain and the range from it, and the converse checks read two declarations. The
 engine reads how many labels there are and nothing of what they mean, so a label is what the program's rules make of
 it ([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). The pattern
-`(relation ?R ?A ?B)` matches binary declarations only; `(relation ?R)` matches every declared relation.
+`(relation ?R ?A ?B)` matches declarations of two labels only; `(relation ?R)` matches every declared relation.
 
 **The quantifiers are Ein too.** `forall` and `unknown` are macros of `std.macro`, declared in Ein:
 

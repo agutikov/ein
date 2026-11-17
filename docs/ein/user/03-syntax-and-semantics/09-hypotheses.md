@@ -6,7 +6,9 @@ A **commitment** is a set of candidates assumed together, and the answer is the 
 owes nothing ([solutions and models](13-solutions-and-models.md)). So H is the space the answer is drawn from, and a
 program says what may go into it: an `hrule` that proposes candidates, an obligation whose payments are the
 candidates, or neither, and then every fact the blind enumerator can form. `(solve …)` and `(__closed__ R)` narrow
-it, and `(solve :no-search)` empties it.
+it, and `(solve :no-search)` empties it. A `(__closed__ R)` fact **closes** the relation `R`: the held extent of
+`R` is fixed, and no candidate is a fact of it; *a closed relation* on these pages is a relation such a fact
+names.
 
 ## In Ein
 
@@ -104,38 +106,57 @@ Write $\operatorname{sat}$ for saturation, the fixpoint of a set of facts under 
 holds, and a commitment any subset of $H$:
 
 $$
-\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+\begin{aligned}
+\mathrm{root} &= \operatorname{sat}(\mathrm{program}) \\
+C &\subseteq H \\
+\operatorname{st}(C) &= \operatorname{sat}(\mathrm{root} \cup C)
+\end{aligned}
 $$
 
 A hypothesis adds one fact to what the rules start from, and everything the rules then derive. The commitments
 ordered by inclusion are the lattice $(2^H, \subseteq)$, with $2^n$ nodes for $n = |H|$. The hrule above proposes
 
 $$
-H = \lbrace \operatorname{seat}(p, c) \mid \text{is-a}(p, \mathsf{Person}) \in \mathrm{root},\ \text{is-a}(c, \mathsf{Chair}) \in \mathrm{root} \rbrace
+\begin{aligned}
+H = \lbrace\, \operatorname{seat}(p, c) \mid\ & \text{is-a}(p, \mathsf{Person}) \in \mathrm{root}, \\
+& \text{is-a}(c, \mathsf{Chair}) \in \mathrm{root} \,\rbrace
+\end{aligned}
 $$
 
 which is the four facts `ein show hyps` lists. In general $H$ is built by the first rung of the ladder that
 applies, and narrowed by the program's scoping:
 
 $$
-H = \operatorname{scope}(G), \qquad G = \begin{cases}
+\begin{aligned}
+H &= \operatorname{scope}(G) \\
+G &= \begin{cases}
 \operatorname{hrules}(\mathrm{root}) & \text{if the program declares an hrule} \\
 \operatorname{payments}(\mathrm{root}) & \text{else, if an obligation is activated at root and its domain cannot grow} \\
 \operatorname{blind}(\mathrm{root}) & \text{else}
 \end{cases}
+\end{aligned}
+$$
+
+The blind enumerator's facts, and the scoping:
+
+$$
+\begin{aligned}
+\operatorname{blind}(\mathrm{root}) =\ & \lbrace\, r(x) \mid r \text{ of one argument},\ x \in A,\ r(x) \notin \mathrm{root} \,\rbrace \\
+\cup\ & \lbrace\, r(x, y) \mid r \text{ of two arguments},\ x, y \in A,\ x \ne y,\ r(x, y) \notin \mathrm{root} \,\rbrace
+\end{aligned}
 $$
 
 $$
-\operatorname{blind}(\mathrm{root}) = \lbrace r(x) \mid r \text{ of one argument},\ x \in O,\ r(x) \notin \mathrm{root} \rbrace \cup \lbrace r(x, y) \mid r \text{ of two arguments},\ x, y \in O,\ x \ne y,\ r(x, y) \notin \mathrm{root} \rbrace
-$$
-
-$$
-\operatorname{scope}(S) = \lbrace f \in S \mid \operatorname{rel}(f) \in \mathit{HR} \text{ (if listed)},\ \operatorname{rel}(f) \notin \mathit{NH},\ \operatorname{rel}(f) \text{ not closed} \rbrace
+\begin{aligned}
+\operatorname{scope}(S) = \lbrace\, f \in S \mid\ & \operatorname{rel}(f) \in \mathit{HR} \text{ (if listed)}, \\
+& \operatorname{rel}(f) \notin \mathit{NH}, \\
+& \operatorname{rel}(f) \text{ not closed} \,\rbrace
+\end{aligned}
 $$
 
 with $r$ ranging over the declared relations and $\operatorname{scope}$ applied on the second and third rungs
-only. $O$ is the objects: the program's names, less the names a declaration writes as a label, the kernel's own
-words and the names of relations and rules
+only. $A$ is the **guessable atoms**: the program's names, less the names a declaration writes as a label, the
+kernel's own words and the names of relations and rules
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
 Candidates are proposed at a fixpoint, after saturation, never in the middle of it
 ([Q19](../../../decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)).
@@ -146,7 +167,7 @@ Candidates are proposed at a fixpoint, after saturation, never in the middle of 
 |---|---|---|
 | **hrules** | the program declares an `hrule` | each active hrule's conclusion, once per match at root. The other two rungs never run |
 | **obligations** | no hrule, and an obligation is activated at root | the facts that would pay what root owes, and what a commitment can bring it to owe; a root that owes nothing proposes nothing ([obligations](08-obligations.md)) |
-| **blind** | neither, or the obligations rung declines | every fact of a declared relation of one or two arguments over the program's objects, whatever the labels |
+| **blind** | neither, or the obligations rung declines | every fact of a declared relation of one or two arguments over the guessable atoms, whatever the labels |
 
 The ladder is decided once, at root
 ([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)), and the
@@ -169,7 +190,7 @@ obligation rules, and they decide nothing until a fact activates one.
 - **Active**: an hrule with no parameters always; one with parameters once per activator in `(solve :hrules (h (a b)
   …))`. Every name in that list is an hrule the program declares, and each activator has as many arguments as its
   hrule has parameters ([Q-M1f.115](../../../decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md)).
-- **It matches at root.** `:match ()` proposes its conclusion once. An instance of `eq` or `neq` is no hypothesis
+- **It matches at root.** `:match ()` proposes its conclusion once. A fact of `eq` or `neq` is no hypothesis
   ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)), and an hrule
   may read a stored `(not …)`, which it reads in root's state
   ([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
@@ -178,26 +199,29 @@ obligation rules, and they decide nothing until a fact activates one.
 ### The blind enumerator
 
 With no hrule and no activated obligation, the engine proposes every fact of every declared relation of one or two
-arguments, over every object, a pair of two different objects for a relation of two. It reads **no label**: the
-declaration `(relation seat Person Chair)` does not keep `(seat C1 Ann)` out. What a label does is leave the
-enumerator's objects: `Person`, `Chair` and `T` are written as labels, so no candidate is about them, and the objects
-are the four names left ([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). Dropping the hrule from the chairs program
-gives 24 candidates, `is-a` and `seat` facts over every pair of the four names; `(solve :hypothesis-relations (seat))`
-brings it to the twelve `seat` facts. A relation of three arguments or more is not enumerated.
+arguments, over every **guessable atom**, a pair of two different ones for a relation of two. It reads **no
+label**: the declaration `(relation seat Person Chair)` does not keep `(seat C1 Ann)` out. What a label does is
+leave the guessable atoms: `Person`, `Chair` and `T` are written as labels, so no candidate is about them, and the
+guessable atoms are the four names left
+([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). Dropping the hrule from the chairs
+program gives 24 candidates, `is-a` and `seat` facts over every pair of the four atoms; `(solve
+:hypothesis-relations (seat))` brings it to the twelve `seat` facts. No fact of a relation of three arguments or
+more is enumerated. Where `ein` prints *object* in a row about the enumerator, it means a guessable atom.
 
 ## Narrowing what is guessed
 
 | the program states | it means | read by |
 |---|---|---|
-| `(solve :hypothesis-relations (R …))` | speculate only on these relations; `()` names none | the obligations rung and the blind enumerator |
-| `(solve :no-hypothesis (R …))` | never speculate on these | the same |
-| `(__closed__ R)`, written or derived | R's facts are fixed: no commitment extends it | the same, and the read-out |
+| `(solve :hypothesis-relations (R …))` | propose facts of these relations only; `()` names none | the obligations rung and the blind enumerator |
+| `(solve :no-hypothesis (R …))` | propose no fact of these | the same |
+| `(__closed__ R)`, written or derived | the held extent of R is fixed: no commitment adds a fact of R | the same, and the read-out |
 | `(solve :no-search)` | the lattice is root alone: nothing is proposed, H is empty, R is {∅} or empty | every rung, before the first |
 
 Every name a list holds is a relation the program writes elsewhere, or the program is refused at load
 ([Q-M1f.114](../../../decisions/language/Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md)). A
-saturation rule still fires on a relation the lists take out; only guessing stops. `(__closed__ R)` is also what makes
-an `absent` over R safe to read before the search is over, since no commitment can add an R fact. The `(solve …)` form
+saturation rule still derives facts of a relation the lists take out; only guessing stops. `(__closed__ R)` is also
+what makes an `absent` over facts of R safe to read before the search is over, since no commitment can add one. The
+`(solve …)` form
 is [query](12-query.md)'s; `ein solve --no-search`, a command declining to search, is another thing from the program's
 `:no-search` ([the CLI](../04-reference/05-cli.md)).
 
@@ -213,12 +237,12 @@ declaration that filters nothing, or repeats what another says, is one `note:` l
 | pair | refused where | a `note:` where |
 |---|---|---|
 | H + O | never: H generates, O judges | — |
-| H + HR | an active hrule proposes a relation the list leaves out | the list, which filters nothing beside an hrule |
-| H + NH | an active hrule proposes a relation the list names | the same |
-| H + C | an active hrule proposes a closed relation | — |
-| O + HR | no hrule, and an obligation owes a relation the list leaves out | — |
-| O + NH | no hrule, and an obligation owes a relation the list names | — |
-| O + C | an obligation owes a closed relation, whatever generates | — |
+| H + HR | an active hrule proposes a fact of a relation the list leaves out | the list, which filters nothing beside an hrule |
+| H + NH | an active hrule proposes a fact of a relation the list names | the same |
+| H + C | an active hrule proposes a fact of a closed relation | — |
+| O + HR | no hrule, and an obligation owes facts of a relation the list leaves out | — |
+| O + NH | no hrule, and an obligation owes facts of a relation the list names | — |
+| O + C | an obligation owes facts of a closed relation, whatever generates | — |
 | HR + NH | a relation is in both | no hrule: an NH name HR already leaves out |
 | HR + C | a listed relation is closed | — |
 | NH + C | never | no hrule: an NH name a closure already closes |
@@ -244,16 +268,17 @@ is a `note:` saying that nothing is proposed, and every refused pair is refused 
 
 ## What the universe leaves out
 
-R is over H, so the answer holds of a relation H has no candidate of only what the program states and saturation
-derives. The read-out names such a relation under `universe`, where a rule concludes it or a goal asks about it and
-the program has not scoped it out itself: an `outside` row, *gives — no candidate: it has arity 3, and the blind
-enumerator proposes arity 1 and 2 only*
+R is over H, so of a relation H has no candidate of, the answer holds only the facts the program states and
+saturation derives. The read-out names such a relation under `universe`, where a rule concludes a fact of it or a
+goal asks about one and the program has not scoped it out itself: an `outside` row, *gives — no candidate: it has
+arity 3, and the blind enumerator proposes arity 1 and 2 only*
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). Two more rows
-name what the blind enumerator did: a row the read-out calls `types`, where a candidate is about a name that is the
-second argument of an `is-a` fact
+name what the blind enumerator did: a row the read-out calls `types`, where a candidate is about an atom that is
+the second argument of an `is-a` fact
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)), and a
-`relation names` row where a candidate names a relation only a rule concludes. None of the three changes R; a
-declaration that writes the name as a label, or that declares the relation, takes it out of H.
+`relation names` row where an argument of a candidate is a relation that only a rule's conclusion writes. None of
+the three changes R; a declaration that writes the name as a label, or that declares the relation, takes the atom
+out of the guessable ones.
 
 ## Seeing H
 

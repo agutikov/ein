@@ -1,14 +1,20 @@
-# Objects
+# Objects: atoms and facts
 
-An **object** is a thing a program names: `Norwegian`, `House-1`, `Red`. Ein's knowledge base is a graph, and
-every part of it is a node named the same way an object is: a relation (`lives-in`) and a rule (`transitive`) are
-names too, and a fact is a node built of names. There is no number, no string and no other kind of value: a value
-is a **name**, or a **fact** a state could hold
+The knowledge base a program describes is a **graph**, and an **object** is a node of it. A node is one of two
+sorts, and there is no third:
+
+- an **atom** is a labelled node with no outgoing arrow, and its label is its **name**: `Norwegian`, `House-1`,
+  `lives-in`;
+- a **fact** is a node with outgoing arrows, in order. The first points at its **relation**, which is an atom, and
+  the others at its **arguments**, each an atom or a fact: `(lives-in Norwegian House-1)`.
+
+**An object's identity is its name or its list of arrows**: one atom for a name and one fact for a list, however
+often a program writes either. There is no number, no string and no other kind of thing an arrow could point at
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)).
 
-**Ein has no types.** A name carries nothing but its spelling. `Person`, `House`, `Object` and `Type` below are
-names like `Norwegian`: labels, which mean what the program's rules make them mean, and nothing where no rule reads
-them ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)).
+**Ein has no types.** An atom carries nothing but its name. `Person`, `House`, `Object` and `Type` below are atoms
+like `Norwegian`: labels, which mean what the program's rules make them mean, and nothing where no rule reads them
+([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)).
 
 ## In Ein
 
@@ -23,56 +29,91 @@ them ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-decla
 (solve :no-search)
 ```
 
-Every bare word in this program is a name, and each names one node. What a name is called depends on where the
-program writes it:
+Every bare word in this program is a **name**, and a name is one atom wherever it is written. Each of the first
+five forms is a **fact**: its first word is the atom under its first arrow, its second word the object under its
+second arrow, and so on. The two `(relation …)` forms are facts like the other three, **declarations**, whose
+first arrow points at the atom `relation`. What an atom is called depends on which arrow of a fact points at it:
 
-| a name is called | where it stands | in the program above |
+| an atom is called | where it stands | in the program above |
 |---|---|---|
-| an **object** | an argument of a fact | `Norwegian`, `House-1`, `Person`, `House` |
-| a **relation** | the head of a fact, or the name a `(relation …)` declares | `is-instance`, `lives-in` |
-| a **label** | after the name in a `(relation …)`, one per argument | `Object`, `Type`, `Person`, `House` |
-| a **rule** | the name a `(rule …)` declares ([rules](05-rules.md)) | none here |
+| a **relation** | under the first arrow of a fact: the first word of a form | `is-instance`, `lives-in`, and `relation` itself |
+| an **argument** | under a later arrow of a fact: a word after the first | `Norwegian`, `House-1`, `Person`, `House` |
+| a **declared relation** | under the second arrow of a declaration: the word after `relation` | `is-instance`, `lives-in` |
+| a **label** | under a later arrow of a declaration, one per argument of the declared relation | `Object`, `Type`, `Person`, `House` |
+| a **rule**'s name | the name a `(rule …)` declares ([rules](05-rules.md)) | none here |
 
-and a **fact** is a relation applied to its arguments, `(lives-in Norwegian House-1)`, a node of its own
-([facts](03-facts.md)). The words are roles, not kinds: nothing in a name says which it plays, and one name plays
-several. `Person` is a label of `lives-in` and an object of `(is-instance Norwegian Person)`; a relation's name is an
-object of the facts that describe the relation, `(symmetric next-to)` among them
-([properties and operators](07-properties-and-operators.md)).
+The words are parts an atom plays, not kinds of atom: nothing in a name says which it plays, and one atom plays
+several. `Person` is a label of `lives-in` and an argument of `(is-instance Norwegian Person)`; `lives-in` is the
+relation of one fact and an argument of its declaration; and a relation is an argument of every fact that
+describes it, `(symmetric next-to)` among them ([properties and operators](07-properties-and-operators.md)).
+
+**A relation, its extent, a fact of it.** `is-instance` is one atom. The facts whose first arrow points at it,
+taken together, are its **extent**: every such fact, whether a knowledge base holds it or not. The ones a
+knowledge base holds are its **held extent**, two of them here, and each is **a fact of** `is-instance`
+([relations](02-relations.md), [facts](03-facts.md)).
 
 **A name** is a run of ASCII letters and digits, the connectors `_ - .`, and the characters
 `` $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ``. Nothing else, and never a character outside ASCII: those are written
-only in a string or a comment. A run of digits is a name like any other: `1` and `01` are two names, and Ein has no
-numbers ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)); arithmetic is a
-theory of the standard library ([the calculator](../04-reference/04-stdlib/07-calculator.md)). What is **not** a name:
-a variable, `?x`, which a rule or a query binds and no fact holds; a keyword, `:why`, which marks a clause of a
-form; a string, `"…"`, which is natural-language text written only after `:why`, `:source` or `:goal-text`
+only in a string or a comment. A run of digits is a name like any other: `1` and `01` are two names, so two atoms,
+and Ein has no numbers ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md));
+arithmetic is a theory of the standard library ([the calculator](../04-reference/04-stdlib/07-calculator.md)). What
+is **not** a name, and so no atom: a variable, `?x`, which a rule or a query binds and no fact holds; a keyword,
+`:why`, which marks a clause of a form; a string, `"…"`, which is natural-language text written only after `:why`,
+`:source` or `:goal-text`
 ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)); and the
 words the grammar reserves ([reserved names](../04-reference/03-reserved-names.md)).
 
 ## As a graph
 
-`ein render kb FILE` draws the program loaded and saturated, one node per name, every form that writes the name
-fused into it. The program above, whole:
+**The graph itself**, drawn by hand: every object of the program above is one node. A box is an atom, with its
+name in it. An octagon is a fact; it has no name, and the letter beside it is only what this page calls it. An
+arrow carries its place in the fact's list, `1` on the arrow to the relation:
 
-![The program loaded and saturated, one node per name](diagrams/01-program-kb.svg)
+![The knowledge base of the program as a graph: nine atoms and seven facts](diagrams/01-the-graph.svg)
 
-Every name is one node, and every one is drawn the same way. `Person` is one node: the declaration of `lives-in`
-points at it as its second argument, and `(is-instance Norwegian Person)` points at it as an arrow's end. Each
-declaration is drawn as what it is stored as, two facts of the relation named `relation`: an octagon with a
-numbered edge to the relation's name and to each label, and a loop on the name. A binary fact is one labelled arrow
-(the `lives-in` one with its source's short tag, `(10)`), a unary fact a labelled loop, and a fact of three
-arguments or more an octagon with an edge to each argument. The shapes are the
-[rendering reference](../04-reference/12-rendering.md)'s legend.
+The program writes five facts and the graph has seven, since a declaration is stored as two: `d1` is `(relation
+is-instance Object Type)` and `d2` is `(relation is-instance)`, which says that the name is declared; `d3` and
+`d4` are the same two of `lives-in`. `m1` and `m2` are the two `is-instance` facts, and `f` is `(lives-in
+Norwegian House-1)`. Each atom is one box however many arrows reach it. `Person` is under the fourth arrow of
+`d3` and the third of `m1`. `is-instance` is under the first arrow of `m1` and of `m2`, which is what makes them
+two facts of one relation, and under the second arrow of `d1` and of `d2`, which is what makes it a declared
+relation. [The knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md) defines this graph and
+everything said of it.
 
-That is the **compact** view. The **detailed** view is the canonical one: every fact is a node of its own, an
-octagon, with an edge numbered by position to each argument, so a fact of any arity has the same shape and a fact
-can itself be an argument. `ein render program --levi FILE` draws the program's stated fact so:
+**What `ein` draws** is that graph in fewer nodes. No command draws a node for the relation of a fact: the engine
+writes the relation's name in the fact's node, or on an arrow, and so folds the first arrow and the atom under it
+into a word. `ein render kb FILE` draws the program loaded and saturated:
+
+![The program loaded and saturated, as ein render kb draws it](diagrams/01-program-kb.svg)
+
+That is the **compact** view, the graph
+[drawn with labelled arrows](../../reasoning/01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows). A fact
+of two arguments is one arrow from its first argument to its second, with the relation's name written on it (the
+`lives-in` one with its source's short tag, `(10)`); a fact of one argument is a loop with the relation's name on
+it; and a fact of three arguments or more is an octagon with the relation's name in it, `(relation)`, and an edge
+to each argument. So `m1`, `m2` and `f` of the graph are three arrows here, `d2` and `d4` two loops, and `d1` and
+`d3` the two octagons. The shapes are the [rendering reference](../04-reference/12-rendering.md)'s legend.
+
+The **detailed** view draws every fact as a node of its own, an octagon, so a fact of any count of arguments has
+the same shape. `ein render program --levi FILE` draws the program's stated fact so:
 
 ![The program's stated fact in the detailed view: an octagon with a numbered edge to each argument](diagrams/01-fact-levi.svg)
 
-The compact view is a projection of the detailed one: collapse each octagon of one or two arguments into an arrow,
-and promote the relation's name to the arrow's label. The two say the same thing of a graph of unary and binary
-facts, which is most of a puzzle; past two arguments only the detailed one can be drawn.
+How the two drawings stand to the graph:
+
+| in the graph | compact, `ein render kb` | detailed, `--levi` |
+|---|---|---|
+| an atom | a node with its name in it, where a drawn fact has the atom as an argument | the same |
+| a fact | an arrow for a fact of two arguments, a loop for a fact of one, an octagon for any other count | an octagon |
+| a fact's first arrow, and the relation under it | the relation's name, written on the arrow or in the octagon | the relation's name, written in the octagon |
+| a fact's later arrows | the two ends of the arrow, or the octagon's edges, `#1` to the first argument | the octagon's edges, `1` to the first argument |
+
+Two things follow. **The numbers differ by one**: the engine numbers the arguments of a fact, so its `1` is the
+graph's second arrow. And **a relation is a node of a drawing only where some drawn fact has it as an argument**.
+In the compact drawing above `is-instance` is a node, which its declaration points at, and also a word on two
+arrows; in the graph those are one atom, and the two facts point at it. The detailed drawing has no node for
+`lives-in` at all. Neither drawing is the knowledge base: each stands for the graph by the table above, and what
+the engine reasons over is the graph.
 
 **Boxes and ovals are a drawing convention.** Where a program names its membership relation `is-a`, `ein render
 kb` draws the second argument of each `is-a` fact as a box, the first as an oval, and the fact as a dashed arrow
@@ -81,13 +122,14 @@ with an empty head. The same program with `is-instance` spelt `is-a`, the declar
 ![The same program with is-instance spelt is-a: boxes, ovals and dashed arrows](diagrams/01-is-a-convention.svg)
 
 The drawing is keyed on the spelling `is-a` and on nothing else: the two programs hold the same facts under two
-names, and answer alike. `--no-types` leaves the boxes and their arrows out.
+names, and answer alike. The option that leaves the boxes and their arrows out is spelt `--no-types`: *type* is
+the engine's word there for an atom it draws as a box, and such an atom is an atom like any other.
 
 ## In words
 
-A name reads as itself, as written: Ein has no vocabulary of its own for the things a problem is about. A name takes
-part in sentences through the facts it is an argument of, each read by its relation's `:why`. `ein solve FILE
---dump-answer DIR` writes each fact of the state with its sentence:
+An atom reads as its name, as written: Ein has no vocabulary of its own for the things a problem is about. An atom
+takes part in sentences through the facts it is an argument of, each read by its relation's `:why`. `ein solve
+FILE --dump-answer DIR` writes each fact of the state with its sentence:
 
 ```text
 (is-instance House-1 House) ; House-1 is an instance of House
@@ -101,31 +143,61 @@ A name a module declares prints as the main file writes it, and otherwise by its
 
 ## In mathematics
 
-A program has a finite set of **names** $N$: every constant written in an argument position of one of its facts, at
-any depth, and every constant written anywhere in one of its rules
-([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). The **values**
-$V$ are the least set with
+Write $\Sigma^{+}$ for the names, the non-empty words over the name characters, and $\operatorname{out}(o)$ for
+the list of the objects under the arrows of the node $o$, from the first. An atom is its name and has no arrow; a
+fact is its list. The **objects** $O$ are the least set with
 
 $$
-N \subseteq V, \qquad r(v_1, \dots, v_n) \in V, \qquad \lnot f \in V
+\begin{aligned}
+\Sigma^{+} &\subseteq O && \text{the atoms} \\
+(r, o_1, \dots, o_n) &\in O && \text{the facts, for a name } r,\ n \ge 0 \text{ and } o_1, \dots, o_n \in O
+\end{aligned}
 $$
 
-for every relation $r$ of $n$ arguments, all $v_1, \dots, v_n \in V$, and every fact $f = r(v_1, \dots, v_n)$ of an
-ordinary relation. A value is a name or a ground term over the relations. Identity is syntactic: two occurrences of
-a name are one node, and two facts are one node exactly when their relations and their argument lists are equal, at
-every depth. For the program above,
+less the tuples under a word the language keeps from heading a fact ([facts](03-facts.md#a-fact-inside-a-fact)).
+The fact $(r, o_1, \dots, o_n)$ is written $r(o_1, \dots, o_n)$: $r$ is its relation and $o_1, \dots, o_n$ are
+its arguments. **Identity is the name or the tuple**:
+
+$$
+\begin{aligned}
+a = b &\iff a \text{ and } b \text{ are one word} && \text{for atoms } a, b \\
+f = g &\iff \operatorname{out}(f) = \operatorname{out}(g) && \text{for facts } f, g \\
+a &\neq f && \text{for an atom } a \text{ and a fact } f
+\end{aligned}
+$$
+
+So two occurrences of a name are one node, and two facts are one node exactly when their relations and their
+argument lists are equal, at every depth. A knowledge base is a finite set $K$ of facts, and its graph is those
+facts and whatever lies under their arrows. For the program above,
+
+$$
+\begin{aligned}
+\operatorname{out}(d_1) &= (\mathsf{relation},\ \text{is-instance},\ \mathsf{Object},\ \mathsf{Type}) \\
+\operatorname{out}(d_2) &= (\mathsf{relation},\ \text{is-instance}) \\
+\operatorname{out}(d_3) &= (\mathsf{relation},\ \text{lives-in},\ \mathsf{Person},\ \mathsf{House}) \\
+\operatorname{out}(d_4) &= (\mathsf{relation},\ \text{lives-in}) \\
+\operatorname{out}(m_1) &= (\text{is-instance},\ \mathsf{Norwegian},\ \mathsf{Person}) \\
+\operatorname{out}(m_2) &= (\text{is-instance},\ \text{House-1},\ \mathsf{House}) \\
+\operatorname{out}(f) &= (\text{lives-in},\ \mathsf{Norwegian},\ \text{House-1}) \\
+K &= \lbrace d_1, d_2, d_3, d_4, m_1, m_2, f \rbrace
+\end{aligned}
+$$
+
+A program also has a finite set of **names** $N$: every name written as an argument of one of its facts, at any
+depth, and every name written anywhere in one of its rules
+([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). Here
 
 $$
 N = \lbrace \mathsf{Norwegian},\ \text{House-1},\ \mathsf{Person},\ \mathsf{House},\ \mathsf{Object},\ \mathsf{Type},\ \text{is-instance},\ \text{lives-in} \rbrace
 $$
 
-and the knowledge base is a set of facts over $V$. $N$ is not partitioned: there is no subset of *types* and no
-function from a name to a type. The roles of the table above are positions a name is written in.
+$N$ is not partitioned: there is no subset of *types* and no function from an atom to a type. The words of the
+table above say which arrow points at an atom, and nothing about the atom.
 
 ## No types: a label means what a rule makes it mean
 
-`(relation is-instance Object Type :why "…")` is **almost an ordinary fact**. The loader stores it as one, the
-octagon of the graph above, which `ein saturate --dump FILE` lists among the program's facts beside a second fact
+`(relation is-instance Object Type :why "…")` is **almost an ordinary fact**. The loader stores it as one, `d1`
+of the graph above, which `ein saturate --dump FILE` lists among the program's facts beside a second fact, `d2`,
 that says the name is declared:
 
 ```text
@@ -143,8 +215,8 @@ that says the name is declared:
   (lives-in Norwegian House-1 :source "condition (10)")
 ```
 
-`Object` and `Type` are its second and third arguments: names, written in a fact, and nothing more. The engine
-never asks whether `Norwegian` *is* a `Person`. Beside the declarations above, a program may state
+`Object` and `Type` are its second and third arguments: atoms under two arrows of a fact, and nothing more. The
+engine never asks whether `Norwegian` *is* a `Person`. Beside the declarations above, a program may state
 
 ```lisp
 (lives-in House-1 Norwegian)
@@ -160,9 +232,9 @@ labels, `(relation lives-in X Y :why "…")`, changes no fact but the declaratio
 | fixes the **count** of arguments | a form headed by `lives-in` has two, wherever it is written, or the program is refused at load ([relations](02-relations.md)) |
 | carries the **sentence** | its `:why` is what each fact of the relation reads as ([natural language](14-natural-language.md)) |
 | is written **once**, with its `:why` | a second `(relation lives-in …)` is refused, and so is one with no `:why` |
-| tells the **blind enumerator** what to guess about | with no hrule and no obligation, the engine proposes facts of declared relations of one or two arguments, over the program's names less those some declaration writes as a label ([hypotheses](09-hypotheses.md)) |
+| tells the **blind enumerator** what to guess about | with no hrule and no obligation, the engine proposes facts of declared relations of one or two arguments, over the **guessable atoms**: the program's names less those some declaration writes as a label ([hypotheses](09-hypotheses.md)) |
 
-The last is the one place the engine itself reads which names are labels, and it reads them only as *not a thing to
+The last is the one place the engine itself reads which atoms are labels, and it reads them only as *not a thing to
 guess about*. Everything else a label means is given to it by a rule.
 
 ### Giving labels a meaning
@@ -195,7 +267,7 @@ relation's first label* is a sentence a program can write:
 ```
 
 `first-argument-fits` matches three facts at once: the declaration of some relation `?R` with two labels, a fact
-of `?R`, and an `is-instance` arrow from that fact's first argument to the first label. Where all three are there,
+of `?R`, and an `is-instance` fact of that fact's first argument and the first label. Where all three are there,
 *the type of `?x1` is `?T1`* is a fair thing to call it, and the rule says so of the fact. A relation written as a
 variable is a **parameter** of its rule ([rules](05-rules.md)), bound by an activator fact, so the second rule
 supplies one for every relation declared with two labels. The first rule written with no parameter, its `?R` bound
@@ -218,7 +290,7 @@ the relation and its two labels, the fact an arrow labelled with the relation's 
 ![The rule first-argument-fits: a declaration, a fact and a membership, and the fact it asserts](diagrams/01-rule-first-argument-fits.svg)
 
 The second rule, `ein render rule --name every-declared-pair FILE`, matches a declaration alone and asserts the
-first rule's activator, a fact about the relation's name:
+first rule's activator, a fact about the relation:
 
 ![The rule every-declared-pair: a declaration alone, and the activator it asserts](diagrams/01-rule-every-declared-pair.svg)
 
@@ -226,7 +298,10 @@ In words, from the state file: *Norwegian is an instance of Person, the label li
 argument*. In mathematics the rule is one implication, for every relation $R$ it is activated on:
 
 $$
-\operatorname{relation}(R, T_1, T_2) \land R(x_1, x_2) \land \operatorname{is-instance}(x_1, T_1) \implies \operatorname{fits}\bigl(R(x_1, x_2)\bigr)
+\begin{aligned}
+& \operatorname{relation}(R, T_1, T_2) \land R(x_1, x_2) \land \operatorname{is-instance}(x_1, T_1) \\
+& \implies \operatorname{fits}\bigl(R(x_1, x_2)\bigr)
+\end{aligned}
 $$
 
 Remove the two rules and `Person` means nothing again. A check that refutes a state whose fact does not fit, a
@@ -235,18 +310,19 @@ hierarchy of labels, or inheritance along it is written the same way, as rules o
 ([the relation algebra](../04-reference/04-stdlib/02-relation-algebra.md#labels-and-the-membership-relation),
 [bijections](../04-reference/04-stdlib/04-bijections.md#the-argument-check)).
 
-## One name, one node
+## One name, one atom
 
-**No copies.** Two occurrences of a name anywhere in a program, in its imports included, denote the same node, and
-every state the engine considers shares the program's names. A variable is local to the rule or query that writes
-it: `?a` in one rule and `?a` in another are unrelated.
+**No copies.** Two occurrences of a name anywhere in a program, in its imports included, are the same atom, two
+occurrences of a fact are the same fact, and every state the engine considers shares the program's atoms. A
+variable is local to the rule or query that writes it: `?a` in one rule and `?a` in another are unrelated.
 
-**No merging.** Two different names are two nodes, always. `(eq ?a ?b)` holds exactly when `?a` and `?b` are the
-same name ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)),
+**No merging.** Two different names are two atoms, always. `(eq ?a ?b)` holds exactly when `?a` and `?b` are bound
+to the same object
+([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)),
 and a fact `(= a b)` is an ordinary fact of a relation named `=`: it licenses no substitution and makes `a` and `b`
-no more one node than any other fact does
-([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)). The rendering draws a binary `=`
-fact as a `doublecircle` node with an edge to each side, and that is all `=` means.
+no more one atom than any other fact does
+([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)). The rendering draws a fact of
+`=` with two arguments as a `doublecircle` node with an edge to each side, and that is all `=` means.
 
 **Names an import brings.** Every name a module declares has a full name, its module's name and its own,
 `std.algebra.symmetric`; a file writes it short when it lists it in its import, `(import std.algebra :symbols
@@ -257,7 +333,8 @@ fact as a `doublecircle` node with an edge to each side, and that is all `=` mea
 **Names the program cannot write.** The loader makes up names of its own, each starting with `#`, which no program
 can write ([Q-M1f.339](../../../decisions/language/Q-M1f.339-every-name-the-loader-makes-up-starts-with.md)), and
 `__closed__` and `__symmetric__` are the kernel's: a program writes them as a fact's relation, never binds them, and
-no hypothesis is ever about them ([reserved names](../04-reference/03-reserved-names.md)).
+neither is a guessable atom, so no hypothesis is ever about them
+([reserved names](../04-reference/03-reserved-names.md)).
 
 ## What is refused
 
@@ -266,14 +343,17 @@ Each at the parse, on every command, with a line naming the place
 
 - a character outside ASCII outside a string or a comment;
 - a bare `_` or `?_`, anywhere ([Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md));
-- a string where a value goes, and a keyword a form does not take;
-- `()` as a value.
+- a string where an argument goes, and a keyword a form does not take;
+- `()` as an argument.
 
-What looks like a number or a range is a name: `1`, `01` and `1..3` are three names, each its own node.
+What looks like a number or a range is a name: `1`, `01` and `1..3` are three names, each its own atom.
 
 ## See also
 
-- [Relations](02-relations.md) and [facts](03-facts.md), the two other things the graph is made of.
+- [Relations](02-relations.md): the atom under a fact's first arrow, its extent, and its declaration.
+- [Facts](03-facts.md): the nodes with arrows, where each came from, and a fact as an argument of a fact.
+- [The knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md): the graph defined, with its
+  properties: identity, order, the text of an object.
 - [Ontology](04-ontology.md): membership, hierarchy and inheritance, each a relation and rules of the program's own.
 - [The rendering reference](../04-reference/12-rendering.md): every view `ein render` draws and its legend.
 - [The syntax reference](../04-reference/02-syntax.md): the lexer, token by token.
