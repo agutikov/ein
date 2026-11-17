@@ -518,7 +518,7 @@ pub fn meta_of(bytes: &[u8]) -> Result<Meta> {
 /// What each section costs, without opening the file.
 ///
 /// The size ceiling is a number about a whole file
-/// (`tests/roundtrip.rs`' `a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond`),
+/// (`tests/roundtrip.rs`' `a_saturated_zebra2_is_under_80_kb_and_opens_cold_under_6_ms_or_20_with_assertions`),
 /// and a whole-file number tells nobody which section grew. This is what a test — or
 /// anyone holding a `.einb` that got big — reads instead.
 pub fn section_sizes(bytes: &[u8]) -> Result<Vec<(Kind, u64)>> {

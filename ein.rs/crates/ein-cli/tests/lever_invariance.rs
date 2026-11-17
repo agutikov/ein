@@ -50,7 +50,7 @@
 //! that flag beside the same core, which the exemption does not cover. It is
 //! a wrong answer, an `open` row, and its program is compared less that row
 //! until the row is fixed ([`REFUTED_BY_OPEN`]);
-//! [`w36_is_exempt_from_refuted_by_until_f22`] holds the row open and the
+//! [`w36_is_exempt_from_refuted_by_while_its_row_is_open`] holds the row open and the
 //! difference there.
 //!
 //! **Byte for byte, cost counters included**, because no route reads a lever
@@ -940,7 +940,7 @@ fn the_librarys_question_does_the_binarys_work() {
 /// move, on some question, and nothing else. The day it stops, the row is
 /// fixed and the entry goes with it.
 #[test]
-fn w36_is_exempt_from_refuted_by_until_f22() {
+fn w36_is_exempt_from_refuted_by_while_its_row_is_open() {
     let reg = register();
     for (id, witness) in REFUTED_BY_OPEN {
         let row = reg
@@ -949,9 +949,10 @@ fn w36_is_exempt_from_refuted_by_until_f22() {
             .find(|r| r.id == id)
             .unwrap_or_else(|| panic!("{id}: not a register row"));
         assert_eq!(
-            (row.status.as_str(), row.owner.as_str()),
-            ("open", "F22"),
-            "{id}: the exemption is an open row of F22's"
+            row.status.as_str(),
+            "open",
+            "{id}: the exemption is for an open row, a `refuted by` that moves under \
+             :{CORE_FLAG} beside a core that does not"
         );
         assert!(
             row.witness == witness || row.note.as_deref().is_some_and(|n| n.contains(witness)),

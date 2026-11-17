@@ -390,7 +390,10 @@ fn the_canonical_encoding_keeps_its_landmarks() {
     ] {
         let s = shape_of(rel);
         let want: BTreeSet<String> = DECLARED.iter().map(|s| s.to_string()).collect();
-        assert_eq!(s.declared, want, "{rel} declares a different B1 ontology");
+        assert_eq!(
+            s.declared, want,
+            "{rel} declares a different set of relations"
+        );
         assert!(s.has_query, "{rel} has no query block to answer");
         assert!(
             s.rules_total > 20,
@@ -2081,7 +2084,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
     ),
     (
         "examples/branching/04_two_levels.ein",
-        "hyp / hypskip — how H is built, narrated since M1e2 S1e2.1a.5",
+        "hyp / hypskip — how H is built",
     ),
     (
         "examples/branching/12_typed_blind_solve.ein",
@@ -2098,13 +2101,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
     ),
     (
         "examples/lattice/04_obligation_trigger_hole.ein",
-        "monotonicity — a site, an obligation's trigger. `naf-upward-closure.ein` \
-         gave it, and `warn`, until M1e2 S1e2.2.5: *forbid* refuses that \
-         program before the static check is narrated, and `warn` left the \
-         schema with `(config :warn-derived-naf true)`, the flag that gated it. \
-         The `alive-set-invariant` category had a row of its own, \
-         `alive-set-fresh-name.ein`, until S1e2.2.4 seeded the universe with a \
-         rule's constants",
+        "monotonicity — a site, an obligation's trigger",
     ),
 ];
 
