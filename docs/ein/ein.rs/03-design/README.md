@@ -8,13 +8,13 @@ cite these pages as their specification; each states the engine as it is and nam
 Three groups, each constraining the next:
 
 1. **The contract**: what may not change.
-   [Determinism and order](01-determinism-and-order.md) → [Shared assets](02-shared-assets.md)
+   [Determinism and order](01-determinism-and-order.md), then [Shared assets](02-shared-assets.md).
 2. **The machine**: what changes underneath it.
-   [Data model](03-data-model.md) → [IR frontend](04-ir-frontend.md) → [Matcher](05-matcher.md) →
-   [Saturation](06-saturation.md) → [Search](07-search.md)
+   [Data model](03-data-model.md), [IR frontend](04-ir-frontend.md), [Matcher](05-matcher.md),
+   [Saturation](06-saturation.md), then [Search](07-search.md).
 3. **The scale-out and the build.**
-   [Parallelism](08-parallelism.md) → [Binary format](09-binary-format.md) →
-   [Toolchain and layout](10-toolchain-and-layout.md)
+   [Parallelism](08-parallelism.md), [Binary format](09-binary-format.md), then
+   [Toolchain and layout](10-toolchain-and-layout.md).
 
 The same order as a picture: a solid arrow is *read next*, and a dashed one is a group constraining the group
 after it.

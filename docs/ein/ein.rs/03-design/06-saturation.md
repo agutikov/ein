@@ -26,7 +26,8 @@ step():
 - **Boundary.** At quiescence every parked candidate, a match whose NAF guards were not yet judged or failed, is
   judged against that fixpoint, and **at most one is admitted per round**. That is a soundness requirement, not a
   throttle: admitting a batch would let one admission invalidate another's guard after its verdict was taken, which
-  on `p ← absent q; q ← absent p` derives both, and `{p, q}` is a model of that program under no reading. A
+  on the two rules $p \leftarrow \operatorname{absent} q$ and $q \leftarrow \operatorname{absent} p$ derives both, and
+  $\{p, q\}$ is a model of that program under no reading. A
   candidate whose guard fails **stays parked**, since a `forall`'s nested absent can flip from failing to passing as
   the KB grows; one whose guard can only keep failing is **retired**. The events are `park`, `admit` and `retire`
   ([`../05-events.md`](../05-events.md)).

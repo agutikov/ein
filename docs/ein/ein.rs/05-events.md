@@ -104,11 +104,11 @@ asks for it alone. The corpus fixture that emits it is `examples/lattice/04_obli
 
 **Three of `compile`'s six numbers are not what they are named**, and they stay as they are because the event is a
 comparison surface: a changed field meaning is a schema version ([§ Versioning](#versioning)), not a fix
-([`engine.rs`](../../../ein.rs/crates/ein-infer/src/engine.rs)). On a plan with *d* disjuncts:
+([`engine.rs`](../../../ein.rs/crates/ein-infer/src/engine.rs)). On a plan with $d$ disjuncts:
 
-- **`n_guards` is *d***: one guard tuple per disjunct, whether or not the disjunct has a guard in it. It is the
+- **`n_guards` is $d$**: one guard tuple per disjunct, whether or not the disjunct has a guard in it. It is the
   disjunct count and not the guard count, and it is the field a consumer is most likely to sum;
-- **`n_disjuncts` is *d* − 1**: the *extra* disjuncts, so a rule with no `(or …)` reports `n_disjuncts 0` and
+- **`n_disjuncts` is $d - 1$**: the *extra* disjuncts, so a rule with no `(or …)` reports `n_disjuncts 0` and
   `n_guards 1`;
 - **`n_steps` is the first disjunct's** step count alone, not the plan's.
 
@@ -143,14 +143,14 @@ makes the queue's pop order checkable rather than inferred.
 | `e` | emitted at | payload |
 |---|---|---|
 | `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered`; and `later_debts`, `later_candidates` where the call read a debt the state does not owe |
-| `hyp` | each candidate the generator constructs | `fact`, `verdict` ∈ {`emitted`, the name of the filter that dropped it} |
+| `hyp` | each candidate the generator constructs | `fact`; `verdict`, which is `emitted` or the name of the filter that dropped it |
 | `hypskip` | a skip **before** a candidate exists; *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
-| `enter` | each node a route visits, after the node's own events, in visit order | `layer` (the commitment's size), `commitment` (sorted), `kind` ∈ {`dead`, `owing`, `in-r`}, `owes`, `core` (a dead node's, a list; `null` on a node that is not dead, which has no core), `core_status` (`within-budget`, or `cut-` and the caps the core's search stopped at; `null` where no core was taken) |
+| `enter` | each node a route visits, after the node's own events, in visit order | `layer` (the commitment's size), `commitment` (sorted), `kind`, one of `dead`, `owing` and `in-r`, `owes`, `core` (a dead node's, a list; `null` on a node that is not dead, which has no core), `core_status` (`within-budget`, or `cut-` and the caps the core's search stopped at; `null` where no core was taken) |
 | `layer` | the end of each layer of route 1 or of the state route | `layer`, `visited`, `dead`, `owing`, `r`, `facts`: the layer's own counters. On route 1 `layer` is the commitments' size, from 0; on the state route it is the layer's index, root's 0, then one per state size extended, and the counters are its saturations |
 
-`hyp`'s `verdict` is the *name of the thing that dropped the candidate*, not a boolean: `raw == emitted + Σ
-filtered` is the invariant the generator's statistics assert, and naming the filter makes a counter difference
-locate itself (`hypgen::apply_filters` returns that name for this reason).
+`hyp`'s `verdict` is the *name of the thing that dropped the candidate*, not a boolean:
+$\operatorname{raw} = \operatorname{emitted} + \sum_{f} \operatorname{dropped}_f$ over the filters $f$ is the
+invariant the generator's statistics assert, and naming the filter makes a counter difference locate itself (`hypgen::apply_filters` returns that name for this reason).
 
 A skip before any candidate exists gets its own kind rather than a `hyp` with an invented `fact`:
 `closed_relation`, `relation_not_whitelisted` and `no_hypothesis_relation` are decisions about a *relation*, and

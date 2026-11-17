@@ -35,7 +35,7 @@ index.
 
 **Interning is not belief.** The intern tables say that a name or a proposition has a number; whether a KB holds the
 proposition is a bit in that KB (§ 5). A fork may intern freely without its parent ever seeing the proposition, which
-is what makes an O(1) fork correct as well as cheap.
+is what makes an $O(1)$ fork correct as well as cheap.
 
 The two halves, and what one holds of the other. `Terms` is identity, one per run and append-only: it numbers
 names, propositions and derivation records. A `Kb` is belief, one per branch of the search: which of those numbers
@@ -122,9 +122,9 @@ as a sort key would make an output depend on the order the loader walked the fil
 | field | type | holds |
 |---|---|---|
 | `arena` | `String` | all symbol text, one allocation family |
-| `spans` | `Vec<(u32, u32)>` | `Symbol` → `(start, len)` in the arena |
+| `spans` | `Vec<(u32, u32)>` | for each `Symbol`, its `(start, len)` in the arena |
 | `lookup` | `FxHashMap<Box<str>, Symbol>` | the reverse map; it owns a second copy of each string, because a map keyed by slices of `arena` would be a self-referential borrow and need `unsafe` |
-| `rank` | `OnceLock<Vec<u32>>` | `Symbol` → position in the sorted symbol list, built on demand (§ 2.1) |
+| `rank` | `OnceLock<Vec<u32>>` | for each `Symbol`, its position in the sorted symbol list, built on demand (§ 2.1) |
 
 What interns here: relation, object, rule, variable and keyword names, and every name that reaches a fact argument.
 A run of digits is a name like any other, so `7` and `07` are two symbols
@@ -359,7 +359,7 @@ the depth of the stack it clones, held with a counting allocator by
 `a_deep_branch_pays_for_its_depth_and_not_for_the_facts_below_it`.
 
 **The stack is not flattened during a run.** `Kb::depth` is the sealed layers plus one, and a read that aggregates
-over layers is O(depth). The engine keeps the stack rather than materialising each fork, because a fork then shares
+over layers is $O(\operatorname{depth})$. The engine keeps the stack rather than materialising each fork, because a fork then shares
 its parent's index vectors with every sibling instead of holding a private copy. `Kb::flatten` collapses a KB into one
 layer and is content- and order-neutral; no engine path calls it. `Kb::rebuild_indexes` collapses the stack as it
 rebuilds, which the loader does once.
@@ -448,7 +448,7 @@ negation-as-failure boundary asks it once per watched relation ([`06-saturation.
 `Kb::check_extent_counts` compares the map with a walk of the layers and is part of `check_layering`. Held by
 `kb.rs`'s `n_facts_of_costs_one_probe_at_any_depth`, which counts probes forty forks deep under
 `--features counters`, and `a_rebuild_reconstructs_the_extent_counts`. The other aggregate reads (`n_facts`,
-`n_rule_apps`, `contains`, `is_negated`) stay O(depth).
+`n_rule_apps`, `contains`, `is_negated`) stay $O(\operatorname{depth})$.
 
 ## 8. Provenance
 

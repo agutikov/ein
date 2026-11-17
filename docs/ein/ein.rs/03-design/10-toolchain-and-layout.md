@@ -22,7 +22,7 @@ Two are dev-only, `publish = false`, and no shipped crate depends on them: `ein-
 fixture helpers, the worker pool the corpus sweeps share and the benchmark set; and `ein-narration`, the one
 definition of what counts as a derivation's narration rather than its content ([`../05-events.md`](../05-events.md)).
 
-The shipped crates stack linearly up to `ein-infer` and fork there: `ein-core ← ein-ir ← ein-infer`, then `ein-einb`
+The shipped crates stack linearly up to `ein-infer` and fork there: `ein-ir` over `ein-core` and `ein-infer` over `ein-ir`, then `ein-einb`
 and `ein-render` as siblings over `ein-infer`, and `ein-cli` over both. A crate never depends on one above it, which is
 why a doc comment in `ein-ir` names an `ein-infer` item in backticks rather than linking it. The crate and module map
 is [`../01-architecture.md`](../01-architecture.md).

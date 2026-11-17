@@ -9,7 +9,7 @@ lineage: what was taken, and what Ein does instead.
 | **miniKanren** | relations over atoms; the `?var` convention; a body as a conjunction of patterns | no `fresh` and no unification syntax: a rule's variables are bound by its `:match` |
 | **AtomSpace** | explicit declarations of relations, each slot given a name | no types: a slot's name is an ordinary name, a label with no meaning a rule does not give it; no probabilistic truth values and no weights: a fact holds, its negation is stored, or neither is known |
 | **Datalog** | a rule as a head and a body, which Ein writes as `:assert` and `:match`; derivation to a fixpoint | S-expressions rather than infix clauses; every rule carries a `:why` text, so a firing reads as a sentence |
-| **Double-pushout graph rewriting** | `:match` and `:assert` read as the sub-graph before and the sub-graph after | a rule is not written as a span `L ← K → R`, and the engine does not rewrite by pushouts: it adds facts |
+| **Double-pushout graph rewriting** | `:match` and `:assert` read as the sub-graph before and the sub-graph after | a rule is not written as a span $L \leftarrow K \rightarrow R$, and the engine does not rewrite by pushouts: it adds facts |
 
 The same lineage as a picture. A solid arrow is what Ein takes; the dashed note under a source is the place where
 Ein does something else.

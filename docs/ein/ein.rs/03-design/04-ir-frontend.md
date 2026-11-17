@@ -521,7 +521,7 @@ output is rendered the same way ([05-matcher.md](05-matcher.md)).
 Its bytes are observable: they are `ein-ir/tests/golden/zebra2.golden` and `zebra.golden`, the resolved program at
 the head of each `--dump-answer` file, the program a `.einb` stores
 ([09-binary-format.md](09-binary-format.md#23-the-sections)), and the goal text `ein test` prints. Unescaping and escaping are inverse and positions are not compared, so
-`parse ∘ dump` is a fixed point on every program the parser accepts.
+$\operatorname{parse} \circ \operatorname{dump}$ is a fixed point on every program the parser accepts.
 
 ## 11. The tests that hold it
 
@@ -530,7 +530,7 @@ the head of each `--dump-answer` file, the program a `.einb` stores
 | [`ein-ir/tests/generated_parser.rs`](../../../../ein.rs/crates/ein-ir/tests/generated_parser.rs) | a report is the same twice (`a_report_is_the_same_twice`) and says where the budget cut it (`a_report_cut_at_the_budget_says_so`); the end of input is where the text ends; the string escapes; no name the loader makes up is a name; `the_nesting_limit`; the lexer's tokens with and without its start condition |
 | [`ein-ir/tests/grammar_pages.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_pages.rs) | the grammar page's two blocks are written from `ein.l` and `ein.y` (`the_pages_grammar_blocks_are_the_parsers`); the grammar's table, each row a shape refused at the parse with its line, banked in `tests/golden/grammar_table.txt`; the loader lines the grammar does not cover are still reached |
 | [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | every `examples/broken/*.ein` against its `.expected` (`the_parse_negative_fixtures_reproduce_their_message`); a keyword is a whole word in every place |
-| [`ein-ir/tests/ir_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/ir_semantics.rs) | the language as data: what parses and what does not, the node a text becomes, `dump ∘ parse` on every syntactic shape, macro expansion and the names a macro may not take |
+| [`ein-ir/tests/ir_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/ir_semantics.rs) | the language as data: what parses and what does not, the node a text becomes, $\operatorname{dump} \circ \operatorname{parse}$ on every syntactic shape, macro expansion and the names a macro may not take |
 | [`ein-ir/tests/fuzz_properties.rs`](../../../../ein.rs/crates/ein-ir/tests/fuzz_properties.rs) | over generated near-programs (`EIN_FUZZ_ITERS`, `EIN_FUZZ_SEED`) and the seeds and findings of `corpus/fuzz_findings/`: input is parsed or diagnosed, never a panic; what parses round-trips through the dumper; a refusal is the same twice and within its budget; no accepted program carries a keyword its form does not list; the compiler refuses nothing the loader accepts; no firing meets an unbound variable |
 | [`ein-ir/tests/dump_goldens.rs`](../../../../ein.rs/crates/ein-ir/tests/dump_goldens.rs) | `zebra2.golden` and `zebra.golden`; `dump_then_parse_is_a_fixed_point` over the corpus |
 | [`ein-ir/tests/load_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/load_semantics.rs) | every `examples/broken/load/` refusal against its `.expected`; the pass order of accumulated errors; `require_why` decides loading only |

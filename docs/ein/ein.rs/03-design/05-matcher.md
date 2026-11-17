@@ -269,7 +269,7 @@ slots past the reported ones, which is why `Disjunct::n_slots` sizes the array a
 |---|---|---|
 | `run` | every match of every disjunct, each from a fresh seed | a query's goal (`verdict::goal_bindings`), hrules, the obligation reports and the obligation rung |
 | `run_one` | every match of one disjunct | the saturator's full pass over its plans (`Saturator::full_match`) |
-| `run_seeded` | the semi-naive delta: for each top-level relation step over a new fact's relation, that step bound to the fact first and the remaining steps walked, so a fact that can play two roles, as in `(R ?a ?b) ∧ (R ?b ?c)`, is seeded at each | the saturator's delta pass (`Saturator::seed_match`), over the plans that read the relation in a positive premise |
+| `run_seeded` | the semi-naive delta: for each top-level relation step over a new fact's relation, that step bound to the fact first and the remaining steps walked, so a fact that can play two roles, as in `(and (R ?a ?b) (R ?b ?c))`, is seeded at each | the saturator's delta pass (`Saturator::seed_match`), over the plans that read the relation in a positive premise |
 | `holds` | whether a lifted guard's sub-plan has one match, in its own space, seeded from the parent's registers through `scope_of` | the NAF boundary, a goal's guards, the detector, the obligation reports |
 | `universal_support` | the facts a holding guard of `forall`'s shape rests on: what its nested body matched | the saturator, for a firing's `Prov::universal` |
 | `scan_without` | a guard's sub-plan with one step skipped, its other steps enumerated | the obligation rung (`oblgen`) |

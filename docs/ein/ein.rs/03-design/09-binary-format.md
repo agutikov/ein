@@ -185,10 +185,10 @@ so opening re-interns entry *i* and learns the live id of the file's *i*. That f
 
 | table | from | maps |
 |---|---|---|
-| `sym` | `SYMBOLS` | file `Symbol` → live `Symbol` |
-| `fact` | `FACTS` | file `FactId` → live `FactId` |
-| `prov` | `PROV` | file record position → live `ProvId` |
-| `file` | `PROGRAM`'s file names | a `Loc`'s file index → the rebuilt AST's |
+| `sym` | `SYMBOLS` | a file's `Symbol` to the live `Symbol` |
+| `fact` | `FACTS` | a file's `FactId` to the live `FactId` |
+| `prov` | `PROV` | a file's record position to the live `ProvId` |
+| `file` | `PROGRAM`'s file names | a `Loc`'s file index to the rebuilt AST's |
 
 Every other section is translated through them in one linear pass. `Maps::value` keeps a stored `Value`'s tag and
 moves its payload through the symbol or the fact table (`ein_core::Value::from_bits` reads the stored word);

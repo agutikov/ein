@@ -156,7 +156,7 @@ answering path, the one `ein solve` takes.
 
 | field | |
 |---|---|
-| `budget` | facts beyond root, summed over every fixpoint the run computes: `--region-budget`, [2^20 by default](../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md). A run that reaches it stops and says what it established, with `exhausted` false; it never changes an answer |
+| `budget` | facts beyond root, summed over every fixpoint the run computes: `--region-budget`, [$2^{20}$ by default](../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md). A run that reaches it stops and says what it established, with `exhausted` false; it never changes an answer |
 | `limit` | the largest `n` whose whole cube a program the static check flags gets: `--region-limit` |
 | `jobs` | `> 1` fans the nodes out over threads, with the same answer. Inert without the `parallel` feature |
 | `deadline` | `-T`: an `Instant`, past which the run is an error, never an answer |
