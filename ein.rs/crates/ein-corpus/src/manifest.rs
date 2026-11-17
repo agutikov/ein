@@ -294,9 +294,8 @@ mod tests {
         assert!(
             bad.is_empty(),
             "a declared run budgets by wall clock, so its exit code is a \
-             stopwatch and `corpus_exits.txt` banks it (TE-L1). Use `-E` / \
-             `--max-enterings`, which counts enterings and is \
-             deterministic:\n{}",
+             stopwatch and `corpus_exits.txt` banks it. Use `--region-budget \
+             FACTS`, which counts facts and is deterministic:\n{}",
             bad.join("\n")
         );
     }
@@ -344,10 +343,8 @@ mod tests {
                 "examples/zebra2.ein",
             ],
             "the `slow` set moved. An entry that gained the flag has left the \
-             default sweep — check that the cost is real (`utils/bench_env.sh \
-             python3 utils/corpus_cost.py`) before banking it here; one that \
-             lost it is the S1a.9.0 mechanism working and wants a line in \
-             measurements/corpus_cost.md"
+             default sweep — check that its recorded cost is real before \
+             banking it here; one that lost it is back in the default sweep"
         );
     }
 
@@ -387,7 +384,7 @@ mod tests {
         assert!(
             bad.is_empty(),
             "the `slow` flag and the recorded cost disagree \
-             (re-take with `utils/bench_env.sh python3 utils/corpus_cost.py`):\n  {}",
+             (re-measure the entry's runs and record its cost_ms):\n  {}",
             bad.join("\n  ")
         );
     }

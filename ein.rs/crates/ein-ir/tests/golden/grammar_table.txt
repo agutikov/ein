@@ -498,7 +498,7 @@
   repair: Insert `:over`, Delete `:mode`
   repair: Delete `:mode`, Delete `all`
 <row>:3:9: unexpected `:print-alive`: a keyword this form does not take
-  note: config flag :print-alive was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  note: config flag :print-alive is retired: it was inert: no code path read it (Q-M1e.10)
   repair: Insert `:lattice-sanity-check`, Delete `:print-alive`
   repair: Insert `:record-alternative-justifications`, Delete `:print-alive`
   repair: Delete `:print-alive`, Delete `true`
@@ -506,13 +506,13 @@
 ## 67. a query's keyword (was: query-lattice-keyword)
     (query :goal (a ?x) :hrules (h))
 <row>:1:21: unexpected `:hrules`
-  note: :hrules chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  note: :hrules chooses the lattice and belongs on (solve …) — one program, one lattice
   repair: Insert `:goal`, Delete `:hrules`
 
 ## 68. a query's keyword (was: query-lattice-keyword)
     (query :goal (a ?x) :no-hypothesis (p))
 <row>:1:21: unexpected `:no-hypothesis`
-  note: :no-hypothesis chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  note: :no-hypothesis chooses the lattice and belongs on (solve …) — one program, one lattice
   repair: Insert `:goal`, Delete `:no-hypothesis`
 
 ## 69. a query's :over (was: over-not-a-name)
@@ -792,19 +792,19 @@
 ## 111. a config's keyword (was: config-retired)
     (config :lattice-order-seed 7)
 <row>:1:9: unexpected `:lattice-order-seed`: a keyword this form does not take
-  note: config flag :lattice-order-seed was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  note: config flag :lattice-order-seed is retired: an order lever, and every route's order is part of its definition
   repair: Delete `:lattice-order-seed`, Delete `7`
 
 ## 112. a config's keyword (was: config-retired)
     (config :candidate-order-seed 5)
 <row>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
-  note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  note: config flag :candidate-order-seed is retired: it was inert: no code path read it (Q-M1e.10)
   repair: Delete `:candidate-order-seed`, Delete `5`
 
 ## 113. a config's keyword (was: config-retired)
     (config :print-alive true)
 <row>:1:9: unexpected `:print-alive`: a keyword this form does not take
-  note: config flag :print-alive was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  note: config flag :print-alive is retired: it was inert: no code path read it (Q-M1e.10)
   repair: Insert `:lattice-sanity-check`, Delete `:print-alive`
   repair: Insert `:record-alternative-justifications`, Delete `:print-alive`
   repair: Delete `:print-alive`, Delete `true`
@@ -812,19 +812,19 @@
 ## 114. a config's keyword (was: config-retired)
     (config :lattice-order lex)
 <row>:1:9: unexpected `:lattice-order`: a keyword this form does not take
-  note: config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  note: config flag :lattice-order is retired: an order lever, and every route's order is part of its definition
   repair: Delete `:lattice-order`, Delete `lex`
 
 ## 115. a config's keyword (was: config-retired)
     (config :hypgen-rel-weight 2)
 <row>:1:9: unexpected `:hypgen-rel-weight`: a keyword this form does not take
-  note: config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  note: config flag :hypgen-rel-weight is retired: an order lever, and every route's order is part of its definition
   repair: Delete `:hypgen-rel-weight`, Delete `2`
 
 ## 116. a config's keyword (was: config-retired)
     (config :enable-singleton-writeback false)
 <row>:1:9: unexpected `:enable-singleton-writeback`: a keyword this form does not take
-  note: config flag :enable-singleton-writeback was retired at M1e2 S1e2.1a.5: it wrote into root, which no route does: a candidate dead alone leaves the universe by L1
+  note: config flag :enable-singleton-writeback is retired: it wrote into root, which no route does: a candidate dead alone leaves the universe by L1
   repair: Insert `:lattice-sanity-check`, Delete `:enable-singleton-writeback`
   repair: Insert `:record-alternative-justifications`, Delete `:enable-singleton-writeback`
   repair: Delete `:enable-singleton-writeback`, Delete `false`
@@ -832,7 +832,7 @@
 ## 117. a config's keyword (was: config-retired)
     (config :enable-forced-positive false)
 <row>:1:9: unexpected `:enable-forced-positive`: a keyword this form does not take
-  note: config flag :enable-forced-positive was retired at M1e2 S1e2.1a.5: it wrote into root, which no route does: a candidate dead alone leaves the universe by L1
+  note: config flag :enable-forced-positive is retired: it wrote into root, which no route does: a candidate dead alone leaves the universe by L1
   repair: Insert `:lattice-sanity-check`, Delete `:enable-forced-positive`
   repair: Insert `:record-alternative-justifications`, Delete `:enable-forced-positive`
   repair: Delete `:enable-forced-positive`, Delete `false`
@@ -840,7 +840,7 @@
 ## 118. a config's keyword (was: config-retired)
     (config :enable-symmetric-mirror false)
 <row>:1:9: unexpected `:enable-symmetric-mirror`: a keyword this form does not take
-  note: config flag :enable-symmetric-mirror was retired at M1e2 S1e2.1a.6: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked
+  note: config flag :enable-symmetric-mirror is retired: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked (Q-M1e2.30)
   repair: Insert `:lattice-sanity-check`, Delete `:enable-symmetric-mirror`
   repair: Insert `:record-alternative-justifications`, Delete `:enable-symmetric-mirror`
   repair: Delete `:enable-symmetric-mirror`, Delete `false`
@@ -848,7 +848,7 @@
 ## 119. a config's keyword (was: config-retired)
     (config :warn-derived-naf true)
 <row>:1:9: unexpected `:warn-derived-naf`: a keyword this form does not take
-  note: config flag :warn-derived-naf was retired at M1e2 S1e2.2.5: its refutation half is forbid's refusal: a refutation resting on an (absent …) over a relation a commitment can still extend refuses the program, whatever the config says; its stratification half was the walk's advice, and every non-monotone site is the detector's warning on every surface that reports R
+  note: config flag :warn-derived-naf is retired: its refutation half is forbid's refusal: a refutation resting on an (absent …) over a relation a commitment can still extend refuses the program, whatever the config says; its stratification half was the walk's advice, and every non-monotone site is the detector's warning on every surface that reports R (Q-M1e2.5)
   repair: Insert `:lattice-sanity-check`, Delete `:warn-derived-naf`
   repair: Insert `:record-alternative-justifications`, Delete `:warn-derived-naf`
   repair: Delete `:warn-derived-naf`, Delete `true`
@@ -2661,7 +2661,7 @@
 ## 389. a query's keyword (was: query-keyword)
     (query :goal (a ?x) :no-search)
 <row>:1:21: unexpected `:no-search`
-  note: :no-search chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  note: :no-search chooses the lattice and belongs on (solve …) — one program, one lattice
   repair: Delete `:no-search`
 
 ## 390. a solve's flag (was: solve-keyword)

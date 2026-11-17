@@ -580,12 +580,12 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
 }
 
 /// The fifteen retired flags (`config.md` § 2.4) are load errors that say
-/// why, each with the tag its refusal prints, and none is offered among the
+/// why, each with the reason its refusal prints, and none is offered among the
 /// valid names.
 #[test]
 fn the_retired_flags_are_refused_with_why() {
     let dir = Scratch::new("ein-config-reference");
-    for (flag, stage, why) in RETIRED {
+    for (flag, why) in RETIRED {
         let f = write_fixture(
             &dir,
             &format!("retired-{flag}"),
@@ -598,9 +598,7 @@ fn the_retired_flags_are_refused_with_why() {
         let err = String::from_utf8_lossy(&out.stderr);
         assert_eq!(out.status.code(), Some(1), "{flag}: {err}");
         assert!(
-            err.contains(&format!(
-                "config flag :{flag} was retired at M1e2 {stage}: {why}"
-            )),
+            err.contains(&format!("config flag :{flag} is retired: {why}")),
             "{flag}: {err}"
         );
     }
@@ -670,7 +668,8 @@ fn require_why_decides_loading_only() {
         }
         assert!(
             !line.starts_with("  OPTION --require-why "),
-            "{command} still takes --require-why, retired at T1f.5.14.7"
+            "{command} still takes --require-why: a :why is required by default, and \
+             --no-require-why is the one option (Q-M1f.62)"
         );
     }
     let mut want: Vec<String> = LOADING

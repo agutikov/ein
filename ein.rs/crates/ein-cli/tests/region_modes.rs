@@ -915,7 +915,7 @@ fn the_monotone_question_is_about_the_program() {
         )
     };
     let assumes = "    assumes         every node is a fork of root (root's fixpoint, its commitment \
-                   added, saturated); what a node is on this program is open: Q-M1e2.2, F21\n";
+                   added, saturated); what a node is on this program is not decided: Q-M1e2.2\n";
     let cases: Vec<(&str, String)> = vec![
         (
             THREE,

@@ -182,7 +182,7 @@ fn static_half(m: &Monotonicity) -> Vec<(&'static str, Json)> {
             } else {
                 Json::obj(vec![
                     ("node", Json::str("fork from root")),
-                    ("open", Json::str("Q-M1e2.2, F21")),
+                    ("open", Json::str("Q-M1e2.2")),
                 ])
             },
         ),
@@ -803,7 +803,7 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
             "**Not monotone: {} site{}.** A commitment can take a conclusion away or add a \
              debt, so the region may have holes and its two lines may not describe it. \
              Every node below is a fork of root: root's fixpoint, its commitment added, \
-             saturated. What a node is on such a program is open (Q-M1e2.2, F21), and a line \
+             saturated. What a node is on such a program is not decided (Q-M1e2.2), and a line \
              marked *(nodes by fork)* is computed over the nodes so built.\n\n",
             m.sites.len(),
             if m.sites.len() == 1 { "" } else { "s" }

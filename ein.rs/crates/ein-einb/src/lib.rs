@@ -176,8 +176,8 @@ impl std::fmt::Display for EinbError {
             }
             EinbError::Int => write!(
                 f,
-                ".einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of \
-                 digits is a name): save it again from its .ein"
+                ".einb holds an integer, which Ein does not have (a run of digits is a \
+                 name, Q-M1e2.24): save it again from its .ein"
             ),
         }
     }

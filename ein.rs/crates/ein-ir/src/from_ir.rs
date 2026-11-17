@@ -4928,8 +4928,7 @@ fn validate_open(
     assert!(
         forms.len() == usize::from(whole) && (!whole || ast.form_args(assert_node).len() <= 1),
         "{head} '{name}': an (open …) stands where the grammar writes none — ein.y's Assert is \
-         the one production that takes open, a rule's whole :assert, (open) or (open ?R) \
-         (M1f S1f.5.23)"
+         the one production that takes open, a rule's whole :assert, (open) or (open ?R)"
     );
     if !whole {
         return false;

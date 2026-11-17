@@ -16,7 +16,7 @@
   and 1 more repair
 === "(config :enable-pre-branch-lookahead true)"
   refused <string>:1:9: unexpected `:enable-pre-branch-lookahead`: a keyword this form does not take
-  note: config flag :enable-pre-branch-lookahead was retired at M1e2 S1e2.1c.5: the walk's one-step pre-filter, which no route runs: every route saturates each candidate's fork, and the filter's measured saving was in the noise
+  note: config flag :enable-pre-branch-lookahead is retired: the walk's one-step pre-filter, which no route runs: every route saturates each candidate's fork, and the filter's measured saving was in the noise
   repair: Insert `:lattice-sanity-check`, Delete `:enable-pre-branch-lookahead`
   repair: Insert `:record-alternative-justifications`, Delete `:enable-pre-branch-lookahead`
   repair: Delete `:enable-pre-branch-lookahead`, Delete `true`
@@ -117,7 +117,7 @@
   repair: Insert `true`, Delete `maybe`
 === ";; A retired `(config …)` flag: `:lattice-order`, an order lever. The grammar\n;; knows every flag Ein no longer has, and refuses one at the parse with a\n;; note that says why, rather than as an unknown flag or as a flag that does\n;; nothing.\n\n(config :lattice-order lex)\n(relation p T)\n(p A)\n"
   refused <string>:6:9: unexpected `:lattice-order`: a keyword this form does not take
-  note: config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  note: config flag :lattice-order is retired: an order lever, and every route's order is part of its definition
   repair: Delete `:lattice-order`, Delete `lex`
 === ";; An unknown `(config …)` key is a typo, not a silent default. The\n;; message enumerates every legal flag, so this fixture pins the\n;; SolverConfig field set as a byte-comparable surface.\n\n(relation r T T)\n(config :nope true)\n"
   refused <string>:6:9: unexpected `:nope`: a keyword this form does not take
@@ -209,7 +209,7 @@
   repair: Delete `open`
 === ";; LOAD NEGATIVE — a lattice keyword left on (query …).\n;;\n;; Solving and asking are two forms: the keywords that choose the\n;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the\n;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries\n;; ask about one region, so a query may not choose its own. The loader says where\n;; the keyword went instead of calling it unknown.\n;;\n;; Expected (load error): see query_lattice_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :no-hypothesis (p))\n"
   refused <string>:13:23: unexpected `:no-hypothesis`
-  note: :no-hypothesis chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  note: :no-hypothesis chooses the lattice and belongs on (solve …) — one program, one lattice
   repair: Insert `:goal`, Delete `:no-hypothesis`
 === ";; LOAD NEGATIVE — a region claim at the top level.\n;;\n;; `region`, `merged` and `owing` mean something only inside\n;; `(solve … :expect …)`. A printed region pasted at the top of a file would\n;; otherwise load as a fact of a new relation called `region`, check nothing\n;; and say nothing, as a mistyped `:expct` would (`expect_unknown_keyword.ein`).\n\n(relation p T)\n(p A)\n(solve)\n(region (model (p A)))\n"
   refused <string>:11:2: unexpected `region`
