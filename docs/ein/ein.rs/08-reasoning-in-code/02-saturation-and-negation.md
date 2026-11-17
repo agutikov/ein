@@ -36,7 +36,7 @@ The reasoning: [firing a rule](../../reasoning/02-kb-evolution/01-firing.md).
 | a knowledge base, a fork | [`ein-core/src/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs): a stack of immutable layers under one writable top ([`03-data-model.md`](../03-design/03-data-model.md)) |
 | a derivation record | [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs), `Prov`: kind, source, rule, premises, bindings in bind order, the absences, the branch |
 | an application: a rule and its activator | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs) compiles one plan per (rule, activator) pair, [`plan.rs`](../../../../ein.rs/crates/ein-infer/src/plan.rs) is the plan, [`engine.rs`](../../../../ein.rs/crates/ein-infer/src/engine.rs) the cache of plans and the record of what fired |
-| satisfaction, $K \models M\theta$ | [`ein-infer/src/match_.rs`](../../../../ein.rs/crates/ein-infer/src/match_.rs), the register matcher; `eq` and `neq` in [`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs) |
+| satisfaction, $K \models \varphi\theta$ | [`ein-infer/src/match_.rs`](../../../../ein.rs/crates/ein-infer/src/match_.rs), the register matcher; `eq` and `neq` in [`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs) |
 | a firing and its effect | [`ein-infer/src/firing.rs`](../../../../ein.rs/crates/ein-infer/src/firing.rs): the conclusion instantiated, one `Prov` shared by every fact of one firing, and the key that says an identity already fired |
 | dead | [`ein-infer/src/contradiction.rs`](../../../../ein.rs/crates/ein-infer/src/contradiction.rs): `detect`, `has_contradiction`, and `contradicts` for one new fact |
 | a state's identity | [`ein-infer/src/canon.rs`](../../../../ein.rs/crates/ein-infer/src/canon.rs): the sorted fact list, never a hash of it |
@@ -112,32 +112,13 @@ The reasoning: [saturation](../../reasoning/02-kb-evolution/02-saturation.md).
 
 ### 2.2 The algorithm
 
-```plantuml
-@startuml
-[*] --> Closure
-Closure : fire the least positive candidate\nof the queue, in the agenda's order
-Closure --> Closure : a firing added facts:\nseed the plans that read them
-Closure --> Boundary : the queue is empty
-Boundary : judge the parked candidates whose\nwatched relations grew, in the agenda's order
-Boundary --> Closure : the first that passes\nis admitted and fires
-Boundary --> [*] : none passes: the fixpoint
-Closure --> [*] : a contradiction, where the\nsaturation stops at the first
-@enduml
-```
-
-- **The closure is semi-naive.** After a productive firing the next enqueue pass reads only the facts just
-  derived, seeding each plan whose positive premises name one of their relations; a full pass runs only where no
-  delta is known. A match is enqueued once per binding key and guard set.
-- **The queue** is a binary heap ranked by the agenda's half and then a monotone tiebreaker, which is the
-  arrival order; the **parked set** is ordered by the same tiebreaker.
-- **The boundary judges only what can have changed.** A parked candidate records when it was last judged; it is
-  judged again only where a relation one of its guards reads grew. The knowledge base only grows, so an equal
-  extent size is an equal extent.
-- **A node** takes root's snapshot (what fired, the parked set with its stamps, the tiebreaker's high-water
-  mark) and resumes over a fork of root's knowledge base, seeded with the commitment's facts.
-
-[`06-saturation.md`](../03-design/06-saturation.md) states each of these as a contract, with the events
-`park`, `admit` and `retire` ([`05-events.md`](../05-events.md)).
+Saturation is a loop of two phases, a semi-naive positive closure and a boundary that admits one parked candidate a
+round, both in the agenda's order; a node takes root's snapshot and resumes over a fork of root's knowledge base,
+seeded with the commitment's facts. The loop, the closure step, the enqueue pass and the boundary round are told
+once, as flows and pseudocode, in
+[`02-algorithms.md` § 4](../02-algorithms.md#4-saturation-the-two-phase-loop-and-the-agenda), and
+[`06-saturation.md`](../03-design/06-saturation.md) states each as a contract, with the queue, the delta and the
+parked set and the events `park`, `admit` and `retire` ([`05-events.md`](../05-events.md)).
 
 ### 2.3 What holds it
 
@@ -451,7 +432,8 @@ premises and beside them the arrival with the smallest closure. The budget has f
 per label, the rounds, the largest environment and the largest premise closure
 (`ExplanationBudget`'s `max_environments`, `max_rounds`, `max_env_size`, `max_facts`), and a core carries its
 status: `within-budget`, or `cut-` and the caps its search stopped at
-([`07-search.md` § 6](../03-design/07-search.md#6-cores-and-explanations)). In the JSON a node that is not dead
+([`07-search.md` § 6](../03-design/07-search.md#6-cores-and-explanations); the search as a flow is
+[`02-algorithms.md` § 9](../02-algorithms.md#9-core-extraction)). In the JSON a node that is not dead
 has `null` for its core and a dead node with the empty core `[]`.
 
 ### 5.3 What holds it
@@ -505,7 +487,8 @@ The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiabilit
 
 An obligation rule is compiled like any other and kept out of the agenda. After a node's fixpoint the pass runs
 each obligation plan once and counts its matches; the event is `owe`
-([`06-saturation.md` § 6.3](../03-design/06-saturation.md#63-obligations)).
+([`06-saturation.md` § 6.3](../03-design/06-saturation.md#63-obligations); the pass as a flow is
+[`02-algorithms.md` § 10](../02-algorithms.md#10-the-obligation-pass)).
 
 `ein test` asks a file the least question that decides the claims it states, and reads every claim off that
 run: **held**, **FAILED**, or **NOT CHECKED**. A failed claim exits 1, and so does one not checked, except under

@@ -46,7 +46,8 @@ $$
 $$
 
 $\operatorname{sat}$ fires its rules in one order, the same at root and at every node
-([Saturation](02-saturation.md)); on a monotone program the order decides no fixpoint and so no answer. A node's
+([Saturation](02-saturation.md)); on a monotone program the order decides no node's fixpoint beyond what it decides
+of root's ([Monotone and non-monotone programs § 3.4](08-monotonicity.md#34-the-verdict-is-relative-to-root)). A node's
 **core**, the facts its contradiction rests on, is an explanation and no part of the answer ([Cores](09-cores.md)).
 
 **A dead node is decided by its first contradiction.** Saturation only adds, so every knowledge base $K'$ it passes

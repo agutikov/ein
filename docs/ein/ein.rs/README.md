@@ -14,7 +14,7 @@ these pages say how `ein.rs` computes it.
 | [`05-events.md`](05-events.md) | the `--events` protocol, `ein-events/1`: every kind, its payload, how two streams are compared |
 | [`06-lattice-dump.md`](06-lattice-dump.md) | `--dump-lattice`: every node a run visited, as `nodes.json` and `nodes.md` |
 | [`07-reserved-engine-strings.md`](07-reserved-engine-strings.md) | the engine's internal vocabulary: its reserved names, the names the loader makes up, the dunders' effects |
-| [`08-reasoning-in-code/`](08-reasoning-in-code/README.md) | **the reasoning, in this code**: for each page of the reasoning, where `ein.rs` implements it, by which algorithm, and the test that holds it: [`01-static-ir.md`](08-reasoning-in-code/01-static-ir.md), [`02-saturation-and-negation.md`](08-reasoning-in-code/02-saturation-and-negation.md), [`03-hypotheses-and-the-answer.md`](08-reasoning-in-code/03-hypotheses-and-the-answer.md), [`04-rule-evolution.md`](08-reasoning-in-code/04-rule-evolution.md) |
+| [`08-reasoning-in-code/`](08-reasoning-in-code/README.md) | **the reasoning, in this code**: for each page of the reasoning, where `ein.rs` implements it, where its algorithm is told, the test that holds it and the commands that show it: [`01-static-ir.md`](08-reasoning-in-code/01-static-ir.md), [`02-saturation-and-negation.md`](08-reasoning-in-code/02-saturation-and-negation.md), [`03-hypotheses-and-the-answer.md`](08-reasoning-in-code/03-hypotheses-and-the-answer.md), [`04-rule-evolution.md`](08-reasoning-in-code/04-rule-evolution.md) |
 
 How the pages stand to one another: the map first, then what the engine does and the contracts it is built to,
 then the surfaces a program outside the engine reads, and last the bridge from the reasoning's pages to this code.

@@ -181,14 +181,14 @@ $$
 \top \implies \lnot \operatorname{in}(\mathsf{Cat}, \mathsf{B2})
 $$
 
-Let $\operatorname{Cl}(S)$ be the fixpoint of a state $S$ under the program's rules ([rules](05-rules.md)). $S$ is
+Let $\operatorname{sat}(S)$ be the fixpoint of a state $S$ under the program's rules ([rules](05-rules.md)). $S$ is
 **dead** when its fixpoint holds the contradiction, or a fact beside its negation:
 
 $$
-\operatorname{dead}(S) \iff \bot \in \operatorname{Cl}(S) \ \lor\ \exists f.\ f \in \operatorname{Cl}(S) \land \lnot f \in \operatorname{Cl}(S)
+\operatorname{dead}(S) \iff \bot \in \operatorname{sat}(S) \ \lor\ \exists f.\ f \in \operatorname{sat}(S) \land \lnot f \in \operatorname{sat}(S)
 $$
 
-and **alive** otherwise. On a program whose rules read no `absent` a hypothesis can change, $\operatorname{Cl}$ is
+and **alive** otherwise. On a program whose rules read no `absent` a hypothesis can change, $\operatorname{sat}$ is
 monotone, so a state that contains a dead one is dead:
 
 $$

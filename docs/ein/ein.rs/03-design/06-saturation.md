@@ -67,8 +67,11 @@ saturation, every node a route or the oracle computes, and every reader of a fix
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
 
 The order decides when a fact is derived and which derivation a fact's record keeps first, so a core, the rules
-beside it and the narration follow it; on a monotone program it decides no fixpoint and no answer
-(`ein-infer/tests/agenda.rs`). A saturation takes the agenda it is built under; the switches `saturator::fifo` and
+beside it and the narration follow it. It decides no fixpoint and no answer where no rule's `absent` reads a relation
+that another rule waiting on an `absent` derives at the same boundary; where one does, the boundary admits the one
+written first, on a program the static check calls monotone as well, since that check is of what a commitment can
+change ([`07-search.md` § 7](07-search.md#7-monotone-and-flagged-programs)). `ein-infer/tests/agenda.rs` holds the
+agenda and the written order to one answer on the corpus's monotone programs. A saturation takes the agenda it is built under; the switches `saturator::fifo` and
 `saturator::fail_first` exist for that test and for a measurement, and no configuration field, option or environment
 name reaches them.
 

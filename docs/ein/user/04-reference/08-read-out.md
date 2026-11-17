@@ -48,14 +48,14 @@ After the rows come the listing, the queries, the claims, and on request the for
 A row marked **—** counts nothing: it says what was asked, or a verdict on a claim.
 
 **What the rows of kind R count, as formulas.** Write $H$ for the candidates, $C \subseteq H$ for a commitment and
-$\operatorname{state}(C)$ for what root's facts and $C$'s saturate to. Then
+$\operatorname{st}(C)$ for what root's facts and $C$'s saturate to. Then
 
 $$
-R = \lbrace C \subseteq H : \operatorname{state}(C) \text{ is alive and owes nothing} \rbrace
+R = \lbrace C \subseteq H : \operatorname{st}(C) \text{ is alive and owes nothing} \rbrace
 $$
 
 $$
-k_c = |R| \qquad k_s = |\lbrace \operatorname{state}(C) : C \in R \rbrace|
+k_c = |R| \qquad k_s = |\lbrace \operatorname{st}(C) : C \in R \rbrace|
 $$
 
 `commitments (k_c)` counts the members of $R$ and `states (k_s)` the states they reach, so $k_s \le k_c$, with
@@ -66,8 +66,8 @@ $$
 \min R = \lbrace C \in R : \nexists D \in R \colon D \subsetneq C \rbrace \qquad \max R = \lbrace C \in R : \nexists D \in R \colon C \subsetneq D \rbrace
 $$
 
-and `minimal line` and `maximal line` count $\lbrace \operatorname{state}(C) : C \in \min R \rbrace$ and
-$\lbrace \operatorname{state}(C) : C \in \max R \rbrace$. `--minimal` and `--maximal` list those states, and
+and `minimal line` and `maximal line` count $\lbrace \operatorname{st}(C) : C \in \min R \rbrace$ and
+$\lbrace \operatorname{st}(C) : C \in \max R \rbrace$. `--minimal` and `--maximal` list those states, and
 `--single` asks whether $k_s = 1$.
 
 **One label, one number.** Each invocation prints one label for one number, and every number a row prints that the

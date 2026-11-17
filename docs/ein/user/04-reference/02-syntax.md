@@ -372,8 +372,9 @@ A rule is a top-level `(rule …)` form, and an hrule the same shape headed `hru
 `:assert` ([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)). **A rule has no
 priority**: the saturation agenda fires first the rules whose conclusion leads to `(false)`, then the rest, in the
 order they are written and their facts arrive within each half
-([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). On a monotone
-program that order decides no answer; it orders the trace, and the derivation a core is explained from.
+([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Where no
+rule's `absent` reads a relation that another rule waiting on an `absent` derives, that order decides no answer;
+it orders the trace, and the derivation a core is explained from.
 
 **The parameter list** is required:
 

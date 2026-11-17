@@ -393,7 +393,7 @@ if (C owes nothing?) then (yes)
   :C is in R: a leaf;
   stop
 elseif (C owes a licensed instance?) then (yes)
-  :choose the instance I (order.rs);\nbranch on its alternatives A(I);
+  :choose the instance I (order.rs);\nbranch on its alternatives alt(I);
 else (no)
   :branch on every candidate not in C;
 endif
@@ -421,10 +421,50 @@ stop
 | `--minimal` | each leaf's commitment shrunk while it stays discharged; for the whole line, the alive minimal transversals of the complements of the maximal owing states |
 | `--maximal` | a first state of `R` climbed to a maximal one, then dualise and advance above each minimal state: each minimal transversal of the complements of the maximal states found is saturated with the seed, and an alive one is climbed |
 
+**Which instance a state branches on** decides the work and never the answer. The order is `order.rs`'s, by three
+keys in turn: the instance closest to closing a coupling, once the couplings are read
+([`08-reasoning-in-code/03-hypotheses-and-the-answer.md` § 2.2](08-reasoning-in-code/03-hypotheses-and-the-answer.md#22-what-it-costs));
+the fewest alternatives not known dead; the first by rendered text. The owing state of the smallest closure is
+branched next. The `route` row says in words which order a run took.
+
+**`--single`**, *is `R` one state?*, as a procedure:
+
+```text
+if the empty commitment is in R:   s = cl(empty)                 root's own state
+else:   run the tree; stop at the second distinct leaf            not one state
+        if no leaf                                                R is empty
+        if exactly one leaf state s                               every state of R holds s    (L5)
+
+then:   for each candidate b outside s:
+            if s + b is alive                                     it is in R (L2), another state: not one state
+        all dead                                                  every proper superset of s is dead (L1):
+                                                                  one state, proved                        (L4)
+```
+
 **The tree and the classes** (`tree_classes.rs`), describe's default route where root owes a licensed instance,
 finds `R`'s states by that tree with no bound on their number, then each state's class, its commitments and
-minimal generators, by dualise and advance inside the state. It computes neither `N` nor an empty `R`'s owing
-frontier, and the read-out says so.
+minimal generators, by dualise and advance inside the state:
+
+```text
+R's states   = the leaves of the obligation tree, exhausted, and every alive state above them   (L5, L9, L2, L3)
+dead alone   = the candidates b with cl(empty) + b dead
+for each state s of R, its class, the commitments C inside s with cl(C) = s:
+    M(s)          = the maximal closed proper subsets of s      dualise and advance inside 2^s, cl the oracle
+    generators(s) = the minimal transversals of the sets s - m, m in M(s)
+    |class(s)|    = the number of subsets of s that meet every s - m
+k_c = the sum of |class(s)| over the states of R
+the minimal line = the minimal sets among every state's generators       (the empty one where root is in R)
+the maximal line = the states of R every extension of which is dead      (L4)
+```
+
+Dualise and advance inside `s` asks each minimal transversal `T` of the complements known: where `cl(T) = s` it is a
+generator, and otherwise `cl(T)` is climbed inside `s` to a new maximal closed proper subset and the transversals are
+taken again; when every transversal generates `s`, `M(s)` is every maximal closed proper subset. Its seed is the
+closed subsets of `s` the run met, and where every one of them was extended by every candidate it is complete and
+nothing is asked. **It does not compute `N`**, the border of *alive*, nor an empty `R`'s owing frontier, the maximal
+alive sets: where root owes, that border can be far larger than the alive states the state route reads it off. The
+read-out says so, with the members met: the candidates dead alone, and the owing states met with every extension
+dead.
 
 ### 8.3 Route 1, the cube, and the oracle
 
@@ -433,6 +473,16 @@ $k + 1$ is visited only when each of its $k$-subsets is alive, so it saturates t
 minimal dead sets, $|\operatorname{alive}| + |N|$ nodes. **Route 2**, the cube (`region::compute_prepared`), saturates all $2^n$ commitments over $n$ candidates and reads the
 topology off the status array; it is the only route a flagged program has, and `ein oracle` is that route asked
 for on any program, every node to quiescence. Every mode is held to it (`ein-infer/tests/explore.rs`).
+
+```text
+for every subset C of H:                   2^n nodes, n = |H|
+    compute node(C) to quiescence
+    read dead(C), owes(C), cl(C), and its core if dead
+R = the C that are alive and owe nothing
+```
+
+It refuses a universe past its limit, `--region-limit`, 16 by default as `ein oracle --help` prints, and says how
+many saturations the region would have taken.
 
 ## 9. Core extraction
 

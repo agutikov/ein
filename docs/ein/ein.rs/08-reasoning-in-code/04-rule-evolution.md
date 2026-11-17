@@ -32,7 +32,7 @@ The page: [rules as data](../../reasoning/03-rule-evolution/01-rules-as-data.md)
 |---|---|
 | any head outside the declarators is a fact, and a keyword a fact does not take is refused at the parse | `ein-ir/tests/ir_semantics.rs`: `any_head_outside_the_declarator_set_is_a_generic_fact` |
 | no accepted program carries a keyword its form does not list | `ein-ir/tests/fuzz_properties.rs`: `no_accepted_program_carries_a_keyword_its_form_does_not_list` |
-| a declaration is stored as the fact with its slot names and its membership fact; a bare declaration is its membership fact | the loader's unit test `a_declaration_stores_itself_as_facts_so_rules_can_read_signatures` in `ein-ir/src/from_ir.rs` |
+| a declaration is stored as the fact with its labels and its membership fact; a bare declaration is its membership fact | the loader's unit test `a_declaration_stores_itself_as_facts_so_rules_can_read_signatures` in `ein-ir/src/from_ir.rs` |
 | a declarator binds no reserved word | `ein-ir/tests/kb_semantics.rs`: `the_reserved_name_guard_is_on_declarators_and_matches_whole_names`; `ein-ir/tests/imports_semantics.rs`: `every_ein_core_reserved_name_is_unbindable_through_a_qualified_import` |
 | every rule of `std.algebra` and `std.bijection`, the property rules among them, is activated by a program of the stdlib suite | `ein-infer/tests/stdlib_coverage.rs`: `every_stdlib_rule_is_activated_by_a_program`; the programs under `tests/stdlib/algebra/` and `tests/stdlib/bijection/` |
 | `forall` and `unknown` are `std.macro`'s macros, read from the module | `ein-ir/tests/imports_semantics.rs`: `stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list`; `tests/stdlib/macro/01_forall.ein`, `02_unknown.ein` |
@@ -126,7 +126,7 @@ has saturated root.
 | `ein solve` names each negative cycle and its parity as a possibility, still answers and exits 0; a cycle that never fires is reported in the same words; a stratified program prints no `strata` row | `ein-cli/tests/strata_diagnostic.rs`: `solve_names_each_negative_cycle_and_still_answers` |
 | `ein saturate --dump` says whether a stratification exists | `ein-cli/tests/strata_diagnostic.rs`: `saturate_dump_says_whether_a_stratification_exists` |
 | the engine answers a program with an odd cycle, with a fixpoint supported at the boundary | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
-| the agenda's order and the written order alone give every question and every claim the same answer on every monotone program | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
+| the agenda's order and the written order alone give every question and every claim the same answer on every monotone program of the corpus | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
 
 ### Commands that show it
 
@@ -215,7 +215,7 @@ The engine applies no other rewrite to a rule set. The levers that change how a 
 |---|---|
 | every corpus program answers alike under every import form | `ein-cli/tests/import_invariance.rs`: `every_corpus_program_answers_alike_under_every_import_form` |
 | `send_more_money_written.ein` is `send_more_money.ein` with one line of eight facts reordered, and `--single` and the maximal line do the same work and list the same states on both | `ein-cli/tests/cli_semantics.rs`: `the_written_send_is_the_by_column_send_with_one_line_reordered`; `ein-infer/tests/order.rs` |
-| the agenda and the written order alone answer every question and every claim alike on every monotone program | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
+| the agenda and the written order alone answer every question and every claim alike on every monotone program of the corpus | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
 | a rule with parameters gets an instance for an activator derived at run time, on a fork | `ein-infer/tests/explain_semantics.rs`: `a_runtime_derived_activator_gets_a_plan_on_a_fork` |
 | a macro's body may call another macro, and a parameter in head position is substituted | `ein-ir/tests/ir_semantics.rs`: `a_macro_body_may_invoke_another_macro`, `a_macro_parameter_in_head_position_is_substituted` |
 

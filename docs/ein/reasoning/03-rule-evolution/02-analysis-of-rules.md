@@ -177,7 +177,8 @@ them, and the graph has the cycle all the same. The diagnostic's words are *may*
 that order is [saturation](../02-kb-evolution/02-saturation.md)'s, first what leads to falsity and then the
 written and arrival order
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). On a monotone
-program the order decides no answer, and a dead node's core, which it may decide, is an explanation
+program that is order-free at the boundary ([transformations](03-transformations.md#3-what-leaves-r-unchanged))
+the order decides no answer, and a dead node's core, which it may decide, is an explanation
 ([Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)).
 
 **It is read at the root, on every program.** The monotonicity check asks another question

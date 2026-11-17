@@ -167,7 +167,7 @@ Write $\operatorname{sat}$ for saturation, the fixpoint of a set of facts under 
 holds, and a commitment any subset of $H$:
 
 $$
-\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{state}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
 $$
 
 A hypothesis adds one fact to what the rules start from, and everything the rules then derive. The commitments
