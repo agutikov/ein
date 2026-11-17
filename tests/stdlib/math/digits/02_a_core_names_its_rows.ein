@@ -1,14 +1,14 @@
 ;;; A refutation that passes through a table names the table's row in its
-;;; core — `std.math.digits`, M1f S1f.6.2.
+;;; core — `std.math.digits`.
 ;;;
 ;;; ── Why this file exists ───────────────────────────────────────────────────
 ;;;
-;;; The tables are plain facts (the user's ruling of 2026-11-11), and a fact a
-;;; rule reads is a premise like any other. So when a contradiction is derived
-;;; through a lookup, the row that was looked up is part of the explanation:
-;;; the unsat core holds it beside the program's own fact. That is the
-;;; measured cost of plain facts (`design.md` § G of P1f.6), accepted there;
-;;; this program is the one place the suite shows it.
+;;; The tables are plain facts (Q-M1f.366), and a fact a rule reads is a
+;;; premise like any other. So when a contradiction is derived through a
+;;; lookup, the row that was looked up is part of the explanation: the unsat
+;;; core holds it beside the program's own fact. That is what plain facts
+;;; cost, and it is accepted; this program is the one place the suite shows
+;;; it.
 ;;;
 ;;; ── The program, by hand ───────────────────────────────────────────────────
 ;;;

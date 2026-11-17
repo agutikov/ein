@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — a sum, column by column: 123078 + 4567 = 127645.
-;;; M1f S1f.6.3.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

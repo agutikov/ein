@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — subtraction by name, and a rule of the program that reads
-;;; the two numbers. M1f S1f.6.4.
+;;; the two numbers.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

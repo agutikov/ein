@@ -1,10 +1,10 @@
-;;; `std.math.rat` — a letter in a rational's numerator. M1f S1f.6.38.
+;;; `std.math.rat` — a letter in a rational's numerator.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A malformed numeral is `std.math.decimal`'s, wherever it is written: here
 ;;; in the integer that is a rational's numerator. `numeral-digit` flags `(n z
-;;; x)` as it is written (E-38).
+;;; x)` as it is written (Q-M1f.210).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

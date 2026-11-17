@@ -1,12 +1,12 @@
 ;;; `std.math.decimal-arith` — what the theory does not flag: a flag means malformed, and
-;;; no flag does not mean well-formed. M1f S1f.6.12.
+;;; no flag does not mean well-formed.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; Three malformations are answered by silence, as every one was until
-;;; S1f.6.12, because saying them needs a negation or a walk of the program's
-;;; names (the user's reply of 2026-11-12: no general report of unanswered
-;;; requests). A number that ends in a name that is neither a digit nor a
+;;; Three malformations are answered by silence, because saying them needs a
+;;; negation or a walk of the program's names, and no mechanism reports a
+;;; request that no rule completes (Q-M1f.318). A number that ends in a name
+;;; that is neither a digit nor a
 ;;; constant, `(n end 1)`. A fact of another relation where a number goes,
 ;;; `(pair 1 2)`, as an operand or inside a number. And the theory's own
 ;;; second shape, `(b 1 z)`, as an operand.

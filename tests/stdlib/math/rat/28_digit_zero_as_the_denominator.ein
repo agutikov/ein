@@ -1,4 +1,4 @@
-;;; `std.math.rat` — the digit 0 where a rational's denominator goes. M1f S1f.6.38.
+;;; `std.math.rat` — the digit 0 where a rational's denominator goes.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

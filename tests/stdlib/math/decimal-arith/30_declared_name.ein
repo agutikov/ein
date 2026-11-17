@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — a `let` answers the request an undeclared name left
-;;; flagged. M1f S1f.6.12.
+;;; flagged.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

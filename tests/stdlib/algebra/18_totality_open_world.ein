@@ -2,13 +2,13 @@
 ;;; checked anywhere else: **the `forall` must not fire on a partially
 ;;; excluded extent.**
 ;;;
-;;; ── Why this is the family the census says to write first ──────────────────
+;;; ── Why the open world is tested ───────────────────────────────────────────
 ;;;
-;;; Ten stdlib rules quantify with `std.macro`'s `forall`, every one of them
-;;; documents itself as open-world-safe — "fires only when the stored negatives
-;;; cover the whole extent, never on a merely-undecided state" — and before
-;;; this file that claim was checked by nothing at all
-;;; (utils/censuses/stdlib-census.md §7).
+;;; Every stdlib rule that quantifies with `std.macro`'s `forall` documents
+;;; itself as open-world-safe — "fires only when the stored negatives
+;;; cover the whole extent, never on a merely-undecided state" — and this
+;;; file is what checks that claim, for `total` and `surjective`; nothing
+;;; else does.
 ;;; It is also the claim whose failure is silent: a `forall` that fires one
 ;;; negative early yields a **wrong model**, not a crash. `total` firing early
 ;;; would refute a satisfiable puzzle; `domain-elimination` firing early would

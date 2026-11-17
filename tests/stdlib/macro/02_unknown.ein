@@ -11,12 +11,12 @@
 ;;; distinction the stored-negative premises of `std.algebra`'s Schröder rules
 ;;; and every `forall` guard in the library depend on.
 ;;;
-;;; ── Why the corpus needed this file ────────────────────────────────────────
+;;; ── Why the corpus needs this file ─────────────────────────────────────────
 ;;;
-;;; `unknown` appears in **no stdlib rule at all**, and before M1c the whole
-;;; repository used it once, in `examples/features/04_open.ein` — a fixture
-;;; with no finite hypothesis space, so the corpus runs it under `saturate`
-;;; only and no expectation has ever been attached to it. Meanwhile the
+;;; `unknown` appears in **no stdlib rule at all**, and the one example that
+;;; uses it as a feature, `examples/features/04_open.ein`, is a fixture with
+;;; no finite hypothesis space, so the corpus runs it under `saturate` only
+;;; and no expectation is attached to it. Meanwhile the
 ;;; conformance programs beside this one lean on `unknown` heavily, because it is
 ;;; the only instrument that can say "nothing spurious was derived" about a
 ;;; *negative*: stored negatives are the one thing `:expect` does not close, so

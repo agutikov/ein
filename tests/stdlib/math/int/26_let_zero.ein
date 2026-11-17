@@ -1,9 +1,9 @@
-;;; `std.math.int` — `z` as the name a `let` states. M1f S1f.6.38.
+;;; `std.math.int` — `z` as the name a `let` states.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `z` is zero, and names no other number: `let-zero` flags the `let`, as
-;;; before S1f.6.38. The numerals end in `z`, and `std.math.decimal` flags
+;;; `z` is zero, and names no other number: `let-zero` flags the `let`
+;;; (Q-M1f.207). The numerals end in `z`, and `std.math.decimal` flags
 ;;; none of them for it; `std.math.int`, which reads no guard, flags an
 ;;; integer with a part `z` beside the `let`, `(not-integer (int (n z 1) z)
 ;;; z)`.

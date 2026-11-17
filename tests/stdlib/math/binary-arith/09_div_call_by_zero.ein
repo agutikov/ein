@@ -1,8 +1,8 @@
-;;; `std.math.binary-arith` — a tagged division by zero, made by a rule of the program's own. M1f S1f.6.16.
+;;; `std.math.binary-arith` — a tagged division by zero, made by a rule of the program's own.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A division by zero is flagged at the call, whoever made it (S1f.6.24): a
+;;; A division by zero is flagged at the call, whoever made it (Q-M1f.163): a
 ;;; rule of the program calls `(bin-div-call (share A B) A B)`, a tagged call
 ;;; of the interface, under a tag of its own, and the call is flagged
 ;;; `(division-by-zero (bin-div-call (share A B) A B))` by `div-call-by-zero`,

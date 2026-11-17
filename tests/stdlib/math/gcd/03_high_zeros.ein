@@ -1,5 +1,5 @@
 ;;; `std.math.gcd` — an operand written with high zeros is read by value, and
-;;; the answer is in normal form. M1f S1f.6.32.
+;;; the answer is in normal form.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

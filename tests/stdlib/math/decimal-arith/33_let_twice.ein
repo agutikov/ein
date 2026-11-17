@@ -1,13 +1,13 @@
-;;; `std.math.decimal-arith` — a name stated twice, with two numbers. M1f S1f.6.12.
+;;; `std.math.decimal-arith` — a name stated twice, with two numbers.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A `let` the theory cannot read is flagged as the `let`, `(malformed (let
 ;;; NAME NUMBER))`, whether or not a request uses the name, and `malformed-
 ;;; is-false` derives `(false)`. `let-twice` joins two `let`s on the name,
-;;; which the fact index keys, and compares the two numbers by a guard. Until
-;;; S1f.6.12 this program had two answers to its one request, 6 and 8, and no
-;;; word.
+;;; which the fact index keys, and compares the two numbers by a guard.
+;;; Unflagged, this program would have two answers to its one request, 6 and
+;;; 8, and no word.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

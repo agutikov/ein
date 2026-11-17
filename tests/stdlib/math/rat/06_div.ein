@@ -1,10 +1,10 @@
 ;;; `std.math.rat` — division: exact, one rational, and no remainder.
-;;; M1f S1f.6.8.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `(rat-div X Y)` is answered by `(rat-quot-of X Y S)`, S not reduced
-;;; (S1f.6.33), where Y is not zero. Where `std.math.decimal-arith`'s division answers a quotient and
+;;; (Q-M1f.183), where Y is not zero. Where `std.math.decimal-arith`'s division answers a quotient and
 ;;; a remainder, a quotient of rationals is one rational.
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────

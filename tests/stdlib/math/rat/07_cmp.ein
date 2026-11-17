@@ -1,5 +1,5 @@
 ;;; `std.math.rat` — comparison, by value: the cross products of the difference,
-;;; and no division. M1f S1f.6.8.
+;;; and no division.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

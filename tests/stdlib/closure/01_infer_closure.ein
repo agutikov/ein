@@ -18,8 +18,8 @@
 ;;; The module's header is a boxed warning saying so, and the import is the
 ;;; only gate there is.
 ;;;
-;;; The census's §6 named this the one place the corpus could document a
-;;; soundness caveat **by exhibiting it**. This file is that, and the exhibit
+;;; This file documents a soundness caveat **by exhibiting it**, the one
+;;; place the corpus can, and the exhibit
 ;;; is a number:
 ;;;
 ;;;   with    (import std.closure …)   Solution,  k = 1    ← what this file claims
@@ -41,10 +41,10 @@
 ;;; (Fifty-three, and not one — the unclosed count is 54 rather than the 2 a
 ;;; reader expects, because a state that places one agent and leaves two
 ;;; unplaced is **complete** in an open world: nothing obliges an agent to wear
-;;; anything, so every partial placement counts. Turning `total` into a
-;;; first-class obligation is M1d's subject
-;;; (docs/history/m1d_satisfiability/), and until it arrives the two
-;;; numbers measure slightly different things. The comparison survives that:
+;;; anything, so every partial placement counts. An obligation, `total-owed`,
+;;; would make a partial placement owe (Q-M1d.2), and this program declares
+;;; none, so the two numbers measure slightly different things.
+;;; The comparison survives that:
 ;;; 54 → 1 is not a rounding.)
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────

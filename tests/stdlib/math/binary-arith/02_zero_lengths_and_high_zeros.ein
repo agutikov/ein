@@ -1,4 +1,4 @@
-;;; `std.math.binary-arith` — zero, operands of two lengths, and high zeros. M1f S1f.6.16.
+;;; `std.math.binary-arith` — zero, operands of two lengths, and high zeros.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — a difference, both ways round: 123078 - 4567 = 118511, and
-;;; 4567 - 123078 is short by 118511. M1f S1f.6.4.
+;;; 4567 - 123078 is short by 118511.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

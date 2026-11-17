@@ -1,12 +1,12 @@
 ;;; `std.math.rat` — an operand that is not in lowest terms is read by value:
 ;;; its answer has the value its normal form's has, and the same lowest terms.
-;;; M1f S1f.6.8; S1f.6.33.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; An operand is read by value. 2/4 and 1/2 are the one rational. **An
-;;; operation answers unreduced** since S1f.6.33 (round 2's item 54, the
-;;; user's *"(b)"*), so the two answers are two values' spellings, two
+;;; operation answers unreduced** (Q-M1f.183), so the two answers are two
+;;; values' spellings, two
 ;;; different facts of one value: the cross products of 2/4 carry its factor
 ;;; 2 into the answer. `rat-simplify` is the request that reduces, and it
 ;;; gives the two answers one lowest terms. The request is repeated as it was
@@ -22,7 +22,7 @@
 ;;;
 ;;; Each of the four rules asks `rat-simplify` of an answer: the program's
 ;;; point, that a half spelt either way is one rational, is the lowest terms
-;;; of the two answers, which are one (the choice of S1f.6.33's T1 table).
+;;; of the two answers, which are one.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -1,4 +1,4 @@
-;;; QUERY CLAIM — `:over maximal`, the answer a puzzle means. M1e2 S1e2.1a.5.
+;;; QUERY CLAIM — `:over maximal`, the answer a puzzle means.
 ;;;
 ;;; Two people, two seats, one each way: a program of restrictions only, so ∅
 ;;; is in R, and so is every partial seating. Over all of R the goal

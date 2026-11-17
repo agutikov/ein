@@ -1,4 +1,4 @@
-;;; `std.math.convert` — a round trip: decimal to binary and back is the number. M1f S1f.6.16.
+;;; `std.math.convert` — a round trip: decimal to binary and back is the number.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — long division: 127645 divided by 25 is 5105, remainder 20.
-;;; M1f S1f.6.6.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

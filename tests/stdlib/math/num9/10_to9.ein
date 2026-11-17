@@ -1,4 +1,4 @@
-;;; `std.math.num9` — from `std.math.decimal-arith`'s numbers to nine digits. M1f S1f.6.13.
+;;; `std.math.num9` — from `std.math.decimal-arith`'s numbers to nine digits.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

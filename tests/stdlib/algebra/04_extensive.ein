@@ -28,8 +28,8 @@
 ;;; This is the same shape as `std.closure`'s caveat
 ;;; (`../closure/01_infer_closure.ein` exhibits that one) and as `difference`'s
 ;;; and `connex`'s: the sentence is easy, the condition under which it is true
-;;; is not. The census files all four together — §9, "promises that do not fit
-;;; in one sentence".
+;;; is not: four promises that do not fit in one sentence, each read with its
+;;; condition.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

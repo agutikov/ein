@@ -1,4 +1,4 @@
-;;; `std.math.decimal-arith` — a `let` that names the digit 0. M1f S1f.6.38.
+;;; `std.math.decimal-arith` — a `let` that names the digit 0.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

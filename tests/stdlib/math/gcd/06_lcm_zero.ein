@@ -1,5 +1,5 @@
 ;;; `std.math.gcd` — the least common multiple with zero: zero, and never a
-;;; division by zero. M1f S1f.6.32.
+;;; division by zero.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

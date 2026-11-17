@@ -1,5 +1,5 @@
 ;;; `std.math.num9` beside `std.math.decimal-arith` — one sum, both ways, and the two answers
-;;; compared. M1f S1f.6.13.
+;;; compared.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

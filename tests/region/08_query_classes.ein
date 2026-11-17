@@ -1,5 +1,5 @@
-;;; QUERY CLAIM — projection classes over all of R, `(model)` among them. M1e2
-;;; S1e2.1a.5.
+;;; QUERY CLAIM — projection classes over all of R, `(model)` among them.
+;;;
 ;;;
 ;;; A query's `:expect` lists its classes: each `(model …)` is the goal's atoms
 ;;; under one class of rows, and a state whose goal has no row is the class

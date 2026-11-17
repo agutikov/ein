@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — division by zero, the zero written with digits and given a
-;;; name. M1f S1f.6.6.
+;;; name.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

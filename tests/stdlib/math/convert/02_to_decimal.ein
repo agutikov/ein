@@ -1,4 +1,4 @@
-;;; `std.math.convert` — binary to decimal: 0, 1, 1010, 11111111, 100000000 and 1111101000. M1f S1f.6.16.
+;;; `std.math.convert` — binary to decimal: 0, 1, 1010, 11111111, 100000000 and 1111101000.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

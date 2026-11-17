@@ -1,4 +1,4 @@
-;;; `std.math.binary-arith` — named operands: `bin-let`. M1f S1f.6.16.
+;;; `std.math.binary-arith` — named operands: `bin-let`.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

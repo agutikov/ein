@@ -1,5 +1,5 @@
 ;;; REGION CLAIM — (merged …) with an (or …) of two minimal commitments.
-;;; M1e2 S1e2.1a.4.
+;;;
 ;;;
 ;;; A chain under transitivity, with the blind rung proposing the three
 ;;; reversed pairs. The maximal state is reached by five commitments, and two

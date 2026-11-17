@@ -1,11 +1,11 @@
-;;; REGION CLAIM — R by its states, ∅ among them. M1e2 S1e2.1a.4.
+;;; REGION CLAIM — R by its states, ∅ among them.
 ;;;
 ;;; Three properties of one item, and the triple is jointly forbidden. Every
 ;;; pair is alive, so R is seven states: ∅ (root itself, which holds no fact of
 ;;; the three relations, so its model is `(model)`), the three singletons and
 ;;; the three pairs. Naming a relation closes it across the whole claim.
-;;; The program is examples/lattice/02_genuine_3set_death.ein's; the claim is
-;;; docs/ein/user/syntax-and-semantics/query.md's E4.
+;;; The program is examples/lattice/02_genuine_3set_death.ein's; the claim
+;;; reads as docs/ein/user/syntax-and-semantics/query.md § The region claim says.
 
 (rule three-conflict ()
   :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))

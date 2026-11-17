@@ -46,15 +46,15 @@
   :assert (undecided Ann Green)
   :why    "Green's column is only one-third excluded, so nothing may be forced into it")
 
-;; Root alone (M1f S1f.6.36): this file's question is root's saturation:
+;; Root alone (Q-M1f.254): this file's question is root's saturation, so
 ;; nothing is guessed, and root, which owes, is the owing node R stops at.
-;; Until S1f.6.34 it said so with `:no-hypothesis (is-a wears undecided)`,
-;; keeping the obligation from proposing `wears`, which S1f.6.34 refused
-;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13);
-;; S1f.6.34 wrote an hrule `as-stated` instead, proposing only the `wears` root
-;; holds, since letting the obligations propose solves the bijection and six
-;; mutants of the negative-completion and elimination rules survive it.
-;; `:no-search` says what the list meant.
+;; `:no-search` says so. A `:no-hypothesis` list cannot: one that names
+;; `wears`, the relation the obligations owe, contradicts them and is
+;; refused (Q-M1f.244). With the obligations free to propose, the search
+;; would solve the bijection, and a defect in a negative-completion or an
+;; elimination rule could leave its answer as it is; at root, the facts
+;; each of those rules derives are the claim's.
+;; The claim is root's saturation, under `owing`.
 (solve
   :no-search
   :expect (region (owing (model (wears Cid Red)

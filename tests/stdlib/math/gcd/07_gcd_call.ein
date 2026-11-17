@@ -1,5 +1,5 @@
 ;;; `std.math.gcd` — the tagged call, from a rule of the program's own.
-;;; M1f S1f.6.32.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `std.math.digits` — the digit tables, imported and listed, a row of each claimed.
-;;; M1f S1f.6.2.
+;;;
 ;;;
 ;;; ── What the module promises ───────────────────────────────────────────────
 ;;;
@@ -8,14 +8,14 @@
 ;;; to Rust's integers, every one, by `ein-ir/tests/digit_tables.rs`; this
 ;;; program is the other half, the module seen from a program:
 ;;;
-;;;   - an import brings a table's declaration **and its rows** (M1f
-;;;     S1f.6.11's fix, W88, seen from the stdlib), and since S1f.6.35 every
-;;;     table, the module whole; the list names the tables this file writes;
+;;;   - an import brings a table's declaration **and its rows** (W88, seen
+;;;     from the stdlib), and every table, the module whole (Q-M1f.247); the
+;;;     list names the tables this file writes;
 ;;;   - the import brings the module's written `(__closed__ R)` facts too,
 ;;;     so no row is a hypothesis: the universe has no candidate, and R is
-;;;     {∅}, which the `(solve …)` form claims. Until S1f.6.35 they came only
-;;;     with `__closed__` listed, and without it `nz` and `adj`, of one and two
-;;;     arguments, were relations the search guessed rows of.
+;;;     {∅}, which the `(solve …)` form claims. They come whether or not the
+;;;     list names `__closed__` (Q-M1f.146); without them `nz` and `adj`, of
+;;;     one and two arguments, would be relations the search guessed rows of.
 ;;;
 ;;; ── The claims ─────────────────────────────────────────────────────────────
 ;;;

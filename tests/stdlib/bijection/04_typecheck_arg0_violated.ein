@@ -5,13 +5,13 @@
 ;;;
 ;;;   (typecheck-arg-0 R isa Dom)   (R a b) ∧ ¬∃(isa a Dom)  ⟹  (false)
 ;;;
-;;; and its priority is **220**, chosen so the NAF evaluates after a puzzle's
-;;; transitive closure at 200 has finished saturating the hierarchy. `std.elim`
-;;; ships the identical body at **110** — the census's §8 calls that a
-;;; divergence rather than an alias, because no puzzle can import both (a
-;;; same-name differing body is a load conflict) and so nothing has ever had to
-;;; reconcile them. `../elim/03_typecheck_arg0_violated.ein` is the other one,
-;;; and the pair is now the first place in the repository where both run.
+;;; `std.elim` ships the same body under the same name, as a rule of its own:
+;;; the two are `std.bijection.typecheck-arg-0` and
+;;; `std.elim.typecheck-arg-0`, each with its own full name (Q-M1f.231), and
+;;; a file that lists the short name lists it from one module (Q-M1f.234).
+;;; `../elim/03_typecheck_arg0_violated.ein` tests the other, and the pair is
+;;; where both rules run, each in a program of its
+;;; own.
 ;;;
 ;;; ── What this program does to it ───────────────────────────────────────────
 ;;;

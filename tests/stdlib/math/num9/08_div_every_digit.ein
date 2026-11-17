@@ -1,5 +1,5 @@
 ;;; `std.math.num9` — a quotient with every digit: 864197523 divided by 7 is
-;;; 123456789; and a long divisor. M1f S1f.6.13.
+;;; 123456789; and a long divisor.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

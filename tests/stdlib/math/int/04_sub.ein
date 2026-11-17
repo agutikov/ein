@@ -1,5 +1,5 @@
 ;;; `std.math.int` — subtraction: one integer, and nothing is ever short.
-;;; M1f S1f.6.7.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

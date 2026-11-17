@@ -12,19 +12,19 @@
 ;;;   (domain-elimination R isa OT VT)   the activator, naming both types
 ;;;
 ;;; A `fire` event carries its activator, so the four-parameter form here and
-;;; `std.bijection`'s two-parameter one are the two things a firing census can
-;;; actually tell apart — which is how the two `domain-elimination`s stopped
-;;; being one number.
+;;; `std.bijection`'s two-parameter one are two things a count of firings can
+;;; tell apart: the two `domain-elimination`s are two rules, each counted
+;;; apart.
 ;;;
 ;;; ── Why this rule in particular ────────────────────────────────────────────
 ;;;
-;;; It fires **twice** in the entire corpus, both times inside
+;;; Outside `tests/`, the positional module's one activating program is
 ;;; `examples/features/05_stdlib_domain_elim.ein`, whose declared runs are
-;;; `saturate` only — so the whole positional module has one activating file
-;;; and no test of its own. It is also the positional twin of the rule the
-;;; phase was opened by: asserting a positive out of accumulated negatives is
-;;; the mechanism that turned a mid-layer writeback into a refutation, and
-;;; nothing tested it directly.
+;;; `saturate` only, so the module needs a test of its own. The rule is also
+;;; the positional twin of `std.bijection`'s `domain-elimination`: asserting a
+;;; positive out of accumulated negatives can turn a writeback into a
+;;; refutation, and a rule that can do so is tested
+;;; directly.
 ;;;
 ;;; ── What this program does to it ───────────────────────────────────────────
 ;;;

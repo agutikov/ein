@@ -1,4 +1,4 @@
-;;; REGION CLAIM — `(false)`: every node is dead. M1e2 S1e2.1a.4.
+;;; REGION CLAIM — `(false)`: every node is dead.
 ;;;
 ;;; Root holds a self-loop that `irreflexive` refutes, and nothing is guessed,
 ;;; so the only node is dead. `(false)` keeps the spelling and the meaning it

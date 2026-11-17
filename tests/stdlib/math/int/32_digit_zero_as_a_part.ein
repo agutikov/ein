@@ -1,4 +1,4 @@
-;;; `std.math.int` — the digit 0 where the positive part of an integer goes. M1f S1f.6.38.
+;;; `std.math.int` — the digit 0 where the positive part of an integer goes.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

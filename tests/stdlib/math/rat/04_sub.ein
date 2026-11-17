@@ -1,9 +1,9 @@
-;;; `std.math.rat` — subtraction. M1f S1f.6.8.
+;;; `std.math.rat` — subtraction.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `(rat-sub X Y)` is answered by `(rat-diff-of X Y S)`, S not reduced, as a
-;;; sum's (S1f.6.33).
+;;; sum's (Q-M1f.183).
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────
 ;;;

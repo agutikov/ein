@@ -2,18 +2,18 @@
 ;;; spatial relation: `slot-spatial-setup`, `slot-prune-fwd`,
 ;;; `slot-prune-bwd`, `slot-endpoint-fwd`, `slot-endpoint-bwd`.
 ;;;
-;;; ── The census's finding this file exists to close ─────────────────────────
+;;; ── What this file separates ───────────────────────────────────────────────
 ;;;
-;;; `slot-prune-bwd` fires 606 times in the corpus and is **productive zero
-;;; times** — its forward twin always gets there first
-;;; (utils/censuses/stdlib-census.md §5).
-;;; The census could not say whether that is structural or an artefact of
-;;; scheduling at equal priority, and said what would settle it: *"separating
-;;; them needs an `S` that is asymmetric **and** non-functional on positions,
-;;; and there is no such puzzle."* Both of `examples/zebra.ein`'s spatial
-;;; relations fail that test — `right-of` is functional on positions (each
-;;; house has at most one neighbour on a side) and `next-to` is symmetric — so
-;;; the two guards coincide there for two different reasons.
+;;; In `examples/zebra.ein`, `slot-prune-bwd` fires and never derives first:
+;;; its forward twin always gets there before it. Separating the two needs an
+;;; `S` that is asymmetric **and** non-functional on positions, and both of
+;;; `examples/zebra.ein`'s spatial relations fail that test — `right-of` is
+;;; functional on positions (each house has at most one neighbour on a side)
+;;; and `next-to` is symmetric — so the two guards coincide there for two
+;;; different reasons.
+;;;
+;;; Whether the backward rule's silence there is structural or an artefact of
+;;; the order the agenda fires in is what such an `S` settles.
 ;;;
 ;;; This is that puzzle.
 ;;;
@@ -99,13 +99,13 @@
 (above Ann Cat) (co-loc Cat S1)
 (above Dog Bob) (co-loc Dog S4)
 
-;; Root alone (M1f S1f.6.36): this file's question is root's saturation:
+;; Root alone (Q-M1f.254): this file's question is root's saturation, so
 ;; nothing is guessed, and root, which owes, is the owing node R stops at.
-;; Until S1f.6.34 it said so with `:no-hypothesis (type instance co-loc
-;; above)`, keeping the obligation from proposing `co-loc`, which S1f.6.34
-;; refused (*"filtered obligations are nonsense by definition"*, the user,
-;; 2026-11-13); S1f.6.34 wrote `slot-partition`'s fan-out out without its two
-;; obligations instead. `:no-search` says what the list meant.
+;; `:no-search` says so. A `:no-hypothesis` list cannot: one that names
+;; `co-loc`, the relation the obligations owe, contradicts them and is
+;; refused (Q-M1f.244), and with the obligations free to propose, the
+;; search would solve the partition, which is not this file's question.
+;; The claim is root's saturation, under `owing`.
 (solve
   :no-search
   :expect (region (owing (model (co-loc Cat S1) (co-loc S1 Cat)

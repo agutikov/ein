@@ -1,4 +1,4 @@
-;;; `std.math.binary-arith` — a `bin-let` that cannot be read: a bit as a constant's name. M1f S1f.6.16.
+;;; `std.math.binary-arith` — a `bin-let` that cannot be read: a bit as a constant's name.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

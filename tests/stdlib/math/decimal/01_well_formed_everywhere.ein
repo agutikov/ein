@@ -1,4 +1,4 @@
-;;; `std.math.decimal` — a well-formed numeral, wherever it is written, is flagged nowhere. M1f S1f.6.38.
+;;; `std.math.decimal` — a well-formed numeral, wherever it is written, is flagged nowhere.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `std.math.int` — an integer is two natural numbers, and its normal form has one
-;;; of them zero. M1f S1f.6.7.
+;;; of them zero.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

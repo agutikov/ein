@@ -1,4 +1,4 @@
-;;; `std.math.rat` — a natural number where a rational goes, which stays silent. M1f S1f.6.38.
+;;; `std.math.rat` — a natural number where a rational goes, which stays silent.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -8,7 +8,7 @@
 ;;;
 ;;; R is {∅}: root is alive, the request is neither answered nor flagged,
 ;;; and the well-formed one beside it is answered, 1/2 + 1/2 = 4/4, not
-;;; reduced (S1f.6.33).
+;;; reduced (Q-M1f.183).
 
 (import std.math.rat :symbols (rat-arith rat rat-add rat-sum-of))
 (import std.math.int :symbols (int))

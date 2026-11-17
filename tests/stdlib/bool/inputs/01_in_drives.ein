@@ -1,5 +1,5 @@
 ;;; `std.bool.inputs` — inputs as hypotheses: `in-drives`, an input's one
-;;; value, and a truth table read off R. M1f S1f.6.17.
+;;; value, and a truth table read off R.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,4 +1,4 @@
-;;; `std.math.decimal-arith` — nothing is computed that was not asked for. M1f S1f.6.3.
+;;; `std.math.decimal-arith` — nothing is computed that was not asked for.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -16,9 +16,9 @@
 ;;; named and never used. The second claim is `sum-of`'s whole extent, one
 ;;; row.
 ;;;
-;;; Until S1f.6.12 the program also asked for `a + rebate`, a name no `let`
-;;; states, which was neither refused nor answered. It is flagged since, and
-;;; is `29_undeclared_name.ein`.
+;;; A request for `a + rebate`, a name no `let` states, is not here: it is
+;;; flagged, and the program that asks it is `29_undeclared_name.ein`
+;;; (Q-M1f.317).
 
 (import std.math.decimal-arith :symbols (decimal-arith let b add done sum sum-of))
 (import std.math.decimal :symbols (n))

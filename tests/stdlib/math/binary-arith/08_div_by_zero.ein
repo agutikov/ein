@@ -1,4 +1,4 @@
-;;; `std.math.binary-arith` — a division by zero: the flag, and `(false)` from it. M1f S1f.6.16.
+;;; `std.math.binary-arith` — a division by zero: the flag, and `(false)` from it.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -7,8 +7,8 @@
 ;;; written (`div-by-zero`), and its call's, `(division-by-zero (bin-div-call
 ;;; TAG X Y))` (`div-call-by-zero`), each read off the divisor's normal form,
 ;;; `z`. `std.math.arith`'s `division-by-zero-is-false` derives `(false)` from
-;;; each: division by zero is arithmetic's own, whatever the base (the user's
-;;; ruling of 2026-11-14).
+;;; each: division by zero is arithmetic's own, whatever the base
+;;; (Q-M1f.269).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

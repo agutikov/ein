@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — multiplication: zero on either side, zeros inside the
-;;; multiplier, high zeros, one, and a carry out of every row. M1f S1f.6.5.
+;;; multiplier, high zeros, one, and a carry out of every row.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

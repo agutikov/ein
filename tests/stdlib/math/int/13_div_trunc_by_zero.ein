@@ -1,5 +1,5 @@
 ;;; `std.math.int` — a division by zero, truncated: the divisor written 3 less 3,
-;;; not simplified. M1f S1f.6.22.
+;;; not simplified.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -22,11 +22,11 @@
 ;;; look exactly like a sound one in the model.
 ;;;
 ;;; Stored negatives are the one thing an `:expect` does **not** close
-;;; (S1c.1.2's rule 3, second clause), so "no spurious exclusion was derived"
-;;; cannot be said by listing the ones that were. It is said here by
-;;; `probe-undecided` instead: a four-line local rule whose whole body is
-;;; `std.macro`'s `(unknown …)` — true exactly when a fact is neither asserted nor
-;;; denied — turned into an ordinary positive fact the expectation can close.
+;;; (a listed `(not …)` is checked for presence only), so "no spurious
+;;; exclusion was derived" cannot be said by listing the ones that were. It is
+;;; said here by `probe-undecided` instead: a four-line local rule whose whole
+;;; body is `std.macro`'s `(unknown …)` — true exactly when a fact is neither
+;;; asserted nor denied — turned into a positive fact the expectation can close.
 ;;; `(t A G)` is undecided, so `(s B G)` must stay undecided too; if
 ;;; `compose-negative-s` read absence as negation, `undecided` would be empty
 ;;; and this file would fail on a missing fact.

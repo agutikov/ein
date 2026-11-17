@@ -1,9 +1,9 @@
-;;; `std.math.int` — a name stated twice with two integers. M1f S1f.6.38.
+;;; `std.math.int` — a name stated twice with two integers.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A `let` that cannot be read is `std.math.decimal-arith`'s, whatever it
-;;; names: `let-twice` flags each, as before S1f.6.38.
+;;; names: `let-twice` flags each (Q-M1f.207).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

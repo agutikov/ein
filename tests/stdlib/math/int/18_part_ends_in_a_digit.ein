@@ -1,4 +1,4 @@
-;;; `std.math.int` — a part of an integer that ends in a digit where `z` goes. M1f S1f.6.38.
+;;; `std.math.int` — a part of an integer that ends in a digit where `z` goes.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

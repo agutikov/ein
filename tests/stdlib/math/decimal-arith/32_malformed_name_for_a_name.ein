@@ -1,20 +1,20 @@
-;;; `std.math.decimal-arith` — a name that stands for another name. M1f S1f.6.12.
+;;; `std.math.decimal-arith` — a name that stands for another name.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A `let` that cannot be read is flagged, `(malformed (let NAME N))`, and
 ;;; `malformed-is-false` derives `(false)` from the flag, whether or not a
-;;; request names the constant (the user's rulings of 2026-11-11 and
-;;; 2026-11-12).
+;;; request names the constant (Q-M1f.207,
+;;; Q-M1f.316).
 ;;;
 ;;; `(let alias price)`: a name stands for a number, not for another name.
 ;;; `let-to-name` reads the `let` and `(named price)`, which `let-named`
 ;;; writes for `price`'s own `let`, and flags `(malformed (let alias
-;;; price))`. Until S1f.6.38 it was found only where a request named
-;;; `alias`: the operand was found to be `price`, which was handed to the
-;;; check of a numeral, and `check-prefix-named` flagged the request. That
-;;; check is `std.math.decimal`'s since, of what is written, and a `let`'s
-;;; value is the `let`'s to read.
+;;; price))`, whether or not a request names `alias`: the `let` is flagged
+;;; where it is written (Q-M1f.207). No request hands the value it finds to
+;;; a numeral's check, which is `std.math.decimal`'s, of what is written
+;;; (Q-M1f.210); a `let`'s value is the `let`'s to read, and a request that
+;;; names `alias` is computed all the same.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

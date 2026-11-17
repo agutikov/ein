@@ -1,5 +1,5 @@
 ;;; `std.math.gcd` — the least common multiple: the product divided by the
-;;; greatest common divisor. M1f S1f.6.32.
+;;; greatest common divisor.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

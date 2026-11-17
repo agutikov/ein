@@ -1,4 +1,4 @@
-;;; `std.math.decimal` — what the check does not flag: a flag means malformed, and no flag does not mean well-formed. M1f S1f.6.38.
+;;; `std.math.decimal` — what the check does not flag: a flag means malformed, and no flag does not mean well-formed.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

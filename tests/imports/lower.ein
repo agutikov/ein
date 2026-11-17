@@ -1,6 +1,6 @@
 ;;; The lower of two theories — a library with an entry, which `upper.ein`
 ;;; and `upper_without_entry.ein` import, and the witnesses beside them
-;;; through those (M1f S1f.6.25, E-20 of P1f.6's `findings.md`).
+;;; through those.
 ;;;
 ;;; A request `(ask X)` is answered by `(double-of X Y)`, read off a table.
 ;;; `lower` is the entry: it closes the theory's relations and names its one

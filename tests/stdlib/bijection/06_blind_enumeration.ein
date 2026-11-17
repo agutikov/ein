@@ -3,7 +3,7 @@
 ;;;
 ;;; ── Why this file exists ───────────────────────────────────────────────────
 ;;;
-;;; M1d S1d.2.4 gave `bijective-setup` two more activators to derive —
+;;; `bijective-setup` derives two obligation activators beside its others —
 ;;; `(total-owed R isa)` and `(surjective-owed R isa)` — and an activator fact
 ;;; is a **stored** fact. The blind enumerator builds candidates from every
 ;;; relation carrying a `(relation …)` signature, so the question "could a run
@@ -33,13 +33,13 @@
 ;;;
 ;;; ── Why there is a second obligation, and it is not decoration ─────────────
 ;;;
-;;; M1d S1d.2.5 made hypothesis generation a **ladder**: the puzzle's hrules if
-;;; it has any, else the undischarged obligations, else the blind enumerator.
-;;; A program that declares `(bijective seats)` therefore no longer reaches the
-;;; blind rung at all — `total-owed` / `surjective-owed` are the generator now,
-;;; and here they owe nothing, so nothing is proposed and this file's whole
-;;; check went vacuous. The claim needs the enumerator, so the file has to earn
-;;; it back.
+;;; Hypothesis generation is a **ladder**: the puzzle's hrules if it has any,
+;;; else, where root activates an obligation, what it owes (Q-M1f.308), else
+;;; the blind enumerator. A program that declares `(bijective seats)` does not
+;;; reach the blind rung on that alone — `total-owed` / `surjective-owed` are
+;;; the generator, and here they owe nothing, so nothing would be proposed and
+;;; this file's check would be vacuous. The claim needs the enumerator, so the
+;;; file has to earn it.
 ;;;
 ;;; `sorted-somewhere` is what earns it. It is an obligation — every Guest must
 ;;; be a member of some declared sort — written as the bare `(open)`, which
@@ -48,13 +48,13 @@
 ;;; to the blind enumerator. That is this file's rung: `declined`, by
 ;;; construction, in one `rung` event per generation call.
 ;;;
-;;; Until M1f S1f.6.34 it was `(open is-a)`, declined by the domain contract's
-;;; C4 (`is-a` is what `(total-owed seats is-a)`'s guard scans, and an
-;;; obligation whose scan relation the rung itself proposes is declined), beside
-;;; a `:no-hypothesis` that names `is-a`: an obligation on a relation the program
-;;; never lets be guessed, which S1f.6.34 refuses (*"filtered obligations are
-;;; nonsense by definition"*, the user, 2026-11-13). The bare form declines for
-;;; its own reason and owes the same nothing; H, R and the claim did not move.
+;;; It is the bare form and not `(open is-a)`: this program's
+;;; `:no-hypothesis` names `is-a`, and an obligation that owed a relation the
+;;; program never lets be guessed would contradict that list and be refused
+;;; (Q-M1f.244). `(open is-a)` would also be declined by the domain contract
+;;; (`is-a` is what `(total-owed seats is-a)`'s guard scans, and an obligation
+;;; whose scan relation the rung itself proposes is declined); the bare form
+;;; declines for its own reason and owes the same nothing.
 ;;;
 ;;; The obligation is *satisfied* — `(is-a Ann Guest)` witnesses it through
 ;;; `(sort Guest Sortal)` — because the decline is static, per activator, and
@@ -65,10 +65,10 @@
 ;;;
 ;;; The two hierarchy relations and `sort`, and nothing else. A type hierarchy
 ;;; is not a thing to guess about — left in, the enumerator proposes
-;;; `(is-a Ann Bob)` and 1.1 million of its relatives, and the file costs 22 s
-;;; instead of milliseconds; `sort` is the same kind of relation and is scoped
-;;; out for the same reason, which is also what keeps this file's counters
-;;; where they were before the second obligation arrived.
+;;; `(is-a Ann Bob)` and every relative of it, and the search grows past
+;;; anything a test should pay; `sort` is the same kind of relation and is
+;;; scoped out for the same reason, which also keeps this file's counters
+;;; small.
 ;;; Everything else stays in scope, and that is the point:
 ;;; **the obligation activators are not named here**, so if the enumerator
 ;;; could propose `(total-owed seats is-a)` it would, and the assertion would
@@ -77,7 +77,7 @@
 ;;;
 ;;; `typecheck-setup` is imported for the same reason and pays for itself: with
 ;;; the enumerator loose on `seats`, the kernel imposes no type system
-;;; (S1.7.23) and nothing else would refuse `(seats C1 Ann)` — a chair sitting
+;;; (Q23) and nothing else would refuse `(seats C1 Ann)` — a chair sitting
 ;;; on a guest. The puzzle's own typecheck is what rejects it, which is the
 ;;; division of labour the whole is-a-free design rests on.
 ;;;

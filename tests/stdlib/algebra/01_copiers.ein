@@ -10,7 +10,7 @@
 ;;;   (imply1         R1 R2)   the 1-argument reading: a property implies a property
 ;;;
 ;;; Four of the five are two rules under four names. `converse ≡ imply2-reverse`
-;;; and `imply2-fwd ≡ includes` are alpha-identical bodies — the census's §8 —
+;;; and `imply2-fwd ≡ includes` are alpha-identical bodies, two pairs of them,
 ;;; so an expectation made of *facts* cannot tell the members of a pair apart,
 ;;; and this file does not pretend to: each alias gets its own target relation,
 ;;; and what is checked is that the four targets hold the four extents, not
@@ -23,10 +23,10 @@
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
-;;; A copier has no guard, so it has no "must not fire" case in the census's
-;;; sense (§7): its only *must not* is **scope** — a rule activated for
-;;; `p → p-fwd` must not touch any other relation. That is a relation-closure
-;;; claim and nothing else can state it, which is why S1c.1.2's rule 3 exists.
+;;; A copier has no guard, so it has no "must not fire" case of a guard's
+;;; kind: its only *must not* is **scope** — a rule activated for
+;;; `p → p-fwd` must not touch any other relation: a relation-closure claim,
+;;; which nothing else can state, made by naming the relation in a claim.
 ;;; `p-untouched` is how the claim is made checkable: it is an operand of
 ;;; nothing, it carries one authored edge, and the expectation closes it there.
 ;;; A copier that leaked into it would show up as a surplus `(p-untouched A B)`.

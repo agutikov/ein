@@ -1,8 +1,8 @@
-;;; `std.math.rat` — a name stated twice with two rationals. M1f S1f.6.38.
+;;; `std.math.rat` — a name stated twice with two rationals.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `let-twice` flags each `let`, as before S1f.6.38.
+;;; `let-twice` flags each `let` (Q-M1f.207).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

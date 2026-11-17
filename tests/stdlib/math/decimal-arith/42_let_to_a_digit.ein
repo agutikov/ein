@@ -1,12 +1,12 @@
-;;; `std.math.decimal-arith` — a `let` that names a digit. M1f S1f.6.38.
+;;; `std.math.decimal-arith` — a `let` that names a digit.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; What a `let` names is a number, and a digit is none: seven is `(n z 7)`.
 ;;; `let-to-digit` derives `(malformed (let seven 7))` whether or not a
-;;; request names `seven`, and `malformed-is-false` derives `(false)`. Until
-;;; S1f.6.38 it was found only where a request named the constant, by the
-;;; check the request handed the value to.
+;;; request names `seven`, and `malformed-is-false` derives `(false)`: the
+;;; `let` is flagged where it is written, not where a request names the
+;;; constant (Q-M1f.281).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
