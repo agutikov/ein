@@ -481,7 +481,7 @@ What a rule does to a knowledge base it matches in is read off its conclusion:
 Two more kinds of declaration have a rule's parts and are not rewriting rules: neither adds its conclusion to
 the knowledge base it matches in. Each is defined where it is used, in the part after this one
 ([the first](../02-kb-evolution/04-hypothesis-generation.md#3-the-hypothesis-rules-what-the-program-says-to-guess),
-[the second](../02-kb-evolution/10-satisfiability.md)).
+[the second](../02-kb-evolution/04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it)).
 
 ### By what its variables stand for
 
