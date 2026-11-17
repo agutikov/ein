@@ -509,9 +509,9 @@ admitted, after which the closure runs again. For a rule's author that means:
   the order, and on a monotone program neither does the boundary's; the agenda's order still orders the firings, and
   so the trace, and decides which derivation of a fact arrives first, which is what a core is explained from
   ([Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)).
-- **A rule set that is not stratified is answered by operational order.** `p ← absent q` beside `q ← absent p` has two
-  models; the engine reaches one, by the order the boundary admits firings in, and does not report that the other
-  exists. A program whose rules have a cycle through an `absent` is told so: a `strata` row in `ein solve`'s read-out
+- **A rule set that is not stratified is answered by operational order.** A rule that concludes `p` where `q` is
+  absent, beside one that concludes `q` where `p` is absent, has two models; the engine reaches one, by the order
+  the boundary admits firings in, and does not report that the other exists. A program whose rules have a cycle through an `absent` is told so: a `strata` row in `ein solve`'s read-out
   ([`08-read-out.md`](08-read-out.md)) and a `;; Strata` line in `ein saturate --dump`, each cycle named by its relations
   and the rules on its edges. It is a diagnostic, not a refusal: the answer stands, and may depend on that order.
 

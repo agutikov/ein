@@ -14,7 +14,7 @@
 //!   translated node for node of the syntax tree `regex-syntax` reads it as
 //!   ([`regex_ebnf`]). Nothing of a diagram is typed by hand: the two
 //!   tables here name only which rule each diagram starts at, and its
-//!   title. The test fails when the page differs, and `EIN_BLESS=1` rewrites
+//!   title (Q-M1f.378). The test fails when the page differs, and `EIN_BLESS=1` rewrites
 //!   the two marked regions, as `ein-cli/tests/embedding.rs` does for
 //!   `docs/ein/ein.rs/04-api.md`.
 //! - **The grammar's table** ([`TABLE`]). One row for each shape the grammar

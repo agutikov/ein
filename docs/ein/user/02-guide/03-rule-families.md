@@ -61,7 +61,6 @@ are the five facts as `ein saturate examples/zebra2.ein --dump` lists them,
 each with the rule that derived it, a rule a module brings by its full name:
 four colours excluded from House-1, and the survivor, forced.
 
-<!-- output -->
 ```text
   (not (color-loc Red House-1) :rule co-located-negative)
   (not (color-loc Blue House-1) :rule std.bijection.functional-negative)

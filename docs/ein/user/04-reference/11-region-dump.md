@@ -118,7 +118,7 @@ rule that reads `D` asserts into `D`*, with `(not (R …))` as its own `¬R`. Ev
 |---|---|---|---|
 | static | not in `D` | nothing | zebra2's `absent`s over `right-of` / `next-to` |
 | dynamic, monotone polarity | in `D`: even `absent` depth in a saturation rule, odd in an obligation | only add a conclusion, or only pay a debt | `total`'s `forall`; `total-owed`'s witness |
-| dynamic, non-monotone polarity | in `D`: odd depth in a saturation rule, even (the trigger) in an obligation | take a conclusion away, or add a debt | `derive-p ← (absent (q ?x))` beside `derive-q ← (absent (p ?x))`; [`lattice/04`](../../../../examples/lattice/04_obligation_trigger_hole.ein)'s `total-owed` trigger |
+| dynamic, non-monotone polarity | in `D`: odd depth in a saturation rule, even (the trigger) in an obligation | take a conclusion away, or add a debt | a rule `derive-p` that reads `(absent (q ?x))` beside a rule `derive-q` that reads `(absent (p ?x))`; [`lattice/04`](../../../../examples/lattice/04_obligation_trigger_hole.ein)'s `total-owed` trigger |
 
 A **site** is a read of the third kind, or a rule whose activator relation is in `D`. **No site means the program is
 monotone**: *dead* and *discharged* are both upward-closed, `R` has no holes, and its two lines describe it. That is a

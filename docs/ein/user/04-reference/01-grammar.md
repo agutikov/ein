@@ -4,7 +4,8 @@ Ein parses with a lexer and a parser generated from two grammar files: the lexer
 [`ein.l`](../../../../ein.rs/crates/ein-ir/src/ein.l), and the parser's,
 [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y). The diagrams on this page are those two files, every rule of
 each, written as EBNF and drawn as railroad diagrams. **They are what parses.** Each diagram is generated from its
-file, rule by rule, and never edited by hand, and the test suite fails when a diagram and its file differ. The prose
+file, rule by rule, and never edited by hand, and the test suite fails when a diagram and its file differ
+([Q-M1f.378](../../../decisions/docs/Q-M1f.378-the-grammar-page-is-the-two-grammar-files-as-ebnf.md)). The prose
 around them says what the diagrams cannot show; where the two disagree, the diagram is right. What each form means,
 and what the loader holds it to, is [`02-syntax.md`](02-syntax.md).
 
