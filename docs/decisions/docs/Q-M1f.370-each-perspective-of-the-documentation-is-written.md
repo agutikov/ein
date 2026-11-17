@@ -7,7 +7,7 @@ answer.
 |---|---|---|---|
 | `reasoning/` | **mathematics**: definitions, statements and arguments as formulas | graphs, of facts, of rules, of the lattice of commitments; and words, which say what a formula, an arrow or a node means | Ein source, a command line, Rust, a file's path, a test's name, a table of tests, an algorithm |
 | `user/` | **Ein**: programs a reader can run, and what `ein` prints for them | graphs, which visualise what the Ein says; mathematics, where it explains; and words, which say what the Ein says | a crate, a module, an algorithm |
-| `ein.rs/` | whatever the software needs: Rust, pseudocode, shell, JSON | diagrams, of an algorithm, a state machine, the structure of the crates, a process | nothing of its subject |
+| `ein.rs/` | whatever the software needs: Rust, pseudocode, shell, JSON | diagrams, of an algorithm, a state machine, the structure of the crates, a process | nothing: it is where crates, tests and algorithms are named |
 
 A page of `reasoning/` states what is true of any implementation, so what one implementation does to compute a
 thing, and the tests that hold it there, are `ein.rs/`'s to state. A page of `reasoning/` links pages of

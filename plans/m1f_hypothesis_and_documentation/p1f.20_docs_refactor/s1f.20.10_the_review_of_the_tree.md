@@ -252,3 +252,10 @@ one page (lane C makes it `04-stdlib/`).
 
 **Outside the scope**: L-51 to L-55 of [`findings.md`](findings.md).
 
+**The gates.** On `053fdf1d`: `./run_tests.sh` exit 0, its seventeen steps, 160 test binaries and none failed;
+`python3 utils/doc_audit.py --links --check --tracked` 0 links and 0 decision ids, `check_release_voice.py` none,
+`check_gate_steps.py` and `check_doc_blocks.py` pass, on that commit and after each of the four before it (the
+links, the voice). The new check was also run in the runner's image on the working tree (Graphviz 14.1.2,
+x86-64-v3): 41 `dot` blocks, rules 1 and 2 hold. `utils/ci_container.sh` was not run: the stage's part E runs it,
+a workflow having changed.
+
