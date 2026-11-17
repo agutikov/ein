@@ -398,3 +398,66 @@ drawing, since PlantUML's `-syntax` passes EBNF it then draws as a syntax error.
 **The checks on the merged tree**: `python3 utils/check_doc_blocks.py --plantuml`, 482 pages, 673 `dot` and 50
 `plantuml` blocks, rules 1 to 6 hold; `python3 utils/doc_audit.py --links --check --tracked`, 0 links and 0
 decision ids; `python3 utils/check_release_voice.py`, none; `python3 utils/check_gate_steps.py` passes.
+
+### The second notes: what the user ruled while the lane ran, and the lane
+
+**The user's rulings, 2026-11-17, in the order given** (verbatim):
+
+> let's review following definitions: objects are nodes in levi-bipartite representations, atoms are labelled nodes
+> w/o outgoing arrows, names are labels, facts are nodes with out arrows, relations are objects under first arrow,
+> relation desclaration is a fact with first arrow pointing to object with name="relation" - then second arrow
+> points to the name of relation
+>
+> so effectively we got the obejct identity is either name or tuple
+>
+> Points to settle: "{?1}" and :why are both ein languate syntax and is out of scope here; 2 - yes, object is a
+> levi-bipartite graph node; 3 - say that levi-bipartite is an initial idea, the final graph is not strictly it, but
+> still has nodes with and without arrows; 4 - yes; Then - the graph is not just drawing, it's a canonical
+> representation, because in the list of tuples names can be repeated, and in the graph there is only one node with
+> that name and only one node with this set of arrows; Additionally can say that facts in general are directed
+> hyper-edges, and facts with 3 arrows natively can be represented as labelled arrow, but in this case drawing
+> loose relation name identity preperty, because there are many arrows with same label, but in canonical graph form
+> there are many facts but the same relation mean their first arrow goes to the same atom; 3 - again, hypotheses
+> are out of scope here
+>
+> I forgot to mention! We are also talking about relations as: entire set of relation facts, as separate objects -
+> relation fact; there is a potential ambiguity between them; relation declaration say about entire relation as a
+> single object, so do facts where relation name is used as argument
+>
+> docs/ein/reasoning/01-static-ir/01-knowledge-base.md - add identity graph, or definition graph into "What is
+> where", maybe like class diagram?
+>
+> unfortunately inline dot and plantuml sometimes doesn't work - so need to put all diagrams in subfolder, render
+> to svg and insert svg; also long multi-statement math should be written in multiple lines
+
+The points the user answers by number were the coordinator's: (1) how a fact's arrows are numbered; (2) *object*
+taking the place of *value* on every page; (3) the graph not being bipartite once a fact points at a fact; (4) a
+relation by its role against a declared relation.
+
+**The lane** (`5eaa0acc`, `1af644e5`). `reasoning/01-static-ir/` is two pages. `01-knowledge-base.md` starts from
+the graph: the Levi graph of a hypergraph as the idea, then the graph a knowledge base is, nodes without outgoing
+arrows and nodes with ordered ones, one node for a name and one for a list of arrows, with the set of facts held.
+It names what is where by the user's definitions (objects, atoms and names, facts, relations under the first
+arrow, declarations and declared relations; the relation, its extent, a fact of it), carries a class diagram of
+the definitions, and gives the properties: identity as name or tuple, the total order with its proof, the text and
+the quoted form, the count of arguments, nesting, the status of a fact in a set. The first drawing has one node
+for `left-of`. The labelled-arrow form stands beside the graph as a drawing convention, with what it loses.
+`02-rewriting-rules.md` does the rewriting first (a pattern graph, a match as a homomorphism, the conditions, the
+conclusion, the result of rewriting, the span) and then the declaration (parts, activators, conditions, kinds, the
+four levels). Neither page speaks of a firing, of growth or of a hypothesis; what the four old pages said of those
+is in `02-kb-evolution/`: a firing's identity, a fork and the independence of outputs from numbering in
+`01-firing`; the activator-order corollary in `02-saturation`; state identity and the candidates' order in
+`06-solution-semantics`; provenance, origin and what a fact reaches in `09-cores`. Across `reasoning/` and
+`ein.rs/08-reasoning-in-code/`, *object* is a node of the graph, the set is `O`, *value* in that sense is gone,
+and the blind enumerator's objects are the guessable atoms. The review corrected thirteen statements or diagrams
+against the binary, among them the pattern grammar (a disjunction is a whole match), the variables a guard binds
+(they range over the program's names), the scope of an absence (by written order), checks in a conclusion,
+`names(P)`, and the pushout (it holds where one arrow list is one node). The part's seventeen diagrams are files
+under `01-static-ir/diagrams/`, each with the SVG drawn from it, and the pages embed the SVGs; its multi-statement
+formulas are one statement a row. Every reference to the four old pages is re-aimed; no printed path and no
+golden moved.
+
+**Left by these rulings, for the lanes that follow**: every other diagram of `docs/ein/` as a file with its SVG,
+with the tool that draws them and the check that holds them, the generated pages among them; every other
+multi-statement formula one statement a row; *object* for *value* in `user/`, the rest of `ein.rs/`, the
+decisions and `AGENTS.md`; *relation* said of an extent on other pages of the reasoning.
