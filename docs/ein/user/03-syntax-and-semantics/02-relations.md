@@ -193,7 +193,7 @@ Food)`; what it derives is a fact, and declares nothing: no count is held for `h
 The engine itself reads of a declaration how many labels it has and which atoms they are, never what a label
 means. [Objects](01-objects.md#giving-labels-a-meaning) has a rule that gives labels a meaning, and its drawing.
 
-## Three meanings of *relation*
+## The relation, its extent, a fact of it
 
 Three things go by a relation's name, and these pages keep the word *relation* for the first:
 

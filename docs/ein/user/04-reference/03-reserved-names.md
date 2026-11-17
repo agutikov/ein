@@ -48,7 +48,7 @@ malformed form is a parse error too.
 
 | name | form | meaning |
 |---|---|---|
-| `relation` | `(relation R [A B …] :why "…")` | declare a relation and its signature, a name and **zero or more** slot labels, each an ordinary name; the declaration is also stored as the fact `(relation R A B …)` and the membership fact `(relation R)` ([what the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)) |
+| `relation` | `(relation R [A B …] :why "…")` | declare a relation and its signature, a name and **zero or more** slot labels, each an ordinary atom; the declaration is also stored as the fact `(relation R A B …)` and the membership fact `(relation R)` ([what the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)) |
 | `rule` | `(rule N (?p…) :match … :assert … :why "…")` | a saturation rule |
 | `hrule` | `(hrule N (?p…) :match … :assert … :why "…")` | a hypothesis rule: it proposes what may be guessed, and never fires during saturation |
 | `query` | `(query :goal … …)` | a question about the answer |

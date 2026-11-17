@@ -684,7 +684,7 @@ holds names something the program has, or the loader refuses the program, one li
 | `:hrules (guess (att Color House))`, `?R` naming a relation, and no relation is named `att` | `:hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R, which names a relation, and the program names no relation att — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
 | `:hypothesis-relations (like)` or `:no-hypothesis (like)`, and no relation is named `like` | `:no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
 
-**A relation of the program** is a name the program writes as a relation outside the three lists: one it declares or
+**A relation of the program** is an atom the program writes as a relation outside the three lists: one it declares or
 states a fact of; `is-a`, `eq` and `neq`; the relation of any form in a rule's, an hrule's or an obligation's
 `:match` or `:assert`, in a query's `:goal` or in a fact's argument; and a name a fact or a conclusion passes where a
 relation's name is held, as `(bijective color-loc)` passes `color-loc` (§ 2.9's positions). So a relation only a
