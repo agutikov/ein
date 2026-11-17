@@ -96,7 +96,8 @@ constrained-reasoning research.
   theory, graphs & rewrite systems, reasoning benchmarks, …), and a
   knowledge graph (`knowledge-graph.dot` → SVGs and a Cytoscape.js page).
 - **`plans/ideas/`** — the user's *own* ideas; each preserves user quotes and
-  open questions. Authoritative on intent.
+  open questions. Authoritative on intent; idea 11 is the note M1d's obligations
+  were built on.
 - **`examples/`** — encoded Zebra puzzles (`zebra.ein` classic,
   `zebra2.ein` unified-is-a / `*-loc`, `zebra2-hints.ein` partial-state
   fixture) plus focused per-feature fixtures.
@@ -240,8 +241,9 @@ constrained-reasoning research.
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
 - **`utils/`** — the scripts; [`utils/README.md`](utils/README.md) is the
-  catalogue — one line per script in three groups (*renderers*, *checks*,
-  **the M1a measurement set**). Every script that runs the engine names the
+  catalogue — one line per script in its group (*renderers*, *checks*, **the
+  measurement set**), and the **censuses**, each kept beside the tool that
+  re-takes it (`utils/censuses/`). Every script that runs the engine names the
   binary — **`$EIN_BIN`** or `--bin` — defaulting to
   `ein.rs/target/release/ein`, except the one that wants a build of its own
   (`profile_ein_rs.py` → `--profile profiling`, which it builds). Run every
@@ -260,7 +262,7 @@ constrained-reasoning research.
   depends on them. [`c/README.md`](c/README.md) is the catalogue and carries
   the argument.
 - **`nl2smt/`** — **the Zebra puzzle's sentences through link grammar to
-  SMT**, a proof of concept (M1j), wired
+  SMT**, a proof of concept, wired
   into nothing: no crate depends on it and the gate does not run it.
   [`nl2smt/README.md`](nl2smt/README.md) is the page, with the command and
   its tests, which skip where `link-parser`, `racket` or every solver is
@@ -277,24 +279,29 @@ constrained-reasoning research.
 log.** A stage writes what it did to its own stage file under `plans/` and to
 its commit message. Edit this file only when a rule, a location, a command or
 the pointer below changes, and then in place: no dated *"S… ran to its end"*
-paragraph, no register count, no measurement (the user, 2026-11-13).
+paragraph, no register count, no measurement (the user's rule).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  P1f.5, P1f.7, P1f.6 (the calculator,
-  its close)
-  and P1f.10 (the structure of the hypothesis set,
-  its close)
-  are closed. **P1f.20, the documentation tree, is current**: every stage but S1f.20.9, the history sweep, is done; when it is, the phase stops for the user's review of the new docs and is not closed before it:
-  [its README](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)
-  (the user's ruling of 2026-11-15).
+  Its one phase left is **P1f.20, the documentation tree**
+  ([its README](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)):
+  every stage is done, and the phase stops for **the user's review of the new
+  docs**; it is not closed, and its folder not deleted, before the user has
+  read them (the user's ruling).
+- **A finished plan is deleted.** A milestone or phase whose README says
+  *closed* or *done*, and a followup that says *done*, goes with its folder once
+  what still reads it is re-aimed and what it still owns has moved to its owner;
+  it stays in `git log --diff-filter=D -- plans/<folder>`, and a link to it is
+  its label text. What stays under `plans/` is unfinished work: open
+  milestones, phases and followups, the open questions, the open wrong answers,
+  and `plans/ideas/`.
 - **What waits for the user**: milestone-wide questions, with every default
   taken, are
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
   (Q-M1f.n); a default stands until the user revises it. A phase keeps what
   it finds outside its scope in a findings page of its own and shows it, as
-  P1f.6's `findings.md`
-  (E-n) did.
+  P1f.20's [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/findings.md)
+  (L-n) does.
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
   open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);
@@ -310,7 +317,6 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
   [M12](plans/m12_rules_as_data/README.md), rules as data (its
   `rule_census.md` tables are written by `utils/rule_census.py --page`);
   [M15](plans/m15_mcp_server/README.md).
-  M1e2 closed on 2026-11-08 and its plans stay in `plans/m1e2_correctness/`.
 
 ## Standing rules
 
@@ -334,7 +340,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   a rule concluding `(false)`, a stored negation, or a fact whose negation
   can be concluded — then the rest, FIFO in written order within each half
   (`saturator::AGENDA`, everywhere: root, every route's node, the oracle's,
-  every reader; [Q-M1f.313](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false)).
+  every reader; [Q-M1f.313](docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
   On a monotone program it decides no answer (`ein-infer/tests/agenda.rs`);
   of a flagged one the engine claims none.
 - **`:why` is required** on every relation, rule, hrule and macro;
@@ -473,8 +479,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   process reads the project, which it sees in many states; nothing in the
   project reads, links or names the process. A decision about the process
   stays in `plans/`; a generated project file says it is generated and names
-  no tool; a measurement lives beside the script that takes it. P1f.20 brings
-  the tree there (the user's rulings of 2026-11-17).
+  no tool; a measurement lives beside the script that takes it.
 - **A wrong answer** is filed and fixed by
   [`plans/wrong_answers/README.md`](plans/wrong_answers/README.md)'s rules: a
   row of the register with its witness, in a commit of its own; the fix moves
@@ -505,11 +510,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **A flagged corpus program in which a hypothesis leads to a request to
   `std.math.decimal-arith` through a rule with an unbound operand fails
   `region.rs`'s fact-grain test**: the prototype's closure gives up past 10 000 shapes and
-  the test names the program rather than read a narrower verdict (E-33,
-  Q-M1f.225). An unflagged one costs it nothing: the closure runs only where
+  the test names the program rather than read a narrower verdict
+  (Q-M1f.225). An unflagged one costs it nothing: the closure runs only where
   a site reads it.
 - A local module's name is a path from the **program** file's directory, for
-  a module's own imports too: no import reaches a sibling directory (E-32),
+  a module's own imports too: no import reaches a sibling directory,
   and a module that imports a neighbour is found from the program's
   directory, not its own.
 
@@ -520,44 +525,44 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 ```sh
 ./run_tests.sh                                               # the whole per-commit tier
 ./run_tests.sh --tests-only                                  # skip the static checks
-./run_tests.sh --nightly                                     # M1e2 S1e2.3.6: instead of the gate, every step of nightly.yml, its three jobs in order
-./run_tests.sh --dev-host                                    # M1f S1f.5.27: instead of the gate, the nightly at full budget and the steps that left it
+./run_tests.sh --nightly                                     # instead of the gate, every step of nightly.yml, its jobs in order
+./run_tests.sh --dev-host                                    # instead of the gate, the nightly at full budget and the steps that left it
 EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --profile gate --test fuzz_properties     # the nightly's fuzz job, once per seed (1, 987654321); the dev host runs 1000000
 cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
-cargo test … -p ein-infer --features counters --test arith_batch   # M1f S1f.6.3: the calculator's batch, by the matcher's count; by hand since S1f.6.21, in no tier
-cargo test --manifest-path ein.rs/Cargo.toml --profile gate --workspace   # the tests alone, as the gate builds them (M1f S1f.6.39)
+cargo test … -p ein-infer --features counters --test arith_batch   # the calculator's batch, by the matcher's count; by hand, in no tier
+cargo test --manifest-path ein.rs/Cargo.toml --profile gate --workspace   # the tests alone, as the gate builds them
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
-EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step (M1f S1f.6.39)
-python3 utils/gate_times.py run --out g.log -- ./run_tests.sh   # M1f S1f.6.39: a gate run timed per step and per binary, memory and power sampled; `report g.log`
+EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step
+python3 utils/gate_times.py run --out g.log -- ./run_tests.sh   # a gate run timed per step and per binary, memory and power sampled; `report g.log`
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fifteen names
 EIN_ID_SEEDS=8 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance   # the dev host's, every program
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance   # the shape golden's every line, tests/ too
-ein solve … --maximal --models key|grid                       # the M1d S1d.3.3 forms, over the states listed
-EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
-ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
-ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
-ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2: a question about R, the least work it needs
-ein solve … --count                                          # M1e2: how many, R's two counts by describe's route, no state read
+ein solve … --maximal --models key|grid                       # the key and grid forms, over the states listed
+EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the leftover probe
+ein test examples tests stdlib --json-report r.json          # every claim's verdict, as JSON
+ein solve … --dump-answer DIR                                # the answer as files, each state loadable
+ein solve … --maximal | --minimal | --single | -n N --region-budget F   # a question about R, the least work it needs
+ein solve … --count                                          # how many, R's two counts by describe's route, no state read
 ein solve … --describe-route tree|states                     # describe's and --count's route: the tree and the classes (default; no N, no empty R's owing frontier) or every alive state
-ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # M1e2: every mode under every lever, + the slow pair's cells
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test answer_round_trip  # M1f S1f.5.13: every dump reloaded, + the slow and heavy_dump entries'
-ein render region DIR [--visited D] [--answer D] [--view …]  # M1e2: an oracle dump drawn, a solve run on it
-ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
-cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
-ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
+ein oracle FILE [--dump DIR]                                 # R by brute force, 2ⁿ saturations — the reference every mode is held to
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # every mode under every lever, + the slow pair's cells
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test answer_round_trip  # every dump reloaded, + the slow and heavy_dump entries'
+ein render region DIR [--visited D] [--answer D] [--view …]  # an oracle dump drawn, a solve run on it
+ein solve … --dump-lattice DIR                               # every node the run visited (ein render lattice draws them)
+cargo run --release -p ein-infer --example route1_reach      # route 1, R from the alive down-set, over the corpus
+ein render program|kb FILE                                   # the program as written; a KB (or a dumped model)
 ein show hyps FILE                                           # H as Ein facts, one candidate per line, uncut, nothing else on stdout: root's saturation and the generator, no search
 ein render h-space FILE [--view …] [--dump DIR] [--supports]   # the structure of H: a read-out, a graph as DOT, or h-space.json; `ein solve` computes none of it
-python3 utils/review_bundle.py                               # M1e2: build/review/, one page per open wrong answer
-python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
-python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)
-python3 utils/read_out_examples.py                           # M1f S1f.5.16: the read-out reference's examples page, written from the binary
+python3 utils/review_bundle.py                               # build/review/, one page per open wrong answer
+python3 utils/review_bundle.py --regions                     # build/review/regions/, every corpus region surveyed
+python3 utils/region_synth.py --example three_components     # a program written for a chosen region (--check, --random)
+python3 utils/read_out_examples.py                           # the read-out reference's examples page, written from the binary
 python3 utils/doc_audit.py --inbound --tracked --target docs/ein/      # per target file, the references a move rewrites, by referrer kind
 python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check counts; --bless re-banks its baseline
-python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ or docs/history/ reference, a date
+python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ reference, a date
 ```
 
 The read-out's vocabulary is
@@ -595,9 +600,9 @@ re-takes the set, the binary's two among it.
 | `EIN_REGION_CENSUS` | turns on `region.rs`' `census_for_inspection`, a measurement and not a claim |
 | `EIN_ROUTE1_TIMES` | prints each program's route-1 time in `region.rs`' route-1 sweep |
 
-The walk — `-e`, `-m`,
-`EIN_TRAVERSAL`, `EIN_OBLIGATION_CHOICE`, the lattice's verdict wording — was
-deleted at M1e2 S1e2.1c.5; a page that describes it is a record.
+The walk, the search R replaced, is gone with its flags and words (`-e`,
+`-m`, `EIN_TRAVERSAL`, `EIN_OBLIGATION_CHOICE`, the lattice's verdict wording);
+only a plan or a commit still names them.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order:
 nine static checks (`--tests-only` skips them and the bench smoke), then
@@ -622,16 +627,15 @@ step of `.github/workflows/nightly.yml`, its jobs one after another
 (`deep-corpus`, `deep-corpus-shards` and `mutants` once per shard, the fuzzer
 once per seed, the bench smoke), so the nightly can be run before a push;
 `utils/check_gate_steps.py` diffs its list against the workflow's.
-**A nightly step over 5 min on the runner runs in shards** (M1f S1f.6.39,
-[Q-M1f.293](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f293--the-nightlys-steps-against-five-minutes)):
+**A nightly step over 5 min on the runner runs in shards**
+([Q-M1f.293](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f293--the-nightlys-steps-against-five-minutes)):
 a matrix job a shard, `EIN_TEST_SHARD=k/n`, `ein_corpus::shard` dealing every
 program to exactly one shard and `utils/stdlib_mutants.py --shard` every
 `n`-th mutant; each shard is measured on four P-core threads with
 `EIN_TEST_JOBS=4`, the runner's count, on AC, and `check_gate_steps.py` holds a
 sharded step to every one of its shards. **The nightly holds only what guards an answer or a
 contract no per-commit step guards**, each step within 5 min on the runner
-(the user's ruling of 2026-11-10;
-[Q-M1f.102](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
+([Q-M1f.102](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
 **`./run_tests.sh --dev-host` is the tier nothing schedules**, which the user
 runs here or in the runner's image (`utils/ci_container.sh --dev-host`):
 every nightly step at full budget and the steps that left or never ran in
@@ -644,8 +648,8 @@ the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`
 documented crate, and a private item is a real name that public docs may cite
 but not hyperlink.
 
-**What a commit reads and what the nightly does** (M1f S1f.6.39, the
-user's rulings of 2026-11-15 on Q-M1f.287 to .294). Per commit:
+**What a commit reads and what the nightly does** (the user's rulings on
+Q-M1f.287 to .294). Per commit:
 `id_order_invariance` digests every rendering of every corpus program outside
 `tests/` against `ein-render/tests/golden/corpus_shapes.md5` and permutes the
 id space of those of them that **search**, whose describe saturates more than
@@ -659,7 +663,7 @@ the others, and a corpus program with no line fails per commit. Each corpus
 sweep over (program, op) pairs loads a program once and runs every op on a
 copy (`corpus_ops::Loads`; `Ast`, `Terms` and `Kb` are `Clone`).
 
-**The gate profile** (M1f S1f.6.39): every test step of every tier runs
+**The gate profile**: every test step of every tier runs
 `cargo test --profile gate`, into `ein.rs/target/gate/` — release codegen
 with `debug_assert!` and overflow checks on (`ein.rs/Cargo.toml`), which the
 dev profile kept at `opt-level = 1` and `--release` dropped. Clippy, rustdoc
@@ -681,24 +685,24 @@ invariants, and the **stdlib conformance** pair — and it needs **Graphviz** on
 `PATH`, because `dot_wellformed.rs` is the only authority the DOT views have
 on being well-formed and it fails rather than skips without it.
 
-**Which Graphviz build is part of what that test checks** (M1f S1f.5.17). The
-CI runs on whatever `ubuntu-latest` names, and since 2026-11-06 that is Ubuntu
-26.04, whose runner installs the **x86-64-v3 build** of every package. That
-build of Graphviz 14.1.2 compiles `libpathplan`'s orientation test into a
-fused multiply-add, and its spline router refused 20 corpus views that the
-same version's baseline build, 2.42.2 and 16.0.0 all draw, until the overlay
-and Levi digraphs set `ranksep=0.55` (`dot_util::POLYGON_RANKSEP`). A green
-gate here says nothing about that build. **`utils/ci_container.sh`** runs
+**Which Graphviz build is part of what that test checks.** The CI runs on
+whatever `ubuntu-latest` names, Ubuntu 26.04, whose runner installs the
+**x86-64-v3 build** of every package. That build of Graphviz 14.1.2 compiles
+`libpathplan`'s orientation test into a fused multiply-add, and its spline
+router refuses corpus views that the same version's baseline build, 2.42.2 and
+16.0.0 all draw, unless the overlay and Levi digraphs set `ranksep=0.55`
+(`dot_util::POLYGON_RANKSEP`), as they do. A green gate here says nothing
+about that build. **`utils/ci_container.sh`** runs
 `./run_tests.sh`, or `--nightly`, in a container built like the runner, on
 HEAD as committed, so an image move can be checked before a push.
 
-**When `utils/ci_container.sh` is part of done** (M1f S1f.5.29,
-[Q-M1f.77](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done)).
+**When `utils/ci_container.sh` is part of done**
+([Q-M1f.77](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done)).
 A stage that changes a DOT writer, the review bundle or what CI installs is
-not done until `utils/ci_container.sh` is green on its commit. Twice a
-Graphviz refusal reached CI behind a green gate here: S1f.5.17's router, and
-S1f.5.29's `fdp`, which 26.04's `graphviz` links to `dot` with no layout
-plugin behind it, so every KB view was refused. The workflows and the image
+not done until `utils/ci_container.sh` is green on its commit. A Graphviz
+refusal can reach CI behind a green gate here: the router above, and `fdp`,
+which 26.04's `graphviz` links to `dot` with no layout plugin behind it, so
+that every KB view is refused without the plugin. The workflows and the image
 install `libgvplugin-neato-layout8`, `run_tests.sh` exits 127 where `fdp`
 lays out no graph, and a refused DOT fails the review bundle, the smoke's and
 the nightly's alike, with Graphviz's message under its path.
