@@ -263,32 +263,33 @@ activator, and declines the rung where it does (§ 4.3).
 
 **Read off a root.** One guest, two chairs, two drinks; the guest is owed a chair and a drink, each relation is
 functional, and a stated fact says nobody at the first chair drinks milk. Root's facts are the solid and the dashed
-arrows below, as the engine draws a knowledge base, and the dotted arrows are the four payments, added to the
-drawing by hand:
+arrows below, in the vocabulary the engine draws a knowledge base in, and the dotted arrows are the four payments:
 
 ```dot
 digraph root_and_payments {
-  rankdir=BT;
+  rankdir=LR;
+  graph [nodesep=0.35, ranksep=1.1];
   node [fontname="Helvetica", fontsize=10];
   edge [fontname="Helvetica", fontsize=9];
+  "Guest" [shape=box, label="Guest"];
   "Chair" [shape=box, label="Chair"];
   "Drink" [shape=box, label="Drink"];
-  "Guest" [shape=box, label="Guest"];
   "Ann" [shape=oval, label="Ann"];
   "C1" [shape=oval, label="C1"];
   "C2" [shape=oval, label="C2"];
   "Milk" [shape=oval, label="Milk"];
   "Tea" [shape=oval, label="Tea"];
-  "Ann" -> "Guest" [style=dashed, arrowhead=empty, label="is-a"];
+  { rank=same; "C2"; "C1"; "Milk"; "Tea" }
+  "Guest" -> "Ann" [style=dashed, arrowtail=empty, dir=back, label="is-a"];
   "C1" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
   "C2" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
   "Tea" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
   "Milk" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-  "C1" -> "Milk" [label="never-with", color="#17becf", fontcolor="#17becf", style=solid];
-  "Ann" -> "C1" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted, constraint=false];
-  "Ann" -> "C2" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted, constraint=false];
-  "Ann" -> "Tea" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted, constraint=false];
-  "Ann" -> "Milk" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted, constraint=false];
+  "C1" -> "Milk" [label="never-with", color="#17becf", fontcolor="#17becf", style=solid, constraint=false];
+  "Ann" -> "C2" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
+  "Ann" -> "C1" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
+  "Ann" -> "Milk" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
+  "Ann" -> "Tea" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
 }
 ```
 
