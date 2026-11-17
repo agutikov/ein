@@ -147,3 +147,108 @@ The phase still stops for the user's review at the end; it is not closed.
 ## Record
 
 (each part writes what it did here)
+
+### Part A
+
+Five commits on master, `aa861dfa` to the one that carries this record; the gate's result is the last paragraph.
+
+**The renumbering** (`aa861dfa`). 70 pages and 7 folders renamed; 4 READMEs and 16 diagram files moved with
+their folders: 90 files. The map is the commit's renames, `git show -M30% --diff-filter=R --name-status aa861dfa`
+(`-M30%` because three READMEs changed more than half their lines, every one a link). Per folder, in the order
+its README lists:
+
+- `user/`: `01-install.md`, `02-guide/`, `03-syntax-and-semantics/`, `04-reference/`.
+- `user/02-guide/`: the six chapters `01-objects-and-relations.md` to `06-zebra-walkthrough.md`, then
+  `07-examples.md`, `08-word-problems.md`.
+- `user/03-syntax-and-semantics/`, by the README's § The pages: `01-objects`, `02-relations`, `03-facts`,
+  `04-ontology`, `05-rules`, `06-constraints`, `07-properties-and-operators`, `08-obligations`, `09-hypotheses`,
+  `10-theory`, `11-macros`, `12-query`, `13-solutions-and-models`, `14-natural-language`.
+- `user/04-reference/`: `01-grammar`, `02-syntax`, `03-reserved-names`, `04-stdlib`, `05-cli`, `06-config`,
+  `07-diagnostics`, `08-read-out`, `09-read-out-examples`, `10-answer-dump`, `11-region-dump`, `12-rendering`,
+  `13-glossary`.
+- `reasoning/`: `01-static-ir/` (`01-names-and-atoms`, `02-relations-and-facts`, `03-values-and-order`,
+  `04-rules-as-statements`), `02-kb-evolution/` (`01-firing`, `02-saturation`, `03-absent-and-naf`,
+  `04-hypothesis-generation`, `05-hypothesis-space`, `06-solution-semantics`, `07-finding-r`, `08-monotonicity`,
+  `09-cores`, `10-satisfiability`; `diagrams/` keeps its name), `03-rule-evolution/` (`01-rules-as-data`,
+  `02-analysis-of-rules`, `03-transformations`). The README's list ran 1 to 17 across the three parts; it now
+  starts at 1 in each, so a page's number in the list is its file's.
+- `ein.rs/`: `01-architecture`, `02-algorithms`, `03-design/`, `04-api`, `05-events`, `06-lattice-dump`,
+  `07-reserved-engine-strings`; `03-design/` by its README's reading order: `01-determinism-and-order`,
+  `02-shared-assets`, `03-data-model`, `04-ir-frontend`, `05-matcher`, `06-saturation`, `07-search`,
+  `08-parallelism`, `09-binary-format`, `10-toolchain-and-layout`.
+- `overview/`: `01-inspirations.md`.
+
+*The references.* One script (kept outside the repository) built the map, moved the files and rewrote every
+path-like token of every tracked text file: 2 259 relative paths (a page's links, a Rust comment's), 345 paths
+from the repository's root, 224 short paths of two or more components (`design/parallelism.md`), 690 bare page
+names (`read-out.md`), in 579 files. By hand after it: the release workflow's URL of the install page, one
+ambiguous `saturation.md` label, `utils/read_out_examples.py`'s two relative links, a shell line of the
+monotonicity page, `guide_programs.rs`' `starts_with("04_")` twice, one link of `docs/lib/`.
+**This phase's own records keep their short names** (`disposition.md`'s tables map an older tree onto this one in
+them): there the script re-aimed links and full `docs/ein/…` paths only. This stage file is not rewritten at all,
+so § The notes stays verbatim. An output file named `theory.md` that `ein-infer/examples/pair_layer.rs` writes is
+not the page and keeps its name.
+
+*The citations of a design page by number.* The old numbers (02 to 12, with no 09) map to the new by page:
+02→01, 11→02, 03 to 08 unchanged, 10→09, 12→10. Five citations outside `plans/`, each now the page's path and
+a section that says what is cited: `per-commit.yml` (no hash-map iteration: `01-determinism-and-order.md` § 2.3,
+where § 9 is now the tests), `release.yml` (snmalloc default-on: `10-toolchain-and-layout.md` § 4),
+`utils/bench_env.sh` (resolution order: `02-shared-assets.md` § 3), `ein-ir/tests/grammar_decisions.rs` (the
+message of a refusal: `04-ir-frontend.md` § 6, where § 4 is now positions and strings), `AGENTS.md` (`unsafe`:
+`10-toolchain-and-layout.md` § 2). `utils/check_hashmap_iteration.py` cited a section for *a `dylint` rule is
+allowed for*, which no page says; its two sentences say it of themselves now. The plans' citations of a design
+page by number are records of the pages as they were and are left.
+
+*What the binary prints.* `ein`'s help and the region dump name pages by path, and a state file's header names
+`answer-dump.md`: `ein-cli/tests/golden/help_shape.txt` moved with the paths, and
+`ein-render/tests/golden/corpus_shapes.md5` was re-banked over every corpus program
+(`EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance`): 637 lines, every one an
+`oracle` rendering, the same programs before and after.
+
+**The decisions** (`0694c726`), in `docs/decisions/docs/`: Q-M1f.367 (numbering), Q-M1f.368 (diagrams),
+Q-M1f.369 (formulas), Q-M1f.370 (the languages of the three perspectives, in one decision), Q-M1f.371 (four
+representations). Q-M1f.368 also states the default on output: a block of what `ein` printed that could be read as
+a drawing stands in a region the tests compare or under `<!-- output -->`.
+
+**The check** (`ad0d16ee`), `utils/check_doc_blocks.py`, the gate's tenth static step. In `per-commit.yml` it is
+in the `rust` job, after the Graphviz install, since the `shared-assets` job installs none. Its rules, and today's
+findings (`python3 utils/check_doc_blocks.py --counts`):
+
+| rule | what fails | today |
+|---|---|---|
+| 1 | a fenced `dot` block Graphviz refuses | 0 of 41 blocks; none needed a fix |
+| 2 | the numbering | 0 |
+| 3 | `reasoning/`: a fenced block not `dot` or `plantuml`; a link out of `docs/`; inline code that is a file path, a Rust path, a crate, test, function or field name, a command line | 704, all `reasoning/`: 27 blocks (17 `text`, 6 `lisp`, 4 `sh`), 42 links, 297 file paths, 306 test or field names, 32 command lines |
+| 4 | a formula in a `text` block | 31: `reasoning/` 11, `user/` 20 |
+| 5 | a diagram drawn in characters | 6: `ein.rs/` 3, `reasoning/` 1, `user/` 2 |
+| 6 | `--plantuml`: a `plantuml` block PlantUML refuses | 0 of 0 blocks |
+
+The gate step fails on rules 1 and 2. **`--all` adds 3 to 5, and the gate step becomes `--all` when the lanes
+have driven them to zero**: the coordinator changes the step in `run_tests.sh`, `per-commit.yml` and
+`check_gate_steps.py`'s `TESTS_ONLY_SKIPS`. `--plantuml` is a dev-host step, named in `DEV_HOST_ONLY`. Choices
+the docstring states in full: rule 4's operators are those in no golden under `ein.rs/crates/*/tests/golden/` and
+not on the generated read-out page (`⟺ ⇔ ∀ ∃ ⊨ ∨ ∈ ∉ ⊆ ∪ ∩ ≤ ≠ ≡ ↦ ⊥ ⇒` and a few more); a trace prints the
+stdlib's `⟹` and `∧`, so a formula spelt only in `∧ ¬ → ⟹` is not caught. A block is output, and rules 4 and 5
+skip it, on a page generated whole, inside a region a test compares (`<!-- name … -->` to `<!-- /name -->`), or
+under `<!-- output -->`. Rule 3 does not read an option written alone (`--minimal`) or inline Ein (`(false)`).
+
+**`standard-of-proof.md`** (`95df1737`), dissolved. Its rules: Q-M1e.1 gains *whatever states the claim* and
+*the refusal* among the things that check an absence; Q-M1e.2 already said the rest (the premise enforced, the
+test that asserts something next to it, the argument beside the code). Its table of four premises: the
+statement and the argument of each were already in `reasoning/` (`03-values-and-order.md`, § 1.6 of
+`06-solution-semantics.md` with `03-absent-and-naf.md`'s refutation section, `02-saturation.md`'s alive-set
+invariant, `02-relations-and-facts.md` § Equality), so nothing was added there; what enforces each went to
+`ein.rs/`: `03-design/README.md` § What the answer rests on (the four in one table, each with the page that
+states it and the test or refusal that enforces it), and `07-search.md`, which now names the alive invariant's
+two tests and the refusal's test and probe. The worked example's program is
+`examples/ein-bugs/naf-upward-closure.ein`, which `03-absent-and-naf.md` already describes. References
+re-aimed: the root README, `docs/ein/README.md`, `user/README.md`, five Rust comments (bare id), AGENTS.md,
+three plans. Nothing was left without a home.
+
+**Left to the lanes, seen on the way.** `reasoning/README.md` § What holds a page says each page ends with its
+tests, which Q-M1f.370 takes out of `reasoning/` (lane B). `user/03-syntax-and-semantics/README.md` says *in
+plain notation* of the mathematics (lane C). The `stdlib.md` page became `04-reference/04-stdlib.md` and is still
+one page (lane C makes it `04-stdlib/`).
+
+**Outside the scope**: L-51 to L-55 of [`findings.md`](findings.md).
+

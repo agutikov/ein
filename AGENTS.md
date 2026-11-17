@@ -15,7 +15,7 @@ constrained-reasoning research.
   **`user/`**, the black box — the language, the command line, what the
   answer means and every row `ein solve` prints, the guide;
   **`reasoning/`**, what is computed and why it is right, true of any
-  implementation (`static-ir/`, `kb-evolution/`, `rule-evolution/`); and
+  implementation (`01-static-ir/`, `02-kb-evolution/`, `03-rule-evolution/`); and
   **`ein.rs/`**, how this implementation computes it (below). Start here for
   any "what does Ein reason about / how" question. The pages an agent most
   often needs:
@@ -62,12 +62,35 @@ constrained-reasoning research.
   ([Q-M1e.2](docs/decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md);
   the premises the answer rests on, each with what enforces it, are
   [`03-design/README.md`](docs/ein/ein.rs/03-design/README.md#what-the-answer-rests-on)).
+  **How a page is named and written**: every folder and page under `user/`,
+  `reasoning/`, `ein.rs/` and `overview/` is `NN-kebab-name`, numbered in its
+  folder's reading order from `01` with no gap, `README.md` and `diagrams/`
+  aside ([Q-M1f.367](docs/decisions/docs/Q-M1f.367-the-folders-and-pages-of-the-documentation-are.md));
+  a diagram is a fenced `dot` or `plantuml` block, never drawn in characters,
+  and what `ein` prints is output, marked `<!-- output -->` where it could be
+  read as a drawing
+  ([Q-M1f.368](docs/decisions/docs/Q-M1f.368-a-diagram-is-a-graphviz-or-a-plantuml-block.md));
+  a formula is TeX, between `$$` lines or inline `$`, never a `text` block
+  ([Q-M1f.369](docs/decisions/docs/Q-M1f.369-a-formula-is-written-in-tex-displayed-or-inline.md));
+  and each perspective has its languages
+  ([Q-M1f.370](docs/decisions/docs/Q-M1f.370-each-perspective-of-the-documentation-is-written.md)):
+  `reasoning/` is mathematics, graphs and words, with no Ein source, command,
+  Rust, file path, test name or algorithm, and links only pages of `docs/ein/`
+  and decisions; `user/` is Ein first, with graphs, words, and mathematics
+  where it explains, a core notion in all four and special syntax not
+  ([Q-M1f.371](docs/decisions/docs/Q-M1f.371-a-core-notion-is-shown-four-ways-in-the-users.md));
+  `ein.rs/` is software documentation in whatever language it needs, and is
+  where tests and algorithms are named.
   **What keeps the pages true**: `utils/doc_audit.py --links --check
   --tracked`, a gate step (every link and anchor, every prose `§` number
   written after a link, every decision id the project cites); its
   `--identifiers` report (every backticked name that looks like code, looked
   up in `ein.rs/crates/`: a report, never a gate, since a page that rightly
-  says a name is gone still names it); the release-voice check; and running
+  says a name is gone still names it); the release-voice check;
+  `utils/check_doc_blocks.py`, a gate step (every fenced `dot` block through
+  Graphviz and the numbering; `--all` adds the languages of `reasoning/`, no
+  formula in a `text` block and no diagram in characters, and `--plantuml`,
+  the dev host's, the `plantuml` blocks); and running
   the commands a page shows, which no script does and which finds the most.
 - **`docs/decisions/`** — **every question about Ein that has an answer, as
   that answer** ([`docs/decisions/README.md`](docs/decisions/README.md)): one
@@ -225,7 +248,7 @@ constrained-reasoning research.
   names seeds the blind enumerator's objects), **`ein-einb`** (the `.einb`
   binary KB container, and the **only library crate that is not
   `#![forbid(unsafe_code)]`**: its `cast.rs` is the one audited module
-  design/12 §2 permits `unsafe` in; the other audited `unsafe` is
+  `03-design/10-toolchain-and-layout.md` § 2 permits `unsafe` in; the other audited `unsafe` is
   `ein-cli/src/main.rs`'s one `libc::signal(SIGPIPE, SIG_DFL)`, so a closed
   stdout ends `ein` as it ends `cat`), `ein-render` (DOT views, the read-out,
   the region trace, the answer and lattice dumps, the JSON summary, the
@@ -469,6 +492,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `.md`'s links, the links in a Rust comment and the bare paths in a `.ein`
   comment and in `corpus/corpus.toml`, and `--inbound --tracked --target
   PREFIX` counts them per target.
+- **A page added to or taken out of `docs/ein/` renumbers its folder**: it
+  takes the number of its place in the folder's `README.md`, the pages after
+  it move, and every reference moves with them in the same commit
+  (`utils/check_doc_blocks.py` fails on a gap or a number twice; `--list`
+  prints every finding of the pages' rules, `--rule N` one rule's).
 - **The release voice has no baseline**: `utils/check_release_voice.py` fails
   on any line of the project's prose (every project `.md`, every crate comment,
   every `.ein` comment, `corpus/corpus.toml` and `corpus/regressions.toml`)
@@ -567,6 +595,7 @@ python3 utils/region_synth.py --example three_components     # a program written
 python3 utils/read_out_examples.py                           # the read-out reference's examples page, written from the binary
 python3 utils/doc_audit.py --inbound --tracked --target docs/ein/      # per target file, the references a move rewrites, by referrer kind
 python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check finds
+python3 utils/check_doc_blocks.py --list [--rule N] [PATH …]  # every finding of the pages' rules: dot blocks, numbering, reasoning's languages, formulas, character diagrams
 python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ reference, a date
 ```
 
@@ -610,13 +639,13 @@ The walk, the search R replaced, is gone with its flags and words (`-e`,
 only a plan or a commit still names them.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order:
-nine static checks (`--tests-only` skips them and the bench smoke), then
+ten static checks (`--tests-only` skips them and the bench smoke), then
 `cargo test --profile gate --workspace`, then the process's checks that need
 the binary it built, then the bench smoke test. The tests run with
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,
 naming the file that writes it. **`cargo test --profile gate --workspace`
-alone is not the gate**: it checks none of the nine, and none of what the
+alone is not the gate**: it checks none of the ten, and none of what the
 process holds itself to. **The tests read only the project**: what ties a
 process file to the project is a `utils/` check and a gate step, never a crate
 test — `check_gate_steps.py` (the step lists), `check_tool_mirrors.py` (the
