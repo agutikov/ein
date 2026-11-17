@@ -161,12 +161,22 @@ another:
 
 <!-- output -->
 ```text
-    (model))
-  …
+  query 1 of 3      (pet ?x)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?x = Tom
   as :expect        (model (pet Tom))
-  …
+
+  query 2 of 3      (cares ?x ?y)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?x = Ann · ?y = Tom
   as :expect        (model (cares Ann Tom))
-  …
+
+  query 3 of 3      (fed-by ?x ?y)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?x = Tom · ?y = Ann
   as :expect        (model (fed-by Tom Ann))
 ```
 
@@ -530,12 +540,28 @@ nothing until they are given a membership relation, `(total R isa)`.
 
 <!-- output -->
 ```text
+  query 1 of 4      (functional ?r)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?r = wears
   as :expect        (model (functional wears))
-  …
+
+  query 2 of 4      (injective ?r)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?r = wears
   as :expect        (model (injective wears))
-  …
+
+  query 3 of 4      (total ?r)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?r = wears
   as :expect        (model (total wears))
-  …
+
+  query 4 of 4      (surjective ?r)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?r = wears
   as :expect        (model (surjective wears))
 ```
 
