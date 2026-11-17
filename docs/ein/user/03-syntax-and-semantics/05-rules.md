@@ -67,8 +67,31 @@ the four rules derive:
 
 ## As a graph
 
-`ein render rule --name chain FILE` draws a rule as two panels, what it matches and what it asserts. Variables are
-diamonds, a relation pattern a labelled arrow, a guard a dotted undirected link, and the conclusion dashed:
+A rule is a **rewrite of the graph**: where the picture on its left is found in the knowledge base, the picture on
+its right is added. `ein render rules FILE` draws every rule of a program so, and `ein render rule --name N FILE`
+one of them: two panels, what the rule matches and what it asserts. Variables are diamonds, a pattern of two
+arguments a labelled arrow, a pattern of one an octagon over its argument, a guard a dotted undirected link, and
+the conclusion dashed. The four rules of the program above, in the order it writes them:
+
+```dot
+digraph rule_parent_is_ancestor_lhs_rhs {
+  rankdir=TB;
+  label="parent-is-ancestor"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?a_L" -> "?b_L" [label="parent", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" [label="?b", shape=diamond];
+    "?a_R" -> "?b_R" [label="ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  }
+}
+```
+
+`chain` is drawn with its parameter as the arrows' label, `?r`: the picture is of any relation the rule is
+activated on. The dotted link is the guard `(neq ?a ?c)`:
 
 ```dot
 digraph rule_chain_lhs_rhs {
@@ -90,9 +113,30 @@ digraph rule_chain_lhs_rhs {
 }
 ```
 
-`--rule-mode overlay` draws one panel instead, the matched pattern solid and the conclusion dashed over it, which is
-the compact form for a single firing. An `(absent …)` is a dashed cluster marked `∄`, its own variables inside it and
-the shared ones outside, so the drawing still reads *no such match exists*; `ein render rule --name no-child FILE`:
+The two disjuncts of `owns-a-pet`'s `(or …)` are drawn side by side over the variable they share; the picture does
+not say *or*, the rule's text does:
+
+```dot
+digraph rule_owns_a_pet_lhs_rhs {
+  rankdir=TB;
+  label="owns-a-pet"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "h1_has-cat_L" [shape=octagon, label="has-cat", color="#9467bd", fontcolor="#9467bd"];
+    "h1_has-cat_L" -> "?p_L" [label="1", color="#9467bd"];
+    "h2_has-dog_L" [shape=octagon, label="has-dog", color="#17becf", fontcolor="#17becf"];
+    "h2_has-dog_L" -> "?p_L" [label="1", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?p_R" [label="?p", shape=diamond];
+    "h3_pet-owner_R" [shape=octagon, label="pet-owner", color="#17becf", fontcolor="#17becf"];
+    "h3_pet-owner_R" -> "?p_R" [label="1", color="#17becf", style=dashed];
+  }
+}
+```
+
+An `(absent …)` is a dashed cluster marked `∄`, its own variables inside it and the shared ones outside, so the
+drawing still reads *no such match exists*:
 
 ```dot
 digraph rule_no_child_lhs_rhs {
@@ -116,8 +160,26 @@ digraph rule_no_child_lhs_rhs {
 }
 ```
 
-A stored negation `(not P)` is drawn red, its label prefixed `¬`, and `(false)` as an octagon. `ein render rules
-FILE` draws every rule of a program, one digraph each.
+`--rule-mode overlay` draws one panel instead, the matched pattern solid and the conclusion dashed over it. A stored
+negation `(not P)` is drawn red, its label prefixed `¬`, and `(false)` as an octagon
+([constraints](06-constraints.md)).
+
+What the rewrites did to this program's graph is `ein render kb FILE`, the declarations' facts left out: the three
+solid arrows are what the program wrote, and each dashed one is a firing, labelled with its rule.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  "Ann" -> "Bea" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bea" -> "Cid" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bea" -> "Bea" [label="has-dog", color="#17becf", fontcolor="#17becf", style=solid];
+  "Ann" -> "Bea" [label="ancestor by parent-is-ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Bea" -> "Cid" [label="ancestor by parent-is-ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Bea" -> "Bea" [label="pet-owner by owns-a-pet", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Ann" -> "Cid" [label="ancestor by chain", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Cid" -> "Cid" [label="childless by no-child", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
+}
+```
 
 ## In words
 
@@ -134,25 +196,74 @@ Premises: `ancestor(Ann, Bea)`, `ancestor(Bea, Cid)`
 Derives `ancestor(Ann, Cid)` — Ann is an ancestor of Cid
 ```
 
+and under it the firing drawn, the premises it read on the left, the rule with its reason in the middle, the fact
+it added on the right:
+
+```dot
+digraph step4 {
+  rankdir=LR;
+  "f_0d0f2e8c80" [label="ancestor(Ann, Bea)", shape=box, style=rounded];
+  "f_03bbfb1dff" [label="ancestor(Bea, Cid)", shape=box, style=rounded];
+  "f_b8f7bcae1f" [label="ancestor(Ann, Cid)", shape=box, style=rounded, penwidth=2];
+  "fire0_chain" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="chain\nAnn ancestor Bea and Bea ancestor Cid, so Ann ancestor Cid"];
+  "f_0d0f2e8c80" -> "fire0_chain" [color="#8c564b"];
+  "f_03bbfb1dff" -> "fire0_chain" [color="#8c564b"];
+  "fire0_chain" -> "f_b8f7bcae1f" [color="#8c564b", style=bold];
+}
+```
+
 The quote is the rule's reason, and the line after *Derives* is the conclusion's statement, its relation's `:why`.
 A good reason says what the rule concludes and from what; a refutation's says what cannot be
 ([natural language](14-natural-language.md)).
 
 ## In mathematics
 
-A rule is a triple `(p̄, φ, ψ)`: parameters `p̄`, a premise `φ(p̄, x̄)` over the variables `x̄`, and a conclusion
-`ψ(p̄, x̄)`, a set of atoms. For an activator binding `p̄ ↦ ā` and a state `S`, a **match** is a substitution `θ` of
-the variables by values with `S ⊨ φ[ā]θ`; the firing adds `ψ[ā]θ`. With `P` the program's rules, the immediate
-consequence of a state is
+A rule is an implication, universally quantified over its variables. The four above:
 
-```text
-T_P(S) = S ∪ { ψ[ā]θ : (p̄, φ, ψ) ∈ P, ā an activator of it in S, S ⊨ φ[ā]θ }
-```
+$$
+\operatorname{parent}(a, b) \implies \operatorname{ancestor}(a, b)
+$$
 
-and the state a program describes is the least fixpoint above its facts, `Cl(S₀) = ⋃ₖ T_Pᵏ(S₀)`. On a program
-without `absent`, `T_P` is monotone and `Cl` is unique, whatever order the rules fire in. `(absent ψ)` holds in a
-state `W` under `θ` when no extension of `θ` makes `ψ` match a fact of `W`, which is `W ⊭ ∃ȳ. ψθ` with `ȳ` the
-variables `θ` leaves free; it is judged at a fixpoint of the positive rules, never halfway through one.
+$$
+r(a, b) \land r(b, c) \land a \ne c \implies r(a, c) \qquad \text{for each activator } \operatorname{chain}(r)
+$$
+
+$$
+\text{has-cat}(p) \lor \text{has-dog}(p) \implies \text{pet-owner}(p)
+$$
+
+$$
+\operatorname{parent}(x, y) \land \lnot \exists z.\ \operatorname{parent}(y, z) \implies \operatorname{childless}(y)
+$$
+
+In general a rule is a triple $(\bar{p}, \varphi, \psi)$: parameters $\bar{p}$, a premise $\varphi(\bar{p}, \bar{x})$
+over the variables $\bar{x}$, and a conclusion $\psi(\bar{p}, \bar{x})$, a set of atoms. For an activator binding
+$\bar{p} \mapsto \bar{a}$ and a state $S$, a **match** is a substitution $\theta$ of the variables by values with
+$S \models \varphi[\bar{a}]\theta$, and the firing adds $\psi[\bar{a}]\theta$. With $P$ the program's rules, the
+immediate consequence of a state is
+
+$$
+T_P(S) = S \cup \lbrace \psi[\bar{a}]\theta \mid (\bar{p}, \varphi, \psi) \in P,\ \bar{a} \text{ an activator of it in } S,\ S \models \varphi[\bar{a}]\theta \rbrace
+$$
+
+and the state a program describes is the least fixpoint above its facts $S_0$:
+
+$$
+\operatorname{Cl}(S_0) = \bigcup_{k \ge 0} T_P^{\,k}(S_0)
+$$
+
+For the program above $\operatorname{Cl}(S_0)$ is $S_0$ and the five derived facts listed under *In Ein*; the fact
+$\operatorname{ancestor}(\mathsf{Ann}, \mathsf{Cid})$ enters at $k = 2$, since `chain` reads what
+`parent-is-ancestor` adds at $k = 1$. On a program without `absent`, $T_P$ is monotone and $\operatorname{Cl}$ is
+unique, whatever order the rules fire in. An `(absent …)` over a pattern $\psi$ holds in a state $W$ under $\theta$
+when no extension of $\theta$ makes $\psi$ match a fact of $W$:
+
+$$
+W \models \operatorname{absent}(\psi)\theta \iff W \not\models \exists \bar{y}.\ \psi\theta
+$$
+
+with $\bar{y}$ the variables $\theta$ leaves free. It is judged at a fixpoint of the positive rules, never halfway
+through one.
 
 ## The pattern
 
@@ -199,7 +310,7 @@ them; or `()`, which concludes nothing; or, whole, an obligation `(open ?R)` ([o
 never a disjunction: *one of these* is the [hypotheses](09-hypotheses.md)' job. Every variable a conclusion writes is
 bound by a parameter or a premise on every way of satisfying the `:match`, each disjunct of an `(or …)` included
 ([Q-M1e2.37](../../../decisions/language/Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md)); to conclude a
-fact of every name, write the binding out, a typed premise or `(eq ?y ?y)`.
+fact of every name, write the binding out, a membership premise such as `(is-a ?y Person)`, or `(eq ?y ?y)`.
 
 ## Parameters and activators
 

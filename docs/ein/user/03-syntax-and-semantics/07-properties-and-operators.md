@@ -56,7 +56,6 @@ facts; the rules derive what the property implies, or refute a state that breaks
 ```dot
 digraph constraints {
   rankdir=LR;
-  node [fontname="Inter"];
   "std.algebra" [shape=rectangle, label="std.algebra\\n«import»"];
   "knows" [shape=rectangle, label="knows\\n«symmetric, transitive»"];
   "above" [shape=rectangle, label="above\\n«asymmetric»"];
@@ -76,6 +75,81 @@ digraph ontology {
   "knows" -> "knows" [label="transitive", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
   "Alice" -> "Bob" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
   "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
+}
+```
+
+The rules the three property facts activate are `std.algebra`'s. A view draws a program as it is written, its
+imports unresolved, so a library's rule is drawn from the module's own file: `ein render rule --name symmetric
+STDLIB/algebra.ein`, with `STDLIB` a standard library on disk, the directory `ein --version` names
+([install](../01-install.md)). Each is a rewrite over any relation, its
+parameter the arrows' label ([rules](05-rules.md)):
+
+```dot
+digraph rule_symmetric_lhs_rhs {
+  rankdir=TB;
+  label="symmetric"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?b_R" [label="?b", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}
+```
+
+```dot
+digraph rule_transitive_lhs_rhs {
+  rankdir=TB;
+  label="transitive"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+    "?b_L" -> "?c_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+    "?a_L" -> "?c_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?c_R" [label="?c", shape=diamond];
+    "?a_R" -> "?c_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}
+```
+
+```dot
+digraph rule_asymmetric_lhs_rhs {
+  rankdir=TB;
+  label="asymmetric"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+    "?b_L" -> "?a_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}
+```
+
+What the two closures added to the program is `ein render kb FILE`, the declarations' and the property facts left
+out: three solid arrows written, four dashed ones derived, and `above` untouched, since a check adds nothing.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  "Alice" -> "Bob" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
+  "B1" -> "B2" [label="above", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "Bob" -> "Alice" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Carol" -> "Bob" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Alice" -> "Carol" [label="knows by transitive", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Carol" -> "Alice" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
 }
 ```
 
@@ -108,36 +182,60 @@ activation, and no declaration carries a sentence for it.
 
 ## In mathematics
 
-A binary relation is a set of pairs, and `std.algebra` is Tarski's relation algebra `⟨∪, ∩, ¬, 0, 1, ;, ˘, 1'⟩` over
-those sets:
+A binary relation is a set of pairs, and `std.algebra` is Tarski's relation algebra
+$\langle \cup, \cap, {}^{-}, 0, 1, {;}, {}^{\smile}, 1' \rangle$ over those sets, with
 
-```text
-R˘    = { (b, a) : (a, b) ∈ R }                          converse
-R ; S = { (a, c) : ∃b. (a, b) ∈ R ∧ (b, c) ∈ S }          composition
-1'    = { (a, a) }                                       identity
-```
+$$
+R^{\smile} = \lbrace (b, a) \mid (a, b) \in R \rbrace \qquad \text{(converse)}
+$$
 
-and the properties are inclusions:
+$$
+R \mathbin{;} S = \lbrace (a, c) \mid \exists b.\ (a, b) \in R \land (b, c) \in S \rbrace \qquad \text{(composition)}
+$$
 
-```text
-symmetric     R˘ ⊆ R             transitive    R ; R ⊆ R
-functional    R˘ ; R ⊆ 1'        injective     R ; R˘ ⊆ 1'
-irreflexive   R ∩ 1' = ∅         asymmetric    R ∩ R˘ = ∅
-total         every a of the domain has some (a, b) ∈ R
-surjective    every b of the range has some (a, b) ∈ R
-```
+$$
+1' = \lbrace (a, a) \rbrace \qquad \text{(identity)}
+$$
+
+The properties are inclusions. The three the program above states:
+
+$$
+\operatorname{symmetric}(R) \iff R^{\smile} \subseteq R, \qquad
+\operatorname{transitive}(R) \iff R \mathbin{;} R \subseteq R, \qquad
+\operatorname{asymmetric}(R) \iff R \cap R^{\smile} = \emptyset
+$$
+
+and the others of the same family:
+
+$$
+\operatorname{functional}(R) \iff R^{\smile} \mathbin{;} R \subseteq 1', \qquad
+\operatorname{injective}(R) \iff R \mathbin{;} R^{\smile} \subseteq 1', \qquad
+\operatorname{irreflexive}(R) \iff R \cap 1' = \emptyset
+$$
+
+$$
+\operatorname{total}(R) \iff \forall a \in \operatorname{dom}.\ \exists b.\ (a, b) \in R, \qquad
+\operatorname{surjective}(R) \iff \forall b \in \operatorname{ran}.\ \exists a.\ (a, b) \in R
+$$
 
 A **closure** rule makes an inclusion hold by deriving the pairs it lacks, so its fixpoint is the least relation
-containing `R` with the property; `transitive` is guarded by `a ≠ c`, so an irreflexive relation's closure stays
-irreflexive. A **check** rule makes a state that breaks the inclusion dead. The relation algebra is as expressive as
-first-order logic with three variables, so most constraints over at most three variables can be written with it;
-one over more is a rule of the program's own.
+containing $R$ with the property. For the program above, `symmetric` and `transitive` together give
+
+$$
+\operatorname{ext}(\mathsf{knows}) = \lbrace \mathsf{Alice}, \mathsf{Bob}, \mathsf{Carol} \rbrace^2 \setminus 1'
+$$
+
+since `transitive` is guarded by $a \ne c$, so an irreflexive relation's closure stays irreflexive. A **check** rule
+makes a state that breaks the inclusion dead. The relation algebra is as expressive as first-order logic with three
+variables, so most constraints over at most three variables can be written with it; one over more is a rule of the
+program's own.
 
 ## Three distinctions that decide whether a rule is safe
 
 - **Intrinsic or extensive.** An intrinsic operator reads only the pairs a relation has: `converse`, `compose`,
   `meet`, `difference`, `join`, `difunctional`. An extensive one ranges over every pair of the domain and the range,
-  to reach the pairs a relation lacks, so it takes the program's membership relation and the types as parameters,
+  to reach the pairs a relation lacks, so it takes the program's membership relation and the two names its members
+  are classified under as parameters,
   `(complement R S is-a Dom Ran)`: `complement`, `top`, `identity`, `connex`.
 - **Check or closure.** A check concludes `(false)` on a violation: `functional`, `injective`, `total`, `surjective`,
   `empty`, `irreflexive`, `antisymmetric`, `asymmetric`, `connex`. A closure derives the pairs that make the
@@ -157,7 +255,7 @@ one over more is a rule of the program's own.
 | `(imply1 R1 R2)` | `(R1 a)` derives `(R2 a)`: one unary property implies another, `(imply1 functional __closed__)` | intrinsic |
 | `(imply2-fwd R1 R2)` | `(R1 a b)` derives `(R2 a b)` | intrinsic |
 | `(imply2-reverse R1 R2)` | `(R1 a b)` derives `(R2 b a)`, the same as `converse` | intrinsic |
-| `(compose R1 R2 R3)` | `R1(a,b) ∧ R2(b,c)` derives `R3(a,c)`; `(compose R R R)` is the transitive closure | intrinsic |
+| `(compose R1 R2 R3)` | `R1(a,b)` and `R2(b,c)` derive `R3(a,c)`; `(compose R R R)` is the transitive closure | intrinsic |
 | `(identity R isa Dom)` | every member of `Dom` gets `R(a,a)` | extensive |
 
 **The Boolean layer.**
@@ -168,8 +266,8 @@ one over more is a rule of the program's own.
 | `(difference R1 R2 R3)` | `R3` holds the pairs in `R1` that `R2` lacks | intrinsic, closed world |
 | `(join R1 R2 R3)` | `R3` holds the pairs in either; list `derive-join`, `join-l` and `join-r` | intrinsic |
 | `(empty R)` | check: any `R(a,b)` is a contradiction | check |
-| `(top R isa Dom Ran)` | `R` holds every pair of `Dom × Ran` | extensive |
-| `(complement R1 R2 isa Dom Ran)` | `R2` holds every pair of `Dom × Ran` that `R1` lacks | extensive, closed world |
+| `(top R isa Dom Ran)` | `R` holds every pair of a member of `Dom` and a member of `Ran` | extensive |
+| `(complement R1 R2 isa Dom Ran)` | `R2` holds every pair of a member of `Dom` and a member of `Ran` that `R1` lacks | extensive, closed world |
 
 **Cardinality**, each a check.
 
@@ -190,7 +288,7 @@ activated beside them, which report a debt and refute nothing ([obligations](08-
 | activator | refutes a state where |
 |---|---|
 | `(irreflexive R)` | some `R(a,a)` holds |
-| `(antisymmetric R)` | `R(a,b)` and `R(b,a)` hold with `a ≠ b` |
+| `(antisymmetric R)` | `R(a,b)` and `R(b,a)` hold with `a` and `b` different |
 | `(asymmetric R)` | `R(a,b)` and `R(b,a)` hold, a self-loop included |
 | `(connex R isa Dom)` | two different members of `Dom` are related neither way; extensive, closed world |
 
@@ -199,12 +297,12 @@ activated beside them, which report a debt and refute nothing ([obligations](08-
 | activator | derives |
 |---|---|
 | `(symmetric R)` | `R(b,a)` from every `R(a,b)`; `symmetric-negative` mirrors stored negations the same way |
-| `(transitive R)` | the transitive closure, guarded by `a ≠ c` |
+| `(transitive R)` | the transitive closure, guarded by `(neq a c)` |
 | `(includes R S)` | every `R` pair into `S`: `S` contains `R` |
-| `(difunctional R)` | `R(a,b) ∧ R(c,b) ∧ R(c,d)` derives `R(a,d)` |
+| `(difunctional R)` | `R(a,b)`, `R(c,b)` and `R(c,d)` derive `R(a,d)` |
 
-**Typing and lemmas.** `(converse-illtyped-dom R1 R2 isR*)` and `converse-illtyped-ran` refute a converse pair whose
-signatures do not reverse-match under the hierarchy `isR*`. A handful of rules with no parameter relate the operator
+**Labels and lemmas.** `(converse-illtyped-dom R1 R2 isR*)` and `converse-illtyped-ran` refute a converse pair whose
+declarations' labels do not mirror each other under the hierarchy `isR*`. A handful of rules with no parameter relate the operator
 facts to one another, so a program states each fact once: `symmetric-is-self-converse` and
 `self-converse-is-symmetric` (a symmetric relation is its own converse, and back), `converse-pair-symmetric`,
 `compose-contravariant` and `join-converse`. `(compose-negative-s R S T)` and `(compose-negative-r R S T)`, for a
@@ -238,9 +336,10 @@ program could have written itself, matched, derived and explained as any other. 
 imply another: `bijective-properties` reads `(bijective R)` and concludes four property facts, and
 `symmetric-is-self-converse` reads `(symmetric R)` and concludes `(converse R R)`.
 
-**A signature is data a rule reads.** A declaration stores `(relation R A B)`, so a rule can read a relation's types:
-`total` and `surjective` take the domain and the range from it, and the converse checks read two signatures. The
-engine reads a signature's shape and nothing else, so a type is what the program's rules make of it. The pattern
+**A declaration is data a rule reads.** A declaration stores `(relation R A B)`, so a rule can read a relation's labels:
+`total` and `surjective` take the domain and the range from it, and the converse checks read two declarations. The
+engine reads how many labels there are and nothing of what they mean, so a label is what the program's rules make of
+it ([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). The pattern
 `(relation ?R ?A ?B)` matches binary declarations only; `(relation ?R)` matches every declared relation.
 
 **The quantifiers are Ein too.** `forall` and `unknown` are macros of `std.macro`, declared in Ein:
@@ -257,7 +356,7 @@ engine reads a signature's shape and nothing else, so a type is what the program
 ## See also
 
 - [Theories](10-theory.md): a rule set as a whole, and how its rules interact.
-- [The stdlib reference](../04-reference/04-stdlib.md): every module, `std.bijection`, `std.slots` and the calculator
+- [The stdlib reference](../04-reference/04-stdlib/README.md): every module, `std.bijection`, `std.slots` and the calculator
   among them.
 - [Relations](02-relations.md): why a property is written beside a declaration and not inside it.
 - [Constraints](06-constraints.md): what a check's `(false)` does to a state.

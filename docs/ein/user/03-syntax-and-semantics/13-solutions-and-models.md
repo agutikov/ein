@@ -11,7 +11,34 @@ is what a solution adds to what the program said.
 
 ## In Ein
 
-Restrictions alone, two people and two chairs with no sharing ([hypotheses](09-hypotheses.md) has the program):
+Restrictions alone: two people and two chairs, with no sharing.
+
+```lisp
+;; Two people, two chairs: who sits where?
+(relation is-a T T          :why "{?1} is a {?2}")
+(relation seat Person Chair :why "{?1} sits on {?2}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a C1 Chair)   (is-a C2 Chair)
+
+(rule one-chair-each ()
+  :match  (and (seat ?p ?a) (seat ?p ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?p} cannot sit on both {?a} and {?b}")
+(rule one-person-a-chair ()
+  :match  (and (seat ?p ?c) (seat ?q ?c) (neq ?p ?q))
+  :assert (false)
+  :why    "{?p} and {?q} cannot share {?c}")
+
+(hrule guess ()
+  :match  (and (is-a ?p Person) (is-a ?c Chair))
+  :assert (seat ?p ?c)
+  :why    "suppose {?p} sits on {?c}")
+
+(query :goal (seat ?who ?chair) :over maximal)
+```
+
+`ein solve FILE` describes the answer:
 
 ```text
 solve · chairs.ein
@@ -29,6 +56,22 @@ solve · chairs.ein
   N                 4 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          4 candidates, 0 dead alone
+  …
+  (region
+    ;; state 1 of 7 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 7 — 1 candidate · from {(seat Ann C1)}
+    (model (seat Ann C1))
+    ;; state 3 of 7 — 1 candidate · from {(seat Ann C2)}
+    (model (seat Ann C2))
+    ;; state 4 of 7 — 1 candidate · from {(seat Bob C1)}
+    (model (seat Bob C1))
+    ;; state 5 of 7 — 1 candidate · from {(seat Bob C2)}
+    (model (seat Bob C2))
+    ;; state 6 of 7 — 2 candidates · maximal · from {(seat Ann C1), (seat Bob C2)}
+    (model (seat Ann C1) (seat Bob C2))
+    ;; state 7 of 7 — 2 candidates · maximal · from {(seat Ann C2), (seat Bob C1)}
+    (model (seat Ann C2) (seat Bob C1)))
 ```
 
 Seven of the sixteen commitments are solutions: nobody seated, each single seating, and the two full seatings. Adding
@@ -93,7 +136,9 @@ digraph region {
 ```
 
 With a run's dumps beside it, `--visited` and `--answer`, the drawing also shows what that run did: which nodes it
-visited and which states it reported ([rendering](../04-reference/12-rendering.md)).
+visited and which states it reported ([rendering](../04-reference/12-rendering.md)). The program's three rules, the
+hrule that proposes the four candidates and the two restrictions that make nine of the sixteen nodes red, are drawn
+on [hypotheses](09-hypotheses.md#as-a-graph).
 
 ## In words
 
@@ -107,25 +152,59 @@ the claim that names it, `(model …)`, so the answer reads back into the progra
 
 ## In mathematics
 
-```text
-root        = sat(program)
-H           = the candidates proposed at root;  n = |H|
-C ⊆ H       a commitment, a node of the lattice (2^H, ⊆)
-state(C)    = sat(root ∪ C)
-dead(C)     ⟺ (false) ∈ state(C)          alive(C) ⟺ ¬dead(C)
-owes(C)     = the obligation instances state(C) leaves unpaid;  discharged(C) ⟺ owes(C) = ∅
+Root is the program saturated, $H$ the candidates proposed at root, $n = |H|$, and a commitment a subset of $H$, a
+node of the lattice $(2^H, \subseteq)$ ([hypotheses](09-hypotheses.md)):
 
-R           = { C ⊆ H : alive(C) ∧ discharged(C) }
-k_c         = |R|                                    commitments
-k_s         = |{ state(C) : C ∈ R }|                 states
-min(R), max(R)                                       R's minimal and maximal members
-model(C)    = { f ∈ state(C) : f positive } \ { f ∈ program : f positive }
-```
+$$
+\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{state}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+$$
+
+A node is judged by its state:
+
+$$
+\operatorname{dead}(C) \iff \bot \in \operatorname{state}(C), \qquad \operatorname{alive}(C) \iff \lnot \operatorname{dead}(C), \qquad
+\operatorname{discharged}(C) \iff \operatorname{owes}(\operatorname{state}(C)) = 0
+$$
+
+with $\operatorname{owes}$ the count of obligation instances a state leaves unpaid ([obligations](08-obligations.md)).
+The answer is the set of nodes that are both:
+
+$$
+R = \lbrace C \subseteq H \mid \operatorname{alive}(C) \land \operatorname{discharged}(C) \rbrace
+$$
+
+It is counted two ways, in commitments and in states, and has two edges, its minimal and its maximal members:
+
+$$
+k_c = |R|, \qquad k_s = \bigl| \lbrace \operatorname{state}(C) \mid C \in R \rbrace \bigr|, \qquad \min(R), \quad \max(R)
+$$
+
+A model is what a solution's state adds to the program, positive facts only:
+
+$$
+\operatorname{model}(C) = \lbrace f \in \operatorname{state}(C) \mid f \text{ positive} \rbrace \setminus \lbrace f \in \mathrm{program} \mid f \text{ positive} \rbrace
+$$
+
+For the chairs program $n = 4$, the lattice has $2^4 = 16$ nodes, no obligation is stated so every node is
+discharged, and $R$ is the seven alive ones drawn above, with $k_c = k_s = 7$, $\min(R) = \lbrace \emptyset \rbrace$
+and $\max(R)$ the two full seatings.
 
 On a monotone program, one where adding a fact never takes a conclusion away or adds a debt, dead and discharged are
-both upward-closed: a dead commitment stays dead and a discharged one stays discharged as candidates are added. R then
-has no hole, and its two lines describe it: R = ⋃ [a … b] over a ∈ min(R), b ∈ max(R) with a ⊆ b. The full definition,
-stated for a second implementation, is [the solution semantics](../../reasoning/02-kb-evolution/06-solution-semantics.md).
+both upward-closed: a dead commitment stays dead and a discharged one stays discharged as candidates are added.
+
+$$
+C \subseteq C' \land \operatorname{dead}(C) \implies \operatorname{dead}(C'), \qquad
+C \subseteq C' \land \operatorname{discharged}(C) \implies \operatorname{discharged}(C')
+$$
+
+$R$ then has no hole, and its two lines describe it, as the union of the intervals between them:
+
+$$
+R = \bigcup \lbrace [a, b] \mid a \in \min(R),\ b \in \max(R),\ a \subseteq b \rbrace, \qquad [a, b] = \lbrace C \mid a \subseteq C \subseteq b \rbrace
+$$
+
+The full definition, stated for a second implementation, is
+[the solution semantics](../../reasoning/02-kb-evolution/06-solution-semantics.md).
 
 ## Context and problem
 
@@ -156,7 +235,7 @@ context**: the same clues in another context have another region.
 | **state class** | the commitments that reach one state. Where saturation derives a candidate, several commitments have one state; the smallest that reach it are its **minimal generators**, how few guesses the solution needs |
 | **minimal line** · **maximal line** | R's minimal and maximal members: the least that must be guessed, and the most that can be |
 | **component** | a part of R connected by one-candidate steps inside R. A set of solutions, never one |
-| **sub-cube** | every commitment between two members `a ⊆ b`; R is the union of its largest ones, and the read-out gives their dimension, the number of free facts |
+| **sub-cube** | every commitment between two members, one inside the other; R is the union of its largest ones, and the read-out gives their dimension, the number of free facts |
 | **N** | the minimal dead sets: the smallest commitments whose state is dead |
 | **exhausted** | what is printed is all of R; a run a budget stopped prints a part, and says so |
 | **model** | what a solution's state adds to the program: its positive facts not in the program as loaded |

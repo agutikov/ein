@@ -35,36 +35,38 @@ rules and declarations, the comments left out:
 ```
 
 It declares zero, a **flag**, a rule that refutes any state holding the flag, and a **closing rule**, `arith`, which
-says what the theory never guesses and names its rules. `std.math.decimal-arith`, decimal school arithmetic, is built
-on it, and a program asks it a question by stating a **request**:
+says what the theory never guesses and names its rules. Nothing in it derives the flag: that is left to the theories
+built on it, which know what a division is. `std.math.decimal-arith`, decimal school arithmetic, is one, and a
+program that asks it to divide seven by zero meets both theories at once:
 
 ```lisp
-(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal-arith :symbols (div))
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(add (n (n z 4) 2) (n z 7))
+(div (n z 7) z)
 
-(query :goal (sum-of (n (n z 4) 2) (n z 7) ?s) :goal-text "42 + 7 is {?s}")
+(solve :expect (false))
 ```
 
 ```text
-  universe          no candidate: R is {∅} or empty, decided by root alone
-  …
-  query             (sum-of (n (n z 4) 2) (n z 7) ?s)
-  over              all of R — 1 state → 1 projection class
-    class 1 of 1    1 state (1)
-                      ?s = (n (n z 4) 9)
-                        “42 + 7 is (n (n z 4) 9)”
+  unsat core        (div (n z 7) z)
+  refuted by        std.math.arith.division-by-zero-is-false
+
+  (false)
+
+  (solve :expect)   holds
 ```
 
 The import brings `std.math.decimal-arith` whole, with `std.math.decimal`, `std.math.arith`, the digit tables and the
-rules both bases share. Nothing in the engine knows what `7` is: the sum is derived by rules over tables of digit
-names, and the `universe` row says the theory left nothing to guess.
+rules both bases share. Nothing in the engine knows what `7` or zero is: a rule of the shared layer concludes the
+flag from the division's own facts, and `std.math.arith`'s rule concludes `(false)` from the flag.
 
 ## As a graph
 
-`ein render rules FILE` draws each rule of a theory in its two panels; on `std.math.arith`, the refutation:
+`ein render rules STDLIB/math/arith.ein` draws the module's two rules, with `STDLIB` a standard library on disk, the
+directory `ein --version` names ([install](../01-install.md)). The refutation matches the flag, of any request, and
+asserts `(false)`:
 
 ```dot
 digraph rule_division_by_zero_is_false_lhs_rhs {
@@ -81,9 +83,57 @@ digraph rule_division_by_zero_is_false_lhs_rhs {
 }
 ```
 
-What makes the rules a theory is how they connect: one rule's conclusion is another's premise. That is a graph of
-rules and relations, which no `ein render` view draws as a whole; drawn by hand for the division above, a relation a
-box and a rule a hexagon, the shapes of [objects](01-objects.md):
+and the closing rule matches nothing, the `#empty` octagon, and asserts three facts about the module's own names:
+
+```dot
+digraph rule_arith_lhs_rhs {
+  rankdir=TB;
+  label="arith"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "division-by-zero_R" [label="division-by-zero", shape=rectangle];
+    "arith-module-rule_R" [label="arith-module-rule", shape=rectangle];
+    "division-by-zero-is-false_R" [label="division-by-zero-is-false", shape=rectangle];
+    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h2___closed___R" -> "division-by-zero_R" [label="1", color="#e377c2", style=dashed];
+    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
+    "h3___closed___R" -> "arith-module-rule_R" [label="1", color="#e377c2", style=dashed];
+    "h4_arith-module-rule_R" [shape=octagon, label="arith-module-rule", color="#d62728", fontcolor="#d62728"];
+    "h4_arith-module-rule_R" -> "division-by-zero-is-false_R" [label="1", color="#d62728", style=dashed];
+  }
+}
+```
+
+What makes the rules a theory is how they connect: one rule's conclusion is another's premise. `ein solve FILE
+--trace OUT.md` draws each firing, and two consecutive drawings of the division by zero share a node, the flag,
+concluded by a rule of one module and read by a rule of another:
+
+```dot
+digraph step12 {
+  rankdir=LR;
+  "f_9934285045" [label="std.math.decimal-arith.done(std.math.decimal-arith.div-m1(std.math.decimal-arith.quotient(n(z, 7), z), n(z, 7), z), z)", shape=box, style=rounded];
+  "f_eab79754f0" [label="std.math.arith.division-by-zero(div(n(z, 7), z))", shape=box, style=rounded, penwidth=2];
+  "fire0_std.math.positional.div-by-zero" [shape=box, style="rounded,bold", color="#2ca02c", fontcolor="#2ca02c", label="std.math.positional.div-by-zero\nthe divisor of (n z 7) divided by z is zero"];
+  "f_9934285045" -> "fire0_std.math.positional.div-by-zero" [color="#2ca02c"];
+  "fire0_std.math.positional.div-by-zero" -> "f_eab79754f0" [color="#2ca02c", style=bold];
+}
+```
+
+```dot
+digraph step13 {
+  rankdir=LR;
+  "f_eab79754f0" [label="std.math.arith.division-by-zero(div(n(z, 7), z))", shape=box, style=rounded];
+  "f_a1f94f5b63" [label="false", shape=box, style=rounded, penwidth=2];
+  "fire0_std.math.arith.division-by-zero-is-false" [shape=box, style="rounded,bold", color="#bcbd22", fontcolor="#bcbd22", label="std.math.arith.division-by-zero-is-false\n(div (n z 7) z) divides by zero: no number is the answer"];
+  "f_eab79754f0" -> "fire0_std.math.arith.division-by-zero-is-false" [color="#bcbd22"];
+  "fire0_std.math.arith.division-by-zero-is-false" -> "f_a1f94f5b63" [color="#bcbd22", style=bold];
+}
+```
+
+The same connection, over relations and rules and not over one run's facts, is a graph no `ein render` view draws
+as a whole. Drawn by hand for the division above, a relation a box and a rule a hexagon:
 
 ```dot
 digraph theory_dependencies {
@@ -108,8 +158,7 @@ where what a theory concludes may depend on the order its rules are admitted in 
 
 ## In words
 
-A theory explains itself through its rules' reasons, chained. The trace of a program that divides seven by zero, the
-two steps that refute it (`ein solve FILE --trace OUT.md`):
+A theory explains itself through its rules' reasons, chained. The two steps drawn above, as the trace writes them:
 
 ```text
 ### Step 12 — `std.math.positional.div-by-zero`
@@ -134,19 +183,34 @@ died. A rule the program does not list in an import prints by its full name.
 
 ## In mathematics
 
-A theory is a pair `T = (P, F)` of rules and facts over a set of relations. Its meaning on a state `S` is the
-fixpoint `Cl_T(S)`, the least set containing `S ∪ F` and closed under `P` ([rules](05-rules.md)). Two theories over
-shared relations compose by union, and their consequences interact:
+A theory is a pair $T = (P, F)$ of rules and facts over a set of relations. Its meaning on a state $S$ is the
+fixpoint $\operatorname{Cl}_T(S)$, the least set containing $S \cup F$ and closed under $P$ ([rules](05-rules.md)).
+`std.math.arith` is the theory whose rules are one implication and one axiom:
 
-```text
-Cl_{T₁ ∪ T₂}(S) ⊇ Cl_{T₁}(S) ∪ Cl_{T₂}(S)
-```
+$$
+\text{division-by-zero}(q) \implies \bot, \qquad
+\top \implies \operatorname{closed}(\text{division-by-zero}) \land \operatorname{closed}(\text{arith-module-rule}) \land \text{arith-module-rule}(\text{division-by-zero-is-false})
+$$
 
-in general strictly, since a rule of `T₂` may read what only `T₁` concludes. Writing `Alive(T)` for the states `S`
-with `Cl_T(S)` not dead ([constraints](06-constraints.md)), adding a rule or a fact to a theory without `absent` can only
-shrink `Alive`: a derivation rule makes `Cl` larger, a refutation rule makes more of it dead. A theory computes a
-function `f` by requests: for a request `q(ā)` in `S`, `q-of(ā, b̄) ∈ Cl_T(S)` exactly when `b̄ = f(ā)`, and for no
-request no result.
+Two theories over shared relations compose by union, and their consequences interact:
+
+$$
+\operatorname{Cl}_{T_1 \cup T_2}(S) \supseteq \operatorname{Cl}_{T_1}(S) \cup \operatorname{Cl}_{T_2}(S)
+$$
+
+in general strictly, since a rule of $T_2$ may read what only $T_1$ concludes. The division by zero is the strict
+case: with $S$ the one request, $\bot$ is in the closure under both theories and in the closure under neither
+alone, since the theory of division concludes the flag and `std.math.arith` reads it. Writing
+$\operatorname{Alive}(T)$ for the states $S$ with $\operatorname{Cl}_T(S)$ not dead
+([constraints](06-constraints.md)), adding a rule or a fact to a theory without `absent` can only shrink it:
+
+$$
+T \subseteq T' \implies \operatorname{Alive}(T') \subseteq \operatorname{Alive}(T)
+$$
+
+a derivation rule makes the closure larger, a refutation rule makes more of it dead. A theory computes a function
+$f$ by requests: for a request $q(\bar{a})$ in $S$, the result $q\text{-of}(\bar{a}, \bar{b})$ is in
+$\operatorname{Cl}_T(S)$ exactly when $\bar{b} = f(\bar{a})$, and for no request there is no result.
 
 ## A theory is a module, imported whole
 
@@ -237,6 +301,29 @@ program may match it ([Q-M1f.363](../../../decisions/stdlib/math/Q-M1f.363-a-cal
 The same sum written twice is one request; written with other numerals for the same values, it is another request
 with its own answer.
 
+```lisp
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(add (n (n z 4) 2) (n z 7))
+
+(query :goal (sum-of (n (n z 4) 2) (n z 7) ?s) :goal-text "42 + 7 is {?s}")
+```
+
+```text
+  universe          no candidate: R is {∅} or empty, decided by root alone
+  …
+  query             (sum-of (n (n z 4) 2) (n z 7) ?s)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?s = (n (n z 4) 9)
+                        “42 + 7 is (n (n z 4) 9)”
+```
+
+The sum is derived by rules over tables of digit names, and the `universe` row says the theory left nothing to
+guess.
+
 **A theory over a theory.** `std.math.int` computes with integers by asking `std.math.decimal-arith` for the natural
 numbers' parts, and `std.math.rat` asks both. Inside, a theory calls the one below it with a **tag**, a fact that
 names the caller, and gets the answer back under it, `(div-call TAG X Y)` answered by `(div-done TAG Q R)`, so the
@@ -247,7 +334,8 @@ rule that reads it has one premise and no join on a number. The tagged calls are
 every relation they use a parameter, and a base connects to them by one call of the module's macro inside its closing
 rule: the expansion is one activator fact per shared rule, naming the base's own relations
 ([Q-M1f.266](../../../decisions/stdlib/math/Q-M1f.266-a-base-is-connected-to-the-shared-rules-by-one.md)). The
-trace above shows those activators among what `decimal-arith` concludes, `std.math.positional.add-column(…)`.
+trace of the division above shows those activators among what `decimal-arith` concludes,
+`std.math.positional.add-column(…)`.
 
 ## Two theories over one relation
 
@@ -264,8 +352,8 @@ one declaration in a file ([Q-M1f.234](../../../decisions/imports/Q-M1f.234-one-
 'domain-elimination' is bound to two full names in the program, std.bijection.domain-elimination and std.elim.domain-elimination — one short name names one declaration in a file: list it from one module, or write the other by its full name
 ```
 
-Those two modules are two theories of the same idea, elimination by exhaustion, one reading types from a relation's
-signature and one taking them as parameters; a program uses one of them for a given relation.
+Those two modules are two theories of the same idea, elimination by exhaustion, one reading the two sides from a
+relation's declaration and one taking them as parameters; a program uses one of them for a given relation.
 
 ## A theory that disagrees is another module
 
@@ -273,7 +361,7 @@ Nothing a theory says is built into the engine: Ein has no numbers, no types and
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)). Division by zero is a
 contradiction because `std.math.arith` says so; a theory in which it is allowed, a wheel or a meadow, would be a module
 that does not import `std.math.arith`. The standard library's theories are the ones the language ships, not the only
-ones it admits: [the stdlib reference](../04-reference/04-stdlib.md) lists them.
+ones it admits: [the stdlib reference](../04-reference/04-stdlib/README.md) lists them.
 
 ## What a theory cannot say
 
@@ -289,5 +377,5 @@ answer as a whole is stated beside the theory, as a query's `:expect`, and check
   theory is made of.
 - [Properties and operators](07-properties-and-operators.md): `std.algebra`, a theory of relations.
 - [Macros and imports](11-macros.md): how a theory is brought into a program, and its names.
-- [The stdlib reference](../04-reference/04-stdlib.md): every theory the standard library ships.
+- [The stdlib reference](../04-reference/04-stdlib/README.md): every theory the standard library ships.
 - [Hypotheses](09-hypotheses.md): what the engine guesses where a theory leaves a relation open.

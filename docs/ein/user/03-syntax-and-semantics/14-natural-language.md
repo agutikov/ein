@@ -5,7 +5,7 @@ prints can be read as English from those texts. The engine invents no prose: a s
 wrote, filled in, and where a program wrote none, a fact reads as its s-expression, which is true. This page is what
 a program writes, what the engine prints from it and where, and whose words are whose.
 
-## In Ein
+## What a program writes
 
 ```lisp
 (relation knows Person Person :why "{?1} knows {?2}")
@@ -27,28 +27,12 @@ answer. A string is natural-language text, any Unicode, with the escapes `\n \t 
 after `:why`, `:source` and `:goal-text`: it is never a value
 ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)).
 
-## As a graph
+The three keywords are the built-in connection between a form and its English, and that is all they are: a text
+is no node of the knowledge base, no rule reads one, and none has a drawing or a formula of its own
+([Q-M1f.371](../../../decisions/docs/Q-M1f.371-a-core-notion-is-shown-four-ways-in-the-users.md)). What a relation, a
+rule or a fact *is* is drawn and defined on its own page; this page is how each reads.
 
-The views carry the program's texts where they draw what the texts are about. `ein render kb FILE` labels a given
-fact's arrow with its source and a derived one with its rule:
-
-```dot
-digraph kb {
-  rankdir=BT;
-  "Alice" -> "Bob" [label="knows Alice says she knows Bob", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Alice" [label="knows by knows-back", color="#17becf", fontcolor="#17becf", style=dashed];
-}
-```
-
-and `ein render program FILE` draws a query as a note holding its goal and its `:goal-text`:
-
-```dot
-digraph query {
-  "query" [shape=note, label=":goal (knows ?x Alice)\n:goal-text \"{?x} knows Alice\""];
-}
-```
-
-## In words
+## What the engine prints
 
 The same program, as `ein solve FILE` prints its query's answer, each row of the projection with its `:goal-text`:
 
@@ -80,25 +64,13 @@ Premises: `knows(Alice, Bob)` — from Alice says she knows Bob
 Derives `knows(Bob, Alice)` — Bob knows Alice
 ```
 
-## In mathematics
+The views carry the texts where they draw what the texts are about: `ein render kb FILE` labels a given fact's
+arrow with its source, *knows Alice says she knows Bob*, and a derived one with its rule, *knows by knows-back*;
+`ein render program FILE` draws a query as a note holding its goal and its `:goal-text`; and the trace's drawing of
+a firing writes the rule's reason in the rule's box ([facts](03-facts.md), [rules](05-rules.md)).
 
-A template `t` is a string with references `{?v}`. For a binding `σ` of variables to values,
-
-```text
-render(t, σ) = t with each {?v} that σ binds replaced by σ(?v), printed as written;
-               a reference σ does not bind is left as it is
-```
-
-A relation `r` with template `t_r` gives each fact its **statement**, `stmt(r(v₁, …, vₙ)) = render(t_r, {?i ↦ vᵢ})`.
-A fact's **reason** is read off its first recorded justification `j`:
-
-```text
-reason(f) = the quoted :source             if j is a statement with a source
-            render(t_ρ, σ_j)               if j is a firing of rule ρ with bindings σ_j
-            none                           otherwise
-```
-
-and a fact with no statement and no reason reads as its s-expression.
+A template is filled by replacing each reference `{?v}` that the form can bind with the value bound, printed as
+written; a reference it cannot bind is left as it is.
 
 ## 1. The four texts
 
@@ -223,7 +195,7 @@ part of a vocabulary for the domain.
 ## 7. What is checked
 
 - Every `{?ref}` in a `:why` of the standard library, and of every program the project ships as an example or a
-  test, names something its form can fill: a relation's, a position within its signature; a rule's or an hrule's, a
+  test, names something its form can fill: a relation's, a position its declaration has; a rule's or an hrule's, a
   variable it binds (a parameter, or a positive premise's, macros expanded); a macro's, a parameter. None writes
   `{x}`, a reference with its `?` missing.
 - No line of a dump's `answer.txt`, of a state file's facts, or of a trace carries an unfilled `{?`, over every

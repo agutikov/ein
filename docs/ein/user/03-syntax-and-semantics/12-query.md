@@ -80,17 +80,44 @@ ok           claims.ein
 
 ## As a graph
 
-`ein render program FILE` draws `(solve …)` and each `(query …)` as a note holding its keywords, one digraph each,
-beside the rules, the ontology and the facts:
+What a query asks about is a part of R, and R is a set of nodes of the lattice. `ein oracle FILE --dump DIR`
+classifies every node, and `ein render region DIR --view lines` draws root and R's two lines, a dashed edge for the
+candidates between them (the tooltips and the legend left out):
+
+```dot
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · claims.ein\nn = 4 · |R| = 7 of 16 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m6 [label="(seat Ann C2)\n(seat Bob C1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m9 [label="(seat Ann C1)\n(seat Bob C2)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m0 -> m6 [color="#969696", style=dashed, label="+2", fontsize=8, fontcolor="#636363"];
+  m0 -> m9 [color="#969696", style=dashed, label="+2", fontsize=8, fontcolor="#636363"];
+}
+```
+
+The query above is asked `:over maximal`, of the two heavy-bordered nodes, and each gives one class: the goal `(seat
+?who C1)` sees `Bob` in the one that seats Bob on `C1` and `Ann` in the other. Asked `:over minimal` it would be
+asked of `∅`, where the goal has no row. The region claim is about all seven green nodes, which the whole drawing
+shows
+([solutions and models](13-solutions-and-models.md#as-a-graph)).
+
+`ein render program FILE` draws the two forms themselves, each a note holding its keywords, one digraph each, beside
+the rules, the ontology and the facts (the program's hrule and its two restrictions are drawn on
+[hypotheses](09-hypotheses.md#as-a-graph)):
+
+```dot
+digraph solve {
+  "solve" [shape=note, label=":expect (region (model) (model (seat Ann C1)) (model (seat Ann C2)) (model (seat Bob C1)) (model (seat Bob C2)) (model (seat Ann C1) (seat Bob C2)) (model (seat Ann C2) (seat Bob C1)))"];
+}
+```
 
 ```dot
 digraph query {
   "query" [shape=note, label=":goal (seat ?who C1)\n:goal-text \"{?who} sits on the first chair\"\n:over maximal\n:expect (or (model (seat Ann C1)) (model (seat Bob C1)))"];
 }
 ```
-
-R itself is drawn by `ein render region`, a Hasse diagram of the lattice with R's nodes filled green
-([solutions and models](13-solutions-and-models.md)).
 
 ## In words
 
@@ -101,27 +128,52 @@ region is itself a claim, so a run's answer reads back as its own expectation.
 
 ## In mathematics
 
-A query's goal `g` has atoms `a₁ … aₘ`. In a state `S` its **projection** is every atom instantiated under every
-binding that satisfies the whole goal; the query's classes are the projections over the part `P` of R it asks about:
+A query's goal $g$ has atoms $a_1, \dots, a_m$, and asks about a part $P$ of R: all of it, its minimal members or
+its maximal ones, by `:over all`, `minimal` or `maximal`.
 
-```text
-P              = R | min(R) | max(R)                      :over all | minimal | maximal
-π_g(S)         = { aᵢθ : θ a binding under which g holds in S }
-classes(g, P)  = { π_g(S) : S ∈ P }                       deduplicated; π_g(S) = ∅ is the class (model)
+$$
+P \in \lbrace R,\ \min(R),\ \max(R) \rbrace
+$$
 
-(query :goal g :over P :expect (or M₁ … Mₖ))   holds  ⟺  { M₁, …, Mₖ } = classes(g, P)
-(query … :expect (false))                      holds  ⟺  classes(g, P) = ∅
-```
+In a state $S$ the goal's **projection** is every atom instantiated under every binding that satisfies the whole
+goal, and the query's classes are the projections over $P$, each once:
 
-A region claim lists models `M₁ … Mₖ`; let `N` be the relations it names, positively, anywhere:
+$$
+\pi_g(S) = \lbrace a_i\theta \mid 1 \le i \le m,\ \theta \text{ a binding under which } g \text{ holds in } S \rbrace, \qquad
+\operatorname{classes}(g, P) = \lbrace \pi_g(S) \mid S \in P \rbrace
+$$
 
-```text
-(solve :expect (region M₁ … Mₖ))  holds  ⟺  there is a one-to-one β : states(R) → { M₁ … Mₖ } with, for every S,
-        { f ∈ S : rel(f) ∈ N, f positive }  =  { f ∈ β(S) : f positive }
-        and every (not f) that β(S) lists is in S
-(solve :expect (false))           holds  ⟺  every node is dead
-(solve :expect (region))          holds  ⟺  R = ∅
-```
+A state where the goal has no binding gives $\pi_g(S) = \emptyset$, the class a claim writes `(model)`. For the
+query above,
+
+$$
+\operatorname{classes}\bigl(\operatorname{seat}(w, \mathsf{C1}),\ \max(R)\bigr) = \bigl\lbrace \lbrace \operatorname{seat}(\mathsf{Ann}, \mathsf{C1}) \rbrace,\ \lbrace \operatorname{seat}(\mathsf{Bob}, \mathsf{C1}) \rbrace \bigr\rbrace
+$$
+
+A query's claim lists classes $M_1, \dots, M_k$, and holds when they are the classes; its `(false)` holds when
+there is none:
+
+$$
+\operatorname{holds}\bigl(\text{:expect } (\text{or } M_1 \dots M_k)\bigr) \iff \lbrace M_1, \dots, M_k \rbrace = \operatorname{classes}(g, P), \qquad
+\operatorname{holds}\bigl(\text{:expect } (\text{false})\bigr) \iff \operatorname{classes}(g, P) = \emptyset
+$$
+
+A region claim lists models $M_1, \dots, M_k$. Let $N$ be the relations it names, positively, anywhere. It holds
+when the models are R's states one to one: there is a bijection
+$\beta : \operatorname{states}(R) \to \lbrace M_1, \dots, M_k \rbrace$ such that, for every state $S$,
+
+$$
+\lbrace f \in S \mid \operatorname{rel}(f) \in N,\ f \text{ positive} \rbrace = \lbrace f \in \beta(S) \mid f \text{ positive} \rbrace
+\quad \text{and} \quad
+\lnot f \in \beta(S) \implies \lnot f \in S
+$$
+
+and the two claims of an empty answer are
+
+$$
+\operatorname{holds}\bigl((\text{region})\bigr) \iff R = \emptyset, \qquad
+\operatorname{holds}\bigl((\text{false})\bigr) \iff \text{every node is dead}
+$$
 
 ## `(solve …)`: the lattice, stated once
 
@@ -191,15 +243,18 @@ relation and check nothing. `model` is not reserved.
 
 ### The region claim
 
-```text
-<claim> ::= (region <item>*)              ; R, by its nodes
-          | (false)                       ; every node dead
-<item>  ::= (model <fact>*)               ; one state of R
-          | (merged <to> <from>)          ; a state several commitments reach
-          | (owing (model <fact>*) …)     ; R empty, and these alive nodes owe
-<to>    ::= (model <fact>*)               ; one of the states listed
-<from>  ::= (model <fact>*)               ; its one minimal commitment
-          | (or (model <fact>*) …)        ; …or its several
+```plantuml
+@startebnf
+claim = "(region", {item}, ")" (* R, by its nodes *)
+      | "(false)" (* every node dead *);
+item  = model (* one state of R *)
+      | "(merged", to, from, ")" (* a state several commitments reach *)
+      | "(owing", model, {model}, ")" (* R empty, and these alive nodes owe *);
+to    = model (* one of the states listed *);
+from  = model (* its one minimal commitment *)
+      | "(or", model, {model}, ")" (* or its several *);
+model = "(model", {fact}, ")";
+@endebnf
 ```
 
 How a region claim reads:
@@ -366,7 +421,7 @@ Its region claim would list the state's twenty-five `*-loc` facts; with no `(mer
   the mini zebra. A claim cannot leave them out, since naming a relation closes it.
 - **A derived mirror is listed beside its candidate**: `(co-located Bob Coffee)` and `(co-located Coffee Bob)`.
 - **`<to>` repeats a listed state in full**, so each `(merged …)` reads on its own.
-- **A goal's type atoms are part of its class**: `(is-a Dog Pet)` is in the mini zebra's answer because the goal
+- **A goal's membership atoms are part of its class**: `(is-a Dog Pet)` is in the mini zebra's answer because the goal
   names `(is-a ?p Pet)`.
 - **`:over all` and `:over maximal` can give the same classes from different states**: seven states and three, two
   classes each, on `01_states.ein`'s program.
@@ -412,7 +467,7 @@ shapes and never chosen by an option
 | the file's claims | the question | what its answer decides |
 |---|---|---|
 | queries' claims, all over one part of R, none listing more than one class | `--single` over that part | one state or none decides every claim; with two, a claim is refuted where one of them gives a class it does not list |
-| queries' claims over one part, the most classes one lists being k ≥ 2 | `-n k+1` over that part | fewer than k + 1 states decide every claim; with k + 1, a claim is refuted where one gives a class it does not list |
+| queries' claims over one part, the most classes one lists being k, two or more | `-n k+1` over that part | fewer than k + 1 states decide every claim; with k + 1, a claim is refuted where one gives a class it does not list |
 | a `(solve … :expect …)`, alone or beside queries' claims | describe, a bare `ein solve` | every claim, when R is exhausted |
 | queries' claims over more than one part | describe | every claim, when R is exhausted |
 

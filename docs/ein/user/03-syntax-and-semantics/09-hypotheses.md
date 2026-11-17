@@ -65,8 +65,74 @@ An hrule with parameters is activated by the activators `(solve :hrules …)` li
 
 ## As a graph
 
-`ein render h-space FILE --view exclusion` draws H as an undirected graph: a candidate a node, and an edge between two
-that exclude each other, solid where the theory alone excludes them. For the chairs program:
+An hrule is drawn as a rule is, `ein render rule --name guess FILE`: what it matches at root, and the fact each
+match proposes, dashed.
+
+```dot
+digraph rule_guess_lhs_rhs {
+  rankdir=TB;
+  label="guess"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "Person_L" [label="Person", shape=rectangle];
+    "?c_L" [label="?c", shape=diamond];
+    "Chair_L" [label="Chair", shape=rectangle];
+    "?p_L" -> "Person_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "?c_L" -> "Chair_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?p_R" [label="?p", shape=diamond];
+    "?c_R" [label="?c", shape=diamond];
+    "?p_R" -> "?c_R" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+  }
+}
+```
+
+The drawing is the same as a rule's, and the difference is in what the dashed arrow means: a rule's is added to
+the state the rule fires in, an hrule's is a candidate, added in the states that commit to it and in no other.
+
+The program's two restrictions are what the guesses are judged by ([constraints](06-constraints.md)). Each is a
+picture of what a state may not hold, two `seat` arrows out of one person or into one chair, with `(false)` on the
+other side:
+
+```dot
+digraph rule_one_chair_each_lhs_rhs {
+  rankdir=TB;
+  label="one-chair-each"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?p_L" -> "?a_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?p_L" -> "?b_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}
+```
+
+```dot
+digraph rule_one_person_a_chair_lhs_rhs {
+  rankdir=TB;
+  label="one-person-a-chair"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
+    "?p_L" -> "?c_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?q_L" -> "?c_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?p_L" -> "?q_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+}
+```
+
+`ein render h-space FILE --view exclusion` draws H itself as an undirected graph: a candidate a node, and an edge
+between two that exclude each other, solid where the theory alone excludes them. For the chairs program:
 
 ```dot
 graph exclusion {
@@ -84,7 +150,9 @@ graph exclusion {
 ```
 
 The other views draw the groups H falls into (*pick at most one*, *exactly one*) and what couples them; what each
-structure means is [the hypothesis space](../../reasoning/02-kb-evolution/05-hypothesis-space.md).
+structure means is [the hypothesis space](../../reasoning/02-kb-evolution/05-hypothesis-space.md). The lattice of
+commitments over these four candidates, each node coloured by what its state is, is drawn on
+[solutions and models](13-solutions-and-models.md#as-a-graph).
 
 ## In words
 
@@ -94,27 +162,44 @@ its relation's `:why`: *Ann sits on C1*. The read-out names the candidates of a 
 
 ## In mathematics
 
-```text
-root          = sat(program)                      the program's facts, saturated
-H             = the candidates proposed at root   facts root does not hold
-C ⊆ H         a commitment;  the lattice is (2^H, ⊆), n = |H|, 2^n nodes
-state(C)      = sat(root ∪ C)
-```
+Write $\operatorname{sat}$ for saturation, the fixpoint of a set of facts under the program's rules
+([rules](05-rules.md)). Root is the program saturated, $H$ the candidates proposed at root, none of which root
+holds, and a commitment any subset of $H$:
 
-H is built by the first rung of the ladder that applies, and narrowed by the program's scoping:
+$$
+\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{state}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+$$
 
-```text
-H = scope( hrules(root)        if the program declares an hrule
-         | payments(root)      else, if an obligation is activated at root and its domain cannot grow
-         | blind(root) )       else
+A hypothesis adds one fact to what the rules start from, and everything the rules then derive. The commitments
+ordered by inclusion are the lattice $(2^H, \subseteq)$, with $2^n$ nodes for $n = |H|$. The hrule above proposes
 
-blind(root) = { r(x)   : r of one argument,  x ∈ O, r(x) ∉ root }
-            ∪ { r(x,y) : r of two arguments, x, y ∈ O, x ≠ y, r(x,y) ∉ root }
-scope(S)    = { f ∈ S : rel(f) ∈ HR (if listed), rel(f) ∉ NH, rel(f) not closed }   (rungs 2 and 3 only)
-```
+$$
+H = \lbrace \operatorname{seat}(p, c) \mid \text{is-a}(p, \mathsf{Person}) \in \mathrm{root},\ \text{is-a}(c, \mathsf{Chair}) \in \mathrm{root} \rbrace
+$$
 
-`O` is the objects: the program's names, less the names its relation signatures declare as types, the kernel's own
-words and the names of relations and rules ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
+which is the four facts `ein show hyps` lists. In general $H$ is built by the first rung of the ladder that
+applies, and narrowed by the program's scoping:
+
+$$
+H = \operatorname{scope}(G), \qquad G = \begin{cases}
+\operatorname{hrules}(\mathrm{root}) & \text{if the program declares an hrule} \\
+\operatorname{payments}(\mathrm{root}) & \text{else, if an obligation is activated at root and its domain cannot grow} \\
+\operatorname{blind}(\mathrm{root}) & \text{else}
+\end{cases}
+$$
+
+$$
+\operatorname{blind}(\mathrm{root}) = \lbrace r(x) \mid r \text{ of one argument},\ x \in O,\ r(x) \notin \mathrm{root} \rbrace \cup \lbrace r(x, y) \mid r \text{ of two arguments},\ x, y \in O,\ x \ne y,\ r(x, y) \notin \mathrm{root} \rbrace
+$$
+
+$$
+\operatorname{scope}(S) = \lbrace f \in S \mid \operatorname{rel}(f) \in \mathit{HR} \text{ (if listed)},\ \operatorname{rel}(f) \notin \mathit{NH},\ \operatorname{rel}(f) \text{ not closed} \rbrace
+$$
+
+with $r$ ranging over the declared relations and $\operatorname{scope}$ applied on the second and third rungs
+only. $O$ is the objects: the program's names, less the names a declaration writes as a label, the kernel's own
+words and the names of relations and rules
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
 Candidates are proposed at a fixpoint, after saturation, never in the middle of it
 ([Q19](../../../decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)).
 
@@ -124,7 +209,7 @@ Candidates are proposed at a fixpoint, after saturation, never in the middle of 
 |---|---|---|
 | **hrules** | the program declares an `hrule` | each active hrule's conclusion, once per match at root. The other two rungs never run |
 | **obligations** | no hrule, and an obligation is activated at root | the facts that would pay what root owes, and what a commitment can bring it to owe; a root that owes nothing proposes nothing ([obligations](08-obligations.md)) |
-| **blind** | neither, or the obligations rung declines | every fact of a relation of one or two arguments over the program's objects, untyped |
+| **blind** | neither, or the obligations rung declines | every fact of a declared relation of one or two arguments over the program's objects, whatever the labels |
 
 The ladder is decided once, at root
 ([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)), and the
@@ -155,9 +240,11 @@ obligation rules, and they decide nothing until a fact activates one.
 
 ### The blind enumerator
 
-With no hrule and no activated obligation, the engine proposes every fact of every relation of one or two arguments
-the program has, over every object, a pair of two different objects for a relation of two. It is **untyped**: the
-signature `(relation seat Person Chair)` does not keep `(seat C1 Ann)` out. Dropping the hrule from the chairs program
+With no hrule and no activated obligation, the engine proposes every fact of every declared relation of one or two
+arguments, over every object, a pair of two different objects for a relation of two. It reads **no label**: the
+declaration `(relation seat Person Chair)` does not keep `(seat C1 Ann)` out. What a label does is leave the
+enumerator's objects: `Person`, `Chair` and `T` are written as labels, so no candidate is about them, and the objects
+are the four names left ([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). Dropping the hrule from the chairs program
 gives 24 candidates, `is-a` and `seat` facts over every pair of the four names; `(solve :hypothesis-relations (seat))`
 brings it to the twelve `seat` facts. A relation of three arguments or more is not enumerated.
 
@@ -225,10 +312,11 @@ derives. The read-out names such a relation under `universe`, where a rule concl
 the program has not scoped it out itself: an `outside` row, *gives — no candidate: it has arity 3, and the blind
 enumerator proposes arity 1 and 2 only*
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). Two more rows
-name what the untyped blind enumerator did: a `types` row where a candidate names a type as an object
+name what the blind enumerator did: a row the read-out calls `types`, where a candidate is about a name that is the
+second argument of an `is-a` fact
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)), and a
 `relation names` row where a candidate names a relation only a rule concludes. None of the three changes R; a
-signature or a declaration that names the type or the relation takes it out of H.
+declaration that writes the name as a label, or that declares the relation, takes it out of H.
 
 ## Seeing H
 

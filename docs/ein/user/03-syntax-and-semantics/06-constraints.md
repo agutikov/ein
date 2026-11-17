@@ -46,13 +46,14 @@ at root, so no state may hold `(in Cat B2)`: `ein show hyps FILE` lists two cand
     (model (in Cat B1) (in Dog B1)))
 ```
 
-The answer has two states. The third candidate, `(in Dog B2)`, is dead: `--trace` lists it among the minimal dead
+The answer has two states. The other candidate, `(in Dog B2)`, is dead: `--trace` lists it among the minimal dead
 sets, with the facts its death rests on and the rule that refuted it.
 
 ## As a graph
 
-`ein render rule --name cat-not-in-b2 FILE` draws a stored negation red, its label prefixed `¬`, and
-`ein render rule --name one-box-per-pet FILE` draws `(false)` as an octagon in the conclusion's panel:
+A constraint is a rule, and is drawn as one ([rules](05-rules.md)): `ein render rules FILE`. The picture on the left
+of `one-box-per-pet` is what may not be found in a state, one pet with an arrow into each of two different boxes,
+and on its right is `(false)`, an octagon with no argument:
 
 ```dot
 digraph rule_one_box_per_pet_lhs_rhs {
@@ -72,6 +73,9 @@ digraph rule_one_box_per_pet_lhs_rhs {
 }
 ```
 
+A stored negation is drawn red, its label prefixed `¬`. The empty `:match` of `cat-not-in-b2` is the octagon
+`#empty`, the loader's name for it:
+
 ```dot
 digraph rule_cat_not_in_b2_lhs_rhs {
   rankdir=TB;
@@ -87,8 +91,54 @@ digraph rule_cat_not_in_b2_lhs_rhs {
 }
 ```
 
-The empty `:match` is drawn as the octagon `#empty`, the loader's name for it. `ein render kb FILE` leaves stored
-negations out: it draws what holds.
+The hrule the two constraints cut down is drawn the same way, its conclusion the guess:
+
+```dot
+digraph rule_guess_lhs_rhs {
+  rankdir=TB;
+  label="guess"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "Pet_L" [label="Pet", shape=rectangle];
+    "?b_L" [label="?b", shape=diamond];
+    "Box_L" [label="Box", shape=rectangle];
+    "?p_L" -> "Pet_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "?b_L" -> "Box_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?p_R" [label="?p", shape=diamond];
+    "?b_R" [label="?b", shape=diamond];
+    "?p_R" -> "?b_R" [label="in", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
+  }
+}
+```
+
+What the constraints do to the answer is a picture of the lattice. `ein oracle FILE --dump DIR` classifies every
+set of candidates, and `ein render region DIR` draws them, one layer per number of candidates, an edge per added
+candidate, green in R and red dead (the layer labels, the tooltips and the legend left out):
+
+```dot
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · boxes.ein\nn = 2 · |R| = 2 of 4 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m1 [label="(in Cat B1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m2 [label="(in Dog B2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m3 [label="(in Cat B1)\n(in Dog B2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  { rank=same; m0 }
+  { rank=same; m1; m2 }
+  { rank=same; m3 }
+  m0 -> m1 [color="#238b45", style=solid, penwidth=2];
+  m0 -> m2 [color="#cb181d", style=solid, penwidth=1.2];
+  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
+  m2 -> m3 [color="#bdbdbd", style=solid, penwidth=0.6];
+}
+```
+
+`(in Dog B2)` is dead alone, by `one-box-per-pet` against root's `(in Dog B1)`, and everything above it is dead
+with it. `(in Cat B2)` is no node at all: root holds its negation, so it was never a candidate. `ein render kb FILE`
+leaves stored negations out: it draws what holds.
 
 ## In words
 
@@ -121,17 +171,35 @@ which one may depend on the order rules fire in
 
 ## In mathematics
 
-Let `Cl(S)` be the fixpoint of a state `S` under the program's rules ([rules](05-rules.md)). `S` is **dead** when
+A constraint is an implication whose conclusion is falsity, or a negated atom. The two above:
 
-```text
-false ∈ Cl(S)    or    ∃ f : f ∈ Cl(S) ∧ ¬f ∈ Cl(S)
-```
+$$
+\operatorname{in}(p, b) \land \operatorname{in}(p, c) \land b \ne c \implies \bot
+$$
 
-and **alive** otherwise. On a program whose rules read no `absent` a hypothesis can change, `Cl` is monotone, so a
-state that contains a dead one is dead: constraints cut the answer from above, and the dead states are closed
-upward. A **core** of a dead state is a set of its terminal facts, statements of the problem and hypotheses, whose
-closure is already dead, as small as the recorded derivations allow; the smallest over every recorded derivation is
-the one reported ([Q-M1e2.11](../../../decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)).
+$$
+\top \implies \lnot \operatorname{in}(\mathsf{Cat}, \mathsf{B2})
+$$
+
+Let $\operatorname{Cl}(S)$ be the fixpoint of a state $S$ under the program's rules ([rules](05-rules.md)). $S$ is
+**dead** when its fixpoint holds the contradiction, or a fact beside its negation:
+
+$$
+\operatorname{dead}(S) \iff \bot \in \operatorname{Cl}(S) \ \lor\ \exists f.\ f \in \operatorname{Cl}(S) \land \lnot f \in \operatorname{Cl}(S)
+$$
+
+and **alive** otherwise. On a program whose rules read no `absent` a hypothesis can change, $\operatorname{Cl}$ is
+monotone, so a state that contains a dead one is dead:
+
+$$
+S \subseteq S' \land \operatorname{dead}(S) \implies \operatorname{dead}(S')
+$$
+
+Constraints cut the answer from above, and the dead states are closed upward, as the red nodes of the drawing are.
+A **core** of a dead state is a set of its terminal facts, statements of the problem and hypotheses, whose closure
+is already dead, as small as the recorded derivations allow; the smallest over every recorded derivation is the one
+reported ([Q-M1e2.11](../../../decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)). For
+the dead node above it is $\lbrace \operatorname{in}(\mathsf{Dog}, \mathsf{B1}),\ \operatorname{in}(\mathsf{Dog}, \mathsf{B2}) \rbrace$.
 
 ## Two shapes: `(false)` and `(not P)`
 
@@ -160,7 +228,7 @@ library, which a program imports to write it ([macros](11-macros.md)).
 
 Stored negations are what lets elimination be written as rules. *Every colour but one is excluded for this house,
 so it is the remaining one* is a rule whose premise is a `forall` over stored negations; the standard library's
-bijection and slot theories are written so ([the stdlib reference](../04-reference/04-stdlib.md)).
+bijection and slot theories are written so ([the stdlib reference](../04-reference/04-stdlib/README.md)).
 
 ## What a constraint is not
 
