@@ -1,0 +1,32 @@
+digraph frame_unpack_match {
+  rankdir=TB; nodesep=0.45; ranksep=0.8; forcelabels=true;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "think"; "Alice"; "=";
+  subgraph cluster_rule { label="the rule"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#bbbbbb";
+    node [shape=diamond];
+    "?a"; "?b";
+    subgraph cluster_premises { label="premises"; labelloc=t; labeljust=l; fontcolor="#555555"; style=rounded; color="#555555";
+      node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+      q [xlabel="q"];
+    }
+    u [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=dashed, xlabel="u"];
+  }
+  subgraph cluster_kb { label="the knowledge base"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#bbbbbb";
+    node [shape=box];
+    "+"; "5"; "2";
+    subgraph cluster_K { label="K"; labelloc=t; labeljust=l; fontcolor="#555555"; style=rounded; color="#555555";
+      node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+      t [xlabel="t"];
+    }
+    e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="e"];
+    s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="s"];
+  }
+  "think" -> q [label="1", dir=back]; "Alice" -> q [label="2", dir=back]; q -> u [label="3"];
+  "=" -> u [label="1", dir=back]; u -> "?a" [label="2"]; u -> "?b" [label="3"];
+  "think" -> t [label="1", dir=back]; "Alice" -> t [label="2", dir=back]; t -> e [label="3"];
+  "=" -> e [label="1", dir=back]; e -> "5" [label="2"]; e -> s [label="3"];
+  s -> "+" [label="1"]; s -> "2" [label="2"]; s -> "2" [label="3"];
+  edge [style=dotted, color="#1f77b4", fontcolor="#1f77b4", constraint=false, arrowhead=vee];
+  q -> t [label="m"]; u -> e [label="m"]; "?a" -> "5" [label="m"]; "?b" -> s [label="m"];
+}

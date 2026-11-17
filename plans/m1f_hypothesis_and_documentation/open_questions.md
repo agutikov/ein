@@ -319,14 +319,15 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. **Built** by S1f.10.19: `pairs` everywhere, the engine's order |
 | [Q-M1f.314](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) | what the release-voice check reads, and what fails a line: the readings S1f.20.1 took where the stage file left them open | **ruled 2026-11-17 as defaulted** (the user, at S1f.20.2's review, item 13, verbatim [below](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line)): every doc comment of a shipped crate, tests included; every `.ein` comment; every ISO date; the folder `plans/` named alone passes; a count that falls is reported, not failed; F-, E-, W-, K- and review ids and `:why` strings not read yet; **readings revised by S1f.20.9 part C2** (the check now reads every crate comment, every project `.md`, `corpus/regressions.toml`, plan finding, followup and review ids, register cases and process paths, has no baseline and does not read itself; the section says each) |
 | [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact) | what an obligation emits: the verdict, with its justification or as a fact. The user's *"maybe better would be to emit (open) facts as (open ?R <justification>)"* | **put 2026-11-17, not ruled**; [S1f.21.1](p1f.21_verdicts_as_rules/s1f.21.1_the_survey_and_the_design.md)'s [`design.md` § 5](p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation). Recommended default: **(b)**, the verdict carries its justification, the instance, and stays a verdict; nothing is built on a default, and [S1f.21.2](p1f.21_verdicts_as_rules/README.md#stages) writes the pages for today's kernel either way |
-| [Q-M1f.391](#q-m1f391--the-negation-of-a-negation-that-a-rule-builds) | the negation of a negation that a rule builds: a conclusion `(not ?x)` whose variable holds a stored negation stores `(not (not g))`, which the pages say is no fact and no file can write | **the user's direction 2026-11-17, to confirm: (c)**, `(not (not g))` is a fact, the kernel is not changed, and its elimination is a rule (*"Rule for (not (not g)) -> g is a simple rule, essential negation elimination"*), whose home is P1f.21's to say; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 6. The default before it was (a). Nothing is built until the reading is confirmed |
-| [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written) | a state file that reads back dead, through `written`: the reload states `written` for a fact a rule assembled under an arrow, and a rule over `written` fires | **not ruled**; the user: *"I don't understand - write with details into separate file"*, which is [`q392_state_file_and_written.md`](p1f.22_nested_facts/q392_state_file_and_written.md). Default **(c)**, the pages and the file's header say so and the engine is not changed; (a) if the round trip is to hold with no exception |
-| [Q-M1f.393](#q-m1f393--a-fact-held-in-a-variable-as-a-conclusion-or-a-premise) | a fact held in a variable, as a conclusion or a premise: a rule denies whatever fact a variable holds, `(not ?f)`, and can neither hold it nor ask whether it is held | **ruled 2026-11-17, (a), on a reading to confirm**: the user wrote *"Q-M1f.392 (a) for now, I don't yet know why we would need to change it. The only strictly required for now is to know fact's arity, for all other you can use variables"*, read as this question's (a), as it is; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 2 |
-| [Q-M1f.394](#q-m1f394--the-words-for-a-fact-under-an-arrow) | the words for a fact under an arrow: the three cases' names, whether a denied fact is in its negation's context, and *value* and *term* beside *fact* | **not ruled**; the user: *"explain with examples in separate file"*, which is [`q394_words.md`](p1f.22_nested_facts/q394_words.md). Default **(a)** on each: *held* and *in a context*, the knowledge base also *the global context*; a negation is a context; *fact* everywhere, *term* kept for the standard library's pages |
-| [Q-M1f.395](#q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow) | what `ein render` draws of a fact under an arrow: `kb` draws a fact that is held and nested twice, `rule` a nested pattern as one box | **ruled 2026-11-17: not (a)**. The user: *"renders nested facts as atoms with names made from entire tuple. It is not valid because if fact present in multiple contexts it will be drawn multiple times, while canonical (semi-Levi-bipartite) graph has every object drawn once"*. The shape to build, to confirm: a fact that a fact points at is drawn as its node with its arrows, [`contexts.md`](p1f.22_nested_facts/contexts.md) § 7.3; how *held* is marked is Q-M1f.398 |
+| [Q-M1f.391](#q-m1f391--the-negation-of-a-negation-that-a-rule-builds) | the negation of a negation that a rule builds: a conclusion `(not ?x)` whose variable holds a stored negation stores `(not (not g))`, which the pages say is no fact and no file can write | **ruled 2026-11-17: (c)** with the elimination a rule (*"Q-M1f.391 OK"*, to the reading put to the user): `(not (not g))` is a fact a file may write and a rule may match, the kernel is not changed, and the rule that concludes `g` from it is a theory's, its home P1f.21's to say (its V-5); [`contexts.md`](p1f.22_nested_facts/contexts.md) § 6. Built by S1f.22.3 |
+| [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written) | a state file that reads back dead, through `written`: the reload states `written` for a fact a rule assembled under an arrow, and a rule over `written` fires | **not ruled**; explained twice on the user's word, the second time from the start, with a program and three commands: [`q392_state_file_and_written.md`](p1f.22_nested_facts/q392_state_file_and_written.md). The question as put: should a saved solution always load back as that solution ((a)), or is a listed exception fine ((c), the default) |
+| [Q-M1f.393](#q-m1f393--a-fact-held-in-a-variable-as-a-conclusion-or-a-premise) | a fact held in a variable, as a conclusion or a premise: a rule denies whatever fact a variable holds, `(not ?f)`, and can neither hold it nor ask whether it is held | **ruled 2026-11-17: (a)** (*"Q-M1f.393 yes (a)"*): a rule unpacks by a fact's count, the relation a parameter where wanted; Q-M1f.351 stands |
+| [Q-M1f.394](#q-m1f394--the-words-for-a-fact-under-an-arrow) | the words for a fact under an arrow: the three cases' names, whether a denied fact is in its negation's context, and *value* and *term* beside *fact* | **ruled 2026-11-17**, in the user's words: (1) *"held = in the global context; in a context = in a fact's (local) context"*; (2) a negation is a context, the one the kernel reads; (3) *object* for every node of the graph in the core theory, *value* only for what a variable of a rule is bound to, *graph node* fine, *relational node* not used, *term* a word of the syntax, `docs/ein/ein.rs/` free to name as software documentation needs; [`q394_words.md`](p1f.22_nested_facts/q394_words.md) |
+| [Q-M1f.395](#q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow) | what `ein render` draws of a fact under an arrow: `kb` draws a fact that is held and nested twice, `rule` a nested pattern as one box | **ruled 2026-11-17**: every object is drawn once, and *"3-arity fact can [be] an arrow only when nothing points on it"*: a fact that a fact points at is drawn as its node with its own arrows, held or not, in `ein render kb` and `ein render rule`; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 7.3. Built by S1f.22.3 |
 | [Q-M1f.396](#q-m1f396--where-the-explanation-stands-and-which-example-it-uses) | where the explanation of nested facts stands in `docs/ein/reasoning/`, and which example it is told on | **ruled 2026-11-17: (a)**, sections of the two pages of `01-static-ir/` (*"Q-M1f.396 sections"*); the example not named, so the default stands, the user's example beside the page's `says` |
 | [Q-M1f.397](#q-m1f397--the-reserved-words-in-the-three-perspectives) | the reserved words in the three perspectives of the documentation | **ruled 2026-11-17** by the user's note: in `docs/ein/reasoning/` they are conceptual mathematical objects; in `docs/ein/user/` and `docs/ein/ein.rs/` they are the surface between the reasoning kernel and a theory in pure Ein; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 8 |
-| [Q-M1f.398](#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context) | how the graph is drawn to show that a fact is in the global context, in a fact's context, or both, every object drawn once | **not ruled**; raised by the user's note of 2026-11-17 (*"canonical graph representation has to somehow show that nested fact is in global context or/and is in local/fact context … Maybe consider approach similar to `absent` drawing in rules"*). Default **(a)**, a frame for the knowledge base, the filling kept; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 7.2, with the three drawn |
+| [Q-M1f.398](#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context) | how the graph is drawn to show that a fact is in the global context, in a fact's context, or both, every object drawn once | **ruled 2026-11-17: (a), to try** (*"lets try (a) and see how it looks"*). Tried on six of the real figures, [`contexts.md`](p1f.22_nested_facts/contexts.md) § 14; the user's look at them is what S1f.22.2 waits for |
+| [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names of what controls the search, `(false)` and `(open)`: the user's *"Maybe word `false` is too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"* | **put 2026-11-17, not ruled; P1f.21's**, entered there as its V-5. No default is taken and nothing is renamed; the options are [`contexts.md`](p1f.22_nested_facts/contexts.md) § 12 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -7415,6 +7416,8 @@ rule may match, the kernel is not changed, and the rule that concludes `g` from 
 P1f.21's to say. The rule is not writable today (the parse refuses `(not (not …))`), though a state can hold the
 fact. What it would take, and what stays out, is [`contexts.md` § 6](p1f.22_nested_facts/contexts.md#6-the-negation-of-a-negation-and-its-elimination-as-a-rule).
 
+**Ruled 2026-11-17: (c), the elimination a rule.** The user, to the reading above: *"Q-M1f.391 OK"*.
+
 ### Q-M1f.392 — A state file that reads back dead, through `written`
 
 **Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), finding N-2. **Not ruled.**
@@ -7434,6 +7437,10 @@ answer-dump page says a reload derives no fact and no `(false)`.
 [`q392_state_file_and_written.md`](p1f.22_nested_facts/q392_state_file_and_written.md). Still not ruled. (The
 user's *"Q-M1f.392 (a) for now, I don't yet know why we would need to change it"* is read as Q-M1f.393's (a),
 below: this question's (a) is a change, and the sentence before it says the question is not understood.)
+
+**The user, 2026-11-17, again:** *"I still do not understand, show an issue, how to reproduce it, explain for
+dummies."* The page is written again from the start, with the program
+[`q392_demo.ein`](p1f.22_nested_facts/q392_demo.ein) and three commands. Still not ruled.
 
 ### Q-M1f.393 — A fact held in a variable, as a conclusion or a premise
 
@@ -7456,6 +7463,8 @@ relation a parameter where wanted. One thing (a) leaves out is noted for the use
 a variable for a whole fact may be denied at the top of a conclusion and may not stand under `not` in an argument,
 so the rule *deny whatever a liar thinks* has no twin inside a context.
 
+**Confirmed 2026-11-17.** The user: *"Q-M1f.393 yes (a)"*.
+
 ### Q-M1f.394 — The words for a fact under an arrow
 
 **Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md). **Not ruled.**
@@ -7477,6 +7486,17 @@ pages' words in [§ 2.5](p1f.22_nested_facts/analysis.md#25-where-the-pages-disa
 *global context* and *local/fact context*, are taken into option (a) of the first point as a second name for the
 knowledge base.
 
+**Ruled 2026-11-17**, all three points, in the user's words. (1) *"held = in the global context; in a context =
+in a fact's (local) context"*. (2) *"`not` obviously holds something like logically mirrored world where all true
+facts are false and all false are true, right? it looks quite consistent with context idea here"*: a negation is a
+context; what the mirror is and is not is
+[`contexts.md` § 11](p1f.22_nested_facts/contexts.md#11-not-as-a-context). (3) *"object - in core ein theory
+explained on graphs, we have to say what are all those nodes - they are objects; value - … Use word `value` only
+when talk about variables in rules, … the object is a value only when binded to variable; `relational node` -
+don't use it, it is too SQL-ish; graph node - ok; In docs/ein/ein.rs - use whatever naming convention you want,
+just make software documentation good; term - is mostly about syntax"*. The user also found that the survey's
+quotations of the pages were behind the pages (N-16 of the phase's findings).
+
 ### Q-M1f.395 — What `ein render` draws of a fact under an arrow
 
 **Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), findings N-3 and N-4. **Not
@@ -7493,6 +7513,8 @@ writer and from the knowledge-base page's table of the labelled-arrow form. The 
 [`contexts.md` § 7.3](p1f.22_nested_facts/contexts.md#73-ein-render-every-object-once): a fact that a fact points
 at is drawn as its node with its own arrows, held or not, in `ein render kb` and `ein render rule`; how *held* is
 marked is Q-M1f.398.
+
+**Confirmed 2026-11-17.** The user: *"yes, 3-arity fact can an arrow only when nothing points on it"*.
 
 ### Q-M1f.396 — Where the explanation stands, and which example it uses
 
@@ -7531,3 +7553,27 @@ knowledge base in which every case occurs, are
 
 A box for each context, the nested fact drawn inside it, is ruled out by the same note: a fact in two contexts
 would be drawn twice.
+
+**Ruled 2026-11-17: (a), to try.** The user: *"lets try (a) and see how it looks"*. Tried on six of the figures
+the explanation needs, [`contexts.md` § 14](p1f.22_nested_facts/contexts.md#14-the-frame-tried): it reads well;
+the pinning of rows in the pages' sources has to go; the extent's dashed frame cannot stand beside it, and the
+trial draws the extent as its first arrows; frames nest where a figure already frames a rule and a knowledge base.
+
+### Q-M1f.399 — The names of what controls the search: `false` and `open`
+
+**Raised** 2026-11-17 by the user, ruling [P1f.22](p1f.22_nested_facts/README.md)'s questions: *"This also leads
+me to the surface between ein theory and reasoning kernel - things like (false) and (open) are effectively
+controlling the search. Maybe word `false` is too heavey loaded with classical binary logic and not expose it's
+actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accassible
+from ein? Like (ein.search.state.refute)?"* **Not ruled, and no default taken.** It is
+[P1f.21](p1f.21_verdicts_as_rules/README.md)'s question, the kernel's verdicts and how a program sees them, and is
+entered there as its [V-5](p1f.21_verdicts_as_rules/findings.md#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names).
+The options, with what each reads like held and under an arrow, are
+[`contexts.md` § 12](p1f.22_nested_facts/contexts.md#12-the-kernels-surface-false-and-open-control-the-search):
+
+- **(a)** keep `false`; the pages say once that it is no truth value and what the kernel does with it.
+- **(b)** a word for the proposition: `(contradiction)`, `(impossible)` or `(absurd)`.
+- **(c)** a word for the search's act: `(dead)`, `(abort)`, `(refute)`.
+- **(d)** the kernel's surface as a named interface, every relation the kernel reads or states under one prefix.
+
+`(false)` also stands under an arrow, `(think Ann (false))`, where it is a proposition and controls nothing.

@@ -1,10 +1,33 @@
 # Q-M1f.394, with examples — the words for a fact under an arrow
 
 **Phase:** [P1f.22](README.md). Written 2026-11-17 on the user's word (*"Q-M1f.394 explain with examples in
-separate file"*). The question is
-[Q-M1f.394](../open_questions.md#q-m1f394--the-words-for-a-fact-under-an-arrow); it is **not ruled**. It is three
-small questions about vocabulary, and nothing in the engine depends on any of them: they decide which words
-S1f.22.2 writes on the pages.
+separate file"*), and **ruled the same day**, each point in the user's words:
+
+| | ruled | the user |
+|---|---|---|
+| 1 | **held = in the global context; in a context = in a fact's (local) context** | *"held = in the global context; in a context = in a fact's (local) context"* |
+| 2 | **a negation is a context**, the one the kernel reads | *"`not` obviously holds something like logically mirrored world … it looks quite consistent with context idea here"*; what is and is not right in *mirrored* is [`contexts.md` § 11](contexts.md#11-not-as-a-context) |
+| 3 | **each word has its place**: *object* in the core theory, on the graphs, for every node; *value* only for what a variable of a rule is bound to (an object is a value only while bound); *graph node* is fine; *relational node* is not used; *term* is a word of the syntax; `docs/ein/ein.rs/` names things as software documentation needs | *"object - in core ein theory explained on graphs, we have to say what are all those nodes - they are objects; value - … Use word `value` only when talk about variables in rules, … the object is a value only when binded to variable; `relational node` - don't use it, it is too SQL-ish; graph node - ok; In docs/ein/ein.rs - use whatever naming convention you want, just make software documentation good; term - is mostly about syntax"* |
+
+**A correction to Question 3 below.** Its table of quotations was taken from the survey
+([`analysis.md` § 2.5](analysis.md#25-where-the-pages-disagree-with-one-another)), and the survey read the user's
+pages while another phase's last lanes were still re-wording them. As the pages stand, most of those quotations
+are gone, as the user found (*"I found only one place where now 'ground term' exists, maybe survey showed false
+positive"*). Checked on the tree as it is:
+
+| the survey said the pages say | `git grep` on the pages now |
+|---|---|
+| *"a value, not a fact of the knowledge base"* (`03-facts.md`) | gone: the line reads *"`(knows Carol Dan)` inside the `claims` fact is an **argument**, a fact the knowledge base points at and does not hold"* |
+| *"a ground term over the relations"* | no hit under `docs/`; one in `tests/README.md` |
+| *relational node* | one hit, `ein.rs/03-design/03-data-model.md`, a table cell (*"a nested relational node"*) |
+| *fact-valued argument* | no hit |
+| *value* on the user's pages | the glossary has an entry *Value: Not a term of these pages. Where `ein` prints value … it means an object in an argument's place* |
+
+So the pass that Question 3's option (a) asked for is mostly made already. What the ruling leaves for S1f.22.2:
+the glossary's *Value* entry says the word is not used, and the ruling gives it one use (what a variable is bound
+to); the one *relational node*; and a re-take of every quotation of the analysis's § 2 against the pages as they
+stand before anything is written from it ([N-16](findings.md)). The text of Question 3 below is kept as it was
+written, for the record of what was asked.
 
 One program is used throughout:
 

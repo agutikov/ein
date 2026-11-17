@@ -1,0 +1,14 @@
+digraph frame_case_both {
+  rankdir=TB; forcelabels=true; nodesep=0.45; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "think"; "="; "+";
+  subgraph cluster_K { label="K"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#555555"; style=rounded; color="#555555";
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    t [xlabel="t"]; e [xlabel="e"];
+  }
+  s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="s"];
+  "think" -> t [label="1", dir=back]; t -> "Alice" [label="2"]; t -> e [label="3"];
+  "=" -> e [label="1", dir=back]; e -> "5" [label="2"]; e -> s [label="3"];
+  "+" -> s [label="1", dir=back]; s -> "2" [label="2"]; s -> "2" [label="3"];
+}

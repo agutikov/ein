@@ -1,0 +1,20 @@
+digraph frame_relation_extent {
+  rankdir=TB; forcelabels=true; nodesep=0.4; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "transitive"; "relation";
+  "left-of";
+  subgraph cluster_K { label="K"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#555555"; style=rounded; color="#555555";
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    p [xlabel="p"]; d1 [xlabel="d1"]; f3 [xlabel="f3"]; f4 [xlabel="f4"];
+  }
+  g [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="g"];
+  "transitive" -> p [label="1", dir=back]; p -> "left-of" [label="2"];
+  "relation" -> d1 [label="1", dir=back]; d1 -> "left-of" [label="2"]; d1 -> "House" [label="3"]; d1 -> "House" [label="4"];
+  edge [color="#1f77b4", fontcolor="#1f77b4"];
+  "left-of" -> f3 [label="1", dir=back]; "left-of" -> f4 [label="1", dir=back]; "left-of" -> g [label="1", dir=back];
+  edge [color=black, fontcolor=black];
+  f3 -> "House-1" [label="2"]; f3 -> "House-2" [label="3"];
+  f4 -> "House-2" [label="2"]; f4 -> "House-3" [label="3"];
+  g -> "House-1" [label="2"]; g -> "House-3" [label="3"];
+}

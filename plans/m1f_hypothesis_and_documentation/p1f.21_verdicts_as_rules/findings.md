@@ -15,6 +15,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-2](#v-2--the-surfaces-say-derives-false-of-a-state-that-holds-none) | the surfaces say *derives (false)* of a state that holds none | S1f.21.1 | open |
 | [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | open |
 | [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
+| [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399 |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -118,3 +119,32 @@ obligation.
 
 `ein saturate --dump examples/zebra2.ein` lists `;; Rules (60)` and no hypothesis rule either, so the section is
 of the agenda's rules; what the dump leaves unsaid is that it is.
+
+## V-5 — The user's notes from P1f.22: questions as facts, the two negation rules, and the names
+
+**What.** Three things the user said while ruling P1f.22's questions (2026-11-17, verbatim in
+[P1f.22's `contexts.md` § 10](../p1f.22_nested_facts/contexts.md#10-the-users-second-notes-verbatim-and-what-they-rule))
+that are this phase's to take up, none of them built or ruled here.
+
+1. **`(open q)` as a fact that is a question.** *"if we will emit ordinary facts (open (lives-in Alice House-1))
+   they naturally are hypotheses, what rules can do with them? And, (open) context contains "open" questions, like
+   "Does Alice live in House-1?" - so there is a meaning of those facts, so we can write rules to infer something
+   from them directly"*. Run with a relation `question` in the place of `open`, which the parse refuses under an
+   arrow: an hrule over the questions proposes exactly the asked facts, and ordinary rules derive a further
+   question, an answer where asked, a contradiction where every answer is denied
+   ([P1f.22's `contexts.md` § 13](../p1f.22_nested_facts/contexts.md#13-questions-as-facts-what-rules-can-do-with-open-q),
+   `q1.ein` and `q2.ein`). What a held fact cannot be is *still open*: it stays held once answered. That is
+   [`design.md` § 3.2](design.md#32-it-can-be-removed) again, and it lines the note up with Q-M1f.390's option
+   (c), the question and its answer as facts and *owed* their difference.
+2. **The elimination of a double negation is a rule**, beside the contradiction's. Ruled for P1f.22 as its
+   Q-M1f.391: `(not (not g))` becomes a fact a file may write, the kernel is not changed, and the rule that
+   concludes `g` from it is a theory's. Its home, the module and whether a program imports it, is this phase's to
+   say, with [Appendix A.1](design.md#a1-the-contradiction-rule-set-contrainc)'s rule set, which is of the same
+   shape: one rule a count of arguments, the relation a parameter.
+3. **The names.** *"things like (false) and (open) are effectively controlling the search. Maybe word `false` is
+   too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead)
+   is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"*
+   Put as [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open), with
+   the options in [P1f.22's `contexts.md` § 12](../p1f.22_nested_facts/contexts.md#12-the-kernels-surface-false-and-open-control-the-search).
+   One fact bears on it from P1f.22: `(false)` also stands under an arrow, `(think Ann (false))`, where it is a
+   proposition and controls nothing, so a name for the search's act reads badly there.
