@@ -556,55 +556,73 @@ computes today and what P1f.21's survey found of `(open R)` (*"it can be removed
 Q-M1f.390's option (c): the question (there, the *requirement*) is a fact, the answer (the *payment*) is a fact,
 and *owed* is their difference, never stored. It is entered there as [V-5](../p1f.21_verdicts_as_rules/findings.md#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names).
 
-## 14. The frame, tried
+## 14. The frame, tried twice
 
-Six of the figures the explanation needs, each drawn with the knowledge base as a frame, the sources and pictures
-under [`diagrams/`](diagrams/), `frame-*.dot` and `frame-*.svg`:
+**First trial: a frame around the held facts**, the knowledge base as a frame (Q-M1f.398's (a)), on six of the
+real figures. The user, on seeing them: *"I would like to see frame around facts in contexts rather than around
+global facts."* Its figures are dropped; what it showed that still matters: a frame around $K$ takes in every
+figure of the pages, forces their layout to be let go, and cannot stand beside the extent's dashed frame.
 
-The page's first figure, four facts, all held:
+**Second trial: a frame around the facts that are in a context.** The two properties get one mark each, and the
+marks are independent, as the properties are:
 
-![Four held facts inside the frame K, their relations above and their arguments below](diagrams/frame-canonical-graph.svg)
+| | the mark |
+|---|---|
+| **held**, in the global context | the octagon is **filled**, as the pages have it today |
+| **in a context**, a fact's | the octagon is **inside the dashed frame** |
+
+So a fact that is only held is filled and outside; one that is only in a context is empty and inside; one that is
+both is filled and inside. The frame is the dashed, rounded one an absence has in a rule's drawing, with its own
+label. The sources and pictures are under [`diagrams/`](diagrams/), `inctx-*.dot` and `inctx-*.svg`.
+
+The user's example, the three cases. $K = \lbrace e \rbrace$: $e$ is held and in no context, and $s$, which nobody
+states, is in the context of $e$:
+
+![e filled and outside the frame; s empty and inside it](diagrams/inctx-case-stated.svg)
+
+$K = \lbrace t \rbrace$: $e$ and $s$ are in the context of $t$, and neither is held:
+
+![t filled and outside; e and s empty, inside the frame](diagrams/inctx-case-nested.svg)
+
+$K = \lbrace t, e \rbrace$: $e$ is held and in the context of $t$:
+
+![t filled and outside; e filled and inside the frame; s empty and inside it](diagrams/inctx-case-both.svg)
+
+One knowledge base with every case: $t$, $b$ and $h$ only held; $e$ held and in the contexts of $t$ and $b$; $s$
+only in a context:
+
+![t, b and h filled and outside; e filled and s empty, both inside the frame](diagrams/inctx-example.svg)
 
 The page's figure of a fact about a relation, a fact about a fact and a negation; $g$ is in the contexts of $n$
-and $s$ and not held:
+and $s$:
 
-![Four held facts inside the frame; the fact g outside it, pointed at by n and s](diagrams/frame-what-an-arrow-points-at.svg)
+![p, n, s and f3 filled and outside; g empty, inside the frame](diagrams/inctx-what-an-arrow-points-at.svg)
 
-The user's example, in a context only, and held and in a context:
+A rule that unpacks, and its match. In the pattern the frame is around the fact pattern under the premise's
+arrow, which is the rule's conclusion; in the knowledge base around $e$ and $s$:
 
-![t inside the frame; e and s outside](diagrams/frame-case-nested.svg)
+![A rule whose premise q points into a frame at u; a knowledge base whose held t points into a frame at e and s](diagrams/inctx-unpack-match.svg)
 
-![t and e inside the frame; s outside](diagrams/frame-case-both.svg)
+**What this trial shows.**
 
-A relation's extent, two of three facts held:
-
-![The frame K around p, d1, f3 and f4; g outside; the three first arrows of the extent in blue](diagrams/frame-relation-extent.svg)
-
-A rule that unpacks, and its match:
-
-![A rule with its premise q in a frame, and a knowledge base with t in the frame K; e and s outside it](diagrams/frame-unpack-match.svg)
-
-**What the trial shows.**
-
-- **It reads well on the small figures**, and the cases are plain: inside the frame is held, outside and pointed
-  at from inside is in a context only, inside and pointed at is both.
-- **The layout has to be let go.** The sources of the pages pin the relations to the top row and the arguments to
-  the bottom; with a frame that pinning tangles the arrows. Drawn with the first arrows reversed for layout and
-  nothing pinned, the figures come out as above. Every figure of the graph on the two pages is redrawn so.
-- **A frame cannot overlap a frame.** The extent's figure had a dashed frame around the extent, of which two facts
-  are held and one is not; that set and $K$ overlap, and such frames cannot both be drawn. In the trial the extent
-  is its three first arrows, in blue, which is what defines it.
-- **Frames nest.** A figure that already frames *the rule* and *the knowledge base* gets a frame inside each:
-  *premises* in the pattern, $K$ in the knowledge base. That is the pattern's own analogue of *held*, and an
-  absence's dashed frame sits beside it as it does now.
-- The filling is kept inside the frame; it costs nothing and survives where a figure is drawn with no frame.
+- **The three cases are told apart at a glance**, and each object is drawn once: a fact in the contexts of two
+  facts is one octagon in the frame with two arrows into it.
+- **A figure with no fact under an arrow does not change.** The page's first figure, its declaration and its
+  extent keep their sources, their layout and, for the extent, its own dashed frame; only the figures that have a
+  nested fact gain a frame. The first trial changed all of them.
+- **One frame, not one for each context.** A frame for each context, holding what that context speaks about,
+  cannot be drawn where one fact is in two contexts, which is the case the phase was opened for. So the frame says
+  *in some context*, and *which* is read off the arrows that enter it.
+- **Atoms stay outside.** The frame holds facts; an atom under an arrow of a nested fact is outside, as every atom
+  is.
+- In a figure of two graphs, a rule and a knowledge base, each has its own frame, inside the frame of its graph.
 
 ## 15. What is left
 
 | | question | |
 |---|---|---|
-| 1 | **the frame**: do the six figures of § 14 look right, so that S1f.22.2 draws every figure of the graph so | the user's look |
-| 2 | **Q-M1f.392**: should a saved solution always load back as that solution ((a)), or is a listed exception fine ((c)) | [`q392_state_file_and_written.md`](q392_state_file_and_written.md); decides a part of S1f.22.3 only |
-| 3 | **Q-M1f.399**: the names of `(false)` and `(open)` | P1f.21's; does not hold this phase |
+| 1 | **the frame**, second trial: do the six figures of § 14 look right, so that S1f.22.2 draws every figure that has a nested fact so | the user's look |
+| 2 | **Q-M1f.392**: ruled a bug, to be fixed and held by a simple unit test. Which fix, and whether `written` stays as it is: [`q392_state_file_and_written.md`](q392_state_file_and_written.md), its last two sections | the user's word on the fix |
+| 3 | **Q-M1f.399**, and `(open)` as facts: P1f.21's, with the user's direction recorded there | does not hold this phase |
 
 S1f.22.2 is planned in [its stage file](s1f.22.2_the_explanation_written.md) and waits only for 1.

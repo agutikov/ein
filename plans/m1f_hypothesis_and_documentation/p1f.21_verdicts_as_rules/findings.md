@@ -148,3 +148,12 @@ that are this phase's to take up, none of them built or ruled here.
    the options in [P1f.22's `contexts.md` § 12](../p1f.22_nested_facts/contexts.md#12-the-kernels-surface-false-and-open-control-the-search).
    One fact bears on it from P1f.22: `(false)` also stands under an arrow, `(think Ann (false))`, where it is a
    proposition and controls nothing, so a name for the search's act reads badly there.
+
+**The user's direction on 3, 2026-11-17**, verbatim: *"Renaming (false): rules as before can infer (false) in
+contexts, also can infer (false) in global context, but the state considered dead only if there is a rule that
+infer (ein.contradiction) from global (false), or from global (whatever); both (false) renaming and (open) facts
+belongs to p1f.21"*. So, as read for this phase's design: `(false)` stays the word and becomes an ordinary fact,
+inferable under an arrow and globally, with no effect of its own; the kernel reads one fact,
+`(ein.contradiction)`, and a state is dead where it holds that; and what leads there is a rule a theory states,
+`(false)` ⟹ `(ein.contradiction)` the plain one. That is [`design.md` § 2.2](design.md#22-dead-from-false-alive-from-its-absence)'s
+*dead from `(false)`* made a rule a program can see and replace, and the prefix is option (d) of Q-M1f.399.

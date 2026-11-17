@@ -1,0 +1,15 @@
+digraph inctx_what_an_arrow_points_at {
+  rankdir=TB; nodesep=0.45; ranksep=0.6; forcelabels=true;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "transitive"; "not"; "says"; "left-of";
+  p [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="p"]; n [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="n"]; s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="s"]; f3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="f3"];
+  subgraph cluster_ctx { label="in a context"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    g [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="g"];
+  }
+  "transitive" -> p [label="1", dir=back]; p -> "left-of" [label="2"];
+  "not" -> n [label="1", dir=back]; n -> g [label="2"];
+  "says" -> s [label="1", dir=back]; s -> "Norwegian" [label="2"]; s -> g [label="3"];
+  f3 -> "left-of" [label="1"]; f3 -> "House-1" [label="2"]; f3 -> "House-2" [label="3"];
+  g -> "left-of" [label="1"]; g -> "House-2" [label="2"]; g -> "House-1" [label="3"];
+}
