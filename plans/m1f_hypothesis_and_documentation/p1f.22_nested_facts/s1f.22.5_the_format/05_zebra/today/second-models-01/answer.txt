@@ -1,0 +1,17 @@
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/05_zebra/today/models/01.ein --no-search
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 in R — root is alive and owes nothing
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate
+    outside         instance, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  query             (and (co-located Water ?h_water) (instance ?h_water House) (co-located ?who_water ?h_water) (instance ?who_water Nationality) (co-located Zebra ?h_zebra) (instance ?h_zebra House) (co-located ?who_zebra ?h_zebra) (instance ?who_zebra Nationality))
+  over              all of R — 1 state → 1 projection class  (∅ alone: R was not searched past it)
+    class 1 of 1    1 state
+                      ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
+                        “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
+  as :expect        not printed: these classes are a lower bound, and the claim would say they are all

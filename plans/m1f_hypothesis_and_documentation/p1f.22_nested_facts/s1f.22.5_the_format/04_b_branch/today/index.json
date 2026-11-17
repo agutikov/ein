@@ -1,0 +1,118 @@
+{
+  "schema": "ein-answer/2",
+  "source": "examples/domain_elim/b_branch.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 2,
+    "k_c": 2,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "in-r",
+    "root_owes": 0,
+    "root_owed": [],
+    "empty": null,
+    "minimal": {
+      "states": 1,
+      "commitments": 1,
+      "least": 0,
+      "trivial": true
+    },
+    "maximal": {
+      "states": 1,
+      "trivial": false
+    },
+    "components": [
+      2
+    ],
+    "subcubes": [
+      1
+    ],
+    "merged": {
+      "states": 0,
+      "minimal": 0
+    },
+    "nogoods": 6,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 7,
+      "dead_alone": 6
+    },
+    "route": "states",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local"
+    ],
+    "states": [
+      {
+        "facts": [
+          "(color-loc Green H3)",
+          "(color-loc Red H2)"
+        ],
+        "closure": [],
+        "from": [],
+        "minimal_generators": [
+          []
+        ],
+        "commitments": 1,
+        "lines": [
+          "minimal"
+        ],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(color-loc Blue H1)",
+          "(color-loc Green H3)",
+          "(color-loc Red H2)"
+        ],
+        "closure": [
+          "(color-loc Blue H1)"
+        ],
+        "from": [
+          "(color-loc Blue H1)"
+        ],
+        "minimal_generators": [
+          [
+            "(color-loc Blue H1)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [
+          "maximal"
+        ],
+        "listed": true
+      }
+    ],
+    "frontier": null,
+    "core": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "models": [
+    {
+      "path": "models/01.ein",
+      "state": 1,
+      "lines": [
+        "minimal"
+      ],
+      "listed": true
+    },
+    {
+      "path": "models/02.ein",
+      "state": 2,
+      "lines": [
+        "maximal"
+      ],
+      "listed": true
+    }
+  ],
+  "owing": [],
+  "forms": []
+}

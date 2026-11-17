@@ -1,0 +1,1209 @@
+;;; state 1 of 1 — written by `ein solve --dump-answer` (ein-answer/2).
+;;; source:     examples/zebra.ein
+;;; from:       {(co-located Japanese House-5)}
+;;; lines:      minimal, maximal
+;;; reached by: 261982 commitments
+;;; minimal:    {(co-located Japanese House-5)} | {(co-located Juice House-4)} | {(co-located Lucky_Strike House-4)} | {(co-located Parliament House-5)} | {(co-located Chesterfields House-2), (co-located Coffee House-5)} | {(co-located Chesterfields House-2), (co-located Dog House-4)} | {(co-located Chesterfields House-2), (co-located Englishman House-3)} | {(co-located Chesterfields House-2), (co-located Green House-5)} | {(co-located Chesterfields House-2), (co-located Ivory House-4)} | {(co-located Chesterfields House-2), (co-located Old_Gold House-3)} | {(co-located Chesterfields House-2), (co-located Red House-3)} | {(co-located Chesterfields House-2), (co-located Snail House-3)} | {(co-located Chesterfields House-2), (co-located Spaniard House-4)} | {(co-located Coffee House-5), (co-located Dog House-4)} | {(co-located Coffee House-5), (co-located Fox House-1)} | {(co-located Coffee House-5), (co-located Spaniard House-4)} | {(co-located Coffee House-5), (co-located Tea House-2)} | {(co-located Coffee House-5), (co-located Ukrainian House-2)} | {(co-located Coffee House-5), (co-located Zebra House-5)} | {(co-located Dog House-4), (co-located Englishman House-3)} | {(co-located Dog House-4), (co-located Fox House-1)} | {(co-located Dog House-4), (co-located Green House-5)} | {(co-located Dog House-4), (co-located Ivory House-4)} | {(co-located Dog House-4), (co-located Old_Gold House-3)} | {(co-located Dog House-4), (co-located Red House-3)} | {(co-located Dog House-4), (co-located Snail House-3)} | {(co-located Dog House-4), (co-located Tea House-2)} | {(co-located Dog House-4), (co-located Ukrainian House-2)} | {(co-located Dog House-4), (co-located Zebra House-5)} | {(co-located Englishman House-3), (co-located Fox House-1)} | {(co-located Englishman House-3), (co-located Spaniard House-4)} | {(co-located Englishman House-3), (co-located Tea House-2)} | {(co-located Englishman House-3), (co-located Ukrainian House-2)} | {(co-located Englishman House-3), (co-located Zebra House-5)} | {(co-located Fox House-1), (co-located Green House-5)} | {(co-located Fox House-1), (co-located Ivory House-4)} | {(co-located Fox House-1), (co-located Old_Gold House-3)} | {(co-located Fox House-1), (co-located Red House-3)} | {(co-located Fox House-1), (co-located Snail House-3)} | {(co-located Fox House-1), (co-located Spaniard House-4)} | {(co-located Green House-5), (co-located Spaniard House-4)} | {(co-located Green House-5), (co-located Tea House-2)} | {(co-located Green House-5), (co-located Ukrainian House-2)} | {(co-located Green House-5), (co-located Zebra House-5)} | {(co-located Ivory House-4), (co-located Spaniard House-4)} | {(co-located Ivory House-4), (co-located Tea House-2)} | {(co-located Ivory House-4), (co-located Ukrainian House-2)} | {(co-located Ivory House-4), (co-located Zebra House-5)} | {(co-located Old_Gold House-3), (co-located Spaniard House-4)} | {(co-located Old_Gold House-3), (co-located Tea House-2)} | {(co-located Old_Gold House-3), (co-located Ukrainian House-2)} | {(co-located Old_Gold House-3), (co-located Zebra House-5)} | {(co-located Red House-3), (co-located Spaniard House-4)} | {(co-located Red House-3), (co-located Tea House-2)} | {(co-located Red House-3), (co-located Ukrainian House-2)} | {(co-located Red House-3), (co-located Zebra House-5)} | {(co-located Snail House-3), (co-located Spaniard House-4)} | {(co-located Snail House-3), (co-located Tea House-2)} | {(co-located Snail House-3), (co-located Ukrainian House-2)} | {(co-located Snail House-3), (co-located Zebra House-5)} | {(co-located Spaniard House-4), (co-located Tea House-2)} | {(co-located Spaniard House-4), (co-located Ukrainian House-2)} | {(co-located Spaniard House-4), (co-located Zebra House-5)}
+;;;
+;;; Below: the program as loaded, imports inlined, and then every fact of
+;;; the state (608 facts; the program's own relation declarations are not
+;;; repeated). It loads, and saturating it derives nothing new: the state is
+;;; a fixpoint of the program (10-answer-dump.md, every state file loads).
+
+(config :record-alternative-justifications false)
+
+(macro
+  std.macro.forall
+  (?b ?G ?B)
+  (absent (and ?G (absent ?B)))
+  :why "every {?b} the guard {?G} holds of satisfies {?B}: none satisfies the guard and not the body")
+
+(macro
+  std.macro.unknown
+  (?P)
+  (and (absent ?P) (absent (not ?P)))
+  :why "{?P} is unknown: neither it nor its negation holds")
+
+(rule
+  std.algebra.converse
+  (?R1 ?R2)
+  :match (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :why "(converse {?R1} {?R2}): mirror {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+(rule
+  std.algebra.imply1
+  (?R1 ?R2)
+  :match (?R1 ?a)
+  :assert (?R2 ?a)
+  :why "(imply1 {?R1} {?R2}): {?R1}({?a}) → {?R2}({?a})")
+
+(rule
+  std.algebra.imply2-fwd
+  (?R1 ?R2)
+  :match (?R1 ?a ?b)
+  :assert (?R2 ?a ?b)
+  :why "(imply2-fwd {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?a},{?b})")
+
+(rule
+  std.algebra.imply2-reverse
+  (?R1 ?R2)
+  :match (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :why "(imply2-reverse {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+(rule
+  std.algebra.symmetric-is-self-converse
+  ()
+  :match (symmetric ?R)
+  :assert (std.algebra.converse ?R ?R)
+  :why "symmetric {?R} ⟹ (converse {?R} {?R})")
+
+(rule
+  std.algebra.self-converse-is-symmetric
+  ()
+  :match (std.algebra.converse ?R ?R)
+  :assert (symmetric ?R)
+  :why "(converse {?R} {?R}) ⟹ symmetric {?R}")
+
+(rule
+  std.algebra.converse-pair-symmetric
+  ()
+  :match (std.algebra.converse ?R1 ?R2)
+  :assert (std.algebra.converse ?R2 ?R1)
+  :why "(converse {?R1} {?R2}) ⟹ (converse {?R2} {?R1})")
+
+(rule
+  std.algebra.converse-illtyped-dom
+  (?R1 ?R2 ?isR*)
+  :match (and (std.algebra.converse ?R1 ?R2) (relation ?R1 ?D1 ?Rn1) (relation ?R2 ?D2 ?Rn2) (neq ?Rn1 ?D2) (absent (?isR* ?Rn1 ?D2)) (absent (?isR* ?D2 ?Rn1)))
+  :assert (false)
+  :why "converse {?R1}/{?R2} ill-typed: range({?R1})={?Rn1} and domain({?R2})={?D2} are neither equal nor one a subtype of the other under {?isR*}.")
+
+(rule
+  std.algebra.converse-illtyped-ran
+  (?R1 ?R2 ?isR*)
+  :match (and (std.algebra.converse ?R1 ?R2) (relation ?R1 ?D1 ?Rn1) (relation ?R2 ?D2 ?Rn2) (neq ?D1 ?Rn2) (absent (?isR* ?D1 ?Rn2)) (absent (?isR* ?Rn2 ?D1)))
+  :assert (false)
+  :why "converse {?R1}/{?R2} ill-typed: domain({?R1})={?D1} and range({?R2})={?Rn2} are neither equal nor one a subtype of the other under {?isR*}.")
+
+(rule
+  std.algebra.compose
+  (?R1 ?R2 ?R3)
+  :match (and (?R1 ?a ?b) (?R2 ?b ?c))
+  :assert (?R3 ?a ?c)
+  :why "(compose {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?b},{?c}) → {?R3}({?a},{?c}).")
+
+(rule
+  std.algebra.identity
+  (?R ?isa ?Dom)
+  :match (?isa ?a ?Dom)
+  :assert (?R ?a ?a)
+  :why "(identity {?R} {?isa} {?Dom}): {?a}∈{?Dom} → {?R}({?a},{?a}).")
+
+(rule
+  std.algebra.meet
+  (?R1 ?R2 ?R3)
+  :match (and (?R1 ?a ?b) (?R2 ?a ?b))
+  :assert (?R3 ?a ?b)
+  :why "(meet {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+(rule
+  std.algebra.difference
+  (?R1 ?R2 ?R3)
+  :match (and (?R1 ?a ?b) (absent (?R2 ?a ?b)))
+  :assert (?R3 ?a ?b)
+  :why "(difference {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧¬{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+(rule
+  std.algebra.derive-join
+  ()
+  :match (join ?R1 ?R2 ?R3)
+  :assert (and (std.algebra.join-l ?R1 ?R2 ?R3) (std.algebra.join-r ?R1 ?R2 ?R3))
+  :why "(join {?R1} {?R2} {?R3}): fan out into the two per-operand copiers.")
+
+(rule
+  std.algebra.join-l
+  (?R1 ?R2 ?R3)
+  :match (?R1 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :why "(join {?R1} {?R2} {?R3}): {?R1}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+(rule
+  std.algebra.join-r
+  (?R1 ?R2 ?R3)
+  :match (?R2 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :why "(join {?R1} {?R2} {?R3}): {?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+(rule
+  std.algebra.empty
+  (?R)
+  :match (?R ?a ?b)
+  :assert (false)
+  :why "(empty {?R}) violated: {?R}({?a},{?b}) exists.")
+
+(rule
+  std.algebra.top
+  (?R ?isa ?Dom ?Ran)
+  :match (and (?isa ?a ?Dom) (?isa ?b ?Ran))
+  :assert (?R ?a ?b)
+  :why "(top {?R} {?isa} {?Dom} {?Ran}): {?a}∈{?Dom},{?b}∈{?Ran} → {?R}({?a},{?b}).")
+
+(rule
+  std.algebra.complement
+  (?R1 ?R2 ?isa ?Dom ?Ran)
+  :match (and (?isa ?a ?Dom) (?isa ?b ?Ran) (absent (?R1 ?a ?b)))
+  :assert (?R2 ?a ?b)
+  :why "(complement {?R1} {?R2}): {?a}∈{?Dom},{?b}∈{?Ran},¬{?R1}({?a},{?b}) → {?R2}({?a},{?b}).")
+
+(rule
+  std.algebra.functional
+  (?R)
+  :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why "{?R} not functional: {?a} has both {?b} and {?c}.")
+
+(rule
+  std.algebra.injective
+  (?R)
+  :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :why "{?R} not injective: {?c} reached from both {?a} and {?b}.")
+
+(rule
+  std.algebra.bijective-properties
+  ()
+  :match (bijective ?R)
+  :assert (and (std.algebra.functional ?R) (std.algebra.injective ?R) (std.algebra.total ?R) (std.algebra.surjective ?R))
+  :why "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.")
+
+(rule
+  std.algebra.total
+  (?R ?isa)
+  :match (and (relation ?R ?A ?B) (?isa ?a ?A) (std.macro.forall ?b (?isa ?b ?B) (not (?R ?a ?b))))
+  :assert (false)
+  :why "{?R} not total at {?a}: every {?B} is excluded.")
+
+(rule
+  std.algebra.surjective
+  (?R ?isa)
+  :match (and (relation ?R ?A ?B) (?isa ?b ?B) (std.macro.forall ?a (?isa ?a ?A) (not (?R ?a ?b))))
+  :assert (false)
+  :why "{?R} not surjective at {?b}: every {?A} is excluded.")
+
+(rule
+  std.algebra.total-owed
+  (?R ?isa)
+  :match (and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b))))
+  :assert (open ?R)
+  :why "{?R} owes {?a} a {?B}.")
+
+(rule
+  std.algebra.surjective-owed
+  (?R ?isa)
+  :match (and (relation ?R ?A ?B) (?isa ?b ?B) (absent (and (?isa ?a ?A) (?R ?a ?b))))
+  :assert (open ?R)
+  :why "{?R} owes {?b} a preimage in {?A}.")
+
+(rule
+  std.algebra.irreflexive
+  (?R)
+  :match (?R ?a ?a)
+  :assert (false)
+  :why "(irreflexive {?R}) violated: self-loop {?R}({?a},{?a}).")
+
+(rule
+  std.algebra.antisymmetric
+  (?R)
+  :match (and (?R ?a ?b) (?R ?b ?a) (neq ?a ?b))
+  :assert (false)
+  :why "(antisymmetric {?R}) violated: {?R}({?a},{?b})∧{?R}({?b},{?a}), {?a}≠{?b}.")
+
+(rule
+  std.algebra.asymmetric
+  (?R)
+  :match (and (?R ?a ?b) (?R ?b ?a))
+  :assert (false)
+  :why "(asymmetric {?R}) violated: both {?R}({?a},{?b}) and {?R}({?b},{?a}).")
+
+(rule
+  std.algebra.connex
+  (?R ?isa ?Dom)
+  :match (and (?isa ?a ?Dom) (?isa ?b ?Dom) (neq ?a ?b) (absent (?R ?a ?b)) (absent (?R ?b ?a)))
+  :assert (false)
+  :why "(connex {?R}) violated: {?a},{?b}∈{?Dom} incomparable (neither {?R}({?a},{?b}) nor {?R}({?b},{?a})).")
+
+(rule
+  std.algebra.difunctional
+  (?R)
+  :match (and (?R ?a ?b) (?R ?c ?b) (?R ?c ?d))
+  :assert (?R ?a ?d)
+  :why "(difunctional {?R}): {?R}({?a},{?b})∧{?R}({?c},{?b})∧{?R}({?c},{?d}) → {?R}({?a},{?d}).")
+
+(rule
+  symmetric
+  (?rel)
+  :match (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why "{?rel} is symmetric: {?a} ↔ {?b}.")
+
+(rule
+  symmetric-negative-setup
+  ()
+  :match (symmetric ?rel)
+  :assert (std.algebra.symmetric-negative ?rel)
+  :why "{?rel} symmetric ⟹ activate its negative mirror.")
+
+(rule
+  std.algebra.symmetric-negative
+  (?rel)
+  :match (not (?rel ?a ?b))
+  :assert (not (?rel ?b ?a))
+  :why "{?rel} symmetric: ¬{?rel}({?a},{?b}) ⟹ ¬{?rel}({?b},{?a}).")
+
+(rule
+  std.algebra.transitive
+  (?rel)
+  :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why "{?rel} is transitive.")
+
+(rule
+  includes
+  (?p ?q)
+  :match (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}.")
+
+(rule
+  std.algebra.compose-negative-s
+  (?R ?S ?T)
+  :match (and (?R ?a ?b) (not (?T ?a ?c)))
+  :assert (not (?S ?b ?c))
+  :why "Schröder ({?R};{?S}={?T} closed): {?R}({?a},{?b})∧¬{?T}({?a},{?c}) → ¬{?S}({?b},{?c}).")
+
+(rule
+  std.algebra.compose-negative-r
+  (?R ?S ?T)
+  :match (and (?S ?b ?c) (not (?T ?a ?c)))
+  :assert (not (?R ?a ?b))
+  :why "Schröder ({?R};{?S}={?T} closed): {?S}({?b},{?c})∧¬{?T}({?a},{?c}) → ¬{?R}({?a},{?b}).")
+
+(rule
+  std.algebra.compose-contravariant
+  ()
+  :match (and (std.algebra.compose ?R ?S ?T) (std.algebra.converse ?R ?Rc) (std.algebra.converse ?S ?Sc) (std.algebra.converse ?T ?Tc))
+  :assert (std.algebra.compose ?Sc ?Rc ?Tc)
+  :why "B7 contravariance: ({?R};{?S}={?T}) ⟹ ({?Sc};{?Rc}={?Tc}) (converses).")
+
+(rule
+  std.algebra.join-converse
+  ()
+  :match (and (join ?R ?S ?U) (std.algebra.converse ?R ?Rc) (std.algebra.converse ?S ?Sc) (std.algebra.converse ?U ?Uc))
+  :assert (join ?Rc ?Sc ?Uc)
+  :why "B8: ({?R}∪{?S}={?U}) ⟹ ({?Rc}∪{?Sc}={?Uc}) (converses).")
+
+(rule
+  slot-partition-setup
+  ()
+  :match (slot-partition ?R ?isa ?sub ?super ?index)
+  :assert (and (std.slots.slot-locate ?R ?isa ?index) (std.slots.slot-exclusive ?R ?isa ?sub ?super) (std.slots.slot-occupied ?R ?isa ?sub ?super) (std.slots.slot-negative ?R ?isa ?index) (std.slots.slot-elimination ?R ?isa ?sub ?super ?index) (std.slots.slot-fill ?R ?isa ?sub ?super ?index) (std.slots.slot-no-room ?R ?isa ?sub ?super ?index) (std.slots.slot-no-fill ?R ?isa ?sub ?super ?index) (std.slots.slot-owed-room ?R ?isa ?sub ?super ?index) (std.slots.slot-owed-fill ?R ?isa ?sub ?super ?index))
+  :why "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.")
+
+(rule
+  slot-spatial-setup
+  ()
+  :match (slot-spatial ?R ?S ?isa ?PT)
+  :assert (and (std.slots.slot-adjacent-fwd ?R ?S ?isa ?PT) (std.slots.slot-adjacent-bwd ?R ?S ?isa ?PT) (std.slots.slot-adjacent-fwd-neg ?R ?S ?isa ?PT) (std.slots.slot-adjacent-bwd-neg ?R ?S ?isa ?PT) (std.slots.slot-prune-fwd ?R ?S ?isa ?PT) (std.slots.slot-prune-bwd ?R ?S ?isa ?PT) (std.slots.slot-endpoint-fwd ?R ?S ?isa ?PT) (std.slots.slot-endpoint-bwd ?R ?S ?isa ?PT))
+  :why "(slot-spatial {?R} {?S} …) ⟹ the eight directional propagation / pruning / endpoint activators.")
+
+(rule
+  std.slots.slot-locate
+  (?R ?isa ?index)
+  :match (and (?R ?a ?b) (?R ?b ?i) (?isa ?i ?index) (neq ?a ?i))
+  :assert (?R ?a ?i)
+  :why "{?a} shares a slot with {?b}, and {?b} is at {?i} ⟹ {?a} is at {?i}.")
+
+(rule
+  std.slots.slot-exclusive
+  (?R ?isa ?sub ?super)
+  :match (and (?isa ?a ?T) (?sub ?T ?super) (?isa ?b ?T) (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}.")
+
+(rule
+  std.slots.slot-occupied
+  (?R ?isa ?sub ?super)
+  :match (and (?R ?a ?b) (?isa ?b ?T) (?sub ?T ?super) (?isa ?c ?T) (neq ?c ?b))
+  :assert (not (?R ?a ?c))
+  :why "{?a}'s slot already holds the {?T} {?b} ⟹ it does not hold {?c}.")
+
+(rule
+  std.slots.slot-negative
+  (?R ?isa ?index)
+  :match (and (?R ?a ?b) (not (?R ?b ?i)) (?isa ?i ?index))
+  :assert (not (?R ?a ?i))
+  :why "{?a} shares a slot with {?b}, and {?b} cannot be at {?i} ⟹ neither can {?a}.")
+
+(rule
+  std.slots.slot-elimination
+  (?R ?isa ?sub ?super ?index)
+  :match (and (?isa ?a ?Ta) (?sub ?Ta ?super) (neq ?Ta ?index) (?isa ?i ?index) (std.macro.forall ?i_other (and (?isa ?i_other ?index) (neq ?i_other ?i)) (not (?R ?a ?i_other))))
+  :assert (?R ?a ?i)
+  :why "every slot except {?i} is excluded for {?a} ⟹ {?a} is at {?i}.")
+
+(rule
+  std.slots.slot-fill
+  (?R ?isa ?sub ?super ?index)
+  :match (and (?isa ?i ?index) (?sub ?Tv ?super) (neq ?Tv ?index) (?isa ?v ?Tv) (std.macro.forall ?v_other (and (?isa ?v_other ?Tv) (neq ?v_other ?v)) (not (?R ?i ?v_other))))
+  :assert (?R ?i ?v)
+  :why "every {?Tv} except {?v} is excluded for slot {?i} ⟹ {?v} is at {?i}.")
+
+(rule
+  std.slots.slot-no-room
+  (?R ?isa ?sub ?super ?index)
+  :match (and (?isa ?a ?Ta) (?sub ?Ta ?super) (neq ?Ta ?index) (std.macro.forall ?i (?isa ?i ?index) (not (?R ?a ?i))))
+  :assert (false)
+  :why "{?a} has every slot excluded — there is nowhere left for it.")
+
+(rule
+  std.slots.slot-no-fill
+  (?R ?isa ?sub ?super ?index)
+  :match (and (?isa ?i ?index) (?sub ?Tv ?super) (neq ?Tv ?index) (std.macro.forall ?v (?isa ?v ?Tv) (not (?R ?i ?v))))
+  :assert (false)
+  :why "slot {?i} has every {?Tv} excluded — it has no {?Tv} left.")
+
+(rule
+  std.slots.slot-owed-room
+  (?R ?isa ?sub ?super ?index)
+  :match (and (?isa ?a ?Ta) (?sub ?Ta ?super) (neq ?Ta ?index) (absent (and (?isa ?i ?index) (?R ?a ?i))))
+  :assert (open ?R)
+  :why "{?a} is in no slot yet — some {?index} is still owed.")
+
+(rule
+  std.slots.slot-owed-fill
+  (?R ?isa ?sub ?super ?index)
+  :match (and (?isa ?i ?index) (?sub ?Tv ?super) (neq ?Tv ?index) (absent (and (?isa ?v ?Tv) (?R ?i ?v))))
+  :assert (open ?R)
+  :why "slot {?i} has no {?Tv} yet — one is still owed.")
+
+(rule
+  std.slots.slot-adjacent-fwd
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (?R ?b ?p1) (?isa ?p1 ?PT) (?S ?p2 ?p1) (?isa ?p2 ?PT) (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
+  :assert (?R ?a ?p2)
+  :why "{?b} is at {?p1}, whose only {?S}-source is {?p2}, and {?S}({?a},{?b}) ⟹ {?a} is at {?p2}.")
+
+(rule
+  std.slots.slot-adjacent-bwd
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (?R ?a ?p2) (?isa ?p2 ?PT) (?S ?p2 ?p1) (?isa ?p1 ?PT) (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
+  :assert (?R ?b ?p1)
+  :why "{?a} is at {?p2}, whose only {?S}-target is {?p1}, and {?S}({?a},{?b}) ⟹ {?b} is at {?p1}.")
+
+(rule
+  std.slots.slot-adjacent-fwd-neg
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (not (?R ?a ?p2)) (?isa ?p2 ?PT) (?S ?p2 ?p1) (?isa ?p1 ?PT) (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
+  :assert (not (?R ?b ?p1))
+  :why "{?a} cannot be at {?p2}, the only {?S}-source of {?p1} ⟹ {?b} cannot be at {?p1}.")
+
+(rule
+  std.slots.slot-adjacent-bwd-neg
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (not (?R ?b ?p1)) (?isa ?p1 ?PT) (?S ?p2 ?p1) (?isa ?p2 ?PT) (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
+  :assert (not (?R ?a ?p2))
+  :why "{?b} cannot be at {?p1}, the only {?S}-target of {?p2} ⟹ {?a} cannot be at {?p2}.")
+
+(rule
+  std.slots.slot-prune-fwd
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (?R ?b ?p1) (?isa ?p1 ?PT) (?isa ?p_o ?PT) (neq ?p_o ?p1) (absent (?S ?p_o ?p1)))
+  :assert (not (?R ?a ?p_o))
+  :why "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one.")
+
+(rule
+  std.slots.slot-prune-bwd
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (?R ?a ?p2) (?isa ?p2 ?PT) (?isa ?p_o ?PT) (neq ?p_o ?p2) (absent (?S ?p2 ?p_o)))
+  :assert (not (?R ?b ?p_o))
+  :why "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one.")
+
+(rule
+  std.slots.slot-endpoint-fwd
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (?isa ?p1 ?PT) (absent (and (?isa ?p2 ?PT) (?S ?p2 ?p1))))
+  :assert (not (?R ?b ?p1))
+  :why "{?p1} has no {?S}-source, and {?b} needs one ({?S}({?a},{?b})) ⟹ {?b} is not at {?p1}.")
+
+(rule
+  std.slots.slot-endpoint-bwd
+  (?R ?S ?isa ?PT)
+  :match (and (?S ?a ?b) (?isa ?p2 ?PT) (absent (and (?isa ?p1 ?PT) (?S ?p2 ?p1))))
+  :assert (not (?R ?a ?p2))
+  :why "{?p2} has no {?S}-target, and {?a} needs one ({?S}({?a},{?b})) ⟹ {?a} is not at {?p2}.")
+
+(hrule
+  guess
+  (?R ?T1 ?T2)
+  :match (and (instance ?a ?T1) (instance ?b ?T2))
+  :assert (?R ?a ?b)
+  :why "guess: ({?R} {?a} {?b})?")
+
+(relation type T T :why "{?1} is a subtype of {?2}")
+
+(relation instance T T :why "{?1} is an instance of {?2}")
+
+(relation
+  co-located
+  Attribute
+  Attribute
+  :why "{?1} and {?2} are in the same house")
+
+(relation
+  right-of
+  Attribute
+  Attribute
+  :why "{?1}'s house is immediately right of {?2}'s")
+
+(relation next-to Attribute Attribute :why "{?1}'s house is next to {?2}'s")
+
+(symmetric co-located)
+
+(symmetric next-to)
+
+(includes right-of next-to)
+
+(slot-partition co-located instance type Attribute House)
+
+(slot-spatial co-located right-of instance House)
+
+(slot-spatial co-located next-to instance House)
+
+(type Attribute T)
+
+(type House Attribute)
+
+(type Color Attribute)
+
+(type Nationality Attribute)
+
+(type Pet Attribute)
+
+(type Cigarette Attribute)
+
+(type Drink Attribute)
+
+(instance House-1 House)
+
+(instance House-2 House)
+
+(instance House-3 House)
+
+(instance House-4 House)
+
+(instance House-5 House)
+
+(instance Red Color)
+
+(instance Green Color)
+
+(instance Ivory Color)
+
+(instance Yellow Color)
+
+(instance Blue Color)
+
+(instance Englishman Nationality)
+
+(instance Spaniard Nationality)
+
+(instance Ukrainian Nationality)
+
+(instance Norwegian Nationality)
+
+(instance Japanese Nationality)
+
+(instance Dog Pet)
+
+(instance Snail Pet)
+
+(instance Fox Pet)
+
+(instance Horse Pet)
+
+(instance Zebra Pet)
+
+(instance Old_Gold Cigarette)
+
+(instance Kools Cigarette)
+
+(instance Chesterfields Cigarette)
+
+(instance Lucky_Strike Cigarette)
+
+(instance Parliament Cigarette)
+
+(instance Coffee Drink)
+
+(instance Tea Drink)
+
+(instance Milk Drink)
+
+(instance Juice Drink)
+
+(instance Water Drink)
+
+(right-of House-2 House-1 :source "condition (1)")
+
+(right-of House-3 House-2 :source "condition (1)")
+
+(right-of House-4 House-3 :source "condition (1)")
+
+(right-of House-5 House-4 :source "condition (1)")
+
+(co-located Englishman Red :source "condition (2)")
+
+(co-located Spaniard Dog :source "condition (3)")
+
+(co-located Coffee Green :source "condition (4)")
+
+(co-located Ukrainian Tea :source "condition (5)")
+
+(right-of Green Ivory :source "condition (6)")
+
+(co-located Old_Gold Snail :source "condition (7)")
+
+(co-located Kools Yellow :source "condition (8)")
+
+(co-located Milk House-3 :source "condition (9)")
+
+(co-located Norwegian House-1 :source "condition (10)")
+
+(next-to Chesterfields Fox :source "condition (11)")
+
+(next-to Kools Horse :source "condition (12)")
+
+(co-located Lucky_Strike Juice :source "condition (13)")
+
+(co-located Japanese Parliament :source "condition (14)")
+
+(next-to Norwegian Blue :source "condition (15)")
+
+(solve
+  :hrules (guess (co-located Color House) (co-located Nationality House) (co-located Drink House) (co-located Cigarette House) (co-located Pet House)))
+
+(query
+  :goal (and (co-located Water ?h_water) (instance ?h_water House) (co-located ?who_water ?h_water) (instance ?who_water Nationality) (co-located Zebra ?h_zebra) (instance ?h_zebra House) (co-located ?who_zebra ?h_zebra) (instance ?who_zebra Nationality))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")
+;; ── the state ──────────────────────────────────────────────────────────
+
+(co-located Blue House-2) ; rule std.slots.slot-adjacent-fwd: Norwegian is at House-1, whose only next-to-source is House-2, and next-to(Blue,Norwegian) ⟹ Blue is at House-2. — Blue and House-2 are in the same house
+(co-located Chesterfields House-2) ; rule std.slots.slot-elimination: every slot except House-2 is excluded for Chesterfields ⟹ Chesterfields is at House-2. — Chesterfields and House-2 are in the same house
+(co-located Coffee Green) ; source "condition (4)" — Coffee and Green are in the same house
+(co-located Coffee House-5) ; rule std.slots.slot-locate: Coffee shares a slot with Green, and Green is at House-5 ⟹ Coffee is at House-5. — Coffee and House-5 are in the same house
+(co-located Dog House-4) ; rule std.slots.slot-locate: Dog shares a slot with Spaniard, and Spaniard is at House-4 ⟹ Dog is at House-4. — Dog and House-4 are in the same house
+(co-located Dog Spaniard) ; rule symmetric: co-located is symmetric: Spaniard ↔ Dog. — Dog and Spaniard are in the same house
+(co-located Englishman House-3) ; rule std.slots.slot-locate: Englishman shares a slot with Red, and Red is at House-3 ⟹ Englishman is at House-3. — Englishman and House-3 are in the same house
+(co-located Englishman Red) ; source "condition (2)" — Englishman and Red are in the same house
+(co-located Fox House-1) ; rule std.slots.slot-elimination: every slot except House-1 is excluded for Fox ⟹ Fox is at House-1. — Fox and House-1 are in the same house
+(co-located Green Coffee) ; rule symmetric: co-located is symmetric: Coffee ↔ Green. — Green and Coffee are in the same house
+(co-located Green House-5) ; rule std.slots.slot-elimination: every slot except House-5 is excluded for Green ⟹ Green is at House-5. — Green and House-5 are in the same house
+(co-located Horse House-2) ; rule std.slots.slot-adjacent-fwd: Kools is at House-1, whose only next-to-source is House-2, and next-to(Horse,Kools) ⟹ Horse is at House-2. — Horse and House-2 are in the same house
+(co-located House-1 Fox) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Fox,House-1) → co-located(House-1,Fox) — House-1 and Fox are in the same house
+(co-located House-1 Kools) ; rule symmetric: co-located is symmetric: Kools ↔ House-1. — House-1 and Kools are in the same house
+(co-located House-1 Norwegian) ; rule symmetric: co-located is symmetric: Norwegian ↔ House-1. — House-1 and Norwegian are in the same house
+(co-located House-1 Water) ; rule std.slots.slot-fill: every Drink except Water is excluded for slot House-1 ⟹ Water is at House-1. — House-1 and Water are in the same house
+(co-located House-1 Yellow) ; rule std.slots.slot-fill: every Color except Yellow is excluded for slot House-1 ⟹ Yellow is at House-1. — House-1 and Yellow are in the same house
+(co-located House-2 Blue) ; rule symmetric: co-located is symmetric: Blue ↔ House-2. — House-2 and Blue are in the same house
+(co-located House-2 Chesterfields) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Chesterfields,House-2) → co-located(House-2,Chesterfields) — House-2 and Chesterfields are in the same house
+(co-located House-2 Horse) ; rule symmetric: co-located is symmetric: Horse ↔ House-2. — House-2 and Horse are in the same house
+(co-located House-2 Tea) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Tea,House-2) → co-located(House-2,Tea) — House-2 and Tea are in the same house
+(co-located House-2 Ukrainian) ; rule std.slots.slot-fill: every Nationality except Ukrainian is excluded for slot House-2 ⟹ Ukrainian is at House-2. — House-2 and Ukrainian are in the same house
+(co-located House-3 Englishman) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Englishman,House-3) → co-located(House-3,Englishman) — House-3 and Englishman are in the same house
+(co-located House-3 Milk) ; rule symmetric: co-located is symmetric: Milk ↔ House-3. — House-3 and Milk are in the same house
+(co-located House-3 Old_Gold) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Old_Gold,House-3) → co-located(House-3,Old_Gold) — House-3 and Old_Gold are in the same house
+(co-located House-3 Red) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Red,House-3) → co-located(House-3,Red) — House-3 and Red are in the same house
+(co-located House-3 Snail) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Snail,House-3) → co-located(House-3,Snail) — House-3 and Snail are in the same house
+(co-located House-4 Dog) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Dog,House-4) → co-located(House-4,Dog) — House-4 and Dog are in the same house
+(co-located House-4 Ivory) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Ivory,House-4) → co-located(House-4,Ivory) — House-4 and Ivory are in the same house
+(co-located House-4 Juice) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Juice,House-4) → co-located(House-4,Juice) — House-4 and Juice are in the same house
+(co-located House-4 Lucky_Strike) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Lucky_Strike,House-4) → co-located(House-4,Lucky_Strike) — House-4 and Lucky_Strike are in the same house
+(co-located House-4 Spaniard) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Spaniard,House-4) → co-located(House-4,Spaniard) — House-4 and Spaniard are in the same house
+(co-located House-5 Coffee) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Coffee,House-5) → co-located(House-5,Coffee) — House-5 and Coffee are in the same house
+(co-located House-5 Green) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Green,House-5) → co-located(House-5,Green) — House-5 and Green are in the same house
+(co-located House-5 Japanese) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Japanese,House-5) → co-located(House-5,Japanese) — House-5 and Japanese are in the same house
+(co-located House-5 Parliament) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Parliament,House-5) → co-located(House-5,Parliament) — House-5 and Parliament are in the same house
+(co-located House-5 Zebra) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(Zebra,House-5) → co-located(House-5,Zebra) — House-5 and Zebra are in the same house
+(co-located Ivory House-4) ; rule std.slots.slot-elimination: every slot except House-4 is excluded for Ivory ⟹ Ivory is at House-4. — Ivory and House-4 are in the same house
+(co-located Japanese House-5) ; hypothesis 0 — Japanese and House-5 are in the same house
+(co-located Japanese Parliament) ; source "condition (14)" — Japanese and Parliament are in the same house
+(co-located Juice House-4) ; rule std.slots.slot-locate: Juice shares a slot with Lucky_Strike, and Lucky_Strike is at House-4 ⟹ Juice is at House-4. — Juice and House-4 are in the same house
+(co-located Juice Lucky_Strike) ; rule symmetric: co-located is symmetric: Lucky_Strike ↔ Juice. — Juice and Lucky_Strike are in the same house
+(co-located Kools House-1) ; rule std.slots.slot-locate: Kools shares a slot with Yellow, and Yellow is at House-1 ⟹ Kools is at House-1. — Kools and House-1 are in the same house
+(co-located Kools Yellow) ; source "condition (8)" — Kools and Yellow are in the same house
+(co-located Lucky_Strike House-4) ; rule std.slots.slot-elimination: every slot except House-4 is excluded for Lucky_Strike ⟹ Lucky_Strike is at House-4. — Lucky_Strike and House-4 are in the same house
+(co-located Lucky_Strike Juice) ; source "condition (13)" — Lucky_Strike and Juice are in the same house
+(co-located Milk House-3) ; source "condition (9)" — Milk and House-3 are in the same house
+(co-located Norwegian House-1) ; source "condition (10)" — Norwegian and House-1 are in the same house
+(co-located Old_Gold House-3) ; rule std.slots.slot-locate: Old_Gold shares a slot with Snail, and Snail is at House-3 ⟹ Old_Gold is at House-3. — Old_Gold and House-3 are in the same house
+(co-located Old_Gold Snail) ; source "condition (7)" — Old_Gold and Snail are in the same house
+(co-located Parliament House-5) ; rule std.slots.slot-locate: Parliament shares a slot with Japanese, and Japanese is at House-5 ⟹ Parliament is at House-5. — Parliament and House-5 are in the same house
+(co-located Parliament Japanese) ; rule symmetric: co-located is symmetric: Japanese ↔ Parliament. — Parliament and Japanese are in the same house
+(co-located Red Englishman) ; rule symmetric: co-located is symmetric: Englishman ↔ Red. — Red and Englishman are in the same house
+(co-located Red House-3) ; rule std.slots.slot-elimination: every slot except House-3 is excluded for Red ⟹ Red is at House-3. — Red and House-3 are in the same house
+(co-located Snail House-3) ; rule std.slots.slot-elimination: every slot except House-3 is excluded for Snail ⟹ Snail is at House-3. — Snail and House-3 are in the same house
+(co-located Snail Old_Gold) ; rule symmetric: co-located is symmetric: Old_Gold ↔ Snail. — Snail and Old_Gold are in the same house
+(co-located Spaniard Dog) ; source "condition (3)" — Spaniard and Dog are in the same house
+(co-located Spaniard House-4) ; rule std.slots.slot-elimination: every slot except House-4 is excluded for Spaniard ⟹ Spaniard is at House-4. — Spaniard and House-4 are in the same house
+(co-located Tea House-2) ; rule std.slots.slot-locate: Tea shares a slot with Ukrainian, and Ukrainian is at House-2 ⟹ Tea is at House-2. — Tea and House-2 are in the same house
+(co-located Tea Ukrainian) ; rule symmetric: co-located is symmetric: Ukrainian ↔ Tea. — Tea and Ukrainian are in the same house
+(co-located Ukrainian House-2) ; rule std.algebra.converse: (converse co-located co-located): mirror co-located(House-2,Ukrainian) → co-located(Ukrainian,House-2) — Ukrainian and House-2 are in the same house
+(co-located Ukrainian Tea) ; source "condition (5)" — Ukrainian and Tea are in the same house
+(co-located Water House-1) ; rule symmetric: co-located is symmetric: House-1 ↔ Water. — Water and House-1 are in the same house
+(co-located Yellow House-1) ; rule symmetric: co-located is symmetric: House-1 ↔ Yellow. — Yellow and House-1 are in the same house
+(co-located Yellow Kools) ; rule symmetric: co-located is symmetric: Kools ↔ Yellow. — Yellow and Kools are in the same house
+(co-located Zebra House-5) ; rule std.slots.slot-elimination: every slot except House-5 is excluded for Zebra ⟹ Zebra is at House-5. — Zebra and House-5 are in the same house
+(includes right-of next-to)
+(instance Blue Color) ; Blue is an instance of Color
+(instance Chesterfields Cigarette) ; Chesterfields is an instance of Cigarette
+(instance Coffee Drink) ; Coffee is an instance of Drink
+(instance Dog Pet) ; Dog is an instance of Pet
+(instance Englishman Nationality) ; Englishman is an instance of Nationality
+(instance Fox Pet) ; Fox is an instance of Pet
+(instance Green Color) ; Green is an instance of Color
+(instance Horse Pet) ; Horse is an instance of Pet
+(instance House-1 House) ; House-1 is an instance of House
+(instance House-2 House) ; House-2 is an instance of House
+(instance House-3 House) ; House-3 is an instance of House
+(instance House-4 House) ; House-4 is an instance of House
+(instance House-5 House) ; House-5 is an instance of House
+(instance Ivory Color) ; Ivory is an instance of Color
+(instance Japanese Nationality) ; Japanese is an instance of Nationality
+(instance Juice Drink) ; Juice is an instance of Drink
+(instance Kools Cigarette) ; Kools is an instance of Cigarette
+(instance Lucky_Strike Cigarette) ; Lucky_Strike is an instance of Cigarette
+(instance Milk Drink) ; Milk is an instance of Drink
+(instance Norwegian Nationality) ; Norwegian is an instance of Nationality
+(instance Old_Gold Cigarette) ; Old_Gold is an instance of Cigarette
+(instance Parliament Cigarette) ; Parliament is an instance of Cigarette
+(instance Red Color) ; Red is an instance of Color
+(instance Snail Pet) ; Snail is an instance of Pet
+(instance Spaniard Nationality) ; Spaniard is an instance of Nationality
+(instance Tea Drink) ; Tea is an instance of Drink
+(instance Ukrainian Nationality) ; Ukrainian is an instance of Nationality
+(instance Water Drink) ; Water is an instance of Drink
+(instance Yellow Color) ; Yellow is an instance of Color
+(instance Zebra Pet) ; Zebra is an instance of Pet
+(next-to Blue Norwegian) ; rule symmetric: next-to is symmetric: Norwegian ↔ Blue. — Blue's house is next to Norwegian's
+(next-to Chesterfields Fox) ; source "condition (11)" — Chesterfields's house is next to Fox's
+(next-to Fox Chesterfields) ; rule symmetric: next-to is symmetric: Chesterfields ↔ Fox. — Fox's house is next to Chesterfields's
+(next-to Green Ivory) ; rule includes: next-to includes right-of: from Green →right-of→ Ivory, derive Green →next-to→ Ivory. — Green's house is next to Ivory's
+(next-to Horse Kools) ; rule symmetric: next-to is symmetric: Kools ↔ Horse. — Horse's house is next to Kools's
+(next-to House-1 House-2) ; rule symmetric: next-to is symmetric: House-2 ↔ House-1. — House-1's house is next to House-2's
+(next-to House-2 House-1) ; rule includes: next-to includes right-of: from House-2 →right-of→ House-1, derive House-2 →next-to→ House-1. — House-2's house is next to House-1's
+(next-to House-2 House-3) ; rule symmetric: next-to is symmetric: House-3 ↔ House-2. — House-2's house is next to House-3's
+(next-to House-3 House-2) ; rule includes: next-to includes right-of: from House-3 →right-of→ House-2, derive House-3 →next-to→ House-2. — House-3's house is next to House-2's
+(next-to House-3 House-4) ; rule symmetric: next-to is symmetric: House-4 ↔ House-3. — House-3's house is next to House-4's
+(next-to House-4 House-3) ; rule includes: next-to includes right-of: from House-4 →right-of→ House-3, derive House-4 →next-to→ House-3. — House-4's house is next to House-3's
+(next-to House-4 House-5) ; rule symmetric: next-to is symmetric: House-5 ↔ House-4. — House-4's house is next to House-5's
+(next-to House-5 House-4) ; rule includes: next-to includes right-of: from House-5 →right-of→ House-4, derive House-5 →next-to→ House-4. — House-5's house is next to House-4's
+(next-to Ivory Green) ; rule symmetric: next-to is symmetric: Green ↔ Ivory. — Ivory's house is next to Green's
+(next-to Kools Horse) ; source "condition (12)" — Kools's house is next to Horse's
+(next-to Norwegian Blue) ; source "condition (15)" — Norwegian's house is next to Blue's
+(not (co-located Blue Coffee)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Coffee,Blue) ⟹ ¬co-located(Blue,Coffee).
+(not (co-located Blue Englishman)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Englishman,Blue) ⟹ ¬co-located(Blue,Englishman).
+(not (co-located Blue Green)) ; rule std.slots.slot-exclusive: Blue and Green are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Blue House-1)) ; rule std.slots.slot-occupied: Blue's slot already holds the House House-2 ⟹ it does not hold House-1.
+(not (co-located Blue House-3)) ; rule std.slots.slot-occupied: Blue's slot already holds the House House-2 ⟹ it does not hold House-3.
+(not (co-located Blue House-4)) ; rule std.slots.slot-occupied: Blue's slot already holds the House House-2 ⟹ it does not hold House-4.
+(not (co-located Blue House-5)) ; rule std.slots.slot-occupied: Blue's slot already holds the House House-2 ⟹ it does not hold House-5.
+(not (co-located Blue Ivory)) ; rule std.slots.slot-exclusive: Blue and Ivory are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Blue Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,Blue) ⟹ ¬co-located(Blue,Kools).
+(not (co-located Blue Red)) ; rule std.slots.slot-exclusive: Blue and Red are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Blue Yellow)) ; rule std.slots.slot-exclusive: Blue and Yellow are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Chesterfields House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Chesterfields) ⟹ ¬co-located(Chesterfields,House-1).
+(not (co-located Chesterfields House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Chesterfields) ⟹ ¬co-located(Chesterfields,House-3).
+(not (co-located Chesterfields House-4)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-4,Chesterfields) ⟹ ¬co-located(Chesterfields,House-4).
+(not (co-located Chesterfields House-5)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-5,Chesterfields) ⟹ ¬co-located(Chesterfields,House-5).
+(not (co-located Chesterfields Japanese)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Japanese,Chesterfields) ⟹ ¬co-located(Chesterfields,Japanese).
+(not (co-located Chesterfields Juice)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Juice,Chesterfields) ⟹ ¬co-located(Chesterfields,Juice).
+(not (co-located Chesterfields Kools)) ; rule std.slots.slot-exclusive: Chesterfields and Kools are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Chesterfields Lucky_Strike)) ; rule std.slots.slot-exclusive: Chesterfields and Lucky_Strike are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Chesterfields Old_Gold)) ; rule std.slots.slot-exclusive: Chesterfields and Old_Gold are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Chesterfields Parliament)) ; rule std.slots.slot-exclusive: Chesterfields and Parliament are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Chesterfields Snail)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Snail,Chesterfields) ⟹ ¬co-located(Chesterfields,Snail).
+(not (co-located Chesterfields Yellow)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Yellow,Chesterfields) ⟹ ¬co-located(Chesterfields,Yellow).
+(not (co-located Coffee Blue)) ; rule std.slots.slot-occupied: Coffee's slot already holds the Color Green ⟹ it does not hold Blue.
+(not (co-located Coffee House-1)) ; rule std.slots.slot-negative: Coffee shares a slot with Green, and Green cannot be at House-1 ⟹ neither can Coffee.
+(not (co-located Coffee House-2)) ; rule std.slots.slot-negative: Coffee shares a slot with Green, and Green cannot be at House-2 ⟹ neither can Coffee.
+(not (co-located Coffee House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Coffee) ⟹ ¬co-located(Coffee,House-3).
+(not (co-located Coffee House-4)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-4,Coffee) ⟹ ¬co-located(Coffee,House-4).
+(not (co-located Coffee Ivory)) ; rule std.slots.slot-occupied: Coffee's slot already holds the Color Green ⟹ it does not hold Ivory.
+(not (co-located Coffee Juice)) ; rule std.slots.slot-exclusive: Coffee and Juice are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Coffee Lucky_Strike)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Lucky_Strike,Coffee) ⟹ ¬co-located(Coffee,Lucky_Strike).
+(not (co-located Coffee Milk)) ; rule std.slots.slot-exclusive: Coffee and Milk are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Coffee Red)) ; rule std.slots.slot-occupied: Coffee's slot already holds the Color Green ⟹ it does not hold Red.
+(not (co-located Coffee Tea)) ; rule std.slots.slot-exclusive: Coffee and Tea are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Coffee Ukrainian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ukrainian,Coffee) ⟹ ¬co-located(Coffee,Ukrainian).
+(not (co-located Coffee Water)) ; rule std.slots.slot-exclusive: Coffee and Water are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Coffee Yellow)) ; rule std.slots.slot-occupied: Coffee's slot already holds the Color Green ⟹ it does not hold Yellow.
+(not (co-located Dog Englishman)) ; rule std.slots.slot-occupied: Dog's slot already holds the Nationality Spaniard ⟹ it does not hold Englishman.
+(not (co-located Dog Fox)) ; rule std.slots.slot-exclusive: Dog and Fox are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Dog Horse)) ; rule std.slots.slot-exclusive: Dog and Horse are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Dog House-1)) ; rule std.slots.slot-negative: Dog shares a slot with Spaniard, and Spaniard cannot be at House-1 ⟹ neither can Dog.
+(not (co-located Dog House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Dog) ⟹ ¬co-located(Dog,House-2).
+(not (co-located Dog House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Dog) ⟹ ¬co-located(Dog,House-3).
+(not (co-located Dog House-5)) ; rule std.slots.slot-negative: Dog shares a slot with Spaniard, and Spaniard cannot be at House-5 ⟹ neither can Dog.
+(not (co-located Dog Japanese)) ; rule std.slots.slot-occupied: Dog's slot already holds the Nationality Spaniard ⟹ it does not hold Japanese.
+(not (co-located Dog Norwegian)) ; rule std.slots.slot-occupied: Dog's slot already holds the Nationality Spaniard ⟹ it does not hold Norwegian.
+(not (co-located Dog Old_Gold)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Old_Gold,Dog) ⟹ ¬co-located(Dog,Old_Gold).
+(not (co-located Dog Snail)) ; rule std.slots.slot-exclusive: Dog and Snail are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Dog Ukrainian)) ; rule std.slots.slot-occupied: Dog's slot already holds the Nationality Spaniard ⟹ it does not hold Ukrainian.
+(not (co-located Dog Zebra)) ; rule std.slots.slot-exclusive: Dog and Zebra are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Englishman Blue)) ; rule std.slots.slot-occupied: Englishman's slot already holds the Color Red ⟹ it does not hold Blue.
+(not (co-located Englishman Dog)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Dog,Englishman) ⟹ ¬co-located(Englishman,Dog).
+(not (co-located Englishman Green)) ; rule std.slots.slot-occupied: Englishman's slot already holds the Color Red ⟹ it does not hold Green.
+(not (co-located Englishman House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Englishman) ⟹ ¬co-located(Englishman,House-1).
+(not (co-located Englishman House-2)) ; rule std.slots.slot-negative: Englishman shares a slot with Red, and Red cannot be at House-2 ⟹ neither can Englishman.
+(not (co-located Englishman House-4)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-4,Englishman) ⟹ ¬co-located(Englishman,House-4).
+(not (co-located Englishman House-5)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-5,Englishman) ⟹ ¬co-located(Englishman,House-5).
+(not (co-located Englishman Ivory)) ; rule std.slots.slot-occupied: Englishman's slot already holds the Color Red ⟹ it does not hold Ivory.
+(not (co-located Englishman Japanese)) ; rule std.slots.slot-exclusive: Englishman and Japanese are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Englishman Norwegian)) ; rule std.slots.slot-exclusive: Englishman and Norwegian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Englishman Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,Englishman) ⟹ ¬co-located(Englishman,Parliament).
+(not (co-located Englishman Spaniard)) ; rule std.slots.slot-exclusive: Englishman and Spaniard are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Englishman Tea)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Tea,Englishman) ⟹ ¬co-located(Englishman,Tea).
+(not (co-located Englishman Ukrainian)) ; rule std.slots.slot-exclusive: Englishman and Ukrainian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Englishman Yellow)) ; rule std.slots.slot-occupied: Englishman's slot already holds the Color Red ⟹ it does not hold Yellow.
+(not (co-located Fox Dog)) ; rule std.slots.slot-exclusive: Fox and Dog are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Fox Horse)) ; rule std.slots.slot-exclusive: Fox and Horse are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Fox House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Fox) ⟹ ¬co-located(Fox,House-2).
+(not (co-located Fox House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Fox) ⟹ ¬co-located(Fox,House-3).
+(not (co-located Fox House-4)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-4,Fox) ⟹ ¬co-located(Fox,House-4).
+(not (co-located Fox House-5)) ; rule std.slots.slot-adjacent-fwd-neg: Chesterfields cannot be at House-4, the only next-to-source of House-5 ⟹ Fox cannot be at House-5.
+(not (co-located Fox Old_Gold)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Old_Gold,Fox) ⟹ ¬co-located(Fox,Old_Gold).
+(not (co-located Fox Snail)) ; rule std.slots.slot-exclusive: Fox and Snail are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Fox Spaniard)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Spaniard,Fox) ⟹ ¬co-located(Fox,Spaniard).
+(not (co-located Fox Zebra)) ; rule std.slots.slot-exclusive: Fox and Zebra are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Green Blue)) ; rule std.slots.slot-exclusive: Green and Blue are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Green Englishman)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Englishman,Green) ⟹ ¬co-located(Green,Englishman).
+(not (co-located Green House-1)) ; rule std.slots.slot-endpoint-bwd: House-1 has no right-of-target, and Green needs one (right-of(Green,Ivory)) ⟹ Green is not at House-1.
+(not (co-located Green House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Green) ⟹ ¬co-located(Green,House-2).
+(not (co-located Green House-3)) ; rule std.slots.slot-negative: Green shares a slot with Coffee, and Coffee cannot be at House-3 ⟹ neither can Green.
+(not (co-located Green House-4)) ; rule std.slots.slot-negative: Green shares a slot with Coffee, and Coffee cannot be at House-4 ⟹ neither can Green.
+(not (co-located Green Ivory)) ; rule std.slots.slot-exclusive: Green and Ivory are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Green Juice)) ; rule std.slots.slot-occupied: Green's slot already holds the Drink Coffee ⟹ it does not hold Juice.
+(not (co-located Green Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,Green) ⟹ ¬co-located(Green,Kools).
+(not (co-located Green Milk)) ; rule std.slots.slot-occupied: Green's slot already holds the Drink Coffee ⟹ it does not hold Milk.
+(not (co-located Green Red)) ; rule std.slots.slot-exclusive: Green and Red are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Green Tea)) ; rule std.slots.slot-occupied: Green's slot already holds the Drink Coffee ⟹ it does not hold Tea.
+(not (co-located Green Water)) ; rule std.slots.slot-occupied: Green's slot already holds the Drink Coffee ⟹ it does not hold Water.
+(not (co-located Green Yellow)) ; rule std.slots.slot-exclusive: Green and Yellow are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Horse Dog)) ; rule std.slots.slot-exclusive: Horse and Dog are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Horse Fox)) ; rule std.slots.slot-exclusive: Horse and Fox are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Horse House-1)) ; rule std.slots.slot-adjacent-fwd-neg: Kools cannot be at House-2, the only next-to-source of House-1 ⟹ Horse cannot be at House-1.
+(not (co-located Horse House-3)) ; rule std.slots.slot-occupied: Horse's slot already holds the House House-2 ⟹ it does not hold House-3.
+(not (co-located Horse House-4)) ; rule std.slots.slot-occupied: Horse's slot already holds the House House-2 ⟹ it does not hold House-4.
+(not (co-located Horse House-5)) ; rule std.slots.slot-occupied: Horse's slot already holds the House House-2 ⟹ it does not hold House-5.
+(not (co-located Horse Old_Gold)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Old_Gold,Horse) ⟹ ¬co-located(Horse,Old_Gold).
+(not (co-located Horse Snail)) ; rule std.slots.slot-exclusive: Horse and Snail are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Horse Spaniard)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Spaniard,Horse) ⟹ ¬co-located(Horse,Spaniard).
+(not (co-located Horse Zebra)) ; rule std.slots.slot-exclusive: Horse and Zebra are distinct Pets — they cannot share a slot under co-located.
+(not (co-located House-1 Blue)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Blue,House-1) ⟹ ¬co-located(House-1,Blue).
+(not (co-located House-1 Chesterfields)) ; rule std.slots.slot-occupied: House-1's slot already holds the Cigarette Kools ⟹ it does not hold Chesterfields.
+(not (co-located House-1 Coffee)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Coffee,House-1) ⟹ ¬co-located(House-1,Coffee).
+(not (co-located House-1 Dog)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Dog,House-1) ⟹ ¬co-located(House-1,Dog).
+(not (co-located House-1 Englishman)) ; rule std.slots.slot-occupied: House-1's slot already holds the Nationality Norwegian ⟹ it does not hold Englishman.
+(not (co-located House-1 Green)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Green,House-1) ⟹ ¬co-located(House-1,Green).
+(not (co-located House-1 Horse)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Horse,House-1) ⟹ ¬co-located(House-1,Horse).
+(not (co-located House-1 House-2)) ; rule std.slots.slot-exclusive: House-1 and House-2 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-1 House-3)) ; rule std.slots.slot-exclusive: House-1 and House-3 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-1 House-4)) ; rule std.slots.slot-exclusive: House-1 and House-4 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-1 House-5)) ; rule std.slots.slot-exclusive: House-1 and House-5 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-1 Ivory)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ivory,House-1) ⟹ ¬co-located(House-1,Ivory).
+(not (co-located House-1 Japanese)) ; rule std.slots.slot-occupied: House-1's slot already holds the Nationality Norwegian ⟹ it does not hold Japanese.
+(not (co-located House-1 Juice)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Juice,House-1) ⟹ ¬co-located(House-1,Juice).
+(not (co-located House-1 Lucky_Strike)) ; rule std.slots.slot-occupied: House-1's slot already holds the Cigarette Kools ⟹ it does not hold Lucky_Strike.
+(not (co-located House-1 Milk)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Milk,House-1) ⟹ ¬co-located(House-1,Milk).
+(not (co-located House-1 Old_Gold)) ; rule std.slots.slot-occupied: House-1's slot already holds the Cigarette Kools ⟹ it does not hold Old_Gold.
+(not (co-located House-1 Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,House-1) ⟹ ¬co-located(House-1,Parliament).
+(not (co-located House-1 Red)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Red,House-1) ⟹ ¬co-located(House-1,Red).
+(not (co-located House-1 Snail)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Snail,House-1) ⟹ ¬co-located(House-1,Snail).
+(not (co-located House-1 Spaniard)) ; rule std.slots.slot-occupied: House-1's slot already holds the Nationality Norwegian ⟹ it does not hold Spaniard.
+(not (co-located House-1 Tea)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Tea,House-1) ⟹ ¬co-located(House-1,Tea).
+(not (co-located House-1 Ukrainian)) ; rule std.slots.slot-occupied: House-1's slot already holds the Nationality Norwegian ⟹ it does not hold Ukrainian.
+(not (co-located House-1 Zebra)) ; rule std.slots.slot-occupied: House-1's slot already holds the Pet Fox ⟹ it does not hold Zebra.
+(not (co-located House-2 Coffee)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Coffee,House-2) ⟹ ¬co-located(House-2,Coffee).
+(not (co-located House-2 Dog)) ; rule std.slots.slot-occupied: House-2's slot already holds the Pet Horse ⟹ it does not hold Dog.
+(not (co-located House-2 Englishman)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Englishman,House-2) ⟹ ¬co-located(House-2,Englishman).
+(not (co-located House-2 Fox)) ; rule std.slots.slot-occupied: House-2's slot already holds the Pet Horse ⟹ it does not hold Fox.
+(not (co-located House-2 Green)) ; rule std.slots.slot-occupied: House-2's slot already holds the Color Blue ⟹ it does not hold Green.
+(not (co-located House-2 House-1)) ; rule std.slots.slot-exclusive: House-2 and House-1 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-2 House-3)) ; rule std.slots.slot-exclusive: House-2 and House-3 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-2 House-4)) ; rule std.slots.slot-exclusive: House-2 and House-4 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-2 House-5)) ; rule std.slots.slot-exclusive: House-2 and House-5 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-2 Ivory)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ivory,House-2) ⟹ ¬co-located(House-2,Ivory).
+(not (co-located House-2 Japanese)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Japanese,House-2) ⟹ ¬co-located(House-2,Japanese).
+(not (co-located House-2 Juice)) ; rule std.slots.slot-occupied: House-2's slot already holds the Drink Tea ⟹ it does not hold Juice.
+(not (co-located House-2 Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,House-2) ⟹ ¬co-located(House-2,Kools).
+(not (co-located House-2 Lucky_Strike)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Lucky_Strike,House-2) ⟹ ¬co-located(House-2,Lucky_Strike).
+(not (co-located House-2 Milk)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Milk,House-2) ⟹ ¬co-located(House-2,Milk).
+(not (co-located House-2 Norwegian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Norwegian,House-2) ⟹ ¬co-located(House-2,Norwegian).
+(not (co-located House-2 Old_Gold)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Old_Gold,House-2) ⟹ ¬co-located(House-2,Old_Gold).
+(not (co-located House-2 Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,House-2) ⟹ ¬co-located(House-2,Parliament).
+(not (co-located House-2 Red)) ; rule std.slots.slot-occupied: House-2's slot already holds the Color Blue ⟹ it does not hold Red.
+(not (co-located House-2 Snail)) ; rule std.slots.slot-occupied: House-2's slot already holds the Pet Horse ⟹ it does not hold Snail.
+(not (co-located House-2 Spaniard)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Spaniard,House-2) ⟹ ¬co-located(House-2,Spaniard).
+(not (co-located House-2 Water)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Water,House-2) ⟹ ¬co-located(House-2,Water).
+(not (co-located House-2 Yellow)) ; rule std.slots.slot-occupied: House-2's slot already holds the Color Blue ⟹ it does not hold Yellow.
+(not (co-located House-2 Zebra)) ; rule std.slots.slot-occupied: House-2's slot already holds the Pet Horse ⟹ it does not hold Zebra.
+(not (co-located House-3 Blue)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Blue,House-3) ⟹ ¬co-located(House-3,Blue).
+(not (co-located House-3 Chesterfields)) ; rule std.slots.slot-occupied: House-3's slot already holds the Cigarette Old_Gold ⟹ it does not hold Chesterfields.
+(not (co-located House-3 Coffee)) ; rule std.slots.slot-occupied: House-3's slot already holds the Drink Milk ⟹ it does not hold Coffee.
+(not (co-located House-3 Dog)) ; rule std.slots.slot-occupied: House-3's slot already holds the Pet Snail ⟹ it does not hold Dog.
+(not (co-located House-3 Fox)) ; rule std.slots.slot-occupied: House-3's slot already holds the Pet Snail ⟹ it does not hold Fox.
+(not (co-located House-3 Green)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Green,House-3) ⟹ ¬co-located(House-3,Green).
+(not (co-located House-3 Horse)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Horse,House-3) ⟹ ¬co-located(House-3,Horse).
+(not (co-located House-3 House-1)) ; rule std.slots.slot-exclusive: House-3 and House-1 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-3 House-2)) ; rule std.slots.slot-exclusive: House-3 and House-2 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-3 House-4)) ; rule std.slots.slot-exclusive: House-3 and House-4 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-3 House-5)) ; rule std.slots.slot-exclusive: House-3 and House-5 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-3 Ivory)) ; rule std.slots.slot-occupied: House-3's slot already holds the Color Red ⟹ it does not hold Ivory.
+(not (co-located House-3 Japanese)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Japanese,House-3) ⟹ ¬co-located(House-3,Japanese).
+(not (co-located House-3 Juice)) ; rule std.slots.slot-occupied: House-3's slot already holds the Drink Milk ⟹ it does not hold Juice.
+(not (co-located House-3 Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,House-3) ⟹ ¬co-located(House-3,Kools).
+(not (co-located House-3 Lucky_Strike)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Lucky_Strike,House-3) ⟹ ¬co-located(House-3,Lucky_Strike).
+(not (co-located House-3 Norwegian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Norwegian,House-3) ⟹ ¬co-located(House-3,Norwegian).
+(not (co-located House-3 Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,House-3) ⟹ ¬co-located(House-3,Parliament).
+(not (co-located House-3 Spaniard)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Spaniard,House-3) ⟹ ¬co-located(House-3,Spaniard).
+(not (co-located House-3 Tea)) ; rule std.slots.slot-occupied: House-3's slot already holds the Drink Milk ⟹ it does not hold Tea.
+(not (co-located House-3 Ukrainian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ukrainian,House-3) ⟹ ¬co-located(House-3,Ukrainian).
+(not (co-located House-3 Water)) ; rule std.slots.slot-occupied: House-3's slot already holds the Drink Milk ⟹ it does not hold Water.
+(not (co-located House-3 Yellow)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Yellow,House-3) ⟹ ¬co-located(House-3,Yellow).
+(not (co-located House-3 Zebra)) ; rule std.slots.slot-occupied: House-3's slot already holds the Pet Snail ⟹ it does not hold Zebra.
+(not (co-located House-4 Blue)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Blue,House-4) ⟹ ¬co-located(House-4,Blue).
+(not (co-located House-4 Chesterfields)) ; rule std.slots.slot-occupied: House-4's slot already holds the Cigarette Lucky_Strike ⟹ it does not hold Chesterfields.
+(not (co-located House-4 Coffee)) ; rule std.slots.slot-occupied: House-4's slot already holds the Drink Juice ⟹ it does not hold Coffee.
+(not (co-located House-4 Englishman)) ; rule std.slots.slot-occupied: House-4's slot already holds the Nationality Spaniard ⟹ it does not hold Englishman.
+(not (co-located House-4 Fox)) ; rule std.slots.slot-occupied: House-4's slot already holds the Pet Dog ⟹ it does not hold Fox.
+(not (co-located House-4 Green)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Green,House-4) ⟹ ¬co-located(House-4,Green).
+(not (co-located House-4 Horse)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Horse,House-4) ⟹ ¬co-located(House-4,Horse).
+(not (co-located House-4 House-1)) ; rule std.slots.slot-exclusive: House-4 and House-1 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-4 House-2)) ; rule std.slots.slot-exclusive: House-4 and House-2 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-4 House-3)) ; rule std.slots.slot-exclusive: House-4 and House-3 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-4 House-5)) ; rule std.slots.slot-exclusive: House-4 and House-5 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-4 Japanese)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Japanese,House-4) ⟹ ¬co-located(House-4,Japanese).
+(not (co-located House-4 Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,House-4) ⟹ ¬co-located(House-4,Kools).
+(not (co-located House-4 Milk)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Milk,House-4) ⟹ ¬co-located(House-4,Milk).
+(not (co-located House-4 Norwegian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Norwegian,House-4) ⟹ ¬co-located(House-4,Norwegian).
+(not (co-located House-4 Old_Gold)) ; rule std.slots.slot-occupied: House-4's slot already holds the Cigarette Lucky_Strike ⟹ it does not hold Old_Gold.
+(not (co-located House-4 Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,House-4) ⟹ ¬co-located(House-4,Parliament).
+(not (co-located House-4 Red)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Red,House-4) ⟹ ¬co-located(House-4,Red).
+(not (co-located House-4 Snail)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Snail,House-4) ⟹ ¬co-located(House-4,Snail).
+(not (co-located House-4 Tea)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Tea,House-4) ⟹ ¬co-located(House-4,Tea).
+(not (co-located House-4 Ukrainian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ukrainian,House-4) ⟹ ¬co-located(House-4,Ukrainian).
+(not (co-located House-4 Water)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Water,House-4) ⟹ ¬co-located(House-4,Water).
+(not (co-located House-4 Yellow)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Yellow,House-4) ⟹ ¬co-located(House-4,Yellow).
+(not (co-located House-4 Zebra)) ; rule std.slots.slot-occupied: House-4's slot already holds the Pet Dog ⟹ it does not hold Zebra.
+(not (co-located House-5 Blue)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Blue,House-5) ⟹ ¬co-located(House-5,Blue).
+(not (co-located House-5 Chesterfields)) ; rule std.slots.slot-occupied: House-5's slot already holds the Cigarette Parliament ⟹ it does not hold Chesterfields.
+(not (co-located House-5 Dog)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Dog,House-5) ⟹ ¬co-located(House-5,Dog).
+(not (co-located House-5 Englishman)) ; rule std.slots.slot-occupied: House-5's slot already holds the Nationality Japanese ⟹ it does not hold Englishman.
+(not (co-located House-5 Fox)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Fox,House-5) ⟹ ¬co-located(House-5,Fox).
+(not (co-located House-5 Horse)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Horse,House-5) ⟹ ¬co-located(House-5,Horse).
+(not (co-located House-5 House-1)) ; rule std.slots.slot-exclusive: House-5 and House-1 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-5 House-2)) ; rule std.slots.slot-exclusive: House-5 and House-2 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-5 House-3)) ; rule std.slots.slot-exclusive: House-5 and House-3 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-5 House-4)) ; rule std.slots.slot-exclusive: House-5 and House-4 are distinct Houses — they cannot share a slot under co-located.
+(not (co-located House-5 Ivory)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ivory,House-5) ⟹ ¬co-located(House-5,Ivory).
+(not (co-located House-5 Juice)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Juice,House-5) ⟹ ¬co-located(House-5,Juice).
+(not (co-located House-5 Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,House-5) ⟹ ¬co-located(House-5,Kools).
+(not (co-located House-5 Lucky_Strike)) ; rule std.slots.slot-occupied: House-5's slot already holds the Cigarette Parliament ⟹ it does not hold Lucky_Strike.
+(not (co-located House-5 Milk)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Milk,House-5) ⟹ ¬co-located(House-5,Milk).
+(not (co-located House-5 Norwegian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Norwegian,House-5) ⟹ ¬co-located(House-5,Norwegian).
+(not (co-located House-5 Old_Gold)) ; rule std.slots.slot-occupied: House-5's slot already holds the Cigarette Parliament ⟹ it does not hold Old_Gold.
+(not (co-located House-5 Red)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Red,House-5) ⟹ ¬co-located(House-5,Red).
+(not (co-located House-5 Snail)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Snail,House-5) ⟹ ¬co-located(House-5,Snail).
+(not (co-located House-5 Spaniard)) ; rule std.slots.slot-occupied: House-5's slot already holds the Nationality Japanese ⟹ it does not hold Spaniard.
+(not (co-located House-5 Tea)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Tea,House-5) ⟹ ¬co-located(House-5,Tea).
+(not (co-located House-5 Ukrainian)) ; rule std.slots.slot-occupied: House-5's slot already holds the Nationality Japanese ⟹ it does not hold Ukrainian.
+(not (co-located House-5 Water)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Water,House-5) ⟹ ¬co-located(House-5,Water).
+(not (co-located House-5 Yellow)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Yellow,House-5) ⟹ ¬co-located(House-5,Yellow).
+(not (co-located Ivory Blue)) ; rule std.slots.slot-exclusive: Ivory and Blue are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Ivory Coffee)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Coffee,Ivory) ⟹ ¬co-located(Ivory,Coffee).
+(not (co-located Ivory Englishman)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Englishman,Ivory) ⟹ ¬co-located(Ivory,Englishman).
+(not (co-located Ivory Green)) ; rule std.slots.slot-exclusive: Ivory and Green are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Ivory House-1)) ; rule std.slots.slot-adjacent-fwd-neg: Green cannot be at House-2, the only right-of-source of House-1 ⟹ Ivory cannot be at House-1.
+(not (co-located Ivory House-2)) ; rule std.slots.slot-adjacent-fwd-neg: Green cannot be at House-3, the only right-of-source of House-2 ⟹ Ivory cannot be at House-2.
+(not (co-located Ivory House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Ivory) ⟹ ¬co-located(Ivory,House-3).
+(not (co-located Ivory House-5)) ; rule std.slots.slot-endpoint-fwd: House-5 has no right-of-source, and Ivory needs one (right-of(Green,Ivory)) ⟹ Ivory is not at House-5.
+(not (co-located Ivory Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,Ivory) ⟹ ¬co-located(Ivory,Kools).
+(not (co-located Ivory Red)) ; rule std.slots.slot-exclusive: Ivory and Red are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Ivory Yellow)) ; rule std.slots.slot-exclusive: Ivory and Yellow are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Japanese Chesterfields)) ; rule std.slots.slot-occupied: Japanese's slot already holds the Cigarette Parliament ⟹ it does not hold Chesterfields.
+(not (co-located Japanese Dog)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Dog,Japanese) ⟹ ¬co-located(Japanese,Dog).
+(not (co-located Japanese Englishman)) ; rule std.slots.slot-exclusive: Japanese and Englishman are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Japanese House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Japanese) ⟹ ¬co-located(Japanese,House-1).
+(not (co-located Japanese House-2)) ; rule std.slots.slot-occupied: Japanese's slot already holds the House House-5 ⟹ it does not hold House-2.
+(not (co-located Japanese House-3)) ; rule std.slots.slot-occupied: Japanese's slot already holds the House House-5 ⟹ it does not hold House-3.
+(not (co-located Japanese House-4)) ; rule std.slots.slot-occupied: Japanese's slot already holds the House House-5 ⟹ it does not hold House-4.
+(not (co-located Japanese Kools)) ; rule std.slots.slot-occupied: Japanese's slot already holds the Cigarette Parliament ⟹ it does not hold Kools.
+(not (co-located Japanese Lucky_Strike)) ; rule std.slots.slot-occupied: Japanese's slot already holds the Cigarette Parliament ⟹ it does not hold Lucky_Strike.
+(not (co-located Japanese Norwegian)) ; rule std.slots.slot-exclusive: Japanese and Norwegian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Japanese Old_Gold)) ; rule std.slots.slot-occupied: Japanese's slot already holds the Cigarette Parliament ⟹ it does not hold Old_Gold.
+(not (co-located Japanese Red)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Red,Japanese) ⟹ ¬co-located(Japanese,Red).
+(not (co-located Japanese Spaniard)) ; rule std.slots.slot-exclusive: Japanese and Spaniard are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Japanese Tea)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Tea,Japanese) ⟹ ¬co-located(Japanese,Tea).
+(not (co-located Japanese Ukrainian)) ; rule std.slots.slot-exclusive: Japanese and Ukrainian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Juice Chesterfields)) ; rule std.slots.slot-occupied: Juice's slot already holds the Cigarette Lucky_Strike ⟹ it does not hold Chesterfields.
+(not (co-located Juice Coffee)) ; rule std.slots.slot-exclusive: Juice and Coffee are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Juice Green)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Green,Juice) ⟹ ¬co-located(Juice,Green).
+(not (co-located Juice House-1)) ; rule std.slots.slot-negative: Juice shares a slot with Lucky_Strike, and Lucky_Strike cannot be at House-1 ⟹ neither can Juice.
+(not (co-located Juice House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Juice) ⟹ ¬co-located(Juice,House-2).
+(not (co-located Juice House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Juice) ⟹ ¬co-located(Juice,House-3).
+(not (co-located Juice House-5)) ; rule std.slots.slot-negative: Juice shares a slot with Lucky_Strike, and Lucky_Strike cannot be at House-5 ⟹ neither can Juice.
+(not (co-located Juice Kools)) ; rule std.slots.slot-occupied: Juice's slot already holds the Cigarette Lucky_Strike ⟹ it does not hold Kools.
+(not (co-located Juice Milk)) ; rule std.slots.slot-exclusive: Juice and Milk are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Juice Old_Gold)) ; rule std.slots.slot-occupied: Juice's slot already holds the Cigarette Lucky_Strike ⟹ it does not hold Old_Gold.
+(not (co-located Juice Parliament)) ; rule std.slots.slot-occupied: Juice's slot already holds the Cigarette Lucky_Strike ⟹ it does not hold Parliament.
+(not (co-located Juice Tea)) ; rule std.slots.slot-exclusive: Juice and Tea are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Juice Ukrainian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ukrainian,Juice) ⟹ ¬co-located(Juice,Ukrainian).
+(not (co-located Juice Water)) ; rule std.slots.slot-exclusive: Juice and Water are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Kools Blue)) ; rule std.slots.slot-occupied: Kools's slot already holds the Color Yellow ⟹ it does not hold Blue.
+(not (co-located Kools Chesterfields)) ; rule std.slots.slot-exclusive: Kools and Chesterfields are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Kools Green)) ; rule std.slots.slot-occupied: Kools's slot already holds the Color Yellow ⟹ it does not hold Green.
+(not (co-located Kools House-2)) ; rule std.slots.slot-negative: Kools shares a slot with Yellow, and Yellow cannot be at House-2 ⟹ neither can Kools.
+(not (co-located Kools House-3)) ; rule std.slots.slot-occupied: Kools's slot already holds the House House-1 ⟹ it does not hold House-3.
+(not (co-located Kools House-4)) ; rule std.slots.slot-occupied: Kools's slot already holds the House House-1 ⟹ it does not hold House-4.
+(not (co-located Kools House-5)) ; rule std.slots.slot-occupied: Kools's slot already holds the House House-1 ⟹ it does not hold House-5.
+(not (co-located Kools Ivory)) ; rule std.slots.slot-occupied: Kools's slot already holds the Color Yellow ⟹ it does not hold Ivory.
+(not (co-located Kools Japanese)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Japanese,Kools) ⟹ ¬co-located(Kools,Japanese).
+(not (co-located Kools Juice)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Juice,Kools) ⟹ ¬co-located(Kools,Juice).
+(not (co-located Kools Lucky_Strike)) ; rule std.slots.slot-exclusive: Kools and Lucky_Strike are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Kools Old_Gold)) ; rule std.slots.slot-exclusive: Kools and Old_Gold are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Kools Parliament)) ; rule std.slots.slot-exclusive: Kools and Parliament are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Kools Red)) ; rule std.slots.slot-occupied: Kools's slot already holds the Color Yellow ⟹ it does not hold Red.
+(not (co-located Kools Snail)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Snail,Kools) ⟹ ¬co-located(Kools,Snail).
+(not (co-located Lucky_Strike Chesterfields)) ; rule std.slots.slot-exclusive: Lucky_Strike and Chesterfields are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Lucky_Strike Coffee)) ; rule std.slots.slot-occupied: Lucky_Strike's slot already holds the Drink Juice ⟹ it does not hold Coffee.
+(not (co-located Lucky_Strike House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Lucky_Strike) ⟹ ¬co-located(Lucky_Strike,House-1).
+(not (co-located Lucky_Strike House-2)) ; rule std.slots.slot-negative: Lucky_Strike shares a slot with Juice, and Juice cannot be at House-2 ⟹ neither can Lucky_Strike.
+(not (co-located Lucky_Strike House-3)) ; rule std.slots.slot-negative: Lucky_Strike shares a slot with Juice, and Juice cannot be at House-3 ⟹ neither can Lucky_Strike.
+(not (co-located Lucky_Strike House-5)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-5,Lucky_Strike) ⟹ ¬co-located(Lucky_Strike,House-5).
+(not (co-located Lucky_Strike Japanese)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Japanese,Lucky_Strike) ⟹ ¬co-located(Lucky_Strike,Japanese).
+(not (co-located Lucky_Strike Kools)) ; rule std.slots.slot-exclusive: Lucky_Strike and Kools are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Lucky_Strike Milk)) ; rule std.slots.slot-occupied: Lucky_Strike's slot already holds the Drink Juice ⟹ it does not hold Milk.
+(not (co-located Lucky_Strike Old_Gold)) ; rule std.slots.slot-exclusive: Lucky_Strike and Old_Gold are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Lucky_Strike Parliament)) ; rule std.slots.slot-exclusive: Lucky_Strike and Parliament are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Lucky_Strike Snail)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Snail,Lucky_Strike) ⟹ ¬co-located(Lucky_Strike,Snail).
+(not (co-located Lucky_Strike Tea)) ; rule std.slots.slot-occupied: Lucky_Strike's slot already holds the Drink Juice ⟹ it does not hold Tea.
+(not (co-located Lucky_Strike Water)) ; rule std.slots.slot-occupied: Lucky_Strike's slot already holds the Drink Juice ⟹ it does not hold Water.
+(not (co-located Lucky_Strike Yellow)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Yellow,Lucky_Strike) ⟹ ¬co-located(Lucky_Strike,Yellow).
+(not (co-located Milk Coffee)) ; rule std.slots.slot-exclusive: Milk and Coffee are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Milk Green)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Green,Milk) ⟹ ¬co-located(Milk,Green).
+(not (co-located Milk House-1)) ; rule std.slots.slot-occupied: Milk's slot already holds the House House-3 ⟹ it does not hold House-1.
+(not (co-located Milk House-2)) ; rule std.slots.slot-occupied: Milk's slot already holds the House House-3 ⟹ it does not hold House-2.
+(not (co-located Milk House-4)) ; rule std.slots.slot-occupied: Milk's slot already holds the House House-3 ⟹ it does not hold House-4.
+(not (co-located Milk House-5)) ; rule std.slots.slot-occupied: Milk's slot already holds the House House-3 ⟹ it does not hold House-5.
+(not (co-located Milk Juice)) ; rule std.slots.slot-exclusive: Milk and Juice are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Milk Lucky_Strike)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Lucky_Strike,Milk) ⟹ ¬co-located(Milk,Lucky_Strike).
+(not (co-located Milk Tea)) ; rule std.slots.slot-exclusive: Milk and Tea are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Milk Ukrainian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ukrainian,Milk) ⟹ ¬co-located(Milk,Ukrainian).
+(not (co-located Milk Water)) ; rule std.slots.slot-exclusive: Milk and Water are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Norwegian Dog)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Dog,Norwegian) ⟹ ¬co-located(Norwegian,Dog).
+(not (co-located Norwegian Englishman)) ; rule std.slots.slot-exclusive: Norwegian and Englishman are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Norwegian House-2)) ; rule std.slots.slot-occupied: Norwegian's slot already holds the House House-1 ⟹ it does not hold House-2.
+(not (co-located Norwegian House-3)) ; rule std.slots.slot-occupied: Norwegian's slot already holds the House House-1 ⟹ it does not hold House-3.
+(not (co-located Norwegian House-4)) ; rule std.slots.slot-occupied: Norwegian's slot already holds the House House-1 ⟹ it does not hold House-4.
+(not (co-located Norwegian House-5)) ; rule std.slots.slot-occupied: Norwegian's slot already holds the House House-1 ⟹ it does not hold House-5.
+(not (co-located Norwegian Japanese)) ; rule std.slots.slot-exclusive: Norwegian and Japanese are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Norwegian Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,Norwegian) ⟹ ¬co-located(Norwegian,Parliament).
+(not (co-located Norwegian Red)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Red,Norwegian) ⟹ ¬co-located(Norwegian,Red).
+(not (co-located Norwegian Spaniard)) ; rule std.slots.slot-exclusive: Norwegian and Spaniard are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Norwegian Tea)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Tea,Norwegian) ⟹ ¬co-located(Norwegian,Tea).
+(not (co-located Norwegian Ukrainian)) ; rule std.slots.slot-exclusive: Norwegian and Ukrainian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Old_Gold Chesterfields)) ; rule std.slots.slot-exclusive: Old_Gold and Chesterfields are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Old_Gold Dog)) ; rule std.slots.slot-occupied: Old_Gold's slot already holds the Pet Snail ⟹ it does not hold Dog.
+(not (co-located Old_Gold Fox)) ; rule std.slots.slot-occupied: Old_Gold's slot already holds the Pet Snail ⟹ it does not hold Fox.
+(not (co-located Old_Gold Horse)) ; rule std.slots.slot-occupied: Old_Gold's slot already holds the Pet Snail ⟹ it does not hold Horse.
+(not (co-located Old_Gold House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Old_Gold) ⟹ ¬co-located(Old_Gold,House-1).
+(not (co-located Old_Gold House-2)) ; rule std.slots.slot-negative: Old_Gold shares a slot with Snail, and Snail cannot be at House-2 ⟹ neither can Old_Gold.
+(not (co-located Old_Gold House-4)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-4,Old_Gold) ⟹ ¬co-located(Old_Gold,House-4).
+(not (co-located Old_Gold House-5)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-5,Old_Gold) ⟹ ¬co-located(Old_Gold,House-5).
+(not (co-located Old_Gold Japanese)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Japanese,Old_Gold) ⟹ ¬co-located(Old_Gold,Japanese).
+(not (co-located Old_Gold Juice)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Juice,Old_Gold) ⟹ ¬co-located(Old_Gold,Juice).
+(not (co-located Old_Gold Kools)) ; rule std.slots.slot-exclusive: Old_Gold and Kools are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Old_Gold Lucky_Strike)) ; rule std.slots.slot-exclusive: Old_Gold and Lucky_Strike are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Old_Gold Parliament)) ; rule std.slots.slot-exclusive: Old_Gold and Parliament are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Old_Gold Yellow)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Yellow,Old_Gold) ⟹ ¬co-located(Old_Gold,Yellow).
+(not (co-located Old_Gold Zebra)) ; rule std.slots.slot-occupied: Old_Gold's slot already holds the Pet Snail ⟹ it does not hold Zebra.
+(not (co-located Parliament Chesterfields)) ; rule std.slots.slot-exclusive: Parliament and Chesterfields are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Parliament Englishman)) ; rule std.slots.slot-occupied: Parliament's slot already holds the Nationality Japanese ⟹ it does not hold Englishman.
+(not (co-located Parliament House-1)) ; rule std.slots.slot-negative: Parliament shares a slot with Japanese, and Japanese cannot be at House-1 ⟹ neither can Parliament.
+(not (co-located Parliament House-2)) ; rule std.slots.slot-occupied: Parliament's slot already holds the House House-5 ⟹ it does not hold House-2.
+(not (co-located Parliament House-3)) ; rule std.slots.slot-occupied: Parliament's slot already holds the House House-5 ⟹ it does not hold House-3.
+(not (co-located Parliament House-4)) ; rule std.slots.slot-occupied: Parliament's slot already holds the House House-5 ⟹ it does not hold House-4.
+(not (co-located Parliament Juice)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Juice,Parliament) ⟹ ¬co-located(Parliament,Juice).
+(not (co-located Parliament Kools)) ; rule std.slots.slot-exclusive: Parliament and Kools are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Parliament Lucky_Strike)) ; rule std.slots.slot-exclusive: Parliament and Lucky_Strike are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Parliament Norwegian)) ; rule std.slots.slot-occupied: Parliament's slot already holds the Nationality Japanese ⟹ it does not hold Norwegian.
+(not (co-located Parliament Old_Gold)) ; rule std.slots.slot-exclusive: Parliament and Old_Gold are distinct Cigarettes — they cannot share a slot under co-located.
+(not (co-located Parliament Snail)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Snail,Parliament) ⟹ ¬co-located(Parliament,Snail).
+(not (co-located Parliament Spaniard)) ; rule std.slots.slot-occupied: Parliament's slot already holds the Nationality Japanese ⟹ it does not hold Spaniard.
+(not (co-located Parliament Ukrainian)) ; rule std.slots.slot-occupied: Parliament's slot already holds the Nationality Japanese ⟹ it does not hold Ukrainian.
+(not (co-located Parliament Yellow)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Yellow,Parliament) ⟹ ¬co-located(Parliament,Yellow).
+(not (co-located Red Blue)) ; rule std.slots.slot-exclusive: Red and Blue are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Red Coffee)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Coffee,Red) ⟹ ¬co-located(Red,Coffee).
+(not (co-located Red Green)) ; rule std.slots.slot-exclusive: Red and Green are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Red House-1)) ; rule std.slots.slot-negative: Red shares a slot with Englishman, and Englishman cannot be at House-1 ⟹ neither can Red.
+(not (co-located Red House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Red) ⟹ ¬co-located(Red,House-2).
+(not (co-located Red House-4)) ; rule std.slots.slot-negative: Red shares a slot with Englishman, and Englishman cannot be at House-4 ⟹ neither can Red.
+(not (co-located Red House-5)) ; rule std.slots.slot-negative: Red shares a slot with Englishman, and Englishman cannot be at House-5 ⟹ neither can Red.
+(not (co-located Red Ivory)) ; rule std.slots.slot-exclusive: Red and Ivory are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Red Japanese)) ; rule std.slots.slot-occupied: Red's slot already holds the Nationality Englishman ⟹ it does not hold Japanese.
+(not (co-located Red Kools)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Kools,Red) ⟹ ¬co-located(Red,Kools).
+(not (co-located Red Norwegian)) ; rule std.slots.slot-occupied: Red's slot already holds the Nationality Englishman ⟹ it does not hold Norwegian.
+(not (co-located Red Spaniard)) ; rule std.slots.slot-occupied: Red's slot already holds the Nationality Englishman ⟹ it does not hold Spaniard.
+(not (co-located Red Ukrainian)) ; rule std.slots.slot-occupied: Red's slot already holds the Nationality Englishman ⟹ it does not hold Ukrainian.
+(not (co-located Red Yellow)) ; rule std.slots.slot-exclusive: Red and Yellow are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Snail Chesterfields)) ; rule std.slots.slot-occupied: Snail's slot already holds the Cigarette Old_Gold ⟹ it does not hold Chesterfields.
+(not (co-located Snail Dog)) ; rule std.slots.slot-exclusive: Snail and Dog are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Snail Fox)) ; rule std.slots.slot-exclusive: Snail and Fox are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Snail Horse)) ; rule std.slots.slot-exclusive: Snail and Horse are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Snail House-1)) ; rule std.slots.slot-negative: Snail shares a slot with Old_Gold, and Old_Gold cannot be at House-1 ⟹ neither can Snail.
+(not (co-located Snail House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Snail) ⟹ ¬co-located(Snail,House-2).
+(not (co-located Snail House-4)) ; rule std.slots.slot-negative: Snail shares a slot with Old_Gold, and Old_Gold cannot be at House-4 ⟹ neither can Snail.
+(not (co-located Snail House-5)) ; rule std.slots.slot-negative: Snail shares a slot with Old_Gold, and Old_Gold cannot be at House-5 ⟹ neither can Snail.
+(not (co-located Snail Kools)) ; rule std.slots.slot-occupied: Snail's slot already holds the Cigarette Old_Gold ⟹ it does not hold Kools.
+(not (co-located Snail Lucky_Strike)) ; rule std.slots.slot-occupied: Snail's slot already holds the Cigarette Old_Gold ⟹ it does not hold Lucky_Strike.
+(not (co-located Snail Parliament)) ; rule std.slots.slot-occupied: Snail's slot already holds the Cigarette Old_Gold ⟹ it does not hold Parliament.
+(not (co-located Snail Spaniard)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Spaniard,Snail) ⟹ ¬co-located(Snail,Spaniard).
+(not (co-located Snail Zebra)) ; rule std.slots.slot-exclusive: Snail and Zebra are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Spaniard Englishman)) ; rule std.slots.slot-exclusive: Spaniard and Englishman are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Spaniard Fox)) ; rule std.slots.slot-occupied: Spaniard's slot already holds the Pet Dog ⟹ it does not hold Fox.
+(not (co-located Spaniard Horse)) ; rule std.slots.slot-occupied: Spaniard's slot already holds the Pet Dog ⟹ it does not hold Horse.
+(not (co-located Spaniard House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Spaniard) ⟹ ¬co-located(Spaniard,House-1).
+(not (co-located Spaniard House-2)) ; rule std.slots.slot-negative: Spaniard shares a slot with Dog, and Dog cannot be at House-2 ⟹ neither can Spaniard.
+(not (co-located Spaniard House-3)) ; rule std.slots.slot-negative: Spaniard shares a slot with Dog, and Dog cannot be at House-3 ⟹ neither can Spaniard.
+(not (co-located Spaniard House-5)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-5,Spaniard) ⟹ ¬co-located(Spaniard,House-5).
+(not (co-located Spaniard Japanese)) ; rule std.slots.slot-exclusive: Spaniard and Japanese are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Spaniard Norwegian)) ; rule std.slots.slot-exclusive: Spaniard and Norwegian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Spaniard Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,Spaniard) ⟹ ¬co-located(Spaniard,Parliament).
+(not (co-located Spaniard Red)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Red,Spaniard) ⟹ ¬co-located(Spaniard,Red).
+(not (co-located Spaniard Snail)) ; rule std.slots.slot-occupied: Spaniard's slot already holds the Pet Dog ⟹ it does not hold Snail.
+(not (co-located Spaniard Tea)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Tea,Spaniard) ⟹ ¬co-located(Spaniard,Tea).
+(not (co-located Spaniard Ukrainian)) ; rule std.slots.slot-exclusive: Spaniard and Ukrainian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Spaniard Zebra)) ; rule std.slots.slot-occupied: Spaniard's slot already holds the Pet Dog ⟹ it does not hold Zebra.
+(not (co-located Tea Coffee)) ; rule std.slots.slot-exclusive: Tea and Coffee are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Tea Englishman)) ; rule std.slots.slot-occupied: Tea's slot already holds the Nationality Ukrainian ⟹ it does not hold Englishman.
+(not (co-located Tea Green)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Green,Tea) ⟹ ¬co-located(Tea,Green).
+(not (co-located Tea House-1)) ; rule std.slots.slot-negative: Tea shares a slot with Ukrainian, and Ukrainian cannot be at House-1 ⟹ neither can Tea.
+(not (co-located Tea House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Tea) ⟹ ¬co-located(Tea,House-3).
+(not (co-located Tea House-4)) ; rule std.slots.slot-occupied: Tea's slot already holds the House House-2 ⟹ it does not hold House-4.
+(not (co-located Tea House-5)) ; rule std.slots.slot-negative: Tea shares a slot with Ukrainian, and Ukrainian cannot be at House-5 ⟹ neither can Tea.
+(not (co-located Tea Japanese)) ; rule std.slots.slot-occupied: Tea's slot already holds the Nationality Ukrainian ⟹ it does not hold Japanese.
+(not (co-located Tea Juice)) ; rule std.slots.slot-exclusive: Tea and Juice are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Tea Lucky_Strike)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Lucky_Strike,Tea) ⟹ ¬co-located(Tea,Lucky_Strike).
+(not (co-located Tea Milk)) ; rule std.slots.slot-exclusive: Tea and Milk are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Tea Norwegian)) ; rule std.slots.slot-occupied: Tea's slot already holds the Nationality Ukrainian ⟹ it does not hold Norwegian.
+(not (co-located Tea Spaniard)) ; rule std.slots.slot-occupied: Tea's slot already holds the Nationality Ukrainian ⟹ it does not hold Spaniard.
+(not (co-located Tea Water)) ; rule std.slots.slot-exclusive: Tea and Water are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Ukrainian Coffee)) ; rule std.slots.slot-occupied: Ukrainian's slot already holds the Drink Tea ⟹ it does not hold Coffee.
+(not (co-located Ukrainian Dog)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Dog,Ukrainian) ⟹ ¬co-located(Ukrainian,Dog).
+(not (co-located Ukrainian Englishman)) ; rule std.slots.slot-exclusive: Ukrainian and Englishman are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Ukrainian House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Ukrainian) ⟹ ¬co-located(Ukrainian,House-1).
+(not (co-located Ukrainian House-3)) ; rule std.slots.slot-negative: Ukrainian shares a slot with Tea, and Tea cannot be at House-3 ⟹ neither can Ukrainian.
+(not (co-located Ukrainian House-4)) ; rule std.slots.slot-occupied: Ukrainian's slot already holds the House House-2 ⟹ it does not hold House-4.
+(not (co-located Ukrainian House-5)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-5,Ukrainian) ⟹ ¬co-located(Ukrainian,House-5).
+(not (co-located Ukrainian Japanese)) ; rule std.slots.slot-exclusive: Ukrainian and Japanese are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Ukrainian Juice)) ; rule std.slots.slot-occupied: Ukrainian's slot already holds the Drink Tea ⟹ it does not hold Juice.
+(not (co-located Ukrainian Milk)) ; rule std.slots.slot-occupied: Ukrainian's slot already holds the Drink Tea ⟹ it does not hold Milk.
+(not (co-located Ukrainian Norwegian)) ; rule std.slots.slot-exclusive: Ukrainian and Norwegian are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Ukrainian Parliament)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Parliament,Ukrainian) ⟹ ¬co-located(Ukrainian,Parliament).
+(not (co-located Ukrainian Red)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Red,Ukrainian) ⟹ ¬co-located(Ukrainian,Red).
+(not (co-located Ukrainian Spaniard)) ; rule std.slots.slot-exclusive: Ukrainian and Spaniard are distinct Nationalitys — they cannot share a slot under co-located.
+(not (co-located Ukrainian Water)) ; rule std.slots.slot-occupied: Ukrainian's slot already holds the Drink Tea ⟹ it does not hold Water.
+(not (co-located Water Coffee)) ; rule std.slots.slot-exclusive: Water and Coffee are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Water Green)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Green,Water) ⟹ ¬co-located(Water,Green).
+(not (co-located Water House-2)) ; rule std.slots.slot-occupied: Water's slot already holds the House House-1 ⟹ it does not hold House-2.
+(not (co-located Water House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Water) ⟹ ¬co-located(Water,House-3).
+(not (co-located Water House-4)) ; rule std.slots.slot-occupied: Water's slot already holds the House House-1 ⟹ it does not hold House-4.
+(not (co-located Water House-5)) ; rule std.slots.slot-occupied: Water's slot already holds the House House-1 ⟹ it does not hold House-5.
+(not (co-located Water Juice)) ; rule std.slots.slot-exclusive: Water and Juice are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Water Lucky_Strike)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Lucky_Strike,Water) ⟹ ¬co-located(Water,Lucky_Strike).
+(not (co-located Water Milk)) ; rule std.slots.slot-exclusive: Water and Milk are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Water Tea)) ; rule std.slots.slot-exclusive: Water and Tea are distinct Drinks — they cannot share a slot under co-located.
+(not (co-located Water Ukrainian)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Ukrainian,Water) ⟹ ¬co-located(Water,Ukrainian).
+(not (co-located Yellow Blue)) ; rule std.slots.slot-exclusive: Yellow and Blue are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Yellow Chesterfields)) ; rule std.slots.slot-occupied: Yellow's slot already holds the Cigarette Kools ⟹ it does not hold Chesterfields.
+(not (co-located Yellow Coffee)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Coffee,Yellow) ⟹ ¬co-located(Yellow,Coffee).
+(not (co-located Yellow Englishman)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Englishman,Yellow) ⟹ ¬co-located(Yellow,Englishman).
+(not (co-located Yellow Green)) ; rule std.slots.slot-exclusive: Yellow and Green are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Yellow House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Yellow) ⟹ ¬co-located(Yellow,House-2).
+(not (co-located Yellow House-3)) ; rule std.slots.slot-occupied: Yellow's slot already holds the House House-1 ⟹ it does not hold House-3.
+(not (co-located Yellow House-4)) ; rule std.slots.slot-occupied: Yellow's slot already holds the House House-1 ⟹ it does not hold House-4.
+(not (co-located Yellow House-5)) ; rule std.slots.slot-occupied: Yellow's slot already holds the House House-1 ⟹ it does not hold House-5.
+(not (co-located Yellow Ivory)) ; rule std.slots.slot-exclusive: Yellow and Ivory are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Yellow Lucky_Strike)) ; rule std.slots.slot-occupied: Yellow's slot already holds the Cigarette Kools ⟹ it does not hold Lucky_Strike.
+(not (co-located Yellow Old_Gold)) ; rule std.slots.slot-occupied: Yellow's slot already holds the Cigarette Kools ⟹ it does not hold Old_Gold.
+(not (co-located Yellow Parliament)) ; rule std.slots.slot-occupied: Yellow's slot already holds the Cigarette Kools ⟹ it does not hold Parliament.
+(not (co-located Yellow Red)) ; rule std.slots.slot-exclusive: Yellow and Red are distinct Colors — they cannot share a slot under co-located.
+(not (co-located Zebra Dog)) ; rule std.slots.slot-exclusive: Zebra and Dog are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Zebra Fox)) ; rule std.slots.slot-exclusive: Zebra and Fox are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Zebra Horse)) ; rule std.slots.slot-exclusive: Zebra and Horse are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Zebra House-1)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-1,Zebra) ⟹ ¬co-located(Zebra,House-1).
+(not (co-located Zebra House-2)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-2,Zebra) ⟹ ¬co-located(Zebra,House-2).
+(not (co-located Zebra House-3)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-3,Zebra) ⟹ ¬co-located(Zebra,House-3).
+(not (co-located Zebra House-4)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(House-4,Zebra) ⟹ ¬co-located(Zebra,House-4).
+(not (co-located Zebra Old_Gold)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Old_Gold,Zebra) ⟹ ¬co-located(Zebra,Old_Gold).
+(not (co-located Zebra Snail)) ; rule std.slots.slot-exclusive: Zebra and Snail are distinct Pets — they cannot share a slot under co-located.
+(not (co-located Zebra Spaniard)) ; rule std.algebra.symmetric-negative: co-located symmetric: ¬co-located(Spaniard,Zebra) ⟹ ¬co-located(Zebra,Spaniard).
+(right-of Green Ivory) ; source "condition (6)" — Green's house is immediately right of Ivory's
+(right-of House-2 House-1) ; source "condition (1)" — House-2's house is immediately right of House-1's
+(right-of House-3 House-2) ; source "condition (1)" — House-3's house is immediately right of House-2's
+(right-of House-4 House-3) ; source "condition (1)" — House-4's house is immediately right of House-3's
+(right-of House-5 House-4) ; source "condition (1)" — House-5's house is immediately right of House-4's
+(slot-partition co-located instance type Attribute House)
+(slot-spatial co-located next-to instance House)
+(slot-spatial co-located right-of instance House)
+(std.algebra.converse co-located co-located) ; rule std.algebra.symmetric-is-self-converse: symmetric co-located ⟹ (converse co-located co-located)
+(std.algebra.converse next-to next-to) ; rule std.algebra.symmetric-is-self-converse: symmetric next-to ⟹ (converse next-to next-to)
+(std.algebra.symmetric-negative co-located) ; rule symmetric-negative-setup: co-located symmetric ⟹ activate its negative mirror.
+(std.algebra.symmetric-negative next-to) ; rule symmetric-negative-setup: next-to symmetric ⟹ activate its negative mirror.
+(std.slots.slot-adjacent-bwd co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-adjacent-bwd co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-adjacent-bwd-neg co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-adjacent-bwd-neg co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-adjacent-fwd co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-adjacent-fwd co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-adjacent-fwd-neg co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-adjacent-fwd-neg co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-elimination co-located instance type Attribute House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-endpoint-bwd co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-endpoint-bwd co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-endpoint-fwd co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-endpoint-fwd co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-exclusive co-located instance type Attribute) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-fill co-located instance type Attribute House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-locate co-located instance House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-negative co-located instance House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-no-fill co-located instance type Attribute House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-no-room co-located instance type Attribute House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-occupied co-located instance type Attribute) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-owed-fill co-located instance type Attribute House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-owed-room co-located instance type Attribute House) ; rule slot-partition-setup: (slot-partition co-located …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.
+(std.slots.slot-prune-bwd co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-prune-bwd co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-prune-fwd co-located next-to instance House) ; rule slot-spatial-setup: (slot-spatial co-located next-to …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(std.slots.slot-prune-fwd co-located right-of instance House) ; rule slot-spatial-setup: (slot-spatial co-located right-of …) ⟹ the eight directional propagation / pruning / endpoint activators.
+(symmetric co-located)
+(symmetric next-to)
+(type Attribute T) ; Attribute is a subtype of T
+(type Cigarette Attribute) ; Cigarette is a subtype of Attribute
+(type Color Attribute) ; Color is a subtype of Attribute
+(type Drink Attribute) ; Drink is a subtype of Attribute
+(type House Attribute) ; House is a subtype of Attribute
+(type Nationality Attribute) ; Nationality is a subtype of Attribute
+(type Pet Attribute) ; Pet is a subtype of Attribute

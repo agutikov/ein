@@ -1,0 +1,152 @@
+{
+  "schema": "ein-summary/2",
+  "source": "tests/region/04_owing.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 0,
+    "k_c": 0,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "owing",
+    "root_owes": 1,
+    "root_owed": [
+      "likes owes Ann a Food."
+    ],
+    "empty": "owing",
+    "minimal": {
+      "states": 0,
+      "commitments": 0,
+      "least": null,
+      "trivial": false
+    },
+    "maximal": {
+      "states": 0,
+      "trivial": false
+    },
+    "components": [],
+    "subcubes": [],
+    "merged": {
+      "states": 0,
+      "minimal": 0
+    },
+    "nogoods": 0,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 0,
+      "dead_alone": 0
+    },
+    "route": "states",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local"
+    ],
+    "states": [],
+    "frontier": [
+      {
+        "facts": [],
+        "set": [],
+        "owes": 1,
+        "owed": [
+          "likes owes Ann a Food."
+        ]
+      }
+    ],
+    "core": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(likes ?who ?what)",
+      "over": "all",
+      "exact": true,
+      "classes": [],
+      "expect": null
+    }
+  ],
+  "claim": {
+    "outcome": "held",
+    "lines": []
+  },
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": 2
+  },
+  "monotonicity": {
+    "monotone": true,
+    "hypothesised": [],
+    "dynamic": [],
+    "plans": {
+      "saturation": 8,
+      "obligation": 1
+    },
+    "reads": {
+      "static": 18,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 2,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 10,
+    "facts_by_relation": {
+      "is-a": 4,
+      "likes": 1,
+      "relation": 4,
+      "total-owed": 1
+    },
+    "dead": false,
+    "owes": 1,
+    "owed": [
+      "likes owes Ann a Food."
+    ],
+    "plans": 8,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 0,
+      "emitted": 0,
+      "filtered": {},
+      "pre_candidate": {},
+      "outside": [],
+      "types_as_objects": {
+        "objects": [],
+        "relations": [],
+        "candidates": 0
+      }
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  }
+}

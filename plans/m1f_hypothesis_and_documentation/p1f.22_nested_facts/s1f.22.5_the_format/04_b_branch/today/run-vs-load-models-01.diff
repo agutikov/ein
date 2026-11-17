@@ -1,0 +1,49 @@
+--- plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/04_b_branch/today/dump-program.txt	2026-11-18 00:07:42.479386716 +0400
++++ plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/04_b_branch/today/dump-models-01.txt	2026-11-18 00:07:42.496826201 +0400
+@@ -5,8 +5,12 @@
+ (relation is-a T T)
+ (relation color-loc Color House)
+ 
+-;; Relations — auto-vivified (1)
++;; Relations — auto-vivified (5)
+ ;;   bijective
++;;   functional
++;;   injective
++;;   surjective
++;;   total
+ 
+ ;; Rules (4)
+ ;;   bijective-properties  :params ()  stratum 0
+@@ -16,8 +20,10 @@
+ 
+ ;; Strata — stratified, 1 stratum
+ 
+-;; ── BACKGROUND (13 facts) ──
++;; ── BACKGROUND (17 facts) ──
+   (bijective color-loc)
++  (functional color-loc)
++  (injective color-loc)
+ ;;   is-a (8)
+   (is-a Color T)
+   (is-a House T)
+@@ -32,18 +38,14 @@
+   (relation is-a)
+   (relation color-loc Color House)
+   (relation color-loc)
++  (surjective color-loc)
++  (total color-loc)
+ 
+ ;; ── GIVEN (2 facts) ──
+ ;;   color-loc (2)
+   (color-loc Red H2 :source "(1) Red is in house 2")
+   (color-loc Green H3 :source "(2) Green is in house 3")
+ 
+-;; ── DERIVED (4 facts) ──
+-  (functional color-loc :rule bijective-properties)
+-  (injective color-loc :rule bijective-properties)
+-  (surjective color-loc :rule bijective-properties)
+-  (total color-loc :rule bijective-properties)
+-
+ ;; Query
+ ;;   :goal  (color-loc Blue ?h)
+ 

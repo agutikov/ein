@@ -2,7 +2,9 @@
 
 **Phase:** [P1f.22](README.md)
 **Status:** planned 2026-11-17; **started 2026-11-17** on the user's word (*"start s1f.22.5"*). Its first task
-ends with the user's look at the format on real programs; nothing is built before it.
+ends with the user's look at the format on real programs; nothing is built before it. **Task 1 is done
+(2026-11-18) and waits for that look**: [`s1f.22.5_the_format.md`](s1f.22.5_the_format.md), Q-M1f.400 to .403
+put; tasks 2 to 4 are not started.
 **Ruling:** [Q-M1f.392](../open_questions.md#q-m1f392--a-state-file-that-reads-back-dead-through-written).
 
 ## The requirement, in the user's words
@@ -58,4 +60,33 @@ since every dumped state of every program is read again.
 
 ## Record
 
-Not started.
+**Task 1, the format on real programs** (2026-11-18). Done; it ends here, with the user's look.
+
+- **The page**: [`s1f.22.5_the_format.md`](s1f.22.5_the_format.md), with the files, raw, in
+  [`s1f.22.5_the_format/`](s1f.22.5_the_format/): for eight programs (no import; a choice with a fact inside it;
+  the standard library's check; one choice and its derived facts; zebra, the standard library and one choice; a
+  local module; an owing node; a corpus program that has the bug today), everything today's `--dump-answer`
+  writes, today's second save, the KB dumps and their diffs, the proposed file, and a `commands.txt` of every
+  command with its exit code and output; and `00_survey/`, every writer of a state run once. The proposed files are
+  assembled by [`s1f.22.5_propose.py`](s1f.22.5_propose.py) from the programs' and modules' bytes and the
+  commitment today's file names; no `ein` reads one today. The folders are written by
+  [`s1f.22.5_showcase.py`](s1f.22.5_showcase.py).
+- **The measurement**: [`s1f.22.5_measure.py`](s1f.22.5_measure.py) over the corpus entries the round trip reads
+  per commit, on the gate build, its numbers in the page's § 2. The writer's state is a function of the program
+  and the commitment (28 311 files byte-identical on a second run and with `-j 4`); the program and the choices
+  saturated at once are not (facts in 6 programs, a first rule in 8); today's load is not the state (every derived
+  and committed fact typed, `written` beyond root's in 136 states, dead in 2); today's second save is byte-identical
+  for 0 of 1 267.
+- **The questions**, each with a default, in [`open_questions.md`](../open_questions.md):
+  [Q-M1f.400](../open_questions.md#q-m1f400--how-a-saved-file-states-the-choices-made) (the choices: `(commit F
+  …)`), [Q-M1f.401](../open_questions.md#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) (the
+  program and its modules: `(program …)` and `(module NAME …)` around each file's bytes; the file reads no other),
+  [Q-M1f.402](../open_questions.md#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines)
+  (no new command; the dump `ein saturate --dump`'s KB section; a loaded file a program whose root is its state;
+  one fixed first line), [Q-M1f.403](../open_questions.md#q-m1f403--the-programs-claims-in-a-saved-file) (the
+  program's claims, which 188 of 826 state files with a commitment fail today: not checked on such a file).
+- **Found outside the task**: N-29 to N-32 in [`findings.md`](findings.md), N-30 the notable one: two corpus
+  programs, `tests/stdlib/math/{decimal,binary}/0?_what_stays_silent.ein`, already have the bug, and the round-trip
+  test does not see it (N-31).
+- **What it leaves for the user**: the look at the format, and the four questions. Task 2, the build, waits on
+  them.

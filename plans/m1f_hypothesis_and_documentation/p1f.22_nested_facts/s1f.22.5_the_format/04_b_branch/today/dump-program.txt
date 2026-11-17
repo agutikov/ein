@@ -1,0 +1,50 @@
+=  SATURATED KB DUMP
+======================================================================
+
+;; Relations — declared (2)
+(relation is-a T T)
+(relation color-loc Color House)
+
+;; Relations — auto-vivified (1)
+;;   bijective
+
+;; Rules (4)
+;;   bijective-properties  :params ()  stratum 0
+;;   functional  :params (?R)  stratum 0
+;;   injective  :params (?R)  stratum 0
+;;   injective-negative  :params (?R)  no plan compiled
+
+;; Strata — stratified, 1 stratum
+
+;; ── BACKGROUND (13 facts) ──
+  (bijective color-loc)
+;;   is-a (8)
+  (is-a Color T)
+  (is-a House T)
+  (is-a Red Color)
+  (is-a Green Color)
+  (is-a Blue Color)
+  (is-a H1 House)
+  (is-a H2 House)
+  (is-a H3 House)
+;;   relation (4)
+  (relation is-a T T)
+  (relation is-a)
+  (relation color-loc Color House)
+  (relation color-loc)
+
+;; ── GIVEN (2 facts) ──
+;;   color-loc (2)
+  (color-loc Red H2 :source "(1) Red is in house 2")
+  (color-loc Green H3 :source "(2) Green is in house 3")
+
+;; ── DERIVED (4 facts) ──
+  (functional color-loc :rule bijective-properties)
+  (injective color-loc :rule bijective-properties)
+  (surjective color-loc :rule bijective-properties)
+  (total color-loc :rule bijective-properties)
+
+;; Query
+;;   :goal  (color-loc Blue ?h)
+
+======================================================================

@@ -328,6 +328,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.397](#q-m1f397--the-reserved-words-in-the-three-perspectives) | the reserved words in the three perspectives of the documentation | **ruled 2026-11-17** by the user's note: in `docs/ein/reasoning/` they are conceptual mathematical objects; in `docs/ein/user/` and `docs/ein/ein.rs/` they are the surface between the reasoning kernel and a theory in pure Ein; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 8 |
 | [Q-M1f.398](#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context) | how the graph is drawn to show that a fact is in the global context, in a fact's context, or both, every object drawn once | **ruled 2026-11-17**, in two looks at the trial's figures: *"I would like to see frame around facts in contexts rather than around global facts"*, then *"label contexts `<relation name> cts` instead of `in context`"*. So: a fact is **filled** where held, and **inside a dashed frame labelled with the context's relation**, `think ctx`, where it is in a context; a fact that facts of two relations point at is in one frame that names both; frames stand side by side. [`contexts.md`](p1f.22_nested_facts/contexts.md) § 14. S1f.22.2 draws so |
 | [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names of what controls the search, `(false)` and `(open)`: the user's *"Maybe word `false` is too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"* | **put 2026-11-17, not ruled; P1f.21's**, entered there as its V-5, with **the user's direction** of the same day: `(false)` stays a fact that rules infer, in a context or globally, and a state is dead only where a rule infers `(ein.contradiction)` from the global `(false)` or from whatever a theory chooses; *"both (false) renaming and (open) facts belongs to p1f.21"*. Nothing is renamed or built in P1f.22 |
+| [Q-M1f.400](#q-m1f400--how-a-saved-file-states-the-choices-made) | how a saved file states the choices made: no form does today, and a choice typed as a fact reads as given and is `written` | **put 2026-11-18, not ruled**; [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, [`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md). Default: **(a)**, a form of its own, `(commit F …)`, committed after root's fixpoint as a node commits it |
+| [Q-M1f.401](#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) | how the program and its modules are in one file, unchanged: inlining rewrites the program, and the import lines alone need the modules | **put 2026-11-18, not ruled**; the same page. Default: **(a)**, `(program …)` and `(module NAME …)` around each file's bytes as read; a saved file reads no other file |
+| [Q-M1f.402](#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines) | what *save* and *load* are as commands, the dump the second invariance compares, what a save of a loaded file is, and a file's first lines | **put 2026-11-18, not ruled**; the same page. Default: no new command; the dump `ein saturate --dump`'s KB section; a loaded file a program whose root is its state; one fixed first line |
+| [Q-M1f.403](#q-m1f403--the-programs-claims-in-a-saved-file) | the program's claims in a saved file: 188 of 826 state files with a commitment exit 1 today, each a claim about the program's R checked against the file's own | **put 2026-11-18, not ruled**; the same page. Default: **(a)**, a file with a commitment checks no claim and says so |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -7625,3 +7629,135 @@ also can infer (false) in global context, but the state considered dead only if 
 (ein.contradiction) from global (false), or from global (whatever); both (false) renaming and (open) facts belongs
 to p1f.21"*. Read: `false` is not renamed and stops being the kernel's; the kernel's verdict is a fact of its own,
 under the kernel's prefix, and what makes a state dead is a rule a theory states. Not built, and not this phase's.
+
+### Q-M1f.400 — How a saved file states the choices made
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
+[Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written)'s ruling (*a saved solution is the program
+unchanged with the choices made, the state derived again on load*). **Put, not ruled.** The files and the runs are
+[`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md); the measurement is its
+[§ 2](p1f.22_nested_facts/s1f.22.5_the_format.md#2-is-a-state-a-function-of-the-program-and-the-choices-measured).
+
+No form states a choice today: a state file writes each committed candidate as a typed fact, `; hypothesis 0` in a
+comment (the `0` is the same in all 157 907 such lines, N-29). Measured over 1 267 state files of the corpus, the
+choices typed and saturated with the program read each as given (2 303 facts, 826 states); where a choice has a
+fact inside it, it is `written`, and the program of
+[§ 3.2](p1f.22_nested_facts/s1f.22.5_the_format.md#32-q392_demo_hypothesis-a-choice-that-has-a-fact-inside-it)
+loads dead; saturated at once with the program, the choices move facts in 6 programs (each with an `absent`) and a
+derived fact's first rule in 8. So a choice is not text of the program: it is committed after root's fixpoint, as
+a node of the search commits it.
+
+- **(a)** **a form of its own, `(commit F …)`**, after the program and its modules: each `F` a candidate of H,
+  written in the program's spelling, committed after root's fixpoint as a node commits it, its origin *hypothesis*,
+  no `written` stated for what it has inside it. A root's file has none. **Default.**
+- **(b)** each chosen fact written with a mark, `(note (bad a) :hypothesis)`, after the program; the loader holds a
+  marked fact apart from the program's and commits it after root's fixpoint.
+- **(c)** the choices by their places in H, `(commit 0 3)`: short, unreadable, and moved by any change to H's
+  order.
+
+And three points that go with any of them, each with a default:
+
+1. **A choice that is no candidate of H on load** (a file edited by hand, or a binary whose generator builds
+   another H): **refused**, naming the fact, since the file is then no node of its program (default); or committed
+   with a `note:`.
+2. **An owing node's file and a dead node's**: the same form; the load computes the state and the read-out says
+   what it is; nothing in the file marks it (default). `--dump-answer` writes no dead node's file, as today.
+3. **Which commitment of a state reached by several**: the one the state was read from, today's `from:` (default),
+   which costs no work: then one state can have two files, as zebra's has under describe and under `--maximal`
+   (48 of 588 `--maximal` files read from another commitment than describe's). Or the class's first minimal
+   generator in H's order, one file a state, at the cost of finding it where a question does not.
+
+### Q-M1f.401 — How the program and its modules are in one file, unchanged
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
+[Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written)'s rulings that the program is unchanged
+and that the file *"loads with no other file beside it"* (*"yes"*). **Put, not ruled.**
+[`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md) § 3.3, § 3.5 and § 3.6 show it on a program
+that imports the standard library and on one with a local module.
+
+Today the program is inlined and printed again: its comments and layout are gone, and its imports are replaced by
+the modules' forms. Measured, on 480 programs, the inlined program loads to the same root, fact for fact and origin
+for origin; it loses the text and nothing of the knowledge base. The two rulings pull apart where a program imports:
+the import lines as written need the modules beside the file.
+
+- **(a)** **each text in a wrapper of its own**: `(program …)` around the program file's bytes, `(module NAME …)`
+  around each module's, as the run read them, the choices after them. The loader reads each text as the file it
+  was, its positions its own, and resolves every import against the modules in the file and never the disk: **a
+  saved file reads no other file.** **Default.**
+- **(b)** the program's bytes first, unwrapped, then the modules and the choices: the file's lines are the
+  program's lines, and where the program ends has to be marked.
+- **(c)** a bundle: each text after a comment line that names it and gives its length in bytes. No form is added to
+  the language, and the loader reads comments.
+- **(d)** the local modules carried, the standard library named by its manifest's hash and read from the binary's
+  own copy, the load refused where the hash differs: smaller, and a file saved by one binary does not load in a
+  binary whose standard library moved.
+
+A module's text as a string is out: a string is natural-language text, only after `:why`, `:source` or
+`:goal-text`. Inlining is out: it is today's, and changes the program.
+
+And, under any of them, each with a default:
+
+1. **Which bytes**: the program file's, and each module's as the run read it, from `$EIN_STDLIB`, the checkout or
+   the binary's embedded copy, whichever the resolution chose. A state saved from a `.einb` carries the program the
+   container stores, import-flattened, and no module, since the container keeps no source (default).
+2. **A carried standard-library module that differs from the one the binary would read**: the carried text is
+   loaded and a `note:` names the module (default); or loaded with nothing said; or refused.
+3. **Which modules**: every module the load reads, each once, under the name the resolver gives it (`std.x.y`, or
+   a path from the program's directory, a dot a directory), a module's own imports among them; in the file sorted by
+   name, and read on load in the order the imports reach them, as from the disk, since the order facts are loaded
+   in is the agenda's order (default).
+4. **The size**, measured over the 1 267 files: 123.1 MB today, 32.2 MB proposed; the proposed file is smaller for
+   527 and larger for 740, those a small state of a program that imports a long module
+   (`tests/region/04_owing.ein`: 9 684 B today, 29 164 B proposed).
+
+### Q-M1f.402 — What save and load are as commands, the dump they are held to, and a file's first lines
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
+[Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written)'s requirement, verbatim: *"save and load
+must in both directions must have identical results: save -> load -> save byte identical, load -> save -> load -
+have identical dumps; both save and load must not modify the program, must not add or remove any bit of
+information"*. **Put, not ruled.** The commands, run today on every program of
+[`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md), are in each folder's `commands.txt`.
+
+Measured today, over 1 267 state files: a second save is byte-identical for **0**, and 2.9 times as long; the two
+loads' dumps are identical for 1 265, so today's file passes the second invariance and fails at the step before
+both, **the first load is not the state saved**. The writer's state is a function of the program and the
+commitment, byte for byte, in all 28 311 files a second run and `-j 4` write; the program and the choices
+saturated together are not (6 programs move facts, 8 a first rule). So the load is the node's computation, and the
+dump can promise every fact, `written` among them, its origin, its first rule, and the order.
+
+- **The commands.** **(a)** **no new command** (default): *save* is `ein solve FILE --dump-answer DIR`, each state
+  of the part of R asked as `models/NN.ein` and the owing frontier as `owing/NN.ein`, and `--no-search` saves root
+  as `DIR/root.ein`; *load* is any command given a saved file. The first invariance is `ein solve F --no-search
+  --dump-answer D` then `cmp F D/root.ein`. **(b)** a new `ein show state FILE`, the saved file of FILE's root on
+  stdout, as `ein show` prints Ein text a file could hold.
+- **The dump the second invariance compares.** **(a)** **`ein saturate --dump`'s KB section** (default): every fact
+  held, `written` included, by origin, with its first rule or `:hypothesis`, in the order held, byte for byte.
+  **(b)** the facts by value, origins aside, as `ein-cli/tests/answer_round_trip.rs` compares today: it passes the
+  two corpus programs that load dead (N-30, N-31). **(c)** `answer.json` and the file: they say R, not the facts'
+  origins.
+- **A save of a loaded file.** **(A)** **a loaded file is a program whose root is its state** (default): every
+  command reads it as today, `ein solve F` describes the answer above that state, and a state found above it is
+  saved as F with a second `(commit …)`, a node of a node, so the file keeps the order the choices were made in;
+  `--no-search --dump-answer` writes F again. **(C)** a saved file is a node of its program's lattice: `ein solve
+  F` describes the part of the program's R above the node, and every file is the program with one commitment of H.
+- **A file's first lines.** **(a)** **one fixed line** naming the format and saying the file reads no other
+  (default); what today's header says of the run (the state's number, its lines, how many commitments reach it, its
+  minimal generators, the path read from) is not reproduced by a second save, and moves to `index.json`, which has
+  `state`, `lines`, `listed` and `source` now. **(b)** none. **(c)** today's, which no second save reproduces.
+
+### Q-M1f.403 — The program's claims in a saved file
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task. **Put, not
+ruled.** [`s1f.22.5_the_format.md` § 4](p1f.22_nested_facts/s1f.22.5_the_format.md#4-the-design-point-by-point).
+
+A saved file holds the program unchanged, its `(query … :expect …)` and `(solve … :expect …)` among it, and those
+are claims about the program's R. Measured today: of 826 corpus state files with a commitment, **188, in 40
+programs, exit 1** when solved, each a claim of the program checked against the file's own answer
+(`examples/binary_logic/knights.ein`'s `models/01.ein`: *the claim lists 2 classes, the query has 1*); of 441 with
+none, 2 exit 1 where their program exits 0, both N-30's, and 1 exits 1 as its program does.
+
+- **(a)** **a file with a commitment checks no claim**: its read-out names them as the program's, NOT CHECKED, and
+  it exits 0; a root's file checks them as the program does, since it loads to the program's root. **Default.**
+- **(b)** as today: checked against the loaded file's answer, exit 1 where a claim is about the program's R.
+- **(c)** checked against the program's R, by solving the program again from the file's text.

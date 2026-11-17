@@ -1,0 +1,23 @@
+=  SATURATED KB DUMP
+======================================================================
+
+;; Relations — auto-vivified (3)
+;;   item
+;;   note
+;;   false
+
+;; Rules (2)
+;;   make  :params ()  stratum 0
+;;   no-bad  :params ()  stratum 0
+
+;; Strata — stratified, 1 stratum
+
+;; ── BACKGROUND (3 facts) ──
+  (false)
+  (item a)
+  (note (bad a))
+
+;; ── DERIVED (1 facts) ──
+  (written (bad a) :rule "#written")
+
+======================================================================

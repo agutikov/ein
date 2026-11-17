@@ -1,0 +1,27 @@
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/08_what_stays_silent/today/models/01.ein --no-search
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 dead — root's own fixpoint derives (false)
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  unsat core        (price pear (n z x))
+  refuted by        std.math.decimal.not-decimal-is-false
+
+  query 1 of 2      (sum-of ?x ?y ?s)
+  over              all of R — root is dead, and a fork only adds, so every node is (L0): no state to answer from
+  as :expect        (false)
+  :expect           FAILED — the claim lists 1 class, the query has 0: (model (sum-of (n z 4) (n z 3) (n z 7))) is no class of all of R
+                    the claim lists (model (sum-of (n z 4) (n z 3) (n z 7))), which is no class
+
+  query 2 of 2      (not-decimal ?numeral ?thing)
+  over              all of R — root is dead, and a fork only adds, so every node is (L0): no state to answer from
+  as :expect        (false)
+  :expect           FAILED — the claim lists 1 class, the query has 0: (model) is no class of all of R
+                    the claim lists (model), which is no class
+
+  (solve :expect)   FAILED
+                    the claim lists 1 state and R is empty

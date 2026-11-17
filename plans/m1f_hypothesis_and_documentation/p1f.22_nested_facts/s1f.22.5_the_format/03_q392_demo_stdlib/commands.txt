@@ -1,0 +1,116 @@
+# 03_q392_demo_stdlib: plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/q392_demo_stdlib.ein
+# Every command below was run on the gate build (ein.rs/target/gate/ein, written `ein`),
+# from the repository's root, by s1f.22.5_showcase.py; the output is as it printed.
+
+## Today: solve, and save every state (`--dump-answer`)
+
+$ ein solve plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/q392_demo_stdlib.ein --dump-answer plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today
+# exit 0
+# stdout:
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/q392_demo_stdlib.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 1
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅
+  maximal line      1 state
+  components        1
+  sub-cubes         1, of dimension 0
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 2 layers
+
+  (region
+    ;; state 1 of 1 — ∅, root itself · minimal and maximal
+    (model))
+
+  query             (reading ?r)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?r = (n z x)
+  as :expect        (model (reading (n z x)))
+
+$ ein saturate --dump plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/q392_demo_stdlib.ein
+# exit 0
+
+# (its KB section: plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/dump-program.txt)
+
+## Today: load models/01.ein again (`ein solve` on the state file)
+
+$ ein solve plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein
+# exit 0
+# stdout:
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every node is dead — root's own fixpoint derives (false)
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 1 layer
+
+  unsat core        (reading (n z x))
+  refuted by        std.math.decimal.not-decimal-is-false
+
+  (false)
+
+  query             (reading ?r)
+  over              all of R — R is empty, root is dead: no state to answer from
+  as :expect        (false)
+
+$ ein saturate --dump plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein
+# exit 0
+
+## Today: save it again (`--no-search --dump-answer`), save -> load -> save
+
+$ ein solve plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein --no-search --dump-answer plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/second-models-01
+# exit 0
+# stdout:
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein --no-search
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 dead — root's own fixpoint derives (false)
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  unsat core        (reading (n z x))
+  refuted by        std.math.decimal.not-decimal-is-false
+
+  query             (reading ?r)
+  over              all of R — root is dead, and a fork only adds, so every node is (L0): no state to answer from
+  as :expect        (false)
+
+$ cmp plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/second-models-01/root.ein
+# differ: diff -u is +3395 -21 lines (plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/save-load-save-models-01.diff)
+
+$ ein saturate --dump plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/second-models-01/root.ein
+# exit 0
+
+## Today: load -> save -> load, the two loads' `ein saturate --dump` KB sections
+$ diff -u plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/dump-models-01.txt plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/dump-models-01-second.txt
+# differ: +6 -5 lines
+
+## Today: run -> save -> load, root's state: the program's own dump against the state file's load
+$ diff -u plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/dump-program.txt plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/dump-models-01.txt
+# differ: +23 -20 lines (plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/run-vs-load-models-01.diff)
+
+## Proposed: plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/proposed/models/01.ein, assembled by s1f.22.5_propose.py from plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/q392_demo_stdlib.ein, its modules
+## and the commitment plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein names. NOT a file today's `ein` reads.
+## The commands that would check the two invariances on it:
+#   ein solve plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/q392_demo_stdlib.ein --dump-answer A                      # save: A/models/01.ein is plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/proposed/models/01.ein
+#   ein solve A/models/01.ein --no-search --dump-answer B                # load it, save its root again
+#   cmp A/models/01.ein B/root.ein                                      # save -> load -> save: byte for byte
+#   ein saturate --dump A/models/01.ein > a.txt; ein saturate --dump B/root.ein > b.txt
+#   diff <(sed -n '/SATURATED KB DUMP/,$p' a.txt) <(sed -n '/SATURATED KB DUMP/,$p' b.txt)   # load -> save -> load
+

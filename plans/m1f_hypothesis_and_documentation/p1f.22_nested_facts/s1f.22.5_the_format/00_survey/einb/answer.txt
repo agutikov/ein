@@ -1,0 +1,32 @@
+solve · build/s5/sat.einb
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 1
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 not in R — root owes 3 instances
+    owed            in owes a a Bit.
+    owed            in owes b a Bit.
+    owed            in owes cin a Bit.
+  minimal line      1 state, from 1 commitment — the least guess is 3 candidates
+  maximal line      1 state
+  components        1
+  sub-cubes         1, of dimension 0
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 not computed by the tree and the classes; --describe-route states computes N
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          6 candidates, 0 dead alone
+  route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
+  work              23 saturations · 141 facts beyond root
+
+  (region
+    ;; state 1 of 1 — 3 candidates · minimal and maximal · from {(in a 1), (in b 1), (in cin 1)}
+    (model (in a 1) (in b 1) (in cin 1)))
+
+  query             (and (in a ?a) (in b ?b) (in cin ?c))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?a = 1 · ?b = 1 · ?c = 1
+                        “a = 1, b = 1, carry in = 1”
+  as :expect        (model (in a 1) (in b 1) (in cin 1))
+  :expect           holds

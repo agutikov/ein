@@ -1,0 +1,106 @@
+{
+  "schema": "ein-summary/2",
+  "source": "plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/models/01.ein",
+  "asked": {
+    "which": "all",
+    "ask": "no-search",
+    "n": null
+  },
+  "region": null,
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(reading ?r)",
+      "over": "all",
+      "exact": true,
+      "classes": [],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": null
+  },
+  "monotonicity": {
+    "monotone": true,
+    "hypothesised": [],
+    "dynamic": [],
+    "plans": {
+      "saturation": 9,
+      "obligation": 0
+    },
+    "reads": {
+      "static": 9,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 0,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 1716,
+    "facts_by_relation": {
+      "__closed__": 13,
+      "digit-read": 1,
+      "false": 1,
+      "reading": 1,
+      "relation": 27,
+      "std.math.arith.arith-module-rule": 1,
+      "std.math.decimal.decimal-rule": 6,
+      "std.math.decimal.not-decimal": 1,
+      "std.math.digits.adj": 10,
+      "std.math.digits.cl": 300,
+      "std.math.digits.fa": 200,
+      "std.math.digits.fs": 200,
+      "std.math.digits.md": 900,
+      "std.math.digits.mid": 45,
+      "std.math.digits.nz": 9,
+      "written": 1
+    },
+    "dead": true,
+    "owes": 0,
+    "owed": [],
+    "plans": 9,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 0,
+      "emitted": 0,
+      "filtered": {},
+      "pre_candidate": {
+        "closed_relation": 182
+      },
+      "outside": [],
+      "types_as_objects": {
+        "objects": [],
+        "relations": [],
+        "candidates": 0
+      }
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  }
+}

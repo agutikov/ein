@@ -1,0 +1,108 @@
+{
+  "schema": "ein-answer/2",
+  "source": "examples/binary_logic/satisfiable.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 1,
+    "k_c": 1,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "owing",
+    "root_owes": 3,
+    "root_owed": [
+      "in owes a a Bit.",
+      "in owes b a Bit.",
+      "in owes cin a Bit."
+    ],
+    "empty": null,
+    "minimal": {
+      "states": 1,
+      "commitments": 1,
+      "least": 3,
+      "trivial": false
+    },
+    "maximal": {
+      "states": 1,
+      "trivial": false
+    },
+    "components": [
+      1
+    ],
+    "subcubes": [
+      0
+    ],
+    "merged": {
+      "states": 0,
+      "minimal": 0
+    },
+    "nogoods": null,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 6,
+      "dead_alone": 0
+    },
+    "route": "tree-classes",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L2 discharged is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local",
+      "L5 an owed instance's alternatives are exhaustive"
+    ],
+    "states": [
+      {
+        "facts": [
+          "(in a 1)",
+          "(in b 1)",
+          "(in cin 1)"
+        ],
+        "closure": [
+          "(in a 1)",
+          "(in b 1)",
+          "(in cin 1)"
+        ],
+        "from": [
+          "(in a 1)",
+          "(in b 1)",
+          "(in cin 1)"
+        ],
+        "minimal_generators": [
+          [
+            "(in a 1)",
+            "(in b 1)",
+            "(in cin 1)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [
+          "minimal",
+          "maximal"
+        ],
+        "listed": true
+      }
+    ],
+    "frontier": null,
+    "core": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "models": [
+    {
+      "path": "models/01.ein",
+      "state": 1,
+      "lines": [
+        "minimal",
+        "maximal"
+      ],
+      "listed": true
+    }
+  ],
+  "owing": [],
+  "forms": []
+}

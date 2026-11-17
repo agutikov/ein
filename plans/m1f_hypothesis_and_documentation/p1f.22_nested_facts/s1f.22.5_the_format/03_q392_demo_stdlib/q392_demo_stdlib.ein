@@ -1,0 +1,17 @@
+;; Q-M1f.392's demo with the standard library's check (analysis.md's h2.ein):
+;; a rule assembles a numeral from a letter, which std.math.decimal flags
+;; only where a file writes it. The run has one state; today's saved file
+;; writes the assembled numeral as typed text, so its reload is flagged and
+;; dead.
+
+(import std.math.decimal :symbols (decimal n))
+(import std.math.arith :symbols (z))
+
+(digit-read x)
+
+(rule assemble ()
+  :match  (digit-read ?d)
+  :assert (reading (n z ?d))
+  :why    "the reading is the numeral of {?d}")
+
+(query :goal (reading ?r))

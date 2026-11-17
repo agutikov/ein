@@ -1,0 +1,235 @@
+{
+  "schema": "ein-summary/2",
+  "source": "build/s5/sat.einb",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 1,
+    "k_c": 1,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "owing",
+    "root_owes": 3,
+    "root_owed": [
+      "in owes a a Bit.",
+      "in owes b a Bit.",
+      "in owes cin a Bit."
+    ],
+    "empty": null,
+    "minimal": {
+      "states": 1,
+      "commitments": 1,
+      "least": 3,
+      "trivial": false
+    },
+    "maximal": {
+      "states": 1,
+      "trivial": false
+    },
+    "components": [
+      1
+    ],
+    "subcubes": [
+      0
+    ],
+    "merged": {
+      "states": 0,
+      "minimal": 0
+    },
+    "nogoods": null,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 6,
+      "dead_alone": 0
+    },
+    "route": "tree-classes",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L2 discharged is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local",
+      "L5 an owed instance's alternatives are exhaustive"
+    ],
+    "states": [
+      {
+        "facts": [
+          "(in a 1)",
+          "(in b 1)",
+          "(in cin 1)"
+        ],
+        "closure": [
+          "(in a 1)",
+          "(in b 1)",
+          "(in cin 1)"
+        ],
+        "from": [
+          "(in a 1)",
+          "(in b 1)",
+          "(in cin 1)"
+        ],
+        "minimal_generators": [
+          [
+            "(in a 1)",
+            "(in b 1)",
+            "(in cin 1)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [
+          "minimal",
+          "maximal"
+        ],
+        "listed": true
+      }
+    ],
+    "frontier": null,
+    "core": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(and (in a ?a) (in b ?b) (in cin ?c))",
+      "over": "all",
+      "exact": true,
+      "classes": [
+        {
+          "facts": [
+            "(in a 1)",
+            "(in b 1)",
+            "(in cin 1)"
+          ],
+          "rows": [
+            {
+              "a": "1",
+              "b": "1",
+              "c": "1"
+            }
+          ],
+          "states": [
+            1
+          ]
+        }
+      ],
+      "expect": {
+        "outcome": "held",
+        "lines": []
+      }
+    }
+  ],
+  "claim": null,
+  "work": {
+    "saturations": 23,
+    "facts": 141,
+    "layers": null
+  },
+  "monotonicity": {
+    "monotone": true,
+    "hypothesised": [
+      "in"
+    ],
+    "dynamic": [
+      "false",
+      "in",
+      "std.bool.circuit.val"
+    ],
+    "plans": {
+      "saturation": 32,
+      "obligation": 1
+    },
+    "reads": {
+      "static": 36,
+      "dynamic_monotone": 9,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 1,
+      "dynamic_monotone": 1,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 276,
+    "facts_by_relation": {
+      "__closed__": 28,
+      "is-a": 5,
+      "relation": 58,
+      "require": 2,
+      "std.algebra.functional": 1,
+      "std.algebra.total-owed": 1,
+      "std.bool.circuit.circuit-rule": 4,
+      "std.bool.circuit.gate": 5,
+      "std.bool.gates.And": 4,
+      "std.bool.gates.Andn": 4,
+      "std.bool.gates.Fst": 4,
+      "std.bool.gates.Nand": 4,
+      "std.bool.gates.Nfst": 4,
+      "std.bool.gates.Nor": 4,
+      "std.bool.gates.Nsnd": 4,
+      "std.bool.gates.One": 4,
+      "std.bool.gates.Or": 4,
+      "std.bool.gates.Orn": 4,
+      "std.bool.gates.Randn": 4,
+      "std.bool.gates.Rorn": 4,
+      "std.bool.gates.Snd": 4,
+      "std.bool.gates.Xnor": 4,
+      "std.bool.gates.Xor": 4,
+      "std.bool.gates.Zero": 4,
+      "std.bool.gates.bit": 2,
+      "std.bool.gates.column-name": 16,
+      "std.bool.gates.gate2": 64,
+      "std.bool.gates.gates-rule": 17,
+      "std.bool.gates.inv": 2,
+      "std.bool.gates.le": 3,
+      "std.bool.inputs.inputs-rule": 4
+    },
+    "dead": false,
+    "owes": 3,
+    "owed": [
+      "in owes a a Bit.",
+      "in owes b a Bit.",
+      "in owes cin a Bit."
+    ],
+    "plans": 32,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 6,
+      "emitted": 6,
+      "filtered": {},
+      "pre_candidate": {},
+      "outside": [],
+      "types_as_objects": {
+        "objects": [],
+        "relations": [],
+        "candidates": 0
+      }
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  }
+}

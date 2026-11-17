@@ -1,0 +1,12 @@
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/02_q392_demo_hypothesis/today/models/02.ein --no-search
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 dead — root's own fixpoint derives (false)
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  unsat core        (note (bad a))
+  refuted by        no-bad

@@ -1,0 +1,115 @@
+# 07_owing: tests/region/04_owing.ein
+# Every command below was run on the gate build (ein.rs/target/gate/ein, written `ein`),
+# from the repository's root, by s1f.22.5_showcase.py; the output is as it printed.
+
+## Today: solve, and save every state (`--dump-answer`)
+
+$ ein solve tests/region/04_owing.ein --dump-answer plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today
+# exit 0
+# stdout:
+solve · tests/region/04_owing.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every alive node owes — no commitment pays every debt
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 2 layers
+
+  owing             ∅ — owes 1
+                      likes owes Ann a Food.
+
+  (region (owing (model)))
+
+  query             (likes ?who ?what)
+  over              all of R — R is empty, root is alive and owes 1 instance: no state to answer from
+  as :expect        (false)
+
+  (solve :expect)   holds
+
+$ ein saturate --dump tests/region/04_owing.ein
+# exit 0
+
+# (its KB section: plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/dump-program.txt)
+
+## Today: load owing/01.ein again (`ein solve` on the state file)
+
+$ ein solve plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein
+# exit 0
+# stdout:
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every alive node owes — no commitment pays every debt
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 2 layers
+
+  owing             ∅ — owes 1
+                      likes owes Ann a Food.
+
+  (region (owing (model)))
+
+  query             (likes ?who ?what)
+  over              all of R — R is empty, root is alive and owes 1 instance: no state to answer from
+  as :expect        (false)
+
+  (solve :expect)   holds
+
+$ ein saturate --dump plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein
+# exit 0
+
+## Today: save it again (`--no-search --dump-answer`), save -> load -> save
+
+$ ein solve plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein --no-search --dump-answer plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/second-owing-01
+# exit 0
+# stdout:
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein --no-search
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 not in R — root owes 1 instance
+    owed            likes owes Ann a Food.
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  query             (likes ?who ?what)
+  over              all of R — --no-search read root alone, and root owes 1 instance, so ∅ is not in R: no state to answer from, and R was not searched
+
+  (solve :expect)   NOT CHECKED
+                    the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so ∅ is not in R, and R was not searched
+# stderr:
+note: plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein: (solve :expect) NOT CHECKED — the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so ∅ is not in R, and R was not searched
+
+$ cmp plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/second-owing-01/root.ein
+# differ: diff -u is +16 -4 lines (plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/save-load-save-owing-01.diff)
+
+$ ein saturate --dump plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/second-owing-01/root.ein
+# exit 0
+
+## Today: load -> save -> load, the two loads' `ein saturate --dump` KB sections
+$ diff -u plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/dump-owing-01.txt plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/dump-owing-01-second.txt
+# identical: +0 -0 lines
+
+## Today: run -> save -> load, root's state: the program's own dump against the state file's load
+$ diff -u plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/dump-program.txt plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/dump-owing-01.txt
+# identical: +0 -0 lines (plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/run-vs-load-owing-01.diff)
+
+## Proposed: plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/proposed/owing/01.ein, assembled by s1f.22.5_propose.py from tests/region/04_owing.ein, its modules
+## and the commitment plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein names. NOT a file today's `ein` reads.
+## The commands that would check the two invariances on it:
+#   ein solve tests/region/04_owing.ein --dump-answer A                      # save: A/owing/01.ein is plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/proposed/owing/01.ein
+#   ein solve A/owing/01.ein --no-search --dump-answer B                # load it, save its root again
+#   cmp A/owing/01.ein B/root.ein                                      # save -> load -> save: byte for byte
+#   ein saturate --dump A/owing/01.ein > a.txt; ein saturate --dump B/root.ein > b.txt
+#   diff <(sed -n '/SATURATED KB DUMP/,$p' a.txt) <(sed -n '/SATURATED KB DUMP/,$p' b.txt)   # load -> save -> load
+

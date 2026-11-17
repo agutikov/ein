@@ -1,0 +1,33 @@
+--- plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein	2026-11-18 00:07:43.138398713 +0400
++++ plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/second-owing-01/root.ein	2026-11-18 00:07:43.194398968 +0400
+@@ -1,7 +1,7 @@
+-;;; an owing node of an empty R — written by `ein solve --dump-answer` (ein-answer/2).
+-;;; source:     tests/region/04_owing.ein
+-;;; commitment: ∅
+-;;; owes:       1
++;;; root — written by `ein solve --no-search --dump-answer` (ein-answer/2).
++;;; source:     plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein
++;;; root:       not in R — owes 1
++;;; R:          not searched
+ ;;;   likes owes Ann a Food.
+ ;;;
+ ;;; Below: the program as loaded, imports inlined, and then every fact of
+@@ -320,6 +320,18 @@
+ (solve :no-search :expect (region (owing (model (likes Bob Stew)))))
+ 
+ (query :goal (likes ?who ?what))
++
++(is-a Ann Person)
++
++(is-a Bob Person)
++
++(is-a Soup Food)
++
++(is-a Stew Food)
++
++(likes Bob Stew)
++
++(total-owed likes is-a)
+ ;; ── the state ──────────────────────────────────────────────────────────
+ 
+ (is-a Ann Person) ; Ann is a Person

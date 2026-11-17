@@ -1,0 +1,23 @@
+solve · plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/02_q392_demo_hypothesis/q392_demo_hypothesis.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      2
+  commitments (k_c) 2
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
+  components        1
+  sub-cubes         1, of dimension 1
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          1 candidate, 0 dead alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              2 saturations · 1 fact beyond root · 3 layers
+
+  (region
+    ;; state 1 of 2 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 2 — 1 candidate · maximal · from {(note (bad a))}
+    (model (note (bad a))))

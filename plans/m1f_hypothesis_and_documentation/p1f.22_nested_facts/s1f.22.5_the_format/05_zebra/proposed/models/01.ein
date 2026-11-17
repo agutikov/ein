@@ -1,0 +1,1312 @@
+;;; A saved state of ein (ein-saved/1): the program as written, every module it
+;;; imports as written, and the choices made. It reads no other file.
+(program
+;;; Ein — Zebra puzzle (Einstein's puzzle): the ONE-GENERIC-LINK ontology.
+;;;
+;;; Setup: five houses in a row. Each house has a colour, occupant
+;;; nationality, drink, cigarette brand, and pet. Each attribute
+;;; appears exactly once across the five positions.
+;;;
+;;; Question: Who drinks water? Who owns the zebra?
+;;; Answer:   Norwegian drinks Water; Japanese owns Zebra.
+;;;
+;;; ── Editing this file ────────────────────────────────────────
+;;;
+;;; It is a **world anchor**: tests in six crates hard-code facts about it,
+;;; and three goldens that may never be re-blessed are taken from it. The list
+;;; of what an edit fans out into is examples/README.md § What an edit to these
+;;; two files fans out into — generated, and diffed by
+;;; ein-cli/tests/world_anchors.rs, so it cannot go stale here.
+;;;
+;;;
+;;; ── What makes this file different from examples/zebra2.ein ──────────
+;;;
+;;; The two are TWO ONTOLOGIES FOR ONE PUZZLE, not "classic vs modern".
+;;; Both are valid ein-lang; they commit to different vocabularies and
+;;; therefore to different inference:
+;;;
+;;;   zebra2.ein — FIVE TYPED PROJECTIONS. `color-loc : Color → House`,
+;;;     `nation-loc : Nationality → House`, … Each is declared
+;;;     `(bijective …)`, and the whole std.bijection pipeline (negative
+;;;     completion, domain/range elimination, typecheck) keys off that
+;;;     per-relation property. Cross-attribute facts are *activators*
+;;;     (`(co-located nation-loc Englishman color-loc Red)`), and
+;;;     "same house" is a join through the shared House argument.
+;;;
+;;;   zebra.ein (this file) — ONE GENERIC LINK. A single `co-located`
+;;;     equivalence relation over ALL attribute values, whose classes
+;;;     *are* the houses. Cross-attribute facts are ordinary facts
+;;;     (`(co-located Englishman Red)`), spatial clues are ordinary
+;;;     spatial facts between attribute values (`(right-of Green Ivory)`
+;;;     = "Green's house is immediately right of Ivory's house"), and
+;;;     "same house" is `co-located`'s own equivalence structure rather
+;;;     than a shared argument.
+;;;     Membership stays SPLIT — `(instance V T)` for membership,
+;;;     `(type Sub Super)` for subtyping — instead of zebra2's unified
+;;;     `is-a`.
+;;;
+;;; The interesting consequence: `bijective` is a property of a relation,
+;;; and `co-located` is NOT a bijection — it is an equivalence whose
+;;; classes hold exactly one instance of each attribute type. So the
+;;; whole std.bijection stack is inapplicable here, and the inference it
+;;; licenses has to be re-derived from the *slot-partition* property
+;;; instead (std.slots, imported below). That property is TYPE-SCOPED —
+;;; it quantifies over the attribute types, not over one relation — which
+;;; is exactly the expressivity a split encoding needs and a property of
+;;; one relation cannot give.
+;;;
+;;; ── Provenance convention ───────────────────────────────────────────
+;;;   no annotation  — IMPLICIT assumptions: schema, instance
+;;;                    enumerations, property-application facts,
+;;;                    structural facts derived from background context
+;;;                    (e.g. condition (1) "five in a row").
+;;;   `:source "…"`  — EXPLICIT problem statements: the numbered puzzle
+;;;                    conditions (1)-(15). Every given clue carries one,
+;;;                    so the contradiction frontier and the `--trace`
+;;;                    can name the clue a conclusion rests on.
+;;;   `:rule`/`:using` — DERIVED facts the engine produces at runtime.
+;;;                    None at authoring time.
+;;;
+;;; Every rule carries a `:why` template; every relation that reads as a
+;;; sentence carries a positional `:why` render template. Together with
+;;; the query's `:goal-text` that makes this file the NL ⇄ IR
+;;; round-trip target, not just a fixture. See
+;;; docs/ein/user/02-guide/06-zebra-walkthrough.md.
+
+
+;; ──── Search control ───────────────────────────────────────────────
+;; Explicit rather than defaulted, because this encoding is the one that
+;; stresses hypothesis filtering: `co-located` spans 30 attribute values
+;; (zebra2's five projections each span 5), so an unfiltered enumeration
+;; is ~20x larger. The `:hrules` clause in (solve …) is what actually
+;; bounds it; these knobs decide how hard each candidate is tested
+;; before it is entered.
+(config
+  ;; `:record-alternative-justifications` is the one flag set here, and
+  ;; no flag changes R: this one may change which core a dead node's
+  ;; refutation names, and no state (docs/ein/user/04-reference/06-config.md). It is
+  ;; set
+  ;; OFF, and this is the single most consequential knob in the file.
+  ;; With multi-justification provenance on, a dead branch's no-good is
+  ;; explained by searching the AND/OR proof graph for a genuinely
+  ;; minimal frontier. That search is affordable when each fact has one
+  ;; or two derivations; here it is not. One generic `co-located` edge is
+  ;; re-derivable many ways — `symmetric`, `slot-locate`, `slot-occupied`
+  ;; and the spatial rules all reach the same pair — so the graph is
+  ;; densely multi-justified and the minimisation explodes: measured at
+  ;; ~22.7 s PER dead branch (50% of a whole stop-after-1 solve), against
+  ;; ~2 s for the branch's own saturation. Off, the frontier falls back
+  ;; to the recorded-primary walk: still sound, merely order-dependent in
+  ;; WHICH minimal-ish core it names.
+  ;;
+  ;; This is a property of the ontology, not of the engine: five typed
+  ;; relations (zebra2) give each fact essentially one derivation, so
+  ;; zebra2 can afford the search and leaves the knob at its default.
+  :record-alternative-justifications false)
+
+
+;; ──── Imported property rules ──────────────────────────────────────
+;; The std.algebra property closures, imported rather than written in
+;; this file; the module comes whole, and the
+;; list names the rules the property-application facts below activate
+;; (`(symmetric co-located)`, `(symmetric next-to)`, `(includes right-of
+;; next-to)`), so they are written short. `(includes R S)` copies every
+;; R fact into S: here, every `right-of` pair is a `next-to` pair.
+;;
+;; `symmetric-negative-setup` is load-bearing, not decoration: a
+;; symmetric relation has a symmetric COMPLEMENT too, and this encoding
+;; derives most of its negatives in one argument order only. Without the
+;; mirror, `(not (co-located House-2 Green))` never reaches a rule that
+;; matches `(not (co-located Green House-2))`, and the whole
+;; *Blue@H_2 ⟹ ¬Green@H_2 ⟹ ¬Ivory@H_1 ⟹ Yellow@H_1* chain of the human
+;; walkthrough stalls at its first step. zebra2 needs no such mirror
+;; because its `*-loc` relations are directed Attribute→House, so there
+;; is only one order to begin with.
+(import std.algebra
+  :symbols (symmetric symmetric-negative-setup includes))
+
+;; ──── The slot-partition property (std.slots) ──────────────────────
+;; One declaration — the `(slot-partition …)` fact below — says:
+;; `co-located` is an equivalence relation whose classes are *slots*;
+;; each slot holds exactly one `instance` of every `type` that is a
+;; direct subtype of `Attribute`; and the `House` member of a slot is its
+;; name. From that, std.slots derives the operational activators this
+;; puzzle needs: placement, same-type exclusion, seat occupancy, negative
+;; propagation across the equivalence, elimination in both directions,
+;; and the two no-room contradictions. It is the type-scoped counterpart
+;; of zebra2's per-relation `(bijective …)`.
+;;
+;; The second entry point, `slot-spatial-setup`, does the same for a
+;; spatial relation between attribute values, which means "their slots
+;; are spatially related".
+;; `(slot-spatial co-located next-to instance House)` says: `next-to`
+;; relates attribute values exactly when it relates their slots, and the
+;; slot type carrying the spatial structure is `House`. std.slots then
+;; supplies the propagation zebra2 gets from `adjacent-via-*`: positive
+;; propagation across a unique neighbour, its contrapositive, the
+;; disjunctive domain pruning, and the endpoint exclusions.
+(import std.slots :symbols (slot-partition-setup slot-spatial-setup))
+
+
+;; ──── On the "square rule" ─────────────────────────────────────────
+;; Earlier revisions of this file carried a local pair of rules,
+;; `square-fwd` / `square-bwd`, projecting a directional spatial relation
+;; across the `co-located` bridge:
+;;
+;;   ?x  ──R──▶ ?y       (the spatial leg)
+;;   ▲           ▲
+;;   │ co-loc    │ co-loc (one is bridge, the other inferred)
+;;   ?a  ──R──▶ ?b       (the attribute leg)
+;;
+;; They are gone, because they are the special case of std.slots'
+;; `slot-adjacent-fwd` / `slot-adjacent-bwd` in which the
+;; unique-neighbour guard is vacuous. Their restriction to *directional*
+;; relations (never `(square-fwd next-to)` — for a symmetric relation the
+;; conclusion is disjunctive, since a position can have two neighbours)
+;; is exactly what that guard expresses, and expresses better: it admits
+;; the corner cases of a symmetric relation, which `square-fwd` had to
+;; refuse wholesale and `square-unique` had to re-implement with a
+;; hand-written NAF clause. One mechanism replaced three.
+
+
+;; ──── Hypothesis generation ────────────────────────────────────────
+;; Byte-for-byte zebra2's hrule: the guessed RELATION rides in as the
+;; parameter ?R, so the body names only kernel primitives and variables,
+;; and the `:hrules` activators in (solve …) say what to speculate
+;; about. What differs between the two encodings is *only* the activator
+;; list — zebra2 names five different typed relations, this file names
+;; the SAME generic `co-located` five times, once per attribute type
+;; that has to be placed:
+;;
+;;   zebra2   (color-loc Color House) (nation-loc Nationality House) …
+;;   zebra    (co-located Color House) (co-located Nationality House) …
+;;
+;; Either way the candidate space is the 25 attribute values × 5 houses
+;; = 125 raw `(?R V H)` facts — and ~18x smaller than the unguided
+;; enumeration the file would get without one (2255 candidates over
+;; `co-located` × `next-to`: with no hrule, hypgen fills EVERY slot of
+;; EVERY open relation, type-blind).
+;;
+;; House is deliberately not an activator's ?T1: a house's own placement
+;; is not a degree of freedom, and `(co-located House-i House-j)` is
+;; excluded by same-type slot exclusion anyway.
+(hrule guess (?R ?T1 ?T2)
+  :match  (and (instance ?a ?T1)
+               (instance ?b ?T2))
+  :assert (?R ?a ?b)
+  :why    "guess: ({?R} {?a} {?b})?")
+
+
+;; ──── Relation signatures ──────────────────────────────────────────
+;; `type` / `instance` are ORDINARY relations — declared here like any
+;; other, and handed to the imported rules as the `?isa` / `?sub`
+;; parameters of the property facts below, so no rule body names them.
+;; They are this ontology's membership vocabulary; zebra2 unifies them
+;; into `is-a`. `T` is the
+;; universal-top type annotation: these meta-relations span the
+;; hierarchy, so their args aren't constrained to Attribute.
+;; `(type Sub Super)` = Sub's parent type is Super;
+;; `(instance Thing Type)` = Thing is an instance of Type.
+;;
+;; The `:why` strings are positional render templates ({?1} = arg 0,
+;; {?2} = arg 1) used to translate a fact into text in the `ein solve`
+;; table's "rendered query facts" column and in `--trace`.
+(relation type       T T :why "{?1} is a subtype of {?2}")
+(relation instance   T T :why "{?1} is an instance of {?2}")
+;; `co-located`'s template is the honest limit of one generic link: the
+;; relation is symmetric and untyped, so it cannot know which argument is
+;; the house and cannot render "*Water is drunk in* House-1" the way
+;; zebra2's `drink-loc` does. The typed encoding carries more NL structure
+;; in its signatures; this one carries more of it in its rules' `:why`.
+(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
+(relation right-of   Attribute Attribute :why "{?1}'s house is immediately right of {?2}'s")
+(relation next-to    Attribute Attribute :why "{?1}'s house is next to {?2}'s")
+
+;; ──── Property-application facts ───────────────────────────────────
+;; IMPLICIT: the puzzle text never says "co-located is symmetric" —
+;; that is universal context the reader supplies.
+(symmetric  co-located)
+(symmetric  next-to)
+(includes   right-of next-to)
+
+;; co-located's classes are the houses: one instance of every direct
+;; subtype of Attribute per class, and the House member of a class NAMES
+;; it. This single fact drives std.slots.
+;;
+;; Note what is NOT declared: `(transitive co-located)`. Transitivity
+;; HOLDS — it is what justifies std.slots' `slot-locate` /
+;; `slot-negative` / `slot-elimination` — but enumerating it materialises
+;; every pair inside each house (150 positive edges, and a 900-pair
+;; negative square), and the negative-propagation rules join positives
+;; against negatives, so the cost is the product. std.slots' Index
+;; anchoring puts the same information on the 25-value × 5-house
+;; rectangle zebra2's typed relations occupy. Measured: declaring
+;; `transitive` here costs ~4.3 s per hypothesis instead of ~0.1 s.
+(slot-partition co-located instance type Attribute House)
+
+;; Both spatial relations are congruences of co-located, carried by the
+;; House slot type.
+(slot-spatial co-located right-of instance House)
+(slot-spatial co-located next-to  instance House)
+
+;; ──── Type schema. Flat attribute hierarchy. ───────────────────────
+(type Attribute   T)
+(type House       Attribute)
+(type Color       Attribute)
+(type Nationality Attribute)
+(type Pet         Attribute)
+(type Cigarette   Attribute)
+(type Drink       Attribute)
+
+;; ──── Instance enumeration. IMPLICIT: the puzzle text mentions each
+;; ──── attribute (Norwegian, Red, House-1, …) without literally saying
+;; ──── "Norwegian is a Nationality"; the reader supplies the typing.
+(instance House-1 House) (instance House-2 House) (instance House-3 House)
+(instance House-4 House) (instance House-5 House)
+(instance Red    Color) (instance Green Color) (instance Ivory Color)
+(instance Yellow Color) (instance Blue  Color)
+(instance Englishman Nationality) (instance Spaniard  Nationality)
+(instance Ukrainian  Nationality) (instance Norwegian Nationality)
+(instance Japanese   Nationality)
+(instance Dog   Pet)   (instance Snail Pet) (instance Fox Pet)
+(instance Horse Pet)   (instance Zebra Pet)
+(instance Old_Gold      Cigarette) (instance Kools        Cigarette)
+(instance Chesterfields Cigarette) (instance Lucky_Strike Cigarette)
+(instance Parliament    Cigarette)
+(instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
+(instance Juice  Drink) (instance Water Drink)
+
+;; ──── The 15 numbered puzzle conditions ────────────────────────────
+;;
+;; (1) Five houses in a row. The cardinality statement is explicit; the
+;; pairwise consequences are reader-supplied, hence `:source` pointing
+;; at the originating condition. `(includes right-of next-to)` +
+;; `(symmetric next-to)` derive the eight next-to pairs for free.
+(right-of House-2 House-1 :source "condition (1)")
+(right-of House-3 House-2 :source "condition (1)")
+(right-of House-4 House-3 :source "condition (1)")
+(right-of House-5 House-4 :source "condition (1)")
+
+;; (2) The Englishman lives in the red house.
+(co-located Englishman Red       :source "condition (2)")
+;; (3) The Spaniard owns the dog.
+(co-located Spaniard Dog         :source "condition (3)")
+;; (4) Coffee is drunk in the green house.
+(co-located Coffee Green         :source "condition (4)")
+;; (5) The Ukrainian drinks tea.
+(co-located Ukrainian Tea        :source "condition (5)")
+;; (6) The green house is immediately right of the ivory house.
+(right-of   Green Ivory          :source "condition (6)")
+;; (7) The Old Gold smoker owns snails.
+(co-located Old_Gold Snail       :source "condition (7)")
+;; (8) Kools are smoked in the yellow house.
+(co-located Kools Yellow         :source "condition (8)")
+;; (9) Milk is drunk in the middle house.
+(co-located Milk House-3         :source "condition (9)")
+;; (10) The Norwegian lives in the first house.
+(co-located Norwegian House-1    :source "condition (10)")
+;; (11) Chesterfields is smoked next to the house with the fox.
+(next-to    Chesterfields Fox    :source "condition (11)")
+;; (12) Kools is smoked next to the house with the horse.
+(next-to    Kools Horse          :source "condition (12)")
+;; (13) The Lucky Strike smoker drinks orange juice.
+(co-located Lucky_Strike Juice   :source "condition (13)")
+;; (14) The Japanese smokes Parliaments.
+(co-located Japanese Parliament  :source "condition (14)")
+;; (15) The Norwegian lives next to the blue house.
+(next-to    Norwegian Blue       :source "condition (15)")
+
+(solve
+  ;; One activator per attribute type that must be placed — all five
+  ;; naming the same generic link relation.
+  :hrules (guess
+            (co-located Color       House)
+            (co-located Nationality House)
+            (co-located Drink       House)
+            (co-located Cigarette   House)
+            (co-located Pet         House)))
+
+(query
+  ;; The two puzzle questions are "who drinks water?" and "who owns the
+  ;; zebra?" — a Nationality, not a House (who, not where). The
+  ;; goal binds the drink's / pet's house, then joins back through
+  ;; co-located to a Nationality. Under solve() the goal is
+  ;; projection-only (the verdict is consistent ∧ complete, not
+  ;; goal-match), so the `instance` conjuncts don't gate the search;
+  ;; they disambiguate which of the slot-mates the answer names.
+  :goal (and (co-located Water ?h_water)
+             (instance ?h_water House)
+             (co-located ?who_water ?h_water)
+             (instance ?who_water Nationality)
+             (co-located Zebra ?h_zebra)
+             (instance ?h_zebra House)
+             (co-located ?who_zebra ?h_zebra)
+             (instance ?who_zebra Nationality))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")
+
+;; Expected solution facts:
+;;   - (co-located Norwegian ?h) ∧ (co-located Water ?h) — same ?h
+;;   - (co-located Japanese  ?h) ∧ (co-located Zebra ?h) — same ?h
+
+)
+(module std.algebra
+;;; Ein stdlib — `std.algebra`: relation-algebra library rules.
+;;;
+;;; The full relation-algebra signature — Tarski's ⟨∪, ∩, ¬, 0, 1, ;, ⁻¹, 1'⟩
+;;; over relations-as-pair-sets — as generic ein rules on the existing matcher.
+;;; The module holds the relative layer (`converse` / `imply`), composition
+;;; (`compose`), the Boolean lattice (`meet` / `join` / `difference` /
+;;; `complement` / `top` / `empty`), the identity (`identity`), the missing
+;;; single-relation property checks, and the Tarski/Maddux equational lemmas
+;;; (Schröder B10, contravariance B7, converse-over-join B8).
+;;;
+;;; All rules are GENERIC (parametrised over the operand relations), so a puzzle
+;;; imports the module, listing the rules whose activators it writes, and
+;;; declares activator facts naming the operands:
+;;;
+;;;     (import std.algebra :symbols (converse compose meet))
+;;;     (converse right-of left-of)            ; R2 = R1°
+;;;     (compose  right-of right-of two-right)  ; two-right = right-of ; right-of
+;;;     (meet     owns rents shares)            ; shares = owns ∩ rents
+;;;
+;;; An import brings every rule of the module (Q-M1f.247); `:symbols` names
+;;; the rules whose activators the puzzle writes, so their bare names resolve.
+;;;
+;;; ── intrinsic vs extensive ───────────────────────────────────────────────────
+;;; INTRINSIC ops (`compose` / `meet` / `difference` / `converse` / `join` /
+;;; `difunctional`) read only existing edges — pure joins / NAF over the KB.
+;;; EXTENSIVE ops (`complement` / `top` / `identity` / `connex`) range over the
+;;; `Dom×Ran` universe to reach ABSENT pairs, so they take the puzzle's
+;;; instance-type relation + the argument types `(?isa ?Dom ?Ran)` (the
+;;; `std.typing` / `std.elim` machinery) and inherit the closed-world soundness
+;;; caveat: a `complement` / `connex` / `difference` reading is sound only when
+;;; the operand is saturation-determined (the `std.closure` caveat), NOT when it
+;;; needs hypothesis BRANCHING (the Zebra attribute relations). Opt in per use.
+;;; The hierarchy relation always arrives as the ?isa PARAM, never an `is-a`
+;;; literal — the rule bodies stay is-a-free (kernel purity).
+;;;
+;;; Expressivity: RA ≡ FOL with ≤3 variables, so most ≤3-var constraints are
+;;; expressible here; `co-located` (4 params) / `adjacent-via` (5) exceed the L3
+;;; ceiling and correctly stay as puzzle-local named rules.
+
+;; Dependency: the extensive totality checks (`total` / `surjective`) quantify
+;; with `forall` (std.macro), imported here, so any import of std.algebra brings
+;; std.macro too; one copy per program, so a puzzle that also imports `forall`
+;; is fine.
+(import std.macro :symbols (forall))
+
+;; ── converse — (converse R1 R2) ⟺ R2 = R1° (the inverse relation).
+;; Mirrors each R1-edge into R2 with the endpoints swapped. `right-of`/`left-of`
+;; are converse; `next-to` is self-converse.
+(rule converse (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :why    "(converse {?R1} {?R2}): mirror {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+;; ── imply1 — (imply1 R1 R2): (R1 a) ⇒ (R2 a), a 1-arg (property) implication.
+;; Doubles as property→property: (imply1 functional __closed__) turns a
+;; (functional R) marker into a (__closed__ R) one — no new rule shape needed.
+(rule imply1 (?R1 ?R2)
+  :match  (?R1 ?a)
+  :assert (?R2 ?a)
+  :why    "(imply1 {?R1} {?R2}): {?R1}({?a}) → {?R2}({?a})")
+
+;; ── imply2-fwd — (imply2-fwd R1 R2): (R1 a b) ⇒ (R2 a b), forward 2-arg.
+(rule imply2-fwd (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?a ?b)
+  :why    "(imply2-fwd {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?a},{?b})")
+
+;; ── imply2-reverse — ergonomic alias of `converse`: (R1 a b) ⇒ (R2 b a).
+(rule imply2-reverse (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :why    "(imply2-reverse {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+;; ── algebra lemmas ──────────────────────────────────────────────────────────
+;; These DERIVE `converse` / `symmetric` activator facts, which then activate
+;; the rules above (and the puzzle's `symmetric` rule) — relying on reflective
+;; rule-implication: a derived `(converse R R)` activates the
+;; `converse` rule on the next saturation pass. Parameter-less (free match
+;; vars). They converge: every back-derivation is a fact that already exists,
+;; so the saturator's dedup bounds the loop.
+
+;; symmetric R ⟺ converse R R (a symmetric relation is its own inverse).
+(rule symmetric-is-self-converse ()
+  :match  (symmetric ?R)
+  :assert (converse ?R ?R)
+  :why    "symmetric {?R} ⟹ (converse {?R} {?R})")
+
+(rule self-converse-is-symmetric ()
+  :match  (converse ?R ?R)
+  :assert (symmetric ?R)
+  :why    "(converse {?R} {?R}) ⟹ symmetric {?R}")
+
+;; converse is symmetric on the pair: (converse R1 R2) ⟹ (converse R2 R1).
+(rule converse-pair-symmetric ()
+  :match  (converse ?R1 ?R2)
+  :assert (converse ?R2 ?R1)
+  :why    "(converse {?R1} {?R2}) ⟹ (converse {?R2} {?R1})")
+
+;; ── converse well-formedness — domain/range typecheck ────────────────────────
+;; A `(converse R1 R2)` is type-valid iff R2's signature is R1's reversed:
+;;   range(R1) = domain(R2)  and  domain(R1) = range(R2),
+;; up to the supplied subtype relation ?isR* (a puzzle's transitive is-a
+;; closure), **either way**: a pair is ill-typed where the two types of a side
+;; are neither equal nor one a subtype of the other.
+;; `(converse R1 R2)` is the equality R2 = R1°, which `converse-pair-symmetric`
+;; states, so a pair and its mirror must check alike: read one way, `Pet` ⊑
+;; `Animal` passed `(converse owns owned-by)` (owns : Person → Pet, owned-by :
+;; Animal → Person) and refuted the mirror the lemma derives, so no pair with a
+;; proper subtype held where the lemma was loaded, which is wherever a program
+;; writes `converse` since imports bring a module whole. These reject (⊥) the
+;; ill-typed pairings — `(converse house-color pet-dog)` etc., where the types
+;; do not meet. The signatures are read straight off the `(relation …)`
+;; declaration facts (matchable since rules already do `(relation ?R ?A ?B)`);
+;; the hierarchy relation arrives as the parameter ?isR*, so the rule BODY names
+;; no `is-a` literal — its dependency on is-a*'s closure is explicit in the
+;; parameter list. The `(neq …)` guard absorbs the identical-type case, so an
+;; *irreflexive* ?isR* (zebra2's is-a* is transitive-but-irreflexive) still
+;; passes exact-type converses (right-of/left-of) without a self-loop; declare
+;; `(reflexive is-a*)` (std.typing) only if you want the pure-subtype reading.
+;; Activate per pair — `(converse-illtyped-dom right-of left-of is-a*)` — or let
+;; std.typing's `(type-hierarchy …)` knob derive the activators.
+(rule converse-illtyped-dom (?R1 ?R2 ?isR*)
+  :match  (and (converse  ?R1 ?R2)
+               (relation  ?R1 ?D1 ?Rn1)
+               (relation  ?R2 ?D2 ?Rn2)
+               (neq ?Rn1 ?D2)
+               (absent (?isR* ?Rn1 ?D2))
+               (absent (?isR* ?D2 ?Rn1)))
+  :assert (false)
+  :why    "converse {?R1}/{?R2} ill-typed: range({?R1})={?Rn1} and domain({?R2})={?D2} are neither equal nor one a subtype of the other under {?isR*}.")
+
+(rule converse-illtyped-ran (?R1 ?R2 ?isR*)
+  :match  (and (converse  ?R1 ?R2)
+               (relation  ?R1 ?D1 ?Rn1)
+               (relation  ?R2 ?D2 ?Rn2)
+               (neq ?D1 ?Rn2)
+               (absent (?isR* ?D1 ?Rn2))
+               (absent (?isR* ?Rn2 ?D1)))
+  :assert (false)
+  :why    "converse {?R1}/{?R2} ill-typed: domain({?R1})={?D1} and range({?R2})={?Rn2} are neither equal nor one a subtype of the other under {?isR*}.")
+
+;; ╒═══════════════════════════════════════════════════════════════════════════╕
+;; │ The rest of the relation-algebra signature                                 │
+;; ╘═══════════════════════════════════════════════════════════════════════════╛
+
+;; ── relative (composition) layer ─────────────────────────────────────────────
+
+;; compose — (compose R1 R2 R3) ⟺ R3 ⊇ R1;R2 (relative product). The shared ?b
+;; makes it a Join: an R1-edge into ?b composes with an R2-edge out of ?b.
+;; `(compose right-of right-of two-right)` builds the two-to-the-right relation;
+;; `(compose R R R)` is exactly transitive closure of R.
+(rule compose (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (?R2 ?b ?c))
+  :assert (?R3 ?a ?c)
+  :why    "(compose {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?b},{?c}) → {?R3}({?a},{?c}).")
+
+;; identity — (identity R isa Dom) ⟺ R ⊇ 1' on Dom: self-loop every Dom element.
+;; EXTENSIVE (⊙) — materialises pairs absent from the edge set, so it ranges over
+;; the `(?isa _ ?Dom)` extent rather than existing edges.
+(rule identity (?R ?isa ?Dom)
+  :match  (?isa ?a ?Dom)
+  :assert (?R ?a ?a)
+  :why    "(identity {?R} {?isa} {?Dom}): {?a}∈{?Dom} → {?R}({?a},{?a}).")
+
+;; ── Boolean (lattice) layer ──────────────────────────────────────────────────
+
+;; meet — (meet R1 R2 R3) ⟺ R3 ⊇ R1∩R2: the pairs in BOTH operands.
+(rule meet (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (?R2 ?a ?b))
+  :assert (?R3 ?a ?b)
+  :why    "(meet {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; difference — (difference R1 R2 R3) ⟺ R3 ⊇ R1∖R2: in R1 but NOT R2 (NAF on R2).
+;; The `absent` is judged at the boundary, on the fixpoint of the positive rules,
+;; so whatever saturation derives of R2 is there before it. Closed-world:
+;; sound only when R2 is saturation-determined.
+(rule difference (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (absent (?R2 ?a ?b)))
+  :assert (?R3 ?a ?b)
+  :why    "(difference {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧¬{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; join — (join R1 R2 R3) ⟺ R3 ⊇ R1∪R2: two generic copiers, `join-l` from R1
+;; and `join-r` from R2, each reached by an activator of its own. They are lit
+;; by the NON-generic fan-out idiom (`bijective-properties` / `reflexive`): a
+;; None-activator rule reads the `(join …)` operand fact and asserts both
+;; per-operand activators in one firing, which then light up the two copiers
+;; by reflective rule-implication. IMPORT all three
+;; (`derive-join join-l join-r`); the activator relation is `join`, distinct
+;; from any rule name.
+(rule derive-join ()
+  :match  (join ?R1 ?R2 ?R3)
+  :assert (and (join-l ?R1 ?R2 ?R3) (join-r ?R1 ?R2 ?R3))
+  :why    "(join {?R1} {?R2} {?R3}): fan out into the two per-operand copiers.")
+
+(rule join-l (?R1 ?R2 ?R3)
+  :match  (?R1 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :why    "(join {?R1} {?R2} {?R3}): {?R1}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+(rule join-r (?R1 ?R2 ?R3)
+  :match  (?R2 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :why    "(join {?R1} {?R2} {?R3}): {?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; empty — (empty R) ⟺ R = 0: a CHECK. Any edge in R contradicts the claim.
+(rule empty (?R)
+  :match  (?R ?a ?b)
+  :assert (false)
+  :why    "(empty {?R}) violated: {?R}({?a},{?b}) exists.")
+
+;; top — (top R isa Dom Ran) ⟺ R ⊇ 1: the full Dom×Ran rectangle. EXTENSIVE (⊙).
+(rule top (?R ?isa ?Dom ?Ran)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran))
+  :assert (?R ?a ?b)
+  :why    "(top {?R} {?isa} {?Dom} {?Ran}): {?a}∈{?Dom},{?b}∈{?Ran} → {?R}({?a},{?b}).")
+
+;; complement — (complement R1 R2 isa Dom Ran) ⟺ R2 ⊇ ¬R1 over Dom×Ran: the pairs
+;; of the universe ABSENT from R1. EXTENSIVE (⊙) and the one op that materialises
+;; absent pairs, so it inherits the closed-world caveat squarely — sound only when
+;; R1 is saturation-determined (the `std.closure` caveat). One positive R1-edge
+;; removed shrinks the complement.
+(rule complement (?R1 ?R2 ?isa ?Dom ?Ran)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran) (absent (?R1 ?a ?b)))
+  :assert (?R2 ?a ?b)
+  :why    "(complement {?R1} {?R2}): {?a}∈{?Dom},{?b}∈{?Ran},¬{?R1}({?a},{?b}) → {?R2}({?a},{?b}).")
+
+;; ── single-relation property checks (RA equations) ───────────────────────────
+;; These complete the tag vocabulary zebra2 uses (`symmetric` below,
+;; `functional` / `injective` here, `reflexive` in `std.typing`; `total` /
+;; `surjective` / `bijective` below). Each is a generic check (`⟹ (false)`) or
+;; closure (`⟹ the closing edge`).
+
+;; ── cardinality checks: functional / injective ───────────────────────────────
+;; The right-/left-uniqueness checks of a relation R ⊆ A×B:
+;;   functional  — ∀a. |{b : R(a,b)}| ≤ 1  (right-unique): two DISTINCT images of
+;;                 the same `a` is ⊥.
+;;   injective   — ∀b. |{a : R(a,b)}| ≤ 1  (left-unique): the dual.
+;; Generic over R, activated per relation by `(functional R)` / `(injective R)`
+;; (zebra2's *-loc bijections derive these from `(bijective R)`). They fire
+;; `(false)` on VIOLATION, not satisfaction. A rule that concludes `(false)` is
+;; in the agenda's first half (Q-M1f.313), so a violation fires as soon as it
+;; matches, before the rest.
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}.")
+
+(rule injective (?R)
+  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}.")
+
+;; bijective — the "all four cardinality properties" shorthand. A single
+;; `(bijective R)` declaration fans out into the four markers
+;; `(functional R)` / `(injective R)` / `(total R)` / `(surjective R)` via one
+;; multi-fact `:assert (and …)`, one firing whose conjuncts share a provenance.
+;; A None-activator rule (generic-by-premise): it reads the `(bijective R)`
+;; operand fact, so the importer needs only this one symbol — the derived
+;; markers then activate `functional`/`injective` (here) and the importer's
+;; `total`/`surjective`/elimination rules, each as its marker is derived: the
+;; agenda's order decides no answer on a monotone program (Q-M1f.313).
+(rule bijective-properties ()
+  :match  (bijective ?R)
+  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.")
+
+;; ── totality checks: total / surjective ──────────────────────────────────────
+;; The left-/right-TOTAL checks of R ⊆ A×B, the EXTENSIVE duals of the (intrinsic)
+;; functional/injective above:
+;;   total       — ∀a∈A. ∃b. R(a,b)  (left-total):   an `a` with every `b` excluded is ⊥.
+;;   surjective  — ∀b∈B. ∃a. R(a,b)  (right-total):  the dual.
+;; Open-world-safe: they fire `(false)` only when EVERY partner is *explicitly*
+;; excluded (the stored `(not …)` facts cover the whole opposite-type domain) —
+;; a "must hold" reading would fire on every empty-yet state. Types come from the
+;; `(relation R A B)` signature; the type-membership relation is the `?isa` PARAM,
+;; never an `is-a` literal (is-a-free body), so `(?isa …)` is an
+;; activator-bound scan. Activate per relation: `(total R is-a)` / `(surjective R is-a)`.
+;;
+;; Dependency: these use `forall` (std.macro), which this module imports, so
+;; any import of it brings std.macro too (Q-M1f.247).
+(rule total (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?a ?A)
+               (forall ?b (?isa ?b ?B) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not total at {?a}: every {?B} is excluded.")
+
+(rule surjective (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?b ?B)
+               (forall ?a (?isa ?a ?A) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not surjective at {?b}: every {?A} is excluded.")
+
+;; ── totality OBLIGATIONS: total-owed / surjective-owed (Q-M1d.2) ──────────────
+;; The other half of the same two properties, and the pair the `≥` half had no
+;; way to say. The scans above are about a candidate set of size **0** — every
+;; partner explicitly excluded, so the requirement has become unreachable and
+;; the state is dead. These are about a set of size **≥ 1** with nothing in it
+;; yet: no witness is *present*, so the requirement is still **outstanding**.
+;; One modality down, and one word different — `open` where `total` says
+;; `false`, *unfinished* where it says *dead*.
+;;
+;; Note the two guards are not the same question:
+;;   total          (forall ?b (?isa ?b ?B) (not (?R ?a ?b)))  — every candidate
+;;                  carries a STORED negative. Open-world-safe, and silent in a
+;;                  program with no negative-completion rule.
+;;   total-owed     (absent (and (?isa ?b ?B) (?R ?a ?b)))     — no candidate is
+;;                  STORED POSITIVE. True of an empty-yet state, which is
+;;                  exactly what an obligation is for: it reports a debt, it
+;;                  does not refute anything.
+;;
+;; The obligation is stated ONCE, in the `absent`; `(open ?R)` names whose
+;; extent is incomplete and the engine projects the domain scan and the witness
+;; slot out of the guard (Q-M1d.3). The direction falls out of which
+;; slot the absent leaves free — `total-owed` scans ?b, `surjective-owed` scans
+;; ?a — so there is no position index and no numeral anywhere.
+;;
+;; These rules are NOT in the saturation agenda: they derive nothing, and the
+;; loader routes a rule asserting `open` into `Program::obligations`, read once
+;; per quiescent KB after the fixpoint. So they read the fixpoint whole, what
+;; negative completion and elimination derived included, and no order among
+;; the rules moves what a state owes.
+(rule total-owed (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?a ?A)
+               (absent (and (?isa ?b ?B) (?R ?a ?b))))
+  :assert (open ?R)
+  :why    "{?R} owes {?a} a {?B}.")
+
+(rule surjective-owed (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?b ?B)
+               (absent (and (?isa ?a ?A) (?R ?a ?b))))
+  :assert (open ?R)
+  :why    "{?R} owes {?b} a preimage in {?A}.")
+
+;; irreflexive — R∩1' = 0: no self-loop. The repeated ?a is an equality
+;; constraint in the matcher (`_bind_arg`), so this fires only on `(R a a)`.
+(rule irreflexive (?R)
+  :match  (?R ?a ?a)
+  :assert (false)
+  :why    "(irreflexive {?R}) violated: self-loop {?R}({?a},{?a}).")
+
+;; antisymmetric — R∩R° ⊆ 1': R(a,b)∧R(b,a) ⟹ a=b, so a DISTINCT mutual pair is ⊥.
+(rule antisymmetric (?R)
+  :match  (and (?R ?a ?b) (?R ?b ?a) (neq ?a ?b))
+  :assert (false)
+  :why    "(antisymmetric {?R}) violated: {?R}({?a},{?b})∧{?R}({?b},{?a}), {?a}≠{?b}.")
+
+;; asymmetric — R∩R° = 0: ANY mutual pair (incl. a self-loop) is ⊥ — strictly
+;; stronger than antisymmetric (= antisymmetric ∧ irreflexive).
+(rule asymmetric (?R)
+  :match  (and (?R ?a ?b) (?R ?b ?a))
+  :assert (false)
+  :why    "(asymmetric {?R}) violated: both {?R}({?a},{?b}) and {?R}({?b},{?a}).")
+
+;; connex — R∪R° = 1 over Dom (a total / linear relation): every DISTINCT pair of
+;; Dom elements is comparable. CHECK, EXTENSIVE (⊙) — quantifies over the absent
+;; pairs, so closed-world (Dom = ?isa-extent, both args one type). Two distinct
+;; Dom elements with neither orientation present ⟹ ⊥.
+(rule connex (?R ?isa ?Dom)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Dom) (neq ?a ?b)
+               (absent (?R ?a ?b)) (absent (?R ?b ?a)))
+  :assert (false)
+  :why    "(connex {?R}) violated: {?a},{?b}∈{?Dom} incomparable (neither {?R}({?a},{?b}) nor {?R}({?b},{?a})).")
+
+;; difunctional — R;R°;R ⊆ R: a CLOSURE. R(a,b)∧R(c,b)∧R(c,d) ⟹ R(a,d) (rows that
+;; overlap in a column agree on every column). Bounded by existing nodes → dedup
+;; terminates.
+(rule difunctional (?R)
+  :match  (and (?R ?a ?b) (?R ?c ?b) (?R ?c ?d))
+  :assert (?R ?a ?d)
+  :why    "(difunctional {?R}): {?R}({?a},{?b})∧{?R}({?c},{?b})∧{?R}({?c},{?d}) → {?R}({?a},{?d}).")
+
+;; ── single-relation property CLOSURES (vs the checks above) ───────────────────
+;; The checks above fire `(false)` on a violation; these instead DERIVE the edge
+;; that makes the property hold — the operational reading for properties that are
+;; always achievable by adding edges (symmetric / transitive closure / ⊆-lifting),
+;; as opposed to the violable ones (ir/anti/a-symmetric): universal rules a
+;; puzzle need not write itself; activate per relation, e.g.
+;; `(symmetric next-to)`, `(transitive is-a*)`, `(includes is-a is-a*)`.
+
+;; symmetric — R = R°: mirror every edge. (See also the symmetric⟺converse-R-R
+;; lemmas above, which relate this tag to `converse`.)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
+
+;; symmetric (negative) — the dual of the positive mirror: an impossible edge
+;; mirrors too. `(symmetric R)` + `(not (R a b))` ⇒ `(not (R b a))`. Matching a
+;; stored `(not (R a b))` (the singleton-death writeback's `(not h)` writes land in the KB
+;; as facts) derives the mirror negation, which lands in `_negated_facts` so
+;; hypgen skips the symmetric counterpart. The mirror is the program's, in
+;; pure userspace: the engine mirrors no negation of its own.
+;;
+;; TWO rules: the matcher can scan a *variable* relation head inside `(not …)`
+;; only when that head is an ACTIVATOR param (compile-time bound), not a
+;; premise-bound var. So `symmetric-negative-setup` lifts `(symmetric R)` to the
+;; activator `(symmetric-negative R)` (picked up reflectively), and the
+;; worker — activated by it, `?rel` a param — does the negation mirror.
+(rule symmetric-negative-setup ()
+  :match  (symmetric ?rel)
+  :assert (symmetric-negative ?rel)
+  :why    "{?rel} symmetric ⟹ activate its negative mirror.")
+
+(rule symmetric-negative (?rel)
+  :match  (not (?rel ?a ?b))
+  :assert (not (?rel ?b ?a))
+  :why    "{?rel} symmetric: ¬{?rel}({?a},{?b}) ⟹ ¬{?rel}({?b},{?a}).")
+
+;; transitive — R;R ⊆ R: the transitive closure. The guarded (`neq ?a ?c`)
+;; special case of `(compose R R R)` — the guard suppresses the self-loop a bare
+;; compose-into-self would add, which keeps an irreflexive closure irreflexive.
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive.")
+
+;; includes — R ⊆ S (subrelation lifting): copy every R-edge into S. The
+;; ⊆-flavoured twin of `imply2-fwd` (identical body) — `(includes is-a is-a*)`
+;; reads "is-a* includes is-a", lifting each direct edge into the closure.
+(rule includes (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}.")
+
+;; ── equational theory: Tarski/Maddux axioms as lemma rules ───────────────────
+;; B1–B5 (Boolean + monoid structure) hold by construction (ein relations are
+;; pair-sets — a representable RA), so they need no rules. B6–B10 are
+;; DERIVATIONAL — they interrelate operator facts; all reflective (a derived
+;; `(compose …)` / `(join …)` lights up its rule next pass) and convergent (every
+;; back-derivation already exists → the saturator's dedup bounds the loop).
+
+;; B10 Schröder / cycle law — A;B ≤ C⁻ ⟺ A˘;C ≤ B⁻ ⟺ C;B˘ ≤ A⁻. Operationally,
+;; for a declared composite T = R;S, a MISSING composite edge forces a missing
+;; factor: ¬T(a,c) ∧ R(a,b) ⟹ ¬S(b,c), and dually ¬T(a,c) ∧ S(b,c) ⟹ ¬R(a,b).
+;; The generic form of zebra2's `adjacent-via` / `disjunctive-prune` negative
+;; propagation. SOUND only when T = R;S is CLOSED — composition is
+;; the only source of T (the `std.closure` caveat). Opt in PER TRIPLE, separate
+;; from `compose`, since the closed-T obligation is stricter: declare
+;; `(compose-negative-s R S T)` / `(compose-negative-r R S T)` to enable.
+(rule compose-negative-s (?R ?S ?T)
+  :match  (and (?R ?a ?b) (not (?T ?a ?c)))
+  :assert (not (?S ?b ?c))
+  :why    "Schröder ({?R};{?S}={?T} closed): {?R}({?a},{?b})∧¬{?T}({?a},{?c}) → ¬{?S}({?b},{?c}).")
+
+(rule compose-negative-r (?R ?S ?T)
+  :match  (and (?S ?b ?c) (not (?T ?a ?c)))
+  :assert (not (?R ?a ?b))
+  :why    "Schröder ({?R};{?S}={?T} closed): {?S}({?b},{?c})∧¬{?T}({?a},{?c}) → ¬{?R}({?a},{?b}).")
+
+;; B7 contravariance — (A;B)° = B°;A°. From a declared `(compose R S T)` plus the
+;; three converse facts, derive the converse composite `(compose S° R° T°)`.
+;; Non-generic (operator facts from premises); reflective; converges (re-applying
+;; with `converse-pair-symmetric`'s back-edges yields `(compose R S T)`, already
+;; present).
+(rule compose-contravariant ()
+  :match  (and (compose ?R ?S ?T)
+               (converse ?R ?Rc) (converse ?S ?Sc) (converse ?T ?Tc))
+  :assert (compose ?Sc ?Rc ?Tc)
+  :why    "B7 contravariance: ({?R};{?S}={?T}) ⟹ ({?Sc};{?Rc}={?Tc}) (converses).")
+
+;; B8 converse over join — (A∨B)° = A°∨B°. From `(join R S U)` plus the converse
+;; facts, derive `(join R° S° U°)`. Same reflective/convergent shape as B7.
+(rule join-converse ()
+  :match  (and (join ?R ?S ?U)
+               (converse ?R ?Rc) (converse ?S ?Sc) (converse ?U ?Uc))
+  :assert (join ?Rc ?Sc ?Uc)
+  :why    "B8: ({?R}∪{?S}={?U}) ⟹ ({?Rc}∪{?Sc}={?Uc}) (converses).")
+
+)
+(module std.macro
+;;; Ein stdlib — `std.macro`: pattern-macro sugar.
+;;;
+;;; **Canonical** module: the import resolver (`ein-ir`'s
+;;; `stdlib::resolve`) maps the logical name `std.macro` to THIS file under the
+;;; stdlib root (`stdlib/README.md` has the three steps).
+;;;
+;;; `forall` and `unknown` are ordinary ein-lang `(macro …)` declarations, no
+;;; form of the compiler's: a program that does not import this module has
+;;; neither (Q-M1f.132). Reach them three ways:
+;;;     (import std.macro)            → `(std.macro.forall …)`
+;;;     (import std.macro :as m)      → `(m.forall …)`
+;;;     (import std.macro :symbols (forall unknown)) → `(forall …)` (short names)
+;;;
+;;; Each carries a `:why`, as every relation and rule here does: a macro's is
+;;; required as a rule's is (Q-M1f.59), so the stdlib loads with a `:why`
+;;; required, the default.
+
+;; `(forall ?b (G) (B))` — guarded universal ∀b. G(b) → B(b), encoded as the
+;; classical ¬∃b. G(b) ∧ ¬B(b). The bound var ?b must appear in the guard G.
+(macro forall (?b ?G ?B)
+  (absent (and ?G (absent ?B)))
+  :why "every {?b} the guard {?G} holds of satisfies {?B}: none satisfies the guard and not the body")
+
+;; `(unknown P)` — third-state match: P is neither asserted nor negated in the
+;; KB. It is not named `open`, the word an obligation concludes: an
+;; obligation is a rule whose conclusion is `(open ?R)`, and `open` is that
+;; verdict's atom (Q-M1d.2).
+(macro unknown (?P)
+  (and (absent ?P) (absent (not ?P)))
+  :why "{?P} is unknown: neither it nor its negation holds")
+
+)
+(module std.slots
+;;; Ein stdlib — `std.slots`: closed-world inference for a SINGLE generic
+;;; co-location relation whose equivalence classes are *slots*.
+;;;
+;;; The type-scoped counterpart of `std.bijection`. Where std.bijection
+;;; equips ONE relation per attribute — `(bijective color-loc)`,
+;;; `(bijective nation-loc)`, … each a bijection between its attribute type
+;;; and a position type — this module equips ONE relation shared by every
+;;; attribute: an equivalence relation R whose classes each hold exactly one
+;;; member of every attribute type.
+;;;
+;;; ── why this module has to exist ─────────────────────────────────────────────
+;;; `bijective` is a property of a RELATION. A single generic `co-located`
+;;; spanning all attribute types is not a bijection — restricted to one pair of
+;;; types it is, but `(bijective co-located)` cannot say "between Nationality
+;;; and House", so std.bijection's `functional-negative` would read
+;;; `(relation co-located Attribute Attribute)` and wrongly exclude a value
+;;; from every OTHER Attribute rather than from the other members of one type.
+;;; The property that actually holds is TYPE-SCOPED, and scoping it per type
+;;; PAIR would need one declaration per ordered pair (30 of them for the six
+;;; Zebra attribute types). So the property is scoped by the type FAMILY
+;;; instead — one declaration naming the family's common supertype and the
+;;; member type that *identifies* a slot:
+;;;
+;;;     (slot-partition R isa sub Super Index)
+;;;
+;;; reads: *R is an equivalence relation; its classes are slots; each slot
+;;; holds exactly one `isa`-member of every type that is a direct `sub`-child
+;;; of `Super`; and the `Index` member of a slot is its name.* For the Zebra
+;;; puzzle, with membership `instance`, subtyping `type`, and houses naming the
+;;; slots:
+;;;
+;;;     (slot-partition co-located instance type Attribute House)
+;;;
+;;; ── why Index, and not just the equivalence ─────────────────────────────────
+;;; An equivalence relation closed under transitivity materialises every pair
+;;; inside a class: for Zebra that is 6 members × 5 ordered partners × 5 slots =
+;;; 150 positive edges, where zebra2's five directed Attribute→House projections
+;;; hold the same information in 25. The negative side is worse — the
+;;; complement of a 30-element square is 900 ordered pairs against zebra2's 125
+;;; — and the negative-propagation rules join positives against negatives, so
+;;; the cost is the PRODUCT: on the exhaustive Zebra solve the fully closed
+;;; formulation costs many times what zebra2's does per hypothesis.
+;;;
+;;; So `Index` is a MATERIALISATION policy, not a weakening of the property:
+;;; every derived edge is anchored at the slot's index, which puts the derived
+;;; facts on the same Attribute×Index rectangle zebra2's typed relations live
+;;; on, while the AUTHORED facts keep the freedom the generic relation exists
+;;; for (a clue may still link two attribute values directly, with no house
+;;; named). Transitivity still HOLDS — `slot-negative` and the eliminations are
+;;; justified by it — it is simply not enumerated off the rectangle. A puzzle
+;;; that genuinely needs the full closure declares `(transitive R)`
+;;; (std.algebra) alongside and pays for it; one whose clues are *only*
+;;; cross-attribute, with no index ever named, would have to.
+;;;
+;;; ── what it licenses ────────────────────────────────────────────────────────
+;;; The same inferences std.bijection derives from `(bijective R)`, all
+;;; re-derived from the partition property instead:
+;;;
+;;;   slot-locate       — transitivity anchored at the index: a value linked to
+;;;                       a value that sits at slot i, sits at slot i. This is
+;;;                       what turns an authored cross-attribute clue into a
+;;;                       placement (std.bijection has no counterpart — zebra2
+;;;                       needs a puzzle-local `co-located` propagation rule
+;;;                       and a 4-argument activator per clue)
+;;;   slot-exclusive    — distinct members of one type never share a slot
+;;;                       (the "all-different within a category" constraint;
+;;;                       std.bijection gets this from `injective`)
+;;;   slot-occupied     — a slot's seat for a type is taken: once a slot holds
+;;;                       one member of T, it holds no other (std.bijection:
+;;;                       `functional-negative` + `injective-negative`, which
+;;;                       are this one rule read in R's two argument orders)
+;;;   slot-negative     — the equivalence carries negatives: the contrapositive
+;;;                       of transitivity, likewise anchored at the index
+;;;   slot-elimination  — every SLOT but i is excluded for a value ⟹ it is at i
+;;;                       (std.bijection: `domain-elimination`)
+;;;   slot-fill         — every MEMBER of a type but v is excluded for a slot
+;;;                       ⟹ v is in it (std.bijection: `range-elimination`)
+;;;   slot-no-room      — a value with every slot excluded ⟹ ⊥
+;;;   slot-no-fill      — a slot with every member of some type excluded ⟹ ⊥
+;;;                       (the two together are std.algebra's
+;;;                       `total` / `surjective`)
+;;;
+;;; ── spatial congruence ──────────────────────────────────────────────────────
+;;; A second declaration handles relations that hold between attribute values
+;;; *because of where their slots are*:
+;;;
+;;;     (slot-spatial R S isa PositionType)
+;;;
+;;; reads: *S relates two values exactly when it relates their slots, and the
+;;; slot member type carrying S's structure is PositionType.* So one relation
+;;; name does double duty — `(right-of Green Ivory)` is a CONSTRAINT between
+;;; two Colors ("Green's house is immediately right of Ivory's"), while
+;;; `(right-of House-2 House-1)` is the STRUCTURE it is resolved against. The
+;;; rules tell them apart by `isa`-membership of PositionType, never by name.
+;;; This replaces zebra2's `adjacent-via` activator family: there, a clue's
+;;; spatial content had to be re-stated as a 5-argument activator fact
+;;; (`(adjacent-via right-of color-loc Ivory color-loc Green)`); here the clue
+;;; IS the fact.
+;;;
+;;; ── requirements on the caller ──────────────────────────────────────────────
+;;; `(slot-partition R …)` assumes R is SYMMETRIC, and that its negative mirror
+;;; is closed too — the symmetric closures are std.algebra's job, not this
+;;; module's:
+;;;
+;;;     (import std.algebra :symbols (symmetric symmetric-negative-setup))
+;;;     (symmetric R)
+;;;
+;;; Transitivity must HOLD of R semantically (it is what justifies `slot-locate`
+;;; / `slot-negative` / `slot-elimination`) but must NOT be declared: `slot-locate`
+;;; is the index-anchored form of it, and adding `(transitive R)` alongside
+;;; re-introduces exactly the off-rectangle closure described above.
+;;;
+;;; ── soundness ───────────────────────────────────────────────────────────────
+;;; Every rule here is a consequence of the partition property, and every
+;;; negative it derives is a *stated* consequence rather than a NAF reading of
+;;; the KB — with two exceptions, both `absent`-guarded and both on the
+;;; POSITION structure only: the unique-neighbour guards of
+;;; `slot-adjacent-{fwd,bwd}` and the pruning/endpoint guards. Those are sound
+;;; exactly when the position structure is saturation-determined (for Zebra,
+;;; condition (1) fixes the row of houses), which is the ordinary `std.closure`
+;;; caveat. The ATTRIBUTE side is never read under NAF, so nothing here prunes
+;;; a branch the hypothesis search still needs.
+;;;
+;;; ── the order rules fire in ─────────────────────────────────────────────────
+;;; No rule has a priority: the agenda fires first what leads to `(false)`, a
+;;; rule concluding `(false)`, a stored negation, or a fact whose negation can be
+;;; concluded, then the rest, FIFO within each half (Q-M1f.313). On a monotone
+;;; program the order decides no answer, and an elimination's `forall` is judged
+;;; at the boundary, on the closure's fixpoint, whatever fired before it.
+
+;; Dependency self-imported (one copy per program): the eliminations quantify
+;; with `forall` (std.macro).
+(import std.macro :symbols (forall))
+
+
+;; ══ glue ════════════════════════════════════════════════════════════════════
+;; Fan `(slot-partition R isa sub Super)` out into the four operational
+;; activators. None-activator (generic-by-premise, the `bijective-properties`
+;; idiom): one firing asserts all four, sharing one provenance, and each
+;; activator it derives lights the rule below that consumes it. A generic rule
+;; may conclude a conjunction too; this one reads its relation off a premise.
+(rule slot-partition-setup ()
+  :match  (slot-partition ?R ?isa ?sub ?super ?index)
+  :assert (and (slot-locate      ?R ?isa ?index)
+               (slot-exclusive   ?R ?isa ?sub ?super)
+               (slot-occupied    ?R ?isa ?sub ?super)
+               (slot-negative    ?R ?isa ?index)
+               (slot-elimination ?R ?isa ?sub ?super ?index)
+               (slot-fill        ?R ?isa ?sub ?super ?index)
+               (slot-no-room     ?R ?isa ?sub ?super ?index)
+               (slot-no-fill     ?R ?isa ?sub ?super ?index)
+               (slot-owed-room   ?R ?isa ?sub ?super ?index)
+               (slot-owed-fill   ?R ?isa ?sub ?super ?index))
+  :why    "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.")
+
+;; Fan `(slot-spatial R S isa PT)` out into the eight directional consumers:
+;; positive propagation, its contrapositive, the disjunctive pruner and the
+;; endpoint exclusion, each in a forward and a backward reading.
+(rule slot-spatial-setup ()
+  :match  (slot-spatial ?R ?S ?isa ?PT)
+  :assert (and (slot-adjacent-fwd     ?R ?S ?isa ?PT)
+               (slot-adjacent-bwd     ?R ?S ?isa ?PT)
+               (slot-adjacent-fwd-neg ?R ?S ?isa ?PT)
+               (slot-adjacent-bwd-neg ?R ?S ?isa ?PT)
+               (slot-prune-fwd        ?R ?S ?isa ?PT)
+               (slot-prune-bwd        ?R ?S ?isa ?PT)
+               (slot-endpoint-fwd     ?R ?S ?isa ?PT)
+               (slot-endpoint-bwd     ?R ?S ?isa ?PT))
+  :why    "(slot-spatial {?R} {?S} …) ⟹ the eight directional propagation / pruning / endpoint activators.")
+
+
+;; ══ the partition rules ═════════════════════════════════════════════════════
+
+;; ── slot-locate ─────────────────────────────────────────────────────────────
+;; Transitivity, anchored at the index: if ?a shares a slot with ?b and ?b's
+;; slot is ?i, then ?a's slot is ?i. This is the rule that consumes an AUTHORED
+;; cross-attribute link — "the Englishman lives in the red house", stated
+;; without naming a house — and turns it into a placement as soon as either end
+;; is placed. Both ends are covered without a second rule because R is
+;; symmetric: the mirror edge re-enters this same match with ?a and ?b swapped.
+;;
+;; The `(neq ?a ?i)` guard keeps the closure irreflexive, exactly as
+;; std.algebra's `transitive` does.
+(rule slot-locate (?R ?isa ?index)
+  :match  (and (?R ?a ?b)
+               (?R ?b ?i)
+               (?isa ?i ?index)
+               (neq ?a ?i))
+  :assert (?R ?a ?i)
+  :why    "{?a} shares a slot with {?b}, and {?b} is at {?i} ⟹ {?a} is at {?i}.")
+
+;; ── slot-exclusive ──────────────────────────────────────────────────────────
+;; Two DISTINCT members of the same type can never share a slot — a slot holds
+;; exactly one of each type. This is the puzzle-independent form of the
+;; "all-different within a category" constraint: it is derived from the
+;; membership facts, never authored pairwise.
+;;
+;; ?T is a free match var, not a parameter: the rule fires once per SLOT type,
+;; so a puzzle adds a category by adding its members, not by touching this rule.
+;; The `(?sub ?T ?super)` premise is what keeps ?T to the family — without it
+;; the rule would also fire on memberships that are not slot types at all (a
+;; puzzle whose `?isa` relation carries more than one kind of membership), and
+;; exclude values that may perfectly well share a slot.
+(rule slot-exclusive (?R ?isa ?sub ?super)
+  :match  (and (?isa ?a ?T)
+               (?sub ?T ?super)
+               (?isa ?b ?T)
+               (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}.")
+
+;; ── slot-occupied ───────────────────────────────────────────────────────────
+;; A slot has one seat per type, and a positive edge takes it: if ?a shares a
+;; slot with ?b, no other member of ?b's type shares that slot. This is
+;; std.bijection's `functional-negative` and `injective-negative` fused — they
+;; are the same statement about the two argument positions of a *directed*
+;; relation, and R's symmetry collapses them into one rule here.
+;;
+;; It is also the workhorse negative producer: every negative that matters
+;; downstream is either this, `slot-endpoint-*`, or `slot-negative` transporting
+;; one of those across an authored link.
+;; `(?sub ?T ?super)` gates ?T to the family, for the same reason it does in
+;; `slot-exclusive`: only a SLOT type has the one-seat-per-slot guarantee this
+;; rule reads off.
+(rule slot-occupied (?R ?isa ?sub ?super)
+  :match  (and (?R ?a ?b)
+               (?isa ?b ?T)
+               (?sub ?T ?super)
+               (?isa ?c ?T)
+               (neq ?c ?b))
+  :assert (not (?R ?a ?c))
+  :why    "{?a}'s slot already holds the {?T} {?b} ⟹ it does not hold {?c}.")
+
+;; ── slot-negative ───────────────────────────────────────────────────────────
+;; The contrapositive of transitivity, which is what makes the equivalence carry
+;; NEGATIVE information: if ?a shares a slot with ?b, then any slot ?b cannot be
+;; in, ?a cannot be in either. (Were ?a at ?i, then ?b↔?a↔?i would put ?b at ?i
+;; by symmetry + transitivity.)
+;;
+;; Anchored at the index for the same reason `slot-locate` is: the unanchored
+;; form concludes over the whole value square, and since the rule joins
+;; positives against negatives its cost is the product of the two.
+(rule slot-negative (?R ?isa ?index)
+  :match  (and (?R ?a ?b)
+               (not (?R ?b ?i))
+               (?isa ?i ?index))
+  :assert (not (?R ?a ?i))
+  :why    "{?a} shares a slot with {?b}, and {?b} cannot be at {?i} ⟹ neither can {?a}.")
+
+;; ── slot-elimination / slot-fill ────────────────────────────────────────────
+;; The positive half, in its two readings — std.bijection's
+;; `domain-elimination` and `range-elimination`:
+;;
+;;   slot-elimination  every SLOT but ?i is excluded for the value ?a ⟹ ?a at ?i
+;;   slot-fill         every ?Tv-MEMBER but ?v is excluded for slot ?i ⟹ ?v at ?i
+;;
+;; Both are needed, and they are not each other's mirror. R's symmetry makes the
+;; two CONCLUSIONS interchangeable — `(R a i)` and `(R i a)` are the same edge —
+;; but the two rules quantify over different domains, so they consume different
+;; negatives and fire at different times. The Zebra opening needs `slot-fill`
+;; ("House-1's colour seat has only Yellow left"); the endgame needs
+;; `slot-elimination` ("Zebra has only House-5 left").
+;;
+;; Both are pinned to the INDEX type — one type pair, not all of them. An
+;; elimination between two non-index types could only fire on off-rectangle
+;; negatives, which the index-anchored negative rules never produce, so
+;; quantifying over the whole family costs (family × family) guard evaluations
+;; per pass to no purpose: on Zebra that is 900 `forall` evaluations against 275.
+(rule slot-elimination (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index)
+               (?isa ?i ?index)
+               (forall ?i_other
+                 (and (?isa ?i_other ?index) (neq ?i_other ?i))
+                 (not (?R ?a ?i_other))))
+  :assert (?R ?a ?i)
+  :why    "every slot except {?i} is excluded for {?a} ⟹ {?a} is at {?i}.")
+
+(rule slot-fill (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index)
+               (?isa ?v ?Tv)
+               (forall ?v_other
+                 (and (?isa ?v_other ?Tv) (neq ?v_other ?v))
+                 (not (?R ?i ?v_other))))
+  :assert (?R ?i ?v)
+  :why    "every {?Tv} except {?v} is excluded for slot {?i} ⟹ {?v} is at {?i}.")
+
+;; ── slot-no-room / slot-no-fill ─────────────────────────────────────────────
+;; The violation duals, and the encoding's main branch killer: a value must have
+;; a slot, and a slot must have a member of every type. Open-world-safe — each
+;; fires only when the stored negatives cover the whole extent, never on a
+;; merely-undecided state.
+(rule slot-no-room (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index)
+               (forall ?i (?isa ?i ?index) (not (?R ?a ?i))))
+  :assert (false)
+  :why    "{?a} has every slot excluded — there is nowhere left for it.")
+
+(rule slot-no-fill (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index)
+               (forall ?v (?isa ?v ?Tv) (not (?R ?i ?v))))
+  :assert (false)
+  :why    "slot {?i} has every {?Tv} excluded — it has no {?Tv} left.")
+
+;; ── the OBLIGATION duals of the two above (Q-M1d.2) ─────────────────────────
+;; Same pair of questions, one modality down. `slot-no-room` / `slot-no-fill`
+;; fire when every candidate carries a stored negative — the requirement has
+;; become unreachable, so the state is dead. These fire while no candidate is
+;; stored *positive* — the requirement is simply not met yet, so the state is
+;; **unfinished**. `(open ?R)` names the relation whose extent is incomplete;
+;; the domain scan and the witness slot are projected out of the `absent`.
+;;
+;; Not in the saturation agenda (they derive nothing) — one pass over the
+;; quiescent KB after the fixpoint, which they read whole.
+(rule slot-owed-room (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index)
+               (absent (and (?isa ?i ?index) (?R ?a ?i))))
+  :assert (open ?R)
+  :why    "{?a} is in no slot yet — some {?index} is still owed.")
+
+(rule slot-owed-fill (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index)
+               (absent (and (?isa ?v ?Tv) (?R ?i ?v))))
+  :assert (open ?R)
+  :why    "slot {?i} has no {?Tv} yet — one is still owed.")
+
+
+;; ══ the spatial rules ═══════════════════════════════════════════════════════
+;;
+;; Throughout: `(?S ?a ?b)` is read as "?a's slot is ?S-related to ?b's slot",
+;; in that argument order — so the constraint and the structure it resolves
+;; against have the SAME orientation, and `(?S ?p2 ?p1)` on positions is the
+;; structural witness for `(?S ?a ?b)` with ?a at ?p2 and ?b at ?p1.
+;;
+;; Every rule matches `(?S ?a ?b)` without asking whether ?a and ?b are
+;; positions or attribute values, because the position-membership premises make
+;; the distinction for free: a structure fact `(?S House-2 House-1)` cannot
+;; satisfy `(?R House-1 ?p1)` with ?p1 a position (that would need two
+;; positions in one slot, which `slot-exclusive` forbids), so structure facts
+;; are silent in the propagation and pruning rules, and produce only
+;; already-known negatives in the endpoint rules.
+
+;; ── slot-adjacent-fwd / -bwd ────────────────────────────────────────────────
+;; Positive propagation, gated on the neighbour being UNIQUE. The NAF guard is
+;; trivially satisfied when ?S is functional on positions (`right-of`), and
+;; selects the corner cases when it is not (`next-to`: interior positions have
+;; two neighbours, so the guard fails and the disjunction is left to the
+;; hypothesis search).
+;;
+;; These two subsume the "square rule" — projecting a directional spatial
+;; relation across the co-location bridge — as the special case where the
+;; uniqueness guard is vacuous.
+(rule slot-adjacent-fwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?b ?p1) (?isa ?p1 ?PT)
+               (?S ?p2 ?p1) (?isa ?p2 ?PT)
+               (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
+  :assert (?R ?a ?p2)
+  :why    "{?b} is at {?p1}, whose only {?S}-source is {?p2}, and {?S}({?a},{?b}) ⟹ {?a} is at {?p2}.")
+
+(rule slot-adjacent-bwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?a ?p2) (?isa ?p2 ?PT)
+               (?S ?p2 ?p1) (?isa ?p1 ?PT)
+               (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
+  :assert (?R ?b ?p1)
+  :why    "{?a} is at {?p2}, whose only {?S}-target is {?p1}, and {?S}({?a},{?b}) ⟹ {?b} is at {?p1}.")
+
+;; ── slot-adjacent-fwd-neg / -bwd-neg ────────────────────────────────────────
+;; The contrapositives, under the same uniqueness witness: if ?a cannot be at
+;; the only ?S-source of ?p1, then ?b cannot be at ?p1. Without these, a
+;; negative on one side of a spatial clue never reaches the other, and the
+;; eliminations stall a pass behind where the human trace is.
+(rule slot-adjacent-fwd-neg (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (not (?R ?a ?p2)) (?isa ?p2 ?PT)
+               (?S ?p2 ?p1) (?isa ?p1 ?PT)
+               (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
+  :assert (not (?R ?b ?p1))
+  :why    "{?a} cannot be at {?p2}, the only {?S}-source of {?p1} ⟹ {?b} cannot be at {?p1}.")
+
+(rule slot-adjacent-bwd-neg (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (not (?R ?b ?p1)) (?isa ?p1 ?PT)
+               (?S ?p2 ?p1) (?isa ?p2 ?PT)
+               (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
+  :assert (not (?R ?a ?p2))
+  :why    "{?b} cannot be at {?p1}, the only {?S}-target of {?p2} ⟹ {?a} cannot be at {?p2}.")
+
+;; ── slot-prune-fwd / -bwd ───────────────────────────────────────────────────
+;; Disjunctive pruning: unlike the positive rules these fire whether or not the
+;; neighbour is unique, restricting the partner's domain to the ?S-neighbourhood
+;; even when no single position can be pinned. This is what turns "Kools is next
+;; to the horse" into three exclusions the moment Kools is placed, instead of
+;; waiting for a corner.
+;;
+;; The two directions are NOT interchangeable when ?S is asymmetric: fwd
+;; excludes positions that are not ?S-SOURCES of ?b's position, bwd excludes
+;; those that are not ?S-TARGETS of ?a's — note the reversed operand order in
+;; the two guards.
+(rule slot-prune-fwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?b ?p1) (?isa ?p1 ?PT)
+               (?isa ?p_o ?PT)
+               (neq ?p_o ?p1)
+               (absent (?S ?p_o ?p1)))
+  :assert (not (?R ?a ?p_o))
+  :why    "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one.")
+
+(rule slot-prune-bwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?a ?p2) (?isa ?p2 ?PT)
+               (?isa ?p_o ?PT)
+               (neq ?p_o ?p2)
+               (absent (?S ?p2 ?p_o)))
+  :assert (not (?R ?b ?p_o))
+  :why    "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one.")
+
+;; ── slot-endpoint-fwd / -bwd ────────────────────────────────────────────────
+;; Prophylactic exclusions from the position structure's gaps ALONE — no
+;; positive needed, so these fire at d=0. A position with no ?S-source cannot
+;; hold ?b, and one with no ?S-target cannot hold ?a, whatever the other end of
+;; the clue does. For `right-of` on a row of houses that is *Ivory ≠ last* and
+;; *Green ≠ first*; for symmetric `next-to` both guards fail everywhere (every
+;; position has a neighbour), so nothing spurious fires.
+(rule slot-endpoint-fwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?isa ?p1 ?PT)
+               (absent (and (?isa ?p2 ?PT) (?S ?p2 ?p1))))
+  :assert (not (?R ?b ?p1))
+  :why    "{?p1} has no {?S}-source, and {?b} needs one ({?S}({?a},{?b})) ⟹ {?b} is not at {?p1}.")
+
+(rule slot-endpoint-bwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?isa ?p2 ?PT)
+               (absent (and (?isa ?p1 ?PT) (?S ?p2 ?p1))))
+  :assert (not (?R ?a ?p2))
+  :why    "{?p2} has no {?S}-target, and {?a} needs one ({?S}({?a},{?b})) ⟹ {?a} is not at {?p2}.")
+
+)
+(commit
+  (co-located Japanese House-5))

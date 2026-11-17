@@ -1,0 +1,29 @@
+--- plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/01_q392_demo/today/dump-program.txt	2026-11-18 00:07:42.058813374 +0400
++++ plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/01_q392_demo/today/dump-models-01.txt	2026-11-18 00:07:42.073570647 +0400
+@@ -1,8 +1,9 @@
+ =  SATURATED KB DUMP
+ ======================================================================
+ 
+-;; Relations — auto-vivified (1)
++;; Relations — auto-vivified (2)
+ ;;   item
++;;   note
+ 
+ ;; Rules (2)
+ ;;   make  :params ()  stratum 0
+@@ -10,10 +11,12 @@
+ 
+ ;; Strata — stratified, 1 stratum
+ 
+-;; ── BACKGROUND (1 facts) ──
++;; ── BACKGROUND (2 facts) ──
+   (item a)
++  (note (bad a))
+ 
+-;; ── DERIVED (1 facts) ──
+-  (note (bad a) :rule make)
++;; ── DERIVED (2 facts) ──
++  (false :rule no-bad)
++  (written (bad a) :rule "#written")
+ 
+ ======================================================================

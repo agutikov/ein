@@ -1,0 +1,83 @@
+--- plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/dump-program.txt	2026-11-18 00:07:42.247205664 +0400
++++ plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/03_q392_demo_stdlib/today/dump-models-01.txt	2026-11-18 00:07:42.336750103 +0400
+@@ -17,9 +17,10 @@
+ (relation std.math.decimal.not-decimal Number Thing)
+ (relation std.math.decimal.decimal-rule Rule)
+ 
+-;; Relations — auto-vivified (2)
++;; Relations — auto-vivified (3)
+ ;;   __closed__
+ ;;   digit-read
++;;   reading
+ 
+ ;; Rules (9)
+ ;;   std.math.arith.division-by-zero-is-false  :params ()  stratum 0
+@@ -34,8 +35,8 @@
+ 
+ ;; Strata — stratified, 1 stratum
+ 
+-;; ── BACKGROUND (1699 facts) ──
+-;;   __closed__ (7)
++;; ── BACKGROUND (1713 facts) ──
++;;   __closed__ (13)
+   (__closed__ std.math.digits.fa)
+   (__closed__ std.math.digits.fs)
+   (__closed__ std.math.digits.md)
+@@ -43,7 +44,14 @@
+   (__closed__ std.math.digits.nz)
+   (__closed__ std.math.digits.mid)
+   (__closed__ std.math.digits.adj)
++  (__closed__ n)
++  (__closed__ std.math.arith.arith-module-rule)
++  (__closed__ std.math.arith.division-by-zero)
++  (__closed__ std.math.decimal.decimal-rule)
++  (__closed__ std.math.decimal.named)
++  (__closed__ std.math.decimal.not-decimal)
+   (digit-read x)
++  (reading (n z x))
+ ;;   relation (27)
+   (relation z)
+   (relation std.math.arith.division-by-zero Request)
+@@ -72,6 +80,14 @@
+   (relation std.math.decimal.not-decimal)
+   (relation std.math.decimal.decimal-rule Rule)
+   (relation std.math.decimal.decimal-rule)
++  (std.math.arith.arith-module-rule std.math.arith.division-by-zero-is-false)
++;;   std.math.decimal.decimal-rule (6)
++  (std.math.decimal.decimal-rule std.math.arith.arith)
++  (std.math.decimal.decimal-rule std.math.decimal.not-decimal-is-false)
++  (std.math.decimal.decimal-rule std.math.decimal.numeral-digit)
++  (std.math.decimal.decimal-rule std.math.decimal.numeral-prefix-digit)
++  (std.math.decimal.decimal-rule std.math.decimal.numeral-prefix-named)
++  (std.math.decimal.decimal-rule std.math.decimal.numeral-prefix-zero)
+ ;;   std.math.digits.adj (10)
+   (std.math.digits.adj 0 1)
+   (std.math.digits.adj 1 2)
+@@ -1744,23 +1760,10 @@
+   (std.math.digits.nz 8)
+   (std.math.digits.nz 9)
+ 
+-;; ── DERIVED (14 facts) ──
+-;;   __closed__ (6)
+-  (__closed__ std.math.arith.division-by-zero :rule std.math.arith.arith)
+-  (__closed__ std.math.arith.arith-module-rule :rule std.math.arith.arith)
+-  (__closed__ n :rule decimal)
+-  (__closed__ std.math.decimal.named :rule decimal)
+-  (__closed__ std.math.decimal.not-decimal :rule decimal)
+-  (__closed__ std.math.decimal.decimal-rule :rule decimal)
+-  (reading (n z x) :rule assemble)
+-  (std.math.arith.arith-module-rule std.math.arith.division-by-zero-is-false :rule std.math.arith.arith)
+-;;   std.math.decimal.decimal-rule (6)
+-  (std.math.decimal.decimal-rule std.math.arith.arith :rule decimal)
+-  (std.math.decimal.decimal-rule std.math.decimal.numeral-digit :rule decimal)
+-  (std.math.decimal.decimal-rule std.math.decimal.numeral-prefix-digit :rule decimal)
+-  (std.math.decimal.decimal-rule std.math.decimal.numeral-prefix-zero :rule decimal)
+-  (std.math.decimal.decimal-rule std.math.decimal.numeral-prefix-named :rule decimal)
+-  (std.math.decimal.decimal-rule std.math.decimal.not-decimal-is-false :rule decimal)
++;; ── DERIVED (3 facts) ──
++  (false :rule std.math.decimal.not-decimal-is-false)
++  (std.math.decimal.not-decimal (n z x) x :rule std.math.decimal.numeral-digit)
++  (written (n z x) :rule "#written")
+ 
+ ;; Query
+ ;;   :goal  (reading ?r)

@@ -1,0 +1,24 @@
+;;; A saved state of ein (ein-saved/1): the program as written, every module it
+;;; imports as written, and the choices made. It reads no other file.
+(program
+;; Q-M1f.392, the smallest program that shows it. See q392_state_file_and_written.md beside this file.
+;;
+;; The author types one fact, (item a), and two rules.
+
+(item a)
+
+;; Rule 1 builds a note about every item. The note has a fact inside it, (bad a),
+;; which nobody typed: the rule put it together from ?x.
+(rule make ()
+  :match  (item ?x)
+  :assert (note (bad ?x))
+  :why    "a note about {?x}")
+
+;; Rule 2 is a check on what the AUTHOR TYPED: if the text of the program
+;; has a (bad ...) inside some fact, the program is wrong.
+(rule no-bad ()
+  :match  (written (bad ?x))
+  :assert (false)
+  :why    "the author typed (bad {?x})")
+
+)

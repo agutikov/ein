@@ -1,0 +1,967 @@
+;;; A saved state of ein (ein-saved/1): the program as written, every module it
+;;; imports as written, and the choices made. It reads no other file.
+(program
+;;; Application 3, satisfiability: is there an input of the full adder for
+;;; which the sum bit is 1 and the carry out is 1? Yes, one: a = 1, b = 1,
+;;; carry in = 1.
+;;;
+;;; The truth-table program with two outputs required. A state in which a
+;;; required wire carries the other bit is a contradiction, so R is the
+;;; satisfying assignments, here one state. `ein solve` also reports ten
+;;; minimal dead sets, each a clause the search learned with the gates and
+;;; table rows it rests on; `--dump-answer DIR` writes them with their cores.
+;;;
+;;;   ein solve examples/binary_logic/satisfiable.ein
+;;;   ein solve --single examples/binary_logic/satisfiable.ein   # one state, fewer saturations
+;;;
+;;; The claim was computed in Python by enumeration.
+;;;
+;;; `docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md`.
+(import std.bool.inputs :symbols (inputs is-a in require))
+(import full_adder)
+
+(is-a a Input) (is-a b Input) (is-a cin Input)
+(require sum 1) (require cout 1)
+
+(query :goal (and (in a ?a) (in b ?b) (in cin ?c))
+       :goal-text "a = {?a}, b = {?b}, carry in = {?c}"
+       :expect (model (in a 1) (in b 1) (in cin 1)))
+
+)
+(module full_adder
+;;; The binary full adder, from five gates: a library of facts.
+;;;
+;;;   inputs a, b and cin (the carry in); outputs sum and cout (the carry out)
+;;;
+;;;   sum  = (a xor b) xor cin
+;;;   cout = (a and b) or ((a xor b) and cin)
+;;;
+;;; A program brings the five gates with (import full_adder). `gate` is
+;;; `std.bool.circuit`'s, which this module imports, since its facts are of
+;;; that relation, and `Xor`, `And` and `Or` are `std.bool.gates`', so it
+;;; lists them (a module that states facts of another module's
+;;; relation imports it, and a file lists every short name it writes from the
+;;; module that declares it). A program that writes `gate` itself lists it
+;;; from `std.bool.circuit`.
+;;;
+;;; `docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md` § Using `std.bool.circuit`.
+(import std.bool.circuit :symbols (gate))
+(import std.bool.gates :symbols (Xor And Or))
+
+(gate x1 Xor a b ab)        ; a xor b
+(gate x2 Xor ab cin sum)    ; the sum bit
+(gate a1 And a b g1)        ; both inputs
+(gate a2 And ab cin g2)     ; one input and the carry
+(gate o1 Or g1 g2 cout)     ; the carry out
+
+)
+(module std.algebra
+;;; Ein stdlib — `std.algebra`: relation-algebra library rules.
+;;;
+;;; The full relation-algebra signature — Tarski's ⟨∪, ∩, ¬, 0, 1, ;, ⁻¹, 1'⟩
+;;; over relations-as-pair-sets — as generic ein rules on the existing matcher.
+;;; The module holds the relative layer (`converse` / `imply`), composition
+;;; (`compose`), the Boolean lattice (`meet` / `join` / `difference` /
+;;; `complement` / `top` / `empty`), the identity (`identity`), the missing
+;;; single-relation property checks, and the Tarski/Maddux equational lemmas
+;;; (Schröder B10, contravariance B7, converse-over-join B8).
+;;;
+;;; All rules are GENERIC (parametrised over the operand relations), so a puzzle
+;;; imports the module, listing the rules whose activators it writes, and
+;;; declares activator facts naming the operands:
+;;;
+;;;     (import std.algebra :symbols (converse compose meet))
+;;;     (converse right-of left-of)            ; R2 = R1°
+;;;     (compose  right-of right-of two-right)  ; two-right = right-of ; right-of
+;;;     (meet     owns rents shares)            ; shares = owns ∩ rents
+;;;
+;;; An import brings every rule of the module (Q-M1f.247); `:symbols` names
+;;; the rules whose activators the puzzle writes, so their bare names resolve.
+;;;
+;;; ── intrinsic vs extensive ───────────────────────────────────────────────────
+;;; INTRINSIC ops (`compose` / `meet` / `difference` / `converse` / `join` /
+;;; `difunctional`) read only existing edges — pure joins / NAF over the KB.
+;;; EXTENSIVE ops (`complement` / `top` / `identity` / `connex`) range over the
+;;; `Dom×Ran` universe to reach ABSENT pairs, so they take the puzzle's
+;;; instance-type relation + the argument types `(?isa ?Dom ?Ran)` (the
+;;; `std.typing` / `std.elim` machinery) and inherit the closed-world soundness
+;;; caveat: a `complement` / `connex` / `difference` reading is sound only when
+;;; the operand is saturation-determined (the `std.closure` caveat), NOT when it
+;;; needs hypothesis BRANCHING (the Zebra attribute relations). Opt in per use.
+;;; The hierarchy relation always arrives as the ?isa PARAM, never an `is-a`
+;;; literal — the rule bodies stay is-a-free (kernel purity).
+;;;
+;;; Expressivity: RA ≡ FOL with ≤3 variables, so most ≤3-var constraints are
+;;; expressible here; `co-located` (4 params) / `adjacent-via` (5) exceed the L3
+;;; ceiling and correctly stay as puzzle-local named rules.
+
+;; Dependency: the extensive totality checks (`total` / `surjective`) quantify
+;; with `forall` (std.macro), imported here, so any import of std.algebra brings
+;; std.macro too; one copy per program, so a puzzle that also imports `forall`
+;; is fine.
+(import std.macro :symbols (forall))
+
+;; ── converse — (converse R1 R2) ⟺ R2 = R1° (the inverse relation).
+;; Mirrors each R1-edge into R2 with the endpoints swapped. `right-of`/`left-of`
+;; are converse; `next-to` is self-converse.
+(rule converse (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :why    "(converse {?R1} {?R2}): mirror {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+;; ── imply1 — (imply1 R1 R2): (R1 a) ⇒ (R2 a), a 1-arg (property) implication.
+;; Doubles as property→property: (imply1 functional __closed__) turns a
+;; (functional R) marker into a (__closed__ R) one — no new rule shape needed.
+(rule imply1 (?R1 ?R2)
+  :match  (?R1 ?a)
+  :assert (?R2 ?a)
+  :why    "(imply1 {?R1} {?R2}): {?R1}({?a}) → {?R2}({?a})")
+
+;; ── imply2-fwd — (imply2-fwd R1 R2): (R1 a b) ⇒ (R2 a b), forward 2-arg.
+(rule imply2-fwd (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?a ?b)
+  :why    "(imply2-fwd {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?a},{?b})")
+
+;; ── imply2-reverse — ergonomic alias of `converse`: (R1 a b) ⇒ (R2 b a).
+(rule imply2-reverse (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :why    "(imply2-reverse {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+;; ── algebra lemmas ──────────────────────────────────────────────────────────
+;; These DERIVE `converse` / `symmetric` activator facts, which then activate
+;; the rules above (and the puzzle's `symmetric` rule) — relying on reflective
+;; rule-implication: a derived `(converse R R)` activates the
+;; `converse` rule on the next saturation pass. Parameter-less (free match
+;; vars). They converge: every back-derivation is a fact that already exists,
+;; so the saturator's dedup bounds the loop.
+
+;; symmetric R ⟺ converse R R (a symmetric relation is its own inverse).
+(rule symmetric-is-self-converse ()
+  :match  (symmetric ?R)
+  :assert (converse ?R ?R)
+  :why    "symmetric {?R} ⟹ (converse {?R} {?R})")
+
+(rule self-converse-is-symmetric ()
+  :match  (converse ?R ?R)
+  :assert (symmetric ?R)
+  :why    "(converse {?R} {?R}) ⟹ symmetric {?R}")
+
+;; converse is symmetric on the pair: (converse R1 R2) ⟹ (converse R2 R1).
+(rule converse-pair-symmetric ()
+  :match  (converse ?R1 ?R2)
+  :assert (converse ?R2 ?R1)
+  :why    "(converse {?R1} {?R2}) ⟹ (converse {?R2} {?R1})")
+
+;; ── converse well-formedness — domain/range typecheck ────────────────────────
+;; A `(converse R1 R2)` is type-valid iff R2's signature is R1's reversed:
+;;   range(R1) = domain(R2)  and  domain(R1) = range(R2),
+;; up to the supplied subtype relation ?isR* (a puzzle's transitive is-a
+;; closure), **either way**: a pair is ill-typed where the two types of a side
+;; are neither equal nor one a subtype of the other.
+;; `(converse R1 R2)` is the equality R2 = R1°, which `converse-pair-symmetric`
+;; states, so a pair and its mirror must check alike: read one way, `Pet` ⊑
+;; `Animal` passed `(converse owns owned-by)` (owns : Person → Pet, owned-by :
+;; Animal → Person) and refuted the mirror the lemma derives, so no pair with a
+;; proper subtype held where the lemma was loaded, which is wherever a program
+;; writes `converse` since imports bring a module whole. These reject (⊥) the
+;; ill-typed pairings — `(converse house-color pet-dog)` etc., where the types
+;; do not meet. The signatures are read straight off the `(relation …)`
+;; declaration facts (matchable since rules already do `(relation ?R ?A ?B)`);
+;; the hierarchy relation arrives as the parameter ?isR*, so the rule BODY names
+;; no `is-a` literal — its dependency on is-a*'s closure is explicit in the
+;; parameter list. The `(neq …)` guard absorbs the identical-type case, so an
+;; *irreflexive* ?isR* (zebra2's is-a* is transitive-but-irreflexive) still
+;; passes exact-type converses (right-of/left-of) without a self-loop; declare
+;; `(reflexive is-a*)` (std.typing) only if you want the pure-subtype reading.
+;; Activate per pair — `(converse-illtyped-dom right-of left-of is-a*)` — or let
+;; std.typing's `(type-hierarchy …)` knob derive the activators.
+(rule converse-illtyped-dom (?R1 ?R2 ?isR*)
+  :match  (and (converse  ?R1 ?R2)
+               (relation  ?R1 ?D1 ?Rn1)
+               (relation  ?R2 ?D2 ?Rn2)
+               (neq ?Rn1 ?D2)
+               (absent (?isR* ?Rn1 ?D2))
+               (absent (?isR* ?D2 ?Rn1)))
+  :assert (false)
+  :why    "converse {?R1}/{?R2} ill-typed: range({?R1})={?Rn1} and domain({?R2})={?D2} are neither equal nor one a subtype of the other under {?isR*}.")
+
+(rule converse-illtyped-ran (?R1 ?R2 ?isR*)
+  :match  (and (converse  ?R1 ?R2)
+               (relation  ?R1 ?D1 ?Rn1)
+               (relation  ?R2 ?D2 ?Rn2)
+               (neq ?D1 ?Rn2)
+               (absent (?isR* ?D1 ?Rn2))
+               (absent (?isR* ?Rn2 ?D1)))
+  :assert (false)
+  :why    "converse {?R1}/{?R2} ill-typed: domain({?R1})={?D1} and range({?R2})={?Rn2} are neither equal nor one a subtype of the other under {?isR*}.")
+
+;; ╒═══════════════════════════════════════════════════════════════════════════╕
+;; │ The rest of the relation-algebra signature                                 │
+;; ╘═══════════════════════════════════════════════════════════════════════════╛
+
+;; ── relative (composition) layer ─────────────────────────────────────────────
+
+;; compose — (compose R1 R2 R3) ⟺ R3 ⊇ R1;R2 (relative product). The shared ?b
+;; makes it a Join: an R1-edge into ?b composes with an R2-edge out of ?b.
+;; `(compose right-of right-of two-right)` builds the two-to-the-right relation;
+;; `(compose R R R)` is exactly transitive closure of R.
+(rule compose (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (?R2 ?b ?c))
+  :assert (?R3 ?a ?c)
+  :why    "(compose {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?b},{?c}) → {?R3}({?a},{?c}).")
+
+;; identity — (identity R isa Dom) ⟺ R ⊇ 1' on Dom: self-loop every Dom element.
+;; EXTENSIVE (⊙) — materialises pairs absent from the edge set, so it ranges over
+;; the `(?isa _ ?Dom)` extent rather than existing edges.
+(rule identity (?R ?isa ?Dom)
+  :match  (?isa ?a ?Dom)
+  :assert (?R ?a ?a)
+  :why    "(identity {?R} {?isa} {?Dom}): {?a}∈{?Dom} → {?R}({?a},{?a}).")
+
+;; ── Boolean (lattice) layer ──────────────────────────────────────────────────
+
+;; meet — (meet R1 R2 R3) ⟺ R3 ⊇ R1∩R2: the pairs in BOTH operands.
+(rule meet (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (?R2 ?a ?b))
+  :assert (?R3 ?a ?b)
+  :why    "(meet {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; difference — (difference R1 R2 R3) ⟺ R3 ⊇ R1∖R2: in R1 but NOT R2 (NAF on R2).
+;; The `absent` is judged at the boundary, on the fixpoint of the positive rules,
+;; so whatever saturation derives of R2 is there before it. Closed-world:
+;; sound only when R2 is saturation-determined.
+(rule difference (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (absent (?R2 ?a ?b)))
+  :assert (?R3 ?a ?b)
+  :why    "(difference {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧¬{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; join — (join R1 R2 R3) ⟺ R3 ⊇ R1∪R2: two generic copiers, `join-l` from R1
+;; and `join-r` from R2, each reached by an activator of its own. They are lit
+;; by the NON-generic fan-out idiom (`bijective-properties` / `reflexive`): a
+;; None-activator rule reads the `(join …)` operand fact and asserts both
+;; per-operand activators in one firing, which then light up the two copiers
+;; by reflective rule-implication. IMPORT all three
+;; (`derive-join join-l join-r`); the activator relation is `join`, distinct
+;; from any rule name.
+(rule derive-join ()
+  :match  (join ?R1 ?R2 ?R3)
+  :assert (and (join-l ?R1 ?R2 ?R3) (join-r ?R1 ?R2 ?R3))
+  :why    "(join {?R1} {?R2} {?R3}): fan out into the two per-operand copiers.")
+
+(rule join-l (?R1 ?R2 ?R3)
+  :match  (?R1 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :why    "(join {?R1} {?R2} {?R3}): {?R1}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+(rule join-r (?R1 ?R2 ?R3)
+  :match  (?R2 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :why    "(join {?R1} {?R2} {?R3}): {?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; empty — (empty R) ⟺ R = 0: a CHECK. Any edge in R contradicts the claim.
+(rule empty (?R)
+  :match  (?R ?a ?b)
+  :assert (false)
+  :why    "(empty {?R}) violated: {?R}({?a},{?b}) exists.")
+
+;; top — (top R isa Dom Ran) ⟺ R ⊇ 1: the full Dom×Ran rectangle. EXTENSIVE (⊙).
+(rule top (?R ?isa ?Dom ?Ran)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran))
+  :assert (?R ?a ?b)
+  :why    "(top {?R} {?isa} {?Dom} {?Ran}): {?a}∈{?Dom},{?b}∈{?Ran} → {?R}({?a},{?b}).")
+
+;; complement — (complement R1 R2 isa Dom Ran) ⟺ R2 ⊇ ¬R1 over Dom×Ran: the pairs
+;; of the universe ABSENT from R1. EXTENSIVE (⊙) and the one op that materialises
+;; absent pairs, so it inherits the closed-world caveat squarely — sound only when
+;; R1 is saturation-determined (the `std.closure` caveat). One positive R1-edge
+;; removed shrinks the complement.
+(rule complement (?R1 ?R2 ?isa ?Dom ?Ran)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran) (absent (?R1 ?a ?b)))
+  :assert (?R2 ?a ?b)
+  :why    "(complement {?R1} {?R2}): {?a}∈{?Dom},{?b}∈{?Ran},¬{?R1}({?a},{?b}) → {?R2}({?a},{?b}).")
+
+;; ── single-relation property checks (RA equations) ───────────────────────────
+;; These complete the tag vocabulary zebra2 uses (`symmetric` below,
+;; `functional` / `injective` here, `reflexive` in `std.typing`; `total` /
+;; `surjective` / `bijective` below). Each is a generic check (`⟹ (false)`) or
+;; closure (`⟹ the closing edge`).
+
+;; ── cardinality checks: functional / injective ───────────────────────────────
+;; The right-/left-uniqueness checks of a relation R ⊆ A×B:
+;;   functional  — ∀a. |{b : R(a,b)}| ≤ 1  (right-unique): two DISTINCT images of
+;;                 the same `a` is ⊥.
+;;   injective   — ∀b. |{a : R(a,b)}| ≤ 1  (left-unique): the dual.
+;; Generic over R, activated per relation by `(functional R)` / `(injective R)`
+;; (zebra2's *-loc bijections derive these from `(bijective R)`). They fire
+;; `(false)` on VIOLATION, not satisfaction. A rule that concludes `(false)` is
+;; in the agenda's first half (Q-M1f.313), so a violation fires as soon as it
+;; matches, before the rest.
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}.")
+
+(rule injective (?R)
+  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}.")
+
+;; bijective — the "all four cardinality properties" shorthand. A single
+;; `(bijective R)` declaration fans out into the four markers
+;; `(functional R)` / `(injective R)` / `(total R)` / `(surjective R)` via one
+;; multi-fact `:assert (and …)`, one firing whose conjuncts share a provenance.
+;; A None-activator rule (generic-by-premise): it reads the `(bijective R)`
+;; operand fact, so the importer needs only this one symbol — the derived
+;; markers then activate `functional`/`injective` (here) and the importer's
+;; `total`/`surjective`/elimination rules, each as its marker is derived: the
+;; agenda's order decides no answer on a monotone program (Q-M1f.313).
+(rule bijective-properties ()
+  :match  (bijective ?R)
+  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.")
+
+;; ── totality checks: total / surjective ──────────────────────────────────────
+;; The left-/right-TOTAL checks of R ⊆ A×B, the EXTENSIVE duals of the (intrinsic)
+;; functional/injective above:
+;;   total       — ∀a∈A. ∃b. R(a,b)  (left-total):   an `a` with every `b` excluded is ⊥.
+;;   surjective  — ∀b∈B. ∃a. R(a,b)  (right-total):  the dual.
+;; Open-world-safe: they fire `(false)` only when EVERY partner is *explicitly*
+;; excluded (the stored `(not …)` facts cover the whole opposite-type domain) —
+;; a "must hold" reading would fire on every empty-yet state. Types come from the
+;; `(relation R A B)` signature; the type-membership relation is the `?isa` PARAM,
+;; never an `is-a` literal (is-a-free body), so `(?isa …)` is an
+;; activator-bound scan. Activate per relation: `(total R is-a)` / `(surjective R is-a)`.
+;;
+;; Dependency: these use `forall` (std.macro), which this module imports, so
+;; any import of it brings std.macro too (Q-M1f.247).
+(rule total (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?a ?A)
+               (forall ?b (?isa ?b ?B) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not total at {?a}: every {?B} is excluded.")
+
+(rule surjective (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?b ?B)
+               (forall ?a (?isa ?a ?A) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not surjective at {?b}: every {?A} is excluded.")
+
+;; ── totality OBLIGATIONS: total-owed / surjective-owed (Q-M1d.2) ──────────────
+;; The other half of the same two properties, and the pair the `≥` half had no
+;; way to say. The scans above are about a candidate set of size **0** — every
+;; partner explicitly excluded, so the requirement has become unreachable and
+;; the state is dead. These are about a set of size **≥ 1** with nothing in it
+;; yet: no witness is *present*, so the requirement is still **outstanding**.
+;; One modality down, and one word different — `open` where `total` says
+;; `false`, *unfinished* where it says *dead*.
+;;
+;; Note the two guards are not the same question:
+;;   total          (forall ?b (?isa ?b ?B) (not (?R ?a ?b)))  — every candidate
+;;                  carries a STORED negative. Open-world-safe, and silent in a
+;;                  program with no negative-completion rule.
+;;   total-owed     (absent (and (?isa ?b ?B) (?R ?a ?b)))     — no candidate is
+;;                  STORED POSITIVE. True of an empty-yet state, which is
+;;                  exactly what an obligation is for: it reports a debt, it
+;;                  does not refute anything.
+;;
+;; The obligation is stated ONCE, in the `absent`; `(open ?R)` names whose
+;; extent is incomplete and the engine projects the domain scan and the witness
+;; slot out of the guard (Q-M1d.3). The direction falls out of which
+;; slot the absent leaves free — `total-owed` scans ?b, `surjective-owed` scans
+;; ?a — so there is no position index and no numeral anywhere.
+;;
+;; These rules are NOT in the saturation agenda: they derive nothing, and the
+;; loader routes a rule asserting `open` into `Program::obligations`, read once
+;; per quiescent KB after the fixpoint. So they read the fixpoint whole, what
+;; negative completion and elimination derived included, and no order among
+;; the rules moves what a state owes.
+(rule total-owed (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?a ?A)
+               (absent (and (?isa ?b ?B) (?R ?a ?b))))
+  :assert (open ?R)
+  :why    "{?R} owes {?a} a {?B}.")
+
+(rule surjective-owed (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?b ?B)
+               (absent (and (?isa ?a ?A) (?R ?a ?b))))
+  :assert (open ?R)
+  :why    "{?R} owes {?b} a preimage in {?A}.")
+
+;; irreflexive — R∩1' = 0: no self-loop. The repeated ?a is an equality
+;; constraint in the matcher (`_bind_arg`), so this fires only on `(R a a)`.
+(rule irreflexive (?R)
+  :match  (?R ?a ?a)
+  :assert (false)
+  :why    "(irreflexive {?R}) violated: self-loop {?R}({?a},{?a}).")
+
+;; antisymmetric — R∩R° ⊆ 1': R(a,b)∧R(b,a) ⟹ a=b, so a DISTINCT mutual pair is ⊥.
+(rule antisymmetric (?R)
+  :match  (and (?R ?a ?b) (?R ?b ?a) (neq ?a ?b))
+  :assert (false)
+  :why    "(antisymmetric {?R}) violated: {?R}({?a},{?b})∧{?R}({?b},{?a}), {?a}≠{?b}.")
+
+;; asymmetric — R∩R° = 0: ANY mutual pair (incl. a self-loop) is ⊥ — strictly
+;; stronger than antisymmetric (= antisymmetric ∧ irreflexive).
+(rule asymmetric (?R)
+  :match  (and (?R ?a ?b) (?R ?b ?a))
+  :assert (false)
+  :why    "(asymmetric {?R}) violated: both {?R}({?a},{?b}) and {?R}({?b},{?a}).")
+
+;; connex — R∪R° = 1 over Dom (a total / linear relation): every DISTINCT pair of
+;; Dom elements is comparable. CHECK, EXTENSIVE (⊙) — quantifies over the absent
+;; pairs, so closed-world (Dom = ?isa-extent, both args one type). Two distinct
+;; Dom elements with neither orientation present ⟹ ⊥.
+(rule connex (?R ?isa ?Dom)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Dom) (neq ?a ?b)
+               (absent (?R ?a ?b)) (absent (?R ?b ?a)))
+  :assert (false)
+  :why    "(connex {?R}) violated: {?a},{?b}∈{?Dom} incomparable (neither {?R}({?a},{?b}) nor {?R}({?b},{?a})).")
+
+;; difunctional — R;R°;R ⊆ R: a CLOSURE. R(a,b)∧R(c,b)∧R(c,d) ⟹ R(a,d) (rows that
+;; overlap in a column agree on every column). Bounded by existing nodes → dedup
+;; terminates.
+(rule difunctional (?R)
+  :match  (and (?R ?a ?b) (?R ?c ?b) (?R ?c ?d))
+  :assert (?R ?a ?d)
+  :why    "(difunctional {?R}): {?R}({?a},{?b})∧{?R}({?c},{?b})∧{?R}({?c},{?d}) → {?R}({?a},{?d}).")
+
+;; ── single-relation property CLOSURES (vs the checks above) ───────────────────
+;; The checks above fire `(false)` on a violation; these instead DERIVE the edge
+;; that makes the property hold — the operational reading for properties that are
+;; always achievable by adding edges (symmetric / transitive closure / ⊆-lifting),
+;; as opposed to the violable ones (ir/anti/a-symmetric): universal rules a
+;; puzzle need not write itself; activate per relation, e.g.
+;; `(symmetric next-to)`, `(transitive is-a*)`, `(includes is-a is-a*)`.
+
+;; symmetric — R = R°: mirror every edge. (See also the symmetric⟺converse-R-R
+;; lemmas above, which relate this tag to `converse`.)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
+
+;; symmetric (negative) — the dual of the positive mirror: an impossible edge
+;; mirrors too. `(symmetric R)` + `(not (R a b))` ⇒ `(not (R b a))`. Matching a
+;; stored `(not (R a b))` (the singleton-death writeback's `(not h)` writes land in the KB
+;; as facts) derives the mirror negation, which lands in `_negated_facts` so
+;; hypgen skips the symmetric counterpart. The mirror is the program's, in
+;; pure userspace: the engine mirrors no negation of its own.
+;;
+;; TWO rules: the matcher can scan a *variable* relation head inside `(not …)`
+;; only when that head is an ACTIVATOR param (compile-time bound), not a
+;; premise-bound var. So `symmetric-negative-setup` lifts `(symmetric R)` to the
+;; activator `(symmetric-negative R)` (picked up reflectively), and the
+;; worker — activated by it, `?rel` a param — does the negation mirror.
+(rule symmetric-negative-setup ()
+  :match  (symmetric ?rel)
+  :assert (symmetric-negative ?rel)
+  :why    "{?rel} symmetric ⟹ activate its negative mirror.")
+
+(rule symmetric-negative (?rel)
+  :match  (not (?rel ?a ?b))
+  :assert (not (?rel ?b ?a))
+  :why    "{?rel} symmetric: ¬{?rel}({?a},{?b}) ⟹ ¬{?rel}({?b},{?a}).")
+
+;; transitive — R;R ⊆ R: the transitive closure. The guarded (`neq ?a ?c`)
+;; special case of `(compose R R R)` — the guard suppresses the self-loop a bare
+;; compose-into-self would add, which keeps an irreflexive closure irreflexive.
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive.")
+
+;; includes — R ⊆ S (subrelation lifting): copy every R-edge into S. The
+;; ⊆-flavoured twin of `imply2-fwd` (identical body) — `(includes is-a is-a*)`
+;; reads "is-a* includes is-a", lifting each direct edge into the closure.
+(rule includes (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}.")
+
+;; ── equational theory: Tarski/Maddux axioms as lemma rules ───────────────────
+;; B1–B5 (Boolean + monoid structure) hold by construction (ein relations are
+;; pair-sets — a representable RA), so they need no rules. B6–B10 are
+;; DERIVATIONAL — they interrelate operator facts; all reflective (a derived
+;; `(compose …)` / `(join …)` lights up its rule next pass) and convergent (every
+;; back-derivation already exists → the saturator's dedup bounds the loop).
+
+;; B10 Schröder / cycle law — A;B ≤ C⁻ ⟺ A˘;C ≤ B⁻ ⟺ C;B˘ ≤ A⁻. Operationally,
+;; for a declared composite T = R;S, a MISSING composite edge forces a missing
+;; factor: ¬T(a,c) ∧ R(a,b) ⟹ ¬S(b,c), and dually ¬T(a,c) ∧ S(b,c) ⟹ ¬R(a,b).
+;; The generic form of zebra2's `adjacent-via` / `disjunctive-prune` negative
+;; propagation. SOUND only when T = R;S is CLOSED — composition is
+;; the only source of T (the `std.closure` caveat). Opt in PER TRIPLE, separate
+;; from `compose`, since the closed-T obligation is stricter: declare
+;; `(compose-negative-s R S T)` / `(compose-negative-r R S T)` to enable.
+(rule compose-negative-s (?R ?S ?T)
+  :match  (and (?R ?a ?b) (not (?T ?a ?c)))
+  :assert (not (?S ?b ?c))
+  :why    "Schröder ({?R};{?S}={?T} closed): {?R}({?a},{?b})∧¬{?T}({?a},{?c}) → ¬{?S}({?b},{?c}).")
+
+(rule compose-negative-r (?R ?S ?T)
+  :match  (and (?S ?b ?c) (not (?T ?a ?c)))
+  :assert (not (?R ?a ?b))
+  :why    "Schröder ({?R};{?S}={?T} closed): {?S}({?b},{?c})∧¬{?T}({?a},{?c}) → ¬{?R}({?a},{?b}).")
+
+;; B7 contravariance — (A;B)° = B°;A°. From a declared `(compose R S T)` plus the
+;; three converse facts, derive the converse composite `(compose S° R° T°)`.
+;; Non-generic (operator facts from premises); reflective; converges (re-applying
+;; with `converse-pair-symmetric`'s back-edges yields `(compose R S T)`, already
+;; present).
+(rule compose-contravariant ()
+  :match  (and (compose ?R ?S ?T)
+               (converse ?R ?Rc) (converse ?S ?Sc) (converse ?T ?Tc))
+  :assert (compose ?Sc ?Rc ?Tc)
+  :why    "B7 contravariance: ({?R};{?S}={?T}) ⟹ ({?Sc};{?Rc}={?Tc}) (converses).")
+
+;; B8 converse over join — (A∨B)° = A°∨B°. From `(join R S U)` plus the converse
+;; facts, derive `(join R° S° U°)`. Same reflective/convergent shape as B7.
+(rule join-converse ()
+  :match  (and (join ?R ?S ?U)
+               (converse ?R ?Rc) (converse ?S ?Sc) (converse ?U ?Uc))
+  :assert (join ?Rc ?Sc ?Uc)
+  :why    "B8: ({?R}∪{?S}={?U}) ⟹ ({?Rc}∪{?Sc}={?Uc}) (converses).")
+
+)
+(module std.bool.circuit
+;;; Ein stdlib — `std.bool.circuit`: a circuit as a program, simulated by
+;;; saturation (Q-M1f.328).
+;;;
+;;; Wires are names, a gate is a fact, and one rule carries values from a
+;;; gate's inputs to its output, looking its function up in the table of
+;;; `std.bool.gates`. Saturation is then simulation, search-free, like the
+;;; calculator: a firing a gate, and nothing guessed.
+;;;
+;;;     (gate INSTANCE FUNCTION IN1 IN2 OUT)   a gate of the circuit, written by
+;;;                                            a program; FUNCTION is one of the
+;;;                                            sixteen of `std.bool.gates`
+;;;     (val WIRE BIT)                         the wire carries the bit
+;;;
+;;; `propagate` fires once for a gate whose two inputs carry a value. A wire
+;;; that carries both bits is a contradiction, `one-value`. A gate whose input
+;;; carries no value computes nothing, and its output carries none.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.bool.circuit :symbols (gate val))
+;;;     (import std.bool.gates :symbols (Xor And))
+;;;
+;;; An import brings the module whole, `std.bool.gates` with it
+;;; (Q-M1f.247); a program lists the names it writes from the module that
+;;; declares each, and a function's name, written as a gate's FUNCTION, is
+;;; `std.bool.gates`'s (that module's header says why it must be listed).
+;;; `circuit` is the entry, the closing rule at the end of this file: gates
+;;; are written and values derived, never guessed, so it closes `gate` and
+;;; `val`, names every rule, and names `gates`, the entry of
+;;; `std.bool.gates`. Inputs as hypotheses are `std.bool.inputs`.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; `gate` and `val`; the rules `propagate` and `one-value`; `circuit-rule`,
+;;; and the entry `circuit`. Everything of `std.bool.gates` comes with it.
+
+(import std.bool.gates :symbols (gates gate2))
+
+(relation gate Instance Function Wire Wire Wire
+  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+(relation val Wire Bit
+  :why "{?1} carries {?2}")
+
+(rule propagate ()
+  :match  (and (gate ?g ?f ?a ?b ?o) (val ?a ?x) (val ?b ?y) (gate2 ?f ?x ?y ?z))
+  :assert (val ?o ?z)
+  :why    "{?g}: {?f} of {?x} and {?y} is {?z}, on {?o}")
+(rule one-value ()
+  :match  (and (val ?w ?x) (val ?w ?y) (neq ?x ?y))
+  :assert (false)
+  :why    "the wire {?w} carries both {?x} and {?y}")
+
+;; ── The closing rule, the module's entry ────────────────────────────────────
+(relation circuit-rule Rule
+  :why "{?1} is a rule of the circuit theory")
+(circuit-rule circuit)
+(rule circuit ()
+  :match  ()
+  :assert (and (__closed__ gate) (__closed__ val) (__closed__ circuit-rule)
+               (circuit-rule propagate) (circuit-rule one-value) (circuit-rule gates))
+  :why    "a circuit is simulated and never guessed: every relation of the theory is closed")
+
+)
+(module std.bool.gates
+;;; Ein stdlib — `std.bool.gates`: the sixteen Boolean functions of two
+;;; inputs, as one table and as a relation each (Q-M1f.325).
+;;;
+;;; A function of two bits is its column of four outputs, at a b = 00, 01, 10
+;;; and 11, and there are sixteen columns; every one has a name here, exactly
+;;; once. Ein has no numbers and no truth values of its own (Q-M1e2.24): the
+;;; two bits are the names `0` and `1`, which are
+;;; decimal's digits too, and what is known of them is written here as tables
+;;; of facts, as `std.math.digits` writes the digits'. Nothing is guessed: on a
+;;; program that imports the module and writes nothing else, R is {∅}.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.bool.gates :symbols (gate2 Xor And))
+;;;
+;;; An import brings the module whole (Q-M1f.247); a program lists the
+;;; names it writes. `gates` is the module's entry, the closing rule at the
+;;; end of this file: it closes every relation and names every rule.
+;;;
+;;; ── Two layouts ────────────────────────────────────────────────────────────
+;;;
+;;;     (gate2 NAME A B OUT)    one table, 64 rows: NAME of A and B is OUT
+;;;     (NAME A B OUT)          a relation a function, its four rows, derived
+;;;                             from the table by sixteen rules
+;;;
+;;; In the table a function is a value, so a rule about any function matches
+;;; (gate2 ?f …) with no parameter, and a search can make the function a
+;;; hypothesis (`examples/binary_logic/synthesis.ein`). In the second layout a
+;;; function is a relation, (Xor ?a ?b ?o), for a rule that names the one it
+;;; means. Every program that imports the module derives the second layout,
+;;; 64 firings at root: an import brings every rule (Q-M1f.247), so no program
+;;; selects the sixteen rules apart from the table (Q-M1f.263).
+;;;
+;;; ── A function's name is the module's ──────────────────────────────────────
+;;;
+;;; Each of the sixteen names is declared here, as the relation of the second
+;;; layout, so it has one full name, `std.bool.gates.Xor`, in both of its
+;;; places: the relation, and the value in the table. A program that writes a
+;;; function's name, as a value too, `(gate g1 Xor a b o)`, lists it, or
+;;; writes it in full or by an alias. A name it writes and does not list is its
+;;; own, as every short name is (Q-M1f.236): a name no row of the table has, so
+;;; a gate of that function computes nothing, and nothing says so (Q-M1f.264).
+;;;
+;;; ── The sixteen ────────────────────────────────────────────────────────────
+;;;
+;;;     name   column  the output                 the connective
+;;;     Zero   f0000   0                          contradiction
+;;;     And    f0001   a and b                    conjunction
+;;;     Andn   f0010   a and not b                nonimplication
+;;;     Fst    f0011   a                          projection on the first
+;;;     Randn  f0100   not a and b                converse nonimplication
+;;;     Snd    f0101   b                          projection on the second
+;;;     Xor    f0110   a xor b                    exclusive disjunction
+;;;     Or     f0111   a or b                     disjunction
+;;;     Nor    f1000   not (a or b)               joint denial, Peirce's arrow
+;;;     Xnor   f1001   not (a xor b)              biconditional
+;;;     Nsnd   f1010   not b                      negation of the second
+;;;     Orn    f1011   a or not b                 converse implication
+;;;     Nfst   f1100   not a                      negation of the first
+;;;     Rorn   f1101   not a or b                 implication, a then b
+;;;     Nand   f1110   not (a and b)              alternative denial, Sheffer's stroke
+;;;     One    f1111   1                          tautology
+;;;
+;;; The names are capitalised because `and`, `or` and `not` are Ein's own
+;;; words and are never a value. `Randn` and `Rorn` are `Andn` and `Orn` with
+;;; the inputs exchanged. The column, `f0110` for `Xor`, is each function's
+;;; second name, held in `(column-name Xor f0110)`: a value and no relation,
+;;; so it is not the module's, and any program may write it.
+;;;
+;;; Beside the table, three small ones the property rules of `std.bool.props`
+;;; read: `(inv A B)`, not A is B; `(le A B)`, the order of the bits; and
+;;; `(bit A)`, the two bits.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; The tables `gate2`, `column-name`, `inv`, `le` and `bit`; the sixteen
+;;; functions, each a relation and a value of `gate2`; the sixteen rules
+;;; `Zero-rows` to `One-rows`, one a function; `gates-rule`, and the entry
+;;; `gates`.
+;;;
+;;; The table's rows are GENERATED, between the two lines that say so below:
+;;; an edit by hand is lost the next time they are written. The rows are
+;;; computed twice: `ein-infer/tests/bool_theory.rs` holds every row, and
+;;; every fact the rules derive, to an enumeration of the columns in Rust.
+;;; The rest of this file, the declarations, the sixteen rules and the
+;;; closing rule, is written by hand.
+
+;; ── The tables ──────────────────────────────────────────────────────────────
+(relation gate2 Function Bit Bit Bit
+  :why "{?1} of {?2} and {?3} is {?4}")
+(relation column-name Function Column
+  :why "{?1} is the function whose outputs at 00, 01, 10 and 11 spell {?2}")
+(relation inv Bit Bit
+  :why "not {?1} is {?2}")
+(relation le Bit Bit
+  :why "{?1} is at most {?2}")
+(relation bit Bit
+  :why "{?1} is a bit")
+
+;; BEGIN GENERATED: an edit by hand is lost when the rows are written again
+(bit 0) (bit 1)
+(inv 0 1) (inv 1 0)
+(le 0 0) (le 0 1) (le 1 1)
+(gate2 Zero 0 0 0) (gate2 Zero 0 1 0) (gate2 Zero 1 0 0) (gate2 Zero 1 1 0)   (column-name Zero f0000)
+(gate2 And 0 0 0) (gate2 And 0 1 0) (gate2 And 1 0 0) (gate2 And 1 1 1)   (column-name And f0001)
+(gate2 Andn 0 0 0) (gate2 Andn 0 1 0) (gate2 Andn 1 0 1) (gate2 Andn 1 1 0)   (column-name Andn f0010)
+(gate2 Fst 0 0 0) (gate2 Fst 0 1 0) (gate2 Fst 1 0 1) (gate2 Fst 1 1 1)   (column-name Fst f0011)
+(gate2 Randn 0 0 0) (gate2 Randn 0 1 1) (gate2 Randn 1 0 0) (gate2 Randn 1 1 0)   (column-name Randn f0100)
+(gate2 Snd 0 0 0) (gate2 Snd 0 1 1) (gate2 Snd 1 0 0) (gate2 Snd 1 1 1)   (column-name Snd f0101)
+(gate2 Xor 0 0 0) (gate2 Xor 0 1 1) (gate2 Xor 1 0 1) (gate2 Xor 1 1 0)   (column-name Xor f0110)
+(gate2 Or 0 0 0) (gate2 Or 0 1 1) (gate2 Or 1 0 1) (gate2 Or 1 1 1)   (column-name Or f0111)
+(gate2 Nor 0 0 1) (gate2 Nor 0 1 0) (gate2 Nor 1 0 0) (gate2 Nor 1 1 0)   (column-name Nor f1000)
+(gate2 Xnor 0 0 1) (gate2 Xnor 0 1 0) (gate2 Xnor 1 0 0) (gate2 Xnor 1 1 1)   (column-name Xnor f1001)
+(gate2 Nsnd 0 0 1) (gate2 Nsnd 0 1 0) (gate2 Nsnd 1 0 1) (gate2 Nsnd 1 1 0)   (column-name Nsnd f1010)
+(gate2 Orn 0 0 1) (gate2 Orn 0 1 0) (gate2 Orn 1 0 1) (gate2 Orn 1 1 1)   (column-name Orn f1011)
+(gate2 Nfst 0 0 1) (gate2 Nfst 0 1 1) (gate2 Nfst 1 0 0) (gate2 Nfst 1 1 0)   (column-name Nfst f1100)
+(gate2 Rorn 0 0 1) (gate2 Rorn 0 1 1) (gate2 Rorn 1 0 0) (gate2 Rorn 1 1 1)   (column-name Rorn f1101)
+(gate2 Nand 0 0 1) (gate2 Nand 0 1 1) (gate2 Nand 1 0 1) (gate2 Nand 1 1 0)   (column-name Nand f1110)
+(gate2 One 0 0 1) (gate2 One 0 1 1) (gate2 One 1 0 1) (gate2 One 1 1 1)   (column-name One f1111)
+;; END GENERATED
+
+;; ── A relation a function: the second layout ────────────────────────────────
+(relation Zero Bit Bit Bit
+  :why "the constant 0 of {?1} and {?2} is {?3}")
+(relation And Bit Bit Bit
+  :why "{?1} and {?2} is {?3}")
+(relation Andn Bit Bit Bit
+  :why "{?1} and not {?2} is {?3}")
+(relation Fst Bit Bit Bit
+  :why "the first of {?1} and {?2} is {?3}")
+(relation Randn Bit Bit Bit
+  :why "not {?1} and {?2} is {?3}")
+(relation Snd Bit Bit Bit
+  :why "the second of {?1} and {?2} is {?3}")
+(relation Xor Bit Bit Bit
+  :why "{?1} xor {?2} is {?3}")
+(relation Or Bit Bit Bit
+  :why "{?1} or {?2} is {?3}")
+(relation Nor Bit Bit Bit
+  :why "neither {?1} nor {?2} is {?3}")
+(relation Xnor Bit Bit Bit
+  :why "{?1} xnor {?2} is {?3}")
+(relation Nsnd Bit Bit Bit
+  :why "the negation of the second of {?1} and {?2} is {?3}")
+(relation Orn Bit Bit Bit
+  :why "{?1} or not {?2} is {?3}")
+(relation Nfst Bit Bit Bit
+  :why "the negation of the first of {?1} and {?2} is {?3}")
+(relation Rorn Bit Bit Bit
+  :why "not {?1} or {?2} is {?3}")
+(relation Nand Bit Bit Bit
+  :why "{?1} nand {?2} is {?3}")
+(relation One Bit Bit Bit
+  :why "the constant 1 of {?1} and {?2} is {?3}")
+
+(rule Zero-rows ()
+  :match  (gate2 Zero ?a ?b ?o)
+  :assert (Zero ?a ?b ?o)
+  :why    "the table's row: Zero of {?a} and {?b} is {?o}")
+(rule And-rows ()
+  :match  (gate2 And ?a ?b ?o)
+  :assert (And ?a ?b ?o)
+  :why    "the table's row: And of {?a} and {?b} is {?o}")
+(rule Andn-rows ()
+  :match  (gate2 Andn ?a ?b ?o)
+  :assert (Andn ?a ?b ?o)
+  :why    "the table's row: Andn of {?a} and {?b} is {?o}")
+(rule Fst-rows ()
+  :match  (gate2 Fst ?a ?b ?o)
+  :assert (Fst ?a ?b ?o)
+  :why    "the table's row: Fst of {?a} and {?b} is {?o}")
+(rule Randn-rows ()
+  :match  (gate2 Randn ?a ?b ?o)
+  :assert (Randn ?a ?b ?o)
+  :why    "the table's row: Randn of {?a} and {?b} is {?o}")
+(rule Snd-rows ()
+  :match  (gate2 Snd ?a ?b ?o)
+  :assert (Snd ?a ?b ?o)
+  :why    "the table's row: Snd of {?a} and {?b} is {?o}")
+(rule Xor-rows ()
+  :match  (gate2 Xor ?a ?b ?o)
+  :assert (Xor ?a ?b ?o)
+  :why    "the table's row: Xor of {?a} and {?b} is {?o}")
+(rule Or-rows ()
+  :match  (gate2 Or ?a ?b ?o)
+  :assert (Or ?a ?b ?o)
+  :why    "the table's row: Or of {?a} and {?b} is {?o}")
+(rule Nor-rows ()
+  :match  (gate2 Nor ?a ?b ?o)
+  :assert (Nor ?a ?b ?o)
+  :why    "the table's row: Nor of {?a} and {?b} is {?o}")
+(rule Xnor-rows ()
+  :match  (gate2 Xnor ?a ?b ?o)
+  :assert (Xnor ?a ?b ?o)
+  :why    "the table's row: Xnor of {?a} and {?b} is {?o}")
+(rule Nsnd-rows ()
+  :match  (gate2 Nsnd ?a ?b ?o)
+  :assert (Nsnd ?a ?b ?o)
+  :why    "the table's row: Nsnd of {?a} and {?b} is {?o}")
+(rule Orn-rows ()
+  :match  (gate2 Orn ?a ?b ?o)
+  :assert (Orn ?a ?b ?o)
+  :why    "the table's row: Orn of {?a} and {?b} is {?o}")
+(rule Nfst-rows ()
+  :match  (gate2 Nfst ?a ?b ?o)
+  :assert (Nfst ?a ?b ?o)
+  :why    "the table's row: Nfst of {?a} and {?b} is {?o}")
+(rule Rorn-rows ()
+  :match  (gate2 Rorn ?a ?b ?o)
+  :assert (Rorn ?a ?b ?o)
+  :why    "the table's row: Rorn of {?a} and {?b} is {?o}")
+(rule Nand-rows ()
+  :match  (gate2 Nand ?a ?b ?o)
+  :assert (Nand ?a ?b ?o)
+  :why    "the table's row: Nand of {?a} and {?b} is {?o}")
+(rule One-rows ()
+  :match  (gate2 One ?a ?b ?o)
+  :assert (One ?a ?b ?o)
+  :why    "the table's row: One of {?a} and {?b} is {?o}")
+
+;; ── The closing rule, the module's entry ────────────────────────────────────
+(relation gates-rule Rule
+  :why "{?1} is a rule of the gates module")
+(gates-rule gates)
+(rule gates ()
+  :match  ()
+  :assert (and (__closed__ gate2) (__closed__ column-name) (__closed__ inv) (__closed__ le)
+               (__closed__ bit) (__closed__ gates-rule)
+               (__closed__ Zero) (__closed__ And) (__closed__ Andn) (__closed__ Fst)
+               (__closed__ Randn) (__closed__ Snd) (__closed__ Xor) (__closed__ Or)
+               (__closed__ Nor) (__closed__ Xnor) (__closed__ Nsnd) (__closed__ Orn)
+               (__closed__ Nfst) (__closed__ Rorn) (__closed__ Nand) (__closed__ One)
+               (gates-rule Zero-rows) (gates-rule And-rows) (gates-rule Andn-rows)
+               (gates-rule Fst-rows) (gates-rule Randn-rows) (gates-rule Snd-rows)
+               (gates-rule Xor-rows) (gates-rule Or-rows) (gates-rule Nor-rows)
+               (gates-rule Xnor-rows) (gates-rule Nsnd-rows) (gates-rule Orn-rows)
+               (gates-rule Nfst-rows) (gates-rule Rorn-rows) (gates-rule Nand-rows)
+               (gates-rule One-rows))
+  :why    "the sixteen functions are written and derived, and never guessed: every relation of the module is closed")
+
+)
+(module std.bool.inputs
+;;; Ein stdlib — `std.bool.inputs`: a circuit's inputs as hypotheses, each
+;;; owing exactly one value, and the values a program requires
+;;; (Q-M1f.328).
+;;;
+;;; This is the one module of `std.bool` with a search in it. An input wire
+;;; has exactly one value, and which one is for the search to try:
+;;;
+;;;     (is-a WIRE Input)   written by a program: this wire is an input
+;;;     (in WIRE BIT)       a hypothesis: the input is set to the bit
+;;;     (require WIRE BIT)  written by a program: a state in which the wire
+;;;                         carries the other bit is a contradiction
+;;;
+;;; *Exactly one* is two declarations of `std.algebra` over a typed relation.
+;;; `(total-owed in is-a)` says every input owes a value, so a state with an
+;;; input unset is not an answer; `(functional in)` says none has two. The
+;;; obligation is also what proposes the candidates, through the obligations
+;;; rung of hypothesis generation: two an input, (in w 0) and (in w 1), and no
+;;; other fact is ever guessed. `in-drives` puts an input's value on its wire,
+;;; where `std.bool.circuit` carries it on.
+;;;
+;;; So R is the input assignments that contradict nothing: with no
+;;; requirement, every assignment, and a query's projection classes are a
+;;; truth table's rows; with requirements, the assignments that satisfy them,
+;;; which is satisfiability, and empty where none does. Such an R is empty
+;;; because every alive node owes an input it cannot be given, not because
+;;; every node is dead: `ein solve --single` answers `Open`, and not
+;;; `Contradiction`, which is said only where no node is alive (Q-M1d.6).
+;;;
+;;; **What it costs.** A node of the search is a partial assignment, each
+;;; input unset, 0 or 1: describing R over n inputs is 3^n + n saturations,
+;;; and finding one state 2^n. That is a demonstration and not a SAT solver:
+;;; the search has no cheaper move for *exactly one value per object* than
+;;; the obligation's candidates, one input at a time. Where every input is to
+;;; be tried, writing the inputs as test vectors is one saturation
+;;; (`examples/binary_logic/adder_against_table.ein`).
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.bool.inputs :symbols (is-a in require))
+;;;     (import std.bool.circuit :symbols (gate))
+;;;     (import std.bool.gates :symbols (Xor And))
+;;;
+;;; An import brings the module whole, `std.bool.circuit`, `std.bool.gates`
+;;; and `std.algebra` with it (Q-M1f.247); a program lists the names it
+;;; writes from the module that declares each. `inputs` is the entry, the
+;;; closing rule at the end of this file: it closes `is-a` and `require`,
+;;; which are written and never guessed, names every rule, and names
+;;; `circuit`, the entry of `std.bool.circuit`. `in` is not closed: it is the
+;;; hypothesis.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; `is-a`, `in` and `require`; the rules `in-drives` and `required`;
+;;; `inputs-rule`, and the entry `inputs`; the facts `(is-a 0 Bit)`,
+;;; `(is-a 1 Bit)`, `(total-owed in is-a)` and `(functional in)`. The types
+;;; `Input` and `Bit` are values, not the module's. Everything of
+;;; `std.bool.circuit`, `std.bool.gates` and `std.algebra` comes with it.
+
+(import std.bool.circuit :symbols (circuit val))
+(import std.algebra :symbols (total-owed functional))
+
+(relation is-a Thing Type
+  :why "{?1} is a {?2}")
+(relation in Input Bit
+  :why "the input {?1} is set to {?2}")
+(relation require Wire Bit
+  :why "{?1} is required to carry {?2}")
+
+(is-a 0 Bit) (is-a 1 Bit)
+(total-owed in is-a)     ; every input owes a value: a state with an input unset is not an answer
+(functional in)          ; and none has two
+
+(rule in-drives ()
+  :match  (in ?w ?v)
+  :assert (val ?w ?v)
+  :why    "the input {?w} is set to {?v}")
+(rule required ()
+  :match  (and (require ?w ?v) (val ?w ?u) (neq ?u ?v))
+  :assert (false)
+  :why    "{?w} is required to carry {?v} and carries {?u}")
+
+;; ── The closing rule, the module's entry ────────────────────────────────────
+(relation inputs-rule Rule
+  :why "{?1} is a rule of the inputs theory")
+(inputs-rule inputs)
+(rule inputs ()
+  :match  ()
+  :assert (and (__closed__ is-a) (__closed__ require) (__closed__ inputs-rule)
+               (inputs-rule in-drives) (inputs-rule required) (inputs-rule circuit))
+  :why    "types and requirements are written, never guessed")
+
+)
+(module std.macro
+;;; Ein stdlib — `std.macro`: pattern-macro sugar.
+;;;
+;;; **Canonical** module: the import resolver (`ein-ir`'s
+;;; `stdlib::resolve`) maps the logical name `std.macro` to THIS file under the
+;;; stdlib root (`stdlib/README.md` has the three steps).
+;;;
+;;; `forall` and `unknown` are ordinary ein-lang `(macro …)` declarations, no
+;;; form of the compiler's: a program that does not import this module has
+;;; neither (Q-M1f.132). Reach them three ways:
+;;;     (import std.macro)            → `(std.macro.forall …)`
+;;;     (import std.macro :as m)      → `(m.forall …)`
+;;;     (import std.macro :symbols (forall unknown)) → `(forall …)` (short names)
+;;;
+;;; Each carries a `:why`, as every relation and rule here does: a macro's is
+;;; required as a rule's is (Q-M1f.59), so the stdlib loads with a `:why`
+;;; required, the default.
+
+;; `(forall ?b (G) (B))` — guarded universal ∀b. G(b) → B(b), encoded as the
+;; classical ¬∃b. G(b) ∧ ¬B(b). The bound var ?b must appear in the guard G.
+(macro forall (?b ?G ?B)
+  (absent (and ?G (absent ?B)))
+  :why "every {?b} the guard {?G} holds of satisfies {?B}: none satisfies the guard and not the body")
+
+;; `(unknown P)` — third-state match: P is neither asserted nor negated in the
+;; KB. It is not named `open`, the word an obligation concludes: an
+;; obligation is a rule whose conclusion is `(open ?R)`, and `open` is that
+;; verdict's atom (Q-M1d.2).
+(macro unknown (?P)
+  (and (absent ?P) (absent (not ?P)))
+  :why "{?P} is unknown: neither it nor its negation holds")
+
+)
+(commit
+  (in a 1)
+  (in b 1)
+  (in cin 1))

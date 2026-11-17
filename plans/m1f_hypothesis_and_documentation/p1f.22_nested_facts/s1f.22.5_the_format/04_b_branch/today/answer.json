@@ -1,0 +1,212 @@
+{
+  "schema": "ein-summary/2",
+  "source": "examples/domain_elim/b_branch.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 2,
+    "k_c": 2,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "in-r",
+    "root_owes": 0,
+    "root_owed": [],
+    "empty": null,
+    "minimal": {
+      "states": 1,
+      "commitments": 1,
+      "least": 0,
+      "trivial": true
+    },
+    "maximal": {
+      "states": 1,
+      "trivial": false
+    },
+    "components": [
+      2
+    ],
+    "subcubes": [
+      1
+    ],
+    "merged": {
+      "states": 0,
+      "minimal": 0
+    },
+    "nogoods": 6,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 7,
+      "dead_alone": 6
+    },
+    "route": "states",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local"
+    ],
+    "states": [
+      {
+        "facts": [
+          "(color-loc Green H3)",
+          "(color-loc Red H2)"
+        ],
+        "closure": [],
+        "from": [],
+        "minimal_generators": [
+          []
+        ],
+        "commitments": 1,
+        "lines": [
+          "minimal"
+        ],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(color-loc Blue H1)",
+          "(color-loc Green H3)",
+          "(color-loc Red H2)"
+        ],
+        "closure": [
+          "(color-loc Blue H1)"
+        ],
+        "from": [
+          "(color-loc Blue H1)"
+        ],
+        "minimal_generators": [
+          [
+            "(color-loc Blue H1)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [
+          "maximal"
+        ],
+        "listed": true
+      }
+    ],
+    "frontier": null,
+    "core": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(color-loc Blue ?h)",
+      "over": "all",
+      "exact": true,
+      "classes": [
+        {
+          "facts": [],
+          "rows": [],
+          "states": [
+            1
+          ]
+        },
+        {
+          "facts": [
+            "(color-loc Blue H1)"
+          ],
+          "rows": [
+            {
+              "h": "H1"
+            }
+          ],
+          "states": [
+            2
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "work": {
+    "saturations": 8,
+    "facts": 13,
+    "layers": 3
+  },
+  "monotonicity": {
+    "monotone": true,
+    "hypothesised": [
+      "color-loc"
+    ],
+    "dynamic": [
+      "color-loc",
+      "false"
+    ],
+    "plans": {
+      "saturation": 3,
+      "obligation": 0
+    },
+    "reads": {
+      "static": 1,
+      "dynamic_monotone": 4,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 0,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 19,
+    "facts_by_relation": {
+      "bijective": 1,
+      "color-loc": 2,
+      "functional": 1,
+      "injective": 1,
+      "is-a": 8,
+      "relation": 4,
+      "surjective": 1,
+      "total": 1
+    },
+    "dead": false,
+    "owes": 0,
+    "owed": [],
+    "plans": 3,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 9,
+      "emitted": 7,
+      "filtered": {
+        "fact_already_exists": 2
+      },
+      "pre_candidate": {},
+      "outside": [],
+      "types_as_objects": {
+        "objects": [],
+        "relations": [],
+        "candidates": 0
+      }
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  }
+}

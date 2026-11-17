@@ -1,0 +1,99 @@
+{
+  "schema": "ein-summary/2",
+  "source": "plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/s1f.22.5_the_format/07_owing/today/owing/01.ein",
+  "asked": {
+    "which": "all",
+    "ask": "no-search",
+    "n": null
+  },
+  "region": null,
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(likes ?who ?what)",
+      "over": "all",
+      "exact": false,
+      "classes": [],
+      "expect": null
+    }
+  ],
+  "claim": {
+    "outcome": "not-checked",
+    "lines": [
+      "the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so \u2205 is not in R, and R was not searched"
+    ]
+  },
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": null
+  },
+  "monotonicity": {
+    "monotone": true,
+    "hypothesised": [],
+    "dynamic": [],
+    "plans": {
+      "saturation": 8,
+      "obligation": 1
+    },
+    "reads": {
+      "static": 18,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 2,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 10,
+    "facts_by_relation": {
+      "is-a": 4,
+      "likes": 1,
+      "relation": 4,
+      "total-owed": 1
+    },
+    "dead": false,
+    "owes": 1,
+    "owed": [
+      "likes owes Ann a Food."
+    ],
+    "plans": 8,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 0,
+      "emitted": 0,
+      "filtered": {},
+      "pre_candidate": {},
+      "outside": [],
+      "types_as_objects": {
+        "objects": [],
+        "relations": [],
+        "candidates": 0
+      }
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  }
+}
