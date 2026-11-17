@@ -38,8 +38,8 @@
 ;;; hold the same information in 25. The negative side is worse — the
 ;;; complement of a 30-element square is 900 ordered pairs against zebra2's 125
 ;;; — and the negative-propagation rules join positives against negatives, so
-;;; the cost is the PRODUCT. Measured on the exhaustive Zebra solve, the fully
-;;; closed formulation costs ~4.3 s per hypothesis against zebra2's ~0.09 s.
+;;; the cost is the PRODUCT: on the exhaustive Zebra solve the fully closed
+;;; formulation costs many times what zebra2's does per hypothesis.
 ;;;
 ;;; So `Index` is a MATERIALISATION policy, not a weakening of the property:
 ;;; every derived edge is anchored at the slot's index, which puts the derived
