@@ -13,7 +13,7 @@ reports each finding as `file:line: rule N: what`.
 | 3 | a page of the reasoning that speaks an implementation's language: a fenced block that is not `dot` or `plantuml`; a link that resolves outside `docs/`; inline code that is a file path, a Rust path, a crate or test name, or a command line | `docs/ein/reasoning/` |
 | 4 | a formula in a block: a fenced block with no language or `text` that holds a mathematical operator no program output holds | `docs/ein/` |
 | 5 | a diagram drawn in characters: a fenced block that is not `dot` or `plantuml` and holds box-drawing corners, junctions or verticals, an arrow of dashes (`-->`, `<--`), a `+--` corner, or, in a block with no language or `text`, a line that is only a connector (`|`, `v`, `^`) or one that chains two or more arrows (`a ← b ← c`) | `docs/ein/` |
-| 6 | with `--plantuml`: a fenced `plantuml` block with no `@start…` line, or one PlantUML's `-syntax` answers `ERROR` to | `docs/ein/`, `docs/decisions/` |
+| 6 | with `--plantuml`: a fenced `plantuml` block with no `@start…` line, or one PlantUML does not draw (no SVG, or the words *Syntax error* in it) | `docs/ein/`, `docs/decisions/` |
 
     python3 utils/check_doc_blocks.py                # the gate's form: rules 1 and 2, exit 1 on a finding
     python3 utils/check_doc_blocks.py --all          # rules 1 to 5
@@ -333,15 +333,17 @@ def rule6(pages: dict[str, list[Block]]) -> list[Finding]:
             else:
                 jobs.append((rel, b))
 
-    def verdict(_rc: int, stdout: str, _err: str):
-        lines = stdout.splitlines()
-        if lines and lines[0].strip() == "ERROR":
-            return ("PlantUML refuses this block" + (f" at its line {lines[1].strip()}"
-                    if len(lines) > 1 else "") + (f": {lines[2].strip()[:160]}"
-                    if len(lines) > 2 else ""))
-        return None if lines else "PlantUML printed nothing for this block"
+    # `plantuml -syntax` passes a block the renderer then draws as the words "Syntax error!" (an
+    # EBNF exception with a group on its right, an empty option), so the block is drawn and the
+    # drawing read.
+    def verdict(rc: int, stdout: str, err: str):
+        if rc != 0 or "<svg" not in stdout:
+            return "PlantUML draws nothing for this block" + (f": {err.strip()[:160]}" if err.strip() else "")
+        if "Syntax error" in stdout:
+            return "PlantUML draws this block as a syntax error"
+        return None
     out += [(rel, b.line, 6, what)
-            for rel, b, what in run_blocks(jobs, ["plantuml", "-syntax"], verdict)]
+            for rel, b, what in run_blocks(jobs, ["plantuml", "-tsvg", "-pipe"], verdict)]
     return out
 
 
@@ -359,7 +361,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--all", action="store_true", help="rules 1 to 5 (default: 1 and 2)")
     ap.add_argument("--plantuml", action="store_true",
-                    help="rule 6 as well: every `plantuml` block through `plantuml -syntax`")
+                    help="rule 6 as well: every `plantuml` block drawn by `plantuml -tsvg`")
     ap.add_argument("--rule", type=int, action="append", choices=range(1, 7), metavar="N",
                     help="only rule N (repeatable)")
     ap.add_argument("--list", action="store_true",

@@ -156,7 +156,7 @@ add(block(["examples/branching/05_mini_zebra.ein"]))
 
 add("""## X2 — `lattice/02_genuine_3set_death.ein`: one program, every mode
 
-[`06-solution-semantics.md` § 2.5]("""+SOLUTION_SEMANTICS+"""#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
+[`06-solution-semantics.md` § 2.5]("""+SOLUTION_SEMANTICS+"""#25-worked-a-conflict-of-three)'s worked
 example: three candidates, every pair alive, the triple dead, no obligation. One run per question, so the same R can be
 read through each.
 

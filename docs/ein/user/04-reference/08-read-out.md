@@ -321,7 +321,7 @@ has them all. The block does not take the listings' 100 lines. Its JSON is the s
 <!-- rows: strata -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `negative cycle` | per cycle through an `absent` of the rules' dependency graph | its relations, the rules on its negative edges, and what its parity may mean; [`02-analysis-of-rules.md`](../../reasoning/03-rule-evolution/02-analysis-of-rules.md#5-where-it-is-shown) has every line it prints | around R | — | [X14](09-read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
+| `negative cycle` | per cycle through an `absent` of the rules' dependency graph | its relations, the rules on its negative edges, and what its parity may mean; [`04-rule-evolution.md`](../../ein.rs/08-reasoning-in-code/04-rule-evolution.md#where-the-diagnostic-is-shown) has every line it prints | around R | — | [X14](09-read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 <!-- /rows -->
 
 ### 5.3 Under `universe`
