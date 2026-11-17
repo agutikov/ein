@@ -346,16 +346,17 @@ replaces the other.
 **The two sets of components** are of the open candidates. Two are together where they share a question or an edge
 holds a question of each.
 
-- **Over every edge**: these are what **$R$ is the product of its parts over**. With components
-  $H^{\mathrm{o}} = K_1 \uplus \dots \uplus K_p$ and $R_i$ the region of the commitments inside $K_i$:
+- **Over every edge**: these are what **$R$ is the product of its parts over**.
+- **Over the conflicts' and the derivations' edges alone**, the debts' left out: what no debt joins. Where a debt's
+  payers lie in two of them, $R$ is no product over those.
+
+With the components over every edge $H^{\mathrm{o}} = K_1 \uplus \dots \uplus K_p$, and $R_i$ the region of the
+commitments inside $K_i$:
 
 $$
 R \;=\; \lbrace\, C_1 \cup \dots \cup C_p \;:\; C_i \in R_i \,\rbrace, \qquad
 k_c = \prod_{i=1}^{p} \lvert R_i \rvert
 $$
-
-- **Over the conflicts' and the derivations' edges alone**, the debts' left out: what no debt joins. Where a debt's
-  payers lie in two of them, $R$ is no product over those.
 
 Wherever all of $R$ is known, every member of $N$ lies inside one edge of a conflict or a derivation, and $R$ is the
 product over the first set.
