@@ -759,7 +759,7 @@ fn items(n: usize, all: bool) -> String {
     s
 }
 
-/// **A count past what a run reports is an answer** (W92, Q-M1f.218).
+/// **A count past what a run reports is an answer** (Q-M1f.218).
 ///
 /// The count is exact, however large, and a surface carries it up to
 /// 2⁶³ − 1, which reads *this many or more*: never an exit 1 with no
@@ -1313,7 +1313,7 @@ fn one_verdict_on_every_corpus_program() {
                     b.to_str().unwrap(),
                 ]);
                 // A refuted claim exits 1 and prints its read-out
-                // whole (W28's witnesses), so it is read.
+                // whole (the `*-int-name` witnesses), so it is read.
                 if described.code != 0 && !described.out.contains("\n  lattice ") {
                     // A read-out that errs prints none: a goal the
                     // compiler rejected ended the run where a state is
@@ -1423,7 +1423,7 @@ fn one_verdict_on_every_corpus_program() {
     );
 }
 
-/// The W27 witness: a flagged program of 17 candidates, past the default
+/// `past-limit-lines.ein`: a flagged program of 17 candidates, past the default
 /// `--region-limit`, whose R the oracle gives at 17 (three states, minimal line
 /// {∅}).
 const PAST: &str = "examples/ein-bugs/wrong-answers/past-limit-lines.ein";
@@ -1431,7 +1431,7 @@ const PAST: &str = "examples/ein-bugs/wrong-answers/past-limit-lines.ein";
 /// **Where ∅ is in R, every minimal question stops at root, and says only ∅**
 /// (Q-M1f.23): ∅ is below every commitment, so where it is in R the minimal
 /// line is {∅}, decided after one saturation, on any program and at any
-/// limit. Three rows, through the binary, on the W27 witness past the limit,
+/// limit. Three rows, through the binary, on `past-limit-lines.ein` past the limit,
 /// where describe certifies {∅}: `--single`, `-n N` and `--minimal` each
 /// decide it after one saturation, not *not decided*, *as asked* or
 /// *exhausted no* after 2^16.

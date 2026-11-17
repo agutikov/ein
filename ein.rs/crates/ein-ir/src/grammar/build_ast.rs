@@ -164,7 +164,7 @@ pub(super) fn text(p: &RefCell<B>, lx: Lx, t: Tok) -> Id {
 /// A string's body with its escapes read: the body of a `TEXT` token, whose
 /// rule in `ein.l` admits no other escape and no `\u{…}` that names no
 /// character: one past 10FFFF or a surrogate is a `BADESCAPE` token, refused
-/// at the parse, and never read here as U+FFFD in silence (W38).
+/// at the parse, and never read here as U+FFFD in silence.
 fn unescape(body: &str) -> String {
     let mut out = String::with_capacity(body.len());
     let mut it = body.chars();

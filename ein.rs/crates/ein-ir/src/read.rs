@@ -7,7 +7,7 @@
 //! refused with the line its file would be refused with as the program a
 //! command is given, naming its own path: a module that is not UTF-8, one
 //! that cannot be read, a directory and a `.einb` container each get their
-//! own line, and none reads as `module not found at …` (W74).
+//! own line, and none reads as `module not found at …`.
 //!
 //! The bytes are read and told apart by their first eight: a `.einb` container
 //! ([`looks_like_einb`]) or UTF-8 text. A file that cannot be read gives the

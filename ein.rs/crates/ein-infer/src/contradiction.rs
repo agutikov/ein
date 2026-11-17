@@ -55,8 +55,7 @@ impl Contradiction {
     ///
     /// It is **not** what the core is the frontier of: that is
     /// [`Contradiction::sides`]. A core of this fact alone would leave out
-    /// the derivation of a pair's `(not X)`, where a commitment typically is
-    /// (`W21`).
+    /// the derivation of a pair's `(not X)`, where a commitment typically is.
     pub fn witness(&self) -> FactId {
         self.positive.unwrap_or(self.negative)
     }
@@ -64,7 +63,7 @@ impl Contradiction {
     /// The facts the contradiction rests on, which the core search explains
     /// together ([`crate::explain::contradiction_frontier`]): a pair's `X`
     /// and its `(not X)`, the witness first, or a direct ⊥'s `(false …)`
-    /// fact (`W21`).
+    /// fact.
     pub fn sides(&self) -> Vec<FactId> {
         self.positive
             .into_iter()

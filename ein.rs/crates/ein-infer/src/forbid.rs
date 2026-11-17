@@ -38,7 +38,7 @@
 //! program the static check calls monotone it reads nothing: every cause
 //! needs a site.
 //!
-//! **Why `D⁺` and not `D`** (`W17`): with *extendable* read as `D`, and an
+//! **Why `D⁺` and not `D`**: with *extendable* read as `D`, and an
 //! open rule's activator relation required to be in `D`, a chain of
 //! activators past the first plan root never compiled would not be followed,
 //! and an open rule's own `absent` would taint nothing it derived: a
@@ -394,7 +394,7 @@ pub fn check(
     // of its arity, each binding every parameter's position. The rule's
     // parameters say so, whatever the activator's arguments are, so no
     // refutation resting on an activator through `absent` loads unlooked-for
-    // (`W16`, `examples/ein-bugs/activator-all-int.ein`).
+    // (`examples/ein-bugs/activator-all-int.ein`).
     let has_activator = |p: &Plan| {
         program
             .rules
@@ -407,7 +407,7 @@ pub fn check(
         .collect();
     // Every rule with parameters, read from its pattern, and `D⁺`, the
     // relations a commitment can extend: `D` followed through the plans a
-    // node can compile that root never had (`W17`), not `D` itself, whose
+    // node can compile that root never had, not `D` itself, whose
     // closure follows root's plans only.
     let bodies = bodies_of(kb, terms, ast);
     let extendable = extendable_over(

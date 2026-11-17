@@ -60,7 +60,7 @@ fn resolve(kb: &Kb, premise: FactId) -> Option<FactId> {
 /// color-loc)`, nor what root derived an activator from; a plan only a node
 /// compiles rests on what the node added to compile it, and the core
 /// follows that, so a commitment that reaches a refutation only through an
-/// activator is in the core (W19: `forbid-chain-no-absent.ein`'s dead
+/// activator is in the core (`forbid-chain-no-absent.ein`'s dead
 /// `{(p a)}` has the core `(p a) (seed a)`, not root's `(seed a)` alone).
 ///
 /// [`Prov::activator`]: crate::prov::Prov::activator

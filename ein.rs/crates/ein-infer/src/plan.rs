@@ -76,7 +76,7 @@ pub type Reg = u16;
 /// one compile-time bound and it says so out loud: the loader refuses a
 /// `:match` or a `:goal` that writes more distinct variables than this, a
 /// rule's parameters among them ([`ein_ir::MAX_MATCH_VARIABLES`], which this
-/// is, `W63`), so every command refuses it alike and the compiler's check is
+/// is), so every command refuses it alike and the compiler's check is
 /// an invariant.
 pub const MAX_REGS: usize = ein_ir::MAX_MATCH_VARIABLES;
 
@@ -91,10 +91,10 @@ pub enum Slot {
     Nested { rel: Symbol, slots: Span },
     // There is no wildcard slot: a bare `_` is refused at the parse
     // (Q-M1e2.22), so a premise's fact is a function of the register file,
-    // a disjunction the one exception (`W39`).
+    // a disjunction the one exception.
     /// An IR node the compiler's `slot` returned unchanged — an `SForm` whose
     /// head is a variable the activator does not bind. The loader refuses a
-    /// relation variable no parameter binds (`W24`), and the compiler a
+    /// relation variable no parameter binds, and the compiler a
     /// parameter its activator bound to a nested fact, so no program the
     /// loader accepts reaches one in a `:match`. A string, a range and a
     /// keyword pair inside a term are refused at the parse, so none is one.
@@ -297,7 +297,7 @@ pub struct Plan {
     /// checks print as a label, and a plan's activator where an analysis keys
     /// on one (`oblgen`'s `InstanceKey`, the region's owed instances,
     /// `detector`'s root plans, `naf_deps`); every argument binds its
-    /// parameter (`W33`), so two plans that differ only in a nested fact bind
+    /// parameter, so two plans that differ only in a nested fact bind
     /// two values, and each key tells them apart.
     pub activator_args: Box<[Value]>,
     /// The activator fact this plan was compiled from, `None` for a rule
@@ -305,7 +305,7 @@ pub struct Plan {
     /// [`crate::compile::PlanKey`], and the key's values are this fact's
     /// arguments under the rule's name, so one key names one fact. Every
     /// firing records it ([`ein_core::Prov::activator`]), and a dead node's
-    /// core follows it where the node derived or committed it (W19).
+    /// core follows it where the node derived or committed it.
     pub activator: Option<FactId>,
     /// The activator binding, materialised: register `i` holds `seed[i].1`
     /// at match start, and the name is what provenance renders.

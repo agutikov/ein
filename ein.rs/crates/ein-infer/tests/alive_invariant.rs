@@ -11,12 +11,12 @@
 //! Clause 1, *rules assert no new objects*, read against the names the
 //! loaded **facts** mention alone, would break on a constant only a rule
 //! names, and on `examples/ein-bugs/alive-set-fresh-name.ein` breaking it
-//! would cost a model (`W4`): a blind enumerator that built its objects from
+//! would cost a model: a blind enumerator that built its objects from
 //! the KB's names would put such a constant in no candidate. Such a constant
 //! is a name of the program — *rules are part of root, so rules can't assert
 //! new names* (Q-M1e.21) — and the universe is seeded with every name of the
 //! program (Q-M1e2.9): a constant in a rule's `:match` too, and one a fact
-//! names only inside a nested fact (`W15`). So the three readings read:
+//! names only inside a nested fact. So the three readings read:
 //!
 //! | | claim | corpus |
 //! |---|---|---|
@@ -80,42 +80,45 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `07_schroder.ein` — `G`, in the probe rule `probe-undecided`, which fires
 ///   in **root** saturation, so `G` is a name at root without the seed too;
 ///   and `C`, `D`, inside its stored negatives.
-/// - `wrong-answers/fresh-name-default.ein` — `Z`, `W4` in isolation.
-/// - `wrong-answers/match-only.ein` and `negative-only.ein` — `Z`, `W15`:
+/// - `wrong-answers/fresh-name-default.ein` — `Z`, a rule's fresh constant in
+///   isolation.
+/// - `wrong-answers/match-only.ein` and `negative-only.ein` — `Z`, a name
+///   written outside a top-level fact or an `:assert`:
 ///   without the seed no candidate names it, and R would be {∅} where the
 ///   `-declared` controls' four states are.
 /// - `wrong-answers/oblig-fresh-name.ein`, `-two.ein` and
-///   `oblig-stdlib-total-owed.ein` — `Z`, in `special`'s `:assert`, `W14`:
+///   `oblig-stdlib-total-owed.ein` — `Z`, in `special`'s `:assert`:
 ///   an object of the blind enumerator, which the obligations rung those
 ///   programs take does not consult.
 /// - the three `*-disproved`, `syntax/equality` and `syntax/arg-kinds` — the
-///   corpus programs whose H the seed moves (`W15`'s rows; `arg-kinds`' `a`
+///   corpus programs whose H the seed moves (regressions of a name written
+///   outside a top-level fact or an `:assert`; `arg-kinds`' `a`
 ///   and `b` inside `(r (nested a b) c)`, its solve scoped, R {∅}).
 /// - a run of digits is a name: `stdlib/elim.ein`'s `0` and `1`, `:match`
 ///   constants of `domain-elimination`; `syntax/relation-decls`' `7`, inside
 ///   its `ontology` fact; and `wrong-answers/range-in-match.ein`'s `1..3`, a
 ///   `:match` constant.
 /// - `ein-bugs/binding-key-{both,swapped,nested-only}.ein` — `Y`, inside an
-///   activator's nested `(src Y)`, `W7`'s family: H is `(holds Y)`.
+///   activator's nested `(src Y)`: H is `(holds Y)`.
 /// - `wrong-answers/or-one-key-twin.ein` — `w`, in `m1`'s and `s`'s
-///   `:assert`, `W39`: the witness beside it names a rule `w`, which makes `w`
+///   `:assert`: the witness beside it names a rule `w`, which makes `w`
 ///   a name of the program there, and the twin, whose rules are `w1` and
 ///   `w2`, names it in no fact.
-/// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`,
-///   `W16`: its one candidate is the hrule's `(checked (box a))`, and the
+/// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`:
+///   its one candidate is the hrule's `(checked (box a))`, and the
 ///   name is no candidate's.
-/// - `W30`'s `assert-neq-w-x.ein` and `assert-eq-x-w.ein`, `w` in a
+/// - `assert-neq-w-x.ein` and `assert-eq-x-w.ein`, `w` in a
 ///   concluded `neq` or `eq`, a constant of the rule's `:assert` and so a
 ///   name of the program though the conclusion is checked and never stored,
-///   which makes `(p w)` a candidate; and `W31`'s `empty-match-fact.ein` and
+///   which makes `(p w)` a candidate; and `empty-match-fact.ein` and
 ///   `empty-match-hrule.ein`, `b` in a conclusion no firing reaches.
-/// - `W52`'s `relvar-eq-assert.ein`, `w` in a conclusion whose relation a
-///   parameter binds to `eq`, as `W30`'s `assert-eq-x-w.ein`'s; and `W54`'s
+/// - `relvar-eq-assert.ein`, `w` in a conclusion whose relation a
+///   parameter binds to `eq`, as `assert-eq-x-w.ein`'s; and
 ///   `goal-nested-var.ein`, `a` and `b` inside its stored negations.
 /// - `syntax/query-full.ein`'s `House`, `Water` and `Tea`, constants of the
 ///   two hrules its `:hrules` names, which the program declares, since the
 ///   loader refuses a list naming an hrule the program does not declare.
-/// - `W94`'s `and-in-and.ein` and `and-in-and-macro.ein`, `a`, a name only a
+/// - `and-in-and.ein` and `and-in-and-macro.ein`, `a`, a name only a
 ///   rule's conclusion writes: a constant of the conclusion, read at any
 ///   depth, however the conclusion's `and` nests.
 /// - the programs whose `z` only a rule's conclusion wrote meet it first in
@@ -1194,7 +1197,7 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
 /// is put `Z` in a fact.
 ///
 /// Without the seed that one fact would be the difference between two
-/// answers: the twin's R `{∅}`, a rule's constant in no candidate (`W4`), and
+/// answers: the twin's R `{∅}`, a rule's constant in no candidate, and
 /// the control's maximal state `{(q A Z), (q B Z)}`. `Z` is a name of both
 /// programs, the fact names it in one of them, and the two describe the same
 /// R: four states, that one the maximal.

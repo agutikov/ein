@@ -11,7 +11,7 @@
 //! The diff's claims are the three shapes `ein-render::models`' unit tests pin,
 //! seen through the CLI: a missing model, a spurious one, and one a fact off.
 //! The region read-out answers the regressions right, so the shapes are
-//! made here by writing the file wrong, over W1's witness.
+//! made here by writing the file wrong, over `branching/15`.
 
 use std::collections::BTreeSet;
 use std::process::Command;
@@ -182,15 +182,15 @@ fn diff(file: &str, flags: &[&str], expected: &str) -> String {
     r.out
 }
 
-/// The three shapes, each on W1's witness — whose maximal line is `{(p A)}`
-/// and `{(p B), (p C)}`, the right answer since the switch — against a file
+/// The three shapes, each on `branching/15` — whose maximal line is `{(p A)}`
+/// and `{(p B), (p C)}` — against a file
 /// written wrong; and the empty model, against the minimal line of a program
 /// whose ∅ owes.
 #[test]
 fn the_diff_names_the_missing_the_spurious_and_the_one_fact_off() {
-    const W1: &str = "examples/branching/15_lookahead_two_step_on.ein";
+    const FILE: &str = "examples/branching/15_lookahead_two_step_on.ein";
     let out = diff(
-        W1,
+        FILE,
         &["--maximal"],
         "closes p\nmodel\n(p A)\nmodel\n(p B)\n(p C)\nmodel\n(p C)\n(p D)\n",
     );
@@ -202,14 +202,14 @@ fn the_diff_names_the_missing_the_spurious_and_the_one_fact_off() {
         out.contains("- missing: model 3 of the file [(p C) (p D)]"),
         "{out}"
     );
-    let out = diff(W1, &["--maximal"], "closes p\nmodel\n(p A)\n");
+    let out = diff(FILE, &["--maximal"], "closes p\nmodel\n(p A)\n");
     assert!(
         out.contains("1 matched, 0 near, 0 missing, 1 spurious"),
         "{out}"
     );
     assert!(out.contains("+ spurious: state 2 of 2"), "{out}");
     let out = diff(
-        W1,
+        FILE,
         &["--maximal"],
         "closes p\nmodel\n(p A)\n(p B)\nmodel\n(p B)\n(p C)\n",
     );

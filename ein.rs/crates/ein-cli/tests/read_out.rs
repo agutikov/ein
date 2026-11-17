@@ -725,7 +725,7 @@ fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
 }
 
 /// **What the universe leaves out is one sentence, on every surface that
-/// reports R** (W6, Q-M1e2.3): R is scoped, and the read-out says so. R is
+/// reports R** (Q-M1e2.3): R is scoped, and the read-out says so. R is
 /// over H, and the
 /// read-out names each relation the program can conclude or ask about, does
 /// not scope out itself, and of which the rung that built H proposes no fact

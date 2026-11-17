@@ -46,12 +46,13 @@ const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 /// **What *forbid* refuses on the corpus and the regressions, exactly.**
 ///
 /// Each row is the program and the first clause of its refusal's line: the
-/// rule, what it concludes, and what it rests on. The `direct` rows are W3's
-/// four witnesses, `alive-empty-interlayer` and the two `branching/`
-/// refusal fixtures; the `via` rows are `W8`'s `stale-naf-fork` pair and the
-/// fuzz finding `d3-unsat-core`; the three `per activator` rows are `W16`'s
-/// second shape: the symbol control, and its int and nested-fact twins, each
-/// refused whatever its activator's arguments are; and `W17`'s family:
+/// rule, what it concludes, and what it rests on. The `direct` rows are the
+/// four witnesses of *dead is not upward-closed under absent*,
+/// `alive-empty-interlayer` and the two `branching/` refusal fixtures; the
+/// `via` rows are the `stale-naf-fork` pair and the fuzz finding
+/// `d3-unsat-core`; the three `per activator` rows are `activator-all-*`: the
+/// symbol control, and its int and nested-fact twins, each refused whatever
+/// its activator's arguments are; and the `forbid-chain-*` family:
 /// `forbid-chain-0`, its control, an activator `mk` derives resting on an
 /// `absent` compiling a refutation root has no plan of, refused because its
 /// activator relation is in D, and its five witnesses, refused because

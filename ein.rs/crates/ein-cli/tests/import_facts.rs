@@ -1,4 +1,4 @@
-//! **An import brings a module's facts, on every command** (W88): every
+//! **An import brings a module's facts, on every command**: every
 //! import brings its module whole, and a list only names (Q-M1f.247).
 //!
 //! An import that kept the listed declarations and dropped every fact of `M`,
@@ -98,7 +98,8 @@ fn comparable(text: &str, path: &str) -> String {
     out.join("\n")
 }
 
-/// A regression witness of W88: its file, its module, the names its import
+/// A witness of an `import-facts-*` regression: its file, its module, the
+/// names its import
 /// lists, the claim its goal's rows make.
 struct Witness {
     file: &'static str,

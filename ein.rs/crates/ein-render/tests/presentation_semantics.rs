@@ -473,8 +473,9 @@ fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
 /// **A dead hole is read out as dead, with what it died of.** The read-out
 /// has a line for a minimal hole of each kind, `— owes n` and `— dead: core`,
 /// and the cube's status counts dead nodes with an alive superset. *Forbid*
-/// refuses every program of the corpus with a dead hole — W3's four
-/// witnesses among them — so no `ein solve` prints the second kind,
+/// refuses every program of the corpus with a dead hole — the witnesses of
+/// the regressions `naf-upward-closure`, `naf-nowb-L`, `three-components` and
+/// `trigger-hole` among them — so no `ein solve` prints the second kind,
 /// and the line is held here: `naf-upward-closure.ein`, read
 /// through `forbid::studying`, the library-level way past the refusal that no
 /// CLI path takes. The program is refused outside it, which is the other half.

@@ -404,8 +404,8 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
 // ── 2. Every `(config …)` flag, in-process ────────────────────────────
 
 /// Every corpus program and regression witness, less the slow tier (whose R a
-/// bare describe does not reach), W7's two witnesses and W16's order pair
-/// among them, in a debug build too.
+/// bare describe does not reach), the `binding-key-*` and `activator-text-*`
+/// witnesses among them, in a debug build too.
 fn programs() -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = corpus()
         .entry
@@ -650,7 +650,7 @@ fn reach(path: &Path) -> Reach {
 ///
 /// `enable-symmetric-mirror` off would take the mirror's three facts out of
 /// root's fixpoint on `examples/features/06_symmetric_native.ein`, on every
-/// question, so R would move (W13): the flag is retired, a program that sets
+/// question, so R would move: the flag is retired, a program that sets
 /// it is a load error, and it is not among [`FLAGS`].
 #[test]
 fn no_config_flag_moves_a_line_of_any_mode() {

@@ -14,14 +14,13 @@
 //!
 //! Such a character is never taken into a token that is not a name, and a
 //! Unicode space, a no-break space, U+3000, U+2028 or U+0085, is no
-//! separator: a program writing one is not answered as if it were a space
-//! (W73).
+//! separator: a program writing one is not answered as if it were a space.
 //!
 //! And an imported module is read through the read every command makes of
 //! the program it is given (`ein_ir::read`), so a module that is not UTF-8,
 //! one that cannot be read, a directory and a `.einb` container are refused
 //! with that read's line, naming the module's path, not `module not found at
-//! … (None)` (W74).
+//! … (None)`.
 //!
 //! Every place a token can stand, each on every command that reads a
 //! program, and every character this file names in every place through the
@@ -488,8 +487,8 @@ fn every_command(dir: &Path, file: &str) -> Vec<(String, Run)> {
         .collect()
 }
 
-/// **An imported module is read as the program a command is given is read**
-/// (W74). A module that is not UTF-8, one that is a
+/// **An imported module is read as the program a command is given is read**.
+/// A module that is not UTF-8, one that is a
 /// directory, one that cannot be read and one that is a `.einb` container,
 /// each imported by a file-relative name, on every command: one first line,
 /// the line the module's own path gives as the program a command is given

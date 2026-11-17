@@ -206,7 +206,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     // `--dump-answer` makes its directory before the run, so a path that
     // cannot be written fails before the work. Every state file starts with
     // the program, which a `.einb` stores, and the dump writes that one
-    // (Q-M1f.27, W43; `solve::inlined_program`).
+    // (Q-M1f.27; `solve::inlined_program`).
     let dump = m.get_one::<String>("dump-answer").cloned();
     if let Some(dir) = dump.as_deref()
         && let Err(e) = std::fs::create_dir_all(dir)
@@ -1135,7 +1135,7 @@ fn universe(r: &ReadOut, terms: &Terms) -> Form {
     let mut groups: Vec<(Option<String>, Vec<Vec<String>>)> = Vec::new();
     for (rel, cands) in &by_rel {
         let d = cands.iter().filter(|(i, _)| is_dead(*i)).count();
-        // One space at least after the relation (W42): a name of sixteen
+        // One space at least after the relation: a name of sixteen
         // characters or more would touch its count, `lives-next-door-to2
         // candidates`.
         let w = 16.max(rel.chars().count() + 1);

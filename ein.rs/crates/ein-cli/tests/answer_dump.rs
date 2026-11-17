@@ -139,7 +139,7 @@ fn strings(v: &J) -> Vec<String> {
 }
 
 /// Every state file the directory holds against its state in the summary.
-/// The one printer writes every state (W16, W28's `classes-int-name`), and
+/// The one printer writes every state (`classes-int-name` among them), and
 /// `answer_round_trip.rs` holds each to its facts by value.
 fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     let index = json(&dir.join("index.json"));
@@ -476,7 +476,7 @@ fn a_stopped_run_still_says_what_it_is() {
     );
 }
 
-/// **A container writes the directory its program writes** (W43, Q-M1f.27):
+/// **A container writes the directory its program writes** (Q-M1f.27):
 /// every state file starts with the program the container stores, and a
 /// `.einb` is not refused here.
 /// `einb_cli::the_answer_directory_of_a_container_is_its_sources` holds the

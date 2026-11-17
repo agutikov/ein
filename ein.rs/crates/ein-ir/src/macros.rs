@@ -262,7 +262,7 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
 /// Note what is *not* expanded: a `(forall …)` appearing as a **fact** stays
 /// as it is, because the loader only ever runs the expander over rule clauses
 /// and a goal. The loader refuses such a fact (`from_ir`'s
-/// `refuse_macro_facts`, W86): a macro's call is no fact
+/// `refuse_macro_facts`): a macro's call is no fact
 /// ([`diagnostics.md` § 2.24](../../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
 pub fn expand_rule_clauses(
     ast: &mut Ast,

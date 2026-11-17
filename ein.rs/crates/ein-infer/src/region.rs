@@ -29,7 +29,7 @@
 //! fixpoint's. That is the engine's own notion of a commitment, minus every
 //! search-time write: no lookahead, no forced positive, no kill cache, no
 //! writeback, no learned clause. Where adding a fact can take a conclusion
-//! away the from-scratch route can disagree with it (`W8`): on such a
+//! away the from-scratch route can disagree with it: on such a
 //! program the fork is an assumption, and the engine claims nothing about
 //! its solutions (Q-M1e2.2). [`crate::monotone`] says whether a program can,
 //! and on one that can, [`crate::detector`] says what the read-out warns of.
@@ -171,8 +171,8 @@ pub struct Node {
     /// The unsat core of a dead node — the search's own reading,
     /// [`crate::explain::contradiction_frontier`].
     pub core: Vec<String>,
-    /// What [`Self::core`]'s search established — whether its budget cut it
-    /// (`W23`); `None` where no core was taken.
+    /// What [`Self::core`]'s search established — whether its budget cut it;
+    /// `None` where no core was taken.
     pub core_status: Option<crate::explain::CoreStatus>,
     /// The rules whose firing ends the derivation of the contradiction
     /// [`Self::core`] was taken over ([`crate::explain::Explanation::steps`]),
@@ -2126,7 +2126,8 @@ fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {
 /// each step's premises and not the activator its plan was compiled from,
 /// which the core follows where a node derived it (Q-M1e2.12): the
 /// non-monotone detector reads this list for its status, and following the
-/// activator here would move that label on `W17`'s witnesses.
+/// activator here would move that label on the `forbid-chain-*.ein`
+/// witnesses.
 fn absent_premises(kb: &Kb, terms: &Terms, witness: FactId) -> Vec<String> {
     let mut seen: FxHashSet<FactId> = FxHashSet::default();
     let mut stack = vec![witness];

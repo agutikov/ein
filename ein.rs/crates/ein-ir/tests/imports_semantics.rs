@@ -597,7 +597,7 @@ fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
 /// names).
 ///
 /// A selection names; it keeps no closure of the listed names, and no state
-/// file's program is tree-shaken to what a live name reaches (W91). Every
+/// file's program is tree-shaken to what a live name reaches. Every
 /// relation, rule and macro of the library comes,
 /// the listed one under its short name and the rest under their full names,
 /// and the inlined text loads to the same program with nothing left to
@@ -718,7 +718,7 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
         .collect())
 }
 
-/// **What each import form brings of a module**, a case per cell (W88), one
+/// **What each import form brings of a module**, a case per cell, one
 /// answer for every form: the module whole, its declarations and its facts,
 /// under the names the form gives them (Q-M1f.247: every form imports
 /// everything, and differs only in names).
@@ -727,7 +727,7 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
 /// under the alias; a selection writes the names it lists short and every
 /// other in full. A name no file declares (`likes`, `thing`, a constant) is
 /// one name everywhere. What a module states as a program, its `(query …)`,
-/// `(solve …)` and `(config …)`, never comes (W90, Q-M1f.215).
+/// `(solve …)` and `(config …)`, never comes (Q-M1f.215).
 #[test]
 fn what_each_import_form_brings_of_a_module() {
     let onto = [("onto", ONTO)];
@@ -796,7 +796,7 @@ fn what_each_import_form_brings_of_a_module() {
     }
 }
 
-/// **No import brings what a module states as a program** (W90, Q-M1f.215).
+/// **No import brings what a module states as a program** (Q-M1f.215).
 ///
 /// A module may be a program of its own, with a query, a lattice and a
 /// configuration. An import that kept them would have the importer answer the

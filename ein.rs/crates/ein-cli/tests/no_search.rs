@@ -266,7 +266,7 @@ fn test_decides_what_root_decides_and_a_claim_not_checked_exits_0() {
 /// **Under `(solve :no-search)` no commitment holds a fact**, so the
 /// loader's checks of what a commitment could bind read none: a rule that
 /// concludes `(not ?x)` with `?x` bound only by a declared relation the blind
-/// enumerator would guess is refused without the keyword (W84, Q-M1f.127: a
+/// enumerator would guess is refused without the keyword (Q-M1f.127: a
 /// commitment could give `?x` a name) and loads with it.
 #[test]
 fn no_commitment_binds_a_name_under_the_keyword() {

@@ -1432,8 +1432,8 @@ const TABLE: &[Row] = &[
     // suggests. Each is a token no production takes (`ein.l`'s `UNDERSCORE`
     // and `VARUNDERSCORE`), refused at the parse with its note, in every place
     // a name or a variable goes: neither is dropped from a fact, an activator
-    // or a nested fact (W-22, W29), nor matches any value in a rule's pattern
-    // (W20); the rows above that write `_` as a relation, a guard's argument
+    // or a nested fact, nor matches any value in a rule's pattern; the rows
+    // above that write `_` as a relation, a guard's argument
     // or a premise are the [`DELETED`] lines'. Every command that reads a program
     // refuses both, which `ein-cli/tests/cli_semantics.rs`'
     // `a_bare_underscore_names_nothing_in_every_place` holds.
@@ -1678,8 +1678,9 @@ const TABLE: &[Row] = &[
     // does not list, `:where`, `:cardinality` and `:mode` among them, is
     // refused at the parse, and so is any keyword pair inside a term: none is
     // dropped in silence, by the compiler from a `:match` or a goal, by the
-    // expander from a macro call, or by the loader from an annotation (W32's
-    // seven rows). The rows above for `query`, `solve` and `config` are the
+    // expander from a macro call, or by the loader from an annotation (the
+    // regressions `where-*` and `kwpair-*`). The rows above for `query`,
+    // `solve` and `config` are the
     // [`DELETED`] lines'. One row for each form, then one for each
     // place in a term; `fuzz_properties`' last property holds the lists on
     // every program the fuzzer's stream accepts.
@@ -2007,7 +2008,7 @@ const TABLE: &[Row] = &[
     ),
     // ── A character that is not ASCII, outside a string literal and a
     // comment (Q-M1f.65): refused at the lexer, at the character, in every
-    // place; a Unicode space among them, which is no separator (W73) ──
+    // place; a Unicode space among them, which is no separator ──
     row("a fact's relation", &[], "(p\u{e9} k)"),
     row("a fact's value", &[], "(relation p T) (p caf\u{e9})"),
     row("a value alone", &[], "(relation p T) (p \u{2192})"),
@@ -2367,7 +2368,7 @@ fn load_error(text: &str) -> String {
 ///   is a bare parameter puts its argument where a premise goes.
 ///
 /// - **A kernel primitive in another shape than the grammar gives it**
-///   (`refuse_malformed_primitives`, W66 to W69, Q-M1f.80): a macro's
+///   (`refuse_malformed_primitives`, Q-M1f.80): a macro's
 ///   body writes `eq` or `absent` at any arity, `false` with an argument and
 ///   an `(or …)` as a conclusion, and a call's argument puts a connective where
 ///   `not` takes a pattern or a guard a value; a body that is a bare parameter

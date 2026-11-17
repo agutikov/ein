@@ -6,8 +6,8 @@
 //! fact's relation, a stored negation's, a goal's or a claim's, as an
 //! activator binding a relation parameter to it, and as a value anywhere,
 //! which would make it a name of the program the blind enumerator proposes
-//! facts about (W70, W71); and a macro's body could state the verdict for a
-//! rule (W72). So `open` is one of the words that are never a name
+//! facts about; and a macro's body could state the verdict for a
+//! rule. So `open` is one of the words that are never a name
 //! (`ein_ir::grammar::RESERVED_WORDS`), and `ein.y`'s `Assert` is the one
 //! production that takes it, so every other place is refused at the parse, at
 //! the `open`, with a note saying where it is written.
@@ -386,7 +386,7 @@ fn the_registers_witnesses_are_refused_on_every_command() {
     assert_eq!(
         witnesses.len(),
         24,
-        "W70's seven, W71's fourteen and W72's three"
+        "seven as a relation's name, fourteen as a value and three in a macro's body"
     );
     let mut bad = Vec::new();
     for w in &witnesses {

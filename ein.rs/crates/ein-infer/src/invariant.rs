@@ -16,7 +16,7 @@
 //! names*. So [`rule_constants`] is the list of what a rule can introduce,
 //! and the blind enumerator's objects are **seeded** with it.
 //! `examples/ein-bugs/alive-set-fresh-name.ein` is the program on which a
-//! rule's constant missing from the candidates would cost a model (`W4`).
+//! rule's constant missing from the candidates would cost a model.
 //!
 //! # Every constant the program writes, but a query's
 //!
@@ -32,7 +32,7 @@
 //! program, and [`crate::hypgen::candidate_objects`], which unions it into the
 //! names index. `examples/ein-bugs/wrong-answers/match-only.ein` and
 //! `negative-only.ein` are the two shapes on which a name missing from it
-//! would cost a model (`W15`).
+//! would cost a model.
 //!
 //! What a rule could introduce that no static set predicts is a relation
 //! head written as a parameter and bound to a value no text of the program

@@ -108,7 +108,7 @@ pub fn goal_bindings(
         // A top-level `(absent …)` is lifted out of the plan, as a rule's is,
         // for the boundary to judge, and a goal has no boundary: it is judged
         // here, against the state, which is a fixpoint. It holds where its
-        // query has no match (`W56`: so `(and (p ?y) (absent (q ?y)))` never
+        // query has no match (so `(and (p ?y) (absent (q ?y)))` never
         // answers `?y = b` beside `(q b)`).
         if m.guards()
             .iter()
@@ -169,7 +169,7 @@ mod tests {
     use super::*;
     use ein_ir::{from_ir::load, parse};
 
-    /// **A goal's `(absent …)` is judged** (`W56`): the lifted guard holds
+    /// **A goal's `(absent …)` is judged**: the lifted guard holds
     /// where its query has no match in the state, so a row whose `(q ?y)` the
     /// state holds is no row; a `forall`'s nested shape is judged the same
     /// way.

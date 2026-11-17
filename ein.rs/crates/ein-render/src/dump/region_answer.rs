@@ -381,7 +381,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
 /// A core's status, as every JSON surface writes it beside the core:
 /// `within-budget`, `cut-` and the caps its search stopped at
 /// ([`ein_infer::explain::CoreStatus::word`]), or `null` where no core was
-/// taken (W23). Every member of N carries its core (Q-M1f.26), past
+/// taken. Every member of N carries its core (Q-M1f.26), past
 /// `--region-limit` too, so no status says a core was not kept.
 pub fn core_status(c: Option<ein_infer::explain::CoreStatus>) -> Json {
     c.map_or(Json::Null, |c| Json::str(c.word()))

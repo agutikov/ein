@@ -8,9 +8,9 @@
 //!
 //! Four tests hold the overlay, against a region run's dumps
 //! (`--dump-lattice`, `--dump-answer`), to what the regressions' witnesses
-//! show: W1's maximal node that no reported state holds is
-//! MISSING, W3's hole and an exclusion the cube refutes, W2's root that a
-//! region run never moves, and a state that counts as the node its
+//! show: a maximal node that no reported state holds is MISSING, a hole and
+//! an exclusion the cube refutes, a root that a region run never moves, and
+//! a state that counts as the node its
 //! saturation lands on. A correct engine misses nothing, so where a test
 //! needs a wrong answer it writes one — the walk's — into
 //! a copy of the run's dump, which is the input the comparison is for.
@@ -87,7 +87,7 @@ impl ein_infer::events::Watch for Collect {
 /// `lattice/` in `run`, written by the writers `ein oracle --dump` and `ein
 /// solve --maximal --dump-answer --dump-lattice` call, at library level and
 /// past *forbid*'s refusal (`forbid::studying`, Q-M1e2.5), which no CLI
-/// path lifts. W3's dead hole is the shape the refusal names, and its drawing
+/// path lifts. `naf-nowb`'s dead hole is the shape the refusal names, and its drawing
 /// is what the test below holds; `ein render region` reads the directories
 /// and refuses nothing.
 fn studied(file: &str, cube: &Path, run: &Path) {
@@ -281,7 +281,7 @@ fn graphviz_accepts(dot: &str) -> Result<(), String> {
 /// forced positive, saturation moving nodes, an owing root, the n = 9 border
 /// view and the n = 8 lines view — and one directory over the limit.
 /// `naf-nowb`'s dead hole is not among them, since *forbid* refuses it
-/// (Q-M1e2.5); the W3 test draws that one from a library-level fixture.
+/// (Q-M1e2.5); the hole's test draws that one from a library-level fixture.
 const DRAWN: [(&str, &[&str]); 9] = [
     ("examples/branching/15_lookahead_two_step_on.ein", &[]),
     ("examples/lattice/04_obligation_trigger_hole.ein", &[]),
@@ -380,14 +380,14 @@ fn every_view_is_drawn_and_auto_picks_the_measured_one() {
     assert!(auto("02_genuine_3set_death.ein").starts_with("none"));
 }
 
-/// **W1, drawn.** On `branching/15` `--maximal` reports both nodes of the
+/// **A maximal node, drawn.** On `branching/15` `--maximal` reports both nodes of the
 /// maximal line, and nothing is missing. The walk reported only `{(p B),
 /// (p C)}` and called it exhausted (the walk's recorded answer): written into the
 /// run's answer, `{(p A)}` is MISSING, red, in the drawing and the table.
 /// Bare `ein solve` reports all of R — five states, five octagons.
 #[test]
-fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
-    let root = scratch("w1");
+fn a_node_of_the_part_asked_that_no_state_holds_is_missing() {
+    let root = scratch("missing");
     let file = "examples/branching/15_lookahead_two_step_on.ein";
     let cube = root.join("region");
     dumped(file, &[], &cube);
@@ -443,7 +443,7 @@ fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
     );
 }
 
-/// **W3, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
+/// **A hole, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
 /// under its `absent` guard, and `{(p A), (q A)}` above it is alive. *Forbid*
 /// refuses the program (Q-M1e2.5), so its directories are written by
 /// [`studied`], a library-level fixture, and the drawing is held so. The
@@ -454,8 +454,8 @@ fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
 /// exclusion named unsound and the alive node it
 /// left unvisited.
 #[test]
-fn w3_the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
-    let root = scratch("w3");
+fn the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
+    let root = scratch("hole");
     let file = "examples/ein-bugs/wrong-answers/naf-nowb.ein";
     let cube = root.join("region");
     let run = root.join("run");
@@ -537,14 +537,14 @@ fn a_node_above_a_states_denial_is_drawn_as_one() {
     assert!(!dot.contains("\\n≠ the cube"), "{dot}");
 }
 
-/// **W2, drawn.** The walk's forced-positive cascade promoted `(q one)` into
+/// **Root, drawn.** The walk's forced-positive cascade promoted `(q one)` into
 /// root before any entering, moved the search's root onto the dead `{(q
 /// one)}`, and left `∅` — all of R — missing. A region run never writes root:
 /// it visits `∅` and `{(q one)}`, reads them as the cube does, and reports
 /// `∅`.
 #[test]
-fn w2_a_region_run_never_moves_root() {
-    let root = scratch("w2");
+fn a_region_run_never_moves_root() {
+    let root = scratch("root");
     let file = "examples/ein-bugs/wrong-answers/forced-2.ein";
     let cube = root.join("region");
     dumped(file, &[], &cube);

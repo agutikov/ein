@@ -69,8 +69,8 @@ pub struct Firing {
 ///
 /// **No conclusion reads a register its match left unbound**, so there is no
 /// variant for one: the loader refuses a conclusion variable no premise or
-/// parameter binds (`W57`), and the compiler seeds every parameter from its
-/// activator, a nested fact too (`W33`, `parameter-nested-assert`). What
+/// parameter binds, and the compiler seeds every parameter from its
+/// activator, a nested fact too (`parameter-nested-assert`). What
 /// holds it is `resolve`'s assertion, and `ein-ir`'s
 /// `fuzz_properties::no_firing_meets_an_unbound_variable`.
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -107,8 +107,8 @@ impl From<Overflow> for FireError {
 /// is productive — that is what makes the redundancy check cheap — so this is
 /// deliberately separate from [`fire`].
 ///
-/// **`None` is the negation of a name**, which is no fact (`W84`, under the
-/// value rule: *a value is a name, or a fact a state could hold: an atom of
+/// **`None` is the negation of a name**, which is no fact (under the value
+/// rule: *a value is a name, or a fact a state could hold: an atom of
 /// an ordinary relation, or its negation*). A conclusion `(not ?x)` is of a
 /// variable bound to a fact;
 /// where a binding gives it a name there is nothing to conclude, so the
@@ -157,7 +157,7 @@ pub fn build_fact(
 /// `(false)`, so its state is a contradiction, explained as one a rule
 /// concluding `(false)` is — its core the premises the firing matched, and
 /// `refuted by` the rule. Stored as an ordinary fact, a false one would sit
-/// in the KB while a guard computed the opposite, and kill nothing (`W30`).
+/// in the KB while a guard computed the opposite, and kill nothing.
 pub fn build_conclusion(
     terms: &mut Terms,
     ast: &Ast,
@@ -245,7 +245,7 @@ fn not_a_fact(
         // body writes one (`(macro id (?x) ?x)` called as a conclusion). A
         // line here would stop only the firing that met it, so a rule only a
         // commitment activates would load and some commands would answer it,
-        // and an hrule's would be dropped in silence (`W69`). The loader
+        // and an hrule's would be dropped in silence. The loader
         // refuses it, after expansion, with the same words (`ein_ir::from_ir`'s
         // `refuse_malformed_primitives`), so no program reaches it.
         (None, None) => unreachable!(
@@ -367,7 +367,7 @@ pub fn new_prov(
 ///
 /// `activator` is an id the engine interns for the plan's compile key,
 /// [`crate::compile::PlanKey::activator`] — **every** argument of the
-/// activator, as a value, not its text (`W16`) — which keeps a key two words
+/// activator, as a value, not its text — which keeps a key two words
 /// plus one small vector. So within one engine an id names one plan, and the
 /// plans that share
 /// `(rule, activator)` are one plan with one register layout, the invariant a
@@ -377,7 +377,7 @@ pub fn new_prov(
 /// **The id keys on every activator argument** (Q-M1e.16): a key on part of
 /// them would put two plans with **two register layouts** in one space,
 /// where a release build compares them as one and a derivation is lost with
-/// no diagnostic (`W7`). `rule_semantics` holds it: activators differing
+/// no diagnostic. `rule_semantics` holds it: activators differing
 /// only by a name argument both fire
 /// (`activators_differing_only_by_an_int_argument_both_fire`), two
 /// nested-`Fact` activators each fire, the second redundantly
@@ -495,7 +495,7 @@ mod tests {
     }
 
     /// A conclusion writes a parameter its activator binds to a nested fact,
-    /// as one bound to a name (`W58`): the compiler seeds the parameter, so
+    /// as one bound to a name: the compiler seeds the parameter, so
     /// the conclusion never reads an unbound register, and no driver compiles
     /// a rule with parameters but from an activator.
     #[test]

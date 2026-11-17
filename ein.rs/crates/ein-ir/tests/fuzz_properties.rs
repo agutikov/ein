@@ -38,7 +38,7 @@
 //!    loader's, and the compiler's arms for them are invariants, which a
 //!    panic here would show.
 //! 8. **No accepted program holds a form of a declared relation at another
-//!    count** (W89, Q-M1f.315): no fact the loaded store holds, at any
+//!    count** (Q-M1f.315): no fact the loaded store holds, at any
 //!    depth, and no premise, nested pattern or conclusion of a plan of a rule
 //!    without parameters, gives a declared relation another count of
 //!    arguments than its declaration has types.
@@ -777,7 +777,7 @@ fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
 /// `(absent …)`, lifted or nested, binds nothing outside it. A rule with
 /// parameters is compiled only from an activator, which seeds every one, a
 /// nested fact too, so a conclusion reads a parameter as a constant of the
-/// plan (W33, W58); one no activator activates compiles no plan, so no
+/// plan; one no activator activates compiles no plan, so no
 /// parameter is excepted here.
 fn unbound_conclusion(text: &str) -> Option<String> {
     use ein_infer::plan::{GuardArgKind, Plan, Slot, Step};
@@ -935,10 +935,10 @@ fn compile_refusal(text: &str) -> Option<String> {
 ///
 /// A refusal the compiler made a program reach would be met only where a plan
 /// is compiled, so a command that never compiled it would answer what one that
-/// did stopped on. The loader refuses each (a nested `(or …)`, W62; a clause
-/// past the register file, W63; a goal's relation variable, W64; a primitive a
-/// macro's expansion writes in another shape than the grammar's, `eq` or
-/// `absent` at another arity among them, W66 to W69). So for every generated
+/// did stopped on. The loader refuses each (a nested `(or …)`; a clause past
+/// the register file; a goal's relation variable; a primitive a macro's
+/// expansion writes in another shape than the grammar's, `eq` or `absent` at
+/// another arity among them). So for every generated
 /// program it accepts, every plan compiles ([`compile_refusal`]). The
 /// compiler's arms for each are invariants, so one the loader let through
 /// would panic here.
@@ -1076,7 +1076,7 @@ fn wrong_count(text: &str) -> Option<String> {
 }
 
 /// **No accepted program holds a form of a declared relation at another
-/// count** (W89).
+/// count**.
 ///
 /// The loader refuses a form headed by a declared relation whose arguments
 /// are not as many as the declaration's types (Q-M1f.315). So, for

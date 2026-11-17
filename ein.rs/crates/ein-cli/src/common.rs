@@ -6,8 +6,8 @@
 //! too), [`load_held`] loads either (a text against its own directory, so a
 //! file-relative `(import …)` resolves; a container opened), and
 //! [`parse_held`] parses either without loading (a container's stored
-//! program). So no command refuses a `.einb` another answers (W40) or a
-//! file-relative import another resolves (W41), and a file that is not UTF-8
+//! program). So no command refuses a `.einb` another answers or a
+//! file-relative import another resolves, and a file that is not UTF-8
 //! is one line, never a process exit that takes `ein test`'s whole selection
 //! down with it.
 //!
@@ -29,7 +29,7 @@ pub use ein_ir::read::Held;
 ///
 /// The read is `ein-ir`'s, so that the import resolver reads an imported
 /// module through it too and refuses one as this refuses the program it is
-/// given, naming the module's path (W74): a file that cannot be read gives one line naming the
+/// given, naming the module's path: a file that cannot be read gives one line naming the
 /// error class, the errno text and the quoted path, and a file that is
 /// neither a `.einb` container nor UTF-8 gives
 /// [`ein_ir::read::not_utf8_line`].
@@ -51,7 +51,7 @@ pub struct ProgramText {
 /// resolved against its directory; or the program a `.einb` stores, the
 /// resolved and import-flattened text `ein kb save` wrote, named
 /// `<program stored in x.einb>` (`ein_einb::program_name`) and with nothing
-/// left to resolve. A container is not refused here (W43): `ein solve x.einb
+/// left to resolve. A container is not refused here: `ein solve x.einb
 /// --dump-answer DIR` answers where the `.ein` does (Q-M1f.27).
 pub fn program_text(path: &Path) -> Result<ProgramText, String> {
     match read_program(path)? {

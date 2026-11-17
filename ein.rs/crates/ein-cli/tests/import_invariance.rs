@@ -401,9 +401,10 @@ fn hypotheses(path: &Path) -> (String, Vec<String>) {
 /// `symmetric` written in its place, no obligation rule is loaded. Both are
 /// on the blind enumerator's rung, with one H and one R. And the same of a
 /// module imported for a name the program never writes, against the program
-/// with the import deleted. These are the `W97` regressions' witnesses and
-/// their controls, which until the rung was read off an activated obligation
-/// took the second rung and answered `{∅}`.
+/// with the import deleted. These are the witnesses of the regressions
+/// `rung-unactivated`, `symmetric-import` and `connex-import` and their
+/// controls: a rung chosen by an obligation rule that is loaded and not
+/// activated would be the second, and would answer `{∅}`.
 #[test]
 fn a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out() {
     const PAIRS: &[(&str, &str, usize, u64)] = &[

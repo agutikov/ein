@@ -11,7 +11,7 @@
 //! program hits it), and a fixture. The fixture is built here rather than
 //! checked into `examples/`.
 //!
-//! **Refused at load** (`W63`, Q-M1f.73): the loader counts every distinct
+//! **Refused at load** (Q-M1f.73): the loader counts every distinct
 //! variable a `:match` writes, the rule's parameters among them, against
 //! [`ein_ir::MAX_MATCH_VARIABLES`], which `MAX_REGS` is, so every command
 //! refuses a rule past it alike, a rule no state activates included, and the

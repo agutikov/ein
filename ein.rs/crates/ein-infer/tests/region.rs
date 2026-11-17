@@ -165,7 +165,8 @@ fn a_dead_node_still_says_what_it_owes() {
     );
 }
 
-/// Without holes the two lines are N's and E's; with W3's hole the N side
+/// Without holes the two lines are N's and E's; with a hole of a program
+/// whose dead set is not upward-closed under `absent` the N side
 /// fails, which is the cross-check failing where it should.
 #[test]
 fn the_duality_holds_without_holes_and_fails_on_the_hole() {
@@ -679,7 +680,7 @@ fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side()
 
 /// **`--jobs` changes nothing.** The same record with one thread and with
 /// four, node for node and reason for reason — including the core, whose
-/// choice depends on interner order (W11), because a worker never numbers a
+/// choice depends on interner order, because a worker never numbers a
 /// fact and every new number is the calling thread's, in layer order.
 /// **Saturation is a move inside the cube.** Every node's
 /// closure — the candidates its fixpoint holds — contains its own mask, and an
@@ -1174,7 +1175,7 @@ fn deaths(
 ///
 /// **`D` is read as *forbid* reads it**: `D⁺`, the static check's `D`
 /// followed through the rules root has no plan of (`forbid::extendable`).
-/// Read as `D`, `W17`'s `forbid-chain-node-writes` is a
+/// Read as `D`, `forbid-chain-node-writes` is a
 /// counterexample: its death rests on `(absent (x a))`, `x` outside `D`, and
 /// a plan only a node compiles writes `x` at the alive superset.
 ///
@@ -1197,7 +1198,7 @@ fn an_untainted_death_is_dead_in_every_superset() {
         // The static check first, on its own load, so a monotone cube is
         // never enumerated; and what *forbid* calls extendable, `D⁺`, the
         // static check's `D` followed through the rules root has no plan of.
-        // Read as `D`, `W17`'s `forbid-chain-node-writes` would be a
+        // Read as `D`, `forbid-chain-node-writes` would be a
         // counterexample to that reading and not to the claim: its dead hole
         // {(p a)} rests on `(absent (x a))`, and only a plan a node compiles
         // writes `x`, at the alive superset.
@@ -1547,7 +1548,7 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
                     // A dead root decides a flagged program too (L0, a fork only
                     // adds: `downset::compute`), and route 1 reads root alone.
                     // No program the oracle answers has the shape: *forbid*
-                    // refuses `W16`'s second-shape witnesses.
+                    // refuses `activator-all-int` and `activator-all-nested`.
                     if d.root_dead {
                         failures.extend(route_1_against_oracle(&rel, &r, &d));
                     } else if d.declined != Some(Declined::NotMonotone) {
@@ -2297,7 +2298,7 @@ fn a_witness_two_candidates_derive_together_stands_for_neither() {
 }
 
 /// **A dead node's core follows the activator its refutation rests on, where
-/// a node derived or committed it** (`W19`, Q-M1e2.12).
+/// a node derived or committed it** (Q-M1e2.12).
 ///
 /// A plan of a rule with parameters is compiled from an activator. A core
 /// that followed only the premises the plan matched would leave out a
@@ -2307,8 +2308,8 @@ fn a_witness_two_candidates_derive_together_stands_for_neither() {
 /// the same, and `core-activator-guard-only`'s `{(p a)}` nothing. Root's
 /// activators, stated (`core-activator-given`) or derived
 /// (`core-activator-root-derived`), are the program's, as the plans root
-/// compiles from them are its rules, and are followed into no core. `W17`'s
-/// five, read past *forbid*'s refusal, report the core that names the
+/// compiles from them are its rules, and are followed into no core. The five
+/// `forbid-chain-*` witnesses, read past *forbid*'s refusal, report the core that names the
 /// commitment too, but `-node-writes`, whose refutation matches it.
 #[test]
 fn a_dead_nodes_core_follows_an_activator_only_a_node_derives() {
@@ -2352,7 +2353,7 @@ fn a_dead_nodes_core_follows_an_activator_only_a_node_derives() {
 }
 
 /// **A contradiction's core covers what it rests on: both sides of a pair, and
-/// the facts a `forall` read** (`W21`, Q-M1e2.15).
+/// the facts a `forall` read** (Q-M1e2.15).
 ///
 /// A core search that explained a contradiction by its witness alone, a
 /// pair's positive `X`, with a firing that recorded none of the facts its

@@ -102,7 +102,7 @@ fn the_load_negative_fixtures_are_byte_identical() {
     // `macro_reserved_name`, `relation_malformed`, `relation_needs_a_name`,
     // `relation_reserved_name` and `rule_reserved_name`; and `(mirror 3)`
     // names the relation `3`, so it has no fixture here.
-    // `eq_in_a_macro_body` (W66): the loader holds a macro's expansion to the
+    // `eq_in_a_macro_body`: the loader holds a macro's expansion to the
     // grammar's shapes, its line the macro body's position first.
     for name in [
         "derivation_cycle",
@@ -522,7 +522,7 @@ fn require_why_decides_loading_only() {
 // ── A template names every variable it can reach ──
 
 /// **A template that writes a reference to a variable holding `}` is refused,
-/// and one that reaches its variables loads** (W37, Q-M1f.11).
+/// and one that reaches its variables loads** (Q-M1f.11).
 ///
 /// A reference reads a variable's name up to its first `}`
 /// (`ein_core::why::render_why`), and `}` is one of the name rule's
@@ -530,7 +530,8 @@ fn require_why_decides_loading_only() {
 /// reference `{?a}` and the text `b}`. Each place a template names a scope's
 /// variables, a rule's and an hrule's `:why`, a macro's and a query's
 /// `:goal-text`, is refused with one line where it writes one; the same
-/// program loads with a reference to a variable it can reach (`?n*`, W37's),
+/// program loads with a reference to a variable it can reach (`?n*`, the
+/// regression `template-var-star`'s),
 /// or with `?a}b` named by no reference, and a reference to no variable at
 /// all, `{?a}`, stays text as before.
 #[test]
