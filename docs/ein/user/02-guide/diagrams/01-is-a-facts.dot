@@ -1,0 +1,4 @@
+digraph { rankdir=LR; node [shape=box];
+  Norwegian  -> Nationality [label="is-a"];
+  Englishman -> Nationality [label="is-a"];
+}

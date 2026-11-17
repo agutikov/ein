@@ -1,0 +1,8 @@
+digraph facts {
+  ranksep=0.55;
+  "h_1_lives-in" [shape=octagon, label="lives-in"];
+  "Norwegian" [shape=rectangle];
+  "House-1" [shape=rectangle];
+  "h_1_lives-in" -> "Norwegian" [label="1"];
+  "h_1_lives-in" -> "House-1" [label="2"];
+}

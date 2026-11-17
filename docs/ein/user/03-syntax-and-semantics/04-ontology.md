@@ -58,21 +58,7 @@ representation.
 
 `ein render kb FILE`, the declarations' facts left out:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "Drink" [shape=box, label="Drink"];
-  "Human" [shape=box, label="Human"];
-  "Coffee" [shape=oval, label="Coffee"];
-  "Jack" [shape=oval, label="Jack"];
-  "Jack" -> "Human" [style=dashed, arrowhead=empty, label="is-a"];
-  "Coffee" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-  "Human" -> "Drink" [label="can-drink", color="#17becf", fontcolor="#17becf", style=solid];
-  "Jack" -> "Drink" [label="can-drink by inherit-left", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Human" -> "Coffee" [label="can-drink by inherit-right", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Jack" -> "Coffee" [label="can-drink by inherit-right", color="#17becf", fontcolor="#17becf", style=dashed];
-}
-```
+![The saturated program: the one fact written, solid, and the three derived, dashed](diagrams/04-program-kb.svg)
 
 The solid arrow is the fact the program wrote, and the three dashed ones what the rules derived from it. The two
 dashed arrows out of `Jack` and `Human` each lift one end of the solid one, and the third lifts both. The boxes and
@@ -83,43 +69,9 @@ a name that is only ever a first argument as an oval. It is a drawing convention
 The two rules, as `ein render rules FILE` draws them. Each matches an arrow of the relation it is activated on and an
 `is-a` arrow into one of its ends, and asserts the arrow moved to the `is-a` arrow's tail:
 
-```dot
-digraph rule_inherit_left_lhs_rhs {
-  rankdir=TB;
-  label="inherit-left"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?t_L" [label="?t", shape=diamond];
-    "?other_L" [label="?other", shape=diamond];
-    "?inst_L" [label="?inst", shape=diamond];
-    "?t_L" -> "?other_L" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?inst_L" -> "?t_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?inst_R" [label="?inst", shape=diamond];
-    "?other_R" [label="?other", shape=diamond];
-    "?inst_R" -> "?other_R" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule inherit-left: what it matches and what it asserts](diagrams/04-rule-inherit-left.svg)
 
-```dot
-digraph rule_inherit_right_lhs_rhs {
-  rankdir=TB;
-  label="inherit-right"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?other_L" [label="?other", shape=diamond];
-    "?t_L" [label="?t", shape=diamond];
-    "?inst_L" [label="?inst", shape=diamond];
-    "?other_L" -> "?t_L" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?inst_L" -> "?t_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?other_R" [label="?other", shape=diamond];
-    "?inst_R" [label="?inst", shape=diamond];
-    "?other_R" -> "?inst_R" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule inherit-right: what it matches and what it asserts](diagrams/04-rule-inherit-right.svg)
 
 ## In words
 
@@ -193,30 +145,7 @@ say something of each of them, with the relation it says things of `Jack` with:
 
 It loads, and the seven facts are seven arrows of one relation, as `ein render program FILE` draws them:
 
-```dot
-digraph ontology {
-  "T" [shape=oval];
-  "Jack" [shape=oval];
-  "Human" [shape=oval];
-  "Kind" [shape=box];
-  "can-drink" [shape=oval];
-  "Relation" [shape=box];
-  "is-a" [shape=oval];
-  "inherit-left" [shape=oval];
-  "Rule" [shape=box];
-  "Fact" [shape=box];
-  "Label" [shape=box];
-  "T" -> "T" [label="is-a", style=dashed];
-  "T" -> "T" [label="can-drink", style=dashed];
-  "Jack" -> "Human" [style=dashed, arrowhead=empty, label="is-a"];
-  "Human" -> "Kind" [style=dashed, arrowhead=empty, label="is-a"];
-  "can-drink" -> "Relation" [style=dashed, arrowhead=empty, label="is-a"];
-  "is-a" -> "Relation" [style=dashed, arrowhead=empty, label="is-a"];
-  "inherit-left" -> "Rule" [style=dashed, arrowhead=empty, label="is-a"];
-  "(is-a Jack Human)" -> "Fact" [style=dashed, arrowhead=empty, label="is-a"];
-  "T" -> "Label" [style=dashed, arrowhead=empty, label="is-a"];
-}
-```
+![Seven is-a facts: about an instance, a kind, two relations, a rule, a fact and a label](diagrams/04-facts-about-anything.svg)
 
 `Kind`, `Relation`, `Rule`, `Fact` and `Label` are names this program made up, and mean what its rules make of
 them, which here is nothing. The arrow from `is-a` to `Relation` is the fixed point: the relation that says what a

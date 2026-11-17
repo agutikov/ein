@@ -84,18 +84,7 @@ What a query asks about is a part of R, and R is a set of nodes of the lattice. 
 classifies every node, and `ein render region DIR --view lines` draws root and R's two lines, a dashed edge for the
 candidates between them (the tooltips and the legend left out):
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · claims.ein\nn = 4 · |R| = 7 of 16 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
-  m6 [label="(seat Ann C2)\n(seat Bob C1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  m9 [label="(seat Ann C1)\n(seat Bob C2)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  m0 -> m6 [color="#969696", style=dashed, label="+2", fontsize=8, fontcolor="#636363"];
-  m0 -> m9 [color="#969696", style=dashed, label="+2", fontsize=8, fontcolor="#636363"];
-}
-```
+![Root and the two lines of R for claims.ein](diagrams/12-region-lines-claims.svg)
 
 The query above is asked `:over maximal`, of the two heavy-bordered nodes, and each gives one class: the goal `(seat
 ?who C1)` sees `Bob` in the one that seats Bob on `C1` and `Ann` in the other. Asked `:over minimal` it would be
@@ -107,17 +96,9 @@ shows
 the rules, the ontology and the facts (the program's hrule and its two restrictions are drawn on
 [hypotheses](09-hypotheses.md#as-a-graph)):
 
-```dot
-digraph solve {
-  "solve" [shape=note, label=":expect (region (model) (model (seat Ann C1)) (model (seat Ann C2)) (model (seat Bob C1)) (model (seat Bob C2)) (model (seat Ann C1) (seat Bob C2)) (model (seat Ann C2) (seat Bob C1)))"];
-}
-```
+![The solve form as a note holding its keywords](diagrams/12-solve-form.svg)
 
-```dot
-digraph query {
-  "query" [shape=note, label=":goal (seat ?who C1)\n:goal-text \"{?who} sits on the first chair\"\n:over maximal\n:expect (or (model (seat Ann C1)) (model (seat Bob C1)))"];
-}
-```
+![The query form as a note holding its keywords](diagrams/12-query-form.svg)
 
 ## In words
 
@@ -243,19 +224,7 @@ relation and check nothing. `model` is not reserved.
 
 ### The region claim
 
-```plantuml
-@startebnf
-claim = "(region", {item}, ")" (* R, by its nodes *)
-      | "(false)" (* every node dead *);
-item  = model (* one state of R *)
-      | "(merged", to, from, ")" (* a state several commitments reach *)
-      | "(owing", model, {model}, ")" (* R empty, and these alive nodes owe *);
-to    = model (* one of the states listed *);
-from  = model (* its one minimal commitment *)
-      | "(or", model, {model}, ")" (* or its several *);
-model = "(model", {fact}, ")";
-@endebnf
-```
+![The grammar of a region claim as a railroad diagram](diagrams/12-region-claim.svg)
 
 How a region claim reads:
 

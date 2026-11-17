@@ -1,0 +1,27 @@
+digraph rule_disjunctive_prune_fwd_lhs_rhs {
+  rankdir=TB;
+  label="disjunctive-prune-fwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "?h_other_L" [label="?h_other", shape=diamond];
+    "?V1_L" -> "?h1_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R2_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
+    "?h_other_L" -> "?B_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h_other_L" -> "?h1_L" [label="?S", color="#2ca02c", fontcolor="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_other_R" [label="?h_other", shape=diamond];
+    "?V2_R" -> "?h_other_R" [label="¬?R2", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

@@ -83,29 +83,7 @@ member of the domain has an image*, activated per relation by a fact:
 `ein render rule --name everyone-sits FILE` draws the obligation as its two sides: the match, with the `absent` as a
 dashed cluster (*∄*), and the verdict, an octagon named `open` pointing at the relation it names.
 
-```dot
-digraph rule_everyone_sits_lhs_rhs {
-  rankdir=TB;
-  label="everyone-sits"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "Person_L" [label="Person", shape=rectangle];
-    "?p_L" -> "Person_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?c_L" [label="?c", shape=diamond];
-      "Chair_L" [label="Chair", shape=rectangle];
-      "?c_L" -> "Chair_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-      "?p_L" -> "?c_L" [label="seat", color="#1f77b4", fontcolor="#1f77b4"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "seat_R" [label="seat", shape=rectangle];
-    "h1_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_open_R" -> "seat_R" [label="1", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule everyone-sits: the match with its absence a dashed cluster, and the verdict open](diagrams/08-rule-everyone-sits.svg)
 
 Outside the cluster is the trigger, a person; inside it is what must not be missing, a chair with a `seat` arrow from
 that person. The library's `total-owed` is the same picture with every name a variable: the relation `?R` and its
@@ -113,34 +91,7 @@ two labels are read from the declaration's fact, and `?isa` is the membership re
 (`ein render rule --name total-owed STDLIB/algebra.ein`, with `STDLIB` a standard library on disk, the directory
 `ein --version` names):
 
-```dot
-digraph rule_total_owed_lhs_rhs {
-  rankdir=TB;
-  label="total-owed"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?a_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?b_L" [label="?b", shape=diamond];
-      "?b_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?R_R" [label="?R", shape=diamond];
-    "h2_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_open_R" -> "?R_R" [label="1", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule total-owed: the same obligation with every name a variable](diagrams/08-rule-total-owed.svg)
 
 The program's two restrictions, `one-chair-each` and `one-person-a-chair`, are drawn on
 [hypotheses](09-hypotheses.md#as-a-graph), whose program shares them.
@@ -149,21 +100,7 @@ What the obligation does to the answer is a picture of the lattice: `ein oracle 
 region DIR` (the layer labels, the tooltips and the legend left out). An owing node is filled amber, a node of R
 green, a dead one red, and the edge that pays a node's last debt is drawn blue:
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · seats.ein\nn = 2 · |R| = 1 of 4 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m1 [label="(seat Bob C1)\nR · min · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3, peripheries=2];
-  m2 [label="(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m3 [label="(seat Bob C1)\n(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
-  m0 -> m2 [color="#cb181d", style=dashed, penwidth=1.2];
-  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
-  m2 -> m3 [color="#bdbdbd", style=solid, penwidth=0.6];
-}
-```
+![The lattice of seats.ein: root owing, one node in R, two dead](diagrams/08-region-seats.svg)
 
 Root owes, so it is below R; one candidate pays the debt and one dies of the restriction; the answer is the one
 green node between them ([rendering](../04-reference/12-rendering.md)).

@@ -55,86 +55,22 @@ A constraint is a rule, and is drawn as one ([rules](05-rules.md)): `ein render 
 of `one-box-per-pet` is what may not be found in a state, one pet with an arrow into each of two different boxes,
 and on its right is `(false)`, an octagon with no argument:
 
-```dot
-digraph rule_one_box_per_pet_lhs_rhs {
-  rankdir=TB;
-  label="one-box-per-pet"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?p_L" -> "?b_L" [label="in", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?p_L" -> "?c_L" [label="in", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?b_L" -> "?c_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule one-box-per-pet: one pet in two different boxes, and (false)](diagrams/06-rule-one-box-per-pet.svg)
 
 A stored negation is drawn red, its label prefixed `¬`. The empty `:match` of `cat-not-in-b2` is the octagon
 `#empty`, the loader's name for it:
 
-```dot
-digraph rule_cat_not_in_b2_lhs_rhs {
-  rankdir=TB;
-  label="cat-not-in-b2"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "Cat_R" [label="Cat", shape=rectangle];
-    "B2_R" [label="B2", shape=rectangle];
-    "Cat_R" -> "B2_R" [label="¬in", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule cat-not-in-b2: an empty match, and the stored negation it asserts](diagrams/06-rule-cat-not-in-b2.svg)
 
 The hrule the two constraints cut down is drawn the same way, its conclusion the guess:
 
-```dot
-digraph rule_guess_lhs_rhs {
-  rankdir=TB;
-  label="guess"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "Pet_L" [label="Pet", shape=rectangle];
-    "?b_L" [label="?b", shape=diamond];
-    "Box_L" [label="Box", shape=rectangle];
-    "?p_L" -> "Pet_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?b_L" -> "Box_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?p_R" [label="?p", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?p_R" -> "?b_R" [label="in", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
-  }
-}
-```
+![The hrule guess: what it matches and the fact each match proposes, dashed](diagrams/06-rule-guess.svg)
 
 What the constraints do to the answer is a picture of the lattice. `ein oracle FILE --dump DIR` classifies every
 set of candidates, and `ein render region DIR` draws them, one layer per number of candidates, an edge per added
 candidate, green in R and red dead (the layer labels, the tooltips and the legend left out):
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · boxes.ein\nn = 2 · |R| = 2 of 4 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
-  m1 [label="(in Cat B1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  m2 [label="(in Dog B2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m3 [label="(in Cat B1)\n(in Dog B2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  { rank=same; m0 }
-  { rank=same; m1; m2 }
-  { rank=same; m3 }
-  m0 -> m1 [color="#238b45", style=solid, penwidth=2];
-  m0 -> m2 [color="#cb181d", style=solid, penwidth=1.2];
-  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
-  m2 -> m3 [color="#bdbdbd", style=solid, penwidth=0.6];
-}
-```
+![The lattice of boxes.ein: two nodes in R, green, and two dead, red](diagrams/06-region-boxes.svg)
 
 `(in Dog B2)` is dead alone, by `one-box-per-pet` against root's `(in Dog B1)`, and everything above it is dead
 with it. `(in Cat B2)` is no node at all: root holds its negation, so it was never a candidate. `ein render kb FILE`

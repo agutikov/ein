@@ -70,10 +70,11 @@ binary's, but nothing compares them, because an exact comparison cannot express 
 | [ch. 6](06-zebra-walkthrough.md), the read-out lines it quotes and the two grids | **excerpts** |
 | [word problems](08-word-problems.md), the read-outs, dumps and traces | **excerpts** |
 
-**A drawing is a `dot` block**, which Graphviz renders. Where a page says a drawing is `ein render`'s and names the
-command, the block is what that command writes, less its two lines that are no part of the drawing, a layout hint
-and a font, and where a page says so, cut to the arrows the section is about. A drawing a page does not attribute
-is a schematic drawn for the page, in the same shapes ([rendering](../04-reference/12-rendering.md)).
+**A drawing is an image**, which Graphviz drew from the `.dot` file of the same name under
+[`diagrams/`](diagrams/). Where a page says a drawing is `ein render`'s and names the command, that file is what the
+command writes, less its two lines that are no part of the drawing, a layout hint and a font, and where a page says
+so, cut to the arrows the section is about. A drawing a page does not attribute is a schematic drawn for the page,
+in the same shapes ([rendering](../04-reference/12-rendering.md)).
 
 A generated block is never edited by hand: change the command in its marker, and the block is written again from a
 run.

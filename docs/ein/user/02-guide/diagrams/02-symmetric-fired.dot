@@ -1,0 +1,5 @@
+digraph kb {
+  rankdir=BT;
+  "House-1" -> "House-2" [label="next-to demo", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-2" -> "House-1" [label="next-to by symmetric", color="#d62728", fontcolor="#d62728", style=dashed];
+}

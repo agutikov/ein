@@ -1,0 +1,7 @@
+digraph { rankdir=LR; node [shape=box];
+  Green  -> "House-1" [label="¬color-loc", style=dotted];
+  Blue   -> "House-1" [label="¬color-loc", style=dotted];
+  Ivory  -> "House-1" [label="¬color-loc", style=dotted];
+  Red    -> "House-1" [label="¬color-loc", style=dotted];
+  Yellow -> "House-1" [label="color-loc by range-elimination", style=dashed];
+}

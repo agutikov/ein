@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Pages: 1 -->
+<svg width="265pt" height="98pt"
+ viewBox="0.00 0.00 265.00 98.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 94)">
+<polygon fill="white" stroke="none" points="-4,4 -4,-94 261,-94 261,4 -4,4"/>
+<!-- Norwegian -->
+<g id="node1" class="node">
+<title>Norwegian</title>
+<polygon fill="none" stroke="black" points="97.38,-90 3.37,-90 3.37,-54 97.38,-54 97.38,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="50.38" y="-67.33" font-family="Times,serif" font-size="14.00">Norwegian</text>
+</g>
+<!-- Nationality -->
+<g id="node2" class="node">
+<title>Nationality</title>
+<polygon fill="none" stroke="black" points="257,-63 161.5,-63 161.5,-27 257,-27 257,-63"/>
+<text xml:space="preserve" text-anchor="middle" x="209.25" y="-40.33" font-family="Times,serif" font-size="14.00">Nationality</text>
+</g>
+<!-- Norwegian&#45;&gt;Nationality -->
+<g id="edge1" class="edge">
+<title>Norwegian&#45;&gt;Nationality</title>
+<path fill="none" stroke="black" d="M97.59,-64.05C113.98,-61.23 132.63,-58.01 149.9,-55.04"/>
+<polygon fill="black" stroke="black" points="150.25,-58.53 159.51,-53.39 149.06,-51.64 150.25,-58.53"/>
+<text xml:space="preserve" text-anchor="middle" x="131.12" y="-64.07" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Englishman -->
+<g id="node3" class="node">
+<title>Englishman</title>
+<polygon fill="none" stroke="black" points="100.75,-36 0,-36 0,0 100.75,0 100.75,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="50.38" y="-13.32" font-family="Times,serif" font-size="14.00">Englishman</text>
+</g>
+<!-- Englishman&#45;&gt;Nationality -->
+<g id="edge2" class="edge">
+<title>Englishman&#45;&gt;Nationality</title>
+<path fill="none" stroke="black" d="M101.01,-26.54C116.62,-29.23 133.99,-32.22 150.14,-35"/>
+<polygon fill="black" stroke="black" points="149.14,-38.38 159.58,-36.62 150.32,-31.48 149.14,-38.38"/>
+<text xml:space="preserve" text-anchor="middle" x="131.12" y="-37.07" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 471c9c369b36412ae0545f598d85c14e70eb35f25a56559674958902ca8d2c67 -->

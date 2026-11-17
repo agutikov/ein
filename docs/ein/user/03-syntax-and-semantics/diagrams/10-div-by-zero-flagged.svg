@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: step12 Pages: 1 -->
+<svg width="1564pt" height="51pt"
+ viewBox="0.00 0.00 1564.00 51.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 46.5)">
+<title>step12</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-46.5 1559.5,-46.5 1559.5,4 -4,4"/>
+<!-- f_9934285045 -->
+<g id="node1" class="node">
+<title>f_9934285045</title>
+<path fill="none" stroke="black" d="M829,-39.25C829,-39.25 12,-39.25 12,-39.25 6,-39.25 0,-33.25 0,-27.25 0,-27.25 0,-15.25 0,-15.25 0,-9.25 6,-3.25 12,-3.25 12,-3.25 829,-3.25 829,-3.25 835,-3.25 841,-9.25 841,-15.25 841,-15.25 841,-27.25 841,-27.25 841,-33.25 835,-39.25 829,-39.25"/>
+<text xml:space="preserve" text-anchor="middle" x="420.5" y="-16.57" font-family="Times,serif" font-size="14.00">std.math.decimal&#45;arith.done(std.math.decimal&#45;arith.div&#45;m1(std.math.decimal&#45;arith.quotient(n(z, 7), z), n(z, 7), z), z)</text>
+</g>
+<!-- fire0_std.math.positional.div&#45;by&#45;zero -->
+<g id="node3" class="node">
+<title>fire0_std.math.positional.div&#45;by&#45;zero</title>
+<path fill="none" stroke="#2ca02c" stroke-width="2" d="M1167.5,-42.5C1167.5,-42.5 889,-42.5 889,-42.5 883,-42.5 877,-36.5 877,-30.5 877,-30.5 877,-12 877,-12 877,-6 883,0 889,0 889,0 1167.5,0 1167.5,0 1173.5,0 1179.5,-6 1179.5,-12 1179.5,-12 1179.5,-30.5 1179.5,-30.5 1179.5,-36.5 1173.5,-42.5 1167.5,-42.5"/>
+<text xml:space="preserve" text-anchor="middle" x="1028.25" y="-25.2" font-family="Times,serif" font-size="14.00" fill="#2ca02c">std.math.positional.div&#45;by&#45;zero</text>
+<text xml:space="preserve" text-anchor="middle" x="1028.25" y="-7.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">the divisor of (n z 7) divided by z is zero</text>
+</g>
+<!-- f_9934285045&#45;&gt;fire0_std.math.positional.div&#45;by&#45;zero -->
+<g id="edge1" class="edge">
+<title>f_9934285045&#45;&gt;fire0_std.math.positional.div&#45;by&#45;zero</title>
+<path fill="none" stroke="#2ca02c" d="M841.39,-21.25C849.49,-21.25 857.46,-21.25 865.27,-21.25"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="865.08,-24.75 875.08,-21.25 865.08,-17.75 865.08,-24.75"/>
+</g>
+<!-- f_eab79754f0 -->
+<g id="node2" class="node">
+<title>f_eab79754f0</title>
+<path fill="none" stroke="black" stroke-width="2" d="M1543.5,-39.25C1543.5,-39.25 1227.5,-39.25 1227.5,-39.25 1221.5,-39.25 1215.5,-33.25 1215.5,-27.25 1215.5,-27.25 1215.5,-15.25 1215.5,-15.25 1215.5,-9.25 1221.5,-3.25 1227.5,-3.25 1227.5,-3.25 1543.5,-3.25 1543.5,-3.25 1549.5,-3.25 1555.5,-9.25 1555.5,-15.25 1555.5,-15.25 1555.5,-27.25 1555.5,-27.25 1555.5,-33.25 1549.5,-39.25 1543.5,-39.25"/>
+<text xml:space="preserve" text-anchor="middle" x="1385.5" y="-16.57" font-family="Times,serif" font-size="14.00">std.math.arith.division&#45;by&#45;zero(div(n(z, 7), z))</text>
+</g>
+<!-- fire0_std.math.positional.div&#45;by&#45;zero&#45;&gt;f_eab79754f0 -->
+<g id="edge2" class="edge">
+<title>fire0_std.math.positional.div&#45;by&#45;zero&#45;&gt;f_eab79754f0</title>
+<path fill="none" stroke="#2ca02c" stroke-width="2" d="M1179.91,-21.25C1187.66,-21.25 1195.48,-21.25 1203.31,-21.25"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" stroke-width="2" points="1201.75,-24.75 1211.75,-21.25 1201.75,-17.75 1201.75,-24.75"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 100df6aeb7361e55cc7db0eef268f17f96efd6324b18ac3e4cfae9e67d910c5f -->

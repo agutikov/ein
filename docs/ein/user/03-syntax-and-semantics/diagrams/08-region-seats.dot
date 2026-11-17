@@ -1,0 +1,13 @@
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · seats.ein\nn = 2 · |R| = 1 of 4 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
+  m1 [label="(seat Bob C1)\nR · min · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3, peripheries=2];
+  m2 [label="(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m3 [label="(seat Bob C1)\n(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
+  m0 -> m2 [color="#cb181d", style=dashed, penwidth=1.2];
+  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
+  m2 -> m3 [color="#bdbdbd", style=solid, penwidth=0.6];
+}

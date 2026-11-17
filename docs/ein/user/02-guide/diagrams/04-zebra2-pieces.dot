@@ -1,0 +1,12 @@
+digraph { rankdir=LR; node [shape=box];
+  imports [label="imports\n(std.algebra, std.bijection)"];
+  schema  [label="relation declarations\n+ property tags"];
+  facts   [label="is-a facts + 15 clues"];
+  rules   [label="spatial rules\n(co-located, adjacent-via, …)"];
+  guess   [label="(hrule guess …)\n+ (solve :hrules …)"];
+  query   [label="(query :goal …)", shape=note];
+  engine  [label="ein solve", shape=ellipse];
+  answer  [label="Norwegian ↔ water\nJapanese ↔ zebra", shape=note];
+  imports -> engine; schema -> engine; facts -> engine; rules -> engine;
+  guess -> engine; query -> engine; engine -> answer;
+}

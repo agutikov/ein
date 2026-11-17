@@ -28,14 +28,7 @@ lesson you'll take to your own puzzles:
 
 One tag pulls in a whole family of imported logic:
 
-```dot
-digraph { rankdir=LR; node [shape=box];
-  tag [label="(bijective color-loc)", shape=note];
-  tag -> "functional"; tag -> "injective";
-  tag -> "total"; tag -> "surjective";
-  tag -> "domain- and range-elimination"; tag -> "negative-completion";
-}
-```
+![The tag (bijective color-loc) and the family of logic it pulls in](diagrams/03-bijective-family.svg)
 
 You never wrote `symmetric`/`bijective`'s logic: the stdlib did
 ([the relation algebra](../04-reference/04-stdlib/02-relation-algebra.md), [bijections](../04-reference/04-stdlib/04-bijections.md)). Each `(bijective R)` pulls
@@ -72,15 +65,7 @@ four colours excluded from House-1, and the survivor, forced.
 As a graph, a stored negation dotted and labelled `¬`, as a rule's drawing
 labels one, and the derived fact dashed:
 
-```dot
-digraph { rankdir=LR; node [shape=box];
-  Green  -> "House-1" [label="¬color-loc", style=dotted];
-  Blue   -> "House-1" [label="¬color-loc", style=dotted];
-  Ivory  -> "House-1" [label="¬color-loc", style=dotted];
-  Red    -> "House-1" [label="¬color-loc", style=dotted];
-  Yellow -> "House-1" [label="color-loc by range-elimination", style=dashed];
-}
-```
+![Range elimination: the stored negations dotted, the derived fact dashed](diagrams/03-range-elimination.svg)
 
 Elimination needs negatives to eat, which is where the next family comes in.
 
@@ -100,22 +85,7 @@ lot. `(bijective R)` gives the *property* side; zebra2 adds
 As `ein render rule --name co-located-negative examples/zebra2.ein` draws
 it, a `¬` on an arrow marking a stored negation:
 
-```dot
-digraph rule_co_located_negative_lhs_rhs {
-  rankdir=TB;
-  label="co-located-negative"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?V1_L" [label="?V1", shape=diamond];
-    "?h_L" [label="?h", shape=diamond];
-    "?V1_L" -> "?h_L" [label="¬?R1", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?V2_R" [label="?V2", shape=diamond];
-    "?h_R" [label="?h", shape=diamond];
-    "?V2_R" -> "?h_R" [label="¬?R2", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule co-located-negative: a stored negation in, a stored negation out](diagrams/03-rule-co-located-negative.svg)
 
 **English:** "the Norwegian is in House-1, so the Englishman isn't; the
 Englishman is the red house, so House-1 isn't red." Each `(not …)` it
@@ -133,22 +103,7 @@ in its real two-attribute form ([`zebra2.ein`](../../../../examples/zebra2.ein))
   :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h}).")
 ```
 
-```dot
-digraph rule_co_located_lhs_rhs {
-  rankdir=TB;
-  label="co-located"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?V1_L" [label="?V1", shape=diamond];
-    "?h_L" [label="?h", shape=diamond];
-    "?V1_L" -> "?h_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?V2_R" [label="?V2", shape=diamond];
-    "?h_R" [label="?h", shape=diamond];
-    "?V2_R" -> "?h_R" [label="?R2", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule co-located: what it matches and what it asserts](diagrams/03-rule-co-located.svg)
 
 Driven by an activator like `(co-located nation-loc Englishman color-loc Red)`
 ("the Englishman lives in the red house"), it copies a known placement of
@@ -173,30 +128,7 @@ neighbour is **unique**:
 The drawing puts what must be `absent` in a dashed box of its own, marked
 `∄`: no other `?h_o` is an `?S`-neighbour of `?h1`.
 
-```dot
-digraph rule_adjacent_via_fwd_lhs_rhs {
-  rankdir=TB;
-  label="adjacent-via-fwd"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?V1_L" [label="?V1", shape=diamond];
-    "?h1_L" [label="?h1", shape=diamond];
-    "?h2_L" [label="?h2", shape=diamond];
-    "?V1_L" -> "?h1_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
-    "?h2_L" -> "?h1_L" [label="?S", color="#2ca02c", fontcolor="#2ca02c"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?h_o_L" [label="?h_o", shape=diamond];
-      "?h_o_L" -> "?h1_L" [label="?S", color="#2ca02c", fontcolor="#2ca02c"];
-      "?h_o_L" -> "?h2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?V2_R" [label="?V2", shape=diamond];
-    "?h2_R" [label="?h2", shape=diamond];
-    "?V2_R" -> "?h2_R" [label="?R2", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule adjacent-via-fwd: its absence a dashed box](diagrams/03-rule-adjacent-via-fwd.svg)
 
 `(absent …)` is **negation-as-failure**: the clause matches only when *no*
 such fact is present. Here it means "fire only if `?h1` has a single
@@ -219,35 +151,7 @@ out:
   :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded.")
 ```
 
-```dot
-digraph rule_disjunctive_prune_fwd_lhs_rhs {
-  rankdir=TB;
-  label="disjunctive-prune-fwd"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?V1_L" [label="?V1", shape=diamond];
-    "?h1_L" [label="?h1", shape=diamond];
-    "?R2_L" [label="?R2", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?h_other_L" [label="?h_other", shape=diamond];
-    "?V1_L" -> "?h1_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R2_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?h_other_L" -> "?B_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?h_other_L" -> "?h1_L" [label="?S", color="#2ca02c", fontcolor="#2ca02c"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?V2_R" [label="?V2", shape=diamond];
-    "?h_other_R" [label="?h_other", shape=diamond];
-    "?V2_R" -> "?h_other_R" [label="¬?R2", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule disjunctive-prune-fwd: its absence a dashed box, its conclusion a stored negation](diagrams/03-rule-disjunctive-prune-fwd.svg)
 
 **This rule reads a declaration.** `(relation ?R2 ?A ?B)` matches the stored
 fact of `?R2`'s declaration, the octagon, and binds `?B` to the label of its

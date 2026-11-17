@@ -48,34 +48,13 @@ rule on for `next-to`.
 from `ein render rule --name symmetric` on that file. A diamond is a
 variable, and a dashed arrow is a fact the rule adds:
 
-```dot
-digraph rule_symmetric_lhs_rhs {
-  rankdir=TB;
-  label="symmetric"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule symmetric: what it matches and what it asserts](diagrams/02-rule-symmetric.svg)
 
 **The facts once it has fired**, the two `next-to` arrows of `ein render kb`
 on that file: the solid one is the fact the program states, labelled with
 its source, and the dashed one the fact `symmetric` added.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "House-1" -> "House-2" [label="next-to demo", color="#d62728", fontcolor="#d62728", style=solid];
-  "House-2" -> "House-1" [label="next-to by symmetric", color="#d62728", fontcolor="#d62728", style=dashed];
-}
-```
+![The two next-to arrows once symmetric has fired: one stated, one added](diagrams/02-symmetric-fired.svg)
 
 **Run it:**
 
@@ -120,46 +99,14 @@ is a **guard** — a built-in predicate that only matches when the two differ
 **graph** — `ein render rule --name transitive` on that file. The dotted
 `≠` link is the guard:
 
-```dot
-digraph rule_transitive_lhs_rhs {
-  rankdir=TB;
-  label="transitive"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-    "?b_L" -> "?c_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-    "?a_L" -> "?c_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?c_R" [label="?c", shape=diamond];
-    "?a_R" -> "?c_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule transitive: what it matches and what it asserts, the guard a dotted link](diagrams/02-rule-transitive.svg)
 
 **The facts once it has fired**, from `ein render kb` on that file. The
 program states the two arrows of the chain; the third, from `Cat` to
 `Animal`, is the one `transitive` added. The drawing gives every `is-a`
 arrow one style, and a box to each name an `is-a` arrow points at:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  // types
-  "Animal" [shape=box, label="Animal"];
-  "Mammal" [shape=box, label="Mammal"];
-  // instances
-  "Cat" [shape=oval, label="Cat"];
-
-  // facts
-  "Cat" -> "Mammal" [style=dashed, arrowhead=empty, label="is-a"];
-  "Mammal" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
-  "Cat" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
-}
-```
+![The is-a chain once transitive has fired: two arrows stated, the third added](diagrams/02-transitive-fired.svg)
 
 **Run it:**
 
@@ -206,17 +153,7 @@ rule* proposes the cross-attribute pairings the facts don't pin directly.
 the program states, solid, with the number of their clue, and the four the
 two rules add, dashed, each with the rule that added it.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "Alice" -> "Tea" [label="co-located (1)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Alice" -> "Cat" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Tea" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  "Cat" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  "Tea" -> "Cat" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  "Cat" -> "Tea" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-}
-```
+![The co-located arrows: two the program states, four the two rules add](diagrams/02-co-located-fired.svg)
 
 **Run it** (its header documents the unique answer):
 

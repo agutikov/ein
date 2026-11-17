@@ -1,0 +1,28 @@
+digraph kb {
+  rankdir=BT;
+  // types
+  "Attribute" [shape=box, label="Attribute"];
+  "House" [shape=box, label="House"];
+  "Nationality" [shape=box, label="Nationality"];
+  // instances
+  "House-1" [shape=oval, label="House-1"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+
+  // facts
+  f_1f1a2cc2f3 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "is-a" [label="#1", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#2", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#3", color="#bcbd22", style=solid];
+  "is-a" -> "is-a" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6c4ab1c24 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "co-located" [label="#1", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
+  "co-located" -> "co-located" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "House" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "House-1" [label="co-located (10)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "House-1" -> "Norwegian" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+}

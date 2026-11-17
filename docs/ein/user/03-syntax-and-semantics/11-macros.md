@@ -147,44 +147,11 @@ up, and is changed in one place.
 `ein render rule --name chores FILE` draws a program as it is written, before the loader expands anything, so in
 the program with the macro the call is drawn as if `housemates` were a relation, one arrow:
 
-```dot
-digraph rule_chores_lhs_rhs {
-  rankdir=TB;
-  label="chores"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="housemates", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="shares-chores", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule chores-with-macro: the macro's call drawn as one arrow](diagrams/11-rule-chores-with-macro.svg)
 
 and the same command on the program written out draws what the engine matches, the pattern the arrow stood for:
 
-```dot
-digraph rule_chores_lhs_rhs {
-  rankdir=TB;
-  label="chores"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?h_L" [label="?h", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?h_L" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
-    "?b_L" -> "?h_L" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
-    "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="shares-chores", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule chores-written-out: the pattern the arrow stood for](diagrams/11-rule-chores-written-out.svg)
 
 A macro's `:why` documents the pattern for a reader of the program, *Ann and Bob are two people who live in one
 house*, and is printed nowhere: a call is gone by the time anything runs, so what a derivation reads as is the
@@ -256,56 +223,12 @@ The program with the call replaced by its expansion, and the import dropped, sat
 the quantified variable, the guard and the body inside it, the variable the rest of the rule shares, `?bag`,
 outside.
 
-```dot
-digraph rule_bag_is_ready_lhs_rhs {
-  rankdir=TB;
-  label="bag-is-ready"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?bag_L" [label="?bag", shape=diamond];
-    "Bag_L" [label="Bag", shape=rectangle];
-    "?bag_L" -> "Bag_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?i_L" [label="?i", shape=diamond];
-      "?i_L" -> "?bag_L" [label="goes-in", color="#17becf", fontcolor="#17becf"];
-      "h1_packed_L" [shape=octagon, label="packed", color="#8c564b", fontcolor="#8c564b"];
-      "h1_packed_L" -> "?i_L" [label="1", color="#8c564b"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?bag_R" [label="?bag", shape=diamond];
-    "h2_ready_R" [shape=octagon, label="ready", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_ready_R" -> "?bag_R" [label="1", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule bag-is-ready-with-forall: the call of forall a dashed cluster](diagrams/11-rule-bag-is-ready-with-forall.svg)
 
 The same command on the program with the expansion written out draws what the engine matches: an `absent (∄)`
 cluster around the guard and the body's absence.
 
-```dot
-digraph rule_bag_is_ready_lhs_rhs {
-  rankdir=TB;
-  label="bag-is-ready"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?bag_L" [label="?bag", shape=diamond];
-    "Bag_L" [label="Bag", shape=rectangle];
-    "?bag_L" -> "Bag_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?i_L" [label="?i", shape=diamond];
-      "?i_L" -> "?bag_L" [label="goes-in", color="#17becf", fontcolor="#17becf"];
-      "h1_packed_L" [shape=octagon, label="¬packed", color="#d62728", fontcolor="#d62728"];
-      "h1_packed_L" -> "?i_L" [label="1", color="#d62728"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?bag_R" [label="?bag", shape=diamond];
-    "h2_ready_R" [shape=octagon, label="ready", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_ready_R" -> "?bag_R" [label="1", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule bag-is-ready-written-out: an absence around the guard and the body's absence](diagrams/11-rule-bag-is-ready-written-out.svg)
 
 The two pictures are one statement read two ways: *for every item in the bag, packed*, and *there is no item in
 the bag that is not packed*. The inner `(absent (packed ?i))` is drawn red with a `¬`, the mark the view also gives a

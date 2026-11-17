@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="142pt" height="223pt"
+ viewBox="0.00 0.00 142.00 223.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 218.5)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-218.5 137.71,-218.5 137.71,4 -4,4"/>
+<!-- Animal -->
+<g id="node1" class="node">
+<title>Animal</title>
+<polygon fill="none" stroke="black" points="73.34,-214.5 7.84,-214.5 7.84,-178.5 73.34,-178.5 73.34,-214.5"/>
+<text xml:space="preserve" text-anchor="middle" x="40.59" y="-191.82" font-family="Times,serif" font-size="14.00">Animal</text>
+</g>
+<!-- Mammal -->
+<g id="node2" class="node">
+<title>Mammal</title>
+<polygon fill="none" stroke="black" points="133.71,-125.25 55.46,-125.25 55.46,-89.25 133.71,-89.25 133.71,-125.25"/>
+<text xml:space="preserve" text-anchor="middle" x="94.59" y="-102.58" font-family="Times,serif" font-size="14.00">Mammal</text>
+</g>
+<!-- Mammal&#45;&gt;Animal -->
+<g id="edge2" class="edge">
+<title>Mammal&#45;&gt;Animal</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M83.92,-125.49C76.3,-137.8 65.9,-154.59 57.2,-168.65"/>
+<polygon fill="none" stroke="black" points="54.31,-166.67 52.03,-177.01 60.27,-170.35 54.31,-166.67"/>
+<text xml:space="preserve" text-anchor="middle" x="84.8" y="-147.2" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Cat -->
+<g id="node3" class="node">
+<title>Cat</title>
+<ellipse fill="none" stroke="black" cx="28.59" cy="-18" rx="28.59" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="28.59" y="-13.32" font-family="Times,serif" font-size="14.00">Cat</text>
+</g>
+<!-- Cat&#45;&gt;Animal -->
+<g id="edge3" class="edge">
+<title>Cat&#45;&gt;Animal</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M25.43,-36.37C22.07,-57.46 17.75,-94.1 21.84,-125.25 23.68,-139.34 27.53,-154.61 31.26,-167.31"/>
+<polygon fill="none" stroke="black" points="27.86,-168.17 34.15,-176.7 34.55,-166.11 27.86,-168.17"/>
+<text xml:space="preserve" text-anchor="middle" x="34.21" y="-102.58" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Cat&#45;&gt;Mammal -->
+<g id="edge1" class="edge">
+<title>Cat&#45;&gt;Mammal</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M40.38,-34.6C49.87,-47.14 63.42,-65.05 74.6,-79.82"/>
+<polygon fill="none" stroke="black" points="71.79,-81.92 80.62,-87.79 77.38,-77.7 71.79,-81.92"/>
+<text xml:space="preserve" text-anchor="middle" x="79.87" y="-57.95" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: f97f4e9080f807a88116582ac6eaa4605a2a4164d836aed5bd0ac924dc13c868 -->

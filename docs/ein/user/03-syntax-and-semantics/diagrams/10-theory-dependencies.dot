@@ -1,0 +1,15 @@
+digraph theory_dependencies {
+  rankdir=LR;
+  "div"                       [shape=box];
+  "division rules"            [shape=hexagon, label="the division's rules"];
+  "division-by-zero"          [shape=box];
+  "division-by-zero-is-false" [shape=hexagon];
+  "false"                     [shape=box];
+  "arith"                     [shape=hexagon];
+  "__closed__"                [shape=box];
+  "div" -> "division rules"            [label="read by"];
+  "division rules" -> "division-by-zero" [label="concludes"];
+  "division-by-zero" -> "division-by-zero-is-false" [label="read by"];
+  "division-by-zero-is-false" -> "false" [label="concludes"];
+  "arith" -> "__closed__"              [label="concludes"];
+}

@@ -1,0 +1,14 @@
+digraph rule_co_located_negative_lhs_rhs {
+  rankdir=TB;
+  label="co-located-negative"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h_L" [label="?h", shape=diamond];
+    "?V1_L" -> "?h_L" [label="¬?R1", color="#d62728", fontcolor="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_R" [label="?h", shape=diamond];
+    "?V2_R" -> "?h_R" [label="¬?R2", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

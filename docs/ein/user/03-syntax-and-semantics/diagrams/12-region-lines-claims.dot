@@ -1,0 +1,10 @@
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · claims.ein\nn = 4 · |R| = 7 of 16 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m6 [label="(seat Ann C2)\n(seat Bob C1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m9 [label="(seat Ann C1)\n(seat Bob C2)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m0 -> m6 [color="#969696", style=dashed, label="+2", fontsize=8, fontcolor="#636363"];
+  m0 -> m9 [color="#969696", style=dashed, label="+2", fontsize=8, fontcolor="#636363"];
+}

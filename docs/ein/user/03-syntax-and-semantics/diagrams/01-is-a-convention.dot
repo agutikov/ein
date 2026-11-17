@@ -1,0 +1,10 @@
+digraph kb {
+  rankdir=BT;
+  "House" [shape=box, label="House"];
+  "Person" [shape=box, label="Person"];
+  "House-1" [shape=oval, label="House-1"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+  "Norwegian" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "House-1" [label="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
+}

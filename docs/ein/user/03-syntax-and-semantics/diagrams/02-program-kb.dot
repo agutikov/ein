@@ -1,0 +1,24 @@
+digraph kb {
+  rankdir=BT;
+  f_37791a66b1 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_37791a66b1 -> "lives-in" [label="#1", color="#bcbd22", style=solid];
+  f_37791a66b1 -> "Person" [label="#2", color="#bcbd22", style=solid];
+  f_37791a66b1 -> "House" [label="#3", color="#bcbd22", style=solid];
+  "lives-in" -> "lives-in" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "adult" -> "Person" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "adult" -> "adult" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_c19a3b2aac [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_c19a3b2aac -> "keeps" [label="#1", color="#bcbd22", style=solid];
+  f_c19a3b2aac -> "Person" [label="#2", color="#bcbd22", style=solid];
+  f_c19a3b2aac -> "House" [label="#3", color="#bcbd22", style=solid];
+  f_c19a3b2aac -> "Pet" [label="#4", color="#bcbd22", style=solid];
+  "keeps" -> "keeps" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "solved" -> "solved" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Norwegian" -> "House-1" [label="lives-in", color="#9467bd", fontcolor="#9467bd", style=solid];
+  "Norwegian" -> "Norwegian" [label="adult", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_81cc97aa67 [shape=octagon, label="(keeps)", color="#d62728", fontcolor="#d62728", style=solid];
+  f_81cc97aa67 -> "Norwegian" [label="#1", color="#d62728", style=solid];
+  f_81cc97aa67 -> "House-1" [label="#2", color="#d62728", style=solid];
+  f_81cc97aa67 -> "Zebra" [label="#3", color="#d62728", style=solid];
+  f_c08e9231d4 [shape=octagon, label="(solved)", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+}

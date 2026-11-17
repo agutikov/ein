@@ -23,12 +23,7 @@ is something the program *says*, with an ordinary fact:
 (is-a Englishman Nationality)
 ```
 
-```dot
-digraph { rankdir=LR; node [shape=box];
-  Norwegian  -> Nationality [label="is-a"];
-  Englishman -> Nationality [label="is-a"];
-}
-```
+![Two is-a facts: Norwegian and Englishman are each a Nationality](diagrams/01-is-a-facts.svg)
 
 **Ein has no types.** Nothing in the language sets `Nationality` apart from `Norwegian`: both are names, both are
 nodes, and `is-a` is a relation like any other, one the puzzle chose to call that. When this guide says *the
@@ -51,16 +46,7 @@ slots:
 - **graph:** the declaration is itself stored as a fact, `(relation nation-loc Nationality House)`, a node with one
   arrow to the relation's name and one to each slot's label. This is how `ein render kb` draws it:
 
-  ```dot
-  digraph kb {
-    rankdir=BT;
-    f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-    f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
-    f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
-    f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
-    "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  }
-  ```
+  ![The declaration of nation-loc as a stored fact](diagrams/01-declaration.svg)
 
   The loop on `nation-loc` is a second stored fact, `(relation nation-loc)`: *`nation-loc` is a declared relation*.
 - **English:** "a nationality lives in a house."
@@ -89,27 +75,13 @@ A **fact** applies a relation to actual objects. It's the unit of knowledge:
   ```
 - **graph (compact):** a labelled link between the two objects, as `ein render program` draws it,
 
-  ```dot
-  digraph facts {
-    "Norwegian" [shape=rectangle];
-    "House-1" [shape=rectangle];
-    "Norwegian" -> "House-1" [label="nation-loc", color="#d62728", fontcolor="#d62728", style=solid];
-  }
-  ```
+  ![The fact (nation-loc Norwegian House-1) as a labelled link between two objects](diagrams/01-fact-compact.svg)
 
   which is the readable shorthand for how Ein holds it *canonically*: a **node** joined to its two arguments (the
   **Levi** view, `ein render program --levi`; see [facts](../03-syntax-and-semantics/03-facts.md)):
 
-  ```dot
-  digraph facts {
-    ranksep=0.55;
-    "h_1_nation-loc" [shape=octagon, label="nation-loc"];
-    "Norwegian" [shape=rectangle];
-    "House-1" [shape=rectangle];
-    "h_1_nation-loc" -> "Norwegian" [label="1"];
-    "h_1_nation-loc" -> "House-1" [label="2"];
-  }
-  ```
+  ![The same fact in the Levi view: a node joined to its two arguments](diagrams/01-fact-levi.svg)
+
 - **English:** "the Norwegian lives in House-1", which is the relation's `:why` with the fact's arguments in it.
 
 A fact can record where it came from, which shows up in explanations:
@@ -142,26 +114,7 @@ That's the whole vocabulary. Put together, a tiny model reads:
 
 Save it as `tiny.ein`, and `ein render kb tiny.ein` draws all of it as one graph, every name once:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  // types
-  "Nationality" [shape=box, label="Nationality"];
-  // instances
-  "Englishman" [shape=oval, label="Englishman"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-
-  // facts
-  f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
-  f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
-  f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
-  "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "Englishman" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "House-1" [label="nation-loc (10)", color="#d62728", fontcolor="#d62728", style=solid];
-}
-```
+![The program tiny.ein as one graph, every name once](diagrams/01-tiny-program.svg)
 
 The drawing puts `Nationality` in a box and the two names with an `is-a` arrow into it in ovals, and its comments
 call them *types* and *instances*. That is a convention of the drawing, keyed on a relation named `is-a`

@@ -1,0 +1,9 @@
+digraph kb {
+  rankdir=BT;
+  "Alice" -> "Tea" [label="co-located (1)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Alice" -> "Cat" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Tea" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  "Cat" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  "Tea" -> "Cat" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  "Cat" -> "Tea" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+}

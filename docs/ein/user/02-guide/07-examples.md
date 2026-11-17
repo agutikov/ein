@@ -16,14 +16,7 @@ than background ([facts](../03-syntax-and-semantics/03-facts.md)). `lives-in` is
 it; a declared relation carries a `:why` and a label for each of its slots. `ein render kb` draws the program as the
 one arrow it is, labelled with the relation and the clue's number:
 
-```dot
-digraph kb {
-  rankdir=BT;
-
-  // facts
-  "Norwegian" -> "House-1" [label="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
-}
-```
+![The four-token Zebra sentence as the one arrow it is](diagrams/07-four-token-sentence.svg)
 
 ## A larger Zebra fragment
 
@@ -65,56 +58,7 @@ As a graph, from `ein render kb`: the three declarations, each an octagon with a
 one to each slot's label, the `is-a` facts as dashed arrows with an open head, and the three clues as solid arrows.
 `transitive` adds nothing here, since no two `co-located` facts chain, so no arrow is dashed as derived.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  // types
-  "Attribute" [shape=box, label="Attribute"];
-  "Color" [shape=box, label="Color"];
-  "House" [shape=box, label="House"];
-  "Nationality" [shape=box, label="Nationality"];
-  // instances
-  "Englishman" [shape=oval, label="Englishman"];
-  "Green" [shape=oval, label="Green"];
-  "House-1" [shape=oval, label="House-1"];
-  "House-2" [shape=oval, label="House-2"];
-  "House-3" [shape=oval, label="House-3"];
-  "Ivory" [shape=oval, label="Ivory"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-  "Red" [shape=oval, label="Red"];
-
-  // facts
-  f_1f1a2cc2f3 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "is-a" [label="#1", color="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "T" [label="#2", color="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "T" [label="#3", color="#bcbd22", style=solid];
-  "is-a" -> "is-a" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d6c4ab1c24 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d6c4ab1c24 -> "co-located" [label="#1", color="#bcbd22", style=solid];
-  f_d6c4ab1c24 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
-  f_d6c4ab1c24 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
-  "co-located" -> "co-located" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_f19a293ea2 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_f19a293ea2 -> "right-of" [label="#1", color="#bcbd22", style=solid];
-  f_f19a293ea2 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
-  f_f19a293ea2 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
-  "right-of" -> "right-of" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "House" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "Color" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-3" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "Red" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-  "Green" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-  "Ivory" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "Englishman" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "Englishman" -> "Red" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Green" -> "Ivory" [label="right-of (6)", color="#d62728", fontcolor="#d62728", style=solid];
-  "Norwegian" -> "House-1" [label="co-located (10)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-}
-```
+![A larger Zebra fragment: three declarations, the is-a facts and three clues](diagrams/07-zebra-fragment.svg)
 
 ## Two ontologies for one puzzle
 
@@ -258,44 +202,9 @@ As graphs, from `ein render rule --name symmetric stdlib/algebra.ein` and
 `ein render rule --name slot-exclusive stdlib/slots.ein`: what each matches above what it asserts, a variable a
 diamond, a guard a dotted `≠` link, the asserted fact dashed and a stored negation labelled `¬`.
 
-```dot
-digraph rule_symmetric_lhs_rhs {
-  rankdir=TB;
-  label="symmetric"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule symmetric: what it matches and what it asserts](diagrams/07-rule-symmetric.svg)
 
-```dot
-digraph rule_slot_exclusive_lhs_rhs {
-  rankdir=TB;
-  label="slot-exclusive"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?T_L" [label="?T", shape=diamond];
-    "?super_L" [label="?super", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?T_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?T_L" -> "?super_L" [label="?sub", color="#9467bd", fontcolor="#9467bd"];
-    "?b_L" -> "?T_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="¬?R", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![The rule slot-exclusive: what it matches, and the stored negation it asserts](diagrams/07-rule-slot-exclusive.svg)
 
 A rule that names its relations literally, with no parameter, is still legal, and it is what a genuinely
 puzzle-specific rule looks like; neither Zebra encoding needs one for its properties.

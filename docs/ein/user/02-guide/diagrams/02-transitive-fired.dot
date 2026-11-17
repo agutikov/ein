@@ -1,0 +1,13 @@
+digraph kb {
+  rankdir=BT;
+  // types
+  "Animal" [shape=box, label="Animal"];
+  "Mammal" [shape=box, label="Mammal"];
+  // instances
+  "Cat" [shape=oval, label="Cat"];
+
+  // facts
+  "Cat" -> "Mammal" [style=dashed, arrowhead=empty, label="is-a"];
+  "Mammal" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
+  "Cat" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
+}

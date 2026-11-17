@@ -54,24 +54,7 @@ words the grammar reserves ([reserved names](../04-reference/03-reserved-names.m
 `ein render kb FILE` draws the program loaded and saturated, one node per name, every form that writes the name
 fused into it. The program above, whole:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  f_d3022860ca [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d3022860ca -> "is-instance" [label="#1", color="#bcbd22", style=solid];
-  f_d3022860ca -> "Object" [label="#2", color="#bcbd22", style=solid];
-  f_d3022860ca -> "Type" [label="#3", color="#bcbd22", style=solid];
-  "is-instance" -> "is-instance" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_37791a66b1 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_37791a66b1 -> "lives-in" [label="#1", color="#bcbd22", style=solid];
-  f_37791a66b1 -> "Person" [label="#2", color="#bcbd22", style=solid];
-  f_37791a66b1 -> "House" [label="#3", color="#bcbd22", style=solid];
-  "lives-in" -> "lives-in" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Norwegian" -> "Person" [label="is-instance", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "House-1" -> "House" [label="is-instance", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Norwegian" -> "House-1" [label="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
-}
-```
+![The program loaded and saturated, one node per name](diagrams/01-program-kb.svg)
 
 Every name is one node, and every one is drawn the same way. `Person` is one node: the declaration of `lives-in`
 points at it as its second argument, and `(is-instance Norwegian Person)` points at it as an arrow's end. Each
@@ -85,16 +68,7 @@ That is the **compact** view. The **detailed** view is the canonical one: every 
 octagon, with an edge numbered by position to each argument, so a fact of any arity has the same shape and a fact
 can itself be an argument. `ein render program --levi FILE` draws the program's stated fact so:
 
-```dot
-digraph facts {
-  ranksep=0.55;
-  "h_1_lives-in" [shape=octagon, label="lives-in"];
-  "Norwegian" [shape=rectangle];
-  "House-1" [shape=rectangle];
-  "h_1_lives-in" -> "Norwegian" [label="1"];
-  "h_1_lives-in" -> "House-1" [label="2"];
-}
-```
+![The program's stated fact in the detailed view: an octagon with a numbered edge to each argument](diagrams/01-fact-levi.svg)
 
 The compact view is a projection of the detailed one: collapse each octagon of one or two arguments into an arrow,
 and promote the relation's name to the arrow's label. The two say the same thing of a graph of unary and binary
@@ -104,18 +78,7 @@ facts, which is most of a puzzle; past two arguments only the detailed one can b
 kb` draws the second argument of each `is-a` fact as a box, the first as an oval, and the fact as a dashed arrow
 with an empty head. The same program with `is-instance` spelt `is-a`, the declarations' facts left out:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "House" [shape=box, label="House"];
-  "Person" [shape=box, label="Person"];
-  "House-1" [shape=oval, label="House-1"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-  "Norwegian" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "House-1" [label="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
-}
-```
+![The same program with is-instance spelt is-a: boxes, ovals and dashed arrows](diagrams/01-is-a-convention.svg)
 
 The drawing is keyed on the spelling `is-a` and on nothing else: the two programs hold the same facts under two
 names, and answer alike. `--no-types` leaves the boxes and their arrows out.
@@ -252,54 +215,12 @@ its activator binds*. `ein solve FILE`:
 `Person`. The rule, as `ein render rule --name first-argument-fits FILE` draws it, the declaration an octagon over
 the relation and its two labels, the fact an arrow labelled with the relation's variable:
 
-```dot
-digraph rule_first_argument_fits_lhs_rhs {
-  rankdir=TB;
-  label="first-argument-fits"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?T1_L" [label="?T1", shape=diamond];
-    "?T2_L" [label="?T2", shape=diamond];
-    "?x1_L" [label="?x1", shape=diamond];
-    "?x2_L" [label="?x2", shape=diamond];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?T1_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?T2_L" [label="3", color="#bcbd22"];
-    "?x1_L" -> "?x2_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    "?x1_L" -> "?T1_L" [label="is-instance", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "(?R ?x1 ?x2)_R" [label="(?R ?x1 ?x2)", shape=rectangle];
-    "h2_fits_R" [shape=octagon, label="fits", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_fits_R" -> "(?R ?x1 ?x2)_R" [label="1", color="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule first-argument-fits: a declaration, a fact and a membership, and the fact it asserts](diagrams/01-rule-first-argument-fits.svg)
 
 The second rule, `ein render rule --name every-declared-pair FILE`, matches a declaration alone and asserts the
 first rule's activator, a fact about the relation's name:
 
-```dot
-digraph rule_every_declared_pair_lhs_rhs {
-  rankdir=TB;
-  label="every-declared-pair"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?T1_L" [label="?T1", shape=diamond];
-    "?T2_L" [label="?T2", shape=diamond];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?T1_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?T2_L" [label="3", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?R_R" [label="?R", shape=diamond];
-    "h2_first-argument-fits_R" [shape=octagon, label="first-argument-fits", color="#d62728", fontcolor="#d62728"];
-    "h2_first-argument-fits_R" -> "?R_R" [label="1", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule every-declared-pair: a declaration alone, and the activator it asserts](diagrams/01-rule-every-declared-pair.svg)
 
 In words, from the state file: *Norwegian is an instance of Person, the label lives-in declares for its first
 argument*. In mathematics the rule is one implication, for every relation $R$ it is activated on:

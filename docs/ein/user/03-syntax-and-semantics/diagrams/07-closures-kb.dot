@@ -1,0 +1,10 @@
+digraph kb {
+  rankdir=BT;
+  "Alice" -> "Bob" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
+  "B1" -> "B2" [label="above", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "Bob" -> "Alice" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Carol" -> "Bob" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Alice" -> "Carol" [label="knows by transitive", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Carol" -> "Alice" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
+}

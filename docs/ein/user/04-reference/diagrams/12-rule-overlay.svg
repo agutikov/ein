@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_symmetric_overlay Pages: 1 -->
+<svg width="100pt" height="163pt"
+ viewBox="0.00 0.00 100.00 163.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 158.5)">
+<title>rule_symmetric_overlay</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-158.5 95.75,-158.5 95.75,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="45.88" y="-137.2" font-family="Times,serif" font-size="14.00">symmetric</text>
+<!-- ?a -->
+<g id="node1" class="node">
+<title>?a</title>
+<polygon fill="none" stroke="black" points="45.88,-129.25 14.38,-111.25 45.87,-93.25 77.37,-111.25 45.88,-129.25"/>
+<text xml:space="preserve" text-anchor="middle" x="45.88" y="-106.58" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?b -->
+<g id="node2" class="node">
+<title>?b</title>
+<polygon fill="none" stroke="black" points="45.88,-36 13.63,-18 45.87,0 78.12,-18 45.88,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="45.88" y="-13.32" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?a&#45;&gt;?b -->
+<g id="edge1" class="edge">
+<title>?a&#45;&gt;?b</title>
+<path fill="none" stroke="#2ca02c" d="M35.96,-98.8C30.66,-91.9 24.66,-82.65 21.88,-73.25 19.7,-65.9 19.7,-63.35 21.88,-56 23.5,-50.51 26.23,-45.07 29.27,-40.11"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="32.05,-42.24 34.85,-32.02 26.29,-38.27 32.05,-42.24"/>
+<text xml:space="preserve" text-anchor="middle" x="35.38" y="-59.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">?rel</text>
+</g>
+<!-- ?b&#45;&gt;?a -->
+<g id="edge2" class="edge">
+<title>?b&#45;&gt;?a</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M47.51,-35.56C48.06,-41.94 48.6,-49.3 48.88,-56 49.19,-63.66 49.19,-65.59 48.88,-73.25 48.76,-76.18 48.59,-79.24 48.38,-82.28"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="44.9,-81.94 47.62,-92.18 51.88,-82.48 44.9,-81.94"/>
+<text xml:space="preserve" text-anchor="middle" x="62.61" y="-59.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">?rel</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 3172cfaea8558508c0249e50c0cdd3ce023f00711f780ed5c392dca5547ef997 -->

@@ -53,30 +53,12 @@ facts; the rules derive what the property implies, or refute a state that breaks
 
 `ein render constraints FILE` draws each relation with the properties the program states of it:
 
-```dot
-digraph constraints {
-  rankdir=LR;
-  "std.algebra" [shape=rectangle, label="std.algebra\\n«import»"];
-  "knows" [shape=rectangle, label="knows\\n«symmetric, transitive»"];
-  "above" [shape=rectangle, label="above\\n«asymmetric»"];
-}
-```
+![Each relation with the properties the program states of it](diagrams/07-constraints-view.svg)
 
 `ein render program FILE` draws each property fact as what it is, a unary fact about a relation's name: a labelled
 self-loop on that name, beside the relation's own facts (the view trimmed to `knows`):
 
-```dot
-digraph ontology {
-  "knows" [shape=rectangle];
-  "Alice" [shape=rectangle];
-  "Bob" [shape=rectangle];
-  "Carol" [shape=rectangle];
-  "knows" -> "knows" [label="symmetric", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "knows" -> "knows" [label="transitive", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Alice" -> "Bob" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
-}
-```
+![The property facts as self-loops on knows, beside its own facts](diagrams/07-property-facts.svg)
 
 The rules the three property facts activate are `std.algebra`'s. A view draws a program as it is written, its
 imports unresolved, so a library's rule is drawn from the module's own file: `ein render rule --name symmetric
@@ -84,74 +66,16 @@ STDLIB/algebra.ein`, with `STDLIB` a standard library on disk, the directory `ei
 ([install](../01-install.md)). Each is a rewrite over any relation, its
 parameter the arrows' label ([rules](05-rules.md)):
 
-```dot
-digraph rule_symmetric_lhs_rhs {
-  rankdir=TB;
-  label="symmetric"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule symmetric: what it matches and what it asserts](diagrams/07-rule-symmetric.svg)
 
-```dot
-digraph rule_transitive_lhs_rhs {
-  rankdir=TB;
-  label="transitive"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-    "?b_L" -> "?c_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-    "?a_L" -> "?c_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?c_R" [label="?c", shape=diamond];
-    "?a_R" -> "?c_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule transitive: what it matches and what it asserts](diagrams/07-rule-transitive.svg)
 
-```dot
-digraph rule_asymmetric_lhs_rhs {
-  rankdir=TB;
-  label="asymmetric"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    "?b_L" -> "?a_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule asymmetric: what it matches and what it asserts](diagrams/07-rule-asymmetric.svg)
 
 What the two closures added to the program is `ein render kb FILE`, the declarations' and the property facts left
 out: three solid arrows written, four dashed ones derived, and `above` untouched, since a check adds nothing.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "Alice" -> "Bob" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
-  "B1" -> "B2" [label="above", color="#1f77b4", fontcolor="#1f77b4", style=solid];
-  "Bob" -> "Alice" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Carol" -> "Bob" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Alice" -> "Carol" [label="knows by transitive", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Carol" -> "Alice" [label="knows by symmetric", color="#17becf", fontcolor="#17becf", style=dashed];
-}
-```
+![What the two closures added: three arrows written, four derived](diagrams/07-closures-kb.svg)
 
 ## In words
 

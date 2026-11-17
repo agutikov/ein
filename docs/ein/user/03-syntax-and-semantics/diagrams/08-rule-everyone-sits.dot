@@ -1,0 +1,21 @@
+digraph rule_everyone_sits_lhs_rhs {
+  rankdir=TB;
+  label="everyone-sits"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?p_L" [label="?p", shape=diamond];
+    "Person_L" [label="Person", shape=rectangle];
+    "?p_L" -> "Person_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?c_L" [label="?c", shape=diamond];
+      "Chair_L" [label="Chair", shape=rectangle];
+      "?c_L" -> "Chair_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "?p_L" -> "?c_L" [label="seat", color="#1f77b4", fontcolor="#1f77b4"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "seat_R" [label="seat", shape=rectangle];
+    "h1_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_open_R" -> "seat_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}

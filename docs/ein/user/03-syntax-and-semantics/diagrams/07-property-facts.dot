@@ -1,0 +1,10 @@
+digraph ontology {
+  "knows" [shape=rectangle];
+  "Alice" [shape=rectangle];
+  "Bob" [shape=rectangle];
+  "Carol" [shape=rectangle];
+  "knows" -> "knows" [label="symmetric", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "knows" -> "knows" [label="transitive", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Alice" -> "Bob" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
+}

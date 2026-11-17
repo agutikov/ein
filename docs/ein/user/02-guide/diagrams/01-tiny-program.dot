@@ -1,0 +1,18 @@
+digraph kb {
+  rankdir=BT;
+  // types
+  "Nationality" [shape=box, label="Nationality"];
+  // instances
+  "Englishman" [shape=oval, label="Englishman"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+
+  // facts
+  f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
+  "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "Englishman" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "House-1" [label="nation-loc (10)", color="#d62728", fontcolor="#d62728", style=solid];
+}

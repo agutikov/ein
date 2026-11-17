@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="895pt" height="223pt"
+ viewBox="0.00 0.00 895.00 223.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 218.5)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-218.5 891.02,-218.5 891.02,4 -4,4"/>
+<!-- f_d3022860ca -->
+<g id="node1" class="node">
+<title>f_d3022860ca</title>
+<polygon fill="none" stroke="#bcbd22" points="327.15,-10.54 327.15,-25.46 290.68,-36 239.1,-36 202.63,-25.46 202.63,-10.54 239.1,0 290.68,0 327.15,-10.54"/>
+<text xml:space="preserve" text-anchor="middle" x="264.89" y="-13.32" font-family="Times,serif" font-size="14.00" fill="#bcbd22">(relation)</text>
+</g>
+<!-- is&#45;instance -->
+<g id="node2" class="node">
+<title>is&#45;instance</title>
+<ellipse fill="none" stroke="black" cx="64.89" cy="-107.25" rx="64.89" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="64.89" y="-102.58" font-family="Times,serif" font-size="14.00">is&#45;instance</text>
+</g>
+<!-- f_d3022860ca&#45;&gt;is&#45;instance -->
+<g id="edge1" class="edge">
+<title>f_d3022860ca&#45;&gt;is&#45;instance</title>
+<path fill="none" stroke="#bcbd22" d="M230.51,-34C196.96,-48.63 145.78,-70.96 109.2,-86.92"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="107.97,-83.64 100.21,-90.84 110.77,-90.05 107.97,-83.64"/>
+<text xml:space="preserve" text-anchor="middle" x="193.3" y="-57.95" font-family="Times,serif" font-size="14.00">#1</text>
+</g>
+<!-- Object -->
+<g id="node3" class="node">
+<title>Object</title>
+<ellipse fill="none" stroke="black" cx="264.89" cy="-107.25" rx="43.84" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="264.89" y="-102.58" font-family="Times,serif" font-size="14.00">Object</text>
+</g>
+<!-- f_d3022860ca&#45;&gt;Object -->
+<g id="edge2" class="edge">
+<title>f_d3022860ca&#45;&gt;Object</title>
+<path fill="none" stroke="#bcbd22" d="M264.89,-36.24C264.89,-48.07 264.89,-64.05 264.89,-77.75"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="261.39,-77.53 264.89,-87.53 268.39,-77.53 261.39,-77.53"/>
+<text xml:space="preserve" text-anchor="middle" x="275.39" y="-57.95" font-family="Times,serif" font-size="14.00">#2</text>
+</g>
+<!-- Type -->
+<g id="node4" class="node">
+<title>Type</title>
+<ellipse fill="none" stroke="black" cx="361.89" cy="-107.25" rx="35.42" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="361.89" y="-102.58" font-family="Times,serif" font-size="14.00">Type</text>
+</g>
+<!-- f_d3022860ca&#45;&gt;Type -->
+<g id="edge3" class="edge">
+<title>f_d3022860ca&#45;&gt;Type</title>
+<path fill="none" stroke="#bcbd22" d="M284.05,-36.24C299.19,-49.86 320.44,-68.97 336.91,-83.78"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="334.13,-85.99 343.91,-90.08 338.81,-80.79 334.13,-85.99"/>
+<text xml:space="preserve" text-anchor="middle" x="332.57" y="-57.95" font-family="Times,serif" font-size="14.00">#3</text>
+</g>
+<!-- is&#45;instance&#45;&gt;is&#45;instance -->
+<g id="edge4" class="edge">
+<title>is&#45;instance&#45;&gt;is&#45;instance</title>
+<path fill="none" stroke="#bcbd22" d="M123.36,-99.03C137.39,-99.67 147.77,-102.41 147.77,-107.25 147.77,-110.65 142.64,-113.02 134.71,-114.34"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="134.48,-110.85 124.87,-115.32 135.17,-117.81 134.48,-110.85"/>
+<text xml:space="preserve" text-anchor="middle" x="175.52" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">relation</text>
+</g>
+<!-- f_37791a66b1 -->
+<g id="node5" class="node">
+<title>f_37791a66b1</title>
+<polygon fill="none" stroke="#bcbd22" points="581.15,-10.54 581.15,-25.46 544.68,-36 493.1,-36 456.63,-25.46 456.63,-10.54 493.1,0 544.68,0 581.15,-10.54"/>
+<text xml:space="preserve" text-anchor="middle" x="518.89" y="-13.32" font-family="Times,serif" font-size="14.00" fill="#bcbd22">(relation)</text>
+</g>
+<!-- lives&#45;in -->
+<g id="node6" class="node">
+<title>lives&#45;in</title>
+<ellipse fill="none" stroke="black" cx="518.89" cy="-107.25" rx="47" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="518.89" y="-102.58" font-family="Times,serif" font-size="14.00">lives&#45;in</text>
+</g>
+<!-- f_37791a66b1&#45;&gt;lives&#45;in -->
+<g id="edge5" class="edge">
+<title>f_37791a66b1&#45;&gt;lives&#45;in</title>
+<path fill="none" stroke="#bcbd22" d="M518.89,-36.24C518.89,-48.07 518.89,-64.05 518.89,-77.75"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="515.39,-77.53 518.89,-87.53 522.39,-77.53 515.39,-77.53"/>
+<text xml:space="preserve" text-anchor="middle" x="529.39" y="-57.95" font-family="Times,serif" font-size="14.00">#1</text>
+</g>
+<!-- Person -->
+<g id="node7" class="node">
+<title>Person</title>
+<ellipse fill="none" stroke="black" cx="702.89" cy="-107.25" rx="45.42" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="702.89" y="-102.58" font-family="Times,serif" font-size="14.00">Person</text>
+</g>
+<!-- f_37791a66b1&#45;&gt;Person -->
+<g id="edge6" class="edge">
+<title>f_37791a66b1&#45;&gt;Person</title>
+<path fill="none" stroke="#bcbd22" d="M551.36,-34.4C582.92,-49.36 630.85,-72.09 664.33,-87.97"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="662.75,-91.09 673.29,-92.22 665.75,-84.77 662.75,-91.09"/>
+<text xml:space="preserve" text-anchor="middle" x="637.87" y="-57.95" font-family="Times,serif" font-size="14.00">#2</text>
+</g>
+<!-- House -->
+<g id="node8" class="node">
+<title>House</title>
+<ellipse fill="none" stroke="black" cx="448.89" cy="-196.5" rx="42.79" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="448.89" y="-191.82" font-family="Times,serif" font-size="14.00">House</text>
+</g>
+<!-- f_37791a66b1&#45;&gt;House -->
+<g id="edge7" class="edge">
+<title>f_37791a66b1&#45;&gt;House</title>
+<path fill="none" stroke="#bcbd22" d="M490.93,-35.72C473.24,-48.05 451.9,-66.57 441.89,-89.25 430.94,-114.05 434.83,-145.3 440.15,-167.48"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="436.74,-168.24 442.69,-177 443.5,-166.44 436.74,-168.24"/>
+<text xml:space="preserve" text-anchor="middle" x="452.39" y="-102.58" font-family="Times,serif" font-size="14.00">#3</text>
+</g>
+<!-- lives&#45;in&#45;&gt;lives&#45;in -->
+<g id="edge8" class="edge">
+<title>lives&#45;in&#45;&gt;lives&#45;in</title>
+<path fill="none" stroke="#bcbd22" d="M561.09,-98.9C573.88,-99.1 583.89,-101.89 583.89,-107.25 583.89,-110.85 579.37,-113.29 572.53,-114.57"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="572.24,-111.08 562.59,-115.47 572.87,-118.05 572.24,-111.08"/>
+<text xml:space="preserve" text-anchor="middle" x="611.64" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">relation</text>
+</g>
+<!-- Norwegian -->
+<g id="node9" class="node">
+<title>Norwegian</title>
+<ellipse fill="none" stroke="black" cx="756.89" cy="-18" rx="65.94" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="756.89" y="-13.32" font-family="Times,serif" font-size="14.00">Norwegian</text>
+</g>
+<!-- Norwegian&#45;&gt;Person -->
+<g id="edge9" class="edge">
+<title>Norwegian&#45;&gt;Person</title>
+<path fill="none" stroke="#7f7f7f" d="M733.45,-35.1C727.11,-40.46 720.8,-46.89 716.39,-54 711.89,-61.25 708.88,-69.96 706.87,-78.16"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="703.49,-77.25 704.95,-87.74 710.35,-78.63 703.49,-77.25"/>
+<text xml:space="preserve" text-anchor="middle" x="754.64" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;instance</text>
+</g>
+<!-- House&#45;1 -->
+<g id="node10" class="node">
+<title>House&#45;1</title>
+<ellipse fill="none" stroke="black" cx="818.89" cy="-107.25" rx="52.26" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="818.89" y="-102.58" font-family="Times,serif" font-size="14.00">House&#45;1</text>
+</g>
+<!-- Norwegian&#45;&gt;House&#45;1 -->
+<g id="edge11" class="edge">
+<title>Norwegian&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="#9467bd" d="M776.09,-35.36C781.92,-40.91 788.06,-47.38 792.89,-54 798.37,-61.51 803.26,-70.35 807.29,-78.6"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="804.05,-79.96 811.41,-87.58 810.41,-77.03 804.05,-79.96"/>
+<text xml:space="preserve" text-anchor="middle" x="845.02" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#9467bd">lives&#45;in (10)</text>
+</g>
+<!-- House&#45;1&#45;&gt;House -->
+<g id="edge10" class="edge">
+<title>House&#45;1&#45;&gt;House</title>
+<path fill="none" stroke="#7f7f7f" d="M779.26,-119.39C771.84,-121.4 764.14,-123.43 756.89,-125.25 665.68,-148.14 558.49,-171.88 497.64,-185.06"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="496.98,-181.63 487.95,-187.16 498.46,-188.47 496.98,-181.63"/>
+<text xml:space="preserve" text-anchor="middle" x="719.35" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;instance</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 9f28a528ac00c3f7e485ff6d600b4c40509ac4d5b059d762a3c87d76ceaea931 -->

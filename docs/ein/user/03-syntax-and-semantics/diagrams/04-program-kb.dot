@@ -1,0 +1,13 @@
+digraph kb {
+  rankdir=BT;
+  "Drink" [shape=box, label="Drink"];
+  "Human" [shape=box, label="Human"];
+  "Coffee" [shape=oval, label="Coffee"];
+  "Jack" [shape=oval, label="Jack"];
+  "Jack" -> "Human" [style=dashed, arrowhead=empty, label="is-a"];
+  "Coffee" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
+  "Human" -> "Drink" [label="can-drink", color="#17becf", fontcolor="#17becf", style=solid];
+  "Jack" -> "Drink" [label="can-drink by inherit-left", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Human" -> "Coffee" [label="can-drink by inherit-right", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Jack" -> "Coffee" [label="can-drink by inherit-right", color="#17becf", fontcolor="#17becf", style=dashed];
+}

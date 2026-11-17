@@ -1,0 +1,11 @@
+@startebnf
+claim = "(region", {item}, ")" (* R, by its nodes *)
+      | "(false)" (* every node dead *);
+item  = model (* one state of R *)
+      | "(merged", to, from, ")" (* a state several commitments reach *)
+      | "(owing", model, {model}, ")" (* R empty, and these alive nodes owe *);
+to    = model (* one of the states listed *);
+from  = model (* its one minimal commitment *)
+      | "(or", model, {model}, ")" (* or its several *);
+model = "(model", {fact}, ")";
+@endebnf

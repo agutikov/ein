@@ -148,67 +148,13 @@ the engine supposes no fact of them: a relation left open is one whose facts the
 **As a graph.** The problem's three sentences, from `ein render program` on that file: a fact of more than two
 arguments is an octagon with a numbered arrow to each, and a number or a quantity, itself a fact, is one node.
 
-```dot
-digraph facts {
-  ranksep=0.55;
-  "h_1_has" [shape=octagon, label="has"];
-  "Bob" [shape=rectangle];
-  "apples" [shape=rectangle];
-  "t0" [shape=rectangle];
-  "h_2_gave" [shape=octagon, label="gave"];
-  "Alice" [shape=rectangle];
-  "t1" [shape=rectangle];
-  "h_3_asked" [shape=octagon, label="asked"];
-  "h_1_has" -> "Bob" [label="1"];
-  "h_1_has" -> "apples" [label="2"];
-  "h_1_has" -> "(n z 5)" [label="3"];
-  "h_1_has" -> "t0" [label="4"];
-  "h_2_gave" -> "Bob" [label="1"];
-  "h_2_gave" -> "Alice" [label="2"];
-  "h_2_gave" -> "apples" [label="3"];
-  "h_2_gave" -> "(n z 2)" [label="4"];
-  "h_2_gave" -> "t0" [label="5"];
-  "h_2_gave" -> "t1" [label="6"];
-  "h_3_asked" -> "(amount Bob apples t1)" [label="1"];
-}
-```
+![The word problem's three sentences as facts](diagrams/08-problem-facts.svg)
 
 And the rule that turns *gave* into a subtraction, from `ein render rule --name gave-means-less`: it matches a wanted
 amount, the sentence that says what was given, and the value the giver had before, and asserts the request `(sub ?a
 ?x)`, the dashed arrow.
 
-```dot
-digraph rule_gave_means_less_lhs_rhs {
-  rankdir=TB;
-  label="gave-means-less"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "(amount ?p ?k ?u)_L" [label="(amount ?p ?k ?u)", shape=rectangle];
-    "?p_L" [label="?p", shape=diamond];
-    "?r_L" [label="?r", shape=diamond];
-    "?k_L" [label="?k", shape=diamond];
-    "?x_L" [label="?x", shape=diamond];
-    "?t_L" [label="?t", shape=diamond];
-    "?u_L" [label="?u", shape=diamond];
-    "(amount ?p ?k ?t)_L" [label="(amount ?p ?k ?t)", shape=rectangle];
-    "?a_L" [label="?a", shape=diamond];
-    "h1_wanted_L" [shape=octagon, label="wanted", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_wanted_L" -> "(amount ?p ?k ?u)_L" [label="1", color="#7f7f7f"];
-    "h2_gave_L" [shape=octagon, label="gave", color="#1f77b4", fontcolor="#1f77b4"];
-    "h2_gave_L" -> "?p_L" [label="1", color="#1f77b4"];
-    "h2_gave_L" -> "?r_L" [label="2", color="#1f77b4"];
-    "h2_gave_L" -> "?k_L" [label="3", color="#1f77b4"];
-    "h2_gave_L" -> "?x_L" [label="4", color="#1f77b4"];
-    "h2_gave_L" -> "?t_L" [label="5", color="#1f77b4"];
-    "h2_gave_L" -> "?u_L" [label="6", color="#1f77b4"];
-    "(amount ?p ?k ?t)_L" -> "?a_L" [label="value", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?x_R" [label="?x", shape=diamond];
-    "?a_R" -> "?x_R" [label="sub", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  }
-}
-```
+![The rule gave-means-less: a wanted amount, what was given and the value before, and the request it asserts](diagrams/08-rule-gave-means-less.svg)
 
 The answer:
 

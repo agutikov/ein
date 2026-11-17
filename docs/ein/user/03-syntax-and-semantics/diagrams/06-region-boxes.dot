@@ -1,0 +1,16 @@
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · boxes.ein\nn = 2 · |R| = 2 of 4 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m1 [label="(in Cat B1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m2 [label="(in Dog B2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m3 [label="(in Cat B1)\n(in Dog B2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  { rank=same; m0 }
+  { rank=same; m1; m2 }
+  { rank=same; m3 }
+  m0 -> m1 [color="#238b45", style=solid, penwidth=2];
+  m0 -> m2 [color="#cb181d", style=solid, penwidth=1.2];
+  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
+  m2 -> m3 [color="#bdbdbd", style=solid, penwidth=0.6];
+}

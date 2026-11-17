@@ -1,0 +1,6 @@
+digraph kb {
+  rankdir=BT;
+
+  // facts
+  "Norwegian" -> "House-1" [label="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
+}

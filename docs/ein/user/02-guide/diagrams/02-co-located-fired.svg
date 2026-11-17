@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="673pt" height="223pt"
+ viewBox="0.00 0.00 673.00 223.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 218.5)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-218.5 669.15,-218.5 669.15,4 -4,4"/>
+<!-- Alice -->
+<g id="node1" class="node">
+<title>Alice</title>
+<ellipse fill="none" stroke="black" cx="282.73" cy="-18" rx="35.42" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="282.73" y="-13.32" font-family="Times,serif" font-size="14.00">Alice</text>
+</g>
+<!-- Tea -->
+<g id="node2" class="node">
+<title>Tea</title>
+<ellipse fill="none" stroke="black" cx="128.73" cy="-107.25" rx="28.59" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="128.73" y="-102.58" font-family="Times,serif" font-size="14.00">Tea</text>
+</g>
+<!-- Alice&#45;&gt;Tea -->
+<g id="edge1" class="edge">
+<title>Alice&#45;&gt;Tea</title>
+<path fill="none" stroke="#bcbd22" d="M247.12,-19.54C192.74,-21.2 92.93,-27.83 70.73,-54 58.76,-68.1 76.04,-82.02 94.78,-91.94"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="92.98,-94.96 103.5,-96.21 96.06,-88.67 92.98,-94.96"/>
+<text xml:space="preserve" text-anchor="middle" x="118.73" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#bcbd22">co&#45;located (1)</text>
+</g>
+<!-- Cat -->
+<g id="node3" class="node">
+<title>Cat</title>
+<ellipse fill="none" stroke="black" cx="286.73" cy="-196.5" rx="28.59" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="286.73" y="-191.82" font-family="Times,serif" font-size="14.00">Cat</text>
+</g>
+<!-- Alice&#45;&gt;Cat -->
+<g id="edge2" class="edge">
+<title>Alice&#45;&gt;Cat</title>
+<path fill="none" stroke="#bcbd22" d="M315.98,-24.43C333.34,-29.14 353.13,-37.87 363.73,-54 389.73,-93.55 389.36,-120.7 363.73,-160.5 355.05,-173.98 339.77,-182.33 325.1,-187.47"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="324.11,-184.11 315.56,-190.37 326.15,-190.81 324.11,-184.11"/>
+<text xml:space="preserve" text-anchor="middle" x="431.09" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">co&#45;located (2)</text>
+</g>
+<!-- Tea&#45;&gt;Alice -->
+<g id="edge3" class="edge">
+<title>Tea&#45;&gt;Alice</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M144.26,-91.86C158.97,-78.43 180.19,-59.64 189.73,-54 205.81,-44.49 224.92,-36.76 241.63,-31.01"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="242.37,-34.45 250.77,-27.99 240.17,-27.81 242.37,-34.45"/>
+<text xml:space="preserve" text-anchor="middle" x="276.73" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#bcbd22">co&#45;located by symmetric</text>
+</g>
+<!-- Tea&#45;&gt;Cat -->
+<g id="edge5" class="edge">
+<title>Tea&#45;&gt;Cat</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M100.29,-110.58C55.89,-115.25 -22.01,-128.23 6.48,-160.5 22.13,-178.23 173.36,-189.11 246.93,-193.4"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="246.34,-196.87 256.53,-193.95 246.74,-189.89 246.34,-196.87"/>
+<text xml:space="preserve" text-anchor="middle" x="90.1" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#bcbd22">co&#45;located by transitive</text>
+</g>
+<!-- Cat&#45;&gt;Alice -->
+<g id="edge4" class="edge">
+<title>Cat&#45;&gt;Alice</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M314.77,-191.9C379.02,-182.47 528.01,-153.23 482.73,-89.25 448.16,-40.41 376.82,-25.27 329.37,-20.73"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="329.91,-17.26 319.66,-19.93 329.34,-24.24 329.91,-17.26"/>
+<text xml:space="preserve" text-anchor="middle" x="578.15" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">co&#45;located by symmetric</text>
+</g>
+<!-- Cat&#45;&gt;Tea -->
+<g id="edge6" class="edge">
+<title>Cat&#45;&gt;Tea</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M261.34,-187.83C242.76,-181.71 217.27,-172.22 196.48,-160.5 195.3,-159.84 173.6,-143.07 155.07,-128.7"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="157.31,-126.01 147.26,-122.64 153.02,-131.54 157.31,-126.01"/>
+<text xml:space="preserve" text-anchor="middle" x="280.1" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#bcbd22">co&#45;located by transitive</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 01e032f16e112eefb793e4362a60566bcab883a2a635f4a0242a987d90a4476b -->

@@ -100,40 +100,7 @@ diagram, one layer per number of candidates, an edge per added candidate. Fill i
 amber owing, red dead. A double border marks the minimal line, a heavy green one the maximal line. The chairs
 program, abridged to its first three layers (the four nodes of layer 3 and the top are dead):
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · chairs.ein\nn = 4 · |R| = 7 of 16 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
-  m1 [label="(seat Ann C1)\nR", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#525252", penwidth=1];
-  m2 [label="(seat Ann C2)\nR", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#525252", penwidth=1];
-  m4 [label="(seat Bob C1)\nR", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#525252", penwidth=1];
-  m8 [label="(seat Bob C2)\nR", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#525252", penwidth=1];
-  m3 [label="(seat Ann C1)\n(seat Ann C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m5 [label="(seat Ann C1)\n(seat Bob C1)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m6 [label="(seat Ann C2)\n(seat Bob C1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  m9 [label="(seat Ann C1)\n(seat Bob C2)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  m10 [label="(seat Ann C2)\n(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m12 [label="(seat Bob C1)\n(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m0 -> m1 [color="#238b45", style=solid, penwidth=2];
-  m0 -> m2 [color="#238b45", style=solid, penwidth=2];
-  m0 -> m4 [color="#238b45", style=solid, penwidth=2];
-  m0 -> m8 [color="#238b45", style=solid, penwidth=2];
-  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
-  m1 -> m5 [color="#cb181d", style=solid, penwidth=1.2];
-  m1 -> m9 [color="#238b45", style=solid, penwidth=2];
-  m2 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
-  m2 -> m6 [color="#238b45", style=solid, penwidth=2];
-  m2 -> m10 [color="#cb181d", style=solid, penwidth=1.2];
-  m4 -> m5 [color="#cb181d", style=solid, penwidth=1.2];
-  m4 -> m6 [color="#238b45", style=solid, penwidth=2];
-  m4 -> m12 [color="#cb181d", style=solid, penwidth=1.2];
-  m8 -> m9 [color="#238b45", style=solid, penwidth=2];
-  m8 -> m10 [color="#cb181d", style=solid, penwidth=1.2];
-  m8 -> m12 [color="#cb181d", style=solid, penwidth=1.2];
-}
-```
+![The lattice of the chairs program, its first three layers](diagrams/13-region-chairs.svg)
 
 With a run's dumps beside it, `--visited` and `--answer`, the drawing also shows what that run did: which nodes it
 visited and which states it reported ([rendering](../04-reference/12-rendering.md)). The program's three rules, the

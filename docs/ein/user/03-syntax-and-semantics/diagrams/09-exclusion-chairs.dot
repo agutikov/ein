@@ -1,0 +1,12 @@
+graph exclusion {
+  graph [label="chairs.ein: the exclusion graph. 4 pairs the theory excludes alone (solid; dotted where a member is dead alone at root), 0 the puzzle's (dashed)", labelloc=t, fontsize=11, overlap=scale];
+  node [shape=box, fontsize=9, margin="0.06,0.03", height=0.25];
+  n0 [label="(seat Ann C1)", style=filled, fillcolor="#ddf4ff"];
+  n1 [label="(seat Ann C2)", style=filled, fillcolor="#ddf4ff"];
+  n2 [label="(seat Bob C1)", style=filled, fillcolor="#ddf4ff"];
+  n3 [label="(seat Bob C2)", style=filled, fillcolor="#ddf4ff"];
+  n0 -- n1 [color="#0969da", penwidth=1.3];
+  n0 -- n2 [color="#0969da", penwidth=1.3];
+  n1 -- n3 [color="#0969da", penwidth=1.3];
+  n2 -- n3 [color="#0969da", penwidth=1.3];
+}

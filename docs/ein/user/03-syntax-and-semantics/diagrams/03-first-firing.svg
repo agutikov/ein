@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: step1 Pages: 1 -->
+<svg width="643pt" height="51pt"
+ viewBox="0.00 0.00 643.00 51.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 46.5)">
+<title>step1</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-46.5 639.25,-46.5 639.25,4 -4,4"/>
+<!-- f_976d7e7ab9 -->
+<g id="node1" class="node">
+<title>f_976d7e7ab9</title>
+<path fill="none" stroke="black" d="M130.75,-39.25C130.75,-39.25 12,-39.25 12,-39.25 6,-39.25 0,-33.25 0,-27.25 0,-27.25 0,-15.25 0,-15.25 0,-9.25 6,-3.25 12,-3.25 12,-3.25 130.75,-3.25 130.75,-3.25 136.75,-3.25 142.75,-9.25 142.75,-15.25 142.75,-15.25 142.75,-27.25 142.75,-27.25 142.75,-33.25 136.75,-39.25 130.75,-39.25"/>
+<text xml:space="preserve" text-anchor="middle" x="71.38" y="-16.57" font-family="Times,serif" font-size="14.00">knows(Alice, Bob)</text>
+</g>
+<!-- fire0_knows&#45;back -->
+<g id="node3" class="node">
+<title>fire0_knows&#45;back</title>
+<path fill="none" stroke="#8c564b" stroke-width="2" d="M444.5,-42.5C444.5,-42.5 190.75,-42.5 190.75,-42.5 184.75,-42.5 178.75,-36.5 178.75,-30.5 178.75,-30.5 178.75,-12 178.75,-12 178.75,-6 184.75,0 190.75,0 190.75,0 444.5,0 444.5,0 450.5,0 456.5,-6 456.5,-12 456.5,-12 456.5,-30.5 456.5,-30.5 456.5,-36.5 450.5,-42.5 444.5,-42.5"/>
+<text xml:space="preserve" text-anchor="middle" x="317.62" y="-25.2" font-family="Times,serif" font-size="14.00" fill="#8c564b">knows&#45;back</text>
+<text xml:space="preserve" text-anchor="middle" x="317.62" y="-7.95" font-family="Times,serif" font-size="14.00" fill="#8c564b">Alice knows Bob, so Bob knows Alice</text>
+</g>
+<!-- f_976d7e7ab9&#45;&gt;fire0_knows&#45;back -->
+<g id="edge1" class="edge">
+<title>f_976d7e7ab9&#45;&gt;fire0_knows&#45;back</title>
+<path fill="none" stroke="#8c564b" d="M143.02,-21.25C150.77,-21.25 158.86,-21.25 167.12,-21.25"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="166.97,-24.75 176.97,-21.25 166.97,-17.75 166.97,-24.75"/>
+</g>
+<!-- f_884e5d5933 -->
+<g id="node2" class="node">
+<title>f_884e5d5933</title>
+<path fill="none" stroke="black" stroke-width="2" d="M623.25,-39.25C623.25,-39.25 504.5,-39.25 504.5,-39.25 498.5,-39.25 492.5,-33.25 492.5,-27.25 492.5,-27.25 492.5,-15.25 492.5,-15.25 492.5,-9.25 498.5,-3.25 504.5,-3.25 504.5,-3.25 623.25,-3.25 623.25,-3.25 629.25,-3.25 635.25,-9.25 635.25,-15.25 635.25,-15.25 635.25,-27.25 635.25,-27.25 635.25,-33.25 629.25,-39.25 623.25,-39.25"/>
+<text xml:space="preserve" text-anchor="middle" x="563.88" y="-16.57" font-family="Times,serif" font-size="14.00">knows(Bob, Alice)</text>
+</g>
+<!-- fire0_knows&#45;back&#45;&gt;f_884e5d5933 -->
+<g id="edge2" class="edge">
+<title>fire0_knows&#45;back&#45;&gt;f_884e5d5933</title>
+<path fill="none" stroke="#8c564b" stroke-width="2" d="M456.81,-21.25C464.77,-21.25 472.63,-21.25 480.26,-21.25"/>
+<polygon fill="#8c564b" stroke="#8c564b" stroke-width="2" points="478.62,-24.75 488.62,-21.25 478.62,-17.75 478.62,-24.75"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 58ab80bb079d0800945e17daab443730937d623939c895ca308ba5ee46438b70 -->

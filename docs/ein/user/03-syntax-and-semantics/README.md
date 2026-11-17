@@ -13,7 +13,7 @@ page, and **the four are of one example**, so a reader can lay them side by side
 | heading | what it shows | why it is there |
 |---|---|---|
 | **In Ein** | a small program that loads and runs, and what `ein` prints for it. Ein is the main language of these pages: it is what a reader writes | what to type |
-| **As a graph** | that program as the engine draws it, in a `dot` block, with the command that drew it: `ein render kb` for what the knowledge base holds, `ein render rule` for a rule as a rewrite, `ein render region` for the lattice of commitments | the knowledge base is a graph, and every form has a fixed drawing |
+| **As a graph** | that program as the engine draws it, an image whose source is a `.dot` file under [`diagrams/`](diagrams/), with the command that wrote it: `ein render kb` for what the knowledge base holds, `ein render rule` for a rule as a rewrite, `ein render region` for the lattice of commitments | the knowledge base is a graph, and every form has a fixed drawing |
 | **In words** | what the Ein says: the English the program carries in its `:why`, `:source` and `:goal-text`, and the sentences the engine prints from it | every statement a program makes can be read back as English |
 | **In mathematics** | what the notion is, as a formula: the set, the relation, the implication a rule is, the condition an obligation owes, what a hypothesis adds, what the answer is | what the concept is, independent of how it is written or drawn |
 

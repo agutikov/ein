@@ -56,18 +56,7 @@ record that the file wrote that fact as a value (below).
 `ein render kb FILE` draws every fact of the saturated knowledge base, styled by where it came from. The program
 above, its declarations' facts left out:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "Alice" -> "Bob" [label="knows Alice says she knows Bob", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
-  "Carol" -> "(knows Carol Dan)" [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_2b1fa186fb [shape=octagon, label="(written)\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_2b1fa186fb -> "(knows Carol Dan)" [label="#1", color="#d62728", style=dashed];
-  "Bob" -> "Alice" [label="knows by knows-back", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Carol" -> "Bob" [label="knows by knows-back", color="#17becf", fontcolor="#17becf", style=dashed];
-}
-```
+![The facts of the saturated knowledge base, styled by where each came from](diagrams/03-program-kb.svg)
 
 A **given** fact is a solid arrow whose label carries its source, the short `(N)` where the source has one and the
 whole sentence otherwise; a **background** fact is a plain solid arrow; a **derived** fact is dashed, labelled with
@@ -79,37 +68,13 @@ negations; `ein render program FILE` draws a program's written negations.
 The two dashed arrows are firings of the program's one rule, which `ein render rule --name knows-back FILE` draws as
 what it matches and what it asserts ([rules](05-rules.md)):
 
-```dot
-digraph rule_knows_back_lhs_rhs {
-  rankdir=TB;
-  label="knows-back"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="knows", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" -> "?a_R" [label="knows", color="#17becf", fontcolor="#17becf", style=dashed];
-  }
-}
-```
+![The rule knows-back: what it matches and what it asserts](diagrams/03-rule-knows-back.svg)
 
 and where a derived fact came from is itself a graph, the fact's record drawn: `ein solve FILE --trace OUT.md`
 writes one drawing per firing, the premises on the left, the rule with its reason in the middle, the fact it added
 on the right. The first step of this program:
 
-```dot
-digraph step1 {
-  rankdir=LR;
-  "f_976d7e7ab9" [label="knows(Alice, Bob)", shape=box, style=rounded];
-  "f_884e5d5933" [label="knows(Bob, Alice)", shape=box, style=rounded, penwidth=2];
-  "fire0_knows-back" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="knows-back\nAlice knows Bob, so Bob knows Alice"];
-  "f_976d7e7ab9" -> "fire0_knows-back" [color="#8c564b"];
-  "fire0_knows-back" -> "f_884e5d5933" [color="#8c564b", style=bold];
-}
-```
+![The program's first firing: its premise, the rule with its reason, the fact it added](diagrams/03-first-firing.svg)
 
 ## In words
 

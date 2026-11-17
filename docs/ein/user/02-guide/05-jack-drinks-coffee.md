@@ -112,24 +112,7 @@ relation named `is-a`), an `is-a` fact as a dashed arrow with an open head, any 
 arrow labelled by its relation, a derived one dashed and labelled with the rule that derived it. Leaving out the
 `(relation …)` declarations it also draws, it is:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  // types
-  "Drink" [shape=box];
-  "Human" [shape=box];
-  // instances
-  "Coffee" [shape=oval];
-  "Jack" [shape=oval];
-  "Jack" -> "Human" [style=dashed, arrowhead=empty, label="is-a"];
-  "Coffee" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-  "Human" -> "Drink" [label="can-drink", color="#17becf", fontcolor="#17becf", style=solid];
-  "Jack" -> "Coffee" [label="drinks puzzle text", color="#e377c2", fontcolor="#e377c2", style=solid];
-  "Jack" -> "Drink" [label="can-drink by inherit-rel-lhs", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Human" -> "Coffee" [label="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Jack" -> "Coffee" [label="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed];
-}
-```
+![Jack drinks coffee in the compact view: one stated can-drink arrow and three derived](diagrams/05-jack-compact.svg)
 
 The three dashed `can-drink` arrows are the *inheritance closure* of the stated fact `(can-drink Human Drink)` across
 the `is-a` arrows: every pair of $\lbrace \mathsf{Human}, \mathsf{Jack} \rbrace \times \lbrace \mathsf{Drink},
@@ -141,38 +124,7 @@ edge, the way [facts](../03-syntax-and-semantics/03-facts.md) states a fact and 
 other number of arguments. It makes visible what the compact view hides: `(can-drink Human Drink)` and
 `(can-drink Jack Coffee)` are distinct facts about different argument tuples of one relation.
 
-```dot
-digraph jack_levi {
-  rankdir=BT;
-
-  // relations
-  rel_isa   [shape=box, style=rounded, label="is-a"];
-  rel_can   [shape=box, style=rounded, label="can-drink"];
-  rel_drink [shape=box, style=rounded, label="drinks"];
-
-  // the names: a box where an is-a arrow points, an oval where one starts
-  Human [shape=box];  Drink [shape=box];
-  Jack [shape=oval];  Coffee [shape=oval];
-
-  // stated facts
-  isa_jack [shape=octagon, label="(is-a Jack Human)"];
-  isa_jack -> rel_isa [style=dashed]; isa_jack -> Jack [label="#1"]; isa_jack -> Human [label="#2"];
-  isa_coffee [shape=octagon, label="(is-a Coffee Drink)"];
-  isa_coffee -> rel_isa [style=dashed]; isa_coffee -> Coffee [label="#1"]; isa_coffee -> Drink [label="#2"];
-  can_HD [shape=octagon, label="(can-drink Human Drink)"];
-  can_HD -> rel_can [style=dashed]; can_HD -> Human [label="#1"]; can_HD -> Drink [label="#2"];
-  drinks_JC [shape=octagon, label="(drinks Jack Coffee)\n:source puzzle text"];
-  drinks_JC -> rel_drink [style=dashed]; drinks_JC -> Jack [label="#1"]; drinks_JC -> Coffee [label="#2"];
-
-  // derived facts
-  can_JD [shape=octagon, style=dashed, label="(can-drink Jack Drink)\nby inherit-rel-lhs"];
-  can_JD -> rel_can [style=dashed]; can_JD -> Jack [label="#1"]; can_JD -> Drink [label="#2"];
-  can_HC [shape=octagon, style=dashed, label="(can-drink Human Coffee)\nby inherit-rel-rhs"];
-  can_HC -> rel_can [style=dashed]; can_HC -> Human [label="#1"]; can_HC -> Coffee [label="#2"];
-  can_JC [shape=octagon, style=dashed, label="(can-drink Jack Coffee)\nby either rule"];
-  can_JC -> rel_can [style=dashed]; can_JC -> Jack [label="#1"]; can_JC -> Coffee [label="#2"];
-}
-```
+![The same facts in the detailed view, every fact a node of its own](diagrams/05-jack-levi.svg)
 
 ## In mathematics
 

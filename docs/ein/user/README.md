@@ -44,8 +44,9 @@ claim on any of these pages settled.
 - **Ein is the language of these pages**: a program a reader can run, in a ```` ```lisp ```` block, and what `ein`
   prints for it, in a ```` ```text ```` block. A graph shows what the Ein says, words say it, and a formula is added
   where it explains ([Q-M1f.370](../../decisions/docs/Q-M1f.370-each-perspective-of-the-documentation-is-written.md)).
-- A drawing is a ```` ```dot ```` block, which Graphviz renders, and the grammar's diagrams are
-  ```` ```plantuml ```` blocks; none is drawn in characters
+- A drawing is an image. Its source is a file in the `diagrams/` folder beside the page, a `.dot` that Graphviz
+  draws or, for the grammar's diagrams, a `.puml` that PlantUML draws, and the page shows the `.svg` drawn from it;
+  none is drawn in characters
   ([Q-M1f.368](../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)). A drawing of a
   program is the one `ein render` writes for it, where a page names the command.
 - A formula is TeX, between `$` in a line and between two `$$` lines when displayed

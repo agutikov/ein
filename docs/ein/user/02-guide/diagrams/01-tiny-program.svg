@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="607pt" height="133pt"
+ viewBox="0.00 0.00 607.00 133.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 129.25)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-129.25 602.73,-129.25 602.73,4 -4,4"/>
+<!-- Nationality -->
+<g id="node1" class="node">
+<title>Nationality</title>
+<polygon fill="none" stroke="black" points="277.69,-125.25 182.19,-125.25 182.19,-89.25 277.69,-89.25 277.69,-125.25"/>
+<text xml:space="preserve" text-anchor="middle" x="229.94" y="-102.58" font-family="Times,serif" font-size="14.00">Nationality</text>
+</g>
+<!-- Englishman -->
+<g id="node2" class="node">
+<title>Englishman</title>
+<ellipse fill="none" stroke="black" cx="229.94" cy="-18" rx="70.67" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="229.94" y="-13.32" font-family="Times,serif" font-size="14.00">Englishman</text>
+</g>
+<!-- Englishman&#45;&gt;Nationality -->
+<g id="edge6" class="edge">
+<title>Englishman&#45;&gt;Nationality</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M229.94,-36.24C229.94,-48.07 229.94,-64.05 229.94,-77.75"/>
+<polygon fill="none" stroke="black" points="226.44,-77.53 229.94,-87.53 233.44,-77.53 226.44,-77.53"/>
+<text xml:space="preserve" text-anchor="middle" x="242.31" y="-57.95" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Norwegian -->
+<g id="node3" class="node">
+<title>Norwegian</title>
+<ellipse fill="none" stroke="black" cx="65.94" cy="-18" rx="65.94" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="65.94" y="-13.32" font-family="Times,serif" font-size="14.00">Norwegian</text>
+</g>
+<!-- Norwegian&#45;&gt;Nationality -->
+<g id="edge5" class="edge">
+<title>Norwegian&#45;&gt;Nationality</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M108.71,-32.04C125.18,-37.79 143.88,-45.25 159.94,-54 174.27,-61.8 188.91,-72.28 201.08,-81.8"/>
+<polygon fill="none" stroke="black" points="198.68,-84.36 208.68,-87.88 203.06,-78.9 198.68,-84.36"/>
+<text xml:space="preserve" text-anchor="middle" x="198.61" y="-57.95" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- House&#45;1 -->
+<g id="node7" class="node">
+<title>House&#45;1</title>
+<ellipse fill="none" stroke="black" cx="55.94" cy="-107.25" rx="52.26" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="55.94" y="-102.58" font-family="Times,serif" font-size="14.00">House&#45;1</text>
+</g>
+<!-- Norwegian&#45;&gt;House&#45;1 -->
+<g id="edge7" class="edge">
+<title>Norwegian&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="#d62728" d="M60.81,-36.3C59.37,-41.9 57.98,-48.17 57.19,-54 56.17,-61.55 55.68,-69.78 55.49,-77.41"/>
+<polygon fill="#d62728" stroke="#d62728" points="51.99,-77.22 55.41,-87.24 58.99,-77.27 51.99,-77.22"/>
+<text xml:space="preserve" text-anchor="middle" x="108.56" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#d62728">nation&#45;loc (10)</text>
+</g>
+<!-- f_4405c3d64e -->
+<g id="node4" class="node">
+<title>f_4405c3d64e</title>
+<polygon fill="none" stroke="#bcbd22" points="443.2,-10.54 443.2,-25.46 406.73,-36 355.15,-36 318.68,-25.46 318.68,-10.54 355.15,0 406.73,0 443.2,-10.54"/>
+<text xml:space="preserve" text-anchor="middle" x="380.94" y="-13.32" font-family="Times,serif" font-size="14.00" fill="#bcbd22">(relation)</text>
+</g>
+<!-- f_4405c3d64e&#45;&gt;Nationality -->
+<g id="edge2" class="edge">
+<title>f_4405c3d64e&#45;&gt;Nationality</title>
+<path fill="none" stroke="#bcbd22" d="M352.18,-35.62C328.92,-49.06 295.88,-68.15 270.02,-83.09"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="268.36,-80.01 261.45,-88.04 271.86,-86.07 268.36,-80.01"/>
+<text xml:space="preserve" text-anchor="middle" x="329.46" y="-57.95" font-family="Times,serif" font-size="14.00">#2</text>
+</g>
+<!-- nation&#45;loc -->
+<g id="node5" class="node">
+<title>nation&#45;loc</title>
+<ellipse fill="none" stroke="black" cx="361.94" cy="-107.25" rx="60.15" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="361.94" y="-102.58" font-family="Times,serif" font-size="14.00">nation&#45;loc</text>
+</g>
+<!-- f_4405c3d64e&#45;&gt;nation&#45;loc -->
+<g id="edge1" class="edge">
+<title>f_4405c3d64e&#45;&gt;nation&#45;loc</title>
+<path fill="none" stroke="#bcbd22" d="M377.19,-36.24C374.58,-48.19 371.06,-64.37 368.05,-78.17"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="364.72,-77.05 366.01,-87.57 371.55,-78.54 364.72,-77.05"/>
+<text xml:space="preserve" text-anchor="middle" x="383.64" y="-57.95" font-family="Times,serif" font-size="14.00">#1</text>
+</g>
+<!-- House -->
+<g id="node6" class="node">
+<title>House</title>
+<ellipse fill="none" stroke="black" cx="555.94" cy="-107.25" rx="42.79" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="555.94" y="-102.58" font-family="Times,serif" font-size="14.00">House</text>
+</g>
+<!-- f_4405c3d64e&#45;&gt;House -->
+<g id="edge3" class="edge">
+<title>f_4405c3d64e&#45;&gt;House</title>
+<path fill="none" stroke="#bcbd22" d="M412.63,-34.8C442.54,-49.71 487.38,-72.07 518.92,-87.8"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="517.2,-90.85 527.72,-92.18 520.33,-84.58 517.2,-90.85"/>
+<text xml:space="preserve" text-anchor="middle" x="494.61" y="-57.95" font-family="Times,serif" font-size="14.00">#3</text>
+</g>
+<!-- nation&#45;loc&#45;&gt;nation&#45;loc -->
+<g id="edge4" class="edge">
+<title>nation&#45;loc&#45;&gt;nation&#45;loc</title>
+<path fill="none" stroke="#bcbd22" d="M416,-98.98C429.76,-99.53 440.09,-102.28 440.09,-107.25 440.09,-110.7 435.1,-113.09 427.43,-114.4"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="427.12,-110.92 417.5,-115.37 427.8,-117.88 427.12,-110.92"/>
+<text xml:space="preserve" text-anchor="middle" x="467.84" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">relation</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 33c1488ff069d184b92e94472de2aa61f6d1872d21f20d0c84ebd8875d60f1ff -->

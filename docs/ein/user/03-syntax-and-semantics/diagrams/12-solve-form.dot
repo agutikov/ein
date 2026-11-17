@@ -1,0 +1,3 @@
+digraph solve {
+  "solve" [shape=note, label=":expect (region (model) (model (seat Ann C1)) (model (seat Ann C2)) (model (seat Bob C1)) (model (seat Bob C2)) (model (seat Ann C1) (seat Bob C2)) (model (seat Ann C2) (seat Bob C1)))"];
+}

@@ -1,0 +1,30 @@
+digraph rule_gave_means_less_lhs_rhs {
+  rankdir=TB;
+  label="gave-means-less"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(amount ?p ?k ?u)_L" [label="(amount ?p ?k ?u)", shape=rectangle];
+    "?p_L" [label="?p", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
+    "?k_L" [label="?k", shape=diamond];
+    "?x_L" [label="?x", shape=diamond];
+    "?t_L" [label="?t", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "(amount ?p ?k ?t)_L" [label="(amount ?p ?k ?t)", shape=rectangle];
+    "?a_L" [label="?a", shape=diamond];
+    "h1_wanted_L" [shape=octagon, label="wanted", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_wanted_L" -> "(amount ?p ?k ?u)_L" [label="1", color="#7f7f7f"];
+    "h2_gave_L" [shape=octagon, label="gave", color="#1f77b4", fontcolor="#1f77b4"];
+    "h2_gave_L" -> "?p_L" [label="1", color="#1f77b4"];
+    "h2_gave_L" -> "?r_L" [label="2", color="#1f77b4"];
+    "h2_gave_L" -> "?k_L" [label="3", color="#1f77b4"];
+    "h2_gave_L" -> "?x_L" [label="4", color="#1f77b4"];
+    "h2_gave_L" -> "?t_L" [label="5", color="#1f77b4"];
+    "h2_gave_L" -> "?u_L" [label="6", color="#1f77b4"];
+    "(amount ?p ?k ?t)_L" -> "?a_L" [label="value", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?x_R" [label="?x", shape=diamond];
+    "?a_R" -> "?x_R" [label="sub", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  }
+}

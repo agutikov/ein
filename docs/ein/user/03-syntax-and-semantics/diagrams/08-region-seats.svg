@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: region Pages: 1 -->
+<svg width="266pt" height="299pt"
+ viewBox="0.00 0.00 266.00 299.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 294.66)">
+<title>region</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-294.66 261.97,-294.66 261.97,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="128.98" y="-275.26" font-family="Times,serif" font-size="12.00">region · seats.ein</text>
+<text xml:space="preserve" text-anchor="middle" x="128.98" y="-261.01" font-family="Times,serif" font-size="12.00">n = 2 · |R| = 1 of 4 · monotone</text>
+<!-- m0 -->
+<g id="node1" class="node">
+<title>m0</title>
+<ellipse fill="#fee391" stroke="#525252" cx="130.98" cy="-230.47" rx="38.36" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="130.98" y="-233.72" font-family="Helvetica,sans-Serif" font-size="10.00">∅</text>
+<text xml:space="preserve" text-anchor="middle" x="130.98" y="-220.97" font-family="Helvetica,sans-Serif" font-size="10.00">owing 1</text>
+</g>
+<!-- m1 -->
+<g id="node2" class="node">
+<title>m1</title>
+<ellipse fill="#a1d99b" stroke="#006d2c" stroke-width="3" cx="61.98" cy="-136.1" rx="57.98" ry="23.69"/>
+<ellipse fill="none" stroke="#006d2c" stroke-width="3" cx="61.98" cy="-136.1" rx="61.98" ry="27.69"/>
+<text xml:space="preserve" text-anchor="middle" x="61.98" y="-139.35" font-family="Helvetica,sans-Serif" font-size="10.00">(seat Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="61.98" y="-126.6" font-family="Helvetica,sans-Serif" font-size="10.00">R · min · max</text>
+</g>
+<!-- m0&#45;&gt;m1 -->
+<g id="edge1" class="edge">
+<title>m0&#45;&gt;m1</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M115.33,-208.51C106.94,-197.28 96.41,-183.18 86.92,-170.49"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="88.87,-169.58 83.59,-166.03 85.5,-172.09 88.87,-169.58"/>
+</g>
+<!-- m2 -->
+<g id="node3" class="node">
+<title>m2</title>
+<ellipse fill="#fcbba1" stroke="#525252" cx="199.98" cy="-136.1" rx="57.98" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="199.98" y="-139.35" font-family="Helvetica,sans-Serif" font-size="10.00">(seat Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="199.98" y="-126.6" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+</g>
+<!-- m0&#45;&gt;m2 -->
+<g id="edge2" class="edge">
+<title>m0&#45;&gt;m2</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" stroke-dasharray="5,2" d="M146.64,-208.51C156.16,-195.77 168.43,-179.33 178.81,-165.44"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="180.43,-166.78 182.34,-160.72 177.07,-164.27 180.43,-166.78"/>
+</g>
+<!-- m3 -->
+<g id="node4" class="node">
+<title>m3</title>
+<ellipse fill="#fcbba1" stroke="#525252" cx="130.98" cy="-32.7" rx="57.98" ry="32.7"/>
+<text xml:space="preserve" text-anchor="middle" x="130.98" y="-42.33" font-family="Helvetica,sans-Serif" font-size="10.00">(seat Bob C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="130.98" y="-29.58" font-family="Helvetica,sans-Serif" font-size="10.00">(seat Bob C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="130.98" y="-16.83" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+</g>
+<!-- m1&#45;&gt;m3 -->
+<g id="edge3" class="edge">
+<title>m1&#45;&gt;m3</title>
+<path fill="none" stroke="#cb181d" stroke-width="1.2" d="M80.29,-108.19C88.25,-96.5 97.69,-82.63 106.25,-70.04"/>
+<polygon fill="#cb181d" stroke="#cb181d" stroke-width="1.2" points="107.98,-71.24 109.62,-65.1 104.51,-68.87 107.98,-71.24"/>
+</g>
+<!-- m2&#45;&gt;m3 -->
+<g id="edge4" class="edge">
+<title>m2&#45;&gt;m3</title>
+<path fill="none" stroke="#bdbdbd" stroke-width="0.6" d="M184.84,-112.84C176.16,-100.08 165.05,-83.76 155.18,-69.26"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" stroke-width="0.6" points="156.95,-68.13 151.84,-64.35 153.48,-70.49 156.95,-68.13"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: e391bc74deef47879c00533cced2a7e4e6c9e574fb6fc13e89ffde201c6bca0a -->

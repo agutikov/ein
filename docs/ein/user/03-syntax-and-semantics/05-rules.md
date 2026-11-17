@@ -73,92 +73,22 @@ one of them: two panels, what the rule matches and what it asserts. Variables ar
 arguments a labelled arrow, a pattern of one an octagon over its argument, a guard a dotted undirected link, and
 the conclusion dashed. The four rules of the program above, in the order it writes them:
 
-```dot
-digraph rule_parent_is_ancestor_lhs_rhs {
-  rankdir=TB;
-  label="parent-is-ancestor"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="parent", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule parent-is-ancestor: what it matches and what it asserts](diagrams/05-rule-parent-is-ancestor.svg)
 
 `chain` is drawn with its parameter as the arrows' label, `?r`: the picture is of any relation the rule is
 activated on. The dotted link is the guard `(neq ?a ?c)`:
 
-```dot
-digraph rule_chain_lhs_rhs {
-  rankdir=TB;
-  label="chain"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?a_L" -> "?b_L" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?b_L" -> "?c_L" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?a_L" -> "?c_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?c_R" [label="?c", shape=diamond];
-    "?a_R" -> "?c_R" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule chain: what it matches and what it asserts, its parameter the arrows' label](diagrams/05-rule-chain.svg)
 
 The two disjuncts of `owns-a-pet`'s `(or …)` are drawn side by side over the variable they share; the picture does
 not say *or*, the rule's text does:
 
-```dot
-digraph rule_owns_a_pet_lhs_rhs {
-  rankdir=TB;
-  label="owns-a-pet"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "h1_has-cat_L" [shape=octagon, label="has-cat", color="#9467bd", fontcolor="#9467bd"];
-    "h1_has-cat_L" -> "?p_L" [label="1", color="#9467bd"];
-    "h2_has-dog_L" [shape=octagon, label="has-dog", color="#17becf", fontcolor="#17becf"];
-    "h2_has-dog_L" -> "?p_L" [label="1", color="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?p_R" [label="?p", shape=diamond];
-    "h3_pet-owner_R" [shape=octagon, label="pet-owner", color="#17becf", fontcolor="#17becf"];
-    "h3_pet-owner_R" -> "?p_R" [label="1", color="#17becf", style=dashed];
-  }
-}
-```
+![The rule owns-a-pet: the two disjuncts side by side over the variable they share](diagrams/05-rule-owns-a-pet.svg)
 
 An `(absent …)` is a dashed cluster marked `∄`, its own variables inside it and the shared ones outside, so the
 drawing still reads *no such match exists*:
 
-```dot
-digraph rule_no_child_lhs_rhs {
-  rankdir=TB;
-  label="no-child"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?x_L" [label="?x", shape=diamond];
-    "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="parent", color="#17becf", fontcolor="#17becf"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?z_L" [label="?z", shape=diamond];
-      "?y_L" -> "?z_L" [label="parent", color="#17becf", fontcolor="#17becf"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?y_R" [label="?y", shape=diamond];
-    "h1_childless_R" [shape=octagon, label="childless", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_childless_R" -> "?y_R" [label="1", color="#7f7f7f", style=dashed];
-  }
-}
-```
+![The rule no-child: its absence a dashed cluster](diagrams/05-rule-no-child.svg)
 
 `--rule-mode overlay` draws one panel instead, the matched pattern solid and the conclusion dashed over it. A stored
 negation `(not P)` is drawn red, its label prefixed `¬`, and `(false)` as an octagon
@@ -167,19 +97,7 @@ negation `(not P)` is drawn red, its label prefixed `¬`, and `(false)` as an oc
 What the rewrites did to this program's graph is `ein render kb FILE`, the declarations' facts left out: the three
 solid arrows are what the program wrote, and each dashed one is a firing, labelled with its rule.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "Ann" -> "Bea" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bea" -> "Cid" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bea" -> "Bea" [label="has-dog", color="#17becf", fontcolor="#17becf", style=solid];
-  "Ann" -> "Bea" [label="ancestor by parent-is-ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  "Bea" -> "Cid" [label="ancestor by parent-is-ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  "Bea" -> "Bea" [label="pet-owner by owns-a-pet", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Ann" -> "Cid" [label="ancestor by chain", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  "Cid" -> "Cid" [label="childless by no-child", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
-}
-```
+![The program's graph after the rewrites: three arrows written, the derived ones dashed](diagrams/05-program-kb.svg)
 
 ## In words
 
@@ -199,18 +117,7 @@ Derives `ancestor(Ann, Cid)` — Ann is an ancestor of Cid
 and under it the firing drawn, the premises it read on the left, the rule with its reason in the middle, the fact
 it added on the right:
 
-```dot
-digraph step4 {
-  rankdir=LR;
-  "f_0d0f2e8c80" [label="ancestor(Ann, Bea)", shape=box, style=rounded];
-  "f_03bbfb1dff" [label="ancestor(Bea, Cid)", shape=box, style=rounded];
-  "f_b8f7bcae1f" [label="ancestor(Ann, Cid)", shape=box, style=rounded, penwidth=2];
-  "fire0_chain" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="chain\nAnn ancestor Bea and Bea ancestor Cid, so Ann ancestor Cid"];
-  "f_0d0f2e8c80" -> "fire0_chain" [color="#8c564b"];
-  "f_03bbfb1dff" -> "fire0_chain" [color="#8c564b"];
-  "fire0_chain" -> "f_b8f7bcae1f" [color="#8c564b", style=bold];
-}
-```
+![One firing drawn: the premises it read, the rule with its reason, the fact it added](diagrams/05-firing.svg)
 
 The quote is the rule's reason, and the line after *Derives* is the conclusion's statement, its relation's `:why`.
 A good reason says what the rule concludes and from what; a refutation's says what cannot be

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Pages: 1 -->
+<svg width="393pt" height="264pt"
+ viewBox="0.00 0.00 393.00 264.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 260.15)">
+<polygon fill="white" stroke="none" points="-4,4 -4,-260.15 388.5,-260.15 388.5,4 -4,4"/>
+<!-- Green -->
+<g id="node1" class="node">
+<title>Green</title>
+<polygon fill="none" stroke="black" points="60.62,-252 1.12,-252 1.12,-216 60.62,-216 60.62,-252"/>
+<text xml:space="preserve" text-anchor="middle" x="30.88" y="-229.32" font-family="Times,serif" font-size="14.00">Green</text>
+</g>
+<!-- House&#45;1 -->
+<g id="node2" class="node">
+<title>House&#45;1</title>
+<polygon fill="none" stroke="black" points="384.5,-144 310,-144 310,-108 384.5,-108 384.5,-144"/>
+<text xml:space="preserve" text-anchor="middle" x="347.25" y="-121.33" font-family="Times,serif" font-size="14.00">House&#45;1</text>
+</g>
+<!-- Green&#45;&gt;House&#45;1 -->
+<g id="edge1" class="edge">
+<title>Green&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M60.76,-237.05C111.38,-240.97 217.81,-242.74 292,-199 309.63,-188.61 323.31,-170.02 332.53,-154.21"/>
+<polygon fill="black" stroke="black" points="335.48,-156.11 337.21,-145.66 329.34,-152.75 335.48,-156.11"/>
+<text xml:space="preserve" text-anchor="middle" x="185.88" y="-242.85" font-family="Times,serif" font-size="14.00">¬color&#45;loc</text>
+</g>
+<!-- Blue -->
+<g id="node3" class="node">
+<title>Blue</title>
+<polygon fill="none" stroke="black" points="57.88,-198 3.88,-198 3.88,-162 57.88,-162 57.88,-198"/>
+<text xml:space="preserve" text-anchor="middle" x="30.88" y="-175.32" font-family="Times,serif" font-size="14.00">Blue</text>
+</g>
+<!-- Blue&#45;&gt;House&#45;1 -->
+<g id="edge2" class="edge">
+<title>Blue&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M58.11,-178.78C105.48,-176.11 208.15,-168.21 292,-147 294.26,-146.43 296.55,-145.79 298.85,-145.1"/>
+<polygon fill="black" stroke="black" points="299.74,-148.49 308.14,-142.04 297.55,-141.84 299.74,-148.49"/>
+<text xml:space="preserve" text-anchor="middle" x="185.88" y="-181.31" font-family="Times,serif" font-size="14.00">¬color&#45;loc</text>
+</g>
+<!-- Ivory -->
+<g id="node4" class="node">
+<title>Ivory</title>
+<polygon fill="none" stroke="black" points="57.88,-144 3.88,-144 3.88,-108 57.88,-108 57.88,-144"/>
+<text xml:space="preserve" text-anchor="middle" x="30.88" y="-121.33" font-family="Times,serif" font-size="14.00">Ivory</text>
+</g>
+<!-- Ivory&#45;&gt;House&#45;1 -->
+<g id="edge3" class="edge">
+<title>Ivory&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M58.14,-126C111.08,-126 231.28,-126 298.49,-126"/>
+<polygon fill="black" stroke="black" points="298.09,-129.5 308.09,-126 298.09,-122.5 298.09,-129.5"/>
+<text xml:space="preserve" text-anchor="middle" x="185.88" y="-129.95" font-family="Times,serif" font-size="14.00">¬color&#45;loc</text>
+</g>
+<!-- Red -->
+<g id="node5" class="node">
+<title>Red</title>
+<polygon fill="none" stroke="black" points="57.88,-90 3.88,-90 3.88,-54 57.88,-54 57.88,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="30.88" y="-67.33" font-family="Times,serif" font-size="14.00">Red</text>
+</g>
+<!-- Red&#45;&gt;House&#45;1 -->
+<g id="edge4" class="edge">
+<title>Red&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M58.12,-73.15C105.5,-75.71 208.19,-83.41 292,-104.75 294.26,-105.33 296.55,-105.97 298.85,-106.66"/>
+<polygon fill="black" stroke="black" points="297.56,-109.92 308.15,-109.75 299.77,-103.28 297.56,-109.92"/>
+<text xml:space="preserve" text-anchor="middle" x="185.88" y="-108.7" font-family="Times,serif" font-size="14.00">¬color&#45;loc</text>
+</g>
+<!-- Yellow -->
+<g id="node6" class="node">
+<title>Yellow</title>
+<polygon fill="none" stroke="black" points="61.75,-36 0,-36 0,0 61.75,0 61.75,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="30.88" y="-13.32" font-family="Times,serif" font-size="14.00">Yellow</text>
+</g>
+<!-- Yellow&#45;&gt;House&#45;1 -->
+<g id="edge5" class="edge">
+<title>Yellow&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M61.96,-15C113.03,-11.38 218.33,-10.42 292,-53.75 309.41,-63.99 323.04,-82.21 332.28,-97.8"/>
+<polygon fill="black" stroke="black" points="329.05,-99.19 336.97,-106.22 335.16,-95.78 329.05,-99.19"/>
+<text xml:space="preserve" text-anchor="middle" x="185.88" y="-57.7" font-family="Times,serif" font-size="14.00">color&#45;loc by range&#45;elimination</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 9dc7ed92a4ff68424fb1fcbcc67f4b4031bc2252c894b6d39bd2587fd964faf0 -->

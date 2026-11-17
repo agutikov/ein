@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="259pt" height="133pt"
+ viewBox="0.00 0.00 259.00 133.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 129.25)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-129.25 254.79,-129.25 254.79,4 -4,4"/>
+<!-- House&#45;1 -->
+<g id="node1" class="node">
+<title>House&#45;1</title>
+<ellipse fill="none" stroke="black" cx="59.27" cy="-18" rx="52.26" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="59.27" y="-13.32" font-family="Times,serif" font-size="14.00">House&#45;1</text>
+</g>
+<!-- House&#45;2 -->
+<g id="node2" class="node">
+<title>House&#45;2</title>
+<ellipse fill="none" stroke="black" cx="59.27" cy="-107.25" rx="52.26" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="59.27" y="-102.58" font-family="Times,serif" font-size="14.00">House&#45;2</text>
+</g>
+<!-- House&#45;1&#45;&gt;House&#45;2 -->
+<g id="edge1" class="edge">
+<title>House&#45;1&#45;&gt;House&#45;2</title>
+<path fill="none" stroke="#d62728" d="M25.63,-32.24C16.5,-37.57 7.71,-44.7 2.52,-54 -4.52,-66.61 4.44,-77.87 17.17,-86.67"/>
+<polygon fill="#d62728" stroke="#d62728" points="15.28,-89.62 25.64,-91.85 18.93,-83.65 15.28,-89.62"/>
+<text xml:space="preserve" text-anchor="middle" x="49.39" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#d62728">next&#45;to demo</text>
+</g>
+<!-- House&#45;2&#45;&gt;House&#45;1 -->
+<g id="edge2" class="edge">
+<title>House&#45;2&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M81.41,-90.76C87.37,-85.34 93.05,-78.72 96.27,-71.25 99.3,-64.21 99.3,-61.04 96.27,-54 94.51,-49.91 92.01,-46.08 89.14,-42.56"/>
+<polygon fill="#d62728" stroke="#d62728" points="91.9,-40.39 82.45,-35.58 86.84,-45.23 91.9,-40.39"/>
+<text xml:space="preserve" text-anchor="middle" x="174.67" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#d62728">next&#45;to by symmetric</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 431dea86d1af5190a8b5d5d7c1051bf663cca6a6f6ce2c84fa20bad4f35d39e1 -->

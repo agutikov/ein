@@ -41,5 +41,7 @@ states one surface completely. What a concept means, in four representations, is
 - `;` line comments, `#| block |#` block comments, not nesting.
 - Hyphenated lower case for relations and rules (`has-color`, `triangle-composition`); PascalCase or `Foo-N` for the
   names of things and of the groups a program puts them in (`Person`, `House-1`).
-- A block of Ein is fenced ```` ```lisp ````, a drawing ```` ```dot ````, a diagram of the grammar
-  ```` ```plantuml ````, a command ```` ```sh ```` and printed output ```` ```text ````; a formula is TeX between `$`.
+- A block of Ein is fenced ```` ```lisp ````, a command ```` ```sh ```` and printed output ```` ```text ````; a
+  formula is TeX between `$`. A drawing is an image, and its source is a file of the same name in the
+  [`diagrams/`](diagrams/) folder beside the page: a `.dot`, or a `.puml` for a diagram of the grammar
+  ([Q-M1f.368](../../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)).

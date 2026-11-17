@@ -81,32 +81,9 @@ macro call is drawn as written and imports are not resolved. The examples of thi
 Its `ontology` and `facts` groups: a declaration as a dashed arrow between its two labels, an `is-a` fact as a dashed
 arrow with an open head, a property tag as a self-loop, and the given fact as a solid arrow.
 
-```dot
-digraph ontology {
-  "T" [shape=box];
-  "Attribute" [shape=box];
-  "Nationality" [shape=box];
-  "House" [shape=box];
-  "Norwegian" [shape=oval];
-  "House-1" [shape=oval];
-  "co-located" [shape=rectangle];
-  "T" -> "T" [label="is-a", style=dashed];
-  "Attribute" -> "Attribute" [label="co-located", style=dashed];
-  "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "House" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "co-located" -> "co-located" [label="symmetric", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-}
-```
+![ein render program: the ontology of the Zebra puzzle's first lines](diagrams/12-program-ontology.svg)
 
-```dot
-digraph facts {
-  "Norwegian" [shape=rectangle];
-  "House-1" [shape=rectangle];
-  "Norwegian" -> "House-1" [label="co-located", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-}
-```
+![ein render program: the given fact](diagrams/12-program-facts.svg)
 
 ## Rules — `ein render rules` and `ein render rule`
 
@@ -115,35 +92,11 @@ rule as its match and its conclusion, in one of two modes, `--rule-mode`:
 
 **`sidebyside`, the default**: two clusters, `match` and `assert`, top to bottom.
 
-```dot
-digraph rule_symmetric_lhs_rhs {
-  rankdir=TB;
-  label="symmetric"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  }
-}
-```
+![ein render rule, side by side: the clusters match and assert](diagrams/12-rule-sidebyside.svg)
 
 **`overlay`**, the most compact: the match solid and what the conclusion adds dashed, in one graph.
 
-```dot
-digraph rule_symmetric_overlay {
-  label="symmetric"; labelloc=t;
-  ranksep=0.55;
-  "?a" [label="?a", shape=diamond];
-  "?b" [label="?b", shape=diamond];
-  "?a" -> "?b" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
-  "?b" -> "?a" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-}
-```
+![ein render rule, overlay: the match solid and the conclusion dashed in one graph](diagrams/12-rule-overlay.svg)
 
 Within each panel the drawing tells apart the three things a `:match` or an `:assert` holds:
 
@@ -196,36 +149,7 @@ has those facts drawn as ordinary coloured arrows. A declaration is drawn as the
 with an arrow to the relation's name and one to each label, beside the loop of its membership fact. For the program
 above, whose one given fact is *"The Norwegian lives in the first house"*, condition (10):
 
-```dot
-digraph kb {
-  rankdir=BT;
-  // types
-  "Attribute" [shape=box, label="Attribute"];
-  "House" [shape=box, label="House"];
-  "Nationality" [shape=box, label="Nationality"];
-  // instances
-  "House-1" [shape=oval, label="House-1"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-
-  // facts
-  f_1f1a2cc2f3 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "is-a" [label="#1", color="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "T" [label="#2", color="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "T" [label="#3", color="#bcbd22", style=solid];
-  "is-a" -> "is-a" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d6c4ab1c24 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d6c4ab1c24 -> "co-located" [label="#1", color="#bcbd22", style=solid];
-  f_d6c4ab1c24 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
-  f_d6c4ab1c24 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
-  "co-located" -> "co-located" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "House" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "House-1" [label="co-located (10)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "House-1" -> "Norwegian" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-}
-```
+![ein render kb: the knowledge base of the same program](diagrams/12-kb-view.svg)
 
 ```sh
 ein render kb examples/zebra2.ein                       # root, after saturation

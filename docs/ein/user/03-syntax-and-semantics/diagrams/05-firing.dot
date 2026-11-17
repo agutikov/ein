@@ -1,0 +1,10 @@
+digraph step4 {
+  rankdir=LR;
+  "f_0d0f2e8c80" [label="ancestor(Ann, Bea)", shape=box, style=rounded];
+  "f_03bbfb1dff" [label="ancestor(Bea, Cid)", shape=box, style=rounded];
+  "f_b8f7bcae1f" [label="ancestor(Ann, Cid)", shape=box, style=rounded, penwidth=2];
+  "fire0_chain" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="chain\nAnn ancestor Bea and Bea ancestor Cid, so Ann ancestor Cid"];
+  "f_0d0f2e8c80" -> "fire0_chain" [color="#8c564b"];
+  "f_03bbfb1dff" -> "fire0_chain" [color="#8c564b"];
+  "fire0_chain" -> "f_b8f7bcae1f" [color="#8c564b", style=bold];
+}

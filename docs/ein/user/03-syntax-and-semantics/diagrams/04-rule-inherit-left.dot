@@ -1,0 +1,16 @@
+digraph rule_inherit_left_lhs_rhs {
+  rankdir=TB;
+  label="inherit-left"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?t_L" [label="?t", shape=diamond];
+    "?other_L" [label="?other", shape=diamond];
+    "?inst_L" [label="?inst", shape=diamond];
+    "?t_L" -> "?other_L" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "?inst_L" -> "?t_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?inst_R" [label="?inst", shape=diamond];
+    "?other_R" [label="?other", shape=diamond];
+    "?inst_R" -> "?other_R" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+  }
+}

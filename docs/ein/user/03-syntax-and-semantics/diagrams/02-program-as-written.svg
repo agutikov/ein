@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: ontology Pages: 1 -->
+<svg width="435pt" height="231pt"
+ viewBox="0.00 0.00 435.00 231.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 226.5)">
+<title>ontology</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-226.5 430.94,-226.5 430.94,4 -4,4"/>
+<!-- Person -->
+<g id="node1" class="node">
+<title>Person</title>
+<polygon fill="none" stroke="black" points="70.43,-222.5 5.68,-222.5 5.68,-186.5 70.43,-186.5 70.43,-222.5"/>
+<text xml:space="preserve" text-anchor="middle" x="38.05" y="-199.82" font-family="Times,serif" font-size="14.00">Person</text>
+</g>
+<!-- House -->
+<g id="node2" class="node">
+<title>House</title>
+<polygon fill="none" stroke="black" points="68.55,-129.25 7.55,-129.25 7.55,-93.25 68.55,-93.25 68.55,-129.25"/>
+<text xml:space="preserve" text-anchor="middle" x="38.05" y="-106.58" font-family="Times,serif" font-size="14.00">House</text>
+</g>
+<!-- Person&#45;&gt;House -->
+<g id="edge1" class="edge">
+<title>Person&#45;&gt;House</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M15.72,-186.05C10.2,-180.46 5.02,-173.81 2.05,-166.5 -1.99,-156.55 1.93,-146.52 8.45,-137.83"/>
+<polygon fill="black" stroke="black" points="10.97,-140.27 14.97,-130.46 5.72,-135.63 10.97,-140.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27.55" y="-153.2" font-family="Times,serif" font-size="14.00">lives&#45;in</text>
+</g>
+<!-- Person&#45;&gt;House -->
+<g id="edge2" class="edge">
+<title>Person&#45;&gt;House</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M46.65,-186.23C49.25,-180.15 51.75,-173.17 53.05,-166.5 54.52,-158.98 54.52,-156.77 53.05,-149.25 52.46,-146.23 51.63,-143.14 50.65,-140.1"/>
+<polygon fill="black" stroke="black" points="53.99,-139.05 47.19,-130.93 47.44,-141.52 53.99,-139.05"/>
+<text xml:space="preserve" text-anchor="middle" x="74.78" y="-153.2" font-family="Times,serif" font-size="14.00">keeps</text>
+</g>
+<!-- Norwegian -->
+<g id="node3" class="node">
+<title>Norwegian</title>
+<polygon fill="none" stroke="black" points="181.05,-129.25 87.05,-129.25 87.05,-93.25 181.05,-93.25 181.05,-129.25"/>
+<text xml:space="preserve" text-anchor="middle" x="134.05" y="-106.58" font-family="Times,serif" font-size="14.00">Norwegian</text>
+</g>
+<!-- Norwegian&#45;&gt;Norwegian -->
+<g id="edge4" class="edge">
+<title>Norwegian&#45;&gt;Norwegian</title>
+<path fill="none" stroke="#bcbd22" d="M181.38,-119.73C191.62,-118.9 199.05,-116.08 199.05,-111.25 199.05,-108.46 196.57,-106.34 192.49,-104.88"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="193.34,-101.48 182.87,-103.05 192.03,-108.36 193.34,-101.48"/>
+<text xml:space="preserve" text-anchor="middle" x="217.43" y="-106.58" font-family="Times,serif" font-size="14.00" fill="#bcbd22">adult</text>
+</g>
+<!-- House&#45;1 -->
+<g id="node4" class="node">
+<title>House&#45;1</title>
+<polygon fill="none" stroke="black" points="240.3,-36 165.8,-36 165.8,0 240.3,0 240.3,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="203.05" y="-13.32" font-family="Times,serif" font-size="14.00">House&#45;1</text>
+</g>
+<!-- Norwegian&#45;&gt;House&#45;1 -->
+<g id="edge3" class="edge">
+<title>Norwegian&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="#9467bd" d="M147.03,-93.09C157.18,-79.66 171.47,-60.76 183.08,-45.41"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="185.74,-47.69 188.98,-37.6 180.16,-43.47 185.74,-47.69"/>
+<text xml:space="preserve" text-anchor="middle" x="200.23" y="-59.95" font-family="Times,serif" font-size="14.00" fill="#9467bd">lives&#45;in</text>
+</g>
+<!-- h_1_keeps -->
+<g id="node5" class="node">
+<title>h_1_keeps</title>
+<polygon fill="none" stroke="black" points="315.52,-197.04 315.52,-211.96 290.06,-222.5 254.05,-222.5 228.58,-211.96 228.58,-197.04 254.05,-186.5 290.06,-186.5 315.52,-197.04"/>
+<text xml:space="preserve" text-anchor="middle" x="272.05" y="-199.82" font-family="Times,serif" font-size="14.00">keeps</text>
+</g>
+<!-- h_1_keeps&#45;&gt;Norwegian -->
+<g id="edge5" class="edge">
+<title>h_1_keeps&#45;&gt;Norwegian</title>
+<path fill="none" stroke="black" d="M248.95,-188.23C227.28,-173.89 194.54,-152.25 169.55,-135.72"/>
+<polygon fill="black" stroke="black" points="171.58,-132.87 161.31,-130.28 167.72,-138.71 171.58,-132.87"/>
+<text xml:space="preserve" text-anchor="middle" x="219.91" y="-153.2" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h_1_keeps&#45;&gt;House&#45;1 -->
+<g id="edge6" class="edge">
+<title>h_1_keeps&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="black" d="M269.74,-186.16C265.36,-157.55 254.08,-99.3 230.05,-56 228.14,-52.56 225.96,-49.06 223.69,-45.67"/>
+<polygon fill="black" stroke="black" points="226.68,-43.84 218.04,-37.71 220.97,-47.89 226.68,-43.84"/>
+<text xml:space="preserve" text-anchor="middle" x="261.94" y="-106.58" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- Zebra -->
+<g id="node6" class="node">
+<title>Zebra</title>
+<polygon fill="none" stroke="black" points="357.05,-129.25 299.05,-129.25 299.05,-93.25 357.05,-93.25 357.05,-129.25"/>
+<text xml:space="preserve" text-anchor="middle" x="328.05" y="-106.58" font-family="Times,serif" font-size="14.00">Zebra</text>
+</g>
+<!-- h_1_keeps&#45;&gt;Zebra -->
+<g id="edge7" class="edge">
+<title>h_1_keeps&#45;&gt;Zebra</title>
+<path fill="none" stroke="black" d="M282.59,-186.34C290.75,-173.04 302.2,-154.37 311.57,-139.1"/>
+<polygon fill="black" stroke="black" points="314.34,-141.29 316.58,-130.94 308.37,-137.63 314.34,-141.29"/>
+<text xml:space="preserve" text-anchor="middle" x="309.57" y="-153.2" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h_2_solved -->
+<g id="node7" class="node">
+<title>h_2_solved</title>
+<polygon fill="none" stroke="black" points="426.94,-197.04 426.94,-211.96 399.47,-222.5 360.63,-222.5 333.17,-211.96 333.17,-197.04 360.63,-186.5 399.47,-186.5 426.94,-197.04"/>
+<text xml:space="preserve" text-anchor="middle" x="380.05" y="-199.82" font-family="Times,serif" font-size="14.00">solved</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 8e44bae80c81c1ff3d33efb5ea5a78b646b5246e553ed2064c1c988d7259a1d1 -->

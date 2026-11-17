@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="651pt" height="223pt"
+ viewBox="0.00 0.00 651.00 223.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 218.5)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-218.5 646.75,-218.5 646.75,4 -4,4"/>
+<!-- Alice -->
+<g id="node1" class="node">
+<title>Alice</title>
+<ellipse fill="none" stroke="black" cx="151.75" cy="-18" rx="35.42" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="151.75" y="-13.32" font-family="Times,serif" font-size="14.00">Alice</text>
+</g>
+<!-- Bob -->
+<g id="node2" class="node">
+<title>Bob</title>
+<ellipse fill="none" stroke="black" cx="36.75" cy="-107.25" rx="30.69" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="36.75" y="-102.58" font-family="Times,serif" font-size="14.00">Bob</text>
+</g>
+<!-- Alice&#45;&gt;Bob -->
+<g id="edge1" class="edge">
+<title>Alice&#45;&gt;Bob</title>
+<path fill="none" stroke="#17becf" d="M116.89,-22.32C77.66,-26.85 17.59,-36.5 3.75,-54 -3.76,-63.5 1.77,-74.79 10.31,-84.43"/>
+<polygon fill="#17becf" stroke="#17becf" points="7.69,-86.77 17.25,-91.34 12.63,-81.81 7.69,-86.77"/>
+<text xml:space="preserve" text-anchor="middle" x="26.25" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#17becf">knows</text>
+</g>
+<!-- Carol -->
+<g id="node3" class="node">
+<title>Carol</title>
+<ellipse fill="none" stroke="black" cx="151.75" cy="-196.5" rx="38.06" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="151.75" y="-191.82" font-family="Times,serif" font-size="14.00">Carol</text>
+</g>
+<!-- Alice&#45;&gt;Carol -->
+<g id="edge6" class="edge">
+<title>Alice&#45;&gt;Carol</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M182.52,-27.14C196.12,-32.43 210.8,-40.87 218.75,-54 243.28,-94.48 243.28,-120.02 218.75,-160.5 213.1,-169.83 204.05,-176.79 194.41,-181.94"/>
+<polygon fill="#17becf" stroke="#17becf" points="193.23,-178.63 185.64,-186.03 196.19,-184.97 193.23,-178.63"/>
+<text xml:space="preserve" text-anchor="middle" x="307.27" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#17becf">knows by transitive</text>
+</g>
+<!-- Bob&#45;&gt;Alice -->
+<g id="edge4" class="edge">
+<title>Bob&#45;&gt;Alice</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M44.58,-89.83C50.66,-78.51 60.03,-63.81 71.75,-54 83.13,-44.48 97.5,-37.13 110.91,-31.67"/>
+<polygon fill="#17becf" stroke="#17becf" points="111.86,-35.06 119.96,-28.24 109.37,-28.51 111.86,-35.06"/>
+<text xml:space="preserve" text-anchor="middle" x="145.25" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#17becf">knows by symmetric</text>
+</g>
+<!-- Bob&#45;&gt;Carol -->
+<g id="edge2" class="edge">
+<title>Bob&#45;&gt;Carol</title>
+<path fill="none" stroke="#17becf" d="M18.33,-122.1C6.13,-132.95 -5.97,-148.22 3.75,-160.5 16.09,-176.1 65.15,-185.46 103.44,-190.52"/>
+<polygon fill="#17becf" stroke="#17becf" points="102.56,-193.94 112.92,-191.71 103.43,-186.99 102.56,-193.94"/>
+<text xml:space="preserve" text-anchor="middle" x="26.25" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#17becf">knows</text>
+</g>
+<!-- Carol&#45;&gt;Alice -->
+<g id="edge7" class="edge">
+<title>Carol&#45;&gt;Alice</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M189.21,-192.45C266.8,-184.66 433.7,-159.43 381.75,-89.25 359.64,-59.38 257.05,-37.08 196.61,-26.27"/>
+<polygon fill="#17becf" stroke="#17becf" points="197.43,-22.86 186.98,-24.58 196.22,-29.75 197.43,-22.86"/>
+<text xml:space="preserve" text-anchor="middle" x="465.09" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#17becf">knows by symmetric</text>
+</g>
+<!-- Carol&#45;&gt;Bob -->
+<g id="edge5" class="edge">
+<title>Carol&#45;&gt;Bob</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M119.82,-186.24C104.16,-180.59 85.71,-172.17 71.75,-160.5 63.23,-153.38 55.96,-143.66 50.28,-134.54"/>
+<polygon fill="#17becf" stroke="#17becf" points="53.37,-132.89 45.33,-125.98 47.31,-136.39 53.37,-132.89"/>
+<text xml:space="preserve" text-anchor="middle" x="145.25" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#17becf">knows by symmetric</text>
+</g>
+<!-- B1 -->
+<g id="node4" class="node">
+<title>B1</title>
+<ellipse fill="none" stroke="black" cx="600.75" cy="-18" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="600.75" y="-13.32" font-family="Times,serif" font-size="14.00">B1</text>
+</g>
+<!-- B2 -->
+<g id="node5" class="node">
+<title>B2</title>
+<ellipse fill="none" stroke="black" cx="600.75" cy="-107.25" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="600.75" y="-102.58" font-family="Times,serif" font-size="14.00">B2</text>
+</g>
+<!-- B1&#45;&gt;B2 -->
+<g id="edge3" class="edge">
+<title>B1&#45;&gt;B2</title>
+<path fill="none" stroke="#1f77b4" d="M600.75,-36.24C600.75,-48.07 600.75,-64.05 600.75,-77.75"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="597.25,-77.53 600.75,-87.53 604.25,-77.53 597.25,-77.53"/>
+<text xml:space="preserve" text-anchor="middle" x="621.75" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#1f77b4">above</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 1f2e8145710d8dd32c29d3ea7c483e2e880d6ff855e89b38135a3f3497f9be79 -->

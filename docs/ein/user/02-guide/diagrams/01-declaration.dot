@@ -1,0 +1,8 @@
+digraph kb {
+  rankdir=BT;
+  f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
+  "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+}

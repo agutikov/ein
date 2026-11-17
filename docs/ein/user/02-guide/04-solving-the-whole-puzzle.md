@@ -45,20 +45,7 @@ pieces from this guide, in layers:
 
 The pieces, and how `ein solve` turns them into the answer:
 
-```dot
-digraph { rankdir=LR; node [shape=box];
-  imports [label="imports\n(std.algebra, std.bijection)"];
-  schema  [label="relation declarations\n+ property tags"];
-  facts   [label="is-a facts + 15 clues"];
-  rules   [label="spatial rules\n(co-located, adjacent-via, …)"];
-  guess   [label="(hrule guess …)\n+ (solve :hrules …)"];
-  query   [label="(query :goal …)", shape=note];
-  engine  [label="ein solve", shape=ellipse];
-  answer  [label="Norwegian ↔ water\nJapanese ↔ zebra", shape=note];
-  imports -> engine; schema -> engine; facts -> engine; rules -> engine;
-  guess -> engine; query -> engine; engine -> answer;
-}
-```
+![The pieces of zebra2.ein, and ein solve turning them into the answer](diagrams/04-zebra2-pieces.svg)
 
 Nothing here is new — it's Chapters 1–3 at full size. The `(hrule guess …)`
 is Chapter 2's `guess`, written out: it proposes `(?R ?a ?b)` for every `?a`
@@ -74,25 +61,7 @@ template that renders the headline answer.
 The hrule drawn, from `ein render rule --name guess examples/zebra2.ein`: it
 matches two `is-a` arrows and proposes the dashed one.
 
-```dot
-digraph rule_guess_lhs_rhs {
-  rankdir=TB;
-  label="guess"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?T1_L" [label="?T1", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?T2_L" [label="?T2", shape=diamond];
-    "?a_L" -> "?T1_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?b_L" -> "?T2_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The hrule guess: what it matches and the fact each match proposes, dashed](diagrams/04-rule-guess.svg)
 
 ## Solve it
 

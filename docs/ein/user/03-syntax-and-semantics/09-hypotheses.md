@@ -68,25 +68,7 @@ An hrule with parameters is activated by the activators `(solve :hrules …)` li
 An hrule is drawn as a rule is, `ein render rule --name guess FILE`: what it matches at root, and the fact each
 match proposes, dashed.
 
-```dot
-digraph rule_guess_lhs_rhs {
-  rankdir=TB;
-  label="guess"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "Person_L" [label="Person", shape=rectangle];
-    "?c_L" [label="?c", shape=diamond];
-    "Chair_L" [label="Chair", shape=rectangle];
-    "?p_L" -> "Person_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?c_L" -> "Chair_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?p_R" [label="?p", shape=diamond];
-    "?c_R" [label="?c", shape=diamond];
-    "?p_R" -> "?c_R" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The hrule guess: what it matches and the fact each match proposes, dashed](diagrams/09-rule-guess.svg)
 
 The drawing is the same as a rule's, and the difference is in what the dashed arrow means: a rule's is added to
 the state the rule fires in, an hrule's is a candidate, added in the states that commit to it and in no other.
@@ -95,59 +77,14 @@ The program's two restrictions are what the guesses are judged by ([constraints]
 picture of what a state may not hold, two `seat` arrows out of one person or into one chair, with `(false)` on the
 other side:
 
-```dot
-digraph rule_one_chair_each_lhs_rhs {
-  rankdir=TB;
-  label="one-chair-each"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?p_L" -> "?a_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?p_L" -> "?b_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule one-chair-each: two seat arrows out of one person, and (false)](diagrams/09-rule-one-chair-each.svg)
 
-```dot
-digraph rule_one_person_a_chair_lhs_rhs {
-  rankdir=TB;
-  label="one-person-a-chair"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?q_L" [label="?q", shape=diamond];
-    "?p_L" -> "?c_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?q_L" -> "?c_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?p_L" -> "?q_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule one-person-a-chair: two seat arrows into one chair, and (false)](diagrams/09-rule-one-person-a-chair.svg)
 
 `ein render h-space FILE --view exclusion` draws H itself as an undirected graph: a candidate a node, and an edge
 between two that exclude each other, solid where the theory alone excludes them. For the chairs program:
 
-```dot
-graph exclusion {
-  graph [label="chairs.ein: the exclusion graph. 4 pairs the theory excludes alone (solid; dotted where a member is dead alone at root), 0 the puzzle's (dashed)", labelloc=t, fontsize=11, overlap=scale];
-  node [shape=box, fontsize=9, margin="0.06,0.03", height=0.25];
-  n0 [label="(seat Ann C1)", style=filled, fillcolor="#ddf4ff"];
-  n1 [label="(seat Ann C2)", style=filled, fillcolor="#ddf4ff"];
-  n2 [label="(seat Bob C1)", style=filled, fillcolor="#ddf4ff"];
-  n3 [label="(seat Bob C2)", style=filled, fillcolor="#ddf4ff"];
-  n0 -- n1 [color="#0969da", penwidth=1.3];
-  n0 -- n2 [color="#0969da", penwidth=1.3];
-  n1 -- n3 [color="#0969da", penwidth=1.3];
-  n2 -- n3 [color="#0969da", penwidth=1.3];
-}
-```
+![The exclusion graph of the chairs program: a candidate a node, an edge between two that exclude each other](diagrams/09-exclusion-chairs.svg)
 
 The other views draw the groups H falls into (*pick at most one*, *exactly one*) and what couples them; what each
 structure means is [the hypothesis space](../../reasoning/02-kb-evolution/05-hypothesis-space.md). The lattice of

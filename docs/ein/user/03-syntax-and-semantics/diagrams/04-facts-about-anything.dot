@@ -1,0 +1,22 @@
+digraph ontology {
+  "T" [shape=oval];
+  "Jack" [shape=oval];
+  "Human" [shape=oval];
+  "Kind" [shape=box];
+  "can-drink" [shape=oval];
+  "Relation" [shape=box];
+  "is-a" [shape=oval];
+  "inherit-left" [shape=oval];
+  "Rule" [shape=box];
+  "Fact" [shape=box];
+  "Label" [shape=box];
+  "T" -> "T" [label="is-a", style=dashed];
+  "T" -> "T" [label="can-drink", style=dashed];
+  "Jack" -> "Human" [style=dashed, arrowhead=empty, label="is-a"];
+  "Human" -> "Kind" [style=dashed, arrowhead=empty, label="is-a"];
+  "can-drink" -> "Relation" [style=dashed, arrowhead=empty, label="is-a"];
+  "is-a" -> "Relation" [style=dashed, arrowhead=empty, label="is-a"];
+  "inherit-left" -> "Rule" [style=dashed, arrowhead=empty, label="is-a"];
+  "(is-a Jack Human)" -> "Fact" [style=dashed, arrowhead=empty, label="is-a"];
+  "T" -> "Label" [style=dashed, arrowhead=empty, label="is-a"];
+}

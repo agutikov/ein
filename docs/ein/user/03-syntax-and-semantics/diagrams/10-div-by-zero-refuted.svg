@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: step13 Pages: 1 -->
+<svg width="883pt" height="51pt"
+ viewBox="0.00 0.00 883.00 51.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 46.5)">
+<title>step13</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-46.5 879,-46.5 879,4 -4,4"/>
+<!-- f_eab79754f0 -->
+<g id="node1" class="node">
+<title>f_eab79754f0</title>
+<path fill="none" stroke="black" d="M328,-39.25C328,-39.25 12,-39.25 12,-39.25 6,-39.25 0,-33.25 0,-27.25 0,-27.25 0,-15.25 0,-15.25 0,-9.25 6,-3.25 12,-3.25 12,-3.25 328,-3.25 328,-3.25 334,-3.25 340,-9.25 340,-15.25 340,-15.25 340,-27.25 340,-27.25 340,-33.25 334,-39.25 328,-39.25"/>
+<text xml:space="preserve" text-anchor="middle" x="170" y="-16.57" font-family="Times,serif" font-size="14.00">std.math.arith.division&#45;by&#45;zero(div(n(z, 7), z))</text>
+</g>
+<!-- fire0_std.math.arith.division&#45;by&#45;zero&#45;is&#45;false -->
+<g id="node3" class="node">
+<title>fire0_std.math.arith.division&#45;by&#45;zero&#45;is&#45;false</title>
+<path fill="none" stroke="#bcbd22" stroke-width="2" d="M773,-42.5C773,-42.5 388,-42.5 388,-42.5 382,-42.5 376,-36.5 376,-30.5 376,-30.5 376,-12 376,-12 376,-6 382,0 388,0 388,0 773,0 773,0 779,0 785,-6 785,-12 785,-12 785,-30.5 785,-30.5 785,-36.5 779,-42.5 773,-42.5"/>
+<text xml:space="preserve" text-anchor="middle" x="580.5" y="-25.2" font-family="Times,serif" font-size="14.00" fill="#bcbd22">std.math.arith.division&#45;by&#45;zero&#45;is&#45;false</text>
+<text xml:space="preserve" text-anchor="middle" x="580.5" y="-7.95" font-family="Times,serif" font-size="14.00" fill="#bcbd22">(div (n z 7) z) divides by zero: no number is the answer</text>
+</g>
+<!-- f_eab79754f0&#45;&gt;fire0_std.math.arith.division&#45;by&#45;zero&#45;is&#45;false -->
+<g id="edge1" class="edge">
+<title>f_eab79754f0&#45;&gt;fire0_std.math.arith.division&#45;by&#45;zero&#45;is&#45;false</title>
+<path fill="none" stroke="#bcbd22" d="M340.4,-21.25C348.3,-21.25 356.27,-21.25 364.27,-21.25"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="364.07,-24.75 374.07,-21.25 364.07,-17.75 364.07,-24.75"/>
+</g>
+<!-- f_a1f94f5b63 -->
+<g id="node2" class="node">
+<title>f_a1f94f5b63</title>
+<path fill="none" stroke="black" stroke-width="2" d="M863,-39.25C863,-39.25 833,-39.25 833,-39.25 827,-39.25 821,-33.25 821,-27.25 821,-27.25 821,-15.25 821,-15.25 821,-9.25 827,-3.25 833,-3.25 833,-3.25 863,-3.25 863,-3.25 869,-3.25 875,-9.25 875,-15.25 875,-15.25 875,-27.25 875,-27.25 875,-33.25 869,-39.25 863,-39.25"/>
+<text xml:space="preserve" text-anchor="middle" x="848" y="-16.57" font-family="Times,serif" font-size="14.00">false</text>
+</g>
+<!-- fire0_std.math.arith.division&#45;by&#45;zero&#45;is&#45;false&#45;&gt;f_a1f94f5b63 -->
+<g id="edge2" class="edge">
+<title>fire0_std.math.arith.division&#45;by&#45;zero&#45;is&#45;false&#45;&gt;f_a1f94f5b63</title>
+<path fill="none" stroke="#bcbd22" stroke-width="2" d="M785.42,-21.25C793.9,-21.25 801.82,-21.25 808.98,-21.25"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" stroke-width="2" points="807.24,-24.75 817.24,-21.25 807.24,-17.75 807.24,-24.75"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 58665569c14aa7c0e7efc6b973a23706a068f49a7ce78abc01c16f9be5c82fe1 -->

@@ -1,0 +1,6 @@
+digraph constraints {
+  rankdir=LR;
+  "std.algebra" [shape=rectangle, label="std.algebra\\n«import»"];
+  "knows" [shape=rectangle, label="knows\\n«symmetric, transitive»"];
+  "above" [shape=rectangle, label="above\\n«asymmetric»"];
+}

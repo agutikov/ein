@@ -388,6 +388,10 @@ fn a_planted_refusal_in_a_copy_of_the_guide_fails_it() {
     std::fs::create_dir_all(&loads).expect("the scratch is writable");
     for entry in std::fs::read_dir(repo_root().join(GUIDE)).expect("docs/ein/user/02-guide") {
         let path = entry.expect("a directory entry").path();
+        // The pages alone: the folder of their diagrams holds no program.
+        if path.extension().is_none_or(|x| x != "md") {
+            continue;
+        }
         std::fs::copy(&path, copy.join(path.file_name().expect("a name"))).expect("a copy");
     }
     let mut planted_at = None;

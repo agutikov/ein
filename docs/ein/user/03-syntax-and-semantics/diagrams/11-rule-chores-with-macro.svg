@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_chores_lhs_rhs Pages: 1 -->
+<svg width="285pt" height="216pt"
+ viewBox="0.00 0.00 285.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_chores_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 281,-211.75 281,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="138.5" y="-190.45" font-family="Times,serif" font-size="14.00">chores</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-174.5 128,-174.5 128,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="68" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="136,-8 136,-174.5 269,-174.5 269,-8 136,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="202.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?a_L -->
+<g id="node1" class="node">
+<title>?a_L</title>
+<polygon fill="none" stroke="black" points="47,-141.25 15.5,-123.25 47,-105.25 78.5,-123.25 47,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="47" y="-118.58" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?b_L -->
+<g id="node2" class="node">
+<title>?b_L</title>
+<polygon fill="none" stroke="black" points="48,-52 15.76,-34 48,-16 80.24,-34 48,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="48" y="-29.32" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?a_L&#45;&gt;?b_L -->
+<g id="edge1" class="edge">
+<title>?a_L&#45;&gt;?b_L</title>
+<path fill="none" stroke="#7f7f7f" d="M46.57,-105.31C46.38,-95.08 46.25,-81.79 46.5,-70 46.55,-67.77 46.61,-65.45 46.69,-63.13"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="50.18,-63.37 47.08,-53.24 43.19,-63.1 50.18,-63.37"/>
+<text xml:space="preserve" text-anchor="middle" x="89.25" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">housemates</text>
+</g>
+<!-- ?a_R -->
+<g id="node3" class="node">
+<title>?a_R</title>
+<polygon fill="none" stroke="black" points="175,-141.25 143.5,-123.25 175,-105.25 206.5,-123.25 175,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="175" y="-118.58" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- ?b_R -->
+<g id="node4" class="node">
+<title>?b_R</title>
+<polygon fill="none" stroke="black" points="176,-52 143.76,-34 176,-16 208.24,-34 176,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="176" y="-29.32" font-family="Times,serif" font-size="14.00">?b</text>
+</g>
+<!-- ?a_R&#45;&gt;?b_R -->
+<g id="edge2" class="edge">
+<title>?a_R&#45;&gt;?b_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M175.2,-105.01C175.33,-93.18 175.52,-77.2 175.67,-63.5"/>
+<polygon fill="#d62728" stroke="#d62728" points="179.17,-63.75 175.79,-53.72 172.17,-63.67 179.17,-63.75"/>
+<text xml:space="preserve" text-anchor="middle" x="225.09" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#d62728">shares&#45;chores</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 578a574abda9ae7c1b7f5cef7d922ddf4140b8f966f4a0ac84346a9e897f5131 -->

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="475pt" height="223pt"
+ viewBox="0.00 0.00 475.00 223.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 218.5)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-218.5 470.64,-218.5 470.64,4 -4,4"/>
+<!-- Ann -->
+<g id="node1" class="node">
+<title>Ann</title>
+<ellipse fill="none" stroke="black" cx="100.16" cy="-18" rx="30.69" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="100.16" y="-13.32" font-family="Times,serif" font-size="14.00">Ann</text>
+</g>
+<!-- Bea -->
+<g id="node2" class="node">
+<title>Bea</title>
+<ellipse fill="none" stroke="black" cx="30.16" cy="-107.25" rx="30.16" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="30.16" y="-102.58" font-family="Times,serif" font-size="14.00">Bea</text>
+</g>
+<!-- Ann&#45;&gt;Bea -->
+<g id="edge1" class="edge">
+<title>Ann&#45;&gt;Bea</title>
+<path fill="none" stroke="#17becf" d="M72.04,-25.65C57.09,-30.77 39.98,-39.49 30.91,-54 26.58,-60.93 25.21,-69.44 25.24,-77.58"/>
+<polygon fill="#17becf" stroke="#17becf" points="21.75,-77.77 26.01,-87.48 28.73,-77.24 21.75,-77.77"/>
+<text xml:space="preserve" text-anchor="middle" x="54.54" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#17becf">parent</text>
+</g>
+<!-- Ann&#45;&gt;Bea -->
+<g id="edge4" class="edge">
+<title>Ann&#45;&gt;Bea</title>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M95.51,-36.24C91.99,-47.08 86.35,-60.91 78.16,-71.25 73.26,-77.44 66.99,-83.06 60.62,-87.9"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="58.77,-84.92 52.59,-93.53 62.79,-90.66 58.77,-84.92"/>
+<text xml:space="preserve" text-anchor="middle" x="197.28" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by parent&#45;is&#45;ancestor</text>
+</g>
+<!-- Cid -->
+<g id="node3" class="node">
+<title>Cid</title>
+<ellipse fill="none" stroke="black" cx="100.16" cy="-196.5" rx="28.06" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="100.16" y="-191.82" font-family="Times,serif" font-size="14.00">Cid</text>
+</g>
+<!-- Ann&#45;&gt;Cid -->
+<g id="edge7" class="edge">
+<title>Ann&#45;&gt;Cid</title>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M130.47,-21.25C181.18,-25.47 280.55,-35.83 310.16,-54 326.76,-64.18 330.08,-70.76 336.16,-89.25 346.7,-121.27 338.9,-142.87 310.16,-160.5 282.19,-177.66 191.99,-187.85 139.34,-192.49"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="139.26,-188.98 129.59,-193.32 139.85,-195.96 139.26,-188.98"/>
+<text xml:space="preserve" text-anchor="middle" x="403.64" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by chain</text>
+</g>
+<!-- Bea&#45;&gt;Bea -->
+<g id="edge3" class="edge">
+<title>Bea&#45;&gt;Bea</title>
+<path fill="none" stroke="#17becf" d="M59.79,-103.07C70.05,-103.02 78.33,-104.42 78.33,-107.25 78.33,-108.89 75.56,-110.04 71.24,-110.72"/>
+<polygon fill="#17becf" stroke="#17becf" points="71.07,-107.22 61.3,-111.34 71.5,-114.21 71.07,-107.22"/>
+<text xml:space="preserve" text-anchor="middle" x="106.08" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#17becf">has&#45;dog</text>
+</g>
+<!-- Bea&#45;&gt;Bea -->
+<g id="edge6" class="edge">
+<title>Bea&#45;&gt;Bea</title>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M58.73,-100.6C90.75,-96.93 133.83,-99.14 133.83,-107.25 133.83,-114.44 99.95,-116.99 69.96,-114.92"/>
+<polygon fill="#17becf" stroke="#17becf" points="70.51,-111.46 60.23,-114.04 69.88,-118.43 70.51,-111.46"/>
+<text xml:space="preserve" text-anchor="middle" x="221.58" y="-102.58" font-family="Times,serif" font-size="14.00" fill="#17becf">pet&#45;owner by owns&#45;a&#45;pet</text>
+</g>
+<!-- Bea&#45;&gt;Cid -->
+<g id="edge2" class="edge">
+<title>Bea&#45;&gt;Cid</title>
+<path fill="none" stroke="#17becf" d="M26.12,-125.52C24.57,-136.36 24.47,-150.19 30.91,-160.5 38.2,-172.16 50.69,-180.09 63.07,-185.41"/>
+<polygon fill="#17becf" stroke="#17becf" points="61.79,-188.66 72.38,-188.9 64.25,-182.11 61.79,-188.66"/>
+<text xml:space="preserve" text-anchor="middle" x="54.54" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#17becf">parent</text>
+</g>
+<!-- Bea&#45;&gt;Cid -->
+<g id="edge5" class="edge">
+<title>Bea&#45;&gt;Cid</title>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M51.35,-120.1C60.55,-126.08 70.87,-134.03 78.16,-143.25 83.86,-150.44 88.32,-159.32 91.69,-167.7"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="88.3,-168.62 95,-176.83 94.89,-166.24 88.3,-168.62"/>
+<text xml:space="preserve" text-anchor="middle" x="197.28" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by parent&#45;is&#45;ancestor</text>
+</g>
+<!-- Cid&#45;&gt;Cid -->
+<g id="edge8" class="edge">
+<title>Cid&#45;&gt;Cid</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M125.27,-188.26C136.51,-187.48 146.22,-190.22 146.22,-196.5 146.22,-200.52 142.24,-203.09 136.42,-204.21"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="136.61,-200.7 126.79,-204.67 136.94,-207.69 136.61,-200.7"/>
+<text xml:space="preserve" text-anchor="middle" x="218.6" y="-191.82" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">childless by no&#45;child</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: e126e6f6a83c5c2de359c3b3efe35156c1de94853395f66ed3e64e90c09a74a8 -->

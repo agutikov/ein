@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_cat_not_in_b2_lhs_rhs Pages: 1 -->
+<svg width="228pt" height="216pt"
+ viewBox="0.00 0.00 228.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_cat_not_in_b2_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 224,-211.75 224,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="110" y="-190.45" font-family="Times,serif" font-size="14.00">cat&#45;not&#45;in&#45;b2</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-97.25 8,-174.5 134,-174.5 134,-97.25 8,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="142,-8 142,-174.5 212,-174.5 212,-8 142,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="177" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- h1_#empty_L -->
+<g id="node1" class="node">
+<title>h1_#empty_L</title>
+<polygon fill="none" stroke="#17becf" points="126.43,-115.79 126.43,-130.71 93.96,-141.25 48.04,-141.25 15.57,-130.71 15.57,-115.79 48.04,-105.25 93.96,-105.25 126.43,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#17becf">#empty</text>
+</g>
+<!-- Cat_R -->
+<g id="node2" class="node">
+<title>Cat_R</title>
+<polygon fill="none" stroke="black" points="204,-141.25 150,-141.25 150,-105.25 204,-105.25 204,-141.25"/>
+<text xml:space="preserve" text-anchor="middle" x="177" y="-118.58" font-family="Times,serif" font-size="14.00">Cat</text>
+</g>
+<!-- B2_R -->
+<g id="node3" class="node">
+<title>B2_R</title>
+<polygon fill="none" stroke="black" points="204,-52 150,-52 150,-16 204,-16 204,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="177" y="-29.32" font-family="Times,serif" font-size="14.00">B2</text>
+</g>
+<!-- Cat_R&#45;&gt;B2_R -->
+<g id="edge1" class="edge">
+<title>Cat_R&#45;&gt;B2_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M177,-105.01C177,-93.18 177,-77.2 177,-63.5"/>
+<polygon fill="#d62728" stroke="#d62728" points="180.5,-63.72 177,-53.72 173.5,-63.72 180.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="189.75" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#d62728">¬in</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: eaf77988aa559f8a88ff2458df986a035c4078eaf7d4cde285f9f8235a708cbb -->

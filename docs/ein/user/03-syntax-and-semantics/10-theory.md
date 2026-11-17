@@ -68,90 +68,24 @@ flag from the division's own facts, and `std.math.arith`'s rule concludes `(fals
 directory `ein --version` names ([install](../01-install.md)). The refutation matches the flag, of any request, and
 asserts `(false)`:
 
-```dot
-digraph rule_division_by_zero_is_false_lhs_rhs {
-  rankdir=TB;
-  label="division-by-zero-is-false"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?request_L" [label="?request", shape=diamond];
-    "h1_division-by-zero_L" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h1_division-by-zero_L" -> "?request_L" [label="1", color="#e377c2"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h2_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule division-by-zero-is-false: the flag, and (false)](diagrams/10-rule-division-by-zero-is-false.svg)
 
 and the closing rule matches nothing, the `#empty` octagon, and asserts three facts about the module's own names:
 
-```dot
-digraph rule_arith_lhs_rhs {
-  rankdir=TB;
-  label="arith"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "division-by-zero_R" [label="division-by-zero", shape=rectangle];
-    "arith-module-rule_R" [label="arith-module-rule", shape=rectangle];
-    "division-by-zero-is-false_R" [label="division-by-zero-is-false", shape=rectangle];
-    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h2___closed___R" -> "division-by-zero_R" [label="1", color="#e377c2", style=dashed];
-    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h3___closed___R" -> "arith-module-rule_R" [label="1", color="#e377c2", style=dashed];
-    "h4_arith-module-rule_R" [shape=octagon, label="arith-module-rule", color="#d62728", fontcolor="#d62728"];
-    "h4_arith-module-rule_R" -> "division-by-zero-is-false_R" [label="1", color="#d62728", style=dashed];
-  }
-}
-```
+![The rule arith: an empty match, and three facts about the module's own names](diagrams/10-rule-arith.svg)
 
 What makes the rules a theory is how they connect: one rule's conclusion is another's premise. `ein solve FILE
 --trace OUT.md` draws each firing, and two consecutive drawings of the division by zero share a node, the flag,
 concluded by a rule of one module and read by a rule of another:
 
-```dot
-digraph step12 {
-  rankdir=LR;
-  "f_9934285045" [label="std.math.decimal-arith.done(std.math.decimal-arith.div-m1(std.math.decimal-arith.quotient(n(z, 7), z), n(z, 7), z), z)", shape=box, style=rounded];
-  "f_eab79754f0" [label="std.math.arith.division-by-zero(div(n(z, 7), z))", shape=box, style=rounded, penwidth=2];
-  "fire0_std.math.positional.div-by-zero" [shape=box, style="rounded,bold", color="#2ca02c", fontcolor="#2ca02c", label="std.math.positional.div-by-zero\nthe divisor of (n z 7) divided by z is zero"];
-  "f_9934285045" -> "fire0_std.math.positional.div-by-zero" [color="#2ca02c"];
-  "fire0_std.math.positional.div-by-zero" -> "f_eab79754f0" [color="#2ca02c", style=bold];
-}
-```
+![The firing that concludes the division by zero's flag](diagrams/10-div-by-zero-flagged.svg)
 
-```dot
-digraph step13 {
-  rankdir=LR;
-  "f_eab79754f0" [label="std.math.arith.division-by-zero(div(n(z, 7), z))", shape=box, style=rounded];
-  "f_a1f94f5b63" [label="false", shape=box, style=rounded, penwidth=2];
-  "fire0_std.math.arith.division-by-zero-is-false" [shape=box, style="rounded,bold", color="#bcbd22", fontcolor="#bcbd22", label="std.math.arith.division-by-zero-is-false\n(div (n z 7) z) divides by zero: no number is the answer"];
-  "f_eab79754f0" -> "fire0_std.math.arith.division-by-zero-is-false" [color="#bcbd22"];
-  "fire0_std.math.arith.division-by-zero-is-false" -> "f_a1f94f5b63" [color="#bcbd22", style=bold];
-}
-```
+![The next firing, which reads the flag and concludes (false)](diagrams/10-div-by-zero-refuted.svg)
 
 The same connection, over relations and rules and not over one run's facts, is a graph no `ein render` view draws
 as a whole. Drawn by hand for the division above, a relation a box and a rule a hexagon:
 
-```dot
-digraph theory_dependencies {
-  rankdir=LR;
-  "div"                       [shape=box];
-  "division rules"            [shape=hexagon, label="the division's rules"];
-  "division-by-zero"          [shape=box];
-  "division-by-zero-is-false" [shape=hexagon];
-  "false"                     [shape=box];
-  "arith"                     [shape=hexagon];
-  "__closed__"                [shape=box];
-  "div" -> "division rules"            [label="read by"];
-  "division rules" -> "division-by-zero" [label="concludes"];
-  "division-by-zero" -> "division-by-zero-is-false" [label="read by"];
-  "division-by-zero-is-false" -> "false" [label="concludes"];
-  "arith" -> "__closed__"              [label="concludes"];
-}
-```
+![The division's relations and rules as a graph: a relation a box, a rule a hexagon](diagrams/10-theory-dependencies.svg)
 
 An edge through an `absent` is the one that matters most: the read-out's `strata` row reports a cycle of such edges,
 where what a theory concludes may depend on the order its rules are admitted in ([rules](05-rules.md)).

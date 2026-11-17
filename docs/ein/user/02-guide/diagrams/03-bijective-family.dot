@@ -1,0 +1,6 @@
+digraph { rankdir=LR; node [shape=box];
+  tag [label="(bijective color-loc)", shape=note];
+  tag -> "functional"; tag -> "injective";
+  tag -> "total"; tag -> "surjective";
+  tag -> "domain- and range-elimination"; tag -> "negative-completion";
+}

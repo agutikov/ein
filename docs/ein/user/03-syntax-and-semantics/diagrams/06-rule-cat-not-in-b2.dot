@@ -1,0 +1,12 @@
+digraph rule_cat_not_in_b2_lhs_rhs {
+  rankdir=TB;
+  label="cat-not-in-b2"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "Cat_R" [label="Cat", shape=rectangle];
+    "B2_R" [label="B2", shape=rectangle];
+    "Cat_R" -> "B2_R" [label="¬in", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

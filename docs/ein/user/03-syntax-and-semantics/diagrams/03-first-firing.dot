@@ -1,0 +1,8 @@
+digraph step1 {
+  rankdir=LR;
+  "f_976d7e7ab9" [label="knows(Alice, Bob)", shape=box, style=rounded];
+  "f_884e5d5933" [label="knows(Bob, Alice)", shape=box, style=rounded, penwidth=2];
+  "fire0_knows-back" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="knows-back\nAlice knows Bob, so Bob knows Alice"];
+  "f_976d7e7ab9" -> "fire0_knows-back" [color="#8c564b"];
+  "fire0_knows-back" -> "f_884e5d5933" [color="#8c564b", style=bold];
+}

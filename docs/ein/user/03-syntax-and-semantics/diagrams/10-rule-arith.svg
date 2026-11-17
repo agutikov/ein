@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_arith_lhs_rhs Pages: 1 -->
+<svg width="691pt" height="216pt"
+ viewBox="0.00 0.00 691.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<title>rule_arith_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 687,-211.75 687,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="341.5" y="-190.45" font-family="Times,serif" font-size="14.00">arith</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-97.25 8,-174.5 134,-174.5 134,-97.25 8,-97.25"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="142,-8 142,-174.5 675,-174.5 675,-8 142,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="408.5" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- h1_#empty_L -->
+<g id="node1" class="node">
+<title>h1_#empty_L</title>
+<polygon fill="none" stroke="#17becf" points="126.43,-115.79 126.43,-130.71 93.96,-141.25 48.04,-141.25 15.57,-130.71 15.57,-115.79 48.04,-105.25 93.96,-105.25 126.43,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#17becf">#empty</text>
+</g>
+<!-- division&#45;by&#45;zero_R -->
+<g id="node2" class="node">
+<title>division&#45;by&#45;zero_R</title>
+<polygon fill="none" stroke="black" points="281.25,-52 152.75,-52 152.75,-16 281.25,-16 281.25,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="217" y="-29.32" font-family="Times,serif" font-size="14.00">division&#45;by&#45;zero</text>
+</g>
+<!-- arith&#45;module&#45;rule_R -->
+<g id="node3" class="node">
+<title>arith&#45;module&#45;rule_R</title>
+<polygon fill="none" stroke="black" points="440.25,-52 299.75,-52 299.75,-16 440.25,-16 440.25,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="370" y="-29.32" font-family="Times,serif" font-size="14.00">arith&#45;module&#45;rule</text>
+</g>
+<!-- division&#45;by&#45;zero&#45;is&#45;false_R -->
+<g id="node4" class="node">
+<title>division&#45;by&#45;zero&#45;is&#45;false_R</title>
+<polygon fill="none" stroke="black" points="651.62,-52 468.38,-52 468.38,-16 651.62,-16 651.62,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="560" y="-29.32" font-family="Times,serif" font-size="14.00">division&#45;by&#45;zero&#45;is&#45;false</text>
+</g>
+<!-- h2___closed___R -->
+<g id="node5" class="node">
+<title>h2___closed___R</title>
+<polygon fill="none" stroke="#e377c2" points="283.82,-115.79 283.82,-130.71 244.68,-141.25 189.32,-141.25 150.18,-130.71 150.18,-115.79 189.32,-105.25 244.68,-105.25 283.82,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="217" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#e377c2">__closed__</text>
+</g>
+<!-- h2___closed___R&#45;&gt;division&#45;by&#45;zero_R -->
+<g id="edge1" class="edge">
+<title>h2___closed___R&#45;&gt;division&#45;by&#45;zero_R</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="5,2" d="M217,-105.01C217,-93.18 217,-77.2 217,-63.5"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="220.5,-63.72 217,-53.72 213.5,-63.72 220.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="221.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h3___closed___R -->
+<g id="node6" class="node">
+<title>h3___closed___R</title>
+<polygon fill="none" stroke="#e377c2" points="435.82,-115.79 435.82,-130.71 396.68,-141.25 341.32,-141.25 302.18,-130.71 302.18,-115.79 341.32,-105.25 396.68,-105.25 435.82,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="369" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#e377c2">__closed__</text>
+</g>
+<!-- h3___closed___R&#45;&gt;arith&#45;module&#45;rule_R -->
+<g id="edge2" class="edge">
+<title>h3___closed___R&#45;&gt;arith&#45;module&#45;rule_R</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="5,2" d="M369.2,-105.01C369.33,-93.18 369.52,-77.2 369.67,-63.5"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="373.17,-63.75 369.79,-53.72 366.17,-63.67 373.17,-63.75"/>
+<text xml:space="preserve" text-anchor="middle" x="374.09" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h4_arith&#45;module&#45;rule_R -->
+<g id="node7" class="node">
+<title>h4_arith&#45;module&#45;rule_R</title>
+<polygon fill="none" stroke="#d62728" points="666.68,-115.79 666.68,-130.71 604.19,-141.25 515.81,-141.25 453.32,-130.71 453.32,-115.79 515.81,-105.25 604.19,-105.25 666.68,-115.79"/>
+<text xml:space="preserve" text-anchor="middle" x="560" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#d62728">arith&#45;module&#45;rule</text>
+</g>
+<!-- h4_arith&#45;module&#45;rule_R&#45;&gt;division&#45;by&#45;zero&#45;is&#45;false_R -->
+<g id="edge3" class="edge">
+<title>h4_arith&#45;module&#45;rule_R&#45;&gt;division&#45;by&#45;zero&#45;is&#45;false_R</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M560,-105.01C560,-93.18 560,-77.2 560,-63.5"/>
+<polygon fill="#d62728" stroke="#d62728" points="563.5,-63.72 560,-53.72 556.5,-63.72 563.5,-63.72"/>
+<text xml:space="preserve" text-anchor="middle" x="564.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: fb20bfacf6e7310d13476298480326520f2618387d9f43cf425d9eb748a7f333 -->

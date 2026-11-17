@@ -1,0 +1,22 @@
+digraph facts {
+  ranksep=0.55;
+  "h_1_has" [shape=octagon, label="has"];
+  "Bob" [shape=rectangle];
+  "apples" [shape=rectangle];
+  "t0" [shape=rectangle];
+  "h_2_gave" [shape=octagon, label="gave"];
+  "Alice" [shape=rectangle];
+  "t1" [shape=rectangle];
+  "h_3_asked" [shape=octagon, label="asked"];
+  "h_1_has" -> "Bob" [label="1"];
+  "h_1_has" -> "apples" [label="2"];
+  "h_1_has" -> "(n z 5)" [label="3"];
+  "h_1_has" -> "t0" [label="4"];
+  "h_2_gave" -> "Bob" [label="1"];
+  "h_2_gave" -> "Alice" [label="2"];
+  "h_2_gave" -> "apples" [label="3"];
+  "h_2_gave" -> "(n z 2)" [label="4"];
+  "h_2_gave" -> "t0" [label="5"];
+  "h_2_gave" -> "t1" [label="6"];
+  "h_3_asked" -> "(amount Bob apples t1)" [label="1"];
+}

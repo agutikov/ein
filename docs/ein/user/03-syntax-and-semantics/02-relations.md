@@ -57,56 +57,13 @@ a relation of the program, **open-world**, with no labels, no held count and no 
 between its first two, and the facts by arity, a binary fact as a labelled arrow, a unary one as a labelled
 self-loop, and the others as octagons with an edge numbered by position to each argument:
 
-```dot
-digraph ontology {
-  ranksep=0.55;
-  "Person" [shape=box];
-  "House" [shape=box];
-  "Norwegian" [shape=rectangle];
-  "House-1" [shape=rectangle];
-  "h_1_keeps" [shape=octagon, label="keeps"];
-  "Zebra" [shape=rectangle];
-  "h_2_solved" [shape=octagon, label="solved"];
-  "Person" -> "House" [label="lives-in", style=dashed];
-  "Person" -> "House" [label="keeps", style=dashed];
-  "Norwegian" -> "House-1" [label="lives-in", color="#9467bd", fontcolor="#9467bd", style=solid];
-  "Norwegian" -> "Norwegian" [label="adult", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "h_1_keeps" -> "Norwegian" [label="1"];
-  "h_1_keeps" -> "House-1" [label="2"];
-  "h_1_keeps" -> "Zebra" [label="3"];
-}
-```
+![The program as written: declarations as dashed edges, facts by arity](diagrams/02-program-as-written.svg)
 
 The two labels a dashed edge joins are drawn as boxes where no fact names them; that is the view's way of setting
 the declarations apart from the facts, and says nothing of what `Person` is. `ein render kb FILE` draws the loaded program, the declarations as the
 facts they are stored as, so a relation is visibly a node that facts are about:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  f_37791a66b1 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_37791a66b1 -> "lives-in" [label="#1", color="#bcbd22", style=solid];
-  f_37791a66b1 -> "Person" [label="#2", color="#bcbd22", style=solid];
-  f_37791a66b1 -> "House" [label="#3", color="#bcbd22", style=solid];
-  "lives-in" -> "lives-in" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "adult" -> "Person" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "adult" -> "adult" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_c19a3b2aac [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_c19a3b2aac -> "keeps" [label="#1", color="#bcbd22", style=solid];
-  f_c19a3b2aac -> "Person" [label="#2", color="#bcbd22", style=solid];
-  f_c19a3b2aac -> "House" [label="#3", color="#bcbd22", style=solid];
-  f_c19a3b2aac -> "Pet" [label="#4", color="#bcbd22", style=solid];
-  "keeps" -> "keeps" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "solved" -> "solved" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Norwegian" -> "House-1" [label="lives-in", color="#9467bd", fontcolor="#9467bd", style=solid];
-  "Norwegian" -> "Norwegian" [label="adult", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_81cc97aa67 [shape=octagon, label="(keeps)", color="#d62728", fontcolor="#d62728", style=solid];
-  f_81cc97aa67 -> "Norwegian" [label="#1", color="#d62728", style=solid];
-  f_81cc97aa67 -> "House-1" [label="#2", color="#d62728", style=solid];
-  f_81cc97aa67 -> "Zebra" [label="#3", color="#d62728", style=solid];
-  f_c08e9231d4 [shape=octagon, label="(solved)", color="#2ca02c", fontcolor="#2ca02c", style=solid];
-}
-```
+![The loaded program: each declaration as the fact it is stored as](diagrams/02-program-kb.svg)
 
 `(relation lives-in Person House)` is an octagon with an edge to `lives-in` and one to each label; `(relation adult
 Person)`, a fact of two arguments, is an arrow from `adult` to `Person`; and `(relation solved)` is a loop on

@@ -1,0 +1,18 @@
+digraph rule_every_declared_pair_lhs_rhs {
+  rankdir=TB;
+  label="every-declared-pair"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?T1_L" [label="?T1", shape=diamond];
+    "?T2_L" [label="?T2", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?T1_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?T2_L" [label="3", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h2_first-argument-fits_R" [shape=octagon, label="first-argument-fits", color="#d62728", fontcolor="#d62728"];
+    "h2_first-argument-fits_R" -> "?R_R" [label="1", color="#d62728", style=dashed];
+  }
+}

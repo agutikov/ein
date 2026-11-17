@@ -1,0 +1,8 @@
+digraph step12 {
+  rankdir=LR;
+  "f_9934285045" [label="std.math.decimal-arith.done(std.math.decimal-arith.div-m1(std.math.decimal-arith.quotient(n(z, 7), z), n(z, 7), z), z)", shape=box, style=rounded];
+  "f_eab79754f0" [label="std.math.arith.division-by-zero(div(n(z, 7), z))", shape=box, style=rounded, penwidth=2];
+  "fire0_std.math.positional.div-by-zero" [shape=box, style="rounded,bold", color="#2ca02c", fontcolor="#2ca02c", label="std.math.positional.div-by-zero\nthe divisor of (n z 7) divided by z is zero"];
+  "f_9934285045" -> "fire0_std.math.positional.div-by-zero" [color="#2ca02c"];
+  "fire0_std.math.positional.div-by-zero" -> "f_eab79754f0" [color="#2ca02c", style=bold];
+}

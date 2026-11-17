@@ -1,0 +1,5 @@
+digraph facts {
+  "Norwegian" [shape=rectangle];
+  "House-1" [shape=rectangle];
+  "Norwegian" -> "House-1" [label="nation-loc", color="#d62728", fontcolor="#d62728", style=solid];
+}

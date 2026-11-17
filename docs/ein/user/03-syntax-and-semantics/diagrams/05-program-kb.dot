@@ -1,0 +1,11 @@
+digraph kb {
+  rankdir=BT;
+  "Ann" -> "Bea" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bea" -> "Cid" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bea" -> "Bea" [label="has-dog", color="#17becf", fontcolor="#17becf", style=solid];
+  "Ann" -> "Bea" [label="ancestor by parent-is-ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Bea" -> "Cid" [label="ancestor by parent-is-ancestor", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Bea" -> "Bea" [label="pet-owner by owns-a-pet", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Ann" -> "Cid" [label="ancestor by chain", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Cid" -> "Cid" [label="childless by no-child", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
+}
