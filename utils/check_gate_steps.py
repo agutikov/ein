@@ -271,7 +271,7 @@ DEV_HOST_ONLY = [
      "left the nightly with the bundle it reads"),
     ("python3 utils/check_doc_blocks.py --plantuml",
      "needs a PlantUML that knows `@startebnf`, which the runner's package predates; the "
-     "per-commit step holds the `dot` blocks and the numbering"),
+     "per-commit step holds every diagram to its source's hash and the `.dot` sources to Graphviz"),
 ]
 
 # The fuzzer's budget on the dev host; the nightly runs it at a budget that fits.

@@ -75,9 +75,12 @@ constrained-reasoning research.
   `reasoning/`, `ein.rs/` and `overview/` is `NN-kebab-name`, numbered in its
   folder's reading order from `01` with no gap, `README.md` and `diagrams/`
   aside ([Q-M1f.367](docs/decisions/docs/Q-M1f.367-the-folders-and-pages-of-the-documentation-are.md));
-  a diagram is a fenced `dot` or `plantuml` block, never drawn in characters,
-  and what `ein` prints is output, marked `<!-- output -->` where it could be
-  read as a drawing
+  a diagram is a file, `NN-name.dot` or `NN-name.puml` in the `diagrams/`
+  folder beside its page, `NN` the page's number, and the page shows the
+  picture drawn from it, an image of `diagrams/NN-name.svg` whose text says
+  what it shows: no page holds a fenced `dot` or `plantuml` block, none is
+  drawn in characters, and what `ein` prints is output, marked
+  `<!-- output -->` where it could be read as a drawing
   ([Q-M1f.368](docs/decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md));
   a formula is TeX, between `$$` lines or inline `$`, never a `text` block
   ([Q-M1f.369](docs/decisions/docs/Q-M1f.369-a-formula-is-written-in-tex-displayed-or-inline.md));
@@ -96,10 +99,13 @@ constrained-reasoning research.
   `--identifiers` report (every backticked name that looks like code, looked
   up in `ein.rs/crates/`: a report, never a gate, since a page that rightly
   says a name is gone still names it); the release-voice check;
-  `utils/check_doc_blocks.py`, a gate step (every fenced `dot` block through
-  Graphviz, the numbering, the languages of `reasoning/`, no formula in a
-  `text` block and no diagram in characters; `--plantuml`, the dev host's,
-  draws the `plantuml` blocks too); and running
+  `utils/check_doc_blocks.py`, a gate step (a diagram is a file with its
+  picture: no fenced `dot` or `plantuml` block, every source with the `.svg`
+  drawn from it as it stands, by the stamp `utils/render_diagrams.py` writes,
+  named for the page that shows it, and every `.dot` through the Graphviz at
+  hand; the numbering, the languages of `reasoning/`, no formula in a `text`
+  block and no diagram in characters; `--plantuml`, the dev host's, draws the
+  `.puml` sources too); and running
   the commands a page shows, which no script does and which finds the most.
 - **`docs/decisions/`** — **every question about Ein that has an answer, as
   that answer** ([`docs/decisions/README.md`](docs/decisions/README.md)): one
@@ -478,8 +484,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 ### Edits that go together
 
 - **Generated, never edited by hand** (edit the generator and re-run):
-  `01-grammar.md`'s two grammar regions, the EBNF diagrams and the lexer's
-  table (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
+  `01-grammar.md`'s two grammar regions, the lexer's table among them, and
+  the sources of its EBNF diagrams, `04-reference/diagrams/01-grammar-*.puml`
+  (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
+  **every `.svg` under a `diagrams/` folder** (`utils/render_diagrams.py`,
+  from the `.dot` or `.puml` beside it);
   `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
   (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
   and its width-2 twin, the fixture `ein-infer/tests/golden/num2_theory.ein`
@@ -493,8 +502,9 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`utils/gen_send_written.py`);
   `09-read-out-examples.md` (`utils/read_out_examples.py`); the rule regions
-  of the `04-stdlib/` pages (`utils/gen_stdlib_rule_pages.py`, which needs the
-  binary); `06-config.md`'s
+  of the `04-stdlib/` pages and the sources of the rules' drawings,
+  `04-stdlib/diagrams/NN-MODULE.RULE.dot` (`utils/gen_stdlib_rule_pages.py`,
+  which needs the binary, and draws their pictures); `06-config.md`'s
   defaults block and `docs/ein/ein.rs/04-api.md`'s `rust` block;
   `ein-core/src/printable.rs` (`utils/gen_unicode_printable.py`, with
   `ein-core/tests/golden/repr_escapes.txt` re-blessed). All of those have a
@@ -517,6 +527,15 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   it move, and every reference moves with them in the same commit
   (`utils/check_doc_blocks.py` fails on a gap or a number twice; `--list`
   prints every finding of the pages' rules, `--rule N` one rule's).
+- **A diagram that is edited is drawn again in the same commit**, and one that
+  is added or dropped takes its picture and its page's image line with it:
+  `python3 utils/render_diagrams.py` draws what is missing or stale, and
+  rule 1 of `utils/check_doc_blocks.py` fails on a source whose picture was
+  not drawn from it as it stands, by the hash stamped on the picture's last
+  line. **A picture is never compared with a second drawing**: its bytes
+  depend on the Graphviz that drew it. A source the tool does not write
+  (the standard library's rule drawings, the grammar's diagrams) changes
+  through its generator, and then the tool draws it.
 - **The release voice has no baseline**: `utils/check_release_voice.py` fails
   on any line of the project's prose (every project `.md`, every crate comment,
   every `.ein` comment, `corpus/corpus.toml` and `corpus/regressions.toml`)
@@ -616,7 +635,8 @@ python3 utils/region_synth.py --example three_components     # a program written
 python3 utils/read_out_examples.py                           # the read-out reference's examples page, written from the binary
 python3 utils/doc_audit.py --inbound --tracked --target docs/ein/      # per target file, the references a move rewrites, by referrer kind
 python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check finds
-python3 utils/check_doc_blocks.py --list [--rule N] [PATH …]  # every finding of the pages' rules: dot blocks, numbering, reasoning's languages, formulas, character diagrams
+python3 utils/check_doc_blocks.py --list [--rule N] [PATH …]  # every finding of the pages' rules: diagrams as files, numbering, reasoning's languages, formulas, character diagrams
+python3 utils/render_diagrams.py [--check | --all | --list] [PATH …]   # draw every diagram source that is missing its picture or changed since; --check draws nothing and reads the stamps
 python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ reference, a date
 ```
 

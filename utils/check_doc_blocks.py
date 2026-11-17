@@ -3,17 +3,24 @@
 
 Each rule is a decision under `docs/decisions/docs/` (Q-M1f.367 to .371), and
 this is what holds the pages to them. It reads every tracked `.md` under
-`docs/ein/`, and for rules 1 and 6 those under `docs/decisions/` too, and
-reports each finding as `file:line: rule N: what`.
+`docs/ein/`, for rule 1 those under `docs/decisions/` too, and for rules 1
+and 6 every `diagrams/` folder under `docs/`, and reports each finding as
+`file:line: rule N: what`.
 
 | rule | what fails | where |
 |---|---|---|
-| 1 | a fenced `dot` block that Graphviz refuses (`dot -Tsvg`, exit ≠ 0) | `docs/ein/`, `docs/decisions/` |
-| 2 | the numbering: an entry of `user/`, `reasoning/`, `ein.rs/` or `overview/`, at any depth, that is not `README.md`, not a `diagrams/` folder and not `NN-kebab-name`; a folder whose numbers are not `01..n`, each once | the four folders |
-| 3 | a page of the reasoning that speaks an implementation's language: a fenced block that is not `dot` or `plantuml`; a link that resolves outside `docs/`; inline code that is a file path, a Rust path, a crate or test name, or a command line | `docs/ein/reasoning/` |
+| 1 | **a diagram that is not a file with its picture** (Q-M1f.368). (a) A fenced `dot` or `plantuml` block in a page: a diagram is an image, `![…](diagrams/NN-name.svg)`, of a source in the page's `diagrams/` folder. (b) Everything `render_diagrams.py --check` holds: a source with no picture or a picture with no source; a picture whose stamp is not its source's hash; anything else in a `diagrams/` folder; a name that is not `NN-name` with `NN` the number of a page of the folder that shows it (`00` its `README.md`); a picture no page shows, and a shown picture that does not exist. (c) A `.dot` source that the Graphviz at hand refuses (`dot -Tsvg`, exit ≠ 0) | the pages of `docs/ein/` and `docs/decisions/`; every `diagrams/` folder under `docs/` |
+| 2 | the numbering: an entry of `user/`, `reasoning/`, `ein.rs/` or `overview/`, at any depth, that is not `README.md`, not a `diagrams/` folder and not `NN-kebab-name`; a folder whose numbers are not `01..n`, each once. What a `diagrams/` folder holds is named by rule 1 | the four folders |
+| 3 | a page of the reasoning that speaks an implementation's language: a fenced block, of any language; a link that resolves outside `docs/`; inline code that is a file path, a Rust path, a crate or test name, or a command line | `docs/ein/reasoning/` |
 | 4 | a formula in a block: a fenced block with no language or `text` that holds a mathematical operator no program output holds | `docs/ein/` |
-| 5 | a diagram drawn in characters: a fenced block that is not `dot` or `plantuml` and holds box-drawing corners, junctions or verticals, an arrow of dashes (`-->`, `<--`), a `+--` corner, or, in a block with no language or `text`, a line that is only a connector (`|`, `v`, `^`) or one that chains two or more arrows (`a ← b ← c`) | `docs/ein/` |
-| 6 | with `--plantuml`: a fenced `plantuml` block with no `@start…` line, or one PlantUML does not draw (no SVG, or the words *Syntax error* in it) | `docs/ein/`, `docs/decisions/` |
+| 5 | a diagram drawn in characters: a fenced block that holds box-drawing corners, junctions or verticals, an arrow of dashes (`-->`, `<--`), a `+--` corner, or, in a block with no language or `text`, a line that is only a connector (`|`, `v`, `^`) or one that chains two or more arrows (`a ← b ← c`) | `docs/ein/` |
+| 6 | with `--plantuml`: a `.puml` source with no `@start…` line, or one PlantUML does not draw (no SVG, or the words *Syntax error* in it) | every `diagrams/` folder under `docs/` |
+
+**Where each rule can run.** Rule 1 draws nothing it keeps: (b) reads the
+stamps, so it holds on any machine, and (c) lays every `.dot` out with the
+Graphviz at hand and throws the result away, which is what finds a source the
+runner's Graphviz refuses and this machine's draws. Rule 6 needs a PlantUML
+that knows every diagram type the sources use.
 
     python3 utils/check_doc_blocks.py                # the gate's form: rules 1 to 5, exit 1 on a finding
     python3 utils/check_doc_blocks.py --plantuml     # rule 6 as well (the dev host's: needs a PlantUML that knows @startebnf)
@@ -70,9 +77,12 @@ such a line marks the block `<!-- output -->`.
   another language or in a paragraph.
 - Rule 5: a drawing with one arrow a line, or made only of letters, dashes
   and indentation; a drawing a page marks as output.
-- Rule 1 checks that Graphviz lays the block out, not that it draws what the
-  text says. Rule 6 is PlantUML's syntax check, which a block of an unknown
-  diagram type passes as the type it guesses.
+- Rule 1 checks that Graphviz lays a source out and that its picture was
+  drawn from it, not that the picture shows what the text says, nor that it
+  can be read: a graph too wide for a page passes. An image that is not under
+  a `diagrams/` folder is not a diagram to it. Rule 6 is PlantUML drawing the
+  source, which a source of an unknown diagram type passes as the type it
+  guesses.
 """
 from __future__ import annotations
 
@@ -84,6 +94,9 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import render_diagrams  # noqa: E402  (the diagrams' own rules, which rule 1 holds)
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -192,27 +205,67 @@ def parse(text: str) -> tuple[list[Block], list[tuple[int, str]]]:
 Finding = tuple[str, int, int, str]  # (file, line, rule, what)
 
 
-def run_blocks(jobs: list[tuple[str, Block]], cmd: list[str],
-               verdict) -> list[tuple[str, Block, str]]:
-    """Each block's body through `cmd` on stdin, in parallel; `verdict` reads
+def run_sources(files: list[Path], cmd: list[str], verdict) -> list[tuple[Path, str]]:
+    """Each source's bytes through `cmd` on stdin, in parallel; `verdict` reads
     (exit code, stdout, stderr) and answers what is wrong, or None."""
-    def one(job: tuple[str, Block]):
-        rel, block = job
-        p = subprocess.run(cmd, input="\n".join(block.body) + "\n", capture_output=True, text=True)
-        return rel, block, verdict(p.returncode, p.stdout, p.stderr)
+    def one(file: Path):
+        p = subprocess.run(cmd, input=file.read_bytes(), capture_output=True)
+        return file, verdict(p.returncode, p.stdout.decode("utf-8", "replace"),
+                             p.stderr.decode("utf-8", "replace"))
     with ThreadPoolExecutor(max_workers=os.cpu_count() or 1) as pool:
-        return [r for r in pool.map(one, jobs) if r[2] is not None]
+        return [r for r in pool.map(one, files) if r[1] is not None]
 
 
-def rule1(pages: dict[str, list[Block]]) -> list[Finding]:
-    jobs = [(rel, b) for rel, blocks in pages.items() for b in blocks if b.lang == "dot"]
+def diagram_roots(keep: list[str]) -> list[Path]:
+    """The folders whose `diagrams/` rule 1 and rule 6 read: `docs/`, or what the PATHs name (a
+    page names the folder it is in)."""
+    if not keep:
+        return [REPO / "docs"]
+    roots = []
+    for k in keep:
+        p = REPO / k
+        p = p if p.is_dir() else p.parent
+        if p not in roots:
+            roots.append(p)
+    return roots
 
+
+def sources(keep: list[str], suffix: str) -> list[Path]:
+    seen: list[Path] = []
+    for root in diagram_roots(keep):
+        for s in render_diagrams.sources(root):
+            if s.suffix == suffix and s not in seen:
+                seen.append(s)
+    return seen
+
+
+def rule1(pages: dict[str, list[Block]], keep: list[str]) -> list[Finding]:
+    out: list[Finding] = []
+    # (a) No diagram is a block of a page.
+    for rel, blocks in pages.items():
+        for b in blocks:
+            if b.lang in DIAGRAMS:
+                out.append((rel, b.line, 1, f"a fenced `{b.lang}` block: a diagram is a file in the "
+                            "page's `diagrams/` folder, and the page shows the picture drawn from it"))
+    # (b) Every source has its picture, drawn from it as it stands, named for the page that shows it.
+    seen = set()
+    for root in diagram_roots(keep):
+        for path, what in render_diagrams.check(root):
+            if (path, what) in seen:
+                continue
+            seen.add((path, what))
+            m = re.fullmatch(r"(.*\.md):(\d+)", path)
+            out.append((m.group(1), int(m.group(2)), 1, what) if m else (path, 0, 1, what))
+
+    # (c) Every `.dot` source is one the Graphviz at hand lays out.
     def verdict(rc: int, _out: str, err: str):
         if rc == 0:
             return None
         first = next((l for l in err.splitlines() if l.strip()), "no message")
-        return f"Graphviz refuses this `dot` block (exit {rc}): {first.strip()[:160]}"
-    return [(rel, b.line, 1, what) for rel, b, what in run_blocks(jobs, ["dot", "-Tsvg"], verdict)]
+        return f"Graphviz refuses this source (exit {rc}): {first.strip()[:160]}"
+    out += [(str(f.relative_to(REPO)), 0, 1, what)
+            for f, what in run_sources(sources(keep, ".dot"), ["dot", "-Tsvg"], verdict)]
+    return out
 
 
 def rule2(files: list[str]) -> list[Finding]:
@@ -256,9 +309,9 @@ def rule3(rel: str, blocks: list[Block], prose: list[tuple[int, str]]) -> list[F
         return []
     out: list[Finding] = []
     for b in blocks:
-        if b.lang not in DIAGRAMS:
-            out.append((rel, b.line, 3, f"a fenced `{b.lang or '(no language)'}` block: the "
-                        "reasoning's blocks are `dot` and `plantuml`"))
+        if b.lang not in DIAGRAMS:  # a `dot` or a `plantuml` block is rule 1's finding
+            out.append((rel, b.line, 3, f"a fenced `{b.lang or '(no language)'}` block: a page of "
+                        "the reasoning holds formulas, images and words, and no block"))
     here = os.path.dirname(rel)
     for i, line in prose:
         for m in LINK.finditer(line):
@@ -311,37 +364,35 @@ def rule5(rel: str, blocks: list[Block]) -> list[Finding]:
                 what = "a line that chains arrows"
             if what:
                 out.append((rel, b.line + k, 5, f"a diagram drawn in characters ({what}) in a "
-                            f"`{b.lang or '(no language)'}` block: draw it as a `dot` or a "
-                            "`plantuml` block, or mark what `ein` printed with "
-                            "`<!-- output -->` on the line before"))
+                            f"`{b.lang or '(no language)'}` block: draw it with Graphviz or "
+                            "PlantUML, a file in the page's `diagrams/` folder, or mark what "
+                            "`ein` printed with `<!-- output -->` on the line before"))
                 break
     return out
 
 
-def rule6(pages: dict[str, list[Block]]) -> list[Finding]:
+def rule6(keep: list[str]) -> list[Finding]:
     out: list[Finding] = []
     jobs = []
-    for rel, blocks in pages.items():
-        for b in blocks:
-            if b.lang != "plantuml":
-                continue
-            first = next((l.strip() for l in b.body if l.strip()), "")
-            if not first.startswith("@start"):
-                out.append((rel, b.line, 6, "a `plantuml` block that does not open with `@start…`"))
-            else:
-                jobs.append((rel, b))
+    for f in sources(keep, ".puml"):
+        lines = f.read_text(encoding="utf-8").splitlines()
+        first = next((l.strip() for l in lines if l.strip()), "")
+        if not first.startswith("@start"):
+            out.append((str(f.relative_to(REPO)), 0, 6, "a `.puml` source that does not open with `@start…`"))
+        else:
+            jobs.append(f)
 
-    # `plantuml -syntax` passes a block the renderer then draws as the words "Syntax error!" (an
-    # EBNF exception with a group on its right, an empty option), so the block is drawn and the
+    # `plantuml -syntax` passes a source the renderer then draws as the words "Syntax error!" (an
+    # EBNF exception with a group on its right, an empty option), so the source is drawn and the
     # drawing read.
     def verdict(rc: int, stdout: str, err: str):
         if rc != 0 or "<svg" not in stdout:
-            return "PlantUML draws nothing for this block" + (f": {err.strip()[:160]}" if err.strip() else "")
-        if "Syntax error" in stdout:
-            return "PlantUML draws this block as a syntax error"
+            return "PlantUML draws nothing for this source" + (f": {err.strip()[:160]}" if err.strip() else "")
+        if render_diagrams.PLANTUML_ERROR.search(stdout):
+            return "PlantUML draws this source as a syntax error"
         return None
-    out += [(rel, b.line, 6, what)
-            for rel, b, what in run_blocks(jobs, ["plantuml", "-tsvg", "-pipe"], verdict)]
+    out += [(str(f.relative_to(REPO)), 0, 6, what)
+            for f, what in run_sources(jobs, ["plantuml", "-tsvg", "-nometadata", "-pipe"], verdict)]
     return out
 
 
@@ -359,7 +410,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--all", action="store_true", help="rules 1 to 5, which is the default; kept so an older command line still runs")
     ap.add_argument("--plantuml", action="store_true",
-                    help="rule 6 as well: every `plantuml` block drawn by `plantuml -tsvg`")
+                    help="rule 6 as well: every `.puml` source drawn by `plantuml -tsvg`")
     ap.add_argument("--rule", type=int, action="append", choices=range(1, 7), metavar="N",
                     help="only rule N (repeatable)")
     ap.add_argument("--list", action="store_true",
@@ -367,7 +418,8 @@ def main() -> int:
     ap.add_argument("--counts", action="store_true",
                     help="findings per rule and per perspective, and exit 0")
     ap.add_argument("paths", nargs="*", metavar="PATH",
-                    help="only the pages under each PATH (rule 2 always reads the whole tree)")
+                    help="only the pages and the `diagrams/` folders under each PATH (rule 2 always "
+                         "reads the whole tree)")
     args = ap.parse_args()
 
     if args.rule:
@@ -396,7 +448,7 @@ def main() -> int:
 
     found: list[Finding] = []
     if 1 in rules:
-        found += rule1(pages)
+        found += rule1(pages, keep)
     if 2 in rules:
         found += rule2([f for f in files if f.startswith(DOCS)])
     in_docs = {rel: b for rel, b in pages.items() if rel.startswith(DOCS)}
@@ -408,12 +460,12 @@ def main() -> int:
         if 5 in rules:
             found += rule5(rel, blocks)
     if 6 in rules:
-        found += rule6(pages)
+        found += rule6(keep)
     found.sort()
 
     n_blocks = sum(len(b) for b in pages.values())
-    n_dot = sum(1 for bs in pages.values() for b in bs if b.lang == "dot")
-    n_puml = sum(1 for bs in pages.values() for b in bs if b.lang == "plantuml")
+    n_dot = len(sources(keep, ".dot"))
+    n_puml = len(sources(keep, ".puml"))
 
     if args.counts:
         table: dict[tuple[int, str], int] = {}
@@ -438,8 +490,8 @@ def main() -> int:
             print(f"  {rel}:{line}: rule {rule}: {what}" if line
                   else f"  {rel}: rule {rule}: {what}", file=sys.stderr)
         return 1
-    print(f"doc blocks ok — {len(pages)} page(s), {n_blocks} fenced block(s), {n_dot} `dot`"
-          + (f", {n_puml} `plantuml`" if 6 in rules else "") + f"; {said} hold")
+    print(f"doc blocks ok — {len(pages)} page(s), {n_blocks} fenced block(s), {n_dot + n_puml} "
+          f"diagram(s) ({n_dot} `.dot`, {n_puml} `.puml`); {said} hold")
     return 0
 
 

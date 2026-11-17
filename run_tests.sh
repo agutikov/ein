@@ -79,11 +79,13 @@
 #   check_tool_mirrors.py         the editor grammar, the natural-language
 #                                 census and the review driver against the
 #                                 lists of the engine they copy
-#   check_doc_blocks.py           the pages' own rules: every fenced `dot`
-#                                 block through Graphviz, the numbering of
-#                                 `docs/ein/`, the languages of `reasoning/`,
-#                                 no formula in a text block, no diagram
-#                                 drawn in characters
+#   check_doc_blocks.py           the pages' own rules: a diagram is a file
+#                                 with the picture drawn from it and no
+#                                 fenced block, every `.dot` through
+#                                 Graphviz; the numbering of `docs/ein/`,
+#                                 the languages of `reasoning/`, no formula
+#                                 in a text block, no diagram drawn in
+#                                 characters
 #   cargo fmt --all --check       three files were unformatted the first time
 #                                 it ran, all three from M1c's `:expect` work
 #   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four
@@ -794,11 +796,13 @@ if [[ "${CHECKS}" == 1 ]]; then
     step "utils/check_tool_mirrors.py"
     python3 "${SCRIPT_DIR}/utils/check_tool_mirrors.py"
 
-    # The pages' own rules: every fenced `dot` block of `docs/ein/` and
-    # `docs/decisions/` is one Graphviz lays out, and every page and folder
-    # under the four perspectives is numbered in its folder's reading order,
-    # 01 to n with no gap. `--all` adds the rules on a page's languages, and
-    # `--plantuml`, the dev host's, the `plantuml` blocks.
+    # The pages' own rules. A diagram of `docs/` is a file under a `diagrams/`
+    # folder with the picture drawn from it beside it, and no fenced block of
+    # a page: every `.dot` is one this Graphviz lays out, and every picture
+    # carries its source's hash (`render_diagrams.py --check`, which draws
+    # nothing). Every page and folder under the four perspectives is numbered
+    # in its folder's reading order, 01 to n with no gap; then the rules on a
+    # page's languages. `--plantuml`, the dev host's, draws the `.puml` sources.
     step "utils/check_doc_blocks.py"
     python3 "${SCRIPT_DIR}/utils/check_doc_blocks.py"
 
