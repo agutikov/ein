@@ -1,6 +1,6 @@
 ;;; A macro whose body is its parameter, called as a conclusion in a rule only a
 ;;; commitment activates: `ein saturate` answers and describe stops at the firing —
-;;; **W69**, regression `macro-bare-conclusion-under-commitment`.
+;;; regression `macro-bare-conclusion-under-commitment`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

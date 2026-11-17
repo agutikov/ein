@@ -117,8 +117,8 @@ _ <AFTER_WORD>"UNDERSCORE"
 :[A-Za-z0-9_.\-$%^*+=<>!&@~\/'`\[\]{}]+ <AFTER_WORD>"KEYWORD"
 // A string: any Unicode, the escapes \n \t \r \" \\ and \u{…}.
 // \u{…} is one to six hex digits naming a Unicode scalar value: 0 to 10FFFF
-// and not a surrogate, D800 to DFFF, which names no character
-// (W38). The six alternatives are the values of one to six significant
+// and not a surrogate, D800 to DFFF, which names no character.
+// The six alternatives are the values of one to six significant
 // digits, each after the leading zeros that keep it within six; the fourth
 // leaves out D800 to DFFF.
 // Any other escape is BADESCAPE; a string glued to what follows, BADTEXT,
@@ -141,5 +141,5 @@ _ <AFTER_WORD>"UNDERSCORE"
 // give (`generated_parser::the_lexer_gives_the_tokens_its_plain_form_does`). A comment
 // holds any character, Unicode's among them (Q-M1f.65); whitespace is
 // ASCII's, so a no-break space, U+3000 or U+2028 is no separator: a reader
-// could not tell one from a space or a line break (W73).
+// could not tell one from a space or a line break.
 <INITIAL,AFTER_WORD>([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;

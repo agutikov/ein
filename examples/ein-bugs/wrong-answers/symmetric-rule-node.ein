@@ -1,4 +1,4 @@
-;;; The control of `symmetric-derived-node.ein` — **W98**, regression
+;;; The control of `symmetric-derived-node.ein` — regression
 ;;; `derived-at-node`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with `near` closed under the swap by a rule of its own,

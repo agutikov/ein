@@ -127,8 +127,8 @@ fn printed(path: &Path, route: Route, budget: u64) -> Option<Printed> {
 }
 
 /// Every corpus file and regression witness, once, but the manifest's `slow`
-/// entries unless `slow`; this run's shard of them, W7's two witnesses and
-/// W16's order pair among them in a debug build too.
+/// entries unless `slow`; this run's shard of them, the `binding-key-*` and
+/// `activator-text-*` witnesses among them in a debug build too.
 fn programs(slow_too: bool) -> Vec<PathBuf> {
     let root = repo_root();
     let slow: std::collections::BTreeSet<PathBuf> = ein_corpus::corpus()

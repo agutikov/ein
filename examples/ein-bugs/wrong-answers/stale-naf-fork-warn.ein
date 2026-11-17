@@ -1,5 +1,5 @@
 ;;; `stale-naf-fork.ein` with `(config :warn-derived-naf true)` — the twin that
-;;; shows **W8** is *not* contained by the warning that flag turned on.
+;;; shows the stale fact is *not* contained by the warning that flag turned on.
 ;;; Regression `stale-naf-fork`, as a twin.
 ;;;
 ;;; As banked, below this header the program was `stale-naf-fork.ein` plus the

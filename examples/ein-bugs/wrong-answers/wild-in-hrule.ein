@@ -1,4 +1,4 @@
-;;; A wildcard `_` in an hrule's `:match` proposes nothing — **W20**,
+;;; A wildcard `_` in an hrule's `:match` proposes nothing —
 ;;; regression `wild-in-hrule` (`corpus/regressions.toml`), the
 ;;; case's mechanism in an hrule.
 ;;;

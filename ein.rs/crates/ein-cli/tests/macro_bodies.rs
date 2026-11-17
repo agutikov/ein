@@ -3,8 +3,8 @@
 //! body, and what a call writes is refused before anything executes it.
 //!
 //! A macro's body is a template the grammar never reads expanded, so what a
-//! call writes could otherwise be met only where it is used, or not at all
-//! (W66 to W69): `eq` or `absent` at another arity refused only where a plan
+//! call writes could otherwise be met only where it is used, or not at all:
+//! `eq` or `absent` at another arity refused only where a plan
 //! is compiled, while a rule only a commitment activates, an hrule, an
 //! obligation and a rule no activator reaches load; a `not` of no fact and a
 //! connective where a value goes matched; `(eq k)`, `(false k)`, an

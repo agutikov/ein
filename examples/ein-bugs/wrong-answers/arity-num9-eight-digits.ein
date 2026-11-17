@@ -1,6 +1,6 @@
 ;;; A `num9` number of eight digits loads, and the request that holds it is
 ;;; answered by silence —
-;;; **W89**, regression `num9-eight-digits`
+;;; regression `num9-eight-digits`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

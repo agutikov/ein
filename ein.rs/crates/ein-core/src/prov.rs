@@ -165,7 +165,7 @@ pub struct Prov {
     /// `(rule args…)` that bound a rule's parameters — or `None` for a rule
     /// with none, and for every record that is not a firing. Through it a
     /// commitment that reaches a refutation only through an activator is in
-    /// the core (W19). What reads it is [`crate::walks::node_activator`],
+    /// the core. What reads it is [`crate::walks::node_activator`],
     /// which follows one a node derived or committed and never root's
     /// (Q-M1e2.12). A `.einb` does not store it: it holds root's KB, whose
     /// activators no reader follows.

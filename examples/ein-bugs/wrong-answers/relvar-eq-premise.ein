@@ -1,5 +1,5 @@
 ;;; A premise whose relation is a parameter its activator binds to `eq` scans
-;;; stored facts — **W52**, regression `relvar-eq-premise`
+;;; stored facts — regression `relvar-eq-premise`
 ;;; (`corpus/regressions.toml`), under Q-M1e2.26: the reading holds wherever
 ;;; a relation can be written.
 ;;;

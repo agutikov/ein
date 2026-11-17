@@ -27,7 +27,8 @@
 //!
 //! The polarity is the depth's parity, read differently by the two kinds of
 //! rule. In a **saturation** rule a match is a conclusion, and a read at odd
-//! depth (inside one `absent`) is non-monotone: W3's `bad`, W8's `derive-p`.
+//! depth (inside one `absent`) is non-monotone: `naf-upward-closure.ein`'s
+//! `bad`, `features/07`'s `derive-p`.
 //! In an **obligation** rule a match is a *debt* — the rule is the negation of
 //! its witness — and a read at even depth is non-monotone: its **trigger**, the
 //! positive steps that say who owes. `total-owed`'s witness `absent` is odd
@@ -537,7 +538,7 @@ pub(crate) fn dynamic(
     close(seed, &saturation, &[], terms)
 }
 
-/// `D` followed through the rules root has no plan of (`W17`): the relations
+/// `D` followed through the rules root has no plan of: the relations
 /// *forbid* calls extendable, `D⁺`
 /// ([monotonicity.md § 10](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#10-forbid-what-is-refused-at-load)).
 ///

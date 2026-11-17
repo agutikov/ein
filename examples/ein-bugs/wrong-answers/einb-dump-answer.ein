@@ -1,4 +1,4 @@
-;;; `ein solve --dump-answer` refused a `.einb` — **W43**, regression
+;;; `ein solve --dump-answer` refused a `.einb` — regression
 ;;; `einb-dump-answer` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -15,7 +15,7 @@
 ;;; the magic bytes (`docs/ein/ein.rs/design/binary-format.md`), and no two
 ;;; commands, or one command on two forms of one program, may disagree
 ;;; (Q-M1e2.32). A `.einb` stores its program, resolved and
-;;; import-flattened, and every command reads it (W40's six rows), so `ein
+;;; import-flattened, and every command reads it (`einb-every-command/*`), so `ein
 ;;; solve x.einb --dump-answer DIR` answers as `ein solve x.ein --dump-answer
 ;;; DIR` does (Q-M1f.27): exit 0, R's three states on stdout, and `DIR` holding
 ;;; a state file for each, the stored program and then the state, and

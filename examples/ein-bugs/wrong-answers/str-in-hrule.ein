@@ -1,4 +1,4 @@
-;;; A string written in an hrule's `:assert` proposes nothing — **W18**,
+;;; A string written in an hrule's `:assert` proposes nothing —
 ;;; regression `str-in-hrule` (`corpus/regressions.toml`), the
 ;;; case's mechanism in an hrule.
 ;;;

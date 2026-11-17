@@ -266,7 +266,7 @@ fn projection(path: &Path, n: usize) -> Option<region::Projection> {
 /// leaves no site — what the blind rung no longer proposing it would do —
 /// with how many of its facts root holds and whether a rule derives it, so
 /// a given-only relation can be told from a derived one.
-fn c1_row(root: &Root, kb: &Kb, terms: &Terms) -> Json {
+fn typing_row(root: &Root, kb: &Kb, terms: &Terms) -> Json {
     let is_a = terms.syms.get("is-a");
     let types: rustc_hash::FxHashSet<Symbol> = match is_a {
         Some(isa) => kb
@@ -351,8 +351,8 @@ struct Totals {
     fact_leaves: Vec<String>,
     fact_incomplete: Vec<String>,
     fact_unsound: Vec<String>,
-    c1_types: Vec<String>,
-    c1_drop: Vec<String>,
+    typing_types: Vec<String>,
+    typing_drop: Vec<String>,
     unattributed: Vec<String>,
     by_cause: BTreeMap<String, usize>,
     monotone_violated: Vec<String>,
@@ -556,16 +556,16 @@ fn main() {
             }));
         }
         row["sites"] = json!(sites_json);
-        row["c1"] = c1_row(&root, &kb, &terms);
-        if row["c1"]["types_excluded"]["monotone"].as_bool() == Some(true) {
-            tot.c1_types.push(rel.clone());
+        row["typing"] = typing_row(&root, &kb, &terms);
+        if row["typing"]["types_excluded"]["monotone"].as_bool() == Some(true) {
+            tot.typing_types.push(rel.clone());
         }
-        for j in row["c1"]["unflagged_by_dropping"]
+        for j in row["typing"]["unflagged_by_dropping"]
             .as_array()
             .into_iter()
             .flatten()
         {
-            tot.c1_drop.push(format!(
+            tot.typing_drop.push(format!(
                 "{rel}: {} ({} facts at root{})",
                 j["relation"].as_str().unwrap_or(""),
                 j["facts_at_root"],
@@ -665,8 +665,8 @@ fn print_block(row: &Json) {
             }
         );
     }
-    let c1 = &row["c1"];
-    let alone: Vec<String> = c1["unflagged_by_dropping"]
+    let typing = &row["typing"];
+    let alone: Vec<String> = typing["unflagged_by_dropping"]
         .as_array()
         .into_iter()
         .flatten()
@@ -685,9 +685,9 @@ fn print_block(row: &Json) {
         })
         .collect();
     println!(
-        "  C1: types excluded drops {} candidates → {}; dropping one relation from H unflags it: {}",
-        c1["types_excluded"]["dropped"],
-        if c1["types_excluded"]["monotone"].as_bool() == Some(true) {
+        "  typing: types excluded drops {} candidates → {}; dropping one relation from H unflags it: {}",
+        typing["types_excluded"]["dropped"],
+        if typing["types_excluded"]["monotone"].as_bool() == Some(true) {
             "monotone"
         } else {
             "still flagged"
@@ -835,14 +835,14 @@ fn print_totals(tot: &Totals, swept_selection: bool, wall: f64) {
         println!("    UNSOUND       {p}");
     }
     println!(
-        "C1 at relation grain: the universe without a candidate naming a type unflags {}; one relation of H removed unflags {}:",
-        tot.c1_types.len(),
-        tot.c1_drop.len()
+        "Typing at relation grain: the universe without a candidate naming a type unflags {}; one relation of H removed unflags {}:",
+        tot.typing_types.len(),
+        tot.typing_drop.len()
     );
-    for p in &tot.c1_types {
+    for p in &tot.typing_types {
         println!("    types         {p}");
     }
-    for p in &tot.c1_drop {
+    for p in &tot.typing_drop {
         println!("    without       {p}");
     }
     let by_cause: Vec<String> = tot

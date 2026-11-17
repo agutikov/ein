@@ -1,4 +1,4 @@
-;;; A string written in a guard never equals a value — **W18**, register
+;;; A string written in a guard never equals a value —
 ;;; regression `str-in-guard` (`corpus/regressions.toml`), the case's
 ;;; mechanism in a guard.
 ;;;

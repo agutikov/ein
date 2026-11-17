@@ -1,17 +1,17 @@
-//! **A query's `:goal` is held to what a rule's `:match` is held to** (W77,
-//! W78, W79, Q-M1f.117 to .121).
+//! **A query's `:goal` is held to what a rule's `:match` is held to**
+//! (Q-M1f.117 to .121).
 //!
 //! A goal is a premise, and read less closely than a rule's it would mislead:
 //!
-//! - **a macro call in a goal left unexpanded** (W77): `(unknown (p ?x))`
+//! - **a macro call in a goal left unexpanded**: `(unknown (p ?x))`
 //!   would be a pattern over a relation `unknown`, so the goal would have no
 //!   row, `:expect (model)` would hold of it and the claim listing what the
 //!   macro means would be refused;
-//! - **a goal over a relation the program names nowhere** (W78) would have no
+//! - **a goal over a relation the program names nowhere** would have no
 //!   row, and under an `(absent …)` hold of everything;
-//! - **a pattern inside a pattern whose relation is a variable** (W79) would
+//! - **a pattern inside a pattern whose relation is a variable** would
 //!   match nothing, and under an `(absent …)` the goal would hold in every
-//!   state, where a rule writing the shape is refused (W24).
+//!   state, where a rule writing the shape is refused.
 //!
 //! So the loader expands a goal's macro calls (`ein_ir::from_ir`'s
 //! `expand_goal`), reads the expanded goal with the walks a rule's `:match`
@@ -70,7 +70,7 @@ const NO_H: &str = "(solve :hypothesis-relations ())\n";
 
 /// `(shape, the query, what the first line holds)`.
 const REFUSED: [(&str, &str, &str); 19] = [
-    // W77: a call that cannot be expanded, and an expansion a rule's
+    // A call that cannot be expanded, and an expansion a rule's
     // `:match` would be refused for.
     (
         "macro-unimported-unknown",
@@ -113,7 +113,7 @@ const REFUSED: [(&str, &str, &str); 19] = [
         "(query :goal (settled ?g) :expect (model (settled Ann)))",
         ":expect names settled, and the program names no relation settled",
     ),
-    // W78: a relation the program names nowhere.
+    // A relation the program names nowhere.
     (
         "goal-relation",
         "(query :goal (payed ?g))",
@@ -157,7 +157,7 @@ const REFUSED: [(&str, &str, &str); 19] = [
         "(solve … :expect …) names payed, and the program names no relation payed — a relation \
          of the program is one it declares, states a fact of, or writes in a rule or an hrule",
     ),
-    // W79: a relation written as a variable, at any depth.
+    // A relation written as a variable, at any depth.
     (
         "relation-variable-inside-a-pattern",
         "(query :goal (says (?R ?g)))",

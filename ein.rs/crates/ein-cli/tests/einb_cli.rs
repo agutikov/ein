@@ -129,8 +129,8 @@ fn a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source() {
     }
 }
 
-/// **`--dump-answer` on a container writes the directory its source writes**
-/// (W43): not refused before the run, as a container carrying no program
+/// **`--dump-answer` on a container writes the directory its source writes**:
+/// not refused before the run, as a container carrying no program
 /// source would be, while the same run on the `.ein` answers and every other
 /// command reads the program the container stores. The same files,
 /// each the source's byte for byte but for the path it names; on a program

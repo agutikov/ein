@@ -4,7 +4,7 @@
 //! to a pipe whose reader has gone would fail with `EPIPE`, and every stdout
 //! write in `ein-cli` is a `print!` or a `println!`, which panic on a failed
 //! write: `ein saturate … | head` would print *failed printing to stdout:
-//! Broken pipe (os error 32)* and exit 101 (W75). So the binary's `main`
+//! Broken pipe (os error 32)* and exit 101. So the binary's `main`
 //! restores the default disposition first (`ein-cli/src/main.rs`'s
 //! `restore_sigpipe`), so the kernel ends the process at that write, with
 //! nothing on stderr, and a shell reports 141, 128 + 13.
@@ -46,7 +46,7 @@ use std::process::{Command, ExitStatus, Stdio};
 use ein_corpus::{Scratch, repo_root};
 
 /// The witness of every run but `ein test`'s: nine candidates, four rules, R
-/// five states, and no claim, so no question prints a `note:` (W75's).
+/// five states, and no claim, so no question prints a `note:`.
 const W: &str = "examples/branching/05_mini_zebra.ein";
 /// `ein test`'s: a claim that holds, so the run exits 0 (closed-stdout/test's).
 const T: &str = "examples/features/11_expect_ambiguity.ein";
@@ -320,7 +320,7 @@ fn every_run_listed_writes_stdout_and_nothing_on_stderr() {
 
 /// **A reader closed before the run ends every run by `SIGPIPE`**, at its
 /// first write, with nothing on stderr: never the panic, *failed printing to
-/// stdout*, exit 101 (W75), and never exit 0 with the output lost, as a
+/// stdout*, exit 101, and never exit 0 with the output lost, as a
 /// help that ignored its write's error would.
 #[test]
 fn a_reader_closed_before_the_run_ends_every_run_by_sigpipe() {

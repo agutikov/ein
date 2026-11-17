@@ -1,4 +1,4 @@
-;;; A rule with a parameter whose `:match` is `()` never fired — **W31**,
+;;; A rule with a parameter whose `:match` is `()` never fired —
 ;;; regression `empty-match-activator` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

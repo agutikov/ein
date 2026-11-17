@@ -1,4 +1,4 @@
-;;; A refusal, and a core that moved with interner ids — **W11** and **W1**,
+;;; A refusal, and a core that moved with interner ids —
 ;;; regressions `d3-unsat-core-id-order` and `d3-unsat-core/d3-unsat-core`
 ;;; (`corpus/regressions.toml`). `corpus/fuzz_findings/d3-unsat-core.ein`
 ;;; is the same program, a frontend-fuzzer seed.

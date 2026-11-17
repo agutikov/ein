@@ -62,7 +62,7 @@
 //! obligation takes the whole call back to the blind generator, which is what
 //! keeps completeness a property of the ladder rather than of the puzzle.
 //!
-//! **A relation grows by derivation too** (`W14`). The candidates are the
+//! **A relation grows by derivation too**. The candidates are the
 //! guard's scan over *root's* KB, so a domain value only a commitment derives
 //! would be in no candidate, and R would miss the model it licenses. So the
 //! rung also declines when an obligation's trigger,
@@ -464,7 +464,7 @@ pub(crate) fn generate(
                 return Ok(declined(s, &reason));
             }
         }
-        // C4 over `D` (`W14`): nor may it grow by derivation. A
+        // C4 over `D`: nor may it grow by derivation. A
         // relation a commitment can change — `D`, seeded with what this rung
         // proposes and closed under the saturation plans, `crate::monotone`'s
         // one computation of it — can gain at a node a domain value root's
@@ -1556,7 +1556,7 @@ mod tests {
         (r, rung)
     }
 
-    /// W14's shape (`examples/ein-bugs/wrong-answers/oblig-fresh-name.ein`):
+    /// The shape of `examples/ein-bugs/wrong-answers/oblig-fresh-name.ein`:
     /// Ann owes a liked food, and `special` makes Z a food once anyone likes
     /// anything.
     const OWES_FOOD: &str = "(relation person T :why \"{?1} is a person\")\n(relation food T :why \"{?1} is a food\")\n\
@@ -1566,7 +1566,7 @@ mod tests {
                              \x20               (absent (and (food ?b) (likes ?a ?b))))\n\
                              \x20 :assert (open likes) :why \"{?a} is a person who likes no food yet — one is still owed\"\n)\n";
 
-    /// **C4 over `D`** (`W14`, Q-M1e2.10): a guard that scans a relation a
+    /// **C4 over `D`** (Q-M1e2.10): a guard that scans a relation a
     /// commitment can change
     /// declines the rung, and its `rung` line says so. Without `special`,
     /// `food` is static and the same obligation branches.

@@ -1,5 +1,5 @@
 ;;; A kernel dunder among the blind enumerator's objects, on the shipped
-;;; stdlib — **W96**, regression `arith-closing-rule`
+;;; stdlib — regression `arith-closing-rule`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

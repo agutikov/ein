@@ -1,6 +1,6 @@
 ;;; A relation parameter a derived activator can bind to `eq` heads a premise
 ;;; of one argument, and only a commitment derives it, so `ein saturate`
-;;; answered where `ein solve` stopped — **W60**, regression
+;;; answered where `ein solve` stopped — regression
 ;;; `eq-arity-under-commitment` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

@@ -1,5 +1,5 @@
 ;;; A macro called in a query's `:goal` is not expanded, so the goal has no row
-;;; and the claim that it has none holds — **W77**, regression
+;;; and the claim that it has none holds — regression
 ;;; `goal-macro-expect-model`.
 ;;;
 ;;;

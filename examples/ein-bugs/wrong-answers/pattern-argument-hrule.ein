@@ -1,5 +1,5 @@
 ;;; An hrule's premise `(says (or …))` loads and proposes nothing —
-;;; **W83**, regression `pattern-argument-hrule`.
+;;; regression `pattern-argument-hrule`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

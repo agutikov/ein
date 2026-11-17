@@ -1,5 +1,5 @@
 ;;; A conclusion's variable that no premise binds, in a rule only a
-;;; commitment fires: two commands answered and two stopped — **W57**,
+;;; commitment fires: two commands answered and two stopped —
 ;;; regression `assert-var-under-commitment`
 ;;; (`corpus/regressions.toml`).
 ;;;

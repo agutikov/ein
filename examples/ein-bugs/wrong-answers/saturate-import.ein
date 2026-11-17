@@ -1,4 +1,4 @@
-;;; `ein saturate` resolves no file-relative import — **W41**, regression
+;;; `ein saturate` resolves no file-relative import — regression
 ;;; `saturate-import` (`corpus/regressions.toml`).
 ;;;
 ;;;

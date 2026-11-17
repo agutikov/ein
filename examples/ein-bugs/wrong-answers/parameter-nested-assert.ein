@@ -1,7 +1,7 @@
 ;;; A value parameter its activator binds to a nested fact, read only by the
-;;; rule's conclusion, stops the run — **W58**, regression
+;;; rule's conclusion, stops the run — regression
 ;;; `parameter-nested-assert` (`corpus/regressions.toml`), which shares
-;;; a cause with W33.
+;;; a cause with `activator-nested-value`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -20,7 +20,7 @@
 ;;;
 ;;; At `2eb483e0`, release and debug alike: the compiler seeded a parameter
 ;;; from its activator and skipped a nested fact (*a nested Fact does not
-;;; bind*, W33's cause), so `?y` reached the conclusion unbound and the run
+;;; bind*, `activator-nested-value`'s cause), so `?y` reached the conclusion unbound and the run
 ;;; stopped at root, exit 1, with `unbound var ?y in :assert — bindings:
 ;;; {'x': 'a'}`, on every command (`ein solve FILE`). The loader cannot
 ;;; refuse it: a parameter is bound by its activator, and the loader holds a

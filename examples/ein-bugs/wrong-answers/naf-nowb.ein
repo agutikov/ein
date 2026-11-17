@@ -1,4 +1,4 @@
-;;; `naf-upward-closure.ein` under the singleton writeback's lever — **W3**'s
+;;; `naf-upward-closure.ein` under the singleton writeback's lever — its
 ;;; lever row, where `dead` not being upward-closed under `absent` turned into a
 ;;; certified `Contradiction`. Regression `naf-nowb-L`
 ;;; (`corpus/regressions.toml`).
@@ -34,8 +34,8 @@
 ;;;            pruned the live superset as if it were dead. `{(q A)}` survived
 ;;;            and was not recorded either — `(p A)` was still proposed, so it
 ;;;            was not `complete` — and the empty layer 2 ended the run with the
-;;;            dead core as the program's. Two mechanisms, then: W3's clause,
-;;;            and W1's unrecorded survivor.
+;;;            dead core as the program's. Two mechanisms, then: the dead set not
+;;;            upward-closed under `absent`, and the unrecorded survivor.
 ;;;
 ;;; The engine refuses the program at load: `ein solve` exits 1 naming `bad`
 ;;; over `q`, and `ein saturate` still saturates. No `:expect`, then.

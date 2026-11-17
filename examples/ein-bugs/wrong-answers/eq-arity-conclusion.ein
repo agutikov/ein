@@ -1,5 +1,5 @@
 ;;; A relation parameter its activator binds to `eq` heads a conclusion of one
-;;; argument, and root stored `(eq a)` — **W60**, regression
+;;; argument, and root stored `(eq a)` — regression
 ;;; `eq-arity-conclusion` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

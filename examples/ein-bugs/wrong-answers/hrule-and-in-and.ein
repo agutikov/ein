@@ -1,4 +1,4 @@
-;;; W95 — an hrule whose conclusion is an `and` inside an `and` proposes one
+;;; An hrule whose conclusion is an `and` inside an `and` proposes one
 ;;; fact headed `and`, a commitment no state can hold.
 ;;;
 ;;; A nested `(and …)` in an hrule: the inner one was a template headed `and`,

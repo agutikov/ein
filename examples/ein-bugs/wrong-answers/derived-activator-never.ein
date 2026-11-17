@@ -1,5 +1,5 @@
 ;;; A rule that could derive an activator binding a relation parameter to a
-;;; fact loaded and answered, since no run derives it — **W59**, register
+;;; fact loaded and answered, since no run derives it —
 ;;; regression `derived-activator-never` (`corpus/regressions.toml`). The
 ;;; refusal Q-M1f.1 states refuses this program, knowingly.
 ;;;

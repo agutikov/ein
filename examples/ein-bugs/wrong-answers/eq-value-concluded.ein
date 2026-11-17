@@ -1,5 +1,5 @@
 ;;; A rule's `:assert (asked (eq ?x ?y))` stores equalities as values —
-;;; **W82**, regression `eq-value-concluded`.
+;;; regression `eq-value-concluded`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

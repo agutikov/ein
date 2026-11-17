@@ -1,4 +1,4 @@
-;;; `(absent ())` loads, and holds — **W35**, regression
+;;; `(absent ())` loads, and holds — regression
 ;;; `absent-empty` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

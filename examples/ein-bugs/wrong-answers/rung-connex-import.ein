@@ -1,5 +1,5 @@
 ;;; A refutation over a relation of the program's own read closed-world
-;;; because a module imported for it loads an obligation rule — **W97**,
+;;; because a module imported for it loads an obligation rule —
 ;;; regression `connex-import` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

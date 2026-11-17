@@ -594,8 +594,8 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// `:match` too, and one a fact names only inside a nested fact, whose
 /// arguments `kb.names()` does not index (Q40). A constant only a
 /// `(query …)` names is not one. A pool without them would lose the models
-/// of `examples/ein-bugs/alive-set-fresh-name.ein` (`W4`),
-/// `wrong-answers/match-only.ein` and `negative-only.ein` (`W15`).
+/// of `examples/ein-bugs/alive-set-fresh-name.ein`,
+/// `wrong-answers/match-only.ein` and `negative-only.ein`.
 /// [`crate::invariant::program_names`] is the one list of the
 /// program's names, so this reads it rather than walking the program a second
 /// way.

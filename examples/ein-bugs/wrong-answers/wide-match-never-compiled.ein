@@ -1,5 +1,5 @@
 ;;; A rule whose `:match` writes 257 distinct variables, which no activator
-;;; activates: every command answers — **W63**, regression `wide-match-never-compiled`
+;;; activates: every command answers — regression `wide-match-never-compiled`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;;

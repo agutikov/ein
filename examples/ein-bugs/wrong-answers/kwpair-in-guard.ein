@@ -1,4 +1,4 @@
-;;; A keyword pair as a guard's argument reads nothing, in silence — **W24**,
+;;; A keyword pair as a guard's argument reads nothing, in silence —
 ;;; regression `kwpair-in-guard` (`corpus/regressions.toml`); a keyword
 ;;; pair is no guard's argument (Q-M1e2.18).
 ;;;

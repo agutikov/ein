@@ -1,4 +1,4 @@
-;;; A keyword pair in a query's goal is dropped, and the claim holds — **W32**,
+;;; A keyword pair in a query's goal is dropped, and the claim holds —
 ;;; regression `kwpair-in-goal` (`corpus/regressions.toml`); each form
 ;;; takes a closed list of keywords (Q-M1e2.28).
 ;;;

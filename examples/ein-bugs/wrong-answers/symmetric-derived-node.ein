@@ -1,5 +1,5 @@
 ;;; A symmetry a commitment brings a rule to derive, not mirrored by the
-;;; node's saturation — **W98**, regression `derived-at-node`
+;;; node's saturation — regression `derived-at-node`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

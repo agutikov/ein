@@ -1,4 +1,4 @@
-;;; A value `(false Bob)` inside a fact is stored — **W81**, regression
+;;; A value `(false Bob)` inside a fact is stored — regression
 ;;; `false-fact-nested`.
 ;;;
 ;;;

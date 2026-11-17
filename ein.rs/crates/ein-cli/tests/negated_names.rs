@@ -1,4 +1,4 @@
-//! **`not` of a name is the negation of no fact** (W84, Q-M1f.127 and
+//! **`not` of a name is the negation of no fact** (Q-M1f.127 and
 //! Q-M1f.128), under the value rule (Q-M1f.113: *a value is a name, or a
 //! fact a state could hold: an atom of an ordinary relation, or its
 //! negation*).

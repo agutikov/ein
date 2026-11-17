@@ -1,5 +1,5 @@
 ;;; An activator that binds a value parameter to a nested fact leaves the
-;;; parameter unbound — **W33**, regression `activator-nested-value`
+;;; parameter unbound — regression `activator-nested-value`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -21,7 +21,7 @@
 ;;; `p`: root held `(hit a)`, `(hit b)` and `(hit (f a))`, H was empty and R
 ;;; {∅}, exit 0 (`ein saturate FILE --dump`, `ein solve FILE` and `ein oracle
 ;;; FILE` at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
-;;; W24 refused the same activator only where the parameter names a relation.
+;;; The loader refused the same activator only where the parameter names a relation.
 ;;;
 ;;;
 ;;;

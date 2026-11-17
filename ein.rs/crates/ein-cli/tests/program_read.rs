@@ -4,8 +4,8 @@
 //! command that takes one goes through it: a `.einb` container is told from
 //! UTF-8 text by its first bytes, a text is loaded against its own directory
 //! so a file-relative `(import …)` resolves, and a file that is neither is
-//! refused with one line in Ein's words. No command reads text only (W40) or
-//! loads with no base directory (W41), and a file that is not UTF-8 is never
+//! refused with one line in Ein's words. No command reads text only or
+//! loads with no base directory, and a file that is not UTF-8 is never
 //! a Python line, `UnicodeDecodeError: …`, from a `process::exit` that takes
 //! `ein test`'s whole selection down.
 //!
@@ -236,7 +236,7 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
 ///
 /// The program is one whose error names a position: a macro whose template
 /// writes `eq` with one argument (`syntax.md`). The loader refuses it,
-/// `g.ein:3:18:` first, the macro body's position (W66, Q-M1f.80), so `ein kb
+/// `g.ein:3:18:` first, the macro body's position (Q-M1f.80), so `ein kb
 /// save` does too, and the container is written here through
 /// `ein_einb::save` with that program stored beside a KB that loads: what a
 /// command reads back from a container is its stored program, which it loads

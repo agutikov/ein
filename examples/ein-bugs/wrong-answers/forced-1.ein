@@ -1,4 +1,4 @@
-;;; One candidate, refuted in ONE firing — **W2** under `-L`, and its control
+;;; One candidate, refuted in ONE firing — the cascade under `-L`, and its control
 ;;; under default flags. Regressions `forced-1-L`
 ;;; (`corpus/regressions.toml`).
 ;;;

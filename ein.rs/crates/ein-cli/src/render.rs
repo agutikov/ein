@@ -2,7 +2,7 @@
 //!
 //! Every body is the same three steps: load, call one renderer, write it with
 //! a trailing newline. **Every view reads the program through the loader**
-//! (W65, Q-M1f.71), so a program the loader refuses is refused here with its
+//! (Q-M1f.71), so a program the loader refuses is refused here with its
 //! line, exit 1, as every other command refuses it; the four that draw a
 //! program as written (`rules`, `rule`, `constraints`, `program`) draw it
 //! from its parsed forms after that, its imports unresolved, and so never
@@ -24,7 +24,7 @@ fn emit(dot: &str) {
 }
 
 /// Is `file` refused by the loader? Then its line is printed, as every
-/// command that loads prints it, and the view exits 1 (Q-M1f.71, W65).
+/// command that loads prints it, and the view exits 1 (Q-M1f.71).
 ///
 /// The load is a check, in arenas of its own: a view draws the program as
 /// written, so what it draws is read by [`parse_program`] after it, which a
@@ -141,7 +141,7 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
 /// `ein render program` — the program **as written**, by
 /// [`ein_render::ir_to_dot`] (Q-M1e.20).
 ///
-/// Read through the loader first (W65, Q-M1f.71), so a program the loader
+/// Read through the loader first (Q-M1f.71), so a program the loader
 /// refuses is refused, with its line, `examples/broken/load/`'s among them.
 /// What it draws
 /// is the parsed forms, so imports are not resolved: the stdlib's forms would

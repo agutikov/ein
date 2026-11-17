@@ -1,4 +1,4 @@
-;;; A wildcard `_` in a rule's `:match` matches nothing — **W20**,
+;;; A wildcard `_` in a rule's `:match` matches nothing —
 ;;; regression `wild-in-match` (`corpus/regressions.toml`); a bare
 ;;; `_` is reserved and refused (Q-M1e2.22).
 ;;;

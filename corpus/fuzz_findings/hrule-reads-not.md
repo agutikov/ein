@@ -4,8 +4,8 @@ An `(hrule …)` whose `:match` reads the `not` relation, a generated program mi
 `(absent (not …))` premises are ordinary ein-lang (`examples/features/01_not_and_absent.ein` is a fixture for
 them), so this is a legal program, and every command answers it as `ein oracle` does, in a release build and a debug
 one: where an hrule reads `not`, every hrule is matched before any candidate is emitted, so no `not` fact the
-hypothesis pipeline writes is read mid-enumeration (regression W85). The regression entries are
-`examples/ein-bugs/wrong-answers/hrule-reads-{absent-not,not,unknown}.ein`, and `ein-cli/tests/hrule_reads_not.rs`
+hypothesis pipeline writes is read mid-enumeration. The regressions `hrule-reads-absent-not`, `hrule-reads-not` and
+`hrule-reads-unknown` hold it, their witnesses `examples/ein-bugs/wrong-answers/hrule-reads-{absent-not,not,unknown}.ein`, and `ein-cli/tests/hrule_reads_not.rs`
 runs them, and this file's program, under `cargo test`'s debug assertions.
 
 - property: **no-crash** — a generated program exits 0, 1 or 2, never a panic

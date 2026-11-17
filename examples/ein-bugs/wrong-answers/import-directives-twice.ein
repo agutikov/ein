@@ -1,5 +1,5 @@
 ;;; Two qualified imports of a module that states a lattice are refused —
-;;; **W90**, regression `import-directives-twice`
+;;; regression `import-directives-twice`
 ;;; (`corpus/regressions.toml`); no import brings a module's `(solve …)`
 ;;; (Q-M1f.215).
 ;;;

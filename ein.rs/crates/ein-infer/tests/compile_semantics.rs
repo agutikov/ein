@@ -178,7 +178,7 @@ fn a_where_guard_written_as_a_positional_premise_compiles() {
 /// **A string in a rule is refused at the parse**: a string is
 /// natural-language text, written only after `:why`, `:source` or
 /// `:goal-text`, so a string as a value is refused in both clauses, at any
-/// depth, and as a fact's argument, each with its note (`W18`); the name
+/// depth, and as a fact's argument, each with its note; the name
 /// written bare is what to write, and the program with every string written
 /// bare as the name it spells derives what the name says.
 #[test]
@@ -234,8 +234,8 @@ fn a_string_in_a_rule_is_the_symbol_it_names() {
     assert!(shape.contains("    SCAN holds ['1']"), "{shape}");
 }
 
-/// **A bare `_` is refused at the parse, in every position** (Q-M1e2.22,
-/// `W20`) — at the top of a premise, in a nested fact, under a `not` and under
+/// **A bare `_` is refused at the parse, in every position** (Q-M1e2.22) —
+/// at the top of a premise, in a nested fact, under a `not` and under
 /// an `absent` — each with its note, and a fresh variable is what to write:
 /// it matches any value, two of them independently.
 #[test]
@@ -312,9 +312,9 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
 /// **One fixture is left here**, `activator_arity`, a direct caller's: every
 /// other refusal of the compiler is the loader's or the grammar's first. A
 /// premise that is not a form and a relation variable no parameter binds
-/// (`W24`, `empty_absent`, `unbound_head`), a nested `(or …)` (`W62`,
-/// `nested_or`) and what a macro's expansion writes outside the grammar's
-/// shapes (`W66` to `W69`, `eq_in_a_macro_body`) are under
+/// (`empty_absent`, `unbound_head`), a nested `(or …)`
+/// (`nested_or`) and what a macro's expansion writes outside the grammar's
+/// shapes (`eq_in_a_macro_body`) are under
 /// `examples/broken/load/`, each `.expected` its load line; each line is in
 /// Ein's words, `{FILE}:<line>:<col>: rule 'r': …` where the form has a
 /// position.
@@ -340,7 +340,7 @@ fn every_compile_error_says_what_its_expected_file_says() {
         })
         .collect();
     // `nested_or` and `eq_in_a_macro_body` are under `broken/load/`, the
-    // loader refusing each (`W62`, `W66`).
+    // loader refusing each.
     assert_eq!(
         stems,
         ["activator_arity"],
@@ -373,7 +373,7 @@ fn every_compile_error_says_what_its_expected_file_says() {
 /// site has a checked-in fixture, so the negative one is built here: a
 /// compiler that guarded only the site it had a fixture for would look correct.
 ///
-/// **At load** (`W62`): the loader refuses each, one line naming the rule,
+/// **At load**: the loader refuses each, one line naming the rule,
 /// the disjunction and what it is a premise of, and the compiler's arm is an
 /// invariant.
 #[test]
@@ -422,7 +422,7 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
 /// any name (`ein.y`'s `Template`), `absent` and `eq` among them, at any
 /// arity; and a body that is a bare parameter, called in an `:assert`, leaves
 /// a variable as the whole conclusion. **The loader refuses all three**
-/// (`ein_ir::from_ir`'s `refuse_malformed_primitives`, `W66` and `W69`, and
+/// (`ein_ir::from_ir`'s `refuse_malformed_primitives`, and
 /// Q-M1f.80), with the same words, the position where the expanded form is
 /// written first, so a rule only a commitment activates, an hrule and an
 /// obligation are refused by every command, not only where they are compiled
@@ -514,7 +514,7 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
 // ── A relation named by a fact ────────────────────────────────────
 
 /// **A relation parameter bound to a nested fact is refused, wherever the
-/// binding is made** (`W24`, Q-M1e2.18); where a rule derives the binding, at
+/// binding is made** (Q-M1e2.18); where a rule derives the binding, at
 /// load (Q-M1f.1), and by the compiler behind it.
 ///
 /// `mirror` names the relation it matches and asserts by its parameter. A run
@@ -532,8 +532,8 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     digits.saturate();
     assert_eq!(digits.facts_under("3"), ["(3 A B)", "(3 B A)"]);
 
-    // A nested fact, derived the same way, names no relation either (`W24`,
-    // Q-M1e2.18). The loader refuses the program (Q-M1f.1): `src` is a marker
+    // A nested fact, derived the same way, names no relation either
+    // (Q-M1e2.18). The loader refuses the program (Q-M1f.1): `src` is a marker
     // whose argument `make` passes to `mirror`'s relation parameter, so the fact
     // `(src (q A B))` writes a fact where a relation is named (Q-M1f.41), and
     // the run never reaches the compile of `mirror`'s plan.
@@ -598,18 +598,18 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     assert_eq!(ok.facts_under("q"), ["(q A B)", "(q B A)"]);
 }
 
-/// **A value parameter binds a nested fact** (`W33`, `W58`): a nested fact
+/// **A value parameter binds a nested fact**: a nested fact
 /// is a value, so an activator binds a parameter to it as to a name, whether
 /// the activator is written down or a rule derives it.
 ///
 /// Were it skipped, the parameter would be a free variable of the plan, so
 /// `(act (f a))` would fire `(p ?y)` on every `p` and conclude `(hit a)` and
 /// `(hit b)` beside `(hit (f a))` (`activator-nested-value`), and a
-/// conclusion that alone read the parameter would have no value (`W58`). The
+/// conclusion that alone read the parameter would have no value. The
 /// test beside it holds the relation half, which stays refused.
 #[test]
 fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
-    // Written down, read by the premise: W33's witness.
+    // Written down, read by the premise: `activator-nested-value.ein`'s shape.
     let mut matched = load_text(
         "(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a) (p b) (p (f a))\n\
          (rule act (?y) :match (p ?y) :assert (hit ?y) :why \"act names {?y} and p holds of it, so hit holds of {?y}\")\n(act (f a))\n",
@@ -617,7 +617,8 @@ fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
     matched.saturate();
     assert_eq!(matched.facts_under("hit"), ["(hit (f a))"]);
 
-    // Written down, read by the conclusion alone: W58's witness.
+    // Written down, read by the conclusion alone:
+    // `parameter-nested-assert.ein`'s shape.
     let mut concluded = load_text(
         "(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
          (rule act (?y) :match (p ?x) :assert (hit ?y) :why \"act names {?y} and p holds of {?x}, so hit holds of {?y}\")\n(act (f a))\n",

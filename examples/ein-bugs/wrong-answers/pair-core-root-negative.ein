@@ -1,4 +1,4 @@
-;;; A boundary of **W21**: a pair contradiction whose *negative* side is
+;;; A boundary of `pair-core-root-given`: a pair contradiction whose *negative* side is
 ;;; root's. No regression: the core the engine reports names the
 ;;; commitment.
 ;;;

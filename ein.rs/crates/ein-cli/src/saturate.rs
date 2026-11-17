@@ -677,7 +677,7 @@ fn bench(
 ) -> Result<(), String> {
     // The one read every command makes of a program: a `.einb` is opened,
     // and a text is loaded against its own directory, so a file-relative
-    // `(import …)` resolves as `solve` resolves it (W40, W41).
+    // `(import …)` resolves as `solve` resolves it.
     let held = crate::common::read_program(path)?;
     println!("input:   {}", path.display());
     println!("         {}", held.size_line());

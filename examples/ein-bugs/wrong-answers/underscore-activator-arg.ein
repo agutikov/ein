@@ -1,5 +1,5 @@
 ;;; A bare `_` as an activator's argument is dropped at load, in silence —
-;;; **W29**, regression `activator-arg` (`corpus/regressions.toml`),
+;;; regression `activator-arg` (`corpus/regressions.toml`),
 ;;; under Q-M1e2.22.
 ;;;
 ;;;

@@ -1,4 +1,4 @@
-;;; A query's `:expect` splits a name that starts with `and` — **W22**, register
+;;; A query's `:expect` splits a name that starts with `and` —
 ;;; regression `kw-and-in-expect` (`corpus/regressions.toml`): a reserved word is
 ;;; a keyword only as a whole token (Q-M1e2.17).
 ;;;

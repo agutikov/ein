@@ -35,7 +35,7 @@ fn main() -> std::process::ExitCode {
 /// process, and `print!` / `println!` panic on a failed write: `ein saturate
 /// … | head` would print *failed printing to stdout: Broken pipe (os error
 /// 32)* and exit 101, and whether a command met it would be a race between
-/// its writes and the reader's exit (W75).
+/// its writes and the reader's exit.
 /// Restoring the default disposition makes the kernel end the process at that
 /// write: nothing is printed, and the shell reports 141, 128 + 13, as it does
 /// for `cat`, `grep` and `head`, so `set -o pipefail` reads `ein` as it reads

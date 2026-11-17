@@ -1,4 +1,4 @@
-;;; Which core a dead node reports moved with interner ids — **W11**,
+;;; Which core a dead node reports moved with interner ids —
 ;;; regression `fork-delta-order` (`corpus/regressions.toml`).
 ;;; `corpus/fuzz_findings/fork-delta-order.ein` is the same program, the
 ;;; finding's record.

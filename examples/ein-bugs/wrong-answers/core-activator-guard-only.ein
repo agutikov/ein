@@ -1,5 +1,5 @@
 ;;; A dead node's core leaves out the activator its refutation rests on, where
-;;; the refuting plan matches no fact — **W19**, regression
+;;; the refuting plan matches no fact — regression
 ;;; `core-activator-guard-only` (`corpus/regressions.toml`), found by
 ;;; probing `forbid-chain-no-absent.ein`'s mechanism.
 ;;;

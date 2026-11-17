@@ -1,4 +1,4 @@
-;;; A premise that is not a form is dropped, in silence — **W24**,
+;;; A premise that is not a form is dropped, in silence —
 ;;; regression `bare-premise` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

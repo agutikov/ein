@@ -600,7 +600,7 @@ fn hang(value: &str, col: usize) -> String {
 /// through a [`Row`].
 ///
 /// One space at least separates a label from its value, at every width
-/// (W42): a label as long as its column, `class 100 of 277` at a block's
+///: a label as long as its column, `class 100 of 277` at a block's
 /// sixteen, would otherwise run into its value, `class 100 of 27728 states`.
 /// Such a label's value starts one past it, and every other row's at its
 /// column.
@@ -879,7 +879,7 @@ fn sub_row(r: Row, value: impl AsRef<str>) -> String {
     line(r, value)
 }
 
-/// What the universe leaves out, as one sentence (W6, Q-M1e2.3: *scoped, and
+/// What the universe leaves out, as one sentence (Q-M1e2.3: *scoped, and
 /// the read-out says so*): the relations [`ein_infer::scope`] names, why the rung that
 /// built H proposes none of their facts, and what R holds of them. `None`
 /// when it leaves nothing out. The read-out prints it as the `outside` row
@@ -1536,7 +1536,7 @@ fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
 }
 
 /// The `minimal line` row's value, read off a description: describe's, and
-/// a line mode's past `--region-limit` on a flagged program (W27), read off
+/// a line mode's past `--region-limit` on a flagged program, read off
 /// the same description, so the two say the same.
 fn minimal_line(d: &Described) -> String {
     let root = &d.root;
@@ -2187,7 +2187,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         }
     } else if let Some(d) = a.partial.as_deref() {
         // A line mode past `--region-limit` on a flagged program says what
-        // describe says of its line, from the same description (W27).
+        // describe says of its line, from the same description.
         out.row(
             label,
             match a.mode.which {
@@ -2931,7 +2931,7 @@ mod tests {
         );
     }
 
-    /// A label never touches its value, at every width (W42): one shorter
+    /// A label never touches its value, at every width: one shorter
     /// than its column has its value at column 20, and one as long or longer
     /// has one space after it, its value's further lines at that value's
     /// column, so `class 100 of 277` and `28 states` never print as

@@ -1,6 +1,6 @@
 ;;; A pair one of whose sides is concluded through a `forall`: the core leaves
 ;;; out the facts the universal read, and names none of the commitment —
-;;; **W21**, regression `forall-core-elim` (`corpus/regressions.toml`);
+;;; regression `forall-core-elim` (`corpus/regressions.toml`);
 ;;; a derivation through a `forall` rests on each fact it read (Q-M1e2.15).
 ;;;
 ;;;

@@ -1,4 +1,4 @@
-;;; The twin of `wild-in-head.ein` — **W20**: the same program with the head
+;;; The twin of `wild-in-head.ein`: the same program with the head
 ;;; wildcard written out as the disjunction over the relations it has that a
 ;;; one-argument fact can belong to, `holds` and `hit`. A fresh variable is
 ;;; no twin for a head (a relation head is bound by the activator, Q29). `w`

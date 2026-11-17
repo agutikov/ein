@@ -1,5 +1,5 @@
 ;;; A premise `(says (and (paid ?g)))` loads and never matches —
-;;; **W83**, regression `pattern-argument-and`.
+;;; regression `pattern-argument-and`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

@@ -116,7 +116,7 @@ fn every_marked_guide_transcript_is_a_real_run() {
                     bless,
                     "{rel}: the block for `{argv}` is not what the binary prints. \
                      Re-bank it with `EIN_BLESS=1 cargo test -p ein-cli --test \
-                     guide_transcripts` and read the diff (CD-L2).\n\
+                     guide_transcripts` and read the diff.\n\
                      --- page ---\n{got}\n--- binary ---\n{want}"
                 );
                 text.replace_range(body_start..body_end, &want);
@@ -131,6 +131,6 @@ fn every_marked_guide_transcript_is_a_real_run() {
         checked >= 2,
         "no marked transcript was found on any page — the marker was renamed \
          and this test went quiet, which is the shape of failure it exists to \
-         prevent (CD-L2)"
+         prevent"
     );
 }

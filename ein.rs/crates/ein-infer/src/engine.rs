@@ -207,7 +207,7 @@ impl Engine {
         // The activator id is the compile key's list, every argument
         // (Q-M1e.16). On part of them, two plans could share one binding-key
         // space with two register layouts, and a release build would lose a
-        // derivation (`W7`). With the compile key's list the id and the plan
+        // derivation. With the compile key's list the id and the plan
         // are one-to-one within an engine.
         let activator_id = self.intern_activator(&key.activator);
         self.check_layout(plan.rule, activator_id, &plan.reg_names);
@@ -235,7 +235,7 @@ impl Engine {
     /// the activator bound. An activator id over part of the arguments would
     /// let `(r a b)` and `(r a (f X))` share an id and disagree here, and in a
     /// **release** build, where this assertion is compiled out, cost a
-    /// derivation with no diagnostic (`W7`).
+    /// derivation with no diagnostic.
     ///
     /// The id interns the compile key's list, every argument (Q-M1e.16), so
     /// two plans of one rule with one id have one compile key and are one

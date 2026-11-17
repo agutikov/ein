@@ -56,7 +56,7 @@
 //! may not be the smallest, and [`Explanation::cut`] names the cap. The two
 //! callers that take a core a surface prints, `region::node_in_region` and
 //! `region::Nodes::refutation`, carry the status with the frontier, so a cut
-//! core is never printed as the core (`W23`):
+//! core is never printed as the core:
 //! `examples/ein-bugs/wrong-answers/core-search-cut.ein`'s `(A k)` has 256
 //! environments, and its root core is ten facts where eight suffice,
 //! qualified as cut. The search keeps its budget and a
@@ -75,7 +75,7 @@
 //! program's, as the plans root compiles from them are its rules, and are
 //! followed into no core (Q-M1e2.12). So a core is a set of facts from
 //! which, with root's plans, saturation derives the contradiction, and it
-//! names the commitment a plan only a node compiles rests on (`W19`):
+//! names the commitment a plan only a node compiles rests on:
 //! `examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein`'s dead
 //! `{(p a)}` reports `(p a) (seed a)`, and `core-activator-guard-only.ein`'s,
 //! whose refuting plan matches no fact, `(p a)`.
@@ -89,7 +89,7 @@
 //! search folds over their whole labels (Q-M1e2.15). Folding those over their
 //! whole labels too is the exact search, which costs orders of magnitude
 //! more on a member of N and is cut by its budget; a core it would give
-//! smaller is the promise's second residual, beside the cap's (`W21`):
+//! smaller is the promise's second residual, beside the cap's:
 //! `examples/ein-bugs/wrong-answers/forall-core-false.ein`'s dead `{(tag s1),
 //! (tag s2)}` reports `(item a) (tag s1) (tag s2)`.
 //!
@@ -100,7 +100,7 @@
 //! smallest union over both sides' environments. A node's core is the
 //! smallest over its contradictions. A core of a pair's positive side alone
 //! would leave out the derivation of `(not X)`, where a commitment typically
-//! is (`W21`): `pair-core-root-given.ein`'s dead `{(q a)}` would report
+//! is: `pair-core-root-given.ein`'s dead `{(q a)}` would report
 //! `(p a)`, a fact the program states.
 //!
 //! ### Which rules a core's derivation ends in
@@ -189,7 +189,7 @@ impl Default for ExplanationBudget {
 }
 
 /// Which of [`ExplanationBudget`]'s caps a search stopped at: none when it
-/// reached its fixpoint inside every one (`W23`).
+/// reached its fixpoint inside every one.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Default)]
 pub struct Cut {
     /// A label, or a justification's fold, had more than
@@ -210,7 +210,7 @@ impl Cut {
 }
 
 /// What a core's search established, carried beside every core a surface
-/// prints (`W23`). It says whether the search was cut, and at which cap, and
+/// prints. It says whether the search was cut, and at which cap, and
 /// no more: [`CoreStatus::WithinBudget`] does not say the core is the
 /// smallest over every derivation the program records, which the two
 /// residuals keep it from being (the module note). A dead set is never
@@ -778,7 +778,7 @@ pub fn explain(
 /// [`crate::contradiction::Contradiction::witness`] its tie-break and the
 /// [`Explanation::target`].
 ///
-/// `W21`: explained by its witness alone, a pair's positive side, the core
+/// Explained by its witness alone, a pair's positive side, the core
 /// would leave out the derivation of `(not X)`, where a commitment typically
 /// is: `examples/ein-bugs/wrong-answers/pair-core-root-given.ein`'s dead
 /// `{(q a)}` would report `(p a)`, a fact root states. The sides are taken

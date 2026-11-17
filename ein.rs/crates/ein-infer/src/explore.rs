@@ -54,7 +54,7 @@
 //! ([`crate::region`]) where it cannot. Past `--region-limit` a question that
 //! needs the whole cube meets the members of `R` in layer order up to the
 //! limit; describe certifies what it can of them (`Space::partial_cube`),
-//! and a line mode answers from the same description (`W27`, Q-M1e2.19), so
+//! and a line mode answers from the same description (Q-M1e2.19), so
 //! it certifies what describe certifies and no more. A program whose root is
 //! dead is decided by route 1 in one saturation (L0, L1). **A minimal
 //! question where ∅ is in `R` is decided at root on every route**, a flagged
@@ -551,7 +551,7 @@ pub struct Answer {
     /// the one rule: a member met with no member of `R` met below it is
     /// minimal, and the maximal line, which needs the whole cube, is not
     /// known. The read-out counts the other members met and does not list
-    /// them, and `--dump-answer` writes each (`W27`, Q-M1e2.19). `None` on
+    /// them, and `--dump-answer` writes each (Q-M1e2.19). `None` on
     /// every other run.
     pub partial: Option<Box<Described>>,
     /// The chosen part of `R` was exhausted: [`Self::states`] is all of it.
@@ -1718,7 +1718,7 @@ impl<'a> Space<'a> {
     /// member was met in an earlier layer, so a member with no member of `R`
     /// below it is certified minimal, monotone or not. The maximal line needs
     /// the whole cube, and is not certified. Describe's, and every line
-    /// mode's past the limit too (`W27`)
+    /// mode's past the limit too
     /// (`certified_line`): the one rule, so the two cannot disagree.
     ///
     /// With `nogoods`, each member of `N` met is given its core after the
@@ -2446,7 +2446,7 @@ fn flagged(
         });
         // A line mode past the limit (`!early` here is past it) answers from
         // describe's partial description, by its rule, so the two certify the
-        // same line members (`W27`, Q-M1e2.19), and labels no member met with
+        // same line members (Q-M1e2.19), and labels no member met with
         // a line it does not certify.
         let line_past_limit = !early && !empty_in_r && opts.mode.which != Which::All;
         // Only describe prints `N`, so only describe takes its cores.
@@ -2517,7 +2517,7 @@ type MinimalAt = (Box<[u32]>, usize);
 
 /// A line mode's states past `--region-limit` on a flagged program, read off
 /// describe's partial description `d` ([`Space::partial_cube`]), so that the
-/// mode certifies what describe certifies and nothing more (`W27`). On the
+/// mode certifies what describe certifies and nothing more. On the
 /// minimal line, the states `d` marks minimal, each with the
 /// minimal commitments that reach it, in layer order: the order the minimal
 /// line has within the limit ([`of_cube`]). The maximal line needs the whole

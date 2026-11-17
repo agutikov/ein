@@ -1,4 +1,4 @@
-;;; A written `(false Bob)` is stored, kills root, and names `Bob` — **W81**,
+;;; A written `(false Bob)` is stored, kills root, and names `Bob` —
 ;;; regression `false-fact-argument`.
 ;;;
 ;;;

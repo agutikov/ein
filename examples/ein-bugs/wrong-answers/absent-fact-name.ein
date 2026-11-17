@@ -1,5 +1,5 @@
 ;;; A written `(absent Bob)` adds `Bob` to the program's names, and H grows —
-;;; **W80**, regression `absent-fact-name`.
+;;; regression `absent-fact-name`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

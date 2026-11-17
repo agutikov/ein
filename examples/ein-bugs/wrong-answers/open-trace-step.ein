@@ -1,4 +1,4 @@
-;;; `open` written as a trace step's name loads — **W71**, regression
+;;; `open` written as a trace step's name loads — regression
 ;;; `trace-step`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

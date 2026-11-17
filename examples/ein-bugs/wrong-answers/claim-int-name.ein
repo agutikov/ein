@@ -1,5 +1,5 @@
 ;;; A query's claim about the int `1` held of a state holding the name `"1"`
-;;; — **W28**, regression `claim-int-name`
+;;; — regression `claim-int-name`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

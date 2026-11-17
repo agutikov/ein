@@ -1,5 +1,5 @@
 ;;; A premise `(absent (false ?g))` holds of everything, so the rule fires —
-;;; **W81**, regression `false-premise-argument`.
+;;; regression `false-premise-argument`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

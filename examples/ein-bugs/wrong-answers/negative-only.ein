@@ -1,9 +1,9 @@
 ;;; A name written **only inside a nested fact** never became a candidate —
-;;; **W15**, regression `negative-only` (`corpus/regressions.toml`).
+;;; regression `negative-only` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; W4's program (`../alive-set-fresh-name.ein`) without its `spawn` rule,
+;;; The program of `../alive-set-fresh-name.ein` without its `spawn` rule,
 ;;; plus the stored negative `(not (q Z A))`. `Z` is written in a fact, but
 ;;; only inside the nested `(q Z A)`: the KB's names index does not index a
 ;;; nested fact's arguments (Q40, *the nested fact is interned, not

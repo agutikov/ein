@@ -16,8 +16,9 @@
 //!    over an `is-a` the core does not name would refute anything on an empty
 //!    KB.
 //!
-//! It catches `W19` (a core leaving out the activator its refutation rests
-//! on, `(seed a)` alone) and `W21` (a pair's core naming its positive side
+//! It catches a core leaving out the activator its refutation rests on
+//! (`(seed a)` alone) and a contradiction's core leaving out what it rests on
+//! (a pair's core naming its positive side
 //! alone; and a `(false)` through a `forall` naming the two facts its rule
 //! matched): each fails the first claim, and
 //! `saturation/type-exclusivity/*`'s fail the second.
@@ -35,7 +36,7 @@
 //! It reads the corpus's entries that are not slow by default, and the
 //! zebra family's too under `EIN_CORPUS_SLOW=1`.
 //!
-//! **And no core is printed unqualified from a cut search** (`W23`):
+//! **And no core is printed unqualified from a cut search**:
 //! [`no_core_is_printed_unqualified_from_a_cut_search`]
 //! reads every core a surface prints with the status printed beside it, root's
 //! on a dead root and every dead node a route visits included, and holds each
@@ -919,7 +920,7 @@ fn statuses(files: &[PathBuf]) -> Vec<Option<Statuses>> {
     out
 }
 
-/// **No core is printed unqualified from a cut search** (`W23`), over the
+/// **No core is printed unqualified from a cut search**, over the
 /// corpus and the regressions' witnesses.
 ///
 /// Every core a surface prints, with the status printed beside it
@@ -993,7 +994,7 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
 
 // ── A rule with no premise: the empty core ─────────────────────────────────
 
-/// **A rule with no premise refutes root with the empty core** (`W31`):
+/// **A rule with no premise refutes root with the empty core**:
 /// `:match ()` is
 /// the empty conjunction, true, so `(rule r () :match () :assert (false))`
 /// fires once at root and root is dead. Its refutation rests on no fact, so

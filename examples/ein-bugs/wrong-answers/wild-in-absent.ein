@@ -1,5 +1,5 @@
 ;;; An `(absent …)` over a pattern with a wildcard `_` always holds —
-;;; **W20**, regression `wild-in-absent` (`corpus/regressions.toml`),
+;;; regression `wild-in-absent` (`corpus/regressions.toml`),
 ;;; the case's mechanism under `absent`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

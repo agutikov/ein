@@ -1,5 +1,5 @@
 ;;; A relation parameter its activator binds to `eq` heads a premise of one
-;;; argument, and the run stopped where the plan is compiled — **W60**,
+;;; argument, and the run stopped where the plan is compiled —
 ;;; regression `eq-arity-premise` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

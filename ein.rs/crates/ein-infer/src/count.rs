@@ -1,5 +1,5 @@
 //! A count of commitments, exact at any size, and the bound a run reports it
-//! to (Q-M1f.218, `W92`).
+//! to (Q-M1f.218).
 //!
 //! One state can be reached by more commitments than any machine integer
 //! holds: a state of 130 candidates that any one of them reaches is reached by

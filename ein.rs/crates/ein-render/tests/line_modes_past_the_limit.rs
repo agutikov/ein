@@ -1,5 +1,5 @@
 //! **Past `--region-limit`, a line mode certifies what describe certifies**
-//! (W27, Q-M1e2.19).
+//! (Q-M1e2.19).
 //!
 //! On a program the static check flags, a question that needs the whole cube
 //! is answered past the limit from the members the run met in layer order
@@ -46,14 +46,14 @@ use serde_json::Value as J;
 
 /// The limits each flagged program is asked under, those below its
 /// candidate count: past the limit at each. The default, 16, only where the
-/// oracle's R is known: the W27 witness, past it at default settings. The
+/// oracle's R is known: `past-limit-lines.ein`, past it at default settings. The
 /// programs past 17 candidates take the same code at 2^8 nodes that they
 /// take at the default's 2^16, at a 256th of the cost.
 const LIMITS: [u32; 8] = [0, 1, 2, 3, 4, 6, 8, 16];
 
 /// The largest program the oracle enumerates here: the default limit, and
-/// `examples/ein-bugs/wrong-answers/past-limit-lines.ein`, the W27 witness
-/// whose 17 candidates put it past the default limit.
+/// `examples/ein-bugs/wrong-answers/past-limit-lines.ein`, whose 17
+/// candidates put it past the default limit.
 const ORACLE_MAX: usize = 17;
 
 /// Every line mode, and describe to hold them to.

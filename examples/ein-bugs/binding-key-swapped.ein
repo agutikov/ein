@@ -1,5 +1,5 @@
 ;;; `binding-key-both.ein` with its two activator lines exchanged, and
-;;; nothing else — **W7**'s twin, regression `binding-key-both/binding-key-layout`
+;;; nothing else — its twin, regression `binding-key-both/binding-key-layout`
 ;;; (`corpus/regressions.toml`), Q-M1e.16.
 ;;; `corpus/fuzz_findings/binding-key-layout-swapped.ein` is the same
 ;;; program, a frontend-fuzzer seed.
@@ -8,7 +8,7 @@
 ;;; order two facts are written in may not change what is derived. Every
 ;;; state holds `(noted 1 1)` and `(noted 2 1)` and no other `noted` fact:
 ;;; `(note edge 1)` binds `?f` to `1`, and `(note edge (src Y))` binds it to
-;;; `(src Y)`, which no `holds` fact or candidate is (W33).
+;;; `(src Y)`, which no `holds` fact or candidate is.
 ;;;
 ;;; At `9c3c3fbc` this order answered right in a release build, because the
 ;;; nested-fact plan, compiled first and binding no `?f`, derived every

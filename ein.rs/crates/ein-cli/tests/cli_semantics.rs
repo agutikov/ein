@@ -451,7 +451,7 @@ fn a_load_failure_is_one_diagnostic_line_and_a_non_zero_exit() {
 ///
 /// The rule views render the *parsed forms*, as written; nothing they draw is
 /// the loaded `Kb`. But each view reads the program through the loader first
-/// and refuses it with the same line and exit (W65, Q-M1f.71): a view that
+/// and refuses it with the same line and exit (Q-M1f.71): a view that
 /// drew a program every other command refused would disagree with them about
 /// whether it is one.
 #[test]
@@ -813,7 +813,7 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     }
 }
 
-/// **A wildcard written as a relation is refused** (W20), at the parse: a
+/// **A wildcard written as a relation is refused**, at the parse: a
 /// bare `_` is refused in every position (Q-M1e2.22).
 ///
 /// One report, from every command that reads the program: `ein saturate`,
@@ -996,8 +996,8 @@ fn a_string_is_natural_language_and_no_value() {
 /// `render rules`, `render constraints`, `render kb` and `kb save` exit 1 and
 /// `ein test` 2, each with one line at the token, `FILE:L:C: unexpected `_`: _
 /// (reserved)`, and a note under it: never dropped from a fact, a nested fact
-/// or an activator in silence (W29), nor matched as any value in a rule's
-/// pattern (W20). A module that writes one is refused where it is imported, with
+/// or an activator in silence, nor matched as any value in a rule's
+/// pattern. A module that writes one is refused where it is imported, with
 /// the module's line, by every command that resolves a file-relative import:
 /// `ein solve`, `oracle`, `test`, `render kb` and `kb save` (`ein saturate`
 /// resolves none, and `render program`, `rules` and `constraints` draw the
@@ -1220,10 +1220,11 @@ fn a_run_of_digits_is_a_name_in_every_place() {
     }
 }
 
-/// **A rule shape that reads nothing is refused** (W24, Q-M1e2.18), at the
+/// **A rule shape that reads nothing is refused** (Q-M1e2.18), at the
 /// parse wherever the grammar states the place.
 ///
-/// Each of W24's witnesses, from every command that loads it: `ein
+/// Each witness of a rule shape that reads nothing, from every command that
+/// loads it: `ein
 /// saturate`, `ein solve` and `ein oracle` exit 1 and `ein test` 2. None
 /// loads to read nothing in silence (a guard comparing a raw node or a null,
 /// a premise dropped, a pattern that matches nothing). Three are the
@@ -1417,12 +1418,15 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
 /// **A conclusion's variable nothing binds is refused at load, by every
 /// command, with one line** (Q-M1e2.37).
 ///
-/// W57's four witnesses and the regression fixture, each on every command that
+/// The four witnesses of a conclusion's variable no premise binds
+/// (`assert-var-*`, `hrule-assert-var`) and the regression fixture, each on
+/// every command that
 /// loads a program: exit 1 (`ein test`: 2), and the loader's line, one per
 /// variable, naming the rule, the variable and the two explicit spellings, in
 /// Ein's words, never a firing that stops one command while another answers.
 /// What loads: a variable a typed premise, an `eq` guard or a parameter
-/// binds. And W58's witness, a parameter its activator binds to a nested
+/// binds. And `parameter-nested-assert.ein`, a parameter its activator binds
+/// to a nested
 /// fact, which the compiler seeds, answers on every command.
 #[test]
 fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
@@ -1514,15 +1518,15 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     for fact in ["(q h1 :rule typed)", "(q b :rule", "(q House :rule every)"] {
         assert!(r.out.contains(fact), "no {fact}:\n{}", r.out);
     }
-    // W58: a parameter its activator binds to a nested fact, which the
-    // compiler seeds (W33's cause otherwise); every command answers, root
+    // A parameter its activator binds to a nested fact, which the compiler
+    // seeds (unseeded, it would be left unbound); every command answers, root
     // holding `(hit (f a))`.
-    let w58 = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein";
+    let seeded = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein";
     for args in [
-        vec!["saturate", "--dump", w58],
-        vec!["solve", w58],
-        vec!["solve", "--minimal", w58],
-        vec!["oracle", w58],
+        vec!["saturate", "--dump", seeded],
+        vec!["solve", seeded],
+        vec!["solve", "--minimal", seeded],
+        vec!["oracle", seeded],
     ] {
         let r = ein(&args);
         assert_eq!(r.code, 0, "ein {args:?}:\n{}", r.err);
@@ -1530,7 +1534,7 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
             assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
         }
     }
-    let r = ein(&["saturate", "--dump", w58]);
+    let r = ein(&["saturate", "--dump", seeded]);
     assert!(r.out.contains("(hit (f a) :rule act)"), "{}", r.out);
 }
 
@@ -1538,7 +1542,8 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
 /// fact is refused at load, by every command, with one line** (Q-M1f.1).
 ///
 /// The two `g14` programs, as refusal fixtures under `examples/broken/load/`
-/// and as W59's witnesses, each on every command that loads a program: exit 1
+/// and as the witnesses of the regressions `derived-activator/derived-activator` and
+/// `derived-activator-never`, each on every command that loads a program: exit 1
 /// (`ein test`: 2) and the loader's line, naming the deriving rule, the
 /// activated rule and the parameter, never the compiler's line where a plan
 /// was compiled. What loads: the zebra2 fan-out and the stdlib's, which pass a relation's
@@ -2554,9 +2559,9 @@ fn the_summary_escapes_non_ascii_where_the_event_stream_does_not() {
 // ── A keyword is a whole word ──────────────────────────────────────
 
 /// **A name that starts with a keyword answers as its twin does, on every
-/// command** (W22, Q-M1e2.17).
+/// command** (Q-M1e2.17).
 ///
-/// Each of W22's fourteen witnesses writes a name that starts with a reserved
+/// Each of the fourteen `kw-*` witnesses writes a name that starts with a reserved
 /// word (`neqw`, `orz`, `andz`, `notw`, `relationship`) in the place the
 /// parser read the keyword in; its twin is the same program with the name's
 /// first letter doubled (`nneqw`), a name that starts with no keyword and
@@ -2682,10 +2687,10 @@ fn a_name_that_starts_with_a_keyword_answers_as_its_twin_does() {
     );
 }
 
-// ── A core search cut at its budget says so (W23) ────────────────────────
+// ── A core search cut at its budget says so ────────────────────────
 
 /// **A core whose search was cut says so on every surface that prints it, and
-/// one whose search was not prints nothing new** (W23): the core search
+/// one whose search was not prints nothing new**: the core search
 /// keeps its budget, `explain::ExplanationBudget`, and a core it
 /// cut is qualified as cut, at the cap it stopped at.
 ///
@@ -2822,7 +2827,7 @@ fn a_cut_core_says_so_on_every_surface_and_an_uncut_one_does_not() {
 /// core and `core_status: "not-kept"`, on `lattice/06_friends_tables.ein`
 /// nor on `past-limit-lines.ein`.
 ///
-/// `past-limit-lines.ein` (W27's witness) is the control: past the default
+/// `past-limit-lines.ein` is the control: past the default
 /// limit its run stops with the 15 members of N met, and with
 /// `--region-limit 17` it exhausts and prints the same 15 with the same
 /// cores, statuses and rules, which are the cores `--dump-lattice` writes for
@@ -2973,14 +2978,15 @@ fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
 /// **An empty `:match` fires, and an empty conclusion asserts nothing, on every
 /// command** (Q-M1e2.36).
 ///
-/// W31's four witnesses and W34's, each on every command that answers a
+/// The four `empty-match-*` witnesses and `assert-empty.ein`, each on every
+/// command that answers a
 /// program: `()` is the empty conjunction, which is true, so a rule whose
 /// `:match` is `()` fires once at root, or once per activator fact, with only
 /// its parameters bound, and an hrule's proposes its conclusion likewise; and
 /// `:assert ()` concludes nothing. `()` is no premise over the parser's
 /// synthetic `#empty`, which no fact holds and which would never fire the rule
-/// in silence (W31), and `:assert ()` stores no fact under that head, whose
-/// name would join H (W34).
+/// in silence, and `:assert ()` stores no fact under that head, whose
+/// name would join H.
 #[test]
 fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
     let w = |name: &str| format!("examples/ein-bugs/wrong-answers/{name}.ein");
@@ -3080,7 +3086,8 @@ fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
 /// is refused at load, by every command, with one line** (Q-M1f.46), and a
 /// written fact of `eq` at another arity beside it (Q-M1f.47).
 ///
-/// W60's four witnesses and W61's, each on every command that loads a program:
+/// The four `eq-arity-*` witnesses and `fact-eq-arity.ein`, each on every
+/// command that loads a program:
 /// exit 1 (`ein test`: 2), and the loader's line in Ein's words, not a
 /// compiler's line where a plan is compiled, nor one command stopping where
 /// another answers, nor a stored fact of `eq` at one argument. What loads:
@@ -3217,7 +3224,9 @@ fn every_command(file: &str, einb: &str) -> Vec<(Vec<String>, i32)> {
 }
 
 /// **A refusal the compiler made reads the same on every command, in Ein's
-/// words, and is made at load**: W62, W63, W64 and W65.
+/// words, and is made at load**: a nested `(or …)`, a clause past the
+/// register file, a goal's relation variable, and every command that reads a
+/// program.
 ///
 /// Each witness on every command that reads a program, seventeen of them, the
 /// views and `kb save` among them: exit 1 (`ein test`: 2) and one first line,
@@ -3227,7 +3236,7 @@ fn every_command(file: &str, einb: &str) -> Vec<(Vec<String>, i32)> {
 /// commitment's activator, an hrule, a goal, a rule no activator reaches,
 /// the four views and `kb save`).
 ///
-/// `(eq ?x)` in a macro's body is the loader's refusal too (W66, Q-M1f.80):
+/// `(eq ?x)` in a macro's body is the loader's refusal too (Q-M1f.80):
 /// one line on every command, its position the macro body's, the views and
 /// `kb save` refusing it too; every shape a macro's body
 /// malforms is held on every command by `macro_bodies.rs`.

@@ -1,6 +1,6 @@
 ;;; A `(solve :hrules …)` activator that names a relation the program does not
 ;;; have loads, and proposes facts of it —
-;;; **W76**, regression `hrules-activator-relation`.
+;;; regression `hrules-activator-relation`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

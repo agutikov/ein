@@ -1,5 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` bound by a guard alone stores the negation of every other name —
-;;; **W84**, regression `not-name-guard`.
+;;; regression `not-name-guard`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

@@ -1,4 +1,4 @@
-;;; The twin of `kw-and-in-expect.ein`, a control of **W22**: the same program
+;;; The twin of `kw-and-in-expect.ein`, a control of regression `kw-and-in-expect`: the same program
 ;;; with `andz` renamed `aandz`, its first letter doubled: a name that starts
 ;;; with no keyword and sorts where `andz` does. Its answer is the witness's
 ;;; right one, the name read back (`ein solve FILE` at `35186bc0`, release and

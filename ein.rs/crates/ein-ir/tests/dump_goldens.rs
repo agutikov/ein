@@ -40,7 +40,8 @@ fn the_goldens_are_reproduced() {
 /// side table exists to make true.
 ///
 /// Over every corpus file the parser accepts: the refusal witnesses of the
-/// decisions the grammar carries (W29's, W32's, W35's, W18's, …) are refused
+/// decisions the grammar carries (a bare `_`, a keyword pair inside a term,
+/// `(absent ())`, a string in a rule, …) are refused
 /// at the parse wherever they live, beside `examples/broken/`, and are left
 /// out by the parse rather than by their directory.
 #[test]

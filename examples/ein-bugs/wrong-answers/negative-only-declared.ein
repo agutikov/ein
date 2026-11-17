@@ -1,5 +1,5 @@
 ;;; The **control** for [`negative-only.ein`](negative-only.ein) — that file
-;;; plus one fact, `(seen Z)` — case W15.
+;;; plus one fact, `(seen Z)`.
 ;;;
 ;;; `(seen Z)` names `Z` at top level, over a relation nothing else mentions
 ;;; and which is closed, and changes nothing else. With it H is five `q`

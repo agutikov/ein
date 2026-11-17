@@ -1,4 +1,4 @@
-;;; The line modes past `--region-limit` — **W27**, regressions
+;;; The line modes past `--region-limit` — regressions
 ;;; `past-limit-lines-minimal` and `past-limit-lines-maximal`
 ;;; (`corpus/regressions.toml`), under Q-M1e2.19: the smallest program the
 ;;; static check flags whose cube is past the default limit of 16, so a bare

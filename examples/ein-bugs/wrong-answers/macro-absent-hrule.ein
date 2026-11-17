@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `absent` over two premises, called in an hrule:
 ;;; `ein saturate` answers and every solve question stops —
-;;; **W66**, regression `macro-absent-hrule`.
+;;; regression `macro-absent-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

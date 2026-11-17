@@ -1,5 +1,5 @@
 ;;; A wildcard `_` as a pattern's relation head stopped the run with a Python
-;;; spelling — **W20**, regression `wild-in-head`
+;;; spelling — regression `wild-in-head`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

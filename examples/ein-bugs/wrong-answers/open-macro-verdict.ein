@@ -1,5 +1,5 @@
 ;;; a macro's body writes `open`, the verdict, and a rule's `:assert` calls it:
-;;; an obligation through a macro loads — **W72**, regression
+;;; an obligation through a macro loads — regression
 ;;; `macro-verdict`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

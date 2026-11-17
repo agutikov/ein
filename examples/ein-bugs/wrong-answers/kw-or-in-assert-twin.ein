@@ -1,4 +1,4 @@
-;;; The twin of `kw-or-in-assert.ein`, a control of **W22**: the same program
+;;; The twin of `kw-or-in-assert.ein`, a control of regression `kw-or-in-assert`: the same program
 ;;; with `orz` renamed `oorz`, its first letter doubled: a name that starts with
 ;;; no keyword and sorts where `orz` does. Its answer is the witness's right
 ;;; one, the name read back (`ein solve FILE` at `35186bc0`, release and debug).

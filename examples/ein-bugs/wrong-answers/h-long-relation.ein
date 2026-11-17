@@ -1,4 +1,4 @@
-;;; A relation's name glued to its candidate count in `-H` — **W42**, register
+;;; A relation's name glued to its candidate count in `-H` —
 ;;; regression `h-long-relation` (`corpus/regressions.toml`), found beside
 ;;; `class-label-04-open`: the same column logic on another surface.
 ;;;

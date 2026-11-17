@@ -1,4 +1,4 @@
-;;; The kernel's other dunder among the blind enumerator's objects — **W96**,
+;;; The kernel's other dunder among the blind enumerator's objects —
 ;;; regression `symmetric-by-rule` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

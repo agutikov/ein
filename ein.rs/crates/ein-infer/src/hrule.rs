@@ -115,7 +115,7 @@ impl Hrules {
     /// a stored negation, `(absent (not …))`, the stdlib's `unknown`),
     /// **every** hrule is matched before any candidate is emitted, and no
     /// write a caller makes is visible to the enumeration: an hrule that reads
-    /// `not` reads the state it was asked about (`W85`). Where none reads it
+    /// `not` reads the state it was asked about. Where none reads it
     /// the two orders agree, and each hrule is matched as it is reached, so a
     /// caller that stops early matches no hrule it does not reach. A debug
     /// build and a release build answer such a program alike, as `ein oracle`
@@ -174,8 +174,8 @@ impl Hrules {
                 };
                 match build_fact(s.terms, s.ast, plan, env, template) {
                     Ok(Some(fact)) => f(s, fact)?,
-                    // The negation of a name is no fact, and no hypothesis
-                    // (`W84`): `(not ?x)` with `?x` bound to a
+                    // The negation of a name is no fact, and no hypothesis:
+                    // `(not ?x)` with `?x` bound to a
                     // name the loader could not foresee.
                     Ok(None) => continue,
                     // `NotAFact` — a malformed template yields no candidate.

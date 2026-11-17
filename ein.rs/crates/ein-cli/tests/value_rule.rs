@@ -1,5 +1,5 @@
-//! **A value is a name, or a fact a state could hold** (W80 to W83,
-//! Q-M1f.113, and Q-M1f.122 to .126).
+//! **A value is a name, or a fact a state could hold** (Q-M1f.113, and
+//! Q-M1f.122 to .126).
 //!
 //! *A value is a name, or a fact a state could hold: an atom of an ordinary
 //! relation, or its negation.* So no fact, value or conclusion is headed

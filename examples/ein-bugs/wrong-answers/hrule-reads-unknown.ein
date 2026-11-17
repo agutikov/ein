@@ -1,5 +1,5 @@
 ;;; An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`,
-;;; stops a debug build — **W85**, regression `hrule-reads-unknown`.
+;;; stops a debug build — regression `hrule-reads-unknown`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

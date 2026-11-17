@@ -1,5 +1,5 @@
 ;;; An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build
-;;; — **W85**, regression `hrule-reads-absent-not`.
+;;; — regression `hrule-reads-absent-not`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

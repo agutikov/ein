@@ -1,5 +1,5 @@
 ;;; A query's `:goal` whose `(absent …)` writes a pattern inside a pattern with
-;;; a variable as its relation loads, and holds in every state — **W79**,
+;;; a variable as its relation loads, and holds in every state —
 ;;; regression `goal-absent-nested-relation-variable`.
 ;;;
 ;;;

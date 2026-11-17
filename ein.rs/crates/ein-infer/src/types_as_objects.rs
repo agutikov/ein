@@ -127,7 +127,7 @@ mod tests {
     const TYPES: &str = "(relation is-a T T :why \"{?1} is a {?2}\")\n(__closed__ is-a)\n\
         (is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)\n";
 
-    /// C1's shape: a relation over `T` admits `Color` and `House`, which are
+    /// `branching/06`'s shape: a relation over `T` admits `Color` and `House`, which are
     /// on the right of an `is-a`, and the blind enumerator proposes them.
     #[test]
     fn an_untyped_signature_binds_the_types_as_objects() {

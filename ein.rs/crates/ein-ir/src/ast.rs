@@ -284,7 +284,7 @@ impl Ast {
     /// `Conclusion` takes and a macro whose body is an `(and …)` writes when it
     /// is called as one conjunct, is read as its members, never as a template
     /// headed `and` that would store one fact headed `and` and none of its
-    /// members (W94).
+    /// members.
     pub fn conjuncts(&self, id: NodeId) -> Vec<NodeId> {
         let mut out = Vec::new();
         self.push_conjuncts(id, &mut out);

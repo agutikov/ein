@@ -12,7 +12,8 @@
 //! | `via` | the plan has no such `absent` itself, but reads **positively** a relation a non-monotone plan derives, so a commitment can take the premise away | this file: `N`, closed the same way `D` is |
 //!
 //! A `direct` row is a [`monotone::SiteKind::Absent`] site whose plan
-//! refutes. The other sites — a non-refuting `absent` (W8's shape), an
+//! refutes. The other sites — a non-refuting `absent` (the shape that can
+//! leave a stale fact), an
 //! obligation trigger, an activator — are counted, because they are what a
 //! program still has after *forbid*.
 //!

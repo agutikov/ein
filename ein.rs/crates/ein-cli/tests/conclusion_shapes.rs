@@ -1,4 +1,4 @@
-//! **What a rule may conclude** (W94): may a rule assert an arbitrary
+//! **What a rule may conclude**: may a rule assert an arbitrary
 //! compound fact built from simple facts with `and` and `or`?
 //!
 //! A rule concludes **a conjunction of literals** (facts and stored negations),
@@ -7,7 +7,7 @@
 //! flat at any depth, as a premise is (`ein_ir::Ast::conjuncts`), so `(and (r
 //! a) (and (p a) (q a)))` concludes what `(and (r a) (p a) (q a))` concludes,
 //! and no fact is ever headed `and`: a compiler that split the top `(and …)`
-//! alone would store the inner one as one fact headed `and` (W94).
+//! alone would store the inner one as one fact headed `and`.
 //!
 //! Each row is pinned, here or where the row's kind of answer is pinned:
 //!
@@ -17,7 +17,7 @@
 //! | an `and` inside an `and`, written and through a macro | [`an_and_inside_an_and_is_read_flat`], [`a_macros_and_inside_an_and_is_read_flat`], [`the_witnesses_answer_as_their_flat_twins`]: the same answer, facts and read-out as the flat conclusion, held by invariance |
 //! | `(or …)`, an `(or …)` inside an `(and …)`, a connective as a conclusion's argument or under its `not` | refused at the parse: the grammar's table, `ein-ir/tests/grammar_pages.rs`, and [`no_disjunction_and_no_compound_fact_is_a_conclusion`] here |
 //! | the same written by a macro's expansion | refused at load: `docs/ein/user/reference/diagnostics.md` § 2.16, `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes` |
-//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271, W95): `diagnostics.md` § 2.29, [`an_hrule_concludes_one_fact`], on every command |
+//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271): `diagnostics.md` § 2.29, [`an_hrule_concludes_one_fact`], on every command |
 //!
 //! ```text
 //! cargo test -p ein-cli --test conclusion_shapes
@@ -265,7 +265,8 @@ fn a_macros_and_inside_an_and_is_read_flat() {
     same_answer(&flat, &written, "the expansion written out");
 }
 
-/// **The regressions' two witnesses of W94 answer as their flat twins**, the
+/// **`and-in-and.ein` and `and-in-and-macro.ein` answer as their flat
+/// twins**, the
 /// conclusion written `(and (r a) (p a) (q a))` and nothing else changed.
 #[test]
 fn the_witnesses_answer_as_their_flat_twins() {
@@ -364,7 +365,7 @@ fn no_disjunction_and_no_compound_fact_is_a_conclusion() {
 /// one conjunct, and one of more is refused at load, on every command, one
 /// line placed where the `:assert` is written (Q-M1f.271,
 /// `docs/ein/user/reference/diagnostics.md` § 2.29), never the first conjunct
-/// proposed alone and the others dropped in silence (W95). An `(and …)` of
+/// proposed alone and the others dropped in silence. An `(and …)` of
 /// one conjunct is one conclusion, and loads.
 #[test]
 fn an_hrule_concludes_one_fact() {

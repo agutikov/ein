@@ -1,5 +1,5 @@
 ;;; A bare `_` inside a nested fact is dropped at load, in silence —
-;;; **W29**, regression `nested-fact-arg` (`corpus/regressions.toml`),
+;;; regression `nested-fact-arg` (`corpus/regressions.toml`),
 ;;; under Q-M1e2.22.
 ;;;
 ;;;

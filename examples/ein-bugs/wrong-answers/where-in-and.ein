@@ -1,5 +1,5 @@
 ;;; A `:where` pair beside a `:match`'s conjuncts is dropped, so the rule
-;;; fires without its guard — **W32**, regression `where-in-and`
+;;; fires without its guard — regression `where-in-and`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

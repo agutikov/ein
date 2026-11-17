@@ -1,5 +1,5 @@
 ;;; a macro's body no rule calls writes `open`, the verdict, and loads —
-;;; **W72**, regression `macro-unused`.
+;;; regression `macro-unused`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

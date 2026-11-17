@@ -20,7 +20,7 @@ use crate::common::{How, load_held, read_program};
 /// `file` is read as every command reads a program: a `.ein` is parsed and
 /// loaded against its own directory, and a `.einb` is opened and saved
 /// again, its sources and its state carried over, not refused as text that
-/// is not UTF-8 (W40).
+/// is not UTF-8.
 pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOptions) -> i32 {
     let path = PathBuf::from(file);
     let mut ast = Ast::new();

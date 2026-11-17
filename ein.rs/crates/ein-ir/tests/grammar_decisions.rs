@@ -97,7 +97,7 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
 ///
 /// A reserved word is a keyword only as a whole word, and a word character
 /// after it makes the whole name a SYMBOL, never split into the keyword and
-/// the rest (W22, Q-M1e2.17), so a trace word a word character
+/// the rest (Q-M1e2.17), so a trace word a word character
 /// follows, which a trace holds no other reading of, is a parse error;
 /// `relation` is the one declarator that is also a SYMBOL; `value* kw_pair*` interleaves the way
 /// `list_item*` allows; `=` and `not` are arity-pinned; and a block comment
@@ -214,8 +214,8 @@ fn the_documented_ambiguities_keep_their_decisions() {
     }
 }
 
-/// **A keyword is a whole word, in every place the parser reads one** (W22,
-/// Q-M1e2.17, and the name rule, Q-M1e2.24).
+/// **A keyword is a whole word, in every place the parser reads one**
+/// (Q-M1e2.17, and the name rule, Q-M1e2.24).
 ///
 /// Every word of `LITERALS` below, the language's literal words, and as
 /// controls the kernel's eight other heads, each followed by a name

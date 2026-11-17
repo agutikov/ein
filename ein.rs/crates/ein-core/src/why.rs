@@ -9,7 +9,7 @@
 //! may start with a digit. Unbound references keep their reference text; the
 //! trace renderer prefers a partial render over a hard failure.
 //!
-//! **A reference names every variable a program can write** (W37): after
+//! **A reference names every variable a program can write**: after
 //! `{?` it reads the name rule's characters ([`crate::text::is_name_char`])
 //! up to the first `}`, so `{?isR*}`, the stdlib's, and every variable the
 //! name rule allows (`?_x_`, `?a.b`, `?n*`) is substituted. `}` is a name
@@ -126,7 +126,7 @@ mod tests {
         );
     }
 
-    /// **A reference names every variable the name rule spells** (W37),
+    /// **A reference names every variable the name rule spells**,
     /// not only `{?` one letter or digit, then letters, digits, `_` and `-`:
     /// each name below is substituted.
     #[test]

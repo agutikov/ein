@@ -78,7 +78,7 @@ pub enum Listing {
     Owing(Vec<OwingState>),
     /// A partial description: its certified line members, as states. `others`
     /// members met are not listed. A line mode's past `--region-limit` on a
-    /// flagged program too (`W27`): the members it
+    /// flagged program too: the members it
     /// certifies on its line, which are describe's, and the others met.
     Certified { others: u64 },
     /// A mode's answer: a line, an `-n` cut, `--single`'s one or two states.
@@ -249,8 +249,7 @@ pub fn of_answer(
                 // A line mode past `--region-limit` on a flagged program: its
                 // states are the line members describe's partial description
                 // certifies, and the other members met are counted, not
-                // listed, and written by `--dump-answer`, as describe's are
-                // (`W27`).
+                // listed, and written by `--dump-answer`, as describe's are.
                 Some(d) => {
                     let on_line = |s: &crate::described::State| match answer.mode.which {
                         Which::Minimal => s.minimal,
@@ -1135,7 +1134,7 @@ fn conjuncts(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
 /// A conjunct with a row's bindings substituted, at any depth: `(not (eq ?x
 /// ?y))` and `(p (f ?x))` print their instances, never the pattern as
 /// written, which would give two rows one fact with its variables in it, a
-/// class no claim could state (`W54`).
+/// class no claim could state.
 fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
     let Node::SForm { head, .. } = ast.node(conj) else {
         return None;

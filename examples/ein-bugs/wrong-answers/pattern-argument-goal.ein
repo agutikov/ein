@@ -1,5 +1,5 @@
 ;;; A goal's `(absent (says (neq ?g Bob)))` holds of everything —
-;;; **W83**, regression `pattern-argument-goal`.
+;;; regression `pattern-argument-goal`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

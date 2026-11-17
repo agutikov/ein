@@ -1,4 +1,4 @@
-//! What the universe leaves out (`W6`, Q-M1e2.3): R is *scoped, and the
+//! What the universe leaves out (Q-M1e2.3): R is *scoped, and the
 //! read-out says so*.
 //!
 //! R is over H, the candidate list the generation ladder builds at root
@@ -21,7 +21,7 @@
 //! 2. **the program does not scope it out itself**: `(__closed__ R)`, a
 //!    `:hypothesis-relations` list without it, or `:no-hypothesis` naming it.
 //!    That scope is the program's own statement, and the read-out does not
-//!    repeat it (W6's `arity3.ein` scopes `is-a` out, and only `r3` is named);
+//!    repeat it (`arity3.ein` scopes `is-a` out, and only `r3` is named);
 //! 3. **the rung that built H proposes none of its facts**, at relation
 //!    grain: the hrules assert no fact of it, no obligation owes it (one root
 //!    owes, or one a commitment can bring, which the rung reads too:
@@ -190,7 +190,7 @@ mod tests {
             .collect()
     }
 
-    /// W6's `uncovered.ein`: the obligations rung owes `seats` alone.
+    /// `uncovered.ein`'s shape: the obligations rung owes `seats` alone.
     const OBLIGED: &str = "(import std.algebra :symbols (total-owed surjective-owed))\n\
         (relation is-a T T :why \"{?1} is a {?2}\")\n(relation seats Guest Chair :why \"{?1} is seated on {?2}\")\n(relation knows Guest Guest :why \"{?1} knows {?2}\")\n\
         (is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair) (is-a C2 Chair)\n\
@@ -214,7 +214,7 @@ mod tests {
         assert_eq!(named(&asked), [("knows".to_string(), Why::NotOwed)]);
     }
 
-    /// W6's `arity3.ein`: the blind enumerator proposes arity 1 and 2, so a
+    /// `arity3.ein`'s shape: the blind enumerator proposes arity 1 and 2, so a
     /// goal over an arity-3 relation is outside; clause 2, a relation the
     /// program scopes out, is not named.
     #[test]

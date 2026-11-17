@@ -1,5 +1,5 @@
 ;;; A core search cut at its budget prints its core as the smallest —
-;;; **W23**, regression `core-search-cut` (`corpus/regressions.toml`).
+;;; regression `core-search-cut` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

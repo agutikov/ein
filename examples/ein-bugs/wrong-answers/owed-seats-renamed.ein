@@ -1,5 +1,5 @@
 ;;; `owed-seats.ein` with **Ann renamed Zed**, and nothing else — the twin that
-;;; makes **W5** an order dependence rather than only a wrong count.
+;;; makes its wrong answer an order dependence rather than only a wrong count.
 ;;; Regression `owed-seats`, as a twin.
 ;;;
 ;;; The walk's lattice answered k = 3 here too, but its third model was

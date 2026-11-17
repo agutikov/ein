@@ -302,7 +302,7 @@ fn fact_set(f: &Fixture) -> Vec<String> {
 }
 
 /// **A full alternatives list does not decide which unsat core is
-/// reported** (`W10`, Q-M1e2.11).
+/// reported** (Q-M1e2.11).
 ///
 /// `Kb::record_justification` retains by **premise count**, which is local,
 /// and `explain` minimises **frontier size**, which is transitive, so a full
@@ -602,7 +602,7 @@ fn every_budget_cap_stays_sound_and_reports_itself() {
     );
 }
 
-/// **Each cap a search stops at is named** (`W23`).
+/// **Each cap a search stops at is named**.
 ///
 /// `Explanation::exhausted` says only *some* cap was hit; `Explanation::cut`
 /// says which, and a core's status ([`CoreStatus`]) carries it to every

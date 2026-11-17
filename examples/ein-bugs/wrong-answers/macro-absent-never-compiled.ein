@@ -1,6 +1,6 @@
 ;;; A macro whose body heads a form with its parameter, called with `absent` and
 ;;; two premises in a rule no activator reaches: every command answers —
-;;; **W66**, regression `macro-absent-never-compiled`.
+;;; regression `macro-absent-never-compiled`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

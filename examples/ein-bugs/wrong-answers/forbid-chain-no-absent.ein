@@ -1,4 +1,4 @@
-;;; A control for **W17** (`corpus/regressions.toml`): `forbid-chain-1.ein`
+;;; A control for the `forbid-chain-*` regressions: `forbid-chain-1.ein`
 ;;; with no `absent`, which loads.
 ;;;
 ;;; `mk` derives `(q a)` from `(p a)` whatever `a`'s `p2`; the chain `q`, `r2`
@@ -12,9 +12,9 @@
 ;;; reads it, and does neither.
 ;;;
 ;;;
-;;; ── W19 ────────────────────────────────────────────────────────────────
+;;; ── A dead node's core ─────────────────────────────────────────────────
 ;;;
-;;; This is also the witness of **W19**, regression
+;;; This is also the witness of regression
 ;;; `forbid-chain-no-absent`: a dead node's core leaves out the activator
 ;;; its refutation rests on. N is {(p a)}, and its core is `(seed a)` alone, by
 ;;; `r2` (`ein solve FILE --dump-answer DIR`'s `nogoods.json` at `ff023413`,

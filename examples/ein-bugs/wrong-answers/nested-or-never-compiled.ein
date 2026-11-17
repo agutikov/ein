@@ -1,5 +1,5 @@
 ;;; A disjunction nested inside a conjunction, in a rule no activator
-;;; activates: every command answers — **W62**, regression
+;;; activates: every command answers — regression
 ;;; `nested-or-never-compiled`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

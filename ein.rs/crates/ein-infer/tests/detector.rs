@@ -288,10 +288,10 @@ fn stale(w: &Warning) -> Vec<String> {
         .collect()
 }
 
-/// **The stale check reads every node the run computes** — the proposal's
-/// § 4.1, approved: on W8's own witness the stale fact is in a dead node no
-/// run lists. One per kind the proposal's § 4.2 shows: dead, in R, and the
-/// FIFO gap's node of R; none where the state never breaks.
+/// **The stale check reads every node the run computes**: on
+/// `stale-naf-fork.ein` the stale fact is in a dead node no run lists. One
+/// per kind: dead, in R, and the FIFO gap's node of R; none where the state
+/// never breaks.
 #[test]
 fn the_stale_check_reads_every_node_the_run_computes() {
     let cases: &[(&str, &[&str])] = &[
@@ -364,7 +364,8 @@ fn the_status_names_the_sites_its_violations_are_attributed_to() {
         // Where the attribution names no site, the
         // derivation followed through each plan's activator. `lattice/12`'s
         // `total-owed` activator is derived by a plan of `serves`, which root
-        // never compiled; W17's witnesses, studied past *forbid*, die through
+        // never compiled; the `forbid-chain-*` witnesses, studied past
+        // *forbid*, die through
         // `r2`, `r3` or `bad`, compiled at a node, none of them a site.
         (
             "examples/lattice/12_activator_chain_hole.ein",

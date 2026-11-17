@@ -1,4 +1,4 @@
-;;; A query's `:goal` splits a name that starts with `neq` — **W22**, register
+;;; A query's `:goal` splits a name that starts with `neq` —
 ;;; regression `kw-neq-in-goal` (`corpus/regressions.toml`): a reserved word is a
 ;;; keyword only as a whole token (Q-M1e2.17).
 ;;;

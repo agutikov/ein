@@ -1,4 +1,4 @@
-;;; W94 — a macro's call that expands to an `(and …)`, written as one conjunct
+;;; A macro's call that expands to an `(and …)`, written as one conjunct
 ;;; of a rule's `(and …)` conclusion, stores one fact headed `and`, and none of
 ;;; the facts the macro names.
 ;;;

@@ -1,5 +1,5 @@
-//! **An hrule that reads `not` gets one answer from both builds** (W85,
-//! Q-M1f.129).
+//! **An hrule that reads `not` gets one answer from both builds**
+//! (Q-M1f.129).
 //!
 //! `Hrules::candidates` holds no `debug_assert!` that no hrule's `:match`
 //! reads `not`: nothing writes a `not` mid-enumeration, so such an assertion

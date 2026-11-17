@@ -1,5 +1,5 @@
 ;;; A bare `_` as an `is-a` subject is dropped at load, in silence —
-;;; **W29**, regression `is-a-arg` (`corpus/regressions.toml`),
+;;; regression `is-a-arg` (`corpus/regressions.toml`),
 ;;; under Q-M1e2.22.
 ;;;
 ;;;

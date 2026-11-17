@@ -1067,13 +1067,13 @@ note   = "the only program known to put a nested fact in an unsat core: the give
 path   = "examples/ein-bugs/binding-key-int-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "W7's family (Q-M1e.16): docs/ein/reasoning/static-ir/values-and-order.md's binding-key program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare. A run of digits is a name, so `2` is a candidate object, and the solve holds `edge` and `noted` out: R is two states, root and `{(holds 2)}`, each with root's two `noted` facts `(noted 1 1)` and `(noted 2 1)`, which `:expect` states."
+note   = "The binding-key family (Q-M1e.16): docs/ein/reasoning/static-ir/values-and-order.md's binding-key program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare. A run of digits is a name, so `2` is a candidate object, and the solve holds `edge` and `noted` out: R is two states, root and `{(holds 2)}`, each with root's two `noted` facts `(noted 1 1)` and `(noted 2 1)`, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-nested-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "W7's family (Q-M1e.16): the binding-key program with the int activator deleted, a control. The nested fact binds `?f` (W33) to `(src Y)`, which no fact or candidate `holds`, so the rule derives nothing and no state holds a `noted` fact, which a query's `:expect` states, the region's naming `holds` alone. `Y` is a name of the program (Q-M1e2.9 (a)) and `2` a candidate object, and the solve holds `edge` and `noted` out."
+note   = "The binding-key family (Q-M1e.16): the binding-key program with the int activator deleted, a control. The nested fact binds `?f` to `(src Y)`, which no fact or candidate `holds`, so the rule derives nothing and no state holds a `noted` fact, which a query's `:expect` states, the region's naming `holds` alone. `Y` is a name of the program (Q-M1e2.9 (a)) and `2` a candidate object, and the solve holds `edge` and `noted` out."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-both.ein"
@@ -1115,7 +1115,7 @@ note   = "`activator-all-nested`: `activator-all-int.ein` with `(item (box a))`,
 path   = "examples/ein-bugs/activator-all-symbol.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W16's second shape, the control: `activator-all-int.ein` with `(item a)`. Refused (*forbid*, per activator): `alarm` concludes (false) from its activator, which `watch` derives resting on (absent …) over `checked`, so `solve` exits 1 naming it and `saturate` still saturates. The int and nested-fact witnesses answer as it does, less the `[activator a]` label."
+note   = "The control of an activator read as none: `activator-all-int.ein` with `(item a)`. Refused (*forbid*, per activator): `alarm` concludes (false) from its activator, which `watch` derives resting on (absent …) over `checked`, so `solve` exits 1 naming it and `saturate` still saturates. The int and nested-fact witnesses answer as it does, less the `[activator a]` label."
 
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
 #
@@ -1137,7 +1137,7 @@ note   = "`forced-1-L`: one candidate refuted in one firing. Root is consistent 
 path   = "examples/ein-bugs/wrong-answers/forced-1-two.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W1's control (`forced-2-two`): two candidates, each refuted in one firing; root is consistent, so R = {∅}."
+note   = "The control of regression `forced-2-two`: two candidates, each refuted in one firing; root is consistent, so R = {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2.ein"
@@ -1167,7 +1167,7 @@ note   = "`owed-two-step`: an owed instance whose alternatives die in two firing
 path   = "examples/ein-bugs/wrong-answers/tree-dead.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W1's control (`owed-two-step`): the same obligation with one-firing deaths: R empty, every node owing, as the witness's."
+note   = "The control of regression `owed-two-step`: the same obligation with one-firing deaths: R empty, every node owing, as the witness's."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
@@ -1197,7 +1197,7 @@ note   = "`owed-seats`: two guests, two chairs, `total-owed` + `surjective-owed`
 path   = "examples/ein-bugs/wrong-answers/owed-seats-renamed.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W5's twin: owed-seats.ein with Ann renamed Zed: the same R under the renaming."
+note   = "The twin of owed-seats.ein with Ann renamed Zed: the same R under the renaming."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/uncovered.ein"
@@ -1209,7 +1209,7 @@ note   = "`uncovered`, docs/ein/reasoning/kb-evolution/satisfiability.md § 5's 
 path   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W6's twin: uncovered.ein plus (knows Ann Bob)."
+note   = "The twin of uncovered.ein plus (knows Ann Bob)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/alt-cap-shared.ein"
@@ -1233,13 +1233,13 @@ note   = "`stale-naf-fork`: (p one), derived under (absent (q one)), would survi
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W8's twin: stale-naf-fork.ein's program, kept for the shape a warning on a derived `absent` would miss. **Refused**, as stale-naf-fork.ein: what this twin shows, that the derived case is the one to read, is why the refusal reads it."
+note   = "The twin of stale-naf-fork.ein: its program, kept for the shape a warning on a derived `absent` would miss. **Refused**, as stale-naf-fork.ein: what this twin shows, that the derived case is the one to read, is why the refusal reads it."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W8's twin: features/07 with the forced-positive cascade set off, a `(config …)` line gone with the cascade (docs/ein/user/reference/config.md): features/07's program, a flagged program whose answer the engine claims nothing of."
+note   = "The twin of features/07: features/07 with the forced-positive cascade set off, a `(config …)` line gone with the cascade (docs/ein/user/reference/config.md): features/07's program, a flagged program whose answer the engine claims nothing of."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/match-only.ein"
@@ -1251,7 +1251,7 @@ note   = "`match-only`: alive-set-fresh-name.ein's program with `spawn` replaced
 path   = "examples/ein-bugs/wrong-answers/match-only-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "W15's control for match-only.ein: the same program plus `(seen Z)`, which puts `Z` in a fact at root. H is 6 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for match-only.ein under Q-M1e2.9 (a), which that file answers."
+note   = "The control for match-only.ein: the same program plus `(seen Z)`, which puts `Z` in a fact at root. H is 6 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for match-only.ein under Q-M1e2.9 (a), which that file answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/negative-only.ein"
@@ -1263,7 +1263,7 @@ note   = "`negative-only`: alive-set-fresh-name.ein's program without `spawn`, p
 path   = "examples/ein-bugs/wrong-answers/negative-only-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "W15's control for negative-only.ein: the same program plus `(seen Z)`, which names `Z` at top level. H is 5 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for negative-only.ein under Q-M1e2.9 (a), which that file answers."
+note   = "The control for negative-only.ein: the same program plus `(seen Z)`, which names `Z` at top level. H is 5 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for negative-only.ein under Q-M1e2.9 (a), which that file answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name.ein"
@@ -1275,7 +1275,7 @@ note   = "`oblig-fresh-name`: Ann owes a liked food, the only food at root is So
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "W14's control for oblig-fresh-name.ein: the same program plus `(food Z)` at root. Its guard reads `food`, in D here too, so the rung declines and the blind enumerator builds H (6), and R is one state, `{(likes Ann Z)}`, which its `:expect` states and its witness answers."
+note   = "The control for oblig-fresh-name.ein: the same program plus `(food Z)` at root. Its guard reads `food`, in D here too, so the rung declines and the blind enumerator builds H (6), and R is one state, `{(likes Ann Z)}`, which its `:expect` states and its witness answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein"
@@ -1287,7 +1287,7 @@ note   = "`oblig-fresh-name-two`: oblig-fresh-name.ein plus Bob, who may like So
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "W14's control for oblig-fresh-name-two.ein: the same program plus `(food Z)` at root. Its guard reads `food`, in D here too, so the rung declines (Q-M1e2.10 (a)), H is 12 and R twelve states, which its `:expect` states and its witness answers."
+note   = "The control for oblig-fresh-name-two.ein: the same program plus `(food Z)` at root. Its guard reads `food`, in D here too, so the rung declines (Q-M1e2.10 (a)), H is 12 and R twelve states, which its `:expect` states and its witness answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain.ein"
@@ -1299,7 +1299,7 @@ note   = "`oblig-derived-domain`: oblig-fresh-name.ein's shape with no rule cons
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "W14's control for oblig-derived-domain.ein: the same program plus `(food Pie)` at root. Its guard reads `food`, in D here too, so the rung declines and the blind enumerator builds H (6), and R is one state, `{(likes Ann Pie)}`, which its `:expect` states and its witness answers."
+note   = "The control for oblig-derived-domain.ein: the same program plus `(food Pie)` at root. Its guard reads `food`, in D here too, so the rung declines and the blind enumerator builds H (6), and R is one state, `{(likes Ann Pie)}`, which its `:expect` states and its witness answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein"
@@ -1311,7 +1311,7 @@ note   = "`oblig-stdlib-total-owed`, on the shipped `total-owed`: Ann owes a Foo
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "W14's control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. `total-owed` scans `is-a`, in D here too, so the rung declines (Q-M1e2.10 (a)), H is 6 and R sixteen states, which its `:expect` states and its witness answers. Flagged as its witness is."
+note   = "The control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. `total-owed` scans `is-a`, in D here too, so the rung declines (Q-M1e2.10 (a)), H is 6 and R sixteen states, which its `:expect` states and its witness answers. Flagged as its witness is."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-1.ein"
@@ -1329,7 +1329,7 @@ note   = "`forbid-chain-2`: forbid-chain-1.ein one activator longer, `r2` assert
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-0.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W17's refused control: forbid-chain-1.ein one link shorter, `q` concluding (false) itself. `q`'s activator relation is in D, so *forbid* reads `q` from its pattern and refuses it: `solve` exits 1 naming `q`, `saturate` still saturates."
+note   = "The refused control of the `forbid-chain-*` regressions: forbid-chain-1.ein one link shorter, `q` concluding (false) itself. `q`'s activator relation is in D, so *forbid* reads `q` from its pattern and refuses it: `solve` exits 1 naming `q`, `saturate` still saturates."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
@@ -1401,13 +1401,13 @@ note   = "`core-activator-guard-only`: `mk` derives the activator `(w a)` from `
 path   = "examples/ein-bugs/wrong-answers/core-activator-given.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W19's boundary, a given activator: `(r2 a)` is stated, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives or commits (Q-M1e2.12 (c)), and names no given one."
+note   = "A boundary of regression `forbid-chain-no-absent`, a given activator: `(r2 a)` is stated, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives or commits (Q-M1e2.12 (c)), and names no given one."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-root-derived.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W19's boundary, an activator root derives: `mk0` derives `(r2 a)` from the given `(start a)`, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives (Q-M1e2.12 (c)), so `(start a)` is not named."
+note   = "A boundary of regression `forbid-chain-no-absent`, an activator root derives: `mk0` derives `(r2 a)` from the given `(start a)`, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives (Q-M1e2.12 (c)), so `(start a)` is not named."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-match.ein"
@@ -1419,7 +1419,7 @@ note   = "`wild-in-match`: `w`'s `:match` is `(holds _)`. Refused at the parse (
 path   = "examples/ein-bugs/wrong-answers/wild-in-match-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W20's twin of `wild-in-match.ein`: `_` written as `?any`, a variable the rule reads nowhere else. `w` fires, root holds `(hit w)`, R {(hit w)} and {(hit a), (hit w)}: the witness's right answer."
+note   = "The twin of `wild-in-match.ein`: `_` written as `?any`, a variable the rule reads nowhere else. `w` fires, root holds `(hit w)`, R {(hit w)} and {(hit a), (hit w)}: the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-head.ein"
@@ -1431,7 +1431,7 @@ note   = "`wild-in-head`: `w`'s `:match` is `(_ a)`, a head wildcard; a wildcard
 path   = "examples/ein-bugs/wrong-answers/wild-in-head-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W20's twin of `wild-in-head.ein`: the head wildcard written out as `(or (holds a) (hit a))`, the program's relations a one-argument fact can belong to; a fresh variable is no twin for a head. Root holds `(hit w)`, R {(hit w)} and {(hit a), (hit w)}: the program written out, which loads."
+note   = "The twin of `wild-in-head.ein`: the head wildcard written out as `(or (holds a) (hit a))`, the program's relations a one-argument fact can belong to; a fresh variable is no twin for a head. Root holds `(hit w)`, R {(hit w)} and {(hit a), (hit w)}: the program written out, which loads."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/range-in-match.ein"
@@ -1449,7 +1449,7 @@ note   = "`wild-in-absent`: `(absent (holds _))` beside the fact `(holds a)`. Re
 path   = "examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W20's twin of `wild-in-absent.ein`: `_` written as `?any`. `z` never fires, R ∅ and {(hit a)}: the witness's right answer."
+note   = "The twin of `wild-in-absent.ein`: `_` written as `?any`. `z` never fires, R ∅ and {(hit a)}: the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-hrule.ein"
@@ -1461,7 +1461,7 @@ note   = "`wild-in-hrule`: `(hrule h () :match (holds ?x _) …)`. Refused at th
 path   = "examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W20's twin of `wild-in-hrule.ein`: `_` written as `?any`. H {(tag a)}, R ∅ and {(tag a)}: the witness's right answer."
+note   = "The twin of `wild-in-hrule.ein`: `_` written as `?any`. H {(tag a)}, R ∅ and {(tag a)}: the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-given.ein"
@@ -1491,9 +1491,9 @@ note   = "`forall-core-elim`: a pair one of whose sides `elim` concludes through
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-negative.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W21's boundary: the pair's negative side is the program's, `(not (p a))`, and the commitment derives `(p a)`. R {∅}; N {(q a)}, whose core is `(not (p a)) (q a)`. No row: it names its commitment either way."
+note   = "A boundary of regression `pair-core-root-given`: the pair's negative side is the program's, `(not (p a))`, and the commitment derives `(p a)`. R {∅}; N {(q a)}, whose core is `(not (p a)) (q a)`. No row: it names its commitment either way."
 
-# ── W22: a keyword prefix split ─────────────
+# ── A keyword prefix split ─────────────
 #
 # Each witness with its twin, the same program with the keyword-prefixed
 # name's first letter doubled (`neqw` -> `nneqw`), so that it starts with no
@@ -1509,7 +1509,7 @@ note   = "`kw-neq-in-assert`: `r`'s `:assert` is `(neqw ?x)`. A keyword is a who
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-assert-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-neq-in-assert.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(neqw a)`, R {∅}, the query's class `?y = a`."
+note   = "The twin of `kw-neq-in-assert.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(neqw a)`, R {∅}, the query's class `?y = a`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert.ein"
@@ -1521,7 +1521,7 @@ note   = "`kw-or-in-assert`: `(orz ?x)` in `r`'s `:assert`. A keyword is a whole
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-or-in-assert.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: root `(orz a)`, R {∅}."
+note   = "The twin of `kw-or-in-assert.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: root `(orz a)`, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert.ein"
@@ -1533,7 +1533,7 @@ note   = "`kw-and-in-assert`: `(andz ?x)` in `r`'s `:assert`. A keyword is a who
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-and-in-assert.ein`: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: root `(andz a)`, R {∅}."
+note   = "The twin of `kw-and-in-assert.ein`: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: root `(andz a)`, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-match.ein"
@@ -1545,7 +1545,7 @@ note   = "`kw-and-in-match`: the premise `(andz ?x)`. A keyword is a whole word 
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-match-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-and-in-match.ein`: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: root `(hit b)`, R six states."
+note   = "The twin of `kw-and-in-match.ein`: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: root `(hit b)`, R six states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match.ein"
@@ -1557,7 +1557,7 @@ note   = "`kw-neq-in-match`: the premise `(neqw ?x)`. A keyword is a whole word 
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-neq-in-match.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(hit b)`, R six states."
+note   = "The twin of `kw-neq-in-match.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(hit b)`, R six states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein"
@@ -1569,7 +1569,7 @@ note   = "`kw-neq-in-absent`: `(absent (neqw ?x))`. A keyword is a whole word (`
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-neq-in-absent.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(hit a)`, R eight states over three."
+note   = "The twin of `kw-neq-in-absent.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(hit a)`, R eight states over three."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein"
@@ -1581,7 +1581,7 @@ note   = "`kw-neq-in-fact`: the fact `(box (neqw a))`. A keyword is a whole word
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-neq-in-fact.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(box (neqw a))`, R two states over `(box a)`."
+note   = "The twin of `kw-neq-in-fact.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(box (neqw a))`, R two states over `(box a)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-not-fact.ein"
@@ -1593,7 +1593,7 @@ note   = "`kw-not-fact`: the fact `(notw)`. A keyword is a whole word (`grammar.
 path   = "examples/ein-bugs/wrong-answers/kw-not-fact-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-not-fact.ein`: `notw` renamed `nnotw`, a name that starts with no keyword and sorts where `notw` does. Its answer, `nnotw` read as `notw`, is the witness's right one: root `(notw)`, R {∅}."
+note   = "The twin of `kw-not-fact.ein`: `notw` renamed `nnotw`, a name that starts with no keyword and sorts where `notw` does. Its answer, `nnotw` read as `notw`, is the witness's right one: root `(notw)`, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-relation-fact.ein"
@@ -1605,7 +1605,7 @@ note   = "`kw-relation-fact`: the fact `(relationship alice bob)`. A keyword is 
 path   = "examples/ein-bugs/wrong-answers/kw-relation-fact-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-relation-fact.ein`: `relationship` renamed `rrelationship`, a name that starts with no keyword and sorts where `relationship` does. Its answer, `rrelationship` read as `relationship`, is the witness's right one: root `(relationship alice bob)`, R two states over `(relationship bob alice)`."
+note   = "The twin of `kw-relation-fact.ein`: `relationship` renamed `rrelationship`, a name that starts with no keyword and sorts where `relationship` does. Its answer, `rrelationship` read as `relationship`, is the witness's right one: root `(relationship alice bob)`, R two states over `(relationship bob alice)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal.ein"
@@ -1617,7 +1617,7 @@ note   = "`kw-neq-in-goal`: the query's goal `(neqw ?y)`. A keyword is a whole w
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-neq-in-goal.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: the read-out's `outside` names `neqw`, the query's class `?y = a`."
+note   = "The twin of `kw-neq-in-goal.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: the read-out's `outside` names `neqw`, the query's class `?y = a`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein"
@@ -1629,7 +1629,7 @@ note   = "`kw-or-in-hrule`: the hrule's template `(orz ?x)`. A keyword is a whol
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-or-in-hrule.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: H `(orz a)`."
+note   = "The twin of `kw-or-in-hrule.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: H `(orz a)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein"
@@ -1641,7 +1641,7 @@ note   = "`kw-or-in-obligation`: the obligation's guard `(orz ?a)`. A keyword is
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-or-in-obligation.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: R empty, owing."
+note   = "The twin of `kw-or-in-obligation.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: R empty, owing."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect.ein"
@@ -1653,7 +1653,7 @@ note   = "`kw-and-in-expect`: the query's goal and `:expect` write `(andz …)`.
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-and-in-expect.ein`: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: R {∅}, the claim holds."
+note   = "The twin of `kw-and-in-expect.ein`: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: R {∅}, the claim holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve.ein"
@@ -1665,7 +1665,7 @@ note   = "`kw-or-in-solve`: the `(solve …)` claim writes `(orz a)`. A keyword 
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W22's twin of `kw-or-in-solve.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: R {∅}, the claim holds."
+note   = "The twin of `kw-or-in-solve.ein`: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: R {∅}, the claim holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-search-cut.ein"
@@ -1677,13 +1677,13 @@ note   = "`core-search-cut`: `(A k)` has 256 environments of eight facts, past t
 path   = "examples/ein-bugs/wrong-answers/core-search-cut-control.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W23's control: `core-search-cut.ein` with its `x` facts deleted, so the eight `y` facts alone derive `(false)` and root's core is them, inside the budget. Its cube's nodes that commit seven or eight `x` facts are cut, 9 of 256, and say so."
+note   = "The control of regression `core-search-cut`: `core-search-cut.ein` with its `x` facts deleted, so the eight `y` facts alone derive `(false)` and root's core is them, inside the budget. Its cube's nodes that commit seven or eight `x` facts are cut, 9 of 256, and say so."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-search-cut-5.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W23's twin: the witness's shape with five pairs, 32 environments under the core search's 64, so root's core is the smallest, `(y1 k) … (y5 k)`, and no surface says it was cut."
+note   = "The twin of regression `core-search-cut`: the witness's shape with five pairs, 32 environments under the core search's 64, so root's core is the smallest, `(y1 k) … (y5 k)`, and no surface says it was cut."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-guard.ein"
@@ -1743,7 +1743,7 @@ note   = "`oblig-derived-activator`: a rule derives an obligation's activator, `
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W26's control: `oblig-derived-activator.ein` with the activator also stated, so root owes both debts and R is `{(drinks Ann Tea), (likes Ann Soup)}`, the witness's right answer."
+note   = "The control of regression `oblig-derived-activator`: `oblig-derived-activator.ein` with the activator also stated, so root owes both debts and R is `{(drinks Ann Tea), (likes Ann Soup)}`, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/past-limit-lines.ein"
@@ -1809,7 +1809,7 @@ note   = "`core-two-ways`: `_` in a rule's pattern, where its twin writes `?w0`.
 path   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W29 (`core-two-ways`'s twin): the witness with the slot written `?w0`, whose root core is `(c x) (small s0)`."
+note   = "The twin of regression `core-two-ways`: the witness with the slot written `?w0`, whose root core is `(c x) (small s0)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein"
@@ -1953,7 +1953,7 @@ note   = "`saturate-import`: a file-relative `(import saturate-import-mod :symbo
 path   = "examples/ein-bugs/wrong-answers/saturate-import-mod.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W41's module: `saturate-import.ein` imports `q` from it by its file-relative name. A program of its own too, one relation and no fact."
+note   = "The module of regression `saturate-import`: `saturate-import.ein` imports `q` from it by its file-relative name. A program of its own too, one relation and no fact."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/h-long-relation.ein"
@@ -2751,7 +2751,7 @@ note   = "`(relation settled Guest)` beside `(macro settled …)`: refused at lo
 path   = "examples/ein-bugs/wrong-answers/import-facts-library.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W88's library of facts, an ontology: `is-a` declared with two facts, a fact and a stored negation of `likes`, which it does not declare, and a rule that reads its `is-a` facts. `import-facts-flat`, `-rule` and `-undeclared` import it flat. A program of its own too, R {∅}."
+note   = "The `import-facts-*` regressions' library of facts, an ontology: `is-a` declared with two facts, a fact and a stored negation of `likes`, which it does not declare, and a rule that reads its `is-a` facts. `import-facts-flat`, `-rule` and `-undeclared` import it flat. A program of its own too, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-flat.ein"
@@ -2775,7 +2775,7 @@ note   = "`(import import-facts-library :symbols (likes))`, a relation the libra
 path   = "examples/ein-bugs/wrong-answers/import-facts-table-module.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W88's table module, the calculator's case: two rows of the full adder's table as facts of `fa`, and the rule `add2` that looks them up. `import-facts-table` imports it flat. A program of its own too, R {∅}."
+note   = "The `import-facts-table` regression's module, the calculator's case: two rows of the full adder's table as facts of `fa`, and the rule `add2` that looks them up. `import-facts-table` imports it flat. A program of its own too, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein"
@@ -2854,7 +2854,7 @@ note   = "`count-past-2-128`: the same program with 130 items, one state reached
 path   = "examples/ein-bugs/wrong-answers/dump-selection-library.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W91's library: a relation and one rule with an empty `:match`, its entry, which states two colours at root. `dump-selection` imports it by that rule's name. A program of its own too, R {∅}."
+note   = "The library of regression `dump-selection`: a relation and one rule with an empty `:match`, its entry, which states two colours at root. `dump-selection` imports it by that rule's name. A program of its own too, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein"
@@ -2872,7 +2872,7 @@ note   = "`(import dump-selection-library :symbols (palette))`, R {∅}: a name 
 path   = "examples/ein-bugs/wrong-answers/import-directives-module.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W90's module: a declaration and a fact, and then what a program states, `(solve :hypothesis-relations ())`, a `(config …)` flag and a `(query …)`. `import-directives-as` and `-twice` import it qualified. A program of its own too, R {∅}, its query's one row *Tea is a drink*."
+note   = "The module of the `import-directives-*` regressions: a declaration and a fact, and then what a program states, `(solve :hypothesis-relations ())`, a `(config …)` flag and a `(query …)`. `import-directives-as` and `-twice` import it qualified. A program of its own too, R {∅}, its query's one row *Tea is a drink*."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-directives-as.ein"
@@ -2920,7 +2920,7 @@ note   = "`closed-by-rule`: ten digits closed by a rule, `(__closed__ digit)` de
 path   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W96's control: `dunder-object-closed-by-rule.ein` with the closure written as a fact, which registers `__closed__` as a relation of the program, so it is no object: ten candidates, R 1 024 states, the witness's right answer."
+note   = "The control of regression `closed-by-rule`: `dunder-object-closed-by-rule.ein` with the closure written as a fact, which registers `__closed__` as a relation of the program, so it is no object: ten candidates, R 1 024 states, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-arith.ein"
@@ -2950,13 +2950,13 @@ note   = "`rung-unactivated`: `std.algebra` imported for `total-owed`, which the
 path   = "examples/ein-bugs/wrong-answers/rung-unactivated-no-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W97's control: `rung-unactivated.ein` with the import deleted, which it never used. No obligation rule is loaded: the blind enumerator's eleven candidates, and R the whole cube, 2 048 states, the witness's right answer."
+note   = "The control of regression `rung-unactivated`: `rung-unactivated.ein` with the import deleted, which it never used. No obligation rule is loaded: the blind enumerator's eleven candidates, and R the whole cube, 2 048 states, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-discharged.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W97's twin: `rung-unactivated.ein` with the obligation stated, `(total-owed at is-a)`, and paid at root. An obligation activated at root takes the ladder's second rung, and a discharged root under it proposes nothing and is complete: no candidate, R {∅}, under the ruling as before it."
+note   = "The twin of regression `rung-unactivated`: `rung-unactivated.ein` with the obligation stated, `(total-owed at is-a)`, and paid at root. An obligation activated at root takes the ladder's second rung, and a discharged root under it proposes nothing and is complete: no candidate, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-symmetric-import.ein"
@@ -2968,7 +2968,7 @@ note   = "`symmetric-import`: `std.algebra` imported for `symmetric` over `near`
 path   = "examples/ein-bugs/wrong-answers/rung-symmetric-written.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W97's control for `symmetric-import`: the import deleted and `std.algebra`'s `symmetric` written in its place, word for word. No obligation rule is loaded: four candidates, and R 16 commitments and 8 states, the witness's right answer."
+note   = "The control for `symmetric-import`: the import deleted and `std.algebra`'s `symmetric` written in its place, word for word. No obligation rule is loaded: four candidates, and R 16 commitments and 8 states, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
@@ -2986,7 +2986,7 @@ note   = "`derived-at-root`: `(near a b)` and a rule with an empty `:match` that
 path   = "examples/ein-bugs/wrong-answers/symmetric-written-root.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W98's control for `derived-at-root`: the mark written as a fact, `(__symmetric__ near)`. Root's fixpoint holds `(near b a)` by the native mirror, no candidate, R {∅}, the witness's right answer."
+note   = "The control for `derived-at-root`: the mark written as a fact, `(__symmetric__ near)`. Root's fixpoint holds `(near b a)` by the native mirror, no candidate, R {∅}, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
@@ -2998,7 +2998,7 @@ note   = "The symmetry mark derived under a commitment, by a rule that reads `cl
 path   = "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W98's control for `derived-at-node`: `near` closed under the swap by a rule of the program's own once anything is close, the closure the native mirror computes for a marked relation. Each candidate is dead alone, R {∅}, the witness's right answer."
+note   = "The control for `derived-at-node`: `near` closed under the swap by a rule of the program's own once anything is close, the closure the native mirror computes for a marked relation. Each candidate is dead alone, R {∅}, the witness's right answer."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
@@ -3332,31 +3332,31 @@ runs   = ["solve", "saturate", "render rules"]
 path   = "examples/broken/load/derived_activator.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "a derived activator (Q-M1f.1 (b)): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. Refused at load, one line naming `mk`, `r` and `?R` (W59)."
+note   = "a derived activator (Q-M1f.1 (b)): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. Refused at load, one line naming `mk`, `r` and `?R`."
 
 [[entry]]
 path   = "examples/broken/load/derived_activator_never.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "`derived_activator.ein` without `(item (a b))`, so no run derives the activator. Refused at load with the same line (Q-M1f.1 (b)), which chose the refusal for a program no run would reach (W59)."
+note   = "`derived_activator.ein` without `(item (a b))`, so no run derives the activator. Refused at load with the same line (Q-M1f.1 (b)), which chose the refusal for a program no run would reach."
 
 [[entry]]
 path   = "examples/broken/load/unbound_head.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "`(?R ?x)`, a relation variable no parameter binds, at the top level. Refused at load (W24), with `render rules` among its runs as every load-negative entry has."
+note   = "`(?R ?x)`, a relation variable no parameter binds, at the top level. Refused at load, with `render rules` among its runs as every load-negative entry has."
 
 [[entry]]
 path   = "examples/broken/load/eq_in_a_macro_body.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "`(eq ?x)` written in a macro's body, which the grammar never reads expanded. The loader holds a rule's clauses, after expansion, to the grammar's shapes and refuses it, one line on every command, the macro body's position first (Q-M1f.80; W66), so no command compiles it and none answers."
+note   = "`(eq ?x)` written in a macro's body, which the grammar never reads expanded. The loader holds a rule's clauses, after expansion, to the grammar's shapes and refuses it, one line on every command, the macro body's position first (Q-M1f.80), so no command compiles it and none answers."
 
 [[entry]]
 path   = "examples/broken/load/nested_or.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "a nested `(or …)` in a `:match` premise. Refused at load, one line on every command (W62), `render rules` among its runs as every load-negative entry has."
+note   = "a nested `(or …)` in a `:match` premise. Refused at load, one line on every command, `render rules` among its runs as every load-negative entry has."
 
 [[entry]]
 path   = "examples/broken/load/rule_duplicate_name.ein"
@@ -3674,7 +3674,7 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 path   = "tests/stdlib/algebra/27_converse_welltyped_either_way.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "W93's case: `converse-illtyped-dom` and `-ran` loaded, activated and satisfied where the subtype runs the other way on each side, the mirror of a well-typed pair: a side's types meet either way."
+note   = "The case of regression `converse-lemma-subtype`: `converse-illtyped-dom` and `-ran` loaded, activated and satisfied where the subtype runs the other way on each side, the mirror of a well-typed pair: a side's types meet either way."
 
 [[entry]]
 path   = "tests/stdlib/math/binary/01_well_formed_everywhere.ein"
@@ -4327,7 +4327,7 @@ note   = "the control half of the closed-and-owing pair. Closed by infer-closure
 path   = "tests/stdlib/math/digits/01_tables.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.digits` imported, a row of each table claimed, `nz` and `adj` whole, and R {∅} claimed on the solve form: the module's own closing facts leave no candidate, and every import brings them (W88's case, seen from the stdlib)."
+note   = "`std.math.digits` imported, a row of each table claimed, `nz` and `adj` whole, and R {∅} claimed on the solve form: the module's own closing facts leave no candidate, and every import brings them (the `import-facts-*` regressions' case, seen from the stdlib)."
 
 [[entry]]
 path   = "tests/stdlib/math/digits/02_a_core_names_its_rows.ein"

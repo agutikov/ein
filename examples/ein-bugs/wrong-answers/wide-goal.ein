@@ -1,5 +1,5 @@
 ;;; A query whose `:goal` writes 257 distinct variables: `ein saturate` and
-;;; the views answer, and every solve question stops — **W63**, regression `wide-goal`
+;;; the views answer, and every solve question stops — regression `wide-goal`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;;

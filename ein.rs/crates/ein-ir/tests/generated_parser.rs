@@ -8,7 +8,7 @@
 //! | no name the loader makes up is a name a program can write (Q-M1f.339) | [`no_name_the_loader_makes_up_is_a_name`] |
 //! | a program at the nesting limit parses and goes through the dumper, macro expansion and the loader on a test thread; one past it is refused with a line | [`the_nesting_limit`] |
 //! | `ein.l`'s one skip rule and its start condition give the parser the tokens its plain form does | [`the_lexer_gives_the_tokens_its_plain_form_does`] |
-//! | a string's escapes are the decided ones, and a `\u{…}` reads exactly the Unicode scalar values (Q-M1e2.23, W38) | [`a_strings_escapes_are_the_rulings`] |
+//! | a string's escapes are the decided ones, and a `\u{…}` reads exactly the Unicode scalar values (Q-M1e2.23) | [`a_strings_escapes_are_the_rulings`] |
 //!
 //! The fuzzer's half of the same-report claim is in `fuzz_properties.rs`.
 
@@ -219,7 +219,7 @@ fn why_text(body: &str) -> Result<String, grammar::ParseError> {
 }
 
 /// **A string's escapes are the decided ones, and a `\u{…}` reads exactly
-/// the Unicode scalar values** (W38).
+/// the Unicode scalar values**.
 ///
 /// A string is Unicode text with the escapes `\n \t \r \" \\` and `\u{…}`,
 /// one to six hex digits naming that code point (Q-M1e2.23), and any other
@@ -494,7 +494,7 @@ fn relative(p: &Path) -> String {
 
 /// `ein.l`'s skip rule as it ships, and the three plain rules it stands
 /// for, each as `ein.l` writes it, without a start condition. The whitespace
-/// in both is ASCII's, never `\s`, Unicode's (W73): the two lexers this test
+/// in both is ASCII's, never `\s`, Unicode's: the two lexers this test
 /// compares read one class.
 const SKIP_RULE: &str =
     r"<INITIAL,AFTER_WORD>([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;";

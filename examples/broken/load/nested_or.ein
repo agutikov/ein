@@ -10,8 +10,8 @@
 ;
 ; The loader refuses it, one line on every command, the views and `kb save`
 ; among them, before any rule is compiled: lift the `(or …)` to the top of
-; the `:match`, or split the rule. Register case W62 is the shape refused
-; where only the compiler met it.
+; the `:match`, or split the rule. The regressions `nested-or-*` hold the
+; shape refused where only the compiler met it.
 ;
 (relation a Thing :why "a holds of {?1}")
 (relation p Thing :why "p holds of {?1}")

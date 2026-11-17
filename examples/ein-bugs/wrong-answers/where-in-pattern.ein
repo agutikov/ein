@@ -1,5 +1,5 @@
 ;;; A `:where` pair inside a pattern is dropped, so the rule fires without
-;;; its guard — **W32**, regression `where-in-pattern`
+;;; its guard — regression `where-in-pattern`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

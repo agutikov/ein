@@ -1,4 +1,4 @@
-;;; An `(absent …)` over a string always holds — **W18**, regression
+;;; An `(absent …)` over a string always holds — regression
 ;;; `str-in-absent` (`corpus/regressions.toml`), the case's mechanism
 ;;; under `absent`.
 ;;;

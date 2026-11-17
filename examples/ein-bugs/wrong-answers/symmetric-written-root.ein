@@ -1,4 +1,4 @@
-;;; The control of `symmetric-derived-root.ein` — **W98**, regression
+;;; The control of `symmetric-derived-root.ein` — regression
 ;;; `derived-at-root`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the mark written as a fact, `(__symmetric__ near)`,

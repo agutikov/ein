@@ -390,7 +390,7 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                                 u(&s, "region.merged.states") == merged,
                             );
                             // A count is reported up to 2^63 − 1, `i64::MAX`, which
-                            // reads *or more* (W92, Q-M1f.218): the sums stop there.
+                            // reads *or more* (Q-M1f.218): the sums stop there.
                             let commitments: i64 = states
                                 .iter()
                                 .filter_map(|x| x["commitments"].as_i64())
@@ -417,7 +417,7 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                             // Its listed states, and only those: past `--region-limit`
                             // on a flagged program a line mode lists the line members
                             // describe certifies and reports the other members met
-                            // unlisted, on no line (W27, Q-M1e2.19), not every
+                            // unlisted, on no line (Q-M1e2.19), not every
                             // state on the line.
                             check(
                                 "a line mode's listed states are on its line, and the others on none",

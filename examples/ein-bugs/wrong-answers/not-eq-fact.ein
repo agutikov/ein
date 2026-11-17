@@ -1,5 +1,5 @@
 ;;; A written `(not (eq …))` is stored as a negation, not read as `neq` —
-;;; **W51**, regression `not-eq-fact` (`corpus/regressions.toml`)
+;;; regression `not-eq-fact` (`corpus/regressions.toml`)
 ;;; (Q-M1e2.26).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

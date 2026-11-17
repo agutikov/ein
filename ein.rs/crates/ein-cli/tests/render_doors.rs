@@ -144,7 +144,7 @@ fn every_door_prints_dot_that_dot_draws() {
 }
 
 /// **A program the loader refuses is refused by every view**, with the line
-/// and the exit every other command gives it (W65, Q-M1f.71).
+/// and the exit every other command gives it (Q-M1f.71).
 ///
 /// A view that drew a program before loading it would give a refused program
 /// a picture, a view answering a program every other command refuses. The

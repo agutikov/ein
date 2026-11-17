@@ -1,5 +1,5 @@
 ;;; `open` written as a macro call's argument loads, as a name of the program —
-;;; **W71**, regression `macro-argument`.
+;;; regression `macro-argument`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

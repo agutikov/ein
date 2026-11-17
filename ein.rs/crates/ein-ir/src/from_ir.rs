@@ -86,7 +86,7 @@ impl Default for LoadOptions {
 pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
 
 /// The most distinct variables a rule's `:match`, its parameters among them,
-/// or a query's `:goal` may write (W63, Q-M1f.73).
+/// or a query's `:goal` may write (Q-M1f.73).
 ///
 /// The compiler numbers a plan's variables into a fixed register file of this
 /// many slots, so the matcher's inner loop allocates nothing
@@ -101,7 +101,7 @@ pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
 pub const MAX_MATCH_VARIABLES: usize = 256;
 
 /// The line [`LoadOptions::require_why`] refuses a form with: its head and its
-/// name as written, in the W24 refusals' spelling.
+/// name as written, `rule 'r'`, as the loader's other refusals spell a form.
 fn missing_why(head: &str, name: &str) -> String {
     format!(
         "{head} '{name}' has no :why \"…\", which this load requires of every {WHY_REQUIRED_OF}"
@@ -245,8 +245,8 @@ pub fn load_query_with(
     for &form in &relations {
         ingest_relation(ast, terms, &mut kb, form, opts, &mut errors)?;
     }
-    // What each declaration declares of its relation's count of arguments
-    // (W89): read by the rules pass, the facts' and the queries'.
+    // What each declaration declares of its relation's count of arguments:
+    // read by the rules pass, the facts' and the queries'.
     let declared = declared_counts(ast, &relations);
     // Pass 2 — rules. After this, rule-name resolution is possible.
     ingest_rules(
@@ -275,12 +275,12 @@ pub fn load_query_with(
     // ones of a rule's conclusion (Q-M1f.272 and Q-M1f.275).
     state_written(ast, terms, &mut kb, &stored)?;
     // A fact, or a fact it holds, of a declared relation at another count of
-    // arguments than declared (W89).
+    // arguments than declared.
     refuse_wrong_counts_in_facts(ast, &facts, &declared, &mut errors);
-    // A written fact of `eq` at another arity (W61).
+    // A written fact of `eq` at another arity.
     refuse_eq_facts_of_another_arity(ast, &facts, &mut errors);
     // A macro's call written as a fact, which nothing expands, and a relation
-    // declared under a macro's name (W86).
+    // declared under a macro's name.
     let stdlib_macros = Resolver::new().stdlib_macro_names();
     refuse_macro_facts(
         ast,
@@ -297,7 +297,7 @@ pub fn load_query_with(
     let relation_places =
         refuse_derived_relation_activators(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
     // A conclusion `(not ?x)` whose variable the program shows can hold a
-    // name (W84).
+    // name.
     refuse_negated_names(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
 
     // Every query block, in source order: a program may ask several
@@ -305,7 +305,7 @@ pub fn load_query_with(
     // a setting, a query is content.
     //
     // A goal is a premise, so a macro called in one is expanded as a rule's
-    // `:match` is (W77): every reader of the query's `:goal`
+    // `:match` is: every reader of the query's `:goal`
     // meets the expansion, and `Query::goal_written` keeps the goal as the
     // program wrote it, for the surfaces that print it.
     let mut queries: Vec<Query> = Vec::with_capacity(query_blocks.len());
@@ -341,7 +341,7 @@ pub fn load_query_with(
     });
     validate_solve(ast, &kb, holdable.as_ref(), &mut errors);
     // A `(solve …)` list that names an hrule or a relation the program does
-    // not have (W76).
+    // not have.
     if let Some(known) = relations_of.as_ref() {
         refuse_solve_names(ast, terms, &kb, known, &relation_places, &mut errors);
     }
@@ -352,7 +352,7 @@ pub fn load_query_with(
         .collect();
     validate_queries(ast, &kb, holdable.as_ref(), &unimported, &mut errors);
     // A goal's pattern and a claim's fact are held to a declaration's count
-    // as a rule's and a written fact are (W89).
+    // as a rule's and a written fact are.
     refuse_wrong_counts_in_queries(ast, &kb, &declared, &mut errors);
     // …and one a claim lists, which is a fact too. A claim headed
     // by the call names no relation of the program and has its own line
@@ -380,7 +380,7 @@ pub fn load_query_with(
             }
         }
     }
-    // …and a goal, which is a premise too (W77): unexpanded, the call would
+    // …and a goal, which is a premise too: unexpanded, the call would
     // match nothing and the goal would have no row in any state.
     for query in &kb.program().queries {
         if let Some(goal) = query_keyword(ast, query, "goal") {
@@ -575,7 +575,7 @@ fn validate_solve(
                 }
                 continue;
             }
-            // A relation of the program (W78), not only one a declaration or
+            // A relation of the program, not only one a declaration or
             // a fact makes, so a claim may list a fact only a rule's `:assert`
             // derives.
             let known = relations_of.is_none_or(|k| k.contains(fact.relation));
@@ -601,7 +601,7 @@ struct RelationPlaces {
     passed: BTreeSet<String>,
 }
 
-/// **A `(solve …)` list names what the program has** (W76).
+/// **A `(solve …)` list names what the program has**.
 ///
 /// The three lists choose the candidates, so a name in one that matches
 /// nothing would move H, and R with it, in silence: `:hrules (gues …)` beside
@@ -932,11 +932,11 @@ fn validate_queries(
             // the one walk a rule's clauses get reads it, a guard over a form
             // holding a variable (Q-M1f.30), a premise that is no form, which
             // a macro's expansion can leave, and a relation written as a
-            // variable, at the top level (W64) and inside a pattern (W79).
+            // variable, at the top level and inside a pattern.
             let n_refused = errors.len();
             refuse_no_fact_holds(ast, "query", &[], ":goal", goal, errors);
             // A goal is compiled as a rule's `:match` is, and refused where the
-            // compiler would refuse it (W62, W63).
+            // compiler would refuse it.
             refuse_nested_disjunctions(ast, "query", ":goal", goal, errors);
             refuse_wide_matches(ast, "query", ":goal", &[], goal, errors);
             // A kernel primitive in a shape only a macro's expansion writes,
@@ -944,8 +944,7 @@ fn validate_queries(
             if errors.len() == n_refused {
                 refuse_malformed_primitives(ast, "query", ":goal", goal, errors);
             }
-            // A relation the goal asks about is a relation of the program
-            // (W78).
+            // A relation the goal asks about is a relation of the program.
             if errors.len() == n_refused
                 && let Some(known) = relations_of
             {
@@ -973,10 +972,10 @@ fn validate_queries(
                 // facts are computed, so no declaration or fact makes them
                 // one, and the check below is the goal's. So is an
                 // `(absent …)` the goal writes, whose instance a class lists
-                // beside the rest (W56).
+                // beside the rest.
                 //
-                // The rest is a relation of the program, [`program_relations`]
-                // (W78), not only one a declaration or a fact makes, so a
+                // The rest is a relation of the program, [`program_relations`],
+                // not only one a declaration or a fact makes, so a
                 // claim may list a fact only a rule's `:assert` derives.
                 let known = is_predicate(fact.relation)
                     || fact.relation == "absent"
@@ -1030,7 +1029,7 @@ fn validate_queries(
 }
 
 /// **A template that names a variable no reference can reach is refused**
-/// (W37; [`diagnostics.md` § 2.11](../../../../docs/ein/user/reference/diagnostics.md#211-a-template-reference-no-reference-can-reach)).
+/// ([`diagnostics.md` § 2.11](../../../../docs/ein/user/reference/diagnostics.md#211-a-template-reference-no-reference-can-reach)).
 /// A reference reads a
 /// variable's name up to its first `}` ([`ein_core::why::render_why`]), and
 /// `}` is a name character, so `{?a}b}` is the reference `{?a}` and the text
@@ -1486,7 +1485,7 @@ fn is_ground(ast: &Ast, node: NodeId) -> bool {
 
 /// What the rules pass reads of the passes before it: the macros it expands
 /// a rule's clauses with, and the count each `(relation …)` declares, which
-/// the expanded clauses are held to (W89).
+/// the expanded clauses are held to.
 #[derive(Clone, Copy)]
 struct Declarations<'a> {
     macros: &'a BTreeMap<String, IrMacro>,
@@ -1562,8 +1561,8 @@ fn ingest_rules(
                 }
             }
         };
-        // A wildcard as a relation, in a rule (W20), and the shapes that
-        // read nothing (W24).
+        // A wildcard as a relation, in a rule, and the shapes that
+        // read nothing.
         let n_refused = errors.len();
         let param_vars: Vec<&str> = ast
             .form_args(params_form)
@@ -1577,12 +1576,12 @@ fn ingest_rules(
         refuse_no_fact_holds(ast, &who, &param_vars, ":match", match_node, errors);
         refuse_no_fact_holds(ast, &who, &param_vars, ":assert", assert_node, errors);
         // An `(or …)` written as a premise, and a `:match` past the register
-        // file: the two shapes the compiler cannot compile, read here (W62,
-        // W63), after expansion, so a macro's `(or …)` too (Q-M1f.74).
+        // file: the two shapes the compiler cannot compile, read here, after
+        // expansion, so a macro's `(or …)` too (Q-M1f.74).
         refuse_nested_disjunctions(ast, &who, ":match", match_node, errors);
         refuse_wide_matches(ast, &who, ":match", &param_vars, match_node, errors);
         // A pattern or a conclusion of a declared relation at another count
-        // of arguments than declared (W89): read here, after
+        // of arguments than declared: read here, after
         // expansion, so a macro's body is held where a rule calls it.
         refuse_wrong_counts(ast, &who, ":match", "writes", match_node, declared, errors);
         refuse_wrong_counts(
@@ -1598,7 +1597,7 @@ fn ingest_rules(
             continue;
         }
         // A kernel primitive the grammar shapes, which a macro's expansion
-        // wrote in another shape (W66 to W69, Q-M1f.80): read
+        // wrote in another shape (Q-M1f.80): read
         // here, after expansion, so no command compiles, fires or proposes it.
         refuse_malformed_primitives(ast, &who, ":match", match_node, errors);
         refuse_malformed_primitives(ast, &who, ":assert", assert_node, errors);
@@ -1655,7 +1654,7 @@ fn ingest_rules(
             continue;
         }
         // An hrule proposes one fact per match, each a commitment of its own,
-        // so its conclusion, read flat, is one conjunct (Q-M1f.271, W95): a
+        // so its conclusion, read flat, is one conjunct (Q-M1f.271): a
         // conjunction could read as *each is a guess* or as *these together*,
         // and no commitment states the second.
         if head == "hrule" && !is_obligation {
@@ -1720,7 +1719,7 @@ fn ingest_rules(
 }
 
 /// **What no fact can hold, and what reads nothing, in a rule is refused**
-/// (W20, W24, Q-M1e2.18; a bare `_` is refused at the parse, Q-M1e2.22).
+/// (Q-M1e2.18; a bare `_` is refused at the parse, Q-M1e2.22).
 ///
 /// The pass reads a rule's clauses as the compiler does: a `:match` as
 /// premises, each pattern's arguments as slots, and an `:assert` as
@@ -1750,15 +1749,15 @@ fn ingest_rules(
 /// premise goes, each a row of the grammar's table
 /// (`ein-ir/tests/grammar_pages.rs`). So it does a keyword pair at a
 /// pattern's top level, `(n ?x :where v)`, or as a premise of an `(and …)`,
-/// `:where (neq ?a ?b)` (Q-M1e2.28); `_` as a pattern's argument (W20); and
+/// `:where (neq ?a ?b)` (Q-M1e2.28); `_` as a pattern's argument; and
 /// `_` or a keyword pair at an `:assert`'s conclusion's top level. A keyword
 /// pair met as a premise would be refused here as a premise that is no form.
 /// Ein has no ranges (Q-M1e2.24): `1..3` is a parse error.
 ///
 /// **A query's `:goal` is read by the same walk**, `who` being `query` and
 /// `clause` `:goal`: a goal is a premise. A query has no activator, so every
-/// relation written as a variable is refused, at the top level (W64) and
-/// inside a pattern (W79), and so is a premise that is no form, which a
+/// relation written as a variable is refused, at the top level and
+/// inside a pattern, and so is a premise that is no form, which a
 /// macro's expansion leaves in a goal as in a rule.
 fn refuse_no_fact_holds(
     ast: &Ast,
@@ -2096,8 +2095,8 @@ fn refuse_unbound_conclusions(
     }
 }
 
-/// **An `(or …)` is a whole `:match`, or a whole `:goal`** (W62;
-/// [`diagnostics.md` § 2.15](../../../../docs/ein/user/reference/diagnostics.md#215-a-nested-or--a-wide-match-and-a-goals-relation-variable)).
+/// **An `(or …)` is a whole `:match`, or a whole `:goal`**
+/// ([`diagnostics.md` § 2.15](../../../../docs/ein/user/reference/diagnostics.md#215-a-nested-or--a-wide-match-and-a-goals-relation-variable)).
 ///
 /// A top-level `(or …)` is one way the rule holds per disjunct, each compiled
 /// as a plan of its own (`ein_infer::compile`'s `match_disjuncts`). One written
@@ -2161,7 +2160,7 @@ fn refuse_nested_disjunctions(
 }
 
 /// **A macro's expansion is held to the shapes the grammar gives a written
-/// rule** (Q-M1f.67, W66 to W69;
+/// rule** (Q-M1f.67;
 /// [`diagnostics.md` § 2.16](../../../../docs/ein/user/reference/diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes)).
 ///
 /// A macro's body is a template whose head may be any name at any arity
@@ -2170,17 +2169,17 @@ fn refuse_nested_disjunctions(
 /// reads the expanded rule. Unread here, what it writes would be met only
 /// where it is used, or not at all: `eq` and `absent` at another arity by the
 /// compiler, where it compiles a plan, so whether a program loads would hang
-/// on whether a command activates the rule (W66); a `not` of no fact, a
+/// on whether a command activates the rule; a `not` of no fact, a
 /// connective where a value goes, `false` with an argument and an `(or …)`
-/// concluded would be matched, concluded or proposed as they stand (W67,
-/// W68); and a conclusion that is no form would reach the firing and the
-/// hypothesis layer (W69). An unused macro is not read here, so one that no
+/// concluded would be matched, concluded or proposed as they stand; and a
+/// conclusion that is no form would reach the firing and the
+/// hypothesis layer. An unused macro is not read here, so one that no
 /// rule calls loads whatever its body (Q-M1f.67); one a rule calls is refused
 /// where it is called, at load, on every command (Q-M1f.80).
 ///
 /// **The walk holds the value rule too** (Q-M1f.113: *a value is a name, or a
 /// fact a state could hold: an atom of an ordinary relation, or its
-/// negation*; W80 to W83). The grammar refuses what a program writes of it,
+/// negation*). The grammar refuses what a program writes of it,
 /// through `ValueHead`; what is left to this walk is what a macro's expansion
 /// writes, and the one shape the grammar cannot refuse, a connective as a
 /// premise pattern's argument, which it takes so that a macro can be called
@@ -2361,7 +2360,7 @@ impl<'a> Shapes<'a> {
     ///
     /// The grammar takes a connective there, so that a macro such as `forall`
     /// can be called with premises; once the macros are expanded, one that is
-    /// still a pattern's argument is a pattern no fact matches (W83): unread,
+    /// still a pattern's argument is a pattern no fact matches: unread,
     /// `(q (and (p ?x)))` would match nothing, in silence, and under an
     /// `(absent …)` hold, so the rule would fire.
     fn arg(&mut self, within: NodeId, node: NodeId) {
@@ -2549,7 +2548,7 @@ impl<'a> Shapes<'a> {
 }
 
 /// **A rule binds at most [`MAX_MATCH_VARIABLES`] variables, and so does a
-/// goal** (W63, Q-M1f.73).
+/// goal** (Q-M1f.73).
 ///
 /// The count is every distinct variable the clause writes, at any depth, and
 /// the rule's parameters, which bounds each register file the compiler builds
@@ -2582,7 +2581,7 @@ fn refuse_wide_matches(
     ));
 }
 
-/// **A goal asks about relations of the program** (W78).
+/// **A goal asks about relations of the program**.
 ///
 /// A premise of a goal over a relation the program names nowhere else can
 /// have no row in any state, and under an `(absent …)` holds in every one, so
@@ -2636,7 +2635,7 @@ fn refuse_goal_relations(
 }
 
 /// One `(query …)` as the program holds it: its clauses, with the macro calls
-/// of its `:goal` expanded as a rule's `:match`'s are (W77).
+/// of its `:goal` expanded as a rule's `:match`'s are.
 ///
 /// A goal is a premise. Unexpanded, a call in a goal, `(unknown (p ?x))`,
 /// would read as a pattern over a relation `unknown`: the goal would have no
@@ -2696,7 +2695,7 @@ fn expand_goal(
 /// it matches and asserts by its parameter, and the activator binds it:
 /// `(mirror q)` asserts `q` facts. An activator that binds it to a **nested
 /// fact**, `(mirror (p a))`, names no relation: a nested fact binds no
-/// parameter (W24, Q-M1e2.18), so it is refused.
+/// parameter (Q-M1e2.18), so it is refused.
 ///
 /// **Here, where the activator is written down**: a fact, or a literal in a
 /// rule's `:assert`. An activator a rule derives through a variable is known
@@ -2770,7 +2769,7 @@ fn validate_relation_parameters(
         }
         for &(i, param) in heads {
             // A nested fact binds no parameter (`ein_infer::compile`), so
-            // the relation it would name is none (W24, Q-M1e2.18).
+            // the relation it would name is none (Q-M1e2.18).
             if let Node::SForm { .. } = ast.node(args[i]) {
                 errors.push(format!(
                     "rule '{}': its parameter ?{} names a relation, and {} binds it to the \
@@ -2810,11 +2809,11 @@ fn validate_relation_parameters(
 /// check, whether or not a run derives it.
 ///
 /// [`validate_relation_parameters`] refuses a relation parameter bound to a
-/// fact where the activator is written down (W24). An activator a rule
+/// fact where the activator is written down. An activator a rule
 /// derives, `(rule mk () :match (item ?f) :assert (r ?f))`, binds `r`'s
 /// parameter to whatever `?f` holds, which only a run knows: a check where
 /// `r`'s plan is compiled would stop one run and let another, which never
-/// derives it, answer (W59). This check reads the program instead.
+/// derives it, answer. This check reads the program instead.
 ///
 /// **Which positions hold relation names** (Q-M1f.41). A rule's parameter
 /// that heads a form,
@@ -2834,7 +2833,8 @@ fn validate_relation_parameters(
 ///   premise binds where a name is held, the deriving rule, the conclusion,
 ///   the parameter and the premise named;
 /// - a conclusion or a fact that writes a fact where an inferred position holds
-///   a relation name (a rule's own activator is W24's, above).
+///   a relation name (a rule's own activator is
+///   [`validate_relation_parameters`]'s, above).
 ///
 /// A conclusion written `(?T …)` writes into the relation its activator
 /// names: it is read as writing into every rule of its arity whose name the
@@ -3222,7 +3222,7 @@ fn refuse_derived_relation_activators(
         let arg = crate::dump::dump_compact(ast, s.arg);
         match ast.node(s.arg) {
             // A fact written as a rule's own activator, where the rule's
-            // parameter heads a form, is W24's line, above.
+            // parameter heads a form, is `validate_relation_parameters`' line.
             Node::SForm { .. } => {
                 let written_as_activator = relation_of(ast, positive(ast, s.conclusion)).is_some()
                     && matches!(rp[&s.to], Holds::Param { .. });
@@ -3281,7 +3281,8 @@ fn refuse_derived_relation_activators(
         }
     }
     // A fact that writes a fact where an inferred position holds a relation
-    // name; one written as a rule's own activator is W24's, above.
+    // name; one written as a rule's own activator is
+    // `validate_relation_parameters`' line.
     for &f in facts {
         let p = positive(ast, f);
         let Some(rel) = relation_of(ast, p) else {
@@ -3364,7 +3365,7 @@ fn refuse_derived_relation_activators(
     }
 
     /// **A relation parameter that can be bound to `eq` heads a form of
-    /// another arity** (W60).
+    /// another arity**.
     ///
     /// `eq` is the relation of equality, between exactly two values
     /// (Q-M1e2.26), and the grammar refuses `(eq ?x)` wherever a premise or a
@@ -3705,7 +3706,7 @@ fn refuse_derived_relation_activators(
     }
 }
 
-/// **A conclusion `(not ?x)` whose variable can hold a name** (W84), under the
+/// **A conclusion `(not ?x)` whose variable can hold a name**, under the
 /// value rule (Q-M1f.113: *a value is a name, or a fact a state could hold: an
 /// atom of an ordinary relation, or its negation*). `not` of a name is the
 /// negation of no fact.
@@ -3716,7 +3717,7 @@ fn refuse_derived_relation_activators(
 /// k)`, which no program can write and whose `--dump-answer` state file would
 /// not reload, and an hrule would propose it, so R would hold two states that
 /// differ in a fact nothing can read. A written `(not k)` is a parse error,
-/// and a macro's is refused by [`Shapes::negation`] (W68).
+/// and a macro's is refused by [`Shapes::negation`].
 ///
 /// **What is read** (Q-M1f.127). A position, a relation
 /// and an argument's index, *holds a name* where the program shows one there:
@@ -4335,7 +4336,7 @@ fn refuse_negated_names(
     }
 }
 
-/// **A written fact of `eq` at another arity** (W61, Q-M1f.47): `eq` is the
+/// **A written fact of `eq` at another arity** (Q-M1f.47): `eq` is the
 /// relation of equality between two values (Q-M1e2.26).
 ///
 /// `ingest_fact` reads a written fact of `eq`, or of `(not (eq …))`, as a
@@ -4343,7 +4344,7 @@ fn refuse_negated_names(
 /// arguments. At any other, `(eq a)`, `(eq)`, `(eq a a a)` or `(not (eq a))`, it
 /// is no fact of equality, true or false, and the grammar refuses `(eq ?x)` as
 /// a premise and a conclusion; unread here, it would be stored as an ordinary
-/// fact (W61). One line per fact, `; `-joined with the loader's others. A
+/// fact. One line per fact, `; `-joined with the loader's others. A
 /// nested `(box (eq a))` or `(box (eq a b))` is a parse error: `eq` heads no
 /// value.
 fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
@@ -4401,7 +4402,7 @@ fn declared_counts(ast: &Ast, relations: &[NodeId]) -> Declared {
 }
 
 /// **A form headed by a declared relation has as many arguments as the
-/// declaration has types** (W89, Q-M1f.315;
+/// declaration has types** (Q-M1f.315;
 /// [`diagnostics.md` § 2.26](../../../../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)):
 /// every form headed by a declared relation, at any depth, in a fact, a rule
 /// or a query, is refused at load with one line naming the relation, the
@@ -4589,7 +4590,7 @@ fn refuse_wrong_counts_in_queries(
 }
 
 /// **A macro's call is a premise, a conclusion or a goal, and never a fact**
-/// (W86; [`diagnostics.md` § 2.24](../../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
+/// ([`diagnostics.md` § 2.24](../../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
 ///
 /// The loader expands a macro's call in a rule's or an hrule's `:match` and
 /// `:assert` and in a query's `:goal` (Q-M1f.130). A fact headed by a macro's
@@ -5216,7 +5217,7 @@ fn ingest_fact(
     // changes them (Q-M1e2.26). One that holds adds nothing; one that does
     // not is `(false)`, written where it is, as a rule's false conclusion of
     // one is — read as a conclusion with no premise (Q-M1f.31 and Q-M1f.33).
-    // Stored, it would be an ordinary fact, which no guard reads (W50, W51).
+    // Stored, it would be an ordinary fact, which no guard reads.
     // `(neq …)` is no fact the grammar takes.
     let mut head_name = head_name;
     let mut args = args;
@@ -5396,8 +5397,8 @@ mod tests {
         ));
     }
 
-    /// **A rule shape that reads nothing is refused at load** (W24,
-    /// Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
+    /// **A rule shape that reads nothing is refused at load**
+    /// (Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
     /// and an obligation, one line naming the rule and the clause; and what
     /// stays: a guard on values, a parameter head.
     ///
@@ -5510,8 +5511,8 @@ mod tests {
         }
     }
 
-    /// **Three shapes the compiler cannot compile are refused at load** (W62,
-    /// W63, W64). An `(or …)`
+    /// **Three shapes the compiler cannot compile are refused at load**. An
+    /// `(or …)`
     /// written as a premise, of an `(and …)`, an `(absent …)` or a top-level
     /// `(or …)`, in a rule's, an hrule's or a goal's clause, written or
     /// produced by a macro (Q-M1f.74); a `:match` or a `:goal` past the
@@ -5634,8 +5635,7 @@ mod tests {
         }
     }
 
-    /// **A macro's expansion is held to the grammar's shapes** (Q-M1f.67, W66
-    /// to W69).
+    /// **A macro's expansion is held to the grammar's shapes** (Q-M1f.67).
     ///
     /// Each shape a macro's body or a call's argument can malform, in a rule's,
     /// an hrule's and an obligation's `:match` and as a conclusion, refused at
@@ -5861,7 +5861,7 @@ mod tests {
     }
 
     /// **A conclusion `(not ?x)` whose variable can hold a name is refused at
-    /// load** (W84), under the value rule (Q-M1f.113, Q-M1f.127).
+    /// load**, under the value rule (Q-M1f.113, Q-M1f.127).
     ///
     /// Each way the program shows a name where the variable is bound: a
     /// written fact, at the top and inside another fact; a declaration; a
@@ -6271,7 +6271,7 @@ mod tests {
         }
     }
 
-    /// **`eq` at another arity is refused at load** (W60, Q-M1f.46; W61,
+    /// **`eq` at another arity is refused at load** (Q-M1f.46,
     /// Q-M1f.47): a relation parameter that can hold `eq`
     /// heading a premise or a conclusion whose arity is not 2, read as the
     /// check above reads relation names, one line each; and a written fact of
@@ -6361,7 +6361,7 @@ mod tests {
                      :hrules (h (eq))) binds ?R to eq {TAIL}"
                 ),
             ),
-            // W61: a written fact, and its negation.
+            // A written fact, and its negation.
             (
                 format!("{pre}(eq a)"),
                 format!("the fact (eq a) writes eq with 1 argument {TAIL}"),
@@ -6466,8 +6466,8 @@ mod tests {
                 ),
             ),
             // Written as a premise's relation too, the rule pass refuses it
-            // first, as it refuses any relation variable no parameter binds
-            // (W24), before this check reads the projection.
+            // first, as it refuses any relation variable no parameter binds,
+            // before this check reads the projection.
             (
                 "with ?R as its relation, which no parameter binds",
                 format!(
@@ -6674,7 +6674,7 @@ mod tests {
     #[test]
     fn every_query_is_kept_and_the_last_config_still_wins() {
         // The facts make `a` and `b` relations of the program, which a goal
-        // asks about (W78).
+        // asks about.
         let (_terms, kb) = ok(
             "(a k) (b k)\n(query :goal (a ?x))\n(query :goal (b ?x) :over all)\n\
              (config :record-alternative-justifications false)\n(config :lattice-sanity-check true)",
@@ -6712,7 +6712,7 @@ mod tests {
         );
         assert!(e.contains("nosuch"), "{e}");
         assert!(e.contains("the program names no relation nosuch"), "{e}");
-        // A relation only a rule's `:assert` derives is the program's (W78):
+        // A relation only a rule's `:assert` derives is the program's:
         // a claim may list a fact of it.
         ok(
             "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
@@ -6840,7 +6840,7 @@ mod tests {
         );
     }
 
-    /// **A macro's call written as a fact is refused at load** (W86): a fact headed by a macro's name, at any depth, one of
+    /// **A macro's call written as a fact is refused at load**: a fact headed by a macro's name, at any depth, one of
     /// `std.macro`'s the program does not import, a relation declared under a
     /// macro's name, and a call inside a fact a claim lists. A call in a
     /// `:match`, an `:assert` or a `:goal` is expanded, and the name written

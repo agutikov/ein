@@ -1,5 +1,5 @@
 ;;; A dead node's core leaves out the activator its refutation rests on, where
-;;; the activator is the commitment itself — **W19**, regression
+;;; the activator is the commitment itself — regression
 ;;; `core-activator-committed` (`corpus/regressions.toml`), found by
 ;;; probing `forbid-chain-no-absent.ein`'s mechanism.
 ;;;

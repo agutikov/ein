@@ -1,4 +1,4 @@
-;;; The twin of `wild-in-absent.ein` — **W20**: the same program with the
+;;; The twin of `wild-in-absent.ein`: the same program with the
 ;;; wildcard `_` written as `?any`, a variable the rule reads nowhere else,
 ;;; which under `absent` asks after any `holds` fact at all. `z` never
 ;;; fires, and R is `∅` and `{(hit a)}` (`ein solve FILE`): the answer the

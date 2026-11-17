@@ -225,7 +225,7 @@ pub(crate) fn resolve_jobs(n: i64) -> usize {
 /// with its imports inlined, by the three calls `stdlib/README.md` documents
 /// and `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
 /// holds to the same program; or, on a `.einb`, the program it stores, already
-/// resolved and import-flattened (Q-M1f.27, W43). The program as loaded,
+/// resolved and import-flattened (Q-M1f.27). The program as loaded,
 /// whole: an import brings its module whole and nothing is shaken out, so
 /// the file declares every full name the run had. The file has already
 /// loaded, so a failure here is a defect, and it is written into the file

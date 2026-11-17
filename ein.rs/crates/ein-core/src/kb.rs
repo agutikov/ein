@@ -51,7 +51,7 @@ use std::sync::Arc;
 /// the first and loses the second, so a full list alone would refuse the
 /// derivation with the smaller frontier: `examples/ein-bugs/alt-cap-core.ein`
 /// and its `-reordered` twin, which writes one rule in another place, are the
-/// witness (W10).
+/// witness.
 ///
 /// **So a fact also keeps, beside the list, the arrival with the smallest
 /// closure** ([`Kb::closure`], [`Kb::best`]; Q-M1e2.11), and the pair report

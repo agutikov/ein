@@ -1,4 +1,4 @@
-//! **A macro's call is no fact** (W86, Q-M1f.130 to .133).
+//! **A macro's call is no fact** (Q-M1f.130 to .133).
 //!
 //! The loader expands a macro's call in a rule's or an hrule's `:match` and
 //! `:assert` and in a query's `:goal`, and nowhere else. Stored, a fact

@@ -1,5 +1,5 @@
 //! **A form headed by a declared relation has as many arguments as the
-//! declaration has types** (W89, Q-M1f.315, Q-M1f.201 to .204).
+//! declaration has types** (Q-M1f.315, Q-M1f.201 to .204).
 //!
 //! A form not held to its relation's declaration would act in silence:
 //! `(likes Bob)` beside `(relation likes Person Drink)` stored, a premise

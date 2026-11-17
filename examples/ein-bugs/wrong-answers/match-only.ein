@@ -1,9 +1,9 @@
 ;;; A name written **only in a rule's `:match`** never became a candidate —
-;;; **W15**, regression `match-only` (`corpus/regressions.toml`).
+;;; regression `match-only` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; W4's program (`../alive-set-fresh-name.ein`) with its `spawn` rule replaced
+;;; The program of `../alive-set-fresh-name.ein` with its `spawn` rule replaced
 ;;; by `reach-z`, which names `Z` in its `:match` and not in its `:assert`.
 ;;; `Z` is in no fact and in no `:assert`: an enumerator that takes its objects
 ;;; from the KB's names and from a rule's `:assert` constants proposes `q` over

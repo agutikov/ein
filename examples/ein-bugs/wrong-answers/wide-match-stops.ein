@@ -1,5 +1,5 @@
 ;;; A rule whose `:match` writes 257 distinct variables, compiled at root:
-;;; every command that compiles it stops, and the views and `kb save` answer — **W63**, regression `wide-match-stops`
+;;; every command that compiles it stops, and the views and `kb save` answer — regression `wide-match-stops`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;;

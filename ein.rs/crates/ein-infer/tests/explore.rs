@@ -559,8 +559,8 @@ fn every_mode_is_the_oracle() {
                     // root is alive takes the state route for describe and the modes'
                     // routes over states otherwise, naming L5 exactly when the
                     // obligation tree used it. No program the oracle answers has a
-                    // flagged dead root: *forbid* refuses `W16`'s second-shape
-                    // witnesses, which have one.
+                    // flagged dead root: *forbid* refuses `activator-all-int`
+                    // and `activator-all-nested`, which have one.
                     let describe =
                         mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
                     let route_ok = if !monotone && a.root_dead {
@@ -979,8 +979,8 @@ fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {
     assert_eq!((min.saturations, min.minimal.len()), (1, 1), "∅ ∈ R");
 }
 
-/// **A bare `_` is refused at the parse, in every position** (`W20`,
-/// Q-M1e2.22): `_` in a rule's, an hrule's or an obligation's pattern is
+/// **A bare `_` is refused at the parse, in every position**
+/// (Q-M1e2.22): `_` in a rule's, an hrule's or an obligation's pattern is
 /// refused at each `_`, and the fresh variable, `?wN`, a variable read
 /// nowhere else, is what to write: each program so written loads and answers.
 #[test]

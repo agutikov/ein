@@ -8,8 +8,8 @@
 ;;; to Rust's integers, every one, by `ein-ir/tests/digit_tables.rs`; this
 ;;; program is the other half, the module seen from a program:
 ;;;
-;;;   - an import brings a table's declaration **and its rows** (W88, seen
-;;;     from the stdlib), and every table, the module whole (Q-M1f.247); the
+;;;   - an import brings a table's declaration **and its rows** (the
+;;;     `import-facts-*` regressions, seen from the stdlib), and every table, the module whole (Q-M1f.247); the
 ;;;     list names the tables this file writes;
 ;;;   - the import brings the module's written `(__closed__ R)` facts too,
 ;;;     so no row is a hypothesis: the universe has no candidate, and R is

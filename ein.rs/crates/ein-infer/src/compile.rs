@@ -114,7 +114,7 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 ///
 /// **A value, not its text**: two activators whose arguments are two values,
 /// the names `7` and `07`, or a name and a nested fact, are two keys and two
-/// plans, so neither loses its conclusions to the other (`W16`).
+/// plans, so neither loses its conclusions to the other.
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct PlanKey {
     pub rule: Symbol,
@@ -310,8 +310,8 @@ impl Space {
     ///
     /// **The file holds [`MAX_REGS`]**, and the loader refuses a `:match` or a
     /// `:goal` that writes more distinct variables than that, a rule's
-    /// parameters among them (`ein_ir::from_ir`'s `refuse_wide_matches`,
-    /// `W63`), which bounds each register file a plan has. So no program
+    /// parameters among them (`ein_ir::from_ir`'s `refuse_wide_matches`),
+    /// which bounds each register file a plan has. So no program
     /// reaches the bound here, and it is an invariant (Q-M1f.84): a rule no
     /// state compiles would never meet a compiler's error.
     fn push(&mut self, name: Symbol, from: Option<Reg>) -> Result<Reg, CompileError> {
@@ -433,7 +433,7 @@ impl<'a> Compiler<'a> {
         if bodies.is_empty() {
             // `:match ()`, the empty conjunction, which is true → one empty
             // disjunct, which the matcher accepts as a single vacuous match:
-            // the plan fires once, with only its parameters bound (`W31`).
+            // the plan fires once, with only its parameters bound.
             disjuncts.push(Disjunct {
                 steps: Span::EMPTY,
                 guards: Span::EMPTY,
@@ -453,7 +453,7 @@ impl<'a> Compiler<'a> {
         // `:assert ()`, the empty conclusion, asserts nothing: no template, so
         // an application derives nothing and is no firing, as one whose every
         // conclusion holds; no fact is stored for it, and no name joins the
-        // program's names or H (`W34`).
+        // program's names or H.
         let mut asserts: Vec<Slot> = Vec::new();
         if let Some(p) = &rule.assert_
             && !self.is_empty(NodeId(p.expr.0))
@@ -498,8 +498,8 @@ impl<'a> Compiler<'a> {
     /// **A nested fact binds its parameter** as a name does, so the seed is
     /// as long as the parameter list and no parameter is a free variable of
     /// the plan: `(act (f a))` over `(p a) (p b) (p (f a))` fires `(p (f a))`
-    /// alone (`W33`), and a conclusion that reads the parameter alone has its
-    /// value (`W58`).
+    /// alone, and a conclusion that reads the parameter alone has its
+    /// value.
     fn bind_activator(
         &mut self,
         rule: &Rule,
@@ -570,7 +570,7 @@ impl<'a> Compiler<'a> {
     /// The grammar's `Conclusion` nests, and [`premise`](Self::premise)
     /// flattens a premise's at any depth, so an `and` inside a conclusion,
     /// written or left by a macro's call as one conjunct, is its members and
-    /// never one fact headed `and` (`W94`).
+    /// never one fact headed `and`.
     fn assert_conjuncts(&self, expr: NodeId) -> Vec<NodeId> {
         self.ast.conjuncts(expr)
     }
@@ -645,7 +645,7 @@ impl<'a> Compiler<'a> {
                 )
             }
             // A premise that is not a form — an atom, a variable, `_`, a
-            // string. The loader refuses each in a rule (`W24`), so no
+            // string. The loader refuses each in a rule, so no
             // program it accepts reaches this arm. Were the premise dropped,
             // `:match _` would fire with no premise at all,
             // `(and (hit ?y) _)` on `(hit ?y)` alone, and `(absent ?x)` would
@@ -675,7 +675,7 @@ impl<'a> Compiler<'a> {
         //
         // [`grammar.md` §2]: ../../../../docs/ein/user/reference/grammar.md
         //
-        // **An invariant** (`W66`): the grammar takes `absent` at one
+        // **An invariant**: the grammar takes `absent` at one
         // premise, and what a macro's expansion writes is held to the
         // grammar's shapes at load (`ein_ir::from_ir`'s
         // `refuse_malformed_primitives`, Q-M1f.80), so no program reaches
@@ -714,7 +714,7 @@ impl<'a> Compiler<'a> {
         // guard fail, and a failing monotone guard retires its candidate).
         //
         // A line of the compiler would be met only where a plan is compiled,
-        // so some commands would answer a program others stop on (`W62`).
+        // so some commands would answer a program others stop on.
         // The loader refuses one, after macro expansion, so no program
         // reaches this arm (Q-M1f.9, Q-M1f.84).
         if head_name.as_deref() == Some("or") {
@@ -739,13 +739,13 @@ impl<'a> Compiler<'a> {
         // `(?R ?x ?y)` under `(r eq)`, is this guard, and `(not (eq a b))`,
         // the stored negation of a fact whose truth is computed, is `(neq a
         // b)` (Q-M1f.31). As ordinary patterns over stored facts, which no
-        // state holds, they would match nothing (`W51`, `W52`).
+        // state holds, they would match nothing.
         //
-        // **An invariant** (`W66`): a written guard is shaped by the grammar,
+        // **An invariant**: a written guard is shaped by the grammar,
         // one a macro's expansion writes is refused at load (`ein_ir::from_ir`'s
         // `refuse_malformed_primitives`), and one whose relation is a
         // parameter its activator binds to `eq` is refused at load
-        // (`refuse_eq_at_another_arity`, `W60`), so no program reaches another
+        // (`refuse_eq_at_another_arity`), so no program reaches another
         // arity here.
         if let Some((pred, args)) = self.guard_form(node) {
             assert!(
@@ -897,7 +897,7 @@ impl<'a> Compiler<'a> {
 
     /// A relation head written as a parameter, bound by the activator to a
     /// value that is not a name: a nested `Fact`, which names no relation
-    /// (`W24`, Q-M1e2.18). The parameter is seeded with the fact, as a value
+    /// (Q-M1e2.18). The parameter is seeded with the fact, as a value
     /// parameter is, and the head meets it there. The loader refuses the
     /// activators it can read, a fact or a literal in an `:assert`; this is
     /// the one a rule derives through a variable, which only a run binds.
@@ -977,12 +977,12 @@ impl<'a> Compiler<'a> {
                     // a rule with a ground `:assert` would store its
                     // conclusion off an arity-mismatched activator.
                     //
-                    // The loader refuses a head variable no parameter binds
-                    // (`W24`), and a parameter bound to a nested fact is
+                    // The loader refuses a head variable no parameter binds,
+                    // and a parameter bound to a nested fact is
                     // seeded with it and refused just above, so no program the
                     // loader accepts reaches this arm. A goal has no
                     // activator, and the loader refuses a goal's relation
-                    // variable at every depth (`refuse_no_fact_holds`, `W64`),
+                    // variable at every depth (`refuse_no_fact_holds`),
                     // so only a direct caller compiling a rule with
                     // parameters and no activator reaches this line, in Ein's
                     // words (Q-M1f.75).
@@ -1221,7 +1221,7 @@ impl<'a> Compiler<'a> {
     /// returned as-is and compared by equality, which is the "unrecognised
     /// shape" safety net and which never matches anything; in an `:assert` it
     /// stops the firing. No program the loader accepts reaches it in a
-    /// `:match` (`W24`): the loader refuses a relation variable no parameter
+    /// `:match`: the loader refuses a relation variable no parameter
     /// binds, in a rule.
     /// A keyword pair inside a term is refused at the parse (Q-M1e2.28), so
     /// the `KwPair` arm is unreachable.
@@ -1229,9 +1229,9 @@ impl<'a> Compiler<'a> {
     /// **An opaque node is a silent wrong answer** wherever a program can
     /// reach one: it matches nothing, so a rule over it never fires and an
     /// `(absent …)` over it always holds. That is why every shape that would
-    /// be one — a string (`W18`), a wildcard or a range (`W20`, Q-M1e2.22), a
+    /// be one — a string, a wildcard or a range (Q-M1e2.22), a
     /// keyword pair inside a pattern and a relation variable no parameter
-    /// binds (`W24`) — is refused before it gets here.
+    /// binds — is refused before it gets here.
     fn slot(&mut self, node: NodeId) -> Result<Slot, CompileError> {
         match self.ast.node(node) {
             Node::Var(s) => {
@@ -1743,8 +1743,8 @@ mod tests {
     }
 
     /// The key is the activator's values, so two activators that are two
-    /// facts are two keys and two plans, and neither loses its conclusions
-    /// (`W16`): two names of digits, `7` and `07`, and a name from a nested
+    /// facts are two keys and two plans, and neither loses its conclusions:
+    /// two names of digits, `7` and `07`, and a name from a nested
     /// fact. The key's text is each value's `display`, the one printer's.
     #[test]
     fn plan_key_is_the_activators_values() {
@@ -1955,8 +1955,8 @@ mod tests {
         }
     }
 
-    /// A bare `_` is refused at the parse, in every position (Q-M1e2.22,
-    /// `W20`): the program is refused at each of its four `_`, and a variable
+    /// A bare `_` is refused at the parse, in every position (Q-M1e2.22):
+    /// the program is refused at each of its four `_`, and a variable
     /// used once matches any value instead.
     #[test]
     fn a_wildcard_matches_any_value_and_binds_nothing() {
@@ -1987,7 +1987,7 @@ mod tests {
 
     /// A string is natural-language text, written only after `:why`,
     /// `:source` or `:goal-text`, so a string in a pattern and in an `:assert`
-    /// is refused at the parse, each with its note (`W18`); the name written
+    /// is refused at the parse, each with its note; the name written
     /// bare is the key.
     #[test]
     fn a_string_in_a_pattern_is_the_symbol_it_names() {

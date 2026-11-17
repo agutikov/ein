@@ -1,5 +1,5 @@
 ;;; A kernel dunder a program writes as a value, among the blind enumerator's
-;;; objects — **W96**, regression `as-value`
+;;; objects — regression `as-value`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

@@ -1,5 +1,5 @@
 ;;; A pair contradiction's core names only its positive side, where that side
-;;; is a fact the program states — **W21**, regression
+;;; is a fact the program states — regression
 ;;; `pair-core-root-given` (`corpus/regressions.toml`).
 ;;;
 ;;;

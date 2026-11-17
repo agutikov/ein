@@ -23,8 +23,7 @@
 //!   the cube;
 //! - **the state**: every node the run computes is read for **stale facts**
 //!   ([`stale_facts`], in [`crate::region`]'s node function), dead nodes
-//!   included, because `W8`'s
-//!   stale fact is in a dead node no run lists;
+//!   included, because a stale fact can be in a dead node no run lists;
 //! - **the paths**: the read-out's parent-path spot check
 //!   ([`crate::region::Nodes::by_parent`]), at most [`SPOT_PARENTS`] parents
 //!   of each state it prints of two commitments or more. It reads one-step
@@ -916,7 +915,8 @@ fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTr
 /// *forbid* reads it, here for a label). A derivation does not record the
 /// activator its plan was compiled from, so where a chain of activators runs
 /// at a node, the refuting rule is no site and its premises carry no
-/// `absent`: on `W17`'s witnesses, read past *forbid*'s refusal, the rule
+/// `absent`: on the `forbid-chain-*.ein` witnesses, read past *forbid*'s
+/// refusal, the rule
 /// above names nothing, and the status row would read *by* and an empty list.
 fn dead_chain_sites(
     nodes: &mut Nodes<'_>,

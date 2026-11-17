@@ -73,7 +73,7 @@
 #                                 and the bare paths of `.ein` comments and
 #                                 `corpus.toml` too
 #   check_release_voice.py        its own docstring's examples, the first time
-#                                 it ran; the rest of the tree is its baseline
+#                                 it ran
 #   check_gate_steps.py           this script's three step lists against the
 #                                 two workflows
 #   check_tool_mirrors.py         the editor grammar, the natural-language
@@ -769,9 +769,10 @@ if [[ "${CHECKS}" == 1 ]]; then
     step "utils/doc_audit.py --links --check"
     python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check --tracked
 
-    # The release voice: no milestone, phase, stage or task id, no path into
-    # `plans/` and no date where the released tree keeps its prose, held to a
-    # banked per-file baseline that may only fall.
+    # The release voice, with no baseline: no milestone, phase, stage or task
+    # id, no plan's finding, followup or review id, no case of the
+    # wrong-answer register, no path into the process and no date where the
+    # project keeps its prose.
     step "utils/check_release_voice.py"
     python3 "${SCRIPT_DIR}/utils/check_release_voice.py"
 

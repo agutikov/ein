@@ -1,5 +1,5 @@
 ;;; A macro called in a query's `:goal` is not expanded, so the claim that lists
-;;; what the macro means is refused — **W77**, regression
+;;; what the macro means is refused — regression
 ;;; `goal-macro-unknown`.
 ;;;
 ;;;

@@ -1,4 +1,4 @@
-;;; W14 on the shipped obligation rule — **W14**, regression
+;;; `oblig-fresh-name.ein` on the shipped obligation rule — regression
 ;;; `oblig-stdlib-total-owed` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -21,7 +21,7 @@
 ;;; `{(likes Ann Z)}` saturates to `(is-a Z Food)`, which witnesses Ann's
 ;;; debt. Over the rung's candidates with `(is-a Z Food)` declared at root
 ;;; (`oblig-stdlib-total-owed-declared.ein`) R is that one state. With the
-;;; rung declined, the blind enumerator, which is untyped (C1, Q-M1e.12),
+;;; rung declined, the blind enumerator, which is untyped (Q-M1e.12),
 ;;; proposes `likes` over Ann, Soup and Z, and the four with a non-Person
 ;;; subject, which no rule refutes, are free: R is sixteen states. The second
 ;;; holds (Q-M1e2.10): a guard over a relation in D declines the rung, and the

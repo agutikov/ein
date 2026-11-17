@@ -1,5 +1,4 @@
-//! **A `(solve …)` list names what the program has** (W76, Q-M1f.114 to
-//! .116).
+//! **A `(solve …)` list names what the program has** (Q-M1f.114 to .116).
 //!
 //! The three lists of a `(solve …)` choose the candidates, so the lattice the
 //! answer is a region of. A name in one that matched nothing, read as one
