@@ -9,7 +9,7 @@ user at [S1h.2.4](s1h.2.4_what_used_means_and_the_stop.md).
 
 ## The question it rests on
 
-[Round 2, item 33](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q33), to which
+Round 2, item 33, to which
 the user replied *"OK"*:
 
 > One thing slicing by derivation does not show, and M1h's slicing phase should: a **restriction that was

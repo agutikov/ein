@@ -6,9 +6,9 @@ scratch programs and writes a page; no source under `ein.rs/` and nothing outsid
 moves.
 **Depends on:** the word problems as banked under
 [`examples/word_problems/`](../../../examples/word_problems/README.md); the calculator as shipped, with
-[S1f.6.23](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md),
-[S1f.6.12](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md)'s build and
-[S1f.6.24](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md).
+S1f.6.23,
+S1f.6.12's build and
+S1f.6.24.
 
 ## What it rests on
 

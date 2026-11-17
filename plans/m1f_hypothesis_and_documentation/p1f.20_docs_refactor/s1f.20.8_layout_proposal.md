@@ -16,8 +16,8 @@ python3 utils/decision_census.py               # every id, one line: class, subj
 python3 utils/decision_census.py --check       # 0 gaps: every row classed, every decision a subject
 ```
 
-The script is [`utils/decision_census.py`](../../../utils/decision_census.py); its hand half, one row an id, is
-[`utils/decision_census.txt`](../../../utils/decision_census.txt).
+The script is `utils/decision_census.py`; its hand half, one row an id, is
+`utils/decision_census.txt` (both retired by S1f.20.9 part C1, in git).
 
 ## 1. What the census found
 

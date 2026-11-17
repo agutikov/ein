@@ -79,13 +79,13 @@ comment, `corpus.toml`) to a file under `docs/decisions/`, and fails on one it c
 
 ## Record 2026-11-16: T1 and T2
 
-**T1, the census.** [`utils/decision_census.py`](../../../utils/decision_census.py) reads every ledger the stage
+**T1, the census.** `utils/decision_census.py` (retired by S1f.20.9 part C1, in git) reads every ledger the stage
 names and every other one the tree holds: the nine milestone ledgers (four under `docs/history/`), the M1e review's
 ten, `plans/open_questions.md` with M1's absorbed questions, M2's two id forms, the Q rows of F1 to F4, P1f.6's
 numbered questions with round 2 and the replies' index, and the six stage files that number questions of their own.
 It classes each id **decision**, **open** or **not carried**, follows a chain to its last word, and gives each
 decision a proposed subject. What the state's first words do not decide, and every row whose state names a chain,
-is classed by hand in [`utils/decision_census.txt`](../../../utils/decision_census.txt), one row an id, which
+is classed by hand in `utils/decision_census.txt`, one row an id, which
 `--check` holds complete: a ledger edit that adds an id or a chain fails it until a hand row classes it.
 
 ```sh

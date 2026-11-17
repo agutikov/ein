@@ -17,7 +17,7 @@ source and is kept as written.
 ## The instruction
 
 The user, 2026-11-12, in the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md), above the questions
+`questions.md`, above the questions
 on word problems. As typed:
 
 > p1h.20 - requirements verification. How is it done in real world? e.g. in systems design, or market

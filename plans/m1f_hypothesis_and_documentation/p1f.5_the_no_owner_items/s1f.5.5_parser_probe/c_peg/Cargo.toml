@@ -1,7 +1,0 @@
-[package]
-name="c_peg"
-version.workspace=true
-edition.workspace=true
-[dependencies]
-common={path="../common"}
-peg="0.8"

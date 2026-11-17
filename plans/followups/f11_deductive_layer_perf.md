@@ -12,7 +12,7 @@ fanned-out exhaustive run is 3.17–4.40× faster again on 8 cores. Both reading
 are inside every ergonomic envelope the project has. This is the file to
 promote when one isn't.
 
-> **Status after [M1a P1a.6](../../docs/history/m1a_rust/README.md#p1a6--performance), which
+> **Status after M1a P1a.6, which
 > was this file's own most likely promotion trigger (2026-08-20):** the phase
 > ran, reached the matcher, and **neither entry landed**. D1 was
 > gated, measured and declined twice — the second time at *0.45 candidates per
@@ -37,14 +37,14 @@ status box above first, then this for the arc:
 - **P1.8a's split still holds: ~95 % of a solve is the matcher inside
   saturation** (O1+O2), not the search
   ([`algorithms.md` § 2](../../docs/ein/ein.rs/algorithms.md#2-what-it-is-shaped-against)). Every *search*-layer optimisation was tried and rejected against
-  that split ([F9 ledger](f9_e_catalog.md)).
+  that split (F9 ledger).
 - **S1.9.E23 removed the largest chunk of pointless matching**: over half
   the exhaustive wall-clock was saturating forks already known to be dead.
   What's left is saturation of forks that genuinely live — i.e. the matcher
   doing work that has to happen. That makes D1 the largest remaining lever
   and, unlike before, the *only* one with a clear ceiling story.
 
-**[S1a.6.1](../../docs/history/m1a_rust/README.md#s1a61--fresh-profile-and-bench-baseline) (2026-08-18)
+**S1a.6.1 (2026-08-18)
 re-took both.** What changed:
 
 - **The 95 % split no longer holds.** An exhaustive
@@ -58,7 +58,7 @@ re-took both.** What changed:
   enterings (baseline.md §5),
   so per-fork memories are affordable outright and the read-only-share
   design is an optimisation rather than a precondition.
-- The gate on [S1a.6.3](../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)
+- The gate on S1a.6.3
   is therefore **open**. It runs fourth in the phase, behind two cheaper wins
   the profile found first.
 
@@ -81,7 +81,7 @@ baseline.md § Reproducing all of it.
 **Effort:** M. **Value:** H (perf) — the named next rung.
 
 > **Measured and declined, 2026-08-19
-> ([S1a.6.3](../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)).** The
+> (S1a.6.3).** The
 > gated stage ran and the gate said no — not because the memory would not work,
 > but because two cheaper changes removed what it was for.
 >
@@ -95,14 +95,14 @@ baseline.md § Reproducing all of it.
 >   replaces 2.2 is a constant factor with a per-fork table attached.
 > - **The catch came back, with a measurement this time.** This file recorded
 >   in August that the catch had "dissolved" because a fork's delta is only
->   3.6 KB. [T1a.6.2.5](../../docs/history/m1a_rust/README.md#s1a62--memory-layout)
+>   3.6 KB. T1a.6.2.5
 >   then built the exact shape design/05 §7 calls the *root memory* — a flat
 >   per-relation table — and **cloning it per fork cost 7.6 %** while making the
 >   fork-free bench 8 % faster. Affordable in bytes is not the same as free in
 >   cache: a fork *shares* the layered index by `Arc`, and a materialised table
 >   gives every live fork its own copy.
 > - **The re-derivation it would have replayed is gone.**
->   [S1a.6.9](../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator) made a
+>   S1a.6.9 made a
 >   fork resume root's saturation rather than re-derive it, which was the
 >   "root memories" task's whole purpose.
 >
@@ -112,7 +112,7 @@ baseline.md § Reproducing all of it.
 > or a puzzle whose premises the index cannot key.
 >
 > **Re-priced again at the close of P1a.6, 2026-08-20
-> ([S1a.6.7](../../docs/history/m1a_rust/README.md#s1a67--re-measure-the-lever-matrix)
+> (S1a.6.7
 > T1a.6.7.5), and the number moved the same way twice more.** The intermediate
 > a beta-memory would materialise is now **below one tuple per step entered**:
 >
@@ -120,7 +120,7 @@ baseline.md § Reproducing all of it.
 > |---|---:|---:|---:|
 > | before T1a.6.3.0 | 25 160 149 | 530 405 | **47.4** |
 > | after it (S1a.6.3) | 1 171 385 | 530 405 | **2.21** |
-> | after [S1a.6.12](../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot) | **238 567** | 532 115 | **0.45** |
+> | after S1a.6.12 | **238 567** | 532 115 | **0.45** |
 >
 > `solve zebra -e`, `--features counters`. The step count is flat to 0.3 %
 > across all three rows, which is what makes them comparable: the *decisions*
@@ -212,7 +212,7 @@ Promote into a perf phase (not into this file) when **any** holds:
 
 ## Cross-links
 
-- [F9 ledger](f9_e_catalog.md) — the closed *search*-layer catalog; read
+- F9 ledger — the closed *search*-layer catalog; read
   its "what the catalog taught" section before opening a perf entry here.
 - [`algorithms.md`](../../docs/ein/ein.rs/algorithms.md)
   § 1 and § 2 — the operation-by-operation SOTA comparison these two entries

@@ -1,4 +1,4 @@
-# Tier 2 of three — docs/history/m1a_rust/design/12_toolchain_and_layout.md §4.
+# Tier 2 of three: per-commit, nightly, release.
 #
 # Everything the per-commit tier cannot afford **that guards an answer or a
 # contract no per-commit step guards**, each step at a budget that fits in
@@ -31,9 +31,8 @@
 # fails it; it holds `--dev-host`'s list to this one's too, so a step that
 # leaves here and is not named there fails it. Every `run:` here is a step of
 # that list, or a provisioning step the check names with its reason
-# (Graphviz, the tests' `TMPDIR`). Until S1e2.3.6 nothing local ran these steps, and this workflow
-# failed on every run from 2026-10-17 to 11-03 without anybody here seeing it
-# (plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.6_the_nightly_workflow.md).
+# (Graphviz, the tests' `TMPDIR`). `./run_tests.sh --nightly` runs these
+# steps locally, so a nightly failure is seen before a push.
 
 name: nightly
 

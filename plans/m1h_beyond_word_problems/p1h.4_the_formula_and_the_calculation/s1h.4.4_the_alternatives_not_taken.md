@@ -6,7 +6,7 @@ limit**, by the milestone README's own words: nothing outside `plans/` and `buil
 **Depends on:** [S1h.4.2](s1h.4.2_the_formula_as_an_object.md), since an alternative is a formula that was
 not built; [S1h.3.4](../p1h.3_gaps_assumptions_and_readings/s1h.3.4_readings.md), the two states with one
 answer (if that stage has not run, the two states are re-run here from
-[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s
+S1f.6.28's
 files or the investigation's, and the page says so).
 
 ## What it rests on

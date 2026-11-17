@@ -1,7 +1,7 @@
 # F25 — Roughness found outside the zebra programs
 
 **Filed 2026-11-11**, on the user's instruction of that day, at the start of M1f
-[P1f.7](../m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md):
+P1f.7:
 
 > I don't want to review any new findings that does not affect existing zebra problems - so if find anything -
 > either fix in place if it is quick or record into followups; I accept that language and engine MAY still contain
@@ -17,10 +17,10 @@ the row here is the record.
 
 **Whose findings.** P1f.7's alone (the user, 2026-11-11: *"my ruling … was about only one phase p1f.7"*). A
 later phase keeps what it finds: P1f.6's are in its own
-[`findings.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md), where the seven rows filed
+`findings.md`, where the seven rows filed
 here as R-9 to R-15 that day were moved.
 
-**Trigger.** A corpus of real Ein programs exists (from [P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)'s
+**Trigger.** A corpus of real Ein programs exists (from P1f.6's
 calculator onward) and one of them meets a row; or the user asks for the list.
 
 ## The items

@@ -13,8 +13,6 @@ dist/
 /dump/
 /dumps/
 
-# Machine-specific bench artifact of utils/feature_matrix.py (no committed record).
-utils/feature_matrix_results.json
 
 # ── M1a (the Rust engine) ─────────────────────────────────────────
 # Cargo's build tree — and the others, one per instrument feature, each kept

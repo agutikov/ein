@@ -2,7 +2,7 @@
 # The M1a bench environment (T1a.6.1.1) — a fingerprint, then the command.
 #
 #     utils/bench_env.sh cargo bench                  # in ein.rs/
-#     utils/bench_env.sh python3 utils/e2e_baseline.py
+#     utils/bench_env.sh python3 utils/corpus_cost.py
 #     utils/bench_env.sh --core 6 ./target/release/ein solve ...
 #     utils/bench_env.sh --cores P:8 ./target/release/ein solve ... --jobs 8
 #     utils/bench_env.sh --report                     # fingerprint only
@@ -23,7 +23,7 @@
 # three different machines — 8 physical P-cores, 8 P-core *threads* on 4
 # physical cores, or 8 E-cores — which differ by more than the speedup being
 # measured, so a `--jobs N` number that does not say which is not a
-# measurement (docs/history/m1a_rust/measurements/scaling.md, preamble). The
+# measurement. The
 # spec is `P:N` / `PT:N` / `E:N` / `ET:N`, or a literal taskset list:
 #
 #   P:8    8 physical P-cores  — one thread per core, no SMT sibling shared

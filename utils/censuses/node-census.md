@@ -1,7 +1,7 @@
 # The node census — 2026-11-02
 
-**S1e2.1b.2's measurement** ([the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md)), the
-evidence for [Q-M1e2.2](../../plans/m1e2_correctness/open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
+**S1e2.1b.2's measurement** (the stage), the
+evidence for [Q-M1e2.2](../../docs/decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)
 asked of every node. A node's state is built two ways, and the two are
 compared node for node on every cube the oracle reaches:
 
@@ -20,7 +20,7 @@ the fixpoint, and the facts that are **stale** (§ 4).
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census                  # § 2, the flagged cubes, 0.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --control      # § 3, the monotone cubes, 59 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- \
-    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                             # § 2.2, S1e2.4.1's probes
+    plans/followups/f21_probes/*.ein                                                                     # § 2.2, S1e2.4.1's probes
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --written      # § 2.3, three programs written into it
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata       # § 5, every program that loads, 0.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance   # § 7, the levers, 0.9 s
@@ -39,7 +39,7 @@ those commands unless it names another.
 **What it selects.** With no file, the programs of `site_census`'s selection
 (`corpus_files()` and the register's witnesses, 271 files, 208 of which load
 and saturate) that the static check flags and whose cube is within
-`--region-limit 16`: **18**. That is [site census § 3](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#3-the-flagged-programs-within-the-limit)'s
+`--region-limit 16`: **18**. That is site census § 3's
 14, plus the four fixtures S1e2.1b.6 banked after it (`lattice/08`,
 `lattice/09`, `synth/maximal_not_top`, `synth/local_not_global`). `--control`
 takes the 155 that the check calls monotone. S1e2.4.1's probes get their own
@@ -134,7 +134,7 @@ judges any guard, so `derive-p` never fires. On `stale-naf-fork` the stale
 `features/07` and its twin nothing refutes the pair, and the node is in R on
 both routes, holding a different state.
 
-These are the four programs [site census § 2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)
+These are the four programs site census § 2
 names as the only ones within the limit where a site's rule fires at root.
 The census called that an argument for where the routes *can* differ. Here
 the routes differ there, on one node each, and nowhere else.
@@ -175,7 +175,7 @@ stratified program, scratch's own root holds a stale fact.
 ## 3. The control: the monotone cubes
 
 On a program the static check calls monotone, fork and scratch build the same
-state by the theorem ([phase README § What non-monotone means](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md#what-non-monotone-means-and-what-is-not)).
+state by the theorem (phase README § What non-monotone means).
 `--control` checks that premise node for node, on every fact; `region_dump.rs`
 checks the statuses and closures of nine programs:
 
@@ -350,7 +350,7 @@ contradiction; built to quiescence, as the oracle builds a node, they agree.
   every node from root at once. But the node is *root plus the commitment at
   once*, so a search that extends a parent's fixpoint builds a different node
   on a flagged program. `lattice/08` is stratified, so (D) does not remove the
-  case. That constrains [P1e2.1c](../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)'s
+  case. That constrains P1e2.1c's
   search.
 - **(B)**: a node has no path, and the direct node already is scratch's. The
   abort says nothing against (B).
@@ -375,7 +375,7 @@ answer, R = ∅, is the same under (B). L0's *reason* is not: under scratch a
 dead root does not kill its supersets, as `dead_root` (§ 2.3) shows with
 `{(h A)}` in R above a dead ∅. Under (B), a flagged program with a dead root
 needs another licence, or the cube. On `features/12` the arguments that exist
-are fact grain (its reads are static at fact grain, [site census § 5.3](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#53-what-leaves-the-set))
+are fact grain (its reads are static at fact grain, site census § 5.3)
 and S1e2.2.5's refusal under *forbid*. (C) would change nothing, by the same
 fact-grain argument and not by a run: the guard root's `(false)` rests on reads
 `(instance ?h Hole)`, which no candidate and no fact derived from one
@@ -408,7 +408,7 @@ under *forbid* the program it writes would be refused.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance                         # the flagged cubes, 0.9 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --written
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance \
-    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein
+    plans/followups/f21_probes/*.ein
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --control --max-n 9    # 149 monotone cubes, 10 s
 ```
 
@@ -624,7 +624,7 @@ a fork-aware cell, which S1e2.1c.3 would have to design.
 
 ## 11. The path census — S1e2.1b.7
 
-[S1e2.1b.7](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_the_consequences_written_down.md)'s T1e2.1b.7.2, for
+S1e2.1b.7's T1e2.1b.7.2, for
 the rows [`monotonicity.md` § What holds it](../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it)
 left *unverified*: every split C1 ⊆ C and longer chains, the state-memoized
 path DAG and (F)'s per-node counts, and the premise that a step is a function
@@ -633,7 +633,7 @@ of the KB's contents. § 6.1 above read one-step parents, as `-y` built them.
 ```sh
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths                    # § 11.2, the flagged cubes, 1.3 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths \
-    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                                        # § 11.3, 1.1 s
+    plans/followups/f21_probes/*.ein                                                                                # § 11.3, 1.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --written          # § 11.3
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12   # § 11.4, 36 s
 ```
@@ -825,7 +825,7 @@ can leave scratch ≠ fork through a FIFO race over a static read*.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative                      # § 12.3, the flagged cubes, 0.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --written
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative \
-    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein
+    plans/followups/f21_probes/*.ein
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --control --max-n 12   # § 12.3, 6.7 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --stratum-order --jobs 4            # § 12.4, 0.3 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --invariance \
@@ -861,7 +861,7 @@ written**, first try:
 - **`--invariance`**: writing r1 before r2 moves the state of `{(a one), (b
   one)}` on both routes and moves no status, no universe.
 - **The reader at an earlier priority**, the proposal's scratch copy
-  [`fifo_gap_priority.ein`](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) (r2 at
+  `fifo_gap_priority.ein` (r2 at
   100), reads the same under `--paths` and `--cumulative`, and `--invariance`
   finds no equal-priority pair to reorder. It is not banked: it is the same
   gap, and the order check that tells the two apart is S1e2.1b.5's.

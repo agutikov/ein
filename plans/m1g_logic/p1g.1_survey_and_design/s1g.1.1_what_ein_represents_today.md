@@ -2,7 +2,7 @@
 
 **Phase:** [P1g.1](README.md)
 **Status:** planned 2026-11-11, not started.
-**Depends on:** [S1f.6.17](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md),
+**Depends on:** S1f.6.17,
 whose gate tables and circuit programs are the first row of the survey.
 **Pulls in:** [F1b](../../followups/f1b_logical_formulation.md)'s opening question, *"which fragment is native
 and which would be derived sugar?"*, as a list of programs to try.

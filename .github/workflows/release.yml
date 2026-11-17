@@ -1,4 +1,4 @@
-# Tier 3 of three — docs/history/m1a_rust/design/12_toolchain_and_layout.md §4.
+# Tier 3 of three: per-commit, nightly, release.
 #
 # Everything nightly, plus the checks that only matter when something is about
 # to be handed to someone: does the parallel engine agree with the serial one,
@@ -19,15 +19,9 @@
 # **What has never run.** Every job below except `gate` and
 # `no-default-features` exercises a platform this repository has never built
 # on: the workspace is developed on x86_64 Linux and the first tag is what
-# runs macOS, Windows and aarch64 for the first time. The plan record
-# (docs/history/m1a_rust/README.md § S1a.9.3 — Packaging and release) says so
-# in as many words, so that a green badge here is read as "the first tag
-# passed" rather than as "this was always going to pass".
-#
-# That cross-reference named "§ What CI has not yet proved" until 2026-08-29,
-# and no such section has ever existed — M1e S1e.1.6, the review's Q10. The
-# *content* was always there; the pointer was not, which is the failure mode
-# a reader of a workflow header cannot detect.
+# runs macOS, Windows and aarch64 for the first time. It is said here in as
+# many words, so that a green badge here is read as "the first tag passed"
+# rather than as "this was always going to pass".
 
 name: release
 
@@ -262,9 +256,8 @@ jobs:
   # `continue-on-error` and **not** in `publish`'s `needs:`, deliberately.
   # A musl target has no C++ toolchain on the runner image, so `snmalloc`
   # cannot build there and this leg is `--no-default-features` — the system
-  # allocator, which musl's is, and which costs a measured **+25 % on `solve
-  # zebra2 -e` and +36 % on `solve zebra -e`**
-  # (docs/history/m1a_rust/measurements/feature_cost.md). That is the wrong default
+  # allocator, which musl's is, and which is slower than `snmalloc` (the
+  # measurement was the walk's, and went with it). That is the wrong default
   # for the four required artefacts and the right trade for the one case they
   # do not cover: an old or minimal distribution where a glibc-linked binary
   # will not start at all. If it fails, the release still ships and the notes
@@ -347,9 +340,8 @@ jobs:
             done
             echo
             if [ -e staged/ein-linux-x86_64-musl ]; then
-              echo "The musl build is statically linked and uses the **system allocator**:"
-              echo "it costs +25 % on \`solve zebra2.ein -e\` against the default binary"
-              echo "(docs/history/m1a_rust/measurements/feature_cost.md). Prefer"
+              echo "The musl build is statically linked and uses the **system allocator**,"
+              echo "which is slower than the default binary's \`snmalloc\`. Prefer"
               echo "\`ein-linux-x86_64\` unless glibc is the problem."
             else
               echo "**No static musl binary in this release** — that leg is best-effort"

@@ -2,16 +2,16 @@
 
 **Estimate:** ~2.5 weeks — 5 stages, 12 days of stage estimates.
 **Status:** **promoted to a milestone 2026-08-23** at the user's direction,
-out of [M1c](../../docs/history/m1c_external_validation/README.md)'s P1c.2, where it was
+out of M1c's P1c.2, where it was
 created 2026-08-21. Nothing about the work changed: the five stages, their
 estimates and their dependencies are as written, `S1c.2.<n>` became
 `S10.<n>`, and the three questions about *method* moved with it as
 [`Q-M10.1–3`](open_questions.md).
-**Depends on:** [M1c P1c.1](../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)
+**Depends on:** M1c P1c.1
 — not to run, but to *keep*: the answers this milestone establishes are
 written back into the `.ein` files as `:expect`, and that form is P1c.1's.
-Also on [M1a](../../docs/history/m1a_rust/README.md) having shipped its
-[performance phase](../../docs/history/m1a_rust/README.md#p1a6--performance): a
+Also on M1a having shipped its
+performance phase: a
 comparison run against the pre-S1a.6 engine measures a version nobody ships.
 **Blocks:** nothing on the critical path. [M5](../m5_presentation/README.md)
 Track A is the consumer: its "head-to-head numbers where applicable" are this
@@ -29,7 +29,7 @@ right?* — and the precedent is specific, recent and expensive:
 five phases of byte-exact regression checks, and what found it was an **independent
 enumeration** of a puzzle's models written outside the engine on the day.
 
-There are two ways to answer *is this right?* [M1c](../../docs/history/m1c_external_validation/README.md)
+There are two ways to answer *is this right?* M1c
 owns the first — an expectation written next to a rule and run by the engine.
 This milestone owns the second: the same problem stated for six other systems.
 
@@ -42,9 +42,9 @@ at all. **The external tools are needed to establish the answer, not to keep
 it.**
 
 > **The last clause needs a depth, measured 2026-08-26** by M1d
-> [S1d.4.3](../../docs/history/m1d_satisfiability/the_vocabulary.md),
+> S1d.4.3,
 > which rewrote the same sentence in
-> [M1c](../../docs/history/m1c_external_validation/README.md#splitting-them-did-not-split-the-pipeline).
+> M1c.
 > `ein test` exhausts, but at `--max-set-size 5`; `zebra2-minus-15`'s lattice
 > ends at depth **22**, so at the default the re-check comes back **`NOT
 > CHECKED`** — honest, and not a re-check. The honest promise is `ein test
@@ -85,7 +85,7 @@ puzzle.
    a Z3 blocking-clause loop and a Prolog `findall` each enumerate
    independently, and if they agree, the count is established by three
    systems that share no code with Ein and no code with each other. This is
-   the [`disjunctive-prune`](../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance) check
+   the `disjunctive-prune` check
    made permanent: that bug survived a year of the engine agreeing with its
    own goldens and died to one independent enumeration.
 2. **Times, and what had to be said to get them.** Wall clock as a process,
@@ -120,10 +120,10 @@ puzzle.
   that reaches it**. `ein test` runs `-m 5`; a claim that needs more is checked
   in with the `-m` that checks it, or it is not checked in at all, because
   `NOT CHECKED` is not a re-check (M1d
-  [S1d.4.3](../../docs/history/m1d_satisfiability/the_vocabulary.md)).
+  S1d.4.3).
 - Timings are **processes, cold**, taken through
   [`utils/bench_env.sh`](../../utils/bench_env.sh) exactly as
-  [`e2e_baseline.py`](../../utils/e2e_baseline.py) takes Ein's — "the same
+  `e2e_baseline.py` took Ein's (deleted with the walk; in git) — "the same
   workloads as *processes*, which is what M1a's targets meant".
 - **A missing system is a reported cell, never a skipped one.**
 - The report states where Ein loses, by how much, and why the author thinks so.
@@ -151,7 +151,7 @@ puzzle.
   the finding, and it is the most interesting cell in the table, because
   **Datalog is the closest formal relative of Ein's saturator**. If Soufflé
   needs an extension to express the puzzle, that is direct evidence for
-  [M1d](../../docs/history/m1d_satisfiability/README.md)'s premise.
+  M1d's premise.
 - **Tool availability is real work.** Measured on the dev machine (Manjaro,
   `core`/`extra`/`multilib`, 2026-08-20): `z3` 4.16.0 and `cvc4` 1.8 are
   installed, `swi-prolog` 10.0.2-2 is in the sync db, and `clingo`,
@@ -164,7 +164,7 @@ puzzle.
   dropped, and never checked out by anything. CVC5 is a different program
   with a different name, and this benchmark uses **CVC5** — so the submodule
   had no consumer here, and M1a
-  [S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-grammar-as-ebnf)
+  S1a.10.5
   deinitialised it rather than making every clone fetch it. The three
   hand-written `.smt` files it sat beside **stay**, and are named below.
   [`nl2smt/README.md`](../../nl2smt/README.md) (the two directories are one
@@ -185,7 +185,7 @@ puzzle.
   ProofWriter, LogiQA — is [F13](../followups/f13_puzzles_beyond_zebra/ideas.md)'s
   territory and needs [M2](../m2_nl_to_ir/README.md)'s NL frontend to be
   interesting.
-- **Ein's own performance work.** [P1a.6](../../docs/history/m1a_rust/README.md#p1a6--performance)
+- **Ein's own performance work.** P1a.6
   owns that and closed on its targets. A comparison that shows Ein slow
   somewhere is a *finding*; acting on it is a milestone somewhere else.
 - **Winning.** A benchmark built to be won gets tuned until it is. The
@@ -195,7 +195,7 @@ puzzle.
   defect.
 - **New reasoning features.** If a comparison shows that a problem cannot be
   *stated* in ein-lang, that is a finding for
-  [M1d](../../docs/history/m1d_satisfiability/README.md) or a followup, not a stage here.
+  M1d or a followup, not a stage here.
 
 ## Open questions
 
@@ -217,8 +217,8 @@ the harness lives.
   happens to hold
 - [`examples/README.md`](../../examples/README.md) — the catalog
   convention the benchmark corpus follows
-- [M1c](../../docs/history/m1c_external_validation/README.md) — the milestone this was a
-  phase of until 2026-08-23; [P1c.1](../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)
+- M1c — the milestone this was a
+  phase of until 2026-08-23; P1c.1
   owns the `:expect` form every answer here is checked back into
 - [M5](../m5_presentation/README.md) Track A/B — the consumer
 - [F13](../followups/f13_puzzles_beyond_zebra/ideas.md) — the *other*

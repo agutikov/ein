@@ -8,7 +8,7 @@ stop:** the geometry's survey on a prototype, the vocabulary and the reading of 
 `docs/lib/` is written before the user has read its page.
 **Depends on:** [S1g.10.1](../p1g.10_school_algebra/s1g.10.1_survey_and_design.md)'s rulings on what the two
 phases share (where the theories live, how a program states its lattice). It needs no algebra;
-[S1f.6.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md) for the measure layer.
+S1f.6.6 for the measure layer.
 
 ## The instruction's part
 

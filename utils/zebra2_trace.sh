@@ -74,7 +74,7 @@ OUT_DIR="${OUT_DIR:-${REPO_ROOT}/build/zebra2}"
 MD="${OUT_DIR}/zebra2.md"
 
 # The engine. `$EIN_BIN` is a *path*, so a build with a feature or an
-# allocator arm is named the same way `e2e_baseline.py --bin` names one.
+# allocator arm is named by its path.
 # shellcheck disable=SC2206
 EIN=( ${EIN_BIN} )
 if ! command -v "${EIN[0]}" >/dev/null 2>&1 && [[ ! -x "${EIN[0]}" ]]; then

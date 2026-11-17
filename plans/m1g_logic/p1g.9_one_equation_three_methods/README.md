@@ -6,7 +6,7 @@
 The number 9 is the next free one after P1g.7 and P1g.8.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop; of M1f, the calculator's tables and
 the probes banked under `examples/beyond_arith/`
-([S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)), and
+(S1f.6.10), and
 [P1g.10's S1g.10.4](../p1g.10_school_algebra/s1g.10.4_linear_equations.md),
 whose derivation of a linear equation is the third method as far as school algebra takes it.
 **Read with:** [P1g.7](../p1g.7_unsatisfiable_against_owing/README.md), which rules what an unpayable debt is
@@ -16,7 +16,7 @@ that.
 ## Where it comes from
 
 The calculator's questions 24 and 37
-([`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q24)) asked the same
+(`questions.md`) asked the same
 thing twice. The user, 2026-11-12:
 
 > solution of `x × 7 = 862` belongs yet to arithmetic or already to algebra? this question open vs. false is
@@ -25,7 +25,7 @@ thing twice. The user, 2026-11-12:
 > Q24 already asked this, Is it possible at all to solve it by saturation without algebra rules that allows
 > infer x*7=862 -> x=862/7 ? Again is it arithmetics or algebra?
 
-[Round 2, items 24, 28 and 37](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q24)
+Round 2, items 24, 28 and 37
 answered in outline, *the question, "which x", is algebra's: it has an unknown. The methods differ*, set
 out three methods, and proposed that P1f.8 (now P1g.10) compare them. The user's reply there (`dc88520b`):
 
@@ -82,7 +82,7 @@ check, over a bounded domain; method 3, the shapes its rewriting rules know.
 before?* is *x − 2 = 5* met in a text, and the banked word theory does not answer it, since it reads *gave*
 in one direction ([M1h's P1h.1](../../m1h_beyond_word_problems/README.md#p1h1--temporal-and-causal-theories),
 its opening question; `examples/word_problems/before.ein` once
-[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)
+S1f.6.28
 banks it). It joins this stage's set of equations.
 
 ### S1g.9.2 — What *no solution* is under each

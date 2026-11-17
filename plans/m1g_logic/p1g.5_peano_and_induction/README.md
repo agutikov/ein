@@ -3,11 +3,11 @@
 **Milestone:** [M1g](../README.md)
 **Status:** planned 2026-11-11, not started.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s rulings; `std.math.decimal-arith`, the decimal calculator
-of [P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), which S1g.5.2 holds the unary
+of P1f.6, which S1g.5.2 holds the unary
 numbers to; for S1g.5.3, [S1g.4.4](../p1g.4_first_order_logic/s1g.4.4_quantifier_rules.md)'s proof checker.
 **Pulls in:** [F26](../../followups/f26_consistency_and_completeness.md)'s § *Does Gödel's theorem say
 anything about an Ein program?* and its promotion 5;
-[S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)'s item 4,
+S1f.6.10's item 4,
 bounded theorem checking, which this phase continues from where that stage says *what it cannot do: quantify
 over unbounded numbers, or state an induction schema*.
 
@@ -67,7 +67,7 @@ open, where a search does not end, and what self-reference would need.
 
 - **Unary is exponentially longer than decimal.** A number n is n nested constructors, and the parser nests
   to 1 000 (E-4 of the calculator's
-  [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)): a program writes
+  `findings.md`): a program writes
   numbers below a thousand, and multiplication's cost is in the product. The bounds are small and stated.
 - **Induction needs most of P1g.4.** If substitution or the quantifier rules slip, S1g.5.3 falls back to an
   induction rule for quantifier-free equations only (primitive recursive arithmetic's shape), which needs

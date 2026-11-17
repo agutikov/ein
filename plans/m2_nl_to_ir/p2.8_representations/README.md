@@ -47,7 +47,7 @@ encodings, compares what the model can do with each target, and never times
 the solvers against each other. Shared: the systems, their installation
 ([S10.2](../../m10_external_benchmarks/s10.2_systems_and_install.md)), the
 runner's subprocess discipline (a linked rival and a subprocess rival are
-not comparable — the reason [Q-M1a.23](../../../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+not comparable — the reason [Q-M1a.23](../../../docs/decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)
 gave), and the hand-written encodings as the *few-shot examples* for each
 target. Not shared: M10's answers are certified by three systems agreeing;
 this phase's answers are the benchmark's gold, and a target's agreement with
@@ -70,7 +70,7 @@ the next thought is "so call it" — that is M3, it is dropped*.
   it was pre-registered to have, and the caveats where the numbers appear:
   Lean is not a solver; Datalog may be unable to state a choice
   ([M10 § Risks](../../m10_external_benchmarks/README.md#risks) — and that
-  finding, if it recurs here, is direct evidence for [M1d](../../../docs/history/m1d_satisfiability/README.md)'s
+  finding, if it recurs here, is direct evidence for M1d's
   premise from a second direction).
 
 ## Acceptance

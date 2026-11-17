@@ -3,7 +3,7 @@
 **Phase:** [P1h.3](README.md) of [M1h](../README.md)
 **Status:** planned 2026-11-13. Not started. A reading of programs that exist, with scratch variants: nothing
 outside `plans/` and `build/` moves.
-**Depends on:** [S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md),
+**Depends on:** S1f.6.28,
 which rebuilds `readings.ein` to *always owed*, makes `boxes12.ein` two states with one answer, and brings
 back the 13-apple problem. If that stage has not run, this one uses the investigation's `readings_always`
 and its two problems from `build/s1f.6.20/p/`, or rebuilds them from
@@ -23,7 +23,7 @@ The user, 2026-11-12, on a word with two readings (reply 31):
 > correct, but reasoning not - this case is M2 and Ein theory of itself or theory of solutions - so out of
 > the scope here.
 
-[Round 2, item 31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q31), to which
+Round 2, item 31, to which
 the user replied *"yes"*: *with 12 apples and boxes of 3 both readings answer 4, so R is **two states with
 one answer**: two solutions, one of which may be the wrong reasoning with the right number. The query's
 projection shows one class, 4; the states show the two readings.*

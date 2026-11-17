@@ -1,6 +1,6 @@
 # `nl2smt/` — Zebra sentences through link grammar to SMT
 
-A proof of concept, [M1j](../plans/m1j_nlp_smt_poc/README.md): the Zebra
+A proof of concept, M1j: the Zebra
 puzzle's clues as English lines go in, and a solver's answer comes out.
 
 ```
@@ -367,7 +367,7 @@ back-end and none is planned; see [`plans/README.md`](../plans/README.md)
 § Roadmap.
 
 > **The `CVC4` submodule was deinitialised at M1a
-> [S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-grammar-as-ebnf).**
+> S1a.10.5.**
 > It pointed at `CVC4/CVC4` at version 1.8 (2021), at `smt/CVC4`, and was never
 > built by anything here; what it cost was a `git clone --recurse-submodules`
 > fetching a large repository for a dropped milestone. Nothing that *reads*
@@ -403,7 +403,7 @@ its own (P2.5) until the 2026-08-23 reshape of M2 around
 representation ablation; nothing about the experiment changed.
 
 > **The `link-grammar` submodule was deinitialised at M1a
-> [S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-grammar-as-ebnf).**
+> S1a.10.5.**
 > It pointed at `opencog/link-grammar`, at `nlp/link-grammar`, and was never
 > checked out, so what it cost was a `git clone --recurse-submodules` fetching
 > it for an experiment that has not run. The pipeline here did not need it:

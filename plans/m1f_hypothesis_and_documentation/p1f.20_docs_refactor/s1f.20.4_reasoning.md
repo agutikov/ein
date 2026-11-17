@@ -7,7 +7,7 @@ branch of its own; the split sources it shares with them are left for S1f.20.6. 
 2026-11-08.
 **Depends on:** [S1f.20.2](s1f.20.2_the_disposition_table.md)'s table, reviewed. Its
 `rule-evolution/analysis-of-rules.md` is sequenced with
-[S1f.5.15](../p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md), whichever runs second.
+S1f.5.15, whichever runs second.
 
 ## What it writes
 

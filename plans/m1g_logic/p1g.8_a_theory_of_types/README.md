@@ -5,14 +5,14 @@
 No stage file yet: the phase is this README, and its stages are sections below.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop; of M1f, the calculator's number kinds
 as shipped (`std.math.decimal-arith`, `std.math.int`, `std.math.rat`, under `std.math` since
-[S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)), and
+S1f.6.31), and
 [P1g.10's S1g.10.7](../p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md),
 which says what the compound numbers would need of a types theory.
 
 ## Where it comes from
 
 Question 12 of the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q12): *Is a smaller
+`questions.md`: *Is a smaller
 kind of number accepted where a larger is expected?* Today it is not: `(int-add (n z 5) X)`, a natural
 number where an integer goes, is answered by silence, and so is an integer where a rational goes; 5 as a
 rational is written `(rat (int (n z 5) z) (n z 1))`. The options were (a) no promotion, as built, and (b)
@@ -29,7 +29,7 @@ its own**; and promotion is tried *with it*, as its first use, not written as fo
 
 A theory **written in Ein**, as every other module of the stdlib is: relations and rules, imported by a
 program that wants it. It is not a type checker in the loader (the loader's arity check,
-[S1f.6.23](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md),
+S1f.6.23,
 holds a form to its relation's *count* of arguments and stops there), and it is not new syntax.
 
 What exists to build on, which the first stage reads before proposing anything:

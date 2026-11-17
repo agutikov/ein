@@ -11,7 +11,7 @@ and the right choice here anyway since none of this is adversary-facing input.
 But `FxHashMap`'s iteration order, while stable run-to-run, is still an
 artefact of hash values and insertion history rather than of the data, where
 the engine's observables are defined by *insertion order* or an explicit sort
-([design/02](../docs/history/m1a_rust/design/02_determinism_and_order.md) §2). So the
+([`determinism-and-order.md`](../docs/ein/ein.rs/design/determinism-and-order.md) § 2). So the
 rule is stronger than "don't use RandomState": **do not iterate a hash map at
 all** where the order can reach an output.
 

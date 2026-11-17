@@ -713,11 +713,11 @@ saying "drop the keyword once registry exists").
 **The pair is refused since M1f S1f.5.11 (2026-11-09).** Q32 removed
 `:where` and left a pair written anyway to be dropped, by the compiler, in
 silence, so the rule fired unguarded. The user's ruling of 2026-11-07
-([Q-M1e2.28](m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take),
+([Q-M1e2.28](../docs/decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md),
 the no-owner inventory's D-15 and G-22) supersedes that half: each form takes a
 fixed set of keywords and a term takes none, so `:where` is refused at the
 parse wherever it is written since S1f.5.5's swap (2026-11-09), and
-[S1f.5.11](m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)'s
+S1f.5.11's
 T1f.5.11.2 retired the compiler's drop. The positional guard, `(neq ?a ?c)`,
 is what Q32 asked for and what every program writes.
 

@@ -9,7 +9,7 @@ with the cut computed outside the engine on real programs and every proposed sur
 or anything it prints changes; the two stages after the stop are named here and their tasks are written at
 the stop.
 **Depends on:** [M1f](../../m1f_hypothesis_and_documentation/README.md)'s calculator phase,
-[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), for the word problems banked
+P1f.6, for the word problems banked
 under [`examples/word_problems/`](../../../examples/word_problems/README.md), on which both opening questions
 were first met. Nothing of M1g.
 **Blocks:** [P1h.3](../p1h.3_gaps_assumptions_and_readings/README.md) reads the slice for how an answer
@@ -23,7 +23,7 @@ stages.
 ## Where it comes from
 
 Question 27 of the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q27) asked whether the
+`questions.md` asked whether the
 word theory works backwards from the question, so that nothing is computed that no question needs. The user,
 2026-11-12:
 
@@ -36,7 +36,7 @@ program is *a model of a problem*; the parts are *used / unused*, *required / su
 both *print* and *dump*.
 
 **Its two opening questions** are from
-[round 2, item 33](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q33). There the
+round 2, item 33. There the
 user's reply 33 was answered:
 
 > Is this a finite set of assumptions? What is it limited by? Used names/words? Probably we don't need to say
@@ -114,7 +114,7 @@ figure is re-taken by [S1h.2.1](s1h.2.1_what_a_slice_is_today.md).
 
   (The calculator's investigation counted 139 and 137 for the two-step problem on its prototype of
   2026-11-11, E-17 of its
-  [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md).) On `contra.ein`,
+  `findings.md`.) On `contra.ein`,
   whose root is dead, the three steps kept are the plan and the stated amount: the walk starts from the
   query's relations, and the refutation is on no path to them.
 - **A dead node's core,** a slice of another kind: the given facts a contradiction rests on, with the rule
@@ -222,7 +222,7 @@ cites this section:
 
 ## Connections
 
-- **[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** replies 27 and 33, round 2's
+- **P1f.6:** replies 27 and 33, round 2's
   item 33, and E-17, whose 137 of 139 steps is what the trace's slice does on a calculation.
 - **[P1h.3](../p1h.3_gaps_assumptions_and_readings/README.md):** *how an answer reports what it rests on* is
   this slice; *which assumptions a model has to state* is counted through it.

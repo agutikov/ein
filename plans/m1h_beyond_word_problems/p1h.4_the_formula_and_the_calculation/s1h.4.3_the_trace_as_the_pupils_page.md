@@ -38,7 +38,7 @@ with it.*
 - **A call.** A word rule asks the calculator by concluding a request, `(div 12 3)`, and reads its answer,
   `(quot-of 12 3 4 z)`. Between the two are the calculator's steps. The calculator's own tagged calls
   (`add-walk`, `mul-call`, `div-call`, `cmp-walk`) are named as an interface by
-  [S1f.6.30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)'s
+  S1f.6.30's
   first task.
 
 ## What it produces

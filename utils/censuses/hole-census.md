@@ -1,8 +1,8 @@
 # The hole census — 2026-11-02
 
-**S1e2.1b.3's measurement** ([the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)), the evidence
+**S1e2.1b.3's measurement** (the stage), the evidence
 for [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D4, which is
-[Q-M1e2.7](../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)'s
+[Q-M1e2.7](../../docs/decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)'s
 sub-question (d): *what is reported when R has holes?* It lists every hole of
 every flagged cube the oracle reaches, by kind and by cause, each with the
 site that made it, and R's shape around its holes. It decides nothing.
@@ -11,7 +11,7 @@ site that made it, and R's shape around its holes. It decides nothing.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census                    # § 1–6, the flagged cubes, 0.2 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --written       # § 2, the programs in shared/written.rs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- \
-    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                                  # § 2, S1e2.4.1's probes
+    plans/followups/f21_probes/*.ein                                                                          # § 2, S1e2.4.1's probes
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- \
     --limit 19 examples/lattice/06_friends_tables.ein                                                         # § 7, 29 s at 16 jobs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example site_census                    # § 8, 6.6 s
@@ -65,7 +65,7 @@ census's own (§ 5, § 6). No route reads any of it.
 
 ## 2. By cause and kind
 
-The six causes of [the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md#context), each as
+The six causes of the stage, each as
 `attribution.rs` recognises it:
 
 | cause | kind | holes: corpus (programs) | probes | written | `06` at 19 | the rule that names the site |
@@ -83,7 +83,7 @@ The six causes of [the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_
   `via_hole` by S1e2.4.1, `ACTIVATOR_REFUTES` by S1e2.1b.6. The corpus's
   activator sites are `lattice/09`'s, which compiles an obligation, and
   `features/01`'s, past the limit and never exercised
-  ([site census § 2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)).
+  (site census § 2).
 - **`ACTIVATOR_UNDER_ABSENT` is new**, written for this census. `act` writes
   the activator `(watch r)` while `(q ?x)` is absent, which compiles `watch`
   for `r`, and `(r A)` then refutes. Its dead hole `{(p A), (r A)}` has
@@ -91,7 +91,7 @@ The six causes of [the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_
   plan was compiled from, so the `absent` the death rests on is in no
   premise. The site rule names the activator site from `refuted_by`, not from
   the premises. What this means for learning from a refutation is
-  [S1e2.1b.4](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)'s.
+  S1e2.1b.4's.
 - **Under *forbid***, once S1e2.2.5's refusal ships: the first row is refused;
   the second if its F2 takes `via`; the third if its F3 reads the plans a
   node compiles. The three owing rows are not refutations and stay.
@@ -244,7 +244,7 @@ extended to the probes, the written programs and `06`: **on every program
 with a hole, the holes are the same by fork and from scratch.** A hole here
 needs no path dependence, as `monotonicity.md` § 7.5 argues for owing holes.
 The dead holes agree too: on none of these programs does a site's rule fire
-at root ([site census § 2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)), and a fact root
+at root (site census § 2), and a fact root
 derived under an `absent` is what makes the two routes differ.
 
 ## 7. Past the limit: `06_friends_tables` at 19
@@ -327,7 +327,7 @@ example code: no route reads it, and no answer moves.
 
 ## 9. Each option, drafted on real programs
 
-The four options of [the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md#the-options-for-f21s-d4),
+The four options of the stage,
 for F21's D4. **None is asked here.** Each is drafted as the rows it would
 print in place of today's `lattice` block, by the census itself from the cube
 it computed:
@@ -336,7 +336,7 @@ it computed:
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --drafts --no-scratch \
     examples/ein-bugs/naf-upward-closure.ein examples/lattice/04_obligation_trigger_hole.ein \
     examples/lattice/08_absent_witness_hole.ein examples/lattice/synth/trigger_hole.ein \
-    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein
+    plans/followups/f21_probes/via_hole.ein
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --drafts --no-scratch \
     --limit 19 examples/lattice/06_friends_tables.ein
 ```
@@ -560,7 +560,7 @@ error: examples/lattice/synth/trigger_hole.ein: not monotone, so R can have a ho
 
 ### via_hole, dead through a derived relation
 
-`plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein`.
+`plans/followups/f21_probes/via_hole.ein`.
 
 Today, printed by `ein solve`:
 
@@ -596,7 +596,7 @@ Today, printed by `ein solve`:
 (d), drafted, on stderr:
 
 ```
-error: plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein: not monotone, so R can have a hole — refused: derive-p: absent reads q at absent depth 1
+error: plans/followups/f21_probes/via_hole.ein: not monotone, so R can have a hole — refused: derive-p: absent reads q at absent depth 1
 ```
 
 ### `06_friends_tables` at `--region-limit 19`, 166 holes
@@ -636,7 +636,7 @@ What each option would move, counted on the corpus. The goldens are
 entry include five read-outs (`read-out[describe]`, `[maximal]`, `[minimal]`,
 `[single]`, `[n2]`) and the `region-trace`, which repeats the `lattice` block;
 `ein-cli/tests/golden/corpus_exits.txt`; the read-out's golden page,
-[`read_out_examples.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md),
+`read_out_examples.md`,
 whose X8 is `naf-upward-closure` and X9 is `06_friends_tables` past the limit;
 and `ein-summary/2`'s `region.holes`, which lists every minimal hole with
 `set`, `dead`, `core` and `owes`. Counted 2026-11-02 at `c92d204e`, from the

@@ -10,7 +10,7 @@
 Two halves, and both run the engine ($EIN_BIN or --bin, default
 `ein.rs/target/release/ein`):
 
-1. **The flag** ([T1f.5.14.6](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)):
+1. **The flag** (`--no-require-why`):
    every `.ein` under `examples/`, `tests/`, `corpus/` and `stdlib/`, per root:
    how many files the loader reads at all (`ein kb save` with `:why` not
    required), and of those how many it refuses when a `:why` is required, with
@@ -26,7 +26,7 @@ Two halves, and both run the engine ($EIN_BIN or --bin, default
    with `--slow`, the `heavy_dump` ones with `--heavy`), solved as `ein solve FILE
    --dump-answer DIR`, and every fact of every state file the run writes
    (`DIR/models/NN.ein`: the whole state, root's facts included — the fact
-   set [Q-M1e.7](../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+   set [Q-M1e.7](../docs/decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)
    is about, and not the read-out's listed projection). Each fact is read with
    the program the state file re-writes above it (imports inlined) and the
    provenance comment after it, and is counted three ways:

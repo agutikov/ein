@@ -3,8 +3,8 @@
 > **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. F24 keeps its question and its rows.
 
 **Filed 2026-11-11**, on the user's ruling of that day (*"yes S1f.7.9 moves to a new F24"*), from M1f
-[S1f.7.9](../m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.9_a_facts_rule_that_names_no_rule.md)
-and the [analysis of 2026-11-11](../m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11).
+S1f.7.9
+and the analysis of 2026-11-11.
 
 **What it owns.** A program may write a fact with a provenance, `(p k :rule R :using (…))`. The loader stores what
 is written and checks none of it. Three things follow, taken on the release binary at `4bf6da73` (2026-11-11):
@@ -73,12 +73,12 @@ form (S1f.7.9 § What the analysis of 2026-11-11 found) was about the fact lines
 
 ## Handed over by M1f, 2026-11-15
 
-One finding of M1f's [P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), moved here on the
+One finding of M1f's P1f.6, moved here on the
 user's ruling of 2026-11-15 at that phase's close (*"all as you recommended"*,
-[`close.md` § The user's rulings](../m1f_hypothesis_and_documentation/p1f.6_calculator/close.md#the-users-rulings-2026-11-15)). It is the round trip's side of this followup's question:
+`close.md` § The user's rulings). It is the round trip's side of this followup's question:
 a state file writes every fact of a state as a fact of the file, the derived ones with no `:rule`, so the loader
 cannot tell them from written ones. No answer moves.
 
 | id | what | source | re-taken |
 |---|---|---|---|
-| E-71 | **a state file reloaded states more `written` facts than its state held.** The loader states `(written T)` for each fact nested in a fact a file holds ([`diagnostics.md` § 2.30](../../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)), and a `--dump-answer` state file writes every fact of the state as a fact of the file, the ones the run derived among them, so their nested facts are stated as written too: the reloaded state holds every `written` fact the state held, and one for each fact nested only in a derived one. A term a rule derives from well-formed terms is well-formed, so `std.math.decimal`'s check of a reloaded state derives nothing; a check that flagged what a rule may build would flag it on reload alone. What a written fact's provenance may claim, and so whether a state file marks its derived facts, is this followup's question | [S1f.6.38](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s T1f.6.38.2, the round trip | live: `ein-cli/tests/answer_round_trip.rs` holds `written` apart, the state's a subset of the reloaded file's and every other fact as it was; re-taken at P1f.6's close, a state file writes a derived fact with no `:rule` (`tests/stdlib/math/decimal-arith/01_add.ein`'s, 2026-11-15) |
+| E-71 | **a state file reloaded states more `written` facts than its state held.** The loader states `(written T)` for each fact nested in a fact a file holds ([`diagnostics.md` § 2.30](../../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)), and a `--dump-answer` state file writes every fact of the state as a fact of the file, the ones the run derived among them, so their nested facts are stated as written too: the reloaded state holds every `written` fact the state held, and one for each fact nested only in a derived one. A term a rule derives from well-formed terms is well-formed, so `std.math.decimal`'s check of a reloaded state derives nothing; a check that flagged what a rule may build would flag it on reload alone. What a written fact's provenance may claim, and so whether a state file marks its derived facts, is this followup's question | S1f.6.38's T1f.6.38.2, the round trip | live: `ein-cli/tests/answer_round_trip.rs` holds `written` apart, the state's a subset of the reloaded file's and every other fact as it was; re-taken at P1f.6's close, a state file writes a derived fact with no `:rule` (`tests/stdlib/math/decimal-arith/01_add.ein`'s, 2026-11-15) |

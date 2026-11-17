@@ -557,7 +557,7 @@ def trace_pages(p: Pages) -> list[dict]:
     pre, sections = split_trace(text)
     defined = [("solution-semantics.md § 1",
                 "docs/ein/reasoning/kb-evolution/solution-semantics.md#1-the-vocabulary"),
-               ("read_out.md § 8.4", "plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md")]
+               ("rendering.md § The trace", "docs/ein/user/reference/rendering.md#the-trace--ein-solve---trace")]
     out: list[dict] = []
     block = 0
     for title, body in sections:
@@ -1255,7 +1255,7 @@ def consistency(p: Pages, s: dict | None, trace: list[dict], events: list[dict])
     page = p.dir / "consistency.md"
     lines = header("Cross-checks", "seven claims the artefacts make about each other, checked against each other",
                    "this bundle — reading the files above",
-                   [("S1e2.1.5", "plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.5_every_artefact_rendered.md")],
+                   [],
                    [], page, "**A mismatch is a finding**, filed when seen — not smoothed over by the renderer.")
     lines += table(["check", "result", "detail"],
                    [[c, "n/a" if ok is None else ("pass" if ok else "**MISMATCH**"), d] for c, ok, d in p.checks])

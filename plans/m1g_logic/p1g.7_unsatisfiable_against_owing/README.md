@@ -5,7 +5,7 @@
 No stage file yet: the phase is this README, and its stages are sections below, written out as files when
 [P1g.1](../p1g.1_survey_and_design/README.md)'s stop has settled the rest of the milestone.
 **Depends on:** P1g.1's stop; of M1f,
-[S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md), the read-out
+S1f.6.26, the read-out
 row for what root owes, which is the small part of the subject that was ruled and is built first; and
 [P1g.9](../p1g.9_one_equation_three_methods/README.md),
 which shows the same equation dead by one method and open by another.
@@ -17,7 +17,7 @@ refuted assumption is read off N.
 
 The question was asked three times in M1f's calculator phase (a circuit, an equation, and this milestone's
 own probe 1b) and merged as question 24 of
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q24): *an
+`questions.md`: *an
 unsatisfiable search reads as "owing", not as "dead": is that the wanted reading?* When the unknowns are
 hypotheses that each owe a value, every complete assignment is dead but the partial ones are alive and
 merely cannot be completed. So R is empty as *every alive node owes*, `ein solve --single` answers `Open`
@@ -38,7 +38,7 @@ and, on how a missing quantity is detected (question 28): *"see my answer in que
 to discuss, analyze, needs a separate stage."*
 
 This is that phase.
-[Round 2, items 24, 28 and 37](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q24)
+Round 2, items 24, 28 and 37
 answers the reply's questions in outline and proposes it: *a phase of M1g, "unsatisfiable against owing":
 the open state's core, the read-out row for N, and whether a finished search may call an unpayable debt
 dead. M1g's first probes already met it.* The outline, which the phase starts from and re-takes on
@@ -69,7 +69,7 @@ programs:
 - **Not F21.** Whether a refutation may rest on an `absent` and what a non-monotone program means are
   [F21](../../followups/f21_non_monotone_programs_decided.md)'s. This phase's programs are monotone: the
   debt is the engine's, not a fact a rule reads
-  ([round 2, item 30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q30)).
+  (round 2, item 30).
 - **Not a SAT solver.** Propagating *dead because every completion is dead* is what a solver learns from;
   the phase says what it would cost and what it would buy, and
   [S1g.6.6](../p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md) is where a cheaper search
@@ -80,15 +80,15 @@ programs:
 ## Handed over by M1f, 2026-11-15
 
 One finding of the calculator's
-[`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md), moved here on the user's
+`findings.md`, moved here on the user's
 ruling of 2026-11-15 at P1f.6's close (*"all as you recommended"*,
-[`close.md` § The user's rulings](../../m1f_hypothesis_and_documentation/p1f.6_calculator/close.md#the-users-rulings-2026-11-15)).
+`close.md` § The user's rulings).
 It is E-23's neighbour, the read-out of an R that is empty by owing, and [S1g.7.2](#s1g72--the-open-states-core)'s
 rows are where it is decided; no answer moves.
 
 | id | what | source | re-taken |
 |---|---|---|---|
-| E-44 | **on an R that is empty by owing, root's own debts are on no stdout row where root is not on the frontier.** The `owing` rows name the frontier, the alive owing nodes with no alive node one fact up, each with its instances. Where an alive node sits above root, root is not among them, the `empty` row stands in place of `∅`, and nothing on stdout names what root itself owes, though a query's row counts it, *root is alive and owes 3 instances*, and the summary's `region.root_owed` lists them (M1f S1f.6.26) | [S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6261--the-rows-shown-first-done)'s T1 | live on four tracked programs, none with `[]` among `region.frontier[].set`: `examples/binary_logic/unsatisfiable.ein` and `equivalent.ein`, three instances each in `region.root_owed`, `examples/beyond_arith/equation_no_solution.ein`, two, and `examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`, one (`ein solve FILE --json-summary`, the gate binary of `7c3c2878`, 2026-11-15) |
+| E-44 | **on an R that is empty by owing, root's own debts are on no stdout row where root is not on the frontier.** The `owing` rows name the frontier, the alive owing nodes with no alive node one fact up, each with its instances. Where an alive node sits above root, root is not among them, the `empty` row stands in place of `∅`, and nothing on stdout names what root itself owes, though a query's row counts it, *root is alive and owes 3 instances*, and the summary's `region.root_owed` lists them (M1f S1f.6.26) | S1f.6.26's T1 | live on four tracked programs, none with `[]` among `region.frontier[].set`: `examples/binary_logic/unsatisfiable.ein` and `equivalent.ein`, three instances each in `region.root_owed`, `examples/beyond_arith/equation_no_solution.ein`, two, and `examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`, one (`ein solve FILE --json-summary`, the gate binary of `7c3c2878`, 2026-11-15) |
 
 ## The stages
 
@@ -99,7 +99,7 @@ The programs on which the two readings part, each banked with every surface it p
 `questions.md` 24) and by saturation (a dead root, a three-row core); the banked `unsatisfiable.ein` and
 `equivalent.ein` of `examples/binary_logic/`, which claim the owing frontier and `(false)` for the query
 (E-23 of the calculator's
-[`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)); this milestone's
+`findings.md`); this milestone's
 probe 1b, `(And p (Not p))` required; a word problem whose gap is a debt; and E-18's pair, on which a
 query's `:expect (false)` holds though root only owes. The user's four questions are each answered on these
 programs and not in prose: what `Open` keeps, what `false` would give, what exists for an open state today,

@@ -45,7 +45,7 @@ P1h.2's slice drawn another way; an engine change where it is one, with the refe
   holds the fold to the trace it folds (every folded call's request and result are steps of the whole
   trace, and its count is theirs).
 - **E-17** of the calculator's
-  [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) and **F-2** of
+  `findings.md` and **F-2** of
   [P1g.10's](../../m1g_logic/p1g.10_school_algebra/findings.md) are marked with what was built, by a pointer
   line in each.
 

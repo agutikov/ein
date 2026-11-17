@@ -11,14 +11,14 @@
 **It was not written anywhere.** A search of `plans/` and `docs/` that day found Gödel named twice, both in
 passing, in [idea 09](../ideas/09-puzzles-beyond-zebra.md) (the liar's sentence as a puzzle, and *Gödel, Escher,
 Bach* as reading); *incompleteness* used only for a relation that owes a witness (M1d's
-[`the_boundary.md`](../../docs/history/m1d_satisfiability/the_boundary.md)) and for M2's *semantic
+`the_boundary.md`, now [`satisfiability.md`](../../docs/ein/reasoning/kb-evolution/satisfiability.md)) and for M2's *semantic
 incompleteness* ([P2.8](../m2_nl_to_ir/p2.8_representations/README.md)); and
 [idea 06](../ideas/06-inference-rules-completeness.md) asking whether the *rule set* is complete, a third sense.
 [F1b](f1b_logical_formulation.md) asks which fragment of first-order logic Ein covers and does not ask this.
 
 **Theme owner:** the user (research interest).
 **Trigger:** when F1b is taken up, since the fragment decides most of the answers below; when
-[P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)'s last stage, S1f.6.10, asks what the
+P1f.6's last stage, S1f.6.10, asks what the
 arithmetic theory can do beyond arithmetic; when M2 or M5 has to say in a paper what Ein's verdicts certify; or
 when [F5](f5_rules_as_data.md) makes rules data, which is where self-reference becomes writable.
 
@@ -118,7 +118,7 @@ problem's text, and where Ein's verdicts are meant to be read as plain statement
 - **Contradictory:** *Bob has 5 apples and gave 7 away*. Root is dead, and the core is the two sentences.
 - **Not enough information:** *how many do they have together* with Alice's apples unstated. A state that owes,
   or a region of several states, and the gap **named**
-  ([S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)'s two kinds: a
+  (S1f.6.20's two kinds: a
   missing quantity and a missing reading).
 - **Complete relative to what?** Common sense fills gaps silently (Alice had none; a box holds any three
   apples). A formal theory is complete only against its own language, and Ein's part is to make the filling
@@ -148,7 +148,7 @@ problem's text, and where Ein's verdicts are meant to be read as plain statement
 - [F1b](f1b_logical_formulation.md), the fragment; [F1](f1_categorical_formulation.md), the categorical reading.
 - [F21](f21_non_monotone_programs_decided.md), programs with no stable reading; [F17](f17_formal_verification/ideas.md),
   `Spec ≠ Intent`, which is *the model is not the world* said of programs.
-- [M1d](../../docs/history/m1d_satisfiability/README.md), where *no model* was separated from *not yet a model*.
+- M1d, where *no model* was separated from *not yet a model*.
 - [M2](../m2_nl_to_ir/README.md), whose benchmark holds instances whose right answer is *ambiguous*, and whose
   faithfulness question is completeness against the text.
 - [Idea 06](../ideas/06-inference-rules-completeness.md) and [idea 09](../ideas/09-puzzles-beyond-zebra.md).

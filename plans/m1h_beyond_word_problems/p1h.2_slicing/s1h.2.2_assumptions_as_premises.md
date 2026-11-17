@@ -16,7 +16,7 @@ The user, 2026-11-12, at the end of reply 33:
 > Btw, if we add rules and ontology that restricts throwing things away and after that the solution will not
 > touch those rules and facts (see my answer 27) - that means this is not required information?
 
-[Round 2, item 33](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q33), to which
+Round 2, item 33, to which
 the user replied *"OK"*:
 
 > If an assumption is a fact that the dependent rules take as a premise, then the slice of an answer (your

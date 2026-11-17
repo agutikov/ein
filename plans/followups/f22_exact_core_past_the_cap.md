@@ -1,18 +1,18 @@
 # F22 — The exact unsat core: re-derive what a full alternatives list refused
 
 **Filed 2026-11-04**, from M1e2's
-[S1e2.2.11](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md)
+S1e2.2.11
 (W10), on the user's ruling of that day on
-[Q-M1e2.11](../m1e2_correctness/open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it)
+[Q-M1e2.11](../../docs/decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)
 (i): *"(b) Every; defer rest"*. The promise stays *the smallest frontier
 over every derivation the program records*; S1e2.2.11 built Q-M1e.15's (3),
 which keeps each fact's smallest-closure arrival beside its capped list and
 fixes `W10/alt-cap-core`; and what (3) cannot reach is this followup's.
 
 **Widened 2026-11-05**, on the user's ruling of that day on
-[Q-M1e2.15](../m1e2_correctness/open_questions.md#q-m1e215--what-does-a-derivation-through-a-forall-rest-on),
+[Q-M1e2.15](../../docs/decisions/answer/Q-M1e2.15-a-derivation-through-a-forall-rests-on-each-fact.md),
 (b): a derivation through a `forall` rests on each fact its universal read,
-and [S1e2.2.21](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md)
+and S1e2.2.21
 folds each at its own smallest frontier rather than searching the
 combinations, which costs ×2 500 a member of N as the search stands
 (`zebra2-hints`, 3 ms → 7.5 s, cut by its budget). So a core can be larger
@@ -27,7 +27,7 @@ a per-fact choice cannot see the saving.
 ([`plans/wrong_answers/register.toml`](../wrong_answers/register.toml)), each
 `open`, reviewed `deferred`, with F22 as its `owner`: `W10/alt-cap-shared`
 (S1e2.2.11, 2026-11-04), and since M1e2
-[S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md)
+S1e2.2.25
 (2026-11-05) `W10/fork-delta-order`, `W10/closure-shared-given`,
 `W10/second-preparation` and `W25/guard-only-second`
 ([§ Handed over by M1e2's inventory](#handed-over-by-m1e2s-inventory-2026-11-05)).
@@ -36,10 +36,10 @@ this kind of row, names each at M1e2's close beside F21's. W23's residual,
 the exact core past the search's budget, is this followup's and no row's.
 **Three more since M1f**, each `open` with F22 as its `owner`:
 `W36/alt-flag-refuted-by` and `W36/alt-flag-two-derivations` (M1f
-[S1f.5.15](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md),
+S1f.5.15,
 2026-11-08, the user's ruling on Q-M1f.5 (a): `:record-alternative-justifications
 false` moves `refuted by` beside an unmoved core), and `W39/or-one-key` (M1f
-[S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s
+S1f.5.1's
 T1f.5.1.3, 2026-11-09, Q-M1f.13 (a), defaulted on the user's instruction of
 that day): a top-level `(or …)` whose second disjunct's match binds every
 register as the first's did is dropped as the same application, so its
@@ -105,18 +105,18 @@ as the fix.
 
 ## Handed over by M1e2's inventory, 2026-11-05
 
-[The inventory of 2026-11-05](../m1e2_correctness/inventory_2026-11-05.md) found four more ways a printed core is
+The inventory of 2026-11-05 found four more ways a printed core is
 not the smallest over every derivation the program records. The user ruled the
-same day ([Q-M1e2.16](../m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (2) and (5), and *"File W22, W23; fix
+same day (Q-M1e2.16 (2) and (5), and *"File W22, W23; fix
 pre-close"*) that each is this followup's:
 
 | inventory id | what | witness | in M1e2 |
 |---|---|---|---|
-| W-8 | a derivation with no premises, from an activator a node derived, is never recorded as an alternative, so rule priority picks a three-fact core over a one-fact one | [`guard-only-second.ein`](../wrong_answers/witnesses/guard-only-second.ein) against [`guard-only-first.ein`](../wrong_answers/witnesses/guard-only-first.ein), the inventory's probes | **`W25/guard-only-second`**, filed by [S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md): N `{(p a)}`'s core `(b a) (p a) (seed a)`, right `(p a)`. A store with no cap gives the three facts too: the derivation is never offered to the list |
+| W-8 | a derivation with no premises, from an activator a node derived, is never recorded as an alternative, so rule priority picks a three-fact core over a one-fact one | [`guard-only-second.ein`](../wrong_answers/witnesses/guard-only-second.ein) against [`guard-only-first.ein`](../wrong_answers/witnesses/guard-only-first.ein), the inventory's probes | **`W25/guard-only-second`**, filed by S1e2.2.25: N `{(p a)}`'s core `(b a) (p a) (seed a)`, right `(p a)`. A store with no cap gives the three facts too: the derivation is never offered to the list |
 | W-9 | `fork-delta-order`'s core has the smallest size but is not the canonical core an uncapped store gives | `examples/ein-bugs/fork-delta-order.ein` | **`W10/fork-delta-order`**, filed by S1e2.2.25 (S1e2.2.12's default 2): core `(g G08) (h H40) (on A) (on B)`, right the canonical `(g G01) (h H01) (on A) (on B)`, contested (any four-fact core is the smallest) |
 | W-10 | the closure estimate counts a given shared by two premises twice | [`closure-shared-given.ein`](../wrong_answers/witnesses/closure-shared-given.ein), S1e2.2.25's probe, against its `-control` | **`W10/closure-shared-given`**, filed by S1e2.2.25: `x-uv`'s premises `(u K) (v K)` rest on the one given `(g K)` and estimate 2, which does not lower a full list's 2, so root's core is `(c C01) (d C01)`, right `(g K)` |
 | S1e2.2.23's note | a member of N whose core `--dump-answer` and `--trace` take after the run, through `region::Nodes::refutation`, is not the smallest | `examples/zebra2.ein` | **`W10/second-preparation`**, filed by S1e2.2.25: `{(nation-loc Ukrainian House-2), (smoke-loc Old_Gold House-4)}`'s core 18 facts, right 17. **The mechanism decides which derivations the cap keeps**: `Nodes::new` prepares the already-saturated root a second time, root's store unmoved (388 facts, a scratch diagnostic at `94c75204`), but the snapshot a node resumes from is written anew, so the node's derivations arrive in another order and the cap keeps others. No smaller witness was found; the row's run costs 9.0 s in release and 10.5 s in debug (2026-11-05) |
-| W23's residual | a core search cut at its budget (`ExplanationBudget`: 64 environments per fact, 64 rounds) prints a frontier that may not be the smallest | `examples/ein-bugs/wrong-answers/core-search-cut.ein`, the inventory's `F2_core_cut.ein` | [S1e2.2.23](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md) made every surface say a core was cut, and at which cap (`be7893d9`); the exact core past the budget is this followup's. The corpus cuts 19 of the 5 442 cores `--dump-answer` reports for N, `zebra.ein`'s six at the rounds and the `zebra2` family's at the environments, and a budget of 1 024 environments and 1 024 rounds gives each the same core and the witness its eight `y` facts, at no measurable cost (`ein solve FILE --dump-answer DIR`, 2026-11-05, S1e2.2.23 T1) |
+| W23's residual | a core search cut at its budget (`ExplanationBudget`: 64 environments per fact, 64 rounds) prints a frontier that may not be the smallest | `examples/ein-bugs/wrong-answers/core-search-cut.ein`, the inventory's `F2_core_cut.ein` | S1e2.2.23 made every surface say a core was cut, and at which cap (`be7893d9`); the exact core past the budget is this followup's. The corpus cuts 19 of the 5 442 cores `--dump-answer` reports for N, `zebra.ein`'s six at the rounds and the `zebra2` family's at the environments, and a budget of 1 024 environments and 1 024 rounds gives each the same core and the witness its eight `y` facts, at no measurable cost (`ein solve FILE --dump-answer DIR`, 2026-11-05, S1e2.2.23 T1) |
 
 They share this page's proposal: the search they need combines a target's
 derivations where a per-fact choice or a bounded list cannot see the saving.
@@ -191,11 +191,11 @@ Any one:
 
 ## Read before deciding
 
-- [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported):
+- Q-M1e.15:
   the three fixes, priced 2026-08-29.
-- [Q-M1e2.11](../m1e2_correctness/open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it):
+- [Q-M1e2.11](../../docs/decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md):
   why (3) is not exact, and the ruling.
-- [S1e2.2.11](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md):
+- S1e2.2.11:
   the measurements, the cap's reach under R's routes, and what (3) costs.
 - [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs) and
   `Kb::record_justification` ([`kb.rs`](../../ein.rs/crates/ein-core/src/kb.rs)):

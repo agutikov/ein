@@ -39,7 +39,7 @@ Two halves, and only the second runs the engine:
 firing is counted but not emitted
 ([events.md § Levels](../docs/ein/ein.rs/events.md)), so a rule whose
 every firing re-derives an existing fact reads as **zero** — the trap
-[S1a.7.0](../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s
+M1a's speculation
 audit hit. `--level normal` is there to show the difference, not to be used.
 
 **A fired name is not a stdlib rule just because the stdlib has that name.**
@@ -167,7 +167,7 @@ def alpha(form, seen: dict[str, str]) -> str:
     Two rules with the same `alpha` of `(params, :match, :assert)` are the same
     rule under two names — `includes` and `imply2-fwd`, `imply2-reverse` and
     `converse`, which the module comments call twins and aliases. It matters
-    for [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus):
+    for `tests/stdlib/`:
     an expectation made of facts cannot tell two identical bodies apart, so
     they are one test plus whatever says they were reached differently — the
     `route` residue Q-M1c.2 parks.

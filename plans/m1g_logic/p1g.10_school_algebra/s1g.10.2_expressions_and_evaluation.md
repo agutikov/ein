@@ -6,7 +6,7 @@
 `(calc E)` and `(let NAME E)`, moved here from S1f.6.14 by the user's reply of that day
 ([§ Moved here from S1f.6.14](#moved-here-from-s1f614-2026-11-12)).
 **Depends on:** [S1g.10.1](s1g.10.1_survey_and_design.md)'s rulings: that expression data is accepted, its
-spelling, and how it stands to [S1f.6.14](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.14_expressions.md). If the user rules there
+spelling, and how it stands to S1f.6.14. If the user rules there
 that the evaluator of this stage *is* S1f.6.14's answer, this stage closes that one, and says so in both files.
 
 ## The instruction's part
@@ -107,7 +107,7 @@ for `Times` are the three for `Plus` with `mul` and `product-of`.
 **What the sketch does wrong on purpose.** `eval-plus-ask` and `eval-plus` join `(evaluate (Plus ?a ?b))` with
 `(value-of ?a ?x)` on the nested value `?a`, and with `(sum-of ?x ?y ?s)` on two numbers: the joins the
 calculator's rule of the theory forbids, because the fact index does not key on a nested value (E-3 of the
-calculator's [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)). S1f.6.3's record adds that a premise *every slot
+calculator's `findings.md`). S1f.6.3's record adds that a premise *every slot
 of which is bound* is one lookup whatever its arguments are, so `(sum-of ?x ?y ?s)` with `?s` free is the costly
 one and `(evaluate ?e)` re-asked with `?e` bound is not. Task 3 measures it and rewrites with continuation tags
 if the measure says so.
@@ -152,9 +152,9 @@ if the measure says so.
 
 ## Moved here from S1f.6.14 (2026-11-12)
 
-[S1f.6.14](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.14_expressions.md) asked whether the calculator gets an expression layer,
+S1f.6.14 asked whether the calculator gets an expression layer,
 `(calc E)` and `(let NAME E)`, and waited. Question 10 of the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q10) put it to the user with three options, (a) none, (b)
+`questions.md` put it to the user with three options, (a) none, (b)
 `(let NAME E)` only, (c) both. The user, 2026-11-12:
 
 > both go into p1f.8, where expressions naturally belong to, with check of used names, with check of recursive
@@ -177,7 +177,7 @@ thing with `(evaluate E)`; that is still S1g.10.1's to show on programs:
 - **`(let NAME E)` beside `(let NAME NUMBER)`.** The calculator's `let` names a number and is built
   (reply 11: *"(a) if it is already built, why asking..."*). Naming an expression's value is the same
   relation with an expression in the number's place, or a relation of its own; the first makes `let` a
-  relation two modules write rules for, which [S1f.6.30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)'s
+  relation two modules write rules for, which S1f.6.30's
   investigation of mixing theories bears on.
 
 **What was already settled goes with it** (S1f.6.14, the user's words of 2026-11-11): `sub` inside an
@@ -191,7 +191,7 @@ operator, and that is the starting text.
 
 **A check of used names.** An expression that uses a name no `let` and no assignment states has no value.
 The calculator's own case, `(add foo X)` with no `(let foo …)`, is ruled on in the calculator's phase
-([S1f.6.12's build](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md#the-build-as-ruled-2026-11-12):
+(S1f.6.12's build:
 `(undeclared NAME REQUEST)` through one `absent` over `let`, then `(false)`, on round 2's default). This
 stage follows whatever stands there when it runs, at every depth of an expression, and reports the name and
 the expression that used it. This stage's own text above says *a variable with no assignment gets no value,
@@ -212,8 +212,8 @@ equation with no solution.
 **"and other".** The reply leaves the list open. What the stage adds unasked, each shown before it is built:
 a name stated twice with two expressions (the calculator's twice-named constant, two answers to one request
 today); an operator with the wrong count of operands (refused at load once
-[S1f.6.23](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) has landed); a division by zero inside an
-expression (the calculator's flag, at the call since [S1f.6.24](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md));
+S1f.6.23 has landed); a division by zero inside an
+expression (the calculator's flag, at the call since S1f.6.24);
 a name that is both a variable of a problem and a `let` constant.
 
 ### Tasks added

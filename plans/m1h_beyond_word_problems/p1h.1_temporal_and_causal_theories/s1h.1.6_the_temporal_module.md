@@ -9,8 +9,8 @@ below designs the module.
 lives and its name) and
 [Q-M1h.8](../open_questions.md#q-m1h8--the-temporal-theorys-first-cut-and-what-soft-and-unknown-are) (its
 first cut); the stdlib's layout as
-[S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md) leaves it,
-and [S1f.6.30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)'s
+S1f.6.31 leaves it,
+and S1f.6.30's
 ruling on name clashes if there is one.
 
 ## What it rests on

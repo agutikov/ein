@@ -2,7 +2,7 @@
 """What every corpus cell costs, on the engine that ships — S1a.9.0's instrument.
 
 `corpus/corpus.toml` marks entries `slow = true`, and until
-[S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) that flag had
+M1a's S1a.9.0 that flag had
 no threshold and no measurement behind it. This is what takes one, and what a
 reader runs when they doubt a flag.
 
@@ -13,8 +13,8 @@ reader runs when they doubt a flag.
     python3 utils/corpus_cost.py --check --json cost.json           # flags vs the threshold
 
 Reported per cell: **mean, sd, relative sd and n**, which is
-[`criterion_table.py`](criterion_table.py)'s statistic rather than
-[`e2e_baseline.py`](e2e_baseline.py)'s best-of-N — a `slow` flag is a claim
+[`criterion_table.py`](criterion_table.py)'s statistic rather than a
+best-of-N — a `slow` flag is a claim
 about what a sweep *costs*, so the estimator has to be the one that includes
 the machine's bad runs, and a mean without a deviation is not a measurement.
 Per entry it also prints what the declared runs cost **together**, which is
