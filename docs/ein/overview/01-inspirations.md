@@ -7,7 +7,7 @@ lineage: what was taken, and what Ein does instead.
 |---|---|---|
 | **SMT-LIB 2** | S-expressions; `;` and `#\| … \|#` comments; `:keyword` arguments; meaning carried by named atoms | rules are part of the program, with no separate form for a recursive definition; no theory annotations; no `(check-sat)`: a program states what it asks with `(query …)` and `(solve …)` |
 | **miniKanren** | relations over atoms; the `?var` convention; a body as a conjunction of patterns | no `fresh` and no unification syntax: a rule's variables are bound by its `:match` |
-| **AtomSpace** | explicit declarations of relations, each argument place given a label | no types: a label is an ordinary name, with no meaning a rule does not give it ([Q-M1f.372](../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)); no probabilistic truth values and no weights: a fact holds, its negation is stored, or neither is known |
+| **AtomSpace** | explicit declarations of relations, each argument place given a label | no types: a label is an ordinary atom, with no meaning a rule does not give it ([Q-M1f.372](../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)); no probabilistic truth values and no weights: a fact holds, its negation is stored, or neither is known |
 | **Datalog** | a rule as a head and a body, which Ein writes as `:assert` and `:match`; derivation to a fixpoint | S-expressions rather than infix clauses; every rule carries a `:why` text, so a firing reads as a sentence |
 | **Double-pushout graph rewriting** | `:match` and `:assert` read as the sub-graph before and the sub-graph after | a rule is not written as a span $L \leftarrow K \rightarrow R$, and the engine does not rewrite by pushouts: it adds facts |
 
@@ -23,13 +23,13 @@ Ein is an S-expression language
 is a richer surface with infix operators, as Prolog, MiniZinc or an SMT solver's API have. S-expressions are chosen
 for three properties:
 
-- **One family of forms.** Rules are facts about facts, and a derivation is a structure of facts: with one
-  syntactic family, a rule can match what another derived, a state the engine writes is a program it can load
-  again, and a generator that writes Ein targets one grammar.
+- **One family of forms.** Rules are facts about facts, and a derivation is a structure of facts: with one syntactic
+  family, a rule can match what another derived, a state the engine writes is a program it can load again, and a
+  generator that writes Ein targets one grammar.
 - **A grammar short enough to hold.** The whole surface is one context-free grammar, short enough to be read in
   full, held to its parser by a test, and used to constrain a generator that writes Ein.
-- **Readable names.** Hyphenated relation names, capitalised object names and `;` comments keep a hand-written program
-  readable, and distinguish the kinds of name without a parser hint.
+- **Readable names.** Hyphenated relation names, capitalised names for the atoms a puzzle is about and `;` comments
+  keep a hand-written program readable, and distinguish the kinds of name without a parser hint.
 
 ## Why patterns inside rules
 

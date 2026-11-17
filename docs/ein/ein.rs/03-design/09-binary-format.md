@@ -95,7 +95,7 @@ to `header::ALIGN = 8`.
 |---|---|---|---|
 | 1 | `META` | always | what the file was made from (§ 4.3): the engine version, a writer string, the KB state (`Loaded`, `Saturated`, `Solved`), the stdlib digest, each source's path and BLAKE3 digest, and the `SolverConfig` in force field by field in `ein_core::config::FIELDS` order; no time |
 | 2 | `SYMBOLS` | always | the interner in id order, as a string table: the count, the blob length, `count + 1` prefix-sum `u32` offsets, then the blob |
-| 4 | `FACTS` | always | the fact store in id order: the row count, the argument count, the rows as `cast::RawRow { rel, args_at, arity }`, then the flat argument arena as `Value` bits |
+| 4 | `FACTS` | always | the fact store in id order: the row count, the argument count, the rows as `cast::RawRow { rel, args_at, arity }`, then the flat argument arena as `Value` bits, a `Value` being the code's word for an object, an atom or a fact |
 | 5 | `PRESENT` | always | the believed facts in insertion order, as `FactId`s |
 | 6 | `PROV` | always | the derivation records the KB references, then the primary map `(fact, record)` and the alternative lists `(fact, [record…])` |
 | 7 | `PROGRAM` | always | the table of file names provenance positions refer to, then the resolved, import-flattened program as canonical text (`ein_ir::dump_canonical`) |

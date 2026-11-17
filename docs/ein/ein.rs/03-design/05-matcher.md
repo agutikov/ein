@@ -21,13 +21,14 @@ indexes allow. Each choice below removes a cost that would grow with the work, n
 - **A binding is a register write**, not a copy of a binding environment, which would cost in proportion to the
   variables bound, per candidate, at every level of the join. Unbinding is popping a trail.
 - **A comparison is one `u32` equality.** A `Value` is four bytes, a two-bit tag and a payload (`ein_core::Value`,
-  its size held by a `size_of` assertion in `value.rs`), so two values, names or nested facts, compare by identity
-  and a comparison never asks what kind of value either side is.
+  its size held by a `size_of` assertion in `value.rs`), so two objects, atoms or nested facts, compare by identity
+  and a comparison never asks which of the two either side is. `Value` is the code's word for an object
+  ([Q-M1f.379](../../../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md)).
 - **A match is not materialised.** It is handed to a callback that reads it in place, so a match the saturator turns
   out to have seen costs a key hash and nothing more.
 - **A candidate comes from the narrowest index that answers the premise**: one lookup for a premise every slot of
-  which is bound, a bucket of the participation index where a slot's value is known, the relation's whole extent
-  only where nothing is (§ 5).
+  which is bound, a bucket of the participation index where what a slot holds is known, the relation's whole held
+  extent, which the code calls its extent, only where nothing is (§ 5).
 - **A plan is compiled once per run** for each pair of a rule and an activator, and read without a lock (§ 7).
 
 The inner loop allocates nothing: `ein-infer/tests/match_alloc.rs`' `the_inner_loop_does_not_allocate` runs one
@@ -42,14 +43,14 @@ program's `Ast` ([04-ir-frontend.md](04-ir-frontend.md#9-the-loader)), until `co
 ### 2.1 The compile unit and its activator
 
 The unit of compilation is a rule and **one activator**: a fact whose head is the rule's name and whose arguments
-bind the rule's parameters, positionally, before any match. The compiler substitutes those values, so a relation
+bind the rule's parameters, positionally, before any match. The compiler substitutes those arguments, so a relation
 named by a parameter is a constant in the plan
 ([Q29](../../../decisions/engine/Q29-a-rule-compiles-once-per-activator.md)). A rule with no parameters has one
 implicit activator, `None`, and one plan. `compile::activators_for` lists a rule's activators from the KB being
 saturated (`Kb::rule_apps_by_rule`), so an activator a node derives gets its plan when it arrives, and drops one
 whose argument count is not the rule's parameter count.
 
-`Plan::activator_args` holds **every** argument of the activator fact, as values: the compile key's list, a nested
+`Plan::activator_args` holds **every** argument of the activator fact, as `Value`s: the compile key's list, a nested
 fact included, each binding its parameter. It is what the `enqueue`, `fire` and `owe` events print and what every
 analysis keys a plan on ([Q-M1f.43](../../../decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)).
 `Plan::activator` is the activator fact itself, which every firing records. A query's goal is compiled the same way,
@@ -66,7 +67,7 @@ tree:
 | `Disjunct` | one branch of a top-level `(or …)`: its `steps`, its lifted `guards`, `n_premises` (the relation steps a match reports), `n_slots` (premise slots a run writes, nested queries included), `guard_key` (its guards encoded by value, for the saturator's `seen` set) |
 | `Step` | `Rel(RelStep)`, a relation lookup; `Guard { pred, args }`, an `eq` or `neq` premise; `Absent { sub }`, an `(absent …)` nested inside a lifted guard's sub-plan |
 | `RelStep` | `rel`, `slots`, `probe` (the candidate probes, § 5.2), `shared` (the variables an earlier premise mentioned, sorted) and `join`, true where `shared` is not empty; the unifier treats a scan and a join alike, and the flag is for the plan's text |
-| `Slot` | `Reg(Reg)`, a free variable; `Const(Value)`, a name or a value the activator bound; `Nested { rel, slots }`, a pattern matched against a fact-valued argument; `Opaque(NodeId)`, a node kept for the plan's text, equal to no value, which no program the loader accepts puts in a `:match` |
+| `Slot` | `Reg(Reg)`, a free variable; `Const(Value)`, a name or an object the activator bound; `Nested { rel, slots }`, a pattern matched against an argument that is a fact; `Opaque(NodeId)`, a node kept for the plan's text, equal to no object, which no program the loader accepts puts in a `:match` |
 | `NafGuard` | a top-level `(absent …)` lifted out of its disjunct: its sub-plan `sub`, its own register space (`n_regs`, `reg_names`), `scope_of` (the parent register each of its registers is projected from, or none), `scope` (the variables bound before it, the rule's parameters among them, sorted), `watched` (the relations it reads, sorted), and `monotone`, true unless its sub-plan holds a nested `(absent …)` |
 
 The same types as a diagram. The plan owns its disjuncts and its conclusion templates as boxed slices; every
@@ -79,8 +80,8 @@ arena, run in a register space of its own (§ 2.3).
 A `:match` of `()` compiles to one empty disjunct, which the matcher accepts as one match: the rule fires once, or
 once per activator, with only its parameters bound
 ([Q-M1e2.36](../../../decisions/language/Q-M1e2.36-an-empty-match-is-true-and-fires-once.md)). An `:assert` of `()`
-compiles to no template. `ein_infer::shape::plan_shape` renders every plan of a KB as one deterministic text, values
-by `repr` and sets sorted, without registers and probes, which change no behaviour.
+compiles to no template. `ein_infer::shape::plan_shape` renders every plan of a KB as one deterministic text,
+`Value`s by `repr` and sets sorted, without registers and probes, which change no behaviour.
 
 ### 2.3 Register spaces and the variable limit
 
@@ -126,7 +127,7 @@ guard reads its variable
 ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md),
 [Q-M1f.34](../../../decisions/language/Q-M1f.34-a-guard-that-binds-its-variable-binds-it-where.md)). A guard's
 argument is resolved at compile time: a variable to its register (`GuardArgKind::Reg`), a name or a form that holds
-no variable to its value (`GuardArgKind::Const`).
+no variable to the object it denotes (`GuardArgKind::Const`).
 
 ### 2.5 Compiler errors
 
@@ -213,8 +214,8 @@ Each declares its arity, two (`Pred::arity`); `predicates::names()` is sorted. A
 arguments:
 
 - both bound: a test, passing or backtracking;
-- one free: `eq` binds it to the other side's value; `neq` binds it in turn to every name of the program but the
-  other side's value;
+- one free: `eq` binds it to the object on the other side; `neq` binds it in turn to every name of the program but
+  the one on the other side;
 - both free: `eq` binds both to every name of the program, each paired with itself; `neq` to every ordered pair of
   two different names; `(neq ?x ?x)` holds of none.
 
@@ -229,9 +230,9 @@ on only where it found none.
 
 ## 5. Candidate selection
 
-For a relation step, `rel_step` takes its candidates from the first of these that applies. Every source yields
-facts in the order of the relation's extent, the KB's layers oldest first and each in insertion order, so the
-source chosen changes how many facts are offered and never the order of the matches.
+For a relation step, `rel_step` takes its candidates from the first of these that applies. Every source yields facts
+in the order of the relation's held extent, the KB's layers oldest first and each in insertion order, so the source
+chosen changes how many facts are offered and never the order of the matches.
 
 ![The sources a relation step takes its candidates from, the first that applies](diagrams/05-candidate-sources.svg)
 
@@ -254,9 +255,10 @@ Otherwise the step narrows on its first known slot, through `ein_core::kb::SlotK
 `Kb::facts_with(key)` yields the facts of `rel` with `value` at argument `slot`, or, where `inner` is not
 `SlotKey::DIRECT`, at position `inner` **inside the fact** at argument `slot`. `Kb::index_fact` keys every argument
 that is a name directly, and for an argument that is a fact, each of that fact's name arguments one level in
-([03-data-model.md](03-data-model.md#61-the-participation-key)). No key has a fact as its value and none reaches two
-levels in, so `(not (R ?b ?i))` with `?b` bound probes `(not, slot 0, inner 0) = ?b` instead of walking `not`'s
-extent, and a premise whose only bound slots hold facts walks the extent unless every slot is bound (§ 5.1).
+([03-data-model.md](03-data-model.md#61-the-participation-key)). No key has a fact as its `value` and none reaches
+two levels in, so `(not (R ?b ?i))` with `?b` bound probes `(not, slot 0, inner 0) = ?b` instead of walking the held
+extent of `not`, and a premise whose only bound slots hold facts walks the held extent unless every slot is bound (§
+5.1).
 
 The compiler precomputes the step's candidate probes, `RelStep::probe` (`compile`'s `probes_for`): the slots left to
 right, a constant ending the list, a register listed, and a nested pattern contributing its own constant and
@@ -273,14 +275,14 @@ as missing ([03-data-model.md](03-data-model.md#62-the-per-layer-bloom-filter)).
 
 ### 5.3 The extent
 
-Where no probe applies, the step walks `Kb::facts_of(rel)`, the relation's whole extent, layers oldest first.
+Where no probe applies, the step walks `Kb::facts_of(rel)`, the relation's whole held extent, layers oldest first.
 
 ### 5.4 Extent counts
 
-A relation's extent size is one map lookup whatever the KB's depth: `Kb::n_facts_of` reads `n_by_rel`, kept up to
-date as facts are indexed, and never folds over the layers. The NAF boundary's watch stamps ask it once per watched
-relation of each parked match. `Kb::check_extent_counts`, part of `Kb::check_layering`, holds the maintained counts
-to a walk of the layer stack, and `n_facts_of_costs_one_probe_at_any_depth` holds the one probe
+The size of a relation's held extent is one map lookup whatever the KB's depth: `Kb::n_facts_of` reads `n_by_rel`,
+kept up to date as facts are indexed, and never folds over the layers. The NAF boundary's watch stamps ask it once
+per watched relation of each parked match. `Kb::check_extent_counts`, part of `Kb::check_layering`, holds the
+maintained counts to a walk of the layer stack, and `n_facts_of_costs_one_probe_at_any_depth` holds the one probe
 ([03-data-model.md](03-data-model.md#7-per-relation-extent-counts)).
 
 ## 6. Which optimisations are legal
@@ -293,8 +295,8 @@ in what order:
 
 | legal, and built | why it keeps the orders |
 |---|---|
-| registers and a trail | a binding is the same value in the same order, without a copied environment |
-| `u32` equality on tagged values | equality of `Value` is equality of the name or the fact it denotes |
+| registers and a trail | a binding is the same object in the same order, without a copied environment |
+| `u32` equality on tagged `Value`s | equality of `Value` is equality of the atom or the fact it denotes |
 | the compiled probe list, and keys one level inside a nested argument | a bucket holds every fact that could unify on the probed slot, in extent order, and **every slot is re-checked** (`try_candidate` unifies the whole premise, the probed slot included), so the surviving subsequence is the extent's |
 | one lookup for a ground premise | the same one-or-none candidate, the same `FactId` (§ 5.1) |
 | the per-layer Bloom filter | it skips only layers that do not hold the key |
@@ -313,8 +315,7 @@ re-check of a probed slot, on which the narrowing's argument rests.
 ## 7. The compile cache
 
 A plan is a pure function of its key, `compile::PlanKey { rule, activator }`, the rule's name and the activator's
-argument values (`compile::plan_key`, which copies the interned arguments and renders nothing). The cache has two
-levels:
+arguments (`compile::plan_key`, which copies the interned arguments and renders nothing). The cache has two levels:
 
 - **One memo per run.** `compile::PlanMemo` maps a key to a `PlanId` and holds the plans as `Arc<Plan>`;
   `compile::SharedMemo` is an `Arc<Mutex<PlanMemo>>`. A run creates one (`region::prepare_as`) and hands it, on the
@@ -340,7 +341,7 @@ and `Engine::plan_arc`, takes no lock. The `compile` event fires on an engine mi
 ([05-events.md](../05-events.md)). A query's goal is compiled outside the cache, on each call of `goal_bindings`.
 
 In a debug build `Engine::check_layout` asserts that two plans sharing a rule and an activator id share one register
-layout, the property a binding key that compares register values rests on. `compile`'s unit test
+layout, the property a binding key that compares register contents rests on. `compile`'s unit test
 `the_memo_compiles_a_pair_once` holds the memo.
 
 ## 8. What the matcher does not keep
@@ -363,11 +364,11 @@ no increment. The matcher's work, by name:
 | `candidates` | facts offered to a relation premise and unified against |
 | `scan_ground`, `cand_ground` | ground premises answered by one lookup (§ 5.1), and those that found their fact |
 | `scan_bucket`, `cand_bucket` | premises that probed the participation index, and the facts the buckets offered |
-| `scan_extent`, `cand_extent` | premises that walked the extent, and the facts it offered |
+| `scan_extent`, `cand_extent` | premises that walked the held extent, and the facts it offered |
 | `scan_ground_guard`, `scan_bucket_guard`, `cand_bucket_guard`, `scan_extent_guard`, `cand_extent_guard` | the same, restricted to the guards' sub-plans the boundary runs; the join's share is the total less these |
 | `unify`, `unify_slot` | premise argument lists unified, a nested descent counting again, and single slots bound or compared |
 | `nested_rel_hit`, `nested_rel_reject` | nested slots whose fact's relation matched, and those rejected on it |
-| `predicate_value` | values an `eq` or `neq` premise was decided for, one per name where a free side ranges over the program's names; `candidates` does not see a guard |
+| `predicate_value` | objects an `eq` or `neq` premise was decided for, one per name where a free side ranges over the program's names; `candidates` does not see a guard |
 | `plan_key`, `plan_compile` | compile keys built by the engines' walks, and plans compiled, which is memo misses |
 | `extent_probe` | `Kb::n_facts_of` lookups (§ 5.4) |
 | `fact_probe` | `FactStore::probe` lookups, a ground premise's among them |
@@ -380,7 +381,7 @@ no increment. The matcher's work, by name:
 |---|---|
 | [`ein-infer/tests/match_alloc.rs`](../../../../ein.rs/crates/ein-infer/tests/match_alloc.rs) | no allocation in the inner loop, at two KB sizes; a failed candidate leaves no binding behind |
 | [`ein-infer/tests/compile_limits.rs`](../../../../ein.rs/crates/ein-infer/tests/compile_limits.rs) | a rule at 256 variables compiles; one past is refused at load with its line; the corpus's widest rules against the bound |
-| [`ein-infer/tests/compile_semantics.rs`](../../../../ein.rs/crates/ein-infer/tests/compile_semantics.rs) | every `CompileError` a direct caller reaches, in its words; a nested `(or …)` refused; a value parameter bound to a nested fact is bound |
+| [`ein-infer/tests/compile_semantics.rs`](../../../../ein.rs/crates/ein-infer/tests/compile_semantics.rs) | every `CompileError` a direct caller reaches, in its words; a nested `(or …)` refused; a parameter that names no relation, bound to a nested fact, is bound |
 | [`ein-infer/tests/rule_semantics.rs`](../../../../ein.rs/crates/ein-infer/tests/rule_semantics.rs) | `a_premise_means_the_same_in_any_order_of_its_conjuncts`, `a_binding_guard_binds_where_it_is_written`, `a_guards_free_variable_ranges_over_the_programs_names`, `an_empty_match_fires_once_or_once_per_activator`, activators that differ only in a nested fact both fire |
 | `match_.rs`' unit tests | `narrowing_never_changes_the_match_sequence`, `a_seeded_match_reports_the_same_premise_order`, `a_lifted_guard_keeps_asking_its_own_question`, `two_free_guard_arguments_range_over_the_programs_names` |
 | `compile.rs`' unit tests | the seed's registers in binding order, the probe list as the scan narrowed, a nested pattern probing one level in, a guard's scope, the memo compiling a pair once |

@@ -92,8 +92,8 @@ reference's grammar page is read out of the same two files by `ein-ir/tests/gram
 
 `ein.y` has one production per position: what a fact's argument, a premise, a conclusion, a guard's argument, a
 claim and each keyword's value may hold, each stated where it is used (`FactArg`, `Premise`, `Conclusion`, `Term`,
-`Claim`, …), with no shared value production. A shape no production lists is a parse error at its first token, so
-the loader carries no line for it
+`Claim`, …), with no production shared between them. A shape no production lists is a parse error at its first
+token, so the loader carries no line for it
 ([Q-M1f.9](../../../decisions/engine/Q-M1f.9-a-shape-the-grammar-refuses-is-a-loader.md)).
 
 Every action is one call into the builder `grammar/build_ast.rs`, the module the grammar imports as `b`, which
@@ -211,9 +211,9 @@ and a name's text is in the string table once, whichever nodes spell it.
 | `SForm { head, args }` | `(head arg …)`; the head is an `Atom`, or a `Var` inside a pattern |
 
 **Positions are a side table.** A `Node` carries none and derives no `PartialEq`, because comparing child ids would
-answer *same subtree object* where every caller means *same shape*; `Ast::eq_nodes` compares shapes and ignores
-positions. That is what makes `parse(dump(parse(x)))` equal to `parse(x)` by construction, and what lets import
-resolution compare two declarations read from two files.
+answer *the same node of the tree* where every caller means *same shape*; `Ast::eq_nodes` compares shapes and
+ignores positions. That is what makes `parse(dump(parse(x)))` equal to `parse(x)` by construction, and what lets
+import resolution compare two declarations read from two files.
 
 One `Ast` holds a whole program, every imported module in it. `Ast` is `Clone`, a copy of the whole arena, for a
 caller that loads once and runs several things on copies. `Ast::conjuncts` is the one reading of an `(and …)`,
@@ -247,11 +247,11 @@ recovery reached, in file order, each a `SyntaxError { line, col, what, notes, r
   last character of the text.
 - **`what`**: `unexpected X`, X being the token as written, in backticks and cut at 40 characters, followed by its
   `%epp` description where `ein.y` gives one (`a name`, `a variable`, `a keyword this form does not take`), or
-  `unexpected end of input`; for a lexing error, the not-ASCII line (`grammar::not_ascii`) or `no token starts
-  with …`.
-- **`notes`**: where a decision says more than the token: a bare `_`, a string as a value, a lattice keyword written
-  on a `(query …)`, a retired `(config …)` flag (`ein_core::config::RETIRED`), `open` outside a rule's `:assert`,
-  `absent` heading no premise, `false` with an argument, an empty `(and)` or `(or)`.
+  `unexpected end of input`; for a lexing error, the not-ASCII line (`grammar::not_ascii`) or `no token starts with
+  …`.
+- **`notes`**: where a decision says more than the token: a bare `_`, a string where an object goes, a lattice
+  keyword written on a `(query …)`, a retired `(config …)` flag (`ein_core::config::RETIRED`), `open` outside a
+  rule's `:assert`, `absent` heading no premise, `false` with an argument, an empty `(and)` or `(or)`.
 - **`repairs`**: CPCT+'s ranked repairs, best first, the first being the one the parse went on with. Where a place
   takes a name, repairs that differ only in which of the `POSITION_WORDS` or which name they insert fold into one,
   `Insert a name`. `REPAIRS_SHOWN` (3) are listed and the rest counted in `more_repairs`.
@@ -415,9 +415,10 @@ For each fact stored from a file, the program's, a local module's or a standard-
 nested in P's arguments and not P itself. Then, in the registries' order, for each nested fact of a rule's or an
 hrule's conclusion that holds no variable
 ([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)). One
-`FxHashSet<Value>` carried through both walks states each term once a program. Each is derived by the loader's step
-`#written` (`ein_core::terms::WRITTEN_STEP`), from the fact it was read in, its one premise, or from no premise for
-a conclusion's ([Q-M1f.279](../../../decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)).
+`FxHashSet<Value>` carried through both walks states each term once a program (a `Value` is the code's word for an
+object, an atom or a fact). Each is derived by the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`), from
+the fact it was read in, its one premise, or from no premise for a conclusion's
+([Q-M1f.279](../../../decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)).
 
 `written_in` and `written_in_conclusions` are public, so a caller that states a program over fewer of its facts
 (`ein_infer::structure`) asks the loader's reading instead of reading a fact's arguments a second way. A program does
@@ -428,9 +429,9 @@ rules read it ([Q-M1f.272](../../../decisions/language/Q-M1f.272-a-representatio
 ### 9.3 The KB as one text
 
 A loaded KB has no command that prints all of it, so `ein_core::shape::shape` renders it as one deterministic text:
-its registries, its indexes and its participation counts, facts named by their position in the fact list, values by
-`repr`, every map in sorted order. It is the `load` operation of the corpus shape digest (§ 11), and the compiler's
-output is rendered the same way ([05-matcher.md](05-matcher.md)).
+its registries, its indexes and its participation counts, facts named by their position in the fact list, `Value`s
+by `repr`, every map in sorted order. It is the `load` operation of the corpus shape digest (§ 11), and the
+compiler's output is rendered the same way ([05-matcher.md](05-matcher.md)).
 
 ## 10. The dumper
 

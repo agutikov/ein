@@ -14,6 +14,16 @@ three perspectives, each asked of every paragraph:
 A paragraph that would still be true of a second implementation is the reasoning's; one that names a crate, a module
 or a type is `ein.rs`'s; one about what a program says or what `ein` prints, with no word on how, is the user's.
 
+## The words every page uses
+
+A knowledge base is a graph, and an **object** is a node of it: an **atom**, a labelled node with no outgoing arrow
+whose label is its **name**, or a **fact**, a node with ordered arrows, the first at its **relation**, an atom, and
+the others at its arguments. An object is identified by its name or by its tuple. A relation's **extent** is every
+fact of it, held or not, and what a knowledge base holds of it is the **held extent**. The definitions, drawn and
+stated, are [the knowledge base](reasoning/01-static-ir/01-knowledge-base.md), and they are decisions
+[Q-M1f.379](../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md) to
+[Q-M1f.382](../decisions/language/Q-M1f.382-a-labelled-arrow-draws-a-fact-of-two-arguments.md).
+
 ## Beside them
 
 - [**Decisions**](../decisions/README.md): every question about Ein that has an answer, as that answer, each in a

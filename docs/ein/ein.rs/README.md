@@ -20,3 +20,17 @@ How the pages stand to one another: the map first, then what the engine does and
 then the surfaces a program outside the engine reads, and last the bridge from the reasoning's pages to this code.
 
 ![How the pages of ein.rs stand to one another](diagrams/00-page-map.svg)
+
+## The code's words
+
+These pages name the code's identifiers as the code spells them, in backticks, and some of them are other words for
+what the rest of the documentation defines ([the knowledge base](../reasoning/01-static-ir/01-knowledge-base.md)):
+
+| in the code | in the documentation |
+|---|---|
+| `Value` | an **object**, a node of the knowledge-base graph: an atom or a fact ([Q-M1f.379](../../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md)) |
+| `Symbol` | a **name**, the label of an atom; a `Value` tagged `Sym` is the atom |
+| `FactId` | a **fact**, identified by its relation and arguments, whether or not a KB holds it |
+| a relation's *extent* (`Kb::facts_of`, `n_by_rel`, the `scan_extent` counter) | the **held extent**, the facts of the relation that a KB holds ([Q-M1f.381](../../decisions/language/Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md)) |
+| `candidate_objects`, `NameCategory::Object`, the `--events` field `object` | the **guessable atoms**, what the blind enumerator guesses about |
+| `types_as_objects`, `Relation::signature` | an atom an `is-a` fact points at; a declaration's **labels**. Ein has no types ([Q-M1f.372](../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)) |

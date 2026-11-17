@@ -13,11 +13,11 @@ design page that is its contract.
 |---|---|---|---|
 | **join**: every match of a rule's premises | a register machine over a fixed join order, with candidates narrowed by an index on argument positions (one level inside a nested argument) and a fully bound premise answered by one interned lookup | nested-loop join over alpha memories, in the RETE family, with no beta memories; not a worst-case-optimal join, whose reordering would change the firing order | [`03-design/05-matcher.md`](03-design/05-matcher.md) |
 | **saturation**: the fixpoint | forward chaining, semi-naive: after a firing, only the delta is matched, each plan seeded at the premise a new fact plays; plans compiled once per run | the Datalog ladder: naive, then semi-naive with a seeded delta join | [`03-design/06-saturation.md`](03-design/06-saturation.md) |
-| **negation as failure** | the boundary: a guard is judged only on a quiescent KB, one admission a round, a parked candidate judged again only where a relation it watches grew | stratification computed by the run rather than in advance; a refutation resting on an `absent` a commitment could extend is refused | [`03-design/06-saturation.md`](03-design/06-saturation.md), [`03-design/07-search.md`](03-design/07-search.md) |
+| **negation as failure** | the boundary: a guard is judged only on a quiescent KB, one admission a round, a parked candidate judged again only where the held extent of a relation it watches grew | stratification computed by the run rather than in advance; a refutation resting on an `absent` a commitment could extend is refused | [`03-design/06-saturation.md`](03-design/06-saturation.md), [`03-design/07-search.md`](03-design/07-search.md) |
 | **equality** | none: `eq` is name identity, computed, never stored, and names are never merged ([Q1](../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)) | no congruence closure | [`03-design/03-data-model.md`](03-design/03-data-model.md) |
 | **contradiction** | two bit tests per new fact, `(false)` and a pair `X`, `(not X)`; the agenda fires first what can make one, and a route's node stops at its first | incremental clash detection | [`03-design/06-saturation.md`](03-design/06-saturation.md) |
 | **provenance and cores** | every derivation recorded as an OR over AND-nodes, alternatives kept by premise count and smallest closure; a core is the smallest frontier, by an ATMS label search with a budget | ATMS labels; a minimum-cardinality frontier rather than a subset-minimal unsatisfiable subset | [`03-design/03-data-model.md`](03-design/03-data-model.md), [`03-design/07-search.md`](03-design/07-search.md) |
-| **hypotheses**: the candidates H | a ladder: the program's hrules, else what the obligations owe, else blind enumeration, every object the program names in every slot of every eligible relation | rule-driven, obligation-driven and generate-and-test generation | [`03-design/07-search.md`](03-design/07-search.md) |
+| **hypotheses**: the candidates H | a ladder: the program's hrules, else what the obligations owe, else blind enumeration, every guessable atom in every slot of every eligible relation | rule-driven, obligation-driven and generate-and-test generation | [`03-design/07-search.md`](03-design/07-search.md) |
 | **the search**: the region `R` | routes over the lattice of commitments, each the least work its question needs: the state route (each alive state once), the obligation tree, the climb and the shrink, the alive down-set, the cube | monotone, upward-closed pruning (a dead node's supersets are dead), minimal transversals for the dead sets and the minimal generators, branching on an owed instance's exhaustive alternatives | [`03-design/07-search.md`](03-design/07-search.md) |
 | **canonicalisation** | a state is its sorted fact set, compared whole, never by hash | canonical forms rather than isomorphism | [`03-design/07-search.md`](03-design/07-search.md) |
 
@@ -114,9 +114,9 @@ made of, the second the rest; within a half the order is the tiebreaker's, the o
 heap over `(rank, entry)` and the parked set a `BTreeSet` of the same keys, so the closure pops, and the boundary
 walks, in one order.
 
-**The boundary round** (`Saturator::admit_from_boundary`) judges a parked candidate only where its verdict can
-have moved: the extent sizes of the watched relations are taken once a round, and a candidate judged before is
-skipped unless a relation its guard set watches grew.
+**The boundary round** (`Saturator::admit_from_boundary`) judges a parked candidate only where its verdict can have
+moved: the sizes of the watched relations' held extents are taken once a round, and a candidate judged before is
+skipped unless one of them grew.
 
 ![The boundary round as a flow: which parked candidates are judged](diagrams/02-boundary-round.svg)
 
@@ -135,8 +135,8 @@ each match to a callback without copying it. The contract is
 **Unifying a slot** is the machine's one instruction (`Matcher::unify_slot`): a `Const` slot is a `u32` equality; a
 `Reg` slot binds an unbound register, pushing it on the trail, or compares a bound one; a `Nested` slot requires a
 fact, compares its relation, then unifies its arguments. Unbinding pops the trail back to a mark. The three
-candidate sources yield in the extent's order and every slot is re-checked, so the source chosen changes how many
-facts are offered and never the sequence of matches.
+candidate sources yield in the held extent's order and every slot is re-checked, so the source chosen changes how
+many facts are offered and never the sequence of matches.
 
 **The entry points** differ in what is bound before the walk: `run` and `run_one` start each disjunct from the
 activator's seed registers; `run_seeded` binds one step to a new fact first, at every step whose relation is the

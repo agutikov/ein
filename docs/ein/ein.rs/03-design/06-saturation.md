@@ -78,15 +78,15 @@ found it to the application that fires it. Only the boundary moves a parked cand
 
 **The closure is semi-naive.** After a productive firing, the next enqueue pass reads only the derived facts,
 seeding each plan whose positive premises name a delta fact's relation at that premise (`run_seeded`); a full pass
-runs only where no delta is known. A binding key is a fixed-width array of values hashed with FxHash, keyed on the
-rule, **every argument of its activator** and the bindings
+runs only where no delta is known. A binding key is a fixed-width array of `Value`s, the code's word for objects,
+hashed with FxHash, keyed on the rule, **every argument of its activator** and the bindings
 ([Q-M1e.16](../../../decisions/engine/Q-M1e.16-a-firings-identity-keys-on-every-activator.md)).
 
 **The boundary judges only what can have changed.** Each parked candidate records the epoch it was judged at, per
-guard set; the sizes of a guard set's watched relations are taken once per round, and a candidate is re-judged only
-where one of them grew. The KB only grows, so an equal extent size is an equal extent, and a guard whose watched
-relations did not grow gives the verdict it gave. A round stops at the first admission, so it walks the parked set in
-order up to the first candidate whose guards now pass.
+guard set; the sizes of the held extents of a guard set's watched relations are taken once per round, and a
+candidate is re-judged only where one of them grew. The KB only grows, so a held extent of equal size is an equal
+held extent, and a guard whose watched held extents did not grow gives the verdict it gave. A round stops at the
+first admission, so it walks the parked set in order up to the first candidate whose guards now pass.
 
 ## 4. A node resumes root's saturation
 
@@ -142,19 +142,19 @@ and nothing else (the one exemption the configuration principle makes,
 
 ### 6.1 The native mirror
 
-A relation marked `(__symmetric__ R)` has its extension closed under argument swap by the saturator directly, with no
-plan and no match: each fact of R is offered to the mirror, whose write is a firing with rule `__symmetric__` and the
-source edge as its premise, narrated as a `mirror` event. The marked relations are read sorted by name, so no hash
-order reaches the firing order. Where the mirror fact already exists, the derivation is recorded as an alternative,
-which makes the justification graph cyclic; the explanation search takes a least fixpoint from the sources up, so the
-cycle costs it nothing ([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)).
+A relation marked `(__symmetric__ R)` has its held extent closed under argument swap by the saturator directly, with
+no plan and no match: each fact of R is offered to the mirror, whose write is a firing with rule `__symmetric__` and
+the source edge as its premise, narrated as a `mirror` event. The marked relations are read sorted by name, so no
+hash order reaches the firing order. Where the mirror fact already exists, the derivation is recorded as an
+alternative, which makes the justification graph cyclic; the explanation search takes a least fixpoint from the
+sources up, so the cycle costs it nothing ([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)).
 
 ### 6.2 Contradiction
 
 A KB is contradictory when it holds `(false)` (a rule concluded it outright) or a pair `X` and `(not X)`, however
 either fact got there: a written clue, a commitment and a derivation are alike. The check is two bit tests per new
-fact, is `X` negated and is `X` present, and its result order is fixed, `(false)` first, then pairs in extent order,
-because it reaches the core and the trace.
+fact, is `X` negated and is `X` present, and its result order is fixed, `(false)` first, then pairs in the order the
+KB holds them, because it reaches the core and the trace.
 
 ### 6.3 Obligations
 

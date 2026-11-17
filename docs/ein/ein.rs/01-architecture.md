@@ -36,15 +36,16 @@ The last three edges are `ein-corpus`'s own `[dev-dependencies]`, for its bench 
 (`ein-corpus/benches/engine.rs`): its library depends on none of the three.
 
 - **`ein-core`** depends on no other crate of the workspace: interning, `Value` and `FactId`, the layered
-  copy-on-write KB, provenance and its walks, the value printers, and `:why` template substitution, which the
+  copy-on-write KB, provenance and its walks, the printers of a `Value`, and `:why` template substitution, which the
   obligation pass needs below the renderers ([`03-design/03-data-model.md`](03-design/03-data-model.md)).
-- **`ein-ir`** parses, resolves imports, expands macros and loads: it builds the KB itself rather than handing an AST
-  to a separate loader, which is why it sits above the store ([`03-design/04-ir-frontend.md`](03-design/04-ir-frontend.md)).
+- **`ein-ir`** parses, resolves imports, expands macros and loads: it builds the KB itself rather than handing an
+  AST to a separate loader, which is why it sits above the store
+  ([`03-design/04-ir-frontend.md`](03-design/04-ir-frontend.md)).
 - **`ein-infer`** is the only writer of derived facts: compile, match, saturate, the boundary, the obligation pass,
-  hypothesis generation, the routes over `R`, the cores
-  ([`03-design/05-matcher.md`](03-design/05-matcher.md), [`03-design/06-saturation.md`](03-design/06-saturation.md),
-  [`03-design/07-search.md`](03-design/07-search.md)).
-- **`ein-einb`** writes and maps the `.einb` container ([`03-design/09-binary-format.md`](03-design/09-binary-format.md)).
+  hypothesis generation, the routes over `R`, the cores ([`03-design/05-matcher.md`](03-design/05-matcher.md),
+  [`03-design/06-saturation.md`](03-design/06-saturation.md), [`03-design/07-search.md`](03-design/07-search.md)).
+- **`ein-einb`** writes and maps the `.einb` container
+  ([`03-design/09-binary-format.md`](03-design/09-binary-format.md)).
 - **`ein-render`** owns every rendering: the DOT views, the read-out's text, the markdown trace, the answer and
   lattice dumps, the JSON summary, the hypothesis space's document and graphs.
 - **`ein-cli`** orchestrates: six subcommands, `ein {oracle,render,saturate,show,solve,test}`, plus `ein kb` under
@@ -87,13 +88,13 @@ after root.
 | module | owns |
 |---|---|
 | `intern.rs`, `terms.rs` | the symbol table and the two intern tables, lent to workers during a fan-out |
-| `value.rs`, `facts.rs` | `Value`, four bytes; the fact store, interned rows and their ids |
+| `value.rs`, `facts.rs` | `Value`, four bytes, the code's word for an object, an atom or a fact ([Q-M1f.379](../../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md)); the fact store, interned rows and their ids |
 | `kb.rs` | the KB: immutable layers and one writable top, the indexes, the extent counts, the fork |
 | `bitset.rs` | dense sets of ids |
 | `prov.rs`, `walks.rs` | derivation records and their arena; the premise closure, the derivation DAG, the unsat-core walk |
 | `entities.rs`, `program.rs` | the typed views of relations, rules and macros; the program's registries |
 | `config.rs`, `numparse.rs` | the typed view of `(config …)`, and the coercion of its values |
-| `text.rs`, `repr.rs`, `printable.rs`, `numfmt.rs` | the one printer of Ein text, the value renderer, its escapes, number formats |
+| `text.rs`, `repr.rs`, `printable.rs`, `numfmt.rs` | the one printer of Ein text, the `Value` renderer, its escapes, number formats |
 | `why.rs` | `:why` template substitution |
 | `counters.rs` | the work counters, compiled in by `counters` |
 | `shape.rs` | the KB's shape as one text, a test instrument |
@@ -126,7 +127,7 @@ The modules as the path a program's bytes take through them; an arrow is what on
 | `saturator.rs`, `firing.rs`, `contradiction.rs` | the two-phase loop and the agenda; a rule application; the contradiction check |
 | `obligations.rs` | the obligation pass over a quiescent KB |
 | `naf_deps.rs`, `strata.rs` | the static map of what reads an `absent` over what; the rule dependency graph and its strata |
-| `hypgen.rs`, `hrule.rs`, `oblgen.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs`, `relation_names.rs`, `types_as_objects.rs` | the generation ladder and its rungs; the mechanisms read together; the alive-set invariant; what the universe leaves out; a relation or a type bound as an object |
+| `hypgen.rs`, `hrule.rs`, `oblgen.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs`, `relation_names.rs`, `types_as_objects.rs` | the generation ladder and its rungs; the mechanisms read together; the alive-set invariant; what the universe leaves out; a relation's name, or an atom an `is-a` fact points at, among the atoms guessed about, which the read-out calls a type as an object |
 | `monotone.rs`, `detector.rs`, `forbid.rs` | the static check, the detector, the refusal of a refutation resting on an extendable `absent` |
 | `region.rs` | the node function, the fan-out, the cube (route 2, the oracle) |
 | `explore.rs` | every question about `R` and its route; the licences |

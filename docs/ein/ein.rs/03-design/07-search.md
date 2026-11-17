@@ -13,24 +13,25 @@ computes it.
 H is built once, at root, by the generation **ladder** ([`hypgen.rs`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs),
 one function, `rung`):
 
-1. **the program's `(hrule …)`s**, where it declares any ([`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs)):
-   an hrule without parameters is one plan, an hrule with them one plan per activator `(solve :hrules …)` names,
-   and each plan's `:assert`, one fact, is a candidate per match. The rung is chosen by the declaration: a program
-   whose only hrule has parameters and no activator takes this rung and proposes nothing;
+1. **the program's `(hrule …)`s**, where it declares any
+   ([`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs)): an hrule without parameters is one plan, an
+   hrule with them one plan per activator `(solve :hrules …)` names, and each plan's `:assert`, one fact, is a
+   candidate per match. The rung is chosen by the declaration: a program whose only hrule has parameters and no
+   activator takes this rung and proposes nothing;
 2. else, **the obligations rung**, where an obligation is activated at root
-   ([`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)): the facts that would discharge what root owes,
-   and, read off the rules with no saturation, what a rule can bring a commitment to owe. Under an activated
+   ([`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)): the facts that would discharge what root
+   owes, and, read off the rules with no saturation, what a rule can bring a commitment to owe. Under an activated
    obligation a state that owes nothing proposes nothing. The rung declines the whole call, and the blind enumerator
-   runs instead, where an obligation's guard scans a relation the rung itself proposes, or reads one a commitment
-   can change;
-3. else, **the blind enumerator**: every eligible relation of one or two arguments, every object the program names
-   in each of its slots (a binary fact of an object with itself left out). No slot is filtered by the name its
-   declaration gives it: Ein has no types, the names a declaration writes in its slots are only left out of the
-   objects, and a candidate the program's rules do not allow is refuted by those rules, in its own node.
-   The objects are the names the alive-set invariant lists for the program
-   ([`invariant.rs`](../../../../ein.rs/crates/ein-infer/src/invariant.rs): no rule asserts a name the program lacks),
-   never `__closed__` or `__symmetric__`. The invariant is what lets H be taken once, at root, and it is enforced:
-   [`ein-infer/tests/alive_invariant.rs`](../../../../ein.rs/crates/ein-infer/tests/alive_invariant.rs)'s
+   runs instead, where an obligation's guard scans a relation of which the rung itself proposes a fact, or reads one
+   whose held extent a commitment can change;
+3. else, **the blind enumerator**: every eligible relation of one or two arguments, every guessable atom in each of
+   its slots (a binary fact of an atom with itself left out). No slot is filtered by the name its declaration gives
+   it: Ein has no types, the names a declaration writes as labels are only left out of the guessable atoms, and a
+   candidate the program's rules do not allow is refuted by those rules, in its own node. The guessable atoms,
+   `hypgen::candidate_objects` in the code, are drawn from the names the alive-set invariant lists for the program
+   ([`invariant.rs`](../../../../ein.rs/crates/ein-infer/src/invariant.rs): no rule asserts a name the program
+   lacks), never `__closed__` or `__symmetric__`. The invariant is what lets H be taken once, at root, and it is
+   enforced: [`ein-infer/tests/alive_invariant.rs`](../../../../ein.rs/crates/ein-infer/tests/alive_invariant.rs)'s
    `every_name_of_the_program_is_a_candidate_object` holds the static reading and
    `no_run_reaches_a_name_the_program_does_not_have` the one in the search, which fails when a node reaches a name
    outside root's fixpoint and the rules' constants.
@@ -53,11 +54,11 @@ From the program to the bit order of every node mask; the choice between the run
 ([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)).
 
 **The mechanisms are read together**, on root's fixpoint
-([`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs)): no active hrule proposes a relation a list or
-a closure takes out, no obligation owes one, and no relation is in both lists or listed and closed; a conflict is
-refused before any search, and a list an hrule leaves filtering nothing, or a redundant name, is a note.
-**`(solve :no-search)`** states that H is empty: no rung runs, and `R` is $\{\emptyset\}$ where root is alive and discharged,
-empty otherwise. `ein show hyps FILE` prints H, one candidate per line, with no search.
+([`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs)): no active hrule proposes a fact of a
+relation a list or a closure takes out, no obligation owes one, and no relation is in both lists or listed and
+closed; a conflict is refused before any search, and a list an hrule leaves filtering nothing, or a redundant name,
+is a note. **`(solve :no-search)`** states that H is empty: no rung runs, and `R` is $\{\emptyset\}$ where root is
+alive and discharged, empty otherwise. `ein show hyps FILE` prints H, one candidate per line, with no search.
 
 ## 2. The node
 
@@ -234,9 +235,9 @@ reported with these warnings, and the engine claims nothing about it beyond what
 --monotone` asks the static question alone (`explore::Checked`): root's fixpoint and the check, no node built, so it
 has no `R` to disagree with another command about.
 
-**Forbid** ([`forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs)): a program whose refutation could rest on
-an `(absent P)` over a relation a commitment can still extend is refused at load, since it would judge a state that
-has not decided `P` as if `P` were false, and `dead` would stop being upward-closed
+**Forbid** ([`forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs)): a program whose refutation could rest
+on an `(absent P)` over a relation whose held extent a commitment can still extend is refused at load, since it
+would judge a state that has not decided `P` as if `P` were false, and `dead` would stop being upward-closed
 ([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)). The refusal is what
 enforces L1's premise, since the premise is false of the shape it refuses:
 [`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein) is that shape, in

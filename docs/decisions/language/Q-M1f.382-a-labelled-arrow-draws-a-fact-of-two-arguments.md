@@ -7,10 +7,10 @@ first arrows meet at one atom ([Q-M1f.380](Q-M1f.380-an-objects-identity-is-its-
 
 Drawn with labelled arrows, the same facts are as many arrows carrying one word, and the relation is no node. So
 the drawing has no place for a fact about the relation, a declaration or a property, which points at that node, nor
-for a fact that points at a fact, and it draws a fact of any other count of arguments as a node all the same. No
-page defines a knowledge base, a fact or a relation by it: a drawing with labelled arrows says that it is one, or
-is a view `ein render` writes, whose legend states the convention. `ein render program --levi` draws every fact as
-a node.
+for a fact that points at a fact; a fact of one argument it draws as a loop, and a fact of three or more as a node
+all the same. No page defines a knowledge base, a fact or a relation by it: a drawing with labelled arrows says
+that it is one, or is a view `ein render` writes, whose legend states the convention. `ein render program --levi`
+draws every fact as a node.
 
 **Why.** A labelled arrow is the natural picture of a fact of two arguments and the one a reader takes in fastest,
 which is why the views draw it. It loses the relation's identity: there are many arrows with one label, where the
