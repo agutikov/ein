@@ -181,7 +181,7 @@ Each of these holds wherever it applies; this page is the shared reason.
   ([finding R](07-finding-r.md)).
 - **A derivation records the absences it rested on.** A firing admitted at the boundary records each question
   that had to fail, one pattern per guard with a position the question left free recorded as free, beside the
-  positive premises it read:
+  positive premises it read ([cores](09-cores.md#a-derivation-record) defines the record):
 
 $$
 \begin{aligned}

@@ -71,7 +71,8 @@ $$
 **A candidate's mark** is what root says of it alone: *at root*, *dead alone*, or *alive alone*. A candidate alive
 alone is **open**, and $H^{\mathrm{o}} = \lbrace a \in H : \operatorname{alive}(\lbrace a \rbrace) \rbrace$.
 
-On a monotone program two lemmas decide a pair without its node. *Dead is upward-closed*: a pair with a member dead
+On a monotone program ([solution semantics § 1.6](06-solution-semantics.md#16-monotone)) two lemmas decide a pair
+without its node. *Dead is upward-closed*: a pair with a member dead
 alone is dead, and is **not** an exclusion, since its dead member says all there is to say. *A commitment's state is
 its closure's*: a pair one of whose members implies the other is that member's node.
 

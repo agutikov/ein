@@ -369,7 +369,7 @@ closure among the closed subsets of $T$, so the classes of those partition $2^{T
 
 $$
 \begin{aligned}
-\lvert [T] \rvert &= 2^{\lvert T \rvert} \;-\; \sum_{S \,\in\, \mathcal{C},\; s \subsetneq T} \lvert [s] \rvert \\
+\lvert [T] \rvert &= 2^{\lvert T \rvert} \;-\; \sum_{s \,\in\, \mathcal{C},\; s \subsetneq T} \lvert [s] \rvert \\
 k_c &= \sum_{T \,\in\, R / {\sim}} \lvert [T] \rvert \\
 \min R &= \min \bigcup_{T \,\in\, R / {\sim}} \min\, [T]
 \end{aligned}
