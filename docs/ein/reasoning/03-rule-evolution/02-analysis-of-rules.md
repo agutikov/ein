@@ -93,7 +93,7 @@ the components form an acyclic graph, and where a stratification exists this $\s
 has one more stratum than its highest:
 
 $$
-\sigma(\rho) = \max\{\, \sigma(w) \;:\; w \in \operatorname{writes}(\rho) \,\}, \qquad\qquad \#\text{strata} = 1 + \max_{v \in \mathcal{V}} \sigma(v)
+\sigma(\rho) = \max\{\, \sigma(w) \;:\; w \in \operatorname{writes}(\rho) \,\}, \qquad\qquad \text{the number of strata} = 1 + \max_{v \in \mathcal{V}} \sigma(v)
 $$
 
 In the example $\sigma(\operatorname{p}) = \sigma(\operatorname{s}) = \sigma(\operatorname{q}) = 0$ and

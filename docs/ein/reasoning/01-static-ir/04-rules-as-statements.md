@@ -273,18 +273,15 @@ and the double pushout reduces to one gluing. With $G = G(S)$ the graph of the s
 
 ```dot
 digraph pushout {
-  rankdir=LR;
   node [shape=box, style=rounded];
   L  [label="L\nthe pattern"];
   Lp [label="L⁺ = L ∪ ψ\nthe pattern with the conclusion"];
   G  [label="G(S)\nthe state"];
   Gp [label="G(S ∪ ψθ)\nthe state after the firing"];
-  L -> Lp [label="r, an inclusion"];
-  L -> G  [label="m = θ, the match"];
-  Lp -> Gp [label="θ, extended"];
-  G -> Gp [label="an inclusion"];
-  { rank=same; L; G; }
-  { rank=same; Lp; Gp; }
+  { rank=same; L -> Lp [label="  r, an inclusion  "]; }
+  { rank=same; G -> Gp [label="  an inclusion  "]; }
+  L -> G   [label="  m = θ, the match"];
+  Lp -> Gp [label="  θ, extended"];
 }
 ```
 

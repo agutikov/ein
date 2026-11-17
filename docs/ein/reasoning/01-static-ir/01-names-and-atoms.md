@@ -33,14 +33,15 @@ Four families of word stand beside the names, each disjoint from them or set apa
 |---|---|---|
 | a **variable** | $\mathtt{?}w$ with $w \in \Sigma^{+}$; the set of them is $X$ | the mark $\mathtt{?} \notin \Sigma$, so $X \cap \Sigma^{+} = \emptyset$ |
 | a **text** | a quoted run of any characters: a reason, a source sentence, a goal's wording | it annotates a form and is never a value ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)) |
-| a **made-up name** | $\mathtt{\#}w$: a name the reading of a program makes up for something the text writes no name for | the mark $\mathtt{\#} \notin \Sigma$, so no name a program writes collides with one ([Q-M1f.339](../../../decisions/language/Q-M1f.339-every-name-the-loader-makes-up-starts-with.md)) |
+| a **made-up name** | a word that begins with the number sign: a name the reading of a program makes up for something the text writes no name for | the number sign is not in $\Sigma$, so no name a program writes collides with one ([Q-M1f.339](../../../decisions/language/Q-M1f.339-every-name-the-loader-makes-up-starts-with.md)) |
 | a **reserved word** | one of a fixed finite set $W \subset \Sigma^{+}$: the words that head a declaration, the words of the pattern language, and a few relation names whose facts the reading of a program states or the kernel reads | the language gives it one fixed meaning, and no declaration binds it; [the reserved names](../../user/04-reference/03-reserved-names.md) lists $W$ |
 
-Some reserved words never head a fact: the words that head a declaration of a rule, a macro, an import or a
-question, and the pattern language's two equalities, its absence and its two connectives. Write
-$W_{\!c} \subset W$ for those. Two other words of $W$ are the **kernel's markers**, one that closes a relation to hypotheses and one that closes it
-under the swap of its arguments. A program may write either as a fact's relation or as a value, and may bind
-neither: no declaration, rule, macro or alias takes one
+Some reserved words are no relation's name: the words that head a declaration of a rule, a macro, an import or a
+question, and the words of the pattern language, its two equalities, its absence, its two connectives, its
+negation and its falsity. Write $W_{\!c} \subset W$ for those; negation and falsity enter the facts only as the
+two forms $\lnot f$ and $\bot$ defined below. Two other words of $W$ are the **kernel's markers**, one that
+closes a relation to hypotheses and one that closes it under the swap of its arguments. A program may write
+either as a fact's relation or as a value, and may bind neither: no declaration, rule, macro or alias takes one
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)).
 
 **A name has one full name.** A name $d$ that a module $m$ declares, a relation, a rule or a macro, is the word
@@ -166,10 +167,11 @@ The slot names are ordinary names. They are labels, and what they mean is what t
   ([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). A declaration
   with $n = 0$ declares a relation of no argument
   ([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md));
-- a **rule** reads the slot names as it reads any fact, through the facts a declaration is held as ([below](#a-relation-is-an-object)), and it is
-  such a rule that gives $T_i$ the meaning *the $i$-th argument is one of these*;
-- they are read by name in one more place, stated [below](#a-relation-is-an-object): the last rung of hypothesis generation proposes no fact
-  about a name that some declaration uses as a slot name.
+- a **rule** reads the slot names as it reads any fact, through the facts a declaration is held as
+  ([below](#a-relation-is-an-object)), and it is such a rule that gives $T_i$ the meaning *the $i$-th argument is
+  one of these*;
+- they are read by name in one more place, stated [below](#a-relation-is-an-object): the last rung of hypothesis
+  generation proposes no fact about a name that some declaration uses as a slot name.
 
 A name is declared once: two declarations of one relation name, or of one rule name, are no program.
 
@@ -191,8 +193,8 @@ the first fact carrying the slot names and the second saying only that $r$ is a 
 one fact. A pattern over them is an ordinary premise: $\operatorname{relation}(r, x, y)$ binds $x$ and $y$ to the
 slot names of each relation of two arguments, and $\operatorname{relation}(r)$ holds of every declared relation
 whatever its count. In the three-house example the declaration of $\operatorname{lives-in}$ is the fact drawn
-below, in a fragment of the drawing of the example's knowledge base: an octagon with three numbered arrows, and its slot names $\mathsf{Person}$ and $\mathsf{House}$ are the
-same nodes the membership facts point at:
+below, in a fragment of the drawing of the example's knowledge base: an octagon with three numbered arrows, whose
+slot names $\mathsf{Person}$ and $\mathsf{House}$ are the same nodes the membership facts point at:
 
 ```dot
 digraph kb {
@@ -223,9 +225,10 @@ $$
 \operatorname{relation}(r, t_1, t_2) \;\land\; r(x_1, x_2) \;\land\; \operatorname{is-a}(x_1, t_1) \;\implies\; \operatorname{typed-first}(x_1, t_1)
 $$
 
-concludes of each fact of $r$ whose first argument is a member of the first slot name that it is one. In the
-example it concludes $\operatorname{typed-first}(\mathsf{Norwegian}, \mathsf{Person})$ from
-$\operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1})$, and it would conclude nothing from
+concludes of each fact of $r$ whose first argument is a member of the first slot name that it is one. Applied to
+$\operatorname{lives-in}$ over the example's facts, it concludes
+$\operatorname{typed-first}(\mathsf{Norwegian}, \mathsf{Person})$ from
+$\operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1})$, and it concludes nothing from a fact
 $\operatorname{lives-in}(\mathsf{House\text{-}1}, \mathsf{Norwegian})$, which is a fact all the same. A program
 with no such rule gives its slot names no meaning: what is left of them is their count, and the exclusion below.
 

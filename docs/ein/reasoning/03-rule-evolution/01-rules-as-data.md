@@ -171,7 +171,7 @@ type system is this: membership is a relation, and what a type check concludes, 
 a declaration, and its meaning is an ordinary rule the fact applies
 ([Q27](../../../decisions/language/Q27-a-relations-properties-are-facts-beside.md),
 [Q16](../../../decisions/stdlib/Q16-general-rule-families-are-stdlib-modules.md)). With
-$\operatorname{ext}_S(r) = \{\, (u, v) : r(u, v) \in S \,\}$ the extent of a relation of two arguments, the rules of
+$\operatorname{ext}_S(r) = \lbrace (u, v) : r(u, v) \in S \rbrace$ the extent of a relation of two arguments, the rules of
 the standard library's relation algebra make these true of every saturated state $S$ of a program that brings
 them in:
 

@@ -19,17 +19,17 @@ so $O$ is a function of the program alone. Every order a reader sees is therefor
 content, one of the orders of this page. A collection read only for membership needs no order; one whose
 iteration reaches an output is ordered by content at that point.
 
-## The total order of the values
+## Values are totally ordered
 
 A value is a name or a fact ([names and atoms](01-names-and-atoms.md)), and any two values compare. Write
-$<_{\text{lex}}$ for the order of words by code point, a proper prefix first. Then $\prec$ is the least relation
+$\lt_{\text{lex}}$ for the order of words by code point, a proper prefix first. Then $\prec$ is the least relation
 on $V$ with
 
 $$
 \begin{aligned}
 a \prec f \quad & \text{for every name } a \text{ and every fact } f \\
-a \prec b \quad & \text{iff } a <_{\text{lex}} b, \text{ for names } a, b \\
-r(u_1, \dots, u_m) \prec s(v_1, \dots, v_n) \quad & \text{iff } r <_{\text{lex}} s, \ \text{ or } \ r = s \text{ and } (u_1, \dots, u_m) \prec^{*} (v_1, \dots, v_n)
+a \prec b \quad & \text{iff } a \lt_{\text{lex}} b, \text{ for names } a, b \\
+r(u_1, \dots, u_m) \prec s(v_1, \dots, v_n) \quad & \text{iff } r \lt_{\text{lex}} s, \ \text{ or } \ r = s \text{ and } (u_1, \dots, u_m) \prec^{*} (v_1, \dots, v_n)
 \end{aligned}
 $$
 
@@ -51,9 +51,9 @@ their argument. $u \preceq v$ means $u \prec v$ or $u = v$. In words:
 
 **Proposition.** $\preceq$ is a total order on $V$.
 
-*Argument.* By induction on the depth of the two values. $<_{\text{lex}}$ is a total order of words. Names come
-before facts, and names are ordered by $<_{\text{lex}}$. For two facts, the relation names are compared by
-$<_{\text{lex}}$, and if they are equal the argument lists are compared by $\prec^{*}$, the lexicographic order
+*Argument.* By induction on the depth of the two values. $\lt_{\text{lex}}$ is a total order of words. Names come
+before facts, and names are ordered by $\lt_{\text{lex}}$. For two facts, the relation names are compared by
+$\lt_{\text{lex}}$, and if they are equal the argument lists are compared by $\prec^{*}$, the lexicographic order
 over $\prec$ on values of smaller depth, which is total by induction; a lexicographic order over a total order is
 total. Two values that neither precedes the other have the same relation, the same count and equal arguments,
 which is identity of facts. $\square$
@@ -95,18 +95,18 @@ $$
 with $\sqcup$ one space, and $\texttt{(}\,r\,\texttt{)}$ for $n = 0$. Then
 
 $$
-h <_{H} h' \iff \operatorname{text}(h) <_{\text{lex}} \operatorname{text}(h')
+h \lt_{H} h' \iff \operatorname{text}(h) \lt_{\text{lex}} \operatorname{text}(h')
 $$
 
 This is the **universe's order**, the order in which $H$ is listed
-([the hypothesis space](../02-kb-evolution/05-hypothesis-space.md)). $<_{H}$ and $\prec$ are two orders and
+([the hypothesis space](../02-kb-evolution/05-hypothesis-space.md)). $\lt_{H}$ and $\prec$ are two orders and
 disagree: in the order of characters a space comes before a closing parenthesis, and an opening parenthesis
 before every letter and digit, so
 
 $$
-\operatorname{q}(\mathsf{10}, \mathsf{10}) <_{H} \operatorname{q}(\mathsf{10}) \quad \text{but} \quad \operatorname{q}(\mathsf{10}) \prec \operatorname{q}(\mathsf{10}, \mathsf{10}),
+\operatorname{q}(\mathsf{10}, \mathsf{10}) \lt_{H} \operatorname{q}(\mathsf{10}) \quad \text{but} \quad \operatorname{q}(\mathsf{10}) \prec \operatorname{q}(\mathsf{10}, \mathsf{10}),
 \qquad
-\operatorname{q}(\operatorname{p}(\mathsf{a})) <_{H} \operatorname{q}(\mathsf{a}) \quad \text{but} \quad \operatorname{q}(\mathsf{a}) \prec \operatorname{q}(\operatorname{p}(\mathsf{a}))
+\operatorname{q}(\operatorname{p}(\mathsf{a})) \lt_{H} \operatorname{q}(\mathsf{a}) \quad \text{but} \quad \operatorname{q}(\mathsf{a}) \prec \operatorname{q}(\operatorname{p}(\mathsf{a}))
 $$
 
 Each is total, each is a function of content, and a surface says which one it lists by.
@@ -141,7 +141,7 @@ The two differ exactly where saturation derives a candidate at a node of $R$: th
 $\operatorname{cl}(C) \supsetneq C$ are two commitments with one state
 ([solution semantics](../02-kb-evolution/06-solution-semantics.md)).
 
-## The identity of a rule application
+## A rule application's identity
 
 A rule $\rho$ with parameters $\bar{p} = (p_1, \dots, p_m)$ is applied once for each **activator**: a fact whose
 relation is the rule's name and whose arguments bind its parameters
@@ -287,8 +287,8 @@ neither a backslash nor a quotation mark nor a character outside ASCII.
 $q$ is total and injective, so it is an order too:
 
 $$
-u <_{q} v \iff q(u) <_{\text{lex}} q(v)
+u \lt_{q} v \iff q(u) \lt_{\text{lex}} q(v)
 $$
 
 The facts of a contradiction's core, drawn as the arrows into $\bot$ in the drawing of a refutation, are listed
-in $<_{q}$, whatever order they were found in.
+in $\lt_{q}$, whatever order they were found in.

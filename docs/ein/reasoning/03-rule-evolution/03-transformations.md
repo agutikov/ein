@@ -122,9 +122,10 @@ T_P(S) = S \;\cup\; \big\{\, f \in \psi[\bar{a}]\theta \;:\; \rho \in P,\ \bar{a
 $$
 
 Without an absence, satisfaction is preserved when a state grows, so $T_P$ is monotone, $S \subseteq S'$ implies
-$T_P(S) \subseteq T_P(S')$, and it is inflationary. The chain $S_0 \subseteq T_P(S_0) \subseteq T_P^2(S_0)
-\subseteq \cdots$ is increasing, and its union is the least set of facts above $S_0$ closed under $T_P$, since a
-match reads finitely many facts and so whatever fires in the union fires at some stage of the chain:
+$T_P(S) \subseteq T_P(S')$, and it is inflationary. The chain
+$S_0 \subseteq T_P(S_0) \subseteq T_P^2(S_0) \subseteq \cdots$ is increasing, and its union is the least set of
+facts above $S_0$ closed under $T_P$, since a match reads finitely many facts and so whatever fires in the union
+fires at some stage of the chain:
 
 $$
 \operatorname{sat}(S_0) = \bigcup_{k \ge 0} T_P^{\,k}(S_0)
