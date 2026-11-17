@@ -539,3 +539,8 @@ the user.
 
 **The coordinator**, after the merges: the fifteen decisions whose title changed are renamed to it, every
 reference with them, and the six links the lanes left to two renamed headings follow.
+
+**The last verification.** `utils/ci_container.sh` on `38cef76b` (the runner's image: Ubuntu 26.04, Graphviz
+14.1.2, the amd64v3 packages): exit 0, 160 test binaries ok, none failed. It is the whole gate on the commit
+that carries every lane of this stage, the gate step holding the pages' rules 1 to 5 and the diagrams' sources
+laid out by the runner's Graphviz among its steps.
