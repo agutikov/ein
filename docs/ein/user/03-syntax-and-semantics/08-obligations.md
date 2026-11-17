@@ -107,8 +107,62 @@ digraph rule_everyone_sits_lhs_rhs {
 }
 ```
 
-In `ein render region`'s drawing of the answer an owing node is filled amber, and an edge that pays a node's last debt
-is drawn blue ([rendering](../04-reference/12-rendering.md)).
+Outside the cluster is the trigger, a person; inside it is what must not be missing, a chair with a `seat` arrow from
+that person. The library's `total-owed` is the same picture with every name a variable: the relation `?R` and its
+two labels are read from the declaration's fact, and `?isa` is the membership relation the activator passes
+(`ein render rule --name total-owed STDLIB/algebra.ein`, with `STDLIB` the directory `ein --version` names):
+
+```dot
+digraph rule_total_owed_lhs_rhs {
+  rankdir=TB;
+  label="total-owed"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
+    "?a_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?b_L" [label="?b", shape=diamond];
+      "?b_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+      "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h2_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
+    "h2_open_R" -> "?R_R" [label="1", color="#2ca02c", style=dashed];
+  }
+}
+```
+
+What the obligation does to the answer is a picture of the lattice: `ein oracle FILE --dump DIR`, then `ein render
+region DIR` (the layer labels, the tooltips and the legend left out). An owing node is filled amber, a node of R
+green, a dead one red, and the edge that pays a node's last debt is drawn blue:
+
+```dot
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="region · seats.ein\nn = 2 · |R| = 1 of 4 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
+  m1 [label="(seat Bob C1)\nR · min · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3, peripheries=2];
+  m2 [label="(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m3 [label="(seat Bob C1)\n(seat Bob C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
+  m0 -> m2 [color="#cb181d", style=dashed, penwidth=1.2];
+  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
+  m2 -> m3 [color="#bdbdbd", style=solid, penwidth=0.6];
+}
+```
+
+Root owes, so it is below R; one candidate pays the debt and one dies of the restriction; the answer is the one
+green node between them ([rendering](../04-reference/12-rendering.md)).
 
 ## In words
 
@@ -120,26 +174,40 @@ a sentence with a gap: *for every person, some chair is theirs; until one is, th
 
 ## In mathematics
 
-An obligation rule `o`, activated by `a`, has a trigger `T` and a witness `W`, and matches a state `S` at the
-bindings `θ` of the trigger where no witness exists:
+The requirement `everyone-sits` states is a sentence with two quantifiers, and the rule matches where it fails:
 
-```text
-owes(o, a, θ, S)  ⟺  S ⊨ T(θ)  ∧  ¬∃ ȳ. S ⊨ W(θ, ȳ)
+$$
+\forall p.\ \text{is-a}(p, \mathsf{Person}) \implies \exists c.\ \text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c)
+$$
 
-owes(S)        = | { (o, a, θ) : owes(o, a, θ, S) } |
-discharged(S)  ⟺  owes(S) = 0
-```
+$$
+\text{is-a}(p, \mathsf{Person}) \land \lnot \exists c.\ \bigl( \text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c) \bigr) \implies \operatorname{open}(\mathsf{seat})
+$$
 
-`(open ?R)` names the relation of the one premise of `W` that binds `ȳ`, the slot a payment fills. A state of the
-answer is alive and discharged:
+In general an obligation rule $o$, activated by $a$, has a trigger $T$ and a witness $W$, and matches a state $S$
+at the bindings $\theta$ of the trigger where no witness exists:
 
-```text
-R = { C ⊆ H : (false) ∉ sat(root ∪ C)  ∧  owes(sat(root ∪ C)) = 0 }
-```
+$$
+\operatorname{owes}(o, a, \theta, S) \iff S \models T(\theta) \land \lnot \exists \bar{y}.\ S \models W(\theta, \bar{y})
+$$
 
-Discharge is a positive test, `∃ ȳ. W`, so on a program where commitments cannot grow `T`, a state that is
-discharged stays discharged as facts are added; an obligation bounds R from below as a restriction bounds it from
-above.
+$$
+\operatorname{owes}(S) = \bigl| \lbrace (o, a, \theta) \mid \operatorname{owes}(o, a, \theta, S) \rbrace \bigr|, \qquad
+\operatorname{discharged}(S) \iff \operatorname{owes}(S) = 0
+$$
+
+`(open ?R)` names the relation of the one premise of $W$ that binds $\bar{y}$, the slot a payment fills. In the
+program above $T(p)$ is $\text{is-a}(p, \mathsf{Person})$, $W(p, c)$ is
+$\text{is-a}(c, \mathsf{Chair}) \land \operatorname{seat}(p, c)$, and at root $\operatorname{owes}$ is 1, the
+instance $p = \mathsf{Bob}$. A state of the answer is alive and discharged:
+
+$$
+R = \lbrace C \subseteq H \mid \bot \notin \operatorname{sat}(\mathrm{root} \cup C) \ \land\ \operatorname{owes}(\operatorname{sat}(\mathrm{root} \cup C)) = 0 \rbrace
+$$
+
+Discharge is a positive test, $\exists \bar{y}.\ W$, so on a program where commitments cannot grow $T$, a state
+that is discharged stays discharged as facts are added; an obligation bounds $R$ from below as a restriction
+bounds it from above.
 
 ## The form: `(open ?R)`
 
