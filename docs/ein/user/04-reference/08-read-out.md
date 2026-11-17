@@ -47,6 +47,29 @@ After the rows come the listing, the queries, the claims, and on request the for
 
 A row marked **—** counts nothing: it says what was asked, or a verdict on a claim.
 
+**What the rows of kind R count, as formulas.** Write $H$ for the candidates, $C \subseteq H$ for a commitment and
+$\operatorname{state}(C)$ for what root's facts and $C$'s saturate to. Then
+
+$$
+R = \lbrace C \subseteq H : \operatorname{state}(C) \text{ is alive and owes nothing} \rbrace
+$$
+
+$$
+k_c = |R| \qquad k_s = |\lbrace \operatorname{state}(C) : C \in R \rbrace|
+$$
+
+`commitments (k_c)` counts the members of $R$ and `states (k_s)` the states they reach, so $k_s \le k_c$, with
+equality exactly where the `merged` row reads *none*. The two lines are the states of the members of $R$ with no
+member below them, and with none above:
+
+$$
+\min R = \lbrace C \in R : \nexists D \in R \colon D \subsetneq C \rbrace \qquad \max R = \lbrace C \in R : \nexists D \in R \colon C \subsetneq D \rbrace
+$$
+
+and `minimal line` and `maximal line` count $\lbrace \operatorname{state}(C) : C \in \min R \rbrace$ and
+$\lbrace \operatorname{state}(C) : C \in \max R \rbrace$. `--minimal` and `--maximal` list those states, and
+`--single` asks whether $k_s = 1$.
+
 **One label, one number.** Each invocation prints one label for one number, and every number a row prints that the
 summary also holds is the summary's field. The tables' **summary** column names that field: its number is the
 integer, or an array's length, or each string of a list; a zero may print as a word (*none*, *in R*, *no hole*). In a
@@ -94,7 +117,7 @@ the same either way ([Q-M1f.224](../../../decisions/read-out/Q-M1f.224-a-run-tak
 | `maximal line` | as `minimal line` | the maximal line's size in states, $\top$ *trivial* when nothing dies; on a partial run what is certified, or *not known* where the line needs the whole cube | R | `region.maximal.states` | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](09-read-out-examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit), [X11](09-read-out-examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
 | `components` | as `minimal line` | how many components R has under one-fact edges, and their sizes in commitments where there are several; *not known* on a partial run | R | `region.components` | [X4](09-read-out-examples.md#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes), [X5](09-read-out-examples.md#x5--latticesynthmerged_statesein-every-state-merged) |
 | `sub-cubes` | as `minimal line` | how many maximal sub-cubes R has, and their dimensions; *not known* on a partial run or past the interval search's bound | R | `region.subcubes` | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
-| `merged` | as `minimal line` | how many states more than one commitment reaches, and how many minimal commitments they have between them; *none* where k_c = k_s; *not known* on a partial run | R | `region.merged.states`, `region.merged.minimal` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once), [X5](09-read-out-examples.md#x5--latticesynthmerged_statesein-every-state-merged) |
+| `merged` | as `minimal line` | how many states more than one commitment reaches, and how many minimal commitments they have between them; *none* where $k_c = k_s$; *not known* on a partial run | R | `region.merged.states`, `region.merged.minimal` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once), [X5](09-read-out-examples.md#x5--latticesynthmerged_statesein-every-state-merged) |
 | `N` | as `minimal line` | the minimal dead sets; on a partial run, a lower bound and which of them it holds. **Not computed** by the tree and the classes, which the row says, with the candidates dead alone as the members met and `--describe-route states` as what computes it, the summary's `region.nogoods` `null`; *not taken* where the run was asked by a surface that prints no N | around R | `region.nogoods` | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](09-read-out-examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
 | `E` | describe on route 2, and `ein oracle` | the minimal discharging sets, which only the cube computes | around R | `region.discharging` | [X8](09-read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `lattice` | every run but `--monotone` | the static check's verdict; on a flagged program its sites, and the holes the cube shows or that they are not known; then the block of § 5.1 | around R | `monotonicity.sites`, `region.holes.count` | [X8](09-read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole), [X14](09-read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |

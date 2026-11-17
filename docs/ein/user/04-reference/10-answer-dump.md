@@ -180,7 +180,7 @@ are the full run's `region.root`, `root_owes` and `root_owed`.
 
 | field | what it holds |
 |---|---|
-| `root.facts` | the facts of root's fixpoint, `sat(program)`: what `ein saturate FILE` prints as *facts (total)* after saturation, and what the file of state `∅` holds when $\emptyset \in R$. No route writes into root, so it is root before any commitment and after every one |
+| `root.facts` | the facts of root's fixpoint, $\operatorname{sat}(\text{program})$: what `ein saturate FILE` prints as *facts (total)* after saturation, and what the file of state `∅` holds when $\emptyset \in R$. No route writes into root, so it is root before any commitment and after every one |
 | `root.facts_by_relation` | those facts by relation name, sorted, only the relations that have one. They sum to `root.facts` |
 | `root.dead` | root's own fixpoint derives `(false)`: root's standing, which every run reaches first and `ein solve --no-search` reports. It is `region.root` = `dead` on every description |
 | `root.owes` | the obligation instances root's fixpoint leaves undischarged, dead or not, as a node counts them: `region.root_owes` on every description. With `root.dead`, whether $\emptyset$ is in R |
