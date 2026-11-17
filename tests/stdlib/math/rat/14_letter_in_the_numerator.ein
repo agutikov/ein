@@ -2,9 +2,12 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A malformed numeral is `std.math.decimal`'s, wherever it is written: here
-;;; in the integer that is a rational's numerator. `numeral-digit` flags `(n z
-;;; x)` as it is written (Q-M1f.210).
+;;; A malformed numeral is `std.math.decimal`'s, flagged where an operation
+;;; takes it: here in the integer that is a rational's numerator.
+;;; `rat-check-ask` asks the rational's check, `rat-check-parts` asks
+;;; `std.math.int`'s of the numerator, `int-check-parts` asks
+;;; `std.math.decimal`'s of each part, and `numeral-digit` flags `(n z x)`
+;;; (Q-M1f.210, Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

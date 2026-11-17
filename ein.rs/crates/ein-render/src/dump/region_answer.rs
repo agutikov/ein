@@ -685,13 +685,10 @@ pub fn write_root(
 }
 
 fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> String {
-    // The program's declarations and the loader's `(written T)` are stated
-    // again when the file is loaded, and a file that wrote a
-    // `written` fact would be refused.
-    let (relation, written) = (terms.kernel.relation, terms.kernel.written);
+    let relation = terms.kernel.relation;
     let mut state: Vec<FactId> = kb
         .facts()
-        .filter(|&f| ![relation, written].contains(&terms.facts.get(f).0))
+        .filter(|&f| terms.facts.get(f).0 != relation)
         .collect();
     state.sort_by_cached_key(|&f| ein_infer::events::sexpr(terms, f));
     let mut text = String::new();
@@ -700,20 +697,12 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
         text.push_str(h);
         text.push('\n');
     }
-    // Said only where there are any, so a state file of a program that writes
-    // no nested fact carries no line about `written`.
-    let stated = if kb.facts().any(|f| terms.facts.get(f).0 == written) {
-        "\n;;; The loader states (written T) for each fact nested in a fact the file\n\
-         ;;; holds, so those are not repeated either."
-    } else {
-        ""
-    };
     format!(
         "{text};;;\n\
          ;;; Below: the program as loaded, imports inlined, and then every fact of\n\
          ;;; the state ({} facts; the program's own relation declarations are not\n\
          ;;; repeated). It loads, and saturating it derives nothing new: the state is\n\
-         ;;; a fixpoint of the program (10-answer-dump.md, every state file loads).{stated}\n\n\
+         ;;; a fixpoint of the program (10-answer-dump.md, every state file loads).\n\n\
          {}\n\
          ;; ── the state ──────────────────────────────────────────────────────────\n\n\
          {}",

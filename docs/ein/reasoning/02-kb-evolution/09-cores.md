@@ -74,8 +74,7 @@ are alternatives. What is true of $J$ in every implementation:
 - **A record is of a held fact, and names held facts.** A fact that is only in a context
   ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)) has no
   record. Where a firing turned on such a fact, matched under an arrow of a premise, its premise is the held fact
-  that points at it, and that is what an explanation names. A fact of $\mathsf{written}$ has one premise, the
-  written fact it was read in, or none where a rule's text wrote it.
+  that points at it, and that is what an explanation names.
 - **A record made in a node is the node's.** A node is a fork of root ([firing a rule](01-firing.md#two-layers)),
   and with $J$ root's records and $J'$ the node's, $J'(f) \setminus J(f)$ never reaches root. That keeps
   explanations honest: a derivation recorded under a commitment may rest on the commitment, which root never

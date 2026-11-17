@@ -30,7 +30,7 @@
 ;;; `(false)`, each from a flag: a program that states a request the theory
 ;;; cannot read, or that names an operand no `let` states, is a contradiction
 ;;; (below), and so is one that divides by zero, by `std.math.arith`'s rule,
-;;; and one that writes a malformed numeral, by `std.math.decimal`'s.
+;;; and one whose request takes a malformed numeral, by `std.math.decimal`'s.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -202,10 +202,17 @@
 ;;;
 ;;; **A malformed numeral is not this module's**: a malformed decimal number
 ;;; is a problem of the decimal module, `std.math.decimal` (Q-M1f.210).
-;;; Whether `(n (n z 1) x)` is a number is
-;;; `std.math.decimal`'s question, asked of every numeral a file writes as it
-;;; is written, wherever it sits, with no request reading it: its flag is
-;;; `(not-decimal NUMERAL THING)`, and `(false)` follows. What is left here is
+;;; Whether `(n (n z 1) x)` is a number is `std.math.decimal`'s question,
+;;; which this module asks of every numeral an operand stands for, written as
+;;; the operand or as a `let`'s value, when the operand is looked up
+;;; (`operand-check`, `std.math.positional`'s; Q-M1f.404): once a numeral,
+;;; whatever reads it. Its flag is `(not-decimal NUMERAL THING)`, and
+;;; `(false)` follows; a well-formed one is labelled `(valid NUMERAL)`. A
+;;; numeral no request takes is not checked. **A number a walk makes is
+;;; labelled as it is made**, by `std.math.positional`'s turn and division's
+;;; end: `(sum-of X Y S)`'s S, every number of the other four answers, and a
+;;; tagged call's hand-over are valid already, and none is checked. What is
+;;; left here is
 ;;; what is wrong with an **operand** or a **`let`**, which this module reads:
 ;;;
 ;;;     (malformed REQUEST)         a digit stands where a number goes,
@@ -341,7 +348,8 @@
 ;;; refused at load.
 ;;;
 ;;; **What a program reads:** the results `sum-of`, `diff-of`, `cmp-of`,
-;;; `product-of` and `quot-of`; the flags `malformed` and `undeclared`, with
+;;; `product-of` and `quot-of`, each number of them labelled with
+;;; `std.math.decimal`'s `valid`; the flags `malformed` and `undeclared`, with
 ;;; `std.math.arith`'s `division-by-zero` and `std.math.decimal`'s
 ;;; `not-decimal`; the orders `lt`, `eq` and `gt`; and the tagged calls'
 ;;; answers, `done`, `short`, `order-is`, `div-done` and `operand-is`.
@@ -365,12 +373,12 @@
 ;;; `cl`, `nz`, `mid` and `adj`, with the bound `10`.
 ;;;
 ;;; **Its rules** are decimal's own 35 and the closing rule, each under its
-;;; full name, `std.math.decimal-arith.mul-column`; the 77 it activates are
+;;; full name, `std.math.decimal-arith.mul-column`; the 78 it activates are
 ;;; `std.math.positional`'s and print by that module's name.
 
 (import std.math.digits :symbols (fa fs md cl nz mid adj))
 (import std.math.arith :symbols (arith z))
-(import std.math.decimal :symbols (decimal n named))
+(import std.math.decimal :symbols (decimal n named check valid))
 (import std.math.positional :symbols (positional))
 
 ;; ── The accumulator: the number is `std.math.decimal`'s ─────────────────────
@@ -752,10 +760,10 @@
 ;; contradiction, as a division by zero is (Q-M1f.316). **A flag means
 ;; malformed; no flag does not mean well-formed** (Q-M1f.318): the header
 ;; lists what stays silent. A malformed numeral is `std.math.decimal`'s,
-;; flagged where it is written (Q-M1f.210). The rules that
-;; flag an operand and a `let` are `std.math.positional`'s, but for the one
-;; that reads the ten digits, `operand-undeclared`, below; the relations are
-;; decimal's, declared here.
+;; flagged by the check the operand's look-up asks for (Q-M1f.210). The rules
+;; that flag an operand and a `let` are `std.math.positional`'s, but for the
+;; one that reads the ten digits, `operand-undeclared`, below; the relations
+;; are decimal's, declared here.
 ;;
 ;; `(malformed REQUEST)`: an operand of the request holds something that is
 ;; not a number, the request as written. `(malformed (let NAME NUMBER))`: the
@@ -770,7 +778,7 @@
 ;; FAULT)`: what is wrong, first by the operand's tag and then by the request;
 ;; FAULT is `(not-a-number THING)`, what stands where a number goes, or
 ;; `(no-let NAME)`. A found operand is not walked here for a malformed
-;; numeral: that is `std.math.decimal`'s, seen where it is written
+;; numeral: that is `std.math.decimal`'s check, which the look-up asks for
 ;; (Q-M1f.210).
 (relation bad-operand Tag Fault
   :why "the operand looked up for {?1} is at fault: {?2}")
@@ -811,7 +819,7 @@
 ;;
 ;; **And it connects the base** (Q-M1f.266): its last conjunct is one
 ;; call of `std.math.positional`'s
-;; macro with decimal's 61 relations, which derives the 77 activators of the
+;; macro with decimal's 63 relations, which derives the 78 activators of the
 ;; shared rules in this same firing. Those rules are named by their activators
 ;; and not here: a rule's name written as an argument makes every
 ;; parameterised conclusion of its arity a possible activator that binds a
@@ -887,13 +895,12 @@
                (arith-rule div-too-big) (arith-rule div-digit-found)
                (arith-rule div-next) (arith-rule div-next-zero)
                (arith-rule div-next-none) (arith-rule operand-undeclared)
-               (positional operand operand-is n let named add-walk fa b strip turn nz done
-                           add add-first add-second sum sum-of
-                           sub-walk fs short sub sub-first sub-second difference shortfall diff-of
-                           cmp-walk cl order-is cmp cmp-first cmp-second order cmp-of
-                           top-first top-first-is mul-call mul-digits mul-step mul-sum
-                           mul mul-first mul-second product product-of
-                           div-digits div-step div-done div div-first div-second div-call
-                           quotient quot-of div-m1
-                           bad-operand not-a-number malformed bad-request no-let undeclared))
+               (positional operand operand-is n let named check add-walk fa b strip turn nz done
+                           valid add add-first add-second sum sum-of sub-walk fs short sub sub-first
+                           sub-second difference shortfall diff-of cmp-walk cl order-is cmp
+                           cmp-first cmp-second order cmp-of top-first top-first-is mul-call
+                           mul-digits mul-step mul-sum mul mul-first mul-second product product-of
+                           div-digits div-step div-done div div-first div-second div-call quotient
+                           quot-of div-m1 bad-operand not-a-number malformed bad-request no-let
+                           undeclared))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

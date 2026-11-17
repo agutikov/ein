@@ -5853,7 +5853,7 @@ commitment states. (c) keeps the silent drop's answer.
 
 ### Q-M1f.272 — How a representation module sees a numeral, right away
 
-**Decision file:** [`docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md`](../../docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md`](../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)
 
 **Raised** 2026-11-14 by S1f.6.38's T1, the design
 (`6cca4406`), on Q-M1f.210's ruling: a malformed numeral is the representation's problem, detected as soon as it is
@@ -5904,7 +5904,7 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 
 ### Q-M1f.275 — What the loader states as written
 
-**Decision file:** [`docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md`](../../docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md`](../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)
 
 **Raised** 2026-11-14 by S1f.6.38's T1.
 
@@ -5969,7 +5969,7 @@ operand did not pay.
 
 ### Q-M1f.279 — What a `written` fact is derived by, and where it shows
 
-**Decision file:** [`docs/decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md`](../../docs/decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md`](../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)
 
 **Raised** 2026-11-14 by S1f.6.38's
 T1f.6.38.2. The ruled design: a core that rests on a stated fact names the fact as written, and `written` shows where
@@ -5989,7 +5989,7 @@ the declarations' mirrors show.
 
 ### Q-M1f.280 — A program that writes `written`
 
-**Decision file:** [`docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md`](../../docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md`](../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)
 
 **Raised** 2026-11-14 by S1f.6.38's
 T1f.6.38.2.

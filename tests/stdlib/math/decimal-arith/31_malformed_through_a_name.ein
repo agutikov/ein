@@ -2,21 +2,20 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A malformed numeral is `std.math.decimal`'s, flagged as it is written,
-;;; wherever it sits, with no request reading it (Q-M1f.210): the loader
-;;; states every fact nested in a fact the program writes, `(written T)`, and
-;;; the module's rules read each place of each numeral off it (Q-M1f.272).
-;;; The flag is `(not-decimal NUMERAL THING)`, on the smallest numeral at
-;;; fault (Q-M1f.274), and `not-decimal-is-false` derives `(false)` from it.
-;;; The request that holds the numeral is checked for none of it: no walk of
-;;; `std.math.decimal-arith`'s reads a numeral's places for a fault, and the
-;;; request's own flag, `(malformed REQUEST)`, is a digit's where a number goes.
+;;; A malformed numeral is `std.math.decimal`'s, flagged where an operation
+;;; takes it (Q-M1f.210, Q-M1f.404): the request's operand is looked up, and
+;;; `operand-check` asks the module's check of the numeral it finds, which
+;;; walks it a place a firing from the units. The flag is `(not-decimal
+;;; NUMERAL THING)`, on the smallest numeral at fault (Q-M1f.274), and
+;;; `not-decimal-is-false` derives `(false)` from it. No walk of the
+;;; arithmetic reads a numeral's places for a fault, and the request's own
+;;; flag, `(malformed REQUEST)`, is a digit's where a number goes.
 ;;;
 ;;; The operand is the name `broken`, and its `let` states a number with `x`
-;;; in a digit's place. The numeral is flagged where the `let` writes it,
-;;; `numeral-digit`, whether or not a request names it: so is `unused`, which
-;;; no request asks about: the check runs where a numeral is written, not
-;;; where a request asks for it.
+;;; in a digit's place. The division's operand is looked up through the
+;;; `let`, and the numeral it finds is checked: `numeral-digit` flags it.
+;;; `unused`, which no request asks about, holds `y` in a digit's place and
+;;; is not checked: a numeral no operation takes is not (Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

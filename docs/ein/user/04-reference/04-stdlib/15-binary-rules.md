@@ -11,14 +11,60 @@ prints.
 
 ## `std.math.binary`
 
-The numeral's check, `std.math.decimal`'s twin: each rule has one premise, a written numeral.
+The numeral's check, `std.math.decimal`'s twin, which an operation asks of a numeral it takes, `(bin-check N N)`
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)): each rule has one premise that holds a number, `(bin-check N REST)`.
+
+#### `bin-numeral-step`
+
+The place holds the bit 1: the walk goes on to the prefix.
+
+<!-- rule std.math.binary bin-numeral-step -->
+```lisp
+(rule bin-numeral-step ()
+  :match  (and (bin-check ?w (b2 ?p ?a)) (bin-nz ?a))
+  :assert (bin-check ?w ?p)
+  :why    "the bit {?a} is one: {?p} is still to check")
+```
+
+![The rule bin-numeral-step of std.math.binary, as the engine draws it](diagrams/15-std.math.binary.bin-numeral-step.svg)
+<!-- /rule -->
+
+#### `bin-numeral-step-zero`
+
+The place holds the bit 0: the walk goes on to the prefix.
+
+<!-- rule std.math.binary bin-numeral-step-zero -->
+```lisp
+(rule bin-numeral-step-zero ()
+  :match  (bin-check ?w (b2 ?p 0))
+  :assert (bin-check ?w ?p)
+  :why    "the bit 0 is one: {?p} is still to check")
+```
+
+![The rule bin-numeral-step-zero of std.math.binary, as the engine draws it](diagrams/15-std.math.binary.bin-numeral-step-zero.svg)
+<!-- /rule -->
+
+#### `bin-numeral-valid`
+
+The walk reached `z`: every place held a bit, and the numeral is labelled `(bin-valid N)`.
+
+<!-- rule std.math.binary bin-numeral-valid -->
+```lisp
+(rule bin-numeral-valid ()
+  :match  (bin-check ?w z)
+  :assert (bin-valid ?w)
+  :why    "every place of {?w} holds a bit, and it ends in z: it is a binary number")
+```
+
+![The rule bin-numeral-valid of std.math.binary, as the engine draws it](diagrams/15-std.math.binary.bin-numeral-valid.svg)
+<!-- /rule -->
 
 #### `bin-numeral-bit`
 
 <!-- rule std.math.binary bin-numeral-bit -->
 ```lisp
 (rule bin-numeral-bit ()
-  :match  (and (written (b2 ?p ?a)) (neq ?a 0) (neq ?a 1))
+  :match  (and (bin-check ?w (b2 ?p ?a)) (neq ?a 0) (neq ?a 1))
   :assert (not-binary (b2 ?p ?a) ?a)
   :why    "{?a} stands where a bit goes and is neither of the two")
 ```
@@ -31,7 +77,7 @@ The numeral's check, `std.math.decimal`'s twin: each rule has one premise, a wri
 <!-- rule std.math.binary bin-numeral-prefix-bit -->
 ```lisp
 (rule bin-numeral-prefix-bit ()
-  :match  (and (written (b2 ?m ?a)) (bin-nz ?m))
+  :match  (and (bin-check ?w (b2 ?m ?a)) (bin-nz ?m))
   :assert (not-binary (b2 ?m ?a) ?m)
   :why    "the bit {?m} stands where a number goes: a number ends in z")
 ```
@@ -44,7 +90,7 @@ The numeral's check, `std.math.decimal`'s twin: each rule has one premise, a wri
 <!-- rule std.math.binary bin-numeral-prefix-zero -->
 ```lisp
 (rule bin-numeral-prefix-zero ()
-  :match  (written (b2 0 ?a))
+  :match  (bin-check ?w (b2 0 ?a))
   :assert (not-binary (b2 0 ?a) 0)
   :why    "the bit 0 stands where a number goes: a number ends in z")
 ```
@@ -57,7 +103,7 @@ The numeral's check, `std.math.decimal`'s twin: each rule has one premise, a wri
 <!-- rule std.math.binary bin-numeral-prefix-named -->
 ```lisp
 (rule bin-numeral-prefix-named ()
-  :match  (and (written (b2 ?m ?a)) (neq ?m z) (bin-named ?m))
+  :match  (and (bin-check ?w (b2 ?m ?a)) (neq ?m z) (bin-named ?m))
   :assert (not-binary (b2 ?m ?a) ?m)
   :why    "the name {?m} stands where a number goes: a name stands for a number as an operand, not inside one")
 ```
@@ -85,9 +131,13 @@ The numeral's check, `std.math.decimal`'s twin: each rule has one premise, a wri
 (rule binary ()
   :match  ()
   :assert (and (__closed__ bin-nz)
-               (__closed__ b2) (__closed__ bin-named) (__closed__ not-binary)
+               (__closed__ b2) (__closed__ bin-named) (__closed__ bin-check)
+               (__closed__ bin-valid) (__closed__ not-binary)
                (__closed__ binary-rule)
+               (bin-valid z)
                (binary-rule arith)
+               (binary-rule bin-numeral-step) (binary-rule bin-numeral-step-zero)
+               (binary-rule bin-numeral-valid)
                (binary-rule bin-numeral-bit) (binary-rule bin-numeral-prefix-bit)
                (binary-rule bin-numeral-prefix-zero)
                (binary-rule bin-numeral-prefix-named)
@@ -347,17 +397,16 @@ drawing is not shown.
                (bin-arith-rule bin-div-fits) (bin-arith-rule bin-div-too-big)
                (bin-arith-rule bin-div-too-big-none)
                (bin-arith-rule bin-operand-undeclared)
-               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-add-walk bin-fa bin-b
-                           bin-strip bin-turn bin-nz bin-done
-                           bin-add bin-add-first bin-add-second bin-sum bin-sum-of
-                           bin-sub-walk bin-fs bin-short bin-sub bin-sub-first bin-sub-second
-                           bin-difference bin-shortfall bin-diff-of
-                           bin-cmp-walk bin-cl bin-order-is bin-cmp bin-cmp-first bin-cmp-second
-                           bin-order bin-cmp-of
-                           bin-top-first bin-top-first-is bin-mul-call bin-mul-digits bin-mul-step
-                           bin-mul-sum bin-mul bin-mul-first bin-mul-second bin-product bin-product-of
-                           bin-div-digits bin-div-step bin-div-done bin-div bin-div-first bin-div-second
-                           bin-div-call bin-quotient bin-quot-of bin-div-m1
+               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-check bin-add-walk
+                           bin-fa bin-b bin-strip bin-turn bin-nz bin-done bin-valid bin-add
+                           bin-add-first bin-add-second bin-sum bin-sum-of bin-sub-walk bin-fs
+                           bin-short bin-sub bin-sub-first bin-sub-second bin-difference
+                           bin-shortfall bin-diff-of bin-cmp-walk bin-cl bin-order-is bin-cmp
+                           bin-cmp-first bin-cmp-second bin-order bin-cmp-of bin-top-first
+                           bin-top-first-is bin-mul-call bin-mul-digits bin-mul-step bin-mul-sum
+                           bin-mul bin-mul-first bin-mul-second bin-product bin-product-of
+                           bin-div-digits bin-div-step bin-div-done bin-div bin-div-first
+                           bin-div-second bin-div-call bin-quotient bin-quot-of bin-div-m1
                            bin-bad-operand bin-not-a-number bin-malformed bin-bad-request bin-no-let
                            bin-undeclared))
   :why    "binary arithmetic is computed and never guessed: every relation of the theory is closed")
@@ -377,8 +426,8 @@ so far.
 ```lisp
 (rule to-bin-ask ()
   :match  (to-bin ?x)
-  :assert (to-bin-go ?x ?x z)
-  :why    "{?x} in binary is asked: halve it until nothing is left")
+  :assert (and (check ?x ?x) (to-bin-go ?x ?x z))
+  :why    "{?x} in binary is asked: it is checked as a number, and halved until nothing is left")
 ```
 
 ![The rule to-bin-ask of std.math.convert, as the engine draws it](diagrams/15-std.math.convert.to-bin-ask.svg)
@@ -460,8 +509,8 @@ addition walk with itself, the next bit as its carry in.
 ```lisp
 (rule to-dec-ask ()
   :match  (to-dec ?b)
-  :assert (bin-top-first (dec-bits ?b) ?b z)
-  :why    "{?b} in decimal is asked: first its bits, the top one first")
+  :assert (and (bin-check ?b ?b) (bin-top-first (dec-bits ?b) ?b z))
+  :why    "{?b} in decimal is asked: it is checked as a binary number, and its bits are read, the top one first")
 ```
 
 ![The rule to-dec-ask of std.math.convert, as the engine draws it](diagrams/15-std.math.convert.to-dec-ask.svg)

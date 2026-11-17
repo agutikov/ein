@@ -58,12 +58,11 @@ A text then goes through these phases, in this order:
 | 5 | pass 1, the relations, each storing its declaration fact | `ingest_relation` |
 | 6 | pass 2, the rules and hrules, their `:match` and `:assert` macro-expanded first | `ingest_rules` |
 | 7 | pass 3, the facts, with provenance from `:source`, `:rule` and `:using` | `ingest_fact` |
-| 8 | state `written` for every nested fact a file or a rule's text writes | `state_written` (§ 9.2) |
-| 9 | the program-wide refusals, the queries (goals macro-expanded), the one `(solve …)`, the last `(config …)` | `expand_goal`, `validate_solve`, `validate_queries`, `config_from_kw_pairs` |
-| 10 | the unimported-`std.macro` guard | `macros::unimported_macro_errors` (§ 7) |
-| 11 | intern every name a rule or a query mentions | `intern_program_names` (§ 9.1) |
-| 12 | build the KB's indexes, once | `ein_core::Kb::rebuild_indexes` |
-| 13 | refuse a circular written `:using` chain | `ein_core::detect_provenance_cycles` |
+| 8 | the program-wide refusals, the queries (goals macro-expanded), the one `(solve …)`, the last `(config …)` | `expand_goal`, `validate_solve`, `validate_queries`, `config_from_kw_pairs` |
+| 9 | the unimported-`std.macro` guard | `macros::unimported_macro_errors` (§ 7) |
+| 10 | intern every name a rule or a query mentions | `intern_program_names` (§ 9.1) |
+| 11 | build the KB's indexes, once | `ein_core::Kb::rebuild_indexes` |
+| 12 | refuse a circular written `:using` chain | `ein_core::detect_provenance_cycles` |
 
 The same path as a flow, with where a program is refused. A refusal of the parse or of import resolution ends the
 load at once; the loader's own refusals accumulate through its passes and surface together (§ 9.1).
@@ -408,25 +407,7 @@ syntax, an `ein_core::entities::ExprRef` naming the node, until the compiler low
 compiler reads, so that compiling a plan during a search interns nothing new and the interner, shared by the
 search's threads, does not grow ([08-parallelism.md](08-parallelism.md)).
 
-### 9.2 What the loader states: written
-
-For each fact stored from a file, the program's, a local module's or a standard-library module's, the loader states
-`(written T)` for every fact nested among its arguments at any depth; for a stored negation `(not P)`, for the facts
-nested in P's arguments and not P itself. Then, in the registries' order, for each nested fact of a rule's or an
-hrule's conclusion that holds no variable
-([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)). One
-`FxHashSet<Value>` carried through both walks states each term once a program (a `Value` is the code's word for an
-object, an atom or a fact). Each is derived by the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`), from
-the fact it was read in, its one premise, or from no premise for a conclusion's
-([Q-M1f.279](../../../decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)).
-
-`written_in` and `written_in_conclusions` are public, so a caller that states a program over fewer of its facts
-(`ein_infer::structure`) asks the loader's reading instead of reading a fact's arguments a second way. A program does
-not write `written`: a fact of it, its negation and a conclusion of it are refused
-([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md)). A representation module's
-rules read it ([Q-M1f.272](../../../decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)).
-
-### 9.3 The KB as one text
+### 9.2 The KB as one text
 
 A loaded KB has no command that prints all of it, so `ein_core::shape::shape` renders it as one deterministic text:
 its registries, its indexes and its participation counts, facts named by their position in the fact list, `Value`s
@@ -464,9 +445,8 @@ $\operatorname{parse} \circ \operatorname{dump}$ is a fixed point on every progr
 | [`ein-ir/tests/load_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/load_semantics.rs) | every `examples/broken/load/` refusal against its `.expected`; the pass order of accumulated errors; `require_why` decides loading only |
 | [`ein-ir/tests/imports_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/imports_semantics.rs), [`imports_full_names.rs`](../../../../ein.rs/crates/ein-ir/tests/imports_full_names.rs) | what each import form brings; one module under two spellings is one copy; a diamond yields each fact once; the file each module name reads (`tests/golden/module_paths.txt`); the refusals; what prints |
 | [`ein-cli/tests/import_invariance.rs`](../../../../ein.rs/crates/ein-cli/tests/import_invariance.rs) | every corpus program that imports answers alike written selective, whole and aliased, module prefixes and aliases taken off |
-| [`ein-cli/tests/written_facts.rs`](../../../../ein.rs/crates/ein-cli/tests/written_facts.rs) | what the loader states as `written`, and that a program does not write it |
 
 The corpus shape digest, `ein-render/tests/golden/corpus_shapes.md5`, read by
 [`ein-render/tests/id_order_invariance.rs`](../../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs),
 holds every corpus program's `ir[parse]`, `ir[resolve]`, `ir[expand]` and `ir[dump-compact]` texts and its `load`
-shape (§ 9.3).
+shape (§ 9.2).

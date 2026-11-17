@@ -3,19 +3,20 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A malformed numeral is `std.math.decimal`'s, flagged as it is written,
-;;; wherever it sits, with no request reading it (Q-M1f.210): the loader
-;;; states every fact nested in a fact the program writes, `(written T)`, and
-;;; the module's rules read each place of each numeral off it (Q-M1f.272).
-;;; The flag is `(not-decimal NUMERAL THING)`, on the smallest numeral at
-;;; fault (Q-M1f.274), and `not-decimal-is-false` derives `(false)` from it.
-;;; The request that holds the numeral is checked for none of it: no walk of
-;;; `std.math.decimal-arith`'s reads a numeral's places for a fault, and the
-;;; request's own flag, `(malformed REQUEST)`, is a digit's where a number goes.
+;;; A malformed numeral is `std.math.decimal`'s, flagged where an operation
+;;; takes it (Q-M1f.210, Q-M1f.404): the request's operand is looked up, and
+;;; `operand-check` asks the module's check of the numeral it finds, which
+;;; walks it a place a firing from the units. The flag is `(not-decimal
+;;; NUMERAL THING)`, on the smallest numeral at fault (Q-M1f.274), and
+;;; `not-decimal-is-false` derives `(false)` from it. No walk of the
+;;; arithmetic reads a numeral's places for a fault, and the request's own
+;;; flag, `(malformed REQUEST)`, is a digit's where a number goes.
 ;;;
 ;;; `numeral-prefix-zero`: the table `nz` holds the nine digits that are not
-;;; zero, so the digit 0 has a rule of its own. `(n 0 2)` is not 2 written
-;;; with a high zero, which is `(n (n z 0) 2)`: zero as a number is `z`.
+;;; zero, so the digit 0 has a rule of its own. `(n 0 2)`, the second place
+;;; of `(n (n 0 2) 7)`, is not 2 written with a high zero, which is `(n (n z
+;;; 0) 2)`: zero as a number is `z`. The walk passes the units, 7, and the
+;;; rule flags `(not-decimal (n 0 2) 0)`.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
@@ -30,6 +31,6 @@
 (import std.math.arith :symbols (z))
 
 (add (n z 2) (n z 2))
-(sub (n z 5) (n 0 2))
+(sub (n z 5) (n (n 0 2) 7))
 
 (solve :expect (false))

@@ -49,22 +49,23 @@ the addition walk in a decimal program, from `ein solve -P`:
 The module declares no relation and has one macro, `positional`, whose one call inside a base's closing rule
 activates every shared rule with that base's relations
 ([Q-M1f.266](../../../../decisions/stdlib/math/Q-M1f.266-a-base-is-connected-to-the-shared-rules-by-one.md)):
-`(positional operand operand-is n let named add-walk fa b strip turn nz done …)` in decimal's,
+`(positional operand operand-is n let named check add-walk fa b strip turn nz done valid …)` in decimal's,
 `(positional bin-operand … b2 bin-let …)` in binary's.
 
 ```lisp
-(macro positional (?OPERAND ?OPERAND-IS ?N ?LET ?NAMED ?ADD-WALK ?FA ?B ?STRIP ?TURN ?NZ
-                   ?DONE ?ADD ?ADD-FIRST ?ADD-SECOND ?SUM ?SUM-OF ?SUB-WALK ?FS ?SHORT ?SUB
-                   ?SUB-FIRST ?SUB-SECOND ?DIFFERENCE ?SHORTFALL ?DIFF-OF ?CMP-WALK ?CL
-                   ?ORDER-IS ?CMP ?CMP-FIRST ?CMP-SECOND ?ORDER ?CMP-OF ?TOP-FIRST
-                   ?TOP-FIRST-IS ?MUL-CALL ?MUL-DIGITS ?MUL-STEP ?MUL-SUM ?MUL ?MUL-FIRST
-                   ?MUL-SECOND ?PRODUCT ?PRODUCT-OF ?DIV-DIGITS ?DIV-STEP ?DIV-DONE ?DIV
-                   ?DIV-FIRST ?DIV-SECOND ?DIV-CALL ?QUOTIENT ?QUOT-OF ?DIV-M1 ?BAD-OPERAND
-                   ?NOT-A-NUMBER ?MALFORMED ?BAD-REQUEST ?NO-LET ?UNDECLARED)
+(macro positional (?OPERAND ?OPERAND-IS ?N ?LET ?NAMED ?CHECK ?ADD-WALK ?FA ?B ?STRIP ?TURN ?NZ
+                   ?DONE ?VALID ?ADD ?ADD-FIRST ?ADD-SECOND ?SUM ?SUM-OF ?SUB-WALK ?FS ?SHORT ?SUB
+                   ?SUB-FIRST ?SUB-SECOND ?DIFFERENCE ?SHORTFALL ?DIFF-OF ?CMP-WALK ?CL ?ORDER-IS
+                   ?CMP ?CMP-FIRST ?CMP-SECOND ?ORDER ?CMP-OF ?TOP-FIRST ?TOP-FIRST-IS ?MUL-CALL
+                   ?MUL-DIGITS ?MUL-STEP ?MUL-SUM ?MUL ?MUL-FIRST ?MUL-SECOND ?PRODUCT ?PRODUCT-OF
+                   ?DIV-DIGITS ?DIV-STEP ?DIV-DONE ?DIV ?DIV-FIRST ?DIV-SECOND ?DIV-CALL ?QUOTIENT
+                   ?QUOT-OF ?DIV-M1 ?BAD-OPERAND ?NOT-A-NUMBER ?MALFORMED ?BAD-REQUEST ?NO-LET
+                   ?UNDECLARED)
   (and (operand-zero ?OPERAND ?OPERAND-IS)
        (operand-number ?OPERAND ?N ?OPERAND-IS)
        (let-named ?LET ?NAMED)
        (operand-name ?OPERAND ?NAMED ?LET ?OPERAND-IS)
+       (operand-check ?OPERAND-IS ?N ?CHECK)
        (add-column ?ADD-WALK ?N ?FA ?B)
        (add-column-first ?ADD-WALK ?N ?FA ?B)
        (add-column-second ?ADD-WALK ?N ?FA ?B)
@@ -74,7 +75,7 @@ activates every shared rule with that base's relations
        (strip-top ?STRIP ?B ?NZ ?TURN)
        (strip-none ?STRIP ?DONE)
        (turn-step ?TURN ?B ?N)
-       (turn-end ?TURN ?DONE)
+       (turn-end ?TURN ?DONE ?VALID)
        (add-ask ?ADD ?OPERAND ?ADD-FIRST)
        (add-ask-second ?OPERAND-IS ?ADD-FIRST ?OPERAND ?ADD-SECOND)
        (add-start ?OPERAND-IS ?ADD-SECOND ?ADD-WALK ?SUM)
@@ -108,7 +109,7 @@ activates every shared rule with that base's relations
        (mul-start ?OPERAND-IS ?MUL-SECOND ?MUL-CALL ?PRODUCT)
        (mul-answer ?DONE ?PRODUCT ?PRODUCT-OF)
        (div-begin ?TOP-FIRST-IS ?DIV-DIGITS ?DIV-STEP)
-       (div-end ?DIV-STEP ?DIV-DONE)
+       (div-end ?DIV-STEP ?DIV-DONE ?VALID)
        (div-ask ?DIV ?OPERAND ?DIV-FIRST)
        (div-ask-second ?OPERAND-IS ?DIV-FIRST ?OPERAND ?DIV-SECOND)
        (div-start ?OPERAND-IS ?DIV-SECOND ?DIV-CALL ?QUOTIENT)
@@ -142,8 +143,9 @@ activates every shared rule with that base's relations
 ```
 
 A parameter is the relation a base names for it: `?N` the numeral's constructor, `?B` the accumulator, `?FA`,
-`?FS`, `?CL` and `?NZ` the tables of the full adder, the full subtractor, the comparator and *not zero*; the rest
-are named as decimal names them, `?ADD-WALK` for `add-walk`. The digits `0` and `1`, which every base has, are
+`?FS`, `?CL` and `?NZ` the tables of the full adder, the full subtractor, the comparator and *not zero*, `?CHECK`
+and `?VALID` the representation's check and its label; the rest are named as decimal names them, `?ADD-WALK` for
+`add-walk`. The digits `0` and `1`, which every base has, are
 written as themselves: the carry and the borrow in and out, the high zero, the digit `0` as no number. So are `z`,
 zero, and `eq`, a comparison's start.
 
@@ -210,6 +212,23 @@ tells a constant from a stray name.
 ```
 
 ![The rule operand-name of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-name.svg)
+<!-- /rule -->
+
+#### `operand-check`
+
+The numeral an operand stands for, written as the operand or as a `let`'s value, is asked of the base's
+representation, `(CHECK N N)`, which walks it once whatever reads it and labels it valid, or flags it
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). No operation waits for the label.
+
+<!-- rule std.math.positional operand-check -->
+```lisp
+(rule operand-check (?OPERAND-IS ?N ?CHECK)
+  :match  (?OPERAND-IS ?k (?N ?p ?a))
+  :assert (?CHECK (?N ?p ?a) (?N ?p ?a))
+  :why    "the operand found for {?k} is ({?N} {?p} {?a}): it is checked, once, as a number")
+```
+
+![The rule operand-check of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-check.svg)
 <!-- /rule -->
 
 ### The addition walk
@@ -300,7 +319,8 @@ own.
 ### The normal form
 
 A walk leaves its digits in an accumulator, the top digit first. `strip` drops the high zeros, and `turn` turns
-what is left round into the numeral's shape and hands it over as `done`. Zero comes out as `z`.
+what is left round into the numeral's shape and hands it over as `done`, labelled valid as it is made
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). Zero comes out as `z`, which is valid by its representation's closing rule.
 
 #### `strip-zero`
 
@@ -358,10 +378,10 @@ what is left round into the numeral's shape and hands it over as `done`. Zero co
 
 <!-- rule std.math.positional turn-end -->
 ```lisp
-(rule turn-end (?TURN ?DONE)
+(rule turn-end (?TURN ?DONE ?VALID)
   :match  (?TURN ?k z ?acc)
-  :assert (?DONE ?k ?acc)
-  :why    "turned round: the answer is {?acc}")
+  :assert (and (?DONE ?k ?acc) (?VALID ?acc))
+  :why    "turned round: the answer is {?acc}, a number as it is made")
 ```
 
 ![The rule turn-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.turn-end.svg)
@@ -844,10 +864,10 @@ digit of the quotient, are the base's own.
 
 <!-- rule std.math.positional div-end -->
 ```lisp
-(rule div-end (?DIV-STEP ?DIV-DONE)
+(rule div-end (?DIV-STEP ?DIV-DONE ?VALID)
   :match  (?DIV-STEP ?k ?ms z ?t ?w)
-  :assert (?DIV-DONE ?k ?w ?t)
-  :why    "no digit is left: the quotient is {?w} and the remainder {?t}")
+  :assert (and (?DIV-DONE ?k ?w ?t) (?VALID ?w) (?VALID ?t))
+  :why    "no digit is left: the quotient is {?w} and the remainder {?t}, numbers as they are made")
 ```
 
 ![The rule div-end of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-end.svg)

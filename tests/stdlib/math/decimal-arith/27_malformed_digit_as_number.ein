@@ -6,10 +6,9 @@
 ;;; request as written, and `malformed-is-false` derives `(false)` from the
 ;;; flag, as for a division by zero (Q-M1f.316). The rule that finds an
 ;;; operand's fault says `(bad-operand TAG FAULT)`; a found operand is not
-;;; checked for a malformed numeral, which is `std.math.decimal`'s, seen
-;;; where it is written (Q-M1f.210). The operand's tag is turned into the
-;;; request by
-;;; one of ten rules, here `bad-cmp-second`, and `bad-request-malformed`
+;;; walked here for a malformed numeral, which is `std.math.decimal`'s, asked
+;;; of the numeral the look-up finds (Q-M1f.210, Q-M1f.404). The operand's
+;;; tag is turned into the request by one of ten rules, here `bad-cmp-second`, and `bad-request-malformed`
 ;;; derives the flag.
 ;;;
 ;;; `operand-digit`: 7 is a digit, and the number seven is `(n z 7)`. The

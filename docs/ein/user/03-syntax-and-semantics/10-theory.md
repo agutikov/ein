@@ -204,11 +204,13 @@ that states both properties of one relation, and one pair of it, is dead at root
 The standard library's theories refute in **two steps**: a rule derives a **flag**, a fact that names what is wrong,
 `(division-by-zero REQUEST)`, `(malformed REQUEST)`, `(not-decimal NUMERAL THING)`, and one rule per flag concludes
 `(false)` from it. The flag is part of the explanation: a trace shows it, a claim or a program's rule can read it,
-and the core names the fact the fault was written in. A flag means the request is malformed; no flag does not mean
+and the core names the request the fault came with. A flag means the request is malformed; no flag does not mean
 it is well-formed, since a theory flags what it can detect
 ([Q-M1f.318](../../../decisions/stdlib/math/Q-M1f.318-a-flag-means-malformed-and-no-flag-does-not-mean.md)). A
-malformed term is flagged by the theory that defines the representation, where it is written, and not by the theories
-that compute with it ([Q-M1f.210](../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md)).
+malformed term is flagged by the theory that defines the representation, asked by the operation that takes the
+term, and not by the theories that compute with it
+([Q-M1f.210](../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md),
+[Q-M1f.404](../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
 
 ## What a theory owes
 

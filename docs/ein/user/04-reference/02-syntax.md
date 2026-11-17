@@ -190,19 +190,6 @@ For a bare declaration the two coincide, so one fact is stored. A relation no fo
 :assert (relation ?x) …)` over `(p a)` derives `(relation a :rule r)`, a fact like any other, with no declaration
 behind it. So `(relation ?R)` matches every declared relation and every object a rule has concluded it of.
 
-**What a file writes, stated.** As it stores each declaration's mirror, the loader states each fact nested in a fact
-a file writes, at any depth, as `(written T)`, and each fact a rule's or an hrule's conclusion nests that holds no
-variable ([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)); a stored
-negation's denied fact is no term, and what it nests is. A rule reads it, `:match (written (n ?p ?a))`, which is how a
-module checks every term of its own a file writes, wherever it sits; no program writes it
-([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md),
-[`03-reserved-names.md` § `written`](03-reserved-names.md#written--what-a-file-writes-stated-by-the-loader)):
-
-```lisp
-(p (q a (k b)))
-;; stores (p (q a (k b))), and states (written (q a (k b))) and (written (k b))
-```
-
 **The `:why` template** turns a fact of the relation into natural-language text, its *statement*, written after each
 fact of the relation in a `--dump-answer` state file and after each one `--trace` derives. It refers to the fact's
 argument **slots by position**: `{?1}` is the first argument, `{?2}` the second; a rule's and a goal's template refer

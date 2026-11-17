@@ -1,0 +1,21 @@
+digraph rule_bin_numeral_step_zero_lhs_rhs {
+  rankdir=TB;
+  label="bin-numeral-step-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?w_L" [label="?w", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "0_L" [label="0", shape=rectangle];
+    subgraph cluster_ctx_L_0 {
+      label="bin-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(b2 ?p 0)_L" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+    }
+    "?w_L" -> "(b2 ?p 0)_L" [label="bin-check", color="#1f77b4", fontcolor="#1f77b4"];
+    "(b2 ?p 0)_L" -> "?p_L" [label="1", color="#bcbd22"];
+    "(b2 ?p 0)_L" -> "0_L" [label="2", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?w_R" [label="?w", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?w_R" -> "?p_R" [label="bin-check", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  }
+}

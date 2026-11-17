@@ -222,8 +222,7 @@ the fullest account of each part as built. No route reads a pair layer, the cove
 
 **The small KB** is built over the same interned terms as the program, so a candidate is one fact in both. It keeps
 the loaded program's registries, every rule, declaration and import, and of the facts a file writes those the rule
-keeps; `(written T)` is stated again as the loader states it, so it follows the facts it is read in. The rule reads
-no relation by what it is called and no `:source`. Its nodes are the node function's, over its own saturated root
+keeps. The rule reads no relation by what it is called and no `:source`. Its nodes are the node function's, over its own saturated root
 and the universe **root** built: the small KB's own generator is not asked.
 
 ![Where the structure of H lives: three commands, the parts ein-infer computes and what ein-render writes](diagrams/03-structure-components.svg)
@@ -431,7 +430,7 @@ candidates alone, one fact a line and no node read, are `ein show hyps FILE` ([Â
 | key | what it holds |
 |---|---|
 | `small_kb` | `kept` and `dropped`, counts of the facts files write; `by_clause`, each `clause` of the rule with whether it is `kept` and its `facts`; `error`, where the small KB has no layer |
-| `stated` | every fact the program holds before saturation: `fact`, `source`, `origin` (a fact, a declaration, the loader's `written`), `kept`, the `clause` that said so, `read_absent` |
+| `stated` | every fact the program holds before saturation: `fact`, `source`, `origin` (a fact or a declaration), `kept`, the `clause` that said so, `read_absent` |
 | `theory_dead_alone`, `theory_excluded` | what the theory kills and excludes alone |
 | `against_root`, `small_beyond_root` | `singles` and `pairs` dead in the small KB and alive at root; facts the small KB's fixpoint holds that root's does not |
 | `root_excluded` | each pair root excludes: `pair`, `of_the_theory`, `support` |

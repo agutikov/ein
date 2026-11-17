@@ -3,8 +3,9 @@
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A name stands for a number as an operand, not inside an integer: `int-p-
-;;; named` reads `(written (int price z))` and `(named price)`, and derives
-;;; `(not-integer (int price z) price)` (Q-M1f.276 (a)).
+;;; named` reads `(int-check (int price z))`, which the operand's look-up
+;;; asks, and `(named price)`, and derives `(not-integer (int price z)
+;;; price)` (Q-M1f.276 (a), Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

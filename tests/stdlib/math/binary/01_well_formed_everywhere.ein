@@ -2,22 +2,25 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; As `std.math.decimal`'s check: the loader states every fact nested in a
-;;; fact a file writes, and in a rule's conclusion where it holds no variable,
-;;; as `(written T)`, and the module's rules read every place of every `b2`
-;;; numeral off it. Here a numeral is written in each place it can be: a
-;;; request's operand, a `bin-let` nobody asks about, a fact of the program's
-;;; own relation, and a rule's conclusion. Each is a binary number, so no rule
-;;; of the check fires: `(not-binary …)` has no fact, and the sum is answered.
-;;; `not-binary-is-false` is loaded and activated here, and satisfied.
+;;; As `std.math.decimal`'s check (Q-M1f.404): the sum's two operands are
+;;; walked by `bin-numeral-step` and `bin-numeral-step-zero` to `z`, and
+;;; `bin-numeral-valid` labels each `(bin-valid N)`; the sum is labelled as it
+;;; is made, and `z` by the closing rule. Here a numeral is also written in
+;;; each place no operation takes it from: a `bin-let` nobody asks about, a
+;;; fact of the program's own relation, and a rule's conclusion, and those
+;;; are neither checked nor labelled. Each is a binary number, so no rule of
+;;; the check flags one: `(not-binary …)` has no fact, and the sum is
+;;; answered. `not-binary-is-false` is loaded and activated here, and
+;;; satisfied.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; R is {∅}: root is alive, and the program's own relations are closed. The
-;;; sum, 101 + 11 = 1000, is answered, and the flag's extent is empty.
+;;; sum, 101 + 11 = 1000, is answered, the flag's extent is empty, and
+;;; `bin-valid`'s is the two operands, the sum and `z`.
 
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sum-of))
-(import std.math.binary :symbols (b2 not-binary))
+(import std.math.binary :symbols (b2 not-binary bin-valid))
 (import std.math.arith :symbols (z))
 
 (relation mask Item Bits :why "{?1} is masked by {?2}")
@@ -45,3 +48,8 @@
 (query :goal (not-binary ?numeral ?thing)
        :goal-text "{?numeral} is not a binary number"
        :expect (model))
+
+(query :goal (bin-valid ?numeral)
+       :goal-text "{?numeral} is a binary number"
+       :expect (model (bin-valid z) (bin-valid (b2 (b2 (b2 z 1) 0) 1)) (bin-valid (b2 (b2 z 1) 1))
+                      (bin-valid (b2 (b2 (b2 (b2 z 1) 0) 0) 0))))

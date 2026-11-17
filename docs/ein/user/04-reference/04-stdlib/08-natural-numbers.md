@@ -371,46 +371,58 @@ It computes nothing.
 |---|---|---|
 | `(n PREFIX DIGIT)` | the program | the numeral |
 | `(named NAME)` | `std.math.decimal-arith`, for each name a `let` states | NAME stands for a number |
-| `(not-decimal NUMERAL THING)` | this module: a **flag** | NUMERAL, written somewhere in the program, holds THING where a digit or a prefix goes; `not-decimal-is-false` derives `(false)` |
+| `(check N REST)` | an operation that takes N asks `(check N N)`; this module walks it | N is being checked; REST is still to check |
+| `(valid N)` | this module, where the walk reaches `z`; the arithmetic, for each number it makes; the closing rule, for `z` | N is a decimal number |
+| `(not-decimal NUMERAL THING)` | this module: a **flag** | NUMERAL, which an operation took, holds THING where a digit or a prefix goes; `not-decimal-is-false` derives `(false)` |
 
-**A numeral is checked where it is written**
-([Q-M1f.210](../../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md)). The
-loader states every fact nested in a fact a file writes as `(written T)`
-([reserved names](../03-reserved-names.md)), so the module's rules see every place of every numeral, as an operand,
-inside an integer or a rational, as a `let`'s value nobody asks about, or in a fact of the program's own relation,
-and flag a malformed one in root's first layer, before any calculation, on its smallest `n` term at fault
+**A numeral is checked where an operation takes it**
+([Q-M1f.210](../../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md),
+[Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). A request's operand, a part of an integer or a rational an operation takes, and a number a
+conversion takes are asked of this module's check, once a numeral whatever reads it: the walk goes a place a firing
+from the units and labels the numeral `(valid N)` where it reaches `z`, and a malformed place stops it and is flagged
+on its smallest `n` term at fault
 ([Q-M1f.274](../../../../decisions/stdlib/math/decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)).
-What it flags and what it leaves silent is
+A number the arithmetic makes is labelled valid as it is made, and is not checked. **A numeral no operation takes is
+not checked**: one in a `let` nobody asks about, in a fact of the program's own relation, or in a rule's conclusion
+that never fires. What it flags and what it leaves silent is
 [the calculator's page](07-calculator.md#malformed-numbers-what-is-flagged-and-where). A named constant is told by
 `named`
 ([Q-M1f.278](../../../../decisions/stdlib/math/decimal/Q-M1f.278-a-named-constant-is-told-by-named-the-numeral.md)).
 Entry `decimal`.
 
-A program that imports this module alone, and computes nothing, is still held to its numerals. This is
-[`tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein`](../../../../../tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein):
+A numeral a rule of the program's own hands to a request is checked as any operand is. This is
+[`tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein`](../../../../../tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein):
 
 ```lisp
-(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal-arith :symbols (decimal-arith add))
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation price Item Amount :why "{?1} costs {?2}")
-(__closed__ price)
-(price apple (n 1 2))
+(relation seed Thing :why "{?1} is a seed")
+(__closed__ seed)
+(seed z)
+(rule ask ()
+  :match  (seed ?s)
+  :assert (add (n ?s 0) (n z 5))
+  :why    "{?s} asks for 0 + 5, the 0 written with a high zero")
+(rule assemble ()
+  :match  (seed ?s)
+  :assert (add (n (n ?s 1) x) (n z 5))
+  :why    "{?s} asks for a sum, one operand assembled with a letter in it")
 
 (solve :expect (false))
 ```
 
 <!-- output -->
 ```text
-  unsat core        (price apple (n 1 2))
-  unsat core        (std.math.digits.nz 1)
+  unsat core        (seed z)
   refuted by        std.math.decimal.not-decimal-is-false
 ```
 
-The programs beside it hold the rest: a well-formed numeral in every place a file can write one
-(`01_well_formed_everywhere.ein`), a malformed one in a `let` nobody asks about and in a rule's conclusion (`02`,
-`04`), and what stays silent (`05`).
+The programs beside it hold the rest: a well-formed numeral in every place a file can write one, labelled where an
+operation takes or makes it (`01_well_formed_everywhere.ein`), a malformed one nobody takes, in a `let`, in a fact
+of the program's own and in a rule's conclusion that never fires, each unchecked and R {∅} (`02` to `04`), and what
+stays silent (`05`).
 
 ## Using `std.math.arith` — zero, and the division by zero
 

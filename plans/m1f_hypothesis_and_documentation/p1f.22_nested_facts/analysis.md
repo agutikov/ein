@@ -289,7 +289,7 @@ dump holds `(left-of a c :rule transitive)`. `g17.ein`:
 loads, holds `(think Alice (relation p A B))` and `(written (relation p A B) :rule "#written")`, and no fact of
 `relation`. `g16.ein`, the one line `(think Alice (written (p a)))`, loads and holds
 `(written (written (p a)) :rule "#written")` and `(written (p a) :rule "#written")`, where a fact of `written`
-stated at the top level is refused ([Q-M1f.280](../../../docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md)).
+stated at the top level is refused ([Q-M1f.280](../../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
 
 **A claim is held to the same.** `f9.ein`:
 
@@ -556,7 +556,7 @@ program and `ein saturate --dump FILE` (the facts of the dump) or `ein solve FIL
 
 The matched fact stays held and is now also nested: the stated case becomes the both case. **No fact of `written`
 is stated for it**: the loader states `(written T)` for a fact a file nests, and a fact a rule assembles from
-variables is none ([Q-M1f.275](../../../docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)).
+variables is none ([Q-M1f.275](../../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
 
 **A fact it builds from bound variables.** `p3.ein`:
 
@@ -1030,7 +1030,7 @@ nested in. `f11.ein`:
 
 `ein solve f11.ein`: `unsat core (think Alice (= 5 (+ 2 2)))`, `refuted by no-fives`. A contradiction that rests
 on a `written` fact names the fact it was written in (`f12`, above, and
-[Q-M1f.279](../../../docs/decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)).
+[Q-M1f.279](../../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
 
 **The read-out, the JSON and the answer dump** print a fact by its text, a nested fact inside it:
 `ein solve f7.ein --dump-answer DIR` writes `"facts": ["(think Alice (= 5 (+ 2 2)))"]` in `DIR/answer.json`, and
@@ -1304,7 +1304,7 @@ says; *unstated* that no page says what the engine does there.
 | [Q-M1f.113](../../../docs/decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md), .122 to .126 | a value is a name, or a fact a state could hold, *"an atom of an ordinary relation, or its negation"*; what never heads a nested form | agrees at the parse and the load (§ 1.7); a state can hold a value that is none of these (N-1) |
 | [Q-M1f.123](../../../docs/decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md) | `(false)` is a value; `(q (false))` and `(not (false))` load | agrees (`b4`, `g20`) |
 | [Q-M1f.127](../../../docs/decisions/language/Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md), [.128](../../../docs/decisions/language/Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md) | `(not ?x)` of a name: refused where the text shows it, nothing concluded where a run meets it | agrees; neither speaks of `?x` bound to a negation |
-| [Q-M1f.272](../../../docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md), [.275](../../../docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md), [.279](../../../docs/decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md), [.280](../../../docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md) | what `written` states, from what, where it shows, and that no program writes it | agrees (§ 1.6); .280 refuses *a fact of `written`*, and one under an arrow loads (`g16`), which is consistent with a nested fact being none the state holds and is said nowhere; .279's *"the loader states it again from the facts a file holds"* is the premise of N-2 |
+| [Q-M1f.272](../../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md), [.275](../../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md), [.279](../../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md), [.280](../../../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md) | what `written` states, from what, where it shows, and that no program writes it | agrees (§ 1.6); .280 refuses *a fact of `written`*, and one under an arrow loads (`g16`), which is consistent with a nested fact being none the state holds and is said nowhere; .279's *"the loader states it again from the facts a file holds"* is the premise of N-2 |
 | [Q-M1f.351](../../../docs/decisions/language/Q-M1f.351-a-bare-variable-or-name-is-no-whole-conclusion.md) | a variable is no whole conclusion; it stands whole only under `not` | agrees (`e2`, `e3`, `e6`, `e8`) |
 | [Q-M1f.30](../../../docs/decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md) | a guard's argument is a variable, a name or a fact with no variable | agrees (`c4`, `c5`) |
 | Q-M1f.1, Q-M1e2.18, Q-M1f.41, [Q-M1f.43](../../../docs/decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md), Q-M1e.16 | an activator's argument may be a fact, which binds its parameter; a relation's parameter bound to a fact is refused, written or derivable | agrees (`h4`, `g32`, `g33`) |

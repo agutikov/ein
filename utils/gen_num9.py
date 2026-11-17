@@ -311,6 +311,10 @@ def theory(w: int) -> Theory:
             s = f"(n {s} {v})"
         return s
 
+    # The number a conversion takes is `std.math.decimal`'s to check (Q-M1f.404): one
+    # ask, whatever its shape, and the module's walk flags it or labels it valid.
+    t.rule("to#-check", f"({nm('to#')} ?x)", "(check ?x ?x)",
+           "{?x} is taken to be converted: it is checked as a number")
     t.rule("to#-zero", f"({nm('to#')} z)", f"({nm('as#')} z {t.zero})", "zero is written with zeros")
     for k in range(1, w + 1):
         vs = [f"?a{i}" for i in range(k, 0, -1)]            # ?ak … ?a1, the top digit first
@@ -330,7 +334,7 @@ def theory(w: int) -> Theory:
         W = numl(["0"] * h + vs)
         t.rule(f"from#-{w - h}",
                [f"({nm('from#')} {W})", f"(nz {vs[0]})"],
-               f"({nm('of#')} {W} {nested(vs)})",
+               f"(and ({nm('of#')} {W} {nested(vs)}) (valid {nested(vs)}))",
                f"the top digit that is not zero is {{{vs[0]}}}: a number of {w - h} digit{'s' if w - h > 1 else ''}, "
                "with no high zero")
     return t
@@ -343,7 +347,7 @@ def render(w: int) -> str:
     tables = ["fa", "fs", "md", "cl", "nz", "adj"]
     # `n` is `std.math.decimal`'s, and `z`, the flag of a division by zero and its rule are
     # `std.math.arith`'s, since M1f S1f.6.38; `std.math.decimal-arith` still comes whole with the module.
-    decimal = ["n"]
+    decimal = ["n", "check", "valid"]
     arith = ["z", "division-by-zero", "division-by-zero-is-false"]
     ex = lambda v: t.numl(list(str(v).rjust(w, "0")))
     out: list[str] = []
@@ -406,7 +410,10 @@ def render(w: int) -> str:
 ;;;                      or (big X)   where X is written with more than {w} digits
 ;;;     ({nm('from#')} W)       ({nm('of#')} W X)   X in normal form, with no high zero
 ;;;
-;;; One firing each. Nothing converts a number because it exists, and nothing
+;;; One firing each. The number `{nm('to#')}` takes is checked by
+;;; `std.math.decimal`, which flags a malformed one or labels it valid, and the
+;;; number `{nm('from#')}` answers with is labelled valid as it is made
+;;; (Q-M1f.404). Nothing converts a number because it exists, and nothing
 ;;; routes a request of one module to the other: a program that wants both
 ;;; writes the rule that asks (`examples/arith/num9_both_ways.ein`).
 ;;;
@@ -453,7 +460,8 @@ def render(w: int) -> str:
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
 ;;; Its own: {', '.join('`' + r[0] + '`' for r in t.rels)}, `{rule_rel}`, the entry
-;;; `{entry}`, and its rules' names. From `std.math.decimal`: `n`, for the conversions;
+;;; `{entry}`, and its rules' names. From `std.math.decimal`: `n`, `check` and `valid`,
+;;; for the conversions;
 ;;; from `std.math.arith`: `z`, and `division-by-zero` with the rule from it to `(false)`.
 ;;; From `std.math.digits`: {', '.join('`' + x + '`' for x in tables)}, with the orders `lt`, `eq`,
 ;;; `gt`. The interface is the number, the requests, the results, the two

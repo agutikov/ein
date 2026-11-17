@@ -2,8 +2,8 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `numeral-digit` flags `(n z x)` as it is written, before the division is
-;;; started.
+;;; `numeral-digit` flags `(n z x)` as the operand is looked up, before the
+;;; division is started.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

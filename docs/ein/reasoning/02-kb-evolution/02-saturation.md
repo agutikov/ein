@@ -70,9 +70,7 @@ $$
 and no clause of the right-hand side reads the context of $g$
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)). A fact
 that stands under an arrow of a held fact is held at the fixpoint only where some rule concluded it, by spelling
-it ([packing and unpacking](../01-static-ir/02-rewriting-rules.md#packing-and-unpacking)). The facts of
-$\mathsf{written}$ are no exception: reading a program states them, no rule does, so they are the same in every
-knowledge base a saturation reaches, and each is a context of the fact it points at and holds nothing.
+it ([packing and unpacking](../01-static-ir/02-rewriting-rules.md#packing-and-unpacking)).
 
 **Termination is assumed, not given.** A rule may build a fact out of a fact, so nesting can grow without bound
 and the chain above need not become stationary. Everything stated about an answer is about programs whose
@@ -261,11 +259,9 @@ is the same:
 
 ![The fixpoint of the rule note, the same in either order of its two activators](diagrams/02-note-fixpoint.svg)
 
-The two dashed arrows labelled with the rule are the two conclusions. The dashed octagon is the fact that reading
-the program states of the nested fact the second activator writes
-([the knowledge base](../01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program)), and it points at that
-fact, $\operatorname{src}(\mathsf{Y})$: an octagon of its own in the frame *written ctx*, empty, since nothing
-holds it. The activators and the declarations' facts are left out of the drawing.
+The two dashed arrows labelled with the rule are the two conclusions. The activators and the declarations' facts
+are left out of the drawing, and so is $\operatorname{src}(\mathsf{Y})$: nothing drawn points at it, and nothing
+holds it.
 
 So on such a program every question and every claim answers alike under the agenda and under the written order
 alone. Taking first what can make a contradiction finds a dead node's contradiction sooner, and that is all the

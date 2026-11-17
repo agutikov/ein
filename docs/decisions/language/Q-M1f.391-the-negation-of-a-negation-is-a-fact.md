@@ -21,9 +21,7 @@ with the relation a parameter:
 What `not` does not deny is unchanged: an atom
 ([Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)), an equality, which is computed, and a
 variable anywhere but as a conclusion of its own, so `(not (not ?x))` and an argument `(not ?x)` are refused
-([Q-M1f.393](Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)). The loader's `written` reads through every
-negation: a negation nests what the fact it denies nests, and none of the facts denied on the way
-([Q-M1f.275](Q-M1f.275-written-states-every-fact-a-file-nests.md)).
+([Q-M1f.393](Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)).
 
 **Why.** A conclusion `(not ?x)` over a negation already stored the fact, so a state could hold what no file
 could write, and the file of such a state did not load. The graph has no reason to refuse it: a negation is a node
@@ -32,10 +30,10 @@ unpacking by a variable, which no rule has, and a step of one logic among severa
 so, as it says what any other context means.
 
 **Held by.** `ein-ir/src/ein.y`'s `NegFact` and `NegPattern`; `ein_ir::from_ir`'s `Shapes::negation`, for what a
-macro's expansion writes, and `denied`, for `written`; `ein-cli/tests/negation_of_a_negation.rs`: each place a
-file writes one, a rule that matches and concludes one, *built by a rule or written in the file the answer is the
-same* on `ein solve`, `ein oracle` and `ein test`, the two spellings of one rule under a search, what stays
-refused, what the loader states, and the file of a state that holds one; the claims of
+macro's expansion writes; `ein-cli/tests/negation_of_a_negation.rs`: each place a file writes one, a rule that
+matches and concludes one, *built by a rule or written in the file the answer is the same* on `ein solve`, `ein
+oracle` and `ein test`, the two spellings of one rule under a search, what stays refused, and the file of a state
+that holds one; the claims of
 `examples/beliefs/03_liar_denial.ein` to `06_double_negation.ein`. The pages:
 [the knowledge base](../../ein/reasoning/01-static-ir/01-knowledge-base.md), § A fact about a relation, a fact
 about a fact, a negation, falsity, and § A fact, its negation, both, or neither;

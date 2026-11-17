@@ -5,11 +5,11 @@ digraph rule_int_p_named_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     subgraph cluster_ctx_L_0 {
-      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="int-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int ?x ?n)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
     }
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(int ?x ?n)_L" [label="1", color="#d62728"];
+    "h1_int-check_L" [shape=octagon, label="int-check", color="#2ca02c", fontcolor="#2ca02c"];
+    "h1_int-check_L" -> "(int ?x ?n)_L" [label="1", color="#2ca02c"];
     "h2_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
     "h2_named_L" -> "?x_L" [label="1", color="#d62728"];
     "(int ?x ?n)_L" -> "?x_L" [label="1", color="#17becf"];

@@ -42,17 +42,15 @@ grouped by where each fact came from:
 ;; ── GIVEN (1 facts) ──
   (knows Alice Bob :source "Alice says she knows Bob")
 
-;; ── DERIVED (3 facts) ──
+;; ── DERIVED (2 facts) ──
 ;;   knows (2)
   (knows Bob Alice :rule knows-back)
   (knows Carol Bob :rule knows-back)
-  (written (knows Carol Dan) :rule "#written")
 ```
 
 `(knows Carol Dan)` inside the `claims` fact is an **argument**, a fact the knowledge base points at and does not
 hold: Carol claims it, and nothing says it holds, so `knows-back` does not fire on it. It is a fact of `knows`
-all the same, one of the relation's extent and not of its held extent. The loader states `(written (knows Carol
-Dan))`, its record that the file wrote that fact as an argument (below).
+all the same, one of the relation's extent and not of its held extent.
 
 ## As a graph
 
@@ -67,9 +65,7 @@ the rule that derived it. A fact that is an argument of another is a node of its
 relation's name in it and a numbered arrow to each of its arguments, in a dashed frame named for the relations of
 the facts that point at it, and filled where the knowledge base holds it; it is drawn once, and as no arrow
 ([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)). Here the frame reads
-`claims, written ctx`: Carol's claim points at `(knows Carol Dan)`, and so does the fact the loader states of what
-a file nests, the dashed octagon ([below](#a-fact-inside-a-fact)).
-`--colour-by origin`
+`claims ctx`: Carol's claim points at `(knows Carol Dan)`, and nothing else does. `--colour-by origin`
 colours the arrows by the same three origins instead of by relation, and `--since OTHER` draws thick every fact that
 `OTHER` lacks, which is how a state is drawn against root. The view leaves out a rule's activator facts and stored
 negations; `ein render program FILE` draws a program's written negations.
@@ -120,7 +116,7 @@ K = \lbrace\ & \mathsf{knows}(\mathsf{Alice}, \mathsf{Bob}), \\
 \end{aligned}
 $$
 
-where the dots are the declarations' facts and the loader's `written`. One fact is an argument of a member of $K$
+where the dots are the declarations' facts. One fact is an argument of a member of $K$
 and not a member:
 
 $$
@@ -314,16 +310,6 @@ ordinary relation, a stored negation `(not F)` of such a fact or of a stored neg
 state holds, and each is refused where it is written
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)).
 The refusal's line says `where a value goes`: *value* is the engine's word for an object in an argument's place.
-
-### `written`
-
-**`written` is the loader's.** For every fact nested in a fact a file writes, and for every fact a rule's or an
-hrule's conclusion nests that holds no variable, the loader states `(written T)`, derived by its own step
-`#written` ([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)). It is
-one more context of `T`, the one the loader makes: it says that a file wrote `T` as an argument, and not that `T`
-holds. A rule reads it to check what a file wrote where it was written, as the standard library's numerals do; no
-program writes a `written` fact and no declaration binds the name
-([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md)).
 
 ## Facts in a state
 

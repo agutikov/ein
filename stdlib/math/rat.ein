@@ -10,9 +10,9 @@
 ;;; and the answer is root's fixpoint. No `absent`, no `not` and no guard of
 ;;; its own; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the
 ;;; undeclared name's, and so two strata (Q-M1f.317). An operand's faults and a
-;;; malformed rational are flagged (Q-M1f.206, Q-M1f.276, below), a malformed integer by
-;;; `std.math.int` and a malformed numeral by `std.math.decimal`, wherever
-;;; each is written.
+;;; malformed rational are flagged (Q-M1f.206, Q-M1f.276, below), a malformed
+;;; integer by `std.math.int` and a malformed numeral by `std.math.decimal`,
+;;; each where an operation takes the rational (Q-M1f.404).
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -157,8 +157,8 @@
 ;;; `rat-first`, `rat-second`, `rat-x1` to `rat-x6`, `rat-sum-num`,
 ;;; `rat-sum-den`, `rat-cmp-num`, `rat-mul-num`, `rat-mul-den`, `rat-div-by`,
 ;;; `rat-num`, `rat-den-norm`, `rat-low`, `rat-g`, `rat-q-num` and
-;;; `rat-q-den`; the flag `not-rational`; `rat-rule`, and the entry
-;;; `rat-arith`. Euclid's chain is `std.math.gcd`'s, which this module calls
+;;; `rat-q-den`; the check `rat-check` and the flag `not-rational`;
+;;; `rat-rule`, and the entry `rat-arith`. Euclid's chain is `std.math.gcd`'s, which this module calls
 ;;; (Q-M1f.303).
 ;;; Everything of `std.math.int`, `std.math.decimal-arith` and `std.math.gcd`
 ;;; comes with it,
@@ -170,8 +170,8 @@
 
 (import std.math.decimal-arith :symbols (decimal-arith operand operand-is cmp-walk order-is div-call
                             div-done mul-call done add-walk bad-operand bad-request))
-(import std.math.int :symbols (int-arith int int-norm int-done int-mul-call))
-(import std.math.decimal :symbols (decimal n named))
+(import std.math.int :symbols (int-arith int int-norm int-done int-mul-call int-check))
+(import std.math.decimal :symbols (decimal n named check))
 (import std.math.arith :symbols (arith z division-by-zero))
 (import std.math.digits :symbols (nz))
 (import std.math.gcd :symbols (gcd gcd-call gcd-done))
@@ -298,6 +298,13 @@
   :match  (order-is (rat-den ?k ?p ?n ?d) eq)
   :assert (rat-zero-den ?k)
   :why    "the denominator {?d} is zero")
+
+;; A rational an operand stands for, written as the operand or as a `let`'s
+;; value, is asked for its check, once whatever reads it (below).
+(rule rat-check-ask ()
+  :match  (operand-is ?k (rat ?i ?d))
+  :assert (rat-check (rat ?i ?d))
+  :why    "the operand found for {?k} is {?i} over {?d}: it is checked, once, as a rational")
 
 (rule rat-operand-second ()
   :match  (rat-operand-is (rat-first ?k ?y) ?p ?n ?d)
@@ -604,43 +611,53 @@
   :assert (bad-request ?request ?f)
   :why    "the second operand of {?request} is at fault: {?f}")
 
-;; ── A rational's own shape ──────────────────────────────────────────────────
+;; ── A rational's own shape, checked where an operation takes it ────────────
 ;; `(rat Z D)` holds an integer and a natural number. A digit or a named
 ;; constant where either goes is the rational's fault, this module's, seen
-;; where the rational is written (Q-M1f.276), off `(written (rat
-;; Z D))`. A malformed integer inside is `std.math.int`'s, a malformed numeral
-;; `std.math.decimal`'s; a natural number where the integer goes is not
+;; where an operation takes the rational (Q-M1f.276, Q-M1f.404):
+;; `(rat-check RATIONAL)` asks, once a rational whatever reads it. The
+;; integer is asked of `std.math.int`'s check and the denominator of
+;; `std.math.decimal`'s, which flag a malformed integer and a malformed
+;; numeral, and label a well-formed numeral valid. A rational no operation
+;; takes is not checked; a natural number where the integer goes is not
 ;; flagged (Q-M1f.277). No guard, as `std.math.int`'s.
+(relation rat-check Rational
+  :why "{?1} is taken by an operation: its shape and its parts are checked")
 (relation not-rational Rational Thing
   :why "{?1} is not a rational: {?2} stands where an integer or a natural number goes")
 
+(rule rat-check-parts ()
+  :match  (rat-check (rat ?i ?d))
+  :assert (and (int-check ?i) (check ?d ?d))
+  :why    "{?i} is checked as an integer, and {?d} as a number")
+
 (rule rat-z-digit ()
-  :match  (and (written (rat ?x ?d)) (nz ?x))
+  :match  (and (rat-check (rat ?x ?d)) (nz ?x))
   :assert (not-rational (rat ?x ?d) ?x)
   :why    "the digit {?x} stands where an integer goes: it is (int (n z {?x}) z)")
 
 (rule rat-z-zero ()
-  :match  (written (rat 0 ?d))
+  :match  (rat-check (rat 0 ?d))
   :assert (not-rational (rat 0 ?d) 0)
   :why    "the digit 0 stands where an integer goes: zero is (int z z)")
 
 (rule rat-z-named ()
-  :match  (and (written (rat ?x ?d)) (named ?x))
+  :match  (and (rat-check (rat ?x ?d)) (named ?x))
   :assert (not-rational (rat ?x ?d) ?x)
   :why    "the name {?x} stands where an integer goes: a name stands for a number as an operand, not inside one")
 
 (rule rat-d-digit ()
-  :match  (and (written (rat ?i ?x)) (nz ?x))
+  :match  (and (rat-check (rat ?i ?x)) (nz ?x))
   :assert (not-rational (rat ?i ?x) ?x)
   :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
 
 (rule rat-d-zero ()
-  :match  (written (rat ?i 0))
+  :match  (rat-check (rat ?i 0))
   :assert (not-rational (rat ?i 0) 0)
   :why    "the digit 0 stands where a natural number goes: zero is z")
 
 (rule rat-d-named ()
-  :match  (and (written (rat ?i ?x)) (named ?x))
+  :match  (and (rat-check (rat ?i ?x)) (named ?x))
   :assert (not-rational (rat ?i ?x) ?x)
   :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
 
@@ -667,7 +684,8 @@
 
 (rule rat-arith ()
   :match  ()
-  :assert (and (__closed__ rat) (__closed__ nz) (__closed__ not-rational)
+  :assert (and (__closed__ rat) (__closed__ nz) (__closed__ rat-check)
+               (__closed__ not-rational)
                (__closed__ rat-simplify)
                (__closed__ rat-simple-of) (__closed__ rat-neg)
                (__closed__ rat-neg-of) (__closed__ rat-add)
@@ -693,7 +711,8 @@
                (rat-rule int-arith) (rat-rule decimal) (rat-rule arith) (rat-rule gcd)
                (rat-rule rat-operand)
                (rat-rule rat-operand-check) (rat-rule rat-operand-found)
-               (rat-rule rat-operand-zero) (rat-rule rat-operand-second)
+               (rat-rule rat-operand-zero) (rat-rule rat-check-ask)
+               (rat-rule rat-operand-second)
                (rat-rule rat-zero-only) (rat-rule rat-zero-first)
                (rat-rule rat-zero-second) (rat-rule rat-norm-numerator)
                (rat-rule rat-norm-denominator) (rat-rule rat-norm-done)
@@ -720,7 +739,7 @@
                (rat-rule rat-div-pos) (rat-rule rat-div-neg)
                (rat-rule rat-div-zero) (rat-rule rat-div-answer)
                (rat-rule rat-bad-only) (rat-rule rat-bad-first)
-               (rat-rule rat-bad-second)
+               (rat-rule rat-bad-second) (rat-rule rat-check-parts)
                (rat-rule rat-z-digit) (rat-rule rat-z-zero) (rat-rule rat-z-named)
                (rat-rule rat-d-digit) (rat-rule rat-d-zero) (rat-rule rat-d-named)
                (rat-rule not-rational-is-false))

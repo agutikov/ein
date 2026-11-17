@@ -101,12 +101,6 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
 /// commitment's hypothesis. A fact with none is the loader's, so it drops out
 /// of every `--print-final-*` mode but `hfacts`.
 fn beyond_the_program(kb: &Kb, terms: &Terms, fact: ein_core::FactId) -> bool {
-    // A `(written T)` fact is the loader's statement of what the program
-    // writes, derived at load by its step (Q-M1f.272): the program as
-    // loaded holds it.
-    if terms.facts.get(fact).0 == terms.kernel.written {
-        return false;
-    }
     match kb.primary(fact) {
         Some(p) => terms.provs.get(p).kind != ein_core::ProvKind::Source,
         None => false,

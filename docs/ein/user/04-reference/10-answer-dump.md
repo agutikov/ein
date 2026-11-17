@@ -82,13 +82,10 @@ where it has one, the full name otherwise ([`11-macros.md`](../03-syntax-and-sem
 declares the full names it was loaded with, `std.math.decimal-arith.strip`, and imports nothing, which the loader reads
 as the program's own names
 ([Q-M1f.239](../../../decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md)). The program's
-own `(relation …)` declarations are not repeated, because the loader refuses a second one, and neither are the loader's
-`(written T)` facts, which the loader refuses where a file writes one and states again from the facts the file holds
-([`07-diagnostics.md`](07-diagnostics.md)): from every fact of the state, a fact the run derived among them, so the reloaded
-state holds every `written` fact the state held and one for each fact nested only in a derived one, and the header
-says so where the state holds any. So the file **loads as a program**, and saturating it **derives no fact and no
-`(false)`**. It holds every candidate of its state's closure and no other candidate. Each state is read again the way
-every route reads a node, so the file is the state the read-out names and not a copy of one.
+own `(relation …)` declarations are not repeated, because the loader refuses a second one. So the file **loads as a
+program**, and saturating it **derives no fact and no `(false)`**. It holds every candidate of its state's closure and
+no other candidate. Each state is read again the way every route reads a node, so the file is the state the read-out
+names and not a copy of one.
 
 **It loads to the state.** Each fact is written as text the loader reads back to the same object: a name bare where it
 reads as one name (`House-1`, `neqw`, `1`, `07`, `1..5`), a nested fact `(rel …)`. A name the loader made up, which

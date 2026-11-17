@@ -121,11 +121,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `and-in-and.ein` and `and-in-and-macro.ein`, `a`, a name only a
 ///   rule's conclusion writes: a constant of the conclusion, read at any
 ///   depth, however the conclusion's `and` nests.
-/// - the programs whose `z` only a rule's conclusion wrote meet it first in
-///   the fact the loader states from that conclusion, `(written (n z 1))`;
-///   and `z` is `std.math.arith`'s, a declared relation of no argument, a
-///   name of every program that loads the calculator, so a `z` is listed
-///   only where a fact names it inside a nested fact.
+/// - `z` is `std.math.arith`'s, a declared relation of no argument, a name
+///   of every program that loads the calculator, so a `z` is listed only
+///   where a fact names it inside a nested fact.
 /// - every program of `tests/stdlib/math/rat/` and
 ///   `tests/stdlib/math/gcd/12_what_stays_silent.ein`, which imports
 ///   `std.math.int` beside `std.math.gcd`: `pos` and `neg` in
@@ -153,7 +151,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// another arity) and the loader's refusals (a premise that is no form, a
 /// relation variable no parameter binds, a relation parameter bound to a
 /// fact, an hrule concluding more than one fact).
-const SEEDED: [(&str, &[&str]); 137] = [
+const SEEDED: [(&str, &[&str]); 138] = [
     (
         "examples/arith/int.ein",
         &[
@@ -516,10 +514,8 @@ const SEEDED: [(&str, &[&str]); 137] = [
     (
         "tests/stdlib/math/binary/06_what_stays_silent.ein",
         &[
-            "`2`, asserted by rule `assemble`",
             "`7`, in (bin-let seven (b2 7 1))",
             "`end`, in (bin-let far (b2 end 1))",
-            "`high`, asserted by rule `assemble`",
         ],
     ),
     (
@@ -551,11 +547,11 @@ const SEEDED: [(&str, &[&str]); 137] = [
     ),
     (
         "tests/stdlib/math/decimal/05_what_stays_silent.ein",
-        &[
-            "`end`, in (let far (n end 1))",
-            "`pear`, asserted by rule `assemble`",
-            "`x`, asserted by rule `assemble`",
-        ],
+        &["`end`, in (let far (n end 1))"],
+    ),
+    (
+        "tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein",
+        &["`x`, asserted by rule `assemble`"],
     ),
     (
         "tests/stdlib/math/gcd/12_what_stays_silent.ein",

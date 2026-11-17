@@ -19,7 +19,7 @@
 ;;; ── Import: one call connects a base ───────────────────────────────────────
 ;;;
 ;;; A module that is a base imports this one and calls the macro `positional`
-;;; once, with its 61 relations in the macro's order, inside its closing rule's
+;;; once, with its 63 relations in the macro's order, inside its closing rule's
 ;;; conclusion:
 ;;;
 ;;;     (import std.math.positional :symbols (positional))
@@ -29,7 +29,7 @@
 ;;;                    (positional operand operand-is n let named …))
 ;;;       :why    "…")
 ;;;
-;;; The call expands to one activator a rule, 77 facts, which the closing rule
+;;; The call expands to one activator a rule, 78 facts, which the closing rule
 ;;; derives at root in the firing it closes the base's relations in, so a base
 ;;; costs no firing more; each activated rule compiles when its activator
 ;;; appears (Q-M1f.266). A program imports a base,
@@ -37,10 +37,10 @@
 ;;; it comes with the base, one copy a program, so a program that imports both
 ;;; bases holds each rule once, activated twice.
 ;;;
-;;; **Why a macro and not 77 written facts:** a rule with parameters fires for
+;;; **Why a macro and not 78 written facts:** a rule with parameters fires for
 ;;; a fact headed by its own name, one plan a fact, and nothing lets one fact
 ;;; activate several rules; a call of a macro is the one hand-written form that
-;;; stands for 77 (Q-M1f.266). **Why the closing rule does not name
+;;; stands for 78 (Q-M1f.266). **Why the closing rule does not name
 ;;; these rules:** a rule's name written as an argument, `(arith-rule
 ;;; add-end)`, makes every parameterised conclusion of the rule's arity a
 ;;; possible activator that binds a parameter to a fact, which the loader
@@ -50,9 +50,12 @@
 ;;; ── What it holds ──────────────────────────────────────────────────────────
 ;;;
 ;;;   - the operands, a number or a name a `let` states, and the `let`'s name
-;;;     probe, `named`;
+;;;     probe, `named`; the check of a numeral an operand stands for, asked of
+;;;     the base's representation;
 ;;;   - the addition, subtraction and comparison walks, a column a firing;
-;;;   - the normal form, high zeros dropped, and both turns;
+;;;   - the normal form, high zeros dropped, and both turns, the last of which
+;;;     labels the number it makes valid, as the division's end labels its
+;;;     quotient and its remainder;
 ;;;   - the protocol of the five operations: each its ask, its second operand,
 ;;;     its start and its answer;
 ;;;   - multiplication's call, its turn and its end, and division's;
@@ -64,16 +67,20 @@
 ;;;     `MALFORMED` and `UNDECLARED`, each with its rule to `(false)`.
 ;;;
 ;;; A numeral's own faults are no rule here: whether `(n (n z 1) x)` is a
-;;; number is the representation's question (Q-M1f.210), asked where the
-;;; numeral is written, by `std.math.decimal` and
-;;; `std.math.binary`.
+;;; number is the representation's question (Q-M1f.210), which an operand's
+;;; look-up asks of `std.math.decimal` or `std.math.binary` for the numeral it
+;;; finds (Q-M1f.404). **A number a walk makes is labelled as it is made**,
+;;; `(VALID S)`, by the turn that ends a walk and by the division's end, so
+;;; every number an operation answers with, a tagged call's included, is
+;;; labelled valid already, and no operation checks it.
 ;;;
 ;;; ── The parameters ─────────────────────────────────────────────────────────
 ;;;
 ;;; A parameter is the relation a base names for it, spelled in capitals: `?N`
 ;;; the numeral's constructor, `?B` the accumulator, `?FA`, `?FS`, `?CL` and
 ;;; `?NZ` the tables of the full adder, the full subtractor, the comparator and
-;;; *not zero*; the rest are named as decimal names them, `?ADD-WALK` for
+;;; *not zero*, `?CHECK` and `?VALID` the representation's check and its
+;;; label; the rest are named as decimal names them, `?ADD-WALK` for
 ;;; `add-walk`. Capitals, because a parameter spelled as a relation's short name
 ;;; would intern that name bare, and a reader that looks a relation up by its
 ;;; bare spelling would find the empty one. What a
@@ -97,7 +104,7 @@
 ;;;
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
-;;; Its 77 rules, each under its full name, `std.math.positional.add-column`,
+;;; Its 78 rules, each under its full name, `std.math.positional.add-column`,
 ;;; which a trace, a core and `refuted by` print, whichever base activated it;
 ;;; and the macro `positional`, the interface. It declares no relation, and so
 ;;; has no closing rule: the base's closes the relations it activates the rules
@@ -109,8 +116,8 @@
 ;; A number stands for itself, whatever high zeros it is written with; the
 ;; walk reads it by value. Two rules, because "is a number" has two shapes
 ;; and no negation is used to tell a number from a name. Whether it is a
-;; number is the representation's, which checked it when it was written
-;; (`std.math.decimal`, `std.math.binary`).
+;; number is the representation's (`std.math.decimal`, `std.math.binary`),
+;; which `operand-check` asks, below.
 (rule operand-zero (?OPERAND ?OPERAND-IS)
   :match  (?OPERAND ?k z)
   :assert (?OPERAND-IS ?k z)
@@ -136,6 +143,19 @@
   :match  (and (?OPERAND ?k ?x) (?NAMED ?x) (?LET ?x ?v))
   :assert (?OPERAND-IS ?k ?v)
   :why    "{?x} names {?v}")
+
+;; **The check of what an operand stands for** (Q-M1f.404): a numeral found,
+;; written as the operand or as a `let`'s value, is handed to the
+;; representation's check, `(?CHECK N N)`, which walks it once whatever reads
+;; it and labels it `(?VALID N)` at the end, or flags its fault. The
+;; operation does not wait for the label: reading it beside the operand would
+;; join two facts on a number, and a malformed numeral is a contradiction.
+;; `z` is zero in every base, and valid by its representation's closing
+;; rule: it needs no check.
+(rule operand-check (?OPERAND-IS ?N ?CHECK)
+  :match  (?OPERAND-IS ?k (?N ?p ?a))
+  :assert (?CHECK (?N ?p ?a) (?N ?p ?a))
+  :why    "the operand found for {?k} is ({?N} {?p} {?a}): it is checked, once, as a number")
 
 ;; ── The walk shared by every circuit that adds ──────────────────────────────
 ;; `(ADD-WALK TAG X Y CARRY ACC)`: one column a firing, from the units. A
@@ -194,10 +214,10 @@
   :assert (?TURN ?k ?r (?N ?acc ?a))
   :why    "the digit {?a} goes after {?acc}")
 
-(rule turn-end (?TURN ?DONE)
+(rule turn-end (?TURN ?DONE ?VALID)
   :match  (?TURN ?k z ?acc)
-  :assert (?DONE ?k ?acc)
-  :why    "turned round: the answer is {?acc}")
+  :assert (and (?DONE ?k ?acc) (?VALID ?acc))
+  :why    "turned round: the answer is {?acc}, a number as it is made")
 
 ;; ── Addition ────────────────────────────────────────────────────────────────
 (rule add-ask (?ADD ?OPERAND ?ADD-FIRST)
@@ -407,10 +427,10 @@
   :assert (?DIV-STEP ?k ?ms ?t z z)
   :why    "start at the top digit: nothing is left over yet, and the quotient is zero")
 
-(rule div-end (?DIV-STEP ?DIV-DONE)
+(rule div-end (?DIV-STEP ?DIV-DONE ?VALID)
   :match  (?DIV-STEP ?k ?ms z ?t ?w)
-  :assert (?DIV-DONE ?k ?w ?t)
-  :why    "no digit is left: the quotient is {?w} and the remainder {?t}")
+  :assert (and (?DIV-DONE ?k ?w ?t) (?VALID ?w) (?VALID ?t))
+  :why    "no digit is left: the quotient is {?w} and the remainder {?t}, numbers as they are made")
 
 (rule div-ask (?DIV ?OPERAND ?DIV-FIRST)
   :match  (?DIV ?x ?y)
@@ -456,8 +476,8 @@
 ;; A request the theory cannot read is flagged, and the flag is a
 ;; contradiction, as a division by zero is (Q-M1f.316). **A flag means
 ;; malformed; no flag does not mean well-formed** (Q-M1f.318). A malformed
-;; numeral is its representation's, flagged where it is written (Q-M1f.210);
-;; what is here is what is wrong with an operand or a
+;; numeral is its representation's, flagged by the check `operand-check` asks
+;; for (Q-M1f.210); what is here is what is wrong with an operand or a
 ;; `let`. Whether an operand that is a name is one no `let` states reads an
 ;; `absent` and a guard over the base's digits, and is the base's own
 ;; (`operand-undeclared`, `bin-operand-undeclared`).
@@ -597,23 +617,24 @@
   :why    "{?request} uses the name {?x}, which names no number")
 
 ;; ── The connection: one call of this macro is every activator ───────────────
-;; A base calls it once, inside its closing rule's conclusion, with its 61
+;; A base calls it once, inside its closing rule's conclusion, with its 63
 ;; relations in this order; each line of the body is one rule's activator, its
 ;; parameters in the rule's own order. Written by hand, and held by
 ;; `ein-infer/tests/arith_theory.rs` to name each rule of this module once, with
 ;; that rule's parameters (Q-M1f.270).
-(macro positional (?OPERAND ?OPERAND-IS ?N ?LET ?NAMED ?ADD-WALK ?FA ?B ?STRIP ?TURN ?NZ
-                   ?DONE ?ADD ?ADD-FIRST ?ADD-SECOND ?SUM ?SUM-OF ?SUB-WALK ?FS ?SHORT ?SUB
-                   ?SUB-FIRST ?SUB-SECOND ?DIFFERENCE ?SHORTFALL ?DIFF-OF ?CMP-WALK ?CL
-                   ?ORDER-IS ?CMP ?CMP-FIRST ?CMP-SECOND ?ORDER ?CMP-OF ?TOP-FIRST
-                   ?TOP-FIRST-IS ?MUL-CALL ?MUL-DIGITS ?MUL-STEP ?MUL-SUM ?MUL ?MUL-FIRST
-                   ?MUL-SECOND ?PRODUCT ?PRODUCT-OF ?DIV-DIGITS ?DIV-STEP ?DIV-DONE ?DIV
-                   ?DIV-FIRST ?DIV-SECOND ?DIV-CALL ?QUOTIENT ?QUOT-OF ?DIV-M1 ?BAD-OPERAND
-                   ?NOT-A-NUMBER ?MALFORMED ?BAD-REQUEST ?NO-LET ?UNDECLARED)
+(macro positional (?OPERAND ?OPERAND-IS ?N ?LET ?NAMED ?CHECK ?ADD-WALK ?FA ?B ?STRIP ?TURN ?NZ
+                   ?DONE ?VALID ?ADD ?ADD-FIRST ?ADD-SECOND ?SUM ?SUM-OF ?SUB-WALK ?FS ?SHORT ?SUB
+                   ?SUB-FIRST ?SUB-SECOND ?DIFFERENCE ?SHORTFALL ?DIFF-OF ?CMP-WALK ?CL ?ORDER-IS
+                   ?CMP ?CMP-FIRST ?CMP-SECOND ?ORDER ?CMP-OF ?TOP-FIRST ?TOP-FIRST-IS ?MUL-CALL
+                   ?MUL-DIGITS ?MUL-STEP ?MUL-SUM ?MUL ?MUL-FIRST ?MUL-SECOND ?PRODUCT ?PRODUCT-OF
+                   ?DIV-DIGITS ?DIV-STEP ?DIV-DONE ?DIV ?DIV-FIRST ?DIV-SECOND ?DIV-CALL ?QUOTIENT
+                   ?QUOT-OF ?DIV-M1 ?BAD-OPERAND ?NOT-A-NUMBER ?MALFORMED ?BAD-REQUEST ?NO-LET
+                   ?UNDECLARED)
   (and (operand-zero ?OPERAND ?OPERAND-IS)
        (operand-number ?OPERAND ?N ?OPERAND-IS)
        (let-named ?LET ?NAMED)
        (operand-name ?OPERAND ?NAMED ?LET ?OPERAND-IS)
+       (operand-check ?OPERAND-IS ?N ?CHECK)
        (add-column ?ADD-WALK ?N ?FA ?B)
        (add-column-first ?ADD-WALK ?N ?FA ?B)
        (add-column-second ?ADD-WALK ?N ?FA ?B)
@@ -623,7 +644,7 @@
        (strip-top ?STRIP ?B ?NZ ?TURN)
        (strip-none ?STRIP ?DONE)
        (turn-step ?TURN ?B ?N)
-       (turn-end ?TURN ?DONE)
+       (turn-end ?TURN ?DONE ?VALID)
        (add-ask ?ADD ?OPERAND ?ADD-FIRST)
        (add-ask-second ?OPERAND-IS ?ADD-FIRST ?OPERAND ?ADD-SECOND)
        (add-start ?OPERAND-IS ?ADD-SECOND ?ADD-WALK ?SUM)
@@ -657,7 +678,7 @@
        (mul-start ?OPERAND-IS ?MUL-SECOND ?MUL-CALL ?PRODUCT)
        (mul-answer ?DONE ?PRODUCT ?PRODUCT-OF)
        (div-begin ?TOP-FIRST-IS ?DIV-DIGITS ?DIV-STEP)
-       (div-end ?DIV-STEP ?DIV-DONE)
+       (div-end ?DIV-STEP ?DIV-DONE ?VALID)
        (div-ask ?DIV ?OPERAND ?DIV-FIRST)
        (div-ask-second ?OPERAND-IS ?DIV-FIRST ?OPERAND ?DIV-SECOND)
        (div-start ?OPERAND-IS ?DIV-SECOND ?DIV-CALL ?QUOTIENT)

@@ -3,7 +3,7 @@
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `(n 1 2)` ends in `1` where `z` goes, and `numeral-prefix-digit` flags it
-;;; as it is written.
+;;; as the part is checked.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -2,9 +2,8 @@
 
 A name the parser, the loader or the engine makes up for something a program writes no name for starts with `#`:
 `#empty` for the empty form `()`, `#nested` for a nested form whose head is not a name, `#params` for a parameter
-list, `#list` for a fact's `:using` list, `#query` for the rule a query's goal compiles to, and `#written` for the
-loader's step that states a `written` fact. `#` is no name character, so no program can spell one of them, and a
-name a program writes is never one the engine made up.
+list, `#list` for a fact's `:using` list, and `#query` for the rule a query's goal compiles to. `#` is no name
+character, so no program can spell one of them, and a name a program writes is never one the engine made up.
 
 **Why.** Were a made-up name spellable, a program's own name could collide with it: `(p ())` and a fact written
 with the made-up name would load as one fact.

@@ -9,8 +9,10 @@
 ;;; `let-zero` flags already, so that program is dead with the guard or
 ;;; without it. A program may also list `named` from `std.math.decimal` and
 ;;; write `(named z)` itself. Then nothing flags the naming, and the guard is
-;;; what keeps `(price apple (n z 3))`, a well-formed numeral, from being
-;;; flagged as `(not-decimal (n z 3) z)`.
+;;; what keeps `(n z 3)`, a well-formed numeral the request takes, from
+;;; being flagged as `(not-decimal (n z 3) z)` when it is checked. The
+;;; program's own fact `(price apple (n z 3))` is no operation's, and is not
+;;; checked (Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

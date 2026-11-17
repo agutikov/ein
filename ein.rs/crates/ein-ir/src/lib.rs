@@ -33,8 +33,7 @@ pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId, loc_repr, node_rep
 pub use dump::{dump_canonical, dump_compact, dump_pretty};
 pub use from_ir::{
     KbLoadError, LoadOptions, MAX_MATCH_VARIABLES, WHY_REQUIRED_OF, load, load_file,
-    load_file_with, load_query, load_query_with, load_with, pattern_relations, written_in,
-    written_in_conclusions,
+    load_file_with, load_query, load_query_with, load_with, pattern_relations,
 };
 pub use grammar::{ParseError, SyntaxError, parse};
 pub use imports::{LoadError, Resolver, resolve_imports};

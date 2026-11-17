@@ -571,8 +571,10 @@ fn circuit(body: &str) -> (usize, usize) {
 /// **Each request as a circuit.** A step of Euclid's chain is a long
 /// division, which computes its divisor's nine multiples first; the least
 /// common multiple is the chain, one product and one division more. The
-/// firings count `std.math.decimal`'s check of each numeral the program
-/// writes, as every circuit of the calculator's does.
+/// firings count `std.math.decimal`'s check of each numeral an operand
+/// stands for, a firing a place and one for the label (Q-M1f.404), as every
+/// circuit of the calculator's does; it runs beside the chain, so the depth
+/// is the chain's.
 ///
 /// `cargo test -p ein-infer --test gcd_theory the_circuit -- --nocapture`
 /// re-takes them.
@@ -598,14 +600,14 @@ fn the_circuit_of_each_request() {
 
 /// The pinned measures, in the order [`the_circuit_of_each_request`] asks.
 const CIRCUITS: [(usize, usize); 8] = [
-    (553, 553),
-    (742, 742),
-    (866, 866),
-    (257, 257),
-    (17, 17),
+    (564, 553),
+    (753, 742),
+    (877, 866),
+    (263, 257),
+    (20, 17),
     (14, 14),
     (14, 14),
-    (10337, 10337),
+    (10358, 10337),
 ];
 
 // ── the module's text ──────────────────────────────────────────────

@@ -2,7 +2,8 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `numeral-prefix-digit` flags `(n 1 2)` as it is written.
+;;; `numeral-prefix-digit` flags `(n 1 2)` as the rational's parts are
+;;; checked.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

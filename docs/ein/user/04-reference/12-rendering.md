@@ -104,11 +104,9 @@ program below states one fact that two others are about, and claims one that it 
 
 ![ein render program: a fact stated and under two arrows is one filled octagon in the frame claims, doubts ctx; a fact only claimed is an empty octagon in the frame claims ctx](diagrams/12-context-program.svg)
 
-`ein render kb` draws the same two octagons. It also draws the loader's `written` facts
-([reserved names](03-reserved-names.md)), each an octagon that points at the fact the text nests, so the frames it
-draws name `written` beside the program's relations:
+`ein render kb` draws the same two octagons, in the same two frames, over the saturated knowledge base:
 
-![ein render kb: the same two octagons, in the frames claims, doubts, written ctx and claims, written ctx, with the octagons of the two written facts pointing at them](diagrams/12-context-kb.svg)
+![ein render kb: the same two octagons, the stated fact filled in the frame claims, doubts ctx and the claimed one empty in the frame claims ctx](diagrams/12-context-kb.svg)
 
 A fact under an arrow of a fact that is itself under an arrow is drawn the same way, each in the frame of what
 points at it, and a view that holds a frame asks Graphviz to rank the whole graph at once, `newrank=true`. A

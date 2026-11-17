@@ -3,8 +3,8 @@
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; Where the integer stands does not matter: here it is a product's second
-;;; operand, and `numeral-digit` flags `(n z x)` as it is written, before any
-;;; multiplication.
+;;; operand, and `numeral-digit` flags `(n z x)` as the operand is looked up,
+;;; before any multiplication.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

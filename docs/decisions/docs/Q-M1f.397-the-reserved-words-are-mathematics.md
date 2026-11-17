@@ -1,7 +1,7 @@
 # Q-M1f.397 — The reserved words are mathematics in the reasoning and the kernel's surface elsewhere
 
 On the pages of `docs/ein/reasoning/` the reserved words are mathematical objects. The stored negation, falsity,
-an absence, equality, `written` and `relation` are defined there by what each is in the graph and what the
+an absence, equality and `relation` are defined there by what each is in the graph and what the
 definitions read of it, and beyond the one section that lists the reserved atoms those pages do not speak of a
 word a program may not spell.
 

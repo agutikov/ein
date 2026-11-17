@@ -2,10 +2,12 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A malformed numeral is `std.math.decimal`'s, wherever it is written: here
-;;; inside an integer, a request's operand. `(n z x)` holds `x` where a digit
-;;; goes, and `numeral-digit` flags it as it is written: an integer's parts
-;;; are numerals like any other (Q-M1f.210).
+;;; A malformed numeral is `std.math.decimal`'s, flagged where an operation
+;;; takes it: here inside an integer, a request's operand. `int-operand-check`
+;;; asks the integer's check, `int-check-parts` asks `std.math.decimal`'s of
+;;; each part, and `numeral-digit` flags `(n z x)`, which holds `x` where a
+;;; digit goes: an integer's parts are numerals like any other (Q-M1f.210,
+;;; Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

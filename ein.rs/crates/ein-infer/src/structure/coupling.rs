@@ -1652,7 +1652,7 @@ pub fn coupling(
     ast: &ein_ir::Ast,
     opts: &CouplingOptions,
 ) -> Result<(Cover, Coupling), SolveError> {
-    let loaded = Loaded::of(root, terms, ast)?;
+    let loaded = Loaded::of(root);
     with_space(root, terms, ast, &opts.layer, None, |sp| {
         coupling_in(sp, &loaded, opts)
     })
@@ -1671,7 +1671,7 @@ pub fn theory_coupled(
     opts: &TheoryOptions,
     reading: CouplingReading,
 ) -> Result<(Theory, Option<(Cover, Coupling)>), SolveError> {
-    let loaded = Loaded::of(root, terms, ast)?;
+    let loaded = Loaded::of(root);
     with_space(root, terms, ast, &opts.layer, None, |sp| {
         let how = if opts.root_pairs {
             Reading::Pairs

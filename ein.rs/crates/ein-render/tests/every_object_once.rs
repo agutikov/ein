@@ -107,12 +107,12 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once_in_one_frame() {
         "one node for the one fact of = that a fact points at:\n{dot}"
     );
     let e = id_of(equalities[0]);
-    // Held: filled. In the contexts of `says`, `think` and the loader's
-    // `written`: one frame names the three.
+    // Held: filled. In the contexts of `says` and `think`: one frame names
+    // the two.
     assert!(equalities[0].contains("style=\"filled,solid\""), "{dot}");
     assert_eq!(
         frame_of(&dot, e).as_deref(),
-        Some("says, think, written ctx"),
+        Some("says, think ctx"),
         "{dot}"
     );
     // And no arrow of that fact: nothing leaves `5` under the label `=`.
@@ -148,11 +148,7 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once_in_one_frame() {
     let plus: Vec<&&str> = nodes.iter().filter(|l| l.contains("label=\"(+)")).collect();
     assert_eq!(plus.len(), 1, "{dot}");
     assert!(!plus[0].contains("filled"), "{dot}");
-    assert_eq!(
-        frame_of(&dot, sum).as_deref(),
-        Some("=, written ctx"),
-        "{dot}"
-    );
+    assert_eq!(frame_of(&dot, sum).as_deref(), Some("= ctx"), "{dot}");
     // `(= 4 (+ 2 2))` is held and nothing points at it: an arrow, as it was,
     // to the node of the fact under its third arrow.
     assert!(

@@ -1,0 +1,14 @@
+digraph rule_bin_numeral_valid_lhs_rhs {
+  rankdir=TB;
+  label="bin-numeral-valid"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?w_L" [label="?w", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    "?w_L" -> "z_L" [label="bin-check", color="#1f77b4", fontcolor="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?w_R" [label="?w", shape=diamond];
+    "h1_bin-valid_R" [shape=octagon, label="bin-valid", color="#8c564b", fontcolor="#8c564b"];
+    "h1_bin-valid_R" -> "?w_R" [label="1", color="#8c564b", style=dashed];
+  }
+}

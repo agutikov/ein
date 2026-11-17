@@ -2,10 +2,11 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; Each part of `(int P N)` is a natural number, and `7` is none: `int-p-
-;;; digit` reads `(written (int 7 z))` and derives `(not-integer (int 7 z)
-;;; 7)`, the integer's own fault, and `not-integer-is-false` derives `(false)`
-;;; (Q-M1f.276 (a)).
+;;; Each part of `(int P N)` is a natural number, and `7` is none. The
+;;; request's operand is looked up, and `int-operand-check` asks the
+;;; integer's check, `(int-check (int 7 z))`: `int-p-digit` reads it and
+;;; derives `(not-integer (int 7 z) 7)`, the integer's own fault, and
+;;; `not-integer-is-false` derives `(false)` (Q-M1f.276 (a), Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -61,7 +61,7 @@ The last three edges are `ein-corpus`'s own `[dev-dependencies]`, for its bench 
 | read | the file's bytes, `.ein` text or a `.einb` container by its magic | `ein-cli/src/common.rs` (`read_program`), `ein-ir/src/read.rs` |
 | parse | text to the AST arena, by the parser generated from `ein.l` and `ein.y` | `ein_ir::grammar` |
 | resolve, expand | imports read, each module once, names to full names; macros rewritten | `ein_ir::imports`, `ein_ir::macros` |
-| load | the AST to the KB: registries, written facts, `(written T)`, the loader's refusals | `ein_ir::from_ir` |
+| load | the AST to the KB: registries, written facts, the loader's refusals | `ein_ir::from_ir` |
 | judge the mechanisms | where two hypothesis mechanisms could conflict, a second load is saturated and they are read together on root's fixpoint | `ein-cli/src/common.rs` (`load_held`), `ein_infer::mechanisms` |
 | compile | each rule, per activator, to a plan, memoised for the run | `ein_infer::{compile, plan, engine}` |
 | saturate root | the closure and the boundary, to root's fixpoint | `ein_infer::{saturator, match_, firing, contradiction}` |
@@ -161,7 +161,7 @@ stdout, which is `ein-cli`'s.
 
 | concept | parsed | loaded | compiled | run |
 |---|---|---|---|---|
-| a fact | `ein.y` | `from_ir` writes it, with `source` provenance, and states `(written T)` for each fact nested in it | — | read by every plan through the indexes |
+| a fact | `ein.y` | `from_ir` writes it, with `source` provenance | — | read by every plan through the indexes |
 | a rule | `ein.y` | `from_ir` registers it (`entities`) | `compile::compile_rule`, once per activator, to a `Plan` | the matcher finds its matches; the saturator fires them |
 | `(absent …)` | `ein.y` | — | lifted to a NAF guard (`split_naf`), or a nested step | judged at the boundary, on a quiescent KB |
 | `(open ?R)` | `ein.y` | an obligation rule | compiled like any rule | the obligation pass, after the fixpoint |

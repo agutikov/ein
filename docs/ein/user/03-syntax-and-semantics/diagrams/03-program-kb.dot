@@ -3,13 +3,11 @@ digraph kb {
   "Alice" -> "Bob" [label="knows Alice says she knows Bob", color="#17becf", fontcolor="#17becf", style=solid];
   "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
   "Carol" -> f_49646612cf [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_2b1fa186fb [shape=octagon, label="(written)\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_2b1fa186fb -> f_49646612cf [label="#1", color="#d62728", style=dashed];
   "Bob" -> "Alice" [label="knows by knows-back", color="#17becf", fontcolor="#17becf", style=dashed];
   "Carol" -> "Bob" [label="knows by knows-back", color="#17becf", fontcolor="#17becf", style=dashed];
   newrank=true;
   subgraph cluster_ctx_0 {
-    label="claims, written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    label="claims ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_49646612cf [shape=octagon, label="(knows)", color="#17becf", fontcolor="#17becf", style=solid];
   }
   f_49646612cf -> "Carol" [label="#1", color="#17becf", style=solid];

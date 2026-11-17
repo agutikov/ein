@@ -2,7 +2,8 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `numeral-digit` flags `(n z x)`, the denominator, as it is written.
+;;; `numeral-digit` flags `(n z x)`, the denominator, as the rational's parts
+;;; are checked.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

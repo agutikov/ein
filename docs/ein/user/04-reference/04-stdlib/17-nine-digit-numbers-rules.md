@@ -704,6 +704,21 @@ one rule a digit.
 
 To and from `std.math.decimal`'s numbers, a request each way and a rule a length: a number written with $k$ digits
 gets $9 - k$ zeros in front, and the other way the zeros in front of the top digit that is not zero are dropped.
+The number `to9` takes is asked of `std.math.decimal`'s check, and the number `from9` answers with is labelled
+valid as it is made ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
+
+#### `to9-check`
+
+<!-- rule std.math.num9 to9-check -->
+```lisp
+(rule to9-check ()
+  :match  (to9 ?x)
+  :assert (check ?x ?x)
+  :why    "{?x} is taken to be converted: it is checked as a number")
+```
+
+![The rule to9-check of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.to9-check.svg)
+<!-- /rule -->
 
 #### `to9-zero`
 
@@ -868,7 +883,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-9 ()
   :match  (and (from9 (num9 ?a9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1))
                (nz ?a9))
-  :assert (of9 (num9 ?a9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1))
+  :assert (and (of9 (num9 ?a9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)) (valid (n (n (n (n (n (n (n (n (n z ?a9) ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a9}: a number of 9 digits, with no high zero")
 ```
 
@@ -882,7 +897,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-8 ()
   :match  (and (from9 (num9 0 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1))
                (nz ?a8))
-  :assert (of9 (num9 0 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n (n (n z ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1))
+  :assert (and (of9 (num9 0 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n (n (n z ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)) (valid (n (n (n (n (n (n (n (n z ?a8) ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a8}: a number of 8 digits, with no high zero")
 ```
 
@@ -896,7 +911,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-7 ()
   :match  (and (from9 (num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1))
                (nz ?a7))
-  :assert (of9 (num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1))
+  :assert (and (of9 (num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)) (valid (n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a7}: a number of 7 digits, with no high zero")
 ```
 
@@ -910,7 +925,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-6 ()
   :match  (and (from9 (num9 0 0 0 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1))
                (nz ?a6))
-  :assert (of9 (num9 0 0 0 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n z ?a6) ?a5) ?a4) ?a3) ?a2) ?a1))
+  :assert (and (of9 (num9 0 0 0 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n (n z ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)) (valid (n (n (n (n (n (n z ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a6}: a number of 6 digits, with no high zero")
 ```
 
@@ -924,7 +939,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-5 ()
   :match  (and (from9 (num9 0 0 0 0 ?a5 ?a4 ?a3 ?a2 ?a1))
                (nz ?a5))
-  :assert (of9 (num9 0 0 0 0 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n z ?a5) ?a4) ?a3) ?a2) ?a1))
+  :assert (and (of9 (num9 0 0 0 0 ?a5 ?a4 ?a3 ?a2 ?a1) (n (n (n (n (n z ?a5) ?a4) ?a3) ?a2) ?a1)) (valid (n (n (n (n (n z ?a5) ?a4) ?a3) ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a5}: a number of 5 digits, with no high zero")
 ```
 
@@ -938,7 +953,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-4 ()
   :match  (and (from9 (num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1))
                (nz ?a4))
-  :assert (of9 (num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1) (n (n (n (n z ?a4) ?a3) ?a2) ?a1))
+  :assert (and (of9 (num9 0 0 0 0 0 ?a4 ?a3 ?a2 ?a1) (n (n (n (n z ?a4) ?a3) ?a2) ?a1)) (valid (n (n (n (n z ?a4) ?a3) ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a4}: a number of 4 digits, with no high zero")
 ```
 
@@ -952,7 +967,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-3 ()
   :match  (and (from9 (num9 0 0 0 0 0 0 ?a3 ?a2 ?a1))
                (nz ?a3))
-  :assert (of9 (num9 0 0 0 0 0 0 ?a3 ?a2 ?a1) (n (n (n z ?a3) ?a2) ?a1))
+  :assert (and (of9 (num9 0 0 0 0 0 0 ?a3 ?a2 ?a1) (n (n (n z ?a3) ?a2) ?a1)) (valid (n (n (n z ?a3) ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a3}: a number of 3 digits, with no high zero")
 ```
 
@@ -966,7 +981,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-2 ()
   :match  (and (from9 (num9 0 0 0 0 0 0 0 ?a2 ?a1))
                (nz ?a2))
-  :assert (of9 (num9 0 0 0 0 0 0 0 ?a2 ?a1) (n (n z ?a2) ?a1))
+  :assert (and (of9 (num9 0 0 0 0 0 0 0 ?a2 ?a1) (n (n z ?a2) ?a1)) (valid (n (n z ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a2}: a number of 2 digits, with no high zero")
 ```
 
@@ -980,7 +995,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 (rule from9-1 ()
   :match  (and (from9 (num9 0 0 0 0 0 0 0 0 ?a1))
                (nz ?a1))
-  :assert (of9 (num9 0 0 0 0 0 0 0 0 ?a1) (n z ?a1))
+  :assert (and (of9 (num9 0 0 0 0 0 0 0 0 ?a1) (n z ?a1)) (valid (n z ?a1)))
   :why    "the top digit that is not zero is {?a1}: a number of 1 digit, with no high zero")
 ```
 
@@ -1021,14 +1036,15 @@ drawing is not shown.
                (num9-rule div9-step-5) (num9-rule div9-step-6)
                (num9-rule div9-step-7) (num9-rule div9-step-8)
                (num9-rule div9-step-9) (num9-rule div9-done)
-               (num9-rule div9-by-zero) (num9-rule to9-zero) (num9-rule to9-1)
-               (num9-rule to9-2) (num9-rule to9-3) (num9-rule to9-4)
-               (num9-rule to9-5) (num9-rule to9-6) (num9-rule to9-7)
-               (num9-rule to9-8) (num9-rule to9-9) (num9-rule to9-big)
-               (num9-rule from9-zero) (num9-rule from9-9) (num9-rule from9-8)
-               (num9-rule from9-7) (num9-rule from9-6) (num9-rule from9-5)
-               (num9-rule from9-4) (num9-rule from9-3) (num9-rule from9-2)
-               (num9-rule from9-1) (num9-rule division-by-zero-is-false))
+               (num9-rule div9-by-zero) (num9-rule to9-check)
+               (num9-rule to9-zero) (num9-rule to9-1) (num9-rule to9-2)
+               (num9-rule to9-3) (num9-rule to9-4) (num9-rule to9-5)
+               (num9-rule to9-6) (num9-rule to9-7) (num9-rule to9-8)
+               (num9-rule to9-9) (num9-rule to9-big) (num9-rule from9-zero)
+               (num9-rule from9-9) (num9-rule from9-8) (num9-rule from9-7)
+               (num9-rule from9-6) (num9-rule from9-5) (num9-rule from9-4)
+               (num9-rule from9-3) (num9-rule from9-2) (num9-rule from9-1)
+               (num9-rule division-by-zero-is-false))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")
 ```
 <!-- /rule -->

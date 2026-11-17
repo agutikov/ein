@@ -244,7 +244,7 @@ A divisor that is zero by value derives `(division-by-zero REQUEST)`, however th
 ```
 
 A digit or a named constant where a part goes, `(int 7 z)`, is the integer's own fault,
-`(not-integer INTEGER THING)`, flagged where it is written
+`(not-integer INTEGER THING)`, flagged where an operation takes the integer
 ([Q-M1f.276](../../../../decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)):
 
 ```lisp

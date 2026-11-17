@@ -5,7 +5,7 @@ digraph reserved {
 
   dunder [label="__closed__\n__symmetric__"];
   wb     [label="<forced-positive>\n<monotonic-unconditional>\n<lookahead-dies-immediately>"];
-  hash   [label="#empty  #nested  #params\n#list  #query  #written"];
+  hash   [label="#empty  #nested  #params\n#list  #query"];
   keys   [label=":hypothesis-relations\n:no-hypothesis"];
 
   lexer  [label="the lexer, ein.l\nWRITEBACK is a token no production takes;\n# is no name character"];

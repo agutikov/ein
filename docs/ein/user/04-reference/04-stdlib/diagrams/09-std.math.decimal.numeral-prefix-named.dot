@@ -2,18 +2,18 @@ digraph rule_numeral_prefix_named_lhs_rhs {
   rankdir=TB;
   label="numeral-prefix-named"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?w_L" [label="?w", shape=diamond];
     "?m_L" [label="?m", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "z_L" [label="z", shape=rectangle];
     subgraph cluster_ctx_L_0 {
-      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n ?m ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
     }
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(n ?m ?a)_L" [label="1", color="#d62728"];
+    "?w_L" -> "(n ?m ?a)_L" [label="check", color="#7f7f7f", fontcolor="#7f7f7f"];
     "?m_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "h2_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
-    "h2_named_L" -> "?m_L" [label="1", color="#d62728"];
+    "h1_named_L" [shape=octagon, label="named", color="#d62728", fontcolor="#d62728"];
+    "h1_named_L" -> "?m_L" [label="1", color="#d62728"];
     "(n ?m ?a)_L" -> "?m_L" [label="1", color="#9467bd"];
     "(n ?m ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
   }

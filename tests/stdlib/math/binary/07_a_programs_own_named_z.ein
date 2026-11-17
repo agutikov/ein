@@ -9,8 +9,10 @@
 ;;; `(bin-let z …)`, which is flagged already, so that program is dead with
 ;;; the guard or without it. A program may also list `bin-named` from
 ;;; `std.math.binary` and write `(bin-named z)` itself. Then nothing flags the
-;;; naming, and the guard is what keeps `(price apple (b2 z 1))`, a
-;;; well-formed numeral, from being flagged as `(not-binary (b2 z 1) z)`.
+;;; naming, and the guard is what keeps `(b2 z 1)`, a well-formed numeral
+;;; the request takes, from being flagged as `(not-binary (b2 z 1) z)` when
+;;; it is checked. The program's own fact `(price apple (b2 z 1))` is no
+;;; operation's, and is not checked (Q-M1f.404).
 ;;; Decimal's twin is `tests/stdlib/math/decimal/06_a_programs_own_named_z.ein`.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────

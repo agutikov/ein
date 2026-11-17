@@ -203,11 +203,10 @@ Both print the same derived facts:
 
 <!-- output -->
 ```text
-;; ── DERIVED (3 facts) ──
+;; ── DERIVED (2 facts) ──
 ;;   noted (2)
   (noted 1 1 :rule note)
   (noted 2 1 :rule note)
-  (written (src Y) :rule "#written")
 ```
 
 ---
