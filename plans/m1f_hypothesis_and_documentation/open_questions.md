@@ -318,6 +318,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **ruled 2026-11-16: (e)**, both ops removed and what only they read deleted; the user's choice at the phase's close; **built 2026-11-16** by S1f.10.16's record as ruled (`26d0bc56`, the pages `ff63da53`): the golden's 1 322 `hyp` and `hyp+closed` lines gone, nothing else moved, and the walk's generator pass deleted with K-29 and K-30 |
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. **Built** by S1f.10.19: `pairs` everywhere, the engine's order |
 | [Q-M1f.314](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) | what the release-voice check reads, and what fails a line: the readings S1f.20.1 took where the stage file left them open | **ruled 2026-11-17 as defaulted** ([P1f.20 § The user's rulings at S1f.20.2's review](p1f.20_docs_refactor/README.md#the-users-rulings-at-s1f202s-review-2026-11-17), item 13): every doc comment of a shipped crate, tests included; every `.ein` comment; every ISO date; the folder `plans/` named alone passes; a count that falls is reported, not failed; F-, E-, W-, K- and review ids and `:why` strings not read yet; **readings revised by S1f.20.9 part C2** (the check now reads every crate comment, every project `.md`, `corpus/regressions.toml`, plan finding, followup and review ids, register cases and process paths, has no baseline and does not read itself; [its record](p1f.20_docs_refactor/s1f.20.9_the_history_sweep.md#record-part-c2-2026-11-17)) |
+| [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact) | what an obligation emits: the verdict, with its justification or as a fact. The user's *"maybe better would be to emit (open) facts as (open ?R <justification>)"* | **put 2026-11-17, not ruled**; [S1f.21.1](p1f.21_verdicts_as_rules/s1f.21.1_the_survey_and_the_design.md)'s [`design.md` § 5](p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation). Recommended default: **(b)**, the verdict carries its justification, the instance, and stays a verdict; nothing is built on a default, and [S1f.21.2](p1f.21_verdicts_as_rules/README.md#stages) writes the pages for today's kernel either way |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -7302,3 +7303,66 @@ baseline, 6 743 lines in 1 041 files, is of these readings.
 7. **The check reads itself**, so its own docstring is held to the voice it enforces; its two lines of examples
    carry the escape, which were its first findings.
 
+
+### Q-M1f.390 — What an obligation emits: the verdict, with its justification or as a fact
+
+**Raised** 2026-11-17 by the user's instruction that opened [P1f.21](p1f.21_verdicts_as_rules/README.md): *"… can
+say that if treat (open ?R) as facts then they are only facts that (1) duplicates (2) can be removed from KB; but
+maybe better would be to emit (open) facts as (open ?R <justification>) ?"*. **Put, not ruled.**
+[S1f.21.1](p1f.21_verdicts_as_rules/s1f.21.1_the_survey_and_the_design.md) surveyed the kernel and designed the
+form; [`design.md`](p1f.21_verdicts_as_rules/design.md) has every run, and its
+[§ 5](p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation) is the page to rule from. The ids
+between Q-M1f.314 and this one are in use: each that is decided has its file under `docs/decisions/`.
+
+**What the survey found** (each a run in `design.md`):
+
+- **The two properties are real.** On `examples/lattice/05_owed_seats_bounded.ein` root owes 4 instances and they
+  are one tuple, `open(seats)`; `{(seats Ann C1)}` owes 2 and holds every other fact root holds. On
+  `examples/zebra2-obligations.ein` root's 36 instances are 5 tuples.
+- **(1) goes with one justification, the instance**: the rule's name, its activator's arguments and its
+  trigger's bindings. Under it a tuple is a debt at every one of the 120 nodes `ein solve
+  examples/zebra2-obligations.ein` enters; under the activator alone at 70, under the trigger's matched facts
+  not where two obligations over one relation share a trigger, and a payment is a tuple per alternative, not per
+  debt. The engine already computes the instance, keys the tree's table by it, and prints it on every `owe`
+  event.
+- **(2) goes with no justification.** A fact that means *owed now* is in a state and not in a larger one, and a
+  fork inherits what its parent holds. Written as an ordinary rule, the debt outlives its payment in 15 of that
+  program's 16 nodes, the engine reports each as a *stale fact*, the static check flags the program and the
+  route is the cube.
+- **What can be facts** are the requirement (from the trigger), its payment (from the trigger with its witness)
+  and *discharged* (every requirement is paid): three ordinary rules today's Ein runs, with the static check
+  *monotone*, the count of unpaid requirements equal to the kernel's `owes` at all 16 nodes of the first program
+  and all 120 of the second, and every field of the answer the same.
+- **No choice changes $R$**: $R$ reads only whether anything is owed.
+
+**The options**, in each the justification being the instance, made by the kernel:
+
+- **(a) As today.** The rule concludes `open(r)`, the pass counts matches, and the reasoning pages state the
+  three verdicts as rules and say of `(open R)` what the instruction says. Nothing is built.
+- **(b) The verdict carries its justification and stays a verdict.** The pass's result is the set of tuples
+  `open(r, j)`: facts of the extent of `open` that are true of the state and that no knowledge base holds. The
+  pages write it so. Nothing need be built; the engine may print the instance as one term on `owe` and in the
+  answer dump, which is additive.
+- **(c) The requirement and the payment are facts, and *owed* is their difference.** The kernel emits both in
+  the agenda; nothing is removed; `(discharged)` can be a fact, and $R$ the states that hold it and not
+  `(false)`. To build: two more plans an obligation, two reserved relations, the listings, every golden of a
+  program with an obligation (78 of the 567 corpus programs `ein solve` answers). On
+  `examples/zebra2-obligations.ein` the run's facts beyond root go from 5 409 to 8 623 in the emulation.
+- **(d) `(open R j)` is a fact of the state that owes it**, written by the pass after the fixpoint into a part of
+  the node no fork inherits, matched by no rule. A state's facts then no longer grow with its commitment. To
+  build: that part of a node, the fact in the grammar and the loader, the dumps.
+
+*The agenda derives `(open R j)` as any conclusion* is not offered: its run is the stale debt above.
+
+**Recommended default: (b).** It is all of the instruction's *maybe* that can be had: the duplicate is gone, and
+the removal is what a verdict is, as *alive* is. It moves no licence, check, golden or state, and it does not
+close (c), which a later phase can build or a module can state. **The strongest argument against it**: the debt
+stays outside the knowledge base, so no rule and no claim reads one and the pass remains a second mechanism;
+(c) is the option that makes owed and discharged ordinary rewriting, with runs behind it, at the price of its
+build and of a requirement the knowledge base states beside the rule's guard, which
+[Q-M1d.2](../../docs/decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md) chose not to
+have.
+
+**What waits on it.** S1f.21.3, planned only on (c) or (d), or on (b) with the term printed. S1f.21.2 does not
+wait: it states today's kernel as rules under every ruling, and the ruling decides how it writes the verdict and
+the remark ([`design.md` § What S1f.21.2 writes under each ruling](p1f.21_verdicts_as_rules/design.md#what-s1f212-writes-under-each-ruling)).
