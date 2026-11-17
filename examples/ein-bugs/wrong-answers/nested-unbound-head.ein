@@ -1,5 +1,5 @@
 ;;; A pattern inside a pattern whose relation no parameter binds matches
-;;; nothing, in silence — **W24**, regression
+;;; nothing, in silence — regression
 ;;; `nested-unbound-head` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

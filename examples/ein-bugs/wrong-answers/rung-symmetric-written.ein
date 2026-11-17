@@ -1,4 +1,4 @@
-;;; The control of `rung-symmetric-import.ein` — **W97**, regression
+;;; The control of `rung-symmetric-import.ein` — regression
 ;;; `symmetric-import`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the import deleted and the one rule it used,

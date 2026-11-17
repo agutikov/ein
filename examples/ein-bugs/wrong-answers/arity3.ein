@@ -1,5 +1,5 @@
 ;;; The blind rung never proposes an arity-3 fact, and the run was certified
-;;; anyway — **W6**'s second witness. Regression
+;;; anyway — `uncovered.ein`'s second shape. Regression
 ;;; `arity3` (`corpus/regressions.toml`).
 ;;;
 ;;; The goal is `(r3 ?x ?y ?z)`. `hypgen`'s `fill_slot` documents that arity ≥ 3

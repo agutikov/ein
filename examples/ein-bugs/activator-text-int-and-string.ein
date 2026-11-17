@@ -1,5 +1,5 @@
 ;;; An int and a string with the same text were two activators that shared
-;;; one compile key — **W16**, regression `int-and-string`
+;;; one compile key — regression `int-and-string`
 ;;; (`corpus/regressions.toml`). Ein has no ints and no string values
 ;;; (Q-M1e2.24, Q-M1e2.23), and this file is refused at the parse.
 ;;;

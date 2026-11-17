@@ -1,5 +1,5 @@
 ;;; A goal's `neq` with a free variable holds with nothing bound, and a claim
-;;; naming `neq` is refused — **W55**, regression `goal-neq-free`
+;;; naming `neq` is refused — regression `goal-neq-free`
 ;;; (`corpus/regressions.toml`); `eq` and `neq` are relations (Q-M1e2.26).
 ;;;
 ;;;

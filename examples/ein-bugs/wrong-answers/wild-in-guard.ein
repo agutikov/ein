@@ -1,4 +1,4 @@
-;;; `_` in a guard reads nothing, in silence — **W24**, regression
+;;; `_` in a guard reads nothing, in silence — regression
 ;;; `wild-in-guard` (`corpus/regressions.toml`); a bare `_` is
 ;;; reserved and refused (Q-M1e2.22).
 ;;;

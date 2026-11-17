@@ -1,4 +1,4 @@
-;;; Two candidates, each refuted in TWO firings — **W1** at layer 0, at
+;;; Two candidates, each refuted in TWO firings — an unrecorded survivor at layer 0, at
 ;;; **default flags**. Regression `forced-2-two`
 ;;; (`corpus/regressions.toml`).
 ;;;
@@ -7,7 +7,7 @@
 ;;; Two objects; `(q ?x)` taints its object and a taint is a contradiction, so
 ;;; every `(q ?x)` dies — in two firings, past the one-step lookahead. With two
 ;;; candidates `alive` is never a singleton, so the forced-positive cascade
-;;; (W2) never runs: this is W1 alone.
+;;; never runs: this is the unrecorded survivor alone.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────────
 ;;;

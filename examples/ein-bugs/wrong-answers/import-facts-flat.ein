@@ -1,4 +1,4 @@
-;;; A flat import of a library of facts brings none of its facts — **W88**,
+;;; A flat import of a library of facts brings none of its facts —
 ;;; regression `import-facts-flat` (`corpus/regressions.toml`):
 ;;; importing facts is mandatory.
 ;;;

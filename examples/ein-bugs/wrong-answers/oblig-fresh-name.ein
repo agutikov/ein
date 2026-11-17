@@ -1,5 +1,5 @@
 ;;; The obligations rung never proposed a domain value a commitment derives —
-;;; **W14**, regression `oblig-fresh-name`
+;;; regression `oblig-fresh-name`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

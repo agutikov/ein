@@ -1,4 +1,4 @@
-;;; A string written in a rule's `:match` never matches — **W18**,
+;;; A string written in a rule's `:match` never matches —
 ;;; regression `str-in-match` (`corpus/regressions.toml`).
 ;;;
 ;;;

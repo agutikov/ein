@@ -101,7 +101,7 @@
 ;;   range(R1) = domain(R2)  and  domain(R1) = range(R2),
 ;; up to the supplied subtype relation ?isR* (a puzzle's transitive is-a
 ;; closure), **either way**: a pair is ill-typed where the two types of a side
-;; are neither equal nor one a subtype of the other (W93).
+;; are neither equal nor one a subtype of the other.
 ;; `(converse R1 R2)` is the equality R2 = R1°, which `converse-pair-symmetric`
 ;; states, so a pair and its mirror must check alike: read one way, `Pet` ⊑
 ;; `Animal` passed `(converse owns owned-by)` (owns : Person → Pet, owned-by :

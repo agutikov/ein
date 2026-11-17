@@ -1,9 +1,9 @@
-;;; W16's twin — regression `string-then-int`
+;;; The twin of `activator-text-int-and-string.ein` — regression `string-then-int`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;; `activator-text-int-and-string.ein` with its two activator lines
-;;; swapped, and nothing else. Unlike W7's twin, this order answered wrong
+;;; swapped, and nothing else. Unlike `binding-key-swapped.ein`, this order answered wrong
 ;;; too, the other way: the string's plan was compiled first and the int
 ;;; activator's key was the same text, so root held the string's two
 ;;; `noted` facts and not the int's (`ein saturate` at `6a775f3d`: `noted

@@ -1,4 +1,4 @@
-;;; A rule's `:match` splits a name that starts with `and` — **W22**, register
+;;; A rule's `:match` splits a name that starts with `and` —
 ;;; regression `kw-and-in-match` (`corpus/regressions.toml`): a reserved word is
 ;;; a keyword only as a whole token (Q-M1e2.17).
 ;;;

@@ -1,6 +1,6 @@
 ;;; A macro's call inside a fact is stored as written, and the pattern that calls the macro does not
 ;;; match it —
-;;; **W86**, regression `macro-call-nested-fact`.
+;;; regression `macro-call-nested-fact`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

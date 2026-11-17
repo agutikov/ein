@@ -1,5 +1,5 @@
 ;;; A relation of the program's own left unguessed because a module it
-;;; imports for another name loads an obligation rule — **W97**, register
+;;; imports for another name loads an obligation rule —
 ;;; regression `symmetric-import` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

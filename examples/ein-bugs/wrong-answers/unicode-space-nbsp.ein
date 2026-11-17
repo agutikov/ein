@@ -1,5 +1,5 @@
 ;;; A no-break space between two tokens is read as a space —
-;;; **W73**, regression `unicode-space-nbsp`.
+;;; regression `unicode-space-nbsp`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

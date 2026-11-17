@@ -1,6 +1,6 @@
 ;;; A `(solve :hrules …)` list that names an hrule the program does not declare
 ;;; loads, and proposes nothing —
-;;; **W76**, regression `hrules-name`.
+;;; regression `hrules-name`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

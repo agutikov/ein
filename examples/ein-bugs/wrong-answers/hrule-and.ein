@@ -1,4 +1,4 @@
-;;; W95 — an hrule whose conclusion is an `(and …)` proposes its first conjunct
+;;; An hrule whose conclusion is an `(and …)` proposes its first conjunct
 ;;; alone, and the others are dropped in silence.
 ;;;
 ;;; An hrule proposes facts, each a commitment of its own, and `h` writes two,

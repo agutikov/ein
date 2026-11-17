@@ -1,6 +1,6 @@
 ;;; A `(solve :no-hypothesis …)` list that names a relation the program does not
 ;;; have loads, and restricts nothing —
-;;; **W76**, regression `no-hypothesis`.
+;;; regression `no-hypothesis`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

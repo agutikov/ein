@@ -1,4 +1,4 @@
-;;; The twin of `kw-relation-fact.ein`, a control of **W22**: the same program
+;;; The twin of `kw-relation-fact.ein`, a control of regression `kw-relation-fact`: the same program
 ;;; with `relationship` renamed `rrelationship`, its first letter doubled: a
 ;;; name that starts with no keyword and sorts where `relationship` does. Its
 ;;; answer is the witness's right one, the name read back (`ein solve FILE` at

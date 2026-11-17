@@ -1,5 +1,5 @@
 ;;; A query's `:goal` that writes a pattern inside a pattern with a variable as
-;;; its relation loads, and matches nothing — **W79**, regression
+;;; its relation loads, and matches nothing — regression
 ;;; `goal-nested-relation-variable`.
 ;;;
 ;;;
@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; In a rule the shape is refused at load (W24): a relation is named by a name
+;;; In a rule the shape is refused at load: a relation is named by a name
 ;;; or by a parameter its activator binds, and a query has no activator. Refused
 ;;; at load, one line, on every command (exit 1, `ein test`: 2).
 ;;;

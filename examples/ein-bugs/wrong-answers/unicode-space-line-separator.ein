@@ -1,5 +1,5 @@
 ;;; A line separator between two forms is read as a space —
-;;; **W73**, regression `line-separator`.
+;;; regression `line-separator`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

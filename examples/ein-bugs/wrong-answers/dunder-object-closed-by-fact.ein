@@ -1,4 +1,4 @@
-;;; The control of `dunder-object-closed-by-rule.ein` — **W96**, regression
+;;; The control of `dunder-object-closed-by-rule.ein` — regression
 ;;; `closed-by-rule`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the closure written as a fact, `(__closed__

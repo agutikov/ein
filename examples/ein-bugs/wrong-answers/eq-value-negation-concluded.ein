@@ -1,5 +1,5 @@
 ;;; `(not ?s)` concluded of a stored `(eq k k)` stores `(not (eq k k))` and no `(false)` —
-;;; **W82**, regression `eq-value-negation-concluded`.
+;;; regression `eq-value-negation-concluded`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

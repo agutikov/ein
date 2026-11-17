@@ -1,5 +1,5 @@
 ;;; A bare `_` in a rule's pattern reports a larger core than a variable used
-;;; once — **W29**, regression `core-two-ways`
+;;; once — regression `core-two-ways`
 ;;; (`corpus/regressions.toml`), under Q-M1e2.22, which refuses the `_`.
 ;;; Its twin, `underscore-core-two-ways-twin.ein`, writes the slot `?w0`.
 ;;;

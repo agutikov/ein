@@ -1,5 +1,5 @@
 ;;; The **alive-set invariant**, broken on purpose, and the program on which
-;;; breaking it cost a model: **W4**, regression `alive-set-fresh-name`.
+;;; breaking it cost a model: regression `alive-set-fresh-name`.
 ;;; Its control, which names the rule's constant in a fact, is below.
 ;;;
 ;;; ── The premise this tested ────────────────────────────────────────────
@@ -34,10 +34,10 @@
 ;;; Without `Z` among the objects, the candidates were `(q A B)` and
 ;;; `(q B A)`, both refuted in one firing. The walk answered
 ;;; `k = 0, exhausted = true`, *No solution — the constraints are
-;;; contradictory*, with the file's lookahead off; that refutation was W1
+;;; contradictory*, with the file's lookahead off; that refutation was an unrecorded survivor
 ;;; at layer 0 as much as this case (`wrong-answers/fresh-name-nospawn.ein`
 ;;; is this file without `spawn`, and refuted the same way). Answered as a
-;;; region, R was `{∅}`: W4 in isolation, which
+;;; region, R was `{∅}`: the fresh constant missing from H, alone, which
 ;;; `wrong-answers/fresh-name-default.ein` is this file's program banked as.
 ;;;
 ;;; `Z` is not new (Q-M1e.21): *"rules are part of root, so rules can't

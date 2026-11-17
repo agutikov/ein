@@ -1,5 +1,5 @@
-;;; `forced-2.ein` with the walk's forced-positive cascade off — **W1** at layer
-;;; 0, reached once W2's mechanism is out of the way. Regression
+;;; `forced-2.ein` with the walk's forced-positive cascade off — an unrecorded
+;;; survivor at layer 0, reached once the cascade is out of the way. Regression
 ;;; `forced-2-off` (`corpus/regressions.toml`).
 ;;;
 ;;; Below this header the program is `forced-2.ein`'s: Ein has no flag that

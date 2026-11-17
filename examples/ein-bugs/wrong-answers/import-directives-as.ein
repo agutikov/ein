@@ -1,5 +1,5 @@
 ;;; A qualified import brings the module's query, lattice and configuration —
-;;; **W90**, regression `import-directives-as`
+;;; regression `import-directives-as`
 ;;; (`corpus/regressions.toml`); no import brings them (Q-M1f.215).
 ;;;
 ;;;

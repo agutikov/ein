@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `(not ?a)`, called with a name as a conclusion: the
 ;;; rule fires and stores `(not k)`, the negation of a name —
-;;; **W68**, regression `macro-not-name-conclusion`.
+;;; regression `macro-not-name-conclusion`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

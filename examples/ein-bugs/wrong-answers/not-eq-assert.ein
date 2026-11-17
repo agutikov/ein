@@ -1,5 +1,5 @@
 ;;; A rule's false `(not (eq …))` conclusion is stored as a negation —
-;;; **W51**, regression `not-eq-assert` (`corpus/regressions.toml`)
+;;; regression `not-eq-assert` (`corpus/regressions.toml`)
 ;;; (Q-M1e2.26).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

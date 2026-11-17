@@ -1,4 +1,4 @@
-;;; A goal's `(absent (false ?g))` holds of everything — **W81**, regression
+;;; A goal's `(absent (false ?g))` holds of everything — regression
 ;;; `false-goal-argument`.
 ;;;
 ;;;

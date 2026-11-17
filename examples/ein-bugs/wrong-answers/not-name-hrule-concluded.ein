@@ -1,5 +1,5 @@
 ;;; An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H —
-;;; **W84**, regression `not-name-hrule-concluded`.
+;;; regression `not-name-hrule-concluded`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

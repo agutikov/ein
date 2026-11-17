@@ -1,4 +1,4 @@
-;;; The twin of `wild-in-hrule.ein` — **W20**: the same program with the
+;;; The twin of `wild-in-hrule.ein`: the same program with the
 ;;; wildcard `_` written as `?any`, a variable the hrule reads nowhere else.
 ;;; The hrule proposes `(tag a)`, and R is `∅` and `{(tag a)}` (`ein solve
 ;;; FILE`): the answer the witness's `_` was read as meaning, where the

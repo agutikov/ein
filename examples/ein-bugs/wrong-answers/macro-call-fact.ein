@@ -1,6 +1,6 @@
 ;;; A macro's call written as a fact is stored as a fact of the macro's name, and the fact its body
 ;;; spells is not —
-;;; **W86**, regression `macro-call-fact`.
+;;; regression `macro-call-fact`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

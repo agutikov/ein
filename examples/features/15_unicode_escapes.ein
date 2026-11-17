@@ -14,7 +14,7 @@
 ;;;
 ;;; Any other escape is refused at the parse, `\x41` and `Ж` among them, and
 ;;; so is a `\u{…}` that names no character, one past 10FFFF or a surrogate
-;;; (W38). A raw newline in a string is a newline and needs no escape. Names
+;;;. A raw newline in a string is a newline and needs no escape. Names
 ;;; stay ASCII forever: the greetings below are text, and the people are `Ana`,
 ;;; `Kenji` and `Nikos`.
 ;;;

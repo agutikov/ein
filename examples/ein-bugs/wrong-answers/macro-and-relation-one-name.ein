@@ -1,6 +1,6 @@
 ;;; A relation declared under a macro's name loads: its facts are stored and no premise can read
 ;;; them —
-;;; **W86**, regression `macro-and-relation-one-name`.
+;;; regression `macro-and-relation-one-name`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

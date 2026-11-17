@@ -1,5 +1,5 @@
 ;;; A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)` —
-;;; **W84**, regression `not-name-macro`.
+;;; regression `not-name-macro`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -10,7 +10,7 @@
 ;;;
 ;;; The expansion is `(not ?g)`, with `?g` bound where `(paid Ann)` holds a name:
 ;;; refused at load, at the call's argument, one line, on every command. `(neg Ann)`,
-;;; the name written, is refused too (W68).
+;;; the name written, is refused too.
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;

@@ -1,6 +1,6 @@
 ;;; A `(solve :hypothesis-relations …)` list that names a relation the program
 ;;; does not have loads, and leaves H empty —
-;;; **W76**, regression `hypothesis-relations`.
+;;; regression `hypothesis-relations`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

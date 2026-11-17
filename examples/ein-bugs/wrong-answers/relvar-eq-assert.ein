@@ -1,5 +1,5 @@
 ;;; A conclusion whose relation is a parameter its activator binds to `eq` is
-;;; stored as a fact — **W52**, regression `relvar-eq-assert`
+;;; stored as a fact — regression `relvar-eq-assert`
 ;;; (`corpus/regressions.toml`), under Q-M1e2.26.
 ;;;
 ;;;

@@ -1,4 +1,4 @@
-;;; The twin of `rung-unactivated.ein` that is not wrong — **W97**, register
+;;; The twin of `rung-unactivated.ein` that is not wrong —
 ;;; regression `rung-unactivated`'s twin (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the obligation stated: `(total-owed at is-a)`

@@ -1,4 +1,4 @@
-;;; A rule's concluded `neq` is stored as a fact — **W30**, regression
+;;; A rule's concluded `neq` is stored as a fact — regression
 ;;; `assert-neq-w-x` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

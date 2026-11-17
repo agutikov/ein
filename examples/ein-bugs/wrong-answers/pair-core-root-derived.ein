@@ -1,5 +1,5 @@
 ;;; A pair contradiction's core names only its positive side, where that side
-;;; is a fact root derives — **W21**, regression
+;;; is a fact root derives — regression
 ;;; `pair-core-root-derived` (`corpus/regressions.toml`):
 ;;; `pair-core-root-given.ein`'s mechanism, one derivation deeper.
 ;;;

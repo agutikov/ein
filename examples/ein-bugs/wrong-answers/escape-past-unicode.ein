@@ -1,5 +1,5 @@
 ;;; A `\u{…}` escape that names no character read as U+FFFD, in silence —
-;;; **W38**, regression `escape-past-unicode`
+;;; regression `escape-past-unicode`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

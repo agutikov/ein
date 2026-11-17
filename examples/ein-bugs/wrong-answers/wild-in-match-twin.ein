@@ -1,4 +1,4 @@
-;;; The twin of `wild-in-match.ein` — **W20**: the same program with the
+;;; The twin of `wild-in-match.ein`: the same program with the
 ;;; wildcard `_` written as `?any`, a variable the rule reads nowhere else.
 ;;; `w` fires on `(holds a)`, root holds `(hit w)`, and R is `{(hit w)}` and
 ;;; `{(hit a), (hit w)}` (`ein solve FILE`): the answer the witness's `_`

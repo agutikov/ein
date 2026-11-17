@@ -1,4 +1,4 @@
-;;; A query's class prints a pattern inside a pattern as written — **W54**,
+;;; A query's class prints a pattern inside a pattern as written —
 ;;; regression `goal-nested-var` (`corpus/regressions.toml`): found
 ;;; where `(not (eq ?x ?y))` in a goal printed its class.
 ;;;

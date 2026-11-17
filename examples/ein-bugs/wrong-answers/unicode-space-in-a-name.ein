@@ -1,5 +1,5 @@
 ;;; A no-break space inside a name splits it in two —
-;;; **W73**, regression `nbsp-in-a-name`.
+;;; regression `nbsp-in-a-name`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

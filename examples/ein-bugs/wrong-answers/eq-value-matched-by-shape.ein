@@ -1,5 +1,5 @@
 ;;; A pattern's argument `(eq ?a ?b)` matches a stored `(eq Ann Bob)` by its shape —
-;;; **W82**, regression `eq-value-matched-by-shape`.
+;;; regression `eq-value-matched-by-shape`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

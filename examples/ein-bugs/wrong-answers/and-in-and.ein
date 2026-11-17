@@ -1,4 +1,4 @@
-;;; W94 — a conclusion that is an `and` inside an `and` stores one fact headed
+;;; A conclusion that is an `and` inside an `and` stores one fact headed
 ;;; `and`, and none of its conjuncts.
 ;;;
 ;;; The grammar's `Conclusion ::= '(' 'and' Conclusions ')'` nests, so the rule

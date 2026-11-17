@@ -1,4 +1,4 @@
-;;; A form as a guard's argument read nothing, in silence — **W24**, register
+;;; A form as a guard's argument read nothing, in silence —
 ;;; regression `form-in-guard` (`corpus/regressions.toml`); `eq` and `neq` are
 ;;; relations, and a nested fact is a value (Q-M1e2.26).
 ;;;

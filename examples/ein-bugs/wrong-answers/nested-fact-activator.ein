@@ -1,5 +1,5 @@
 ;;; A relation parameter its activator binds to a nested fact reads nothing,
-;;; in silence — **W24**, regression `nested-fact-activator`
+;;; in silence — regression `nested-fact-activator`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

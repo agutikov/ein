@@ -1,5 +1,5 @@
 ;;; `uncovered.ein` plus one fact, `(knows Ann Bob)` — the twin that shows what
-;;; **W6**'s certification leaves out. Regression `uncovered`, as a
+;;; the certification leaves out. Regression `uncovered`, as a
 ;;; twin.
 ;;;
 ;;; As banked, the engine answered k = 3, `exhausted = true` here as well, and

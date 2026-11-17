@@ -1,5 +1,5 @@
 ;;; A goal's `(absent …)` is not judged, and a claim that lists its instance is
-;;; refused — **W56**, regression `goal-absent`
+;;; refused — regression `goal-absent`
 ;;; (`corpus/regressions.toml`): found where a test of a goal's empty row
 ;;; wrote a goal whose only variable is an `(absent …)`'s own.
 ;;;

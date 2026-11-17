@@ -1,5 +1,5 @@
 ;;; The **control** for [`match-only.ein`](match-only.ein) — that file plus
-;;; one fact, `(seen Z)` — case W15.
+;;; one fact, `(seen Z)`.
 ;;;
 ;;; `(seen Z)` is over a relation nothing else mentions and is closed. It
 ;;; changes no rule, no constraint and no goal: all it does is put `Z` in a

@@ -1,4 +1,4 @@
-;;; An hrule whose `:match` is `()` proposed nothing — **W31**, register
+;;; An hrule whose `:match` is `()` proposed nothing —
 ;;; regression `empty-match-hrule` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

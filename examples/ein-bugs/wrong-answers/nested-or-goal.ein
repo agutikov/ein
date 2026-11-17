@@ -1,6 +1,6 @@
 ;;; A disjunction nested inside a conjunction, in a query's `:goal`: `ein
 ;;; saturate` and the views answer, and every solve question stops —
-;;; **W62**, regression `nested-or-goal`.
+;;; regression `nested-or-goal`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

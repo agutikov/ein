@@ -1,4 +1,4 @@
-;;; The control of `rung-unactivated.ein` — **W97**, regression
+;;; The control of `rung-unactivated.ein` — regression
 ;;; `rung-unactivated`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the import deleted, which it never used: no

@@ -1,5 +1,5 @@
 ;;; A flat import keeps a library's rule and drops the facts the rule reads —
-;;; **W88**, regression `import-facts-rule` (`corpus/regressions.toml`).
+;;; regression `import-facts-rule` (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

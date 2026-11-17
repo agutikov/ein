@@ -1,6 +1,6 @@
 ;;; `std.algebra/converse-illtyped-dom` and `-ran`, loaded, activated and
 ;;; satisfied **where the subtype runs the other way**: the regression
-;;; W93, fixed.
+;;; `converse-lemma-subtype`.
 ;;;
 ;;; ── What the rules promise ─────────────────────────────────────────────────
 ;;;
@@ -11,7 +11,7 @@
 ;;; files where each fires, the types not meeting (`Pet` against `Place`,
 ;;; `Person` against `Place`); `../typing/03_type_hierarchy_welltyped.ein` is a
 ;;; pair whose range is the subtype. This file is the other direction, on each
-;;; side, which until W93's fix each rule refuted: the mirror of a well-typed
+;;; side, which neither rule may refute: the mirror of a well-typed
 ;;; pair, which `converse-pair-symmetric` derives wherever it is loaded.
 ;;;
 ;;; ── What this program does to them ─────────────────────────────────────────

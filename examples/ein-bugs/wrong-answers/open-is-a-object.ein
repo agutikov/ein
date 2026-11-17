@@ -1,4 +1,4 @@
-;;; `open` written as an object's name loads, as an object — **W71**,
+;;; `open` written as an object's name loads, as an object —
 ;;; regression `is-a-object`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

@@ -7,8 +7,8 @@
 ; unconditionally and store its conclusion.
 ;
 ; The loader refuses a relation variable no parameter binds, at the top
-; level as inside a pattern, before any rule is compiled (W24:
-; a rule shape that reads nothing, in silence). A relation is named by a name
+; level as inside a pattern, before any rule is compiled (a rule shape
+; that reads nothing, in silence). A relation is named by a name
 ; or by a parameter its activator binds.
 ;
 (relation p Thing :why "p holds of {?1}")

@@ -1,5 +1,5 @@
 ;;; A query's `:goal` over a relation the program names nowhere else loads, and
-;;; has no row — **W78**, regression `goal-no-such-relation`.
+;;; has no row — regression `goal-no-such-relation`.
 ;;;
 ;;;
 ;;;

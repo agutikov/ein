@@ -1,5 +1,5 @@
 ;;; A query's `:goal` whose `(absent …)` is over a relation the program names
-;;; nowhere else loads, and holds of everything — **W78**, regression
+;;; nowhere else loads, and holds of everything — regression
 ;;; `goal-absent-no-such-relation`.
 ;;;
 ;;;

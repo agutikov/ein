@@ -1,5 +1,5 @@
 ;;; A written `(absent (paid Ann))` beside `(paid Ann)` loads, alive, the constraint ignored —
-;;; **W80**, regression `absent-fact-for-not`.
+;;; regression `absent-fact-for-not`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

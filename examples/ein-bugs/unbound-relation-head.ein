@@ -8,7 +8,7 @@
 ;;;
 ;;;     ein.inference.compile.CompileError: unbound relation head ?R …
 ;;;
-;;; **Refused at load** (W24): the loader reads a relation variable no
+;;; **Refused at load**: the loader reads a relation variable no
 ;;; parameter binds as it reads the same shape inside a pattern, and every
 ;;; command that loads the file exits 1 with *kb load error: rule
 ;;; 'uses-free-head': its :match writes (?R ?x) with ?R as its relation,

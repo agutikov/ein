@@ -1,4 +1,4 @@
-;;; The control for W16's second shape — regressions
+;;; The control for an activator read as none — regressions
 ;;; `activator-all-int` and `activator-all-nested`
 ;;; (`corpus/regressions.toml`).
 ;;;

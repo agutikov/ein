@@ -1,5 +1,5 @@
 ;;; A positive derived under `(absent (q one))` survives into a world that
-;;; commits `(q one)` — **W8**, regression `stale-naf-fork`
+;;; commits `(q one)` — regression `stale-naf-fork`
 ;;; (`corpus/regressions.toml`), whose right answer is the refusal:
 ;;; *forbid* refuses the program (below).
 ;;;

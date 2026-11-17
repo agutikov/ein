@@ -1,5 +1,5 @@
-;;; A written fact of `eq` at one argument is stored — **W61**, regression
-;;; `fact-eq-arity` (`corpus/regressions.toml`), found beside W60.
+;;; A written fact of `eq` at one argument is stored — regression
+;;; `fact-eq-arity` (`corpus/regressions.toml`), beside the `eq-arity-*` ones.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

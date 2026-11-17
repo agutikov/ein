@@ -1,4 +1,4 @@
-;;; A string written in a rule's `:assert` stops the run — **W18**,
+;;; A string written in a rule's `:assert` stops the run —
 ;;; regression `str-in-assert` (`corpus/regressions.toml`).
 ;;;
 ;;;

@@ -1,5 +1,5 @@
 ;;; An hrule's template writes a variable that no premise binds, and proposes
-;;; nothing, in silence — **W57**, regression `hrule-assert-var`
+;;; nothing, in silence — regression `hrule-assert-var`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;;

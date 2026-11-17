@@ -1,4 +1,4 @@
-;;; W93 — `std.algebra`'s converse lemma and its converse type checks refute a
+;;; `std.algebra`'s converse lemma and its converse type checks refute a
 ;;; pair well-typed through the hierarchy.
 ;;;
 ;;; `owns : Person → Pet` and `owned-by : Animal → Person`, and a `Pet` is an

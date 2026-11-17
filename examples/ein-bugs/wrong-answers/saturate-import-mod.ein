@@ -1,5 +1,5 @@
 ;;; The module `saturate-import.ein` imports `q` from, by its file-relative
-;;; name — **W41** (`corpus/regressions.toml`). A program of its own as
+;;; name — regression `saturate-import` (`corpus/regressions.toml`). A program of its own as
 ;;; well: one relation, and no fact.
 
 (relation q T :why "{?1} is a q")

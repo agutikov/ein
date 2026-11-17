@@ -1,5 +1,5 @@
 ;;; A table imported flat arrives empty, so the rule that looks it up never
-;;; fires — **W88**, regression `import-facts-table`
+;;; fires — regression `import-facts-table`
 ;;; (`corpus/regressions.toml`); the calculator's case.
 ;;;
 ;;;

@@ -1,4 +1,4 @@
-;;; The eight `y` facts alone derive `(false)` — the control of **W23**,
+;;; The eight `y` facts alone derive `(false)` — the control of
 ;;; regression `core-search-cut` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

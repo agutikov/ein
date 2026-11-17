@@ -1,5 +1,5 @@
 ;;; `open` written as a stored negation's relation loads, as a relation —
-;;; **W70**, regression `negation-head`.
+;;; regression `negation-head`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

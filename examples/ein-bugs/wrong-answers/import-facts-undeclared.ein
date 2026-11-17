@@ -1,5 +1,5 @@
 ;;; A flat import cannot name a relation its module only states facts of —
-;;; **W88**, regression `import-facts-undeclared`
+;;; regression `import-facts-undeclared`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

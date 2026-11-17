@@ -1,6 +1,6 @@
 ;;; A rule whose `:match` writes a declared relation with another count of
 ;;; arguments loads, and matches nothing —
-;;; **W89**, regression `in-match` (`corpus/regressions.toml`).
+;;; regression `in-match` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

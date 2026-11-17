@@ -1,4 +1,4 @@
-;;; A written `(not (false Bob))` is stored — **W81**, regression
+;;; A written `(not (false Bob))` is stored — regression
 ;;; `false-fact-negated`.
 ;;;
 ;;;

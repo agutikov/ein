@@ -1,5 +1,5 @@
 ;;; A guard on a variable no premise before it binds read nothing, in silence —
-;;; **W24**, regression `guard-before-binder`
+;;; regression `guard-before-binder`
 ;;; (`corpus/regressions.toml`); a conjunction means the same in any order of
 ;;; its conjuncts (Q-M1e2.26).
 ;;;

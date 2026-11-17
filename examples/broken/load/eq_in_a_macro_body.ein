@@ -15,8 +15,8 @@
 ;
 ; Because the refusal is the loader's, it does not wait for a rule to be
 ; compiled: a rule only a commitment activates, an hrule and an obligation
-; are refused alike, and no command answers. Register case W66 is the shape
-; refused where only the compiler met it.
+; are refused alike, and no command answers. `macro-eq-under-commitment`, `macro-absent-hrule`, `macro-eq-obligation`
+; and `macro-absent-never-compiled` are its regressions, the shape refused where only the compiler met it.
 ;
 ;
 (relation q T :why "q holds of {?1}")

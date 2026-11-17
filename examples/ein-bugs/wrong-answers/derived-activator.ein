@@ -1,5 +1,5 @@
 ;;; An activator a rule derives binds a relation parameter to a fact, and the
-;;; run stopped where its plan is compiled — **W59**, regression
+;;; run stopped where its plan is compiled — regression
 ;;; `derived-activator/derived-activator` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -22,11 +22,11 @@
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; The program loaded, root fired `mk` and derived `(r (a b))`, and the run
-;;; stopped where `r`'s plan is compiled, exit 1, with W24's line, *the relation
+;;; stopped where `r`'s plan is compiled, exit 1, with the compiler's line, *the relation
 ;;; head ?R of (?R b) at Loc(…) is bound to the fact (a b) — a relation is
 ;;; named by a symbol, not a fact.*, on every command (`ein solve FILE` at
 ;;; `8249e872`, release and debug alike). Without `(item (a b))` it answered:
-;;; `derived-activator-never.ein`, W59's other row.
+;;; `derived-activator-never.ein`, the regression `derived-activator-never`.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;

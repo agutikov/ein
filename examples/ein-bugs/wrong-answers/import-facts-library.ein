@@ -1,5 +1,5 @@
 ;;; A library of facts, an ontology, which the `import-facts-*` witnesses import
-;;; flat — **W88** (`corpus/regressions.toml`). A program of its own as well.
+;;; flat (`corpus/regressions.toml`). A program of its own as well.
 ;;;
 ;;;
 ;;; It declares `is-a` and states two facts of it, one with a `:source`;

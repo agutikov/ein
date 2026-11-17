@@ -1,4 +1,4 @@
-;;; `exhausted = true` over a relation the rung never hypothesises — **W6**.
+;;; `exhausted = true` over a relation the rung never hypothesises.
 ;;; Regression `uncovered` (`corpus/regressions.toml`).
 ;;;
 ;;; Below this header the program is the witness of

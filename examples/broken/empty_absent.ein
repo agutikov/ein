@@ -8,7 +8,7 @@
 ;
 ; The grammar refuses `?x` there at the parse, as a premise that is not a
 ; form, before any compiler sees it: a variable stands for a value, and
-; `absent` reads a premise. Register case W24 is this shape's class, a rule
+; `absent` reads a premise. This shape's class is a rule
 ; shape that reads nothing, in silence; the guard this one may mean is
 ; written `(absent (p ?x))`.
 (relation p Thing)

@@ -1,4 +1,4 @@
-;;; The twin of `kw-neq-in-fact.ein`, a control of **W22**: the same program
+;;; The twin of `kw-neq-in-fact.ein`, a control of regression `kw-neq-in-fact`: the same program
 ;;; with `neqw` renamed `nneqw`, its first letter doubled: a name that starts
 ;;; with no keyword and sorts where `neqw` does. Its answer is the witness's
 ;;; right one, the name read back (`ein solve FILE` at `35186bc0`, release and

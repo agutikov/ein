@@ -1,4 +1,4 @@
-;;; One candidate, refuted in TWO firings — **W2**, the forced-positive cascade
+;;; One candidate, refuted in TWO firings — the forced-positive cascade
 ;;; refuting a consistent program, at **default flags**. Regression
 ;;; `forced-2` (`corpus/regressions.toml`).
 ;;;
@@ -31,8 +31,8 @@
 ;;; ── Twins ─────────────────────────────────────────────────────────────────
 ;;;
 ;;; `forced-2-off.ein` is this program, the twin that turned the cascade off:
-;;; there the walk still answered `Contradiction`, through W1 at layer 0, with a
-;;; 1-fact core, so fixing W2 alone fell through into W1. `forced-1.ein` is the
+;;; there the walk still answered `Contradiction`, through an unrecorded survivor at layer 0, with a
+;;; 1-fact core, so fixing the cascade alone fell through into it. `forced-1.ein` is the
 ;;; one-firing twin, right at default flags and wrong the same way under `-L`.
 ;;; Now R is {∅}, root alone (`ein solve FILE`).
 ;;;

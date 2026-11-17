@@ -1,5 +1,5 @@
 ;;; *forbid* misses a refutation resting on an `absent` over the relation a
-;;; parameter names, in a plan only a node compiles — **W17**, regression
+;;; parameter names, in a plan only a node compiles — regression
 ;;; `forbid-chain-param-absent` (`corpus/regressions.toml`), found probing
 ;;; the witness's mechanism.
 ;;;

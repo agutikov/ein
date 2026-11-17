@@ -1,5 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to —
-;;; **W84**, regression `not-name-derived`.
+;;; regression `not-name-derived`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

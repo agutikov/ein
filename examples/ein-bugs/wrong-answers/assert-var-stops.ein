@@ -1,5 +1,5 @@
 ;;; A conclusion's variable that no premise binds stops the run at the rule's
-;;; first firing — **W57**, regression `assert-var-stops`
+;;; first firing — regression `assert-var-stops`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

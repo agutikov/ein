@@ -1,4 +1,4 @@
-;;; `alive-set-fresh-name.ein`'s twin — **W4** in isolation: a rule's fresh
+;;; `alive-set-fresh-name.ein`'s twin, in isolation: a rule's fresh
 ;;; constant never became a hypothesis. Regression `fresh-name-default`
 ;;; (`corpus/regressions.toml`), **fixed**.
 ;;;
@@ -11,8 +11,8 @@
 ;;;
 ;;; The banked file's `k = 0, exhausted = true` was **confounded**: delete its
 ;;; `spawn` rule — so no fresh name exists at all — and it still answered
-;;; `Contradiction` (`fresh-name-nospawn.ein`), which was W1 at layer 0 under
-;;; the file's lookahead-off line, not W4. With the lookahead on, the kill cache
+;;; `Contradiction` (`fresh-name-nospawn.ein`), which was an unrecorded survivor at layer 0 under
+;;; the file's lookahead-off line, not the fresh name. With the lookahead on, the kill cache
 ;;; refuted both candidates before layer 1, `alive` was empty, root was
 ;;; recorded, and what was left was the fresh-name defect alone: `Solution`, k =
 ;;; 1, over a model with no `q` fact at all. Under the region, before

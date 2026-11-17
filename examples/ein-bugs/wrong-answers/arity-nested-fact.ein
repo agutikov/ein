@@ -1,6 +1,6 @@
 ;;; A nested fact written with another count of arguments than its relation
 ;;; declares loads, and the request that holds it is answered by silence —
-;;; **W89**, regression `nested-fact` (`corpus/regressions.toml`).
+;;; regression `nested-fact` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

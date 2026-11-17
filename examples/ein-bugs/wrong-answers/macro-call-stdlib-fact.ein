@@ -1,5 +1,5 @@
 ;;; An imported `std.macro` macro written as a fact is stored as a fact of its name —
-;;; **W86**, regression `macro-call-stdlib-fact`.
+;;; regression `macro-call-stdlib-fact`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

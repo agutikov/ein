@@ -1,4 +1,4 @@
-;;; `:assert ()` stores a fact named `#empty`, which joins H — **W34**,
+;;; `:assert ()` stores a fact named `#empty`, which joins H —
 ;;; regression `assert-empty` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

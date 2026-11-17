@@ -1,5 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` bound by a fact only a commitment states: every state past root stores the negation of a guest —
-;;; **W84**, regression `not-name-under-commitment`.
+;;; regression `not-name-under-commitment`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

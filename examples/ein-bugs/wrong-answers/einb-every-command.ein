@@ -1,5 +1,5 @@
-;;; A command that takes a program refused its `.einb` — **W40**, register
-;;; rows `einb-every-command/saturate`, `einb-every-command/render-rules`, `einb-every-command/render-rule`,
+;;; A command that takes a program refused its `.einb` —
+;;; regressions `einb-every-command/saturate`, `einb-every-command/render-rules`, `einb-every-command/render-rule`,
 ;;; `einb-every-command/render-constraints`, `einb-every-command/render-program` and `einb-every-command/kb-save`
 ;;; (`corpus/regressions.toml`).
 ;;;

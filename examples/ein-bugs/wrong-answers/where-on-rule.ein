@@ -1,5 +1,5 @@
 ;;; A `:where` keyword on a rule is ignored, so the rule fires without its
-;;; guard — **W32**, regression `where-on-rule`
+;;; guard — regression `where-on-rule`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

@@ -1,6 +1,6 @@
 ;;; A `std.macro` macro the program does not import, written as a fact, is stored as a fact of its
 ;;; name —
-;;; **W86**, regression `macro-call-stdlib-unimported`.
+;;; regression `macro-call-stdlib-unimported`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

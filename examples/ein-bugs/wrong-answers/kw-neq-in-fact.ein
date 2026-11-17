@@ -1,4 +1,4 @@
-;;; A fact's nested argument splits a name that starts with `neq` — **W22**,
+;;; A fact's nested argument splits a name that starts with `neq` —
 ;;; regression `kw-neq-in-fact` (`corpus/regressions.toml`): a reserved
 ;;; word is a keyword only as a whole token (Q-M1e2.17).
 ;;;

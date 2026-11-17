@@ -1,5 +1,5 @@
 ;;; `open` written as a top-level fact's relation loads, as a relation —
-;;; **W70**, regression `fact-head`.
+;;; regression `fact-head`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

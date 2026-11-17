@@ -1,4 +1,4 @@
-;;; A boundary of **W19** (`corpus/regressions.toml`): the activator is a
+;;; A boundary of `forbid-chain-no-absent` (`corpus/regressions.toml`): the activator is a
 ;;; fact the program states, a declaration.
 ;;;
 ;;; `(r2 a)` is given, so root compiles the plan of `r2`, which concludes

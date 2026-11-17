@@ -1,4 +1,4 @@
-;;; An hrule's `:assert` splits a name that starts with `or` — **W22**, register
+;;; An hrule's `:assert` splits a name that starts with `or` —
 ;;; regression `kw-or-in-hrule` (`corpus/regressions.toml`): a reserved word is a
 ;;; keyword only as a whole token (Q-M1e2.17).
 ;;;

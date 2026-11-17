@@ -1,5 +1,5 @@
 ;;; The ladder's second rung taken by an obligation rule a program loads and
-;;; does not activate — **W97**, regression `rung-unactivated`
+;;; does not activate — regression `rung-unactivated`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

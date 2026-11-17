@@ -1,6 +1,6 @@
 ;;; An hrule's parameter its `(solve :hrules …)` activator binds to `eq` heads
 ;;; a premise of one argument, so `ein saturate` answered where `ein solve`
-;;; stopped — **W60**, regression `eq-arity-hrule`
+;;; stopped — regression `eq-arity-hrule`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

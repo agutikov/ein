@@ -1,5 +1,5 @@
 ;;; The solve form's claim about the int `1` held of a state holding the name
-;;; `"1"` — **W28**, regression `claim-int-name-solve`
+;;; `"1"` — regression `claim-int-name-solve`
 ;;; (`corpus/regressions.toml`), beside `claim-int-name.ein`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

@@ -1,6 +1,6 @@
 ;;; A request to the calculator with one operand where it declares two loads,
 ;;; and is answered by silence —
-;;; **W89**, regression `arity-request` (`corpus/regressions.toml`).
+;;; regression `arity-request` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

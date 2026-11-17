@@ -1,5 +1,5 @@
 ;;; A disjunction nested inside a conjunction, in an hrule: `ein saturate`
-;;; answers and every solve question stops — **W62**, regression
+;;; answers and every solve question stops — regression
 ;;; `nested-or-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

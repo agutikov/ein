@@ -1,5 +1,5 @@
 ;;; The program a `--dump-answer` state file re-writes dropped a rule that only
-;;; a selection names — **W91**, regression `dump-selection`
+;;; a selection names — regression `dump-selection`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

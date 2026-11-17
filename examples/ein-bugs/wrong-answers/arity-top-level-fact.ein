@@ -1,6 +1,6 @@
 ;;; A fact written with another count of arguments than its relation declares
 ;;; loads, and is stored beside the facts of the declared count —
-;;; **W89**, regression `top-level-fact` (`corpus/regressions.toml`).
+;;; regression `top-level-fact` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

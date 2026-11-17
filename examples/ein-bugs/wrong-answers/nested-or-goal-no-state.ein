@@ -1,12 +1,12 @@
 ;;; A disjunction nested inside a conjunction, in a query's `:goal`, where R
-;;; is empty: every command answers — **W62**, regression
+;;; is empty: every command answers — regression
 ;;; `nested-or-goal-no-state`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; `no` refutes root, so no state is answered from the goal and the goal is
 ;;; never compiled. `examples/ein-bugs/query-goal-free-head-unsat.ein` is the
-;;; same asymmetry over a relation written as a variable (W64).
+;;; same asymmetry over a relation written as a variable.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;

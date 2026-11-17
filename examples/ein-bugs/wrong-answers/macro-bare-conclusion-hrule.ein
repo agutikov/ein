@@ -1,6 +1,6 @@
 ;;; A macro whose body is its parameter, called as an hrule's conclusion: the
 ;;; hypothesis layer proposes nothing, in silence —
-;;; **W69**, regression `macro-bare-conclusion-hrule`.
+;;; regression `macro-bare-conclusion-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; A table written as facts, and the rule that looks it up: the module
-;;; `import-facts-table.ein` imports flat — **W88**
+;;; `import-facts-table.ein` imports flat — regression `import-facts-table`
 ;;; (`corpus/regressions.toml`); the calculator's case. A program of its own
 ;;; as well.
 ;;;

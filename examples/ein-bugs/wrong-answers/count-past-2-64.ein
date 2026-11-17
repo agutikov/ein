@@ -1,5 +1,5 @@
 ;;; A count of commitments past what the run holds is an exit 1 with no read-out
-;;; — **W92**, regression `count-past-2-64` (`corpus/regressions.toml`).
+;;; — regression `count-past-2-64` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

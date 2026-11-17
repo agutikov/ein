@@ -1,5 +1,5 @@
 ;;; Two activators of one rule, an int and a nested fact in one position,
-;;; lost a derivation — **W7**, regression `binding-key-both/binding-key-layout`
+;;; lost a derivation — regression `binding-key-both/binding-key-layout`
 ;;; (`corpus/regressions.toml`), Q-M1e.16.
 ;;; `corpus/fuzz_findings/binding-key-layout.ein` is the same program, a
 ;;; frontend-fuzzer seed.
@@ -10,7 +10,7 @@
 ;;; (`docs/ein/reasoning/static-ir/values-and-order.md` § A rule
 ;;; application's identity). `(note edge 1)` binds `?R` to `edge` and `?f`
 ;;; to `1`; `(note edge (src Y))` binds `?R` to `edge` and `?f` to `(src Y)`,
-;;; a nested fact being a value like any other (W33).
+;;; a nested fact being a value like any other.
 ;;; `binding-key-swapped.ein` is this file with the two activator lines
 ;;; exchanged, and that pair is the test: the order two facts are written
 ;;; in may not change what is derived. `binding-key-int-only.ein` and

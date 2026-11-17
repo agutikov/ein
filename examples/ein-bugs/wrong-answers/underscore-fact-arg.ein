@@ -1,5 +1,5 @@
 ;;; A bare `_` as a fact's argument is dropped at load, in silence —
-;;; **W29**, regression `fact-arg` (`corpus/regressions.toml`),
+;;; regression `fact-arg` (`corpus/regressions.toml`),
 ;;; under Q-M1e2.22.
 ;;;
 ;;;

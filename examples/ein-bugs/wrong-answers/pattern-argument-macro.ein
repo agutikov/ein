@@ -1,5 +1,5 @@
 ;;; A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires —
-;;; **W83**, regression `pattern-argument-macro`.
+;;; regression `pattern-argument-macro`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 ;;; `open` written as a pattern's relation inside a query's goal loads, as a
-;;; relation — **W70**, regression `goal-pattern-head`.
+;;; relation — regression `goal-pattern-head`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
