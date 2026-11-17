@@ -1,9 +1,9 @@
-;; One short name bound to two full names in one file is refused (M1f
-;; S1f.6.35, Q-M1f.234, the user: "if it happens in the same file - it's an
-;; error, not correct ein code, just like ordinary namespaces"): the program
-;; lists std.closure's `infer-closure` and declares its own. Until then a
-;; flat import shared a name, and a same-name declaration with a different
-;; body was refused as *conflicting definitions*.
+;; One short name bound to two full names in one file is refused
+;; (Q-M1f.234): in one file it is an error, as in any language with
+;; namespaces. The program lists std.closure's `infer-closure` and declares
+;; its own, so `infer-closure` would name two declarations; the loader
+;; refuses it at the import, naming both full names, and says to write the
+;; other by its full name.
 
 (import std.closure :symbols (infer-closure))
 (rule infer-closure () :match (foo ?x) :assert (bar ?x) :why "w")

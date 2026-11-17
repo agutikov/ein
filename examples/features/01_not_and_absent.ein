@@ -1,16 +1,16 @@
 ;;; Ein — feature demo
 ;;;
-;;; S1.5.8c K-Δ.1 + K-Δ.2 — `(not P)` and `(absent P)` in :match.
+;;; `(not P)` and `(absent P)` in :match.
 ;;;
-;;; Before S1.5.8c, `(not P)` inside :match meant negation-as-failure
-;;; — the premise passed when no fact matching P was in the KB. This
-;;; was asymmetric with `:assert (not P)`, which has always stored
-;;; a literal `(not P)` fact in the KB.
+;;; `(not P)` is the FACT shape — a stored fact whose head is `not` and
+;;; whose nested arg is P — and it means the same thing in :match and
+;;; :assert: `:assert (not P)` stores it, and `:match (not P)` finds it
+;;; stored.
 ;;;
-;;; After S1.5.8c the two are symmetric: `(not P)` is the FACT shape
-;;; — a stored fact whose head is `not` and whose nested arg is P. It
-;;; means the same thing in :match and :assert. NAF moved to the
-;;; explicit `(absent P)` premise.
+;;; `(absent P)` is negation as failure: the premise passes when no fact
+;;; matching P is in the KB. It is written explicitly, and `(not P)` in a
+;;; :match never means it: a premise that reads the KB's silence says
+;;; so.
 ;;;
 ;;; This demo exercises both forms on the same KB so the contrast is
 ;;; visible:

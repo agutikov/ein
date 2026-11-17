@@ -1,24 +1,24 @@
-;;; P1.5 demo 9 — hrule-driven generation (S1.5.6b T1.5.6b.2).
+;;; Branching demo 9 — hrule-driven generation.
 ;;;
-;;; By default `hypgen` is a blind combinatorial enumerator. Here a
-;;; *hypothesis rule* takes over: `guess-co-located` is declared
-;;; with `(hrule …)` — the same shape as `(rule …)`, but it loads
-;;; into `kb.hrules`, not `kb.rules`. Its conclusions are routed to
-;;; the hypothesis loop as *candidates*; the saturator and the
-;;; one-step lookahead never see it (an hrule's `:assert` is a
-;;; speculation, not an entailment).
+;;; With no hrule, H comes from the blind combinatorial enumerator. Here
+;;; a *hypothesis rule* takes over: `guess-co-located` is declared
+;;; with `(hrule …)` — the same shape as `(rule …)`, but its
+;;; conclusions are routed to the hypothesis layer as *candidates*,
+;;; and saturation never fires it: an hrule's `:assert` is a
+;;; speculation, not an entailment, which a commitment may add and
+;;; nothing derives.
 ;;;
-;;; Declaring any hrule switches the blind enumerator off — every
-;;; candidate the solver tries comes from a hrule. `bench_solve
-;;; --hyp-stats` shows the root candidates are exactly the hrule's
-;;; (Color, House) pairs.
+;;; Declaring an hrule takes the blind enumerator's place — H is built
+;;; by the hrules' rung, and every candidate comes from an hrule. `ein
+;;; show hyps` lists exactly the hrule's (Color, House) pairs that root
+;;; does not already hold, seven of them.
 ;;;
 ;;; This basic hrule reproduces the enumerator's `co-located`
 ;;; candidates — the point is the *mechanism*. A smarter hrule
 ;;; could exploit puzzle structure the blind enumerator cannot
 ;;; express (e.g. guess only for the most-constrained object).
 ;;;
-;;; verdict Solution, ?h = H3.
+;;; R is ∅ and {(co-located Blue H3)}: ?h = H3 in its one maximal state.
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
@@ -41,8 +41,8 @@
   :why    "{?R} not functional")
 
 ;; ── The hypothesis rule. Every (Color, House) pair is a
-;; ── co-located candidate. `hrule` loads it into kb.hrules —
-;; ── the saturator and lookahead never see it; hypgen runs it.
+;; ── co-located candidate. Saturation never fires an `hrule`;
+;; ── the hypothesis layer runs it to build H.
 (hrule guess (?R ?T1 ?T2)
   :match  (and (is-a ?x1 ?T1) (is-a ?x2 ?T2))
   :assert (?R ?x1 ?x2)

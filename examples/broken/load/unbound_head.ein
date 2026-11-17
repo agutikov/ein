@@ -1,16 +1,16 @@
-; S1a.3.1 — an unbound relation head in a `:match` premise.
+; An unbound relation head in a `:match` premise.
 ;
-; `?R` is not a parameter, so the activator cannot bind it, and M1 matches
-; relations per activator (Q29). Until S1.22.0 the relation compiler returned
-; no steps here — dropping the premise. The plan's only premise gone, `steps`
-; is empty, and the matcher reads an empty step list as one VACUOUS match, so
-; the rule fired unconditionally and stored its conclusion.
+; `?R` is not a parameter, so the activator cannot bind it, and a rule
+; compiles once per activator (Q29). Compiled anyway, the premise would give
+; no steps — the plan's only premise gone, `steps` empty, and the matcher
+; reads an empty step list as one VACUOUS match — so the rule would fire
+; unconditionally and store its conclusion.
 ;
-; Compile-negative until M1e2 S1e2.2.24 (W24, the stage's default 1): the
-; compiler refused the head with a CompileError in the Python IR's spelling,
-; `unbound relation head ?R in a premise of SForm(…)`. Since then the loader
-; refuses a relation variable no parameter binds, at the top level as inside a
-; pattern, and this file moved here from `examples/broken/compile/`.
+; The loader refuses a relation variable no parameter binds, at the top
+; level as inside a pattern, before any rule is compiled (register case W24:
+; a rule shape that reads nothing, in silence). A relation is named by a name
+; or by a parameter its activator binds.
+;
 (relation p Thing :why "p holds of {?1}")
 
 (rule uses-free-head (?S)

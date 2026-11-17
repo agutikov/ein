@@ -1,9 +1,9 @@
-; M1e S1e.2.1 — `CO-H2` route 4 of 4, and the fourth route the finding did not
-; name: `:as`.
+; `open`, a reserved name, declared in a module imported `:as` — route 4 of 4
+; of `reserved_open_direct.ein`'s declaration.
 ;
-; The stage that fixed `CO-H2` was told to "check as you go whether any *other*
-; declarator route exists — the finding names three, and the loader is where a
-; fourth would hide". It was here: `:as` takes the same `qualify()` path as a
-; plain `(import mod)` with a different prefix, so it had the same hole, and a
-; fixture set covering only the three named routes would have left it unpinned.
+; `:as` gives the module's names a prefix of its own, as a plain
+; `(import mod)` gives them the module's name, and a reserved name is never
+; given either: it keeps its spelling, so the module's `(macro open …)` is
+; refused at its own line in the module, the error this import reports. The
+; four routes are one declaration reached four ways, and refused alike.
 (import reserved_open_direct :as m)

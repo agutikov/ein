@@ -1,4 +1,4 @@
-;; `(relation)` with no name — an empty signature is legal since
-;; S1.22.4, a missing NAME is not.
+;; `(relation)` with no name — an empty signature is legal, a missing NAME
+;; is not.
 
 (relation)

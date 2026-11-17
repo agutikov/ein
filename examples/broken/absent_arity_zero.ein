@@ -1,15 +1,15 @@
-; M1e S1e.2.1 — `(absent)` with nothing to be absent.
+; `(absent)` with nothing to be absent.
 ;
-; The sibling `empty_absent.ein` is `(absent ?x)`, whose sub-plan compiles to
-; no steps and which has had a *CompileError* naming that exact hazard since
-; S1.22.0 — "the guard would fail against every KB and its candidates would be
-; retired permanently". With no argument at all the same thing happened and
-; nothing said so: `absent` fell through to the ordinary relation path, matched
-; the empty extent of a relation nobody declared, and retired the rule for the
-; run in silence.
+; The sibling `empty_absent.ein` is `(absent ?x)`, a guard over no premise:
+; it would fail against every KB, and its candidates would be retired
+; permanently. With no argument at all the hazard is the same: read as an
+; ordinary relation, `absent` would match the empty extent of a relation
+; nobody declared and retire the rule for the run in silence. The grammar
+; refuses it at the parse, at the closing parenthesis (Q-M1e.18: `absent`
+; reads exactly one premise).
 ;
-; So the two files are one hazard at two arities, and only one of them was
-; refused.
+; So the two files are one hazard at two arities, and both are refused at
+; the parse.
 (relation p T)
 (relation q T)
 

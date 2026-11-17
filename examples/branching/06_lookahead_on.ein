@@ -1,8 +1,9 @@
-;;; P1.5 demo 6 — one-step lookahead (S1.5.6): ENABLED.
+;;; Branching demo 6 — one of a pair with `07_lookahead_off.ein`.
 ;;;
-;;; The ENABLED half of an on/off pair. 06_lookahead_on.ein and
-;;; 07_lookahead_off.ein are byte-identical except for the single
-;;; `(config …)` line below — diff the two files to see it.
+;;; 06_lookahead_on.ein and 07_lookahead_off.ein are the same program, byte
+;;; for byte outside their comments, and the witnesses of register rows
+;;; C1/branching-06 and W1/branching-07: no flag tells them apart, since no
+;;; flag changes R (docs/ein/user/reference/config.md § 2.5).
 ;;;
 ;;; The puzzle: five colours, five houses, four colours anchored.
 ;;; Blue is the lone unanchored colour and must take the one free
@@ -16,75 +17,74 @@
 ;;;   ⇒ transitive ⇒ (co-located Blue Ck)
 ;;;
 ;;; and `(not (co-located Blue Ck))` was already derived by
-;;; `sibling-exclusive` (Blue and Ck are both Colours). The lookahead
-;;; sees that collision and drops the candidate.
+;;; `sibling-exclusive` (Blue and Ck are both Colours). Each doomed
+;;; candidate dies alone, and how many firings its death takes moves
+;;; nothing in R.
 ;;;
-;;; With the lookahead ON (this file) those four candidates never
-;;; fork — the search tree collapses to the lone surviving placement.
-;;; With it OFF (07_lookahead_off.ein) each doomed colour forks,
-;;; saturates, and dies as its own branch, so the tree is an order of
-;;; magnitude larger.
+;;; `co-located` relates a Color to a House, `(relation co-located Color
+;;; House)`, as `04_two_levels.ein`'s signature does. A name a relation
+;;; signature declares is no candidate object, so the blind enumerator
+;;; guesses over the ten leaves alone: H is 132 candidates (42 of
+;;; co-located, 90 of is-a), 130 of them dead alone, and R is two states
+;;; over four commitments, ∅ and the state three commitments reach,
+;;; {(co-located Blue H5)} with its mirror: Blue in the one free house,
+;;; ?h = H5, as derived above. `ein solve --maximal` lists that one state,
+;;; and `--single` says Ambiguity because ∅ is in R too. No `types` row:
+;;; nothing H proposes names a type.
 ;;;
-;;; ~~Same verdict (Solution) and the same binding (?h = H5) either
-;;; way — only the node count differs. Measured: ON (06) = 2 tree
-;;; nodes; OFF (07) = 82 (80 dead branches).~~ **That was P1.5, and it
-;;; is no longer true** (re-measured 2026-08-20, M1a S1a.6.7, with
-;;; `ein solve <file>` and `ein solve <file> -e`):
 ;;;
-;;;     ON  (06)  fast: Solution  k=1   67 enterings
-;;;               -e:   Ambiguity k=22  5173 enterings
-;;;     OFF (07)  fast: Contradiction k=0  11501 enterings
-;;;               -e:   Contradiction k=0  11501 enterings
 ;;;
-;;; The lever changes the VERDICT, not just the node count, because
-;;; `hypgen::complete` asks the hypothesis
-;;; generator whether anything is undecided — and the generator's
-;;; candidate list is itself lookahead-filtered. A doomed candidate is
-;;; *decided* with the lookahead on and *open* with it off, so a KB
-;;; whose only survivors are doomed is a solution node in the first
-;;; case and no model at all in the second. See
-;;; docs/kernel/inference/features.md and plans/followups/
-;;; f4_cross_cutting.md Q40.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
-;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; With `(relation co-located T T)` the program would be under-specified
+;; (Q-M1e.12): it admits `(co-located Blue Color)`, the engine does what the
+;; signature says, and the blind enumerator, which is untyped, binds the
+;; names on the right of an is-a as objects. On that shape the read-out
+;; prints a `types` row under `universe`
+;; (`ein solve examples/branching/02_one_dead_one_alive.ein` is one).
 ;;
-;; **No lever changes the answer** (the user's ruling of 2026-10-15,
-;; docs/ein/user/reference/config.md § 2.5), so the verdicts measured above for the
-;; two halves were the walk's, and the OFF half's `Contradiction` was wrong:
-;; register row W1/branching-07, confirmed at the revisit (M1e2 S1e2.1.7,
-;; 2026-11-03). Since the line above went, 06 and 07 are one program, and
-;; their answer is R: 22 maximal states of k_s = 74, which `ein solve
-;; --maximal` reports. That every one of them places a colour in a *type*
-;; (`Color`, `House`) is C1's question, Q-M1e.12.
+;; `ein solve` on this file prints, among its rows:
 ;;
-;; **Not wrong** (register row C1/branching-06, the user's ruling of
-;; 2026-11-03, Q-M1e.12 (a)): this program is under-specified.
-;; `(relation co-located T T)` admits `(co-located Blue Color)`, and the engine
-;; does what the signature says. M1e2 S1e2.2.10 retypes the relation here and
-;; in 07, as `04_two_levels.ein`'s S1.7.23 signature does, and warns when an
-;; untyped rung binds a type as an object.
+;;   states (k_s)      2
+;;   commitments (k_c) 4
+;;   ∅                 in R — root is alive and owes nothing
+;;   maximal line      1 state
+;;   merged            1 state reached by more than one commitment, with 2 minimal
+;;   lattice           monotone (the static check) — R is convex: no hole
+;;   universe          132 candidates, 130 dead alone
 ;;
-;; **Retyped 2026-11-04 by M1e2 S1e2.2.10**, on that ruling: `co-located`
-;; relates a Color to a House, `(relation co-located Color House)`, as
-;; 04_two_levels.ein's signature does, where it was `(relation co-located T
-;; T)`. A name a relation signature declares is no candidate object, so the
-;; blind enumerator guesses over the ten leaves alone: H is 132 candidates
-;; (42 of co-located, 90 of is-a), 130 of them dead alone, and R is two
-;; states over four commitments, ∅ and the state three commitments reach,
-;; {(co-located Blue H5)} with its mirror: Blue in the one free house, ?h =
-;; H5, as derived above. `ein solve --maximal` lists that one state, and
-;; `--single` says Ambiguity because ∅ is in R too. No `types` row: nothing H
-;; proposes names a type.
+;; Every candidate but Blue's placement in H5 and its mirror dies alone. R's
+;; four commitments are ∅ and the three that reach its second state: the two
+;; mirrors of that placement, each minimal, and the two together. The query
+;; answers ?h = H5 in that state; in ∅, which places Blue nowhere, the goal
+;; has no row.
 ;;
-;; Every count above this section is the untyped program's, the file at
-;; 86df5456 and before: H was 204 candidates, 72 of them naming Color or
-;; House, R 74 states, and its maximal line 22, each binding a colour to a
-;; type. On that shape every read-out now prints a `types` row under
-;; `universe` (`ein solve examples/branching/02_one_dead_one_alive.ein` is
-;; one): the names on the right of an is-a that the blind enumerator, which
-;; is untyped, binds as objects because no signature names them.
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

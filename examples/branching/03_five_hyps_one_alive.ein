@@ -1,4 +1,4 @@
-;;; P1.5 demo 3/5 — wider branching: five candidate houses, four
+;;; Branching demo 3 of 5 — wider branching: five candidate houses, four
 ;;; eliminated by anchored siblings.
 ;;;
 ;;; Five colors, five houses; four colors anchored to H1..H4. The
@@ -20,9 +20,9 @@
 ;;; rule prunes the secondary stream of (is-a X Y) hypotheses the
 ;;; generator emits for under-constrained slot-1 enumeration.
 ;;;
-;;; Expected shape (approximate):
-;;;   verdict   Ambiguity (~2 solution branches; symmetric duplicates)
-;;;   depth     1
+;;; Expected:
+;;;   R         2 states: ∅, and White in H5 with its mirror
+;;;   maximal   1 state, the placement and its mirror together
 ;;;   binding   ?h=H5
 
 (rule symmetric (?rel)
@@ -46,7 +46,7 @@
   :why    "{?R} not functional")
 
 (relation is-a       T T :why "{?1} is a {?2}")
-;; S1.7.23 — `co-located` relates a Color to a House; the typed
+;; `co-located` relates a Color to a House; the typed
 ;; signature lets hypgen's name-free candidate set exclude the type
 ;; atoms (`Color`/`House`/`T`) so only leaf instances are guessed
 ;; (no kernel `is-a` read; signature is object-selection metadata).

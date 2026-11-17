@@ -1,5 +1,5 @@
-;; …and a well-known key with an ill-typed value. The key was
-;; `:warn-derived-naf` until M1e2 S1e2.2.5 retired it.
+;; …and a well-known key with an ill-typed value: `:lattice-sanity-check`
+;; takes `true` or `false`, and `maybe` is refused at the parse.
 
 (relation r T T)
 (config :lattice-sanity-check maybe)

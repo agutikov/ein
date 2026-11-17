@@ -1,10 +1,10 @@
 ;;; Ein — feature demo
 ;;;
-;;; S1.5.8c T1.5.8c.4 — the M1-blocking stdlib rules.
+;;; The elimination stdlib rules, `std.elim`.
 ;;;
 ;;; Four parameterised rules, each carrying the relation, the
 ;;; instance-type relation `?isa`, and its argument type(s) as
-;;; activator args (P1.8 S1.8.A10 — the hierarchy relation is a
+;;; activator args (the hierarchy relation is a
 ;;; parameter, not a hardcoded `is-a`, so the rule bodies stay
 ;;; is-a-free):
 ;;;
@@ -23,7 +23,7 @@
 ;;; the survivor. House-3 has no facts so all three colors stay
 ;;; open.
 
-;; ── Stdlib rules: imported from the `std.elim` module (P1.8 S1.8.A8).
+;; ── Stdlib rules: imported from the `std.elim` module.
 ;; ── They are generic (parametrised over a relation), so they are imported
 ;; ── FLAT (`:symbols`) to keep the bare names the activator facts below
 ;; ── reference; their `forall` dependency comes from std.macro.
@@ -43,7 +43,7 @@
 
 ;; ── Stdlib rule activators: opt color-of into all four rules. The 2nd arg
 ;; ── names the instance-type relation (here `is-a`); the rules read it as
-;; ── their `?isa` parameter instead of hardcoding it (S1.8.A10 — is-a-free body).
+;; ── their `?isa` parameter instead of hardcoding it (an is-a-free body).
 (typecheck-arg-0   color-of is-a House)
 (typecheck-arg-1   color-of is-a Color)
 (domain-elimination color-of is-a House Color)
@@ -72,15 +72,15 @@
 ;; The result fact is derived, carrying the four negative facts + the
 ;; Yellow is-a as its provenance premises.
 
-;; ── `is-a` is closed (M1e2 S1e2.2.5, 2026-11-04). `typecheck-arg-0`,
+;; ── `is-a` is out of the hypotheses. `typecheck-arg-0`,
 ;; ── `typecheck-arg-1` and `no-room-left` conclude (false) from an (absent …)
-;; ── over `is-a`, and with `is-a` open the blind enumerator proposes
+;; ── over `is-a`, and with `is-a` open the blind enumerator would propose
 ;; ── membership between two objects, `(is-a Red House-1)`: a relation a
-;; ── commitment can extend, which *forbid* (ruled 2026-11-02) refuses. The
+;; ── commitment can extend, which *forbid* refuses (Q-M1e2.5). The
 ;; ── hierarchy is given in full above and no commitment is meant to extend it,
-;; ── so the program says so, as its four tests/stdlib/elim/ siblings do. R was
-;; ── 7 176 states and counting (2^56, past the oracle's limit); it is 32 states
-;; ── over 26 color-of candidates, exact.
+;; ── so the program says so. R is 32 states, exact: `ein solve` describes it
+;; ── whole.
+;; ──
 (solve :no-hypothesis (is-a))
 
 

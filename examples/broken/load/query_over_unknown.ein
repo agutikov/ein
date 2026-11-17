@@ -1,6 +1,6 @@
-;; M1e2 S1e2.1a.5: a query's `:over` names which states of R it asks about —
-;; `all` (the default), `minimal` or `maximal`, and nothing else. A component,
-;; or any other subset, is not a value (`query.md`, question 6).
+;; A query's `:over` names which states of R it asks about — `all` (the
+;; default), `minimal` or `maximal`, and nothing else. A component, or any
+;; other subset, is not a value (docs/ein/user/syntax-and-semantics/query.md).
 
 (relation p Thing Place :why "p holds of {?1} and {?2}")
 (p A H1)

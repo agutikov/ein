@@ -1,13 +1,13 @@
 ;;; Ein — feature demo
 ;;;
-;;; S1.5.8c T1.5.8c.3a — `(forall ?b (G) (B))` parser sugar.
+;;; `(forall ?b (G) (B))`, a pattern macro of `std.macro`.
 ;;;
-;;; `forall ?b (G) (B)` desugars at compile time to
+;;; `forall ?b (G) (B)` expands, where a rule uses it, to
 ;;;
 ;;;     (absent (and G (absent B)))
 ;;;
 ;;; — the classical ∀x. G(x) → B(x) ≡ ¬∃x. G(x) ∧ ¬B(x) reduction.
-;;; The matcher sees only the desugared form; no new opcode is
+;;; The matcher sees only the expanded form; no new opcode is
 ;;; added to the kernel.
 ;;;
 ;;; Safety: the bound `?b` must appear in the guard `G`. The
@@ -21,7 +21,7 @@
 ;;; remains unbeaten by Carol).
 
 
-;; stdlib pattern-macro sugar — forall/unknown from the std.macro module (S1.8.A5).
+;; stdlib pattern-macro sugar — forall/unknown from the std.macro module.
 (import std.macro :symbols (forall unknown))
 
 (rule undefeated ()

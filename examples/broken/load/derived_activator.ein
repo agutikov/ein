@@ -1,15 +1,15 @@
-;;; M1f S1f.5.18 — G-14's derived activator: a rule derives an activator that
-;;; binds a relation parameter to a fact (S1f.5.5's probe
-;;; `g14/derived-activator.ein`, `:why`s added; register row
-;;; `W59/derived-activator`).
+;;; A derived activator: a rule derives an activator that binds a relation
+;;; parameter to a fact, and the loader refuses the program for it. The
+;;; witness of register row `W59/derived-activator`; its twin, where no run
+;;; derives the activator, is `derived_activator_never.ein`.
 ;;;
 ;;; `r`'s parameter `?R` names a relation, `(box (?R b))`, and `mk` derives
 ;;; `r`'s activator from `item`'s argument, which a declared relation's
 ;;; argument is: any value, a fact among them. `(item (a b))` makes `mk`
-;;; derive `(r (a b))`. Until S1f.5.18 the program loaded and every command
-;;; stopped where `r`'s plan was compiled, W24's `CompileError`; since, the
-;;; loader refuses it (the user's ruling of 2026-11-08 on Q-M1f.1 (b),
-;;; Q-M1f.41).
+;;; derive `(r (a b))`, which names a relation by a fact, and a fact names
+;;; none. The loader refuses the program, on every command, with one line
+;;; naming `mk`, its conclusion and the premise that can bind `?f` to a fact
+;;; (Q-M1f.1, Q-M1f.41).
 (relation box Node :why "{?1} is in the box")
 (relation hit Node :why "{?1} is hit")
 (relation item Node :why "{?1} is an item")

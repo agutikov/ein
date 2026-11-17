@@ -1,4 +1,4 @@
-;;; Ein — feature demo (regression, 2026-08-20)
+;;; Ein — feature demo (regression)
 ;;;
 ;;; **An `adjacent-via` constraint is not satisfied from the same house.**
 ;;;
@@ -7,25 +7,25 @@
 ;;; from `right-of` by `symmetric` + `includes`, and no house is right-of
 ;;; itself), so V1 and V2 in ONE house must be a contradiction.
 ;;;
-;;; It was not. `disjunctive-prune-{fwd,bwd}` in `examples/zebra2.ein` carried
-;;; a `(neq ?h_other ?h1)` premise that exempted `h_other = h1` from the
-;;; exclusion — redundant where ?S is reflexive, wrong where it is not, and it
-;;; silently skipped the one case it should have caught. The determinate
-;;; puzzles never showed it: condition (6) is colour↔colour, where
+;;; A `(neq ?h_other ?h1)` premise in `disjunctive-prune-{fwd,bwd}` would undo
+;;; that (`examples/zebra2.ein`'s pruners carry none): it exempts
+;;; `h_other = h1` from the exclusion — redundant where ?S is reflexive, wrong
+;;; where it is not, and it skips the one case it should catch. The
+;;; determinate puzzle would not show it: condition (6) is colour↔colour, where
 ;;; functional/injective already forbid two values in one house, and (11) /
 ;;; (12) / (15) are cross-attribute but over-constrained. `zebra2-minus-15.ein`
-;;; showed it — under-determined, the exhaustive search reported **55** models
-;;; where the puzzle has **32**, and 23 of the extra ones put Chesterfields
-;;; with the Fox or Kools with the Horse.
+;;; would — under-determined, its R would have **55** states where the puzzle
+;;; has **32**, and 23 of the extra ones would put Chesterfields with the Fox
+;;; or Kools with the Horse.
 ;;;
 ;;; This is the smallest thing that reproduces it: three houses, two attribute
 ;;; kinds, one `next-to` constraint between them, and both values placed in
 ;;; House-2.
 ;;;
-;;; Expected: **Contradiction**, at root, 0 enterings. Put the guard back and
-;;; this file answers **Ambiguity, k = 4** in 10 enterings instead — Red and
-;;; the Fox sharing House-2 is one of the four. That flip is the regression
-;;; this fixture exists to fail on.
+;;; Expected: **Contradiction** — root's own fixpoint derives (false), R is
+;;; empty. Put the guard back and R is 9 states, its maximal line 4, and
+;;; `--single` says **Ambiguity**, Red and the Fox sharing House-2 in each.
+;;; That flip is the regression this fixture exists to fail on.
 ;;;
 ;;; The `adjacent-via` machinery below is copied from `examples/zebra2.ein`
 ;;; (it is puzzle-level, not stdlib) and must track it.

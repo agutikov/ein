@@ -1,9 +1,9 @@
-;;; S1.21.8 D3 / M1a S1a.4.1 — a guard the lookahead cannot judge pre-fork.
+;;; A guard with an `absent` three deep: a refusal fixture.
 ;;;
-;;; The companion to 13_lookahead_naf_world.ein. That file is the case the
-;;; lookahead *can* decide in the world `kb` plus `h`: the guard reads the
-;;; candidate's own relation as a positive premise, so re-running it seeded
-;;; at `h` answers exactly. This file is the case it **cannot**.
+;;; The companion to 13_lookahead_naf_world.ein: both rules conclude
+;;; (false) from an `absent` over a relation the blind enumerator
+;;; proposes, and both are refused for it. That file's `absent` is at
+;;; depth 1; the one that matters here is at depth 3.
 ;;;
 ;;; `premature-signoff`'s guard nests one absent inside another. Read from
 ;;; the inside out:
@@ -17,49 +17,49 @@
 ;;; and it is a contradiction.
 ;;;
 ;;; A nested absent is **non-monotone**: adding a fact can make the inner
-;;; absent fail, which makes the outer one *pass*, which adds a match the
-;;; two cheap checks cannot see. Here `(signed B)` is exactly such a fact —
-;;; it makes B review-clear, so the guard fails and the rule does not fire —
-;;; yet `kb` alone has no review-clear pending item, and `(signed B)` is not
-;;; a positive premise of the guard's query, so seeding it finds nothing
-;;; either. Judged by those two checks the guard "passes", the simulation
-;;; derives `(false)`, and a live hypothesis is killed.
+;;; absent fail, which makes the outer one *pass*. Here `(signed B)` is
+;;; exactly such a fact — it makes B review-clear, so the guard fails and
+;;; the rule does not fire — while `kb` without it has no review-clear
+;;; pending item, and `(signed B)` is not a positive premise of the
+;;; guard's query: the guard cannot be judged before `(signed B)` is in
+;;; the world it reads.
 ;;;
-;;; The lookahead therefore refuses to judge a disjunct whose guards contain
-;;; a nested absent and skips it. That only ever loses a kill — the branch
-;;; forks and dies normally — which is the safe direction for a filter whose
-;;; contract is that it may never report a live hypothesis as dead.
+;;; The depth is the point, and the file cannot be simplified to a
+;;; `forall`. At **one** level of nesting a blocked binding stays
+;;; blocked, because the inner query is positive and adding a fact can
+;;; only give it more matches. It takes **two** levels for the flip to
+;;; reach the outer absent.
 ;;;
-;;; The depth is the point, and the file cannot be simplified to a `forall`.
-;;; At **one** level of nesting the two cheap checks are already exact — a
-;;; blocked binding stays blocked, because the inner query is positive and
-;;; adding a fact can only give it more matches — so the skip is inert and a
-;;; `forall`-shaped fixture would pass either way. It takes **two** levels
-;;; for the flip to reach the outer absent.
+;;; `signed` is a relation a commitment can still extend: `auto-sign`
+;;; concludes it, and the blind enumerator proposes `(signed B)`. Without
+;;; `premature-signoff`, R is three states — ∅, {(signed B)} and the
+;;; maximal state two commitments reach — with ?x = B where B is signed.
 ;;;
-;;; And the kill does not merely skip a branch: it is cached as
-;;; `(not (signed B))` in the root, so `auto-sign`'s later derivation of
-;;; `(signed B)` dies against it, every branch dies, and the verdict flips.
 ;;;
-;;; Measured with `ein solve -e -s`, 2026-08-18:
 ;;;
-;;;   as shipped                          Solution, ?x = B, 2 enterings
-;;;   nested guard judged eagerly         Contradiction, k = 0, 0 enterings
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
-;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; ── A refusal fixture ────────────────────────────────────────────────────
+;; `premature-signoff` concludes (false) from an (absent …) over `signed`,
+;; the shape *forbid* rules out (Q-M1e2.5), so every question about a
+;; commitment (`ein solve`, `ein render lattice`) exits 1 naming it, and
+;; `ein saturate` still saturates. It shows a refusal no witness does: the
+;; `absent` that matters is at depth 3, and odd depth is what the check
+;; reads as non-monotone, however deep. Deleting the rule keeps R, three
+;; states, and leaves a file about nothing. The refusal names its repairs:
+;; `(solve :no-hypothesis (signed))`, if no commitment is meant to extend
+;; `signed`; a requirement stated as a decision or an obligation; or a
+;; conclusion from a stored negative, `(not …)`.
 ;;
-;; ── 2026-11-04 — a refusal fixture (M1e2 S1e2.2.5) ──────────────────────
-;; `premature-signoff` concludes (false) from an (absent …) over a relation the blind
-;; generator proposes, the shape *forbid* rules out (2026-11-02), so every
-;; question about a commitment (`ein solve`, `ein render lattice`) exits 1
-;; naming it, and `ein saturate` still saturates. The lookahead this file was
-;; written for left with the walk. It stays as written because it shows a
-;; refusal no witness does: the `absent` that matters is at depth 3, and odd
-;; depth is what the check reads as non-monotone, however deep. Deleting the
-;; rule keeps R, three states (M1e2 S1e2.4.1 § 2.1), and leaves a file about
-;; nothing.
+;; The file sets no `(config …)`: every flag has its default.
+;;
 
 (relation pending      T :why "{?1} is pending")
 (relation needs-review T :why "{?1} needs review")
