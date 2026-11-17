@@ -15,8 +15,7 @@ reports each finding as `file:line: rule N: what`.
 | 5 | a diagram drawn in characters: a fenced block that is not `dot` or `plantuml` and holds box-drawing corners, junctions or verticals, an arrow of dashes (`-->`, `<--`), a `+--` corner, or, in a block with no language or `text`, a line that is only a connector (`|`, `v`, `^`) or one that chains two or more arrows (`a ← b ← c`) | `docs/ein/` |
 | 6 | with `--plantuml`: a fenced `plantuml` block with no `@start…` line, or one PlantUML does not draw (no SVG, or the words *Syntax error* in it) | `docs/ein/`, `docs/decisions/` |
 
-    python3 utils/check_doc_blocks.py                # the gate's form: rules 1 and 2, exit 1 on a finding
-    python3 utils/check_doc_blocks.py --all          # rules 1 to 5
+    python3 utils/check_doc_blocks.py                # the gate's form: rules 1 to 5, exit 1 on a finding
     python3 utils/check_doc_blocks.py --plantuml     # rule 6 as well (the dev host's: needs a PlantUML that knows @startebnf)
     python3 utils/check_doc_blocks.py --list         # every finding of rules 1 to 5, exit 0
     python3 utils/check_doc_blocks.py --list --rule 3 --rule 4 docs/ein/reasoning
@@ -97,7 +96,6 @@ NUMBERED = ("docs/ein/user", "docs/ein/reasoning", "docs/ein/ein.rs", "docs/ein/
 UNNUMBERED = ("README.md", "diagrams")
 NAME = re.compile(r"(\d\d)-[a-z0-9]+(?:[.-][a-z0-9]+)*")
 
-GATE_RULES = (1, 2)
 ALL_RULES = (1, 2, 3, 4, 5)
 
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})([^`]*)$")
@@ -359,7 +357,7 @@ def perspective(rel: str) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--all", action="store_true", help="rules 1 to 5 (default: 1 and 2)")
+    ap.add_argument("--all", action="store_true", help="rules 1 to 5, which is the default; kept so an older command line still runs")
     ap.add_argument("--plantuml", action="store_true",
                     help="rule 6 as well: every `plantuml` block drawn by `plantuml -tsvg`")
     ap.add_argument("--rule", type=int, action="append", choices=range(1, 7), metavar="N",
@@ -374,10 +372,8 @@ def main() -> int:
 
     if args.rule:
         rules = tuple(sorted(set(args.rule)))
-    elif args.all or args.list or args.counts:
-        rules = ALL_RULES + ((6,) if args.plantuml else ())
     else:
-        rules = GATE_RULES + ((6,) if args.plantuml else ())
+        rules = ALL_RULES + ((6,) if args.plantuml else ())
 
     for rule, tool in ((1, "dot"), (6, "plantuml")):
         if rule in rules and shutil.which(tool) is None:

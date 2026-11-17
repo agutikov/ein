@@ -79,9 +79,11 @@
 #   check_tool_mirrors.py         the editor grammar, the natural-language
 #                                 census and the review driver against the
 #                                 lists of the engine they copy
-#   check_doc_blocks.py           every fenced `dot` block of a page through
-#                                 Graphviz, and the numbering of the pages
-#                                 and folders of `docs/ein/`
+#   check_doc_blocks.py           the pages' own rules: every fenced `dot`
+#                                 block through Graphviz, the numbering of
+#                                 `docs/ein/`, the languages of `reasoning/`,
+#                                 no formula in a text block, no diagram
+#                                 drawn in characters
 #   cargo fmt --all --check       three files were unformatted the first time
 #                                 it ran, all three from M1c's `:expect` work
 #   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four

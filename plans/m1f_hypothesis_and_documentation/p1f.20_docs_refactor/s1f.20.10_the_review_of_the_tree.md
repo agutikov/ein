@@ -317,3 +317,41 @@ sequence; `02-algorithms.md` as the page of the engine's algorithms, nine activi
 loop and a commitment's life as state machines, a fan-out batch, the `.einb` layout as records, the build; the
 `--events` stream of one run and its legal orders; the lattice dump. The three character-drawn diagrams are gone.
 Eight statements were corrected to the code. `overview/README.md` states no plan (L-53).
+
+**C3** (merge `0f607471`). The guide and the reference. `01-grammar.md`'s two generated regions are `ein.l` and
+`ein.y` as EBNF in `plantuml` blocks, nineteen diagrams, each group under a generated heading with a link to its
+file; the generator is `ein-ir/tests/grammar_pages.rs` (a production's alternatives, a left-recursive list as a
+repetition, a lexer rule's regular expression translated from the tree `regex-syntax` gives, a dev-dependency of
+`ein-ir` already in the lock), and a construct with no translation fails the test; Q-M1f.378. Start conditions
+and error names are a generated table. No drawing in characters is left in the guide or the reference: the rule
+and KB drawings are what `ein render` writes, the walkthrough's two grids what `--models grid` prints. Formulas
+are TeX; `08-read-out.md` states what its counts count. A declaration's argument names are labels throughout; the
+word *type* stays where a program uses it for itself and where the binary prints it.
+
+### Part E: the integration, and the gates
+
+**The integration lane** (merge of `ab1fc97d` to `84a585c6`). *One notation in `reasoning/`*: `N` and `E` are the
+minimal dead and the minimal discharging sets on every page, as the read-out prints them; the program's names
+are `names(P)`, its objects `obj(P)`; `K` is a knowledge base and `S` the state a saturation ends in; a rule is
+`(p̄, φ, ψ)`, a firing `ξ = (ρ, a, θ)`, an activator the fact `a`, a derivation `δ` in `J(f)`. `reasoning/README.md`
+§ Notation is the table of every symbol with the page that defines it, and a second table of each page's own
+letters. *One word*: a declaration's argument names are *labels* on every page, with Q-M1f.372 cited where a page
+says Ein has no types. *An algorithm is told once*: the routes' procedures, the tree's order, `--single` and the
+oracle are `02-algorithms.md` § 8's, and the pages of `08-reasoning-in-code/` name the code, the tests and the
+commands and link the flow. Four statements were corrected to the code or the binary: a monotone program's
+describe of a dead root takes the state route; `ein-ir` resolves imports before it expands macros; the order the
+rules fire in decides no answer only where no rule's `absent` reads what another rule waiting on an `absent`
+derives (`AGENTS.md`, the saturation contract, the rules page, the syntax reference, finding R, and the
+transformations' Propositions 2 and 3); a hypothesis rule's activators are those the program lists. The
+decisions' index lines, fifteen links to the standard library's reference aimed at a module's usage page, the
+two commands' documentation cited where it is (the binary's help too, `help_shape.txt` re-blessed), `AGENTS.md`
+and `utils/README.md` in place. Findings L-56 to L-75 of [`findings.md`](findings.md).
+
+**The coordinator** (`e0892c68` and the commit of this record). Two links followed what the reasoning shed, one
+through `utils/read_out_examples.py`. Rule 6 of `check_doc_blocks.py` draws each `plantuml` block and reads the
+drawing, since PlantUML's `-syntax` passes EBNF it then draws as a syntax error. **The gate step holds rules 1 to
+5** now that the pages do: the script's default, so no step list changed.
+
+**The checks on the merged tree**: `python3 utils/check_doc_blocks.py --plantuml`, 482 pages, 673 `dot` and 50
+`plantuml` blocks, rules 1 to 6 hold; `python3 utils/doc_audit.py --links --check --tracked`, 0 links and 0
+decision ids; `python3 utils/check_release_voice.py`, none; `python3 utils/check_gate_steps.py` passes.

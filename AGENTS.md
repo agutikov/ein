@@ -97,9 +97,9 @@ constrained-reasoning research.
   up in `ein.rs/crates/`: a report, never a gate, since a page that rightly
   says a name is gone still names it); the release-voice check;
   `utils/check_doc_blocks.py`, a gate step (every fenced `dot` block through
-  Graphviz and the numbering; `--all` adds the languages of `reasoning/`, no
-  formula in a `text` block and no diagram in characters, and `--plantuml`,
-  the dev host's, the `plantuml` blocks); and running
+  Graphviz, the numbering, the languages of `reasoning/`, no formula in a
+  `text` block and no diagram in characters; `--plantuml`, the dev host's,
+  draws the `plantuml` blocks too); and running
   the commands a page shows, which no script does and which finds the most.
 - **`docs/decisions/`** — **every question about Ein that has an answer, as
   that answer** ([`docs/decisions/README.md`](docs/decisions/README.md)): one
