@@ -1,6 +1,8 @@
 //! Hypothesis generation — the enumerator that proposes what to guess.
 //!
-//! **Three** modes since M1d S1d.2.5, and the switch is a ladder: rule-driven
+//! **Three** modes, and the switch is a ladder
+//! ([hypothesis-generation.md § 2](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#2-the-ladder)):
+//! rule-driven
 //! when the puzzle declares any `(hrule …)` ([`crate::hrule`]); otherwise
 //! obligation-driven where an obligation is **activated** at the state, a plan
 //! its activators compile ([`crate::oblgen`], which proposes what would pay
@@ -29,14 +31,14 @@
 //!   two candidates of one raw text. It is observable all the same: it is the
 //!   order the `hyp` events narrate a call in, under `--events`, and it
 //!   decides which repeat of a candidate `seen_in_call` counts.
-//! - **The kernel imposes no type system** (S1.7.23). The enumerator proposes
+//! - **The kernel imposes no type system.** The enumerator proposes
 //!   type-blind and the puzzle's own rules do the pruning; Rust code that
-//!   reaches for `is-a` here is reintroducing what that stage removed. The
+//!   reaches for `is-a` here would be a type system in the kernel. The
 //!   *signature* atoms are excluded, which is a different thing: a name a
-//!   puzzle declared as a type role, derived without naming `is-a`. Since M1e2
-//!   S1e2.2.10 [`crate::types_as_objects`] reads `is-a` by name, after this
-//!   pass and outside it, to say where the enumerator bound a type as an
-//!   object (Q-M1e.12 (a)): it decides nothing, and no candidate moves.
+//!   puzzle declared as a type role, derived without naming `is-a`.
+//!   [`crate::types_as_objects`] reads `is-a` by name, after this pass and
+//!   outside it, to say where the enumerator bound a type as an object
+//!   (Q-M1e.12): it decides nothing, and no candidate moves.
 //!
 //! ### What is free
 //!
@@ -46,8 +48,8 @@
 //! reject almost all of them are single bit tests on it
 //! ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
 //!
-//! design/07 calls this "intern-on-demand: probe, and only materialise on
-//! survival". The probe and the intern turned out to be *the same hash
+//! This is "intern-on-demand: probe, and only materialise on survival". The
+//! probe and the intern are *the same hash
 //! lookup* — `FactStore::intern` is `probe` plus a push on a miss — and the
 //! push is bounded by the distinct candidate space, not by the number of
 //! calls, so the split would buy a branch and cost the caller a second
@@ -67,15 +69,15 @@ use crate::hrule::Hrules;
 use crate::saturator::Session;
 
 /// The `(query …)` keyword restricting which relations the blind enumerator
-/// builds candidates for (S1.7.25). Reserved engine string.
+/// builds candidates for. Reserved engine string.
 pub const HYPOTHESIS_RELATIONS: &str = "hypothesis-relations";
 
-/// Its exclusion dual (S1.9.E3): relations never to guess on, while saturation
+/// Its exclusion dual: relations never to guess on, while saturation
 /// rules on them still fire. Reserved engine string.
 pub const NO_HYPOTHESIS: &str = "no-hypothesis";
 
-/// The `(solve …)` flag that states the lattice is root alone (M1f
-/// S1f.6.36): no rung runs, so no candidate is proposed whatever the program
+/// The `(solve …)` flag that states the lattice is root alone: no rung runs,
+/// so no candidate is proposed whatever the program
 /// also declares, and `R` is {∅} where root is alive and discharged, empty
 /// otherwise. Reserved engine string.
 pub const NO_SEARCH: &str = "no-search";
@@ -149,8 +151,8 @@ pub struct HypGenStats {
     pub emitted: u64,
     pub filtered: [u64; 3],
     pub pre_candidate: [u64; 4],
-    /// Which rung of the ladder this call took, and what it found owed — M1d
-    /// S1d.2.5. All zeros and [`crate::oblgen::Mode::Blind`] for a program
+    /// Which rung of the ladder this call took, and what it found owed. All
+    /// zeros and [`crate::oblgen::Mode::Blind`] for a program
     /// that declares no obligation rule, which is the shape every counter
     /// baseline was taken under.
     pub rung: crate::oblgen::RungReport,
@@ -176,7 +178,7 @@ impl HypGenStats {
     }
 }
 
-/// `(__closed__ R)` — the kernel's closed-relation marker (S1.7.25). A closed
+/// `(__closed__ R)` — the kernel's closed-relation marker. A closed
 /// relation contributes zero candidates; the generator does not care whether
 /// the fact was authored or derived by a rule (`std.closure`'s).
 pub const CLOSED: &str = ein_core::terms::CLOSED;
@@ -195,13 +197,10 @@ pub const CLOSED: &str = ein_core::terms::CLOSED;
 /// and it is what separates "one model" from "2ⁿ models" when the reading
 /// is open-world.
 ///
-/// Config-free since M1e2
-/// [S1e2.3.1](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md),
-/// the user's ruling of 2026-11-03: the count is taken outside H, and H is
-/// taken with no filter, so a count through a filter H's pass does not apply
-/// would not be comparable with it. Until then the pass ran the walk's
-/// one-step lookahead, and `zebra2`'s unique model left 3 678 where it leaves
-/// 8 203 now. It writes nothing but the interning of its candidates.
+/// Config-free: the count is taken outside H, and H is taken with no filter,
+/// so a count through a filter H's pass does not apply would not be
+/// comparable with it. It writes nothing but the interning of its
+/// candidates.
 pub fn generate_blind(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
@@ -304,7 +303,7 @@ fn generate_with(
         Rungs::Ladder => rung(s)?,
         Rungs::BlindOnly => Rung::Blind,
     };
-    // `(solve :no-search)` (M1f S1f.6.36): the program states that its
+    // `(solve :no-search)`: the program states that its
     // lattice is root alone, so no rung runs and nothing is proposed, whatever
     // hrules, obligations or lists it also declares. Before anything is
     // compiled, so the call narrates nothing.
@@ -320,7 +319,7 @@ fn generate_with(
 
     if rung == Rung::Hrules {
         // Rung 1 — the user's own generator, an override. `(hrule …)` presence
-        // *is* the switch, exactly as design/07 wrote it: a puzzle that says
+        // *is* the switch: a puzzle that says
         // what to guess is never second-guessed by what it owes.
         stats.rung.mode = crate::oblgen::Mode::Hrules;
         let hrules = Hrules::new(s)?;
@@ -347,7 +346,7 @@ fn generate_with(
         }
     }
 
-    // T1a.4.1.1 — hoisted out of the per-(object, relation, slot) fill, which
+    // Hoisted out of the per-(object, relation, slot) fill, which
     // would otherwise re-sort the names in each. Safe because the sequence
     // cannot change mid-call: the pass writes nothing to the KB, and
     // interning a candidate indexes no name.
@@ -432,7 +431,7 @@ fn apply_filters(
 /// The three pre-candidate relation skips run in this order because the order
 /// decides which counter a skip lands in; `slot_idx` then runs ascending.
 ///
-/// S1.7.23 — no type filter: `focal` fills *every* slot of every open
+/// No type filter: `focal` fills *every* slot of every open
 /// relation, type-blind. Type-wrong candidates are killed downstream by the
 /// puzzle's own contradiction rules, not by a kernel `is-a` walk.
 fn raw_candidates(
@@ -446,8 +445,8 @@ fn raw_candidates(
 ) -> Result<ControlFlow<()>, CompileError> {
     for &RelPlan { rel, arity, skip } in relations {
         // The verdict is per relation, the **counter** is per (focal,
-        // relation) — T1a.6.4.3 moves the first and leaves the second where
-        // it was, because `pre_candidate` and the `hypskip` stream are both
+        // relation) — the first is hoisted and the second stays per focal
+        // object, because `pre_candidate` and the `hypskip` stream are both
         // observable and both count once per focal object.
         if let Some(skip) = skip {
             stats.skip(skip);
@@ -510,14 +509,14 @@ fn relation_plan(
 
 /// Enumerate candidate-object fillers for `focal` at `fixed_slot`.
 ///
-/// S1.22.4 — arity 1: the candidate **is** `(R focal)`; no second slot to
+/// Arity 1: the candidate **is** `(R focal)`; no second slot to
 /// fill, so no filler loop and no self-edge check. Arity ≥ 3 is unenumerated.
 ///
-/// S1.7.24 — no symmetric mirror: the enumerator never consults `is_symmetric`
+/// No symmetric mirror: the enumerator never consults `is_symmetric`
 /// to emit `(R b a)`. Both orderings already arise via different focal
 /// objects; a puzzle wanting canonical pairs only declares an hrule.
 ///
-/// S1.5.4b — Filter B ("slot already used") is intentionally absent; its
+/// A filter on "slot already used" is intentionally absent; its
 /// narrower replacement is `fact_already_exists` downstream.
 #[allow(clippy::too_many_arguments)]
 fn fill_slot(
@@ -589,20 +588,19 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// the KB holds, and every name of the program
 /// ([`crate::invariant::program_names`]).
 ///
-/// **The second half is the seed.** M1e2 S1e2.2.4 seeded the pool with every
-/// constant a rule's `:assert` names — Q-M1e.21 (b), the user's ruling of
-/// 2026-10-16, *"rules are part of root, so rules can't assert new names"* —
-/// and S1e2.2.14 with every name of the program, on the user's ruling of
-/// 2026-11-04 on Q-M1e2.9, (a): a constant in a rule's `:match` too, and one a
-/// fact names only inside a nested fact, whose arguments `kb.names()` does not
-/// index (Q40). A constant only a `(query …)` names is not one. Until then the
-/// pool missed them, and `examples/ein-bugs/alive-set-fresh-name.ein` (W4),
-/// `wrong-answers/match-only.ein` and `negative-only.ein` (W15) lost their
-/// models to it. [`crate::invariant::program_names`] is the one list of the
+/// **The second half is the seed**: every name of the program (Q-M1e2.9), a
+/// constant a rule's `:assert` names among them — *rules are part of root,
+/// so rules can't assert new names* (Q-M1e.21) — a constant in a rule's
+/// `:match` too, and one a fact names only inside a nested fact, whose
+/// arguments `kb.names()` does not index (Q40). A constant only a
+/// `(query …)` names is not one. A pool without them would lose the models
+/// of `examples/ein-bugs/alive-set-fresh-name.ein` (`W4`),
+/// `wrong-answers/match-only.ein` and `negative-only.ein` (`W15`).
+/// [`crate::invariant::program_names`] is the one list of the
 /// program's names, so this reads it rather than walking the program a second
 /// way.
 ///
-/// A name-free signal (S1.7.23): a node of `object` category, minus the names
+/// A name-free signal: a node of `object` category, minus the names
 /// a puzzle *declares as a type* in a relation signature, minus the reserved
 /// logical primitives — the rule-body / ⊥ vocabulary `not`/`false`/`and`/`or`/
 /// `absent` plus the `eq`/`neq` predicates. Those can appear as a fact **head**
@@ -632,7 +630,7 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// type-wrong candidates that survive die downstream against the puzzle's own
 /// contradiction rules.
 pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
-    // The same dense-id argument as `Kb::names` (T1a.6.4.2): every signature
+    // The same dense-id argument as `Kb::names`: every signature
     // symbol is a `u32`, so the set of type roles is a bitset built with one
     // OR per signature entry rather than a hash table filled per call.
     let mut type_nodes = ein_core::BitSet::new();
@@ -658,7 +656,7 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
             names.push(n.name);
         }
     }
-    // T1a.6.4.2 — **drop first, then sort**. The two steps commute: the
+    // **Drop first, then sort.** The two steps commute: the
     // comparator is a total order (a rank is a distinct `u32` per symbol), so
     // sorting the survivors and sorting-then-dropping give the same sequence
     // — and on a blind-mode puzzle most of the list is relations, rules and
@@ -690,7 +688,7 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
 /// but the order should not depend on the key alone, and `sort_by` costs
 /// nothing here.
 fn by_participation(kb: &Kb, terms: &Terms, objects: &[Symbol]) -> Vec<Symbol> {
-    // Decorate, sort, undecorate (T1a.6.4.3). `sort_by_key` evaluates its key
+    // Decorate, sort, undecorate. `sort_by_key` evaluates its key
     // on **every comparison**, and `Kb::participation` sums a name's entry
     // over the whole layer stack — so a fork 20 deep re-walked 20 layers
     // O(n log n) times per pass to order a list of a few dozen names.
@@ -713,7 +711,7 @@ fn by_participation(kb: &Kb, terms: &Terms, objects: &[Symbol]) -> Vec<Symbol> {
 /// Read once per generation pass. The predicate it replaces was
 /// `kb.facts_of(__closed__).any(args == [rel])`, run per (focal object,
 /// relation) — the whole extent, walked `|objects| × |relations|` times a pass
-/// to answer a question whose answer cannot change during one (T1a.6.4.3).
+/// to answer a question whose answer cannot change during one.
 /// Same membership: a `(__closed__ …)` fact whose single argument is that
 /// relation's name.
 fn closed_relations(kb: &Kb, terms: &Terms) -> FxHashSet<Symbol> {
@@ -750,7 +748,7 @@ pub(crate) fn scoping(
 }
 
 /// Which relations **this program's generator can still propose** — the
-/// eligibility M1e S1e.2.3's refutation warning is stated over.
+/// eligibility the refutation warning ([`crate::naf_deps`]) is stated over.
 ///
 /// It reads the ladder rather than one rung, because the hazard is *the search
 /// can still add a fact of R*, and which rung would add it does not matter.
@@ -789,13 +787,13 @@ pub(crate) fn scoping(
 ///
 /// It is also **not** the stratification question, and the two do not overlap:
 /// a watched relation a *rule* derives can flip a guard during saturation,
-/// which `warn_derived_naf` is about and which is sound since S1.21.8 because
+/// which the stratification advisory is about and which is sound because
 /// the guard is judged at a fixpoint. This one is about a *commitment*
 /// discharging the guard in a world the search never enters.
 pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, CompileError> {
     // The ladder's switch, read as the generator reads it.
     let rung = rung(s)?;
-    // `(solve :no-search)`: no rung proposes anything (M1f S1f.6.36).
+    // `(solve :no-search)`: no rung proposes anything.
     if rung == Rung::NoSearch {
         return Ok(FxHashSet::default());
     }
@@ -837,12 +835,12 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
 /// "unrestricted". A written `()` is a list that names none, so it
 /// whitelists nothing. The **first** matching keyword wins, not the last.
 ///
-/// Since M1f S1f.7.8 every name a list holds is a relation the program
+/// Every name a list holds is a relation the program
 /// writes outside it, or the loader refuses the program
 /// (`ein_ir::from_ir`'s `refuse_solve_names`), so a misspelt name reaches
 /// neither this nor [`crate::hrule`]'s activators.
 fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> {
-    // On `(solve …)` since M1e2 S1e2.1a.4: the candidate list is the lattice's,
+    // On `(solve …)`: the candidate list is the lattice's,
     // stated once for every query.
     let solve = s.kb.program().solve()?;
     for &pair in solve.kw_pairs.iter() {
@@ -908,7 +906,7 @@ mod tests {
         (ast, terms, kb)
     }
 
-    /// The blind enumerator proposes type-blind (S1.7.23) but never proposes a
+    /// The blind enumerator proposes type-blind but never proposes a
     /// **type-role** atom or a kernel primitive as an object: `T` is named in
     /// a signature and `not` is reserved, so neither is a candidate — while
     /// `A`, which no signature mentions, is.
@@ -950,7 +948,7 @@ mod tests {
         assert_eq!(names, ["a"], "neither dunder is an object");
     }
 
-    /// **The seed** (M1e2 S1e2.2.4, Q-M1e.21 (b)): a constant only a rule's
+    /// **The seed** (Q-M1e.21): a constant only a rule's
     /// `:assert` names is an object of the program before any fact names it,
     /// and a constant the rule names that a fact already does is listed once.
     /// Without the seed this is `["A", "B"]` and nothing is ever proposed
@@ -968,8 +966,8 @@ mod tests {
         assert_eq!(names, ["A", "B", "Z"], "Z seeded, A once, T excluded");
     }
 
-    /// **Every name of the program** (M1e2 S1e2.2.14, the user's ruling of
-    /// 2026-11-04 on Q-M1e2.9, (a)): a constant only a `:match` names (`M`),
+    /// **Every name of the program** (Q-M1e2.9): a constant only a `:match`
+    /// names (`M`),
     /// and one only a nested fact's argument names (`N`, inside the stored
     /// negative), are objects of the program; a constant only a `(query …)`
     /// names (`Q`) is not, because R is the program's and a query asks about

@@ -1,8 +1,5 @@
-//! What the universe leaves out — M1e2
-//! [S1e2.2.8](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md),
-//! W6, on the user's ruling of 2026-11-03 on
-//! [Q-M1e2.3](../../../../plans/m1e2_correctness/open_questions.md#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered),
-//! (a) *scoped, and the read-out says so*.
+//! What the universe leaves out (`W6`, Q-M1e2.3): R is *scoped, and the
+//! read-out says so*.
 //!
 //! R is over H, the candidate list the generation ladder builds at root
 //! ([the universe](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)),
@@ -31,14 +28,13 @@
 //!    [`crate::oblgen`]), or, for the blind enumerator, its arity is 3 or
 //!    more (`hypgen`'s `fill_slot` enumerates arity 1 and 2).
 //!
-//! Measured 2026-11-04 at `ee0b74c4` (T1e2.2.8.1): of the 234 programs of
-//! the sweep that reach H, 22 name a relation, 16 of them under the hrules.
 //! The rule's third clause is the rung's scope and not H's contents: a
 //! relation the rung covers whose every candidate root already holds is not
 //! outside the universe, it has nothing left to guess.
 //!
-//! **What it is not.** It is not the `rung` event's `uncovered`, M1d's
-//! completeness counter, which counts every eligible relation no obligation
+//! **What it is not.** It is not the `rung` event's `uncovered`, the
+//! obligations rung's completeness counter, which counts every eligible
+//! relation no obligation
 //! names, a relation no rule concludes among them (`uncovered.ein`'s `is-a`).
 //! And it is relation grain: a covered relation's facts the rung does not
 //! propose (a self-edge, which the blind enumerator never builds; an
@@ -97,7 +93,7 @@ pub(crate) fn outside(
     plans: &[Arc<Plan>],
     later: &[Symbol],
 ) -> Result<Vec<Outside>, CompileError> {
-    // `(solve :no-search)` (M1f S1f.6.36) scopes every relation out, and it is
+    // `(solve :no-search)` scopes every relation out, and it is
     // the program's own statement, clause 2's: nothing is named.
     if mode == Mode::NoSearch {
         return Ok(Vec::new());

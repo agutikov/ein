@@ -1,10 +1,6 @@
-//! A type bound as an object — M1e2
-//! [S1e2.2.10](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md),
-//! C1, on the user's ruling of 2026-11-03 on
-//! [Q-M1e.12](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object),
-//! (a) *the fixture, with the warning*.
+//! A type bound as an object (Q-M1e.12): *the fixture, with the warning*.
 //!
-//! The blind enumerator is **untyped** (S1.7.23: the kernel commits to no type
+//! The blind enumerator is **untyped** (the kernel commits to no type
 //! system). It fills every slot of every open relation with every name of the
 //! program a signature does not declare, so where a program writes `(is-a Red
 //! Color)` and declares `(relation co-located T T)`, `(co-located Blue Color)`
@@ -32,12 +28,8 @@
 //! out, and `examples/branching/04_two_levels.ein`'s `(relation co-located
 //! Color House)` takes it.
 //!
-//! Measured 2026-11-04 at `86df5456` (T1e2.2.10.2): of the 234 programs of the
-//! sweep that reach H, 151 under the blind enumerator, it names objects on 13,
-//! every one a corpus entry, and on 11 once that stage typed
-//! `examples/branching/06_lookahead_on.ein` and `07`, which were C1's
-//! witnesses. The same 13 when every rung is read, so the scope to the blind
-//! enumerator moves nothing in the corpus; it is the ruling's word, *untyped*.
+//! It is read on the blind enumerator's H alone, the rung that is
+//! *untyped*.
 
 use ein_core::{FactId, Kb, Symbol, Terms};
 use rustc_hash::FxHashSet;

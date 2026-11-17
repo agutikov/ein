@@ -16,33 +16,34 @@
 //!
 //! - **the status**: the cube's violations — holes, dead nodes with an alive
 //!   superset, discharged nodes with an owing superset — each attributed to
-//!   the sites that made it (S1e2.1b.3's rule, `status_of`; where it names
-//!   none, since M1e2 S1e2.2.17, the derivation followed through each plan's
-//!   activator, and where that names none either, [`by_words`] says so):
+//!   the sites that made it (`status_of`; where it names none, the
+//!   derivation followed through each plan's activator, and where that names
+//!   none either, [`by_words`] says so):
 //!   *exercised* or *conservative*, and *not known* where the run did not read
 //!   the cube;
 //! - **the state**: every node the run computes is read for **stale facts**
-//!   ([`stale_facts`], `node_census.md` § 4's check, in
-//!   [`crate::region`]'s node function), dead nodes included, because W8's
+//!   ([`stale_facts`], in [`crate::region`]'s node function), dead nodes
+//!   included, because `W8`'s
 //!   stale fact is in a dead node no run lists;
 //! - **the paths**: the read-out's parent-path spot check
 //!   ([`crate::region::Nodes::by_parent`]), at most [`SPOT_PARENTS`] parents
 //!   of each state it prints of two commitments or more. It reads one-step
 //!   parents only: on the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` a
 //!   node is dead along a two-step chain through an alive parent, and one-step
-//!   parents see one of the two nodes (`node_census.md` § 11.2). Its row says
-//!   what was checked, and claims nothing more.
+//!   parents see one of the two nodes. Its row says what was checked, and
+//!   claims nothing more.
 //!
-//! It decides nothing. What a node is on a flagged program, and what is
-//! reported about it, are
-//! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
-//! D1–D7: no finding here chooses a node, refuses a program or moves `R`.
+//! It decides nothing. A node on a flagged program is a fork of root by
+//! assumption, and the engine claims nothing about such a program's
+//! solutions (Q-M1e2.2,
+//! [monotonicity.md § 12.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#123-what-is-claimed-of-a-flagged-program)):
+//! no finding here chooses a node, refuses a program or moves `R`.
 //!
 //! ### Why it is gated, and why the gate costs nothing it should not
 //!
 //! Every check here runs on a program `classify` flags, and only there. No
-//! option turns it on or off (the config principle, 2026-10-15): it runs by a
-//! rule that reads the program, as describe's route does.
+//! option turns it on or off (Q-M1e2.30): it runs by a rule that reads the
+//! program, as describe's route does.
 //!
 //! **On an unflagged program the detector has nothing to find**, on every node
 //! built by fork from root — which is how every shipped route builds one — and
@@ -56,11 +57,12 @@
 //! at root, where every fork inherits its result (no path differs).
 //!
 //! **It does not hold from scratch.** A node built from the program with the
-//! commitment written in re-derives root inside itself, and there an
-//! equal-priority race over a static read can leave a stale fact on a program
-//! the check calls monotone: `examples/lattice/11_fifo_gap_static.ein`, whose
-//! `{(b one)}` holds a stale `(p one)` from scratch and none by fork (M1e2
-//! S1e2.1b.7, `node_census.md` § 12.2). No shipped route builds from scratch,
+//! commitment written in re-derives root inside itself, and there a FIFO
+//! race over a static read can leave a stale fact on a program the check
+//! calls monotone: `examples/lattice/11_fifo_gap_static.ein`, whose
+//! `{(b one)}` holds a stale `(p one)` from scratch and none by fork
+//! ([monotonicity.md § 3.4](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#34-the-verdict-is-relative-to-root)).
+//! No shipped route builds from scratch,
 //! so the gate is sound for what ships, and the scope is the claim.
 //!
 //! Under [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
@@ -70,8 +72,8 @@
 //!
 //! - `ein-infer/tests/region.rs::fact_grain_never_calls_a_violated_cube_monotone`
 //!   holds a *Monotone* verdict to no cube violation on every corpus file and
-//!   register witness within the oracle's limit, and `utils/region_synth.py`'s
-//!   check on the random programs `ein-cli/tests/region_dump.rs` draws;
+//!   register witness within the oracle's limit, and on the random programs
+//!   `ein-cli/tests/region_dump.rs` draws;
 //! - `ein-infer/tests/detector.rs::a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`
 //!   builds every node of every monotone corpus cube with `n ≤ 10` by fork, by
 //!   every split from a fixpoint that holds root's, and from scratch, and
@@ -223,8 +225,7 @@ pub use crate::strata::Cycle;
 /// relation in `D` that another deferred rule, `writer`, concludes — directly,
 /// or through rules that are not deferred. The boundary admits one parked
 /// candidate a round in FIFO order, the written and arrival order (no rule
-/// has a priority since M1f S1f.5.15), so the written order decides which
-/// goes first.
+/// has a priority), so the written order decides which goes first.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Race {
     pub reader: String,
@@ -353,7 +354,7 @@ fn refutes(plan: &Plan, terms: &Terms) -> Option<Concludes> {
     }
 }
 
-/// The saturation rules' dependency graph over `D` (`node_census.md` § 5's):
+/// The saturation rules' dependency graph over `D`:
 /// [`strata::edges`] restricted to the relations in `D`. Each strongly
 /// connected component holding a negative edge, with its parity.
 fn cycles_over(
@@ -378,10 +379,10 @@ fn cycles_over(
 /// relation in `D` which a deferred rule B concludes — directly, or through
 /// rules that are not deferred, which fire before the boundary speaks — can be
 /// admitted before B and keep a fact B's conclusion then falsifies (the FIFO
-/// gap, `monotonicity.md` § 8.3). At one priority the written order decides
-/// which goes first; with A's priority earlier, A goes first in every order
-/// (`fifo_gap_priority`, the proposal's § 7). B earlier is the stratified
-/// order.
+/// gap,
+/// [monotonicity.md § 8.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#83-the-fifo-gap)).
+/// No rule has a priority, so the written order decides which goes first:
+/// B written first is the stratified order.
 fn order(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], dynamic: &BTreeSet<String>) -> Vec<Race> {
     let program = kb.program();
     let sat: Vec<&Plan> = plans
@@ -461,7 +462,7 @@ fn order(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], dynamic: &BTreeSet<String>
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Status {
     /// The cube shows a violation: non-monotone here, by the sites the
-    /// violations are attributed to (S1e2.1b.3's rule).
+    /// violations are attributed to.
     Exercised {
         by: Vec<String>,
         holes: u64,
@@ -499,7 +500,7 @@ impl Status {
 }
 
 /// The sites an `Exercised` status names, as its row says them: `by a, b`,
-/// or, where the attribution reaches none, why (M1e2 S1e2.2.17).
+/// or, where the attribution reaches none, why.
 pub fn by_words(by: &[String]) -> String {
     if by.is_empty() {
         "by no site: the violation's derivation, each plan's activator followed, reaches none"
@@ -533,8 +534,7 @@ pub struct State {
 
 /// The parent-path spot check: for each state the read-out prints of two
 /// commitments or more, up to [`SPOT_PARENTS`] of its parents `C \ {h}`, or
-/// every one of them under `-y` (M1e2 S1e2.1c.5, the user's ruling of
-/// 2026-11-03), which runs it on a monotone program too.
+/// every one of them under `-y`, which runs it on a monotone program too.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Paths {
     /// Parents read per printed state: [`SPOT_PARENTS`], or `None` under
@@ -568,8 +568,8 @@ pub struct Warning {
     pub paths: Option<Paths>,
 }
 
-/// How many parents of each printed state the spot check reads — the user's
-/// approval of 2026-11-03. `-y` lifts it ([`Paths::bound`]).
+/// How many parents of each printed state the spot check reads. `-y` lifts
+/// it ([`Paths::bound`]).
 pub const SPOT_PARENTS: usize = 3;
 
 // ── The stale check ─────────────────────────────────────────────────
@@ -593,8 +593,8 @@ impl StaleCheck {
 }
 
 /// Every fact of `kb` whose primary derivation's `absent` guard `kb` itself
-/// now falsifies, as `fact ← rule (absent …)`, sorted — `node_census.md`
-/// § 4's check. For each fact whose primary provenance records `absent`
+/// now falsifies, as `fact ← rule (absent …)`, sorted. For each fact whose
+/// primary provenance records `absent`
 /// patterns, the plan and the disjunct that record exactly those patterns,
 /// with the saturator's registers rebuilt from the provenance's bindings; then
 /// the engine's matcher, [`Matcher::holds`], asks whether the guard's query now
@@ -870,12 +870,12 @@ fn absent_label(premise: &str) -> String {
 
 /// The sites a dead node falls to: the activator site of a refuting rule root
 /// never compiled; else the `absent` sites over a premise's relation, those
-/// whose rule refuted it where there are any (S1e2.1b.3's rule, the
-/// `attribution` example's `dead`). Where it names none, [`status_of`] asks
-/// [`dead_chain_sites`] (M1e2 S1e2.2.17). *Refuting* reads the first
-/// contradiction's rules (`Node::first_rules`), which the node keeps whether
-/// or not its core is taken; a dead node's printed `refuted by` follows its
-/// core since M1e2 S1e2.3.10, and the detector's labels are F21's.
+/// whose rule refuted it where there are any (the `attribution` example's
+/// `dead`). Where it names none, [`status_of`] asks [`dead_chain_sites`].
+/// *Refuting* reads the first contradiction's rules (`Node::first_rules`),
+/// which the node keeps whether or not its core is taken; a dead node's
+/// printed `refuted by` follows its core (Q-M1e2.21), and the detector's
+/// labels are its own.
 fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTreeSet<String>) {
     let mut found = false;
     for s in sites.iter().filter(|s| s.kind == SiteKind::Activator) {
@@ -911,13 +911,13 @@ fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTr
     }
 }
 
-/// A dead node [`dead_sites`] names no site of — M1e2 S1e2.2.17: its first
-/// contradiction's derivation, followed through each plan's activator (F2's
-/// *per activator*, read for a label). A derivation does not record the
+/// A dead node [`dead_sites`] names no site of: its first contradiction's
+/// derivation, followed through each plan's activator (*per activator*, as
+/// *forbid* reads it, here for a label). A derivation does not record the
 /// activator its plan was compiled from, so where a chain of activators runs
 /// at a node, the refuting rule is no site and its premises carry no
-/// `absent`: on W17's witnesses, studied past *forbid*'s refusal, the rule
-/// above named nothing, and the status row read *by* and an empty list.
+/// `absent`: on `W17`'s witnesses, read past *forbid*'s refusal, the rule
+/// above names nothing, and the status row would read *by* and an empty list.
 fn dead_chain_sites(
     nodes: &mut Nodes<'_>,
     sites: &[SiteText],
@@ -1020,7 +1020,7 @@ fn chain_sites(sites: &[SiteText], root: &RootPlans, chain: &Chain) -> BTreeSet<
 /// trigger site of the instance; else the activator site of an obligation
 /// whose plan root never compiled; else an `absent` site whose rule derived a
 /// fact `below` holds and `at` does not (the `attribution` example's
-/// `owing`); else, since M1e2 S1e2.2.17, the sites [`chain_sites`] names on
+/// `owing`); else the sites [`chain_sites`] names on
 /// the obligation's activator's derivation.
 fn owing_sites(
     nodes: &mut Nodes<'_>,
@@ -1074,15 +1074,14 @@ fn owing_sites(
                 out.extend(lost_sites.iter().map(|s| s.name.clone()));
                 continue;
             }
-            // None of the three (M1e2 S1e2.2.17): the obligation's activator,
+            // None of the three: the obligation's activator,
             // followed to the plans that derived it, as a dead node's
             // refutation is (`lattice/12_activator_chain_hole.ein`, whose
             // `total-owed` activator a plan of `serves` derives).
             let mut seeds: Vec<FactId> = kbs[1]
                 .rule_apps_by_rule(o.rule)
                 // The activator's every argument, a nested fact among them
-                // (M1f S1f.5.18, Q-M1f.43): until then the owed instance kept
-                // its symbol arguments only, and so did this match.
+                // (Q-M1f.43), as the owed instance keeps them.
                 .filter(|&f| *terms.facts.get(f).1 == *o.activator)
                 .collect();
             if seeds.is_empty() {

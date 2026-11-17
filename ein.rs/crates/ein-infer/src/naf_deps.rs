@@ -1,22 +1,19 @@
 //! Static NAF dependency map — advisory only.
 //!
 //! Which `(absent …)` guards watch a **rule-derived** relation, which watch a
-//! **declared-only** one whose extension the puzzle fixes, and — since M1e
-//! S1e.2.3 — which watch one the **hypothesis generator can still extend**
-//! while concluding a refutation from its absence.
+//! **declared-only** one whose extension the puzzle fixes, and which watch
+//! one the **hypothesis generator can still extend** while concluding a
+//! refutation from its absence.
 //!
 //! The three questions share one scan, deliberately: they are the same walk
 //! over the same guards, differing only in what the watched relation is
 //! classified against, and two passes would be two places for the
-//! classification to drift ([`AR-M1`]).
+//! classification to drift.
 //!
-//! [`AR-M1`]: ../../../../docs/history/m1e_review_processing/review/architecture/medium.md
-//!
-//! **What this means changed with S1.21.8.** It used to be a soundness signal:
-//! the fire-time NAF re-check was what made a derived-NAF rule sound, and this
-//! map told the author which rules leaned on it. That re-check is gone —
-//! `(absent …)` is evaluated on the closure/world boundary against a positive
-//! fixpoint — so a derived-NAF rule is sound whatever the priorities say.
+//! **It is not a soundness signal.** `(absent …)` is evaluated on the
+//! closure/world boundary against a positive fixpoint
+//! ([absent-and-naf.md](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary)),
+//! so a derived-NAF rule is sound whatever order its rules fire in.
 //!
 //! What the distinction still buys is **stratification**. NAF over a derived
 //! relation is exactly the shape that can make a rule set non-stratified, and
@@ -31,9 +28,9 @@
 //! so their plan is compiled only once the saturator's enqueue pass has
 //! refreshed the cache. Pass the engine of a saturator that has run.
 //!
-//! ## The second question — a refutation resting on an `absent` (M1e S1e.2.3)
+//! ## The second question — a refutation resting on an `absent`
 //!
-//! Reproduced, 2026-08-28, and why [`Q-M1e2.5`] refuses it: **`dead` is not upward-closed under
+//! Why [`Q-M1e2.5`] refuses it: **`dead` is not upward-closed under
 //! `absent`**. A rule
 //!
 //! ```lisp
@@ -64,12 +61,11 @@
 //! `std.algebra`'s `connex`, whose `absent` reads the subject relation `?R`
 //! itself.
 //!
-//! The **containment** is a warning, not a refusal
-//! ([D4](../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
-//! option B): refusing at load would refuse `connex` before anyone has decided
-//! whether that rule should be rewritten, which is
-//! [S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
-//! Promoting warn → refuse afterwards is a one-line change here.
+//! This map's line is a warning, advisory as the rest of the map. The
+//! refusal is [`crate::forbid`]'s, at load, over the same shape read at
+//! relation grain on the whole program
+//! ([absent-and-naf.md](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#a-refutation-resting-on-an-absent),
+//! [diagnostics.md § 2.7](../../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
 //!
 //! [`Q-M1e2.5`]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
 
@@ -92,7 +88,7 @@ pub struct NafDep {
     pub activator: Box<[Value]>,
     pub derived: Box<[String]>,
     pub declared_only: Box<[String]>,
-    /// M1e S1e.2.3 — the exposure [`Q-M1e2.5`] refuses, or `None`.
+    /// The exposure [`Q-M1e2.5`] refuses, or `None`.
     ///
     /// `Some` **only** when both halves hold: the `:assert` refutes, and at
     /// least one watched relation is one the program's generator can still
@@ -116,11 +112,11 @@ pub struct Refutation {
 
 /// Does a plan's `:assert` conclude a **refutation** rather than a derivation?
 ///
-/// Every conclusion is inspected, not only the first: `(and …)` multi-assert
-/// (A13) means a rule can derive a fact *and* refute, and the refuting arm is
-/// what matters here. `asserted_relation` / `negated_relation` read
-/// `assert_template()` alone because they are the `S1.7.4` map, which reads
-/// the first conclusion; this is a new question and reads every one.
+/// Every conclusion is inspected, not only the first: a `:assert (and …)`
+/// means a rule can derive a fact *and* refute, and the refuting arm is what
+/// matters here. `asserted_relation` / `negated_relation` read
+/// `assert_template()` alone because they are the stratification map, which
+/// reads the first conclusion; this question reads every one.
 fn refuting_conclusion(plan: &Plan, terms: &Terms) -> Option<&'static str> {
     let mut found = None;
     for slot in plan.asserts.iter() {
@@ -128,7 +124,7 @@ fn refuting_conclusion(plan: &Plan, terms: &Terms) -> Option<&'static str> {
             continue;
         };
         // An `eq` / `neq` conclusion, or `(not …)` over one, is `(false)`
-        // where it does not hold (M1f S1f.5.7, G-21, `firing::build_conclusion`).
+        // where it does not hold (Q-M1e2.26, `firing::build_conclusion`).
         if *rel == terms.kernel.r#false || crate::firing::computed(terms, plan, *slot).is_some() {
             // Direct ⊥ outranks a negative: it is the stronger claim, and the
             // message's advice differs.
@@ -188,7 +184,7 @@ pub fn compute_naf_map(
         // Each bucket is a set, sorted on the way out, so a relation watched
         // twice is one entry — and a relation watched both ways is two.
         let (mut derived, mut declared) = (FxHashSet::default(), FxHashSet::default());
-        // S1e.2.3's third bucket, filled from the *same* walk. A negated watch
+        // The third bucket, filled from the *same* walk. A negated watch
         // `(absent (not (R …)))` is deliberately **not** exposure: what the
         // generator proposes is `R`, and adding an `R` cannot make a missing
         // `(not (R …))` appear. Only the positive read is a hazard.
@@ -241,8 +237,8 @@ fn sorted(set: FxHashSet<String>) -> Box<[String]> {
 /// Ordering of string sequences: element-wise by text, and a prefix sorts first.
 fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
     for (x, y) in a.iter().zip(b.iter()) {
-        // By content: a name by its text, as until M1f S1f.5.18 kept the
-        // names alone, and a nested fact after every name (Q-M1f.43).
+        // By content: a name by its text, and a nested fact after every name
+        // (Q-M1f.43).
         let o = terms.cmp_semantic(*x, *y);
         if o != std::cmp::Ordering::Equal {
             return o;
@@ -254,8 +250,8 @@ fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
 /// One advisory line, and which kind it is.
 ///
 /// `category` is the `warn` event's, and it is what tells the two apart in a
-/// stream: `DerivedNafWarning` is the S1.7.4 stratification advice,
-/// `RefutationUnderAbsentWarning` is M1e S1e.2.3's soundness one.
+/// stream: `DerivedNafWarning` is the stratification advice,
+/// `RefutationUnderAbsentWarning` the soundness one.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NafWarning {
     pub category: &'static str,
@@ -265,9 +261,8 @@ pub struct NafWarning {
 pub const DERIVED_NAF: &str = "DerivedNafWarning";
 pub const REFUTATION_UNDER_ABSENT: &str = "RefutationUnderAbsentWarning";
 
-/// An activator's argument as a label writes it: a name's own text, as it was
-/// written before M1f S1f.5.18 kept a nested fact here too, and a fact as Ein
-/// text.
+/// An activator's argument as a label writes it: a name's own text, and a
+/// fact as Ein text.
 pub(crate) fn raw_text(terms: &Terms, v: Value) -> String {
     match v.as_sym() {
         Some(s) => terms.sym(s).to_string(),
@@ -285,8 +280,8 @@ fn activator_suffix(terms: &Terms, activator: &[Value]) -> String {
 
 /// Every advisory line the NAF map yields, in map order.
 ///
-/// **One walk, two questions** — the stratification one (S1.7.4) and the
-/// refutation-exposure one M1e S1e.2.3 added. There is no second switch:
+/// **One walk, two questions** — the stratification one and the
+/// refutation-exposure one. There is no second switch:
 /// `eligible` **is** the switch, because a refutation line needs a relation
 /// the generator can propose and an empty set has none. So
 /// [`derived_naf_warnings`] is this function over an empty set, and a caller

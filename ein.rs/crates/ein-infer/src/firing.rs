@@ -2,7 +2,7 @@
 //! "this application already happened".
 //!
 //! One `Firing` is one rule application. A `:assert (and …)` concludes several
-//! facts from it (A13 multi-assert) and they **share one** [`Prov`]: one rule
+//! facts from it (a conjunction) and they **share one** [`Prov`]: one rule
 //! application fanning out to N derived nodes, not N applications.
 
 use ein_core::repr::{ReprValue, repr, repr_str};
@@ -67,28 +67,20 @@ pub struct Firing {
 
 /// What stops a firing that should never have been attempted.
 ///
-/// **`UnboundVar` was a third variant until M1f S1f.5.18**, *unbound var
-/// ?{name} in :assert — bindings: …*, which `ein saturate` printed as
-/// `KeyError: "…"`: a conclusion read a register its match left unbound. Its
-/// doc called it an invariant the matcher guaranteed, and the loader did not
-/// check it, so a run met it at whichever node first fired such a rule, until
-/// S1f.5.10 refused at load a conclusion variable no premise or parameter binds
-/// (F13, W57). One path was left, a parameter its activator bound to a nested
-/// fact, which the compiler did not seed (W33's cause), read only by a
-/// conclusion (`W58/parameter-nested-assert`); S1f.5.18 seeds it and retired
-/// the variant. What holds it since is `resolve`'s assertion,
-/// and `ein-ir`'s `fuzz_properties::no_firing_meets_an_unbound_variable`.
+/// **No conclusion reads a register its match left unbound**, so there is no
+/// variant for one: the loader refuses a conclusion variable no premise or
+/// parameter binds (`W57`), and the compiler seeds every parameter from its
+/// activator, a nested fact too (`W33`, `W58/parameter-nested-assert`). What
+/// holds it is `resolve`'s assertion, and `ein-ir`'s
+/// `fuzz_properties::no_firing_meets_an_unbound_variable`.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum FireError {
     /// A conclusion no fact can hold: a top-level `:assert` that is not a
     /// fact, or an argument that is not a value — a relation written as a
-    /// variable the activator does not bind (a keyword pair, a range and a
-    /// wildcard too, until M1f S1f.5.5's swap refused each at the parse).
-    /// One line in Ein's spelling, naming the rule and the slot as
-    /// written (`firing::not_a_fact`). It was *TypeError: expected
-    /// NestedPattern at :assert top-level, got …* and *TypeError: an
-    /// unrecognised `:assert` slot has no value to store* until M1e2
-    /// S1e2.2.18, which also stopped a string reaching it.
+    /// variable the activator does not bind (a keyword pair, a range, a
+    /// wildcard and a string are refused at the parse). One line in Ein's
+    /// spelling, naming the rule and the slot as written
+    /// (`firing::not_a_fact`).
     NotAFact(String),
     /// The interner filled up. Structurally possible, never seen.
     Overflow(Overflow),
@@ -115,17 +107,17 @@ impl From<Overflow> for FireError {
 /// is productive — that is what makes the redundancy check cheap — so this is
 /// deliberately separate from [`fire`].
 ///
-/// **`None` is the negation of a name**, which is no fact (M1f S1f.7.4, W84,
-/// under the value rule, the user's ruling of 2026-11-11: *a value is a name,
-/// or a fact a state could hold: an atom of an ordinary relation, or its
-/// negation*). A conclusion `(not ?x)` is of a variable bound to a fact;
+/// **`None` is the negation of a name**, which is no fact (`W84`, under the
+/// value rule: *a value is a name, or a fact a state could hold: an atom of
+/// an ordinary relation, or its negation*). A conclusion `(not ?x)` is of a
+/// variable bound to a fact;
 /// where a binding gives it a name there is nothing to conclude, so the
 /// firing stores nothing for it and an hrule proposes nothing, as a true `eq`
 /// conclusion adds nothing ([`build_conclusion`]). The loader refuses the
 /// shape wherever the program shows the variable can hold a name
 /// (`ein_ir::from_ir`'s `refuse_negated_names`); this is what is left, a
-/// binding only a run meets (Q-M1f.128). Until S1f.7.4 it was stored, `(not
-/// k)`, a fact no program can write and no state file can reload.
+/// binding only a run meets (Q-M1f.128). Stored, `(not k)` would be a fact
+/// no program can write and no state file can reload.
 pub fn build_fact(
     terms: &mut Terms,
     ast: &Ast,
@@ -159,14 +151,13 @@ pub fn build_fact(
 /// `eq` / `neq` conclusion what its definition makes of it.
 ///
 /// `eq` and `neq` are relations whose facts are computed and never stored
-/// (M1f S1f.5.7, the user's ruling of 2026-11-07 on G-21), so a rule that
+/// (Q-M1e2.26), so a rule that
 /// concludes one is checked: one that holds, `(neq a b)`, adds nothing, and is
 /// `None`; one that does not, `(neq a a)` or `(eq a w)`, cannot hold, and is
 /// `(false)`, so its state is a contradiction, explained as one a rule
 /// concluding `(false)` is — its core the premises the firing matched, and
-/// `refuted by` the rule. Until S1f.5.7 the conclusion was stored as an
-/// ordinary fact, so a false one sat in the KB while a guard computed the
-/// opposite, and killed nothing (W30).
+/// `refuted by` the rule. Stored as an ordinary fact, a false one would sit
+/// in the KB while a guard computed the opposite, and kill nothing (`W30`).
 pub fn build_conclusion(
     terms: &mut Terms,
     ast: &Ast,
@@ -176,7 +167,7 @@ pub fn build_conclusion(
 ) -> Result<Option<FactId>, FireError> {
     if let Some((eq, x, y)) = computed(terms, plan, template) {
         // A side that holds the negation of a name is no value, and the
-        // conclusion nothing (S1f.7.4); the grammar writes no such side.
+        // conclusion nothing; the grammar writes no such side.
         let (Some(x), Some(y)) = (
             resolve(terms, ast, plan, env, x)?,
             resolve(terms, ast, plan, env, y)?,
@@ -241,23 +232,21 @@ fn not_a_fact(
              its activator does not bind — a relation written as a variable is \
              one of the rule's parameters, which its activator binds to a name"
         ),
-        // An argument no fact can hold, `_` or a keyword pair: refused at
-        // load until M1e2 S1e2.2.18, and with a line here (*writes … as an
-        // argument of …, and no fact can hold it*) until M1f S1f.5.5's T5.
-        // Since the swap a conclusion's argument is a name, a variable or a
-        // fact (`ein.y`'s `Term`), and a macro's body holds the same, so no
-        // slot reaches here as one but a relation variable, the arm above.
+        // An argument no fact can hold, `_` or a keyword pair, is refused at
+        // the parse: a conclusion's argument is a name, a variable or a fact
+        // (`ein.y`'s `Term`), and a macro's body holds the same, so no slot
+        // reaches here as one but a relation variable, the arm above.
         (None, Some(rel)) => unreachable!(
             "rule '{rule}': {written} as an argument of {} — the grammar's Term holds a name, \
              a variable or a fact",
             terms.sym(rel)
         ),
         // A whole conclusion that is no fact, `?y` or a name: only a macro's
-        // body writes one (`(macro id (?x) ?x)` called as a conclusion), and
-        // until M1f S1f.5.24 this line stopped the firing that met it, so a
-        // rule only a commitment activated loaded and some commands answered,
-        // and an hrule's was dropped in silence (W69). The loader refuses it
-        // since, after expansion, with the same words (`ein_ir::from_ir`'s
+        // body writes one (`(macro id (?x) ?x)` called as a conclusion). A
+        // line here would stop only the firing that met it, so a rule only a
+        // commitment activates would load and some commands would answer it,
+        // and an hrule's would be dropped in silence (`W69`). The loader
+        // refuses it, after expansion, with the same words (`ein_ir::from_ir`'s
         // `refuse_malformed_primitives`), so no program reaches it.
         (None, None) => unreachable!(
             "rule '{rule}': its :assert concludes {written}, which is not a fact — the grammar \
@@ -281,10 +270,9 @@ fn resolve(
             let v = env.regs[r as usize];
             // No conclusion reads a register its match and its activator leave
             // unbound: the loader refuses a conclusion variable no premise or
-            // parameter binds (M1f S1f.5.10, `from_ir::refuse_unbound_conclusions`),
-            // and the compiler seeds every parameter from its activator, a
-            // nested fact too (S1f.5.18, `compile::Compiler::bind_activator`),
-            // which retired `FireError::UnboundVar` and its `KeyError` line.
+            // parameter binds (`from_ir::refuse_unbound_conclusions`), and
+            // the compiler seeds every parameter from its activator, a nested
+            // fact too (`compile::Compiler::bind_activator`).
             assert!(
                 !v.is_unbound(),
                 "rule '{}' concludes ?{} unbound — bindings: {}; the loader binds every \
@@ -304,11 +292,11 @@ fn resolve(
 /// Build every conclusion, write each, and record the application.
 ///
 /// `absent` are the `(absent …)` queries that had to fail on the
-/// closure/world boundary for this firing to be admitted (S1.21.8). They ride
+/// closure/world boundary for this firing to be admitted. They ride
 /// on the **same** provenance as the positive premises, so a conclusion
 /// records the whole of what it depends on — positive and negative — rather
 /// than only the facts it consumed. `universal` are the facts its
-/// universals read ([`ein_core::Prov::universal`], M1e2 S1e2.2.21).
+/// universals read ([`ein_core::Prov::universal`]).
 pub fn fire(
     kb: &mut Kb,
     terms: &mut Terms,
@@ -325,7 +313,7 @@ pub fn fire(
     let prov = new_prov(terms, plan, env, bindings.clone(), absent, universal);
     let mut derived: Vec<FactId> = Vec::with_capacity(plan.asserts.len());
     for i in 0..plan.asserts.len() {
-        // A true `eq` / `neq` conclusion adds nothing (M1f S1f.5.7, G-21).
+        // A true `eq` / `neq` conclusion adds nothing (Q-M1e2.26).
         let Some(id) = build_conclusion(terms, ast, plan, env, plan.asserts[i])? else {
             continue;
         };
@@ -379,32 +367,23 @@ pub fn new_prov(
 ///
 /// `activator` is an id the engine interns for the plan's compile key,
 /// [`crate::compile::PlanKey::activator`] — **every** argument of the
-/// activator, as a value — which keeps a key two words plus one small vector.
-/// Until M1e2 S1e2.2.16 that list was each argument's text, so the int `1`
-/// and the string `"1"` were one id and one plan, and the second activator's
-/// conclusions were lost (W16).
-/// So within one engine an id names one plan, and the plans that share
+/// activator, as a value, not its text (`W16`) — which keeps a key two words
+/// plus one small vector. So within one engine an id names one plan, and the
+/// plans that share
 /// `(rule, activator)` are one plan with one register layout, the invariant a
 /// value vector needs to be comparable. `Engine::check_layout` asserts it in a
 /// debug build.
 ///
-/// **Until M1e2 S1e2.2.7 the id interned `plan.activator_args`**, the
-/// activator's **symbol** arguments. An `int` binds its parameter, so it
-/// seeds a register and arrives in `values`, and two activators differing
-/// only in one had two keys (M1e
-/// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-/// which showed it with
-/// `rule_semantics::activators_differing_only_by_an_int_argument_both_fire`).
-/// A nested `Fact` binds nothing and reached neither half: two activators
-/// differing only there shared a key, and the dropped application was a
-/// duplicate. But an `int` in the position another activator gives a nested
-/// `Fact` put two plans with **two register layouts** in one space, a release
-/// build compared them as one, and a derivation was lost with no diagnostic
-/// ([Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
-/// M1e2's W7). The id is the compile key's list since, which was Q-M1e.16's
-/// first fix: `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`
-/// is its regression, and two nested-`Fact` activators now each fire, the
-/// second redundantly (`…_differing_only_by_a_nested_fact_argument_both_fire`).
+/// **The id keys on every activator argument** (Q-M1e.16): a key on part of
+/// them would put two plans with **two register layouts** in one space,
+/// where a release build compares them as one and a derivation is lost with
+/// no diagnostic (`W7`). `rule_semantics` holds it: activators differing
+/// only by a name argument both fire
+/// (`activators_differing_only_by_an_int_argument_both_fire`), two
+/// nested-`Fact` activators each fire, the second redundantly
+/// (`…_differing_only_by_a_nested_fact_argument_both_fire`), and a name beside
+/// a nested `Fact` in one position loses no derivation
+/// (`an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`).
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct BindingKey {
     pub rule: Symbol,
@@ -413,8 +392,7 @@ pub struct BindingKey {
 }
 
 /// An interned compile key's argument list, [`crate::compile::PlanKey::activator`]
-/// — every argument of the activator, since M1e2 S1e2.2.7, and as values, not
-/// their text, since S1e2.2.16.
+/// — every argument of the activator, as values, not their text.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct ActivatorId(pub u32);
 
@@ -517,12 +495,9 @@ mod tests {
     }
 
     /// A conclusion writes a parameter its activator binds to a nested fact,
-    /// as one bound to a name: M1f S1f.5.18 (W58). Until then the compiler did
-    /// not seed the parameter, and the conclusion read an unbound register,
-    /// which stopped the run with `FireError::UnboundVar`'s *unbound var ?never
-    /// in :assert — bindings: {'x': 'thing1'}*, the line this test held, the
-    /// plan compiled with no activator; since S1f.5.18 that variant is gone,
-    /// and no driver compiles a rule with parameters but from an activator.
+    /// as one bound to a name (`W58`): the compiler seeds the parameter, so
+    /// the conclusion never reads an unbound register, and no driver compiles
+    /// a rule with parameters but from an activator.
     #[test]
     fn a_parameter_bound_to_a_nested_fact_is_concluded() {
         let src = "(relation a Thing :why \"a holds of {?1}\")\n(relation b A B :why \"b holds of {?1} and {?2}\")\n\

@@ -71,8 +71,8 @@ pub struct Events {
     sink: Sink,
     seq: u64,
     level: Level,
-    /// An in-process reader of the region routes' nodes and steps — M1e2
-    /// T1e2.1a.5.3. It sees what `enter` and `layer` say, in the same order,
+    /// An in-process reader of the region routes' nodes and steps. It sees
+    /// what `enter` and `layer` say, in the same order,
     /// whether or not a sink is recording, and narrates nothing itself.
     watch: Option<Box<dyn Watch + Send>>,
 }
@@ -138,7 +138,9 @@ impl Events {
     /// else: the level, or `None` when the run is not recording.
     ///
     /// `Events` is `Send` and **not** `Sync` — a sink two threads could write
-    /// at once is the shared queue design/08 §3 refuses — so a fan-out cannot
+    /// at once is a shared queue, which
+    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
+    /// refuses — so a fan-out cannot
     /// hand its workers a `&Events`. It hands them this instead, which is
     /// `Copy`.
     pub fn narration(&self) -> Option<Level> {
@@ -470,7 +472,7 @@ impl Write for Buffer {
 }
 
 /// A fact as its canonical s-expression: [`Terms::fact_text`], the one
-/// printer (M1e2 S1e2.3.8), so a name prints bare only where it lexes back as
+/// printer, so a name prints bare only where it lexes back as
 /// itself and the text loads to the same fact.
 ///
 /// Note the nullary case: `(q)`, with no trailing space. `Terms::compact`

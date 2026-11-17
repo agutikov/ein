@@ -1,9 +1,8 @@
-//! Is a program monotone? — M1e2
-//! [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+//! Is a program monotone? — the static check
+//! ([monotonicity.md § 3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#3-the-static-check)).
 //!
 //! The answer to a program is the region `R` of its hypothesis lattice, the
-//! commitments that are alive and owe nothing
-//! ([Q-M1e2.7](../../../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)).
+//! commitments that are alive and owe nothing (Q-M1e2.7).
 //! Two lines describe `R` — its minimal and its maximal elements — only when
 //! `R` has no **holes**: no node outside `R` between two nodes inside it. A
 //! hole needs a commitment that grows and takes a conclusion away, or grows
@@ -54,9 +53,9 @@
 //! so *Monotone* says the operator is monotone on root's fixpoint extended by
 //! commitments: on nodes built by fork from root, which is how every route
 //! builds one. A node built from scratch re-derives root inside itself, and
-//! there an equal-priority race over a static read can leave a stale fact on a
-//! program this check calls monotone (`examples/lattice/11_fifo_gap_static.ein`,
-//! M1e2 S1e2.1b.7).
+//! there a FIFO race over a static read can leave a stale fact on a program
+//! this check calls monotone (`examples/lattice/11_fifo_gap_static.ein`,
+//! [monotonicity.md § 3.4](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#34-the-verdict-is-relative-to-root)).
 //!
 //! ### The theorem
 //!
@@ -91,12 +90,10 @@
 //!
 //! It reads compiled plans and the program's registries and nothing else — no
 //! interning, no event, no counter — so a solve can ask it without moving.
-//! *What* a node is on a program with a site is open:
-//! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
-//! D2. [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
-//! detects, documents and warns: on a program with a site, [`crate::detector`]
-//! reads what every surface warns of (S1e2.1b.5), and `ein solve --monotone`
-//! prints this verdict alone.
+//! On a program with a site a node is a fork of root by assumption, and the
+//! engine claims nothing about its solutions (Q-M1e2.2): it detects and
+//! warns. [`crate::detector`] reads what every surface warns of, and
+//! `ein solve --monotone` prints this verdict alone.
 
 use std::sync::Arc;
 
@@ -259,9 +256,8 @@ impl Site {
     }
 }
 
-/// Every read of a relation inside an `absent`, classified — the user's
-/// question of 2026-10-15, *does any `absent` cause non-monotonicity, or only
-/// some?*, answered per program.
+/// Every read of a relation inside an `absent`, classified — *does any
+/// `absent` cause non-monotonicity, or only some?*, answered per program.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AbsentRead {
     pub rule: Symbol,
@@ -310,12 +306,12 @@ pub struct Monotonicity {
     pub sites: Vec<Site>,
     /// The detector's static half, on a program with a site: what each site
     /// puts at stake, the cycles through an `absent` over `D`, and the order
-    /// findings (M1e2 S1e2.1b.5, [`crate::detector`]). Empty on a program
+    /// findings ([`crate::detector`]). Empty on a program
     /// with none, which it never reads.
     pub detector: Box<crate::detector::Static>,
     /// The **negative cycles** of the saturation rules' dependency graph over
-    /// every relation, not only `D` — M1f S1f.5.15's T4, the static
-    /// non-stratifiability diagnostic ([`crate::strata::graph`]). Empty on a
+    /// every relation, not only `D` — the static non-stratifiability
+    /// diagnostic ([`crate::strata::graph`]). Empty on a
     /// stratified program. Read on every program, flagged or not: a cycle
     /// through an `absent` among relations no commitment changes leaves `D`
     /// alone, so the static check calls the program monotone, and root's own
@@ -332,7 +328,7 @@ impl Monotonicity {
 
     /// Is `rel` in `D` — a relation some commitment can change? A relation
     /// outside it is static: complete at root, and the same at every node.
-    /// L5's premise reads it (`crate::oblgen::alternatives`, M1e2 S1e2.1c.4).
+    /// L5's premise reads it (`crate::oblgen::alternatives`).
     pub fn changes(&self, rel: Rel, terms: &Terms) -> bool {
         if rel.is_any_negative(terms) {
             return self.dynamic.iter().any(|x| x.negated);
@@ -344,7 +340,7 @@ impl Monotonicity {
 
 /// Every relation `span` of `plan` reads, nested `absent`s included, less the
 /// top-level step at `skip` — the reads a guard makes beside its witness
-/// (M1e2 S1e2.1c.4's L5).
+/// (L5's).
 pub fn reads_in(plan: &Plan, span: Span, skip: Option<usize>, terms: &Terms) -> Vec<Rel> {
     let mut out = Vec::new();
     for (i, step) in plan.steps(span).iter().enumerate() {
@@ -505,9 +501,9 @@ pub fn classify(
     d.sort_by_key(|r| r.label(terms));
     out.dynamic = d;
     // The detector's static half, gated on the verdict just reached: a program
-    // with no site gets none and pays one test (M1e2 S1e2.1b.5).
+    // with no site gets none and pays one test.
     out.detector = Box::new(crate::detector::of_program(kb, terms, plans, &out));
-    // Whether a stratification exists at all (M1f S1f.5.15's T4), on every
+    // Whether a stratification exists at all, on every
     // program: the graph is the one the detector restricts to `D`.
     out.negative_cycles = crate::strata::graph(kb, terms, plans).cycles;
     out
@@ -519,8 +515,8 @@ pub fn classify(
 ///
 /// The one computation of `D`. [`classify`] seeds it with `H`'s relations;
 /// the obligations rung seeds it with the relations it would propose, and
-/// declines on a guard that scans one (`crate::oblgen::generate`, M1e2
-/// S1e2.2.15), before `H` exists to seed [`classify`] with.
+/// declines on a guard that scans one (`crate::oblgen::generate`), before
+/// `H` exists to seed [`classify`] with.
 pub(crate) fn dynamic(
     kb: &Kb,
     terms: &Terms,
@@ -541,9 +537,9 @@ pub(crate) fn dynamic(
     close(seed, &saturation, &[], terms)
 }
 
-/// `D` followed through the rules root has no plan of — M1e2
-/// [S1e2.2.17](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.17_forbid_activator_chain.md),
-/// W17: the relations *forbid* calls extendable, `D⁺`.
+/// `D` followed through the rules root has no plan of (`W17`): the relations
+/// *forbid* calls extendable, `D⁺`
+/// ([monotonicity.md § 10](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#10-forbid-what-is-refused-at-load)).
 ///
 /// `D` is closed over the plans root compiled. A rule with parameters whose
 /// activator relation is in `D` is an activator site: a node compiles a plan
@@ -659,7 +655,7 @@ pub fn reads_of(plan: &Plan, terms: &Terms) -> Vec<(Rel, u32)> {
 ///
 /// An `eq` or `neq` conclusion, or `(not …)` over one, writes `(false)` or
 /// nothing: a state stores neither relation, and a false one is a
-/// contradiction (M1f S1f.5.7, G-21, `firing::build_conclusion`).
+/// contradiction (Q-M1e2.26, `firing::build_conclusion`).
 pub fn writes_of(plan: &Plan, terms: &Terms) -> Vec<Rel> {
     let mut out = Vec::new();
     for slot in plan.asserts.iter() {
@@ -691,8 +687,8 @@ pub fn writes_of(plan: &Plan, terms: &Terms) -> Vec<Rel> {
 /// records.
 fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
     for (x, y) in a.iter().zip(b.iter()) {
-        // By content: a name by its text, as until M1f S1f.5.18 kept the
-        // names alone, and a nested fact after every name (Q-M1f.43).
+        // By content: a name by its text, and a nested fact after every name
+        // (Q-M1f.43).
         let o = terms.cmp_semantic(*x, *y);
         if o != std::cmp::Ordering::Equal {
             return o;

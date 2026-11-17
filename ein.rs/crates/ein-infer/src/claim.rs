@@ -1,13 +1,13 @@
-//! A `(solve … :expect …)` claim, checked against R — M1e2
-//! [S1e2.1a.4](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md).
+//! A `(solve … :expect …)` claim, checked against R
+//! ([query.md § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
 //!
 //! The shape is [`ein_ir::claim`]'s and the loader has validated it. This is
-//! the comparison, and it never runs the walk: R comes from route 1 on a
+//! the comparison: R comes from route 1 on a
 //! monotone program and from the cube on a flagged one, the two routes
 //! `ein solve` describes R by ([`crate::explore`]). Each state's facts are its
 //! fixpoint's, root's included, read by the oracle's own node.
 //!
-//! The rules (`query.md`, accepted 2026-10-16):
+//! The rules ([query.md § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)):
 //!
 //! - every relation the claim names positively is closed, across the whole
 //!   claim, and a listed `(not …)` is checked for presence;
@@ -152,8 +152,8 @@ fn lattice(
     // § Describe's route: the tree and the classes, describe's default, do
     // not compute that); route 1 on a flagged one whose root is dead
     // (`explore::Licence::ForkOnlyAdds`), the cube else.
-    // A claim states no core, so the run takes none but root's (M1e2
-    // S1e2.2.21, *minimum work per question*).
+    // A claim states no core, so the run takes none but root's (Q-M1e2.31,
+    // *the least work each question needs*).
     let route_opts = downset::Options {
         budget: opts.budget,
         max_visits: u64::MAX,
@@ -241,7 +241,7 @@ fn lattice(
 }
 
 /// R, printed as the claim that states it — the form `ein solve` prints and a
-/// program reads back (ruling 1 of 2026-10-16: one form, both directions). It
+/// program reads back (one form, both directions). It
 /// names the candidates' relations, so every state is told apart. `None` when
 /// no route described R.
 ///
@@ -479,10 +479,8 @@ fn fixpoints(
 
 /// Where exactly one state of R and one listed model are left over, the facts
 /// they differ in over the closed relations — and each fact the state holds
-/// and the model does not list, with the rule that put it there. That is M1c
-/// T1c.1.3.3's line, kept when the query's claim of a state became the region
-/// claim (M1e2 S1e2.1a.5): the step after "there is an extra fact here" is
-/// where its reader goes next.
+/// and the model does not list, with the rule that put it there: the step
+/// after "there is an extra fact here" is where its reader goes next.
 fn one_off(
     root: &mut Kb,
     terms: &mut Terms,

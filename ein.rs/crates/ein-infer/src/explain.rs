@@ -22,107 +22,97 @@
 //! [`ein_core::Kb::justifications`]: the primary, up to
 //! [`ein_core::kb::MAX_ALT_JUSTIFICATIONS`] alternatives kept by **premise
 //! count**, and, beside them, the arrival with the **smallest closure**
-//! ([`ein_core::Kb::best`], M1e2 S1e2.2.11, Q-M1e2.11). The promise is
+//! ([`ein_core::Kb::best`], Q-M1e2.11). The promise is
 //! the smallest frontier over **every derivation the program records**, and
 //! the third is what keeps a full list from hiding the derivation this search
 //! would choose: premise count is local and frontier size transitive, so a
 //! one-premise step over a deep chain is retained ahead of a two-premise step
 //! over givens. `examples/ein-bugs/alt-cap-core.ein` and its `-reordered`
-//! twin, one `:priority` apart, reported a 3-fact core against a 2-fact one
-//! until S1e2.2.11 and report the same 2-fact core since.
+//! twin, its rules written in another order, report the same 2-fact core.
 //!
-//! Two limits, each a ruling of the user's (2026-11-04, Q-M1e2.11):
+//! Two limits (Q-M1e2.11):
 //!
 //! - **A saving between two facts, behind a full list, is not offered.** The
 //!   derivation a target needs can be its own fact's worst, and no list of
 //!   fixed length keeps every such one:
 //!   `examples/ein-bugs/wrong-answers/alt-cap-shared.ein` reports 3 facts
-//!   where every derivation gives 2. It is `W10/alt-cap-shared`, open and
-//!   deferred to F22, which re-derives what a full list refused when this
-//!   search reaches it. [`Explanation::exhausted`] does not see it.
+//!   where every derivation gives 2 (`W10/alt-cap-shared`): no search
+//!   re-derives what a full list refused. [`Explanation::exhausted`] does
+//!   not see it.
 //! - **`:record-alternative-justifications false` records no alternative**,
 //!   so the search is offered each fact's first derivation alone and the core
 //!   can be another: the one config flag that may change which core is
-//!   named, and nothing else (`config.md` § 2.5).
+//!   named, and nothing else
+//!   ([config.md](../../../../docs/ein/user/reference/config.md), Q-M1e2.30).
 //!
 //! It is not a soundness question either way: a larger frontier is still a
 //! real explanation.
 //!
 //! ### A search its budget cut says so
 //!
-//! **On every surface that prints its core** ([`CoreStatus`], M1e2
-//! S1e2.2.23). The search keeps 64 environments per fact and runs 64 rounds
+//! **On every surface that prints its core** ([`CoreStatus`]). The search
+//! keeps 64 environments per fact and runs 64 rounds
 //! ([`ExplanationBudget`]); past either it stops with a real frontier that
-//! may not be the smallest, and [`Explanation::cut`] names the cap. Until
-//! S1e2.2.23 the two callers that take a core a surface prints,
-//! `region::node_in_region` and `region::Nodes::refutation`, kept the
-//! frontier and dropped the rest, so a cut core was printed as the core
-//! (W23): `examples/ein-bugs/wrong-answers/core-search-cut.ein`'s `(A k)` has
-//! 256 environments, and its root core was ten facts where eight suffice. The
-//! search keeps its budget and a cut core says so; the exact core past the
-//! budget is F22's. The corpus cuts
-//! 19 of the 5 442 cores `--dump-answer` reports for N, `zebra.ein`'s at the
-//! rounds and the `zebra2` family's at the environments, and a budget sixteen
-//! times larger gives each the same core (S1e2.2.23 T1, 2026-11-05).
+//! may not be the smallest, and [`Explanation::cut`] names the cap. The two
+//! callers that take a core a surface prints, `region::node_in_region` and
+//! `region::Nodes::refutation`, carry the status with the frontier, so a cut
+//! core is never printed as the core (`W23`):
+//! `examples/ein-bugs/wrong-answers/core-search-cut.ein`'s `(A k)` has 256
+//! environments, and its root core is ten facts where eight suffice,
+//! qualified as cut. The search keeps its budget and a
+//! cut core says so; the exact core past the budget is not computed. In the
+//! corpus `zebra.ein`'s cuts are at the rounds and the `zebra2` family's at
+//! the environments.
 //!
 //! ### What a derivation rests on
 //!
 //! **Its premises, and the activator its plan was compiled from where a node
-//! derived or committed it** ([`ein_core::walks::node_activator`], M1e2
-//! S1e2.2.19). A plan of a rule with parameters is compiled from an
+//! derived or committed it** ([`ein_core::walks::node_activator`]). A plan
+//! of a rule with parameters is compiled from an
 //! activator, `(rule args…)`, and a firing records it
 //! ([`ein_core::Prov::activator`]); the AND-node is the premises with that
 //! activator beside them. Root's activators, stated or derived, are the
 //! program's, as the plans root compiles from them are its rules, and are
-//! followed into no core: the user's ruling of 2026-11-04 on Q-M1e2.12, (c).
-//! So a core is a set of facts from which, with root's plans, saturation
-//! derives the contradiction, and it names the commitment a plan only a node
-//! compiles rests on. Until S1e2.2.19 no derivation recorded its activator,
-//! and such a commitment was in no core (W19):
+//! followed into no core (Q-M1e2.12). So a core is a set of facts from
+//! which, with root's plans, saturation derives the contradiction, and it
+//! names the commitment a plan only a node compiles rests on (`W19`):
 //! `examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein`'s dead
-//! `{(p a)}` reported `(seed a)`, a fact root holds, and
-//! `core-activator-guard-only.ein`'s, whose refuting plan matches no fact,
-//! reported nothing; they report `(p a) (seed a)` and `(p a)`.
+//! `{(p a)}` reports `(p a) (seed a)`, and `core-activator-guard-only.ein`'s,
+//! whose refuting plan matches no fact, `(p a)`.
 //!
-//! **And the facts its universals read** ([`ein_core::Prov::universal`], M1e2
-//! S1e2.2.21). A `forall` is `(absent (and G (absent B)))`, and one that held
+//! **And the facts its universals read** ([`ein_core::Prov::universal`]). A
+//! `forall` is `(absent (and G (absent B)))`, and one that held
 //! rests on facts: for each match of `G`, the fact `B` matched. `total`'s
 //! `(false)` rests on the `(not (R a b))` that exclude every `b`, and an
 //! elimination's conclusion on the exclusions of every other value. Each is
 //! folded in at its **own smallest environment**, beside the premises the
-//! search folds over their whole labels: the user's ruling of 2026-11-05 on
-//! Q-M1e2.15, (b). Folding those over their whole labels too is the exact
-//! search, and it cost ×2 500 a member of N on `zebra2-hints` (3 ms → 7.5 s,
-//! cut by its budget); a core it would give smaller (13 of that program's 73
-//! N cores, S1e2.2.21 T1) is the promise's second residual, F22's beside the
-//! cap's. Until S1e2.2.21 no record named them:
+//! search folds over their whole labels (Q-M1e2.15). Folding those over their
+//! whole labels too is the exact search, which costs orders of magnitude
+//! more on a member of N and is cut by its budget; a core it would give
+//! smaller is the promise's second residual, beside the cap's (`W21`):
 //! `examples/ein-bugs/wrong-answers/forall-core-false.ein`'s dead `{(tag s1),
-//! (tag s2)}` reported `(item a)`, root's, and reports `(item a) (tag s1)
-//! (tag s2)`.
+//! (tag s2)}` reports `(item a) (tag s1) (tag s2)`.
 //!
 //! ### What a contradiction rests on
 //!
-//! **Its facts, together** ([`contradiction_frontier`], M1e2 S1e2.2.21): a
-//! direct ⊥'s `(false …)` fact, and a pair's `X` and `(not X)` as one
-//! AND-node, the smallest union over both sides' environments. A node's core
-//! is the smallest over its contradictions. Until S1e2.2.21 each contradiction
-//! was explained by its witness alone, a pair's positive side, and the core
-//! left out the derivation of `(not X)`, where a commitment typically is
-//! (W21): `pair-core-root-given.ein`'s dead `{(q a)}` reported `(p a)`, a
-//! fact the program states, and `zebra2.ein`'s N 201 of 366 such cores.
+//! **Its facts, together** ([`contradiction_frontier`]): a direct ⊥'s
+//! `(false …)` fact, and a pair's `X` and `(not X)` as one AND-node, the
+//! smallest union over both sides' environments. A node's core is the
+//! smallest over its contradictions. A core of a pair's positive side alone
+//! would leave out the derivation of `(not X)`, where a commitment typically
+//! is (`W21`): `pair-core-root-given.ein`'s dead `{(q a)}` would report
+//! `(p a)`, a fact the program states.
 //!
 //! ### Which rules a core's derivation ends in
 //!
-//! **The last step of a derivation from the core** ([`Explanation::steps`],
-//! M1e2 S1e2.3.10, P1e2.3's N7): for each fact of the contradiction the core
-//! was taken over, a recorded justification whose premises, activator and
-//! universal reads the core derives, the first in the store's order where
-//! there are several (the user's ruling of 2026-11-06 on Q-M1e2.21, (a)).
-//! A dead node's `refuted by` is those steps' rules. Until S1e2.3.10 it was
-//! the first contradiction's primaries, which need not be a step the core's
-//! derivation takes: `examples/ein-bugs/alt-cap-core.ein` printed `refuted by
-//! narrow` beside the core `(w1 X) (w2 X)`, which only `wide` refutes, and
-//! 65 559 of the corpus's printed cores per commit named such a rule.
+//! **The last step of a derivation from the core** ([`Explanation::steps`]):
+//! for each fact of the contradiction the core was taken over, a recorded
+//! justification whose premises, activator and universal reads the core
+//! derives, the first in the store's order where there are several
+//! (Q-M1e2.21). A dead node's `refuted by` is those steps' rules, never the
+//! first contradiction's primaries, which need not be a step the core's
+//! derivation takes: `examples/ein-bugs/alt-cap-core.ein` prints `refuted by
+//! wide` beside the core `(w1 X) (w2 X)`, which only `wide` refutes.
 //!
 //! ### The algorithm
 //!
@@ -170,7 +160,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 /// discards environments, and each survivor is still a real set of derivation
 /// leaves. A truncated search may miss a smaller one, which is what
 /// [`Explanation::exhausted`] reports and [`Explanation::cut`] names, and
-/// since M1e2 S1e2.2.23 every surface that prints a core says
+/// every surface that prints a core says
 /// ([`CoreStatus`]). Every caller that takes a core a surface prints uses the
 /// default, and no option changes it.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -199,7 +189,7 @@ impl Default for ExplanationBudget {
 }
 
 /// Which of [`ExplanationBudget`]'s caps a search stopped at: none when it
-/// reached its fixpoint inside every one (M1e2 S1e2.2.23, W23).
+/// reached its fixpoint inside every one (`W23`).
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Default)]
 pub struct Cut {
     /// A label, or a justification's fold, had more than
@@ -220,13 +210,12 @@ impl Cut {
 }
 
 /// What a core's search established, carried beside every core a surface
-/// prints (M1e2 S1e2.2.23, W23). It says whether the search was cut, and at
-/// which cap, and no more: [`CoreStatus::WithinBudget`] does not say the core
-/// is the smallest over every derivation the program records, which F22's
-/// residuals keep it from being (the module note). A dead set is never printed
-/// without a core: M1e2 S1e2.3.9's `not-kept`, written beside a member of `N` a
-/// run past `--region-limit` had not kept, retired with M1f S1f.5.12, which
-/// gives every member its core after the walk.
+/// prints (`W23`). It says whether the search was cut, and at which cap, and
+/// no more: [`CoreStatus::WithinBudget`] does not say the core is the
+/// smallest over every derivation the program records, which the two
+/// residuals keep it from being (the module note). A dead set is never
+/// printed without a core: every member of `N` is given its core after the
+/// walk (Q-M1f.26).
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum CoreStatus {
     /// The search reached its fixpoint inside every cap of its budget.
@@ -236,17 +225,14 @@ pub enum CoreStatus {
     Cut(Cut),
 }
 
-/// How a text surface writes a core that holds no fact — M1f S1f.5.9
-/// (Q-M1f.48, taken by default on the user's instruction of 2026-11-09).
+/// How a text surface writes a core that holds no fact (Q-M1f.48).
 ///
 /// A contradiction that needs no fact, `(rule r () :match () :assert
 /// (false))`'s, has the empty set for its core: `[]` in every JSON surface,
 /// which Q-M1e2.27 tells from `null`, *no core*. A text surface prints a core
-/// fact by fact, so the empty set printed nothing, which reads as *no core*
-/// (`--trace`'s `Core:` named nothing); it prints `∅`, the read-out's spelling of
-/// the empty set (*∅, root itself*), where a node is dead and its core was
-/// taken ([`core_text`]). No core was empty until S1f.5.9 made `:match ()`
-/// fire.
+/// fact by fact, so the empty set would print nothing, which reads as *no
+/// core*; it prints `∅`, the read-out's spelling of the empty set (*∅, root
+/// itself*), where a node is dead and its core was taken ([`core_text`]).
 pub const EMPTY_CORE: &str = "∅";
 
 /// What the read-out and the trace say beside [`EMPTY_CORE`].
@@ -372,15 +358,14 @@ pub struct Explanation {
     /// **over the justifications the store holds** ([`ein_core::Kb::justifications`]).
     /// False means "sound, but possibly not smallest", and [`Self::cut`]
     /// says which cap; a core's [`CoreStatus`] carries both to every surface
-    /// that prints it (M1e2 S1e2.2.23).
+    /// that prints it.
     ///
     /// It reports [`ExplanationBudget`] and nothing else. Which derivations
     /// the store holds is decided upstream, by the alternatives cap and the
-    /// smallest-closure arrival kept beside it (M1e2 S1e2.2.11), and this
-    /// flag does not see it: where a saving between two facts sits behind a
-    /// full list, `exhausted = true` beside a core larger than the smallest
-    /// over every derivation (`W10/alt-cap-shared`, F22's; see the module
-    /// note).
+    /// smallest-closure arrival kept beside it, and this flag does not see
+    /// it: where a saving between two facts sits behind a full list,
+    /// `exhausted = true` beside a core larger than the smallest over every
+    /// derivation (`W10/alt-cap-shared`; see the module note).
     pub exhausted: bool,
     /// Which caps the search stopped at; `exhausted == !cut.any()`.
     pub cut: Cut,
@@ -393,8 +378,8 @@ pub struct Explanation {
     /// store records where it derives it through several (`steps_of`), or
     /// the primary of a fact the frontier holds itself (a given's or a
     /// hypothesis's). Past `max_facts`, each fact's primary, the walk's
-    /// derivation. What a dead node's `refuted by` names (M1e2 S1e2.3.10,
-    /// P1e2.3's N7); empty where no target got a label.
+    /// derivation. What a dead node's `refuted by` names (Q-M1e2.21); empty
+    /// where no target got a label.
     pub steps: Vec<ProvId>,
 }
 
@@ -428,7 +413,7 @@ struct AndNode {
     /// facts its universals read: `facts[..searched]` and `facts[searched..]`.
     facts: Vec<FactId>,
     /// How many of `facts` are folded over their whole labels; each one after
-    /// is folded at its smallest environment (M1e2 S1e2.2.21, Q-M1e2.15 (b)).
+    /// is folded at its smallest environment (Q-M1e2.15).
     searched: usize,
     /// The justification it is ([`Explanation::steps`]).
     prov: ProvId,
@@ -529,7 +514,7 @@ fn build_graph(
                 continue;
             }
             // Its premises, and the activator its plan was compiled from
-            // where a node derived or committed it (M1e2 S1e2.2.19).
+            // where a node derived or committed it (Q-M1e2.12).
             let mut facts = prov.premises.to_vec();
             let activator = match reach {
                 Reach::Core => ein_core::walks::node_activator(kb, prov),
@@ -541,7 +526,7 @@ fn build_graph(
                 facts.push(a);
             }
             let searched = facts.len();
-            // Then what its universals read (M1e2 S1e2.2.21).
+            // Then what its universals read (Q-M1e2.15).
             for &u in prov.universal.iter() {
                 if !facts.contains(&u) {
                     facts.push(u);
@@ -671,10 +656,9 @@ fn union(a: &[u32], b: &[u32]) -> Env {
 ///
 /// `facts[..searched]` are folded so; each fact after them, what the
 /// derivation's universals read, contributes its **smallest** environment,
-/// one union at the end (M1e2 S1e2.2.21, the user's ruling of 2026-11-05 on
-/// Q-M1e2.15, (b)). Folding those over their whole labels too is the exact
-/// search, and it cost ×2 500 a member of N on `zebra2-hints` (3 ms → 7.5 s,
-/// cut by its budget; S1e2.2.21 T1); the saving it would find is F22's.
+/// one union at the end (Q-M1e2.15). Folding those over their whole labels
+/// too is the exact search, which costs orders of magnitude more and is cut by
+/// its budget; the saving it would find is not computed.
 fn fold(
     and_node: &[FactId],
     searched: usize,
@@ -794,14 +778,11 @@ pub fn explain(
 /// [`crate::contradiction::Contradiction::witness`] its tie-break and the
 /// [`Explanation::target`].
 ///
-/// M1e2 S1e2.2.21 (W21). Until then each contradiction was explained by its
-/// witness alone, a pair's positive side, and the core left out the
-/// derivation of `(not X)`, where a commitment typically is:
-/// `examples/ein-bugs/wrong-answers/pair-core-root-given.ein`'s dead
-/// `{(q a)}` reported `(p a)`, a fact root states, and `zebra2.ein`'s N 201
-/// of 366 such cores. *Jointly* is the stage's default 2: the stage file's
-/// *each side at its smallest* differs on four corpus programs and is never
-/// smaller.
+/// `W21`: explained by its witness alone, a pair's positive side, the core
+/// would leave out the derivation of `(not X)`, where a commitment typically
+/// is: `examples/ein-bugs/wrong-answers/pair-core-root-given.ein`'s dead
+/// `{(q a)}` would report `(p a)`, a fact root states. The sides are taken
+/// *jointly*: each side at its smallest, apart, is never smaller.
 pub fn contradiction_frontier(
     kb: &Kb,
     terms: &Terms,
@@ -969,16 +950,14 @@ fn derived_from(g: &Graph, env: &Env) -> FxHashSet<FactId> {
 /// (fewest premises first), else the smallest-closure arrival. A fact the
 /// frontier holds itself, or a ground-out, is its own primary.
 ///
-/// The user's ruling of 2026-11-06 on Q-M1e2.21, (a). A core often derives a
-/// fact of its contradiction through two rules (5 041 of the corpus's 230 154
-/// printed cores per commit, M1e2 S1e2.3.10's step 1), and the store's order
-/// picks one: the program's priorities, then arrival in commitment order,
-/// never the interner. So `:record-alternative-justifications false`, which
-/// keeps each fact's primary alone, moves the rule only where it moves the
-/// core: where the core is the same, the primaries are a derivation from it.
-/// The accepted cost: two programs one `:priority` apart can name two rules
-/// beside one core (`s1e2.3.10_probes/two-rules.ein` and its `-reordered`
-/// twin, `wide-a` and `narrow-b` beside `(p A)`).
+/// Q-M1e2.21. A core often derives a fact of its contradiction through two
+/// rules, and the store's order picks one: arrival in the agenda's order and
+/// in commitment order, never the interner. So
+/// `:record-alternative-justifications false`, which keeps each fact's
+/// primary alone, moves the rule only where it moves the core: where the core
+/// is the same, the primaries are a derivation from it. The accepted cost:
+/// two programs whose rules are written in another order can name two rules
+/// beside one core (Q-M1f.6: a core is an explanation).
 fn steps_of(kb: &Kb, g: &Graph, group: &[FactId], env: &Env) -> Vec<ProvId> {
     let d = derived_from(g, env);
     let mut out = Vec::with_capacity(group.len());
@@ -1025,7 +1004,7 @@ pub fn recorded_fallback(
 }
 
 /// [`recorded_fallback`] for `contradictions`, each one's facts walked
-/// together, a pair's two sides (M1e2 S1e2.2.21): what [`contradiction_frontier`]
+/// together, a pair's two sides: what [`contradiction_frontier`]
 /// degrades to past `max_facts`. `pub` for `shape::explain_shape`, as
 /// [`recorded_fallback`] is.
 pub fn recorded_contradiction_fallback(
@@ -1091,8 +1070,8 @@ fn fallback_groups(
 /// The smallest explanation of any contradiction in `kb`.
 ///
 /// `None` explains every contradiction the detector finds, each one's facts
-/// together ([`contradiction_frontier`]; until M1e2 S1e2.2.21 each by its
-/// witness alone). `Some(facts)` explains each of `facts` alone, as
+/// together ([`contradiction_frontier`]). `Some(facts)` explains each of
+/// `facts` alone, as
 /// [`explain`] does; a consistent KB yields an empty [`Explanation`].
 pub fn minimal_contradiction_frontier(
     kb: &Kb,
@@ -1117,10 +1096,9 @@ pub fn minimal_contradiction_frontier(
 /// when one cause propagates it fans out into many. `zebra2-bad`'s single
 /// injected fact is the worked case — a large witness set, each witness a
 /// complete contradiction on its own with a handful of givens behind it, and
-/// the smallest of them exactly the culprit. The four numbers are
-/// `explain_semantics::the_injected_contradiction_fans_out_and_the_union_overstates_it`'s
-/// since M1e `MA-M4`, because this comment and `solve.rs`'s said two different
-/// things and neither was current.
+/// the smallest of them exactly the culprit. The numbers are
+/// `explain_semantics::the_injected_contradiction_fans_out_and_the_union_overstates_it`'s,
+/// so that one place states them.
 pub fn smallest_contradiction_frontier(
     kb: &Kb,
     terms: &Terms,

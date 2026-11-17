@@ -1,16 +1,15 @@
-//! Every plan a KB compiles, as one deterministic text — the S1a.3.1 diff.
+//! Every plan a KB compiles, as one deterministic text.
 //!
 //! A compiled plan has no CLI surface: nothing `ein` prints exposes a step
 //! sequence, a guard's scope, or a `watched` set. So the compiler is rendered
 //! as one text, the way the loader is at
 //! [design/ir-frontend.md § 9.3](../../../../docs/ein/ein.rs/design/ir-frontend.md#93-the-kb-as-one-text),
-//! and since S1a.10.2 the text is digested into `corpus_shapes.md5`.
+//! and the text is digested into `corpus_shapes.md5`.
 //!
 //! Two rules make the text stable, and they are the same two the KB shape
 //! settled on:
 //!
-//! - **Values are rendered with `repr`**, so the name `7` prints as `'7'`
-//!   (and the integer `7` printed as `7`, until M1f S1f.5.4 retired the int),
+//! - **Values are rendered with `repr`**, so the name `7` prints as `'7'`,
 //!   and a slot that changed shape cannot hide.
 //! - **Sets are rendered sorted** — `watched`, `scope` and a step's shared
 //!   variables are sets, whose iteration order is not reproducible even run
@@ -19,7 +18,7 @@
 //! What is deliberately *not* in the text: registers and probes. They are the
 //! compiler's own metadata, and the claim that they change no behaviour is
 //! checked where it is made — by the matcher's debug assertion that its probe
-//! choice is the left-to-right candidate scan's choice (S1a.3.2).
+//! choice is the left-to-right candidate scan's choice.
 
 use ein_core::entities::Rule;
 use ein_core::repr::{ReprValue, repr, repr_str};
@@ -45,7 +44,7 @@ pub fn plan_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, Compi
     plan_shape_with(ast, terms, kb, true)
 }
 
-/// [`plan_shape`], optionally without `activators_for`'s S1.22.0 **arity**
+/// [`plan_shape`], optionally without `activators_for`'s **arity**
 /// filter.
 ///
 /// Nothing in the engine compiles an unfiltered pair — both drivers filter
@@ -80,7 +79,7 @@ pub fn plan_shape_with(
     Ok(out)
 }
 
-/// Every match every plan produces over `kb` — the S1a.3.2 diff.
+/// Every match every plan produces over `kb`.
 ///
 /// Two sweeps per plan, because the matcher has two entry shapes and they owe
 /// each other an identity: the full run, and a `run_seeded` at **every fact in
@@ -133,8 +132,7 @@ pub fn match_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, Comp
     Ok(out)
 }
 
-/// The `--events` log of a root saturation, plus the counters — the S1a.3.3
-/// diff.
+/// The `--events` log of a root saturation, plus the counters.
 ///
 /// The protocol itself, at `verbose`, so a redundant firing is emitted rather
 /// than only counted — a dropped one would otherwise be invisible, which is
@@ -158,7 +156,7 @@ pub fn saturate_events(
     };
     let mut sat = crate::saturator::Saturator::new(&mut s)?;
     sat.saturate(&mut s, None, &mut |_| {})?;
-    // S1.21.8 negative provenance: what each firing depended on *not* holding.
+    // Negative provenance: what each firing depended on *not* holding.
     // Neither the event stream nor the KB shape carries it, so without this
     // line `absent_premises` would be the one thing the boundary produces that
     // nothing compares — and it is where a scope projection goes wrong.
@@ -210,7 +208,7 @@ pub fn saturate_events(
     Ok(buffer.to_string_lossy() + &absents + &clashes + &summary)
 }
 
-/// The static NAF dependency map over a **saturated** cache — the S1a.4.2 diff.
+/// The static NAF dependency map over a **saturated** cache.
 ///
 /// Saturating first is not a convenience: most NAF-bearing rules in the Zebra
 /// family are activated by facts a rule derives, so their plan does not exist
@@ -234,16 +232,16 @@ pub fn naf_map(
     };
     let mut sat = crate::saturator::Saturator::new(&mut s)?;
     sat.saturate(&mut s, None, &mut |_| {})?;
-    // S1e.2.3's third classification needs the program, not just the cache.
+    // The third classification needs the program, not just the cache.
     let eligible = crate::hypgen::eligible_relations(&mut s)?;
     let deps = crate::naf_deps::compute_naf_map(&sat.engine, s.terms, &eligible);
     let mut out: Vec<String> = deps
         .iter()
         .map(|d| {
             // The `refutes=` field is emitted **only when there is one**, so a
-            // digest over a program with no exposed rule is byte-identical to
-            // the one taken before S1e.2.3. The shape golden is then the
-            // corpus census, and its diff is the finding.
+            // digest over a program with no exposed rule carries no trace of
+            // the classification. The shape golden is then the corpus
+            // census of exposed rules.
             let exposed = match &d.refutation {
                 None => String::new(),
                 Some(r) => format!(
@@ -281,7 +279,7 @@ pub fn naf_map(
     Ok(out.join("\n"))
 }
 
-/// Unsat cores and the ATMS label search — the S1a.4.6 diff.
+/// Unsat cores and the ATMS label search.
 ///
 /// Contradictions first — but most corpus files have none, so an op that only
 /// explained contradictions would be empty on nearly all of them. It therefore
@@ -344,7 +342,7 @@ pub fn explain_shape(
 
     // Each contradiction's witness, which the walk's `CORE` line unions as it
     // always has; the search's lines explain each contradiction's sides
-    // together (M1e2 S1e2.2.21).
+    // together.
     let contradictions = crate::contradiction::detect(kb, terms);
     let witnesses: Vec<FactId> = contradictions.iter().map(|c| c.witness()).collect();
     let mut core = ein_core::walks::unsat_core(
@@ -379,7 +377,7 @@ pub fn explain_shape(
         // `recorded_fallback`'s tie-break: with one target its key never has
         // to break a tie, and `zebra2-bad` offers many
         // (`explain_semantics::the_injected_contradiction_fans_out_and_the_union_overstates_it`
-        // is the count's owner — M1e `MA-M4`).
+        // is the count's owner).
         line(
             "CONTRA-TIGHT",
             &crate::explain::contradiction_frontier(kb, terms, &contradictions, &tight),

@@ -1,6 +1,5 @@
-//! The modes' routes on a monotone program — M1e2
-//! [S1e2.1c.4](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md),
-//! each stated, with why it is sound, in
+//! The modes' routes on a monotone program, each stated, with why it is
+//! sound, in
 //! [the routes, question by question](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#6-the-routes-question-by-question).
 //!
 //! Describe takes the state route ([`crate::states`]): it needs every state of

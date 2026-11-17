@@ -1,15 +1,10 @@
 //! [`SolveError`] — why a question about `R` was not answered.
 //!
-//! It was the walk's (`solve.rs`) until M1e2
-//! [S1e2.1c.5](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)
-//! deleted the walk on the user's ruling of 2026-11-03, and every route
-//! ([`crate::explore`], [`crate::region`], [`crate::states`],
-//! [`crate::downset`]) and the read-out ([`crate::read_out`]) return it. The
-//! walk's two arms went with it: a budget that stopped the walk, which a route
-//! reports as an answer that says it is partial, and `-y`'s commutativity
-//! failure, which the walk's sanity probe raised. `-y` has the meaning the
-//! user ruled the same day, the detector's spot check unbounded, and its one
-//! failure is [`SolveError::SpotCheck`].
+//! Every route ([`crate::explore`], [`crate::region`], [`crate::states`],
+//! [`crate::downset`]) and the read-out ([`crate::read_out`]) return it. A
+//! budget that stops a route is no error: the route reports an answer that
+//! says it is partial. `-y` is the detector's spot check unbounded, and its
+//! one failure is [`SolveError::SpotCheck`].
 
 use crate::compile::CompileError;
 use crate::saturator::SaturateError;
@@ -21,15 +16,16 @@ pub enum SolveError {
     /// A question the engine does not answer, or a claim it cannot read: the
     /// message says which.
     Unsupported(String),
-    /// `-T`: the wall clock ran out inside the run — M1e2 T1e2.1a.5.3. A
+    /// `-T`: the wall clock ran out inside the run. A
     /// machine-dependent limit is never an answer.
     Deadline,
     /// `-y` on a program the static check calls monotone found a parent path
-    /// that reaches another state: the § 5.1 theorem says none can, so this is
-    /// an engine error, never an answer (M1e2 S1e2.1c.5, the user's ruling of
-    /// 2026-11-03). The message names the state and the parent.
+    /// that reaches another state: the static check's theorem
+    /// ([monotonicity.md § 3.2](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#32-the-theorem))
+    /// says none can, so this is an engine error, never an answer. The message
+    /// names the state and the parent.
     SpotCheck(String),
-    /// *Forbid* (M1e2 S1e2.2.5): a refutation rests on an `absent` over a
+    /// *Forbid* (Q-M1e2.5): a refutation rests on an `absent` over a
     /// relation a commitment can still extend, so the program is refused
     /// before any question about a commitment is answered. One line per
     /// refusing rule ([`crate::forbid`]); a load error's exit code.

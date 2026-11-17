@@ -1,9 +1,8 @@
-//! The solution region, by brute force — M1e2
-//! [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+//! The solution region, by brute force — the oracle
+//! ([finding-r.md § 2](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#2-the-oracle-the-cube)).
 //!
 //! The answer to a program is `R = { C : C alive and discharged }`, a region
-//! of its hypothesis lattice
-//! ([Q-M1e2.7](../../../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)).
+//! of its hypothesis lattice (Q-M1e2.7).
 //! The search is what is being checked, so this computes `R` **without it**:
 //! every subset of the root candidate list, each one a fork of root with the
 //! subset written in and saturated to quiescence, classified by what the
@@ -30,11 +29,10 @@
 //! fixpoint's. That is the engine's own notion of a commitment, minus every
 //! search-time write: no lookahead, no forced positive, no kill cache, no
 //! writeback, no learned clause. Where adding a fact can take a conclusion
-//! away the from-scratch route can disagree with it (W8), and which one `R` is
-//! over is open:
-//! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
-//! D2. [`crate::monotone`] says whether a program can, and on one that can,
-//! [`crate::detector`] says what the read-out warns of.
+//! away the from-scratch route can disagree with it (`W8`): on such a
+//! program the fork is an assumption, and the engine claims nothing about
+//! its solutions (Q-M1e2.2). [`crate::monotone`] says whether a program can,
+//! and on one that can, [`crate::detector`] says what the read-out warns of.
 //!
 //! **A route's dead node on a monotone program stops at its first
 //! contradiction** (`Axes::stopping_at_first_contradiction`): the
@@ -132,8 +130,8 @@ pub const DEAD: u8 = 1;
 /// The status bit of a node with an undischarged obligation.
 pub const OWING: u8 = 2;
 
-/// `n` past which the oracle refuses unless asked — the user's ruling of
-/// 2026-10-15: *"we can safely limit n with 16 by default"*.
+/// `n` past which the oracle refuses unless asked: `--region-limit`'s default
+/// ([cli.md § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
 pub const DEFAULT_LIMIT: u32 = 16;
 /// From here a raised limit warns on one line.
 pub const WARN_FROM: usize = 17;
@@ -174,17 +172,16 @@ pub struct Node {
     /// [`crate::explain::contradiction_frontier`].
     pub core: Vec<String>,
     /// What [`Self::core`]'s search established — whether its budget cut it
-    /// (M1e2 S1e2.2.23, W23); `None` where no core was taken.
+    /// (`W23`); `None` where no core was taken.
     pub core_status: Option<crate::explain::CoreStatus>,
     /// The rules whose firing ends the derivation of the contradiction
     /// [`Self::core`] was taken over ([`crate::explain::Explanation::steps`]),
     /// `(given)` for a fact of the contradiction the core holds itself, sorted;
-    /// empty where no core was taken (M1e2 S1e2.3.10, P1e2.3's N7: until then
-    /// the first contradiction's primaries, which need not be a rule the
-    /// core's derivation uses).
+    /// empty where no core was taken (Q-M1e2.21; never the first
+    /// contradiction's primaries, which need not be a rule the core's
+    /// derivation uses).
     pub refuted_by: Vec<String>,
-    /// The rules of the first contradiction's primaries, which
-    /// [`Self::refuted_by`] named until M1e2 S1e2.3.10: what the detector
+    /// The rules of the first contradiction's primaries: what the detector
     /// attributes a dead node to (`detector::dead_sites`), read on every
     /// node whether or not its core is taken, and printed nowhere.
     pub first_rules: Vec<String>,
@@ -263,14 +260,12 @@ impl Default for Options {
     }
 }
 
-/// Which dead nodes' unsat cores a run takes — M1f
-/// [S1f.5.12](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md),
-/// the user's ruling of 2026-11-08 on P-15, (c).
+/// Which dead nodes' unsat cores a run takes (Q-M1f.26, Q-M1f.25).
 ///
 /// A core is the one computation a node's record needs that its
 /// classification does not, an explanation search over the node's
-/// derivations, so a run takes one only where a surface prints it (M1e2
-/// S1e2.2.21, the user's ruling of 2026-11-05, *minimum work per question*).
+/// derivations, so a run takes one only where a surface prints it
+/// (Q-M1e2.31, *the least work each question needs*).
 /// Root's is taken on every run, and on the cube the minimal holes', which the
 /// read-out and the summary print. The surfaces that print more ask two
 /// things, and they are two fields:
@@ -333,18 +328,17 @@ pub struct Region {
     pub states: Option<Vec<Vec<String>>>,
     /// On a program the static check flags, what the detector read off the
     /// cube: the status, attributed, and every node's stale facts
-    /// ([`crate::detector`], M1e2 S1e2.1b.5). `None` on a monotone program.
+    /// ([`crate::detector`]). `None` on a monotone program.
     pub warning: Option<Box<Warning>>,
     /// What root's saturation and the universe's generator pass counted.
     pub root: RootStats,
 }
 
 /// What `prepare_with` counted on its way to root's fixpoint and the
-/// universe, kept for `--json-summary`'s `root` block — M1e2
-/// [S1e2.3.1](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md),
-/// the user's ruling (a) of 2026-11-03: the block is root's fixpoint and H,
+/// universe, kept for `--json-summary`'s `root` block: root's fixpoint and H,
 /// config-free, so a summary reads what every route starts from and runs no
-/// pass of its own.
+/// pass of its own
+/// ([read-out.md § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)).
 #[derive(Clone, Debug, Default)]
 pub struct RootStats {
     /// The plans root's saturator compiled, the derived activators' included.
@@ -356,12 +350,12 @@ pub struct RootStats {
     /// at root's fixpoint. Its `emitted` is `H`'s size: `seen_in_call` drops a
     /// repeat before `emitted` counts one.
     pub hypgen: HypGenStats,
-    /// What the universe leaves out ([`crate::scope`], M1e2 S1e2.2.8): the
+    /// What the universe leaves out ([`crate::scope`]): the
     /// relations the program can conclude or ask about, which it does not
     /// scope out itself, and of which the rung that built H proposes no fact.
     pub outside: Vec<crate::scope::Outside>,
-    /// What the untyped rung bound as an object ([`crate::types_as_objects`],
-    /// M1e2 S1e2.2.10): the names on the right of an `is-a` that a candidate
+    /// What the untyped rung bound as an object ([`crate::types_as_objects`]):
+    /// the names on the right of an `is-a` that a candidate
     /// of the blind enumerator's H names.
     pub types_as_objects: crate::types_as_objects::TypesAsObjects,
     /// The relations' names the blind enumerator bound as objects
@@ -375,8 +369,8 @@ pub struct RootStats {
     /// rung's. Empty where H gained nothing, so a surface that prints it
     /// prints what it printed on every such program.
     pub later: Vec<crate::oblgen::LaterDebtText>,
-    /// Root's own fixpoint derives `(false)` (M1f S1f.6.36: root's standing,
-    /// which `--no-search` reports and every run reaches first).
+    /// Root's own fixpoint derives `(false)`: root's standing, which
+    /// `--no-search` reports and every run reaches first.
     pub dead: bool,
     /// The obligation instances root's fixpoint leaves undischarged, dead or
     /// not, as the node function counts them.
@@ -412,8 +406,8 @@ impl Region {
 /// What the oracle did.
 ///
 /// One per oracle run, returned and matched once, so the refused arm's size
-/// beside the boxed region costs nothing worth an indirection; M1e2
-/// S1e2.2.8's `outside` took it past clippy's bound.
+/// beside the boxed region costs nothing worth an indirection; `outside`
+/// takes it past clippy's bound.
 #[derive(Clone, Debug)]
 #[allow(clippy::large_enum_variant)]
 pub enum Outcome {
@@ -553,10 +547,9 @@ pub(crate) fn compute_prepared(
     let pool = pool_of(opts.jobs);
 
     // The projection, before the run: [`PROBE_NODES`] nodes spread evenly over
-    // the masks, so over every layer, each saturated and discarded. It was the
-    // first 64 nodes in layer order until S1e2.1a.8 — the cheapest commitments
-    // of the cube — and `branching/10` (n = 18) projected 22.9 s for a run
-    // still going after 11 minutes on 8 jobs.
+    // the masks, so over every layer, each saturated and discarded. The first
+    // nodes in layer order would be the cheapest commitments of the cube, and
+    // project a fraction of a run's cost.
     if n >= WARN_FROM {
         let t_probe = Instant::now();
         for i in 0..PROBE_NODES as u64 {
@@ -657,7 +650,7 @@ pub(crate) fn compute_prepared(
     // The cores a surface prints that the walk did not take: the minimal
     // holes', which a read-out and a summary print, and under
     // `Cores::nogoods` N's members', which `--dump-answer` and `--trace`
-    // print (M1f S1f.5.12). Each through the node function, against the same
+    // print. Each through the node function, against the same
     // snapshot, so each is the core an eager run takes.
     if !opts.cores.visited {
         let mut after: Vec<u64> = topology
@@ -781,7 +774,7 @@ pub(crate) struct Prepared {
     pub root: RootStats,
     /// The instances root's fixpoint owes, its obligations' tally: with
     /// [`Self::root_dead`], whether ∅ is in `R`, which decides the minimal
-    /// line on any program (M1f S1f.5.6, `crate::explore`'s `flagged`).
+    /// line on any program (`crate::explore`'s `flagged`).
     pub root_owes: usize,
 }
 
@@ -809,16 +802,14 @@ pub fn root_firings(
 
 /// Root's derivation, as [`root_firings`] tells it, taken on a **copy** of
 /// root, so root is saturated by the run's own preparation alone — what
-/// `ein solve --trace` tells before any commitment (M1e2 S1e2.2.21).
+/// `ein solve --trace` tells before any commitment.
 ///
 /// A root saturated twice gives its nodes another snapshot to resume from (the
 /// second pass over a fixpoint re-judges every guard and parks and admits
 /// otherwise), so a node's derivations arrive in another order; under a
-/// `forall`'s support folded at each fact's smallest frontier that moved which
-/// of two equally small cores a node reports. Until S1e2.2.21 `--trace`
-/// saturated root itself first, and on `zebra2.ein` 2 of N's 366 cores and 13
-/// of the lattice dump's 190 dead cores differed from a run without it (the
-/// stage's T2, 2026-11-05; none at HEAD, whose cores did not move with it).
+/// `forall`'s support folded at each fact's smallest frontier that moves which
+/// of two equally small cores a node reports, and `--trace` would print other
+/// cores than a run without it (Q-M1f.25).
 pub fn root_derivation(
     root: &mut Kb,
     terms: &mut Terms,
@@ -841,9 +832,9 @@ pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Pre
 /// root's saturation, its obligation pass, and — on a program the static check
 /// flags — one `monotonicity` line.
 ///
-/// It narrated an `alive-set-invariant` `warn` line per constant only a rule
-/// names until M1e2 S1e2.2.4, which seeds the universe with those constants
-/// (Q-M1e.21 (b)): a name of the program is not a breach of anything.
+/// No `alive-set-invariant` `warn` line is narrated for a constant only a
+/// rule names: the universe is seeded with those constants (Q-M1e.21), and a
+/// name of the program is not a breach of anything.
 pub(crate) fn prepare_with(
     root: &mut Kb,
     terms: &mut Terms,
@@ -903,8 +894,7 @@ fn prepare_as(
     let root_dead = crate::contradiction::has_contradiction(root, terms);
 
     // The universe, config-free, in rendered-text order. Narrated, so the
-    // stream says how H was built — the rung and each candidate — as the
-    // walk's narrated its own generator (M1e2 S1e2.1a.5).
+    // stream says how H was built — the rung and each candidate.
     let candidates: Vec<Candidate> = match universe {
         Some(named) => named.to_vec(),
         None => {
@@ -989,7 +979,7 @@ fn prepare_as(
             };
             crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans, &later)?
         };
-        // What the untyped rung bound as an object (M1e2 S1e2.2.10): read off
+        // What the untyped rung bound as an object: read off
         // H and root's fixpoint, no event, and nothing it decides.
         let facts: Vec<FactId> = candidates.iter().map(|c| c.fact).collect();
         root_stats.types_as_objects =
@@ -999,7 +989,7 @@ fn prepare_as(
         root_stats.relation_names =
             crate::relation_names::of(root, terms, root_stats.hypgen.rung.mode, &facts);
     }
-    // *Forbid* (M1e2 S1e2.2.5): a refutation resting on an `absent` over a
+    // *Forbid* (Q-M1e2.5): a refutation resting on an `absent` over a
     // relation a commitment can still extend refuses the program, here, after
     // root's fixpoint and the static check, so every question about a
     // commitment refuses alike. A monotone program pays one test.
@@ -1007,7 +997,7 @@ fn prepare_as(
         let refused = crate::forbid::check(root, terms, ast, &plans, &monotonicity);
         if !refused.is_empty() {
             // The hrules that propose what a refusal rests on, which its first
-            // remedy names where the program declares any (M1f S1f.6.34).
+            // remedy names where the program declares any.
             let proposers = {
                 let mut silent = Events::off();
                 let mut s = Session {
@@ -1025,7 +1015,7 @@ fn prepare_as(
         }
     }
     if events.on() && !monotonicity.is_monotone() {
-        // The detector's static half (M1e2 S1e2.1b.5): optional fields, so
+        // The detector's static half: optional fields, so
         // `ein-events/1` stays. The dynamic half is the summary's and the
         // read-out's, after the run.
         let d = &monotonicity.detector;
@@ -1076,7 +1066,7 @@ pub(crate) struct Axes {
     /// Read each node's stale facts: on a flagged program only.
     stale: Option<Arc<StaleCheck>>,
     /// Report which of root's owed instances each node still owes — L5's
-    /// table, on the modes' obligation tree only (M1e2 S1e2.1c.4).
+    /// table, on the modes' obligation tree only.
     instances: Option<Arc<crate::oblgen::Alternatives>>,
     /// Take a dead node's unsat core ([`Axes::taking_cores`]); root's is
     /// taken either way.
@@ -1124,9 +1114,9 @@ impl Axes {
     /// root's either way: a core is the one computation a node's record needs
     /// that the classification does not, an explanation search over the
     /// node's derivations, and a run takes one only where a surface prints it
-    /// (M1e2 S1e2.2.21, the user's ruling of 2026-11-05). A node not taken
-    /// reports an empty core, no sources and no `refuted_by`, which names the
-    /// core's derivation's rules (M1e2 S1e2.3.10); its `absent` premises and
+    /// (Q-M1e2.31). A node not taken reports an empty core, no sources and no
+    /// `refuted_by`, which names the core's derivation's rules (Q-M1e2.21);
+    /// its `absent` premises and
     /// the detector's `first_rules` are read either way.
     pub(crate) fn taking_cores(mut self, cores: bool) -> Axes {
         self.cores = cores;
@@ -1136,7 +1126,7 @@ impl Axes {
     /// The axes [`cores_after`] reads a node with: the same node, its core
     /// taken, and nothing the walk records — no narration, no stale facts,
     /// no state text — since the node was the walk's already, or a member of
-    /// `N` it read off others (M1f S1f.5.12).
+    /// `N` it read off others.
     pub(crate) fn after_walk(&self) -> Axes {
         let mut a = self.clone();
         a.cores = true;
@@ -1282,7 +1272,7 @@ pub(crate) fn fan_out(
 }
 
 /// The unsat cores of `sets`, each a node the walk visited without taking
-/// one or did not visit, taken **after the walk** — M1f S1f.5.12 ([`Cores`]).
+/// one or did not visit, taken **after the walk** ([`Cores`]).
 /// Each is the node function's own fork of root, resumed from the walk's
 /// `snapshot` with the walk's plans (`memo`) and stopped where the walk's
 /// node is, with a core taken and nothing narrated, so each is the core an
@@ -1313,8 +1303,7 @@ pub(crate) fn cores_after(
 
 /// What [`cores_after`] needs once a route has returned: the walk's pool, the
 /// snapshot it resumed every node from, its plans and its axes — for a route
-/// whose `N` is read off its description after the walk, the state route's
-/// (M1f S1f.5.12).
+/// whose `N` is read off its description after the walk, the state route's.
 pub(crate) struct AfterWalk {
     pub(crate) pool: Option<Pool>,
     pub(crate) snapshot: Snapshot,
@@ -1367,8 +1356,8 @@ pub(crate) struct Supported {
 }
 
 /// The node function, for a reader that needs a state itself and not its two
-/// bits: the read-out's `(model …)`s and its query classes (M1e2
-/// T1e2.1a.5.2). Root is prepared once; each fixpoint is a fork of it,
+/// bits: the read-out's `(model …)`s and its query classes. Root is prepared
+/// once; each fixpoint is a fork of it,
 /// written and saturated as `fan_out` does for the oracle, to quiescence
 /// whether or not it is dead, and its provenance is reclaimed when the
 /// reader returns.
@@ -1578,8 +1567,8 @@ impl<'a> Nodes<'a> {
 
     /// The state of `sat(sat(root ∪ first) ∪ rest)`, a **split** of
     /// `first ∪ rest` from a fixpoint that holds root's, dead or not — what
-    /// `ein-infer/tests/detector.rs` holds a *Monotone* verdict to (M1e2
-    /// S1e2.1b.5's test (c) 2). [`Self::by_parent`] is the one-fact split of
+    /// `ein-infer/tests/detector.rs` holds a *Monotone* verdict to.
+    /// [`Self::by_parent`] is the one-fact split of
     /// an alive parent.
     pub fn by_split(
         &mut self,
@@ -1639,7 +1628,7 @@ impl<'a> Nodes<'a> {
     /// unsat core and the rules whose firing refuted it, both sorted — or two
     /// empty lists when the fixpoint is alive. For a reader that names a
     /// member of `N` its route did not saturate: the state route reads `N` off
-    /// the maximal alive states (M1e2 S1e2.1c.2), and the trace and the answer
+    /// the maximal alive states, and the trace and the answer
     /// dump print each member's core.
     pub fn refutation(&mut self, facts: &[FactId]) -> Result<Refutation, SolveError> {
         self.terms.provs.open_fork();
@@ -2005,7 +1994,8 @@ fn node_in_region(
 
 /// One node's narration, replayed into `events`, then its `enter` line:
 /// the layer (the commitment's size), the commitment, what the node is, and
-/// a dead node's core — M1e2 T1e2.1a.5.2, `read_out.md` § 8.6.
+/// a dead node's core
+/// ([events.md § Search layer](../../../../docs/ein/ein.rs/events.md#search-layer)).
 pub(crate) fn narrate_node(
     events: &mut Events,
     out: &mut NodeOut,
@@ -2045,8 +2035,8 @@ pub(crate) fn narrate_node(
         l.str("kind", kind);
         l.num("owes", i64::from(out.owes));
         // A node that is not dead has no core, so it is `null`, and `[]` is
-        // the empty set (M1f S1f.5.8, the user's ruling of 2026-11-07 on
-        // D-14): `ein_render::dump::region_answer::core_field`'s rule, which
+        // the empty set (Q-M1e2.27): `ein_render::dump::region_answer::core_field`'s
+        // rule, which
         // every other JSON surface writes a core by.
         if out.dead && out.node.core_status.is_some() {
             l.strs("core", out.node.core.iter().map(String::as_str));
@@ -2079,11 +2069,10 @@ fn sources_of(kb: &Kb, terms: &Terms, facts: &[FactId]) -> Vec<String> {
 }
 
 /// The order H's candidates are sorted in: a fact's s-expression with every
-/// name as its raw text, which is how `sexpr` printed it until M1e2 S1e2.3.8
-/// made the printer quote a name that does not lex as itself. The order is
-/// the route's, so it is kept, and it is never printed: two candidates that
-/// print apart can share it (the names `x y` and `"x y"` cannot, but `1` and
-/// `"1"` would), and the generator's order is the tie-break, as it was.
+/// name as its raw text, unquoted where the printer quotes a name that does
+/// not lex as itself. The order is the route's, and it is never printed: two
+/// candidates that print apart could share it, and the generator's order is
+/// the tie-break.
 pub(crate) fn order_key(terms: &Terms, id: FactId) -> String {
     let (rel, args) = terms.facts.get(id);
     let inner: Vec<String> = args
@@ -2135,10 +2124,9 @@ fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {
 /// The `absent` premises anywhere in `witness`'s primary derivation, rendered
 /// and sorted — the guard a repairable failure rests on. The walk follows
 /// each step's premises and not the activator its plan was compiled from,
-/// which the core follows since M1e2 S1e2.2.19 where a node derived it: the
+/// which the core follows where a node derived it (Q-M1e2.12): the
 /// non-monotone detector reads this list for its status, and following the
-/// activator here moved that label on W17's witnesses studied past *forbid*
-/// (S1e2.2.19 § Notes).
+/// activator here would move that label on `W17`'s witnesses.
 fn absent_premises(kb: &Kb, terms: &Terms, witness: FactId) -> Vec<String> {
     let mut seen: FxHashSet<FactId> = FxHashSet::default();
     let mut stack = vec![witness];

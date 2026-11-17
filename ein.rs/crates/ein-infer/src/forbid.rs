@@ -1,11 +1,9 @@
-//! *Forbid* — M1e2
-//! [S1e2.2.5](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md):
-//! a refutation may not rest on an `(absent P)` over a relation a commitment
-//! can still extend.
+//! *Forbid*: a refutation may not rest on an `(absent P)` over a relation a
+//! commitment can still extend (Q-M1e2.5,
+//! [monotonicity.md § 10](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#10-forbid-what-is-refused-at-load),
+//! [diagnostics.md § 2.7](../../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
 //!
-//! The user ruled it on 2026-11-02
-//! ([S1e2.4.1 § 5](../../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)):
-//! over such a relation, `(absent P)` ⟹ `(false)` or `(not …)` is an
+//! Over such a relation, `(absent P)` ⟹ `(false)` or `(not …)` is an
 //! obligation written as a refutation. It judges a state that has not yet
 //! decided `P` as if `P` were false, so it says *contradiction* where the
 //! truth is *not yet*, and `dead` stops being upward-closed (a commitment of
@@ -16,19 +14,19 @@
 //!
 //! ### What counts
 //!
-//! *Extendable* is F1's reading (b), at relation grain: the relation is in
-//! `D⁺`, the static check's `D` ([`crate::monotone`]), the relations a
-//! commitment can change, followed through the rules root has no plan of
-//! (`monotone::through_activators`, M1e2 S1e2.2.17). A refutation is a
+//! *Extendable* is read at relation grain: the relation is in `D⁺`, the
+//! static check's `D` ([`crate::monotone`]), the relations a commitment can
+//! change, followed through the rules root has no plan of
+//! (`monotone::through_activators`). A refutation is a
 //! saturation plan whose `:assert` writes `(false)` or a stored negative. It
 //! is refused when it rests on such an `absent`:
 //!
 //! | cause | the plan… |
 //! |---|---|
 //! | [`Cause::Direct`] | reads a relation in `D⁺` inside an odd number of `absent`s |
-//! | [`Cause::Via`] | reads positively a relation in `N`: one a rule derives resting on such an `absent` (F2, *via*, ruled 2026-11-04) |
-//! | [`Cause::Activator`] | is compiled from an activator in `N` (F2, *per activator*) |
-//! | [`Cause::Parameter`] | is a rule with parameters whose activator a commitment can derive, and reads a parameter's relation inside an odd number of `absent`s: a node can compile it over a relation in `D⁺` (F3) |
+//! | [`Cause::Via`] | reads positively a relation in `N`: one a rule derives resting on such an `absent` (*via*) |
+//! | [`Cause::Activator`] | is compiled from an activator in `N` (*per activator*) |
+//! | [`Cause::Parameter`] | is a rule with parameters whose activator a commitment can derive, and reads a parameter's relation inside an odd number of `absent`s: a node can compile it over a relation in `D⁺` |
 //!
 //! The check reads root's plans, and every **open** rule from its pattern: a
 //! rule with parameters whose activator relation is in `D⁺`, since a node can
@@ -40,20 +38,20 @@
 //! program the static check calls monotone it reads nothing: every cause
 //! needs a site.
 //!
-//! **Until M1e2 S1e2.2.17** (W17) *extendable* was `D` and an open rule's
-//! activator relation had to be in `D`, so a chain of activators past the
-//! first plan root never compiled was not followed, and an open rule's own
-//! `absent` tainted nothing it derived: a refutation whose activator chain
-//! first appears at a node loaded with a dead hole
-//! (`examples/ein-bugs/wrong-answers/forbid-chain-*.ein`). `D⁺` is `D` on a
-//! program with no activator site.
+//! **Why `D⁺` and not `D`** (`W17`): with *extendable* read as `D`, and an
+//! open rule's activator relation required to be in `D`, a chain of
+//! activators past the first plan root never compiled would not be followed,
+//! and an open rule's own `absent` would taint nothing it derived: a
+//! refutation whose activator chain first appears at a node would load with a
+//! dead hole (`examples/ein-bugs/wrong-answers/forbid-chain-*.ein`). `D⁺` is
+//! `D` on a program with no activator site.
 //!
 //! ### Where it runs
 //!
 //! In [`crate::region`]'s `prepare`, after root's fixpoint and the static
 //! check, so every question about a commitment refuses alike: `ein solve` in
 //! every mode, `ein test`, `ein oracle`, `ein render lattice`, and every
-//! `(solve :expect)` check (F3). `ein saturate` asks about no commitment and
+//! `(solve :expect)` check. `ein saturate` asks about no commitment and
 //! does not refuse. The error is [`crate::SolveError::Refused`], one line per
 //! refusing rule, and a load error's exit code.
 //!
@@ -122,7 +120,7 @@ pub enum Cause {
 
 /// What the `absent` a fact of `N` rests on reads: a relation in `D⁺`, or
 /// the relation an open rule's parameter names, which a node binds — read
-/// conservatively, as [`Cause::Parameter`] is (M1e2 S1e2.2.17).
+/// conservatively, as [`Cause::Parameter`] is.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Over {
     Rel(Rel),
@@ -154,12 +152,11 @@ impl Over {
 
 const EXTENDABLE: &str = "a relation a commitment can still extend";
 
-/// What the program's hrules propose, for the first remedy — M1f
-/// [S1f.6.34](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md),
-/// E-47. No list filters an hrule's candidates, so where the program declares
-/// one, `(solve :no-hypothesis (R))` lifts nothing (and since that stage a list
-/// naming a relation an hrule proposes is refused at load): the remedy names
-/// the hrules that propose R instead.
+/// What the program's hrules propose, for the first remedy. No list filters
+/// an hrule's candidates, so where the program declares one,
+/// `(solve :no-hypothesis (R))` lifts nothing (and a list naming a relation
+/// an hrule proposes is refused at load, [`crate::mechanisms`]): the remedy
+/// names the hrules that propose R instead.
 #[derive(Clone, Default, Debug)]
 pub struct Proposers {
     /// Whether the program declares an hrule, active or not: the ladder's
@@ -170,7 +167,7 @@ pub struct Proposers {
     pub by_relation: Vec<(Symbol, Vec<String>)>,
     /// With no hrule, each relation an obligation of root's activators owes,
     /// and the obligations that do, `obligation 'o'`: a list may not filter
-    /// it either (M1f S1f.6.34, O + NH).
+    /// it either ([`crate::mechanisms`]).
     pub owed: Vec<(Symbol, Vec<String>)>,
 }
 
@@ -259,10 +256,9 @@ pub struct Refusal {
 
 impl Refusal {
     /// One line: the rule, what it rests on, and the forms that say what was
-    /// meant (F4). The first form is the program's way to close the relation:
+    /// meant. The first form is the program's way to close the relation:
     /// `(solve :no-hypothesis (R))` where it declares no hrule, and where it
-    /// declares one, the hrules that propose R, which no list filters (M1f
-    /// S1f.6.34, E-47).
+    /// declares one, the hrules that propose R, which no list filters.
     pub fn text(&self, terms: &Terms, proposers: &Proposers) -> String {
         let rule = terms.sym(self.rule);
         let act = if self.activator.is_empty() {
@@ -310,7 +306,7 @@ impl Refusal {
             _ => None,
         };
         let close = match (proposers.declared, over) {
-            // An obligation owes it: no list may filter it (M1f S1f.6.34).
+            // An obligation owes it: no list may filter it.
             (false, Some(r)) if proposers.owing(r).is_some() => format!(
                 "let no obligation owe {}, if no commitment is meant to extend it — {} owes \
                  it, and no list may filter what an obligation owes",
@@ -325,7 +321,7 @@ impl Refusal {
             (false, None) => "close the relation, (solve :no-hypothesis (…)), if no commitment \
                               is meant to extend it"
                 .to_string(),
-            // Beside an hrule no list filters a candidate (M1f S1f.6.34).
+            // Beside an hrule no list filters a candidate.
             (true, _) => match over.and_then(|r| proposers.proposing(r).map(|hs| (r, hs))) {
                 Some((r, hs)) => format!(
                     "let no hrule propose {}, if no commitment is meant to extend it — {} \
@@ -395,12 +391,10 @@ pub fn check(
         .collect();
     // A saturation plan has an activator exactly when its rule has
     // parameters: `activators_for` hands a rule with parameters only facts
-    // of its arity, each binding every parameter's position. Not
-    // `!p.activator_args.is_empty()`, which until M1e2 S1e2.2.16 this was:
-    // that list keeps the activator's symbol arguments only, so an activator
-    // whose every argument is an int or a nested fact read as none, its plan's
-    // cause was never looked for, and a refutation resting on it through
-    // `absent` loaded (W16, `examples/ein-bugs/activator-all-int.ein`).
+    // of its arity, each binding every parameter's position. The rule's
+    // parameters say so, whatever the activator's arguments are, so no
+    // refutation resting on an activator through `absent` loads unlooked-for
+    // (`W16`, `examples/ein-bugs/activator-all-int.ein`).
     let has_activator = |p: &Plan| {
         program
             .rules
@@ -413,8 +407,8 @@ pub fn check(
         .collect();
     // Every rule with parameters, read from its pattern, and `D⁺`, the
     // relations a commitment can extend: `D` followed through the plans a
-    // node can compile that root never had (M1e2 S1e2.2.17, W17). Until then
-    // this read `D` itself, whose closure follows root's plans only.
+    // node can compile that root never had (`W17`), not `D` itself, whose
+    // closure follows root's plans only.
     let bodies = bodies_of(kb, terms, ast);
     let extendable = extendable_over(
         m.dynamic.iter().copied(),
@@ -434,9 +428,8 @@ pub fn check(
         v.into_iter().next()
     };
     // The open rules: those with parameters a node can compile a plan of
-    // that root never had, their activator relation in `D⁺`. Until M1e2
-    // S1e2.2.17, in `D`, so a chain of activators past the first was not
-    // followed (`forbid-chain-1.ein`'s `r2`).
+    // that root never had, their activator relation in `D⁺`, so a chain of
+    // activators past the first is followed (`forbid-chain-1.ein`'s `r2`).
     let open_rules: Vec<(&Rule, &Body)> = bodies
         .iter()
         .filter(|(r, _)| in_d(pos(r.name)))
@@ -444,8 +437,8 @@ pub fn check(
         .collect();
 
     // N, each relation with the rule that derives it and the `absent` it
-    // rests on: seeded by every plan of root's, and since M1e2 S1e2.2.17 by
-    // every open rule, that reads inside an odd number of `absent`s a
+    // rests on: seeded by every plan of root's, and by every open rule, that
+    // reads inside an odd number of `absent`s a
     // relation in `D⁺` — or, an open rule, its parameter's relation, which a
     // node binds (`forbid-chain-node-absent.ein`, `-param-absent.ein`).
     let mut n = Tainted::default();
@@ -602,9 +595,9 @@ pub fn check(
 
 /// The relations *forbid* calls extendable, `D⁺`, sorted by label: the static
 /// check's `D` followed through the rules root has no plan of
-/// (`monotone::through_activators`, M1e2 S1e2.2.17). `plans` are root's, `m`
-/// the static check over them. For a reader that studies the shape *forbid*
-/// names, as `ein-infer/tests/region.rs`' test of F21's D6 (b) does; it is
+/// (`monotone::through_activators`). `plans` are root's, `m` the static
+/// check over them. For a reader that studies the shape *forbid* names, as
+/// `ein-infer/tests/region.rs`' test of untainted deaths does; it is
 /// `D` on a program with no activator site.
 pub fn extendable(
     kb: &Kb,
@@ -925,7 +918,7 @@ fn walk(
 
 /// The relations an `:assert` writes, `(false)` included, one per conjunct
 /// ([`ein_ir::Ast::conjuncts`], the conclusion read flat at any depth, as the
-/// compiler reads it since M1f S1f.6.37); a head written as a parameter names
+/// compiler reads it); a head written as a parameter names
 /// nothing here.
 fn heads(ast: &Ast, terms: &Terms, node: NodeId, out: &mut Vec<Rel>) {
     for c in ast.conjuncts(node) {
@@ -962,8 +955,8 @@ fn heads(ast: &Ast, terms: &Terms, node: NodeId, out: &mut Vec<Rel>) {
 /// records.
 fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
     for (x, y) in a.iter().zip(b.iter()) {
-        // By content: a name by its text, as until M1f S1f.5.18 kept the
-        // names alone, and a nested fact after every name (Q-M1f.43).
+        // By content: a name by its text, and a nested fact after every name
+        // (Q-M1f.43).
         let o = terms.cmp_semantic(*x, *y);
         if o != std::cmp::Ordering::Equal {
             return o;

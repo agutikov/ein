@@ -1,7 +1,6 @@
 //! The state route — a monotone program's region over its **states**, not its
-//! commitments. M1e2
-//! [S1e2.1c.2](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md),
-//! the user's *"(B) as the first step of P1e2.1c"* (2026-10-16).
+//! commitments
+//! ([finding-r.md § 6](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#6-the-routes-question-by-question)).
 //!
 //! Route 1 ([`crate::downset`]) visits every alive commitment. On a monotone
 //! program a commitment's state is its closure's (L3), so the alive
@@ -79,11 +78,12 @@
 //! instead of this route, because `k_s`, `k_c` and the merged states need
 //! every state of `R`. Beside this route it would only add saturations, and
 //! read here, `N` and `E` cost none. The argument holds while describe needs
-//! the states, which is what *describe* asks (`solution_semantics.md` § 2.3),
+//! the states, which is what *describe* asks
+//! ([solution-semantics.md § 2.3](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#23-how-many-k_s-and-k_c)),
 //! and while this route meets every alive state, which
-//! `ein-infer/tests/region.rs` holds to the oracle. A mode that asks for a line
-//! alone is S1e2.1c.4's, and that is where an enumeration without the states
-//! can win.
+//! `ein-infer/tests/region.rs` holds to the oracle. A mode that asks for a
+//! line alone is `crate::tree`'s, and that is where an enumeration without
+//! the states can win.
 //!
 //! ### Where it stops
 //!
@@ -300,7 +300,7 @@ pub(crate) fn compute_prepared(
 /// [`compute_prepared`], with what the node function needs after the walk
 /// ([`AfterWalk`]): the route reads `N` off its maximal alive states once it
 /// has returned (`describe`), so a caller that prints `N`'s cores takes each
-/// member's then, against the walk's snapshot (M1f S1f.5.12). `None` where
+/// member's then, against the walk's snapshot (Q-M1f.25). `None` where
 /// the route declined before its walk.
 pub(crate) fn compute_resumable(
     root: &mut Kb,
@@ -866,7 +866,7 @@ pub struct Description {
     /// order met.
     pub r: Vec<u32>,
     /// `|R|` in commitments, as a run reports a count: no greater than
-    /// [`crate::count::CAP`], which reads *this many or more* (M1f S1f.6.25).
+    /// [`crate::count::CAP`], which reads *this many or more* (Q-M1f.218).
     /// On a partial run: every commitment of an extended state of `R`, and
     /// those met of the rest — a lower bound, unless [`Self::cube`].
     pub k_c: u64,
@@ -918,13 +918,11 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
 /// exhausted description that is not read off the states met: it is the
 /// minimal transversals of the maximal alive states' complements, a search
 /// over as many edges as there are maximal alive states, and on a program
-/// whose alive nodes are partial assignments it is most of describe's time
-/// (94.6 % of the samples on a five-digit equation, `perf record`,
-/// 2026-11-13; E-31 of P1f.6's `findings.md`). Its count is the number of
-/// those transversals, so a surface that prints the count needs the search as
-/// much as one that prints the sets. A run none of whose surfaces prints
-/// either asks without it (M1f S1f.6.27, *minimum work per question*): no
-/// other field of the description reads `N`.
+/// whose alive nodes are partial assignments it is most of describe's time.
+/// Its count is the number of those transversals, so a surface that prints
+/// the count needs the search as much as one that prints the sets. A run none
+/// of whose surfaces prints either asks without it (Q-M1e2.31, *the least
+/// work each question needs*): no other field of the description reads `N`.
 pub fn describe_with(s: &StateRoute, nogoods: bool) -> Result<Description, SolveError> {
     let n = s.n();
     let ns = s.states.len();
@@ -951,7 +949,7 @@ pub fn describe_with(s: &StateRoute, nogoods: bool) -> Result<Description, Solve
         .collect();
     order.sort_by_key(|&i| s.states[i as usize].closure.len());
     // A count is exact at any size ([`Count`]), so counting does not fail
-    // for being large (M1f S1f.6.25, E-22). What could fail is the identity
+    // for being large (Q-M1f.218). What could fail is the identity
     // the count below a state rests on, which would be an engine defect.
     let defect = || {
         SolveError::Unsupported(

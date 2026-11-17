@@ -1,33 +1,29 @@
-//! The **M1 alive-set invariant**, as a predicate the engine can evaluate.
+//! The **alive-set invariant**, as a predicate the engine can evaluate.
 //!
 //! `docs/ein/reasoning/kb-evolution/saturation.md` § The alive-set invariant states three clauses —
 //! rules assert no new objects, no new relations, and hypotheses connect
 //! existing names only — and concludes that the candidates are a pure
 //! function of the closed KB. Three mechanisms cited that conclusion as their
 //! warrant: the per-KB `compute_alive` recompute, the
-//! [`state_key`](crate::canon::state_key) dedup that produces `k`, and — since
-//! M1d — the tree traversal's exhaustiveness-by-discharge argument. Until M1e
-//! S1e.3.3 **nothing evaluated it**, which is `ST-M1`.
+//! [`state_key`](crate::canon::state_key) dedup that produces `k`, and the
+//! tree traversal's exhaustiveness-by-discharge argument. This module
+//! evaluates it, so none of them rests on it unchecked.
 //!
-//! # Since M1e2 S1e2.2.4: a rule's constant is a name of the program
+//! # A rule's constant is a name of the program
 //!
-//! S1e.3.3 read clause 1 against the names the loaded **facts** mention, and
-//! found three programs whose rule asserts a constant no fact names. The user
-//! ruled on 2026-10-16 that such a constant is not new
-//! ([Q-M1e.21](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)
-//! (b)): *"rules are part of root, so rules can't assert new names"*. So
-//! [`rule_constants`] is the list of what a rule can introduce, and the blind
-//! enumerator's objects were **seeded** with it.
+//! A rule may assert a constant no fact names, and such a constant is not
+//! new (Q-M1e.21): *rules are part of root, so rules can't assert new
+//! names*. So [`rule_constants`] is the list of what a rule can introduce,
+//! and the blind enumerator's objects are **seeded** with it.
 //! `examples/ein-bugs/alive-set-fresh-name.ein` is the program on which a
-//! rule's constant missing from the candidates cost a model (M1e2's W4).
+//! rule's constant missing from the candidates would cost a model (`W4`).
 //!
-//! # Since M1e2 S1e2.2.14: every constant the program writes, but a query's
+//! # Every constant the program writes, but a query's
 //!
-//! `solution_semantics.md` § 1.2 calls a name *a constant the program
-//! mentions, in a fact or in a rule*, and the user ruled on 2026-11-04 that
-//! this is meant literally
-//! ([Q-M1e2.9](../../../../plans/m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program)
-//! (a)): a constant in a rule's `:match` is one, as one in its `:assert` is,
+//! [solution-semantics.md § 1.2](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names)
+//! calls a name *a constant the program mentions, in a fact or in a rule*,
+//! meant literally (Q-M1e2.9): a constant in a rule's `:match` is one, as one
+//! in its `:assert` is,
 //! and so is a constant a fact names only inside a nested fact, whose
 //! arguments the KB's names index does not hold (Q40). A constant only a
 //! `(query …)` names is not: R is the program's, and a query asks about it.
@@ -35,20 +31,18 @@
 //! readers take it: [`Universe::of`], whose baseline is every name of the
 //! program, and [`crate::hypgen::candidate_objects`], which unions it into the
 //! names index. `examples/ein-bugs/wrong-answers/match-only.ein` and
-//! `negative-only.ein` are the two shapes on which a name missing from it cost
-//! a model (M1e2's W15).
+//! `negative-only.ein` are the two shapes on which a name missing from it
+//! would cost a model (`W15`).
 //!
-//! What a rule could introduce that no static set predicts was a relation
-//! head written as a parameter and bound to an **integer**, whose decimal text
-//! the compiler would have interned as a name. It was refused, by the loader
-//! where the activator is written down (`examples/broken/load/relation_parameter_int.ein`,
-//! retired at M1f S1f.5.5's swap) and by the compiler where a rule derives it,
-//! until M1f S1f.5.4 retired the int kind: a run of digits is a name of the
-//! program since the swap. A relation head bound to a nested fact is refused
-//! the same two ways. So the invariant is a property of the engine and a
-//! refusal, not a precondition on the rule library.
+//! What a rule could introduce that no static set predicts is a relation
+//! head written as a parameter and bound to a value no text of the program
+//! holds. A run of digits is a name of the program, and a relation head bound
+//! to a nested fact is refused, by the loader where the activator is written
+//! down and by the compiler where a rule derives it. So the invariant is a
+//! property of the engine and a refusal, not a precondition on the rule
+//! library.
 //!
-//! This is not F5's typed form, which would make a violation unrepresentable.
+//! This is not a typed form, which would make a violation unrepresentable.
 //! It is the cheap one: two set memberships per fact, against a baseline taken
 //! at load.
 //!
@@ -156,9 +150,8 @@ fn walk_value(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
 }
 
 /// A constant a registered rule names in an **argument position** of its
-/// `:match` or its `:assert` — a name of the program (Q-M1e.21 (b), the
-/// user's ruling of 2026-10-16, for an `:assert`; Q-M1e2.9 (a), of
-/// 2026-11-04, for a `:match`).
+/// `:match` or its `:assert` — a name of the program (Q-M1e.21 for an
+/// `:assert`, Q-M1e2.9 for a `:match`).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct RuleConstant {
     /// The declarator's name.
@@ -201,8 +194,8 @@ impl RuleConstant {
 /// or by the activator, so it can only carry a value a fact already holds.
 /// The one exception is a relation head written as a parameter, which the
 /// compiler names by the bound value's text: a name of the program, or a
-/// nested fact, refused at load or at compile (an integer was too, until M1f
-/// S1f.5.4 retired the kind), so it introduces nothing either. A **head** contributes
+/// nested fact, refused at load or at compile, so it introduces nothing
+/// either. A **head** contributes
 /// nothing here: a relation a rule names is the registry's business
 /// ([`Universe::of`] reads it off `relation_names`).
 pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
@@ -287,8 +280,8 @@ fn walk_args(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
     }
 }
 
-/// **Every name of the program** — M1e2 S1e2.2.14, on the user's ruling of
-/// 2026-11-04 on Q-M1e2.9 (a), `solution_semantics.md` § 1.2 read literally:
+/// **Every name of the program** (Q-M1e2.9), `solution-semantics.md` § 1.2
+/// read literally:
 /// every constant in an argument position of a fact, at any depth (a nested
 /// fact's arguments, which the names index does not hold, and not its head,
 /// which names a relation), and every constant in a rule's `:match` or
@@ -355,8 +348,8 @@ impl Universe {
     }
 
     /// [`Universe::of`] without the rules' constants: what the facts, the
-    /// registry and the kernel name. M1e S1e.3.3's baseline, and what
-    /// [`seeded`] is measured against.
+    /// registry and the kernel name: the baseline [`seeded`] is measured
+    /// against.
     fn of_facts(kb: &Kb, terms: &Terms) -> Universe {
         let mut u = Universe {
             objects: BitSet::new(),
@@ -487,14 +480,11 @@ impl Universe {
 /// The structural primitives are transparent: `(and (p A) (not (q B)))`
 /// asserts about `p` and `q`, not about `and` and `not`. A keyword pair
 /// contributes its value only, and a variable contributes nothing at all; no
-/// `:assert` holds a keyword pair since M1f S1f.5.5's swap (S1f.5.11), so the
-/// pair's arm is the walk's, total over the tree, and reached by no program.
+/// `:assert` holds a keyword pair (Q-M1e2.28), so the pair's arm is the
+/// walk's, total over the tree, and reached by no program.
 ///
-/// A **string** was the symbol it names here, as the compiler lowered it and
-/// the loader held it in a fact, so `(tag ?x "lbl")` named `lbl` — M1e2
-/// S1e2.2.18 — until M1f S1f.5.5's swap refused a string in a rule (S1f.5.2);
-/// S1f.5.2's T1f.5.2.3 retired the arm, with the flag that kept a keyword's
-/// string value out of it. A string is natural-language text, and no name.
+/// A string is refused in a rule: it is natural-language text, and no name
+/// (Q-M1e2.23).
 fn walk_constants(ast: &Ast, node: NodeId, head_pos: bool, f: &mut impl FnMut(&str, bool)) {
     match ast.node(node) {
         Node::Atom(s) => f(ast.sym(s), head_pos),

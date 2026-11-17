@@ -5,16 +5,15 @@
 //! 2. **direct** — a `(false)` fact: a rule asserted contradiction outright
 //!    rather than through the self-negation idiom.
 //!
-//! Both encode a **branch failure** under M1's append-only KB: there is no way
+//! Both encode a **branch failure** under the append-only KB: there is no way
 //! to retract a fact, so the only resolution is for whatever caused the
 //! conflict — typically a hypothesis fork — to be unwound.
 //!
-//! **How a fact got into the KB is irrelevant** (S1.22.1b). A KB holding both
-//! `X` and `(not X)` is inconsistent whether `X` is a stated clue, a
-//! background assumption or a derivation, so every such pair is reported.
-//! Until S1.22.1b the detector skipped pairs whose facts sat in different
-//! knowledge layers, and that was a soundness bug: a flatly inconsistent
-//! puzzle was accepted in silence.
+//! **How a fact got into the KB is irrelevant.** A KB holding both `X` and
+//! `(not X)` is inconsistent whether `X` is a stated clue, a background
+//! assumption or a derivation, so every such pair is reported, whichever
+//! knowledge layers its facts sit in: skipping a pair across layers would
+//! accept a flatly inconsistent puzzle in silence.
 //!
 //! The lookup is two bit tests
 //! ([design/saturation.md § 6.2](../../../../docs/ein/ein.rs/design/saturation.md#62-contradiction)):
@@ -54,11 +53,10 @@ impl Contradiction {
     /// and [`crate::explain::Explanation::target`], and the fact
     /// `region::absent_premises` reads.
     ///
-    /// It is **not** what the core is the frontier of, since M1e2 S1e2.2.21:
-    /// that is [`Contradiction::sides`]. Until then the core search explained
-    /// this fact alone, on the reading that a pair's negative is typically a
-    /// structural rule's shallow firing, and a pair's core left out the
-    /// derivation of `(not X)`, where a commitment typically is (W21).
+    /// It is **not** what the core is the frontier of: that is
+    /// [`Contradiction::sides`]. A core of this fact alone would leave out
+    /// the derivation of a pair's `(not X)`, where a commitment typically is
+    /// (`W21`).
     pub fn witness(&self) -> FactId {
         self.positive.unwrap_or(self.negative)
     }
@@ -66,7 +64,7 @@ impl Contradiction {
     /// The facts the contradiction rests on, which the core search explains
     /// together ([`crate::explain::contradiction_frontier`]): a pair's `X`
     /// and its `(not X)`, the witness first, or a direct ⊥'s `(false …)`
-    /// fact. M1e2 S1e2.2.21 (W21).
+    /// fact (`W21`).
     pub fn sides(&self) -> Vec<FactId> {
         self.positive
             .into_iter()
@@ -124,11 +122,11 @@ pub fn has_contradiction(kb: &Kb, terms: &Terms) -> bool {
 /// The **incremental** dual of [`detect`]: the scan asks "does this KB hold a
 /// contradiction?", this asks "did *this fact* create one?". On a KB that was
 /// consistent before `fact` landed the two agree exactly, and that equivalence
-/// is what lets fork saturation fail fast (S1.9.E23): the KB is append-only,
+/// is what lets fork saturation fail fast: the KB is append-only,
 /// so a contradiction can only be *created* by an insertion and can never be
 /// retracted, so checking each derived fact as it lands finds every death a
-/// post-fixpoint scan would — about 2.5 k firings earlier on a dying zebra2
-/// fork, which is ~88 % of its saturation.
+/// post-fixpoint scan would, and earlier: a dying fork stops at the firing
+/// that kills it, not at its fixpoint.
 pub fn contradicts(kb: &Kb, terms: &Terms, fact: FactId) -> bool {
     let rel = terms.facts.rel(fact);
     if rel == terms.kernel.r#false {

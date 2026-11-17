@@ -1,4 +1,5 @@
-//! The saturation driver — S1.21.8's **two-phase** loop.
+//! The saturation driver — the **two-phase** loop
+//! ([design/saturation.md § 1](../../../../docs/ein/ein.rs/design/saturation.md#1-two-phases)).
 //!
 //! ```text
 //! step():
@@ -178,7 +179,7 @@ pub struct Session<'a> {
     pub terms: &'a mut Terms,
     pub ast: &'a Ast,
     pub events: &'a mut Events,
-    /// The run's compiled plans — design/06 § Win A.
+    /// The run's compiled plans, shared by every engine of the run.
     ///
     /// Every engine built from this session compiles into it, the
     /// saturator's and any other a caller builds over it. A caller that hands the
@@ -338,7 +339,7 @@ pub struct Saturator {
     matcher: Matcher,
     entries: Arena,
     queue: BinaryHeap<Ranked>,
-    /// The parked candidates, in FIFO order — S1a.3.4 T7.
+    /// The parked candidates, in FIFO order.
     ///
     /// A `BTreeSet` rather than a heap because a boundary round **reads** the
     /// whole set in order and removes at most one entry from it. Popping every
@@ -433,15 +434,13 @@ pub struct Saturator {
     /// Nanoseconds spent inside the boundary — one `Instant` pair per
     /// quiescence, which is 40 of them on a zebra2 root and therefore free.
     ///
-    /// It exists because the boundary's *share* is the question Win B is
-    /// answered against: design/06 §2 put it at 72 % of an exhaustive solve,
-    /// and an optimisation aimed at 72 % is a different proposition from one
-    /// aimed at a tenth of that.
+    /// It exists because the boundary's *share* of a solve is what an
+    /// optimisation of the boundary is aimed at, and a share is a
+    /// measurement, not an assumption.
     pub boundary_nanos: u64,
-    /// Structurally 0 since S1.21.8, kept as an observable so the old
-    /// measurement gate still has something to assert. It counted firings
+    /// Structurally 0, kept as an observable `naf_semantics` asserts: firings
     /// dropped at dequeue because a guard that passed at enqueue no longer
-    /// held at fire time; a guard is now judged once, on the boundary, at the
+    /// held at fire time. A guard is judged once, on the boundary, at the
     /// moment the candidate is admitted.
     pub naf_dropped: u32,
 }
@@ -505,14 +504,13 @@ impl Snapshot {
     /// order the caller wrote them: every route writes a commitment in
     /// candidate order, rendered text.
     ///
-    /// Not `FactId` order, which this sorted by until M1e2 S1e2.2.12: a
-    /// `FactId` is the order names were interned in, not a function of the
-    /// program. A fork is FIFO within a priority band, so the delta's order
-    /// is the order a dead node's derivations arrive in, and what reads the
-    /// first of them, a fact's primary (the rules `refuted_by` named until
-    /// M1e2 S1e2.3.10 and the store's order it names them in since, the
-    /// `absent`s a refutation rests on) and a full alternatives list (the
-    /// core), moved with the interner (`W11/fork-delta-order`).
+    /// Not `FactId` order: a `FactId` is the order names were interned in,
+    /// not a function of the program. A fork is FIFO within each half of the
+    /// agenda, so the delta's order is the order a dead node's derivations
+    /// arrive in, and what reads the first of them — a fact's primary (the
+    /// store's order `refuted_by` names rules in, the `absent`s a refutation
+    /// rests on) and a full alternatives list (the core) — would move with the
+    /// interner (`W11/fork-delta-order`).
     pub fn new_facts_of(&self, kb: &Kb) -> Vec<FactId> {
         kb.facts().filter(|f| !self.facts.contains(f)).collect()
     }
@@ -550,11 +548,10 @@ impl Saturator {
             sym_sym,
             mirror_queue: Vec::new(),
             mirror_seeded: false,
-            // S1.21.7 — read once from the resolved config: it is consulted
-            // on the redundant-firing path, the highest-volume path in the
-            // engine. The mirror is not a setting: `enable-symmetric-mirror`
-            // was retired at M1e2 S1e2.1a.6, and a marked relation is
-            // always closed.
+            // Read once from the resolved config: it is consulted on the
+            // redundant-firing path, the highest-volume path in the engine.
+            // The mirror is not a setting: a marked relation is always
+            // closed.
             record_alternatives: cfg.record_alternative_justifications,
             reading_universals: false,
             last_universal: Box::default(),
@@ -743,8 +740,8 @@ impl Saturator {
             let admitted = self.admit_from_boundary(s)?;
             self.boundary_nanos += start.elapsed().as_nanos() as u64;
             if admitted == 0 {
-                // **The fixpoint, and the only place that says so.** M1e
-                // `CO-M1`'s clean mark, which the record sites read to find
+                // **The fixpoint, and the only place that says so.** The
+                // clean mark, which the record sites read to find
                 // out whether the state they are about to call a solution has
                 // had its rules run over its current facts. It is set here
                 // rather than in `saturate` because the fail-fast fork loop
@@ -849,9 +846,8 @@ impl Saturator {
 
     /// Record the firing a caller driving `step` itself just consumed.
     ///
-    /// `saturate` does this internally; the walk's fail-fast fork loop
-    /// (`commitment.rs`, deleted with the walk at M1e2 S1e2.1c.5) drove `step`
-    /// directly so it could stop at the firing that kills the branch, and the
+    /// `saturate` does this internally; a caller that drives `step` directly,
+    /// to stop at the firing that kills a branch, records it here, and the
     /// runaway-budget message reads `last_firing`.
     pub fn set_last_firing(&mut self, firing: Firing) {
         self.last_firing = Some(firing);
@@ -872,9 +868,9 @@ impl Saturator {
     /// So an embedder probing quiescence mid-drive is perturbing the drive.
     /// [`docs/ein/ein.rs/api.md`] says so where a reader of the crate boundary will
     /// meet it, because a hazard whose only statement is a comment inside the
-    /// crate is a hazard for everyone outside it (M1e `CO-M6`).
+    /// crate is a hazard for everyone outside it.
     ///
-    /// It is at least **idempotent with respect to the queue** since S1e.3.1:
+    /// It is at least **idempotent with respect to the queue**:
     /// the pending `delta` is consumed here rather than left for a later
     /// `closure_step` to re-seed. Re-seeding was harmless — `seen` dedups it —
     /// and it was work done twice for a question that asked nothing.
@@ -925,7 +921,7 @@ impl Saturator {
             }
             if !firing.redundant {
                 // A productive firing wrote a new fact; the next pass processes
-                // only what it derived (S1.8.B2v — semi-naive), accumulated
+                // only what it derived (semi-naive), accumulated
                 // until consumed.
                 self.needs_enqueue = true;
                 self.delta
@@ -940,8 +936,8 @@ impl Saturator {
 
     /// Apply one popped candidate — productive or redundant.
     ///
-    /// The guards are **not** re-evaluated here (that was the fire-time
-    /// re-check S1.21.8 deleted), but they are recorded as the firing's
+    /// The guards are **not** re-evaluated here (a guard is judged once, on
+    /// the boundary), but they are recorded as the firing's
     /// negative premises, so a provenance walk can see what the conclusion
     /// depended on *not* holding.
     fn apply(
@@ -964,12 +960,12 @@ impl Saturator {
             trail: &e.trail,
             premises: &e.premises,
         };
-        // Tentative-build every conclusion (A13: a `:assert (and …)` has
+        // Tentative-build every conclusion (a `:assert (and …)` has
         // several). Cheap — a pure walk over each template.
         let mut tentative = Vec::with_capacity(plan.asserts.len());
         for i in 0..plan.asserts.len() {
             // A true `eq` / `neq` conclusion adds nothing, and a false one is
-            // `(false)` (M1f S1f.5.7, G-21).
+            // `(false)` (Q-M1e2.26).
             if let Some(f) = build_conclusion(s.terms, s.ast, &plan, env, plan.asserts[i])? {
                 tentative.push(f);
             }
@@ -1040,8 +1036,7 @@ impl Saturator {
     /// and each once. A guard with no nested query rests on an absence, which
     /// [`Saturator::negative_premises`] records, and on no fact.
     ///
-    /// M1e2 S1e2.2.21 (Q-M1e2.15 (b)): until then a firing recorded none of
-    /// them, and a core that rested on a universal left out what it read.
+    /// A core that rests on a universal takes in what it read (Q-M1e2.15).
     fn universal_support(
         &mut self,
         s: &Session<'_>,
@@ -1074,7 +1069,7 @@ impl Saturator {
         out.into_boxed_slice()
     }
 
-    /// Record a redundant firing as an **alternative** justification (S1.21.7).
+    /// Record a redundant firing as an **alternative** justification.
     ///
     /// One provenance per application, shared by every conclusion — the same
     /// contract a productive firing uses, with one deliberate exception:
@@ -1096,7 +1091,7 @@ impl Saturator {
         // Built only once at least one conclusion can still take an
         // alternative, so a hot fact whose list is full of shorter derivations
         // costs one check and nothing else: O(1), and at a full list the
-        // premises' closures against the fact's (M1e2 S1e2.2.11).
+        // premises' closures against the fact's.
         let premises = &self.entries.get(entry).premises;
         let targets: Vec<FactId> = existing
             .iter()
@@ -1145,7 +1140,7 @@ impl Saturator {
         delta: Option<Vec<FactId>>,
     ) -> Result<(), SaturateError> {
         // `compile_all` first, so derived activators get plans — the
-        // reflective rule-implication case (S1.8.A9).
+        // reflective rule-implication case.
         self.engine.compile_all(s.ast, s.terms, s.kb, s.events)?;
         self.matched_plans.resize(self.engine.len(), false);
         if self.fail_first.is_some() {
@@ -1188,7 +1183,7 @@ impl Saturator {
     }
 
     /// relation → plans with that relation as a top-level positive premise —
-    /// the D5-seedable set. Rebuilt when the plan list grows.
+    /// the set a new fact can seed. Rebuilt when the plan list grows.
     fn rebuild_index(&mut self) {
         if self.index_n == self.engine.len() {
             return;
@@ -1525,15 +1520,10 @@ impl Saturator {
     /// registers — can put it there, and it must carry a *different* guard
     /// set, since `seen` dedups the pair. That needs either one plan whose
     /// disjuncts ask different negative questions, or two plans sharing a
-    /// `(rule, activator)` binding-key space. **The second cannot happen since
-    /// M1e2 S1e2.2.7**: the activator id is the compile key's list, every
-    /// argument, so each plan has a space of its own. Until then it was the
-    /// symbol list, the asymmetry Q-M1e.16 settles, and two activators differing only
-    /// in a **nested `Fact`** shared a space (not in an `int`, which binds a
-    /// parameter and so seeds a register — M1e
-    /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-    /// which corrected this comment along with the page it came from). The
-    /// check below still reads both, at the cost of a set insert per plan.
+    /// `(rule, activator)` binding-key space. **The second cannot happen**:
+    /// the activator id is the compile key's list, every argument
+    /// (Q-M1e.16), so each plan has a space of its own. The check below still
+    /// reads both, at the cost of a set insert per plan.
     ///
     /// **The first holds nowhere in the corpus**: the branch is taken 0 times
     /// across every `.ein` under `examples/` and `stdlib/`, and where a
@@ -1572,12 +1562,12 @@ impl Saturator {
     /// moved — the whole round's invalidation, in one pass over the watched
     /// relations.
     ///
-    /// S1a.3.4 T4 asked this per parked candidate: build the extent sizes of
-    /// every relation its guards read, compare against the sizes at its last
-    /// failed judgement, skip if equal. The answer is the right one — the KB
-    /// grows monotonically within a run, so a relation cannot lose a fact and
-    /// equal size means equal extent — but the question was asked 248 043
-    /// times on `zebra -e` to reach 29 865 judgements
+    /// Asked per parked candidate — build the extent sizes of every relation
+    /// its guards read, compare against the sizes at its last failed
+    /// judgement, skip if equal — the answer is the right one: the KB grows
+    /// monotonically within a run, so a relation cannot lose a fact and equal
+    /// size means equal extent. But asked that way it is asked many times per
+    /// judgement
     /// ([design/saturation.md § 3](../../../../docs/ein/ein.rs/design/saturation.md#3-the-queue-the-delta-and-the-parked-set)),
     /// because *sizes* are a property of the world and only the comparison is
     /// a property of the candidate.
@@ -1703,7 +1693,8 @@ impl Saturator {
                     .filter_map(|f| s.terms.facts.args(f).first().and_then(|v| v.as_sym()))
                     .collect();
             // Sorted by name and held sorted throughout: a hash-ordered set
-            // here leaks into firing order (M1a hazard H1). So the mirror
+            // here leaks into firing order
+            // (`docs/ein/ein.rs/design/determinism-and-order.md` § 2.3). So the mirror
             // sequence is a function of the input alone.
             rels.sort_by(|a, b| s.terms.sym(*a).cmp(s.terms.sym(*b)));
             rels.dedup();
@@ -1807,7 +1798,7 @@ impl Saturator {
                 prov
             };
             if let Some(mirror) = existing {
-                // S1.21.7 — the mirror already exists (typically because the
+                // The mirror already exists (typically because the
                 // stdlib `symmetric` rule, or the mirror of the mirror, got
                 // there first). Arg-swap is a real second derivation of it, so
                 // record it rather than dropping it. This is what makes the
@@ -1989,7 +1980,8 @@ mod tests {
     ///
     /// A hash-ordered set here would, with two or more markers, leak into the
     /// seed order, hence into the firing order, hence into every
-    /// derivation-order observable. That is M1a hazard H1.
+    /// derivation-order observable
+    /// ([design/determinism-and-order.md § 2.3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#23-hash-containers)).
     #[test]
     fn the_mirror_seeds_its_relations_in_name_order() {
         let src = "(relation zeta A B :why \"zeta holds of {?1} and {?2}\")\n(relation alpha A B :why \"alpha holds of {?1} and {?2}\")\n(relation mid A B :why \"mid holds of {?1} and {?2}\")\n\
@@ -2120,7 +2112,7 @@ mod tests {
         );
     }
 
-    /// M1e2 S1e2.2.12 (`W11/fork-delta-order`): a resumed fork's delta is in
+    /// `W11/fork-delta-order`: a resumed fork's delta is in
     /// the order its facts were written, never in `FactId` order. The two
     /// facts here are interned one way round and written the other.
     #[test]

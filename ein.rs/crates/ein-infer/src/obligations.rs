@@ -1,10 +1,9 @@
 //! The obligation pass — what a quiescent KB still **owes**.
 //!
-//! M1d [P1d.2](../../../../docs/history/m1d_satisfiability/README.md#p1d2--obligations)
-//! S1d.2.4. [S1d.2.3](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)
-//! reserved the verdict atom and routed the rules that assert it into
-//! [`ein_core::Program::obligations`], where nothing walked them. This is what
-//! walks them.
+//! The verdict atom `(open ?R)` is reserved
+//! ([obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r),
+//! Q-M1d.2), and the loader routes the rules that assert it into
+//! [`ein_core::Program::obligations`]. This is what walks them.
 //!
 //! ### Not the agenda, and not a band
 //!
@@ -34,8 +33,7 @@
 //! state stays dead under any addition. Openness is the opposite — it exists
 //! to be destroyed by an extension — so a stored `open` would survive its own
 //! discharge in a fork that paid it. The tally is state of the **node**
-//! (`owes` on [`crate::region`]'s node and the routes' states; the walk's
-//! `CommitmentSetResult::owes` until M1e2 S1e2.1c.5 deleted the walk), beside
+//! (`owes` on [`crate::region`]'s node and the routes' states), beside
 //! its dead bit, which is the other per-node verdict that is not a fact.
 //!
 //! ### What it costs
@@ -45,7 +43,7 @@
 //! rules, one matcher run per `(rule, activator)` per quiescent KB, and the
 //! plans come from the process-wide memo — so the compile is paid once per
 //! pair per *process*, not once per node. The projection was resolved at load
-//! (S1d.2.3), so nothing here is per-firing.
+//! (`ein_ir`), so nothing here is per-firing.
 //!
 //! It builds its plan list through [`PlanMemo`] rather than through an
 //! [`crate::engine::Engine`] on purpose: an `Engine` narrates a `compile`
@@ -232,7 +230,7 @@ pub(crate) fn plans_for(
     ast: &Ast,
     memo: &SharedMemo,
 ) -> Result<Vec<std::sync::Arc<Plan>>, CompileError> {
-    // Load order, the registry's: no rule has a priority since M1f S1f.5.15.
+    // Load order, the registry's: no rule has a priority.
     let mut out = Vec::new();
     for rule in kb.program().obligations.values() {
         for act in activators_for(kb, terms, rule) {
