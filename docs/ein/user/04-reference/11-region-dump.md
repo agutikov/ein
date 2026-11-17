@@ -95,7 +95,7 @@ where the blind enumerator bound a relation's name as an object: `{objects, rela
 
 | key | what |
 |---|---|
-| `size`, `minimal`, `maximal` | `|R|` and its two lines, each a list of fact sets |
+| `size`, `minimal`, `maximal` | $\lvert R \rvert$ and its two lines, each a list of fact sets |
 | `holes`, `minimal_holes`, `repairs` | nodes outside `R` between two members; the minimal ones; and every edge from a hole up into `R`, with the fact that revives it |
 | `components` | `R`'s connected pieces under one-fact edges, each with its size and the line members inside it |
 | `subcubes` | the maximal intervals `[from … to]` inside `R`, each with its `dimension` (its free facts). Without holes these are the comparable (minimal, maximal) pairs. With holes they are searched, and `null` if that search passed its work bound |
@@ -118,7 +118,7 @@ rule that reads `D` asserts into `D`*, with `(not (R …))` as its own `¬R`. Ev
 |---|---|---|---|
 | static | not in `D` | nothing | zebra2's `absent`s over `right-of` / `next-to` |
 | dynamic, monotone polarity | in `D`: even `absent` depth in a saturation rule, odd in an obligation | only add a conclusion, or only pay a debt | `total`'s `forall`; `total-owed`'s witness |
-| dynamic, non-monotone polarity | in `D`: odd depth in a saturation rule, even (the trigger) in an obligation | take a conclusion away, or add a debt | `derive-p ← (absent (q ?x))` beside `derive-q ← (absent (p ?x))`; [`lattice/04`](../../../../examples/lattice/04_obligation_trigger_hole.ein)'s `total-owed` trigger |
+| dynamic, non-monotone polarity | in `D`: odd depth in a saturation rule, even (the trigger) in an obligation | take a conclusion away, or add a debt | a rule `derive-p` that reads `(absent (q ?x))` beside a rule `derive-q` that reads `(absent (p ?x))`; [`lattice/04`](../../../../examples/lattice/04_obligation_trigger_hole.ein)'s `total-owed` trigger |
 
 A **site** is a read of the third kind, or a rule whose activator relation is in `D`. **No site means the program is
 monotone**: *dead* and *discharged* are both upward-closed, `R` has no holes, and its two lines describe it. That is a
@@ -230,10 +230,10 @@ every row is a field some run writes; the test suite holds the table to the bina
 
 | `n` | behaviour |
 |---|---|
-| ≤ 16 | runs, silently |
+| 16 or fewer | runs, silently |
 | over the limit | not computed. `region.json` has `refused`, `region.md` says why, and stderr gets one `error:` line naming `--region-limit` and the value that would compute it; `ein oracle` exits 2, since its whole answer is the cube |
 | 17–19, the limit raised | runs, after one `warning:` line with the projected time |
-| 20 or more, the limit raised | runs, after a three-line `warning:`: `2ⁿ`, the cost per node measured on nodes spread over the cube and saturated before the run with the projected time at one job (`--jobs` shortens it by less than the jobs), and that the raised `--region-limit` asked for it |
+| 20 or more, the limit raised | runs, after a three-line `warning:`: the count of saturations, $2^n$, the cost per node measured on nodes spread over the cube and saturated before the run with the projected time at one job (`--jobs` shortens it by less than the jobs), and that the raised `--region-limit` asked for it |
 
 ## What it does not check
 

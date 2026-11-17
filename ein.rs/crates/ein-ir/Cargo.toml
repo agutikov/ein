@@ -43,3 +43,8 @@ serde_json.workspace = true
 # what the loader accepts (Q-M1f.40). A dev-dependency only, as
 # `ein-infer` takes `ein-render`: no shipped crate gains an edge.
 ein-infer = { path = "../ein-infer", default-features = false }
+# `grammar_pages` writes the reference's lexical grammar as EBNF: it reads each
+# rule of `ein.l` through the parser the lexer's `regex` reads it with, and
+# translates the syntax tree. A dev-dependency only, and no new package:
+# `lrlex` already brings it through `regex`.
+regex-syntax = "0.8"

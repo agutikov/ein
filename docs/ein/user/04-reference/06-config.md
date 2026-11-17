@@ -242,7 +242,7 @@ a program to answer about.
   `note:` per claim say. Beside an option that asks what it does not answer (a line, `-n`, `--single`,
   `--monotone`, a listed state's form, `-H`, `--trace`) it is a usage error, exit 2, naming the command that answers
   it. `--monotone` asks about the program instead: root's fixpoint and the static check, no node built, every
-  verdict exit 0, and exclusive with the others. The budget (`--region-budget`, default 2²⁰ = 1 048 576 facts beyond
+  verdict exit 0, and exclusive with the others. The budget (`--region-budget`, default $2^{20}$, 1 048 576, facts beyond
   root for every question, [Q-M1e2.35](../../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md);
   `ein solve --help` states it), the cube's limit and the deadline stop a run. A budget or a limit that stops one
   leaves every surface saying the answer is partial: a lower bound, a `note:` on stderr, `exhausted no` and why. A

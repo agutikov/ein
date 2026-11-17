@@ -24,18 +24,24 @@ renderer has a command that reaches it
 
 | element | DOT shape |
 |---|---|
-| a type: a name a signature declares, or the parent of an `is-a` fact | `box` |
-| an instance: the child of an `is-a` fact | `oval` (ellipse) |
+| a name an `is-a` fact points at, and in the program view a name a declaration labels a slot with: a *type*, in the drawings' word | `box` |
+| a name an `is-a` fact starts from and none points at: an *instance*, in the drawings' word | `oval` (ellipse) |
 | any other name | `rectangle` |
 | a fact of three arguments or more, Levi-bipartite | `octagon` |
 | a fact of `=` with two arguments, an equality node | `doublecircle` |
 | a pattern variable `?x` | `diamond` |
-| a relation's signature | a dashed, labelled edge |
+| a relation's declaration, in the program view | a dashed edge between its two labels, labelled with the relation |
+| a relation's declaration, in the KB view | an `octagon`, the fact it is stored as, with an edge to the relation's name and to each label |
 | a fact | a solid, labelled edge |
 | a derived or committed fact | a dashed, labelled edge |
 | an `is-a` fact | a dashed edge with an empty arrowhead, labelled `is-a` |
 
 A relation's edges share a colour, picked from a fixed palette by the relation's name, the same on every run.
+
+**Ein has no types.** *Type* and *instance* are words of the drawings, in their comments and in two options of
+`ein render kb`, for the two ends of a fact of a relation named `is-a`: the box and the oval are a convention keyed
+on that name, and on a declaration's labels in the program view. They change no answer, and a program that writes
+its grouping with a relation of another name is drawn with plain arrows.
 
 ## Hyperedge encoding — Levi-bipartite
 
@@ -44,8 +50,8 @@ fact, with a directed edge to each argument labelled by its position. That is th
 ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)), and the facts of three arguments
 or more are always drawn so.
 
-**The default is compact.** A binary fact `(rel a b)` is drawn as one labelled, relation-coloured arrow `a → b
-[label="rel"]`, and a **unary** fact `(rel a)` as a labelled self-loop `a → a [label="rel"]`, which is how a property
+**The default is compact.** A binary fact `(rel a b)` is drawn as one labelled, relation-coloured arrow, `a -> b
+[label="rel"]`, and a **unary** fact `(rel a)` as a labelled self-loop, `a -> a [label="rel"]`, which is how a property
 tag reads: `(symmetric R)`, `(bijective R)`, `(relation R)`. `ein render program --levi` draws every fact as an
 octagon instead. What a fact is, drawn both ways, is
 [`../03-syntax-and-semantics/03-facts.md`](../03-syntax-and-semantics/03-facts.md).
@@ -54,16 +60,51 @@ octagon instead. What a fact is, drawn both ways, is
 
 `ein render program FILE [--levi] [--rule-mode sidebyside|overlay]` prints one digraph per group of the program as
 it is written: `rule_<name>_…` for each rule, `ontology` for the declarations and the background facts, `facts` for
-the given ones, `query` for the queries. It is drawn from the parsed forms, so a macro call is drawn as written and
-imports are not resolved.
+the given ones, `query` for the queries and `solve` for a `(solve …)` clause. It is drawn from the parsed forms, so a
+macro call is drawn as written and imports are not resolved. The examples of this page are drawings of one program:
+
+```lisp
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
+
+(relation is-a T T :why "{?1} is a {?2}")
+(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
+(is-a Nationality Attribute) (is-a House Attribute)
+(is-a Norwegian Nationality) (is-a House-1 House)
+(symmetric co-located)
+(co-located Norwegian House-1 :source "condition (10)")
+(solve :no-search)
+```
+
+Its `ontology` and `facts` groups: a declaration as a dashed arrow between its two labels, an `is-a` fact as a dashed
+arrow with an open head, a property tag as a self-loop, and the given fact as a solid arrow.
 
 ```dot
 digraph ontology {
   "T" [shape=box];
+  "Attribute" [shape=box];
+  "Nationality" [shape=box];
+  "House" [shape=box];
   "Norwegian" [shape=oval];
-  "Nationality" [shape=oval];
-  "T" -> "T" [label="is-a", style=dashed];                                  // (relation is-a T T)
+  "House-1" [shape=oval];
+  "co-located" [shape=rectangle];
+  "T" -> "T" [label="is-a", style=dashed];
+  "Attribute" -> "Attribute" [label="co-located", style=dashed];
+  "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "House" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
   "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "co-located" -> "co-located" [label="symmetric", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+}
+```
+
+```dot
+digraph facts {
+  "Norwegian" [shape=rectangle];
+  "House-1" [shape=rectangle];
+  "Norwegian" -> "House-1" [label="co-located", color="#bcbd22", fontcolor="#bcbd22", style=solid];
 }
 ```
 
@@ -81,22 +122,33 @@ digraph rule_symmetric_lhs_rhs {
   subgraph cluster_lhs { label="match";
     "?a_L" [label="?a", shape=diamond];
     "?b_L" [label="?b", shape=diamond];
-    "?a_L" -> "?b_L" [label="?rel"];
+    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
     "?b_R" [label="?b", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
-    "?b_R" -> "?a_R" [label="?rel", style=dashed];
+    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
   }
 }
 ```
 
 **`overlay`**, the most compact: the match solid and what the conclusion adds dashed, in one graph.
 
+```dot
+digraph rule_symmetric_overlay {
+  label="symmetric"; labelloc=t;
+  ranksep=0.55;
+  "?a" [label="?a", shape=diamond];
+  "?b" [label="?b", shape=diamond];
+  "?a" -> "?b" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+  "?b" -> "?a" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+}
+```
+
 Within each panel the drawing tells apart the three things a `:match` or an `:assert` holds:
 
-- **a relation** `(R a b)` is a labelled arrow `a → b`, relation-coloured, `R` possibly a `?var`; `(R a b c …)` is a
-  Levi octagon;
+- **a relation** `(R a b)` is a labelled arrow from `a` to `b`, relation-coloured, `R` possibly a `?var`;
+  `(R a b c …)` is a Levi octagon;
 - **a guard**, `(neq ?a ?b)` or `(eq …)`, is a *dotted, undirected* `≠` or `=` link: it is computed, not data, so it
   is never drawn as a relation's arrow;
 - **an `(absent …)`** is a cluster labelled `absent (∄)`: what it holds is drawn inside, the variables it alone binds
@@ -123,10 +175,10 @@ forms it appears in: `Norwegian` appears **once**, with its `is-a` edge to `Nati
 
 | element | DOT shape and style |
 |---|---|
-| a type, the parent of an `is-a` fact | `shape=box` |
-| an instance, a leaf child | `shape=oval` |
-| a binary fact `(rel a b)` | an edge `a → b [label=rel …]` |
-| a unary fact `(rel a)` | a self-loop `a → a [label=rel …]` |
+| a name an `is-a` fact points at, under the comment `// types` | `shape=box` |
+| a name an `is-a` fact starts from and none points at, under `// instances` | `shape=oval` |
+| a binary fact `(rel a b)` | an edge `a -> b [label=rel …]` |
+| a unary fact `(rel a)` | a self-loop `a -> a [label=rel …]` |
 | a fact of another arity | a `shape=octagon` node and an edge to each argument, labelled `#1`, `#2`, … |
 | an `is-a` fact | `style=dashed, arrowhead=empty, label="is-a"` |
 | a background fact | `style=solid` |
@@ -140,23 +192,38 @@ forms it appears in: `Norwegian` appears **once**, with its `is-a` edge to `Nati
 
 `is-a` is the one relation the drawing knows a convention for, and it is a convention of presentation, not of
 reasoning: a program that writes membership with relations of its own, as `zebra.ein` writes `type` and `instance`,
-has those facts drawn as ordinary coloured arrows. For the proposition *"The Norwegian lives in the first house"*,
-condition (10):
+has those facts drawn as ordinary coloured arrows. A declaration is drawn as the fact it is stored as, an octagon
+with an arrow to the relation's name and one to each label, beside the loop of its membership fact. For the program
+above, whose one given fact is *"The Norwegian lives in the first house"*, condition (10):
 
 ```dot
-digraph zebra_fragment {
+digraph kb {
   rankdir=BT;
-  "Nationality" [shape=box];
-  "House"       [shape=box];
-  "Attribute"   [shape=box];
-  "Norwegian"   [shape=oval];
-  "House-1"     [shape=oval];
-  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-1"   -> "House"       [style=dashed, arrowhead=empty, label="is-a"];
+  // types
+  "Attribute" [shape=box, label="Attribute"];
+  "House" [shape=box, label="House"];
+  "Nationality" [shape=box, label="Nationality"];
+  // instances
+  "House-1" [shape=oval, label="House-1"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+
+  // facts
+  f_1f1a2cc2f3 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "is-a" [label="#1", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#2", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#3", color="#bcbd22", style=solid];
+  "is-a" -> "is-a" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6c4ab1c24 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "co-located" [label="#1", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
+  "co-located" -> "co-located" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "House"       -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "House-1" [label="co-located (10)", style=solid];
-  "House-1" -> "Norwegian" [label="co-located by symmetric", style=dashed];
+  "House" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "House-1" [label="co-located (10)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "House-1" -> "Norwegian" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
 }
 ```
 
@@ -170,7 +237,9 @@ ein render kb out/models/02.ein --since out/root.ein    # a state, and what it a
 A `--dump-answer` state file ([`10-answer-dump.md`](10-answer-dump.md)) is a `FILE`: it loads as a program and saturates to
 itself, so a state is drawn the way root is. `--since FILE` loads and saturates a second file and draws at
 `penwidth=3` every fact it lacks: a state against its `root.ein` is what the commitment added. `--no-types` leaves out
-the type boxes and their `is-a` edges, and `--no-instances` the instance ovals and every fact edge.
+the lines under `// types`, which give a box to each name an `is-a` fact points at, and `--no-instances` those under
+`// instances`, which give an oval; either way every edge stays, the `is-a` edges among them, and a name that lost
+its line is drawn in Graphviz's default shape.
 
 ## The lattice — `ein render lattice`
 
@@ -201,11 +270,12 @@ the title says so. Either option alone draws its half. A run whose universe is n
 another `--region-limit`'s candidates, is an error, exit 1, naming the file: its commitments would not be the cube's
 nodes.
 
-**The nodes are the pure cube.** Every subset `C` of the root candidates is a node. There is one rank per layer, `L0`
-at the top, and a thin edge from `C` to `C + h` for each single hypothesis `h`. Where saturation derives candidates,
-**it is drawn as a move inside the cube**, not as a node of its own: the state of `C` holds candidates `C` did not
-commit to, and their union with `C` is the closure `cl(C)`. A `sat` arrow goes from `C` to `cl(C)`, and `C` is drawn
-*transient*, a dashed outline and a paler fill, because it is the state it lands on. A cube edge that adds a fact
+**The nodes are the pure cube.** Every subset $C$ of the root candidates is a node. There is one rank per layer, `L0`
+at the top, and a thin edge from $C$ to $C \cup \lbrace h \rbrace$ for each single hypothesis $h$. Where saturation
+derives candidates, **it is drawn as a move inside the cube**, not as a node of its own: the state of $C$ holds
+candidates $C$ did not commit to, and their union with $C$ is the closure $\operatorname{cl}(C)$. A `sat` arrow goes
+from $C$ to $\operatorname{cl}(C)$, and $C$ is drawn *transient*, a dashed outline and a paler fill, because it is the
+state it lands on. A cube edge that adds a fact
 saturation already derived is *absorbed*, dotted: it moves nothing. The drawing rests on an alive node and its
 closure being one state, so that committing to what saturation derived changes no fixpoint.
 
@@ -228,17 +298,17 @@ misled: with `L0` at the top, the maximal line is the lower one.
 
 | edge | style | meaning |
 |---|---|---|
-| R → R | green, solid | inside R |
-| R → owing | orange, dashed | adding the fact adds a debt |
-| R → dead | red, solid | adding the fact kills |
-| owing → R | blue, solid | adding the fact pays the last debt: how the minimal line is reached |
-| owing → owing | light orange | still owing |
-| owing → dead | red, dashed | kills an owing node |
-| dead → R | magenta, bold | revives a dead node: dead is not upward-closed here |
-| dead → owing | magenta, dashed | revives a dead node, owing |
-| dead → dead | grey, thin | dead to dead |
+| from R to R | green, solid | inside R |
+| from R to owing | orange, dashed | adding the fact adds a debt |
+| from R to dead | red, solid | adding the fact kills |
+| from owing to R | blue, solid | adding the fact pays the last debt: how the minimal line is reached |
+| from owing to owing | light orange | still owing |
+| from owing to dead | red, dashed | kills an owing node |
+| from dead to R | magenta, bold | revives a dead node: dead is not upward-closed here |
+| from dead to owing | magenta, dashed | revives a dead node, owing |
+| from dead to dead | grey, thin | dead to dead |
 | absorbed | grey, dotted, no arrowhead | adds a fact saturation already derived |
-| `sat` | dark blue, heavy | `C ⇒ cl(C)`, which does not move the layout |
+| `sat` | dark blue, heavy | from $C$ to $\operatorname{cl}(C)$, which does not move the layout |
 | `+fact` | purple label | a **repair edge**: the fact that takes a hole back into R |
 | `✗ alive` | magenta, dashed | an unsound exclusion: from a dead node the run visited to an unvisited node above it that the cube says is alive |
 | `+k` | grey, dashed | the `lines` view only: inclusion across `k` facts, the nodes between hidden |
@@ -282,7 +352,7 @@ cube says is alive is marked `≠ the cube`. On a correct run none of these mark
 
 | view | draws | `auto` picks it |
 |---|---|---|
-| `full` | every node and edge of the cube | `n ≤ 6` (64 nodes, 192 edges) |
+| `full` | every node and edge of the cube | $n \le 6$ (64 nodes, 192 edges) |
 | `border` | R, its holes, every node one edge from R, the root, and what the run got wrong (a missing node, a spurious state, a node read otherwise, an unsound exclusion); the hidden nodes counted per layer in the rank column | while that is at most 64 nodes |
 | `lines` | the root, both lines, the holes, what the run got wrong, an owing frontier, and where saturation takes them, joined by inclusion; when R is empty, `N` and `E` instead of lines | past that |
 | `table` | every node as markdown, one section per layer: status, why, where saturation takes it, and with a run what it did. Each row carries `<a id="mMASK">`, so the head's lists of missing, spurious and `≠ the cube` nodes link to their rows | never: it is not DOT |
@@ -293,7 +363,7 @@ bits. The legend's lists are capped at twelve entries, and `--view table` has al
 nodes a list, with how many there are, and every row carries its own mark.
 
 **Sub-cubes** are listed under the drawing with their dimension and free facts, and each node's tooltip names the ones
-it is in. A sub-cube's outline is its R → R edges: sub-cubes overlap whenever two share a node, so a cluster per
+it is in. A sub-cube's outline is its edges from R to R: sub-cubes overlap whenever two share a node, so a cluster per
 sub-cube cannot be drawn.
 
 ## The hypothesis space — `ein render h-space`

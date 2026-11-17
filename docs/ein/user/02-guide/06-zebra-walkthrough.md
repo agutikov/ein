@@ -3,8 +3,8 @@
 The Wikipedia-style deductive solution of the Zebra puzzle, line by line, beside what Ein derives on the same puzzle.
 The encoding is [`examples/zebra2.ein`](../../../../examples/zebra2.ein); conditions `(1)`–`(15)` are the
 `:source "condition (N)"` of its puzzle facts. Names follow Ein's spelling (`House-1`, `Kools`, `Old_Gold`,
-`Lucky_Strike`, `Chesterfields`); in prose `H_i` abbreviates `House-i`. Every rule name in the tables below is the one
-Ein reports for that fact.
+`Lucky_Strike`, `Chesterfields`); in prose `H_i` abbreviates `House-i`, and `X@H_i` says that `X` is placed in
+`H_i`. Every rule name in the tables below is the one Ein reports for that fact.
 
 New to Ein? Start with the [guide](README.md) and return here from chapter 4.
 
@@ -13,7 +13,7 @@ and its `:why`. Driving the same solve from a program is [the Rust API](../../ei
 solves this puzzle.
 
 > **The other encoding.** [`zebra.ein`](../../../../examples/zebra.ein) solves the same puzzle over one generic
-> `co-located` equivalence instead of five typed relations, with the rules of `std.slots`, and reaches the same state
+> `co-located` equivalence instead of five relations, one an attribute, with the rules of `std.slots`, and reaches the same state
 > ([examples](07-examples.md) compares the two). Its root places the same facts as `zebra2.ein`'s, under other rule
 > names: where a row below says `range-elimination`, that encoding says `slot-fill`; where it says `adjacent-via-fwd`,
 > `slot-adjacent-fwd`; where it says `co-located` for a placement, `slot-locate`.
@@ -25,8 +25,9 @@ Each human step is one of three things in Ein.
 - **Root**: what saturation derives from the program with nothing guessed. The human's unconditional steps are all
   here. `ein saturate examples/zebra2.ein --dump` lists root, each derived fact with the rule that derived it, and
   `ein solve examples/zebra2.ein --no-search` reports it.
-- **A supposition refuted**: the human's *"suppose … — impossible"*. The `guess` hrule proposes a fact for each pair of
-  typed values, and `ein show hyps examples/zebra2.ein` lists every candidate. A candidate is **dead alone** when
+- **A supposition refuted**: the human's *"suppose … — impossible"*. The `guess` hrule proposes a fact of each of the
+  five relations for each value of its attribute and each house, and `ein show hyps examples/zebra2.ein` lists every
+  candidate. A candidate is **dead alone** when
   assuming it, and nothing else, saturates to `(false)`. To see it, add the candidate to a copy of `zebra2.ein` as a
   stated fact: `ein solve COPY --no-search` then reports `∅ dead — root's own fixpoint derives (false)`, and its
   `unsat core` lines name the facts one explanation of the contradiction rests on.
@@ -85,7 +86,7 @@ The puzzle's question, from its `(query …)`:
 > **By (10) the Norwegian lives in the first house.** Numbering direction (left-to-right or right-to-left) is
 > irrelevant; only the order matters.
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
 | root | Norwegian in `H_1` | stated (10) | `(nation-loc Norwegian House-1)` |
 
@@ -93,21 +94,21 @@ The puzzle's question, from its `(query …)`:
 > be adjacent (from (6)) and the second house is blue. Not red: that is the Englishman's (2). ***Therefore the first
 > house is yellow.***
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
-| root | Blue at `H_2` | `adjacent-via-fwd` (15) | Norwegian@`H_1`; `H_1`'s only `next-to` neighbour is `H_2` ⟹ `(color-loc Blue House-2)` |
-| root | not Blue at `H_1` | `functional-negative` | Blue@`H_2` ⟹ `(not (color-loc Blue House-1))` |
-| root | not Green at `H_1` | `adjacent-via-endpoint-bwd` (6) | Green is `right-of` Ivory, and `H_1` is right of no house ⟹ `(not (color-loc Green House-1))` |
-| root | not Ivory at `H_1` | `adjacent-via-fwd-negative` (6) | Ivory@`H_1` would put Green at `H_2`, its only right neighbour, which is not green (Blue@`H_2`) ⟹ `(not (color-loc Ivory House-1))` |
-| root | not Red at `H_1` | `co-located-negative` (2) | Norwegian@`H_1` ⟹ the Englishman is not in `H_1` (`injective-negative`) ⟹ `(not (color-loc Red House-1))` |
-| root | **Yellow at `H_1`** | `range-elimination` | Blue, Green, Ivory, Red all excluded at `H_1` ⟹ `(color-loc Yellow House-1)` |
+| root | Blue at `H_2` | `adjacent-via-fwd` (15) | Norwegian@`H_1`; `H_1`'s only `next-to` neighbour is `H_2`, so `(color-loc Blue House-2)` |
+| root | not Blue at `H_1` | `functional-negative` | Blue@`H_2`, so `(not (color-loc Blue House-1))` |
+| root | not Green at `H_1` | `adjacent-via-endpoint-bwd` (6) | Green is `right-of` Ivory, and `H_1` is right of no house, so `(not (color-loc Green House-1))` |
+| root | not Ivory at `H_1` | `adjacent-via-fwd-negative` (6) | Ivory@`H_1` would put Green at `H_2`, its only right neighbour, which is not green (Blue@`H_2`), so `(not (color-loc Ivory House-1))` |
+| root | not Red at `H_1` | `co-located-negative` (2) | Norwegian@`H_1`, so the Englishman is not in `H_1` (`injective-negative`), so `(not (color-loc Red House-1))` |
+| root | **Yellow at `H_1`** | `range-elimination` | Blue, Green, Ivory, Red all excluded at `H_1`, so `(color-loc Yellow House-1)` |
 
 > Consequently **Kools are smoked in `H_1`** (8) and **a horse is kept in `H_2`** (12).
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
-| root | Kools at `H_1` | `co-located` (8) | Yellow@`H_1` ⟹ `(smoke-loc Kools House-1)` |
-| root | Horse at `H_2` | `adjacent-via-fwd` (12) | Kools@`H_1`; its only `next-to` neighbour is `H_2` ⟹ `(pet-loc Horse House-2)` |
+| root | Kools at `H_1` | `co-located` (8) | Yellow@`H_1`, so `(smoke-loc Kools House-1)` |
+| root | Horse at `H_2` | `adjacent-via-fwd` (12) | Kools@`H_1`; its only `next-to` neighbour is `H_2`, so `(pet-loc Horse House-2)` |
 
 > **What does the Norwegian, first house, yellow, Kools, drink?** Not tea (the Ukrainian's, 5); not coffee (the green
 > house's, 4); not milk (the third house's, 9); not orange juice (the Lucky Strike smoker's, 13). ***Therefore the
@@ -116,23 +117,28 @@ The puzzle's question, from its `(query …)`:
 Asked as a question, *what does `H_1` drink?* has five candidate answers, and four of them are excluded by stored
 negatives before anything is guessed. Ein reaches the fifth the same way:
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
-| root | not Tea at `H_1` | `co-located-negative` (5) | the Ukrainian is not in `H_1` ⟹ `(not (drink-loc Tea House-1))` |
-| root | not Coffee at `H_1` | `co-located-negative` (4) | `H_1` is not green ⟹ `(not (drink-loc Coffee House-1))` |
-| root | not Milk at `H_1` | `functional-negative` | Milk@`H_3` ⟹ `(not (drink-loc Milk House-1))` |
-| root | not Juice at `H_1` | `co-located-negative` (13) | Kools@`H_1` ⟹ Lucky Strike is not in `H_1` ⟹ `(not (drink-loc Juice House-1))` |
-| root | **Water at `H_1`** | `range-elimination` | Tea, Coffee, Milk, Juice excluded at `H_1` ⟹ `(drink-loc Water House-1)` |
+| root | not Tea at `H_1` | `co-located-negative` (5) | the Ukrainian is not in `H_1`, so `(not (drink-loc Tea House-1))` |
+| root | not Coffee at `H_1` | `co-located-negative` (4) | `H_1` is not green, so `(not (drink-loc Coffee House-1))` |
+| root | not Milk at `H_1` | `functional-negative` | Milk@`H_3`, so `(not (drink-loc Milk House-1))` |
+| root | not Juice at `H_1` | `co-located-negative` (13) | Kools@`H_1`, so Lucky Strike is not in `H_1`, so `(not (drink-loc Juice House-1))` |
+| root | **Water at `H_1`** | `range-elimination` | Tea, Coffee, Milk, Juice excluded at `H_1`, so `(drink-loc Water House-1)` |
 
-The table at the end of the step, which is root:
+The table at the end of the step is root, and `ein solve examples/zebra2.ein --no-search --models grid` ends with it:
+a row a house, a column a relation, `—` where root places nothing yet.
 
+<!-- output -->
 ```text
-house   1          2      3      4   5
-colour  yellow     blue   ?      ?   ?
-nation  Norwegian  ?      ?      ?   ?
-drink   water      ?      milk   ?   ?
-smoke   Kools      ?      ?      ?   ?
-pet     ?          horse  ?      ?   ?
+  ── root — not in R, owes 36 ──
+  grid — rows: House — given one value each by 5 relations (injective color-loc, injective nation-loc, injective drink-loc, injective smoke-loc, injective pet-loc)
+  | House | color-loc | nation-loc | drink-loc | smoke-loc | pet-loc |
+  |---|---|---|---|---|---|
+  | House-1 | Yellow | Norwegian | Water | Kools | — |
+  | House-2 | Blue | — | — | — | Horse |
+  | House-3 | — | — | Milk | — | — |
+  | House-4 | — | — | — | — | — |
+  | House-5 | — | — | — | — | — |
 ```
 
 ---
@@ -142,10 +148,10 @@ pet     ?          horse  ?      ?   ?
 > **What is smoked in `H_2`** (blue, horse)? Not Kools (smoked in `H_1`, 8). Not Old Gold: that smoker keeps snails
 > (7), and `H_2` has a horse.
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
-| root | not Kools at `H_2` | `co-located-negative` (8) | `H_2` is not yellow ⟹ `(not (smoke-loc Kools House-2))` |
-| root | not Old_Gold at `H_2` | `co-located-negative` (7) | Horse@`H_2` ⟹ no snail in `H_2` (`injective-negative`) ⟹ `(not (smoke-loc Old_Gold House-2))` |
+| root | not Kools at `H_2` | `co-located-negative` (8) | `H_2` is not yellow, so `(not (smoke-loc Kools House-2))` |
+| root | not Old_Gold at `H_2` | `co-located-negative` (7) | Horse@`H_2`, so no snail in `H_2` (`injective-negative`), so `(not (smoke-loc Old_Gold House-2))` |
 
 Root owes `H_2` a cigarette, and three candidates are left to pay it: `(smoke-loc Chesterfields House-2)`,
 `(smoke-loc Lucky_Strike House-2)` and `(smoke-loc Parliament House-2)`.
@@ -156,16 +162,16 @@ Root owes `H_2` a cigarette, and three candidates are left to pay it: `(smoke-lo
 > Norwegian (10); not the Englishman (red, 2); not the Spaniard (dog, 3); not the Ukrainian (tea, 5); not the Japanese
 > (Parliament, 14). *Impossible*: so Lucky Strike is not smoked in `H_2`.
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
 | supposed | Lucky_Strike@`H_2` | the candidate | `(smoke-loc Lucky_Strike House-2)` |
-| supposed | Juice at `H_2` | `co-located` (13) | ⟹ `(drink-loc Juice House-2)` |
+| supposed | Juice at `H_2` | `co-located` (13) | `(drink-loc Juice House-2)` |
 | root | not Norwegian@`H_2` | `functional-negative` | Norwegian@`H_1` |
 | root | not Englishman@`H_2` | `co-located-negative` (2) | `H_2` is not red |
 | root | not Spaniard@`H_2` | `co-located-negative` (3) | `H_2` has no dog: it has the horse |
-| supposed | not Ukrainian@`H_2` | `co-located-negative` (5) | Juice@`H_2` ⟹ no tea in `H_2` |
-| supposed | not Japanese@`H_2` | `co-located-negative` (14) | Lucky_Strike@`H_2` ⟹ no Parliament in `H_2` |
-| supposed | **⊥** | `surjective` | every Nationality is excluded at `H_2` ⟹ `(false)` |
+| supposed | not Ukrainian@`H_2` | `co-located-negative` (5) | Juice@`H_2`, so no tea in `H_2` |
+| supposed | not Japanese@`H_2` | `co-located-negative` (14) | Lucky_Strike@`H_2`, so no Parliament in `H_2` |
+| supposed | **contradiction** | `surjective` | every Nationality is excluded at `H_2`, so `(false)` |
 
 The candidate is **dead alone**. Added as a fact to a copy of `zebra2.ein`, `ein solve COPY --no-search` reports
 `∅ dead — root's own fixpoint derives (false)` and an unsat core that names the human's argument: the Norwegian in
@@ -179,15 +185,15 @@ explanation of the contradiction, and the engine may close it through another va
 > Ukrainian's, 5); not coffee (green, 4); not milk (the middle house's, 9); not juice (Lucky Strike's, 13).
 > *Impossible.*
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
 | supposed | Parliament@`H_2` | the candidate | `(smoke-loc Parliament House-2)` |
-| supposed | Japanese@`H_2` | `co-located` (14) | ⟹ `(nation-loc Japanese House-2)` |
+| supposed | Japanese@`H_2` | `co-located` (14) | `(nation-loc Japanese House-2)` |
 | supposed | not Tea@`H_2` | `co-located-negative` (5) | the Ukrainian is not in `H_2` |
 | root | not Coffee@`H_2` | `co-located-negative` (4) | `H_2` is not green |
 | root | not Milk@`H_2`, not Water@`H_2` | `functional-negative` | Milk@`H_3`, Water@`H_1` |
 | supposed | not Juice@`H_2` | `co-located-negative` (13) | Lucky Strike is not in `H_2` |
-| supposed | **⊥** | `surjective` | every Drink is excluded at `H_2` ⟹ `(false)` |
+| supposed | **contradiction** | `surjective` | every Drink is excluded at `H_2`, so `(false)` |
 
 This candidate is dead alone too.
 
@@ -200,11 +206,11 @@ This candidate is dead alone too.
 Two of the three candidates that pay `H_2`'s cigarette are dead, so every state of the answer holds the third. With
 it, saturation finishes the house:
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
 | the state | **Chesterfields@`H_2`** | the only candidate left | `(smoke-loc Chesterfields House-2)` |
-| the state | **Tea@`H_2`** | `range-elimination` | Water, Milk, Coffee excluded at `H_2` at root, Juice once Lucky Strike is not in `H_2` ⟹ `(drink-loc Tea House-2)` |
-| the state | **Ukrainian@`H_2`** | `co-located` (5) | Tea@`H_2` ⟹ `(nation-loc Ukrainian House-2)` |
+| the state | **Tea@`H_2`** | `range-elimination` | Water, Milk, Coffee excluded at `H_2` at root, Juice once Lucky Strike is not in `H_2`, so `(drink-loc Tea House-2)` |
+| the state | **Ukrainian@`H_2`** | `co-located` (5) | Tea@`H_2`, so `(nation-loc Ukrainian House-2)` |
 
 Ein reaches tea first and the Ukrainian from it; the human reaches the Ukrainian first. The two facts are the same.
 
@@ -214,9 +220,9 @@ Ein reaches tea first and the Ukrainian from it; the human reaches the Ukrainian
 
 > Since Chesterfields are smoked in `H_2`, by (11) the fox is in `H_1` or `H_3`.
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
-| the state | Fox ∉ {`H_2`, `H_4`, `H_5`} | `disjunctive-prune-fwd` (11) | Chesterfields@`H_2`, whose `next-to` neighbours are `H_1` and `H_3` ⟹ `(not (pet-loc Fox House-2))`, `(not (pet-loc Fox House-4))`, `(not (pet-loc Fox House-5))` |
+| the state | Fox in none of `H_2`, `H_4`, `H_5` | `disjunctive-prune-fwd` (11) | Chesterfields@`H_2`, whose `next-to` neighbours are `H_1` and `H_3`, so `(not (pet-loc Fox House-2))`, `(not (pet-loc Fox House-4))`, `(not (pet-loc Fox House-5))` |
 
 ### Supposition: the fox in `H_3` (dead)
 
@@ -234,9 +240,9 @@ same families as before: `injective-negative` (the snail is not where the fox is
 Old Gold), `range-elimination` on the Old Gold smoker's house, `co-located` (4) to the green house, and a totality
 check, `surjective` or `total`, for the contradiction.
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
-| the state | **Fox@`H_1`** | the only candidate left | of the fox's houses, `H_2`, `H_4`, `H_5` are excluded and `H_3` is dead ⟹ `(pet-loc Fox House-1)` |
+| the state | **Fox@`H_1`** | the only candidate left | of the fox's houses, `H_2`, `H_4`, `H_5` are excluded and `H_3` is dead, so `(pet-loc Fox House-1)` |
 
 ---
 
@@ -244,10 +250,10 @@ check, `surjective` or `total`, for the contradiction.
 
 > From the above, **coffee and orange juice are in `H_4` and `H_5`** (order still undetermined).
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
-| the state | Coffee, Juice ∉ {`H_1`, `H_2`, `H_3`} | `injective-negative`, `co-located-negative` | Water@`H_1`, Tea@`H_2`, Milk@`H_3` hold the first three houses |
-| the state | Lucky Strike ∉ {`H_1`, `H_2`, `H_3`} | `co-located-negative` (13), `injective-negative` | it is where the juice is |
+| the state | Coffee and Juice in none of `H_1`, `H_2`, `H_3` | `injective-negative`, `co-located-negative` | Water@`H_1`, Tea@`H_2`, Milk@`H_3` hold the first three houses |
+| the state | Lucky Strike in none of `H_1`, `H_2`, `H_3` | `co-located-negative` (13), `injective-negative` | it is where the juice is |
 
 > Where does the Old Gold and snail keeper live? Not the juice house: that smokes Lucky Strike (13). *Suppose he lives
 > in the coffee house.* Then Old Gold, snail and coffee are in the green house (4): the same impossibility as step 3.
@@ -264,33 +270,38 @@ on a copy of `zebra2.ein` stating `(smoke-loc Chesterfields House-2)`, `(pet-loc
 
 Ein derives the rest from Old Gold in `H_3`, in its own order:
 
-| where | NL | ein rule | premises → conclusion |
+| where | NL | ein rule | premises, and what they give |
 |---|---|---|---|
 | the state | **Old_Gold@`H_3`** | the only candidate left | `(smoke-loc Old_Gold House-3)` |
-| the state | Snail@`H_3` | `co-located` (7) | ⟹ `(pet-loc Snail House-3)` |
-| the state | **Englishman@`H_3`** | `range-elimination` | the Norwegian is in `H_1`, the Ukrainian in `H_2`, the Spaniard's dog and the Japanese's Parliament are not in `H_3` ⟹ `(nation-loc Englishman House-3)` |
-| the state | **Red@`H_3`** | `co-located` (2) | ⟹ `(color-loc Red House-3)` |
-| the state | **Ivory@`H_4`, Green@`H_5`** | `domain-elimination` | green is right of ivory (6), and `H_1` to `H_3` are coloured ⟹ `(color-loc Ivory House-4)`, `(color-loc Green House-5)` |
-| the state | Coffee@`H_5` | `co-located` (4) | Green@`H_5` ⟹ `(drink-loc Coffee House-5)` |
-| the state | Juice@`H_4`, Lucky_Strike@`H_4` | `domain-elimination`, then `co-located` (13) | ⟹ `(drink-loc Juice House-4)`, `(smoke-loc Lucky_Strike House-4)` |
-| the state | Parliament@`H_5`, Japanese@`H_5` | `range-elimination`, `co-located` (14) | ⟹ `(smoke-loc Parliament House-5)`, `(nation-loc Japanese House-5)` |
-| the state | Spaniard@`H_4`, Dog@`H_4` | `domain-elimination`, `co-located` (3) | ⟹ `(nation-loc Spaniard House-4)`, `(pet-loc Dog House-4)` |
-| the state | **Zebra@`H_5`** | `domain-elimination` | the fox, horse, snail and dog hold `H_1` to `H_4` ⟹ `(pet-loc Zebra House-5)` |
+| the state | Snail@`H_3` | `co-located` (7) | `(pet-loc Snail House-3)` |
+| the state | **Englishman@`H_3`** | `range-elimination` | the Norwegian is in `H_1`, the Ukrainian in `H_2`, the Spaniard's dog and the Japanese's Parliament are not in `H_3`, so `(nation-loc Englishman House-3)` |
+| the state | **Red@`H_3`** | `co-located` (2) | `(color-loc Red House-3)` |
+| the state | **Ivory@`H_4`, Green@`H_5`** | `domain-elimination` | green is right of ivory (6), and `H_1` to `H_3` are coloured, so `(color-loc Ivory House-4)`, `(color-loc Green House-5)` |
+| the state | Coffee@`H_5` | `co-located` (4) | Green@`H_5`, so `(drink-loc Coffee House-5)` |
+| the state | Juice@`H_4`, Lucky_Strike@`H_4` | `domain-elimination`, then `co-located` (13) | `(drink-loc Juice House-4)`, `(smoke-loc Lucky_Strike House-4)` |
+| the state | Parliament@`H_5`, Japanese@`H_5` | `range-elimination`, `co-located` (14) | `(smoke-loc Parliament House-5)`, `(nation-loc Japanese House-5)` |
+| the state | Spaniard@`H_4`, Dog@`H_4` | `domain-elimination`, `co-located` (3) | `(nation-loc Spaniard House-4)`, `(pet-loc Dog House-4)` |
+| the state | **Zebra@`H_5`** | `domain-elimination` | the fox, horse, snail and dog hold `H_1` to `H_4`, so `(pet-loc Zebra House-5)` |
 | the state | **the query** | — | `(drink-loc Water House-1)` and `(pet-loc Zebra House-5)` hold, with the Norwegian in `H_1` and the Japanese in `H_5` |
 
-The final table, the one state of the answer:
+The final table is the one state of the answer, and `ein solve examples/zebra2.ein --maximal --models grid` ends
+with it:
 
+<!-- output -->
 ```text
-house   1          2           3         4              5
-colour  yellow     blue        red       ivory          green
-nation  Norwegian  Ukrainian   English   Spaniard       Japanese
-drink   water      tea         milk      orange juice   coffee
-smoke   Kools      Chest'flds  Old Gold  Lucky Strike   Parliament
-pet     fox        horse       snail     dog            zebra
+  ── state 1 of 1 ──
+  grid — rows: House — given one value each by 5 relations (injective color-loc, injective nation-loc, injective drink-loc, injective smoke-loc, injective pet-loc)
+  | House | color-loc | nation-loc | drink-loc | smoke-loc | pet-loc |
+  |---|---|---|---|---|---|
+  | House-1 | Yellow | Norwegian | Water | Kools | Fox |
+  | House-2 | Blue | Ukrainian | Tea | Chesterfields | Horse |
+  | House-3 | Red | Englishman | Milk | Old_Gold | Snail |
+  | House-4 | Ivory | Spaniard | Juice | Lucky_Strike | Dog |
+  | House-5 | Green | Japanese | Coffee | Parliament | Zebra |
 ```
 
-`ein solve examples/zebra2.ein --single` prints it as the `(model …)` of chapter 4, and reads the query's sentence
-off it: *“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”*.
+`ein solve examples/zebra2.ein --single` prints the same state as the `(model …)` of chapter 4, and reads the query's
+sentence off it: *“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”*.
 
 ---
 

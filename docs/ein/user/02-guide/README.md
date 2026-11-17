@@ -15,16 +15,18 @@ facts first, then rules, then the whole puzzle solved end to end.
 ## Chapters
 
 1. **[Objects & relations](01-objects-and-relations.md)**: the three things every Ein model is made of (objects,
-   relations, facts), each shown three ways: plain English, ein-lang, and as a graph.
+   relations, facts), each shown three ways: ein-lang, as a graph, and in plain English. Ein has no types: a
+   declaration labels its slots, and a label is a name.
 2. **[First rules](02-first-rules.md)**: how a *rule* derives new facts: `symmetric`, `transitive`, `co-located`,
-   with the graph before and after each one fires.
+   each as Ein, as the graph of the rule, and as the graph of the facts once it has fired.
 3. **[The rule families](03-rule-families.md)**: the machinery that cracks the Zebra puzzle: domain- and
    range-elimination, negative-completion, spatial adjacency, disjunctive-prune, and which rules you *import* and
    which you *write*.
 4. **[Solving the whole puzzle](04-solving-the-whole-puzzle.md)**: put it together, run `ein solve`, read the
    answer.
 5. **[Jack drinks coffee](05-jack-drinks-coffee.md)**: one small inference stated four ways, in words, in Ein, as a
-   graph and in mathematics: an instance inherits the relations of its type.
+   graph and in mathematics: a type made by a program, two rules by which a name inherits the relations of the name
+   it `is-a`.
 6. **[The Zebra puzzle, step by step](06-zebra-walkthrough.md)**: the human solution, line by line, against what Ein
    derives on the same puzzle. Read it after chapter 4.
 
@@ -54,17 +56,24 @@ the system one instead.
 
 ## Which output blocks are real runs
 
-**Chapters 2 and 4 show what `ein` prints; chapters 1 and 3 run no command.** Of the blocks that show output, the
-ones a page marks with an HTML comment that names the command are **generated**: the whole of what the binary
-prints for that command, which the test suite runs and compares byte for byte, so the block cannot differ from a run. The rest
-are **excerpts**: the two or three lines a section is about, with the header and the other rows elided as `…`. An
-excerpt's lines are the binary's, but nothing compares them, because an exact comparison cannot express an elision.
+**Every chapter shows what `ein` prints or draws.** Of the blocks that show output, the ones a page marks with an
+HTML comment that names the command are **generated**: the whole of what the binary prints for that command, which
+the test suite runs and compares byte for byte, so the block cannot differ from a run. The rest are **excerpts**: the
+lines a section is about, with the header and the other rows left out, some marked `…`. An excerpt's lines are the
+binary's, but nothing compares them, because an exact comparison cannot express an elision.
 
 | where | kind |
 |---|---|
 | [ch. 4](04-solving-the-whole-puzzle.md) § Solve it | **generated**: the whole run of `ein solve examples/zebra2.ein --single` |
 | [ch. 2](02-first-rules.md), three blocks | **excerpts** |
-| [ch. 6](06-zebra-walkthrough.md), the read-out lines it quotes | **excerpts** |
+| [ch. 3](03-rule-families.md), five facts of `ein saturate --dump` | **excerpt** |
+| [ch. 6](06-zebra-walkthrough.md), the read-out lines it quotes and the two grids | **excerpts** |
+| [word problems](08-word-problems.md), the read-outs, dumps and traces | **excerpts** |
+
+**A drawing is a `dot` block**, which Graphviz renders. Where a page says a drawing is `ein render`'s and names the
+command, the block is what that command writes, less its two lines that are no part of the drawing, a layout hint
+and a font, and where a page says so, cut to the arrows the section is about. A drawing a page does not attribute
+is a schematic drawn for the page, in the same shapes ([rendering](../04-reference/12-rendering.md)).
 
 A generated block is never edited by hand: change the command in its marker, and the block is written again from a
 run.

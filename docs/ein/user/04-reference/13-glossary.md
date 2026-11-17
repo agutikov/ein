@@ -21,10 +21,21 @@ ellipse when an `is-a` fact makes it an instance. The name is its label; the obj
 [`../03-syntax-and-semantics/01-objects.md`](../03-syntax-and-semantics/01-objects.md).
 
 ### Type
-A node that classifies objects, `Nationality`, `House`, `Color`: the parent of an `is-a` fact, or a name a signature
-declares. Drawn as a box. Types are nodes like any other and take part in relations as objects do; Ein imposes no
-type system ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). See
-[`../03-syntax-and-semantics/04-ontology.md`](../03-syntax-and-semantics/04-ontology.md).
+**Ein has no types** ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). The
+word is a program's, for a name it groups objects under, `Nationality`, `House`, `Color`: the name its membership
+facts point at, `(is-a Norwegian Nationality)`, or a [label](#label-signature) of a declaration. Such a name is a
+node like any other and takes part in facts as any object does, and it means what the rules that read those facts
+make it mean. `ein render kb` draws the name an `is-a` fact points at as a box, a convention of the drawing keyed on
+that relation's name. See [`../03-syntax-and-semantics/04-ontology.md`](../03-syntax-and-semantics/04-ontology.md).
+
+### Label, signature
+The names a declaration lists after the relation's, one for each argument slot: `Nationality` and `House` in
+`(relation nation-loc Nationality House :why "…")`. Together they are the relation's **signature**. Their number is
+the number of arguments every form of the relation has, which the loader holds; a label itself is an ordinary name,
+no argument is checked against it, and a rule reads it through the stored declaration, `(relation ?R ?A ?B)`. The
+engine reads a signature only for what may be guessed: whether it is empty, how long it is, and which names it
+lists, about which the blind enumerator proposes nothing. See
+[`02-syntax.md` § What the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine).
 
 ### Relation
 Three uses worth telling apart:
@@ -73,7 +84,8 @@ program its answer does not depend on the order rules fire in. See
 A rule set is stratified when no `(absent …)` reads a relation that depends, through the rules, on the guarded rule's
 own conclusion: no recursion through negation. Ein checks it and says so, as a diagnostic and not a refusal: a cycle
 through an `absent` is named by `ein solve`'s `strata` row and `ein saturate --dump`'s `;; Strata` line. On a rule set
-that is not stratified, `p ← absent q` beside `q ← absent p`, the engine reaches one fixpoint, by the order the
+that is not stratified, a rule that concludes `p` where `q` is absent beside one that concludes `q` where `p` is
+absent, the engine reaches one fixpoint, by the order the
 boundary admits firings in, and the `strata` row says it may depend on that order. See [`08-read-out.md`](08-read-out.md).
 
 ### Macro
@@ -106,45 +118,48 @@ The answer to a program is a **region** of its hypothesis lattice
 below are written for a **monotone** program.
 
 ### Root
-The program's facts saturated by its rules, nothing hypothesised: the lattice's node ∅.
+The program's facts saturated by its rules, nothing hypothesised: the lattice's node $\emptyset$, which the read-out
+writes `∅`.
 
 ### Hypothesis, candidate
 A fact the generator proposes at root. Which ones exist is the **generation ladder**'s answer: the program's own
 `(hrule …)`, else the facts that would discharge what root owes and what a rule can bring a commitment to owe, else the
 blind enumerator. `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` decide which relations are eligible,
 so a fact of an excluded relation is no hypothesis at all. The blind enumerator proposes about its **objects**: the
-program's names, less a signature's types, the language's own words, every relation and rule, and the two dunders
+program's names, less a signature's labels, the language's own words, every relation and rule, and the two dunders
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)). See
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
 
 ### Universe, H
-The candidate list, n = |H|: **the space every definition quantifies over**. It must hold every fact a model needs; a
+The candidate list, $n = |H|$: **the space every definition quantifies over**. It must hold every fact a model needs; a
 shortfall is a program error.
 
 ### Commitment
-A subset of the universe: a node of the lattice. Without merging, the lattice is the n-cube, and its layer k holds the
-commitments of k facts.
+A subset of the universe: a node of the lattice. Without merging, the lattice is the $n$-cube, and its layer $k$ holds
+the commitments of $k$ facts.
 
 ### State
-`sat(root + C)` for a commitment C. **Dead** when it holds `(false)`, **alive** otherwise; **owing n** with n
-undischarged obligation instances; **discharged** when it owes nothing.
+$\operatorname{sat}(\text{root} \cup C)$ for a commitment $C$: root's facts and $C$'s, saturated. **Dead** when it holds
+`(false)`, **alive** otherwise; **owing $n$** with $n$ undischarged obligation instances; **discharged** when it owes
+nothing.
 
 ### Closure, state class
-cl(C), the candidates C's state holds (C ⊆ cl(C)). The commitments that reach one state form its **class**: the closed
-set on top, its **minimal generators** at the bottom, the least that must be guessed.
+$\operatorname{cl}(C)$, the candidates $C$'s state holds, so $C \subseteq \operatorname{cl}(C)$. The commitments that reach
+one state form its **class**: the closed set on top, its **minimal generators** at the bottom, the least that must be
+guessed.
 
 ### Region R, solution
 **R is the commitments whose state is alive and discharged**: the answer to a program. A **solution** is a node of R.
 In general R is its set of nodes; on a monotone program it has no holes, and its **minimal** and **maximal lines**
-describe it. ∅ is a solution exactly when root is alive and discharged.
+describe it. $\emptyset$ is a solution exactly when root is alive and discharged.
 
 ### k_s, k_c
-|R| counted in states and in commitments.
+$|R|$ counted in states and in commitments.
 
 ### Line, hole, sub-cube, component
 The **minimal** and **maximal line** are R's minimal and maximal nodes, set by obligations and by restrictions. A
-**hole** is a node outside R between two members; a monotone program has none. A **sub-cube** [a … b] is every
-commitment between a and b, of dimension |b| − |a|. A **component** is a connected part of R under one-fact edges: a
+**hole** is a node outside R between two members; a monotone program has none. A **sub-cube** $[a, b]$ is every
+commitment $C$ with $a \subseteq C \subseteq b$, of dimension $|b| - |a|$. A **component** is a connected part of R under one-fact edges: a
 set of models, never a model.
 
 ### N
@@ -219,25 +234,25 @@ Predicates over a relation, each stated as a fact that activates a rule, `(symme
 library's are [`../03-syntax-and-semantics/07-properties-and-operators.md`](../03-syntax-and-semantics/07-properties-and-operators.md).
 
 ### Symmetric
-`R(a,b) ⇒ R(b,a)`. Example: `co-located`, `next-to`.
+$R(a,b) \implies R(b,a)$. Example: `co-located`, `next-to`.
 
 ### Transitive
-`R(a,b) ∧ R(b,c) ⇒ R(a,c)`. Example: `co-located`, `ancestor-of`.
+$R(a,b) \land R(b,c) \implies R(a,c)$. Example: `co-located`, `ancestor-of`.
 
 ### Reflexive
-`R(x,x)` for every `x` in the relation's domain. `co-located` is reflexive mathematically, and Ein does not derive the
+$R(x,x)$ for every $x$ in the relation's domain. `co-located` is reflexive mathematically, and Ein does not derive the
 self-edges, which add nothing to a Zebra-class puzzle; `std.typing`'s `(reflexive R)` closes a preorder where one is
 wanted.
 
 ### Asymmetric
-`R(a,b) ⇒ ¬R(b,a)` for `a ≠ b`. Example: `is-a` (Norwegian is a Nationality, and Nationality is not a Norwegian),
+$R(a,b) \implies \lnot R(b,a)$ for $a \neq b$. Example: `is-a` (Norwegian is a Nationality, and Nationality is not a Norwegian),
 `right-of`.
 
 ### Antisymmetric
-`R(a,b) ∧ R(b,a) ⇒ a = b`. Weaker than asymmetric: the property of a partial order.
+$R(a,b) \land R(b,a) \implies a = b$. Weaker than asymmetric: the property of a partial order.
 
 ### Irreflexive
-`¬R(x,x)` for every `x`. Used with strict orders and an explicit `neq`.
+$\lnot R(x,x)$ for every $x$. Used with strict orders and an explicit `neq`.
 
 ## Theory
 
@@ -247,8 +262,8 @@ S-expression grammar, so the engine reads its own traces
 ([Q3](../../../decisions/language/Q3-ein-is-an-s-expression-language.md)).
 
 ### DPO, double pushout
-A categorical formulation of graph rewriting in which a rule is a span `L ← K → R`. Ein's patterns are positive and
-conjunctive and delete nothing, so a rule is the case `K = L`.
+A categorical formulation of graph rewriting in which a rule is a span $L \leftarrow K \rightarrow R$. Ein's patterns are
+positive and conjunctive and delete nothing, so a rule is the case $K = L$.
 
 ### ATMS, ATMS label
 An assumption-based truth maintenance system keeps, for every fact, its **label**: the subset-minimal sets of

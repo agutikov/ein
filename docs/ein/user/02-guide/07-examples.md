@@ -13,7 +13,17 @@ puzzles are under [`examples/`](../../../../examples/) (its [catalogue](../../..
 
 The shortest meaningful program: one fact, whose `:source` makes it a **given**, a statement of the problem, rather
 than background ([facts](../03-syntax-and-semantics/03-facts.md)). `lives-in` is not declared, which a program may leave
-it; a declared relation carries a `:why` and the types of its slots.
+it; a declared relation carries a `:why` and a label for each of its slots. `ein render kb` draws the program as the
+one arrow it is, labelled with the relation and the clue's number:
+
+```dot
+digraph kb {
+  rankdir=BT;
+
+  // facts
+  "Norwegian" -> "House-1" [label="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
+}
+```
 
 ## A larger Zebra fragment
 
@@ -51,6 +61,61 @@ premise `(neq ?a ?c)`, an ordinary conjunct of the `:match`. `(transitive co-loc
 `?house = Red · ?nationality = Englishman`. The whole puzzle, fifteen conditions and the rule families that solve it,
 is [`examples/zebra.ein`](../../../../examples/zebra.ein).
 
+As a graph, from `ein render kb`: the three declarations, each an octagon with an arrow to the relation's name and
+one to each slot's label, the `is-a` facts as dashed arrows with an open head, and the three clues as solid arrows.
+`transitive` adds nothing here, since no two `co-located` facts chain, so no arrow is dashed as derived.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  // types
+  "Attribute" [shape=box, label="Attribute"];
+  "Color" [shape=box, label="Color"];
+  "House" [shape=box, label="House"];
+  "Nationality" [shape=box, label="Nationality"];
+  // instances
+  "Englishman" [shape=oval, label="Englishman"];
+  "Green" [shape=oval, label="Green"];
+  "House-1" [shape=oval, label="House-1"];
+  "House-2" [shape=oval, label="House-2"];
+  "House-3" [shape=oval, label="House-3"];
+  "Ivory" [shape=oval, label="Ivory"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+  "Red" [shape=oval, label="Red"];
+
+  // facts
+  f_1f1a2cc2f3 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "is-a" [label="#1", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#2", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#3", color="#bcbd22", style=solid];
+  "is-a" -> "is-a" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6c4ab1c24 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "co-located" [label="#1", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
+  "co-located" -> "co-located" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_f19a293ea2 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_f19a293ea2 -> "right-of" [label="#1", color="#bcbd22", style=solid];
+  f_f19a293ea2 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
+  f_f19a293ea2 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
+  "right-of" -> "right-of" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "House" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "Color" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-3" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "Red" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
+  "Green" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
+  "Ivory" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "Englishman" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "Englishman" -> "Red" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Green" -> "Ivory" [label="right-of (6)", color="#d62728", fontcolor="#d62728", style=solid];
+  "Norwegian" -> "House-1" [label="co-located (10)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+}
+```
+
 ## Two ontologies for one puzzle
 
 The same puzzle is encoded **two ways** under `examples/`. Both are valid Ein; what differs is the *ontology* each
@@ -71,8 +136,9 @@ It declares its own membership relations and links every attribute through a sin
 ```
 
 Nothing here is a keyword of the language: `type` and `instance` are ordinary relations the puzzle declares, exactly
-like `co-located`. Ein special-cases no relation name and keeps no type or instance view of its own; a type
-projection, if a puzzle wants one, is a rule over the puzzle's own facts.
+like `co-located`. **Ein has no types**: it special-cases no relation name and keeps no type or instance view of its
+own, and what this puzzle calls a type is a name its `type` and `instance` facts point at, which means what the
+rules that read those facts make it mean.
 
 Clues between attributes are *ordinary facts* here, `(co-located Englishman Red)`, and so are the spatial ones,
 `(right-of Green Ivory)`: *Green's house is immediately right of Ivory's*. `zebra2.ein` states each of those as an
@@ -80,14 +146,16 @@ activator fact of four or five arguments instead, because its attribute relation
 
 The ontology decides what the properties can say. `bijective` and its kin are properties **of a relation**, declared
 one relation at a time, and one universal `co-located` is not the kind of relation they describe: it is an
-*equivalence whose classes hold exactly one member of each attribute type*. Restricted to one ordered pair of types it
-is a bijection, which is why `zebra2.ein`, whose relations *are* those restrictions, can say `(bijective color-loc)`;
-`(bijective co-located)` has nowhere to put the pair of types. What `zebra.ein` uses instead is a property scoped by
-the type **family** rather than by the relation, [`std.slots`](../../../../stdlib/slots.ein), in
-[§ Type-scoped relation properties](#type-scoped-relation-properties-slot-partition-and-slot-spatial) below. The
+*equivalence whose classes hold exactly one member of each attribute*. Restricted to one ordered pair of attributes
+it is a bijection, which is why `zebra2.ein`, whose relations *are* those restrictions, can say
+`(bijective color-loc)`; `(bijective co-located)` has nowhere to put the pair. What `zebra.ein` uses instead is a
+property scoped by the **family** of attributes rather than by the relation,
+[`std.slots`](../../../../stdlib/slots.ein), in
+[§ Properties of a relation over a family](#properties-of-a-relation-over-a-family-slot-partition-and-slot-spatial)
+below. The
 file reasons over `co-located`, `right-of`, `next-to`, `instance` and `type`, and no other relation.
 
-### Typed attribute relations (`zebra2.ein`)
+### One relation an attribute (`zebra2.ein`)
 
 It uses one membership relation, `is-a`, and its transitive closure `is-a*`:
 
@@ -105,18 +173,22 @@ It uses one membership relation, `is-a`, and its transitive closure `is-a*`:
 (is-a Japanese  Nationality)
 ```
 
-The type hierarchy is the `is-a` facts and nothing else; `is-a*` is their transitive closure, which `includes` and
-`transitive` derive. Ein keeps no derived type or instance view: anything that needs the types reads the `is-a`
-facts. Alongside them, `zebra2.ein` splits `co-located` into five *typed* attribute relations, `nation-loc`,
-`drink-loc` and the rest, each with its own `(bijective …)`: that is what the elimination rules act on, and the
-substantive difference from `zebra.ein`. `(bijection-hierarchy is-a)` tells `std.bijection` which relation holds the
-direct membership the eliminations count over, and `(typecheck-hierarchy is-a*)` which one a fact's arguments are
-checked against, so a member of a subtype passes.
+The grouping is the `is-a` facts and nothing else; `is-a*` is their transitive closure, which `includes` and
+`transitive` derive. Ein keeps no view of it: a rule that needs to know what is a nationality reads the `is-a`
+facts. Alongside them, `zebra2.ein` splits `co-located` into five attribute relations, `nation-loc`, `drink-loc` and
+the rest, each declared with its attribute's name and `House` as the labels of its two slots,
+`(relation nation-loc Nationality House …)`, and each with its own `(bijective …)`: that is what the elimination
+rules act on, and the substantive difference from `zebra.ein`. `(bijection-hierarchy is-a)` tells `std.bijection`
+which relation holds the direct membership the eliminations count over. `(typecheck-hierarchy is-a*)` turns on the
+library's check of a fact against its relation's labels: two rules that read a bijective relation's stored
+declaration and derive `(false)` from a fact whose argument has no `is-a*` fact into its slot's label. The check is
+those rules and nothing in the language, which holds no argument to a label; with it, the labels of this program
+are what a fact's arguments must be members of.
 
-## Type-scoped relation properties (`slot-partition` and `slot-spatial`)
+## Properties of a relation over a family (`slot-partition` and `slot-spatial`)
 
 A property vocabulary that does not fit *a property of one relation*. Where `(bijective color-loc)` equips *one*
-relation, these equip *one relation over a family of types*, the shape a generic link relation has. Both are
+relation, these equip *one relation over a family of attributes*, the shape a generic link relation has. Both are
 ordinary facts, read by [`std.slots`](../../../../stdlib/slots.ein):
 
 ```lisp
@@ -124,20 +196,20 @@ ordinary facts, read by [`std.slots`](../../../../stdlib/slots.ein):
 ```
 
 > *`co-located` is an equivalence relation; its classes are **slots**; each slot holds exactly one `instance` of
-> every type that is a direct `type`-child of `Attribute`; and the `House` member of a slot is its name.*
+> every name that is a direct `type`-child of `Attribute`; and the `House` member of a slot is its name.*
 
-Five arguments, and each carries weight. The membership relation (`instance`) and the subtype relation (`type`) are
-*parameters*, so the rules name no `is-a` and the module works for either membership convention. `Attribute` names
-the family, so adding an attribute category is adding one `(type T Attribute)` fact, not a declaration for every
-pair of types. `House` is the **index**: the member that names a slot, which lets the derived facts be anchored on
-value × index instead of enumerating the whole equivalence.
+Five arguments, and each carries weight. The membership relation (`instance`) and the relation that groups the
+attributes (`type`) are *parameters*, so the rules name no `is-a` and the module works for either membership
+convention. `Attribute` names the family, so adding an attribute category is adding one `(type T Attribute)` fact,
+not a declaration for every pair of attributes. `House` is the **index**: the member that names a slot, which lets the derived facts be anchored on
+a value and an index instead of enumerating the whole equivalence.
 
 ```lisp
 (slot-spatial co-located right-of instance House)
 (slot-spatial co-located next-to  instance House)
 ```
 
-> *`right-of` relates two values exactly when it relates their slots, and the slot type carrying the structure is
+> *`right-of` relates two values exactly when it relates their slots, and the attribute carrying the structure is
 > `House`.*
 
 This lets one relation name do two jobs: `(right-of Green Ivory)` is a **constraint** between two colours, and
@@ -151,7 +223,7 @@ generic rules have no activation at all.
 ## A rule library, imported
 
 Neither encoding writes its property rules; both import them, each module whole, and `:symbols` lists the rules whose
-activators the file writes, so the file writes those names short ([the standard library](../04-reference/04-stdlib.md)):
+activators the file writes, so the file writes those names short ([the standard library](../04-reference/04-stdlib/README.md)):
 
 ```lisp
 ;; zebra.ein
@@ -169,10 +241,10 @@ property fact ([rules](../03-syntax-and-semantics/05-rules.md)):
   :assert (?rel ?b ?a)
   :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
-;; std.slots: two members of one attribute type cannot share a slot. The
-;; membership and subtype relations are parameters, so the rule is is-a-free;
+;; std.slots: two members of one attribute cannot share a slot. The
+;; membership and grouping relations are parameters, so the rule is is-a-free;
 ;; ?T is a variable of the match, not a parameter, so the rule fires once per
-;; type and a puzzle adds a category by adding its members.
+;; attribute and a puzzle adds a category by adding its members.
 (rule slot-exclusive (?R ?isa ?sub ?super)
   :match  (and (?isa ?a ?T)
                (?sub ?T ?super)
@@ -180,6 +252,49 @@ property fact ([rules](../03-syntax-and-semantics/05-rules.md)):
                (neq ?a ?b))
   :assert (not (?R ?a ?b))
   :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}.")
+```
+
+As graphs, from `ein render rule --name symmetric stdlib/algebra.ein` and
+`ein render rule --name slot-exclusive stdlib/slots.ein`: what each matches above what it asserts, a variable a
+diamond, a guard a dotted `≠` link, the asserted fact dashed and a stored negation labelled `¬`.
+
+```dot
+digraph rule_symmetric_lhs_rhs {
+  rankdir=TB;
+  label="symmetric"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?b_R" [label="?b", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
+}
+```
+
+```dot
+digraph rule_slot_exclusive_lhs_rhs {
+  rankdir=TB;
+  label="slot-exclusive"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?T_L" [label="?T", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?a_L" -> "?T_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    "?T_L" -> "?super_L" [label="?sub", color="#9467bd", fontcolor="#9467bd"];
+    "?b_L" -> "?T_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
+    "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" [label="?b", shape=diamond];
+    "?a_R" -> "?b_R" [label="¬?R", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}
 ```
 
 A rule that names its relations literally, with no parameter, is still legal, and it is what a genuinely

@@ -10,7 +10,7 @@ checked on every instance of a small domain, and number theory.
 Every program named here is in the repository, under [`examples/word_problems/`](../../../../examples/word_problems/)
 and [`examples/beyond_arith/`](../../../../examples/beyond_arith/), each with its answers stated as claims; the
 transcripts below are what `ein` prints for them, trimmed to the rows that matter. The calculator's modules and every
-relation they offer are on the [standard library's reference page](../04-reference/04-stdlib.md).
+relation they offer are on the [standard library's reference pages](../04-reference/04-stdlib/README.md).
 
 ## Running the examples
 
@@ -143,7 +143,74 @@ Here is the whole program, the part of the theory this problem needs written bes
 far the first number falls short of the second, here by nothing
 ([Q-M1f.364](../../../decisions/stdlib/math/decimal/Q-M1f.364-a-subtraction-answers-the-difference.md)). The rule `words` closes the theory's relations, so
 the engine supposes no fact of them: a relation left open is one whose facts the engine may take as
-[hypotheses](../03-syntax-and-semantics/09-hypotheses.md), and a word theory supposes nothing. The answer:
+[hypotheses](../03-syntax-and-semantics/09-hypotheses.md), and a word theory supposes nothing.
+
+**As a graph.** The problem's three sentences, from `ein render program` on that file: a fact of more than two
+arguments is an octagon with a numbered arrow to each, and a number or a quantity, itself a fact, is one node.
+
+```dot
+digraph facts {
+  ranksep=0.55;
+  "h_1_has" [shape=octagon, label="has"];
+  "Bob" [shape=rectangle];
+  "apples" [shape=rectangle];
+  "t0" [shape=rectangle];
+  "h_2_gave" [shape=octagon, label="gave"];
+  "Alice" [shape=rectangle];
+  "t1" [shape=rectangle];
+  "h_3_asked" [shape=octagon, label="asked"];
+  "h_1_has" -> "Bob" [label="1"];
+  "h_1_has" -> "apples" [label="2"];
+  "h_1_has" -> "(n z 5)" [label="3"];
+  "h_1_has" -> "t0" [label="4"];
+  "h_2_gave" -> "Bob" [label="1"];
+  "h_2_gave" -> "Alice" [label="2"];
+  "h_2_gave" -> "apples" [label="3"];
+  "h_2_gave" -> "(n z 2)" [label="4"];
+  "h_2_gave" -> "t0" [label="5"];
+  "h_2_gave" -> "t1" [label="6"];
+  "h_3_asked" -> "(amount Bob apples t1)" [label="1"];
+}
+```
+
+And the rule that turns *gave* into a subtraction, from `ein render rule --name gave-means-less`: it matches a wanted
+amount, the sentence that says what was given, and the value the giver had before, and asserts the request `(sub ?a
+?x)`, the dashed arrow.
+
+```dot
+digraph rule_gave_means_less_lhs_rhs {
+  rankdir=TB;
+  label="gave-means-less"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "(amount ?p ?k ?u)_L" [label="(amount ?p ?k ?u)", shape=rectangle];
+    "?p_L" [label="?p", shape=diamond];
+    "?r_L" [label="?r", shape=diamond];
+    "?k_L" [label="?k", shape=diamond];
+    "?x_L" [label="?x", shape=diamond];
+    "?t_L" [label="?t", shape=diamond];
+    "?u_L" [label="?u", shape=diamond];
+    "(amount ?p ?k ?t)_L" [label="(amount ?p ?k ?t)", shape=rectangle];
+    "?a_L" [label="?a", shape=diamond];
+    "h1_wanted_L" [shape=octagon, label="wanted", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_wanted_L" -> "(amount ?p ?k ?u)_L" [label="1", color="#7f7f7f"];
+    "h2_gave_L" [shape=octagon, label="gave", color="#1f77b4", fontcolor="#1f77b4"];
+    "h2_gave_L" -> "?p_L" [label="1", color="#1f77b4"];
+    "h2_gave_L" -> "?r_L" [label="2", color="#1f77b4"];
+    "h2_gave_L" -> "?k_L" [label="3", color="#1f77b4"];
+    "h2_gave_L" -> "?x_L" [label="4", color="#1f77b4"];
+    "h2_gave_L" -> "?t_L" [label="5", color="#1f77b4"];
+    "h2_gave_L" -> "?u_L" [label="6", color="#1f77b4"];
+    "(amount ?p ?k ?t)_L" -> "?a_L" [label="value", color="#17becf", fontcolor="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?x_R" [label="?x", shape=diamond];
+    "?a_R" -> "?x_R" [label="sub", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  }
+}
+```
+
+The answer:
 
 ```text
   ∅                 in R — root is alive and owes nothing
@@ -228,7 +295,7 @@ The calculator is asked exactly two things, each request carrying the rule that 
 ```
 
 The order is the derivation's own: the rule that asks for the division matches the value of *together*, which
-exists only once the sum has been read back. No other operation is asked: 5 × 3, 7 ÷ 3 and 7 − 5 never are. A
+exists only once the sum has been read back. No other operation is asked: $5 \times 3$, $7 \div 3$ and $7 - 5$ never are. A
 sentence no question reaches is silent: in [`unused.ein`](../../../../examples/word_problems/unused.ein), *Alice has
 7 apples*, *Carol has 9 apples* and the box are never wanted when the question is how many Bob has, and in
 [`bystander.ein`](../../../../examples/word_problems/bystander.ein) Carol, who neither gave nor got, keeps her 9.
@@ -400,7 +467,7 @@ answer asks a query of no variable, whose `:goal-text` the read-out prints when 
 
 ## When a word has two readings
 
-*Bob has 5 apples, Alice has 8. A box holds 3. How many boxes do they need?* Every number is stated: 13 ÷ 3 is 4 and
+*Bob has 5 apples, Alice has 8. A box holds 3. How many boxes do they need?* Every number is stated: $13 \div 3$ is 4 and
 1 over. The word *need* does not say whether the answer is 4 boxes, one apple left out, or 5, the last box part full.
 In `words`, a division for *need* that leaves something over derives `(left-over QUANTITY 4 1)` and stops.
 [`readings.ein`](../../../../examples/word_problems/readings.ein) holds the two readings as facts, and which one a
@@ -507,7 +574,7 @@ other than a calculation.
 
 ### An equation, read off a table backwards
 
-*Which x makes x + 4567 = 127645?* `std.math.decimal-arith` reads the full adder by its two operands. A rule may as
+*Which $x$ makes $x + 4567 = 127645$?* `std.math.decimal-arith` reads the full adder by its two operands. A rule may as
 well read it by one operand's digit, the carry and the **sum's** digit, and the table gives the other operand's
 digit and the carry out:
 
@@ -521,8 +588,8 @@ digit and the carry out:
 
 Read that way the full adder has exactly one row for each column, so the walk from the units is a straight line, and
 the equation is solved by saturation alone, no hypothesis:
-[`inverse_addition.ein`](../../../../examples/beyond_arith/inverse_addition.ein) answers x = 123078, and for
-x + 4567 = 999 it derives a fact, *no natural x makes x + 4567 = 999*, since the walk reaches the end of the sum with
+[`inverse_addition.ein`](../../../../examples/beyond_arith/inverse_addition.ein) answers $x = 123078$, and for
+$x + 4567 = 999$ it derives a fact, *no natural x makes x + 4567 = 999*, since the walk reaches the end of the sum with
 digits of the known operand unread. Its trace is the subtraction a pupil writes:
 
 ```text
@@ -534,15 +601,15 @@ digits of the known operand unread. Its trace is the subtraction a pupil writes:
 
 **Where a column has two answers**, saturation carries both.
 [`tables_backwards.ein`](../../../../examples/beyond_arith/tables_backwards.ein) reads the digit multiplier by the
-multiplier, the carry and the product's digit. By 7 a column has one answer: x × 7 = 861 is x = 123. By 4 it has
-two, five apart, with different carries: at the units of x × 4 = 3284, 1 with carry 0 or 6 with carry 2. Nothing
+multiplier, the carry and the product's digit. By 7 a column has one answer: $x \times 7 = 861$ is $x = 123$. By 4 it has
+two, five apart, with different carries: at the units of $x \times 4 = 3284$, 1 with carry 0 or 6 with carry 2. Nothing
 chooses: the rule fires for both rows, and at the next column the wrong walk finds no row that fits and ends. The
-program answers x × 4 = 3284 with 821, x × 5 = 61725 with 12345, x + x = 2468 with 1234, and x × 4 = 3285 and
-x + x = 1357 with no answer fact: *no walk ended well* is an absence, which a rule cannot match.
+program answers $x \times 4 = 3284$ with 821, $x \times 5 = 61725$ with 12345, $x + x = 2468$ with 1234, and
+$x \times 4 = 3285$ and $x + x = 1357$ with no answer fact: *no walk ended well* is an absence, which a rule cannot match.
 
 ### An equation, solved by search
 
-With x's digits as hypotheses, the same equations are a search. An hrule proposes every digit at every place,
+With $x$'s digits as hypotheses, the same equations are a search. An hrule proposes every digit at every place,
 `total-owed` from `std.algebra` makes a state with a place unset owe a digit, and `functional` says a place has one:
 
 ```lisp
@@ -575,20 +642,20 @@ digits below it are set, so a wrong units digit is dead alone. `ein solve --sing
 ```
 
 **Search and the calculator compose.**
-[`equation_two_unknowns.ein`](../../../../examples/beyond_arith/equation_two_unknowns.ein), *which x below 100 and y
-below 10 make 3x + 5y = 47?*, guesses three digits and checks each full guess by asking `std.math.decimal-arith` for
-3x, 5y and their sum: every guess is checked by a computation that guesses nothing. R is three states, x = 4 and
-y = 7, x = 9 and y = 4, x = 14 and y = 1. The cost of checking only whole numbers is that nothing is refuted before
+[`equation_two_unknowns.ein`](../../../../examples/beyond_arith/equation_two_unknowns.ein), *which $x$ below 100 and $y$
+below 10 make $3x + 5y = 47$?*, guesses three digits and checks each full guess by asking `std.math.decimal-arith` for
+$3x$, $5y$ and their sum: every guess is checked by a computation that guesses nothing. R is three states, $x = 4$ and
+$y = 7$, $x = 9$ and $y = 4$, $x = 14$ and $y = 1$. The cost of checking only whole numbers is that nothing is refuted before
 every digit is set.
 
 ### An equation with no solution, three ways
 
 How a *no* reads depends on how the question is asked.
 
-- **By saturation, where a column has several answers**, as x × 4 = 3285 above: silence. No answer fact is derived,
+- **By saturation, where a column has several answers**, as $x \times 4 = 3285$ above: silence. No answer fact is derived,
   and nothing says why.
-- **By search**: [`equation_no_solution.ein`](../../../../examples/beyond_arith/equation_no_solution.ein), *which x
-  of two digits makes x × 7 = 62?* Every full assignment is dead, and what is left alive owes a digit it cannot be
+- **By search**: [`equation_no_solution.ein`](../../../../examples/beyond_arith/equation_no_solution.ein), *which $x$
+  of two digits makes $x \times 7 = 62$?* Every full assignment is dead, and what is left alive owes a digit it cannot be
   given, so R is empty because **every alive node owes**: `--single` answers `Open — R is empty: every alive node
   owes`, and `ein solve --describe-route states` lists the owing frontier. A query's `:expect (false)` holds
   over an R empty either way; the region claim tells the two apart
@@ -690,7 +757,7 @@ it are known:
   :why    "column {?c} adds up to {?d}, and {?z} is {?v}")
 ```
 
-[`cryptarithm.ein`](../../../../examples/beyond_arith/cryptarithm.ein) has one state, 1 + 99 = 100.
+[`cryptarithm.ein`](../../../../examples/beyond_arith/cryptarithm.ein) has one state, $1 + 99 = 100$.
 [`send_more_money.ein`](../../../../examples/beyond_arith/send_more_money.ein) is the same rules on SEND + MORE =
 MONEY, 80 candidates, and `ein solve --single` finds the one answer and shows there is no other:
 
@@ -718,8 +785,8 @@ of cryptarithms in the standard library; a program writes its own column rules, 
 
 ### A law, checked on every instance of a small domain
 
-[`laws.ein`](../../../../examples/beyond_arith/laws.ein) checks commutativity and associativity of + and ×,
-distributivity, and the division identity x = q·y + r with r < y, on every instance over 0 to 3. For each instance the
+[`laws.ein`](../../../../examples/beyond_arith/laws.ein) checks commutativity and associativity of $+$ and $\times$,
+distributivity, and the division identity $x = q \cdot y + r$ with $r < y$, on every instance over 0 to 3. For each instance the
 calculator computes both sides; a law that holds derives `holds2` or `holds3`, one that fails `fails2` or `fails3`,
 and the claims are that nothing fails. The checks are chains of the calculator's **tagged calls**: a rule asks under
 a tag of its own, and the answer comes back under the same tag, so the rule that reads it has one premise
@@ -759,7 +826,7 @@ afford: [`primes.ein`](../../../../examples/beyond_arith/primes.ein) (2 to 30, b
 [`casting_out_nines.ein`](../../../../examples/beyond_arith/casting_out_nines.ein) (0 to 40),
 [`perfect.ein`](../../../../examples/beyond_arith/perfect.ein) (1 to 12: 6),
 [`collatz.ein`](../../../../examples/beyond_arith/collatz.ein) (7 reaches 1 after 16 steps; 27 is stopped at its
-bound), [`fibonacci.ein`](../../../../examples/beyond_arith/fibonacci.ein) (F(30) = 832040) and
+bound), [`fibonacci.ein`](../../../../examples/beyond_arith/fibonacci.ein) ($F(30) = 832040$) and
 [`pythagorean.ein`](../../../../examples/beyond_arith/pythagorean.ein) (the triples to 13).
 [`gcd.ein`](../../../../examples/beyond_arith/gcd.ein) asks `std.math.gcd`, the module that offers both, `(gcd X Y)`
 answered by `(gcd-of X Y G)` and `(lcm X Y)` by `(lcm-of X Y L)`
@@ -805,7 +872,7 @@ What they show about writing such a thing in Ein:
 
 ## See also
 
-- [The standard library](../04-reference/04-stdlib.md): the calculator's modules, their requests and results, the tagged
+- [The standard library](../04-reference/04-stdlib/README.md): the calculator's modules, their requests and results, the tagged
   calls, and how a malformed number is flagged.
 - [Queries and claims](../03-syntax-and-semantics/12-query.md): `:goal-text`, `:expect`, and the region claim.
 - [Hypotheses](../03-syntax-and-semantics/09-hypotheses.md) and [obligations](../03-syntax-and-semantics/08-obligations.md): the

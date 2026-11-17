@@ -136,7 +136,7 @@ t.ein:1:7: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string l
   its first error, so no parse error and no repair follows
   ([Q-M1f.95](../../../decisions/diagnostics/Q-M1f.95-a-file-is-refused-at-its-first-character-that-is.md)). A `#`
   before one is passed over: no rule starts at that `#`, and the line is about the character.
-- **Every place**: a name, a variable, a keyword, a declared relation's name or type, a nested fact, a rule, an
+- **Every place**: a name, a variable, a keyword, a declared relation's name or a slot's label, a nested fact, a rule, an
   hrule, a macro's name or body, a query's goal, `:over` or claim, a `(solve …)` list, a `(config …)` flag, a trace
   step, an import's module, between two tokens, a line's or the file's first character — a byte-order mark among
   them, `'\u{feff}' (U+FEFF)`
@@ -312,14 +312,14 @@ alternative is a distinct exit code, and exit 2 already means a usage error
 
 ### 2.5 The store's own limits
 
-The store interns symbols and facts into two id spaces of 2³⁰ each, and keeps their text and arguments in two arenas
+The store interns symbols and facts into two id spaces of $2^{30}$ each, and keeps their text and arguments in two arenas
 addressed by a 32-bit start. Reaching any of the four is a load error a reader can act on, never a crash:
 
 | input | the line | exit |
 |---|---|---|
-| more than 2³⁰ distinct symbols, or facts | ``too many distinct {symbols,facts} — the limit is 1073741824`` | 1 |
-| more than 2³² bytes of symbol text | ``too much symbol text — the limit is 4294967296 bytes`` | 1 |
-| more than 2³² stored fact arguments | ``too many stored fact arguments — the limit is 4294967296`` | 1 |
+| more than $2^{30}$ distinct symbols, or facts | ``too many distinct {symbols,facts} — the limit is 1073741824`` | 1 |
+| more than $2^{32}$ bytes of symbol text | ``too much symbol text — the limit is 4294967296 bytes`` | 1 |
+| more than $2^{32}$ stored fact arguments | ``too many stored fact arguments — the limit is 4294967296`` | 1 |
 | a fact with more than 65 535 arguments | ``kb load error: a fact takes at most 65535 arguments`` | 1 |
 
 The last is reachable with a three-line program: `(p A0 … A65535)` is refused, and a fact of 65 535 arguments loads
@@ -433,7 +433,7 @@ one line per slot, `; `-joined with every other loader line
 ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). *Could* is read
 off the program ([Q-M1f.41](../../../decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)): a
 rule's parameter that heads a form holds relation names, and so does every argument of `(relation …)`; an argument of
-a **declared** relation holds any value of its type, a fact among them, as does an argument inside a fact pattern and
+a **declared** relation holds any value, a fact among them, as does an argument inside a fact pattern and
 one of a relation a parameter names; and an argument of an **undeclared** relation, a marker such as
 `(bijective color-loc)`, or a rule's own parameter, holds relation names where the program passes a variable bound
 there on to a position that does, to a fixpoint, so the stdlib's fan-outs load and a fact written there is refused. A
@@ -489,7 +489,7 @@ the variable, on every command that reads a program:
 |---|---|
 | a string as a value or a name: `(p "1")`, `(rule r () :match (p "a") …)`, `(relation "p" T)`, `(config :lattice-sanity-check "true")` | `<file>:<l>:<c>: unexpected `"1"`: a string`, then `note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare` |
 | a variable in a fact: `(r ?x)` | `<file>:<l>:<c>: unexpected `?x`: a variable` |
-| an escape a string does not read: `\x41`, `Ж`, `\u{}`, `\u{110000}`, `\u{D800}` | `<file>:<l>:<c>: unexpected `"…"`: a string with an unknown escape`, at the opening quote, then one `note: \u{110000}, at <l>:<c>, is no escape a string reads: a string's escapes are \n, \t, \r, \", \\ and \u{…}, one to six hex digits naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF` per escape |
+| an escape a string does not read: `\x41`, `\Ж`, `\u{}`, `\u{110000}`, `\u{D800}` | `<file>:<l>:<c>: unexpected `"…"`: a string with an unknown escape`, at the opening quote, then one `note: \u{110000}, at <l>:<c>, is no escape a string reads: a string's escapes are \n, \t, \r, \", \\ and \u{…}, one to six hex digits naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF` per escape |
 
 Each is followed by the error's ranked repairs (§ 1). A string reads `\n`, `\t`, `\r`, `\"`, `\\` and `\u{…}`, and
 holds any other character as itself, a raw newline and any Unicode among them ([`01-grammar.md`](01-grammar.md), the
@@ -530,7 +530,7 @@ refused at load, one line each:
 
 **Which parameters can hold `eq`** is read as § 2.9 reads relation names: a position that holds relation names can
 hold `eq` where a fact, a conclusion or a `(solve :hrules …)` activator writes `eq` there, or a `(relation …)`
-declaration's signature writes it as a type; or where a conclusion writes a variable that its `:match` binds, in some
+declaration's signature writes it as a label; or where a conclusion writes a variable that its `:match` binds, in some
 disjunct, only at positions that can, or only with an `eq` or `neq` guard while the program writes `eq` as a name; to
 a fixpoint. `<where eq comes from>` names the first such source and each conclusion it passes through: *the fact (mark
 eq), through rule 'mk''s conclusion (r ?f)*, *rule 'mk''s conclusion (r eq)*, or *an eq or neq guard of rule 'mk',
@@ -612,7 +612,7 @@ t.ein:1:20: unexpected `open`
 ```
 
 The places: a fact's, a nested fact's or a stored negation's relation; a pattern's relation anywhere in a rule, an
-hrule or a query's `:goal`, and a claim's fact; a value, as a fact's argument, an object, a type, a premise's, a
+hrule or a query's `:goal`, and a claim's fact; a value, as a fact's argument, an object, a slot's label, a premise's, a
 guard's or a conclusion's argument, a macro call's, an activator binding a relation parameter, a goal's or a
 claim's; a name in a `(solve …)` list, a query's `:over`, an import, a fact's `:rule` or `:using`, or a trace step;
 the verdict's own argument, `(open open)`; and a macro's body, called or not
@@ -687,7 +687,7 @@ check.
 
 **What is not refused here.** A list that names what the program has and contradicts another of its hypothesis
 declarations is [§ 2.27](#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)'s. An activator's
-argument at a parameter that names no relation is a value, a type or an object, which no declaration lists, so
+argument at a parameter that names no relation is a value, a label or an object, which no declaration lists, so
 `(guess (at Colour House))` loads and proposes nothing, and the read-out's `universe` row says *no candidate*
 ([Q-M1f.116](../../../decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)); so does a
 parameterised hrule that no activator names. A bare name in `:hrules` selects nothing: every hrule without parameters
@@ -901,7 +901,8 @@ program, under full names ([`11-macros.md`](../03-syntax-and-semantics/11-macros
 
 ### 2.26 A form of a declared relation has the declared count of arguments
 
-**A `(relation R T₁ … Tₙ)` declares that a form of `R` has n arguments**, and the loader refuses a program that
+**A declaration that lists $n$ labels after the relation's name declares that a form of the relation has $n$
+arguments**, and the loader refuses a program that
 writes one with another count, one line a form, placed at the form
 ([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)):
 
@@ -938,8 +939,9 @@ kb load error: t.ein:1:71: the fact (likes Bob) gives likes 1 argument, and (rel
 - **An activator is not a declared relation's form**: `(functional r extra)` against a rule `functional (?R)`
   activates nothing, in silence; an activator in a `(solve :hrules …)` list is held to its hrule's parameters by
   § 2.20.
-- **It is no type check**: `(likes Tea Ann)` loads. What is written in an argument's place is not held to the type
-  declared for it.
+- **It checks no argument against a label**: `(likes Tea Ann)` loads. Ein has no types, and what is written in an
+  argument's place is not held to the label of its slot. The line's last word, *types*, is the count of the
+  declaration's labels.
 - **No flag turns it off.**
 
 ### 2.27 A program's hypothesis mechanisms do not contradict one another
@@ -1079,9 +1081,9 @@ decided at root, as nothing but the loader states it. Each `(written T)` is deri
 `#written` from the fact it was read in, its one premise
 ([Q-M1f.279](../../../decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)), so a **core
 that rests on one names the fact as written**, and `refuted by` names the rule that read it; one stated from a rule's
-text rests on no fact, and its core is ∅. What reads it is a representation module's check of its own terms,
+text rests on no fact, and its core is $\emptyset$. What reads it is a representation module's check of its own terms,
 `std.math.decimal`'s of a numeral, which so sees every numeral a file writes, wherever it sits, with no calculation
-started ([`04-stdlib.md`](04-stdlib.md)).
+started ([`04-stdlib/`](04-stdlib/README.md)).
 
 **Where it shows** is where the mirror facts show: `ein saturate --dump` lists each,
 `(written (n z 1) :rule "#written")`, in its `DERIVED` block, and counts it; a KB view draws it; a `.einb` stores it.

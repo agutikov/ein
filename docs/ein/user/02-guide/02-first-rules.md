@@ -3,9 +3,9 @@
 A **rule** watches for a pattern of facts and, when it matches, asserts new
 facts. That's the whole engine in one sentence: *rules rewrite the graph,
 adding edges until nothing new can be added* (a fixpoint). This chapter
-meets the two gentlest rules, each with the graph **before** and **after**
-it fires, and then the relation they make the puzzle's engine, each
-runnable in one command.
+meets the two gentlest rules, each as Ein, as the graph of the rule, and as
+the graph of the facts once it has fired, and then the relation they make
+the puzzle's engine, each runnable in one command.
 
 A rule has a `:match` (the pattern to find) and an `:assert` (what to add):
 
@@ -23,9 +23,6 @@ decides nothing about the answer
 
 ## `symmetric` — if A relates to B, then B relates to A
 
-**English:** "next-to works both ways: if House-1 is next to House-2, then
-House-2 is next to House-1."
-
 **ein-lang** (from [`examples/saturation/symmetric/neighbours.ein`](../../../../examples/saturation/symmetric/neighbours.ein)):
 
 ```lisp
@@ -40,26 +37,44 @@ House-2 is next to House-1."
 (query :goal (next-to House-2 House-1))
 ```
 
+**English:** "next-to works both ways: if House-1 is next to House-2, then
+House-2 is next to House-1."
+
 The `?rel` / `?a` / `?b` (a leading `?`) are **variables** the matcher
 binds. `(symmetric next-to)` is the *activator* fact that turns the generic
 rule on for `next-to`.
 
-**graph** — the rule's own shape (`match` cluster ⟹ `assert` cluster), from
-`ein render rule`:
+**graph** — the rule's own shape, what it matches above what it asserts,
+from `ein render rule --name symmetric` on that file. A diamond is a
+variable, and a dashed arrow is a fact the rule adds:
 
 ```dot
-digraph {
-  subgraph cluster_lhs { label="match";  "?a" -> "?b" [label="?rel"]; }
-  subgraph cluster_rhs { label="assert"; "?b" -> "?a" [label="?rel", style=dashed]; }
+digraph rule_symmetric_lhs_rhs {
+  rankdir=TB;
+  label="symmetric"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?b_R" [label="?b", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" -> "?a_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
 }
 ```
 
-**before → after** on the concrete fact:
+**The facts once it has fired**, the two `next-to` arrows of `ein render kb`
+on that file: the solid one is the fact the program states, labelled with
+its source, and the dashed one the fact `symmetric` added.
 
-```
-before:  House-1 ──next-to──▶ House-2
-after:   House-1 ──next-to──▶ House-2
-         House-1 ◀──next-to── House-2     (added by `symmetric`)
+```dot
+digraph kb {
+  rankdir=BT;
+  "House-1" -> "House-2" [label="next-to demo", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-2" -> "House-1" [label="next-to by symmetric", color="#d62728", fontcolor="#d62728", style=dashed];
+}
 ```
 
 **Run it:**
@@ -80,9 +95,6 @@ is the saturated facts themselves.
 
 ## `transitive` — chain links together
 
-**English:** "is-a chains: a Cat is a Mammal, a Mammal is an Animal, so a
-Cat is an Animal."
-
 **ein-lang** (from [`examples/saturation/transitive/taxonomy.ein`](../../../../examples/saturation/transitive/taxonomy.ein)):
 
 ```lisp
@@ -98,22 +110,55 @@ Cat is an Animal."
 (query :goal (is-a Cat Animal))
 ```
 
+**English:** "is-a chains: a Cat is a Mammal, a Mammal is an Animal, so a
+Cat is an Animal."
+
 Two new pieces: `(and …)` matches *several* facts at once, and `(neq ?a ?c)`
 is a **guard** — a built-in predicate that only matches when the two differ
-(here, so a thing isn't declared a subtype of itself).
+(here, so nothing is concluded to be a kind of itself).
+
+**graph** — `ein render rule --name transitive` on that file. The dotted
+`≠` link is the guard:
 
 ```dot
-digraph {
+digraph rule_transitive_lhs_rhs {
+  rankdir=TB;
+  label="transitive"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "?a" -> "?b" [label="?rel"]; "?b" -> "?c" [label="?rel"]; }
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    "?a_L" -> "?b_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+    "?b_L" -> "?c_L" [label="?rel", color="#2ca02c", fontcolor="#2ca02c"];
+    "?a_L" -> "?c_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
   subgraph cluster_rhs { label="assert";
-    "?a" -> "?c" [label="?rel", style=dashed]; }
+    "?a_R" [label="?a", shape=diamond];
+    "?c_R" [label="?c", shape=diamond];
+    "?a_R" -> "?c_R" [label="?rel", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  }
 }
 ```
 
-```
-before:  Cat ──is-a──▶ Mammal ──is-a──▶ Animal
-after:   …  + Cat ──is-a──▶ Animal          (added by `transitive`)
+**The facts once it has fired**, from `ein render kb` on that file. The
+program states the two arrows of the chain; the third, from `Cat` to
+`Animal`, is the one `transitive` added. The drawing gives every `is-a`
+arrow one style, and a box to each name an `is-a` arrow points at:
+
+```dot
+digraph kb {
+  rankdir=BT;
+  // types
+  "Animal" [shape=box, label="Animal"];
+  "Mammal" [shape=box, label="Mammal"];
+  // instances
+  "Cat" [shape=oval, label="Cat"];
+
+  // facts
+  "Cat" -> "Mammal" [style=dashed, arrowhead=empty, label="is-a"];
+  "Mammal" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
+  "Cat" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
+}
 ```
 
 **Run it:**
@@ -137,9 +182,6 @@ The Zebra puzzle's engine is **co-located**: two attributes that share a
 house imply each other's placement. It's the bridge from these toy rules to
 the real puzzle.
 
-**English:** "if the Norwegian and Water are in the same house, then placing
-one places the other."
-
 **ein-lang** (from [`examples/branching/05_mini_zebra.ein`](../../../../examples/branching/05_mini_zebra.ein), a 3-attribute mini Zebra):
 
 ```lisp
@@ -151,17 +193,28 @@ one places the other."
 ;; … with the two rules, the is-a tree, a `guess` hrule and the query
 ```
 
+**English:** "Alice drinks tea and Alice has the cat, so the tea and the cat
+are in one house": if two things share a house, placing one places the
+other.
+
 No new rule: `co-located` is a relation, and the two rules you just met make
-it an equivalence. Its symmetric + transitive closure links
-Nationality ⇄ Drink ⇄ Pet into one equivalence class, and a `guess`
-*hypothesis rule* proposes the cross-attribute pairings the facts don't pin
-directly:
+it an equivalence. Its symmetric and transitive closure links a nationality,
+a drink and a pet into one equivalence class, and a `guess` *hypothesis
+rule* proposes the cross-attribute pairings the facts don't pin directly.
+
+**graph** — the `co-located` arrows of `ein render kb` on that file: the two
+the program states, solid, with the number of their clue, and the four the
+two rules add, dashed, each with the rule that added it.
 
 ```dot
-digraph { rankdir=LR; node [shape=box]; edge [dir=none];
-  Alice -> Tea [label="co-located"];           // stated
-  Alice -> Cat [label="co-located"];           // stated
-  Tea   -> Cat [label="co-located", style=dashed];   // derived (symmetric+transitive)
+digraph kb {
+  rankdir=BT;
+  "Alice" -> "Tea" [label="co-located (1)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Alice" -> "Cat" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Tea" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  "Cat" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  "Tea" -> "Cat" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  "Cat" -> "Tea" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
 }
 ```
 

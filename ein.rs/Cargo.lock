@@ -396,6 +396,7 @@ dependencies = [
  "include_dir",
  "lrlex",
  "lrpar",
+ "regex-syntax",
  "rustc-hash",
  "serde_json",
  "sha2",

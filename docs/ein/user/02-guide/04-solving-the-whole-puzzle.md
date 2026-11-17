@@ -13,7 +13,7 @@ pieces from this guide, in layers:
 (import std.algebra   :symbols (symmetric transitive includes))   ; the library logic
 (import std.bijection :symbols (bijective-setup typecheck-setup))
 
-(relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; the schema
+(relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; the relations, their slots labelled
 (relation color-loc  Color       House :why "{?2} is painted {?1}")
 (relation drink-loc  Drink       House :why "{?1} is drunk in {?2}")
 (relation smoke-loc  Cigarette   House :why "{?1} is smoked in {?2}")
@@ -32,7 +32,7 @@ pieces from this guide, in layers:
 (solve :hrules (guess (color-loc Color House) (nation-loc Nationality House) (drink-loc Drink House)
                       (smoke-loc Cigarette House) (pet-loc Pet House)))
 
-(is-a Norwegian Nationality) …                      ; the type tree
+(is-a Norwegian Nationality) …                      ; the is-a facts
 (nation-loc Norwegian House-1 :source "condition (10)")   ; the 15 clues
 (co-located nation-loc Englishman color-loc Red :source "condition (2)")
 …
@@ -48,8 +48,8 @@ The pieces, and how `ein solve` turns them into the answer:
 ```dot
 digraph { rankdir=LR; node [shape=box];
   imports [label="imports\n(std.algebra, std.bijection)"];
-  schema  [label="relation signatures\n+ property tags"];
-  facts   [label="is-a tree + 15 clues"];
+  schema  [label="relation declarations\n+ property tags"];
+  facts   [label="is-a facts + 15 clues"];
   rules   [label="spatial rules\n(co-located, adjacent-via, …)"];
   guess   [label="(hrule guess …)\n+ (solve :hrules …)"];
   query   [label="(query :goal …)", shape=note];
@@ -62,10 +62,37 @@ digraph { rankdir=LR; node [shape=box];
 
 Nothing here is new — it's Chapters 1–3 at full size. The `(hrule guess …)`
 is Chapter 2's `guess`, written out: it proposes `(?R ?a ?b)` for every `?a`
-of one type and `?b` of another, and `(solve :hrules …)` names the five
-relations it runs over, each with its two types. The `(query …)` is the only
-piece we haven't used: a `:goal` pattern Ein matches against the solved KB,
-and a `:goal-text` template that renders the headline answer.
+with an `is-a` fact into one name and every `?b` with one into another, and
+`(solve :hrules …)` names the five relations it runs over, each with those
+two names: for `color-loc`, every colour against every house. The names are
+the ones the declarations label their slots with, and it is this clause and
+the hrule's `is-a` premises that make them say what a slot is filled from;
+the declaration alone does not. The `(query …)` is the only piece we haven't
+used: a `:goal` pattern Ein matches against the solved KB, and a `:goal-text`
+template that renders the headline answer.
+
+The hrule drawn, from `ein render rule --name guess examples/zebra2.ein`: it
+matches two `is-a` arrows and proposes the dashed one.
+
+```dot
+digraph rule_guess_lhs_rhs {
+  rankdir=TB;
+  label="guess"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?T1_L" [label="?T1", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?T2_L" [label="?T2", shape=diamond];
+    "?a_L" -> "?T1_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "?b_L" -> "?T2_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" [label="?b", shape=diamond];
+    "?a_R" -> "?b_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  }
+}
+```
 
 ## Solve it
 

@@ -33,7 +33,7 @@ out/
 - **`index.json`** carries `asked` and the same `region` block as the summary, per state file its `path`, `state`
   number, `lines` (`minimal` / `maximal`) and `listed`, and `forms`.
 - **A state file's header** gives its number, the commitment it was read from, its lines, how many commitments reach
-  it and its minimal generators. **A count of commitments, here and in `answer.json`, is reported up to 2^63 − 1**:
+  it and its minimal generators. **A count of commitments, here and in `answer.json`, is reported up to $2^{63} - 1$**:
   `9223372036854775807` reads *that many or more*, and a state file's header says so, *reached by:
   9223372036854775807 or more commitments*
   ([Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)).
@@ -72,7 +72,7 @@ out/
   where no form was asked for.
 
 Each state file costs one more saturation of a state the run already classified, and is mostly the program, so the
-directory's size is about *k* × the inlined program.
+directory's size is about $k$ times the inlined program.
 
 ## Every state file loads, and is a fixpoint
 
@@ -180,10 +180,10 @@ are the full run's `region.root`, `root_owes` and `root_owed`.
 
 | field | what it holds |
 |---|---|
-| `root.facts` | the facts of root's fixpoint, `sat(program)`: what `ein saturate FILE` prints as *facts (total)* after saturation, and what state ∅'s file holds when ∅ ∈ R. No route writes into root, so it is root before any commitment and after every one |
+| `root.facts` | the facts of root's fixpoint, $\operatorname{sat}(\text{program})$: what `ein saturate FILE` prints as *facts (total)* after saturation, and what the file of state `∅` holds when $\emptyset \in R$. No route writes into root, so it is root before any commitment and after every one |
 | `root.facts_by_relation` | those facts by relation name, sorted, only the relations that have one. They sum to `root.facts` |
 | `root.dead` | root's own fixpoint derives `(false)`: root's standing, which every run reaches first and `ein solve --no-search` reports. It is `region.root` = `dead` on every description |
-| `root.owes` | the obligation instances root's fixpoint leaves undischarged, dead or not, as a node counts them: `region.root_owes` on every description. With `root.dead`, whether ∅ is in R |
+| `root.owes` | the obligation instances root's fixpoint leaves undischarged, dead or not, as a node counts them: `region.root_owes` on every description. With `root.dead`, whether $\emptyset$ is in R |
 | `root.owed` | those instances, each through its rule's `:why` (the rule's name where it has none), in the order the rules report them: `region.root_owed`, and the read-out's `owed` rows |
 | `root.plans` | the plans root's saturation compiled, the derived activators' included |
 | `root.saturator.naf_rounds` | how many times root's saturation reached the NAF boundary with candidates parked on an `absent` guard, and judged them against the quiesced world |
