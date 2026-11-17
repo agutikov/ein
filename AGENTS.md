@@ -566,12 +566,37 @@ The read-out's vocabulary is
 every row `ein solve` prints and what it counts, and its golden page, written
 by the binary, is
 [`read-out-examples.md`](docs/ein/user/reference/read-out-examples.md), both
-held to the printer by `ein-cli/tests/read_out_reference.rs`. **The `EIN_*`
-names in the block above are the ones an agent needs, not the set**:
+held to the printer by `ein-cli/tests/read_out_reference.rs`.
 [`docs/ein/user/reference/config.md`](docs/ein/user/reference/config.md) is the census
-of every `EIN_*` name, `(config …)` field and CLI option, with a *does it
-change the answer* column on every flag row, pinned by
-`ein-cli/tests/config_reference.rs`. The walk — `-e`, `-m`,
+of every `(config …)` field, CLI option and `EIN_*` name the binary reads, with a
+*does it change the answer* column on every flag row, pinned by
+`ein-cli/tests/config_reference.rs`. **The test harness's `EIN_*` names are the
+process's**, and this table is their census: the test suite reads them, the binary
+none, and setting one has no effect on any `ein` command. `grep -rhoE
+'env::var(_os)?\(\s*"EIN_[A-Z0-9_]+' ein.rs/crates | grep -oE 'EIN_[A-Z0-9_]+' | sort -u`
+re-takes the set, the binary's two among it.
+
+| name | what it does |
+|---|---|
+| `EIN_BLESS` | `=1` rewrites a golden instead of comparing it, `config.md`'s generated block among them |
+| `EIN_CORPUS_SLOW` | `=1` adds the corpus entries marked slow, the heavy answer dumps, and the slow half of every test that has one |
+| `EIN_CORPUS_TIMEOUT` | the per-run wall budget of the corpus sweep through the binary, in seconds, default 300 |
+| `EIN_ID_SEEDS` | how many permutations of the interned ids the id-order sweep runs, default 1 |
+| `EIN_ID_FILES` | points that sweep at a directory instead of the corpus |
+| `EIN_ID_REPORT` | prints that sweep's per-file report |
+| `EIN_JOBS_SWEEP` | the job counts the job-count sweep compares, e.g. `2,4,8,16` |
+| `EIN_TEST_JOBS` | the corpus sweeps' worker count, default 16, never more than the machine's threads. **No verdict depends on it**: the results are read back in the units' order, and a failure reads the same at any count |
+| `EIN_TEST_SHARD` | `k/n`, `1 ≤ k ≤ n`: run shard `k` of `n` — a sharded sweep keeps the programs dealt to shard `k`, every program in exactly one, and a test that is one computation runs in one shard; unset, the whole run. A value that is no shard is a panic |
+| `EIN_TEST_UNITS` | a file each pooled sweep appends one line per unit to: the sweep, the program, the output, milliseconds, and with one worker the unit's peak resident memory |
+| `EIN_FUZZ_ITERS` | the parser fuzzer's budget, default 2 000 |
+| `EIN_FUZZ_SEED` | moves that fuzzer's stream |
+| `EIN_NARRATION_STRICT` | `=1` runs the id-order, job-count and corpus-shape comparisons with no narration cut: a node's derivation is compared byte for byte, not only what it concludes |
+| `EIN_ROUND_TRIP_LIST` | prints each program's state files beside it in `answer_round_trip` |
+| `EIN_REGION_PRINT` | turns on `ein-infer/tests/region.rs`' `print_for_inspection`, which prints and asserts nothing |
+| `EIN_REGION_CENSUS` | turns on `region.rs`' `census_for_inspection`, a measurement and not a claim |
+| `EIN_ROUTE1_TIMES` | prints each program's route-1 time in `region.rs`' route-1 sweep |
+
+The walk — `-e`, `-m`,
 `EIN_TRAVERSAL`, `EIN_OBLIGATION_CHOICE`, the lattice's verdict wording — was
 deleted at M1e2 S1e2.1c.5; a page that describes it is a record.
 
