@@ -1,6 +1,6 @@
 # Transformations of a rule set
 
-A rule set is an object that can be rewritten: an import written another way, a macro written out, a rule's
+A rule set is a thing that can be rewritten: an import written another way, a macro written out, a rule's
 conclusion flattened, the rules written in another order, a rule split in two or two fused. This page defines what
 it is for a rewrite to leave the answer unchanged, states the rewrites that reading a program performs, and proves
 of three of them that they do.
@@ -61,7 +61,7 @@ $$
 $$
 
 a union of sets of declarations and facts, in which $\alpha$ replaces each short name a file writes by the full
-name it stands for ([names and atoms](../01-static-ir/01-names-and-atoms.md#names)). The ways an import may be
+name it stands for ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program)). The ways an import may be
 written differ only in which names the file may write short, that is, in $\alpha$ before it is applied.
 
 **Expand.** A macro $\mu$ with parameters $\bar{x}$ and body $\beta_\mu$ is called by a form
@@ -88,13 +88,13 @@ $$
 A rule concludes a conjunction of literals, and nesting adds nothing.
 
 **Instantiate.** A rule with parameters stands for one rule per activator
-([rules as statements](../01-static-ir/04-rules-as-statements.md#relation-polymorphic)):
+([the rules](../01-static-ir/02-rewriting-rules.md#a-rule-declared)):
 
 $$
 \operatorname{inst}_K(P) = \{\, \rho[a] \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho) \,\}, \qquad K \subseteq K' \implies \operatorname{inst}_K(P) \subseteq \operatorname{inst}_{K'}(P)
 $$
 
-the values an activator supplies written into the rule before it matches anything. The set is monotone in the
+the objects an activator supplies written into the rule before it matches anything. The set is monotone in the
 state: an activator derived later, at the root or in a node, gives its instance when it arrives
 ([Q29](../../../decisions/engine/Q29-a-rule-compiles-once-per-activator.md)).
 

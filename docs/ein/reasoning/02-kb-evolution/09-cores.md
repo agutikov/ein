@@ -42,17 +42,56 @@ record** $\delta$ is one of three kinds:
 | **a rule's firing** | $\operatorname{fired}(\rho, a, \theta, \operatorname{prem}, \operatorname{all}, \operatorname{abs})$ | the rule, the activator it was applied with, its bindings, the positive premises it read, the facts a universal it read ranged over, and the absences that had to hold for it |
 | **a commitment** | $\operatorname{committed}(h)$ | the hypothesis $h \in C$ a node assumed |
 
-A fact's identity is its relation and its arguments, so a fact derived twice is one fact; the second derivation
-is recorded beside the first, as an **alternative**. Write, with $J$ the provenance of
-[relations and facts](../01-static-ir/02-relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations),
+A fact's identity is its relation and its arguments
+([the knowledge base](../01-static-ir/01-knowledge-base.md#identity)), so a fact derived twice is one fact; the
+second derivation is recorded beside the first, as an **alternative**. The records of a world are its
+**provenance** $J$: for each fact $f \in K$ a non-empty finite sequence,
 
 $$
-J_K(f) = (\delta_1, \delta_2, \dots)
+J_K(f) = (\delta_1, \delta_2, \dots, \delta_k), \qquad k \ge 1
 $$
 
-for the records of $f$ in $K$, in the order they were made: $\delta_1$ is the **primary** derivation and the
-others are alternatives. A given and a commitment take none, $J_K(f) = (\delta_1)$: a clue that happens to
-be derivable again is still a clue.
+the records of $f$ in $K$, in the order they were made: $\delta_1$ is the **primary** derivation and the others
+are alternatives. What is true of $J$ in every implementation:
+
+- **The primary derivation is the first one recorded.** Deriving the fact again never changes it, so everything
+  that reads one derivation of a fact reads one stable story.
+- **A given and a commitment take no other derivation**, $J_K(f) = (\delta_1)$: a clue that happens to be
+  derivable again is still a clue.
+- **Two firings of one rule over the same premises under the same activator are one record**:
+  $(\rho, a, \operatorname{prem}(\delta))$ is what tells two records apart. The substitution $\theta$ is recorded to
+  be shown, and is no part of a record's identity.
+- **What is recorded is what saturation attempted.** A derivation no firing reached is in no $J_K(f)$.
+- **A record made in a node is the node's.** A node is a fork of root ([firing a rule](01-firing.md#two-layers)),
+  and with $J$ root's records and $J'$ the node's, $J'(f) \setminus J(f)$ never reaches root. That keeps
+  explanations honest: a derivation recorded under a commitment may rest on the commitment, which root never
+  assumed, and would otherwise be named in an explanation of root.
+
+**What the program states of a fact it writes is its record.** A written fact's record is read off what the
+text says of it, and an imported fact keeps the record its module writes, as if the program had written it in
+place ([Q-M1f.138](../../../decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)):
+
+| the text writes $f$ | its record | its origin |
+|---|---|---|
+| with a source sentence | given, with that sentence | given |
+| with a rule's name and a list of premises | a firing, as the text says, of that rule from those premises | derived |
+| with neither | given, with no source | background |
+
+A fact stated twice is one fact, and the record of its first statement is the one kept, whether the two
+statements are in one file, in a module and the program, or in two modules
+([Q-M1f.139](../../../decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)).
+
+**Where a fact came from is not what it is.** The primary record sorts the facts of a world into three classes,
+
+$$
+\operatorname{origin} : K \to \{\text{given},\ \text{background},\ \text{derived}\}
+$$
+
+a fact given with a source sentence; a fact given with none, or stated by reading a declaration; and a fact a
+rule concluded or a commitment added. The partition is read off the records, never stored, and it is for
+presentation alone: every rule, every check and every contradiction treats a fact alike whatever its origin. An
+origin is not a kind of fact either: a fact of any relation, a property of a relation among them, may have any
+of the three.
 
 ## The proof graph
 
@@ -124,7 +163,38 @@ digraph cyclic {
 ```
 
 $\operatorname{der}_K$ is a least fixpoint, built up from the terminals, so a cycle adds nothing to it: a fact
-is never its own reason, and $r(b, a)$ rests on the given $r(a, b)$ and on nothing else.
+is never its own reason, and $r(b, a)$ rests on the given $r(a, b)$ and on nothing else. What a program's text
+**states** is held to more than what a saturation records: among the facts a text writes with premises, the
+relation *$g$ is a premise the text states for $f$* has no cycle, and a text in which it has one is no program.
+
+**The terminals a fact reaches.** Following every recorded derivation of a fact down to the terminals gives the
+widest set of terminals it can rest on, the least sets with
+
+$$
+\operatorname{front}(f) =
+\begin{cases}
+\{f\} & \delta_1 \text{ of } J_K(f) \text{ is a terminal} \\
+\bigcup_{\delta \in J_K(f)}\ \bigcup_{g \in \operatorname{rests}(\delta)} \operatorname{front}(g) & \text{otherwise}
+\end{cases}
+$$
+
+where a firing that rests on nothing counts as a terminal. An **explanation** of a set $X$ of facts is the set
+$Z$ of terminals that a *witness* ends in, a witness being a choice of one recorded derivation for each fact
+reached from $X$ along the derivations chosen.
+
+**Proposition (what a fact reaches bounds every explanation).** For every explanation $Z$ of $X$,
+
+$$
+Z \subseteq \bigcup_{f \in X} \operatorname{front}(f)
+$$
+
+*Argument.* A witness follows, from each $f \in X$, one derivation of $J_K(f)$ and then one derivation of each
+of its premises, down to terminals. $\operatorname{front}(f)$ follows every derivation of $J_K(f)$ and of every
+premise. So each path of the witness is a path $\operatorname{front}$ follows, and the terminal it ends in is in
+$\operatorname{front}(f)$. $\square$
+
+So no core of a contradiction names a fact outside what the contradiction's facts reach. Choosing a *smallest*
+explanation is a minimisation over the graph, which $\operatorname{front}$ does not solve.
 
 ## The core
 
@@ -200,7 +270,10 @@ $$
 
 **A core names facts.** The absences a derivation rested on, $\operatorname{abs}(\delta)$, are recorded, and a
 core does not count them: an absence is no fact a node could be shown. What reads them is the check of a program
-that may not be monotone ([monotonicity](08-monotonicity.md)).
+that may not be monotone ([monotonicity](08-monotonicity.md)). A core is a set, and where its facts are drawn,
+as the arrows into $\bot$ in the drawing of a refutation, they are in the order of their quoted forms
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-text-of-an-object)), whatever order they were
+found in.
 
 **Refuted by.** Beside a core stands, for each fact of the contradiction, the rule of the last step of a
 derivation from the core: the fact's first recorded derivation where the core derives it, else the first

@@ -35,11 +35,11 @@ test under a crate's `tests/`.
 | $\operatorname{ActOb}^{+}$, $\Pi^{+}$: a debt root is not told of | `forbid::derivable_activators`; each such debt is an `oblgen::LaterDebt`, counted apart from what root owes |
 | stuck | `oblgen::Mode::Stuck` |
 | $\operatorname{Uncov}(P)$ | `RungReport::uncovered`, over `hypgen::eligible_relations` |
-| $\operatorname{obj}(P)$ | `hypgen::candidate_objects`, seeded with `invariant::program_names` |
+| $\operatorname{guessable}(P)$ | `hypgen::candidate_objects`, seeded with `invariant::program_names` |
 | $\operatorname{unsettled}$ | the candidate filters of `hypgen.rs`, in this order: `negated_fact`, `fact_already_exists`, `seen_in_call` |
 | $\operatorname{inscope}$ | the relation skips of `hypgen.rs`: `closed_relation`, `relation_not_whitelisted`, `no_hypothesis_relation`; and `self_edge` for a relation of two slots |
 | the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command; each refusal and each note, worded, is [`07-diagnostics.md` § 2.27](../../user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) |
-| what the universe leaves out, a type or a relation's name bound as an object | `scope.rs`, `types_as_objects.rs`, `relation_names.rs`: one sentence each, on every surface |
+| what the universe leaves out, a label or a relation's name that is guessed about | `scope.rs`, `types_as_objects.rs`, `relation_names.rs`: one sentence each, on every surface |
 
 ### 1.2 The ladder as the engine runs it
 
@@ -50,8 +50,8 @@ answers `NoSearch`, `Hrules`, `Obligations` or `Blind` before any rung runs; the
 `:hypothesis-relations` and `:no-hypothesis`, are read once a call, and neither they nor a closure filter what an
 hrule proposes; `oblgen::generate` scans each owed instance's guard with the witness step skipped, then the debts
 a commitment can bring, and answers `Mode::Declined` with its reason before it emits anything; the blind
-enumerator takes `candidate_objects`, and for each object, each eligible relation and each slot, one candidate a
-filler, no fact of an object with itself.
+enumerator takes `candidate_objects`, the guessable atoms, and for each of them, each eligible relation and each
+slot, one candidate a filler, no fact of an atom with itself.
 
 Every candidate a rung constructs goes through one pipeline, `emit`: it is counted as `raw`, then dropped by the
 first filter that names it or emitted, so `raw == emitted + Σ filtered` and a dropped candidate's `hyp` event names
@@ -160,6 +160,26 @@ ein show hyps examples/zebra2-obligations.ein 2>/dev/null | sort | md5sum
 A relation of three slots or more has no blind candidate and is named outside the universe:
 [`examples/ein-bugs/wrong-answers/arity3.ein`](../../../../examples/ein-bugs/wrong-answers/arity3.ein).
 
+**A label is read by name in one place, the blind enumerator.** Two programs that differ only in the labels of one
+declaration, `(relation lives-in Person House …)` against `(relation lives-in A B …)`, over the same four lines:
+
+```lisp
+(relation is-instance Object Type :why "{?1} is an instance of {?2}")
+(relation lives-in Person House :why "{?1} lives in {?2}")
+
+(is-instance Norwegian Person)
+(is-instance House-1 House)
+```
+
+```sh
+ein show hyps FILE
+```
+
+The first lists 4 candidates and the second 22: with the declaration naming `A` and `B`, `Person` and `House` are
+no longer labels of any declaration, so the blind enumerator takes them for guessable atoms and proposes
+`(lives-in Person House-1)` and the like. No rule reads the labels in either program
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
+
 ### 1.5 What holds the ladder
 
 | claim | test |
@@ -171,9 +191,9 @@ A relation of three slots or more has no blind candidate and is named outside th
 | the hrule path and the obligation path build one $H$, and with it one $R$, on the zebra family | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |
 | a root that owes and can propose nothing is stuck, reports it, and is no state of $R$ | `ein-infer/tests/obligation_rung.rs`: `owing_and_unable_to_branch_is_stuck_and_says_so` |
 | $H$ holds the payments of a debt only a commitment brings, by the static reading, and $R$ over that $H$ is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles`, `the_rung_line_counts_a_later_debt_apart` |
-| every name of the program is a blind candidate object, and no run reaches a name the program lacks | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
-| a kernel dunder is no object, and a closure by a rule answers what the closure by a fact answers | `ein-infer/tests/dunder_objects.rs`: `a_dunder_written_as_a_value_is_no_object`, `a_closure_by_a_rule_answers_what_the_closure_by_a_fact_answers` |
-| a type bound as an object, and a relation's name bound as an object, are each named on every surface | `ein-cli/tests/read_out.rs`: `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs`: `a_relations_name_bound_as_an_object_is_one_sentence_on_every_surface` |
+| every name of the program is a guessable atom, and no run reaches a name the program lacks | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
+| a kernel dunder is not guessable, and a closure by a rule answers what the closure by a fact answers | `ein-infer/tests/dunder_objects.rs`: `a_dunder_written_as_a_value_is_no_object`, `a_closure_by_a_rule_answers_what_the_closure_by_a_fact_answers` |
+| a label that is guessed about, and a relation's name that is, are each named on every surface | `ein-cli/tests/read_out.rs`: `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs`: `a_relations_name_bound_as_an_object_is_one_sentence_on_every_surface` |
 | a relation of arity 3 or more has no blind candidate and is named outside the universe | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
 | an hrule that reads a negation proposes what the oracle's does | `ein-cli/tests/hrule_reads_not.rs`: `an_hrule_that_reads_not_is_answered_as_the_oracle_answers`, `every_hrule_reads_the_state_it_was_asked_about` |
 | an hrule's conclusion is one fact | `ein-cli/tests/conclusion_shapes.rs`: `an_hrule_concludes_one_fact` |
@@ -198,7 +218,7 @@ A relation of three slots or more has no blind candidate and is named outside th
 | the read-out, the graphs, the document | `ein-render/src/structure.rs`; the command is `ein-cli`'s `render h-space` |
 
 The whole of it is [`structure.rs`](../../../../ein.rs/crates/ein-infer/src/structure.rs), whose module comment is
-the fullest account of each object as built. No route reads a pair layer, the cover or the full coupling.
+the fullest account of each part as built. No route reads a pair layer, the cover or the full coupling.
 
 **The small KB** is built over the same interned terms as the program, so a candidate is one fact in both. It keeps
 the loaded program's registries, every rule, declaration and import, and of the facts a file writes those the rule
@@ -249,7 +269,7 @@ solve --> nc : order.rs, where a choice is tied
 
 In the read-out's units, saturations and facts beyond root:
 
-| object | what it costs |
+| part | what it costs |
 |---|---|
 | H, listed | root's saturation and the generator's pass at its fixpoint. No node: no single, no pair, no small KB |
 | root's pair layer | root's node, a saturation a candidate, and one for each pair the two licences leave |
@@ -397,7 +417,7 @@ is held is the DOT: its bytes in any id space, and that `dot` draws it.
 
 ### 2.4 `h-space.json`
 
-Schema `ein-h-space/1`. One document, every object. A candidate is its text wherever it is named; a group, a
+Schema `ein-h-space/1`. One document, every part. A candidate is its text wherever it is named; a group, a
 question, a component, a grid, an instance and a debt is its place in its own list, which follows the universe's
 order. **The document holds no clock and no job count**: it is a function of the program and of what was asked.
 
@@ -414,7 +434,7 @@ order. **The document holds no clock and no job count**: it is a function of the
 | `cost` | `root_layer` (`saturations`, `facts_beyond_root`); `small_kb_layer` (`saturations`, `facts_beyond_its_own_root`); `supports`; `cover` (`clique_calls`, `root_clique_calls`, `bound`); `exactly_one`; `whole_node` (`saturations`, `facts_beyond_root`, `applications`, `steps`, `contradictions`, `rounds`, `merged`); and `saturations`, their sum |
 | `graphs` | for each graph: `graph`, `file`, `nodes`, `lines` |
 
-**`candidates`: H listed.** One object a candidate, in the universe's order, with what each object says of it. The
+**`candidates`: H listed.** One object a candidate, in the universe's order, with what each part says of it. The
 candidates alone, one fact a line and no node read, are `ein show hyps FILE` ([§ 1.3](#13-h-listed)).
 
 | key | what it holds |
@@ -428,7 +448,7 @@ candidates alone, one fact a line and no node read, are `ein show hyps FILE` ([�
 | `questions` | the questions that hold it, by place |
 | `component`, `conflict_component` | its place in each set of components; `null` for a candidate not alive alone |
 
-**`pairs`: root's pair layer.** `theory.small_kb_layer` is the same object of the small KB.
+**`pairs`: root's pair layer.** `theory.small_kb_layer` is the same part of the small KB.
 
 | key | what it holds |
 |---|---|
@@ -452,7 +472,7 @@ candidates alone, one fact a line and no node read, are `ein show hyps FILE` ([�
 | `theory_dead_alone`, `theory_excluded` | what the theory kills and excludes alone |
 | `against_root`, `small_beyond_root` | `singles` and `pairs` dead in the small KB and alive at root; facts the small KB's fixpoint holds that root's does not |
 | `root_excluded` | each pair root excludes: `pair`, `of_the_theory`, `support` |
-| `rules_naming_objects` | the rules whose text names one of the candidates' objects |
+| `rules_naming_objects` | the rules whose text names one of the candidates' names |
 | `small_kb_layer` | the small KB's pair layer |
 
 A `support` is `null` where none was asked. Otherwise: `read`; `status`, what the search established; `dropped` and
@@ -541,7 +561,7 @@ read knows which of them means *bijective*. A reader does: on `examples/zebra2.e
 
 | what the reasoning says | the key of `h-space.json` |
 |---|---|
-| a clue written as a rule: the rules that name one of the candidates' objects | `theory.rules_naming_objects` |
+| a clue written as a rule: the rules that name one of the candidates' names | `theory.rules_naming_objects` |
 | a theory's pair whose node is alive at root | `cover.pairs_alive_at_root` |
 | a flagged program whose small KB is monotone | `cover.small_monotone` true beside `monotone` false |
 | dead in the small KB and alive at root; held by the small KB's fixpoint and not by root's | `theory.against_root`, `theory.small_beyond_root` |
@@ -583,6 +603,7 @@ third question of the hat, are not corpus programs; their graphs are what `ein r
 | $\operatorname{Owed}$, $\operatorname{owes}$ | [`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): one pass over a quiescent KB; an obligation rule is in no saturation agenda |
 | a node's kind | `dead`, `owing` or `in-r`, with what it owes, its closure and its facts beyond root's |
 | a state's identity, $C \sim C'$ | `canon::state_key`: the sorted fact set itself, never a hash of it |
+| the order of the candidates, by text | `order_key` in `ein-infer/src/region.rs`, which H is sorted by ([`03-design/01-determinism-and-order.md` § 4.2](../03-design/01-determinism-and-order.md#42-the-hypothesis-set-and-the-search)) |
 | $R$ described: the lines, the components, the sub-cubes, $N$, $E$, the holes | `described::Described`, built once and read by the read-out, the summary, the answer dump and a region claim's check; `explore::Shape` |
 | $k_s$, $k_c$ | `explore::Counts`, exact in [`count.rs`](../../../../ein.rs/crates/ein-infer/src/count.rs) and reported up to $2^{63} - 1$ |
 | monotone | `monotone::classify`, the static check; `ein solve FILE --monotone` asks it alone |
@@ -614,8 +635,8 @@ How the questions of the reasoning's § 5 are spelt:
 | the duality failing with no hole: nothing dead, and the top owes | [`examples/lattice/synth/maximal_not_top.ein`](../../../../examples/lattice/synth/maximal_not_top.ein) |
 | the local test and the lattice disagreeing across a hole | [`examples/lattice/synth/local_not_global.ein`](../../../../examples/lattice/synth/local_not_global.ein) |
 | the conflict of three, worked | [`examples/lattice/02_genuine_3set_death.ein`](../../../../examples/lattice/02_genuine_3set_death.ein): `a = (a-prop X)`, `b = (b-prop X)`, `c = (c-prop X)`, and one rule asserting `(false)` when all three hold |
-| a type bound as an object | a program with `(is-a Red Color)` and `(relation co-located T T)`: `(co-located Blue Color)` is a candidate |
-| a relation's name bound as an object | a program that derives `(liquid Tea)` by a rule, declares `liquid` nowhere and leaves `(relation tasty Thing)` open: `(tasty liquid)` is a candidate |
+| a label that is guessed about | a program with `(is-a Red Color)` and `(relation co-located T T)`: `(co-located Blue Color)` is a candidate |
+| a relation's name that is guessed about | a program that derives `(liquid Tea)` by a rule, declares `liquid` nowhere and leaves `(relation tasty Thing)` open: `(tasty liquid)` is a candidate |
 
 The two counts of the program with far more commitments than states:
 
@@ -665,10 +686,12 @@ The files the three commands write are the region dump
 | a monotone program's cube shows no dead node with an alive superset and no discharged node with an owing one; the static check flags the non-monotone fixtures | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
 | the duality holds without holes and fails on the hole; across a hole the local test misreads the lines | `ein-infer/tests/region.rs`: `the_duality_holds_without_holes_and_fails_on_the_hole`, `across_a_hole_the_one_fact_test_misreads_the_lines` |
 | each `synth/` program has the region it was written for | `ein-infer/tests/region.rs`: `every_synthetic_program_has_the_region_it_was_written_for` |
-| every name of the program is a candidate object, and no run reaches a name the program does not have | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
-| a dunder is no object, and a closure stated by a rule answers what one stated by a fact answers | `ein-infer/tests/dunder_objects.rs` |
+| every name of the program is a guessable atom, and no run reaches a name the program does not have | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
+| a dunder is not guessable, and a closure stated by a rule answers what one stated by a fact answers | `ein-infer/tests/dunder_objects.rs` |
 | the obligations rung's reading of later debts, and $R$ over its universe is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles` |
-| what the universe leaves out, a type bound as an object and a relation's name bound as an object are each one sentence on every surface | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface`, `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs` |
+| what the universe leaves out, a label that is guessed about and a relation's name that is are each one sentence on every surface | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface`, `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs` |
+| a state's identity is its fact list, never a digest; two different closures have different identities | `ein-infer/tests/search_semantics.rs`: `state_key_is_identity_not_a_digest`, `distinct_closures_have_distinct_keys` |
+| H is listed in the universe's order, as the binary lists it | `ein-cli/tests/show_hyps.rs`, which holds the listing on the hypothesis space's page to the binary's |
 | no option, lever or flag changes $R$ | `ein-cli/tests/lever_invariance.rs` |
 | the agenda and the written order alone answer every question and every claim alike on the corpus's monotone programs | `ein-infer/tests/agenda.rs` |
 

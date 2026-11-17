@@ -27,8 +27,8 @@ $$
 
 each rule once per activator the root holds, and a rule nothing applies adds no edge. For an instance with
 pattern $\varphi$ and conclusion $\psi$, let $\operatorname{writes}(\psi) \subseteq \mathcal{V}$ be the vertices of
-its literals, and let $\operatorname{reads}(\varphi)$ be the pairs $(u, d)$ of a vertex $u$ an atom of $\varphi$
-is of and the number $d$ of absences that atom stands under. Then
+its literals, and let $\operatorname{reads}(\varphi)$ be the pairs $(u, d)$ of a vertex $u$ a premise of $\varphi$
+is of and the number $d$ of absences that premise stands under. Then
 
 $$
 \mathcal{E} = \bigcup_{\rho[a]}\ \Big( \big\{\, (u,\ w,\ \operatorname{sgn}(d)) \;:\; (u, d) \in \operatorname{reads}(\varphi),\ w \in \operatorname{writes}(\psi) \,\big\} \;\cup\; \big\{\, (\operatorname{name}(\rho),\ w,\ +) \;:\; w \in \operatorname{writes}(\psi),\ \bar{p} \ne \varepsilon \,\big\} \Big)

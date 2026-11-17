@@ -8,9 +8,9 @@ $$
 
 together with the **structure** of the candidate set $H$: what $H$ looks like from inside. This page defines the
 structure: which candidates rule each other out, which of that the rules alone decide, which candidates answer one
-question, where exactly one of them must hold, and which questions bear on each other. Every object is a statement
+question, where exactly one of them must hold, and which questions bear on each other. Every part of it is a statement
 about nodes of the lattice, by the one node function every computation of the answer uses, so none is a second
-semantics. **Nobody declares it**: no object below is read off a relation's name, its arguments or a declaration of
+semantics. **Nobody declares it**: no part below is read off a relation's name, its arguments or a declaration of
 it.
 
 The answer the structure is *of* is the region $R$ ([Solution semantics](06-solution-semantics.md)), and the set it
@@ -20,11 +20,11 @@ is a set of true statements about $R$'s lattice, and $R$ is defined without it.
 
 **The symbols.** $\operatorname{dead}$, $\operatorname{alive}$, $\operatorname{cl}$, $N$ and $\operatorname{Owed}$
 are those of [Solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state) and § 2.4, each read on a
-commitment through $\operatorname{st}$. $H$ is listed in the order of its candidates as written, so no object below
+commitment through $\operatorname{st}$. $H$ is listed in the order of its candidates as written, so no part below
 depends on how an implementation numbers them.
 
 ```dot
-digraph objects {
+digraph parts {
   graph [rankdir=LR, nodesep=0.3, ranksep=0.5, fontname="Helvetica", fontsize=10];
   node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#f7f7f7"];
   edge [fontname="Helvetica", fontsize=9, arrowsize=0.6];
@@ -53,7 +53,7 @@ An arrow reads *is defined from*. The sections below follow the picture from lef
 
 ---
 
-## The objects
+## The parts
 
 ### One candidate, and two: the pair layer
 
@@ -70,7 +70,7 @@ a \bowtie b &\iff \operatorname{alive}(\lbrace a, b \rbrace) \,\land\, \operator
 \end{aligned}
 $$
 
-| object | read from | in words |
+| part | read from | in words |
 |---|---|---|
 | **at root** | root's fixpoint | root already holds the candidate: committing it commits nothing |
 | **dead alone** | the node $\lbrace a \rbrace$ | it is dead |
@@ -145,7 +145,7 @@ K_0^{\circ} \;=\; K_0 \setminus \operatorname{Puz}(P), \qquad
 $$
 
 The commitments are over the same $H$, root's: the small KB's own candidate set would be another program's. Every
-object of the pair layer has its twin there, written with the same mark: $\operatorname{dead}^{\circ}$,
+part of the pair layer has its twin there, written with the same mark: $\operatorname{dead}^{\circ}$,
 $\perp^{\circ}$, $X^{\circ}$.
 
 $$
@@ -161,22 +161,22 @@ member dead alone at root.
 
 **Which statements are the puzzle's** nothing declares; $\operatorname{Puz}(P)$ is read off the candidates. Let
 $T \subseteq K_0$ be the facts the program states, $\operatorname{rels}(H)$ the candidates' relations,
-$O_H$ the names the candidates hold as arguments, and $\operatorname{Rd}$ the relations the rung that built $H$
+$\operatorname{names}(H)$ the names the candidates hold as arguments, and $\operatorname{Rd}$ the relations the rung that built $H$
 reads at root. For $f \in T$, with $\operatorname{names}(f)$ the names $f$ holds as arguments:
 
 $$
 f \in \operatorname{Puz}(P) \iff \operatorname{rel}(f) \in \operatorname{rels}(H) \;\;\lor\;\;
 \begin{cases}
-\operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd} & \text{where hypothesis rules or obligations built } H \\
-\lvert \operatorname{names}(f) \cap O_H \rvert \ge 2 \;\lor\; \big( \operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{names}(f) \cap \operatorname{rels}(H) \neq \emptyset \big) & \text{where the blind enumerator built } H
+\operatorname{names}(f) \cap \operatorname{names}(H) \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd} & \text{where hypothesis rules or obligations built } H \\
+\lvert \operatorname{names}(f) \cap \operatorname{names}(H) \rvert \ge 2 \;\lor\; \big( \operatorname{names}(f) \cap \operatorname{names}(H) \neq \emptyset \,\land\, \operatorname{names}(f) \cap \operatorname{rels}(H) \neq \emptyset \big) & \text{where the blind enumerator built } H
 \end{cases}
 $$
 
 The first disjunct is a given: a fact of a relation a candidate is of, stated or denied. The second is a clue about
-the candidates' objects: on the program's own rungs, any other fact that names one of them; under the blind
+the candidates' names: on the program's own rungs, any other fact that names one of them; under the blind
 enumerator, only a fact that names two of them, or one of them with a candidates' relation.
 
-A fact that names none of them is kept: a declaration that names a relation and no object speaks of the relation
+A fact that names none of them is kept: a declaration that names a relation and none of those names speaks of the relation
 whole. A fact of a relation the rung reads says what the universe is made of, and is kept. What loading records of a
 stated fact goes with the fact. The rule reads no relation by what it is called. It is held by what must be true of
 any right one:
@@ -263,7 +263,7 @@ exhaustive alternatives ([Finding R § 4](07-finding-r.md#4-a-monotone-program-t
 gives, where its premise holds of $I$, the candidates that can witness it: $I$ is then **licensed**, and those
 candidates are its **alternatives** $\operatorname{alt}(I) \subseteq H$. Read against the cover:
 
-| object | what it is | what every $C \in R$ holds |
+| part | what it is | what every $C \in R$ holds |
 |---|---|---|
 | **owed group** | $g \in \mathcal{G}$ with $g = \operatorname{alt}(I)$ for a licensed $I$ | $\lvert \operatorname{cl}(C) \cap g \cap H^{\mathrm{o}} \rvert = 1$: exactly one of its open members |
 | **owed set that is no group** | a licensed $I$ whose alternatives do not pairwise exclude | $\lvert \operatorname{cl}(C) \cap \operatorname{alt}(I) \rvert \ge 1$: at least one |
@@ -463,10 +463,10 @@ theory from the puzzle the way a reader would.
 
 | class | what happens |
 |---|---|
-| **a clue written as a rule** | $K_0^{\circ}$ keeps every rule, so what such a rule says is the theory's. The rules that name one of the candidates' objects are the ones to suspect |
-| **a clue that names none of the candidates' objects** | kept, as a declaration is: a gate between two wires no candidate holds |
-| **the blind enumerator's universe** | $H$ holds facts of every open relation over every object, so a label and a relation's name are among $O_H$, and the statements that say what an object is go with the clues. A cover there can be all of candidates nobody would propose, every member of every group dead alone at root: its groups are true and say nothing of the search |
-| **a table a module states over the candidates' objects** | dropped with the clues. Nothing in a loaded fact says which text stated it |
+| **a clue written as a rule** | $K_0^{\circ}$ keeps every rule, so what such a rule says is the theory's. The rules that name one of the candidates' names are the ones to suspect |
+| **a clue that names none of the candidates' names** | kept, as a declaration is: a gate between two wires no candidate holds |
+| **the blind enumerator's universe** | $H$ holds facts of every open relation over every guessable atom, so a label and a relation's name are among $\operatorname{names}(H)$, and the statements that say what an atom is go with the clues. A cover there can be all of candidates nobody would propose, every member of every group dead alone at root: its groups are true and say nothing of the search |
+| **a table a module states over the candidates' names** | dropped with the clues. Nothing in a loaded fact says which text stated it |
 
 And one more can show in the structure itself: a program not proved monotone whose small KB is. The small KB's layer
 then has the two lemmas where root's has not, and it is still no more than a set of statements about another
@@ -485,10 +485,10 @@ are both empty where the rule fits a program and name the program where it does 
 
 ## What it reads
 
-Each object is a statement about a number of nodes, which is the least any way of knowing it evaluates. With
+Each part is a statement about a number of nodes, which is the least any way of knowing it evaluates. With
 $n = \lvert H \rvert$:
 
-| object | the nodes it is a statement about |
+| part | the nodes it is a statement about |
 |---|---|
 | $H$ itself | root, and no other node |
 | root's pair layer | root, the $n$ single nodes, and each pair the two lemmas do not decide: at most $1 + n + \binom{n}{2}$ |
@@ -506,7 +506,7 @@ coupling, and why the one-node reading exists.
 
 ## How to see it
 
-Every object above is something the engine shows for a program, and each graph on this page is one of its drawings.
+Every part above is something the engine shows for a program, and each graph on this page is one of its drawings.
 Which command lists $H$ and which shows its structure is [the command line](../../user/04-reference/05-cli.md)'s; what
 the drawings' strokes mean is [rendering](../../user/04-reference/12-rendering.md)'s; and the read-out, the graphs
 and the document the engine writes, key by key, with what holds each to this page, are

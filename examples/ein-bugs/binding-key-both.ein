@@ -7,8 +7,8 @@
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; Thirteen lines on a rule application's identity
-;;; (`docs/ein/reasoning/01-static-ir/03-values-and-order.md` § A rule
-;;; application's identity). `(note edge 1)` binds `?R` to `edge` and `?f`
+;;; (`docs/ein/reasoning/02-kb-evolution/01-firing.md` § Firing a rule,
+;;; a firing's identity). `(note edge 1)` binds `?R` to `edge` and `?f`
 ;;; to `1`; `(note edge (src Y))` binds `?R` to `edge` and `?f` to `(src Y)`,
 ;;; a nested fact being a value like any other.
 ;;; `binding-key-swapped.ein` is this file with the two activator lines

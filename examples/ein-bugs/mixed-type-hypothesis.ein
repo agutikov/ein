@@ -12,8 +12,8 @@
 ;;; element-wise. Two candidates of the same relation whose slot *i* holds a
 ;;; name in one and a nested fact in the other are compared across value
 ;;; kinds, and values are totally ordered by construction
-;;; (`docs/ein/reasoning/01-static-ir/03-values-and-order.md` § Values are totally
-;;; ordered), so any such pair sorts like any other.
+;;; (`docs/ein/reasoning/01-static-ir/01-knowledge-base.md` § Order, a total
+;;; order), so any such pair sorts like any other.
 ;;;
 ;;; Why it uses an hrule. An `hrule`'s `:assert` args come from *bindings*:
 ;;; a variable that matched a fact's argument carries that value through,

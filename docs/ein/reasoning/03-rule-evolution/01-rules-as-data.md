@@ -5,8 +5,8 @@ Ein's own rules? The constraint is the point: a self-description that needs a se
 longer Ein describing itself, as a grammar of EBNF written in EBNF needs nothing but EBNF.
 
 The answer is a line through the four levels a knowledge base is read at
-([rules as statements](../01-static-ir/04-rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in)):
-objects, facts and relations are data that rules read and write, and a rule is not. This page states what is on
+([the rules](../01-static-ir/02-rewriting-rules.md#the-four-levels-a-knowledge-base-describes-itself-in)):
+atoms, facts and relations are data that rules read and write, and a rule is not. This page states what is on
 each side of the line.
 
 ## 1. The toolbox: declarations and facts
@@ -22,7 +22,7 @@ rule, a macro, an import, and of a program's questions
 ([the reserved names](../../user/04-reference/03-reserved-names.md) lists them). **Every other form is a fact.**
 Each kind of form takes a closed list of clauses, a fact takes only the clauses that say where it came from
 ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)), and a clause is
-only ever a form's own, never part of a value
+only ever a form's own, never part of an object
 ([Q-M1f.14](../../../decisions/engine/Q-M1f.14-a-keyword-pair-is-only-ever-a-forms-clause.md)).
 
 So there is no schema sub-language to describe Ein with. A form that tried to give a fact named slots would be a
@@ -31,12 +31,12 @@ declarations** and **facts over relations a program names**, and they are enough
 
 ## 2. The four levels, stated in Ein
 
-### Objects: the kinds are names in a membership relation
+### The things named: the kinds are names in a membership relation
 
-Ein has no form that declares an object. An object is any name that fills an argument place, and *this is one of
+Ein has no form that declares an atom. A thing a program names is any atom that fills an argument place, and *this is one of
 those* is a fact of a membership relation the program declares like any other
 ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). Ein's own kinds are then
-four names under a common top, as every node of the knowledge base is a vertex of one graph:
+four names under a common top, as every node of the knowledge base is an object of one graph:
 
 $$
 \operatorname{is-a}(\mathsf{Object}, \mathsf{T}), \qquad \operatorname{is-a}(\mathsf{Relation}, \mathsf{Object}), \qquad \operatorname{is-a}(\mathsf{Fact}, \mathsf{Object}), \qquad \operatorname{is-a}(\mathsf{Rule}, \mathsf{Object})
@@ -54,7 +54,7 @@ Let $\operatorname{is-a}^{*}$ be a second relation, and let the program state tw
 rule of the standard library's relation algebra (§ 3):
 $\operatorname{includes}(\operatorname{is-a}, \operatorname{is-a}^{*})$ and
 $\operatorname{transitive}(\operatorname{is-a}^{*})$. Then the membership relation is, by the program's own
-rules, an object:
+rules, a member of $\mathsf{Object}$:
 
 $$
 \dfrac{
@@ -116,7 +116,7 @@ one from the membership relation to $\mathsf{Object}$ is the conclusion of the d
 
 | level | what it is | as a formula |
 |---|---|---|
-| a fact | a relation applied to values | $\operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2})$ |
+| a fact | a relation applied to objects | $\operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2})$ |
 | a relation | a name and its labels | $\operatorname{decl}(\operatorname{left-of};\ \mathsf{House}, \mathsf{House})$ |
 | a relation's property | a fact whose argument is the relation's name | $\operatorname{transitive}(\operatorname{left-of})$ |
 | a rule | parameters, a pattern and a conclusion | $\operatorname{transitive}[r]:\ r(a, b) \land r(b, c) \land a \ne c \implies r(a, c)$ |
@@ -129,7 +129,7 @@ How each is spelt is the user's pages on [facts](../../user/03-syntax-and-semant
 ### A declaration is a fact a rule can read
 
 Reading a program holds each declaration as facts of the relation $\operatorname{relation}$
-([names and atoms](../01-static-ir/01-names-and-atoms.md#a-relation-is-an-object)):
+([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where)):
 
 $$
 \operatorname{decl}(r;\ T_1, \dots, T_n) \;\longmapsto\; \{\ \operatorname{relation}(r, T_1, \dots, T_n),\ \ \operatorname{relation}(r)\ \}
@@ -161,8 +161,8 @@ $$
 \end{aligned}
 $$
 
-and its rule of domain elimination reads a declaration's labels to know which values to range over
-([rules as statements](../01-static-ir/04-rules-as-statements.md#structural)). The theory itself reads of a
+and its rule of domain elimination reads a declaration's labels to know which atoms to range over
+([the rules](../01-static-ir/02-rewriting-rules.md#structural)). The theory itself reads of a
 declaration only how many labels it has; it never reads a name as a type
 ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). What a program calls its
 type system is this: membership is a relation, and what a type check concludes, a rule concludes.
@@ -171,7 +171,9 @@ type system is this: membership is a relation, and what a type check concludes, 
 a declaration, and its meaning is an ordinary rule the fact applies
 ([Q27](../../../decisions/language/Q27-a-relations-properties-are-facts-beside.md),
 [Q16](../../../decisions/stdlib/Q16-general-rule-families-are-stdlib-modules.md)). With
-$\operatorname{ext}_K(r) = \lbrace (u, v) : r(u, v) \in K \rbrace$ the extent of a relation of two arguments, the rules of
+$\operatorname{ext}_K(r)$ the extent of a relation of two arguments
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)), each fact
+$r(u, v)$ of it written as the pair $(u, v)$, the rules of
 the standard library's relation algebra make these true of every saturated state $K$ of a program that brings
 them in:
 
@@ -190,7 +192,7 @@ them in:
 Union, intersection, composition, converse and inclusion are one rule each over the one notion of a match, and
 the cardinality properties are rules that conclude $\bot$. The one kernel counterpart is the marker that closes a
 relation under the swap of its arguments, as the rule of symmetry does, without the rule
-([names and atoms](../01-static-ir/01-names-and-atoms.md#names)).
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-reserved-atoms)).
 
 **The quantifiers are Ein in Ein.** The bounded universal and the undecided fact are not forms of the pattern
 language. Each is a macro, a named pattern with parameters that is replaced by its body where it is written:
@@ -206,7 +208,7 @@ with both negations read as absence. How a macro is written is
 
 ## 4. Where it stops: a rule is not data
 
-**Objects, facts and relations reify; rules do not.** A pattern has an atom for each of the first three,
+**Atoms, facts and relations reify; rules do not.** A pattern has a premise for each of the first three,
 
 $$
 r(a, b) \quad \text{a fact}, \qquad \operatorname{relation}(r, x, y) \quad \text{a declaration}, \qquad \operatorname{symmetric}(r) \quad \text{a property}
@@ -218,7 +220,7 @@ computation over it reaches:
 $$
 \begin{aligned}
 &\rho \notin K \quad \text{for every rule } \rho \in P && \text{a state holds facts, and a rule is no fact;} \\
-&K \models \varphi\theta \ \text{ depends on } K \text{ alone} && \text{no atom of a pattern is satisfied by a member of } P; \\
+&K \models \varphi\theta \ \text{ depends on } K \text{ alone} && \text{no part of a pattern is satisfied by a member of } P; \\
 &\psi\theta \subseteq F && \text{a conclusion is facts, and a declaration is a form of the text.}
 \end{aligned}
 $$
@@ -241,7 +243,7 @@ digraph the_line {
   L3 [label="L3 rules"];
   L2 [label="L2 relations\ndeclarations and property facts"];
   L1 [label="L1 facts"];
-  L0 [label="L0 objects\nnames"];
+  L0 [label="L0 the things named\natoms"];
   L3 -> L1 [label="match, conclude"];
   L3 -> L2 [label="reads a declaration's facts,\nconcludes a property fact"];
   L2 -> L1 [label="fix the count of"];

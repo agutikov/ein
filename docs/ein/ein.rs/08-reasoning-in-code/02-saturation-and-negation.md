@@ -32,7 +32,7 @@ The reasoning: [firing a rule](../../reasoning/02-kb-evolution/01-firing.md).
 
 | notion | code |
 |---|---|
-| a value, a fact, a stored negation | [`ein-core/src/value.rs`](../../../../ein.rs/crates/ein-core/src/value.rs), [`terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs), [`facts.rs`](../../../../ein.rs/crates/ein-core/src/facts.rs): names and facts interned together, a fact a row of relation and arguments, `(not F)` a fact of `not` |
+| an object, a fact, a stored negation | [`ein-core/src/value.rs`](../../../../ein.rs/crates/ein-core/src/value.rs), [`terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs), [`facts.rs`](../../../../ein.rs/crates/ein-core/src/facts.rs): names and facts interned together, a fact a row of relation and arguments, `(not F)` a fact of `not` |
 | a knowledge base, a fork | [`ein-core/src/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs): a stack of immutable layers under one writable top ([`03-data-model.md`](../03-design/03-data-model.md)) |
 | a derivation record | [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs), `Prov`: kind, source, rule, premises, bindings in bind order, the absences, the branch |
 | an application: a rule and its activator | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs) compiles one plan per (rule, activator) pair, [`plan.rs`](../../../../ein.rs/crates/ein-infer/src/plan.rs) is the plan, [`engine.rs`](../../../../ein.rs/crates/ein-infer/src/engine.rs) the cache of plans and the record of what fired |
@@ -40,6 +40,9 @@ The reasoning: [firing a rule](../../reasoning/02-kb-evolution/01-firing.md).
 | a firing and its effect | [`ein-infer/src/firing.rs`](../../../../ein.rs/crates/ein-infer/src/firing.rs): the conclusion instantiated, one `Prov` shared by every fact of one firing, and the key that says an identity already fired |
 | dead | [`ein-infer/src/contradiction.rs`](../../../../ein.rs/crates/ein-infer/src/contradiction.rs): `detect`, `has_contradiction`, and `contradicts` for one new fact |
 | a state's identity | [`ein-infer/src/canon.rs`](../../../../ein.rs/crates/ein-infer/src/canon.rs): the sorted fact list, never a hash of it |
+| a firing's identity | `ein_infer::firing::BindingKey`: the plan, the activator, the registers; the activator half is the compile key's, `ein_infer::compile::PlanKey` |
+| a fork | `ein_core::kb::Kb::fork`: immutable layers below one writable top ([`03-design/03-data-model.md` § 5.1](../03-design/03-data-model.md#51-the-fork)); the fork's own derivation records, `ein_core::prov::ProvArena`'s fork region |
+| no output depends on the numbering of ids | the contract and its rules, [`03-design/01-determinism-and-order.md`](../03-design/01-determinism-and-order.md) |
 
 ### 1.2 The algorithm
 
@@ -61,6 +64,9 @@ conclusion is present inserts nothing and is recorded as an alternative derivati
 | every route computes the R the definition gives | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
 | matching is structural, and two names are never resolved as one | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
 | nothing is retracted | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
+| a fork and its parent diverge after the fork, each seeing only its own additions | the store's unit test `a_fork_reads_base_then_delta_and_the_two_histories_diverge` in `ein-core/src/kb.rs` |
+| no rendering of any corpus program depends on the order names were numbered in | `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`, `an_id_order_that_reaches_an_output_is_caught` |
+| no rendering depends on how many workers ran | `ein-render/tests/jobs_invariance.rs`: `jobs_does_not_move_any_observable` |
 | a rule written once with a relation parameter fires for each relation its activators name | `ein-infer/tests/stdlib_semantics.rs`: `a_bijective_declaration_fans_out_into_the_operational_activators` |
 
 ### 1.4 The drawings of the page
@@ -131,16 +137,17 @@ parked set and the events `park`, `admit` and `retire` ([`05-events.md`](../05-e
 | within each half of the agenda, rules fire first in, first out, in their written order | `ein-infer/tests/explain_semantics.rs`: `the_agenda_is_fifo_in_the_written_order` |
 | every question and every claim of every monotone corpus program answers alike under the agenda and under the written order alone | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
 | a node saturated from root's snapshot and the same facts saturated afresh reach one state, at the boundary too | `ein-infer/tests/explain_semantics.rs`: `fork_and_direct_saturation_agree`, `fork_and_direct_agree_at_the_naf_boundary`; the saturator's unit test `a_resumed_saturation_reaches_the_same_fixpoint` |
+| two activators differing in any argument both fire, in either order, and the order they are written in loses no derivation | `ein-infer/tests/rule_semantics.rs`: `activators_differing_only_by_an_int_argument_both_fire`, `activators_differing_only_by_a_nested_fact_argument_both_fire`, `an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`, `an_int_and_a_string_with_one_text_are_two_activators`; the corpus programs `examples/ein-bugs/binding-key-both.ein`, `binding-key-swapped.ein`, `binding-key-int-only.ein`, `binding-key-nested-only.ein`, `activator-text-int-and-string.ein` and `activator-text-string-then-int.ein` |
 | an activator first derived in a node gets its rule applied in that node | `ein-infer/tests/explain_semantics.rs`: `a_runtime_derived_activator_gets_a_plan_on_a_fork` |
 | a dead node stopped at its first contradiction gives every question the answer the node run to quiescence gives | `ein-infer/tests/first_contradiction.rs`: `every_question_answers_alike_with_the_stop_and_without` |
-| a functional or injective positive excludes every other value or object; elimination forces the last survivor and says nothing while two survive | `ein-infer/tests/stdlib_semantics.rs`: `a_functional_positive_excludes_every_other_value`, `an_injective_positive_excludes_every_other_object`, `domain_elimination_forces_the_last_surviving_value`, `range_elimination_forces_the_last_surviving_object`, `domain_elimination_says_nothing_while_two_values_survive` |
+| a functional or injective positive excludes every other filler of the place; elimination forces the last survivor and says nothing while two survive | `ein-infer/tests/stdlib_semantics.rs`: `a_functional_positive_excludes_every_other_value`, `an_injective_positive_excludes_every_other_object`, `domain_elimination_forces_the_last_surviving_value`, `range_elimination_forces_the_last_surviving_object`, `domain_elimination_says_nothing_while_two_values_survive` |
 | both Zebra encodings define and use the walkthrough's rules and reach the same walkthrough | `ein-render/tests/idea08_acceptance.rs`: `the_zebra2_trace_exhibits_the_walkthrough_rules`, `the_generic_trace_exhibits_the_walkthrough_rules`, `both_encodings_reach_the_same_walkthrough` |
-| every name of the program is a candidate object | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object` |
+| every name of the program is a guessable atom | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object` |
 | no run reaches a name the program does not have, against either baseline | `ein-infer/tests/alive_invariant.rs`: `no_run_reaches_a_name_the_program_does_not_have` |
 | a program and its twin that writes the same name in a fact answer one R | `ein-infer/tests/alive_invariant.rs`: `the_pair_answers_one_region` |
 | a relation parameter bound to a fact, written or derivable, is refused at load | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused` |
 | the search interns no name the load did not | `ein-infer/tests/interning.rs`: `the_search_interns_no_names`, `a_rule_only_constant_is_interned_at_load` |
-| a dunder is a name of the program where it is written as a value, and no object | `ein-infer/tests/dunder_objects.rs`: `the_programs_names_hold_a_dunder_where_it_is_written_as_a_value`, `a_dunder_written_as_a_value_is_no_object` |
+| a dunder is a name of the program where it is written as an argument, and not guessable | `ein-infer/tests/dunder_objects.rs`: `the_programs_names_hold_a_dunder_where_it_is_written_as_a_value`, `a_dunder_written_as_a_value_is_no_object` |
 
 The agenda's row is a sweep of the corpus: it holds the order to deciding no answer on the monotone programs
 the corpus has, not on every program the static check calls monotone.
@@ -181,6 +188,27 @@ at the fact they share and with each firing labelled by its rule alone; the core
 ```
 
 Its read-out names the three stated facts as the core and `fox-keeps-away` as what refutes root.
+
+**The activator example.** The page's rule `note` with its two activators is
+[`examples/ein-bugs/binding-key-both.ein`](../../../../examples/ein-bugs/binding-key-both.ein); `binding-key-swapped.ein`
+writes the two activators in the other order, and there is one file for each activator alone. The rule's drawing
+is `ein render rules`' of the file and the state's `ein render kb`'s, without the `relation` facts.
+
+```sh
+ein saturate examples/ein-bugs/binding-key-both.ein --dump
+ein saturate examples/ein-bugs/binding-key-swapped.ein --dump
+```
+
+Both print the same derived facts:
+
+<!-- output -->
+```text
+;; ── DERIVED (3 facts) ──
+;;   noted (2)
+  (noted 1 1 :rule note)
+  (noted 2 1 :rule note)
+  (written (src Y) :rule "#written")
+```
 
 ---
 
@@ -418,6 +446,12 @@ The reasoning: [cores](../../reasoning/02-kb-evolution/09-cores.md).
 |---|---|
 | the records of a fact, primary and alternatives | [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs) and the per-knowledge-base table in [`kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs), `Kb::record_justification` |
 | what a derivation rests on: premises, a universal's facts, a node's activator | [`ein-core/src/walks.rs`](../../../../ein.rs/crates/ein-core/src/walks.rs) |
+| a derivation record, a terminal, two records that are one | `ein_core::prov::Prov` and `ProvKind`; `Prov::is_terminal`, `Prov::same_justification` |
+| the primary record and the alternatives, and the bound on them | `Kb::primary`, `Kb::alternatives`, `ein_core::kb::MAX_ALT_JUSTIFICATIONS` |
+| the derivation graph, and the terminals a fact reaches | `ein_core::walks`: `walk_premises`, `build_derivation_dag`, `is_frontier`, `unsat_core` ([`03-design/03-data-model.md` § 8.4](../03-design/03-data-model.md#84-derivation-walks)) |
+| the origin of a fact, read off its record | the three buckets of `ein saturate --dump` in `ein-cli/src/saturate.rs`; `ColourBy::Origin` in `ein-render/src/kb_dot.rs` |
+| a fact stated twice keeps its first record | `Kb`'s loader path |
+| a cycle among the derivations the text states | `ein_core::walks::detect_provenance_cycles` |
 | a core | [`ein-infer/src/explain.rs`](../../../../ein.rs/crates/ein-infer/src/explain.rs): the label search, `ExplanationBudget` |
 | which cores a run takes | `region::Cores` in [`ein-infer/src/region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs) |
 | keeping the first derivation alone | `(config :record-alternative-justifications false)` ([`06-config.md`](../../user/04-reference/06-config.md)), the one option that may change a core |
@@ -455,6 +489,15 @@ has `null` for its core and a dead node with the empty core `[]`.
 | every question and claim answers alike under two orders, a core held as a valid explanation | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |
 | a run that prints no core takes none and answers alike | `ein-infer/tests/explore.rs`: `a_run_that_prints_no_core_takes_none_and_answers_alike` |
 | a member of N's core is the one an eager run takes | `ein-cli/tests/answer_round_trip.rs`: its `eager_cores` check, in the same tests |
+| only a firing with a premise is recorded as another derivation, and a terminal takes none | the store's unit tests `only_a_real_firing_is_recorded_as_an_alternative`, `a_terminal_primary_takes_no_alternatives_at_all` in `ein-core/src/kb.rs` |
+| a record made in a fork does not reach its parent | the store's unit test `a_forks_alternatives_do_not_leak_into_its_parent` in `ein-core/src/kb.rs` |
+| a firing admitted at the boundary records what had to be absent, each derivation its own | `ein-infer/tests/naf_semantics.rs`: `a_boundary_admitted_firing_records_what_was_absent`, `an_alternative_justification_carries_its_own_negative_premises` |
+| every explanation lies inside what the facts reach over every recorded derivation; with other derivations not recorded, the primary-only reach is what remains | `ein-infer/tests/search_semantics.rs`: `an_explanation_is_a_subset_of_the_or_aware_closure_and_not_of_the_primary_only_union`, `turning_alternative_recording_off_restores_the_primary_only_frontier` |
+| the recorded derivations survive a rebuild of the store's indexes | `ein-infer/tests/explain_semantics.rs`: `a_rebuild_preserves_the_alternative_justifications` |
+| a fact stated twice keeps its first statement | the store's unit test `the_loader_path_keeps_the_first_occurrence_and_does_not_index` in `ein-core/src/kb.rs` |
+| an imported fact keeps the record its module writes | `ein-ir/tests/imports_semantics.rs`: `what_each_import_form_brings_of_a_module`; `ein-cli/tests/import_facts.rs`: `a_flat_import_of_facts_answers_as_the_facts_written_in_place_on_every_command` |
+| a written derivation cycle is refused at load, and every load refusal is reported together | `ein-ir/tests/load_semantics.rs`: `the_load_negative_fixtures_are_byte_identical` (`examples/broken/load/derivation_cycle.ein`), `load_errors_accumulate_in_pass_order` |
+| a refutation's edges into `⊥` are in the order of the facts' quoted forms, whatever order they were collected in | `ein-render/tests/presentation_semantics.rs`: `the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered` |
 | a dead root's core names the injected clue, with its `:source` | `ein-infer/tests/acceptance.rs`: `the_contradictions_view_is_the_verdict_explained`, `the_injected_clash_carries_the_source_that_names_it` |
 
 ### 5.4 Commands
@@ -464,7 +507,13 @@ ein solve FILE                      # a dead root: the rows `unsat core`, `sourc
 ein solve FILE --trace OUT.md       # N, each minimal dead set with its core and what refutes it
 ein solve FILE --dump-answer DIR    # the members of N with their cores, as files
 ein solve FILE --dump-lattice DIR   # every node the run visited, a dead one with its core
+ein saturate FILE --dump            # root's facts by origin: BACKGROUND, GIVEN, DERIVED
+ein render kb --colour-by origin FILE   # the same, drawn: given black, derived blue and dashed
 ```
+
+How many derivations a run keeps for one fact is a `(config …)` flag, `:record-alternative-justifications`
+([`06-config.md`](../../user/04-reference/06-config.md)): `false` keeps the primary alone. It changes no state and
+no answer; it may change a dead node's core.
 
 ---
 

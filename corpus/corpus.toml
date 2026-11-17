@@ -1067,7 +1067,7 @@ note   = "the only program known to put a nested fact in an unsat core: the give
 path   = "examples/ein-bugs/binding-key-int-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "The binding-key family (Q-M1e.16): docs/ein/reasoning/01-static-ir/03-values-and-order.md's binding-key program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare. A run of digits is a name, so `2` is a candidate object, and the solve holds `edge` and `noted` out: R is two states, root and `{(holds 2)}`, each with root's two `noted` facts `(noted 1 1)` and `(noted 2 1)`, which `:expect` states."
+note   = "The binding-key family (Q-M1e.16): docs/ein/reasoning/02-kb-evolution/02-saturation.md's binding-key program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare. A run of digits is a name, so `2` is a candidate object, and the solve holds `edge` and `noted` out: R is two states, root and `{(holds 2)}`, each with root's two `noted` facts `(noted 1 1)` and `(noted 2 1)`, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-nested-only.ein"

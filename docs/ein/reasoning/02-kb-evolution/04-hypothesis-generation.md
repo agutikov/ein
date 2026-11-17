@@ -17,7 +17,7 @@ and $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$ the state 
 ([Solution semantics § 1](06-solution-semantics.md#1-the-vocabulary)). $\lnot f$ is the stored negation of a fact
 $f$, $\operatorname{rel}(f)$ the relation of $f$, and $\operatorname{rels}(X)$ the relations of the facts in $X$. A rule's
 match and conclusion are $\varphi$ and $\psi$, and $\operatorname{Act}_{\mathrm{root}}(\rho)$ is its activators at root
-([rules as statements](../01-static-ir/04-rules-as-statements.md)).
+([the rules](../01-static-ir/02-rewriting-rules.md#a-rule-declared)).
 
 ## 1. When H is built
 
@@ -78,7 +78,7 @@ digraph ladder {
   e [shape=box, style="rounded,filled", fillcolor="#f0f0f0", label="H = ∅"];
   hhr [shape=box, style="rounded,filled", fillcolor="#fde0ef", label="H = H_hr\nwhat the hypothesis rules propose at root (§ 3)"];
   hob [shape=box, style="rounded,filled", fillcolor="#e5f5e0", label="H = H_ob\nwhat would pay a debt (§ 4)"];
-  hbl [shape=box, style="rounded,filled", fillcolor="#deebf7", label="H = H_bl\nevery slot of every open relation, every object (§ 5)"];
+  hbl [shape=box, style="rounded,filled", fillcolor="#deebf7", label="H = H_bl\nevery slot of every open relation, every guessable atom (§ 5)"];
   nu -> e [label="yes"];
   nu -> hr [label="no"];
   hr -> hhr [label="yes"];
@@ -123,9 +123,9 @@ $H$ is a set: a fact proposed twice is in it once, and what the answer depends o
 
 ## 3. The hypothesis rules: what the program says to guess
 
-A **hypothesis rule** $h$ is a rule whose conclusion is a guess: a premise $\varphi_h$ and one conclusion atom $\psi_h$,
+A **hypothesis rule** $h$ is a rule whose conclusion is a guess: a premise $\varphi_h$ and one conclusion fact $\psi_h$,
 written $\varphi_h(a, \theta)$ and $\psi_h(a, \theta)$ for $\varphi_h[a]\theta$ and $\psi_h[a]\theta$
-([rules as statements](../01-static-ir/04-rules-as-statements.md) has the kinds of rule). A conclusion of more than
+([the rules](../01-static-ir/02-rewriting-rules.md#the-kinds-of-rule) has the kinds of rule). A conclusion of more than
 one fact is no hypothesis rule
 ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). It is **active** under the
 activators $\operatorname{listed}(h)$: the empty one where $h$ has no parameter, and otherwise each activator the
@@ -203,7 +203,7 @@ $$
 W_o(a, \theta, \bar{y}) \;=\; \Delta_o(a, \theta, \bar{y}) \,\land\, w_o(a, \theta, \bar{y})
 $$
 
-$w_o$ is the **witness step**, the one atom of the owed relation that binds $\bar{y}$, and $\Delta_o$, the rest of
+$w_o$ is the **witness step**, the one premise of the owed relation that binds $\bar{y}$, and $\Delta_o$, the rest of
 the absence, is the **domain** of the debt. An **instance** is a triple $(o, a, \theta)$ with
 $\mathrm{root} \models T_o(a, \theta)$, and it is **owed** at a state $S$ while $\operatorname{owes}(o, a, \theta, S)$
 holds, that is, while no witness is there.
@@ -261,7 +261,7 @@ $$
 For the obligation above, $\operatorname{pay} = \lbrace r(x, y) : \mathrm{root} \models \operatorname{isa}(y, B) \rbrace$. Nothing
 restates the domain: the set of payments is the guard, read at root, and nothing stores it
 ([Q-M1d.3](../../../decisions/hypotheses/Q-M1d.3-an-obligation-needs-no-closed-domain.md)). An obligation whose guard
-does not say which atom is the witness step, none or two of them, is no obligation where that does not depend on the
+does not say which premise is the witness step, none or two of them, is no obligation where that does not depend on the
 activator, and declines the rung where it does (§ 4.3).
 
 **Read off a root.** One guest, two chairs, two drinks; the guest is owed a chair and a drink, each relation is
@@ -296,7 +296,7 @@ digraph root_and_payments {
 }
 ```
 
-A box is a label, an oval an object, a dashed arrow with an open head a membership, a solid arrow a stated fact. Root
+A box is a label, an oval an atom that is no label, a dashed arrow with an open head a membership, a solid arrow a stated fact. Root
 owes two instances, $I_{\mathrm{s}}$, *the guest has a chair*, and $I_{\mathrm{d}}$, *the guest has a drink*, and
 
 $$
@@ -465,25 +465,25 @@ fact: $R$ holds of them only what the program states and saturation derives
 ## 5. The blind enumerator
 
 Where the program declares no hypothesis rule and activates no obligation, or the obligations rung declines, **every
-slot of every open relation is filled with every object**, and the program's own rules prune what is wrong.
+slot of every open relation is filled with every guessable atom**, and the program's own rules prune what is wrong.
 
-**The objects** are $\operatorname{obj}(P)$ of [Solution semantics § 1.2](06-solution-semantics.md#12-names): the
+**The guessable atoms** are $\operatorname{guessable}(P)$ of [Solution semantics § 1.2](06-solution-semantics.md#12-names): the
 program's names, every name its facts hold at root's fixpoint and every constant a rule writes
 ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md),
 [Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)), less four kinds of
 name ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)):
 
 $$
-\operatorname{obj}(P) \;=\; \big( \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
+\operatorname{guessable}(P) \;=\; \big( \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
 $$
 
 the labels a relation's declaration writes for its argument places; the seven words of the rule language; the kernel's two
-reserved relations, whether a rule derives a fact one heads or a program writes one as a value; and every name of a
+reserved relations, whether a rule derives a fact one heads or a program writes one as an argument; and every name of a
 relation the program declares or states a fact of, of a rule, and of an obligation
 ([Q-M1f.226](../../../decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-candidate-object.md)), with the
-relation loading itself writes. A relation's name that only a rule's conclusion heads is none of these, so it is an
-object; the answer names each candidate that binds one, and declaring the relation takes it out. Since every constant
-a rule writes is an object, no rule can bring a name into a state that $H$ lacks: the **alive-set invariant** holds
+relation loading itself writes. A relation's name that only a rule's conclusion heads is none of these, so it is
+guessable; the answer names each candidate that binds one, and declaring the relation takes it out. Since every constant
+a rule writes is guessable, no rule can bring a name into a state that $H$ lacks: the **alive-set invariant** holds
 of every program by construction ([Saturation](02-saturation.md)).
 
 **The relations** are those the program declares with a signature and does not scope out (§ 6); write
@@ -496,22 +496,22 @@ $$
 **The candidates**:
 
 $$
-\Pi_{\mathrm{bl}} \;=\; \lbrace\, r(x) \;:\; r \in \operatorname{Elig}(P),\, \operatorname{ar}(r) = 1,\; x \in \operatorname{obj}(P) \,\rbrace
-\;\cup\; \lbrace\, r(x, y) \;:\; r \in \operatorname{Elig}(P),\, \operatorname{ar}(r) = 2,\; x, y \in \operatorname{obj}(P),\; x \neq y \,\rbrace,
+\Pi_{\mathrm{bl}} \;=\; \lbrace\, r(x) \;:\; r \in \operatorname{Elig}(P),\, \operatorname{ar}(r) = 1,\; x \in \operatorname{guessable}(P) \,\rbrace
+\;\cup\; \lbrace\, r(x, y) \;:\; r \in \operatorname{Elig}(P),\, \operatorname{ar}(r) = 2,\; x, y \in \operatorname{guessable}(P),\; x \neq y \,\rbrace,
 \qquad H_{\mathrm{bl}} = \operatorname{unsettled}(\Pi_{\mathrm{bl}})
 $$
 
 | slots | candidates |
 |---|---|
-| 1 | $r(x)$ for every object $x$ |
-| 2 | $r(x, y)$ for every two distinct objects: no fact of an object with itself |
+| 1 | $r(x)$ for every guessable atom $x$ |
+| 2 | $r(x, y)$ for every two distinct guessable atoms: no fact of an atom with itself |
 | 3 or more | none: such a relation is outside the universe, and the answer names it |
 
-For $k$ objects, $p$ eligible relations of one slot and $q$ of two, $\lvert \Pi_{\mathrm{bl}} \rvert = p\,k + q\,k\,(k - 1)$.
+For $k$ guessable atoms, $p$ eligible relations of one slot and $q$ of two, $\lvert \Pi_{\mathrm{bl}} \rvert = p\,k + q\,k\,(k - 1)$.
 
 ```dot
 digraph blind {
-  graph [rankdir=LR, nodesep=0.3, ranksep=0.9, fontname="Helvetica", fontsize=10, label="Obj(P) = {Ann, Bob, C1}, one relation r of two slots: every ordered pair of distinct objects", labelloc=t];
+  graph [rankdir=LR, nodesep=0.3, ranksep=0.9, fontname="Helvetica", fontsize=10, label="guessable(P) = {Ann, Bob, C1}, one relation r of two slots: every ordered pair of distinct atoms", labelloc=t];
   node [fontname="Helvetica", fontsize=10, shape=oval];
   edge [fontname="Helvetica", fontsize=9, style=dotted, color="#e377c2", fontcolor="#e377c2", arrowsize=0.6];
   Ann -> Bob [label="r ?"];
@@ -523,16 +523,16 @@ digraph blind {
 }
 ```
 
-Three objects and one relation of two slots give the six dotted arrows: both directions between every two objects,
+Three guessable atoms and one relation of two slots give the six dotted arrows: both directions between every two,
 whatever the labels the relation's declaration writes.
 
 **The enumerator is untyped**
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). It imposes no
 type system: a candidate the program's labels would speak against is killed by the program's own rules, or stays in $R$ where
-none rejects it. A name a declaration writes as a label is no object, so a program whose declarations leave out a name
+none rejects it. A name a declaration writes as a label is not guessable, so a program whose declarations leave out a name
 other programs would call a type is under-specified, and it is answered as written: beside
 $\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and a relation $\operatorname{co-located}$ of two slots with one
-label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate. Where a candidate binds as an object
+label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate. Where a candidate guesses about
 a name that stands second in a membership fact of root, the answer names it, and nothing else moves. The program's
 way out is its declaration.
 

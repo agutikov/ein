@@ -98,7 +98,7 @@ iteration budget, the token budget, the solver budget (`--max-time` /
 `--max-enterings`, read from the feedback object, never from exit code 2),
 a repeated theory, a repair cycle. Cycles by hash — the program's canonical
 dump, and the saturated state's digest, which the engine defines as the
-sorted fact list ([`03-values-and-order.md` § A state is its facts](../../../docs/ein/reasoning/01-static-ir/03-values-and-order.md#a-state-is-its-facts));
+sorted fact list ([`06-solution-semantics.md` § 1.5, the state class](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#15-commitment-node-state));
 [Q-M2.4](../open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic)
 recommends stopping on the second and logging both.
 

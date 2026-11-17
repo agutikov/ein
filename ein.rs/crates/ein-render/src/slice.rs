@@ -161,7 +161,7 @@ pub fn render_slice(
         // not a property of the data, and this block lands verbatim in
         // `--trace` output (hazard H4). Sorting by `repr` matches the
         // explainer's convention and is total over mixed argument types
-        // (`docs/ein/reasoning/01-static-ir/03-values-and-order.md` § How a value is printed).
+        // (`docs/ein/reasoning/01-static-ir/01-knowledge-base.md` § The text of an object).
         let mut core: Vec<(String, FactId)> = unsat_core
             .iter()
             .map(|f| (ein_core::repr::repr(&terms.repr_fact(*f)), *f))

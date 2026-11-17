@@ -9,7 +9,7 @@ when a proposition stops being true of the engine, and the `ein` command lines t
 
 | page | the reasoning it follows |
 |---|---|
-| [`01-static-ir.md`](01-static-ir.md) | [`reasoning/01-static-ir/`](../../reasoning/01-static-ir/): names and atoms, relations and facts, values and their order, rules as statements |
+| [`01-static-ir.md`](01-static-ir.md) | [`reasoning/01-static-ir/`](../../reasoning/01-static-ir/): the knowledge base, and the rules that rewrite it |
 | [`02-saturation-and-negation.md`](02-saturation-and-negation.md) | [`reasoning/02-kb-evolution/`](../../reasoning/02-kb-evolution/), six of its pages: firing a rule, saturation, absence, monotone and non-monotone programs, cores, satisfiability |
 | [`03-hypotheses-and-the-answer.md`](03-hypotheses-and-the-answer.md) | [`reasoning/02-kb-evolution/`](../../reasoning/02-kb-evolution/), the other four: hypothesis generation, the hypothesis space, solution semantics, finding R. It also holds the commands `ein show hyps` and `ein render h-space` and the file `h-space.json` |
 | [`04-rule-evolution.md`](04-rule-evolution.md) | [`reasoning/03-rule-evolution/`](../../reasoning/03-rule-evolution/): rules as data, analysis of rules, transformations of a rule set |

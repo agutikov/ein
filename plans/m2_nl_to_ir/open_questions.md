@@ -316,7 +316,7 @@ hashes* — syntactic. The user's own note says the fixed point should be
 rewrite equivalent rules forever without the closure moving.
 
 **The engine can do both, today.** `ein-ir` has a canonical dump, which is the
-syntactic hash; and [`03-values-and-order.md` § A state is its facts](../../docs/ein/reasoning/01-static-ir/03-values-and-order.md#a-state-is-its-facts)
+syntactic hash; and [`06-solution-semantics.md` § 1.5, the state class](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#15-commitment-node-state)
 pins that *canonical state identity is the sorted fact list itself*, which
 makes the saturated state's digest — or the `.einb` of a saturated KB — the
 semantic one, and the summary's sorted `solutions` the model-set one. So the

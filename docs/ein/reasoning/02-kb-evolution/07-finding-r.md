@@ -222,7 +222,7 @@ $$
 \operatorname{sat}(\mathrm{root} \cup C_1 \cup C_2) \;\neq\; \operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup C_2) \quad \text{is possible}
 $$
 
-and on the order rules fire in, so *the set of nodes* is not one object. Every node is built one way,
+and on the order rules fire in, so *the set of nodes* is not one thing. Every node is built one way,
 $\operatorname{st}(C)$ with all of $C$ added to root's fixpoint at once, and the oracle and every question are about
 the region of that construction
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). They agree with each

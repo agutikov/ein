@@ -205,6 +205,79 @@ $T_P$ of what is held, so by induction along the order $K^{\ast} \subseteq \oper
 is left enabled and unfired, so $T_P(K^{\ast}) = K^{\ast}$, and $\operatorname{sat}(K)$ is the least such set
 containing $K$: $\operatorname{sat}(K) \subseteq K^{\ast}$. $\square$
 
+**Corollary (the order activators are written in decides nothing).** Let no rule of $P$ read an absence. Then
+$\operatorname{sat}(K_0)$ does not depend on the order the facts of $K_0$ are written in, and writing one more
+activator only adds facts to it.
+
+*Argument.* The firings of $\rho$ in $K$ are the triples $(\rho, a, \theta)$ with
+$a \in \operatorname{Act}_K(\rho)$ and $K \models \varphi_\rho[a]\theta$. Both conditions are conditions on the
+set $K$, not on the order its facts arrived in, and both are preserved when $K$ grows, so by the proposition the
+fixpoint is one set whatever the order. A new activator adds triples and, since every argument of an activator
+is part of a firing's identity ([firing a rule](01-firing.md#firing-a-rule)), is equal to none that was there;
+$\operatorname{sat}$ is monotone, so the fixpoint of a larger set of facts is larger. $\square$
+
+**The example where a narrower identity would show.** One rule with two parameters, $r$ in a relation's place
+and $f$ any object:
+
+$$
+\operatorname{note}[r, f]:\qquad r(a, b) \;\land\; \operatorname{holds}(f) \;\implies\; \operatorname{noted}(a, f)
+$$
+
+```dot
+digraph rule_note_lhs_rhs {
+  rankdir=TB;
+  label="note"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?f_L" [label="?f", shape=diamond];
+    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_holds_L" [shape=octagon, label="holds", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_holds_L" -> "?f_L" [label="1", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?a_R" [label="?a", shape=diamond];
+    "?f_R" [label="?f", shape=diamond];
+    "?a_R" -> "?f_R" [label="noted", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  }
+}
+```
+
+The upper panel is the match and the lower the conclusion; a diamond is a variable, and the arrow labelled by
+the variable in a relation's place stands for a fact of whichever relation the activator names. The program
+states four facts and two activators:
+
+$$
+\operatorname{edge}(\mathsf{1}, \mathsf{2}),\ \ \operatorname{edge}(\mathsf{2}, \mathsf{3}),\ \ \operatorname{holds}(\mathsf{1}),\ \ \operatorname{holds}(\mathsf{3}),
+\qquad
+\operatorname{note}(\operatorname{edge}, \mathsf{1}),\ \ \operatorname{note}(\operatorname{edge}, \operatorname{src}(\mathsf{Y}))
+$$
+
+The first activator binds $f$ to the name $\mathsf{1}$, which holds, and derives
+$\operatorname{noted}(\mathsf{1}, \mathsf{1})$ and $\operatorname{noted}(\mathsf{2}, \mathsf{1})$, one for each
+edge. The second binds $f$ to the fact $\operatorname{src}(\mathsf{Y})$, of which nothing says that it holds, so
+it derives nothing, and it removes nothing the first derives. In either order of the two activators the fixpoint
+is the same:
+
+```dot
+digraph kb {
+  rankdir=BT;
+  "1" -> "2" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "2" -> "3" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "1" -> "1" [label="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "3" -> "3" [label="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_45dd2ba665 [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
+  f_45dd2ba665 -> "(src Y)" [label="#1", color="#d62728", style=dashed];
+  "1" -> "1" [label="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  "2" -> "1" [label="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
+}
+```
+
+The two dashed arrows labelled with the rule are the two conclusions. The octagon is the fact that reading the
+program states of the nested fact the second activator writes
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program)); the activators and
+the declarations' facts are left out of the drawing.
+
 So on such a program every question and every claim answers alike under the agenda and under the written order
 alone. Taking first what can make a contradiction finds a dead node's contradiction sooner, and that is all the
 order is for. What it does decide is *when* a fact is derived:
@@ -339,13 +412,15 @@ still extend ([absence](03-absent-and-naf.md)).
 
 The candidate set $H$ is taken once, at root's fixpoint, and every computation of $R$ reads subsets of it. That
 is sound only if nothing a node derives names what root's fixpoint and the program did not: a name that first
-appeared inside a node would be an object no candidate is about, in a part of the lattice $H$ was not built for,
+appeared inside a node would be an atom no candidate is about, in a part of the lattice $H$ was not built for,
 and a model naming it would be missing from $R$.
 
-Write $\operatorname{names}(X)$ for the names occurring in $X$ at any depth, a nested fact's arguments included,
-and $\operatorname{rels}(X)$ for the relations of the facts of $X$. $\operatorname{names}(P)$ is every constant of
+$\operatorname{names}(X)$ is the names under an argument place of a fact of $X$ at any depth, a nested fact's
+arguments included ([the knowledge base](../01-static-ir/01-knowledge-base.md#nesting)); write
+$\operatorname{rels}(X)$ for the relations of the facts of $X$. $\operatorname{names}(P)$ is every constant of
 the program's facts and of its rules, match and conclusion alike
-([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). The
+([the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names),
+[Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). The
 invariant, *no rule asserts a name the program lacks*, is
 
 $$
@@ -354,40 +429,43 @@ $$
 
 and it has three clauses:
 
-1. **No new objects.** $\operatorname{names}(\operatorname{fire}(K, \phi)) \subseteq \operatorname{names}(K) \cup
-   \operatorname{names}(A_\rho) \cup \operatorname{names}(\operatorname{range}\theta)$. A variable carries only a
-   value a match already found, so every value in $\operatorname{range}\theta$ occurs in $K$ and nothing but a
-   constant can bring a name in, and every constant is the program's
+1. **No new atoms.** $\operatorname{names}(\operatorname{fire}(K, \xi)) \subseteq \operatorname{names}(K) \cup
+   \operatorname{names}(P)$: a rewriting brings in no name
+   ([the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names)). A variable carries only an
+   object a match already found, or a name of the program, and nothing else but a constant can bring a name in,
+   and every constant is the program's
    ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)). By induction along a
    saturation, $\operatorname{names}(\operatorname{sat}(K)) \subseteq \operatorname{names}(K) \cup
    \operatorname{names}(P)$. A constant only a query writes is not a name of the program: adding a query never
    changes $R$.
 2. **No new relations.** $\operatorname{rels}(\operatorname{st}(C)) \subseteq \operatorname{rels}(P)$, the
    relations fixed when the program is read: the declared ones, the heads of the program's facts, and every
-   constant head a rule can conclude. Nothing adds a relation while a saturation runs.
+   constant head a rule can conclude. Nothing adds a relation while a saturation runs, and nothing adds a rule
+   or a declaration: a conclusion is literals, so along every saturation $P$ and $\operatorname{names}(P)$ are
+   constant and a knowledge base grows by facts alone.
 3. **Hypotheses connect names.** $h \in H \implies \operatorname{names}(h) \subseteq \operatorname{names}(P)$: a
    candidate's arguments are names of the program or facts built of them. A parameter written in a relation's
-   place and bound to a value that names no relation, a nested fact, is refused where it is written or where a
+   place and bound to an object that names no relation, a nested fact, is refused where it is written or where a
    rule could derive it.
 
 Three readings of the invariant, each stronger than the one before:
 
 | | claim |
 |---|---|
-| **static** | $\operatorname{names}(P) \setminus X \subseteq \operatorname{obj}(P)$: every name of the program, less the excluded kinds $X$ below, is an object candidates are proposed about when nothing narrower is stated |
+| **static** | $\operatorname{names}(P) \setminus X \subseteq \operatorname{guessable}(P)$: every name of the program, less the excluded kinds $X$ below, is an atom candidates are proposed about when nothing narrower is stated |
 | **at the fixpoint** | $\operatorname{names}(\operatorname{sat}(K_0)) \subseteq \operatorname{names}(K_0) \cup \operatorname{names}(P)$: nothing a saturation derives names what the program as read, its facts and its rules' constants, did not |
 | **in the search** | $\forall C \subseteq H.\; \operatorname{names}(\operatorname{st}(C)) \subseteq \operatorname{names}(\mathrm{root}) \cup \operatorname{names}(P)$: nothing a node reaches names what root's fixpoint and the rules' constants did not |
 
 The third is the one $R$'s soundness rests on, and the first is what makes it hold for a rule's constant: a
-constant a rule writes, and that would be reached only inside a commitment, is an object from root on. The static
+constant a rule writes, and that would be reached only inside a commitment, is guessable from root on. The static
 reading answers for every saturation the program could have, not only for the one that happened. Together they
 make the lattice finite: $H$ is a finite set of facts over $\operatorname{names}(P)$, and
 $\lvert 2^H \rvert = 2^{\lvert H \rvert}$.
 
-**The objects are not the list of names.** Four kinds of name, the set $X$, are no object, each left out by
+**The guessable atoms are not the list of names.** Four kinds of name, the set $X$, are not guessable, each left out by
 name: the labels a relation's declaration writes for its argument places; the reserved words of the pattern
 language, negation, contradiction, conjunction, disjunction, absence, equality and inequality; every name the
 program calls a relation or a rule; and the two reserved markers that close a relation and make one symmetric,
-which a program may write as a value and which stay names of the program
+which a program may write as an argument and which stay names of the program
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md);
 [reserved names](../../user/04-reference/03-reserved-names.md) lists them as written).

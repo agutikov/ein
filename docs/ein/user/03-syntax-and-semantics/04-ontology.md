@@ -296,4 +296,4 @@ properties are separate facts, `(transitive R)`, never a block inside the declar
 - [Rules](05-rules.md): how a rule reads relations and labels as data.
 - [Properties and operators](07-properties-and-operators.md): the relation algebra, written in Ein.
 - The four levels of a knowledge base, objects, facts, relations and rules, and what each consumes:
-  [the four-level page](../../reasoning/01-static-ir/04-rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in).
+  [the four-level page](../../reasoning/01-static-ir/02-rewriting-rules.md#the-four-levels-a-knowledge-base-describes-itself-in).

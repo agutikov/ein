@@ -1,13 +1,13 @@
 # Firing a rule — what Ein solves, and the operations it performs
 
-This page places Ein's reasoning: what it answers, the objects the answer is made of, what one firing of a rule
+This page places Ein's reasoning: what it answers, what the answer is made of, what one firing of a rule
 does to a knowledge base, the steps every answer goes through, and the nine operations any implementation
 performs, each with its name in the fields it comes from. The pages after it state each step exactly.
 
 ## What Ein answers
 
 Ein answers **finite-domain constraint-satisfaction** questions over a labelled hypergraph of facts and the rules
-over it, the Zebra puzzle and its kin. The answer to a program is one object, the **region** $R$: the commitments
+over it, the Zebra puzzle and its kin. The answer to a program is one thing, the **region** $R$: the commitments
 $C$, sets of candidate facts drawn from a finite candidate set $H$, whose state is alive and owes nothing
 ([solution semantics](06-solution-semantics.md)):
 
@@ -47,15 +47,16 @@ than over one decision variable at a time, and it keeps an explicit world per as
 rather than one trail. That is what makes *forced*, *open* and *why not* fall out of one answer, at the cost of
 the machinery a per-variable solver has.
 
-## The objects
+## The vocabulary
 
 The symbols below are the ones every page of this part uses.
 
-**Values and facts.** A **value** is a name or a fact; $V$ is the set of values
-([names and atoms](../01-static-ir/01-names-and-atoms.md)). A **fact** is a relation applied to values,
+**Objects and facts.** An **object** is a node of the graph a knowledge base is: an atom, which is a name, or a
+fact; $O$ is the set of them ([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where)). A
+**fact** is a relation applied to objects,
 
 $$
-f = r(v_1, \dots, v_k), \qquad r \text{ a name},\quad v_i \in V,
+f = r(v_1, \dots, v_k), \qquad r \text{ a name},\quad v_i \in O,
 $$
 
 and its identity is $r$ and $(v_1, \dots, v_k)$, whatever derived it. A program's constants are written
@@ -67,8 +68,9 @@ the fact $\operatorname{not}(f)$. A **literal** $\ell$ is a fact, a stored negat
 $\bot$, the one fact that says a state is impossible (the language spells it `(false)`; the user's
 [constraints page](../../user/03-syntax-and-semantics/06-constraints.md) shows where it is written).
 
-**Knowledge base.** A **knowledge base** $K$ is a finite set of literals, read with the program $P$ whose rules
-act on it and with the provenance of its facts ([relations and facts](../01-static-ir/02-relations-and-facts.md)).
+**Knowledge base.** A **knowledge base** $K$ is a finite set of literals
+([the knowledge base](../01-static-ir/01-knowledge-base.md)), read here with the program $P$ whose rules act on it
+and with the record of how each fact came to be held ([cores](09-cores.md#a-derivation-record)).
 $K_0$ is the knowledge base the program states. $K$ is **dead** when it holds a contradiction and
 **alive** otherwise:
 
@@ -79,57 +81,53 @@ $$
 **Rule.** A **rule** $\rho = (\bar p, \varphi, \psi)$ has parameters $\bar p$, a **match** $\varphi$, a pattern
 over variables, and a **conclusion** $\psi$, with a name, $\operatorname{name}(\rho)$, and a reason in words beside
 them
-([rules as statements](../01-static-ir/04-rules-as-statements.md); the user's
+([the rules](../01-static-ir/02-rewriting-rules.md#a-rule-declared); the user's
 [rules page](../../user/03-syntax-and-semantics/05-rules.md) has the spelling). $\psi$ is a finite set of literals over
 the variables of $\varphi$, read as their conjunction; or it is the single verdict that makes $\rho$ an **obligation**,
 which derives nothing ([satisfiability](10-satisfiability.md)).
 
-| object | what it is | elsewhere |
+| | what it is | elsewhere |
 |---|---|---|
-| **fact** $f$ | a relation applied to values; its identity is the relation and the arguments | a ground atom, a tuple, a labelled hyperedge |
+| **fact** $f$ | a relation applied to objects; its identity is the relation and the arguments | a ground atom, a tuple, a labelled hyperedge |
 | **stored negation** $\lnot f$ | the statement that $f$ does not hold, stored as a fact is | a negative literal |
 | **relation** $r$ | a name, with as many argument places as its declaration has labels | a database schema, a predicate symbol |
 | **rule** $\rho$ | parameters, a match, a conclusion and a reason; applied once per activator fact of its parameters | a Datalog or production rule, a Horn-like clause |
 | **world** | one knowledge base under saturation, asked at a quiescence: root, or a node | a possible world, an ATMS environment |
 | **derivation record** $\delta$ | how a fact came to be: given, a rule's firing, or a commitment ([cores](09-cores.md)) | a TMS justification, why-provenance, a proof term |
 | **commitment** $C \subseteq H$ | a set of candidates assumed together | a partial assignment, an ATMS environment |
-| **state** $S$ | a commitment's world at its fixpoint, $\operatorname{st}(C)$, identified by its set of facts ([values and their order](../01-static-ir/03-values-and-order.md)) | a model, an answer set |
+| **state** $S$ | a commitment's world at its fixpoint, $\operatorname{st}(C)$, identified by its set of facts ([solution semantics](06-solution-semantics.md#15-commitment-node-state)) | a model, an answer set |
 | **core** | of a dead node, a smallest set of givens and commitments its contradiction follows from | an unsat core, a conflict |
 
-A declaration's argument places carry labels, ordinary names: no value has a type, and a label means what the
+A declaration's argument places carry labels, ordinary names: no object has a type, and a label means what the
 rules that read it make it mean.
 
 ## Firing a rule
 
-**Satisfaction.** A substitution $\theta$ maps variables to values. $K \models \varphi\theta$, *$K$ satisfies $\varphi$ under
-$\theta$*, is defined on the shape of the pattern, with $s, t$ terms and $\bar t$ a tuple of terms:
+**Satisfaction.** A pattern, a match of it and $K \models \varphi\theta$, *$K$ satisfies $\varphi$ under
+$\theta$*, are those of [the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match): a
+substitution $\theta$ gives objects to variables, a premise holds where its instance is a fact $K$ holds, a
+negated premise reads a stored negation and nothing else, and equality is identity of objects, so two names are
+two atoms and nothing makes them equal. One line of that definition is the one place a rule reads what $K$
+lacks,
 
 $$
-\begin{aligned}
-K \models r(\bar t)\,\theta &\iff r(\bar t)\theta \in K \\
-K \models \lnot r(\bar t)\,\theta &\iff \lnot\bigl(r(\bar t)\theta\bigr) \in K \\
-K \models (\varphi_1 \land \varphi_2)\,\theta &\iff K \models \varphi_1\theta \ \text{ and } \ K \models \varphi_2\theta \\
-K \models (\varphi_1 \lor \varphi_2)\,\theta &\iff K \models \varphi_1\theta \ \text{ or } \ K \models \varphi_2\theta \\
-K \models \operatorname{eq}(s, t)\,\theta &\iff s\theta = t\theta \\
-K \models \operatorname{neq}(s, t)\,\theta &\iff s\theta \neq t\theta \\
-K \models \operatorname{absent}(G)\,\theta &\iff \text{no } \theta' \supseteq \theta \text{ has } K \models G\theta'
-\end{aligned}
+K \models \operatorname{absent}(G)\,\theta \iff \text{no } \theta' \supseteq \theta \text{ has } K \models G\theta'
 $$
 
-A negated pattern reads a stored negation and nothing else. Equality is identity of values: two names are two
-objects, and nothing makes them equal. The last line is the one place a rule reads what $K$ lacks, and the
-knowledge base it is read in is fixed by [the boundary](03-absent-and-naf.md).
+and the knowledge base it is read in is fixed by [the boundary](03-absent-and-naf.md).
 
 **Application.** A rule with parameters $\bar p = (p_1, \dots, p_m)$, $m \geq 1$, is applied once for each
-**activator**, a fact $a = \operatorname{name}(\rho)(v_1, \dots, v_m) \in K$ whose relation is the rule's name; the
-application $\rho[a]$ is $\rho$ with each $p_i$ replaced by $v_i$, and $\varphi_\rho[a]$ and $\psi_\rho[a]$ are its
-match and its conclusion. A parameter may stand where a relation's name goes, so one
-rule states a property for every relation an activator names. A rule with no parameter has one application, and
-a rule with parameters and no activator has none.
+**activator**, a fact $a = \operatorname{name}(\rho)(v_1, \dots, v_m) \in K$ whose relation is the rule's name,
+whether the program states it or a rule concluded it; the application $\rho[a]$ is $\rho$ with each $p_i$
+replaced by $v_i$, and $\varphi_\rho[a]$ and $\psi_\rho[a]$ are its match and its conclusion
+([the rules](../01-static-ir/02-rewriting-rules.md#a-rule-declared)). A parameter may stand where a relation's
+name goes, so one rule states a property for every relation an activator names. A rule with no parameter has one
+application, and a rule with parameters and no activator has none.
 
 **Firing.** A **firing** is $\xi = (\rho, a, \theta)$: a rule, its activator, and a substitution of the variables
-of its match. Its identity is that triple ([values and their order](../01-static-ir/03-values-and-order.md)). It
-is **enabled** in $K$ when the match holds there, and firing it adds the conclusion:
+of its match. It is **enabled** in $K$ when the match holds there, and firing it rewrites $K$ at that match
+([the result of rewriting](../01-static-ir/02-rewriting-rules.md#a-conclusion-and-the-result-of-rewriting)): it
+adds the conclusion,
 
 $$
 \xi \in \operatorname{en}(K) \iff a \in K \;\land\; K \models \varphi_\rho[a]\,\theta,
@@ -148,9 +146,26 @@ $$
 A firing only adds; firing it again adds nothing, so one identity fires at most once; and a dead knowledge base
 stays dead.
 
-**As a rewrite of the graph.** A knowledge base is a graph: a name is a node, a fact of two arguments an arrow
-from its first argument to its second, labelled by its relation. A rule is a pair of pattern graphs over
-variables, drawn as diamonds: what it looks for, and what it adds. The rule below says that whoever lives in a
+**A firing's identity** is the triple, its rule, its activator, and the objects its variables are bound to
+([Q-M1e.16](../../../decisions/engine/Q-M1e.16-a-firings-identity-keys-on-every-activator.md)). Two firings are
+one when the three parts are equal, the activators compared **in every argument, as objects**, names and nested
+facts alike ([Q-M1f.43](../../../decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)):
+
+$$
+(\rho, a, \theta) = (\rho', a', \theta') \iff \rho = \rho' \;\land\; \forall i \le m.\ \operatorname{arg}_i(a) = \operatorname{arg}_i(a') \;\land\; \forall x.\ \theta(x) = \theta'(x)
+$$
+
+So two activators of one rule that differ in any argument are two applications, and each fires. An identity that
+kept only some of an activator's arguments, a projection $\pi(a)$ that is not injective, would make one identity
+of two applications with $\pi(a) = \pi(a')$ and one $\theta$, and would drop the second firing as a repeat of
+the first: which conclusion survived would depend on which activator came first.
+[Saturation](02-saturation.md#the-agenda-the-order-rules-fire-in) has the proposition this identity buys, and
+the example where a projection would show.
+
+**As a rewrite of the graph.** A knowledge base is a graph, drawn here with labelled arrows
+([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): a name is a node, a
+fact of two arguments an arrow from its first argument to its second, labelled by its relation's name. A rule is a pair of pattern
+graphs over variables, drawn as diamonds: what it looks for, and what it adds. The rule below says that whoever lives in a
 house lives near the house next to it,
 
 $$
@@ -176,7 +191,7 @@ digraph rule_neighbour_lhs_rhs {
 }
 ```
 
-A substitution $\theta$ is a map from the diamonds of the match to nodes of the knowledge base that carries each
+A match $\theta$ is a map from the diamonds of the match to nodes of the knowledge base that carries each
 pattern arrow onto an arrow of the same label. Here is a knowledge base before the firing, $K$: boxes are labels,
 ovals the names under them, a dashed arrow with an empty head is membership.
 
@@ -229,10 +244,9 @@ $$
 $$
 
 In the algebraic reading of graph rewriting this is the degenerate span: nothing is deleted, the match is kept
-whole, and the conclusion is glued on ([rules as statements](../01-static-ir/04-rules-as-statements.md)). The new
+whole, and the conclusion is glued on ([the rules](../01-static-ir/02-rewriting-rules.md#as-a-span)). The new
 arrow carries its derivation record $\delta$, which holds $\rho$, $a$, $\theta$ and the premises $\theta$ matched
-([relations and facts](../01-static-ir/02-relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations)), so the
-rewrite and its trace are one object.
+([cores](09-cores.md#a-derivation-record)), so the rewrite and its trace are one thing.
 
 ## Two layers
 
@@ -255,6 +269,23 @@ $$
 
 Nothing a node derives is written back into root. A commitment that leads to a contradiction is not retracted:
 its node is dead, and a search learns from it by not entering what it decides ([finding R](07-finding-r.md)).
+
+**A fork.** Each node is a **fork** of root: a knowledge base of the same program that starts as root's fixpoint
+stands and from then on is its own. Writing $K(t)$ for a knowledge base after $t$ further additions, a fork $K'$
+of $K$ has
+
+$$
+\begin{aligned}
+K'(t) &\supseteq K && \text{the fork keeps what its parent held when it was made;} \\
+K'(t) \setminus K &\ \text{is the fork's alone} && \text{nothing a fork adds reaches its parent or a sibling;} \\
+K(t) \setminus K &\ \text{is the parent's alone} && \text{nothing the parent adds afterwards reaches the fork.}
+\end{aligned}
+$$
+
+What a search assumes is so set aside by discarding a fork, never by taking a fact out of a knowledge base, and
+every node is read independently of every other
+([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). The records of how
+a fork's facts came to be held are the fork's too ([cores](09-cores.md#a-derivation-record)).
 
 ```dot
 digraph two_layers {
@@ -307,6 +338,20 @@ $$
 The last is a definition that several computations satisfy, and each is held to the definition: on a program
 small enough to enumerate, $R$ is the set the definition gives, node for node ([finding R](07-finding-r.md)).
 
+**No output depends on how names were numbered.** An implementation may number the names and facts it meets, by
+any injection $\iota$ from the objects it has seen into the integers, may keep them in collections that iterate in
+any order, and may share a run among any number $w$ of workers. Let $\operatorname{Obs}$ be anything a reader can observe of a
+run: the answer, a rendering of it, a narration, a core, a dump. Then
+
+$$
+\operatorname{Obs}(P;\ \iota,\ w) = \operatorname{Obs}(P;\ \iota',\ w') \qquad \text{for all } \iota, \iota', w, w'
+$$
+
+so $\operatorname{Obs}$ is a function of the program alone. Every order a reader sees is therefore an order of
+the objects' content: the order of the objects, of their texts, or of their quoted forms
+([the knowledge base](../01-static-ir/01-knowledge-base.md#order)), and a listing says which. A collection read
+only for membership needs no order; one whose iteration reaches an output is ordered by content at that point.
+
 ## The core operations
 
 Strip away the puzzle vocabulary and the reasoning performs nine operations.
@@ -316,17 +361,17 @@ Strip away the puzzle vocabulary and the reasoning performs nine operations.
 | **O1** | conjunctive matching | $\lbrace \theta : K \models \varphi\theta \rbrace$, the substitutions under which a match holds | this page |
 | **O2** | saturation | $\operatorname{sat}(K)$, the least knowledge base containing $K$ that no firing changes | [saturation](02-saturation.md) |
 | **O3** | negation as failure | $K \models \operatorname{absent}(G)\theta$, asked once, of a quiescent $K$ | [absence](03-absent-and-naf.md) |
-| **O4** | equality | $s\theta = t\theta$, identity of values and nothing else | this page |
+| **O4** | equality | $s\theta = t\theta$, identity of objects and nothing else | this page |
 | **O5** | contradiction detection | $\operatorname{dead}(K)$ | [cores](09-cores.md) |
 | **O6** | provenance and the core | every derivation record of each fact, and a smallest set of givens and commitments a contradiction follows from | [cores](09-cores.md) |
 | **O7** | the candidate set and the lattice | $H$, read off root, and $(2^H, \subseteq)$ | [hypothesis generation](04-hypothesis-generation.md), [the hypothesis space](05-hypothesis-space.md) |
 | **O8** | learning from a refutation | on a monotone program, $\operatorname{dead}(C) \land C \subseteq C' \implies \operatorname{dead}(C')$ | [finding R](07-finding-r.md), [monotonicity](08-monotonicity.md) |
-| **O9** | state identity | $C \sim C' \iff \operatorname{st}(C) = \operatorname{st}(C')$, equality of fact sets | [values and their order](../01-static-ir/03-values-and-order.md) |
+| **O9** | state identity | $C \sim C' \iff \operatorname{st}(C) = \operatorname{st}(C')$, equality of fact sets | [solution semantics](06-solution-semantics.md#15-commitment-node-state) |
 
 - **O1.** A match is structural: it binds the premises of a pattern, $r(a, b) \land s(b, c) \land \dots$, against
   the facts held, and a relation's place may itself be a variable bound by the activator.
-- **O4.** Ein has no equality of its own between objects: equality between objects is whatever relation a program
-  states, read as any other relation, and $\operatorname{eq}$ and $\operatorname{neq}$ compare two values as
+- **O4.** Ein has no equality of its own between atoms: equality between atoms is whatever relation a program
+  states, read as any other relation, and $\operatorname{eq}$ and $\operatorname{neq}$ compare two objects as
   written.
 - **O8.** One dead node then decides every node above it. What a computation of $R$ may conclude without
   saturating a node is stated as its licences ([finding R](07-finding-r.md)).
@@ -355,7 +400,7 @@ Strip away the puzzle vocabulary and the reasoning performs nine operations.
 2. **Rules may be higher-order.** A rule's parameters can stand for relations, bound by its activator facts, so
    one rule states a property for every relation that has it: the activator
    $\operatorname{functional}(\operatorname{color-loc})$ applies the rule named $\operatorname{functional}$ to the
-   relation $\operatorname{color-loc}$. A match ranges over relations as it ranges over objects.
+   relation $\operatorname{color-loc}$. A match ranges over relations as it ranges over the atoms a fact is about.
 3. **Every firing leaves provenance.** Each fact records how it came to be, every recorded derivation of it and
    not only the first, so a fact is an OR over its derivations and a derivation an AND over its premises; a trace,
    a rule's reason in words and a core are all read off that one structure

@@ -11,7 +11,7 @@ second implementation must also make true belongs here, whether it is a definiti
 or an argument that two computations agree.
 
 **What a page states.** Each page states **definitions**, **propositions** and **arguments**. A definition fixes
-an object: a set, a relation, a function, an order. A proposition says what holds of every object that satisfies
+a thing: a set, a relation, a function, an order. A proposition says what holds of everything that satisfies
 the definitions, and stands beside its argument; where it needs a condition, the proposition names it. The pages
 are written in three languages
 ([Q-M1f.370](../../decisions/docs/Q-M1f.370-each-perspective-of-the-documentation-is-written.md)): mathematics, which
@@ -29,40 +29,49 @@ page needs for itself is defined where it is used and is in the second table, so
 bound by the sentence it stands in.
 
 **Letters.** A constant of a program is set upright, $\mathsf{Norwegian}$, and a relation of a program as an
-operator, $\operatorname{lives-in}$. Italic letters range over what the table says: $u, v, w$ over values,
-$f, g$ over facts, $h$ over candidates, $r$ over relation names, $x, y, z$ over variables, $a$ over activators,
-and, where no rule is in view, $a, b, c$ over names or over candidates, as the page says.
+operator, $\operatorname{lives-in}$. Italic letters range over what the table says: $u, v, w$ and $o$ over
+objects, $f, g$ over facts, $h$ over candidates, $r$ over relations, $x, y, z$ over variables, $a$ over activators,
+and, where no rule is in view, $a, b, c$ over atoms or over candidates, as the page says.
+
+**Words.** An **object** is a node of the graph a knowledge base is, and the word means nothing else on these
+pages. An **atom** is a labelled node with no outgoing arrow, and its label is its **name**; a **fact** is a
+node with outgoing arrows. Of a relation three things are kept apart: **the relation**, one atom; its
+**extent**, its held facts taken together; and **a fact of** it.
 
 | symbol | what it is | where it is defined |
 |---|---|---|
-| $\Sigma$, $\Sigma^{+}$ | the name characters, and the names: the non-empty words over them | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $V$, $F$, $A$ | the values: names, and facts over values; the facts, $F = V \setminus \Sigma^{+}$; the atoms, the facts that are no stored negation | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $r(v_1, \dots, v_n)$ | the fact of relation $r$ over the arguments $v_1, \dots, v_n$ | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $\operatorname{rel}(f)$, $\operatorname{arg}_i(f)$, $\operatorname{ar}(f)$ | the relation of a fact, its $i$-th argument, and how many arguments it has | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $\operatorname{sub}(f)$ | the facts nested in $f$, at any depth | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $\operatorname{decl}(r;\ T_1, \dots, T_n)$ | the declaration of the relation $r$ with the labels $T_1, \dots, T_n$ | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $\operatorname{names}(X)$ | the names that stand in an argument place of a fact of $X$, at any depth | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $\operatorname{names}(P)$ | the names of the program: those of its written facts and of its rules, a finite subset of $\Sigma^{+}$ | [names and atoms](01-static-ir/01-names-and-atoms.md) |
-| $\operatorname{labels}(P)$, $\operatorname{obj}(P)$ | the labels the program's declarations write; the objects, the names less the labels, the reserved words and the names of relations and rules | [names and atoms](01-static-ir/01-names-and-atoms.md), [solution semantics](02-kb-evolution/06-solution-semantics.md) |
-| $\lnot f$ | the stored negation of the fact $f$, itself a fact | [relations and facts](01-static-ir/02-relations-and-facts.md) |
-| $\bot$ | the fact of falsity, of no argument | [relations and facts](01-static-ir/02-relations-and-facts.md) |
-| $K$, $K_0$ | a knowledge base: a finite set of facts, read with the program and the provenance of its facts; the one a program's text is read into | [relations and facts](01-static-ir/02-relations-and-facts.md) |
+| $\Sigma$, $\Sigma^{+}$ | the name characters, and the names: the non-empty words over them | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where) |
+| $O$, $F$ | the objects: atoms, each its name in $\Sigma^{+}$, and facts over objects; the facts, $F = O \setminus \Sigma^{+}$ | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where) |
+| $\operatorname{out}(o)$ | the list of the objects under the arrows of the object $o$, counted from the first; empty for an atom | [the knowledge base](01-static-ir/01-knowledge-base.md#the-graph) |
+| $r(v_1, \dots, v_n)$ | the fact whose first arrow points at the relation $r$ and whose arrows after it at the arguments $v_1, \dots, v_n$ | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where) |
+| $\operatorname{rel}(f)$, $\operatorname{arg}_i(f)$, $\operatorname{ar}(f)$ | the relation of a fact, its $i$-th argument, and how many arguments it has | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where) |
+| $\operatorname{ext}_K(r)$ | the extent of the relation $r$ in $K$: the facts of $r$ that $K$ holds | [the knowledge base](01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) |
+| $\operatorname{decl}(r;\ T_1, \dots, T_n)$ | the declaration of the relation $r$ with the labels $T_1, \dots, T_n$, a fact of $\mathsf{relation}$ | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where) |
+| $\lnot f$ | the stored negation of the fact $f$, itself a fact, of the relation $\mathsf{not}$ | [the knowledge base](01-static-ir/01-knowledge-base.md#a-fact-about-a-relation-a-fact-about-a-fact-a-negation-falsity) |
+| $\bot$ | the fact of falsity, of the relation $\mathsf{false}$ and no argument | [the knowledge base](01-static-ir/01-knowledge-base.md#a-fact-about-a-relation-a-fact-about-a-fact-a-negation-falsity) |
+| $K$, $K_0$ | a knowledge base: a finite set of facts, the ones its graph holds; the one a program's text is read into | [the knowledge base](01-static-ir/01-knowledge-base.md#the-graph), [its program](01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program) |
+| $\operatorname{sub}(f)$ | the facts nested in $f$, at any depth | [the knowledge base](01-static-ir/01-knowledge-base.md#nesting) |
+| $\operatorname{names}(X)$ | the atoms under an argument arrow of a fact of $X$, at any depth | [the knowledge base](01-static-ir/01-knowledge-base.md#nesting) |
+| $\preceq$, $\prec$ | the total order of the objects | [the knowledge base](01-static-ir/01-knowledge-base.md#order) |
+| $\operatorname{text}(v)$ | the text of an object, which reads back as it | [the knowledge base](01-static-ir/01-knowledge-base.md#the-text-of-an-object) |
+| $\operatorname{dead}(K)$, $\operatorname{alive}(K)$ | $K$ holds a contradiction, or holds none. Of a commitment, $\operatorname{dead}(C)$ is $\operatorname{dead}(\operatorname{st}(C))$, and so for every predicate of a state | [the knowledge base](01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither) |
+| $\theta$ | a substitution of objects for variables | [the rules](01-static-ir/02-rewriting-rules.md#a-match) |
+| $K \models \varphi\theta$ | the pattern $\varphi$ holds in $K$ under $\theta$ | [the rules](01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match) |
+| $\operatorname{absent}(G)$ | the condition that holds where the pattern $G$ has no match | [the rules](01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match), [absence](02-kb-evolution/03-absent-and-naf.md) |
+| $\psi\theta$, $K \cup \psi\theta$ | the instance of a conclusion under a match, a set of facts; the result of rewriting $K$ at that match | [the rules](01-static-ir/02-rewriting-rules.md#a-conclusion-and-the-result-of-rewriting) |
+| $\rho = (\bar{p}, \varphi, \psi)$, $\operatorname{name}(\rho)$ | a rule: its parameters, its pattern (its match), its conclusion; and its name. $\varphi_\rho$ and $\psi_\rho$ where the rule has to be named | [the rules](01-static-ir/02-rewriting-rules.md#a-rule-declared) |
+| $a$, $\operatorname{Act}_K(\rho)$, $\rho[a]$ | an activator of $\rho$, a fact of $K$ whose relation is the rule's name; the set of them; the rule applied under $a$, with pattern $\varphi[a]$ and conclusion $\psi[a]$ | [the rules](01-static-ir/02-rewriting-rules.md#a-rule-declared) |
+| $P$ | the program, and its rule set | [the knowledge base](01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program), [the rules](01-static-ir/02-rewriting-rules.md#the-program-and-its-names) |
+| $\operatorname{names}(P)$ | the names of the program: those of $K_0$ and of its rules, a finite subset of $\Sigma^{+}$ | [the rules](01-static-ir/02-rewriting-rules.md#the-program-and-its-names) |
+| $\operatorname{labels}(P)$, $\operatorname{guessable}(P)$ | the labels the program's declarations write; the guessable atoms, the names less the labels, the reserved words and the names of relations and rules | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where), [solution semantics](02-kb-evolution/06-solution-semantics.md) |
 | $S$ | a state: the set of facts a saturation ends in, root's or a node's | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
-| $\operatorname{dead}(K)$, $\operatorname{alive}(K)$ | $K$ holds a contradiction, or holds none. Of a commitment, $\operatorname{dead}(C)$ is $\operatorname{dead}(\operatorname{st}(C))$, and so for every predicate of a state | [relations and facts](01-static-ir/02-relations-and-facts.md) |
-| $J$, $J_K(f)$ | the provenance: the derivations recorded for the fact $f$ in $K$, the primary one first | [relations and facts](01-static-ir/02-relations-and-facts.md) |
-| $\delta$; $\operatorname{prem}(\delta)$, $\operatorname{all}(\delta)$, $\operatorname{abs}(\delta)$; $\operatorname{rests}(\delta)$ | a derivation; the premises it matched, the facts a universal premise ranged over, the absences that had to hold; the facts it rests on | [relations and facts](01-static-ir/02-relations-and-facts.md), [cores](02-kb-evolution/09-cores.md) |
-| $\preceq$, $\prec$ | the total order of the values | [values and their order](01-static-ir/03-values-and-order.md) |
-| $\lt_{H}$ | the order of the candidates, by their text | [values and their order](01-static-ir/03-values-and-order.md) |
-| $P$ | the program, and its rule set | [rules as statements](01-static-ir/04-rules-as-statements.md) |
-| $\rho = (\bar{p}, \varphi, \psi)$, $\operatorname{name}(\rho)$ | a rule: its parameters, its pattern (its match), its conclusion; and its name. $\varphi_\rho$ and $\psi_\rho$ where the rule has to be named | [rules as statements](01-static-ir/04-rules-as-statements.md) |
-| $\theta$ | a substitution of values for variables | [rules as statements](01-static-ir/04-rules-as-statements.md) |
-| $K \models \varphi\theta$ | the pattern $\varphi$ holds in $K$ under $\theta$ | [rules as statements](01-static-ir/04-rules-as-statements.md) |
-| $a$, $\operatorname{Act}_K(\rho)$, $\rho[a]$ | an activator of $\rho$, a fact of $K$ whose relation is the rule's name; the set of them; the rule applied under $a$, with pattern $\varphi[a]$ and conclusion $\psi[a]$ | [rules as statements](01-static-ir/04-rules-as-statements.md), [values and their order](01-static-ir/03-values-and-order.md) |
+| $J$, $J_K(f)$ | the provenance: the derivations recorded for the fact $f$ in $K$, the primary one first | [cores](02-kb-evolution/09-cores.md#a-derivation-record) |
+| $\delta$; $\operatorname{prem}(\delta)$, $\operatorname{all}(\delta)$, $\operatorname{abs}(\delta)$; $\operatorname{rests}(\delta)$ | a derivation; the premises it matched, the facts a universal premise ranged over, the absences that had to hold; the facts it rests on | [cores](02-kb-evolution/09-cores.md#a-derivation-record) |
+| $\lt_{H}$ | the order of the candidates, by their text | [solution semantics](02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe) |
 | $\xi = (\rho, a, \theta)$, $\operatorname{en}(K)$, $\operatorname{fire}(K, \xi)$ | a firing; the firings enabled in $K$; $K$ with the firing's conclusion added | [firing a rule](02-kb-evolution/01-firing.md) |
 | $T_P$ | the consequence operator: every enabled firing at once | [saturation](02-kb-evolution/02-saturation.md) |
 | $\operatorname{sat}$, $\operatorname{pos}$ | saturation, a knowledge base taken to its fixpoint under $P$; the closure under the firings that read no absence | [saturation](02-kb-evolution/02-saturation.md) |
 | $\kappa$, $\lhd$ | a candidate of a saturation, a firing with the disjunct it matched; the agenda's order of the candidates | [saturation](02-kb-evolution/02-saturation.md) |
-| $\operatorname{absent}(G)$ | the pattern that holds where $G$ matches nothing | [rules as statements](01-static-ir/04-rules-as-statements.md), [absence](02-kb-evolution/03-absent-and-naf.md) |
 | $\operatorname{rels}(X)$ | the relations of the facts of $X$ | [saturation](02-kb-evolution/02-saturation.md) |
 | $D$, $D^{+}(X)$ | the relations a commitment can change; the same closure from the relations $X$, followed through a rule's activator as well | [monotonicity](02-kb-evolution/08-monotonicity.md), [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md) |
 | $\mathrm{root}$ | the program's own facts, saturated: $\mathrm{root} = \operatorname{sat}(K_0)$ | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
@@ -86,28 +95,32 @@ and, where no rule is in view, $a, b, c$ over names or over candidates, as the p
 
 | page | its own symbols |
 |---|---|
-| [names and atoms](01-static-ir/01-names-and-atoms.md) | $X$ the variables; $W$, $W_{\!c}$ the reserved words; $T$ the facts the text writes; $\alpha_{\text{file}}$ a file's short names |
-| [relations and facts](01-static-ir/02-relations-and-facts.md) | $G(K)$ the hypergraph of $K$; $D$ the facts declarations are held as; $\Delta$ a set of added facts; $Z$ an explanation; $\operatorname{status}_K$, $\operatorname{supported}$, $\operatorname{front}$ |
-| [values and their order](01-static-ir/03-values-and-order.md) | $\iota$, $w$, $O$ a numbering of the names, a count of workers, what a reader observes; $\operatorname{text}$, $q$ a value as text and as quoted in a message |
-| [rules as statements](01-static-ir/04-rules-as-statements.md) | $L$, $I$, $L^{+}$ the span of a rewrite; $\ell$ the level of a node; $\gamma$, $\beta$ the domain and the body of a universal |
-| [saturation](02-kb-evolution/02-saturation.md) | $\Xi$, $Q$ the firings root made and the candidates it parked; $\operatorname{lead}$, $\operatorname{arr}$, $\operatorname{passes}$; $X$ the kinds of name that are no object |
+| [the knowledge base](01-static-ir/01-knowledge-base.md) | $G$, $O_K$ the graph of a knowledge base and its objects; $\nu$ the reading of written tuples; $W$, $W_{\!c}$ the reserved words; $T$, $D$ the facts the text writes and those its declarations are; $\alpha_{\text{file}}$ a file's short names; $q$, $\lt_{q}$ the quoted form of an object and its order; $\operatorname{status}_K$ |
+| [the rules](01-static-ir/02-rewriting-rules.md) | $X$ the variables; $t$ a term; $m$ a match as a homomorphism; $\gamma$ a part of a pattern; $N$ the atoms a pattern is matched over; $\ell$ a literal; $L$, $I$, $L^{+}$ the span of a rewrite; $G$, $B$ the domain and the body of a universal |
+| [firing a rule](02-kb-evolution/01-firing.md) | $\iota$, $w$, $\operatorname{Obs}$ a numbering of the objects, a count of workers, what a reader observes of a run; $K(t)$ a knowledge base after $t$ additions |
+| [saturation](02-kb-evolution/02-saturation.md) | $\Xi$, $Q$ the firings root made and the candidates it parked; $\operatorname{lead}$, $\operatorname{arr}$, $\operatorname{passes}$; $X$ the kinds of name that are not guessable |
 | [absence](02-kb-evolution/03-absent-and-naf.md) | $G$ the pattern under an absence; $\operatorname{abs}^{\ast}(\rho)$ the absences a rule's conclusion can depend on; $\operatorname{dep}(f)$ |
 | [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md) | $\nu(P)$, $\operatorname{Hr}(P)$, $\operatorname{ActOb}(P)$, $\operatorname{declines}(P)$ the four tests of the ladder; $\operatorname{listed}(h)$ the activators a program lists for a hypothesis rule; $\Pi$ and $H$ with a rung's subscript, its proposals and its candidates; $\operatorname{unsettled}$; $T_o$, $\Delta_o$, $w_o$, $W_o$ the parts of an obligation; $I$ an instance; $L^{+}$, $L^{-}$ the two lists; $\operatorname{Closed}$, $\operatorname{inscope}$, $\operatorname{Elig}$, $\operatorname{Uncov}$, $\operatorname{Prop}$, $\operatorname{Ow}$, $\operatorname{stuck}$; $\operatorname{Kw}$, $\operatorname{Res}$, $\operatorname{RelNames}$ |
 | [the hypothesis space](02-kb-evolution/05-hypothesis-space.md) | $a \rightarrow b$, $a \leftrightarrow b$, $a \perp b$, $a \bowtie b$ the pair relations; $X$, $X^{\circ}$ the excluding pairs; $H^{\mathrm{o}}$ the open candidates; $K_0^{\circ}$, $\mathrm{root}^{\circ}$ the theory's share; $\mathcal{G}$, $g$ the groups; $Y$ a grid; $Q$, $W$ the questions and the whole node; $\operatorname{Puz}$, $\operatorname{Ties}$ |
 | [solution semantics](02-kb-evolution/06-solution-semantics.md) | $\Theta$, $\Omega$, $\Phi$ the context and the problem; $\mathcal{L}$, $L_k$ the lattice and its layers; $[a, b]$ a sub-cube; $\operatorname{verdict}(R)$ |
 | [finding R](02-kb-evolution/07-finding-r.md) | $\mathcal{O}$ the oracle's table; $\mathcal{K}$ the sets known dead; $\mathcal{C}$ the alive closed sets; $s$, $T$ closed sets; $M(T)$; $\mathcal{W}$; $\Lambda$; $\operatorname{Leaves}(C)$; L0 to L8 the licences |
 | [monotonicity](02-kb-evolution/08-monotonicity.md) | $\operatorname{site}$, $\operatorname{depth}$, $\operatorname{stale}$, $\operatorname{watch}$; $\mathit{Sh}$ the closure over shapes |
-| [cores](02-kb-evolution/09-cores.md) | $\mathcal{T}(K)$ the terminals; $Z$ a set of them; $\operatorname{der}_K(Z)$, $\operatorname{contr}(K)$, $\operatorname{by}(f)$ |
+| [cores](02-kb-evolution/09-cores.md) | $\mathcal{T}(K)$ the terminals; $Z$ a set of them; $\operatorname{der}_K(Z)$, $\operatorname{contr}(K)$, $\operatorname{by}(f)$; $\operatorname{origin}$, $\operatorname{front}$ |
 | [satisfiability](02-kb-evolution/10-satisfiability.md) | $\Gamma$ a claim; $\operatorname{holds}(\Gamma, \mathcal{S})$; $\operatorname{alt}(I, S)$ the alternatives a state has not denied; $\operatorname{key}$, $\operatorname{rows}_g$ |
-| [rules as data](03-rule-evolution/01-rules-as-data.md) | $W_{\!d}$ the declaring words; $\operatorname{ext}_K(r)$ the extent of a relation |
+| [rules as data](03-rule-evolution/01-rules-as-data.md) | $W_{\!d}$ the declaring words |
 | [analysis of rules](03-rule-evolution/02-analysis-of-rules.md) | $\operatorname{reads}$, $\operatorname{writes}$, $\operatorname{sgn}$; $c$ a strongly connected component; $\chi$ |
 | [transformations](03-rule-evolution/03-transformations.md) | $\tau$ a transformation; $\beta$ a renaming; $\alpha$ the map to full names; $\operatorname{resolve}$, $\operatorname{expand}$, $\operatorname{lits}$, $\operatorname{inst}_K(P)$ |
 
-**Graphs.** A drawing of facts follows one vocabulary, the one in which a program is drawn for its author
-([rendering](../user/04-reference/12-rendering.md)): a name is a node; a fact of two arguments is an arrow from the
-first to the second, labelled by its relation; a fact of any other count is a node of its own with one numbered
-arrow to each argument; a variable is a diamond; a dashed arrow is a fact that was derived, or, in a rule, the
-fact a conclusion adds.
+**Graphs.** A knowledge base is a graph, and the first part draws it as it is: a box is an atom, with its name
+in it; an octagon is a fact, filled where the knowledge base holds it; an arrow carries its place among the
+arrows of its fact, the first pointing at the relation; a diamond is a variable
+([the knowledge base](01-static-ir/01-knowledge-base.md#the-graph)). The pages after it draw facts **with labelled arrows**, the way a
+program is drawn for its author ([rendering](../user/04-reference/12-rendering.md)): a fact with a relation and
+two arguments is one arrow from the first argument to the second, labelled with the relation's name; a fact of
+one argument is a loop; a fact of any other count is a node of its own with one arrow to each argument, numbered
+by argument; a dashed arrow is a fact that was derived, or, in a rule, the fact a conclusion adds. That form is a
+drawing convention, and [the knowledge base](01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows) says what it stands for and what it
+loses.
 
 ## Reading order
 
@@ -115,31 +128,34 @@ Three parts, in the order a program lives through them.
 
 ### The program, up to its loaded state — [`01-static-ir/`](01-static-ir/)
 
-1. [Names and atoms](01-static-ir/01-names-and-atoms.md): names, values and facts, and identity by name.
-2. [Relations and facts](01-static-ir/02-relations-and-facts.md): the knowledge base as a state and its provenance.
-3. [Values and their order](01-static-ir/03-values-and-order.md): the orders a reader can observe, and the identity of
-   a state and of a rule application.
-4. [Rules as statements](01-static-ir/04-rules-as-statements.md): the kinds of rule, a rule as a rewrite, and the four
-   levels a knowledge base describes itself in.
+1. [The knowledge base: facts of relations](01-static-ir/01-knowledge-base.md): the graph; what is where in it, objects, atoms and names,
+   facts, relations, declarations; and their properties, identity, order and the rest.
+2. [The rules: rewriting the graph](01-static-ir/02-rewriting-rules.md): a pattern, a match, the conditions on one, a conclusion and the result
+   of rewriting; then how a rule is declared, the kinds of rule, and the four levels a knowledge base describes
+   itself in.
 
 ### The knowledge base as it grows — [`02-kb-evolution/`](02-kb-evolution/)
 
-1. [Firing a rule](02-kb-evolution/01-firing.md): what Ein solves, and the operations every implementation performs.
-2. [Saturation](02-kb-evolution/02-saturation.md): the fixpoint, the agenda's order, and the alive-set invariant.
+1. [Firing a rule](02-kb-evolution/01-firing.md): what Ein solves, a firing and its identity, a fork, and the
+   operations every implementation performs.
+2. [Saturation](02-kb-evolution/02-saturation.md): the fixpoint, the agenda's order and what the order of the
+   written facts cannot decide, and the alive-set invariant.
 3. [Negation as failure](02-kb-evolution/03-absent-and-naf.md): what an absence reads, and in which world.
 4. [Hypothesis generation](02-kb-evolution/04-hypothesis-generation.md): the ladder that builds the candidate set $H$.
 5. [The hypothesis space and its structure](02-kb-evolution/05-hypothesis-space.md): $H$, and what the theory says of
    its candidates before any search.
-6. [Solution semantics: the region R](02-kb-evolution/06-solution-semantics.md): the answer, defined.
+6. [Solution semantics: the region R](02-kb-evolution/06-solution-semantics.md): the answer, defined, with the
+   identity of a state and the order of the candidates.
 7. [Finding R: the oracle and the routes](02-kb-evolution/07-finding-r.md): every way $R$ is computed, and why they
    agree.
 8. [Monotone and non-monotone programs](02-kb-evolution/08-monotonicity.md): when the routes' licences hold, and what
    is claimed when they do not.
-9. [Cores: what a contradiction rests on](02-kb-evolution/09-cores.md): a dead node's explanation.
+9. [Cores: what a contradiction rests on](02-kb-evolution/09-cores.md): how each fact came to be held, and a
+   dead node's explanation.
 10. [Satisfiability: what a program can say of its answer](02-kb-evolution/10-satisfiability.md): where a rule stops
     being a sentence about the world it fires in.
 
-### The rule set as an object — [`03-rule-evolution/`](03-rule-evolution/)
+### The rule set as a thing to reason about — [`03-rule-evolution/`](03-rule-evolution/)
 
 1. [Rules as data](03-rule-evolution/01-rules-as-data.md): what of Ein describes itself in Ein, and where that stops.
 2. [Analysis of rules](03-rule-evolution/02-analysis-of-rules.md): the dependency graph of a rule set and its strata.

@@ -26,7 +26,7 @@ the region of that construction; nothing more is claimed of the program's soluti
 | symbol | what it is | where |
 |---|---|---|
 | $K_0$ | the knowledge base as loaded, before any saturation | § 1.1 |
-| $\operatorname{names}(P)$, $\operatorname{obj}(P)$ | the names of the program $P$; the objects among them | § 1.2 |
+| $\operatorname{names}(P)$, $\operatorname{guessable}(P)$ | the names of the program $P$; the guessable atoms among them | § 1.2 |
 | $\operatorname{sat}$, $\mathrm{root}$ | saturation; root's fixpoint $\operatorname{sat}(K_0)$ | § 1.3 |
 | $H$, $n$ | the candidate set, and $n = \lvert H \rvert$ | § 1.4 |
 | $C$, $\operatorname{st}(C)$, $S$ | a commitment $C \subseteq H$; its state; a state | § 1.5 |
@@ -84,28 +84,28 @@ $$
 
 so the lattice of § 1.5 is finite.
 
-**An object** is narrower than a name. The objects are what the blind enumerator of
+**A guessable atom** is narrower than a name. The guessable atoms are what the blind enumerator of
 [hypothesis generation](04-hypothesis-generation.md) fills a relation's slots with, and four kinds of name are left
 out, each by name and none by a type system
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)):
 
 $$
-\operatorname{obj}(P) \;=\; \big( \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
+\operatorname{guessable}(P) \;=\; \big( \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
 $$
 
 - $\operatorname{names}(\mathrm{root})$ counts a fact's head beside its top-level arguments;
 - $\operatorname{labels}(P)$ is the labels, the names a relation's declaration writes for its argument places
-  ([names and atoms](../01-static-ir/01-names-and-atoms.md#the-kinds-of-thing));
+  ([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where));
 - $\operatorname{Kw}$ is the seven words of the rule language, *not*, *false*, *and*, *or*, *absent*, *equal* and
-  *unequal*, whether or not a program writes one as a value;
+  *unequal*, whether or not a program writes one as an argument;
 - $\operatorname{Res}$ is the two reserved relations of the kernel, *closed* and *symmetric*
-  ([reserved names](../../user/04-reference/03-reserved-names.md) has their spelling): never an object, neither where
+  ([reserved names](../../user/04-reference/03-reserved-names.md) has their spelling): never guessable, neither where
   a rule derives the fact one heads nor where a program writes one in an argument position, which stays legal and
   keeps it a name of the program. So a closure or a symmetry stated by a fact and the same one derived by a rule give
   one $H$ and one $R$;
 - $\operatorname{RelNames}(P)$ is every name the program declares as a relation, writes as the head of a fact, or
   names a rule by. The head of a fact that only a rule concludes is none of these, so **a relation only a rule
-  concludes is an object**, and a candidate can name it. The candidate stays, and the answer names it (§ 1.4);
+  concludes is guessable**, and a candidate can name it. The candidate stays, and the answer names it (§ 1.4);
   declaring the relation takes its name out.
 
 ### 1.3 Root
@@ -135,7 +135,21 @@ $\operatorname{gen}$ is the **generation ladder** of [Hypothesis generation](04-
 of the program and of root's fixpoint and of nothing else. Nothing a computation is configured with moves which facts
 those are: no option changes the lattice
 ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)). Every later
-definition quantifies over $H$. Three things decide it:
+definition quantifies over $H$.
+
+**The universe's order.** $H$ is a set, and where it is listed it is listed by the texts of its candidates
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-text-of-an-object)):
+
+$$
+h \lt_{H} h' \iff \operatorname{text}(h) \lt_{\text{lex}} \operatorname{text}(h')
+$$
+
+$\lt_{H}$ is total, since a candidate is its text, and it is not the order $\prec$ of the objects: a space comes
+before a closing parenthesis, so $\operatorname{q}(\mathsf{10}, \mathsf{10}) \lt_{H} \operatorname{q}(\mathsf{10})$
+and $\operatorname{q}(\mathsf{10}) \prec \operatorname{q}(\mathsf{10}, \mathsf{10})$. Where an answer tabulates
+the facts its states differ in, they are listed in $\prec$; a listing says which order it is in.
+
+Three things decide $H$:
 
 - **which rung of the ladder applies**: the program's own hypothesis rules if it declares one; else, where an
   obligation is activated at root, the facts that would pay what root owes and what a commitment can bring it to owe
@@ -148,7 +162,7 @@ definition quantifies over $H$. Three things decide it:
 
 **$H$ must contain every fact a model needs.** If it does not, either the program is wrong, a name it never writes,
 or the generator is, a candidate it never proposes. $H$ is defined by the ladder, not declaratively: it is not every
-ground atom of every relation a commitment may extend.
+fact of every relation a commitment may extend.
 
 **On the obligations rung, $H$ holds what a debt root does not owe would propose**
 ([Q-M1e.11](../../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). $H$ is taken
@@ -174,16 +188,16 @@ $$
 and of such a relation $R$ holds only what the program states and saturation derives. It is said at relation grain:
 the facts of a covered relation that the rung does not propose are not named.
 
-**What the universe binds as an object, the answer names too**
+**What the universe guesses about, the answer names too**
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). The blind
-enumerator is untyped: every object fills every slot. Where a program states
+enumerator is untyped: every guessable atom fills every slot. Where a program states
 $\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and declares a relation $\operatorname{co-located}$ of two slots
 with the same label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state of $R$ may
 hold it. $R$ is right for the program as written, and a declaration that writes $\mathsf{Color}$ as a label keeps it out
 of $H$. Where the blind enumerator built $H$ and a candidate names the second argument of a membership fact of root,
 every answer names that name. It decides nothing: $H$, $R$ and every count are the same without the sentence.
 
-**A relation's name bound as an object is named as well** (§ 1.2). Where a rule derives
+**A relation's name that is guessed about is named as well** (§ 1.2). Where a rule derives
 $\operatorname{liquid}(\mathsf{Tea})$, nothing declares $\operatorname{liquid}$, and a declared one-slot relation
 $\operatorname{tasty}$ is open, $\operatorname{tasty}(\mathsf{liquid})$ is a candidate and a state of $R$ may hold it.
 The candidate stays, and declaring the relation takes its name out of $H$. It decides nothing either.
@@ -326,8 +340,17 @@ $$
 A node with $\operatorname{cl}(C) \neq C$ is **transient**: saturation moves it to $\operatorname{cl}(C)$. A node with
 $\operatorname{cl}(C) = C$ is **closed**.
 
-**State class.** Two commitments are one **state** when their states hold the same facts
-([values and their order](../01-static-ir/03-values-and-order.md) has the identity of a state):
+**State class.** Two commitments are one **state** when their states hold the same facts. The identity of a
+state is its set of facts, compared as a set,
+
+$$
+\operatorname{st}(C) = \operatorname{st}(C') \iff \forall f.\ \ f \in \operatorname{st}(C) \leftrightarrow f \in \operatorname{st}(C')
+$$
+
+and leaves out what a fact's identity leaves out: how each fact came to be held, and in which order. A digest
+$d$ of a state may label it for a reader and never decides that two states are one: $d(K) = d(K')$ does not
+imply $K = K'$, so a comparison of digests could count two states as one, and the comparison of sets cannot.
+The commitments that reach one state are a **state class**:
 
 $$
 C \sim C' \iff \operatorname{st}(C) = \operatorname{st}(C'), \qquad [C] = \lbrace\, C' \subseteq H : C' \sim C \,\rbrace
@@ -442,7 +465,7 @@ $$
 
 and on the order rules fire in
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)), so *the full set of
-nodes* is not one object. Every node is built one way, the fork of § 1.5, and $R$ on such a program is the region of
+nodes* is not one thing. Every node is built one way, the fork of § 1.5, and $R$ on such a program is the region of
 that construction: every computation agrees on it, and nothing more is claimed.
 
 A non-monotone program can have almost any subset of the cube as its region. The one exception is a non-empty $R$
@@ -605,7 +628,7 @@ maximal and the pair minimal, and neither is.
 
 ### 2.5 Worked: a conflict of three
 
-Three candidates $a$, $b$, $c$, one a fact of each of three relations about one object; one restriction, which
+Three candidates $a$, $b$, $c$, one a fact of each of three relations about one atom; one restriction, which
 concludes $\bot$ when all three hold; no obligation.
 
 | commitment | alive | owes | in $R$ |
@@ -699,7 +722,7 @@ exhaustive is [Satisfiability](10-satisfiability.md).
 
 ## 5. The questions asked of R
 
-$R$ is one object, and a reader asks for a part of it. Each question below has one answer, a function of $R$ alone,
+$R$ is one thing, and a reader asks for a part of it. Each question below has one answer, a function of $R$ alone,
 so two computations of the same question cannot differ ([Finding R](07-finding-r.md)), and each needs only as much of
 the lattice as decides it
 ([Q-M1e2.31](../../../decisions/answer/Q-M1e2.31-each-question-about-r-does-the-least-work-it.md)). How a question

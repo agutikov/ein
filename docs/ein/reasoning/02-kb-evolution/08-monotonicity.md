@@ -199,7 +199,7 @@ the program stays flagged.
 
 Fact grain is sufficient too. It would unflag a program whose dynamic reads no commitment can ever match: a
 read that asks for membership under a label, $\operatorname{is-a}(a, \mathsf{House})$, where every candidate is a
-membership between objects. Ein's check does not read at it: the check, the refusal of § 10 and the obligations
+membership between atoms. Ein's check does not read at it: the check, the refusal of § 10 and the obligations
 rung read one $D$ at relation grain, so a program with a read of a relation in $D$ is flagged whatever the read's
 pattern.
 
@@ -578,7 +578,7 @@ $$
 
 ### 8.6 What a traversal may memoize by
 
-- **The general object is the path tree.** A node is an ordered sequence of distinct candidates, and a step is
+- **The general structure is the path tree.** A node is an ordered sequence of distinct candidates, and a step is
   $s \mapsto \operatorname{sat}(s \cup \lbrace h \rbrace)$. It has
 
 $$
@@ -743,7 +743,7 @@ something that fails when it stops being true
 | **the lines** | grow the alive down-set layer by layer, or enumerate $N$ and $E$ and dualise: the minimal line is $E$'s alive members, the maximal line the discharged complements of the minimal transversals of $N$. Prior art: MARCO-style MUS/MSS enumeration (Liffiton et al., *Constraints* 2016); incremental monotone dualisation is quasi-polynomial in input plus output (Fredman & Khachiyan, *J. Algorithms* 1996) | no duality: from the classified cube |
 | **$\lvert R \rvert$, components, sub-cubes** | from the lines: the sub-cubes, then inclusion–exclusion | from the classified cube |
 | **states, not commitments** | the closed sets in $R$ and their minimal generators, formal concept analysis's closed sets and minimal generators (Ganter & Wille 1999) | classes by state, read node by node |
-| **stable, how** | a node's state is unique; what is listed is ordered by the values' content; the candidate set does not depend on a run's options; an option may only reorder or prune soundly | under the one stated reading of a node (§ 12.3); rule order can still move the candidate set (c8) |
+| **stable, how** | a node's state is unique; what is listed is ordered by the objects' content; the candidate set does not depend on a run's options; an option may only reorder or prune soundly | under the one stated reading of a node (§ 12.3); rule order can still move the candidate set (c8) |
 | **proved, how** | $N$, $E$ and the static verdict | the full classification |
 | **effective, how** | the alive states are visited and never a node a licence decides, and saturation jumps over transient nodes ([finding R](07-finding-r.md)) | the cube, $2^n$ nodes, where it can be enumerated; past that a partial answer that says so, a line certified only as far as the members met certify it ([Q-M1e2.19](../../../decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md)) |
 
