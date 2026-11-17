@@ -338,8 +338,8 @@ paragraph, no register count, no measurement (the user's rule).
   and **P1f.22, nested facts**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/README.md)).
   Each has its survey and its questions put (Q-M1f.390; Q-M1f.391 to .396).
-  **P1f.22 is started on the user's word**: its second stage waits for the
-  rulings its README lists (Q-M1f.391 to .398) and for nothing else. **P1f.21 is not
+  **P1f.22 is started on the user's word**: its questions are ruled
+  (Q-M1f.391 to .398) and its stages run in the order its README lists. **P1f.21 is not
   started without the user's word.** The milestone's plans are deleted
   when both are done, and **the work stops after M1f** (the user's rulings);
   the close of M1f was started and is paused.
