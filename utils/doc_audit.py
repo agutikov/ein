@@ -38,7 +38,7 @@ the referrer and its line:
 
 A bare path starts at a top-level directory of the repository
 (`docs/ein/README.md`), or at a crate's directory, which the repo writes
-short for `ein.rs/crates/<crate>/` (`ein-cli/tests/gate_steps.rs`), and names
+short for `ein.rs/crates/<crate>/` (`ein-cli/tests/corpus_cli.rs`), and names
 a file with an extension or a directory with a trailing `/`: `tests/stdlib/
 typing/03` is a prefix, not a path, and `ein-corpus/2` a schema. A path with
 `*`, `<` or `{` in it is a pattern and is not read; a missing one git would

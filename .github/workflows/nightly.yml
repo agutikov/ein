@@ -26,12 +26,12 @@
 #
 # **`./run_tests.sh --nightly` runs every step of this file**, since M1e2
 # S1e2.3.6: the three jobs one after another, in this file's order, the fuzz
-# job once per seed of its matrix. `ein-cli/tests/nightly_steps.rs` diffs the
-# two lists, so a step added here and not there fails a test; since S1f.5.27
-# it holds `--dev-host`'s list to this one's too, so a step that leaves here
-# and is not named there fails it. Every `run:` here is a step of that list,
-# or a provisioning step the test names with its reason (Graphviz, the tests'
-# `TMPDIR`). Until S1e2.3.6 nothing local ran these steps, and this workflow
+# job once per seed of its matrix. `utils/check_gate_steps.py`, a step of the
+# per-commit gate, diffs the two lists, so a step added here and not there
+# fails it; it holds `--dev-host`'s list to this one's too, so a step that
+# leaves here and is not named there fails it. Every `run:` here is a step of
+# that list, or a provisioning step the check names with its reason
+# (Graphviz, the tests' `TMPDIR`). Until S1e2.3.6 nothing local ran these steps, and this workflow
 # failed on every run from 2026-10-17 to 11-03 without anybody here seeing it
 # (plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.6_the_nightly_workflow.md).
 

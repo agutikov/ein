@@ -448,8 +448,7 @@ fn every_stdlib_rule_is_activated_by_a_program() {
         zero.is_empty(),
         "{} of {} stdlib rules are activated by no program under {SUITE}/ \
          — a rule with no test is not tested, it is merely not contradicted:\n  {}\n\
-         (write one under {SUITE}/stdlib/<module>/; \
-          `python3 utils/stdlib_census.py -k {SUITE}/stdlib` is the same census with the numbers)",
+         (write one under {SUITE}/stdlib/<module>/)",
         zero.len(),
         decls.len(),
         zero.join("\n  "),
@@ -541,7 +540,7 @@ fn the_inventory_reads_every_module_the_manifest_lists() {
     assert_eq!(
         read, listed,
         "the modules this file reads and the ones stdlib/MANIFEST.sha256 lists differ: \
-         run `python3 utils/stdlib_manifest.py --write`"
+         the manifest is to be written again from the modules"
     );
     assert!(
         read.iter().any(|m| m.contains('/')),

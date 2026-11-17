@@ -364,8 +364,8 @@
 ;; already said it, and now the engine hears it.
 ;;
 ;; This file solving is the fixture for it: no hrule is needed where the
-;; theory (rules + ontology) already says what to guess. Regenerate with
-;; gen_zebra2_variants.py.
+;; theory (rules + ontology) already says what to guess. Generated from
+;; zebra2.ein, not edited by hand.
 
 ;; ──── Relation signatures ──────────────────────────────────
 ;; Every relation carries a `:why` render template — a positional
@@ -503,7 +503,7 @@
 ;; The canonical zebra2.ein closes the conditions with (15); this variant
 ;; drops it, leaving the puzzle under-determined — a GAPS case for solve().
 ;; Everything else (schema, rules, ontology, conditions 1-14) is identical;
-;; regenerate with examples/gen_zebra2_variants.py.
+;; generated from zebra2.ein, not edited by hand.
 
 ;; No (solve … :hrules …) (generated) — the five `(bijective *-loc)`
 ;; declarations are the hypothesis-generator activators now: one obligation

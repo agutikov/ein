@@ -364,8 +364,8 @@
 ;; already said it, and now the engine hears it.
 ;;
 ;; This file solving is the fixture for it: no hrule is needed where the
-;; theory (rules + ontology) already says what to guess. Regenerate with
-;; gen_zebra2_variants.py.
+;; theory (rules + ontology) already says what to guess. Generated from
+;; zebra2.ein, not edited by hand.
 
 ;; ──── Relation signatures ──────────────────────────────────
 ;; Every relation carries a `:why` render template — a positional

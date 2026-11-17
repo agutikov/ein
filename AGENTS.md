@@ -113,7 +113,7 @@ constrained-reasoning research.
   fixture) plus focused per-feature fixtures.
   [`examples/README.md`](examples/README.md) is a **catalog** — one line
   per file / sub-dir. **Four of the zebra files are generated**, by
-  `examples/gen_zebra2_variants.py` from `zebra2.ein`, and `--check` is in the
+  `utils/gen_zebra2_variants.py` from `zebra2.ein`, and `--check` is in the
   gate: `zebra2-minus-15` (clue dropped), `ein-bugs/zebra2-bad` (clue added),
   and [`zebra2-obligations.ein`](examples/zebra2-obligations.ein) and its
   `-minus-15` twin, which are `zebra2` with the `(hrule guess …)` and the
@@ -439,19 +439,24 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `grammar.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
   `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
   (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
-  (`utils/gen_num9.py`); `stdlib/bool/gates.ein`'s rows and the programs
+  and its width-2 twin, the fixture `ein-infer/tests/golden/num2_theory.ein`
+  (`utils/gen_num9.py`); the detector's two hundred random programs,
+  `ein-infer/tests/golden/random_programs.txt` (`utils/gen_random_programs.py`);
+  `stdlib/bool/gates.ein`'s rows and the programs
   under `tests/stdlib/bool/gates/` and `props/` (`utils/gen_gates.py`, then
   `utils/stdlib_manifest.py --write`);
   three `examples/arith/` programs (`utils/gen_arith_examples.py`); the four
-  zebra2 variants (`examples/gen_zebra2_variants.py`);
+  zebra2 variants (`utils/gen_zebra2_variants.py`);
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
-  with its letters declared in another order (`examples/gen_send_written.py`);
+  with its letters declared in another order (`utils/gen_send_written.py`);
   `read-out-examples.md` (`utils/read_out_examples.py`); `config.md`'s
   defaults block and `docs/ein/ein.rs/api.md`'s `rust` block;
   `ein-core/src/printable.rs` (`utils/gen_unicode_printable.py`, with
   `ein-core/tests/golden/repr_escapes.txt` re-blessed). All of those have a
-  `--check` or a test in the gate. None names its generator; this list and
-  `utils/README.md` are where the script is written down.
+  `--check` or a test in the gate; `utils/check_generated.py` runs every
+  generator's `--check`, and no crate test runs a generator. None names its
+  generator; this list and `utils/README.md` are where the script is written
+  down.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
 - A change to what `ein solve` prints changes `read-out.md` in the same
@@ -576,26 +581,34 @@ change the answer* column on every flag row, pinned by
 deleted at M1e2 S1e2.1c.5; a page that describes it is a record.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order:
-seven static checks (`--tests-only` skips them and the bench smoke), then
-`cargo test --profile gate --workspace`, then the bench smoke test. The tests run with
+nine static checks (`--tests-only` skips them and the bench smoke), then
+`cargo test --profile gate --workspace`, then the process's checks that need
+the binary it built, then the bench smoke test. The tests run with
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,
 naming the file that writes it. **`cargo test --profile gate --workspace`
-alone is not the gate**: it checks none of the seven. A local gate that is a subset of the
-remote one is a local gate that lies — keep the two lists the same;
-`ein-cli/tests/gate_steps.rs` diffs them.
+alone is not the gate**: it checks none of the nine, and none of what the
+process holds itself to. **The tests read only the project**: what ties a
+process file to the project is a `utils/` check and a gate step, never a crate
+test — `check_gate_steps.py` (the step lists), `check_tool_mirrors.py` (the
+editor grammar, `nl_census.py` and the review driver against the engine's
+lists), `check_generated.py` (every generator's `--check`) and
+`check_region_routes.py` (the oracle against `region.py` and
+`region_synth.py`). A local gate that is a subset of the remote one is a local
+gate that lies — keep the two lists the same; `utils/check_gate_steps.py`
+diffs them.
 
 **`./run_tests.sh --nightly` runs the nightly** instead of the gate: every
 step of `.github/workflows/nightly.yml`, its jobs one after another
 (`deep-corpus`, `deep-corpus-shards` and `mutants` once per shard, the fuzzer
 once per seed, the bench smoke), so the nightly can be run before a push;
-`ein-cli/tests/nightly_steps.rs` diffs its list against the workflow's.
+`utils/check_gate_steps.py` diffs its list against the workflow's.
 **A nightly step over 5 min on the runner runs in shards** (M1f S1f.6.39,
 [Q-M1f.293](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f293--the-nightlys-steps-against-five-minutes)):
 a matrix job a shard, `EIN_TEST_SHARD=k/n`, `ein_corpus::shard` dealing every
 program to exactly one shard and `utils/stdlib_mutants.py --shard` every
 `n`-th mutant; each shard is measured on four P-core threads with
-`EIN_TEST_JOBS=4`, the runner's count, on AC, and `nightly_steps.rs` holds a
+`EIN_TEST_JOBS=4`, the runner's count, on AC, and `check_gate_steps.py` holds a
 sharded step to every one of its shards. **The nightly holds only what guards an answer or a
 contract no per-commit step guards**, each step within 5 min on the runner
 (the user's ruling of 2026-11-10;
@@ -603,8 +616,8 @@ contract no per-commit step guards**, each step within 5 min on the runner
 **`./run_tests.sh --dev-host` is the tier nothing schedules**, which the user
 runs here or in the runner's image (`utils/ci_container.sh --dev-host`):
 every nightly step at full budget and the steps that left or never ran in
-CI. A step that leaves the nightly is named in `nightly_steps.rs`'s
-`DEV_HOST_ONLY` with why, or `cargo test` fails.
+CI. A step that leaves the nightly is named in `check_gate_steps.py`'s
+`DEV_HOST_ONLY` with why, or the gate fails.
 
 A reference that cannot be a link is still fine as `` `code` ``, and that is
 the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`

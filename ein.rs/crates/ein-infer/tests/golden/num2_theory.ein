@@ -1,0 +1,486 @@
+;;; Ein stdlib — `std.math.num2`: school arithmetic on numbers of 2 digits, computed by
+;;; saturation alone (Q-M1f.320).
+;;;
+;;; GENERATED at a width of digits, any width the same way, this file at
+;;; 2: an edit by hand is lost the next time the file is written.
+;;;
+;;; The calculator's second module (`std.math.decimal-arith` is the first): the user's own
+;;; number, 2 digit names in one fact, the most significant first.
+;;;
+;;;     (num2 0 7)        7
+;;;
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
+;;; This is a theory written in Ein over the digit names: the tables of
+;;; `std.math.digits` are the gates and the rules below are the wiring. Nothing is
+;;; guessed: on a program that imports the theory and states requests the
+;;; universe has no candidate and the answer is root's fixpoint. No `absent`,
+;;; no `not`, one stratum.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.math.num2 :symbols (arith2 add2 num2 sum2-of))
+;;;
+;;; An import brings the whole theory, the tables and `std.math.decimal-arith` with it,
+;;; under full names (Q-M1f.247); a program lists the names it writes.
+;;; `arith2` is the theory's entry, the closing rule at the end of this file:
+;;; it names every rule and closes every relation of the theory and the tables
+;;; it reads. `n` is `std.math.decimal`'s, and `z` and `division-by-zero` are
+;;; `std.math.arith`'s (Q-M1f.283), which this module lists, and a program
+;;; that writes them lists them from those modules.
+;;;
+;;; ── The protocol: a request fact, answered by a result fact or by a flag ───
+;;;
+;;;     (add2 X Y)      (sum2-of X Y S)         or (overflow (add2 X Y))
+;;;     (sub2 X Y)      (diff2-of X Y D R)      D is X - Y or zero, R is Y - X or zero
+;;;     (cmp2 X Y)      (cmp2-of X Y O)         O is `lt`, `eq` or `gt`
+;;;     (mul2 X Y)      (product2-of X Y P)     or (overflow (mul2 X Y))
+;;;     (div2 X Y)      (quot2-of X Y Q R)      X = Q x Y + R, and R less than Y
+;;;
+;;; A program reads an answer with a goal that has a variable in the result's
+;;; place, `(sum2-of X Y ?s)`. An operand is a number, written out: this
+;;; module has no named constants.
+;;;
+;;; **Overflow is a fact, and no number.** A sum or a product that does not
+;;; fit 2 digits derives `(overflow REQUEST)`, the request as written, and no
+;;; result fact: never a truncated number. Root stays alive, so the program's
+;;; other requests are answered, and a rule of the program may match the flag.
+;;;
+;;; **Division by zero is a contradiction,** as in `std.math.decimal-arith`, and by
+;;; `std.math.arith`'s rule: the request derives `(division-by-zero (div2 X ZERO))`,
+;;; and `std.math.arith`'s `division-by-zero-is-false` derives `(false)` from the flag.
+;;; Root is dead and R is empty.
+;;;
+;;; ── Conversions: a request each way ────────────────────────────────────────
+;;;
+;;;     (to2 X)         (as2 X W)   X a number of `std.math.decimal`, `z` or `(n PREFIX DIGIT)`
+;;;                      or (big X)   where X is written with more than 2 digits
+;;;     (from2 W)       (of2 W X)   X in normal form, with no high zero
+;;;
+;;; One firing each. Nothing converts a number because it exists, and nothing
+;;; routes a request of one module to the other: a program that wants both
+;;; writes the rule that asks (`examples/arith/num9_both_ways.ein`).
+;;;
+;;; ── How it computes: wide rules ────────────────────────────────────────────
+;;;
+;;; **A sum is one firing.** `add2-fits` has a premise for the request and
+;;; one for each column, a row of the full adder's table, the carry handed
+;;; from column to column by a variable; the carry out of the top column is
+;;; written `0`, and its twin `add2-overflows` writes `1` there. A
+;;; difference is two such rules, one each way round, and the one that does
+;;; not borrow out of the top answers: the borrow is the comparison. A
+;;; comparison is one rule over the comparator's table.
+;;;
+;;; **A product is 4 firings:** a start, a step for each digit of the
+;;; multiplier from its top, and an end. A step is one rule with 4
+;;; table premises: the multiplicand times the digit, a column at a time, and
+;;; that row added to the sum so far shifted one place; where the digit is 0
+;;; a second rule shifts and reads no table. Three rules derive the
+;;; overflow, one for each place a digit can fall off: the shift, the row's
+;;; carry, the addition's carry.
+;;;
+;;; **A quotient is 4 firings.** `div2-start` computes the divisor's
+;;; multiples by 2 to 9 in one firing, 16 rows of the digit multiplier's
+;;; table, and puts all nine into the state. A step brings down one digit of
+;;; the dividend; ten step rules, one for each digit the quotient can have,
+;;; each read their own multiple from the state and hold two subtractors: the
+;;; multiple taken from the number must not borrow, and the divisor taken from
+;;; what is left must. Exactly one of the ten fires. Nothing is guessed: the
+;;; tables decide each.
+;;;
+;;; **No rule joins two facts on a number,** `std.math.decimal-arith`'s rule, kept here: a
+;;; rule has one premise that holds numbers, and its other premises are table
+;;; rows looked up by digits. So a batch of requests costs in proportion to
+;;; its count (`ein-infer/tests/arith_batch.rs`).
+;;;
+;;; ── When to use which module ───────────────────────────────────────────────
+;;;
+;;; `std.math.num9` where every number fits 2 digits and one firing a sum
+;;; matters, or where a fixed width with an overflow flag is what is modelled.
+;;; `std.math.decimal-arith` for numbers of any length, for named constants, and for
+;;; batches: its circuits are longer chains of cheaper steps
+;;; (`num9_theory.rs` pins what each request costs in firings).
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; Its own: `num2`, `add2`, `sum2-of`, `sub2`, `diff2-of`, `cmp2`, `cmp2-of`, `mul2`, `product2-of`, `div2`, `quot2-of`, `overflow`, `to2`, `as2`, `big`, `from2`, `of2`, `mul2-at`, `row2`, `multiples2`, `div2-at`, `num2-rule`, the entry
+;;; `arith2`, and its rules' names. From `std.math.decimal`: `n`, for the conversions;
+;;; from `std.math.arith`: `z`, and `division-by-zero` with the rule from it to `(false)`.
+;;; From `std.math.digits`: `fa`, `fs`, `md`, `cl`, `nz`, `adj`, with the orders `lt`, `eq`,
+;;; `gt`. The interface is the number, the requests, the results, the two
+;;; flags, the conversions and `big`; the states `mul2-at` and
+;;; `div2-at`, `multiples2` and `row2` are in the state for a query
+;;; or a `--trace` to see, and are not a promise.
+
+(import std.math.digits :symbols (fa fs md cl nz adj))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z division-by-zero division-by-zero-is-false))
+
+;; ── The number: 2 digits, the most significant first ──
+(relation num2 Digit Digit
+  :why "the number written {?1}{?2}")
+
+;; ── The protocol: a request fact, answered by a result fact or by a flag ──
+(relation add2 Number Number
+  :why "asked: {?1} + {?2}")
+(relation sum2-of Number Number Number
+  :why "{?1} + {?2} = {?3}")
+(relation sub2 Number Number
+  :why "asked: {?1} - {?2}")
+(relation diff2-of Number Number Number Number
+  :why "{?1} - {?2} = {?3}, short by {?4}")
+(relation cmp2 Number Number
+  :why "asked: {?1} compared with {?2}")
+(relation cmp2-of Number Number Order
+  :why "{?1} against {?2}: {?3}")
+(relation mul2 Number Number
+  :why "asked: {?1} x {?2}")
+(relation product2-of Number Number Number
+  :why "{?1} x {?2} = {?3}")
+(relation div2 Number Number
+  :why "asked: {?1} divided by {?2}")
+(relation quot2-of Number Number Number Number
+  :why "{?1} divided by {?2} = {?3}, remainder {?4}")
+(relation overflow Request
+  :why "the answer to {?1} does not fit 2 digits")
+(relation to2 Nested
+  :why "asked: {?1} as a number of 2 digits")
+(relation as2 Nested Number
+  :why "{?1} is {?2} in 2 digits")
+(relation big Nested
+  :why "{?1} is written with more than 2 digits")
+(relation from2 Number
+  :why "asked: {?1} as a number of any length")
+(relation of2 Number Nested
+  :why "{?1} is {?2}")
+
+;; ── The circuit's own facts: the states of a product and of a quotient ──
+(relation mul2-at Number Number Step Number Number
+  :why "multiplying {?1} by {?2}, {?3} digits to go: of the multiplier {?4} is left, and the sum so far is {?5}")
+(relation row2 Digit Digit Digit
+  :why "the multiple written {?1}{?2}{?3}")
+(relation multiples2 Row Row Row Row Row Row Row Row Row
+  :why "the divisor's multiples: {?1}, {?2}, {?3}, {?4}, {?5}, {?6}, {?7}, {?8} and {?9}")
+(relation div2-at Number Number Multiples Step Number Number Number
+  :why "dividing {?1} by {?2}, {?4} digits to go: of the dividend {?5} is left, {?6} is left over, and the quotient so far is {?7}")
+
+;; ── Addition: one rule, a premise a column ──
+(rule add2-fits ()
+  :match  (and (add2 (num2 ?x1 ?x0) (num2 ?y1 ?y0))
+               (fa ?x0 ?y0 0 ?s0 ?c1)
+               (fa ?x1 ?y1 ?c1 ?s1 0))
+  :assert (sum2-of (num2 ?x1 ?x0) (num2 ?y1 ?y0) (num2 ?s1 ?s0))
+  :why    "each column's digit and carry from the table, the units first; no carry out of the top column")
+
+(rule add2-overflows ()
+  :match  (and (add2 (num2 ?x1 ?x0) (num2 ?y1 ?y0))
+               (fa ?x0 ?y0 0 ?s0 ?c1)
+               (fa ?x1 ?y1 ?c1 ?s1 1))
+  :assert (overflow (add2 (num2 ?x1 ?x0) (num2 ?y1 ?y0)))
+  :why    "each column's digit and carry from the table: a carry out of the top column, so the sum has 3 digits")
+
+;; ── Subtraction: two subtractors, and the one that does not borrow out of the top answers ──
+(rule sub2-fits ()
+  :match  (and (sub2 (num2 ?x1 ?x0) (num2 ?y1 ?y0))
+               (fs ?x0 ?y0 0 ?d0 ?c1)
+               (fs ?x1 ?y1 ?c1 ?d1 0))
+  :assert (diff2-of (num2 ?x1 ?x0) (num2 ?y1 ?y0) (num2 ?d1 ?d0) (num2 0 0))
+  :why    "the second taken from the first, a column at a time: no borrow out of the top, so the first is not the smaller")
+
+(rule sub2-short ()
+  :match  (and (sub2 (num2 ?x1 ?x0) (num2 ?y1 ?y0))
+               (fs ?y0 ?x0 0 ?r0 ?c1)
+               (fs ?y1 ?x1 ?c1 ?r1 0))
+  :assert (diff2-of (num2 ?x1 ?x0) (num2 ?y1 ?y0) (num2 0 0) (num2 ?r1 ?r0))
+  :why    "the first taken from the second, a column at a time: no borrow out of the top, so the first is short by what is left")
+
+;; ── Comparison: one rule, the order of the digits below overruled by each higher column ──
+(rule cmp2-columns ()
+  :match  (and (cmp2 (num2 ?x1 ?x0) (num2 ?y1 ?y0))
+               (cl eq ?x0 ?y0 ?o1)
+               (cl ?o1 ?x1 ?y1 ?o))
+  :assert (cmp2-of (num2 ?x1 ?x0) (num2 ?y1 ?y0) ?o)
+  :why    "the comparator's table, a column at a time from the units: a higher column overrules the order below")
+
+;; ── Multiplication: the school method from the multiplier's top digit. A step shifts the sum so
+;;    far one place and adds the multiplicand times the next digit, in one rule ──
+(rule mul2-start ()
+  :match  (mul2 (num2 ?x1 ?x0) (num2 ?y1 ?y0))
+  :assert (mul2-at (num2 ?x1 ?x0) (num2 ?y1 ?y0) 2 (num2 ?y1 ?y0) (num2 0 0))
+  :why    "start at the multiplier's top digit: 2 digits to go, and nothing summed yet")
+
+(rule mul2-step ()
+  :match  (and (mul2-at (num2 ?x1 ?x0) ?y ?k (num2 ?y1 ?y0) (num2 0 ?a0))
+               (nz ?y1)
+               (adj ?j ?k)
+               (md ?x0 ?y1 0 ?p0 ?m1)
+               (md ?x1 ?y1 ?m1 ?p1 0)
+               (fa 0 ?p0 0 ?s0 ?c1)
+               (fa ?a0 ?p1 ?c1 ?s1 0))
+  :assert (mul2-at (num2 ?x1 ?x0) ?y ?j (num2 ?y0 0) (num2 ?s1 ?s0))
+  :why    "the multiplicand times the digit {?y1}, a column at a time, added to the sum so far shifted one place")
+
+(rule mul2-step-zero ()
+  :match  (and (mul2-at ?x ?y ?k (num2 0 ?y0) (num2 0 ?a0))
+               (adj ?j ?k))
+  :assert (mul2-at ?x ?y ?j (num2 ?y0 0) (num2 ?a0 0))
+  :why    "the multiplier's next digit is 0: the sum so far shifts one place, and nothing is added")
+
+(rule mul2-done ()
+  :match  (mul2-at ?x ?y 0 ?left ?p)
+  :assert (product2-of ?x ?y ?p)
+  :why    "no digit of the multiplier is left: the sum is the product")
+
+(rule mul2-overflows-shift ()
+  :match  (and (mul2-at ?x ?y ?k ?left (num2 ?a1 ?a0))
+               (adj ?j ?k)
+               (nz ?a1))
+  :assert (overflow (mul2 ?x ?y))
+  :why    "the sum so far has a top digit, {?a1}, and must still shift one place")
+
+(rule mul2-overflows-row ()
+  :match  (and (mul2-at (num2 ?x1 ?x0) ?y ?k (num2 ?y1 ?y0) ?acc)
+               (nz ?y1)
+               (md ?x0 ?y1 0 ?p0 ?m1)
+               (md ?x1 ?y1 ?m1 ?p1 ?c)
+               (nz ?c))
+  :assert (overflow (mul2 (num2 ?x1 ?x0) ?y))
+  :why    "the multiplicand times the digit {?y1} carries {?c} out of the top column")
+
+(rule mul2-overflows-add ()
+  :match  (and (mul2-at (num2 ?x1 ?x0) ?y ?k (num2 ?y1 ?y0) (num2 0 ?a0))
+               (nz ?y1)
+               (md ?x0 ?y1 0 ?p0 ?m1)
+               (md ?x1 ?y1 ?m1 ?p1 0)
+               (fa 0 ?p0 0 ?s0 ?c1)
+               (fa ?a0 ?p1 ?c1 ?s1 1))
+  :assert (overflow (mul2 (num2 ?x1 ?x0) ?y))
+  :why    "adding the row to the sum so far carries out of the top column")
+
+;; ── Division: school long division. The divisor's multiples by 1 to 9 are computed once, by one
+;;    rule, and travel in the state; a step brings down a digit, and the one multiple that
+;;    subtracts without a borrow and leaves less than the divisor is the quotient's digit.
+;;    Ten step rules, one a digit, alike but for the multiple they read ──
+(rule div2-start ()
+  :match  (and (div2 (num2 ?n1 ?n0) (num2 ?d1 ?d0))
+               (md ?d0 2 0 ?m2p0 ?m2c1)
+               (md ?d1 2 ?m2c1 ?m2p1 ?m2c)
+               (md ?d0 3 0 ?m3p0 ?m3c1)
+               (md ?d1 3 ?m3c1 ?m3p1 ?m3c)
+               (md ?d0 4 0 ?m4p0 ?m4c1)
+               (md ?d1 4 ?m4c1 ?m4p1 ?m4c)
+               (md ?d0 5 0 ?m5p0 ?m5c1)
+               (md ?d1 5 ?m5c1 ?m5p1 ?m5c)
+               (md ?d0 6 0 ?m6p0 ?m6c1)
+               (md ?d1 6 ?m6c1 ?m6p1 ?m6c)
+               (md ?d0 7 0 ?m7p0 ?m7c1)
+               (md ?d1 7 ?m7c1 ?m7p1 ?m7c)
+               (md ?d0 8 0 ?m8p0 ?m8c1)
+               (md ?d1 8 ?m8c1 ?m8p1 ?m8c)
+               (md ?d0 9 0 ?m9p0 ?m9c1)
+               (md ?d1 9 ?m9c1 ?m9p1 ?m9c))
+  :assert (div2-at (num2 ?n1 ?n0) (num2 ?d1 ?d0) (multiples2 (row2 0 ?d1 ?d0) (row2 ?m2c ?m2p1 ?m2p0) (row2 ?m3c ?m3p1 ?m3p0) (row2 ?m4c ?m4p1 ?m4p0) (row2 ?m5c ?m5p1 ?m5p0) (row2 ?m6c ?m6p1 ?m6p0) (row2 ?m7c ?m7p1 ?m7p0) (row2 ?m8c ?m8p1 ?m8p0) (row2 ?m9c ?m9p1 ?m9p0)) 2 (num2 ?n1 ?n0) (num2 0 0) (num2 0 0))
+  :why    "the divisor's multiples by 2 to 9, each a column at a time from the table. Start at the dividend's top digit: 2 digits to go, nothing left over, the quotient zero")
+
+(rule div2-step-0 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) ?ms ?k (num2 ?n1 ?n0) (num2 0 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?d0 0 ?u0 ?e1)
+               (fs ?r0 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) ?ms ?j (num2 ?n0 0) (num2 ?r0 ?n1) (num2 ?q0 0))
+  :why    "bring down {?n1}: the number is less than the divisor, since taking the divisor from it borrows out of the top. The quotient's next digit is 0")
+
+(rule div2-step-1 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 (row2 ?pc ?p1 ?p0) ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 (row2 ?pc ?p1 ?p0) ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 1))
+  :why    "bring down {?n1}: 1 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 1")
+
+(rule div2-step-2 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 (row2 ?pc ?p1 ?p0) ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 (row2 ?pc ?p1 ?p0) ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 2))
+  :why    "bring down {?n1}: 2 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 2")
+
+(rule div2-step-3 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 (row2 ?pc ?p1 ?p0) ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 (row2 ?pc ?p1 ?p0) ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 3))
+  :why    "bring down {?n1}: 3 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 3")
+
+(rule div2-step-4 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 (row2 ?pc ?p1 ?p0) ?m5 ?m6 ?m7 ?m8 ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 (row2 ?pc ?p1 ?p0) ?m5 ?m6 ?m7 ?m8 ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 4))
+  :why    "bring down {?n1}: 4 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 4")
+
+(rule div2-step-5 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 (row2 ?pc ?p1 ?p0) ?m6 ?m7 ?m8 ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 (row2 ?pc ?p1 ?p0) ?m6 ?m7 ?m8 ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 5))
+  :why    "bring down {?n1}: 5 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 5")
+
+(rule div2-step-6 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 (row2 ?pc ?p1 ?p0) ?m7 ?m8 ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 (row2 ?pc ?p1 ?p0) ?m7 ?m8 ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 6))
+  :why    "bring down {?n1}: 6 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 6")
+
+(rule div2-step-7 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 (row2 ?pc ?p1 ?p0) ?m8 ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 (row2 ?pc ?p1 ?p0) ?m8 ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 7))
+  :why    "bring down {?n1}: 7 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 7")
+
+(rule div2-step-8 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 (row2 ?pc ?p1 ?p0) ?m9) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 (row2 ?pc ?p1 ?p0) ?m9) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 8))
+  :why    "bring down {?n1}: 8 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 8")
+
+(rule div2-step-9 ()
+  :match  (and (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 (row2 ?pc ?p1 ?p0)) ?k (num2 ?n1 ?n0) (num2 ?r1 ?r0) (num2 ?qq ?q0))
+               (adj ?j ?k)
+               (fs ?n1 ?p0 0 ?t0 ?b1)
+               (fs ?r0 ?p1 ?b1 ?t1 ?b2)
+               (fs ?r1 ?pc ?b2 0 0)
+               (fs ?t0 ?d0 0 ?u0 ?e1)
+               (fs ?t1 ?d1 ?e1 ?u1 1))
+  :assert (div2-at ?n (num2 ?d1 ?d0) (multiples2 ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 (row2 ?pc ?p1 ?p0)) ?j (num2 ?n0 0) (num2 ?t1 ?t0) (num2 ?q0 9))
+  :why    "bring down {?n1}: 9 times the divisor goes into the number, with no borrow, and what is left is less than the divisor. The quotient's next digit is 9")
+
+(rule div2-done ()
+  :match  (div2-at ?n ?d ?ms 0 ?left ?r ?q)
+  :assert (quot2-of ?n ?d ?q ?r)
+  :why    "no digit of the dividend is left: the quotient is {?q} and the remainder {?r}")
+
+(rule div2-by-zero ()
+  :match  (div2 ?n (num2 0 0))
+  :assert (division-by-zero (div2 ?n (num2 0 0)))
+  :why    "the divisor of {?n} divided by zero is zero")
+
+;; ── Conversions to and from `std.math.decimal`'s numbers, `z` and `(n PREFIX DIGIT)`: a request each
+;;    way, one firing, a rule for each count of digits ──
+(rule to2-zero ()
+  :match  (to2 z)
+  :assert (as2 z (num2 0 0))
+  :why    "zero is written with zeros")
+
+(rule to2-1 ()
+  :match  (to2 (n z ?a1))
+  :assert (as2 (n z ?a1) (num2 0 ?a1))
+  :why    "a number written with 1 digit: 1 zero in front")
+
+(rule to2-2 ()
+  :match  (to2 (n (n z ?a2) ?a1))
+  :assert (as2 (n (n z ?a2) ?a1) (num2 ?a2 ?a1))
+  :why    "a number written with 2 digits: as it stands")
+
+(rule to2-big ()
+  :match  (to2 (n (n (n ?rest ?a3) ?a2) ?a1))
+  :assert (big (n (n (n ?rest ?a3) ?a2) ?a1))
+  :why    "a number written with more than 2 digits has no number of 2")
+
+(rule from2-zero ()
+  :match  (from2 (num2 0 0))
+  :assert (of2 (num2 0 0) z)
+  :why    "every digit is 0: zero")
+
+(rule from2-2 ()
+  :match  (and (from2 (num2 ?a2 ?a1))
+               (nz ?a2))
+  :assert (of2 (num2 ?a2 ?a1) (n (n z ?a2) ?a1))
+  :why    "the top digit that is not zero is {?a2}: a number of 2 digits, with no high zero")
+
+(rule from2-1 ()
+  :match  (and (from2 (num2 0 ?a1))
+               (nz ?a1))
+  :assert (of2 (num2 0 ?a1) (n z ?a1))
+  :why    "the top digit that is not zero is {?a1}: a number of 1 digit, with no high zero")
+
+;; ── The closing rule, and the theory's one entry ──
+;; Arithmetic is computed and never guessed: every relation of the theory, and
+;; each table it reads, is closed, so the search has no candidate among them.
+;; The rule also names every rule of the module, for a program and a trace to
+;; read; an import brings the whole theory whether or not a program lists the
+;; entry (Q-M1f.240).
+(relation num2-rule Rule
+  :why "{?1} is a rule of std.math.num2")
+
+;; The closing rule's own name, as a written fact. It is not what keeps
+;; `arith2` in a program inlined and tree-shaken, as the program a
+;; `--dump-answer` state file re-writes is: a name an import lists is live
+;; whether or not a rule reaches it. It stays because every state of every
+;; program that imports the theory holds it; removing it would change them all.
+(num2-rule arith2)
+
+(rule arith2 ()
+  :match  ()
+  :assert (and (__closed__ fa) (__closed__ fs) (__closed__ md) (__closed__ cl)
+               (__closed__ nz) (__closed__ adj) (__closed__ n)
+               (__closed__ division-by-zero) (__closed__ num2)
+               (__closed__ add2) (__closed__ sum2-of) (__closed__ sub2)
+               (__closed__ diff2-of) (__closed__ cmp2) (__closed__ cmp2-of)
+               (__closed__ mul2) (__closed__ product2-of) (__closed__ div2)
+               (__closed__ quot2-of) (__closed__ overflow) (__closed__ to2)
+               (__closed__ as2) (__closed__ big) (__closed__ from2)
+               (__closed__ of2) (__closed__ mul2-at) (__closed__ row2)
+               (__closed__ multiples2) (__closed__ div2-at)
+               (__closed__ num2-rule)
+               (num2-rule add2-fits) (num2-rule add2-overflows)
+               (num2-rule sub2-fits) (num2-rule sub2-short)
+               (num2-rule cmp2-columns) (num2-rule mul2-start)
+               (num2-rule mul2-step) (num2-rule mul2-step-zero)
+               (num2-rule mul2-done) (num2-rule mul2-overflows-shift)
+               (num2-rule mul2-overflows-row) (num2-rule mul2-overflows-add)
+               (num2-rule div2-start) (num2-rule div2-step-0)
+               (num2-rule div2-step-1) (num2-rule div2-step-2)
+               (num2-rule div2-step-3) (num2-rule div2-step-4)
+               (num2-rule div2-step-5) (num2-rule div2-step-6)
+               (num2-rule div2-step-7) (num2-rule div2-step-8)
+               (num2-rule div2-step-9) (num2-rule div2-done)
+               (num2-rule div2-by-zero) (num2-rule to2-zero) (num2-rule to2-1)
+               (num2-rule to2-2) (num2-rule to2-big) (num2-rule from2-zero)
+               (num2-rule from2-2) (num2-rule from2-1)
+               (num2-rule division-by-zero-is-false))
+  :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

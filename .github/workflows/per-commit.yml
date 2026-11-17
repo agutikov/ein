@@ -7,14 +7,14 @@
 # three red commits: clippy and the two Python greps ran only here, and the
 # local script reported a pass over findings it could not see.
 #
-# **Since M1e S1e.3.4 a test diffs the two lists** rather than a convention
-# asking for them to be kept the same — `ein-cli/tests/gate_steps.rs`, which
+# **A check diffs the two lists** rather than a convention asking for them
+# to be kept the same — `utils/check_gate_steps.py`, a step of both, which
 # reads this file and `run_tests.sh` and compares the commands after
 # normalising away the path spellings. A `# gate-step` marker is what makes a
 # `run:` here part of that list: the provisioning steps (checkout, toolchain,
 # cache, Python, Graphviz, the tests' `TMPDIR`) are not gate steps and are
-# excluded by name in the test, so an *unmarked* new step fails it rather than
-# being ignored.
+# excluded by name in the check, so an *unmarked* new step fails it rather
+# than being ignored.
 
 name: per-commit
 
@@ -53,6 +53,14 @@ jobs:
       # `plans/` and no date where the released tree keeps its prose.
       # gate-step
       - run: python3 utils/check_release_voice.py
+      # The gate's, the nightly's and the dev host's step lists against the
+      # two workflows: this file is one side of the first diff.
+      # gate-step
+      - run: python3 utils/check_gate_steps.py
+      # The process tools that copy a list of the engine's — the editor
+      # grammar, the natural-language census, the review driver — against it.
+      # gate-step
+      - run: python3 utils/check_tool_mirrors.py
 
   rust:
     name: ein.rs — build, lint, test
@@ -68,9 +76,9 @@ jobs:
         with: { components: "rustfmt, clippy" }
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
-      # `python3` is here for one thing —
-      # `examples/gen_zebra2_variants.py --check`, a stdlib-only script that
-      # `cli_semantics.rs` runs to compare the zebra2 variants byte for byte.
+      # `python3` is for the scripts this job runs after the tests: the
+      # scratch check, the generators' checks, the region routes and the
+      # review bundle's smoke, all stdlib-only.
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # `ein-render/tests/dot_wellformed.rs` runs every DOT view of every
@@ -106,6 +114,16 @@ jobs:
       # named with the file that writes it, and a failure if there is one.
       # gate-step
       - run: python3 utils/check_test_scratch.py "${GATE_TMP}"
+        working-directory: ${{ github.workspace }}
+      # Every generated project file is what its generator writes, the
+      # read-out examples page written from the binary the tests built.
+      # gate-step
+      - run: python3 utils/check_generated.py --bin ein.rs/target/gate/ein
+        working-directory: ${{ github.workspace }}
+      # The oracle's region against the per-subset route, and random regions
+      # written as programs and read back.
+      # gate-step
+      - run: python3 utils/check_region_routes.py --bin ein.rs/target/gate/ein
         working-directory: ${{ github.workspace }}
       # M1e2 S1e2.1.6 — the review bundle for one small case, with the gate
       # profile's `ein` the step above built (`target/gate/ein`), link-checked

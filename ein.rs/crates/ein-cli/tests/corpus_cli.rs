@@ -522,8 +522,8 @@ fn the_slow_flag_still_describes_the_sweep() {
         // was measured on — so gating it there does not weaken the band, it
         // moves it to where it is truer. The cells run on the pool, each
         // beside the others a worker runs, which the band's 4× is wide enough
-        // for. `nightly_steps::the_slow_cells_run_under_the_gate_profile_with_the_flag`
-        // holds that the flag is set where this runs.
+        // for. The nightly runs this target under the gate profile with the
+        // flag set.
         if let Some(c) = e.cost_ms.filter(|c| *c as u128 >= floor) {
             let (c, f) = (c as u128, COST_FACTOR as u128);
             if ms > c * f || ms * f < c {

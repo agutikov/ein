@@ -57,11 +57,11 @@ The three closed name sets mirror the kernel's single source of truth:
 - **primitives** — `ein_core::STRUCTURAL`, plus the verdict atom `open`
 - **predicates** — `ein-infer`'s predicate registry (`ein_infer::predicates::names()`)
 
-`ein-cli/tests/cli_semantics.rs` re-derives each list straight out
-of `ein.tmLanguage.json` and asserts it equals the authoritative set, so
-the grammar can't silently drift from the kernel. If you add a kernel
-primitive / declarator, update the matching `begin` alternation here and
-the test will keep you honest.
+`utils/check_tool_mirrors.py`, a static step of the gate, re-derives each
+list straight out of `ein.tmLanguage.json` and asserts it equals the
+authoritative set, so the grammar can't silently drift from the kernel. If
+you add a kernel primitive / declarator, update the matching `begin`
+alternation here and the check will keep you honest.
 
 ### Known, intentional omissions
 

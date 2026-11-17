@@ -568,8 +568,8 @@ fn tokens(def: &LexerDef, text: &str) -> Vec<(String, usize, usize)> {
 /// ([`as_t4_wrote_it`]), both read at run time through `lrlex` (`build.rs`
 /// compiles the same text with the same flags), and the two streams are
 /// compared, kind and span, lexing errors included: every `.ein` under
-/// `examples/`, `stdlib/`, `tests/`, `corpus/` and `plans/` (the fuzzer's
-/// seed files among them), 500 seeded mutants of the corpus, edge cases
+/// `examples/`, `stdlib/`, `tests/` and `corpus/` (the fuzzer's seed files
+/// among them), 500 seeded mutants of the corpus, edge cases
 /// around the rules and the separators, and 20 000 seeded strings over the
 /// characters they read.
 #[test]
@@ -589,7 +589,7 @@ fn the_lexer_gives_the_tokens_t4s_did() {
 
     let mut inputs: Vec<(String, String)> = Vec::new();
     let root = repo_root();
-    for dir in ["examples", "stdlib", "tests", "corpus", "plans"] {
+    for dir in ["examples", "stdlib", "tests", "corpus"] {
         for p in ein_corpus::ein_files_under(&root.join(dir)) {
             let text = std::fs::read_to_string(&p).expect("readable");
             inputs.push((relative(&p), text));

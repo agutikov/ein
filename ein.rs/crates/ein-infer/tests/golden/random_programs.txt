@@ -1,0 +1,6311 @@
+;;; Programs written for random regions, over at most six candidates, for the
+;;; detector's sweep. Generated, not edited by hand: an edit is lost the next
+;;; time the file is written. Each program begins at a line `;;; program NAME`.
+;;; program random_0
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 C) (need K3 D) (need K4 A) (need K5 A) (need K5 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of D is required")
+
+(rule owe-4 ()
+  :match  (and (h D) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of A is required")
+
+(rule owe-5 ()
+  :match  (and (world ?w) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(query :goal (h ?x))
+;;; program random_1
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-C ()
+  :match  (h D)
+  :assert (h C)
+  :why    "D brings C")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-E-C ()
+  :match  (h E)
+  :assert (h C)
+  :why    "E brings C")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule dead-2 ()
+  :match  (h E)
+  :assert (false)
+  :why    "E is dead")
+
+(query :goal (h ?x))
+;;; program random_2
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_3
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_4
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_5
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_6
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_7
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_8
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K1 C) (need K2 A) (need K2 C) (need K3 A) (need K3 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B) (h C))
+  :assert (false)
+  :why    "A B C is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(query :goal (h ?x))
+;;; program random_9
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 B) (need K2 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h E))
+  :assert (false)
+  :why    "A E is dead")
+
+(rule dead-2 ()
+  :match  (and (h D) (h E))
+  :assert (false)
+  :why    "D E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h E) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: one of C is required")
+
+(query :goal (h ?x))
+;;; program random_10
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 E) (need K3 D) (need K4 C) (need K5 B) (need K6 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-5 ()
+  :match  (and (world ?w) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-6 ()
+  :match  (and (world ?w) (absent (and (need K6 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_11
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_12
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-D ()
+  :match  (h A)
+  :assert (h D)
+  :why    "A brings D")
+
+(rule imp-D-B ()
+  :match  (h D)
+  :assert (h B)
+  :why    "D brings B")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_13
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_14
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule dead-2 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_15
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 C) (need K2 B) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_16
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 B) (need K1 C) (need K2 A) (need K2 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-A ()
+  :match  (h D)
+  :assert (h A)
+  :why    "D brings A")
+
+(rule imp-D-B ()
+  :match  (h D)
+  :assert (h B)
+  :why    "D brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(query :goal (h ?x))
+;;; program random_17
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule dead-2 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_18
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_19
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_20
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_21
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h B) (h C) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_22
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 C) (need K1 D) (need K2 A) (need K3 D) (need K4 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of D is required")
+
+(rule owe-4 ()
+  :match  (and (h C) (h D) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C D: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_23
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_24
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 C) (need K2 B) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_25
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 A) (need K2 C) (need K3 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_26
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 B) (need K2 Z) (need K3 A) (need K3 C) (need K4 A) (need K4 D) (need K4 E) (need K5 A) (need K6 A) (need K6 F) (need K7 A) (need K7 D) (need K8 A) (need K8 D) (need K9 A) (need K9 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A C: a debt nothing pays")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A C is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D E is required")
+
+(rule owe-5 ()
+  :match  (and (h D) (h E) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D E: one of A is required")
+
+(rule owe-6 ()
+  :match  (and (h D) (absent (and (need K6 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of A F is required")
+
+(rule owe-7 ()
+  :match  (and (h F) (absent (and (need K7 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: one of A D is required")
+
+(rule owe-8 ()
+  :match  (and (h B) (absent (and (need K8 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A D is required")
+
+(rule owe-9 ()
+  :match  (and (h D) (absent (and (need K9 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of A C is required")
+
+(query :goal (h ?x))
+;;; program random_27
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h B) (h C))
+  :assert (false)
+  :why    "B C is dead")
+
+(rule owe-1 ()
+  :match  (and (h C) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_28
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 D) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-D ()
+  :match  (h C)
+  :assert (h D)
+  :why    "C brings D")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule imp-B-D ()
+  :match  (h B)
+  :assert (h D)
+  :why    "B brings D")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_29
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 D) (need K3 B) (need K4 A) (need K5 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-5 ()
+  :match  (and (h C) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_30
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_31
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_32
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 D) (need K3 B) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h E))
+  :assert (false)
+  :why    "A E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (h C) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_33
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_34
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 B) (need K2 D) (need K3 A) (need K4 B) (need K4 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B) (h D))
+  :assert (false)
+  :why    "A B D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B C is required")
+
+(query :goal (h ?x))
+;;; program random_35
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_36
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 D) (need K2 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B))
+  :assert (false)
+  :why    "A B is dead")
+
+(rule dead-2 ()
+  :match  (and (h A) (h D))
+  :assert (false)
+  :why    "A D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(query :goal (h ?x))
+;;; program random_37
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-D ()
+  :match  (h B)
+  :assert (h D)
+  :why    "B brings D")
+
+(rule imp-D-B ()
+  :match  (h D)
+  :assert (h B)
+  :why    "D brings B")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_38
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 A) (need K1 B) (need K1 E) (need K2 A) (need K2 D) (need K2 E) (need K3 A) (need K3 F) (need K4 B) (need K4 F) (need K5 D) (need K5 F) (need K6 E) (need K6 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule dead-1 ()
+  :match  (and (h A) (h F))
+  :assert (false)
+  :why    "A F is dead")
+
+(rule dead-2 ()
+  :match  (and (h E) (h F))
+  :assert (false)
+  :why    "E F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A F is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B F is required")
+
+(rule owe-5 ()
+  :match  (and (world ?w) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D F is required")
+
+(rule owe-6 ()
+  :match  (and (world ?w) (absent (and (need K6 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E F is required")
+
+(query :goal (h ?x))
+;;; program random_39
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_40
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_41
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_42
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 A) (need K3 C) (need K4 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of C is required")
+
+(rule owe-4 ()
+  :match  (and (h C) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_43
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 C) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_44
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 C) (need K3 B) (need K4 A) (need K5 E)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-5 ()
+  :match  (and (h D) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of E is required")
+
+(query :goal (h ?x))
+;;; program random_45
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(query :goal (h ?x))
+;;; program random_46
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_47
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 C) (need K2 Z) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h C) (h F))
+  :assert (false)
+  :why    "C F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_48
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_49
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 D) (need K1 E) (need K2 B) (need K3 A) (need K4 B) (need K5 C) (need K5 E)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D E is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h E) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: one of A is required")
+
+(rule owe-4 ()
+  :match  (and (h A) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(rule owe-5 ()
+  :match  (and (h B) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C E is required")
+
+(query :goal (h ?x))
+;;; program random_50
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_51
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 C) (need K2 B) (need K3 A) (need K3 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h B) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(query :goal (h ?x))
+;;; program random_52
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 C) (need K2 B) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-A ()
+  :match  (h D)
+  :assert (h A)
+  :why    "D brings A")
+
+(rule imp-E-B ()
+  :match  (h E)
+  :assert (h B)
+  :why    "E brings B")
+
+(rule dead-1 ()
+  :match  (and (h A) (h E))
+  :assert (false)
+  :why    "A E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_53
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule dead-2 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(query :goal (h ?x))
+;;; program random_54
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_55
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 C) (need K2 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-C ()
+  :match  (h D)
+  :assert (h C)
+  :why    "D brings C")
+
+(rule dead-1 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_56
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 B) (need K2 A) (need K2 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead")
+
+(rule dead-2 ()
+  :match  (and (h A) (h E))
+  :assert (false)
+  :why    "A E is dead")
+
+(rule dead-3 ()
+  :match  (and (h C) (h E))
+  :assert (false)
+  :why    "C E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D is required")
+
+(query :goal (h ?x))
+;;; program random_57
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule dead-1 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule owe-1 ()
+  :match  (and (h C) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_58
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 D) (need K2 C) (need K3 B) (need K4 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h E)
+  :assert (false)
+  :why    "E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_59
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 A) (need K2 Z) (need K3 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B C: a debt nothing pays")
+
+(rule owe-3 ()
+  :match  (and (h D) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of C is required")
+
+(query :goal (h ?x))
+;;; program random_60
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 B) (need K1 D) (need K2 C) (need K3 Z) (need K4 C) (need K4 E) (need K5 A) (need K5 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C) (h E))
+  :assert (false)
+  :why    "A C E is dead")
+
+(rule dead-2 ()
+  :match  (and (h A) (h D) (h E))
+  :assert (false)
+  :why    "A D E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (h E) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C E: a debt nothing pays")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C E is required")
+
+(rule owe-5 ()
+  :match  (and (h C) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A B is required")
+
+(query :goal (h ?x))
+;;; program random_61
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 A) (need K2 C) (need K2 F) (need K3 B) (need K3 D) (need K4 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-F ()
+  :match  (h D)
+  :assert (h F)
+  :why    "D brings F")
+
+(rule imp-D-E ()
+  :match  (h D)
+  :assert (h E)
+  :why    "D brings E")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C F is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(rule owe-4 ()
+  :match  (and (h D) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_62
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 B) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_63
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-E ()
+  :match  (h C)
+  :assert (h E)
+  :why    "C brings E")
+
+(rule imp-C-D ()
+  :match  (h C)
+  :assert (h D)
+  :why    "C brings D")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(query :goal (h ?x))
+;;; program random_64
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 D) (need K3 B) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-F-A ()
+  :match  (h F)
+  :assert (h A)
+  :why    "F brings A")
+
+(rule imp-D-F ()
+  :match  (h D)
+  :assert (h F)
+  :why    "D brings F")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (h C) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_65
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(query :goal (h ?x))
+;;; program random_66
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 E) (need K3 C) (need K4 Z) (need K5 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-D ()
+  :match  (h A)
+  :assert (h D)
+  :why    "A brings D")
+
+(rule imp-D-F ()
+  :match  (h D)
+  :assert (h F)
+  :why    "D brings F")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-4 ()
+  :match  (and (h B) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(rule owe-5 ()
+  :match  (and (h D) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_67
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_68
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule dead-2 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule dead-3 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(rule dead-4 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_69
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_70
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_71
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 D) (need K2 B) (need K3 E) (need K4 A) (need K5 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-E-D ()
+  :match  (h E)
+  :assert (h D)
+  :why    "E brings D")
+
+(rule imp-A-D ()
+  :match  (h A)
+  :assert (h D)
+  :why    "A brings D")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h F) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: one of E is required")
+
+(rule owe-4 ()
+  :match  (and (h F) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: one of A is required")
+
+(rule owe-5 ()
+  :match  (and (h C) (h F) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C F: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_72
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 B) (need K1 D) (need K2 A) (need K3 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_73
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 C) (need K2 A) (need K2 B) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A B: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_74
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_75
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(query :goal (h ?x))
+;;; program random_76
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_77
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 B) (need K2 A) (need K2 C) (need K2 E) (need K3 A) (need K3 B) (need K4 A) (need K4 C) (need K4 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h C) (h E))
+  :assert (false)
+  :why    "C E is dead")
+
+(rule owe-1 ()
+  :match  (and (h C) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C D is required")
+
+(query :goal (h ?x))
+;;; program random_78
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 D) (need K2 A) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-B ()
+  :match  (h D)
+  :assert (h B)
+  :why    "D brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_79
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 C) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_80
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_81
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule dead-1 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_82
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_83
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(query :goal (h ?x))
+;;; program random_84
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_85
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 B) (need K2 A) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C) (h D))
+  :assert (false)
+  :why    "A C D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_86
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 D) (need K2 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-D-A ()
+  :match  (h D)
+  :assert (h A)
+  :why    "D brings A")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_87
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_88
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 B) (need K2 A) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h C) (h D))
+  :assert (false)
+  :why    "C D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_89
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 B) (need K2 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-E-A ()
+  :match  (h E)
+  :assert (h A)
+  :why    "E brings A")
+
+(rule imp-D-C ()
+  :match  (h D)
+  :assert (h C)
+  :why    "D brings C")
+
+(rule imp-B-E ()
+  :match  (h B)
+  :assert (h E)
+  :why    "B brings E")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h D) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_90
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 C) (need K2 B) (need K2 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule imp-D-C ()
+  :match  (h D)
+  :assert (h C)
+  :why    "D brings C")
+
+(rule dead-1 ()
+  :match  (and (h B) (h D))
+  :assert (false)
+  :why    "B D is dead")
+
+(rule dead-2 ()
+  :match  (and (h B) (h E))
+  :assert (false)
+  :why    "B E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(query :goal (h ?x))
+;;; program random_91
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule owe-1 ()
+  :match  (and (h B) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required")
+
+(query :goal (h ?x))
+;;; program random_92
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_93
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_94
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h D) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_95
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 D) (need K3 C) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-4 ()
+  :match  (and (h A) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_96
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_97
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 D) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h B) (h D))
+  :assert (false)
+  :why    "B D is dead")
+
+(rule dead-2 ()
+  :match  (and (h C) (h D))
+  :assert (false)
+  :why    "C D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_98
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_99
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_100
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 C) (need K1 F) (need K2 B) (need K3 D) (need K4 C) (need K5 E) (need K6 F) (need K7 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-E-A ()
+  :match  (h E)
+  :assert (h A)
+  :why    "E brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C F is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of D is required")
+
+(rule owe-4 ()
+  :match  (and (h A) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of C is required")
+
+(rule owe-5 ()
+  :match  (and (h B) (h C) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B C: one of E is required")
+
+(rule owe-6 ()
+  :match  (and (h A) (absent (and (need K6 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of F is required")
+
+(rule owe-7 ()
+  :match  (and (h C) (h F) (absent (and (need K7 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C F: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_101
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_102
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 C) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_103
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(query :goal (h ?x))
+;;; program random_104
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 A) (need K2 D) (need K3 F) (need K4 C) (need K5 E)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-F-C ()
+  :match  (h F)
+  :assert (h C)
+  :why    "F brings C")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (h D) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of F is required")
+
+(rule owe-4 ()
+  :match  (and (h B) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required")
+
+(rule owe-5 ()
+  :match  (and (h C) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of E is required")
+
+(query :goal (h ?x))
+;;; program random_105
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 D) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_106
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 D) (need K1 F) (need K2 C) (need K3 A) (need K3 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule dead-1 ()
+  :match  (and (h D) (h E))
+  :assert (false)
+  :why    "D E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D is required")
+
+(query :goal (h ?x))
+;;; program random_107
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_108
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule dead-1 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_109
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-D ()
+  :match  (h A)
+  :assert (h D)
+  :why    "A brings D")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_110
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_111
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 D) (need K3 Z) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-E-A ()
+  :match  (h E)
+  :assert (h A)
+  :why    "E brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(rule owe-4 ()
+  :match  (and (h C) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_112
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_113
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 A) (need K2 B) (need K3 C) (need K4 B) (need K5 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A B: one of C is required")
+
+(rule owe-4 ()
+  :match  (and (h C) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B is required")
+
+(rule owe-5 ()
+  :match  (and (h B) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of D is required")
+
+(query :goal (h ?x))
+;;; program random_114
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_115
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 B) (need K1 F) (need K2 B) (need K3 D) (need K3 E) (need K4 C) (need K4 D) (need K5 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h E))
+  :assert (false)
+  :why    "A E is dead")
+
+(rule dead-2 ()
+  :match  (and (h D) (h E))
+  :assert (false)
+  :why    "D E is dead")
+
+(rule dead-3 ()
+  :match  (and (h A) (h C) (h F))
+  :assert (false)
+  :why    "A C F is dead")
+
+(rule dead-4 ()
+  :match  (and (h C) (h D) (h F))
+  :assert (false)
+  :why    "C D F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B F is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D E is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D is required")
+
+(rule owe-5 ()
+  :match  (and (h C) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of F is required")
+
+(query :goal (h ?x))
+;;; program random_116
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 D) (need K2 B) (need K3 E) (need K4 A) (need K4 C) (need K5 A) (need K5 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C) (h E))
+  :assert (false)
+  :why    "A C E is dead")
+
+(rule dead-2 ()
+  :match  (and (h A) (h C) (h F))
+  :assert (false)
+  :why    "A C F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h F) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: one of E is required")
+
+(rule owe-4 ()
+  :match  (and (h E) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: one of A C is required")
+
+(rule owe-5 ()
+  :match  (and (h E) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: one of A F is required")
+
+(query :goal (h ?x))
+;;; program random_117
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-D ()
+  :match  (h A)
+  :assert (h D)
+  :why    "A brings D")
+
+(rule imp-C-D ()
+  :match  (h C)
+  :assert (h D)
+  :why    "C brings D")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule dead-2 ()
+  :match  (and (h D) (h E))
+  :assert (false)
+  :why    "D E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_118
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(query :goal (h ?x))
+;;; program random_119
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 D) (need K3 B) (need K4 A) (need K4 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C is required")
+
+(query :goal (h ?x))
+;;; program random_120
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(query :goal (h ?x))
+;;; program random_121
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 C) (need K1 D) (need K2 A) (need K2 B) (need K2 F) (need K3 B) (need K3 C) (need K3 F) (need K4 D) (need K4 F) (need K5 B) (need K5 E) (need K5 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h B) (h D))
+  :assert (false)
+  :why    "B D is dead")
+
+(rule dead-2 ()
+  :match  (and (h D) (h F))
+  :assert (false)
+  :why    "D F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B F is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B C F is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D F is required")
+
+(rule owe-5 ()
+  :match  (and (world ?w) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B E F is required")
+
+(query :goal (h ?x))
+;;; program random_122
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 D) (need K2 B) (need K2 E) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-E ()
+  :match  (h C)
+  :assert (h E)
+  :why    "C brings E")
+
+(rule imp-C-D ()
+  :match  (h C)
+  :assert (h D)
+  :why    "C brings D")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_123
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 E) (need K3 B) (need K4 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(rule dead-2 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_124
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 B) (need K2 F) (need K3 F) (need K4 A) (need K4 E) (need K5 E) (need K6 A) (need K6 C) (need K6 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of F is required")
+
+(rule owe-3 ()
+  :match  (and (h D) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of F is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A E is required")
+
+(rule owe-5 ()
+  :match  (and (h D) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of E is required")
+
+(rule owe-6 ()
+  :match  (and (world ?w) (absent (and (need K6 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C D is required")
+
+(query :goal (h ?x))
+;;; program random_125
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 A) (need K1 D) (need K2 C) (need K3 A) (need K3 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (h D) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B D: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(query :goal (h ?x))
+;;; program random_126
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 B) (need K1 E) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule dead-1 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_127
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 C) (need K1 D) (need K2 B) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (h D) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C D: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_128
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_129
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 A) (need K1 D) (need K2 C) (need K2 D) (need K3 C) (need K3 E) (need K4 D) (need K4 E) (need K5 E) (need K5 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-F-B ()
+  :match  (h F)
+  :assert (h B)
+  :why    "F brings B")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule dead-1 ()
+  :match  (and (h D) (h E))
+  :assert (false)
+  :why    "D E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C E is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D E is required")
+
+(rule owe-5 ()
+  :match  (and (world ?w) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E F is required")
+
+(query :goal (h ?x))
+;;; program random_130
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_131
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule owe-1 ()
+  :match  (and (h B) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_132
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_133
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 D) (need K3 B) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (h F) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_134
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_135
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule imp-D-B ()
+  :match  (h D)
+  :assert (h B)
+  :why    "D brings B")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule dead-2 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_136
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-C ()
+  :match  (h B)
+  :assert (h C)
+  :why    "B brings C")
+
+(rule owe-1 ()
+  :match  (and (h C) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_137
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 F) (need K3 B) (need K3 D) (need K4 A) (need K4 B) (need K5 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h B) (h C))
+  :assert (false)
+  :why    "B C is dead")
+
+(rule dead-2 ()
+  :match  (and (h B) (h D))
+  :assert (false)
+  :why    "B D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of F is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(rule owe-5 ()
+  :match  (and (h B) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of F is required")
+
+(query :goal (h ?x))
+;;; program random_138
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K1 F) (need K2 D) (need K2 F) (need K3 C) (need K4 A) (need K4 F) (need K5 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B))
+  :assert (false)
+  :why    "A B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D F is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A F is required")
+
+(rule owe-5 ()
+  :match  (and (h B) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_139
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_140
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 A) (need K2 B) (need K2 F) (need K3 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B F is required")
+
+(rule owe-3 ()
+  :match  (and (h E) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: one of F is required")
+
+(query :goal (h ?x))
+;;; program random_141
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_142
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(query :goal (h ?x))
+;;; program random_143
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(query :goal (h ?x))
+;;; program random_144
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_145
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_146
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A) (need K1 B) (need K2 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A B: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_147
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_148
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(query :goal (h ?x))
+;;; program random_149
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_150
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 C) (need K2 B) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h B) (h E))
+  :assert (false)
+  :why    "B E is dead")
+
+(rule dead-2 ()
+  :match  (and (h B) (h F))
+  :assert (false)
+  :why    "B F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_151
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_152
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 D) (need K2 C) (need K3 B) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-4 ()
+  :match  (and (h A) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_153
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 C) (need K2 A) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-D ()
+  :match  (h C)
+  :assert (h D)
+  :why    "C brings D")
+
+(rule imp-C-E ()
+  :match  (h C)
+  :assert (h E)
+  :why    "C brings E")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_154
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-E ()
+  :match  (h C)
+  :assert (h E)
+  :why    "C brings E")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule dead-1 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule dead-2 ()
+  :match  (and (h B) (h C))
+  :assert (false)
+  :why    "B C is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_155
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 C) (need K2 A) (need K3 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h D))
+  :assert (false)
+  :why    "A D is dead")
+
+(rule dead-2 ()
+  :match  (and (h C) (h D))
+  :assert (false)
+  :why    "C D is dead")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_156
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 E) (need K3 C) (need K4 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule dead-2 ()
+  :match  (h D)
+  :assert (false)
+  :why    "D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_157
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 C) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_158
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 A) (need K2 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_159
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 C) (need K2 A) (need K2 B) (need K3 A) (need K3 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B))
+  :assert (false)
+  :why    "A B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D is required")
+
+(query :goal (h ?x))
+;;; program random_160
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 A) (need K2 B) (need K2 C) (need K3 D) (need K4 F) (need K5 A) (need K5 D) (need K6 C) (need K7 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B) (h E))
+  :assert (false)
+  :why    "A B E is dead")
+
+(rule dead-2 ()
+  :match  (and (h B) (h C) (h E))
+  :assert (false)
+  :why    "B C E is dead")
+
+(rule owe-1 ()
+  :match  (and (h C) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B C is required")
+
+(rule owe-3 ()
+  :match  (and (h C) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of D is required")
+
+(rule owe-4 ()
+  :match  (and (h D) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of F is required")
+
+(rule owe-5 ()
+  :match  (and (world ?w) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A D is required")
+
+(rule owe-6 ()
+  :match  (and (h A) (h F) (absent (and (need K6 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A F: one of C is required")
+
+(rule owe-7 ()
+  :match  (and (h E) (absent (and (need K7 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_161
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_162
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule dead-2 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(rule dead-3 ()
+  :match  (h E)
+  :assert (false)
+  :why    "E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_163
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 C) (need K1 D) (need K2 B) (need K2 D) (need K3 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_164
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 C) (need K2 D) (need K3 A) (need K4 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-C ()
+  :match  (h D)
+  :assert (h C)
+  :why    "D brings C")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (h D) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of A is required")
+
+(rule owe-4 ()
+  :match  (and (h A) (h E) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A E: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_165
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_166
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_167
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule imp-D-B ()
+  :match  (h D)
+  :assert (h B)
+  :why    "D brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_168
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 Z) (need K2 Z) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (h B) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(rule owe-2 ()
+  :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: a debt nothing pays")
+
+(rule owe-3 ()
+  :match  (and (h D) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_169
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 D) (need K1 F) (need K2 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-D ()
+  :match  (h A)
+  :assert (h D)
+  :why    "A brings D")
+
+(rule dead-1 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(rule dead-2 ()
+  :match  (and (h D) (h E))
+  :assert (false)
+  :why    "D E is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_170
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 B) (need K2 D) (need K3 C) (need K3 D) (need K4 A) (need K4 D) (need K5 D) (need K5 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B) (h C) (h D))
+  :assert (false)
+  :why    "A B C D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D is required")
+
+(rule owe-3 ()
+  :match  (and (h F) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: one of C D is required")
+
+(rule owe-4 ()
+  :match  (and (h C) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of A D is required")
+
+(rule owe-5 ()
+  :match  (and (h C) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with C: one of D F is required")
+
+(query :goal (h ?x))
+;;; program random_171
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B) (need K2 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_172
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 D) (need K2 A) (need K2 C) (need K3 C) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-E-B ()
+  :match  (h E)
+  :assert (h B)
+  :why    "E brings B")
+
+(rule imp-A-D ()
+  :match  (h A)
+  :assert (h D)
+  :why    "A brings D")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C is required")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required")
+
+(rule owe-4 ()
+  :match  (and (h E) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_173
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 B) (need K1 D) (need K1 F) (need K2 C) (need K2 D) (need K2 F) (need K3 D) (need K3 E) (need K3 F)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h D))
+  :assert (false)
+  :why    "A D is dead")
+
+(rule dead-2 ()
+  :match  (and (h C) (h D))
+  :assert (false)
+  :why    "C D is dead")
+
+(rule dead-3 ()
+  :match  (and (h D) (h E))
+  :assert (false)
+  :why    "D E is dead")
+
+(rule dead-4 ()
+  :match  (h F)
+  :assert (false)
+  :why    "F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B D F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D F is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D E F is required")
+
+(query :goal (h ?x))
+;;; program random_174
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A) (need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(query :goal (h ?x))
+;;; program random_175
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-A ()
+  :match  (h C)
+  :assert (h A)
+  :why    "C brings A")
+
+(rule imp-D-B ()
+  :match  (h D)
+  :assert (h B)
+  :why    "D brings B")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(query :goal (h ?x))
+;;; program random_176
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_177
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 E) (need K2 C) (need K3 Z) (need K4 Z) (need K5 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(rule owe-4 ()
+  :match  (and (h B) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(rule owe-5 ()
+  :match  (and (h D) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_178
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 F) (need K2 E) (need K3 D) (need K4 C) (need K5 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-5 ()
+  :match  (and (world ?w) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(query :goal (h ?x))
+;;; program random_179
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_180
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 C) (need K3 D) (need K4 A) (need K5 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule dead-1 ()
+  :match  (and (h D) (h F))
+  :assert (false)
+  :why    "D F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of D is required")
+
+(rule owe-4 ()
+  :match  (and (h D) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: one of A is required")
+
+(rule owe-5 ()
+  :match  (and (h F) (absent (and (need K5 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_181
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_182
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_183
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(query :goal (h ?x))
+;;; program random_184
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_185
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A) (need K2 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_186
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_187
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_188
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 C) (need K1 D) (need K2 B) (need K3 A) (need K4 A) (need K4 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C) (h D))
+  :assert (false)
+  :why    "A C D is dead")
+
+(rule dead-2 ()
+  :match  (and (h B) (h C) (h D))
+  :assert (false)
+  :why    "B C D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C D is required")
+
+(rule owe-2 ()
+  :match  (and (h A) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h B) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A is required")
+
+(rule owe-4 ()
+  :match  (and (world ?w) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C is required")
+
+(query :goal (h ?x))
+;;; program random_189
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B")
+
+(rule imp-B-A ()
+  :match  (h B)
+  :assert (h A)
+  :why    "B brings A")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_190
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 C) (need K2 B) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_191
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 C) (need K2 A) (need K2 B) (need K3 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (h D) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A D: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_192
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 D) (need K2 B) (need K3 Z) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-E-D ()
+  :match  (h E)
+  :assert (h D)
+  :why    "E brings D")
+
+(rule imp-D-A ()
+  :match  (h D)
+  :assert (h A)
+  :why    "D brings A")
+
+(rule imp-C-E ()
+  :match  (h C)
+  :assert (h E)
+  :why    "C brings E")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h E) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with E: a debt nothing pays")
+
+(rule owe-4 ()
+  :match  (and (h F) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with F: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_193
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-B-D ()
+  :match  (h B)
+  :assert (h D)
+  :why    "B brings D")
+
+(rule imp-D-A ()
+  :match  (h D)
+  :assert (h A)
+  :why    "D brings A")
+
+(rule dead-1 ()
+  :match  (h A)
+  :assert (false)
+  :why    "A is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_194
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-D-A ()
+  :match  (h D)
+  :assert (h A)
+  :why    "D brings A")
+
+(rule imp-B-D ()
+  :match  (h B)
+  :assert (h D)
+  :why    "B brings D")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_195
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (h B)
+  :assert (false)
+  :why    "B is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required")
+
+(query :goal (h ?x))
+;;; program random_196
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K1 F) (need K2 D) (need K3 A) (need K3 B) (need K3 E)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-F-C ()
+  :match  (h F)
+  :assert (h C)
+  :why    "F brings C")
+
+(rule dead-1 ()
+  :match  (and (h A) (h D) (h E))
+  :assert (false)
+  :why    "A D E is dead")
+
+(rule dead-2 ()
+  :match  (and (h D) (h E) (h F))
+  :assert (false)
+  :why    "D E F is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E F is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of D is required")
+
+(rule owe-3 ()
+  :match  (and (world ?w) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B E is required")
+
+(query :goal (h ?x))
+;;; program random_197
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C)
+
+(need K1 B) (need K2 A) (need K2 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C is required")
+
+(query :goal (h ?x))
+;;; program random_198
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
+
+(need K1 E) (need K2 B) (need K3 Z) (need K4 Z)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead")
+
+(rule dead-2 ()
+  :match  (and (h C) (h D))
+  :assert (false)
+  :why    "C D is dead")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of E is required")
+
+(rule owe-2 ()
+  :match  (and (world ?w) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of B is required")
+
+(rule owe-3 ()
+  :match  (and (h A) (absent (and (need K3 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: a debt nothing pays")
+
+(rule owe-4 ()
+  :match  (and (h D) (absent (and (need K4 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with D: a debt nothing pays")
+
+(query :goal (h ?x))
+;;; program random_199
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-C-B ()
+  :match  (h C)
+  :assert (h B)
+  :why    "C brings B")
+
+(rule imp-A-C ()
+  :match  (h A)
+  :assert (h C)
+  :why    "A brings C")
+
+(rule dead-1 ()
+  :match  (h C)
+  :assert (false)
+  :why    "C is dead")
+
+(query :goal (h ?x))

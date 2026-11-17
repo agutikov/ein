@@ -8,7 +8,7 @@
 use std::path::Path;
 
 use ein_core::{FactId, Kb, Prov, Terms};
-use ein_corpus::{Scratch, corpus_files, repo_root};
+use ein_corpus::{corpus_files, repo_root};
 use ein_infer::canon::state_key;
 use ein_infer::compile::SharedMemo;
 use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static, Status, Warning};
@@ -702,42 +702,34 @@ fn a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split() {
     assert!(programs > 140 && nodes > 1900, "the sweep is not vacuous");
 }
 
-/// **The same on random programs**: a program is written for a random
-/// region, as `region_dump.rs`'s round trip draws them (whose check holds a
-/// *Monotone* verdict to no cube violation on them). Here every one the static
-/// check calls monotone is swept as the corpus is — by fork, by every split,
-/// from scratch, and read for stale facts — and none departs: no random
-/// program races two `absent` rules over a static read.
+/// **The same on random programs**: two hundred programs, each written for a
+/// random region over at most six candidates, banked as one generated
+/// fixture, `golden/random_programs.txt`. Every one the static check calls
+/// monotone is swept as the corpus is — by fork, by every split, from
+/// scratch, and read for stale facts — and none departs: no random program
+/// races two `absent` rules over a static read.
 #[test]
 fn a_monotone_verdict_is_one_state_per_node_on_random_programs() {
-    let tmp = Scratch::new("ein-detector-random");
-    let dir = tmp.join("d");
-    let out = std::process::Command::new("python3")
-        .arg("-I")
-        .arg(repo_root().join("utils/region_synth.py"))
-        .args(["--random", "200", "--seed", "5", "--max-n", "6", "--write"])
-        .arg(&dir)
-        .output()
-        .expect("python3 runs utils/region_synth.py — the gate needs python3");
-    assert!(
-        out.status.success(),
-        "{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr)
-    );
+    let fixture = ein_corpus::golden_path("ein-infer", "random_programs.txt");
+    let text =
+        std::fs::read_to_string(&fixture).unwrap_or_else(|e| panic!("{}: {e}", fixture.display()));
+    let mut files: Vec<(String, String)> = Vec::new();
+    for line in text.lines() {
+        if let Some(name) = line.strip_prefix(";;; program ") {
+            files.push((name.to_string(), String::new()));
+        } else if let Some((_, body)) = files.last_mut() {
+            body.push_str(line);
+            body.push('\n');
+        }
+    }
+    assert_eq!(files.len(), 200, "the fixture holds two hundred programs");
     let (mut programs, mut nodes) = (0, 0);
     let mut failures: Vec<String> = Vec::new();
-    let mut files: Vec<_> = std::fs::read_dir(&dir)
-        .expect("written")
-        .filter_map(|e| e.ok().map(|e| e.path()))
-        .collect();
-    files.sort();
-    for path in &files {
-        let text = std::fs::read_to_string(path).expect("written");
-        let Some(s) = sweep(&text, path, 6) else {
+    for (name, program) in &files {
+        let path = fixture.with_file_name(format!("{name}.ein"));
+        let Some(s) = sweep(program, &path, 6) else {
             continue;
         };
-        let name = path.file_name().unwrap_or_default().to_string_lossy();
         programs += 1;
         nodes += s.nodes;
         failures.extend(s.split_differs.iter().map(|d| format!("{name}: split {d}")));

@@ -267,7 +267,7 @@ T1f.5.27.2.
 - The fuzz budget is an environment value each tier sets: `EIN_FUZZ_ITERS`, which the harness already read; no new
   name, so `config_reference.rs`' census of what the shipped binary reads is unmoved.
 
-**The pins**, in [`nightly_steps.rs`](../../../ein.rs/crates/ein-cli/tests/nightly_steps.rs)
+**The pins**, in `nightly_steps.rs` (now [`utils/check_gate_steps.py`](../../../utils/check_gate_steps.py))
 ([Q-M1f.105](../open_questions.md#q-m1f105--how-the-dev-hosts-list-is-held)):
 - `the_dev_host_runs_the_nightly_and_what_left_it`: every nightly step, matrix expanded, is a `--dev-host` step, in
   order, its fuzz budget read as the dev host's; the other steps are exactly `DEV_HOST_ONLY`'s five, each with why; and

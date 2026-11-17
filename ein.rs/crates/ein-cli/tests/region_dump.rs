@@ -1,12 +1,13 @@
 //! `ein oracle FILE --dump DIR`
 //! ([`region-dump.md`](../../../../docs/ein/user/reference/region-dump.md)).
 //!
-//! Held from the outside: the dump moves nothing the oracle prints; it agrees
-//! node for node with the second route, `utils/region.py`, which classifies
-//! each subset with one `ein saturate` process; its limit refuses, exit 2,
-//! and warns when raised; and the `non_monotone` stub's line and block appear
-//! exactly where the static check finds a site. Drawing a region run on the
-//! cube is `region_render.rs`'.
+//! Held from the outside: the dump moves nothing the oracle prints; its limit
+//! refuses, exit 2, and warns when raised; and the `non_monotone` stub's line
+//! and block appear exactly where the static check finds a site. That the
+//! dump agrees node for node with a second route, one `ein saturate` process
+//! a subset, and that a program written for any region comes back as that
+//! region, the gate holds. Drawing a region run on the cube is
+//! `region_render.rs`'.
 
 use std::collections::BTreeSet;
 use std::io::{BufRead, BufReader};
@@ -54,20 +55,6 @@ fn dump(file: &str, flags: &[&str], dir: &Path) -> Run {
     ein(&args, &[])
 }
 
-/// The one of [`SEVEN`] *forbid* refuses (Q-M1e2.5).
-const REFUSED: &str = "examples/ein-bugs/naf-upward-closure.ein";
-
-/// The seven programs of Q-M1e2.7's tables.
-const SEVEN: [&str; 7] = [
-    "examples/branching/15_lookahead_two_step_on.ein",
-    "examples/lattice/02_genuine_3set_death.ein",
-    "examples/ein-bugs/wrong-answers/forced-2-two.ein",
-    "examples/ein-bugs/wrong-answers/owed-two-step.ein",
-    "examples/ein-bugs/wrong-answers/owed-seats.ein",
-    "examples/lattice/05_owed_seats_bounded.ein",
-    "examples/ein-bugs/naf-upward-closure.ein",
-];
-
 /// **The dump moves nothing the oracle prints**: stdout, stderr, the exit
 /// code and its summary, with `--dump` and without.
 #[test]
@@ -106,256 +93,8 @@ fn the_flag_moves_no_answer() {
     }
 }
 
-fn sets(v: &J) -> BTreeSet<Vec<String>> {
-    v.as_array()
-        .expect("a list of sets")
-        .iter()
-        .map(|s| {
-            let mut f: Vec<String> = s
-                .as_array()
-                .expect("a set")
-                .iter()
-                .map(|x| x.as_str().expect("a fact").to_string())
-                .collect();
-            f.sort();
-            f
-        })
-        .collect()
-}
-
-fn require_python3() {
-    let ok = Command::new("python3")
-        .arg("--version")
-        .output()
-        .is_ok_and(|o| o.status.success());
-    assert!(
-        ok,
-        "python3 is not on PATH, and the second route needs it — this test fails \
-         rather than skips, as cli_semantics' variant check does"
-    );
-}
-
-/// A program where saturation **moves** a node inside the cube — a
-/// commitment derives candidates it did not commit to — so the closure check
-/// below is not vacuous: none of the seven does.
-const MOVES: &str = "examples/saturation/transitive/taxonomy.ein";
-
-/// A program whose dead nodes die by a **pair**, `X` beside `(not X)`, which
-/// derives no `(false)` fact: 126 of its 128 nodes. A route that read only
-/// `false` would call such nodes alive.
-const PAIR: &str = "examples/branching/09_hrule.ein";
-
-/// A hole, since the seven's one, `naf-upward-closure`'s, is a refusal
-/// (Q-M1e2.5): an obligation's trigger, owing.
+/// A flagged program with a hole: an obligation's trigger, owing.
 const HOLE: &str = "examples/lattice/04_obligation_trigger_hole.ein";
-
-/// **Two routes agree.** The library oracle and `utils/region.py` on the
-/// seven programs, [`MOVES`], [`PAIR`] and [`HOLE`], node for node: the status
-/// of every subset, every alive node's closure, the two lines, the holes, the
-/// components' sizes, the maximal sub-cubes, `N`, and the N side of the
-/// duality. One of the seven, `naf-upward-closure`, is refused (Q-M1e2.5),
-/// and the oracle says so.
-#[test]
-fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
-    require_python3();
-    let root = scratch("routes");
-    let mut moved = 0;
-    for (i, file) in SEVEN.iter().chain([&MOVES, &PAIR, &HOLE]).enumerate() {
-        let dir = root.join(format!("{i}"));
-        let r = dump(file, &[], &dir);
-        if *file == REFUSED {
-            assert_eq!(r.code, 1, "{file}: {}", r.err);
-            assert!(r.err.starts_with("rule 'bad': "), "{file}: {}", r.err);
-            assert!(
-                !dir.join("region.json").exists(),
-                "{file}: a refusal dumps nothing"
-            );
-            continue;
-        }
-        assert_eq!(r.code, 0, "{file}: {}", r.err);
-        let region = json(&dir.join("region.json"));
-        let cands: Vec<String> = region["candidates"]
-            .as_array()
-            .expect("candidates")
-            .iter()
-            .map(|c| c.as_str().expect("text").to_string())
-            .collect();
-        let mut cmd = Command::new("python3");
-        cmd.arg("-I")
-            .arg(repo_root().join("utils/region.py"))
-            .arg("--json")
-            .arg(repo_root().join(file))
-            .args(&cands)
-            .env("EIN_BIN", env!("CARGO_BIN_EXE_ein"));
-        let out = cmd.output().expect("region.py runs");
-        assert!(
-            out.status.success(),
-            "{file}: {}",
-            String::from_utf8_lossy(&out.stderr)
-        );
-        let py: J = serde_json::from_slice(&out.stdout).expect("region.py --json");
-
-        let rg = &region["region"];
-        // Every node: region.py says dead / owes n / ok, and reads no debt on
-        // a dead node, so dead+owing is its dead.
-        let ours: BTreeSet<(Vec<String>, String)> = rg["nodes"]
-            .as_array()
-            .expect("nodes")
-            .iter()
-            .map(|n| {
-                let mut f: Vec<String> = n["facts"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|x| x.as_str().unwrap().to_string())
-                    .collect();
-                f.sort();
-                let st = match n["status"].as_str().unwrap() {
-                    "R" => "ok".to_string(),
-                    "owing" => format!("owes {}", n["owes"]),
-                    _ => "dead".to_string(),
-                };
-                (f, st)
-            })
-            .collect();
-        let theirs: BTreeSet<(Vec<String>, String)> = py["nodes"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|n| {
-                let f: Vec<String> = n["facts"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|x| x.as_str().unwrap().to_string())
-                    .collect();
-                (f, n["status"].as_str().unwrap().to_string())
-            })
-            .collect();
-        assert_eq!(ours, theirs, "{file}: the nodes differ");
-        // Every alive node's closure: the candidates its fixpoint holds.
-        let named = |mask: i64| -> Vec<String> {
-            let mut f: Vec<String> = (0..cands.len())
-                .filter(|b| mask >> b & 1 == 1)
-                .map(|b| cands[b].clone())
-                .collect();
-            f.sort();
-            f
-        };
-        let ours: BTreeSet<(Vec<String>, Vec<String>)> = rg["nodes"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .filter(|n| !n["status"].as_str().unwrap().starts_with("dead"))
-            .map(|n| {
-                if n["closure"] != n["mask"] {
-                    moved += 1;
-                }
-                (
-                    named(n["mask"].as_i64().unwrap()),
-                    named(n["closure"].as_i64().unwrap()),
-                )
-            })
-            .collect();
-        let theirs: BTreeSet<(Vec<String>, Vec<String>)> = py["nodes"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .filter(|n| !n["closure"].is_null())
-            .map(|n| {
-                let f = |x: &J| -> Vec<String> {
-                    x.as_array()
-                        .unwrap()
-                        .iter()
-                        .map(|y| y.as_str().unwrap().to_string())
-                        .collect()
-                };
-                (f(&n["facts"]), f(&n["closure"]))
-            })
-            .collect();
-        assert_eq!(ours, theirs, "{file}: the closures differ");
-        for key in ["minimal", "maximal", "holes", "nogoods"] {
-            assert_eq!(sets(&rg[key]), sets(&py[key]), "{file}: {key}");
-        }
-        let mut sizes: Vec<i64> = rg["components"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|c| c["size"].as_i64().unwrap())
-            .collect();
-        sizes.sort();
-        let theirs: Vec<i64> = py["components"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|x| x.as_i64().unwrap())
-            .collect();
-        assert_eq!(sizes, theirs, "{file}: components");
-        let cubes = |v: &J, a: &str, b: &str| -> BTreeSet<(Vec<String>, Vec<String>)> {
-            v.as_array()
-                .unwrap()
-                .iter()
-                .map(|c| {
-                    let side = |x: &J| {
-                        let mut f: Vec<String> = x
-                            .as_array()
-                            .unwrap()
-                            .iter()
-                            .map(|y| y.as_str().unwrap().to_string())
-                            .collect();
-                        f.sort();
-                        f
-                    };
-                    if a.is_empty() {
-                        (side(&c[0]), side(&c[1]))
-                    } else {
-                        (side(&c[a]), side(&c[b]))
-                    }
-                })
-                .collect()
-        };
-        assert_eq!(
-            cubes(&rg["subcubes"], "from", "to"),
-            cubes(&py["subcubes"], "", ""),
-            "{file}: sub-cubes"
-        );
-        assert_eq!(
-            rg["duality"]["maximal_holds"].as_bool(),
-            py["duality_n"].as_bool(),
-            "{file}: the N side of the duality"
-        );
-    }
-    assert!(
-        moved > 0,
-        "no node moved: the closure check compared identities"
-    );
-}
-
-/// **Any region can be written as a program**: `utils/region_synth.py
-/// --random` draws 300 targets over at most six candidates — half of them with
-/// implications, so saturation moves nodes — writes each as a program, and
-/// holds this binary's oracle to it node for node, with the static check
-/// calling it monotone exactly when the target is. The one target it does not
-/// draw, a dead root under a non-empty R, it refuses by name: every node is
-/// built from root's fixpoint (Q-M1e2.2).
-#[test]
-fn a_random_region_written_as_a_program_comes_back() {
-    require_python3();
-    let out = Command::new("python3")
-        .arg("-I")
-        .arg(repo_root().join("utils/region_synth.py"))
-        .args(["--random", "300", "--seed", "1", "--max-n", "6"])
-        .env("EIN_BIN", env!("CARGO_BIN_EXE_ein"))
-        .output()
-        .expect("region_synth.py runs");
-    let stdout = String::from_utf8_lossy(&out.stdout);
-    assert!(
-        out.status.success(),
-        "{stdout}{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-    assert!(stdout.contains("300 targets, seed 1, 0 failed"), "{stdout}");
-}
 
 /// **Over the limit is a refusal**: exit 2, one stderr line naming the
 /// option, and a directory whose `region.json` says why there is no region:

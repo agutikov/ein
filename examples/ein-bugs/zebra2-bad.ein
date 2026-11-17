@@ -496,8 +496,8 @@
 ;; ──── INJECTED CONTRADICTION: zebra2-bad fixture (generated) ──────
 ;; condition (6) forces Green ≠ House-1 (no house is right-of House-1);
 ;; this injected positive contradicts it — a CONTRADICTIONS case for
-;; solve(). Otherwise identical to zebra2; regenerate with
-;; examples/gen_zebra2_variants.py.
+;; solve(). Otherwise identical to zebra2, from which it is
+;; generated, not edited by hand.
 (color-loc Green House-1 :source "injected contradiction")
 
 (solve

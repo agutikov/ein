@@ -6,17 +6,16 @@
 //! - its § 3 block, between `<!-- state-file: FILE -->` and `<!--
 //!   /state-file -->`, is lines of the state file `ein solve FILE
 //!   --dump-answer DIR` writes, each one verbatim;
-//! - its § 4 registers are the four `utils/nl_census.py` assigns, and the
-//!   census's `kernel` register is [`ein_core::RESERVED`], name for name;
-//! - every decision id it cites is a heading of the open-questions ledger
-//!   this test reads.
+//! - its § 4 has a row for each of the four registers, and the `kernel`
+//!   row's names are [`ein_core::RESERVED`], name for name;
+//! - every decision id it cites links the decision's own file under
+//!   `docs/decisions/`.
 
 use std::process::Command;
 
 use ein_corpus::{Scratch, repo_root};
 
 const PAGE: &str = "docs/ein/user/syntax-and-semantics/natural-language.md";
-const CENSUS: &str = "utils/nl_census.py";
 const OPEN: &str = "<!-- state-file: ";
 const CLOSE: &str = "<!-- /state-file -->";
 
@@ -58,27 +57,21 @@ fn the_pages_state_file_lines_are_a_runs() {
 }
 
 #[test]
-fn the_pages_registers_are_the_census_and_the_kernel_is_reserved() {
+fn the_pages_registers_are_four_and_the_kernel_is_reserved() {
     let page = page();
-    let census = std::fs::read_to_string(repo_root().join(CENSUS)).expect("the census");
     for reg in ["puzzle", "stdlib", "kernel", "undeclared"] {
         assert!(
             page.contains(&format!("| **{reg}** |")),
             "{PAGE}: no register row {reg}"
         );
-        assert!(
-            census.contains(&format!("return \"{reg}\"")),
-            "{CENSUS}: no register {reg}"
-        );
     }
-    let line = census
+    let row = page
         .lines()
-        .skip_while(|l| !l.starts_with("KERNEL = {"))
-        .take_while(|l| !l.is_empty())
-        .collect::<Vec<_>>()
-        .join(" ");
-    let mut kernel: Vec<String> = line
-        .split('"')
+        .find(|l| l.starts_with("| **kernel** |"))
+        .expect("the kernel row");
+    let names = row.split('|').nth(2).expect("the row's second column");
+    let mut kernel: Vec<String> = names
+        .split('`')
         .enumerate()
         .filter(|(i, _)| i % 2 == 1)
         .map(|(_, s)| s.to_string())
@@ -88,24 +81,34 @@ fn the_pages_registers_are_the_census_and_the_kernel_is_reserved() {
     reserved.sort();
     assert_eq!(
         kernel, reserved,
-        "{CENSUS}'s KERNEL is not ein_core::RESERVED"
+        "{PAGE}'s kernel register is not ein_core::RESERVED"
     );
 }
 
+/// Every `[Q-M1f.N](…)` the page cites links a file under `docs/decisions/`
+/// whose name begins with the id.
 #[test]
-fn every_question_the_page_cites_is_open_questions_heading() {
+fn every_decision_the_page_cites_links_its_file() {
     let page = page();
-    let questions = std::fs::read_to_string(
-        repo_root().join("plans/m1f_hypothesis_and_documentation/open_questions.md"),
-    )
-    .expect("M1f's questions");
+    let dir = repo_root().join(PAGE);
+    let dir = dir.parent().expect("the page's directory");
     let mut cited = 0;
     for (i, _) in page.match_indices("[Q-M1f.") {
-        let id: String = page[i + 1..].chars().take_while(|&c| c != ']').collect();
+        let rest = &page[i + 1..];
+        let id: String = rest.chars().take_while(|&c| c != ']').collect();
+        let target = rest[id.len()..]
+            .strip_prefix("](")
+            .and_then(|t| t.split(')').next())
+            .unwrap_or_else(|| panic!("{PAGE} cites {id} with no link"));
+        let file = dir.join(target);
+        let name = file
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
         cited += 1;
         assert!(
-            questions.contains(&format!("### {id} — ")),
-            "{PAGE} cites {id}, which open_questions.md has no heading for"
+            file.is_file() && name.starts_with(&format!("{id}-")) && target.contains("decisions/"),
+            "{PAGE} cites {id} by {target}, which is not its decision's file"
         );
     }
     assert!(cited > 0, "{PAGE} cites no question");

@@ -19,10 +19,10 @@ manifest: the modules are part of the stdlib and are embedded in the binary.
 
 Two things hold the files besides `--check`:
 
-- `ein-ir/tests/digit_tables.rs` runs this script's `--check` inside
-  `cargo test`, which is how the check is in the gate, and holds every row of
-  both modules to Rust's integers, none missing and none twice. The rows are
-  computed twice, here and there, in two languages.
+- the gate runs this script's `--check` (`utils/check_generated.py`), and
+  `ein-ir/tests/digit_tables.rs` holds every row of both modules to Rust's
+  integers, none missing and none twice. The rows are computed twice, here
+  and there, in two languages.
 - `tests/stdlib/math/digits/01_tables.ein` and `tests/stdlib/math/bits/01_tables.ein`
   import a module flat and claim a row of each table.
 

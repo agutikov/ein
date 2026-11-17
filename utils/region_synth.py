@@ -542,7 +542,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--max-n", type=int, default=5)
     ap.add_argument("--write", help="with --random: write the programs to this directory and check none "
-                    "(no binary needed); what `ein-infer/tests/detector.rs` sweeps")
+                    "(no binary needed); `gen_random_programs.py` banks seed 5's for the detector's sweep")
     ap.add_argument("--bin")
     a = ap.parse_args(argv)
     bin = ein_bin(a.bin)

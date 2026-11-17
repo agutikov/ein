@@ -19,9 +19,10 @@ the oracle for the files and enters no program.
     python3 utils/gen_arith_examples.py            # write the three files
     python3 utils/gen_arith_examples.py --check    # exit 1 if one differs
 
-`ein-cli/tests/arith_search_free.rs` runs `--check` inside `cargo test`, which
-is how the check is in the gate, and `ein test examples/arith` holds every
-claim the files make to the engine's own answers.
+The gate runs `--check` (`utils/check_generated.py`),
+`ein-cli/tests/arith_search_free.rs` holds each file search-free, and `ein
+test examples/arith` holds every claim the files make to the engine's own
+answers.
 
 **The sizes are the corpus's, not the theory's.** Every corpus program is
 solved, dumped and reloaded per commit, and `ein solve` writes every fact of

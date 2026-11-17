@@ -8,23 +8,24 @@
 //!
 //! | claim | where |
 //! |---|---|
-//! | **exhaustively, at a width small enough to exhaust:** the generator's output at width 2, every pair of operands, all five operations, 49 900 requests | [`width_two_is_right_on_every_pair`] |
+//! | **exhaustively, at a width small enough to exhaust:** the same theory written at width 2, the fixture `golden/num2_theory.ein`, every pair of operands, all five operations, 49 900 requests | [`width_two_is_right_on_every_pair`] |
 //! | at the shipped width, a sample of operands of every length, the corners, and requests that overflow | [`width_nine_is_right_on_a_sample`] |
 //! | **overflow is a flag and never a truncated number**: a request has exactly one of an answer and a flag | both, through [`hold`] |
 //! | the conversions to and from `std.math.decimal-arith`'s numbers, at every count of digits; `big` past the width | [`conversions_are_right_at_every_length`] |
 //! | a division by zero derives the flag, and `std.math.decimal-arith`'s rule `(false)` from it | [`a_division_by_zero_is_flagged_and_false`] |
-//! | the file is what the generator writes: its `--check` | [`the_file_is_what_the_generator_writes`] |
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `absent`, no `not`, no `or`, no guard, and no `(false)` of its own | [`the_theory_writes_no_negation`] |
 //! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | what one request costs as a circuit: its firings | [`the_circuit_of_each_operation`] |
+//!
+//! The module and the width-2 fixture are generated, and the gate holds each
+//! to what its generator writes; nothing here runs the generator.
 //!
 //! The oracle is `u64`. The measured half of the rule of the theory, a
 //! batch that costs in proportion to its count, is `arith_batch.rs`; the
 //! search-free claim, on the binary, is `ein-cli/tests/arith_search_free.rs`.
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::process::{Command, Stdio};
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
@@ -331,30 +332,7 @@ fn hold(theory: &str, w: u32, cases: &[(u64, u64)]) {
     );
 }
 
-/// The module's generator run with `ARGS`, its stdout.
-fn generator(args: &[&str]) -> std::process::Output {
-    let probe = Command::new("python3")
-        .args(["-c", "pass"])
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status();
-    assert!(
-        matches!(probe, Ok(s) if s.success()),
-        "`python3` does not run ({probe:?}): `stdlib/math/num9.ein` is generated, and \
-         `utils/gen_num9.py` is what this file holds it to — a missing gate, not a \
-         missing convenience"
-    );
-    Command::new("python3")
-        .arg("utils/gen_num9.py")
-        .args(args)
-        .current_dir(repo_root())
-        .output()
-        .expect("python3 ran a moment ago")
-}
-
-// ── right, held to the integers ────────────────────────────────────
-
-/// **Exhaustive.** The generator's output at width 2 is the shipped theory
+/// **Exhaustive.** The fixture at width 2 is the shipped theory
 /// with two columns for nine: the same rules, a premise a column, the same
 /// three places a product overflows and the same ten step rules of a
 /// division. Every pair of operands from 00 to 99, every operation: 10 000
@@ -363,16 +341,12 @@ fn generator(args: &[&str]) -> std::process::Output {
 /// borrow or an overflow can meet another is met.
 #[test]
 fn width_two_is_right_on_every_pair() {
-    let out = generator(&["--width", "2", "--stdout"]);
-    assert!(
-        out.status.success(),
-        "{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-    let theory = String::from_utf8(out.stdout).expect("utf-8");
+    let path = ein_corpus::golden_path("ein-infer", "num2_theory.ein");
+    let theory =
+        std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     assert!(
         theory.contains("(rule add2-fits ") && theory.contains("(rule div2-step-9 "),
-        "the generator's width 2 is the theory over `num2`"
+        "the fixture at width 2 is the theory over `num2`"
     );
     let cases: Vec<(u64, u64)> = (0..100)
         .flat_map(|a| (0..100).map(move |b| (a, b)))
@@ -568,20 +542,6 @@ fn the_circuit_of_each_operation() {
         let got = run(&format!("{IMPORT}{request}\n"), &[], "arith9");
         assert_eq!(got.firings, firings, "{request}");
     }
-}
-
-/// The generator's `--check`: `stdlib/math/num9.ein` is what the generator
-/// writes. It needs a `python3`, as the digit tables' check does.
-#[test]
-fn the_file_is_what_the_generator_writes() {
-    let out = generator(&["--check"]);
-    assert!(
-        out.status.success(),
-        "stdlib/math/num9.ein is stale — run `python3 utils/gen_num9.py` and \
-         `python3 utils/stdlib_manifest.py --write`\n{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr),
-    );
 }
 
 // ── the module's text ──────────────────────────────────────────────

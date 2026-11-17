@@ -30,10 +30,10 @@ shipped the facts and kept the rules as their check.
 
 Two things hold the files besides `--check`:
 
-- `ein-infer/tests/bool_theory.rs` runs this script's `--check` inside
-  `cargo test`, which is how the check is in the gate, and holds every row of
-  the table and every fact the rules derive to an enumeration written in
-  Rust, from each property's definition: three languages, one answer.
+- the gate runs this script's `--check` (`utils/check_generated.py`), and
+  `ein-infer/tests/bool_theory.rs` holds every row of the table and every
+  fact the rules derive to an enumeration written in Rust, from each
+  property's definition: three languages, one answer.
 - `ein test tests/` runs the programs, and `utils/stdlib_mutants.py` asks
   whether they notice a defect in a rule.
 

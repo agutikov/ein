@@ -20,18 +20,17 @@
 //! | the one-sided identity and absorbing facts are derived (Q-M1f.327), eight a relation over seven functions, and their two-sided meets four | [`the_one_sided_forms_are_derived`] |
 //! | each module's closing rule closes its relations and names every rule and the entry of the module below it | [`each_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | the modules are monotone: no `absent`, no `not`, no `or`, no hrule and no macro; `neq` and `(false)` only in the two rules that refute | [`the_modules_write_no_negation`] |
-//! | the generated files are what their generator writes — its `--check` | [`the_files_are_what_the_generator_writes`] |
 //! | **the full adder built from five gates is the binary adder's table**: on every one of its eight inputs, its sum and carry are `std.math.bits`' `bin-fa` row, and both are Rust's sum | [`the_full_adder_from_gates_is_the_bits_table`] |
 //!
-//! The generator computes the same relations in Python, from the columns,
+//! The generator computes the same relations from the columns,
 //! and writes them as the claims of the programs under `tests/stdlib/bool/`;
 //! this file computes them again from each property's definition in Rust,
 //! and compares the facts the rules derive with both through the gate. So a
-//! property is stated three times, in three languages: as a rule, in Python
-//! and here.
+//! property is stated three times: as a rule, by the generator and here.
+//! That the generated files are what the generator writes the gate holds,
+//! not this file.
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::process::{Command, Stdio};
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
@@ -729,37 +728,6 @@ fn the_modules_write_no_negation() {
     }
     seen.sort();
     assert_eq!(seen, ["one-value", "required"]);
-}
-
-/// The generator's `--check`: the gates' rows and their programs are what
-/// the generator writes. It needs a `python3`, the same shape as
-/// `ein-ir/tests/digit_tables.rs`'.
-#[test]
-fn the_files_are_what_the_generator_writes() {
-    let probe = Command::new("python3")
-        .args(["-c", "pass"])
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status();
-    assert!(
-        matches!(probe, Ok(s) if s.success()),
-        "`python3` does not run ({probe:?}): `stdlib/bool/gates.ein`'s table and the programs \
-         under `tests/stdlib/bool/` are generated, and `utils/gen_gates.py --check` is the only \
-         check that compares their bytes with the script's — a missing gate, not a missing \
-         convenience"
-    );
-    let out = Command::new("python3")
-        .args(["utils/gen_gates.py", "--check"])
-        .current_dir(repo_root())
-        .output()
-        .expect("python3 ran a moment ago");
-    assert!(
-        out.status.success(),
-        "a file `utils/gen_gates.py` writes is stale — run it, then \
-         `python3 utils/stdlib_manifest.py --write`\n{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr),
-    );
 }
 
 // ── the full adder from gates, against the calculator's table ──────

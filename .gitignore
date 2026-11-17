@@ -1,4 +1,4 @@
-# Python: `utils/` and `examples/gen_zebra2_variants.py`.
+# Python: `utils/`.
 *.pyc
 __pycache__/
 
