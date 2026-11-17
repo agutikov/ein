@@ -110,7 +110,8 @@ digraph rule_everyone_sits_lhs_rhs {
 Outside the cluster is the trigger, a person; inside it is what must not be missing, a chair with a `seat` arrow from
 that person. The library's `total-owed` is the same picture with every name a variable: the relation `?R` and its
 two labels are read from the declaration's fact, and `?isa` is the membership relation the activator passes
-(`ein render rule --name total-owed STDLIB/algebra.ein`, with `STDLIB` the directory `ein --version` names):
+(`ein render rule --name total-owed STDLIB/algebra.ein`, with `STDLIB` a standard library on disk, the directory
+`ein --version` names):
 
 ```dot
 digraph rule_total_owed_lhs_rhs {

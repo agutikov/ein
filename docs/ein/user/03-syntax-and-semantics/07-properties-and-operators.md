@@ -80,7 +80,8 @@ digraph ontology {
 
 The rules the three property facts activate are `std.algebra`'s. A view draws a program as it is written, its
 imports unresolved, so a library's rule is drawn from the module's own file: `ein render rule --name symmetric
-STDLIB/algebra.ein`, with `STDLIB` the directory `ein --version` names. Each is a rewrite over any relation, its
+STDLIB/algebra.ein`, with `STDLIB` a standard library on disk, the directory `ein --version` names
+([install](../01-install.md)). Each is a rewrite over any relation, its
 parameter the arrows' label ([rules](05-rules.md)):
 
 ```dot

@@ -64,8 +64,9 @@ flag from the division's own facts, and `std.math.arith`'s rule concludes `(fals
 
 ## As a graph
 
-`ein render rules STDLIB/math/arith.ein` draws the module's two rules, with `STDLIB` the directory `ein --version`
-names. The refutation matches the flag, of any request, and asserts `(false)`:
+`ein render rules STDLIB/math/arith.ein` draws the module's two rules, with `STDLIB` a standard library on disk, the
+directory `ein --version` names ([install](../01-install.md)). The refutation matches the flag, of any request, and
+asserts `(false)`:
 
 ```dot
 digraph rule_division_by_zero_is_false_lhs_rhs {
