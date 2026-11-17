@@ -360,3 +360,118 @@ oracle's second route (a process check) rather than as fixture writers.
   thirty): the process holds each row's recorded run and region, not those properties.
 - **Part B's forbid text and every printed string a regression records move together**: a later change to what
   the binary prints edits `corpus/regressions.toml` in the same commit, as any golden.
+
+## Record: part C2 (2026-11-17)
+
+Run in a worktree beside lane C1 (the deletions, the decision census, `AGENTS.md`, `utils/README.md` and the plans'
+indexes), on part A's finding *1 250 bare case ids remain in 457 project files* and item 5 of § What it does. No
+file of C1's was edited: `AGENTS.md`, `utils/README.md`, `docs/history/`, `plans/` but this record.
+
+**The register's case ids leave the project.** `git grep -cE '\b[WC][0-9]{1,3}\b'` over the project read 1 219
+lines in 457 files. Of them, 781 lines in 417 files were case ids in prose (the widened check's count, below), 12
+were case ids in code, a string or a golden (`models_grid.rs`' `const W1`, `open_reserved.rs`' message, the two
+`ein.l` comments, `fuzz_seeds.txt`'s quote of `empty_absent.ein`, `site_census`'s `C1`, `types_as_objects.rs`'
+and `oblig-stdlib-total-owed.ein`'s `C1`), and one was spelled `W-22` (`grammar_pages.rs`). The rest are not case
+ids, and stay: the chairs `C1`–`C16` of the seating programs, their pages and drawings (184 lines of `.svg` and
+`.dot`), the CLI contract's C1–C4 (`cli.md`, `explore.rs`), the domain contract's C1–C4 (`oblgen.rs`), the split
+`sat(P ∪ C1) ∪ C2`, the scratch names `w1`, `w2`, `w17`, `w20`. After: no `W<n>` in any project file; 429 lines of
+`C<n>` in 58 files, none a case.
+
+How each went, by kind:
+
+- **A tag beside a regression's name or a decision id, or after a statement it only tagged: dropped** — 506 lines
+  by a script over the check's findings, read after (about 260 witness headers' `— **W80**, regression `x`` →
+  `— regression `x``, with the line-wrapped `register` part A's split left; about 246 parentheticals, `(W24)`,
+  `(`W62`, `W63`)`, `(W66 to W69)`, `(W65, Q-M1f.71)` → `(Q-M1f.71)`). Where a tag stood alone on a line, the
+  sentence was re-joined (eleven lines of `.rs`; in the one `.ein`, the line kept empty).
+- **A family named by its regressions or its witnesses** — about 120 lines by hand: `a control of **W22**` → `a
+  control of regression `kw-and-in-assert`` (fourteen twins), `W17's witnesses` → the `forbid-chain-*` witnesses,
+  `W16's second-shape witnesses` → `activator-all-int` and `activator-all-nested`, `the W27 witness` →
+  `past-limit-lines.ein`, `W88's regression` → the `import-facts-*` regressions, `W40's six rows` →
+  `einb-every-command/*`; the corpus notes' `W14's control for …`, `W22's twin of …` → `The control for …`, `The
+  twin of …`, or the regression named (33 forms over 55 notes, by a reviewed table).
+- **A defect a narrative named by its id: said in words** — `W1 at layer 0` → an unrecorded survivor at layer 0,
+  `W3's clause` → the dead set not upward-closed under `absent`, `W4` → the fresh constant missing from H, `W62,
+  W63, W64 and W65` → a nested `(or …)`, a clause past the register file, a goal's relation variable, and every
+  command that reads a program.
+- **An open row's id: the gap in words** — `W8` (`detector.rs`: *a stale fact can be in a dead node no run
+  lists*; `refutation_census`: *the shape that can leave a stale fact*; `monotone.rs`: `features/07`'s `derive-p`;
+  `stale-naf-fork-warn.ein`: *the stale fact is not contained*), `W10` (`kb.rs`' tag dropped), `W39`
+  (`alive_invariant.rs`' tag dropped). No project file named W25, W36 or W87.
+- **Names** — `region_render.rs`' tests `w1_…`, `w2_…`, `w3_…` lose the prefix (scratch tags `missing`, `root`,
+  `hole`; nothing else names them), `models_grid.rs`' `const W1` is `FILE`, `cli_semantics.rs`' `w58` is `seeded`,
+  `site_census`'s `c1_row`, JSON key `"c1"`, `c1_types`, `c1_drop` and its two printed `C1` labels are `typing`
+  (nothing reads the key). **Messages**: `open_reserved.rs`' count, and `guide_transcripts.rs`' two messages'
+  review id `CD-L2`, the one plan id the widened patterns found anywhere in the project.
+- Found beside them and fixed: `examples/broken/load/import_as_and_symbols.ein`'s `(A1 D3)`, an M1a plan's labels;
+  `detector.rs`' *the proposal's § 4.1, approved*; `corpus.toml`'s *under the ruling as before it*;
+  `models_grid.rs`' *the right answer since the switch*; `import_invariance.rs`' *until the rung was read off …*.
+
+Every regression a project line names resolves in `corpus/regressions.toml` (272 names and globs, a script over
+every `regression(s) `…`` in the project). Every `.ein` changed, 330, keeps its line count and its code (each
+compared with HEAD with its comments stripped); `stdlib/algebra.ein`'s one line re-wrote the manifest;
+`fuzz_seeds.txt` moved by one seed, `empty_absent.ein`'s comment, re-blessed and checked comment-only (its text
+with `;` comments stripped is the same, 19 lines either way). No printed string a golden digests carried a case id.
+
+**The check, widened** (`utils/check_release_voice.py`), each widening measured with `--list` on the merged tree
+before any fix:
+
+| widening | what it found | fixed by |
+|---|---|---|
+| a register case, `W62`, `W8/features-07`, `W-22` | 699 lines over the old scope (361 `.ein` comments, 278 doc comments, 60 `corpus.toml` notes) | the two code commits below |
+| a finding, followup or review id: `[EKL]-n`, `F<n>`, `XX-[HML]n` | 0 in the scope; one review id, `CD-L2`, in two test messages, outside it | the crates' commit |
+| a process path: `utils/`, `run_tests.sh`, `.github/`, `AGENTS.md`, `CLAUDE.md`; `plans/` and `utils/` named alone | 0 (S1f.20.6 and parts A and B had left none) | — |
+| every `.md` of the project (folder READMEs, fuzz notes, the six `ein-render` goldens) | 4 lines: `tests/README.md` ×2, `hrule-reads-not.md`, a witness directory's `README.md`, all case ids | the programs' commit |
+| every comment of every crate (plain, trailing, block; `ein-corpus` and `ein-narration` too) | 78 plain or trailing `//` lines of the shipped crates, case ids; the dev-only crates 0 | the crates' commit |
+| `ein.l`/`ein.y` comments, `#` comments of `ein.rs/**/*.toml`, `corpus/regressions.toml` whole | 2 `ein.l` lines, case ids; the rest 0 | the crates' commit |
+
+Not added, and why: a plan's `D<n>` (`D1`, `D2` are `std.math.rat`'s denominators and its pages'; no project file
+names a plan's D row now); a `C<n>` case (a chair, a contract clause); a commit hash (below). **The baseline and
+the ratchet are deleted**: `utils/release_voice_baseline.txt`, `--bless`, the fell/rose report; any finding exits 1
+with the files and their counts, `--list` prints the lines. The script no longer reads itself (process, as
+`AGENTS.md` is), so its docstring carries no escape; `NOT_PROJECT` keeps `docs/history/` until C1's deletion lands,
+when the entry is dead and may go. `history_census.py` imports the same names (the kinds `milestone` … `date` kept)
+and calls its crate column *crates' comments*; `run_tests.sh`' header and step comment and `per-commit.yml`'s say
+what the step holds now; `check_gate_steps.py` reads the same 16, 75, 79 steps.
+
+**For the coordinator**: `utils/README.md`'s row (C1's file) could read, in place of the ratchet's text:
+
+> | [`check_release_voice.py`](check_release_voice.py) | **the release voice**: no milestone, phase, stage or task id, no plan's finding, followup or review id (`E-33`, `F21`, `CD-H1`), no case of the wrong-answer register (`W62`, `W8/…`), no path into the process (`plans/`, `utils/`, `run_tests.sh`, `.github/`, `AGENTS.md`, `CLAUDE.md`) and no ISO date in the project's prose: every `.md` of the project, every comment of every crate (and `ein.l`, `ein.y`, the `.toml` files under `ein.rs/`), every `.ein` comment, and `corpus/corpus.toml` and `corpus/regressions.toml` whole. A decision id (`Q-M…`) passes, and so does a line marked `release-voice-ok: <reason>`. No baseline: any finding exits 1, and `--list [PATH …]` prints the lines | per-commit CI |
+
+and `AGENTS.md`'s *The release voice is a ratchet* rule, and its `--list … --bless` command line, lose the
+ratchet and the baseline the same way. Until one of them lands, `doc_audit.py --links --check --tracked` finds one
+link, `utils/README.md:118`'s to the deleted baseline.
+
+**Q-M1f.314's readings this changes**: (1) every comment of every crate, plain, trailing and block, the dev-only
+crates and the grammar's sources too, not a shipped crate's doc comments; (4) `plans/` named alone fails, as
+`utils/` does: the project names no process; (5) followup, finding, register and review ids are read now; what is
+still not read is a `.ein` string (`:why`, `:source`, `:goal-text`), a Rust string (part B's scan, not a gate), a
+plan's `D<n>`, a `C<n>` case and a commit hash; (6) moot: with no baseline nothing is banked, so nothing falls;
+(7) the check does not read itself. The scope also widens from `docs/ein/`, `docs/decisions/` and `README.md` to
+every `.md` of the project, and gains `corpus/regressions.toml`. Readings (2) and (3) stand.
+
+**Commits**, on the worktree's branch after `git merge master`: `b5a4787f` (the programs, the stdlib, the corpus
+and their pages, with the fuzz seeds' golden), `6e75f093` (the crates: comments, names, messages), `e1f00ddc` (the
+check widened, the baseline deleted), and this record.
+
+**Checks**: `check_release_voice.py` exits 0 over 1 718 files with no baseline, and 1 on a probe line
+(`W8/features-07` appended to `README.md`, then restored); `doc_audit.py --links --check --tracked` 1 and 0, the one
+link above; `cargo fmt --all --check`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`; under the gate
+profile, `ein-ir` whole (`fuzz_properties` blessed, `grammar_pages`, `generated_parser`, `load_semantics`,
+`dump_goldens`, the lib's manifest test), `ein-cli`'s `region_render`, `models_grid`, `cli_semantics`,
+`open_reserved`, `guide_transcripts`, `goal_premises`, `einb_cli`, `import_facts`, `closed_stdout`,
+`conclusion_shapes`, `import_invariance`, `hrule_reads_not`, `corpus_cli`, `ein-infer`'s lib, `stdlib_coverage`,
+`alive_invariant`, `compile_semantics`, `detector`, `corpus_cores`, and `ein-render`'s `id_order_invariance` (no
+shape moved by a comment); `check_gate_steps.py`; `history_census.py` runs. No `./run_tests.sh`.
+
+**Found outside the part**:
+
+- **Commit hashes in the witnesses' narratives**: 293 lines in 264 files under `examples/ein-bugs/` say what the
+  engine answered *at `6a775f3d`* and the like, the defect's history in the past tense, as part A found of the
+  corpus notes. No check reads a hash; a pattern for one (a backticked 7–12 hex) would find exactly these.
+  `alt-cap-shared.ein:31` names one bare. Restating them is the witness headers' share of the sweep.
+- **The `site_census` and `refutation_census` examples** print per-site census rows a process census reads
+  (`utils/censuses/hole-census.md` cites `site_census --json`); they are instruments in a shipped crate's
+  `examples/`.
+- `NOT_PROJECT` in `check_release_voice.py` and in `doc_audit.py` list `docs/history/`, dead once C1's deletion
+  lands.
