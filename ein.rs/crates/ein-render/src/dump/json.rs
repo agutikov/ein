@@ -229,7 +229,7 @@ impl Json {
 }
 
 /// Parse one JSON document — what `ein render region` reads a dump back
-/// with (M1e2 S1e2.1a.2). Every JSON text is accepted, not only this writer's
+/// with. Every JSON text is accepted, not only this writer's
 /// spelling: an integer that fits `i64` is [`Json::Int`], a wider one
 /// [`Json::BigInt`], anything with a point or an exponent [`Json::Float`].
 pub fn parse(text: &str) -> Result<Json, String> {
@@ -507,8 +507,8 @@ mod tests {
     fn non_ascii_is_escaped_with_a_surrogate_pair_above_the_bmp() {
         // One writer does not take this escaping: `ein-infer`'s event writer
         // (`events.rs`) writes non-ASCII as it is. `ein-cli`'s
-        // `summary::write` escapes, deliberately — M1e S1e.4.8, `MA-L3`, where
-        // the reason is written. Everything else is written by this one.
+        // `summary::write` escapes, deliberately, for the reason its doc
+        // comment gives. Everything else is written by this one.
         assert_eq!(dumps(&Json::str("é")), r#""\u00e9""#);
         assert_eq!(dumps(&Json::str("⊥")), r#""\u22a5""#);
         assert_eq!(dumps(&Json::str("𝄞")), r#""\ud834\udd1e""#);

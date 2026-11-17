@@ -58,4 +58,4 @@ before a rule that reads relations, types or rules as data. The guide's
   read-out and every diagnostic.
 - [The guide](../guide/README.md): learn Ein by solving the Zebra puzzle.
 - How the engine computes what these pages define, stated so that any implementation is held to it:
-  [the inference pages](../../../kernel/inference/README.md).
+  [the reasoning pages](../../reasoning/README.md).

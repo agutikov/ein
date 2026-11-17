@@ -25,13 +25,13 @@ const INDENT: &str = "  ";
 pub const DEFAULT_WIDTH: usize = 80;
 
 /// The keywords that take no value, each a flag whose pair holds `()`:
-/// `(solve … :no-search)` (M1f S1f.6.36), the grammar's one.
+/// `(solve … :no-search)`, the grammar's one.
 pub const FLAGS: [&str; 1] = ["no-search"];
 
 /// A synthetic head (`#params`, `#empty`, `#list`: [`ein_core::text::is_internal`])
-/// is printed without a head at all. Until T1f.5.5.8 the test was a leading
-/// `@`, which the name rule makes a name character, so a form a program wrote
-/// with a head such as `@a` would have printed without it.
+/// is printed without a head at all. The test is the internal names' leading
+/// `#`, which no name a program writes carries: `@` is a name character, so a
+/// head such as `@a` that a program writes prints with it.
 fn is_headless(ast: &Ast, node: NodeId) -> bool {
     match ast.node(node) {
         Node::SForm { head, .. } => ast.atom_name(head).is_some_and(ein_core::text::is_internal),
@@ -53,8 +53,7 @@ fn atom_text(ast: &Ast, node: NodeId) -> String {
 ///
 /// The parser's unescape is the inverse, so `parse(escape(s))` recovers `s`.
 ///
-/// The one printer's [`ein_core::text::quote`] since M1e2 S1e2.3.8, which is
-/// the same escape set.
+/// The one printer's [`ein_core::text::quote`], which is the same escape set.
 pub fn escape_string_literal(s: &str) -> String {
     ein_core::text::quote(s)
 }
@@ -76,8 +75,8 @@ fn compact_into(ast: &Ast, node: NodeId, out: &mut String) {
         Node::Str(s) => out.push_str(&escape_string_literal(ast.sym(s))),
         Node::KwPair { key, value } => {
             compact_into(ast, key, out);
-            // A flag holds `()` for its value and is written without it (M1f
-            // S1f.6.36), so the text reads back as the program wrote it.
+            // A flag holds `()` for its value and is written without it, so the
+            // text reads back as the program wrote it.
             let flag = matches!(ast.node(key), Node::Keyword(k) if FLAGS.contains(&ast.sym(k)));
             if !flag {
                 out.push(' ');
@@ -171,12 +170,6 @@ mod tests {
         assert_eq!(escape_string_literal("t\tr\r"), "\"t\\tr\\r\"");
     }
 
-    /// A synthetic head, a parameter list's (`#params`) and the empty form's
-    /// (`#empty`), prints without one. Since M1f S1f.5.5's swap (T1f.5.5.4)
-    /// the programs are in the final grammar: until then they wrote `:match X
-    /// :assert Y`, a name where a premise goes, and `(x ())`, `()` as a fact's
-    /// argument, which the grammar refuses (`()` is a whole `:match` or
-    /// `:assert`, the paper grammar's default 7).
     #[test]
     fn a_flag_prints_without_its_value() {
         assert_eq!(
@@ -185,6 +178,9 @@ mod tests {
         );
     }
 
+    /// A synthetic head, a parameter list's (`#params`) and the empty form's
+    /// (`#empty`), prints without one. `()` is a whole `:match` or `:assert`,
+    /// and the grammar refuses it as a fact's argument, `(x ())`.
     #[test]
     fn synthetic_heads_print_without_one() {
         assert_eq!(
@@ -222,9 +218,8 @@ mod tests {
         );
     }
 
-    /// Since M1f S1f.5.5's swap (T1f.5.5.4) a string is written only after
-    /// `:why`, `:source` or `:goal-text` (S1f.5.2), so the non-ASCII text
-    /// is a fact's `:source`, where until then it was the fact's argument.
+    /// A string is written only after `:why`, `:source` or `:goal-text`, so the
+    /// non-ASCII text is a fact's `:source`.
     #[test]
     fn the_width_budget_counts_characters_not_bytes() {
         // 20 `⟹` are 20 characters and 60 bytes; at width 40 the form fits on

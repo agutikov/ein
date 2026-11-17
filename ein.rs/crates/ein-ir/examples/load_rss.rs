@@ -1,16 +1,13 @@
-//! Peak RSS of a load — the memory half of P1a.2's acceptance.
-//!
-//! design/03 §10 puts a ceiling on a load's peak RSS, and this is the smallest
-//! program that answers the question: load a `.ein` and report what the
-//! kernel says it cost.
+//! Peak RSS of a load: the smallest program that answers what a load costs in
+//! memory. It loads a `.ein` and reports what the kernel says it cost.
 //!
 //! ```sh
 //! cargo run --release --example load_rss -- examples/zebra2.ein
 //! ```
 //!
 //! Both numbers are worth having. `peak` is what a user's machine sees; `delta`
-//! is the RSS the load itself added, which is the data model's cost and is the
-//! one design/03 is really making a claim about.
+//! is the RSS the load itself added, which is the data model's cost
+//! ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)).
 
 use ein_core::Terms;
 use ein_ir::{Ast, load_file};

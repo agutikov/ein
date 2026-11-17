@@ -17,4 +17,4 @@ happen closes.
 
 **Held by.** `docs/ein/standard-of-proof.md`, Rule 1, which states it and calibrates it; the pages that apply it,
 [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md) (each claim beside the test that holds it) and
-`docs/kernel/defined_behaviour.md`.
+[`diagnostics.md`](../../ein/user/reference/diagnostics.md), what Ein refuses and prints when it does.

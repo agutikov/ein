@@ -1,5 +1,5 @@
-//! A model as **the grid a person would draw** — M1e2
-//! [S1e2.1.4](../../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.4_a_model_you_can_read.md).
+//! A model as **the grid a person would draw** (`--models grid`,
+//! [`read-out.md` § 8](../../../../docs/ein/user/reference/read-out.md#8-the-forms-after-the-read-out)).
 //!
 //! `zebra2`'s unique model is 444 facts, and nobody checks 444 facts. A person
 //! checks it as a 5 × 5 table: the houses down the side, an attribute per
@@ -40,7 +40,7 @@
 //! **`T` is never a row type.** It is the universal annotation, every object
 //! is one, and a program that declares `(functional is-a)` — nine of the
 //! `branching/` demos do — would otherwise draw the type hierarchy as its
-//! answer. That was the first census's one wrong pick (S1e2.1.4 T1).
+//! answer.
 //!
 //! The partition wins where a program states both, because it is the more
 //! specific statement: it names the anchor rather than leaving it to a count.
@@ -354,7 +354,7 @@ pub fn grid(terms: &Terms, kb: &Kb, lic: &Licence) -> Grid {
 }
 
 /// The grid as a markdown table under its licence line — the text a terminal
-/// gets and the text the review bundle embeds, one and the same.
+/// gets and the text a page that shows the grid embeds, one and the same.
 pub fn grid_lines(g: &Grid, indent: &str) -> Vec<String> {
     let mut out = vec![format!("{indent}grid — {}", g.licence)];
     if g.rows.is_empty() {

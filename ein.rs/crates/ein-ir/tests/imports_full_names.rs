@@ -1,10 +1,9 @@
-//! Imports by full name — M1f S1f.6.35, the user's model (h) of 2026-11-13 and
-//! its ruling of 2026-11-14 (*"in all cases we import everything, the
-//! difference only in names"*), at the resolver.
+//! Imports by full name, at the resolver: every import form brings its
+//! module whole and differs only in names (Q-M1f.231, Q-M1f.247).
 //!
 //! | claim | where |
 //! |---|---|
-//! | the user's dependency graph, row by row, as `import_clashes.md` § 7's *under (h)* column says | [`the_users_dependency_graph`] |
+//! | a dependency graph of five modules and a program, row by row | [`the_users_dependency_graph`] |
 //! | a short name is local to the file that binds it, and renames nothing | [`a_short_name_is_local_to_its_file`] |
 //! | a module's name is a path from the program file's directory, for a module's own imports too | [`a_module_is_found_from_the_programs_directory`] |
 //! | the refusals, one each | [`the_refusals`] |
@@ -67,8 +66,8 @@ fn over(up: &str, lo: &str) -> String {
     )
 }
 
-/// **The user's dependency graph** (*"A <import- B <import- C <import- Prog,
-/// A <import- Prog, A <import- E <import- Prog"*), each row of § 7's table.
+/// **A dependency graph** (*A <import- B <import- C <import- Prog,
+/// A <import- Prog, A <import- E <import- Prog*), each row of it.
 #[test]
 fn the_users_dependency_graph() {
     let b = over("B", "A");
@@ -201,9 +200,9 @@ fn a_short_name_is_local_to_its_file() {
 }
 
 /// **A module's name is a path from the program file's directory**, a dot
-/// per directory, for the imports a module writes too (the user, 2026-11-13:
-/// *"(import word-theory.gaps :as gaps) having global names like
-/// word-theory.gaps.gaps"*).
+/// per directory, for the imports a module writes too (Q-M1f.235):
+/// `(import word-theory.gaps :as gaps)` gives global names like
+/// `word-theory.gaps.gaps`.
 #[test]
 fn a_module_is_found_from_the_programs_directory() {
     let words = "(relation holds T :why \"h\")\n";

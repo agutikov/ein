@@ -2,11 +2,11 @@
 //!
 //! `(macro NAME (?p…) BODY)` is an alias: an invocation `(NAME a…)` in a rule
 //! clause is replaced by a copy of BODY under the parameter binding *before
-//! the compiler sees it*. That is how `forall` and `open` exist as ein source
-//! (`stdlib/macro.ein`) rather than as arms in the compiler — and it is why
-//! any Rust code that special-cases those two heads would be a bug: by the
-//! time compilation runs they are already `(absent (and G (absent B)))` and
-//! `(and (absent P) (absent (not P)))`.
+//! the compiler sees it*. That is how `forall` and `unknown` exist as ein
+//! source (`std.macro`, `stdlib/macro.ein`) rather than as arms in the
+//! compiler — and it is why any Rust code that special-cases those two heads
+//! would be a bug: by the time compilation runs they are already
+//! `(absent (and G (absent B)))` and `(and (absent P) (absent (not P)))`.
 //!
 //! Substitution walks the arena and rebuilds, so a macro body is copied as
 //! integers rather than cloned as a graph.
@@ -15,8 +15,8 @@ use std::collections::BTreeMap;
 
 use crate::ast::{Ast, Node, NodeId, loc_repr};
 
-/// A macro that expands to itself would recurse forever; cap and reject
-/// (`_MAX_EXPANSION_DEPTH`, Q-S1.5.9.3).
+/// A macro that expands to itself would recurse forever, so expansion is
+/// capped at this depth and refused past it.
 const MAX_EXPANSION_DEPTH: u32 = 50;
 
 /// A malformed invocation — arity mismatch or runaway recursion. The message
@@ -41,11 +41,9 @@ pub struct Macro {
     /// The body's substitution variables, in declaration order.
     pub params: Vec<String>,
     pub body: NodeId,
-    /// `(macro NAME (params…) BODY :why "…")`'s template, which a macro may
-    /// carry as a relation and a rule do: the user's ruling of 2026-11-08,
-    /// that every form an NL template can go on takes one (M1f S1f.5.5, T3).
-    /// Until S1f.5.5's swap (T1f.5.5.4) the hand-written parser, the shipped
-    /// one, refused a macro with anything after its body.
+    /// `(macro NAME (params…) BODY :why "…")`'s template, which a macro
+    /// carries as a relation and a rule do: every form an NL template can go
+    /// on takes one (Q-M1f.59).
     pub why: Option<String>,
     /// The declaring form, for the `Loc` the loader stores on the program.
     pub form: NodeId,
@@ -54,18 +52,15 @@ pub struct Macro {
 /// The `{name: Macro}` registry a form list declares, and what is wrong with
 /// it.
 ///
-/// **One reading, and this is it** — M1e `CO-M4`, `AR-M1`'s fourth pair. There
-/// were two: this one took the first declaration of a duplicate name and
-/// silently skipped a malformed form, `from_ir::ingest_macros` errored on
-/// both, and this one's doc comment claimed to be *"what the loader does"* —
-/// which it was not.
+/// **One reading, and this is it**: the loader reads a program's macros here
+/// ([`read_macros`]), and so does every other consumer, so each refuses
+/// exactly what a load refuses and says the same sentence.
 ///
-/// The lenient reading had one argument for it, that a *dump* should render
-/// something even where a load would refuse. It does not survive contact with
-/// what the dump then shows: a program with two `(macro m …)` renders the
-/// expansion of whichever came first, which is a rendering of a program that
-/// cannot be run. The strict reading is the loader's, so the four non-loader
-/// consumers now refuse exactly what a load refuses and say the same sentence.
+/// A lenient reading — the first declaration of a duplicate name taken, a
+/// malformed form skipped — would let a *dump* render something where a load
+/// refuses. What it would show is a program with two `(macro m …)` rendered
+/// with the expansion of whichever came first: a rendering of a program that
+/// cannot be run.
 ///
 /// Errors are **accumulated**, not returned at the first: a load reports every
 /// problem it found, and this is the half of one.
@@ -93,11 +88,9 @@ pub fn read_macros(ast: &Ast, forms: &[NodeId]) -> (BTreeMap<String, Macro>, Vec
         }
         let loc = loc_repr(ast, ast.loc(form));
         let args = ast.form_args(form);
-        // A macro is a name, a parameter list and a body (`ein.y`'s `Macro`).
-        // Until M1f S1f.5.5's T5 a macro with fewer than three arguments, *needs
-        // name + params + body*, and one whose name or parameters were not
-        // one, *malformed (macro …)*, were refused here; since the swap the
-        // grammar refuses both.
+        // A macro is a name, a parameter list and a body (`ein.y`'s `Macro`):
+        // the grammar refuses one with fewer than three arguments, or whose
+        // name or parameters are not one, so all three are here.
         let (name, params, body) = (args[0], args[1], args[2]);
         let name = ast
             .atom_name(name)
@@ -177,11 +170,9 @@ fn expand(
             if let Some(m) = name.as_deref().and_then(|n| macros.get(n)) {
                 // Every argument of a call is one of the macro's: a call is a
                 // premise or a conclusion (`ein.y`'s `Premise` and
-                // `Conclusion`), which holds no keyword pair. Until M1f
-                // S1f.5.5's swap a call's trailing keyword pairs were metadata,
-                // dropped here and not counted toward its arity (the compiler
-                // dropped them downstream), so `(forall G B :k v)` expanded
-                // as `(forall G B)`; S1f.5.11's T1f.5.11.2 retired the filter.
+                // `Conclusion`), which holds no keyword pair, so
+                // `(forall G B :k v)` does not parse and every argument counts
+                // toward the arity.
                 let actual: Vec<NodeId> = ast.args(args).to_vec();
                 if actual.len() != m.params.len() {
                     return Err(MacroError(format!(
@@ -211,9 +202,8 @@ fn expand(
             Ok(ast.sform(head, &new_args, loc))
         }
         // A pair's value is walked as a form's arguments are. The expander is
-        // handed a clause's value, which holds no pair since M1f S1f.5.5's swap
-        // (S1f.5.11), so no program reaches the arm; the walk keeps it, total
-        // over the tree (S1f.5.11's T1f.5.11.2).
+        // handed a clause's value, which holds no pair, so no program reaches
+        // the arm; the walk keeps it, total over the tree.
         Node::KwPair { key, value } => {
             let value = expand(ast, value, macros, depth)?;
             let loc = ast.loc(node);
@@ -227,9 +217,9 @@ fn expand(
 ///
 /// A parameter may appear in **head** position (`(?R ?a ?b)` — a
 /// relation-polymorphic body); it is substituted there too, but only when the
-/// replacement is atom-shaped, because a head must stay one. M1's `forall` /
-/// `open` never use a var head; the arm is forward-compat for the
-/// `imply` / `converse` family (S1.8.A7).
+/// replacement is atom-shaped, because a head must stay one. `std.macro`'s
+/// `forall` and `unknown` never use a var head; the arm serves a macro whose
+/// body is relation-polymorphic.
 fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -> NodeId {
     match ast.node(template) {
         Node::Var(s) => match subst.get(ast.sym(s)) {
@@ -271,8 +261,9 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
 ///
 /// Note what is *not* expanded: a `(forall …)` appearing as a **fact** stays
 /// as it is, because the loader only ever runs the expander over rule clauses
-/// and, since M1f S1f.7.5, a goal. Since M1f S1f.7.12 the loader refuses such a
-/// fact (`from_ir`'s `refuse_macro_facts`, W86): a macro's call is no fact.
+/// and a goal. The loader refuses such a fact (`from_ir`'s
+/// `refuse_macro_facts`, W86): a macro's call is no fact
+/// ([`diagnostics.md` § 2.24](../../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
 pub fn expand_rule_clauses(
     ast: &mut Ast,
     forms: &[NodeId],
@@ -318,8 +309,8 @@ pub fn expand_rule_clauses(
     Ok(out)
 }
 
-/// The S1.8a.f20 guard: a rule whose `:match`, or since M1f S1f.7.5 a query
-/// whose `:goal`, names a `std.macro` macro that was never imported. `rules`
+/// The unimported-macro guard: a rule whose `:match`, or a query whose
+/// `:goal`, names a `std.macro` macro that was never imported (Q-M1f.132). `rules`
 /// pairs who writes the premise, `rule 'r'` or `query`, with the premise.
 ///
 /// Unexpanded, the invocation survives into the compiled pattern and the rule
@@ -411,25 +402,20 @@ mod tests {
     #[test]
     fn only_rule_clauses_are_expanded() {
         // A `(forall …)` *fact* is left alone: the loader only ever runs the
-        // expander over `:match` / `:assert`, and refuses the fact (M1f
-        // S1f.7.12).
+        // expander over `:match` / `:assert`, and refuses the fact.
         let out = expand_src(&format!("{FORALL}\n(forall a b)")).expect("expands");
         assert!(out.contains("(forall a b)"), "{out}");
     }
 
-    /// The arity of an invocation is its every argument. Until M1f S1f.5.5's
-    /// swap (T1f.5.5.4) a call's trailing keyword pairs were metadata, dropped
-    /// and not counted; since, no keyword pair parses inside a term (S1f.5.11's
-    /// ruling), so a call carries none and the parse refuses one, and
-    /// S1f.5.11's T1f.5.11.2 retired the expander's filter.
+    /// The arity of an invocation is its every argument: no keyword pair
+    /// parses inside a term, so a call carries none and the parse refuses one.
     #[test]
     fn arity_is_counted_over_every_argument() {
         let err = expand_src(&format!(
             "{FORALL}\n(rule r () :match (forall (p ?x)) :assert (done))"
         ))
         .expect_err("arity mismatch");
-        // The position in Ein's spelling since M1f S1f.5.21 (`loc_repr`,
-        // Q-M1f.75), where it was `at Loc(file=…, line=…, col=…)`.
+        // The position in Ein's spelling (`loc_repr`, Q-M1f.75).
         assert_eq!(err.0, "macro forall/2 invoked with 1 args at <string>:2:20");
         // A keyword pair in a call is refused at the parse, at its keyword.
         let refused = parse(

@@ -1,4 +1,4 @@
-//! T1a.7.5.3 — **the `--jobs` contract, as a sweep**: the whole corpus, every
+//! **The `--jobs` contract, as a sweep**: the whole corpus, every
 //! observable surface, at one job count and at several, and nothing may move.
 //!
 //! This is the second sweep over [`corpus_ops`](corpus_ops), beside
@@ -9,44 +9,39 @@
 //!
 //! ## What it claims, and it is stronger than the contract
 //!
-//! The contract ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
-//! §1) is that `--jobs N` is *the same computation* as `--jobs 1` — same
+//! The contract ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract))
+//! is that `--jobs N` is *the same computation* as `--jobs 1` — same
 //! verdict, same models, same unsat core, same counters — and no wider in
-//! narration than a permuted id space already is, which is
-//! `id_order_invariance`'s 51-of-3160.
+//! narration than a permuted id space already is.
 //!
-//! **Today it is wider than that in neither direction: nothing moves at all.**
+//! **It is wider than that in neither direction: nothing moves at all.**
 //! A worker builds its narration into its own buffer with a hole where the
 //! event ordinal goes, and `Events::replay` fills it in at the ordered commit
-//! ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
-//! T1a.7.2.2), so the bytes are the bytes. This test therefore asserts **byte
+//! ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)),
+//! so the bytes are the bytes. This test therefore asserts **byte
 //! equality** and reports any difference *through the cut*, so that the day
 //! one appears the failure says which half it is:
 //!
-//! - an **answer** difference is a contract violation and always has been;
-//! - a **narration** difference is admitted by the contract and has never
-//!   happened, so it fails here too, with a message that says so. Relaxing
+//! - an **answer** difference is a contract violation;
+//! - a **narration** difference is admitted by the contract and does not
+//!   occur, so it fails here too, with a message that says so. Relaxing
 //!   that is a deliberate edit to this file and not something a run can do
 //!   quietly.
 //!
 //! ## What it cannot say, and where that is said
 //!
 //! *These runs agreed*, not *all runs agree* — and the distance between the
-//! two is where a scheduling-dependent bug lives. The walk had one store its
-//! workers shared, its learned clauses, and the **mechanism** that kept a
-//! worker from observing a clause arriving is
-//! [design/determinism-and-order.md](../../../../docs/ein/ein.rs/design/determinism-and-order.md)
-//! (M1e S1e.1.2, Q-M1e.23); the store went with the walk, and a route's
-//! node is a fork of root that no other node reads.
+//! two is where a scheduling-dependent bug lives. What keeps one out is a
+//! **mechanism**, not this sweep: a route's workers share nothing they write,
+//! and a route's node is a fork of root that no other node reads (Q-M1e.23,
+//! [design/determinism-and-order.md § 6](../../../../docs/ein/ein.rs/design/determinism-and-order.md#6-order-across-worker-threads)).
 //!
-//! ## What it runs, and against what (M1f S1f.6.39)
+//! ## What it runs, and against what
 //!
 //! **Only the ops a job count reaches**, [`Op::takes_jobs`](corpus_ops::Op::takes_jobs):
 //! `corpus_ops::run_with` dispatches on that predicate, and every other op —
 //! the frontend modes, the load, root's saturation and its shapes, the DOT
-//! views — goes to a function with no job count to read. Until S1f.6.39 all
-//! 41 ops ran at `--jobs 1` and `--jobs 2`, and 27 of them were one
-//! computation run twice, as the note on `run_with` said they would be.
+//! views — goes to a function with no job count to read.
 //! [`an_op_outside_the_predicate_ignores_jobs`] holds that side.
 //!
 //! **Against the golden.** `--jobs 1`'s rendering of every pair is what
@@ -55,17 +50,18 @@
 //! `--jobs N` run whose digest is the banked one is a run that rendered the
 //! same bytes, and the `--jobs 1` run is not computed again. Only a run whose
 //! digest differs, or that the golden lacks, computes `--jobs 1` and reports
-//! the first difference through the cut, as before. The premise is that the
-//! golden is today's, and `id_order_invariance` fails in the same tier when
+//! the first difference through the cut. The premise is that the
+//! golden is today's, and `id_order_invariance` fails when
 //! it is not; a stale golden costs this test time, never a verdict, since a
 //! mismatch is what computes the baseline.
 //!
-//! **Which programs.** Per commit, the programs outside `tests/` that **search**, whose
-//! describe saturates more than root (`corpus_ops::searches`, computed from
-//! the program): a job count reaches only a region route's fan-out, which has
-//! more than one node to fan out only there. `EIN_CORPUS_SLOW=1`, the
-//! nightly's, every corpus program, in its shard (`EIN_TEST_SHARD`). Each
-//! program is loaded once, every cell on a copy (`corpus_ops::Loads`).
+//! **Which programs.** Without `EIN_CORPUS_SLOW`, the programs outside
+//! `tests/` that **search**, whose describe saturates more than root
+//! (`corpus_ops::searches`, computed from the program): a job count reaches
+//! only a region route's fan-out, which has more than one node to fan out
+//! only there. Under `EIN_CORPUS_SLOW=1`, every corpus program, in its shard
+//! (`EIN_TEST_SHARD`). Each program is loaded once, every cell on a copy
+//! (`corpus_ops::Loads`).
 //!
 //! ## Why it is cheap enough to be in `cargo test`
 //!
@@ -74,7 +70,7 @@
 //! are a **measurement decision**: `EIN_JOBS_SWEEP`
 //! overrides them, and the default is `2` because two threads is where a
 //! fan-out either commits in order or does not. `EIN_JOBS_SWEEP=2,4,8,16` is
-//! the acceptance's full matrix and is what a release run should use.
+//! the full matrix.
 //!
 //! ```text
 //! cargo test -p ein-render --test jobs_invariance
@@ -91,8 +87,8 @@ use corpus_ops::{Loads, Op, digest, golden_digests, ops, pair_name, portable, ru
 use ein_core::Terms;
 use ein_corpus::{corpus_files, pool, repo_root, shard, under_tests};
 
-/// `EIN_CORPUS_SLOW=1`: the nightly's sweep, every corpus program; unset,
-/// the per-commit one (the module note).
+/// `EIN_CORPUS_SLOW=1`: every corpus program; unset, the programs that
+/// search outside `tests/` (the module note).
 fn slow_too() -> bool {
     std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
@@ -105,7 +101,8 @@ fn slow_too() -> bool {
 /// letting a worker see a root the sequential engine would not have given it,
 /// and both are already reachable with two threads. The counts that cost
 /// something are the ones that *schedule* differently — 16 on an 8-core box —
-/// and those belong to a release sweep rather than to every `cargo test`.
+/// and those belong to a sweep asked for with `EIN_JOBS_SWEEP` rather than
+/// to every `cargo test`.
 fn job_counts() -> Vec<usize> {
     let Ok(spec) = std::env::var("EIN_JOBS_SWEEP") else {
         return vec![2];
@@ -125,11 +122,10 @@ fn job_counts() -> Vec<usize> {
 
 /// **The sweep is not vacuous.** Without `ein-infer/parallel` every layer runs
 /// on the committing thread whatever `--jobs` says, so `--jobs 8` and `--jobs
-/// 1` are the same code and the whole sweep below passes by construction —
-/// 20 712 cells of nothing. S1a.9.3 T1a.9.3.2 made that reachable by accident
-/// (`ein-render` stopped taking `ein-infer`'s defaults), so it is a failure
-/// here rather than a silent green, the way `dot_wellformed` fails without
-/// Graphviz.
+/// 1` are the same code and the whole sweep below passes by construction.
+/// `ein-render` takes `ein-infer` without its defaults, so a build without
+/// the feature is reachable, and it is a failure here rather than a silent
+/// green, the way `dot_wellformed` fails without Graphviz.
 #[test]
 fn the_sweep_is_not_vacuous() {
     assert!(
@@ -240,7 +236,7 @@ fn jobs_does_not_move_any_observable() {
             .unwrap_or(&files[f])
             .to_path_buf()
     };
-    // Each program loaded once, every cell on a copy (M1f S1f.6.39).
+    // Each program loaded once, every cell on a copy.
     let loads = Loads::new(&files, &vec![ops.len() * n_counts; files.len()]);
     let cells = pool::map(
         "jobs_invariance",
@@ -355,7 +351,7 @@ fn jobs_does_not_move_any_observable() {
 }
 
 /// **An op outside [`Op::takes_jobs`](corpus_ops::Op::takes_jobs) ignores its
-/// job count** (M1f S1f.6.39 T1f.6.39.2): on programs that load, search,
+/// job count**: on programs that load, search,
 /// refuse and fail to parse, each such op renders the same at `--jobs 1` and
 /// at `--jobs 7`, and the predicate holds the fourteen ops that reach a
 /// region route, every one of which does take the count.
@@ -398,7 +394,7 @@ fn an_op_outside_the_predicate_ignores_jobs() {
 }
 
 /// **A job count that reaches an output is caught**, by the golden's route as
-/// by the computed one (M1f S1f.6.39, the stage's probe kept as a test): a
+/// by the computed one: a
 /// run that writes its job count into one op's rendering is an answer that
 /// moved, whether or not the golden has the pair.
 #[test]

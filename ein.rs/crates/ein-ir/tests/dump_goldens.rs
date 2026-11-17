@@ -1,5 +1,4 @@
-//! The dumper's two checked-in goldens, and `parse ∘ dump` as a fixed point —
-//! S1a.1.2's acceptance.
+//! The dumper's two checked-in goldens, and `parse ∘ dump` as a fixed point.
 //!
 //! `ein.rs/crates/ein-ir/tests/golden/zebra2.golden` *is*
 //! `dump_canonical(parse(zebra2.ein))`: 293 lines of deep nesting, long `:why`
@@ -40,11 +39,10 @@ fn the_goldens_are_reproduced() {
 /// `parse(dump(parse(x))) == parse(x)`, structurally — the property `Loc`'s
 /// side table exists to make true.
 ///
-/// Over every corpus file the parser accepts. Until S1f.5.5's swap that was
-/// every file outside `examples/broken/`; since, the refusal witnesses of the
-/// rulings the grammar carries (W29's, W32's, W35's, W18's, …) are refused at
-/// the parse too, wherever they live, and are left out by the parse rather
-/// than by their directory.
+/// Over every corpus file the parser accepts: the refusal witnesses of the
+/// decisions the grammar carries (W29's, W32's, W35's, W18's, …) are refused
+/// at the parse wherever they live, beside `examples/broken/`, and are left
+/// out by the parse rather than by their directory.
 #[test]
 fn dump_then_parse_is_a_fixed_point() {
     let (mut read, mut refused) = (0usize, 0usize);
@@ -77,8 +75,8 @@ fn dump_then_parse_is_a_fixed_point() {
         assert_eq!(text, dump_canonical(&ast, &twice), "{}", path.display());
     }
     assert!(
-        // A third since M1f P1f.7, whose stages bank a refusal witness per
-        // shape the grammar came to refuse (a quarter until then).
+        // Under a third: the corpus banks a refusal witness per shape the
+        // grammar refuses.
         read >= 300 && refused < read / 3,
         "{read} corpus files read, {refused} refused — the sweep stopped looking"
     );

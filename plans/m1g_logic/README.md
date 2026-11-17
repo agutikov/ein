@@ -15,7 +15,7 @@ gates and truth tables, which are this milestone's starting point and stay stage
 point is in the stdlib since 2026-11-14** (S1f.6.17's build): `std.bool.gates`, the sixteen functions of two
 inputs as a table and as a relation each; `std.bool.props`, thirty relations known of them, derived by rules;
 `std.bool.circuit` and `std.bool.inputs`, a circuit simulated and its inputs as hypotheses
-([`stdlib/README.md` § `std.bool`](../../stdlib/README.md#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)),
+([`stdlib/README.md` § `std.bool`](../../stdlib/README.md#stdbool-the-sixteen-functions-of-two-inputs-and-circuits)),
 with the six applications in [`examples/binary_logic/`](../../examples/binary_logic/README.md). `std.logic` is
 left free for this milestone. `std.math.decimal-arith`, the
 decimal calculator ([P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)), which P1g.5

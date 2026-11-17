@@ -1,8 +1,8 @@
-//! Generates the parser from the grammar, `src/ein.l` and `src/ein.y`
-//! (M1f S1f.5.5, T1f.5.5.3), with grmtools' `CTParserBuilder`: a conflict in
-//! the grammar, or a token rule no production uses that `%expect-unused` does
-//! not name, fails this build. Recovery is CPCT+, from the patched `lrpar`
-//! the workspace vendors (F11).
+//! Generates the parser from the grammar, `src/ein.l` and `src/ein.y`, with
+//! grmtools' `CTParserBuilder` (Q-M1e2.25): a conflict in the grammar, or a
+//! token rule no production uses that `%expect-unused` does not name, fails
+//! this build. Recovery is CPCT+, from the patched `lrpar` the workspace
+//! vendors.
 
 use lrlex::CTLexerBuilder;
 use lrpar::RecoveryKind;

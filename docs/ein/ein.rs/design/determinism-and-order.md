@@ -249,6 +249,13 @@ an interned value. The format is specified by tables: `ein-core/tests/format_tab
 change to the format is a re-blessed golden, never a silent one. `repr` is a sort key and a quoting rule, never the
 form a fact is shown to a reader in; that is the s-expression.
 
+`ein_core::numfmt` formats a float under a `[[fill]align][sign][0][width][.precision]f` spec, which is how
+`ein saturate` prints its phase and step timings (`8.2f`): `precision` digits after the point, six when none is
+given, rounded from the exact binary value with ties to even; NaN prints `nan` and never carries a `-`, an infinity
+prints `inf` with its sign; a spec without the `f`, an empty one included, or with any other presentation type, is
+refused rather than guessed. `format_tables.rs` holds it over a seeded set of doubles and specs
+(`golden/float_format.txt`).
+
 ## 8. Hashes that reach the output
 
 | function | what it is | reaches |

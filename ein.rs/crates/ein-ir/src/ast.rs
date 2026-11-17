@@ -18,21 +18,22 @@
 //!   `rule`/`macro` parameter list to one headed `#params`
 //!   (`ein_core::text::EMPTY_HEAD`, `PARAMS_HEAD`); the dumper prints any
 //!   `#`-headed form without its head. `#` is no name character, so no
-//!   program can write one (T1f.5.5.8; `@empty` and `@params` until then).
-//! - **Top-level forms carry no `loc`.** `relation_decl`, `generic_fact`,
-//!   `eq_fact`, `not_form`, … all build their `SForm` without one, and only
-//!   `generic_list` takes its head's. A loader error that interpolates a
-//!   form's location therefore prints `at None` (`defined_behaviour.md`
-//!   § 1.5; Q-M1a.6 — a real usability bug, kept so that fixing it is one
-//!   visible re-baseline).
+//!   program can write one.
+//! - **Top-level forms carry no `loc`.** The builder `ein.y`'s actions call
+//!   (`grammar::build_ast`) makes a top-level fact, a declarator, `and`,
+//!   `or`, `not` and `neq` without one, and only a form inside another takes
+//!   its head's. A loader error that interpolates a top-level form's location
+//!   therefore prints `at None`
+//!   ([`diagnostics.md` § 1.5](../../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none);
+//!   Q-M1a.6 — a usability gap, kept so that fixing it is one visible
+//!   re-baseline).
 
 use rustc_hash::FxHashMap;
 
 use ein_core::repr::repr_str;
 
-/// An interned string: an atom name, a variable name or a string body (and
-/// the canonical decimal text of an integer, until M1f S1f.5.4 retired the
-/// int: since S1f.5.5's swap a run of digits is an atom name, as written).
+/// An interned string: an atom name, a variable name or a string body. A run
+/// of digits is an atom name, as written (Q-M1e2.24).
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct SymId(pub u32);
 
@@ -76,20 +77,21 @@ impl ArgSpan {
 /// [`Ast::eq_nodes`].
 #[derive(Clone, Copy, Debug)]
 pub enum Node {
-    /// `SYMBOL`, and the `=` of an `eq_fact` (`EQ` is a *named* terminal
-    /// precisely so it arrives as `Atom("=")` — in both the fact and the
-    /// list-head position).
+    /// A name — an argument, a form's head, a declared name, a run of digits
+    /// among them: what `ein.y`'s `Name` reads, a word a position gives a
+    /// meaning to (`eq`, `model`, …) included — or a head the builder makes,
+    /// for a declarator, a connective or a synthetic form (`#empty`,
+    /// `#params`, `#list`).
     Atom(SymId),
     /// `?name` — the `?` is not stored.
     Var(SymId),
     /// `:name` — the `:` is not stored. Only ever a [`Node::KwPair`] key.
     Keyword(SymId),
-    // `Wildcard`, `_`, was a node until M1f S1f.5.1's T1f.5.1.3: S1f.5.5's
-    // swap refused a bare `_` at the parse (`ein.l`'s `UNDERSCORE`, which no
-    // production of `ein.y` takes), so nothing built one.
+    // No node for `_`: the parse refuses a bare `_` (`ein.l`'s `UNDERSCORE`,
+    // which no production of `ein.y` takes).
     /// A double-quoted string, stored **unescaped**: natural-language text,
     /// the value of a `:why`, `:source` or `:goal-text` key pair and nothing
-    /// else since M1f S1f.5.5's swap (S1f.5.2's ruling, `ein.y`'s `Text`).
+    /// else (`ein.y`'s `Text`).
     Str(SymId),
     /// `:key value`. `key` is a [`Node::Keyword`] node so it keeps its own
     /// `Loc`.
@@ -102,8 +104,8 @@ pub enum Node {
 /// String interner. Never iterated — only `intern` and index lookups — so the
 /// hash map's order cannot reach an observable
 /// ([design/determinism-and-order.md § 9](../../../../docs/ein/ein.rs/design/determinism-and-order.md#9-the-tests-that-hold-it)),
-/// and it may therefore be hashed by whatever is fastest. SipHash was **7 %**
-/// of a `parse/zebra2` profile for a table of 157 entries (T1a.6.5.2).
+/// and it may therefore be hashed by whatever is fastest: `FxHashMap`, not the
+/// standard library's SipHash.
 #[derive(Clone, Default, Debug)]
 struct StrTable {
     strings: Vec<String>,
@@ -137,9 +139,9 @@ impl StrTable {
 /// interned ids rather than of strings.
 ///
 /// `Clone` is a copy of the whole arena, for a caller that loads a program
-/// once and runs several things over it, each on its own copy (M1f
-/// S1f.6.39, the corpus sweeps' one load a program): a copy reads
-/// as the arena it was taken from, ids and all.
+/// once and runs several things over it, each on its own copy (the corpus
+/// sweeps load a program once): a copy reads as the arena it was taken from,
+/// ids and all.
 #[derive(Clone, Default, Debug)]
 pub struct Ast {
     nodes: Vec<Node>,
@@ -273,17 +275,16 @@ impl Ast {
     /// `(and (r a) (and (p a) (q a)))` is `[(r a), (p a), (q a)]`, as
     /// `(and (r a) (p a) (q a))` is.
     ///
-    /// **The one reading of a rule's `:assert`** since M1f
-    /// [S1f.6.37](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md)
-    /// (the user's ruling of 2026-11-14, *"ok, flatten is fine, continue"*):
+    /// **The one reading of a rule's `:assert`**
+    /// ([`rules.md` § The conclusion](../../../../docs/ein/user/syntax-and-semantics/rules.md#the-conclusion)):
     /// the compiler's templates (`ein_infer::compile`), the loader's checks
     /// (`from_ir`) and every other reader that splits a conclusion call it,
     /// so all read the same list. A premise flattens the same way where the
-    /// compiler reads it. Until S1f.6.37 the readers split the top `(and …)`
-    /// alone, and an `and` inside one, which the grammar's `Conclusion` takes
-    /// and a macro whose body is an `(and …)` writes when it is called as one
-    /// conjunct, was a template headed `and`: the rule stored one fact headed
-    /// `and` and none of its members (E-63, W94).
+    /// compiler reads it. An `and` inside an `and`, which the grammar's
+    /// `Conclusion` takes and a macro whose body is an `(and …)` writes when it
+    /// is called as one conjunct, is read as its members, never as a template
+    /// headed `and` that would store one fact headed `and` and none of its
+    /// members (W94).
     pub fn conjuncts(&self, id: NodeId) -> Vec<NodeId> {
         let mut out = Vec::new();
         self.push_conjuncts(id, &mut out);
@@ -384,14 +385,13 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
 /// A source location as a loader message interpolates it — `a.ein:6:20`,
 /// the file, the line and the column, as a parse error places itself.
 ///
-/// It was the Python IR's `Loc(file='a.ein', line=6, col=20)` until M1f
-/// S1f.5.21, which took D-2's half of it (F23, Q-M1f.75): the compiler's arity
-/// line printed it too. `None` for a **top-level** form, which is what makes
-/// loader messages end in `at None` (`defined_behaviour.md` § 1.5):
-/// `relation_decl`, `generic_fact`, `eq_fact`, … all build their `SForm`
-/// without a `loc` and only `generic_list` passes one. Q-M1a.6 — a real
-/// usability bug, kept so that fixing it is one visible re-baseline rather
-/// than noise, and F23's D-2 since.
+/// The compiler's arity line prints it the same way (Q-M1f.75). `None` for a
+/// **top-level** form, which is what makes loader messages end in `at None`
+/// ([`diagnostics.md` § 1.5](../../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none)):
+/// the builder makes a top-level fact, a declarator, `and`, `or`, `not` and
+/// `neq` without a `loc`, and only a form inside another takes its head's.
+/// Q-M1a.6 — a usability gap, kept so that fixing it is one visible
+/// re-baseline rather than noise.
 pub fn loc_repr(ast: &Ast, loc: Option<Loc>) -> String {
     match loc {
         None => "None".to_string(),

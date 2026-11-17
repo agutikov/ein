@@ -24,8 +24,9 @@ const NEG_COLOUR: &str = "#7f7f7f"; // grey — eliminated-alternative facts
 /// The content key behind a slice node id — stable across runs, and
 /// deliberately **recursive**: it descends into nested fact arguments, which
 /// the flat [`crate::dot_util::fact_key`] does not. That recursion is
-/// load-bearing for these ids, which is why S1.7c.25 shared only the
-/// hash-and-prefix tail rather than merging the two key builders.
+/// load-bearing for these ids, which is why only the hash-and-prefix tail,
+/// [`crate::dot_util::hashed_id`], is shared and the two key builders are not
+/// merged.
 fn key(terms: &Terms, f: FactId) -> String {
     let (rel, args) = terms.fact(f);
     let parts: Vec<String> = args.iter().map(|a| arg_str(terms, *a)).collect();

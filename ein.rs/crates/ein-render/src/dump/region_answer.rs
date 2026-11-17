@@ -1,15 +1,14 @@
 //! The read-out as data: `--json-summary` as `ein-summary/2` and
-//! `--dump-answer DIR` as `ein-answer/2` — M1e2
-//! [T1e2.1a.5.2](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! fifth step, the fields
+//! `--dump-answer DIR` as `ein-answer/2`, the fields
 //! [`read-out.md` § 11](../../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)
-//! defines.
+//! and [`answer-dump.md`](../../../../../docs/ein/user/reference/answer-dump.md)
+//! define.
 //!
 //! **The same facts as stdout**, from the same [`ReadOut`]: what was asked,
 //! R's counts and lines and shape, every state the run reached with its
 //! model and its lines, each query's classes, the claim, the work. Every key
 //! is present on every run, `null` where it does not apply — a consumer
-//! switching on `schema` never tests for a key (M1e `SE-M2`'s rule, kept).
+//! switching on `schema` never tests for a key.
 //! Every bound sits beside `exhausted`, so no reader has to know which
 //! numbers were complete.
 
@@ -243,8 +242,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
         ("root", Json::str(root)),
         ("root_owes", Json::int(i64::from(d.root.owes))),
         // Each instance root owes, through its rule's `:why`: the read-out's
-        // `owed` rows, on every description, `[]` where root owes none (M1f
-        // S1f.6.26, E-19).
+        // `owed` rows, on every description, `[]` where root owes none.
         ("root_owed", strs(&d.root.owed)),
         ("empty", empty),
         (
@@ -256,7 +254,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
                 ),
                 ("commitments", Json::int(d.minimal_commitments.len() as i64)),
                 ("least", least.map_or(Json::Null, |l| Json::int(l as i64))),
-                // ∅ is in R, so the line is {∅} (M1f S1f.5.6, S-17 and F1):
+                // ∅ is in R, so the line is {∅}:
                 // the row's `1 state — ∅`, read off the same bit.
                 ("trivial", Json::Bool(d.root.in_r())),
             ]),
@@ -383,25 +381,23 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
 /// A core's status, as every JSON surface writes it beside the core:
 /// `within-budget`, `cut-` and the caps its search stopped at
 /// ([`ein_infer::explain::CoreStatus::word`]), or `null` where no core was
-/// taken (M1e2 S1e2.2.23, W23). M1e2 S1e2.3.9's `not-kept`, beside a member
-/// of N a run past `--region-limit` had kept as its two bits, retired with M1f
-/// S1f.5.12, which gives every member its core.
+/// taken (W23). Every member of N carries its core (Q-M1f.26), past
+/// `--region-limit` too, so no status says a core was not kept.
 pub fn core_status(c: Option<ein_infer::explain::CoreStatus>) -> Json {
     c.map_or(Json::Null, |c| Json::str(c.word()))
 }
 
 /// A node's core, or the rules its contradiction's derivation takes, as every
-/// JSON surface writes them (M1f S1f.5.8, the user's ruling of 2026-11-07 on
-/// D-14, Q-M1e2.27): a core is one object, the set of facts a dead node's
+/// JSON surface writes them (Q-M1e2.27): a core is one object, the set of facts a dead node's
 /// contradiction rests on, so a dead node's is a list, and `[]` is the empty
 /// set, a core that exists and holds no fact; a node that is not dead has no
 /// contradiction, so its core does not exist: `null`. A dead node whose core
 /// the run did not take is `null` too, beside a `null` `core_status`, and no
 /// surface the binary writes holds one, each asking for the cores it prints
-/// ([`ein_infer::region::Cores`]). Until S1f.5.8 a node that is not dead was
-/// written `[]`, which reads as *the empty set of facts suffices*: the
-/// summary's owing holes, and every such node of `region.json`, `nodes.json`
-/// and `--events`' `enter` lines.
+/// ([`ein_infer::region::Cores`]). A node that is not dead is never written
+/// `[]`, which would read as *the empty set of facts suffices*: not the
+/// summary's owing holes, nor any such node of `region.json`, `nodes.json`
+/// or `--events`' `enter` lines.
 pub fn core_field(
     dead: bool,
     status: Option<ein_infer::explain::CoreStatus>,
@@ -435,24 +431,21 @@ fn licences(r: &ReadOut) -> Json {
     )
 }
 
-/// The read-out's blocks of `ein-summary/2`, in order: `asked`, `region`,
-/// `verdict`, `queries`, `claim`, `work`. The caller adds `schema` and
-/// `source` before them and the program's own blocks after.
 /// One binding's value: a JSON string, whatever it spells — a name, a
-/// nested fact's s-expression. Since S1f.5.5's swap a run of digits is a name
-/// (S1f.5.4's ruling), and every name is a string here (Q-M1f.340), so
-/// that `(p 007)` and `(p 7)` stay two. Until then an integer was a JSON
-/// number, its digits unclamped (`Json::BigInt` past `i64`), what M1e's
-/// fuzzer found the walk's summary quoting. No reader of `ein-summary/2`
-/// reads a binding's JSON type, so the schema id stays.
+/// nested fact's s-expression. A run of digits is a name, and every name is a
+/// string here (Q-M1f.340), so that `(p 007)` and `(p 7)` stay two, and no
+/// number's digits are clamped to a JSON number's range.
 fn binding(v: &str) -> Json {
     Json::str(v)
 }
 
+/// The read-out's blocks of `ein-summary/2`, in order: `asked`, `region`,
+/// `verdict`, `queries`, `claim`, `work`. The caller adds `schema` and
+/// `source` before them and the program's own blocks after.
 pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
-    // `--no-search` (M1f S1f.6.36) asks root alone, and states no R: its
+    // `--no-search` asks root alone, and states no R (Q-M1f.259): its
     // `region` is `null`, as `--monotone`'s is, and root is the `root` block's.
     let root_alone = a.route == Route::Root;
     let (ask, n) = match a.mode.ask {
@@ -592,8 +585,7 @@ pub struct Inputs<'a> {
     /// The read-out with no listing cut, which `answer.txt` is.
     pub answer_txt: &'a str,
     /// Each form the run printed after its read-out, uncut, by its name:
-    /// `forms/<name>.txt` (M1e2 S1e2.3.3, the user's ruling (a) of
-    /// 2026-11-03).
+    /// `forms/<name>.txt` (Q-M1e2.34).
     pub forms: &'a [(&'a str, String)],
 }
 
@@ -603,8 +595,7 @@ fn nn(i: usize, of: usize) -> String {
     format!("{:0width$}", i + 1)
 }
 
-/// The subtrees this writer owns: the state files, and since M1e2 S1e2.3.3
-/// the forms.
+/// The subtrees this writer owns: the state files and the forms.
 const SUBTREES: [&str; 3] = ["models", "owing", "forms"];
 
 /// Remove what a previous `ein-answer/2` write left, and nothing else: a
@@ -624,7 +615,7 @@ pub fn clear_previous(dir: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
-/// `ein solve --count --dump-answer DIR` (M1e2 T1e2.1c.4.6): the read-out
+/// `ein solve --count --dump-answer DIR`: the read-out
 /// uncut as `answer.txt` and the summary as `answer.json`, and nothing else,
 /// since `--count` reads no state. What a previous `ein-answer/2` write left,
 /// its `index.json` and `nogoods.json` among it, is removed, so the directory
@@ -646,7 +637,7 @@ pub fn write_counted(dir: &Path, answer_txt: &str, summary: &str) -> Result<(), 
     std::fs::write(dir.join("answer.json"), summary).map_err(io)
 }
 
-/// `ein solve --no-search --dump-answer DIR` (M1f S1f.6.36): the read-out
+/// `ein solve --no-search --dump-answer DIR`: the read-out
 /// uncut as `answer.txt`, the summary as `answer.json`, root's state as
 /// `root.ein`, loadable, as a state file is, whatever root is, and each form
 /// asked for under `forms/`. No state of R is written, and no `index.json` or
@@ -695,7 +686,7 @@ pub fn write_root(
 
 fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> String {
     // The program's declarations and the loader's `(written T)` are stated
-    // again when the file is loaded (M1f S1f.6.38), and a file that wrote a
+    // again when the file is loaded, and a file that wrote a
     // `written` fact would be refused.
     let (relation, written) = (terms.kernel.relation, terms.kernel.written);
     let mut state: Vec<FactId> = kb
@@ -710,7 +701,7 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
         text.push('\n');
     }
     // Said only where there are any, so a state file of a program that writes
-    // no nested fact reads as it did before S1f.6.38.
+    // no nested fact carries no line about `written`.
     let stated = if kb.facts().any(|f| terms.facts.get(f).0 == written) {
         "\n;;; The loader states (written T) for each fact nested in a fact the file\n\
          ;;; holds, so those are not repeated either."
@@ -734,14 +725,12 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
 
 /// `nogoods.json`: each member of `N` a describing run met, with its unsat
 /// core, the core's status and the rules that refuted it, `[]` when the run
-/// described nothing. The run takes every member's core, after its walk where
-/// the walk took none, through the node function against the walk's snapshot,
-/// past `--region-limit` too (M1f S1f.5.12, P-15 (c):
+/// described nothing. The run takes every member's core, after the route
+/// where the route took none, through the node function against the route's
+/// snapshot, past `--region-limit` too (Q-M1f.26,
 /// `ein_infer::region::Cores::nogoods`). A member the run carries no core for
 /// was described by a run not asked for `N`'s cores, which the binary never
-/// writes: refused, never printed as a core. Until S1f.5.12 a member the state
-/// route did not saturate was saturated here, through a second preparation of
-/// root, and a member a run past the limit met was written `not-kept`.
+/// writes: refused, never printed as a core. No member is saturated here.
 pub fn nogoods(r: &ReadOut) -> Result<Json, String> {
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
@@ -770,7 +759,7 @@ pub fn nogoods(r: &ReadOut) -> Result<Json, String> {
 /// one loadable program per state the run reached under `models/` (listed or
 /// not: a partial run's other members are where its cut says they are), the
 /// owing frontier of an empty R under `owing/`, `nogoods.json`, each form the
-/// run printed after its read-out, uncut, under `forms/` (M1e2 S1e2.3.3), and
+/// run printed after its read-out, uncut, under `forms/`, and
 /// `index.json` naming what each file is. Each state is read again through the
 /// node function every route uses.
 pub fn write(
@@ -888,7 +877,7 @@ pub fn write(
             index_owing.push(Json::obj(vec![("path", Json::str(path))]));
         }
     }
-    // Each form uncut, the stdout form's rest (M1e2 S1e2.3.3).
+    // Each form uncut, the stdout form's rest.
     let mut index_forms: Vec<Json> = Vec::new();
     if !inputs.forms.is_empty() {
         std::fs::create_dir_all(dir.join("forms")).map_err(io)?;

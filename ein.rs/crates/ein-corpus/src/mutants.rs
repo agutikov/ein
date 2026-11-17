@@ -1,6 +1,5 @@
-//! **Seeded mutants of the corpus** — S1f.5.5's census generator (`c_ein
-//! mutate`, 2026-11-08), kept here so that the tests and the measurements that
-//! read it draw the same inputs (M1f S1f.5.5, T1f.5.5.3).
+//! **Seeded mutants of the corpus**, generated in one place so that the tests
+//! and the measurements that read them draw the same inputs.
 //!
 //! Every `.ein` under `examples/`, `stdlib/`, `tests/` and `corpus/` that is
 //! under 6 000 bytes is a source; a mutant is one source with one to three
@@ -22,10 +21,9 @@ const FRAGMENTS: &[&str] = &[
 ];
 
 /// `text` with every `:priority` clause taken out: the keyword and the run of
-/// digits after it, a `-` allowed. What a corpus file reads as once S1f.5.15
-/// has deleted the keyword, which the generated parser's grammar does not have
-/// (the user, 2026-11-08); a comment or a string that writes one loses it too,
-/// which reads the same to both parsers.
+/// digits after it, a `-` allowed: a text as it reads with the keyword gone,
+/// which the grammar does not have. A comment or a string that writes one
+/// loses it too.
 pub fn without_priority(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut rest = text;
@@ -142,13 +140,10 @@ mod tests {
         line
     }
 
-    /// **No corpus program writes `:priority`** (M1f S1f.5.15's T5, decision
-    /// 1, decided 2026-11-08): the keyword is gone from the language, every
-    /// program under `examples/`, `stdlib/`, `tests/` and `corpus/` was
-    /// stripped of it, and until S1f.5.5's swap the hand-written loader drops
-    /// one written anyway as it drops any rule keyword it does not read
-    /// (D-15), where the generated grammar refuses it. A comment may still
-    /// name it: that is history, not a clause.
+    /// **No corpus program writes `:priority`**: the language has no such
+    /// keyword, and the grammar refuses it, so no program under `examples/`,
+    /// `stdlib/`, `tests/` or `corpus/` writes one. A comment may still name
+    /// it, and is not a clause.
     #[test]
     fn no_corpus_program_writes_a_priority() {
         let root = crate::repo_root();

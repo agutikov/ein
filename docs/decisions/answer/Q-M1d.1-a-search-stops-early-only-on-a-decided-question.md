@@ -16,7 +16,7 @@ No run stops on a heuristic, *no new state for k layers* or the like, and none s
 not classify. A criterion that would certify all of R sooner than the routes do, on purpose and for a class of
 program, is not used; one is adopted only with the proof that licenses it.
 
-**Why.** An answer is a statement about R, which [`ein oracle`](../../kernel/inference/solution_semantics.md)
+**Why.** An answer is a statement about R, which [`ein oracle`](../../ein/reasoning/kb-evolution/finding-r.md#2-the-oracle-the-cube)
 computes by brute force, and every mode must agree with it. A stop that rests on a proof keeps that agreement; a
 stop on a guess would print a different answer as if it were the same one, and a bounded run that did not say it
 was bounded would too.

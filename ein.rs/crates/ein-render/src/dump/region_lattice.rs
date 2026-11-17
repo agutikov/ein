@@ -1,5 +1,5 @@
-//! `--dump-lattice DIR` under a region mode — M1e2
-//! [T1e2.1a.5.3](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md):
+//! `--dump-lattice DIR` under a region mode
+//! ([`lattice-dump.md`](../../../../../docs/ein/ein.rs/lattice-dump.md)):
 //! every node the run visited, whatever the route, in visit order.
 //!
 //! Two files, `nodes.json` (`ein-lattice/2`) and `nodes.md`, written after the
@@ -12,9 +12,6 @@
 //! `ein_infer::region`'s § What a node is); and each step, a route-1 layer or
 //! a mode's batch. The firings of each node's saturation are `--events`', which
 //! narrates every node visited, so the directory does not hold a second copy.
-//!
-//! The walk's tree (`enterings/`, `proof_summary.json`) was its
-//! `LatticeDumper`'s, which went with the walk at M1e2 S1e2.1c.5.
 
 use std::path::Path;
 
@@ -33,7 +30,7 @@ pub struct VisitedNode {
     pub owes: u32,
     pub owed: Vec<String>,
     pub core: Vec<String>,
-    /// What the core's search established (M1e2 S1e2.2.23); `None` where
+    /// What the core's search established; `None` where
     /// none was taken.
     pub core_status: Option<ein_infer::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
@@ -85,7 +82,7 @@ pub fn json(v: &Visits, inputs: &Inputs<'_>) -> Json {
         .iter()
         .enumerate()
         .map(|(i, n)| {
-            // A node that is not dead has no core (M1f S1f.5.8, D-14).
+            // A node that is not dead has no core (Q-M1e2.27).
             let dead = n.kind == "dead";
             Json::obj(vec![
                 ("n", Json::int(i as i64)),

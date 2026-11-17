@@ -268,7 +268,7 @@ The saturations that would have counted the `ein solve` rows' firings and facts 
 
 ### T1f.6.29.3 — the page, done
 
-[`stdlib/README.md` § The biggest calculation](../../../stdlib/README.md#the-biggest-calculation), under § What a
+[`stdlib/README.md` § The biggest calculation](../../../utils/censuses/arith-cost.md#the-biggest-calculation), under § What a
 program pays: the user's two replies quoted; how the sizes were searched (the cap, its mechanism, 600 s, 3 %, cpu4,
 the binary and stdlib of `2ef68530`, the counts the same on `63955507`'s for five smaller programs, another stage's
 agent beside the sweep); one row per command and shape with the program, wall, peak RSS, firings and facts, whether

@@ -1,12 +1,10 @@
-//! M1e2 [S1e2.4.2](../../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md)
-//! — **a pairwise form prices its table before it allocates one.**
+//! **A pairwise form prices its table before it allocates one.**
 //!
+//! A pair table over many states is gigabytes —
 //! `ein solve examples/saturation/type-exclusivity/pets.ein --models key`
-//! held 8.1 GB for the key of its 11 339 states, and was OOM-killed where the
-//! machine had less, because the key form built its pair table before
-//! anything asked what the table would cost. Now the key form and
-//! `--diff-models`' near pairing compare the cost with
-//! [`PAIR_TABLE_BOUND`] first, and past it they decline with the numbers.
+//! keys 11 339 states — so the key form and `--diff-models`' near pairing
+//! compare the cost with [`PAIR_TABLE_BOUND`] before they build anything,
+//! and past it they decline with the numbers.
 //!
 //! *Allocates nothing* is measured here rather than asserted. A counting
 //! allocator keeps the bytes live on the calling thread and their peak, and
@@ -136,9 +134,9 @@ fn declined(o: &KeyOutcome) -> Option<&str> {
     }
 }
 
-/// The price is the arithmetic the stage file states, on `pets.ein`'s 11 339
-/// states over 15 slots, and the bound sits between the largest table the
-/// corpus answers and the smallest it declines (2026-11-02).
+/// The price is the arithmetic [`key_pair_table_bytes`] states, on
+/// `pets.ein`'s 11 339 states over 15 slots, and the bound sits between the
+/// largest table the corpus answers and the smallest it declines.
 #[test]
 fn the_price_is_the_stated_arithmetic() {
     assert_eq!(key_pair_table_bytes(11_339, 15), 514_246_492);

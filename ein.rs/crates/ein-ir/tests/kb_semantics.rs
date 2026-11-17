@@ -1,4 +1,4 @@
-//! T1a.10.2.2 — **the KB after load**: what the loader built, where each fact
+//! **The KB after load**: what the loader built, where each fact
 //! came from, and which library it read to get there.
 //!
 //! Its subjects: a fact's origin, the three import tiers and the
@@ -36,13 +36,9 @@ use std::path::{Path, PathBuf};
 /// Parse and load inline source with no base directory — `from_ir`.
 ///
 /// Fixtures here author rule provenance with `:rule R :using ((p a b) …)`, a
-/// list of premises, each a fact: the paper grammar's default 2, since M1f
-/// S1f.5.5's swap (T1f.5.5.4). Until then `:using` took one value, the
-/// headless list was not in the grammar, and the fixtures wrapped the
-/// premises in a head the loader read nothing of (`via` throughout this file,
-/// `p` in `examples/broken/load/derivation_cycle.ein`), which the grammar
-/// refuses. Every premise is interned as a proposition, which is why a
-/// premise may name a fact this KB never held.
+/// list of premises, each a fact; a premise list wrapped in a head the loader
+/// reads nothing of is refused by the grammar. Every premise is interned as a
+/// proposition, which is why a premise may name a fact this KB never held.
 fn kb_of(text: &str) -> (Terms, Kb) {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -90,8 +86,7 @@ fn names<V>(terms: &Terms, registry: &ein_core::Registry<V>) -> Vec<String> {
 }
 
 /// A private directory for a fixture project, removed when the test ends,
-/// passing or not ([`Scratch`]). It was cleared on entry and never on exit, so
-/// every run left six behind (M1e2 S1e2.3.5).
+/// passing or not ([`Scratch`]), so no run leaves one behind.
 fn scratch(name: &str) -> Scratch {
     Scratch::new(&format!("ein-kb-semantics-{name}"))
 }
@@ -277,12 +272,12 @@ fn a_whole_module_import_qualifies_every_name_and_the_qualified_head_still_expan
 }
 
 /// Importing a module whole brings what that module imported under the
-/// **defining module's** full name, one copy (M1f S1f.6.35).
+/// **defining module's** full name, one copy (Q-M1f.247).
 ///
 /// The interesting case for a library author: `mid` lists `forall` and wraps
-/// it. Until S1f.6.35 a whole import re-qualified the subtree, `mid.forall`
-/// beside `mid.wrap`; since, `forall` is `std.macro.forall` whoever imports
-/// it, and `mid`'s short name for it is `mid`'s alone. The composition must
+/// it. A whole import does not re-qualify the subtree, no `mid.forall` beside
+/// `mid.wrap`: `forall` is `std.macro.forall` whoever imports it, and `mid`'s
+/// short name for it is `mid`'s alone. The composition must
 /// still expand through both levels: `mid.wrap`'s body names the full name.
 #[test]
 fn importing_a_module_whole_names_what_it_imported_by_the_defining_module() {
@@ -332,7 +327,7 @@ fn importing_a_module_whole_names_what_it_imported_by_the_defining_module() {
 /// A file-relative import resolves against the **importing file's** directory,
 /// and the two tiers behave differently on the same module.
 ///
-/// Since M1f S1f.6.35 the two tiers are two spellings of one thing: both
+/// The two tiers are two spellings of one thing: both
 /// bring the module whole, the bare import writing every name in full and
 /// `:symbols` the listed ones short — so `unused`, which nothing references,
 /// arrives too, under its full name.
@@ -397,14 +392,13 @@ fn a_file_relative_import_without_a_base_directory_is_refused() {
 }
 
 /// An import brings its module **whole, with the module's own imports**, all
-/// the way down (M1f S1f.6.35, the user: *"in all cases we import
-/// everything, the difference only in names"*).
+/// the way down (Q-M1f.247: every import form imports everything, and
+/// differs only in names).
 ///
 /// This is the property that makes the stdlib usable at all: a puzzle names
-/// one entry rule and gets a working stack. Until S1f.6.35 it was a selection's
-/// name-reference closure, transitively through the module's own imports;
-/// since, nothing is selected and everything comes, the listed name short and
-/// every other under its full name. The fixture names exactly one rule and
+/// one entry rule and gets a working stack. Nothing is selected and
+/// everything comes, transitively through the module's own imports, the
+/// listed name short and every other under its full name. The fixture names exactly one rule and
 /// asserts on eight it did not name, across three modules.
 #[test]
 fn an_import_brings_the_module_whole_with_its_own_imports() {
@@ -445,17 +439,12 @@ fn an_import_brings_the_module_whole_with_its_own_imports() {
 /// negation model. A guard written as a prefix test would reject `eq-elim` and
 /// `absent-of`, which are just names that begin with kernel words.
 ///
-/// The names that can *reach* the guard were `absent`, `eq`, `false`, `open`
-/// and `relation` until M1f S1f.5.5's swap (T1f.5.5.4), and since its
-/// T1f.5.5.11 the kernel's dunders `__closed__` and `__symmetric__` (Q-M1f.7
-/// (b)); the other four in [`ein_core::RESERVED`] (`and`, `neq`, `not`, `or`)
-/// were among the words the hand-written lexer's `SYMBOL` rejected, so
-/// `(hrule not …)` was a parse error and never a load error. `open` joined
-/// the list at M1d S1d.2.3 and joined this sentence at M1e S1e.2.1, which is
-/// the same eight-against-nine drift `CO-H2` was. **Since the swap only the
-/// dunders reach it**: the other nine are tokens of their own that no
-/// declarator takes (the paper grammar's default 1), refused at the parse
-/// where a declarator binds one.
+/// **Only the kernel's dunders, `__closed__` and `__symmetric__`, reach the
+/// guard** (Q-M1f.7): the other names of [`ein_core::RESERVED`] a program can
+/// write, `and`, `neq`, `not`, `or`, `absent`, `eq`, `false`, `open` and
+/// `relation`, are tokens of their own that no declarator takes, so
+/// `(hrule not …)` is a parse error, refused where a declarator binds one,
+/// and never a load error.
 #[test]
 fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     let (terms, kb) =
@@ -475,8 +464,8 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     assert!(names(&terms, &kb.program().rules).contains(&"eq-elim".to_string()));
     assert!(names(&terms, &kb.program().relations).contains(&"absent-of".to_string()));
 
-    // Non-vacuity: the guard is live on the whole names, the dunders since
-    // the swap; the names those two extend are refused at the parse.
+    // Non-vacuity: the guard is live on the whole names, the dunders; the
+    // names those two extend are refused at the parse.
     for (declarator, source, at) in [
         (
             "rule",
@@ -732,29 +721,21 @@ fn the_resolved_stdlib_root_is_the_only_one_consulted() {
     }
 }
 
-/// **An override has to prove itself, and the refusal is the root cause** —
-/// M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
-/// `EH-M2`.
+/// **An override has to prove itself, and the refusal is the root cause**.
 ///
-/// This test used to assert the opposite, and its own reason was the argument
-/// against it: *"a directory called `stdlib/` proves nothing —
-/// `MANIFEST.sha256` is what identifies the checkout during the walk, and an
-/// explicit source skips the walk entirely, so an empty directory is a
-/// perfectly good (and empty) standard library."* The first clause is why the
-/// marker exists; the conclusion drawn from it was that the
-/// **highest-precedence** source is the one that need not carry it.
+/// *A directory called `stdlib/` proves nothing*: `MANIFEST.sha256` is what
+/// identifies the checkout during the walk, and the **highest-precedence**
+/// source, an explicit one that skips the walk, is held to the same marker.
 ///
-/// What that cost was the diagnosis rather than the answer: an empty or
-/// typo'd override failed at the first `std.*` import with *module not found
-/// at &lt;path&gt;/algebra.ein* — a true sentence naming the module, and never
-/// the variable that chose the directory. It now names the variable, the path
-/// and what is missing, and it says so **before** trying to read, so a
-/// directory that happens to contain an `algebra.ein` is refused just the
-/// same.
+/// Without it, an empty or typo'd override would fail at the first `std.*`
+/// import with *module not found at &lt;path&gt;/algebra.ein* — a true
+/// sentence naming the module, and never the variable that chose the
+/// directory. The refusal names the variable, the path and what is missing,
+/// and it says so **before** trying to read, so a directory that happens to
+/// contain an `algebra.ein` is refused just the same.
 ///
-/// What has not changed: the resolved root is still the *only* one consulted
-/// — no quiet fall-back to the checkout or the embedded copy, which is the
-/// half of this test that was always right and is asserted above.
+/// The resolved root is the *only* one consulted — no quiet fall-back to the
+/// checkout or the embedded copy, which is asserted above.
 #[test]
 fn an_override_without_the_marker_is_refused_and_names_the_variable() {
     let empty = scratch("empty-stdlib");
@@ -894,7 +875,7 @@ fn the_kb_shape_does_not_move_when_the_id_space_is_permuted() {
     let (mut loaded, mut rejected, mut bad) = (0usize, 0usize, Vec::new());
     let mut weakest: Option<(usize, usize)> = None;
 
-    // A file a unit on the corpus sweeps' pool (M1f S1f.6.39): its plain
+    // A file a unit on the corpus sweeps' pool: its plain
     // and permuted loads, what they came to, and its permutation's size,
     // folded back in the files' order.
     let found = ein_corpus::pool::map(
@@ -1130,8 +1111,8 @@ fn the_zebra_registries_and_indexes_hold_what_the_puzzle_declared() {
     );
 
     // An undeclared head vivifies open-world, and a re-derived fact lands in
-    // the extent exactly once — the F-KB-3 regression, which the saturator's
-    // firing-key dedup used to mask.
+    // the extent exactly once, which the saturator's firing-key dedup would
+    // mask.
     let (mut terms, mut kb) = kb_of("(is-a A Foo)\n(mystery-relation A B :source \"(1)\")\n");
     let mystery = terms.syms.get("mystery-relation").expect("vivified");
     assert!(

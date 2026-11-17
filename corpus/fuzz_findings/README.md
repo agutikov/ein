@@ -1,98 +1,35 @@
 # fuzz_findings/
 
-Minimised inputs a fuzzer found something on, written by the two fuzzers
-(`cargo test -p ein-ir --test fuzz_properties` for the frontend,
-[`utils/fuzz_engine.py`](../../utils/fuzz_engine.py) for whole programs). "Something"
-is **a violated property**, named in the finding. Every file here of 2 KB or less is also one of the frontend
-fuzzer's seeds (all of them but `fork-delta-order.ein`) — `every_seed_and_finding_parses_the_way_it_was_recorded` reads
-this directory — so adding one changes `ein-ir/tests/golden/fuzz_seeds.txt`,
-and that is deliberate: a find that nothing re-parses is a souvenir.
+Minimised inputs a fuzzer found something on, and the few written by hand beside them. Two fuzzers write here: the
+frontend's, `cargo test -p ein-ir --test fuzz_properties`, and an engine fuzzer of whole programs. "Something" is
+**a violated property**, named in the finding: `no-crash`, `id-order` (the same program under a permuted id space
+answers the same), `jobs` (the same program at `--jobs 8` answers as at `--jobs 1`).
 
-**Empty is the steady state**: a find is either fixed — and promoted to a
-corpus fixture in the same commit — or accepted, and then it belongs to an
-open question.
+Every file here of 2 KB or less is also one of the frontend fuzzer's seeds (all of them but `fork-delta-order.ein`):
+`every_seed_and_finding_parses_the_way_it_was_recorded` reads this directory, so adding one changes
+`ein-ir/tests/golden/fuzz_seeds.txt`, and that is deliberate: a find that nothing re-parses is a souvenir.
 
-### 2026-08-21 — the rewritten engine fuzzer's first sessions
+**Empty is the steady state.** A find is either fixed, and promoted to a corpus fixture under `examples/` in the same
+commit, or accepted as defined behaviour. What stays here is each find's text, which keys the seeds golden, and its
+note, the dedup signature a later find is compared against. A row of
+[`corpus/wrong_answers.toml`](../wrong_answers.toml) may point here when its witness violates a property the corpus
+sweeps assert.
 
-[S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer)
-re-aimed `utils/fuzz_engine.py` at five properties, the
-strongest of them being *the same program under a permuted interner answers
-the same way* — `ein-render`'s `id_order_invariance`, pointed at a generated
-batch. It found three things in its first twenty minutes, and **all three are
-questions rather than fixes**, so they are here.
-
-| file | property | what it is |
+| file | property | what it is now |
 |---|---|---|
-| [`hrule-reads-not.ein`](hrule-reads-not.md) | `no-crash` | an `(hrule …)` whose `:match` reads the `not` relation trips a `debug_assert!` in `Hrules::candidates`. Legal ein-lang; the release binary answers, the debug build aborts. The precondition was documented at the assertion — hypgen's kill cache writes `not` facts mid-enumeration — and nothing had decided what the right answer is. **Settled 2026-11-11 by M1f S1f.7.2** (W85): the release answer is `ein oracle`'s, no command enumerates with the kill cache on, and the assertion is gone; where an hrule reads `not`, every hrule is matched before any candidate is emitted |
-| [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `id-order` | which facts the **unsat core** names, and how many, moves under a permuted id space. Six of 45 ops, including `trace[answer]`'s "unsat core: 1 facts" vs "2 facts". **Settled 2026-11-04 by M1e2 S1e2.2.12**: the walk's core is gone, no core this program reports moves, and the one path left from the ids to a core, a fork's delta order, is fixed |
-| [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | already here since 2026-08-20 — **re-derived from a different seed to the identical seven forms**, and then shown to move with the fork path held fixed. See below: the resumed fork perturbs the row, it is not why the row is perturbable |
+| [`hrule-reads-not.ein`](hrule-reads-not.md) | `no-crash` | an `(hrule …)` whose `:match` reads the `not` relation. Legal ein-lang; every command answers it as `ein oracle` does, and where an hrule reads `not`, every hrule is matched before any candidate is emitted |
+| [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `id-order` | a program whose core could move under a permuted id space. No core it reports moves; its corpus fixture is [`examples/ein-bugs/unsat-core-id-space.ein`](../../examples/ein-bugs/unsat-core-id-space.ein), which the id-order sweep permutes |
+| [`d3-unsat-core.ein`](d3-unsat-core.md) | `id-order` | the same, from another seed. Refused at load by *forbid*: `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under an `absent` over a relation a commitment can extend; the refusal is the same under every permutation. Its fixture is [`examples/ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein) |
+| [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | one model that satisfies the goal twice. The read-out prints every binding row, sorted, so no row moves; its fixture is [`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein) |
+| [`fork-delta-order.ein`](fork-delta-order.md) | `id-order` | **written by hand**, for the mechanism by which a dead node's core could move with the interner: a fork's delta is in the order its commitment was written, so one core is reported under every permutation; its fixture is [`examples/ein-bugs/fork-delta-order.ein`](../../examples/ein-bugs/fork-delta-order.ein) |
+| [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `no-crash` | **written by hand**: two activators of one rule, a name of digits and a nested fact in one position, in either order. A rule application's identity is its activator's every argument, so both orders derive every `noted` fact; the fixtures are [`examples/ein-bugs/binding-key-both.ein`](../../examples/ein-bugs/binding-key-both.ein) and `binding-key-swapped.ein` |
+| [`activator-text-key.ein`](activator-text-key.md) and `-swapped` | `no-crash` | **written by hand**: two activators whose text is one, `1` and `"1"`. A compile plan is keyed by the activator's values; a string is no value, so both files are refused at the parse, and their fixtures, [`examples/ein-bugs/activator-text-int-and-string.ein`](../../examples/ein-bugs/activator-text-int-and-string.ein) and `activator-text-string-then-int.ein`, are the refusal's witnesses |
+| [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | a keyword pair *below* the top level of an undeclared form. Refused at the parse, a keyword pair inside a term being no value; its fixture is [`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein) |
 
-The two `id-order` rows are the class
-[design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md) forbids,
-and they are the first the id-space sweep has found that the corpus does not
-reach — which is the argument for running it over generated input.
-
-### 2026-08-23 — the `jobs` property's first session
-
-[T1a.7.2.6](../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
-added a sixth property — *the same program at `--jobs 8` answers as it does at
-`--jobs 1`* — and ran the phase's acceptance stress through it: **5 000 cases
-and 25 000 runs, of which 10 000 `solve` runs each paired against a `--jobs 8`
-process of its own**, with 758 cases reaching a fan-out and 79 055 enterings
-evaluated on workers. `jobs` was green on all of
-them. What the session found was one thing, and it is about the DOT renderer:
-
-| file | property | what it is |
-|---|---|---|
-| [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | `render constraints` panics on a keyword pair *below* the top level of an undeclared form — `constraints.rs` filters `KwPair` out of a declaration's arguments, and `value_label` then recurses into an `SForm` and reaches the ones inside. The loader accepts the program; `saturate` answers it. Two defensible fixes and nothing had chosen one, so it was a defined-behaviour question rather than a crash to paper over. **Fixed 2026-11-03 by M1e2 S1e2.3.2** (the user's ruling (a): `value_label` labels a keyword pair `:key value`), and promoted to the corpus as `examples/ein-bugs/kwpair-below-the-filter.ein`; **refused at the parse since M1f S1f.5.5's swap**, and the witness moved to [`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein); the note and this `.ein` stay as the dedup signature and a frontend-fuzzer seed |
-
-### 2026-10-14 — M1e2's register, and two files that are not a fuzzer's
-
-[`corpus/wrong_answers.toml`](../wrong_answers.toml) is M1e2's register of
-known wrong answers, one row per witness, and a row may point here when its
-witness violates a property the corpus sweeps assert — which is the reason
-this directory exists. Four files here were witnesses, and a witness is
-**owned**: the stage that fixes its case promotes it to `examples/` in the same
-commit, which is the steady-state rule above with a name on it. Two are
-since M1e2 S1e2.2.7 promoted W7's pair (2026-11-04), and three since M1e2
-S1e2.2.12 banked a third file no fuzzer wrote, `fork-delta-order.ein`, the
-same day. Two more are W16's order pair, banked by M1e2 S1e2.2.16 the same
-day, by hand, because a debug build aborts on them.
-
-| file | row | why it is here and not in `examples/` |
-|---|---|---|
-| [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `W7/binding-key-layout` until 2026-11-04 | **not a fuzzer's find**: M1e S1e.1.4 wrote it by hand, as `defined_behaviour.md` § 3.2's thirteen lines. A debug build aborted on both files (`check_layout`), and every in-process corpus sweep is a debug test binary. **Fixed 2026-11-04 by M1e2 S1e2.2.7** (Q-M1e.16's fix (1)) and promoted to `examples/ein-bugs/binding-key-both.ein` and `binding-key-swapped.ein`, which the register's rows point at; the two `.ein`s and the note stay as the dedup signature and frontend-fuzzer seeds |
-| [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `W11/unsat-core-id-space` until 2026-11-04 | moved under a permuted interner, which `id_order_invariance` asserts of every corpus file — the walk's core, which no route reports. **Promoted 2026-11-04 by M1e2 S1e2.2.12** to [`examples/ein-bugs/unsat-core-id-space.ein`](../../examples/ein-bugs/unsat-core-id-space.ein), which the row points at: under eight permutations no core it reports moves. The `.ein` and the note stay as the dedup signature and a frontend-fuzzer seed |
-| `d3-unsat-core.ein` | `W11/d3-unsat-core`, `W1/d3-unsat-core` until 2026-11-04 | the same, at the third seed — so the nightly's `EIN_ID_SEEDS=8` would fail on it. **Refused since M1e2 S1e2.2.5** (2026-11-04): `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under `(absent (not (r1 o3 ?v1)))`, a relation a commitment can extend, so *forbid* with F2's *via* refuses the program, and both rows hold the refusal. The file is kept as found: its text keys `ein-ir`'s `fuzz_seeds.txt`. **Promoted 2026-11-04 by M1e2 S1e2.2.12** to [`examples/ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein), with a header, which both rows point at and the id-order sweep permutes for its refusal |
-| [`fork-delta-order.ein`](fork-delta-order.md) | `W11/fork-delta-order` until 2026-11-04 | **not a fuzzer's find**: M1e2 S1e2.2.12 wrote it by hand on 2026-11-04, from the mechanism its eight-seed id-order sweep found. A dead node's core moves under a permuted interner at seed 1, in `nogoods.json`, `nodes.json` and the oracle's `region.json`, which `id_order_invariance` would assert of it as a corpus file. **Fixed and promoted the same day by M1e2 S1e2.2.12** (T1e2.2.12.2): a fork's delta is in the order its commitment was written, and [`examples/ein-bugs/fork-delta-order.ein`](../../examples/ein-bugs/fork-delta-order.ein), which the row points at, reports one core under every permutation. The file stays as the finding's record |
-| [`activator-text-key.ein`](activator-text-key.md) and `-swapped` | `W16/int-and-string`, `W16/string-then-int` until 2026-11-04 | **not a fuzzer's find**: M1e2 S1e2.2.7 found the collision by hand reading the compile key, and S1e2.2.16 banked it on 2026-11-04. The int `1` and the string `"1"` keyed one compile plan, so the second activator's two `noted` facts were lost in a release build, in either order, and a debug build aborts on both files in `Engine::compile_all`'s shortcut check; every in-process corpus sweep is a debug test binary. **Fixed and promoted the same day by M1e2 S1e2.2.16** (T1e2.2.16.2): the key is the activator's values, and [`examples/ein-bugs/activator-text-int-and-string.ein`](../../examples/ein-bugs/activator-text-int-and-string.ein) and [`activator-text-string-then-int.ein`](../../examples/ein-bugs/activator-text-string-then-int.ein), which the rows point at, derive the four `noted` facts in either order and either build. The two `.ein`s stay as frontend seeds, their text unchanged |
-
-The id-order half of a W11 row is held by
-`id_order_invariance::the_register_s_id_order_rows_answer_what_they_record`,
-and the plain half, with every other row, by `ein-cli/tests/wrong_answers.rs`.
-
-### `d3-*.ein` — 2026-08-20, S1a.6.6's first session
-
-Both were filed as consequences of the **resumed fork saturator** — a fork
-*resumes* root's saturation rather than re-deriving it, so two runs can narrate
-different amounts of one derivation — and both kept because the decision they
-need is the user's rather than a fix. **One of the two turned out not to be
-the resumed fork's**, which S1a.10.4's fuzzer found by re-deriving the identical seven-form
-minimum from a different seed and then failing it under a permuted id space:
-
-| file | what differs | what is identical |
-|---|---|---|
-| `d3-unsat-core.ein` | the printed **unsat core**: 6 facts under `EIN_FORK_DELTA=0`, 4 on the resumed path — a strict subset | the verdict, `k`, every counter. Only the fork path differs, so it **is** the resumed fork saturator; the id-space sweep was green on it at seed 1 only, and at the third seed, 15839, the walk's `trace[answer]` moved 4 → 6 facts in one build (M1e2 W11, re-taken 2026-10-14). **Refused since M1e2 S1e2.2.5**, and the refusal is the same under all eight seeds (S1e2.2.12, 2026-11-04), which the sweep checks per commit since it promoted the file to `examples/ein-bugs/` |
-| `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not the resumed fork's, though it reaches it**: the row moves under `EIN_ID_FILES` too, so the defect is the unsorted `rows[0]` and either row is a legitimate one — the filename is kept for the links, the note corrects the attribution. **Gone since M1e2's read-out printed every row sorted, and promoted to `examples/ein-bugs/d3-goal-row-order.ein` by M1e2 S1e2.3.4 (2026-11-03)**, so the id-order sweep permutes it per commit |
-
-Both are corpus entries since, `d3-goal-row-order.ein` by M1e2 S1e2.3.4 and
-`d3-unsat-core.ein` by S1e2.2.12 (2026-11-04), under `examples/ein-bugs/`.
-Both were one command to reproduce, `ein solve FILE --max-set-size 2`, the
-second reading against a build with `EIN_FORK_DELTA=0`. Neither command is
-there to run since: `--max-set-size` is refused since M1e2 S1e2.1a.5's switch,
-and the fork-delta build went with the walk at S1e2.1c.5. The first file exits 1
-with *forbid*'s refusal since S1e2.2.5:
+The id-order half of a register row that points here is held by
+`id_order_invariance::the_register_s_id_order_rows_answer_what_they_record`, and the plain half, with every other
+row, by `ein-cli/tests/wrong_answers.rs`.
 
 ```sh
-ein solve corpus/fuzz_findings/d3-unsat-core.ein
+ein solve corpus/fuzz_findings/d3-unsat-core.ein   # exits 1 with forbid's refusal
 ```

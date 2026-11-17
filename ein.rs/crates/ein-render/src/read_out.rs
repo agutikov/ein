@@ -1,18 +1,17 @@
-//! The read-out as text: what `ein solve` and `ein oracle` print — M1e2
-//! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
-//! the layout [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines row by row since M1f
-//! S1f.5.16, from [`ein_infer::read_out::ReadOut`]; every label is a [`Row`].
+//! The read-out as text: what `ein solve` and `ein oracle` print, in the
+//! layout [`read-out.md`](../../../../docs/ein/user/reference/read-out.md)
+//! defines row by row, from [`ein_infer::read_out::ReadOut`]; every label is a
+//! [`Row`].
 //!
 //! [`render`] returns stdout, the stderr lines and the exit code, and prints
 //! nothing itself. Three rules shape it beyond the rows:
 //!
-//! - **The listings share 100 lines** ([`LIST_LINES`], the user's ruling of
-//!   2026-10-16, the diff's § 4.1). R's states, a line's members, each query's
+//! - **The listings share 100 lines** ([`LIST_LINES`], Q-M1e2.34). R's states, a line's members, each query's
 //!   classes and `as :expect` are printed in that order, each in whole items
 //!   while the lines last and at least one. A cut region is not wrapped in
 //!   `(region …)`, which would claim it is all of R. [`Options::uncut`] is
 //!   what `--dump-answer` writes as `answer.txt`: every listing whole.
-//! - **Every answer exits 0** (the diff's § 9). A claim the run refutes exits
+//! - **Every answer exits 0** (Q-M1e2.33). A claim the run refutes exits
 //!   1; one it could not check, and a partial run, write a `note:`.
 //! - **No verdict word without an expectation**: the four words are
 //!   `--single`'s alone.
@@ -60,7 +59,7 @@ pub enum Layout {
 macro_rules! rows {
     ($($(#[$doc:meta])* $v:ident => $label:literal, $layout:ident;)*) => {
         /// **Every label the read-out prints**, `ein solve`'s and `ein
-        /// oracle`'s, `-s`'s and `-t`'s — M1f S1f.5.16's T1f.5.16.3. A row is
+        /// oracle`'s, `-s`'s and `-t`'s. A row is
         /// printed only through one ([`line()`], and the read-out's private
         /// printers), so a label the reference page,
         /// `docs/ein/user/reference/read-out.md`, lacks cannot be printed
@@ -371,9 +370,8 @@ const DUMP_FLAG: &str = "--dump-answer DIR";
 
 /// Where a cut listing's rest is, as its line names it: `--dump-answer DIR`
 /// on `ein solve`. `ein oracle` writes no answer directory and refuses the
-/// flag, so its lines name the command that writes one, over the same R: the
-/// forms' since M1e2 S1e2.3.3, the read-out's own since S1e2.3.7 (N4, the
-/// user's ruling of 2026-11-03, which added no flag to `ein oracle`).
+/// flag, so its lines name the command that writes one, over the same R,
+/// the read-out's own and the forms' alike.
 pub fn dump_hint(command: &str) -> &'static str {
     if command == "oracle" {
         "ein solve FILE --dump-answer DIR"
@@ -408,11 +406,10 @@ pub struct Text {
     pub stderr: Vec<String>,
     pub code: i32,
     /// The states stdout printed, as indices into `ReadOut::states` — what
-    /// `--trace` traces, and what the forms after the read-out draw from
-    /// (M1e2 S1e2.3.3).
+    /// `--trace` traces, and what the forms after the read-out draw from.
     pub shown: Vec<usize>,
     /// The lines the listings spent of [`LIST_LINES`]: what is left of them
-    /// is the forms' (M1e2 S1e2.3.3, the user's ruling (a) of 2026-11-03).
+    /// is the forms' (Q-M1e2.34).
     pub listed: usize,
 }
 
@@ -425,15 +422,14 @@ impl Text {
 }
 
 /// The lines `block` prints: one per entry, and one more per line break an
-/// entry holds, a text's ([`hang`]) — what the 100 lines count (M1f
-/// S1f.5.16's T1f.5.16.5).
+/// entry holds, a text's ([`hang`]) — what the 100 lines count.
 fn lines_of(block: &[String]) -> usize {
     block.iter().map(|l| 1 + l.matches('\n').count()).sum()
 }
 
 /// How many of `blocks` fit in `left` lines: all, or whole blocks while they
-/// fit and at least one. The read-out's listings are cut by it, and since
-/// M1e2 S1e2.3.3 the forms printed after the read-out too.
+/// fit and at least one. The read-out's listings are cut by it, and the
+/// forms printed after the read-out too.
 pub fn fit(left: usize, blocks: &[Vec<String>]) -> usize {
     let mut lines = 0usize;
     for (i, b) in blocks.iter().enumerate() {
@@ -459,9 +455,8 @@ pub fn group(n: u64) -> String {
 }
 
 /// A count of commitments, as the read-out prints one: grouped, and *or more*
-/// at [`ein_infer::count::CAP`], 2⁶³ − 1, the greatest a run reports (M1f
-/// S1f.6.25, E-22). The run counted every commitment; the number is past
-/// what a surface carries.
+/// at [`ein_infer::count::CAP`], 2⁶³ − 1, the greatest a run reports. The
+/// run counted every commitment; the number is past what a surface carries.
 pub fn commitments(n: u64) -> String {
     if n >= ein_infer::count::CAP {
         format!("{} or more", group(n))
@@ -586,10 +581,10 @@ fn split_breaks(text: &str) -> Vec<&str> {
 
 /// `value`, printed at column `col`, with each further line of a text it
 /// holds started where its first character is: past its indent and an
-/// opening `“` — M1f S1f.5.16's T1f.5.16.5, Q-M1f.19 (a). A `:goal-text`
-/// filled for a class's row, and an obligation's `:why` under `owing`, are
-/// the program's text, and a line break in one is the writer's; until then
-/// its next line started at column 0, outside every row.
+/// opening `“` (Q-M1f.19). A `:goal-text` filled for a class's row, and an
+/// obligation's `:why` under `owing`, are the program's text, and a line
+/// break in one is the writer's; its next line continues inside the row, not
+/// at column 0.
 fn hang(value: &str, col: usize) -> String {
     let lines = split_breaks(value);
     if lines.len() == 1 {
@@ -604,11 +599,11 @@ fn hang(value: &str, col: usize) -> String {
 /// started where it starts ([`hang`]). Private: a label reaches it only
 /// through a [`Row`].
 ///
-/// One space at least separates a label from its value, at every width (M1f
-/// S1f.5.6, W42): a label as long as its column, `class 100 of 277` at a
-/// block's sixteen, was printed with none, so `class 100 of 277` and `28
-/// states` read as `class 100 of 27728 states`. Such a label's value starts
-/// one past it, and every other row's at its column.
+/// One space at least separates a label from its value, at every width
+/// (W42): a label as long as its column, `class 100 of 277` at a block's
+/// sixteen, would otherwise run into its value, `class 100 of 27728 states`.
+/// Such a label's value starts one past it, and every other row's at its
+/// column.
 fn padded(indent: usize, width: usize, label: &str, value: &str) -> String {
     let width = width.max(label.chars().count() + 1);
     let col = indent + width;
@@ -796,11 +791,10 @@ fn partial_note(out: &mut Out, o: &Options, why: String) {
         .push(format!("note: {}: partial — {why}", o.file));
 }
 
-/// The `lattice` row, and on a flagged program the warning under it — M1e2
-/// S1e2.1b.5, the wording the user approved on 2026-11-03: what is assumed,
-/// each site with what it puts at stake, the cycles and order findings, then
-/// whether a site bit, the status and the state apart, and the parent paths.
-/// A monotone program's one row is what it was. `holes` is the description's
+/// The `lattice` row, and on a flagged program the warning under it: what is
+/// assumed, each site with what it puts at stake, the cycles and order
+/// findings, then whether a site bit, the status and the state apart, and the
+/// parent paths. A monotone program prints the one row. `holes` is the description's
 /// count where it has one; a whole cube's status counts them too.
 fn lattice_block(
     out: &mut Out,
@@ -814,7 +808,7 @@ fn lattice_block(
             Row::Lattice,
             "monotone (the static check) — R is convex: no hole",
         );
-        // `-y` (M1e2 S1e2.1c.5): the spot check, unbounded, held to the
+        // `-y`: the spot check, unbounded, held to the
         // theorem — a path that differed would have been the run's error.
         if let Some(p) = spot {
             out.line(sub_row(Row::Paths, paths_text(p)));
@@ -847,14 +841,14 @@ fn lattice_block(
     strata_block(out, m);
 }
 
-/// The `strata` row, on a program with no stratification only — M1f
-/// S1f.5.15's T4, the static non-stratifiability diagnostic: each negative
+/// The `strata` row, on a program with no stratification only — the static
+/// non-stratifiability diagnostic: each negative
 /// cycle of the rules' dependency graph over every relation, by its relations
 /// and the rules on its negative edges. A diagnostic, not a refusal: the
 /// answer above stands. It says what the graph licenses and nothing about this
 /// run: root's fixpoint *may* depend on the boundary's admission order, and
 /// *need not* be unique (`syntax/rule-guards.ein`'s cycle never fires, and its
-/// fixpoint is unique). A stratified program prints nothing, as it did.
+/// fixpoint is unique). A stratified program prints nothing.
 fn strata_block(out: &mut Out, m: &Monotonicity) {
     if m.negative_cycles.is_empty() {
         return;
@@ -875,8 +869,7 @@ fn strata_block(out: &mut Out, m: &Monotonicity) {
 // ── The warning, as rows ────────────────────────────────────────────
 
 /// How many sites, and how many stale nodes, the warning names on stdout
-/// before a `…` row says how many more `--dump-answer` writes (the
-/// proposal's § 0, approved 2026-11-03).
+/// before a `…` row says how many more `--dump-answer` writes.
 pub const WARNING_ROWS: usize = 4;
 
 /// A row of a block: under `lattice`, `strata` or `universe`, at the hole
@@ -886,9 +879,8 @@ fn sub_row(r: Row, value: impl AsRef<str>) -> String {
     line(r, value)
 }
 
-/// What the universe leaves out, as one sentence — M1e2 S1e2.2.8 (W6), the
-/// user's ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped, and the read-out
-/// says so*: the relations [`ein_infer::scope`] names, why the rung that
+/// What the universe leaves out, as one sentence (W6, Q-M1e2.3: *scoped, and
+/// the read-out says so*): the relations [`ein_infer::scope`] names, why the rung that
 /// built H proposes none of their facts, and what R holds of them. `None`
 /// when it leaves nothing out. The read-out prints it as the `outside` row
 /// under `universe`, `ein test` beside each claim it prints, and `ein oracle
@@ -967,9 +959,8 @@ fn outside_row(out: &mut Out, outside: &[Outside]) {
     }
 }
 
-/// What the untyped rung bound as an object, as one sentence — M1e2
-/// S1e2.2.10 (C1), the user's ruling of 2026-11-03 on Q-M1e.12, (a) *the
-/// fixture, with the warning*: the names on the right of an `is-a` that a
+/// What the untyped rung bound as an object, as one sentence (Q-M1e.12: *the
+/// fixture, with the warning*): the names on the right of an `is-a` that a
 /// candidate of the blind enumerator's H names, how many candidates and of
 /// which relations, and why. `None` when it bound none. The read-out prints it
 /// as the `types` row under `universe`, `ein test` beside each claim it
@@ -1118,9 +1109,9 @@ pub fn state_text(st: &State) -> String {
     )
 }
 
-/// `ein test`'s one line beside a claim on a flagged program (the proposal's
-/// § 4.3): the sites, what is assumed, the status, the state and, where one
-/// differs, the parent paths.
+/// `ein test`'s one line beside a claim on a flagged program: the sites, what
+/// is assumed, the status, the state and, where one differs, the parent
+/// paths.
 pub fn warning_line(m: &Monotonicity, w: Option<&Warning>, root_dead: bool) -> String {
     let mut s = format!(
         "not monotone: {} · every node a fork of root{}; what a node is here is open (F21)",
@@ -1232,7 +1223,7 @@ pub fn status_text(s: &Status) -> String {
 }
 
 /// The `paths` row: what the spot check read, and no more. Under `-y`
-/// (`bound` `None`, M1e2 S1e2.1c.5) it says it read every parent.
+/// (`bound` `None`) it says it read every parent.
 pub fn paths_text(p: &Paths) -> String {
     let text = paths_words(p);
     if p.bound.is_none() {
@@ -1274,9 +1265,8 @@ fn paths_words(p: &Paths) -> String {
 }
 
 /// `ein solve FILE --monotone`: a question about the program, answered by
-/// root's fixpoint and the static check — the proposal's § 2.2, approved
-/// 2026-11-03. The cube's half is not computed (option (i)): the `bit` row
-/// names what computes it. Every verdict exits 0.
+/// root's fixpoint and the static check. The cube's half is not computed:
+/// the `bit` row names what computes it. Every verdict exits 0.
 pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     let mut out = Out {
         text: String::new(),
@@ -1352,10 +1342,9 @@ const TREE_CLASSES_ROUTE: &str = "the tree and the classes: R's states by the ob
 /// `--no-search`'s `route` row.
 const ROOT_ROUTE: &str = "none — --no-search: root's node, and no node past it";
 
-/// The read-out of `--no-search` (M1f S1f.6.36): root, and R not searched.
-/// The user's words of 2026-11-14, *"flag that disables search doesn't change
-/// R, it disables discovering of R. R is not an output, it is complete result
-/// when we do full R search"*: no row counts or lists R. What root is comes
+/// The read-out of `--no-search`: root, and R not searched (Q-M1f.255). The
+/// flag does not change R, it declines to discover it, so no row counts or
+/// lists R. What root is comes
 /// first, as describe's `∅` row and its `owed` block say it, then the `R` row
 /// that says it was not searched, the static check, `H` built and not
 /// visited, and root's one saturation; a dead root's core; each query read at
@@ -1497,8 +1486,8 @@ fn licences(l: &[Licence]) -> String {
 
 /// `--count`'s one row for the claims the program states, when it states
 /// any: none is checked, since `--count` reads no state, and none is skipped
-/// silently (M1e2 T1e2.1c.4.6). stderr gets one `note:` per claim, as a claim
-/// describe could not check does (`read-out.md` § 9).
+/// silently. stderr gets one `note:` per claim, as a claim
+/// describe could not check does (`read-out.md` § 10).
 fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
     let n_q = r.queries.len();
     let mut notes: Vec<String> = Vec::new();
@@ -1547,16 +1536,16 @@ fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
 }
 
 /// The `minimal line` row's value, read off a description: describe's, and
-/// since M1e2 S1e2.2.26 (W27) a line mode's past `--region-limit` on a
-/// flagged program, read off the same description, so the two say the same.
+/// a line mode's past `--region-limit` on a flagged program (W27), read off
+/// the same description, so the two say the same.
 fn minimal_line(d: &Described) -> String {
     let root = &d.root;
     let sp = d.states_partial;
     let n_min = d.states.iter().filter(|s| s.minimal).count() as u64;
     // Where ∅ is in R the line is {∅}, and the `∅` row above says why: root
-    // is alive and owes nothing. No clause beside it: *no obligation is
-    // stated* read whether a node the run met owes, not what the program
-    // states (M1f S1f.5.6, S-17 and F1, the user's ruling of 2026-11-07).
+    // is alive and owes nothing. No clause beside it: a clause such as *no
+    // obligation is stated* would read whether a node the run met owes, not
+    // what the program states.
     let min_note = if root.in_r() {
         " — ∅".to_string()
     } else if d.exhausted {
@@ -1662,8 +1651,8 @@ fn maximal_line(d: &Described) -> String {
     }
 }
 
-/// The rows of a description, exhausted or partial. Under `--count` (M1e2
-/// T1e2.1c.4.6) the rows that qualify R's two counts and no others: the
+/// The rows of a description, exhausted or partial. Under `--count` the
+/// rows that qualify R's two counts and no others: the
 /// counts, `exhausted`, `∅` or `empty`, `lattice` with its warning,
 /// `universe`, `route` and `work`, each the same text describe prints. The
 /// lines, components, sub-cubes, merged states, N, E and the minimal holes
@@ -2038,7 +2027,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         }
     }
     if n == 0 && a.root.hypgen.rung.mode == ein_infer::oblgen::Mode::NoSearch {
-        // `(solve :no-search)` (M1f S1f.6.36): the program said so.
+        // `(solve :no-search)`: the program said so.
         out.row(
             Row::Universe,
             "no candidate: the program states :no-search, so R is {∅} or empty, decided by \
@@ -2101,11 +2090,9 @@ pub const OWED_ROWS: usize = 4;
 
 /// The `owed` rows under `∅`: each obligation instance an alive root owes,
 /// through its rule's `:why`, where root is not in R and R is not exhausted
-/// and empty — M1f S1f.6.26, E-19, the user's reply 30 (a) of 2026-11-12.
-/// Until then the `∅` row counted them and nothing on stdout named one, where
-/// an empty R's `owing` rows did: the debt of a root beside a state that pays
-/// it, a problem's named gap beside the supposition that closes it, was in
-/// `--events`' `owe` lines alone.
+/// and empty. So stdout names the debt of a root beside a state that pays it,
+/// a problem's named gap beside the supposition that closes it, as an empty
+/// R's `owing` rows name theirs, and not only `--events`' `owe` lines.
 ///
 /// A block under a row, as the warning's is: at most [`OWED_ROWS`] on stdout,
 /// then one line that counts the rest and names what writes them, and every
@@ -2172,7 +2159,7 @@ fn subcube_text(dims: &[usize]) -> String {
 fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     let a = &r.answer;
     // The states listed: past the limit a line mode meets members it does
-    // not list (M1e2 S1e2.2.26).
+    // not list.
     let k = r.listed().count() as u64;
     let label = match a.mode.which {
         Which::All => Row::StatesOfR,
@@ -2318,7 +2305,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
                 Route::DownSet => "1, the alive down-set",
                 Route::Cube => "2, the cube",
                 // A mode's cut of the route: it meets only the states its
-                // question needs (M1e2 S1e2.1c.4).
+                // question needs.
                 Route::States => "the state route, each state at most once",
                 Route::Tree => "the obligation tree, over states",
                 Route::Root => ROOT_ROUTE,
@@ -2377,7 +2364,7 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
             out.blank();
             if let Some(d) = r.described() {
                 // The empty set, where the core was taken and holds no fact
-                // (M1f S1f.5.9, Q-M1f.48).
+                // (Q-M1f.48).
                 if d.root.core.is_empty() && d.root.core_status.is_some() {
                     out.row(
                         Row::UnsatCore,
@@ -2447,7 +2434,7 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
             out.blank();
             let listed: Vec<(usize, &Listed)> = r.listed().collect();
             // A line mode that certifies no member met (`--maximal` past the
-            // limit, M1e2 S1e2.2.26) has no line member to introduce; a
+            // limit) has no line member to introduce; a
             // description always certifies one when it met one.
             if !listed.is_empty() || *others == 0 {
                 out.line(
@@ -2673,15 +2660,14 @@ fn queries(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
 }
 
 /// Why a query over an empty R has no state to answer from: which kind of
-/// empty R is, as root says it — M1f S1f.6.26, the row half of E-18. A dead
-/// root leaves every node dead (L0), and an alive root of an empty R owes,
-/// since one that owed nothing would be in R. Until then the row read *R is
-/// empty: no state to answer from* on both, so a query could not tell a
-/// contradiction from a debt. The claim under it is not changed: `as :expect
-/// (false)` on both, as a query's `(false)` holds on both (Q-M1f.219).
+/// empty R is, as root says it. A dead root leaves every node dead (L0), and
+/// an alive root of an empty R owes, since one that owed nothing would be in
+/// R; the row tells the two apart, so a query can tell a contradiction from a
+/// debt. The claim under it is the same on both: `as :expect (false)`, as a
+/// query's `(false)` holds on both (Q-M1f.219).
 fn empty_words(a: &ein_infer::explore::Answer) -> String {
     if a.route == Route::Root && a.root_dead {
-        // `--no-search` (M1f S1f.6.36): what root says, and not R.
+        // `--no-search`: what root says, and not R.
         "root is dead, and a fork only adds, so every node is (L0): no state to answer from"
             .to_string()
     } else if a.root_dead {
@@ -2704,7 +2690,7 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
     let k = r.states.len() as u64;
     let over = match (r.described(), q.over) {
         // The states listed: a line mode past the limit meets members it
-        // does not list (M1e2 S1e2.2.26).
+        // does not list.
         _ if !q.as_asked => format!(
             "the {} listed",
             plural(r.listed().count() as u64, "state", "states")
@@ -2728,7 +2714,7 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
             out.row(Row::AsExpect, "(false)");
             return;
         }
-        // `--no-search` (M1f S1f.6.36): root's state is the one read, where
+        // `--no-search`: root's state is the one read, where
         // ∅ is in R and on the part asked, and no other.
         if a.route == Route::Root && q.classes.is_empty() {
             let why = match r.described().map(|d| &d.root) {
@@ -2805,11 +2791,11 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
                 let bound: Vec<String> = row.iter().map(|(k, v)| format!("?{k} = {v}")).collect();
                 if bound.is_empty() {
                     // A goal with a variable binds it in every row it has, an
-                    // `eq` or `neq` guard included since M1f S1f.5.7, unless
-                    // the variable is an `(absent …)`'s own; until then a
-                    // guard's free variable bound nothing, and `(neq w ?y)`'s
-                    // one row said it had no variable. A name holds no `?`
-                    // (`ein.l`'s name rule), so the goal's text tells.
+                    // `eq` or `neq` guard included, unless the variable is an
+                    // `(absent …)`'s own, so a row that binds nothing is a
+                    // goal with no variable, or one whose every variable is
+                    // an `(absent …)`'s. A name holds no `?` (`ein.l`'s name
+                    // rule), so the goal's text tells.
                     b.push(more_text(if q.goal.contains('?') {
                         "  the goal holds: it binds no variable"
                     } else {
@@ -2920,7 +2906,7 @@ mod tests {
 
     /// A text's line breaks are Unicode's mandatory ones, `\r\n` one break;
     /// each further line starts at the column the text's first character is
-    /// printed at (M1f S1f.5.16's T1f.5.16.5).
+    /// printed at.
     #[test]
     fn a_texts_line_breaks_keep_the_rows_column() {
         assert_eq!(
@@ -2945,11 +2931,11 @@ mod tests {
         );
     }
 
-    /// A label never touches its value, at every width (M1f S1f.5.6, W42):
-    /// one shorter than its column has its value at column 20, and one as
-    /// long or longer has one space after it, its value's further lines at
-    /// that value's column. Until S1f.5.6 `class 100 of 277` printed
-    /// `class 100 of 27728 states` for 28 states.
+    /// A label never touches its value, at every width (W42): one shorter
+    /// than its column has its value at column 20, and one as long or longer
+    /// has one space after it, its value's further lines at that value's
+    /// column, so `class 100 of 277` and `28 states` never print as
+    /// `class 100 of 27728 states`.
     #[test]
     fn a_label_never_touches_its_value() {
         for (indent, width) in [(2, 18), (4, 16)] {

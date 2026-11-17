@@ -8,7 +8,7 @@
 //! `HashMap` here would scramble the file.
 //!
 //! A digraph that holds a hyperedge node sets
-//! [`POLYGON_RANKSEP`] (M1f S1f.5.17).
+//! [`POLYGON_RANKSEP`].
 
 use std::collections::HashMap;
 

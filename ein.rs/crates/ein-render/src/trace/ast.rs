@@ -5,14 +5,9 @@
 //! generated English explanation. `diagram` and `section` are render-time
 //! enrichments.
 //!
-//! **Until M1f S1f.5.5's T5 a trace round-tripped through the parser**:
-//! `trace_to_ir` and `step_to_ir` wrote it as a `(trace …)` form and
-//! `parse_trace_steps` read one back. Nothing called either half (`grep -rn
-//! trace_to_ir ein.rs/crates`, 2026-11-08, S1f.5.5's census), and the writer
-//! put a `:bind` and a `:why` on a step, which the grammar's `Step` does not
-//! take; the paper grammar's default 8 retired them with the swap, and T5
-//! deleted them. A `(trace …)` form a program writes is still drawn, by
-//! [`crate::ir_dot::render_trace`].
+//! **A trace is written, never read back**: nothing writes these steps as a
+//! `(trace …)` form or parses one into them. A `(trace …)` form a program
+//! writes is drawn by [`crate::ir_dot::render_trace`].
 //!
 //! **Why a fact here is not a `FactId`.** Everywhere else in the engine a
 //! fact is an interned id. [`FactRef`] is an owned `(relation_name, args)`
@@ -21,9 +16,8 @@
 
 use ein_core::{FactId, Tag, Terms, Value};
 
-/// One argument of a [`FactRef`]: a name or a nested fact (and an integer as
-/// its canonical decimal text, until M1f S1f.5.4 retired the int kind: a run
-/// of digits is a name since S1f.5.5's swap).
+/// One argument of a [`FactRef`]: a name or a nested fact. A run of digits
+/// is a name.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum RefArg {
     Str(String),
@@ -50,7 +44,7 @@ impl FactRef {
 
     /// The readable `rel(a, b, …)` label — `dot_util.fact_label` over this
     /// shape, recursing into nested references. A name prints as the one
-    /// printer prints it (M1e2 S1e2.3.8): bare where it lexes as itself, else
+    /// printer prints it: bare where it lexes as itself, else
     /// quoted, so `holds("x y")` is one argument and `holds(1)` a name.
     pub fn label(&self) -> String {
         let parts: Vec<String> = self
@@ -97,13 +91,13 @@ pub struct TraceStep {
     /// each name.
     pub bindings: Vec<(String, String)>,
     pub why: String,
-    /// What the derived fact says: its relation's `:why`, positional — M1f
-    /// S1f.5.14's T1f.5.14.2. `None` where the relation carries none.
+    /// What the derived fact says: its relation's `:why`, positional. `None`
+    /// where the relation carries none.
     pub statement: Option<String>,
     /// The firing's other conclusions, in the order the rule writes them,
-    /// each with its statement (M1f S1f.6.25, E-5): a firing stores every
-    /// conclusion of its rule, and until that stage a step named the first
-    /// alone. Empty for a rule of one conclusion.
+    /// each with its statement: a firing stores every conclusion of its
+    /// rule, and a step names each (Q-M1f.214). Empty for a rule of one
+    /// conclusion.
     pub more: Vec<(FactRef, Option<String>)>,
     /// The inline DOT slice — render-time, not serialised.
     pub diagram: Option<String>,
