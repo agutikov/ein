@@ -1,6 +1,7 @@
 //! The state route — a monotone program's region over its **states**, not its
 //! commitments
-//! ([07-finding-r.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question)).
+//! (the procedure, [02-algorithms.md § 8.1](../../../../docs/ein/ein.rs/02-algorithms.md#81-the-state-route);
+//! why it is sound, [07-finding-r.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question)).
 //!
 //! Route 1 ([`crate::downset`]) visits every alive commitment. On a monotone
 //! program a commitment's state is its closure's (L3), so the alive

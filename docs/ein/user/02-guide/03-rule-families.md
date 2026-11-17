@@ -38,7 +38,7 @@ digraph { rankdir=LR; node [shape=box];
 ```
 
 You never wrote `symmetric`/`bijective`'s logic: the stdlib did
-([the standard library](../04-reference/04-stdlib/README.md)). Each `(bijective R)` pulls
+([the relation algebra](../04-reference/04-stdlib/02-relation-algebra.md), [bijections](../04-reference/04-stdlib/04-bijections.md)). Each `(bijective R)` pulls
 in four cardinality properties, `functional`, `injective`, `total` and
 `surjective`, and the inference they license: **negative-completion** and
 **domain- and range-elimination**.

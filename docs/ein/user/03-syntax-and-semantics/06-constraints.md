@@ -228,7 +228,8 @@ library, which a program imports to write it ([macros](11-macros.md)).
 
 Stored negations are what lets elimination be written as rules. *Every colour but one is excluded for this house,
 so it is the remaining one* is a rule whose premise is a `forall` over stored negations; the standard library's
-bijection and slot theories are written so ([the stdlib reference](../04-reference/04-stdlib/README.md)).
+bijection and slot theories are written so ([bijections](../04-reference/04-stdlib/04-bijections.md#root-decides-negatives-and-elimination),
+[slots](../04-reference/04-stdlib/05-slots.md)).
 
 ## What a constraint is not
 

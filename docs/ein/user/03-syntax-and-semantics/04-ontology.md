@@ -249,7 +249,8 @@ engine reads how many there are; a rule reads which they are through the declara
 what an object is classified under is a fact of that relation. A program that wants inheritance, a check that an
 argument is an instance of its relation's label, or a hierarchy of labels writes it as rules, as this page and
 [objects](01-objects.md#giving-labels-a-meaning) do; the standard library has the common ones
-([the stdlib reference](../04-reference/04-stdlib/README.md)).
+([`std.typing`](../04-reference/04-stdlib/02-relation-algebra.md#using-stdtyping--a-hierarchy-named-once),
+[`std.bijection`'s argument check](../04-reference/04-stdlib/04-bijections.md#the-argument-check)).
 
 **A hierarchy is facts.** `(is-a Dog Mammal)` and `(is-a Rex Dog)` are one relation in a program that writes them
 so, and differ only in where the name sits in the forest: `Rex` has nothing under it, `Dog` has. What propagates

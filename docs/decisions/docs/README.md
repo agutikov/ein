@@ -22,3 +22,5 @@ how the pages of `docs/ein/` are named and what each is written in. The format a
 - [Q-M1f.369](Q-M1f.369-a-formula-is-written-in-tex-displayed-or-inline.md) — A formula is written in TeX, displayed or inline
 - [Q-M1f.370](Q-M1f.370-each-perspective-of-the-documentation-is-written.md) — Each perspective of the documentation is written in its own languages
 - [Q-M1f.371](Q-M1f.371-a-core-notion-is-shown-four-ways-in-the-users.md) — A core notion is shown four ways in the user's pages, special syntax is not
+- [Q-M1f.375](Q-M1f.375-the-standard-librarys-reference-shows-usage.md) — The standard library's reference shows usage apart from how a module works, and every rule drawn
+- [Q-M1f.378](Q-M1f.378-the-grammar-page-is-the-two-grammar-files-as-ebnf.md) — The grammar page is the two grammar files as EBNF, translated and never typed

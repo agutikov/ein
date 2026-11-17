@@ -156,7 +156,8 @@ owing node is stated in a region claim as `(owing (model …))` ([`02-syntax.md`
 `std.algebra` declares `total-owed` and `surjective-owed`, the obligation duals of the totality checks beside them,
 activated by `bijective-setup`. `std.slots` declares `slot-owed-room` and `slot-owed-fill`, activated by
 `slot-partition-setup`. All four assert `(open ?R)` and nothing else, and the *direction* is nowhere in the head: it
-falls out of which slot the rule's own `absent` leaves free ([`04-stdlib/`](04-stdlib/README.md)).
+falls out of which slot the rule's own `absent` leaves free
+([`total-owed` and `surjective-owed`](04-stdlib/02-relation-algebra.md#obligations-total-owed-and-surjective-owed), [`std.slots`](04-stdlib/05-slots.md)).
 
 ## `written` — what a file writes, stated by the loader
 

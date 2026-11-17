@@ -455,7 +455,7 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 `-H` lists H after a read-out, by relation, within the 100 lines. **H alone, whole and as Ein facts, is
 `ein show hyps FILE`**: one candidate a line and nothing else on stdout, at the cost of root's saturation and the
 generator's pass, no route run
-([`05-hypothesis-space.md` § How to see it](../../reasoning/02-kb-evolution/05-hypothesis-space.md#how-to-see-it)). The
+([hypotheses and the answer, in code § 1.3](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#13-h-listed)). The
 candidates are the same in both.
 
 ---

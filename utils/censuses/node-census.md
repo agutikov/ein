@@ -625,7 +625,7 @@ a fork-aware cell, which S1e2.1c.3 would have to design.
 ## 11. The path census — S1e2.1b.7
 
 S1e2.1b.7's T1e2.1b.7.2, for
-the rows [`08-monotonicity.md` § What holds it](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#what-holds-it)
+the rows [`02-saturation-and-negation.md` § 4.4 What holds it](../../docs/ein/ein.rs/08-reasoning-in-code/02-saturation-and-negation.md#44-what-holds-it)
 left *unverified*: every split C1 ⊆ C and longer chains, the state-memoized
 path DAG and (F)'s per-node counts, and the premise that a step is a function
 of the KB's contents. § 6.1 above read one-step parents, as `-y` built them.
@@ -816,7 +816,7 @@ are not read.
 ## 12. The cumulativity census, and the FIFO gap — S1e2.1b.7
 
 T1e2.1b.7.3, for three rows of
-[`08-monotonicity.md` § What holds it](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#what-holds-it):
+[`02-saturation-and-negation.md` § 4.4 What holds it](../../docs/ein/ein.rs/08-reasoning-in-code/02-saturation-and-negation.md#44-what-holds-it):
 *a stratified program evaluated stratum by stratum is cumulative*, *the FIFO
 example is path-dependent in the engine as written*, and *a Monotone verdict
 can leave scratch ≠ fork through a FIFO race over a static read*.

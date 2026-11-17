@@ -15,8 +15,13 @@ constrained-reasoning research.
   **`user/`**, the black box — the language, the command line, what the
   answer means and every row `ein solve` prints, the guide;
   **`reasoning/`**, what is computed and why it is right, true of any
-  implementation (`01-static-ir/`, `02-kb-evolution/`, `03-rule-evolution/`); and
-  **`ein.rs/`**, how this implementation computes it (below). Start here for
+  implementation (`01-static-ir/`, `02-kb-evolution/`, `03-rule-evolution/`), in
+  mathematics, graphs and words, with no code and no test named, and one
+  notation, the table of [`reasoning/README.md`](docs/ein/reasoning/README.md#notation); and
+  **`ein.rs/`**, how this implementation computes it (below), where
+  [`08-reasoning-in-code/`](docs/ein/ein.rs/08-reasoning-in-code/README.md) is what
+  holds the engine to the reasoning: for each of its pages, the code, the
+  tests and the commands. Start here for
   any "what does Ein reason about / how" question. The pages an agent most
   often needs:
   [`07-diagnostics.md`](docs/ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes),
@@ -27,8 +32,10 @@ constrained-reasoning research.
   [`08-read-out.md`](docs/ein/user/04-reference/08-read-out.md), every row
   `ein solve` prints and what it counts;
   [`05-hypothesis-space.md`](docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md),
-  the hypothesis space and its structure, each object defined, and
-  `h-space.json`;
+  the hypothesis space and its structure, each object defined;
+  [`03-hypotheses-and-the-answer.md`](docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md),
+  `ein show hyps`, `ein render h-space` and `h-space.json`, key by key (its
+  § 1.3, § 2.3 and § 2.4), and the routes' tests;
   [`06-config.md`](docs/ein/user/04-reference/06-config.md), the `(config …)` flags,
   the CLI options and the `EIN_*` names, each with a *does it change the
   answer* column;
@@ -37,7 +44,9 @@ constrained-reasoning research.
   [`14-natural-language.md`](docs/ein/user/03-syntax-and-semantics/14-natural-language.md),
   `:why` texts and how a fact reads as English; and
   [`01-architecture.md`](docs/ein/ein.rs/01-architecture.md), the crate and module
-  map, with the design contracts the code cites under `docs/ein/ein.rs/03-design/`.
+  map, with the design contracts the code cites under `docs/ein/ein.rs/03-design/`
+  and each algorithm told once, as a flow, in
+  [`02-algorithms.md`](docs/ein/ein.rs/02-algorithms.md).
   What is true of the language and the answer today is
   [§ Standing rules](#standing-rules) below; how each rule came to be is in
   the stage records under `plans/` and in `git log`, not here.
@@ -101,8 +110,10 @@ constrained-reasoning research.
   A question still open is a work item and lives in `plans/`, cited by
   nothing in the project; a decision about the process stays in `plans/` too.
 - **`docs/ein/ein.rs/`** — **the engine as built**: the crate and module map,
-  the design contracts the crates cite (`design/`), the `--events` protocol and
-  the other engine read-outs, and **how to drive Ein as a library**,
+  the algorithms (`02-algorithms.md`), the design contracts the crates cite
+  (`03-design/`), the `--events` protocol and the other engine read-outs, the
+  reasoning's pages in this code (`08-reasoning-in-code/`), and **how to drive
+  Ein as a library**,
   [`04-api.md`](docs/ein/ein.rs/04-api.md): the **crates** — `ein-ir` to load, `ein-infer` to solve, `ein-render` to
   explain, `ein-einb` to cache. **Its worked example is a test.** The page's
   `rust` block is the marked region of
@@ -191,7 +202,10 @@ constrained-reasoning research.
   `std.bool.gates`', as a relation and as a value, so a program that writes
   one lists it. `std.logic` is left free for M1g.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
-  [`stdlib/README.md`](stdlib/README.md) has a section for each.
+  [`stdlib/README.md`](stdlib/README.md) has a section for each, and the
+  reference a page for each family, usage apart from how a module works and
+  every rule drawn:
+  [`docs/ein/user/04-reference/04-stdlib/`](docs/ein/user/04-reference/04-stdlib/README.md).
 - **`tests/`** — **the ein-lang test suites**, a third corpus root beside
   `examples/` and `stdlib/`: a `.ein` here with no `corpus.toml` entry fails
   the same completeness check. Its one subject is
@@ -367,8 +381,10 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   can be concluded — then the rest, FIFO in written order within each half
   (`saturator::AGENDA`, everywhere: root, every route's node, the oracle's,
   every reader; [Q-M1f.313](docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
-  On a monotone program it decides no answer (`ein-infer/tests/agenda.rs`);
-  of a flagged one the engine claims none.
+  It decides no answer where no rule's `absent` reads a relation another
+  rule derives at the same boundary; `ein-infer/tests/agenda.rs` holds it on
+  the corpus's monotone programs. Of a flagged program the engine claims no
+  answer.
 - **`:why` is required** on every relation, rule, hrule and macro;
   `--no-require-why` loads a program without.
 - `__closed__` and `__symmetric__` are reserved and never bound, and never
@@ -395,8 +411,9 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   in a `(solve …)` list names something the program has. A macro's call is no
   fact.
 - **A form headed by a declared relation has as many arguments as its
-  declaration has types.** It is no type check. A fixture that wants a
-  relation at several counts leaves it undeclared.
+  declaration has labels.** It is no check of what is written there: Ein has
+  no types, and a label means what a rule makes it mean (Q-M1f.372). A
+  fixture that wants a relation at several counts leaves it undeclared.
 - **Every import brings its module whole**, with its own imports, one copy
   per program, every declared name under its **full name**,
   `std.math.decimal-arith.add`; the three shapes differ only in names: `:symbols (…)` lets the file write
@@ -461,7 +478,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 ### Edits that go together
 
 - **Generated, never edited by hand** (edit the generator and re-run):
-  `01-grammar.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
+  `01-grammar.md`'s two grammar regions, the EBNF diagrams and the lexer's
+  table (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
   `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
   (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
   and its width-2 twin, the fixture `ein-infer/tests/golden/num2_theory.ein`
@@ -474,7 +492,9 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   zebra2 variants (`utils/gen_zebra2_variants.py`);
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`utils/gen_send_written.py`);
-  `09-read-out-examples.md` (`utils/read_out_examples.py`); `06-config.md`'s
+  `09-read-out-examples.md` (`utils/read_out_examples.py`); the rule regions
+  of the `04-stdlib/` pages (`utils/gen_stdlib_rule_pages.py`, which needs the
+  binary); `06-config.md`'s
   defaults block and `docs/ein/ein.rs/04-api.md`'s `rust` block;
   `ein-core/src/printable.rs` (`utils/gen_unicode_printable.py`, with
   `ein-core/tests/golden/repr_escapes.txt` re-blessed). All of those have a
@@ -519,7 +539,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   the row into `corpus/regressions.toml` and the witness into the corpus, with
   any `:expect` that stated the wrong answer, in the fixing commit.
 - **A stdlib rule needs a program under `tests/stdlib/` that activates it**,
-  or `stdlib_coverage.rs` fails. A rule or relation added to
+  or `stdlib_coverage.rs` fails, and a region on its family's rules page
+  under `04-stdlib/`, or `check_generated.py` fails. A rule or relation added to
   a module of the calculator goes into its closing rule's two lists
   (`arith_theory.rs`, `int_theory.rs`, `rat_theory.rs`, `num9_theory.rs`,
   `gcd_theory.rs`); a

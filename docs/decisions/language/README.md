@@ -77,3 +77,4 @@ shapes the parser and the loader refuse.
 - [Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md) — A form of a declared relation has as many arguments as its declaration has types
 - [Q-M1f.339](Q-M1f.339-every-name-the-loader-makes-up-starts-with.md) — Every name the loader makes up starts with `#`
 - [Q-M1f.351](Q-M1f.351-a-bare-variable-or-name-is-no-whole-conclusion.md) — A bare variable or name is no whole conclusion
+- [Q-M1f.372](Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md) — Ein has no types: a declaration's slot names are labels
