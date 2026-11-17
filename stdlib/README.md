@@ -245,7 +245,7 @@ They derive nothing and are not in the saturation agenda; what reads them is
 one pass over the quiescent KB, reported through `--events`' `owe` lines,
 `--json-summary`'s `owes` block and the trace's *Outstanding obligations*
 section
-([`03-reserved-names.md` § the verdict atom](../docs/ein/user/04-reference/03-reserved-names.md#the-verdict-atom--open)).
+([`03-reserved-names.md` § the verdict `open`](../docs/ein/user/04-reference/03-reserved-names.md#the-verdict--open)).
 
 ## `std.math.digits`: a library of facts
 
@@ -354,7 +354,7 @@ table lookup whose outcome the table decides, so nothing is guessed: on a
 program that imports the theory and states requests the universe has no
 candidate, R is {∅}, and the answer is root's fixpoint under `ein solve`,
 `ein saturate` and `ein test` alike
-([Q-M1f.365](../docs/decisions/stdlib/math/Q-M1f.365-the-calculator-closes-its-own-relations-so.md)).
+([Q-M1f.365](../docs/decisions/stdlib/math/Q-M1f.365-the-calculator-closes-the-held-extents.md)).
 No `not` premise, and **one `absent`, over `let`**, which a program writes and
 no rule derives: the theory closes `let`, so the premise is decided at root,
 the static check calls a program that imports the theory monotone, and it has
@@ -1280,7 +1280,7 @@ A function of two bits is its column of four outputs, and there are sixteen,
 each with a name: `Zero And Andn Fst Randn Snd Xor Or Nor Xnor Nsnd Orn Nfst
 Rorn Nand One`, capitalised because `and`, `or` and `not` are Ein's own words.
 Two layouts
-([Q-M1f.325](../docs/decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-a-value-of-one-table.md)):
+([Q-M1f.325](../docs/decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-an-argument-in-one-table.md)):
 
     (gate2 Xor 0 1 1)   the table, 64 rows: a function is an argument, so a rule
                         about any function needs no parameter, and a search can

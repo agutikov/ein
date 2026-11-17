@@ -268,7 +268,7 @@ An obligation plays two parts ([hypotheses](09-hypotheses.md)):
 
 An obligation that owes facts of a relation the program also keeps out of the guessing, by `(__closed__ R)` or,
 with no hrule, by a `(solve …)` list, is refused at load: a state that owed one could never be paid
-([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)).
+([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)).
 To judge root alone, with nothing proposed, a program states `(solve :no-search)` ([query](12-query.md)).
 
 ## Reading a state that owes

@@ -178,7 +178,7 @@ ein show hyps FILE
 The first lists 4 candidates and the second 22: with the declaration naming `A` and `B`, `Person` and `House` are
 no longer labels of any declaration, so the blind enumerator takes them for guessable atoms and proposes
 `(lives-in Person House-1)` and the like. No rule reads the labels in either program
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)).
 
 ### 1.5 What holds the ladder
 

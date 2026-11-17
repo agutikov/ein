@@ -1094,7 +1094,7 @@ Re-opening it means (c).
 **Raised** 2026-11-09 by S1f.5.8's T1f.5.8.1, on the
 coordinator's brief: a wrong answer, or a printer line that says something false about one, is a register row before
 it is fixed. Under the ruling the stage builds
-([Q-M1e2.27](../../docs/decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)), `[]` is the empty
+([Q-M1e2.27](../../docs/decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)), `[]` is the empty
 set, *the empty set of facts suffices*, so a node that is not dead written `"core": []` names a core where none
 exists. The stage's re-take found it on every JSON surface that writes a node's core: the summary's owing holes,
 `region.json`, `nodes.json` and `--events`' `enter` lines.
@@ -2761,7 +2761,7 @@ and S1f.7.10 to S1f.7.12 are planned.
 
 ### Q-M1f.113 — What is a nested `(eq k j)` for: a quoted statement, or nothing a state can hold?
 
-**Decision file:** [`docs/decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md`](../../docs/decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md`](../../docs/decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)
 
 **Raised** 2026-11-11 by the coordinator, on S1f.7.10's
 finding and the user's question of that day (what such a fact would be used for, from Ein's point of view).
@@ -2926,7 +2926,7 @@ taken.
 
 ### Q-M1f.122 — Where `absent` still heads a form that is no premise
 
-**Decision file:** [`docs/decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md`](../../docs/decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md`](../../docs/decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md)
 
 **Raised** 2026-11-11 by S1f.7.7's T1. The stage's direction is that `FactHead`, `ArgHead` and `ConclusionHead` lose
 `absent`. Its sweep found one more place the word heads a form: a claim. A query's claim lists its projection
@@ -2943,7 +2943,7 @@ meant negation: *the stored negation of a fact is (not …)*.
 
 ### Q-M1f.123 — `(false)` with no argument as a value
 
-**Decision file:** [`docs/decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md`](../../docs/decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md`](../../docs/decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)
 
 **Raised** 2026-11-11 by S1f.7.6's T1. `(q (false))`, `(not (false))` and a premise `(false)` load today. The value
 rule names *`false` with an argument*.
@@ -4896,7 +4896,7 @@ computes is 100 shapes.
 
 ### Q-M1f.226 — An obligation's name in a closing rule, and `alive_invariant`'s R0
 
-**Decision file:** [`docs/decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-candidate-object.md`](../../docs/decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-candidate-object.md)
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-guessable-atom.md`](../../docs/decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-guessable-atom.md)
 
 **Raised** 2026-11-13 by S1f.6.28's
 T5 (E-48). The rebuilt `examples/word_problems/readings.ein` owes a reading by an
@@ -5269,7 +5269,7 @@ root.
 
 ### Q-M1f.244 — O + C beside an hrule
 
-**Decision file:** [`docs/decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md`](../../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md`](../../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)
 
 **Raised** 2026-11-14 by S1f.6.34's witnesses. The table qualifies O + HR and O + NH with *with no hrule*, the two
 lists filtering only rungs 2 and 3, and writes O + C without it.
@@ -6471,7 +6471,7 @@ more (S1f.10.10).
 
 ### Q-M1f.306 — What the blind enumerator takes for an object
 
-**Decision file:** [`docs/decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md`](../../docs/decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md`](../../docs/decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)
 
 **Raised** 2026-11-15 by
 S1f.10.9's

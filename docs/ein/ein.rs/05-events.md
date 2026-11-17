@@ -158,7 +158,7 @@ A skip before any candidate exists gets its own kind rather than a `hyp` with an
 
 `enter` and `core`: a core is an explanation
 ([Q-M1f.6](../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)); `null` and `[]` differ, `[]` being the empty
-core of a dead node ([Q-M1e2.27](../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)).
+core of a dead node ([Q-M1e2.27](../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)).
 
 #### `rung`: which generator proposed
 

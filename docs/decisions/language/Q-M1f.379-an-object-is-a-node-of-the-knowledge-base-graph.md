@@ -11,7 +11,7 @@ sorts of node, so there are two sorts of object:
   ([Q40](Q40-a-fact-may-hold-a-fact-as-an-argument.md)). `(owns Norwegian Dog)` is a fact with three arrows.
 
 So what stands in an argument's place, what a variable is bound to and what a guard compares is an object, and
-which facts may stand there is [Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)'s. *Atom*
+which facts may stand there is [Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)'s. *Atom*
 never means an atomic formula: `(owns Norwegian Dog)` is a fact, and the atoms are the three nodes it points at. A
 string, a variable, a keyword and a connective are no object, and no object has a type
 ([Q-M1f.372](Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)).

@@ -265,7 +265,7 @@ something reads it. $\operatorname{lives-in}(\mathsf{House\text{-}1}, \mathsf{No
 $f_2$ beside the declaration above. A rule reads a declaration as it reads any fact, and it is such a rule that
 gives a label the meaning *the argument in this place is one of these*
 ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md),
-[Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md);
+[Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md);
 [the rules](02-rewriting-rules.md#relation-polymorphic) has that rule). Two things a declaration does that
 another fact does not are properties of the graph and are stated [below](#the-count-of-arguments): it fixes the
 count of arguments, and a relation is declared once. One place beside the rules reads which atoms are labels,
@@ -308,8 +308,8 @@ $$
 $$
 
 So $\lnot a$ of an atom $a$ is no fact, and $\lnot\lnot g$ is no fact; $\lnot\bot$ is one, and $\bot$ may be an
-argument ([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md),
-[Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)). What reads the two
+argument ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md),
+[Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)). What reads the two
 relations is [below](#a-fact-its-negation-both-or-neither).
 
 ### The reserved atoms
@@ -330,7 +330,7 @@ $$
 
 Two sorts of word stand beside the names and are no atom's name. A **text**, a quoted run of any characters, is
 a sentence about a fact or a declaration and never an object
-([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). A
+([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)). A
 **made-up name** begins with a mark that is not in $\Sigma$: it names something a program's text gives no name
 to, and no name a program writes is one
 ([Q-M1f.339](../../../decisions/language/Q-M1f.339-every-name-the-loader-makes-up-starts-with.md)).
@@ -458,7 +458,7 @@ is a theory of rules over numerals written in such names, never an operation on 
 
 **No two atoms are ever one.** Equality of objects is identity, and it is no fact: $\mathsf{eq}$ and
 $\mathsf{neq}$ are in $W_{\!c}$, so no knowledge base holds an equality, and nothing merges two nodes
-([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md),
+([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md),
 [Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)).
 
 **What is no part of identity**: where an object is written, how often, the source sentence of a fact, a

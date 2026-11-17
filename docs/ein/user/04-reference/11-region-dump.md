@@ -49,7 +49,7 @@ which the rung that built the list proposes no fact
 
 **What it proposes about, where a program may not mean it,** is named: where the blind enumerator built the list,
 the atoms on the right of an `is-a` that a candidate names, the candidates' relations and how many there are
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). `region.md`
+([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)). `region.md`
 says it as `**Types as objects**`, under its candidate count, as the read-out's `types` row does, and `region.json`
 carries it as `types_as_objects`. The words are the engine's: its *type* is an atom an `is-a` fact points at, and
 its *object* a guessable atom, one the enumerator proposes about.

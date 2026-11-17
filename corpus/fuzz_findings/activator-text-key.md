@@ -3,7 +3,7 @@
 Two activators of one rule whose text is one, `1` and `"1"`, in two orders: this file and
 [`activator-text-key-swapped.ein`](activator-text-key-swapped.ein). A string is natural-language text, written only
 after `:why`, `:source` or `:goal-text`, and never a value
-([Q-M1e2.23](../../docs/decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)), so
+([Q-M1e2.23](../../docs/decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)), so
 `(holds "1")` is refused at the parse, and both files are. A compile plan is keyed by its activator's values, never
 by their text, so two activators that print alike key two plans.
 

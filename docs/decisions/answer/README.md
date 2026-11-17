@@ -3,14 +3,14 @@
 Decisions on the answer: the region R, a dead node's core, how a claim is decided, and which question a command asks of R.
 
 - [Q6](Q6-symmetry-is-the-programs-not-the-engines.md) — Symmetry is the program's, not the engine's
-- [Q-M1c.6](Q-M1c.6-a-claim-can-say-that-a-relation-is-empty.md) — A claim can say that a state holds no fact of a relation
+- [Q-M1c.6](Q-M1c.6-a-claim-can-say-that-a-state-holds-no-fact.md) — A claim can say that a state holds no fact of a relation
 - [Q-M1c.7](Q-M1c.7-a-claim-may-name-a-relation-only-a-rule-derives.md) — A claim may name a relation only a rule derives
 - [Q-M1d.1](Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md) — A search stops early only on a decided question or a bound
 - [Q-M1d.6](Q-M1d.6-contradiction-is-said-only-where-no-node-is.md) — `Contradiction` is said only where no node is alive
 - [Q-M1e.5](Q-M1e.5-no-surface-disagrees-with-the-oracle.md) — No surface disagrees with the oracle, experimental or not
 - [Q-M1e.6](Q-M1e.6-a-model-is-what-a-solutions-state-adds.md) — A model is what a solution's state adds to the program
 - [Q-M1e.7](Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md) — A state is what the engine judges, and a model is a projection of it
-- [Q-M1e.13](Q-M1e.13-a-claim-can-state-an-empty-goal-extent.md) — A claim can state that the goal has no row
+- [Q-M1e.13](Q-M1e.13-a-claim-can-state-that-the-goal-has-no-row.md) — A claim can state that the goal has no row
 - [Q-M1e2.1](Q-M1e2.1-a-discharged-superset-of-a-discharged-state-is.md) — A discharged superset of a discharged state is in R
 - [Q-M1e2.2](Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md) — A node is a fork of root, an assumption on a flagged program
 - [Q-M1e2.3](Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md) — R is over the universe, and the read-out names what it leaves out

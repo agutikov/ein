@@ -3,7 +3,7 @@
 The names a program may *write* but not *redefine*: the language gives each a fixed meaning. A name is reserved
 **if and only if** this page lists it, and nothing else is special. Ein has **no types**, `is-a` and `T`
 being an ordinary relation and an ordinary atom
-([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)), and **no symmetry**,
+([Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md)), and **no symmetry**,
 `symmetric` being a property a rule gives meaning to
 ([Q6](../../../decisions/answer/Q6-symmetry-is-the-programs-not-the-engines.md)). The names the engine makes up for
 its own records, which no program writes, are
@@ -183,10 +183,10 @@ state file writes none of it, since the loader states it again when the file is 
 | name | arguments | meaning |
 |---|---|---|
 | `not` | 1 | the negation of one fact: `(not X)` is a stored fact whose argument is the fact denied. In a `:match` it matches a stored negation, and with `X` it is a contradiction |
-| `false` | 0 | `(false)`: the state is contradictory. It takes no argument, as a fact, an argument of a fact, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)) |
+| `false` | 0 | `(false)`: the state is contradictory. It takes no argument, as a fact, an argument of a fact, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)) |
 | `and` | 1 or more | conjunction: every premise holds, or every conclusion is derived |
 | `or` | 1 or more | disjunction, in a `:match` only: a top-level `(or …)` is one rule per disjunct, and an `(or …)` anywhere else in a `:match` is refused at load |
-| `absent` | 1 | negation as failure on a pattern: a question asked of the state, never a stored fact, so no fact, argument or conclusion is headed by it, and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)). It is asked once, at the closure boundary, against the positive fixpoint ([`02-syntax.md` § NAF evaluation timing](02-syntax.md#naf-evaluation-timing--the-closureworld-boundary)) |
+| `absent` | 1 | negation as failure on a pattern: a question asked of the state, never a stored fact, so no fact, argument or conclusion is headed by it, and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md)). It is asked once, at the closure boundary, against the positive fixpoint ([`02-syntax.md` § NAF evaluation timing](02-syntax.md#naf-evaluation-timing--the-closureworld-boundary)) |
 
 ## Computed relations — `eq` and `neq`
 
@@ -228,7 +228,7 @@ macros: a body or a call that writes `eq`, `absent`, `not`, `false` or `or` in a
 where a rule writes it is refused where the macro is called, and a macro no rule calls loads
 ([`02-syntax.md` § 3](02-syntax.md#the-primitives-and-where-a-malformed-one-is-caught)). **An object is an atom, or a
 fact a state could hold**
-([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)): `eq`, `neq`,
+([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)): `eq`, `neq`,
 `absent`, `and`, `or` and `false` with an argument head no argument of a fact, written or left by a macro's
 expansion, and `not` does, a stored negation being a fact.
 
@@ -286,7 +286,7 @@ read on root's fixpoint
 | H + C | a **conflict** where an active hrule proposes a fact of a closed relation; closing another relation stands |
 | O + HR | with no hrule, a **conflict** where a relation whose facts are owed is outside HR |
 | O + NH | with no hrule, a **conflict** where a relation whose facts are owed is in NH: an obligation filtered away is no obligation |
-| O + C | a **conflict** where a relation whose facts are owed is closed, whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)) |
+| O + C | a **conflict** where a relation whose facts are owed is closed, whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)) |
 | HR + NH | a **conflict** where one relation is in both; with no hrule, NH naming a relation HR leaves out is **redundant**, a `note:` |
 | HR + C | a **conflict** where a listed relation is closed |
 | NH + C | with no hrule, an overlap is **redundant**, a `note:`; never a conflict |

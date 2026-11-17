@@ -139,7 +139,7 @@ Six facts about the terminals that the diagrams state and do not explain:
    ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)): `7`, `07`, `-7` and
    `1..5` are names (fact 5), each printed as written, and a fact of one is never a fact of another.
 4. **A string is natural-language text, with five escapes and `\u{…}`**
-   ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). `TEXT`
+   ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)). `TEXT`
    is the value of `:why`, `:source` or `:goal-text` and nothing else (§2's `Text`): written anywhere an argument goes it
    is a parse error at the string, with a note saying so, and the name written bare is what it meant. It holds any
    character but `"` and `\` as itself, a raw newline among them, and reads `\n` `\t` `\r` `\"` `\\` and `\u{…}`, one

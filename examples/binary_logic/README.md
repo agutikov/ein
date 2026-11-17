@@ -51,7 +51,7 @@ ein solve examples/binary_logic/unsatisfiable.ein --dump-answer unsat   # the an
 ## Which variants, and why
 
 - **The table for a search, a relation a function for a rule that names one.** Both layouts are `std.bool.gates`'
-  ([Q-M1f.325](../../docs/decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-a-value-of-one-table.md)). In the
+  ([Q-M1f.325](../../docs/decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-an-argument-in-one-table.md)). In the
   table a function is an argument, so a rule about any function needs no parameter, and a search can make the
   function a hypothesis, as `synthesis.ein` does; every program here reads the table.
 - **The names** are any spelling other than Ein's own `and`, `or` and `not`.

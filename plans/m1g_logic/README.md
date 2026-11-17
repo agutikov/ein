@@ -20,7 +20,7 @@ with the six applications in [`examples/binary_logic/`](../../examples/binary_lo
 left free for this milestone. `std.math.decimal-arith`, the
 decimal calculator (P1f.6), which P1g.5
 holds Peano's numbers to; and the language as P1f.5 and P1f.7 ruled it, the value rule above all
-([`07-diagnostics.md` § 2.22](../../docs/ein/user/04-reference/07-diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)).
+([`07-diagnostics.md` § 2.22](../../docs/ein/user/04-reference/07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold)).
 **Blocks:** nothing.
 **Promotes:** [F1b](../followups/f1b_logical_formulation.md), the logical formulation, whose *What promotion
 would look like* names a milestone with phases PFL.1 to PFL.4. This is that milestone

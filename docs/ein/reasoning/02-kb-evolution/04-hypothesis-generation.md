@@ -385,7 +385,7 @@ $$
 the kind of empty $R$ where alive states exist and every one owes. It is said as such, and an empty proposal is
 never passed for completeness. A scoping that would take out the relation an obligation owes cannot make a state
 stuck: such a program is no program (§ 6,
-[Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)).
+[Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)).
 
 ### 4.6 What the rung leaves to saturation
 
@@ -420,7 +420,7 @@ what is wrong.
 [Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md),
 [Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)) and the relations
 of root's facts, less four kinds of atom, each left out by its name
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)):
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)):
 
 $$
 \operatorname{guessable}(P) = \big( \operatorname{names}(P) \cup \operatorname{rels}(\mathrm{root}) \big) \setminus \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
@@ -441,7 +441,7 @@ $$
   $R$;
 - $\operatorname{RelNames}(P)$ is every atom the program declares as a relation, writes under the first arrow of a
   fact, or names a rule or an obligation by
-  ([Q-M1f.226](../../../decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-candidate-object.md)), with
+  ([Q-M1f.226](../../../decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-guessable-atom.md)), with
   $\mathsf{written}$, the relation of the facts that reading the text adds. The relation of a fact that only a rule
   concludes is none of these, so **a relation whose facts only a rule concludes is a guessable atom**, and a
   candidate can have it as an argument. The candidate stays, and the answer names it
@@ -485,7 +485,7 @@ Three guessable atoms and one relation of two arguments give the six dotted arro
 whatever the labels the relation's declaration writes.
 
 **The enumerator holds no argument to a label**
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). No object has a
+([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)). No object has a
 type ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)), and the
 enumerator gives a label no meaning of its own: a candidate the program's labels would speak against is killed by the
 program's own rules, or stays in $R$ where none rejects it. An atom a declaration writes as a label is not guessable,
@@ -527,7 +527,7 @@ only if none of these holds:
 | a hypothesis rule proposes a fact of a relation a list takes out | $\operatorname{Prop} \not\subseteq L^{+}$ where $L^{+}$ is stated, or $\operatorname{Prop} \cap L^{-} \neq \emptyset$ |
 | a hypothesis rule proposes a fact of a relation closed to hypotheses | $\operatorname{Prop} \cap \operatorname{Closed} \neq \emptyset$ |
 | with no hypothesis rule, an obligation owes a relation a list takes out | $\operatorname{Hr}(P) = \emptyset$, and $\operatorname{Ow} \not\subseteq L^{+}$ where $L^{+}$ is stated, or $\operatorname{Ow} \cap L^{-} \neq \emptyset$ |
-| an obligation owes a relation closed to hypotheses, whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)) | $\operatorname{Ow} \cap \operatorname{Closed} \neq \emptyset$ |
+| an obligation owes a relation closed to hypotheses, whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)) | $\operatorname{Ow} \cap \operatorname{Closed} \neq \emptyset$ |
 | a relation is in both lists, or in $L^{+}$ and closed to hypotheses | $L^{+} \cap L^{-} \neq \emptyset$, or $L^{+} \cap \operatorname{Closed} \neq \emptyset$ |
 
 A hypothesis rule beside an obligation is no conflict: the first generates and the second judges. A declaration that

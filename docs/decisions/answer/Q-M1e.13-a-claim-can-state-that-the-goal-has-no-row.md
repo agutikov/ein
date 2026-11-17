@@ -24,4 +24,4 @@ empty class states it without inventing a fact.
 `an_extra_class_is_named`; `ein-infer/tests/claim_round_trip.rs`: `every_printed_region_holds_as_its_own_claim`,
 every corpus region printed as a claim and held as one. The page:
 [`02-syntax.md`](../../ein/user/04-reference/02-syntax.md) § The expected region and § Query. That a state holds no
-fact of a relation: [Q-M1c.6](Q-M1c.6-a-claim-can-say-that-a-relation-is-empty.md).
+fact of a relation: [Q-M1c.6](Q-M1c.6-a-claim-can-say-that-a-state-holds-no-fact.md).

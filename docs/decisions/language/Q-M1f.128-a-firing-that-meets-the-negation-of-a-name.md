@@ -8,7 +8,7 @@ conclusions, and an hrule proposes nothing for it. No command stops, no `(false)
 the negation of a name.
 
 **Why.** `not` of a name is the negation of no fact
-([Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)), so there is nothing to state, as a true
+([Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)), so there is nothing to state, as a true
 `eq` conclusion adds nothing. Concluding `(false)` would kill a state for a conclusion that says nothing, and a
 stop would make an answer exit non-zero for a binding only some states meet.
 

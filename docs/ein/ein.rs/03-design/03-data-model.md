@@ -20,7 +20,7 @@ registries. All of it is `ein-core`: [`intern.rs`](../../../../ein.rs/crates/ein
 A fact is a relation and a tuple of arguments, each argument an atom or a fact, and its identity is exactly those
 two things ([Q-M1f.380](../../../decisions/language/Q-M1f.380-an-objects-identity-is-its-name-or-its-tuple.md),
 [Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md),
-[Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)): provenance,
+[Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)): provenance,
 source position and everything else take no part in it. In `ein.rs` every identity is a `u32`:
 
 | thing | type | equality | hash |
@@ -528,7 +528,7 @@ and the comparator of a `.einb` opened into a crowded interner, where ids differ
 not inserted; `EqClasses::union` merges by first argument, the first argument's root winning; `EqClasses::classes`
 lists root and members in the map's insertion order. `Kb::classes()` is its one accessor.
 
-What holds today ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)): atoms are never
+What holds today ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)): atoms are never
 merged, and `eq` is identity of names.
 
 - **Nothing writes it.** No rule, pass or loader step calls `union`; the only callers are tests.

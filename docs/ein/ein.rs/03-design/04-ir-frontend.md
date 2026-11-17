@@ -183,7 +183,7 @@ hex digits naming a Unicode scalar value, the surrogates and every value past 10
 regular expression itself. Any other escape lexes as `BADESCAPE`, refused with a note naming each bad escape and
 where it is (`build_ast::bad_escapes`). `build_ast::text` stores the body unescaped and interned, a `Node::Str`. A
 string is written only after `:why`, `:source` and `:goal-text` (`ein.y`'s `Text`;
-[Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). A
+[Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)). A
 variable is stored without its `?`, a keyword without its `:`.
 
 ## 5. The AST arena

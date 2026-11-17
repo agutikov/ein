@@ -25,7 +25,7 @@ Four texts: the relation's `:why`, a template filled by position; the rule's `:w
 variables; the fact's `:source`, the sentence of the problem it states; and the query's `:goal-text`, filled per
 answer. A string is natural-language text, any Unicode, with the escapes `\n \t \r \" \\ \u{…}`, and is written only
 after `:why`, `:source` and `:goal-text`: it is never an object, and no fact has one as an argument
-([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)).
+([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)).
 
 The three keywords are the built-in connection between a form and its English, and that is all they are: a text
 is no node of the knowledge base, no rule reads one, and none has a drawing or a formula of its own

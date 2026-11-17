@@ -19,7 +19,7 @@ E) is not function call, so (let NAME (calc E)) is not the case, Ein is not Lisp
 ## What it builds
 
 **The term language.** An expression is a value under the value rule
-([`07-diagnostics.md` § 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)): a name, or a fact of an ordinary
+([`07-diagnostics.md` § 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold)): a name, or a fact of an ordinary
 relation. As planned, to be confirmed at S1g.10.1's stop:
 
 | written | reads |

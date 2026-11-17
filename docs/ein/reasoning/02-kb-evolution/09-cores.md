@@ -224,7 +224,7 @@ dead.
 **An empty core and no core are two answers.** A dead node whose refutation rests on no fact, a rule with an
 empty match that concludes $\bot$, has the empty core: the empty set suffices. A node that is not dead has no
 core at all
-([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)):
+([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)):
 
 $$
 \begin{aligned}

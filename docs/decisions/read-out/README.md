@@ -5,7 +5,7 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q20](Q20-the-trace-is-in-the-engines-order-and-reorder.md) — The trace is in the engine's order, and `--reorder` groups it by entity
 - [Q-M1d.5](Q-M1d.5-the-read-out-lists-the-states-each-count.md) — The read-out lists the states, each count qualified, and the key is a form on request
 - [Q-M1e2.21](Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md) — `refuted by` names the first recorded derivation the core supports
-- [Q-M1e2.27](Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md) — In Ein's JSON, `[]` is the empty set and `null` what does not exist
+- [Q-M1e2.27](Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md) — In Ein's JSON, `[]` is the empty set and `null` what does not exist
 - [Q-M1e2.34](Q-M1e2.34-stdouts-listings-share-100-lines-and-a-dump.md) — Stdout's listings share 100 lines, and a dump holds them whole
 - [Q-M1f.12](Q-M1f.12-natural-language-text-reaches-a-fixed-set.md) — Natural-language text reaches a fixed set of surfaces, byte for byte
 - [Q-M1f.18](Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md) — The read-out's `(model …)` is the claim form, and `-P` prints the model

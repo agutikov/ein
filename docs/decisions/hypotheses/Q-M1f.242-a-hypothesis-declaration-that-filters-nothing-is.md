@@ -8,7 +8,7 @@ A declaration that steers the hypotheses and contradicts nothing, yet does nothi
 
 The note is placed at the list or the name, printed on every command that loads the program, once a process, and
 moves no exit code, answer or stdout. A declaration that contradicts another is refused instead
-([Q-M1f.244](Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)).
+([Q-M1f.244](Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)).
 
 **Why.** Such a declaration says nothing false, so the program answers; but it says nothing at all, and an author who
 wrote it believed it filtered something.

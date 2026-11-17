@@ -22,7 +22,7 @@ The label of an [atom](#atom), and the word a program writes for it. **A run of 
 `1`, `01` and `-7` are three names, and `(p 1)` and `(p 01)` two facts; Ein has no numbers
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)). **A string is no name**:
 it is natural-language text, the value of `:why`, `:source` or `:goal-text`, and `"Red"` where a name goes is a parse
-error ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). A name
+error ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)). A name
 is ASCII; a string is any Unicode. See [`02-syntax.md` § 1](02-syntax.md#1-lexical-rules).
 
 ### Fact
@@ -62,7 +62,7 @@ lists, about which the blind enumerator proposes nothing. See
 [`02-syntax.md` § What the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine).
 
 ### Type
-**Ein has no types** ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md),
+**Ein has no types** ([Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md),
 [Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). The
 word is a program's, for an atom it groups other atoms under, `Nationality`, `House`, `Color`: the atom its
 membership facts point at, `(is-a Norwegian Nationality)`, or a [label](#label-signature) of a declaration. Such an
@@ -158,7 +158,7 @@ blind enumerator. `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)`
 so a fact of an excluded relation is no hypothesis at all. The blind enumerator proposes about the **guessable
 atoms**: the program's names, less a signature's labels, the language's own words, every relation and rule, and the
 two dunders
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)); where
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)); where
 `ein` prints *object* of the enumerator, it means one of them. See
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
 
@@ -238,7 +238,7 @@ on the activator a node derived or committed
   or `cut-` and the caps it stopped at, and every text surface says a cut core was cut and at which cap.
   `within-budget` says the search was not cut, and no more.
 - **A node that is not dead has no core**: JSON writes a dead node's core as a list, `[]` being the empty set, and a
-  node that is not dead `null` ([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)).
+  node that is not dead `null` ([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)).
   A text surface prints the empty core `∅`.
 - **A core is taken only where a surface prints one**: a bare `ein solve` takes root's and the minimal holes', and
   `--dump-answer` and `--trace` each member of N's.

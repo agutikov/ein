@@ -29,7 +29,7 @@ Every `ein solve` run, a bare description and each mode alike, takes `--dump-lat
     (`within-budget`, or `cut-` and the caps where it stopped) and the rules that refute it; `null` on a node that
     is not dead, which has no core, and `[]` only as a dead node's empty core
     ([Q-M1f.6](../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md),
-    [Q-M1e2.27](../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md));
+    [Q-M1e2.27](../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md));
   - `closure`, and `facts`, how many facts its fixpoint holds beyond root's.
 - **`nodes.md`**, the same as one table per step.
 

@@ -6,7 +6,7 @@ that the state is impossible, and names nothing*. Written so, `(false)` is an ob
 (false))` and `(not (false))` load.
 
 **Why.** An object is an atom or a fact a state could hold
-([Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)), and `(false)` is such a fact: a dead
+([Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)), and `(false)` is such a fact: a dead
 state holds it. An argument names nothing the state's impossibility depends on.
 
 **Held by.** `ein-cli/tests/value_rule.rs`: `what_a_state_could_hold_loads`, whose `false-alone-as-a-value` and

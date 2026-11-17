@@ -3,11 +3,11 @@
 What Ein is written in and what a program may say: the graph and its objects, names, forms and keywords, rules and
 macros, and the shapes the parser and the loader refuse.
 
-- [Q1](Q1-the-knowledge-base-is-a-typed-labelled.md) — The knowledge base is a hypergraph of atoms and facts, with provenance
+- [Q1](Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md) — The knowledge base is a hypergraph of atoms and facts, with provenance
 - [Q3](Q3-ein-is-an-s-expression-language.md) — Ein is an S-expression language
 - [Q4](Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md) — A rule is a pattern, a conclusion and a reason, written in Ein
 - [Q17](Q17-spatial-structure-is-facts-and-rules-with-no.md) — Spatial structure is facts and rules, with no position arithmetic
-- [Q23](Q23-a-premise-types-a-variable-and-no-entity-has.md) — A premise says what a variable ranges over, and nothing has a type slot
+- [Q23](Q23-a-premise-says-what-a-variable-ranges-over.md) — A premise says what a variable ranges over, and nothing has a type slot
 - [Q27](Q27-a-relations-properties-are-facts-beside.md) — A relation's properties are facts beside its declaration
 - [Q31](Q31-a-why-template-refers-to-a-variable-as-var.md) — A `:why` template refers to a variable as `{?var}`
 - [Q40](Q40-a-fact-may-hold-a-fact-as-an-argument.md) — A fact may hold a fact as an argument
@@ -21,7 +21,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1e2.17](Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md) — A reserved word is a keyword only as a whole token
 - [Q-M1e2.18](Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md) — A keyword pair is no guard's argument, and a fact names no relation
 - [Q-M1e2.22](Q-M1e2.22-a-bare-is-reserved-and-refused.md) — A bare `_` is reserved and refused
-- [Q-M1e2.23](Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md) — A string is natural-language text, never an object
+- [Q-M1e2.23](Q-M1e2.23-a-string-is-natural-language-text-never.md) — A string is natural-language text, never an object
 - [Q-M1e2.24](Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md) — Ein has no numbers and no ranges
 - [Q-M1e2.26](Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md) — `eq` and `neq` are the relations of equality and non-equality
 - [Q-M1e2.28](Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md) — Each form takes a closed list of keywords
@@ -46,7 +46,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.81](Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md) — A malformed primitive is a form the grammar would refuse where it stands
 - [Q-M1f.86](Q-M1f.86-a-macros-body-never-writes-open.md) — A macro's body never writes `open`
 - [Q-M1f.96](Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md) — A byte-order mark is refused as any character that is not ASCII
-- [Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md) — An object is an atom, or a fact a state could hold
+- [Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md) — An object is an atom, or a fact a state could hold
 - [Q-M1f.114](Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md) — A relation a `(solve …)` list names is one the program writes elsewhere
 - [Q-M1f.115](Q-M1f.115-an-hrules-list-names-declared-hrules.md) — An `:hrules` list names declared hrules, and an activator has its hrule's count of arguments
 - [Q-M1f.116](Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md) — An activator's argument at a parameter that names no relation is not checked
@@ -54,8 +54,8 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.118](Q-M1f.118-a-claim-is-not-expanded-so-a-claim-headed.md) — A claim is not expanded, so a claim headed by a macro's call is refused
 - [Q-M1f.119](Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md) — A goal and a claim ask only about relations of the program
 - [Q-M1f.120](Q-M1f.120-a-rule-may-read-a-relation-nothing-makes.md) — A rule may read a relation nothing makes
-- [Q-M1f.122](Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md) — `absent` heads a premise and a member of a claim's class, and nothing else
-- [Q-M1f.123](Q-M1f.123-false-with-no-argument-is-a-value.md) — `(false)` with no argument is an object
+- [Q-M1f.122](Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md) — `absent` heads a premise and a member of a claim's class, and nothing else
+- [Q-M1f.123](Q-M1f.123-false-with-no-argument-is-an-object.md) — `(false)` with no argument is an object
 - [Q-M1f.124](Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md) — `(eq a b)` is written only as a form of its own, never inside another
 - [Q-M1f.125](Q-M1f.125-a-connective-as-a-patterns-argument-is-refused.md) — A connective as a pattern's argument is refused by the loader, after expansion
 - [Q-M1f.126](Q-M1f.126-a-relation-parameter-bound-to-absent-false-or-eq.md) — A relation parameter bound to `absent`, `false` or `eq` is refused where the form it heads would be

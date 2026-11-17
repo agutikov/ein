@@ -6,8 +6,8 @@ a pattern, and a conclusion's or a guard's argument are objects. So `eq`, `neq`,
 with an argument, never head a nested form; `not` does, as the stored negation of a fact. The readings of the rule:
 
 - `absent` heads a premise and a member of a claim's class, and nothing else
-  ([Q-M1f.122](Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md));
-- `(false)` with no argument is an object ([Q-M1f.123](Q-M1f.123-false-with-no-argument-is-a-value.md));
+  ([Q-M1f.122](Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md));
+- `(false)` with no argument is an object ([Q-M1f.123](Q-M1f.123-false-with-no-argument-is-an-object.md));
 - `(eq a b)` is written only as a form of its own
   ([Q-M1f.124](Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md));
 - a connective as a pattern's argument is refused after expansion

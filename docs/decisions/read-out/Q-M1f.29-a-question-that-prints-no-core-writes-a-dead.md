@@ -3,7 +3,7 @@
 On a program whose root is dead, a bare `ein solve` prints root's core and the rules under it, and its summary
 writes them as `region.core` and `region.refuted_by`. `--count` and a mode print no core, and their summaries write
 both `null`, though root is dead and its core exists: the summary holds stdout's facts, and `null` is what the run
-does not state ([Q-M1e2.27](Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)).
+does not state ([Q-M1e2.27](Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)).
 
 **Why.** A count's question is *how many*, and a mode's is a part of R; neither takes a core it would not print, and
 a run does only the work its question needs.

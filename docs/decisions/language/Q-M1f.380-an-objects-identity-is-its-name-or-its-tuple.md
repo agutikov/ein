@@ -22,7 +22,7 @@ each written name to the one node with that name and each written tuple to the o
 name and only one with that list of arrows. So what makes two things one is a property of the graph and needs no
 comparison of spellings: *the same relation* is two first arrows meeting at one atom, a fact speaks of a relation
 or of another fact by pointing at its node, and nothing ever merges two nodes
-([Q1](Q1-the-knowledge-base-is-a-typed-labelled.md)).
+([Q1](Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)).
 
 **Held by.** The page: [the knowledge base](../../ein/reasoning/01-static-ir/01-knowledge-base.md), § The graph, and
 how it is written, and § Identity. `ein-core/src/intern.rs`'s unit test `interning_is_injective_and_stable`, one

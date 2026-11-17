@@ -118,7 +118,7 @@ The figure is facts. Points are names. Everything else is a choice, and the stag
 
 **Objects as values.** `(seg A B)`, `(ang A B C)` (the angle at B), `(tri A B C)`, `(line A B)`: nested facts of
 ordinary relations, values under the value rule
-([`07-diagnostics.md` § 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)). A named line, `l`, is a name.
+([`07-diagnostics.md` § 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold)). A named line, `l`, is a name.
 
 **Relations.** As planned: `(on P l)` incidence; `(collinear A B C)`; `(between A B C)`, B between A and C;
 `(parallel l m)`, `(perp l m)`; `(seg-eq S T)`, equal length; `(ang-eq X Y)`; `(cong T U)`, congruent with

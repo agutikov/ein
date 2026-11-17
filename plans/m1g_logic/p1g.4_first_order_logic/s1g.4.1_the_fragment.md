@@ -40,7 +40,7 @@ its program**.
 | ¬ | by failure | `(absent P)`: a premise's test of the state at the closure boundary; refused where a refutation would rest on one a commitment can fill ([§ 2.7](../../../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)) | native: non-monotone |
 | ⊥ | head | `(false)` | native: an integrity constraint |
 | =, ≠ | body, head | `eq`, `neq`: identity of values, computed, never stored; a false one concluded is `(false)` | native; no equational theory |
-| function symbols | terms | a nested fact of an ordinary relation, under the value rule ([§ 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)): a free constructor | native since nested facts; uninterpreted |
+| function symbols | terms | a nested fact of an ordinary relation, under the value rule ([§ 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold)): a free constructor | native since nested facts; uninterpreted |
 | quantifying over relations | | a rule's relation parameter, bound by an activator fact to a relation's *name* | first-order over names |
 | the closed world | | `(__closed__ R)`, and a claim that names a relation | per relation |
 | a third truth value | | `(unknown P)`: neither `P` nor `(not P)` | macro |

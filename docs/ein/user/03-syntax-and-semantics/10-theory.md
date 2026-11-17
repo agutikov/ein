@@ -226,7 +226,7 @@ in a **closing rule**, its entry, with an empty `:match`: it fires once in every
 concludes `(__closed__ R)` for every relation of the module and every table it reads, so that no fact of one is
 ever proposed as a hypothesis, and names every rule of the
 module ([Q-M1f.240](../../../decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md),
-[Q-M1f.365](../../../decisions/stdlib/math/Q-M1f.365-the-calculator-closes-its-own-relations-so.md)). A program that
+[Q-M1f.365](../../../decisions/stdlib/math/Q-M1f.365-the-calculator-closes-the-held-extents.md)). A program that
 imports the calculator and states requests therefore has nothing to search: one saturation decides it. A relation the
 program declares itself is the program's to close. A closing rule names the entries of the modules below it, so the
 entries form the same tree as the imports

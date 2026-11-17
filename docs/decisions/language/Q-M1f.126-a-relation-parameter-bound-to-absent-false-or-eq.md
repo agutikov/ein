@@ -10,7 +10,7 @@ absent) binds ?R to absent — absent is negation as failure, a premise's test, 
 names: `(h absent)` and `(mk eq)` are facts.
 
 **Why.** The grammar reads a variable where the relation is written, so a binding could build through a parameter a
-fact the rule of what an object is ([Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md))
+fact the rule of what an object is ([Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md))
 refuses written: `(absent a)`, `(false a)` or `(q (eq a a))`. Reading which parameters can hold `eq` is how a
 parameter heading an `eq` form of another arity is refused
 ([Q-M1f.46](Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md)); the same reading serves all three words.

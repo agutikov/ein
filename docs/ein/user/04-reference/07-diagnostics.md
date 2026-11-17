@@ -490,7 +490,7 @@ A reference to no variable of the form, `{?a}` there, stays text. A relation's `
 ### 2.12 A string is natural-language text, and an escape names a character
 
 A string is the value of `:why`, `:source` or `:goal-text` and nothing else
-([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). Written
+([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)). Written
 anywhere an argument or a name goes it is a parse error at the string, and a variable written in a fact a parse error at
 the variable, on every command that reads a program:
 
@@ -739,17 +739,17 @@ premises one by one, as the loader reads them for a claim.
 ### 2.22 An object is an atom, or a fact a state could hold
 
 *An object is an atom, or a fact a state could hold: a fact of an ordinary relation, or its negation*
-([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)). A fact
+([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)). A fact
 inside a fact, a pattern inside a pattern, and a conclusion's or a guard's argument are objects, or patterns of
 them, and the lines below call each a *value*. Four rules hold the language to it:
 
 - **`absent` heads no fact, argument or conclusion.** It is negation as failure, a test a premise or a goal makes of a
   state, `(absent <premise>)`. A claim's class still lists what a goal's `(absent …)` says a state does not hold,
   `(model (absent (q a)) (p a))`
-  ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)).
+  ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md)).
 - **`false` takes no argument**: a fact, an argument, a premise, a goal and a conclusion write it only as `(false)`.
   `(false)` as an argument, `(q (false))`, stays
-  ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)).
+  ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)).
 - **`(eq …)` is no argument**, nor is `(neq …)`: `eq` is computed and never stored (§ 2.14). A fact `(eq a b)` and
   `(not (eq a b))`, a premise and a conclusion of either, and a claim's, stay, each checked; `(not (eq a b))` inside
   a fact or a pattern is refused
@@ -972,7 +972,7 @@ one `note:` line on stderr
 | H + C | an active hrule proposes a fact of a closed relation, one a `(__closed__ R)` names | — |
 | O + HR | no hrule is declared, and an obligation owes facts of a relation the list leaves out | — |
 | O + NH | no hrule is declared, and an obligation owes facts of a relation the list names | — |
-| O + C | an obligation owes facts of a closed relation ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relation-is-not-closed-whatever.md)) | — |
+| O + C | an obligation owes facts of a closed relation ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)) | — |
 | HR + NH | a relation is in both | no hrule: a `:no-hypothesis` name `:hypothesis-relations` already leaves out |
 | HR + C | a listed relation is closed | — |
 | NH + C | never | no hrule: a `:no-hypothesis` name a closure already closes |

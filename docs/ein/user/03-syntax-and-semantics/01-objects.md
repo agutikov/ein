@@ -10,7 +10,7 @@ sorts, and there is no third:
 
 **An object's identity is its name or its list of arrows**: one atom for a name and one fact for a list, however
 often a program writes either. There is no number, no string and no other kind of thing an arrow could point at
-([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)).
+([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)).
 
 **Ein has no types.** An atom carries nothing but its name. `Person`, `House`, `Object` and `Type` below are atoms
 like `Norwegian`: labels, which mean what the program's rules make them mean, and nothing where no rule reads them
@@ -60,7 +60,7 @@ arithmetic is a theory of the standard library ([the calculator](../04-reference
 is **not** a name, and so no atom: a variable, `?x`, which a rule or a query binds and no fact holds; a keyword,
 `:why`, which marks a clause of a form; a string, `"…"`, which is natural-language text written only after `:why`,
 `:source` or `:goal-text`
-([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)); and the
+([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)); and the
 words the grammar reserves ([reserved names](../04-reference/03-reserved-names.md)).
 
 ## As a graph
@@ -324,7 +324,7 @@ to the same object
 ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)),
 and a fact `(= a b)` is an ordinary fact of a relation named `=`: it licenses no substitution and makes `a` and `b`
 no more one atom than any other fact does
-([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)). The rendering draws a fact of
+([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)). The rendering draws a fact of
 `=` with two arguments as a `doublecircle` node with an edge to each side, and that is all `=` means.
 
 **Names an import brings.** Every name a module declares has a full name, its module's name and its own,

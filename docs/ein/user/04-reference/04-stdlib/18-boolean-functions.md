@@ -31,7 +31,7 @@ with a name, capitalised because `and`, `or` and `not` are Ein's own words:
 (import std.bool.gates :symbols (Xor And))
 ```
 
-Two layouts ([Q-M1f.325](../../../../decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-a-value-of-one-table.md)):
+Two layouts ([Q-M1f.325](../../../../decisions/stdlib/bool/Q-M1f.325-a-boolean-function-is-an-argument-in-one-table.md)):
 
 | fact | meaning |
 |---|---|

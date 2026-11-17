@@ -200,7 +200,7 @@ pattern matches into it: `:match (claims ?who (knows ?who ?x))` binds both. It i
 What may be written as an argument is an object: an atom, or a fact a state could hold, which is a fact of an
 ordinary relation or its stored negation `(not F)`. `eq`, `neq`, `absent`, `and`, `or`, and `false` with an
 argument never head a nested form, since none of them is a fact any state holds, and each is refused where it is
-written ([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)).
+written ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)).
 The refusal's line says `where a value goes`: *value* is the engine's word for an object in an argument's place.
 
 **`written` is the loader's.** For every fact nested in a fact a file writes, and for every fact a rule's conclusion

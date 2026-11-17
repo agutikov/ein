@@ -177,7 +177,7 @@ House-1)`. **Identity has no exceptions.** An atom is one per name and a fact on
 
 ## No types, and nothing built in
 
-The engine has no type system ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md),
+The engine has no type system ([Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md),
 [Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). No
 variable, relation, rule or fact has a slot for one. A relation's declaration writes a label per argument, and the
 engine reads how many there are; a rule reads which they are through the declaration's stored fact, `(relation ?R

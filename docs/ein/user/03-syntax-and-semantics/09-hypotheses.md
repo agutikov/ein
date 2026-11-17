@@ -157,7 +157,7 @@ $$
 with $r$ ranging over the declared relations and $\operatorname{scope}$ applied on the second and third rungs
 only. $A$ is the **guessable atoms**: the program's names, less the names a declaration writes as a label, the
 kernel's own words and the names of relations and rules
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)).
 Candidates are proposed at a fixpoint, after saturation, never in the middle of it
 ([Q19](../../../decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)).
 
@@ -275,7 +275,7 @@ arity 3, and the blind enumerator proposes arity 1 and 2 only*
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). Two more rows
 name what the blind enumerator did: a row the read-out calls `types`, where a candidate is about an atom that is
 the second argument of an `is-a` fact
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)), and a
+([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)), and a
 `relation names` row where an argument of a candidate is a relation that only a rule's conclusion writes. None of
 the three changes R; a declaration that writes the name as a label, or that declares the relation, takes the atom
 out of the guessable ones.

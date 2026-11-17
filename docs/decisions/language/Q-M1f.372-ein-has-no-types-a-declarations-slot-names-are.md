@@ -28,8 +28,8 @@ has ([Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). It ca
 relation reads as. It is written once for a relation. And it tells the blind enumerator what to guess about: that
 rung proposes facts of declared relations of one or two arguments, over the guessable atoms, which are the program's
 names less those some declaration writes as a label
-([Q-M1e.12](../hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md),
-[Q-M1f.306](../hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)). That is the one place the
+([Q-M1e.12](../hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md),
+[Q-M1f.306](../hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). That is the one place the
 engine itself reads which names are labels, and it reads them as names not to guess about, never as a kind an object
 has. A fact of `relation` that a rule concludes is a fact and declares nothing.
 

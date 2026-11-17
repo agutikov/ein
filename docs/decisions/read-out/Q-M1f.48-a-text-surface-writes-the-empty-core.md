@@ -8,7 +8,7 @@ same core `[]`. A core not taken prints as it otherwise does.
 
 **Why.** `∅` is already the read-out's spelling of the empty set (*∅, root itself*), so the text and the JSON's `[]`
 say one thing. A core printed fact by fact would print nothing, which reads as *no core*, the very confusion `[]` and
-`null` are kept apart to avoid ([Q-M1e2.27](Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)).
+`null` are kept apart to avoid ([Q-M1e2.27](Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)).
 
 **Held by.** `ein_infer::explain::EMPTY_CORE` and `core_text`, which every text surface writes a core through;
 `ein-infer/tests/corpus_cores.rs`: `a_rule_with_no_premise_refutes_root_with_the_empty_core`. The row:

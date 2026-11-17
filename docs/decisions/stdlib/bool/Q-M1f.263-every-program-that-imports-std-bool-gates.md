@@ -1,7 +1,7 @@
 # Q-M1f.263 — Every program that imports `std.bool.gates` derives the second layout
 
 `std.bool.gates` holds the sixteen rules, `Zero-rows` to `One-rows`, that derive a relation a function from the
-table ([Q-M1f.325](Q-M1f.325-a-boolean-function-is-a-value-of-one-table.md)), and every program that imports the
+table ([Q-M1f.325](Q-M1f.325-a-boolean-function-is-an-argument-in-one-table.md)), and every program that imports the
 module derives them at root, beside the table's rows. No program takes the table without them.
 
 **Why.** Every import brings its module whole

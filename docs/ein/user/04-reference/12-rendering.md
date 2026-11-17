@@ -49,7 +49,7 @@ atom like any other.
 
 DOT has no hyperedge. A fact of any arity `(name a b c)` is encoded **Levi-bipartite**: one `octagon` node for the
 fact, with the relation's name in it and a directed edge to each argument, labelled by the argument's place
-([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)). The facts of three arguments
+([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)). The facts of three arguments
 or more are always drawn so.
 
 **The drawing is of the graph, and is not the graph.** In the knowledge base a fact is a node with ordered arrows,

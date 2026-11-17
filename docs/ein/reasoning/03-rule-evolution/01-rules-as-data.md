@@ -41,7 +41,7 @@ levels.
 
 Ein has no form that declares an atom. A thing a program names is any atom under an argument arrow, and *this is
 one of those* is a fact of a membership relation the program declares like any other
-([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). A program can so name
+([Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md)). A program can so name
 Ein's own kinds: four atoms under a common top, each a member by a fact of that relation:
 
 $$
@@ -162,7 +162,7 @@ $$
 and its rule of domain elimination reads a declaration's labels to know which atoms to range over
 ([the rules](../01-static-ir/02-rewriting-rules.md#structural)). The theory itself reads of a
 declaration only how many labels it has; it never reads a label as a type, and Ein has none
-([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md),
+([Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md),
 [Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). What a
 program calls its type system is this: membership is facts of a relation it declares, and what a type check
 concludes, a rule concludes.

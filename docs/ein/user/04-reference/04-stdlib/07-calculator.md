@@ -87,7 +87,7 @@ fact, the sum by a rule that reads the product, and a third rule reads both:
 ### It searches nothing
 
 Each module's entry closes the held extent of every relation of the module and of every table it reads
-([Q-M1f.365](../../../../decisions/stdlib/math/Q-M1f.365-the-calculator-closes-its-own-relations-so.md)), so a
+([Q-M1f.365](../../../../decisions/stdlib/math/Q-M1f.365-the-calculator-closes-the-held-extents.md)), so a
 program that imports the calculator and states requests has no candidate: `ein solve` prints *universe: no
 candidate*, R is the one state root is or empty, and the answer is root's fixpoint under `ein solve`,
 `ein saturate` and `ein test` alike. **A relation the importing program declares is the program's to close**: the

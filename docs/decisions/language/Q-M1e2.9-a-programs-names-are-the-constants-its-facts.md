@@ -3,7 +3,7 @@
 The names of a program are every constant written in an argument position of a fact, at any depth, a nested fact's
 arguments included, and every constant written anywhere in a rule, its `:match` and its `:assert`. Each is an atom a
 hypothesis may be about, a candidate for the guessable atoms
-([Q-M1f.306](../hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)). A constant written only in
+([Q-M1f.306](../hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). A constant written only in
 a `(query …)` is not a name of the program.
 
 **Why.** The region R is the program's, and a query asks about it: adding a query never changes R. A name a model

@@ -51,7 +51,7 @@ file it keeps its id; do not reuse a closed id.
 
 ## Q1 — What kind of graph is the IR?
 
-**Decision file:** [`docs/decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md`](../docs/decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)
+**Decision file:** [`docs/decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md`](../docs/decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)
 
 Per [idea 02 §Open questions](ideas/02-graph-as-formal-substrate.md)
 the candidates are: plain directed graph, typed multigraph, typed
@@ -406,7 +406,7 @@ longer an `(ontology …)` block to split into sub-heads, so this question is
 
 ## Q23 — What carries an explicit type slot
 
-**Decision file:** [`docs/decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md`](../docs/decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)
+**Decision file:** [`docs/decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md`](../docs/decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md)
 
 Direct question raised 2026-05-18: which entities in the data model
 have a `type` slot?

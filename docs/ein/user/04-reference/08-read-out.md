@@ -530,7 +530,7 @@ The summary is the same facts as stdout, from the same read-out, with every key 
 not apply (`ein-summary/2`). Every bound sits beside `exhausted`.
 
 **`[]` and `null`**
-([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)): `[]` is a
+([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)): `[]` is a
 set known to be empty, and `null` a thing that does not exist or that the run does not state, on every field of every
 JSON surface. A core is one thing, the set of facts a dead node's contradiction rests on, so a dead node's core and
 rules are lists, and a node that is not dead, whose core does not exist, has `null`: `region.core` and

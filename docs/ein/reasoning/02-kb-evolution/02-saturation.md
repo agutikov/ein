@@ -416,4 +416,4 @@ out by its name: the labels of the declarations, the reserved words of the patte
 relations and rules, and the two reserved markers.
 [Hypothesis generation § 5](04-hypothesis-generation.md#5-the-blind-enumerator) defines
 $\operatorname{guessable}(P)$ and says what each of the four is
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)).

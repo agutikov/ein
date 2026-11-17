@@ -81,7 +81,7 @@ the program do not, which is the alive-set invariant of
 a fact with. [Hypothesis generation § 5](04-hypothesis-generation.md#5-the-blind-enumerator) defines them: the
 names of the program and the relations of root's facts, less four kinds of atom, each left out by its name. Ein has
 no types, and none decides this
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)). One
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). One
 consequence is used below: a relation whose facts only a rule concludes is a guessable atom, so a candidate can
 have it as an argument, and the answer names that candidate (§ 1.4).
 
@@ -177,7 +177,7 @@ and the held extent of such a relation, in every state of $R$, is only what the 
 derives. It is said at relation grain: the facts of a covered relation that the rung does not propose are not named.
 
 **What the universe guesses about, the answer names too**
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). The blind
+([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)). The blind
 enumerator holds no argument to its label: every guessable atom fills every argument place. Where a program states
 $\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and declares a relation $\operatorname{co-located}$ of two
 arguments with the same label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state

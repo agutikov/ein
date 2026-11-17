@@ -257,7 +257,7 @@ How a region claim reads:
    empty, of either kind.
 
 Under rule 2 a claim can say that a state holds no fact of a relation
-([Q-M1c.6](../../../decisions/answer/Q-M1c.6-a-claim-can-say-that-a-relation-is-empty.md)), and it may name a relation
+([Q-M1c.6](../../../decisions/answer/Q-M1c.6-a-claim-can-say-that-a-state-holds-no-fact.md)), and it may name a relation
 only a rule derives ([Q-M1c.7](../../../decisions/answer/Q-M1c.7-a-claim-may-name-a-relation-only-a-rule-derives.md)).
 It may not name `eq` or `neq`, which a state never stores. A `(merged …)` whose state is not one the claim lists, and
 `(owing …)` beside states of R, are refused at load.

@@ -111,7 +111,7 @@ two decisions may share a slug. `python3 utils/decision_census.py --slug "TITLE"
 | Q-M1f.313 | The agenda fires first what leads to `(false)` | `engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md` |
 | Q-M1f.231 | Every name a module declares has a full name, and a file lists the short names it writes | `imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md` |
 | Q-M1f.179 | Integer division names its convention | `stdlib/math/int/Q-M1f.179-integer-division-names-its-convention.md` |
-| Q-M1e2.27 | In Ein's JSON, `[]` is the empty set and `null` no object | `read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md` |
+| Q-M1e2.27 | In Ein's JSON, `[]` is the empty set and `null` no object | `read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md` |
 | Q-M1f.340 (was S1f.5.4's Q4) | Every name is a JSON string | `read-out/Q-M1f.340-every-name-is-a-json-string.md` |
 
 ## 4. Four decision files, as T3 would write them

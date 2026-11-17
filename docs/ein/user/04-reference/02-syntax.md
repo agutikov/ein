@@ -15,7 +15,7 @@ are [`03-reserved-names.md`](03-reserved-names.md), and every refusal's line is 
 | `NAME` | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | the name of an atom: an argument, a relation, a rule's name, a slot's label, a step. **The name rule**: a run of ASCII name characters, each name printed as written and reloading to itself, so `7` and `07` are two names. No character has a meaning of its own, `*` among them. A reserved word is never a name, and a position word is one wherever a name goes ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar), fact 1). A token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused |
 | `VAR` | ``\?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `?a`, `?house`, `?T`, `?R*`, `?_x`, `?a.b` | a variable: `?` and a name's characters, bound by a `:match` and reused in an `:assert` |
 | `KEYWORD` | `:` and a name's characters | `:match`, `:rule`, `:source` | a form's clause marker, followed by its value, but `(solve …)`'s `:no-search`, a flag. **Each form takes a fixed set** ([below](#the-keywords-each-form-takes)), and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)) |
-| `TEXT` | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else**: the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, carried byte for byte by every surface that prints it ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). Written anywhere else, as a fact's or a rule's argument, a name or a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact |
+| `TEXT` | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else**: the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, carried byte for byte by every surface that prints it ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)). Written anywhere else, as a fact's or a rule's argument, a name or a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact |
 
 **There is no `_`, no number and no range.** A bare `_` and `?_` are refused wherever either is written, with the
 note *_ is reserved and names nothing: where any value will do, write a variable used once*
@@ -232,7 +232,7 @@ so they read as background:
 #### What the signature means — labels for rules, a shape for the engine
 
 Ein has **no types**
-([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)), and yet a signature is not
+([Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md)), and yet a signature is not
 inert. It is read in two ways that never mix: rules read its *labels*, and the engine reads its *shape*.
 
 **The labels, by rules only.** A rule reads a signature through the mirror fact, `(relation ?R ?A ?B)`, and a label
@@ -272,7 +272,7 @@ signature holds atoms it does not read into.
 |---|---|
 | **not empty** | may guess the relation's facts: no fact of a relation declared with no label is ever guessed, so write `(relation R T)`, `T` any name, for a relation whose facts may be guessed and whose slot needs no label that says something |
 | **one or two labels long** | proposes one candidate per guessable atom for a relation of one argument, and one per pair of them for a relation of two; a relation of three arguments or more loads, its facts are stored and saturate, and none is ever guessed |
-| **its labels** | never proposes a fact *about* an atom a signature lists as a label: a label is no guessable atom ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)) |
+| **its labels** | never proposes a fact *about* an atom a signature lists as a label: a label is no guessable atom ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)) |
 
 So a label is not inert where the blind enumerator builds the candidates. `ein show hyps` on the two lines
 `(relation likes Person Drink :why "{?1} likes {?2}")` and `(likes Ann Tea)` lists one candidate, `(likes Tea Ann)`;
@@ -301,7 +301,7 @@ A fact is any top-level form whose head is **not** a declarator:
 An argument is an object, an atom or a fact, `(hypothesis (co-located Norwegian House-2))`
 ([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)). **An object is an atom, or a fact
 a state could hold**, a fact of an ordinary relation or its negation
-([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)), so:
+([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)), so:
 
 - `not` is shape-pinned: `(not <fact>)`, one fact; a wrong count is a parse error.
 - `and`, `or`, `neq` and `absent` are premises of a rule's `:match`, never a fact's head, and never an argument. A
@@ -317,9 +317,9 @@ a state could hold**, a fact of an ordinary relation or its negation
   ([Q-M1f.124](../../../decisions/language/Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md)).
 - No fact, written at the top or as an argument, is headed `absent`, which is negation as failure, a premise's test;
   the stored negation of a fact is `(not …)`
-  ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md)).
+  ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md)).
 - `false` takes no argument, `(false)` alone, as a fact and as an argument
-  ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-a-value.md)).
+  ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)).
 - The declarators `rule`, `hrule`, `query`, `solve`, `config`, `macro`, `import` and `trace` are reserved words, never
   a fact's head.
 

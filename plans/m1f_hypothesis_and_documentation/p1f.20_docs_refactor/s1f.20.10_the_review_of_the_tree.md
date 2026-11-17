@@ -500,3 +500,42 @@ rules of `std.math.num9` the widest), a strip when fitted to a page: the engine 
 row. Not changed: the source is the engine's, and which rules are drawn is Q-M1f.375's. **The gate** on
 `cd05a0f5`: `./run_tests.sh` exit 0, 160 test binaries ok, none failed.
 
+
+### The words and the formulas
+
+Three lanes, each in a worktree of its own, on the rulings *object for value* and *one statement a row*.
+
+**W1** (merge `b0b2a1e5`). `reasoning/02-kb-evolution/`, `03-rule-evolution/` and the README. Every display
+formula is one statement a row, a statement that renders within a page's width on one row and a longer one
+broken at its connective; no chain of statements is left. *Relation* is the single atom on every page; what a
+commitment extends, a rule reads, an absence ranges over and the kernel's marker closes to hypotheses is the
+held extent, and the README's § Words says so. `01-firing` builds on the first part by link, restates none of
+its definitions, and names root, a candidate, a commitment, a node and its state before the pages that use them.
+Each notion that was stated more than once has one home: the obligation and `owes` in hypothesis generation
+§ 4.1, the guessable atoms in § 5 there, `D⁺` in absence. The guessable atoms are written with the relations of
+root's facts, since the names of a set of facts exclude a first arrow (checked with `ein show hyps`). Left: the
+forward uses of *monotone*, the derivation record, the strata and a core on pages before their own; the two
+senses of *candidate*, *closure*, *open*, *guard* and *witness*.
+
+**W2** (merge `10d57357`). Every page of `docs/ein/user/` uses the ruled words; the blind enumerator's objects
+are guessable atoms; *value* in the old sense is gone. `03-syntax-and-semantics/01-objects.md` is the user's
+entry to the graph: it draws the graph of its program by hand, then the engine's two drawings, and says how each
+stands to the graph. The glossary's entries are Object, Atom, Name, Fact, Relation, Declared relation, Label,
+Type, with Value a redirect. Where the binary prints *value*, *atom*, *type* or *object* in another sense, the
+page quotes it and says once what it is. 75 multi-statement display blocks are one statement a row. Found and
+fixed: `ein render kb --no-types` keeps the `is-a` arrows.
+
+**W3** (merge `94a072a1`). The vocabulary is four decisions, Q-M1f.379 to .382: an object is a node of the
+knowledge-base graph, an atom or a fact; its identity is its name or its tuple, and the graph is the
+representation; a relation is the atom under a fact's first arrow, its extent every fact of it, and a
+declaration or a fact with the atom under a later arrow speaks of the relation as one object; a labelled arrow is
+a drawing of a fact of two arguments. Sixty-three existing decisions say it in those words without deciding
+anything else; eighteen changed title. Q-M1e.12 and Q-M1f.306 still state that the blind enumerator leaves label
+names out of the guessable atoms, which is what the engine does. Q-M1f.369 states one statement a row. AGENTS.md's
+§ The language states the definitions and cites the four decisions; `ein.rs/README.md` maps the code's words to
+the documentation's, and the engine's pages, the overview and the READMEs follow. Nothing the binary prints, no
+identifier and no heading changed; the engine's own uses of *value*, *type*, *object* and *atom* are listed for
+the user.
+
+**The coordinator**, after the merges: the fifteen decisions whose title changed are renamed to it, every
+reference with them, and the six links the lanes left to two renamed headings follow.
