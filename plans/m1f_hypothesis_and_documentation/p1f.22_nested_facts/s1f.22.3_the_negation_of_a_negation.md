@@ -1,8 +1,7 @@
 # S1f.22.3 — the negation of a negation is a fact
 
 **Phase:** [P1f.22](README.md)
-**Status:** planned 2026-11-17; **not started**: it follows [S1f.22.2](s1f.22.2_the_explanation_written.md), whose
-pages it changes.
+**Status:** planned 2026-11-17; **started 2026-11-17**, [S1f.22.2](s1f.22.2_the_explanation_written.md) being done.
 **Ruling:** [Q-M1f.391](../open_questions.md#q-m1f391--the-negation-of-a-negation-that-a-rule-builds), (c):
 `(not (not g))` is a fact a file may write and a rule may match; the kernel is not changed; the rule that
 concludes `g` from it is a theory's, and where that rule lives is P1f.21's.
@@ -25,6 +24,12 @@ concludes `g` from it is a theory's, and where that rule lives is P1f.21's.
 5. **The pages, in the same commits**: the knowledge-base page's shape of $\mathsf{not}$ and *"$\lnot\lnot g$ is
    no fact"*; the rewriting-rules page's $\lnot t$; the user's objects page, the syntax, the diagnostics; the
    decision Q-M1f.391, and Q-M1f.113's sentence re-worded where it says otherwise.
+6. **The explanation's witnesses, as corpus programs** under `examples/beliefs/`, each with its `:expect`, for the
+   claims S1f.22.2 wrote with no test of their own ([its record](s1f.22.2_the_explanation_written.md#record)): the
+   three cases with their two questions; a global rule beside its wrapped twin; the context as a parameter, with
+   `(false)` in a context and *everybody* by `forall`; a declaration, an activator and `(false)` under an arrow
+   doing nothing. `08-reasoning-in-code/01-static-ir.md` names each beside the claim it holds. The comments of the
+   folder's programs and their corpus notes take the ruled words (N-17).
 
 ## Acceptance
 
