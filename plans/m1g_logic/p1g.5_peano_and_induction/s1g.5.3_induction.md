@@ -72,7 +72,8 @@ hypothesis: the classic circular proof, which the checker must reject); and what
 
 The page's closing table, in the vocabulary of
 [S1g.1.2](../p1g.1_survey_and_design/s1g.1.2_two_levels.md) and against
-[`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md):
+the standard of proof ([Q-M1e.1](../../../docs/decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md),
+[Q-M1e.2](../../../docs/decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md)):
 
 | way | what was established | by whom | what it rests on |
 |---|---|---|---|

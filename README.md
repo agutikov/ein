@@ -197,8 +197,9 @@ standard library. A `:why` is required on every relation, rule, hrule and macro.
   [the library API](docs/ein/ein.rs/04-api.md).
 
 Beside them, [`docs/decisions/`](docs/decisions/README.md) holds every question about Ein that has an answer, as that
-answer, and [the standard of proof](docs/ein/standard-of-proof.md) says what it takes to call a claim on these pages
-settled.
+answer; among them, [Q-M1e.1](docs/decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md) and
+[Q-M1e.2](docs/decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md) say what it takes to call a
+claim on these pages settled.
 
 ## Layout
 

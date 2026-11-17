@@ -29,9 +29,7 @@
 //! an alive state whose fixpoint holds `(not b)` for a candidate `b`. Then the
 //! node of `S ∪ {b}` is dead, and by L1 so is every node above it.
 //!
-//! **The argument**, under
-//! [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
-//! rule 2. Three facts, none of them about `b`'s relation, a closure or how
+//! **The argument**, under Q-M1e.2. Three facts, none of them about `b`'s relation, a closure or how
 //! the negation came to be stored:
 //!
 //! 1. *A node's fixpoint holds its commitment.* The node function writes the

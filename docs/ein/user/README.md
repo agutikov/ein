@@ -15,9 +15,10 @@ is held to it, is the reasoning perspective's subject, and how `ein.rs` computes
 | [`03-syntax-and-semantics/`](03-syntax-and-semantics/README.md) | one page a concept — objects, relations, facts, rules, constraints, obligations, hypotheses, theories, macros, queries, solutions — each stated four ways: in Ein, as a graph, in words and in mathematics |
 | [`04-reference/`](04-reference/README.md) | the exact surface: the grammar, every form and reserved name, the standard library symbol by symbol, every command and option, every diagnostic, every row of the read-out and every file of a dump |
 
-Beside them, [`../standard-of-proof.md`](../standard-of-proof.md) says what it takes to call a claim on any of these
-pages settled, and [`../../decisions/`](../../decisions/README.md) holds every decision the pages cite, one file
-each.
+Beside them, [`../../decisions/`](../../decisions/README.md) holds every decision the pages cite, one file each;
+[Q-M1e.1](../../decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md) and
+[Q-M1e.2](../../decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md) say what it takes to call a
+claim on any of these pages settled.
 
 ## Reading paths
 

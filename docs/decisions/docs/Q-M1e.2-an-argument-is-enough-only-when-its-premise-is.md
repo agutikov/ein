@@ -13,5 +13,7 @@ no check at all. A citation of the wrong test is harder to see than no citation,
 looking. Together with [Q-M1e.1](Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md) it is one rule read from two
 ends: a risk is not argued away, and this is what an argument must stand on where one is accepted.
 
-**Held by.** `docs/ein/standard-of-proof.md`, Rule 2 and its table; the alive-set invariant, a premise first
-argued and now enforced, by `ein-infer/tests/alive_invariant.rs`.
+**Held by.** [`docs/ein/ein.rs/03-design/README.md`](../../ein/ein.rs/03-design/README.md), § What the answer rests
+on: the four premises Ein's answers rest on, each beside the page of the reasoning that states it and the test or
+the refusal that enforces it; the alive-set invariant among them, a premise first argued and now enforced, by
+`ein-infer/tests/alive_invariant.rs`.

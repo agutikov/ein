@@ -37,9 +37,7 @@
 //! A(I)`, cover `R ∩ ↑C`. And when every child is dead, `R ∩ ↑C` is empty —
 //! *owing meets dead*, which ends the branch.
 //!
-//! **The argument**, under
-//! [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
-//! rule 2. Let `D ⊇ C` be a member of `R`. The program is monotone, so `I`'s
+//! **The argument**, under Q-M1e.2. Let `D ⊇ C` be a member of `R`. The program is monotone, so `I`'s
 //! trigger reads only relations no commitment changes ([`crate::monotone`]):
 //! `I` is an instance at `D` too, and `D` is discharged, so a guard of `I`
 //! holds at `D`. The premise says every read of that guard beside its witness

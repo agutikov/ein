@@ -53,12 +53,15 @@ constrained-reasoning research.
   a page that stops being true is rewritten or deleted, never kept with a
   banner; no page names a plan, a stage or a date, and a page that needs a
   reason cites the decision that carries it.
-  What it takes to call a claim *settled* is
-  [`docs/ein/standard-of-proof.md`](docs/ein/standard-of-proof.md): a behaviour is
+  What it takes to call a claim *settled* is two decisions: a behaviour is
   refuted only by a banked probe, an absence by naming the thing that checks
-  it, a **risk not by argument at all**, and an argument for leaving something
-  alone holds only while its premise is enforced by something that fails when
-  it stops being true.
+  it, a **risk not by argument at all**
+  ([Q-M1e.1](docs/decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md)),
+  and an argument for leaving something alone holds only while its premise is
+  enforced by something that fails when it stops being true
+  ([Q-M1e.2](docs/decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md);
+  the premises the answer rests on, each with what enforces it, are
+  [`03-design/README.md`](docs/ein/ein.rs/03-design/README.md#what-the-answer-rests-on)).
   **What keeps the pages true**: `utils/doc_audit.py --links --check
   --tracked`, a gate step (every link and anchor, every prose `§` number
   written after a link, every decision id the project cites); its

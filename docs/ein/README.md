@@ -17,8 +17,10 @@ or a type is `ein.rs`'s; one about what a program says or what `ein` prints, wit
 ## Beside them
 
 - [**Decisions**](../decisions/README.md): every question about Ein that has an answer, as that answer, each in a
-  file under its id. A page cites a decision by its id rather than restating why.
-- [**The standard of proof**](standard-of-proof.md): what it takes to call a claim on these pages settled.
+  file under its id. A page cites a decision by its id rather than restating why. Three of them are the standard a
+  claim on these pages is held to: [what refutes one](../decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md),
+  [when an argument is enough](../decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md), and
+  [what an exact number carries](../decisions/docs/Q-M1e.4-an-exact-number-in-a-page-carries-the-command.md).
 - [**Overview**](overview/README.md): how Ein relates to other reasoning systems, and the lineage of its language.
 - [**Demo**](../demo/README.md): the article and the talk.
 

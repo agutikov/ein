@@ -15,8 +15,7 @@
 //!
 //! ### L9, the argument
 //!
-//! Under [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
-//! rule 2. Let the program be monotone (the static check, [`crate::monotone`]),
+//! Under Q-M1e.2. Let the program be monotone (the static check, [`crate::monotone`]),
 //! let root owe the instance `I`, let every read of `I`'s guard beside its
 //! witness step be static (L5's premise, unchanged), and let `w` be a fact
 //! that can witness `I`, no candidate, not denied at root, of a relation `R`

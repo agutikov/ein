@@ -64,8 +64,7 @@
 //! No shipped route builds from scratch,
 //! so the gate is sound for what ships, and the scope is the claim.
 //!
-//! Under [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
-//! rule 2 the argument is enough only while its premise is enforced, and the
+//! Under Q-M1e.2 the argument is enough only while its premise is enforced, and the
 //! premise is enforced by these tests, which fail when it stops
 //! being true:
 //!

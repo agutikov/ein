@@ -106,7 +106,8 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   the engine has: a program with no stable reading.
 - **The second theorem, and what a certificate is.** A system of that strength cannot prove its own
   consistency. Ein's practical form of the question is what `exhausted` and a green gate license one to say,
-  which [`standard-of-proof.md`](../../docs/ein/standard-of-proof.md) answers for the repo and not for the
+  which [Q-M1e.1](../../docs/decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md) and
+  [Q-M1e.2](../../docs/decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md) answer for the repo and not for the
   logic.
 
 ## And common sense

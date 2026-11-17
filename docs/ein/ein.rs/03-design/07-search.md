@@ -24,7 +24,11 @@ one function, `rung`):
 3. else, **the blind enumerator**: every eligible relation, over the objects the program names, its fillers by type.
    The objects are the names the alive-set invariant lists for the program
    ([`invariant.rs`](../../../../ein.rs/crates/ein-infer/src/invariant.rs): no rule asserts a name the program lacks),
-   never `__closed__` or `__symmetric__`.
+   never `__closed__` or `__symmetric__`. The invariant is what lets H be taken once, at root, and it is enforced:
+   [`ein-infer/tests/alive_invariant.rs`](../../../../ein.rs/crates/ein-infer/tests/alive_invariant.rs)'s
+   `every_name_of_the_program_is_a_candidate_object` holds the static reading and
+   `no_run_reaches_a_name_the_program_does_not_have` the one in the search, which fails when a node reaches a name
+   outside root's fixpoint and the rules' constants.
 
 An obligation rule the program loads and nothing activates chooses no rung, so a module imported for another of its
 names takes nothing off the blind enumerator. Candidates then pass a pipeline of filters, each named, so that
@@ -194,4 +198,10 @@ has no `R` to disagree with another command about.
 **Forbid** ([`forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs)): a program whose refutation could rest on
 an `(absent P)` over a relation a commitment can still extend is refused at load, since it would judge a state that
 has not decided `P` as if `P` were false, and `dead` would stop being upward-closed
-([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
+([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)). The refusal is what
+enforces L1's premise, since the premise is false of the shape it refuses:
+[`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein) is that shape, in
+which `{(p A)}` derives `(false)` and `{(p A), (q A)}` does not, and
+[`ein-infer/tests/refutation_under_absent.rs`](../../../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs)
+holds the refused set (`the_refused_set_is_exactly_these`) and the message, which names the forms that say what was
+meant (`the_probe_is_refused_and_the_message_names_the_replacements`).
