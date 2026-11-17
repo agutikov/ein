@@ -38,7 +38,7 @@ digraph { rankdir=LR; node [shape=box];
 ```
 
 You never wrote `symmetric`/`bijective`'s logic: the stdlib did
-([the standard library](../04-reference/04-stdlib.md)). Each `(bijective R)` pulls
+([the standard library](../04-reference/04-stdlib/README.md)). Each `(bijective R)` pulls
 in four cardinality properties, `functional`, `injective`, `total` and
 `surjective`, and the inference they license: **negative-completion** and
 **domain- and range-elimination**.
@@ -56,28 +56,34 @@ excluded, the survivor is *forced*. There is one rule for each direction of
 
 Both ship in `std.bijection` (activated by `(bijective color-loc)`); you
 don't write them. On `zebra2.ein`, before anything is guessed, the first one
-places yellow ([the walkthrough](06-zebra-walkthrough.md), step 1):
+places yellow ([the walkthrough](06-zebra-walkthrough.md), step 1). These
+are the five facts as `ein saturate examples/zebra2.ein --dump` lists them,
+each with the rule that derived it, a rule a module brings by its full name:
+four colours excluded from House-1, and the survivor, forced.
 
+<!-- output -->
+```text
+  (not (color-loc Red House-1) :rule co-located-negative)
+  (not (color-loc Blue House-1) :rule std.bijection.functional-negative)
+  (not (color-loc Green House-1) :rule adjacent-via-endpoint-bwd)
+  (not (color-loc Ivory House-1) :rule adjacent-via-fwd-negative)
+  (color-loc Yellow House-1 :rule std.bijection.range-elimination)
 ```
-before:  (not (color-loc Green  House-1))   (not (color-loc Blue  House-1))
-         (not (color-loc Ivory  House-1))   (not (color-loc Red   House-1))
-after:   + (color-loc Yellow House-1)        ← the only survivor, forced
-```
+
+As a graph, a stored negation dotted and labelled `¬`, as a rule's drawing
+labels one, and the derived fact dashed:
 
 ```dot
 digraph { rankdir=LR; node [shape=box];
-  Green  -> "House-1" [label="✗", style=dotted];
-  Blue   -> "House-1" [label="✗", style=dotted];
-  Ivory  -> "House-1" [label="✗", style=dotted];
-  Red    -> "House-1" [label="✗", style=dotted];
-  Yellow -> "House-1" [label="color-loc (forced)", style=dashed];
+  Green  -> "House-1" [label="¬color-loc", style=dotted];
+  Blue   -> "House-1" [label="¬color-loc", style=dotted];
+  Ivory  -> "House-1" [label="¬color-loc", style=dotted];
+  Red    -> "House-1" [label="¬color-loc", style=dotted];
+  Yellow -> "House-1" [label="color-loc by range-elimination", style=dashed];
 }
 ```
 
-`ein saturate examples/zebra2.ein --dump` lists the fact as
-`(color-loc Yellow House-1 :rule std.bijection.range-elimination)`: a rule a
-module brings is printed by its full name. Elimination needs negatives to
-eat, which is where the next family comes in.
+Elimination needs negatives to eat, which is where the next family comes in.
 
 ## negative-completion — turning one positive into many negatives
 
@@ -92,10 +98,23 @@ lot. `(bijective R)` gives the *property* side; zebra2 adds
   :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h})).")
 ```
 
+As `ein render rule --name co-located-negative examples/zebra2.ein` draws
+it, a `¬` on an arrow marking a stored negation:
+
 ```dot
-digraph { rankdir=LR;
-  subgraph cluster_m { label="match (a negative)";  "?V1" -> "?h" [label="not ?R1", style=dotted]; }
-  subgraph cluster_a { label="assert (a negative)"; "?V2" -> "?h" [label="not ?R2", style=dotted]; }
+digraph rule_co_located_negative_lhs_rhs {
+  rankdir=TB;
+  label="co-located-negative"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h_L" [label="?h", shape=diamond];
+    "?V1_L" -> "?h_L" [label="¬?R1", color="#d62728", fontcolor="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_R" [label="?h", shape=diamond];
+    "?V2_R" -> "?h_R" [label="¬?R2", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
 }
 ```
 
@@ -116,9 +135,19 @@ in its real two-attribute form ([`zebra2.ein`](../../../../examples/zebra2.ein))
 ```
 
 ```dot
-digraph { rankdir=LR;
-  subgraph cluster_m { label="match";  "?V1" -> "?h" [label="?R1"]; }
-  subgraph cluster_a { label="assert"; "?V2" -> "?h" [label="?R2", style=dashed]; }
+digraph rule_co_located_lhs_rhs {
+  rankdir=TB;
+  label="co-located"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h_L" [label="?h", shape=diamond];
+    "?V1_L" -> "?h_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_R" [label="?h", shape=diamond];
+    "?V2_R" -> "?h_R" [label="?R2", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  }
 }
 ```
 
@@ -142,13 +171,31 @@ neighbour is **unique**:
   :why    "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2}).")
 ```
 
+The drawing puts what must be `absent` in a dashed box of its own, marked
+`∄`: no other `?h_o` is an `?S`-neighbour of `?h1`.
+
 ```dot
-digraph { rankdir=LR;
-  subgraph cluster_m { label="match";
-    "?V1" -> "?h1" [label="?R1"];
-    "?h2" -> "?h1" [label="?S (unique nbr)"]; }
-  subgraph cluster_a { label="assert";
-    "?V2" -> "?h2" [label="?R2", style=dashed]; }
+digraph rule_adjacent_via_fwd_lhs_rhs {
+  rankdir=TB;
+  label="adjacent-via-fwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "?h2_L" [label="?h2", shape=diamond];
+    "?V1_L" -> "?h1_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
+    "?h2_L" -> "?h1_L" [label="?S", color="#2ca02c", fontcolor="#2ca02c"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h_o_L" [label="?h_o", shape=diamond];
+      "?h_o_L" -> "?h1_L" [label="?S", color="#2ca02c", fontcolor="#2ca02c"];
+      "?h_o_L" -> "?h2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h2_R" [label="?h2", shape=diamond];
+    "?V2_R" -> "?h2_R" [label="?R2", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  }
 }
 ```
 
@@ -174,14 +221,43 @@ out:
 ```
 
 ```dot
-digraph { rankdir=LR;
-  subgraph cluster_m { label="match";
-    "?V1" -> "?h1" [label="?R1"];
-    "?h_other" -> "?h1" [label="?S absent", style=dotted]; }
-  subgraph cluster_a { label="assert";
-    "?V2" -> "?h_other" [label="not ?R2", style=dotted]; }
+digraph rule_disjunctive_prune_fwd_lhs_rhs {
+  rankdir=TB;
+  label="disjunctive-prune-fwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "?h_other_L" [label="?h_other", shape=diamond];
+    "?V1_L" -> "?h1_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_relation_L" -> "?R2_L" [label="1", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
+    "?h_other_L" -> "?B_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h_other_L" -> "?h1_L" [label="?S", color="#2ca02c", fontcolor="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_other_R" [label="?h_other", shape=diamond];
+    "?V2_R" -> "?h_other_R" [label="¬?R2", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
 }
 ```
+
+**This rule reads a declaration.** `(relation ?R2 ?A ?B)` matches the stored
+fact of `?R2`'s declaration, the octagon, and binds `?B` to the label of its
+second slot: for `(relation pet-loc Pet House …)` that is `House`. Then
+`(is-a ?h_other ?B)` ranges `?h_other` over every name with an `is-a` fact
+into that label, the five houses. This is the whole of what Chapter 1 meant
+by *a label means what the rules that read it make it mean*: Ein has no
+types, and here a rule uses a slot's label and the puzzle's `is-a` facts to
+say *every house*.
 
 **English:** "if V2 must be a `?S`-neighbour of V1, then every house that
 *isn't* a neighbour is excluded for V2." Those negatives feed
@@ -209,6 +285,6 @@ In [Chapter 4](04-solving-the-whole-puzzle.md) we assemble the whole thing
 and watch these families solve it.
 
 > **Reference:** the standard library, module by module:
-> [stdlib](../04-reference/04-stdlib.md); the properties as concepts:
+> [stdlib](../04-reference/04-stdlib/README.md); the properties as concepts:
 > [properties and operators](../03-syntax-and-semantics/07-properties-and-operators.md);
 > each family firing in context: [the walkthrough](06-zebra-walkthrough.md).

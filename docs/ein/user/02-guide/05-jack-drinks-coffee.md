@@ -1,8 +1,10 @@
 # 5 — Jack drinks coffee
 
 One small inference, stated four ways: **in words**, **in Ein**, **as a graph** and **in mathematics**, the four
-representations every [concept page](../03-syntax-and-semantics/README.md) uses. What it shows is how a type holds the
-relations its instances share: an instance inherits the relations of its type
+representations every [concept page](../03-syntax-and-semantics/README.md) uses. What it shows is a *type* made by a
+program. Ein has no types of its own: `is-a` is a relation the program names, `Human` and `Drink` are names like
+`Jack` and `Coffee`, and an `is-a` fact does nothing until a rule reads it. Here two rules do, and they make a name
+inherit the relations of the name it `is-a`: that is all *Jack is of type Human* means in this program
 ([ontology](../03-syntax-and-semantics/04-ontology.md)).
 
 ## In words
@@ -28,9 +30,9 @@ and, *without* using claim 4, also:
 | 5b | Humans can drink coffee. | the right slot inherits: (1) and *coffee is a drink* |
 | 6 | Jack can drink coffee. | chained: (5a) and *coffee is a drink*, or (5b) and *Jack is a human* |
 
-(5a), (5b) and (6) follow from the ontology alone, the declared relations and the `is-a` facts. Claim (4) is a
-separate assertion: *Jack drinks coffee* is not *Jack can drink coffee*; one is observed, the other is a possibility
-the type structure entails.
+(5a), (5b) and (6) follow from claims (1) to (3) and the two rules. Claim (4) is a separate assertion: *Jack drinks
+coffee* is not *Jack can drink coffee*; one is observed, the other is a possibility the `is-a` facts and the rules
+entail.
 
 (5a) and (5b) come from **two rules**, one per argument slot of the two-slot relation `can-drink`. (6) is no rule of
 its own: it is what the two rules reach when they chain. For a relation of N slots the pattern takes N slot rules,
@@ -104,10 +106,11 @@ and the trace below shows both.
 
 ## As a graph
 
-`ein render kb jack.ein` draws the saturated knowledge base as one graph: types as boxes, instances as ovals, an
-`is-a` fact as a dashed arrow with an open head, any other fact of two arguments as an arrow labelled by its relation,
-a derived one dashed and labelled with the rule that derived it. Leaving out the `(relation …)` declarations it also
-draws, it is:
+`ein render kb jack.ein` draws the saturated knowledge base as one graph: a name an `is-a` arrow points at as a box
+and a name one starts from as an oval (the drawing's comments call them *types* and *instances*, its convention for a
+relation named `is-a`), an `is-a` fact as a dashed arrow with an open head, any other fact of two arguments as an
+arrow labelled by its relation, a derived one dashed and labelled with the rule that derived it. Leaving out the
+`(relation …)` declarations it also draws, it is:
 
 ```dot
 digraph kb {
@@ -128,8 +131,9 @@ digraph kb {
 }
 ```
 
-The three dashed `can-drink` arrows are the *inheritance closure* of the type-level fact across the `is-a` arrows:
-the product {Human, Jack} × {Drink, Coffee} less the fact it starts from. The compact view puts *two* relations,
+The three dashed `can-drink` arrows are the *inheritance closure* of the stated fact `(can-drink Human Drink)` across
+the `is-a` arrows: every pair of $\lbrace \mathsf{Human}, \mathsf{Jack} \rbrace \times \lbrace \mathsf{Drink},
+\mathsf{Coffee} \rbrace$ but the one it starts from. The compact view puts *two* relations,
 `can-drink` and `drinks`, on the same pair Jack → Coffee; only the labels tell them apart.
 
 The **detailed** view draws every fact as its own node, joined to its relation and to each argument by a numbered
@@ -146,7 +150,7 @@ digraph jack_levi {
   rel_can   [shape=box, style=rounded, label="can-drink"];
   rel_drink [shape=box, style=rounded, label="drinks"];
 
-  // types and instances
+  // the names: a box where an is-a arrow points, an oval where one starts
   Human [shape=box];  Drink [shape=box];
   Jack [shape=oval];  Coffee [shape=oval];
 
@@ -172,25 +176,38 @@ digraph jack_levi {
 
 ## In mathematics
 
-The program states a finite set *K* of ground atoms, and each rule, once activated for `can-drink`, is a Horn clause
-over it:
+The program states a finite set $K$ of ground atoms:
 
-```text
-K = { is-a(Jack, Human), is-a(Coffee, Drink), can-drink(Human, Drink), drinks(Jack, Coffee) }
+$$
+K = \lbrace \operatorname{is-a}(\mathsf{Jack}, \mathsf{Human}),\ \operatorname{is-a}(\mathsf{Coffee}, \mathsf{Drink}),\ \operatorname{can-drink}(\mathsf{Human}, \mathsf{Drink}),\ \operatorname{drinks}(\mathsf{Jack}, \mathsf{Coffee}) \rbrace
+$$
 
-lhs:  ∀ t, o, i.  can-drink(t, o) ∧ is-a(i, t)  →  can-drink(i, o)
-rhs:  ∀ o, t, i.  can-drink(o, t) ∧ is-a(i, t)  →  can-drink(o, i)
-```
+Each rule, once activated for `can-drink`, is a Horn clause over it, `inherit-rel-lhs` the first and
+`inherit-rel-rhs` the second:
 
-The answer is the least set *K\** ⊇ *K* closed under both clauses, the fixpoint saturation reaches:
+$$
+\begin{aligned}
+\forall t, o, i.\quad & \operatorname{can-drink}(t, o) \land \operatorname{is-a}(i, t) \implies \operatorname{can-drink}(i, o) \\
+\forall o, t, i.\quad & \operatorname{can-drink}(o, t) \land \operatorname{is-a}(i, t) \implies \operatorname{can-drink}(o, i)
+\end{aligned}
+$$
 
-```text
-K* = K ∪ { can-drink(Jack, Drink), can-drink(Human, Coffee), can-drink(Jack, Coffee) }
-```
+The answer is the least set $K^{\ast} \supseteq K$ closed under both clauses, the fixpoint saturation reaches:
 
-and `can-drink(Jack, Coffee) ∈ K*` is the goal. Since `can-drink` has two slots and `is-a` is the only way into
-either, *K\** holds `can-drink(x, y)` for exactly the pairs (x, y) ∈ {Human, Jack} × {Drink, Coffee}: each slot's
-values are closed downward along `is-a`, independently of the other.
+$$
+K^{\ast} = K \cup \lbrace \operatorname{can-drink}(\mathsf{Jack}, \mathsf{Drink}),\ \operatorname{can-drink}(\mathsf{Human}, \mathsf{Coffee}),\ \operatorname{can-drink}(\mathsf{Jack}, \mathsf{Coffee}) \rbrace
+$$
+
+and $\operatorname{can-drink}(\mathsf{Jack}, \mathsf{Coffee}) \in K^{\ast}$ is the goal. Since `can-drink` has two
+slots and `is-a` is the only way into either, $K^{\ast}$ holds $\operatorname{can-drink}(x, y)$ for exactly the pairs
+
+$$
+(x, y) \in \lbrace \mathsf{Human}, \mathsf{Jack} \rbrace \times \lbrace \mathsf{Drink}, \mathsf{Coffee} \rbrace
+$$
+
+each slot's values closed downward along `is-a`, independently of the other. Nothing in the formulas sets
+$\mathsf{Human}$ apart from $\mathsf{Jack}$: both are constants, and the two clauses are the only place `is-a` has a
+meaning.
 
 ## What the example shows
 
@@ -207,9 +224,9 @@ Each claim is one fact, and the fact's origin is visible in the knowledge base:
 | (6) Jack can drink coffee. | `(can-drink Jack Coffee)` | derived by either rule, chained |
 
 `inherit-rel-lhs` and `inherit-rel-rhs` are **relation-polymorphic** rules: `?r` ranges over the relations a fact
-activates them for ([rules](../03-syntax-and-semantics/05-rules.md)). The shape of each, a relation with a type in one slot
-and an `is-a` arrow into that type, concluding the relation on the instance in the same slot, is the **inheritance
-pattern**: the same shape as `transitive`, applied along `is-a` instead of along the relation itself. `ein solve
+activates them for ([rules](../03-syntax-and-semantics/05-rules.md)). The shape of each, a fact with a name in one slot
+and an `is-a` arrow into that name, concluding the same fact with the arrow's source in that slot, is the
+**inheritance pattern**: the same shape as `transitive`, applied along `is-a` instead of along the relation itself. `ein solve
 jack.ein --trace out.md` writes the derivation step by step, each step's `:why` filled in:
 
 ```text
@@ -230,8 +247,8 @@ Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
 
 ## What it leaves out
 
-- **Another encoding of the types.** The types here are bare `is-a` targets. `zebra2.ein`'s encoding roots every type
-  in one name, `T`, so that the types are themselves instances:
+- **Another encoding of the grouping.** `Human` and `Drink` here are bare `is-a` targets. `zebra2.ein` roots every
+  such name in one name, `T`, so that each has an `is-a` fact of its own:
 
   ```lisp
   (relation is-a T T :why "{?1} is a {?2}")
@@ -242,14 +259,15 @@ Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
   ```
 
   Both carry the same content for this example.
-- **How `can-drink` and `drinks` relate.** The example keeps them apart. A puzzle that wants
-  `(drinks Jack Coffee) ⇒ (can-drink Jack Coffee)` writes it as one more rule.
+- **How `can-drink` and `drinks` relate.** The example keeps them apart. A puzzle that wants `(can-drink Jack Coffee)`
+  to follow from `(drinks Jack Coffee)` writes it as one more rule.
 - **Negation.** *Jack doesn't drink tea* is the stored negation `(not (drinks Jack Tea))`
   ([constraints](../03-syntax-and-semantics/06-constraints.md)), and an inheritance rule over negations is one more rule of
   the same shape.
 
 ## See also
 
-- [Ontology](../03-syntax-and-semantics/04-ontology.md): types as the holders of the relations their instances share.
+- [Ontology](../03-syntax-and-semantics/04-ontology.md): the names a program groups its objects under, and the
+  relations stated of them.
 - [Rules](../03-syntax-and-semantics/05-rules.md): a rule's parameters, its activation, and what a pattern matches.
 - [Rendering](../04-reference/12-rendering.md): every view `ein render` draws.

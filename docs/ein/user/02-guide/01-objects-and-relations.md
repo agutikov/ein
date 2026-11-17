@@ -1,8 +1,8 @@
 # 1 — Objects & relations
 
 Every Ein model is built from three things: **objects**, **relations**, and **facts**. This chapter introduces each
-one *three ways at once*: in plain English, in **ein-lang** (the text you write), and as a **graph** (what Ein
-reasons over). That NL ↔ ein-lang ↔ graph triad is the habit the rest of the guide leans on.
+one *three ways at once*: in **ein-lang** (the text you write), as a **graph** (what Ein reasons over), and in plain
+English (what the Ein says). That ein-lang ↔ graph ↔ English triad is the habit the rest of the guide leans on.
 
 We'll use a two-house slice of the Zebra puzzle.
 
@@ -11,12 +11,12 @@ We'll use a two-house slice of the Zebra puzzle.
 An **object** is just a named thing: a house, a person, a colour. You don't declare objects; they exist the moment
 you name them.
 
-- **English:** "the Norwegian", "House-1".
 - **ein-lang:** the bare names `Norwegian`, `House-1`.
-- **graph:** each is a node with no outgoing arrows, a thing other facts point *at*.
+- **graph:** each is a node, a thing facts point *at*.
+- **English:** "the Norwegian", "House-1".
 
-Names that group objects are objects too. `Nationality` is the *type* of `Norwegian`; you say so with an `is-a`
-fact:
+A name that groups objects is an object too. `Nationality` is one more name, and that the Norwegian is a nationality
+is something the program *says*, with an ordinary fact:
 
 ```lisp
 (is-a Norwegian Nationality)
@@ -30,66 +30,84 @@ digraph { rankdir=LR; node [shape=box];
 }
 ```
 
+**Ein has no types.** Nothing in the language sets `Nationality` apart from `Norwegian`: both are names, both are
+nodes, and `is-a` is a relation like any other, one the puzzle chose to call that. When this guide says *the
+Norwegian is a Nationality* it reads that fact aloud. Such a fact matters to the answer only as far as a rule reads
+it, and the rules that do are the subject of [Chapter 3](03-rule-families.md).
+
 (The precise model, names against nodes and *atoms* against *objects*, is
 [ontology](../03-syntax-and-semantics/04-ontology.md); the [glossary](../04-reference/13-glossary.md) defines
 *Levi-bipartite*.)
 
 ## Relations — how things connect
 
-A **relation** says *what kind of link* can hold between objects. You declare it once, naming the types of its
+A **relation** says *what kind of link* can hold between objects. You declare it once, with a name for each of its
 slots:
 
-- **English:** "a nationality lives in a house."
 - **ein-lang:**
   ```lisp
   (relation nation-loc Nationality House :why "the {?1} lives in {?2}")
   ```
-- **graph:** a relation node with one outgoing arrow per slot (here, to `Nationality` and to `House`).
+- **graph:** the declaration is itself stored as a fact, `(relation nation-loc Nationality House)`, a node with one
+  arrow to the relation's name and one to each slot's label. This is how `ein render kb` draws it:
 
   ```dot
-  digraph { rankdir=LR;
-    "nation-loc" [shape=ellipse];
-    "nation-loc" -> Nationality [label="slot 1"];
-    "nation-loc" -> House       [label="slot 2"];
+  digraph kb {
+    rankdir=BT;
+    f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+    f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
+    f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
+    f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
+    "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   }
   ```
 
-`nation-loc` is a relation with two slots, and so is `is-a` (used above): it is not built in, since Ein has no type
-system of its own, and a puzzle whose `is-a` facts Ein may guess declares it as it does any other relation,
-`(relation is-a T T :why "{?1} is a {?2}")` ([reserved names](../04-reference/03-reserved-names.md)). Every relation
-carries its rendering text, a `:why`, e.g. `(relation nation-loc Nationality House :why "the {?1} lives in {?2}")`,
-which says what one of its facts reads as in English; the loader refuses a relation, rule or hrule without one
-(`--no-require-why` loads it anyway).
+  The loop on `nation-loc` is a second stored fact, `(relation nation-loc)`: *`nation-loc` is a declared relation*.
+- **English:** "a nationality lives in a house."
+
+The declaration does two things. It fixes **how many arguments** a `nation-loc` fact has, two, and Ein refuses a
+program that writes one with another count. And it gives each slot a **label**, `Nationality` and `House`. A label
+is an ordinary name, the same node the `is-a` facts above point at, and Ein checks no argument against it:
+`(nation-loc House-1 Norwegian)` loads. A label means what the rules that read the stored declaration make it
+mean, and the standard library's rules in Chapter 3 read it to know which objects a slot is filled from.
+
+`is-a` is declared the same way, `(relation is-a T T :why "{?1} is a {?2}")`, when a puzzle wants Ein to guess its
+facts ([reserved names](../04-reference/03-reserved-names.md)); `T` there is a label that says nothing in
+particular. Every relation carries its rendering text, a `:why`, which says what one of its facts reads as in
+English; the loader refuses a relation, rule or hrule without one (`--no-require-why` loads it anyway).
 
 ## Facts — relations applied to objects
 
 A **fact** applies a relation to actual objects. It's the unit of knowledge:
 
-- **English:** "the Norwegian lives in House-1."
 - **ein-lang:**
   ```lisp
   (nation-loc Norwegian House-1)
   ```
-- **graph (compact):** a labelled link between the two objects,
+- **graph (compact):** a labelled link between the two objects, as `ein render program` draws it,
 
   ```dot
-  digraph { rankdir=LR; node [shape=box];
-    Norwegian -> "House-1" [label="nation-loc"];
+  digraph facts {
+    "Norwegian" [shape=rectangle];
+    "House-1" [shape=rectangle];
+    "Norwegian" -> "House-1" [label="nation-loc", color="#d62728", fontcolor="#d62728", style=solid];
   }
   ```
 
-  which is the readable shorthand for how Ein holds it *canonically*: a **node** joining the relation and its two
-  arguments (the **Levi** view; see [facts](../03-syntax-and-semantics/03-facts.md)):
+  which is the readable shorthand for how Ein holds it *canonically*: a **node** joined to its two arguments (the
+  **Levi** view, `ein render program --levi`; see [facts](../03-syntax-and-semantics/03-facts.md)):
 
   ```dot
-  digraph {
-    rankdir=LR; node [shape=box];
-    fact [label="(nation-loc Norwegian House-1)", shape=ellipse];
-    fact -> "nation-loc" [label="rel"];
-    fact -> "Norwegian"  [label="1"];
-    fact -> "House-1"    [label="2"];
+  digraph facts {
+    ranksep=0.55;
+    "h_1_nation-loc" [shape=octagon, label="nation-loc"];
+    "Norwegian" [shape=rectangle];
+    "House-1" [shape=rectangle];
+    "h_1_nation-loc" -> "Norwegian" [label="1"];
+    "h_1_nation-loc" -> "House-1" [label="2"];
   }
   ```
+- **English:** "the Norwegian lives in House-1", which is the relation's `:why` with the fact's arguments in it.
 
 A fact can record where it came from, which shows up in explanations:
 
@@ -103,7 +121,7 @@ Facts fall into three groups. You never declare which: the annotation you write 
 
 | annotation | what it holds |
 |------------|---------------|
-| *none* | background setup: the `(relation …)` schema, the `is-a` type tree |
+| *none* | background setup: the stored `(relation …)` declarations, the `is-a` facts |
 | `:source "(N)"` | the puzzle's stated clues |
 | `:rule` / `:using` | everything Ein *derives*: the subject of the next chapters, and Ein writes these itself |
 
@@ -113,21 +131,39 @@ contradict each other exactly as readily as two derivations do.
 That's the whole vocabulary. Put together, a tiny model reads:
 
 ```lisp
-(relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; ontology: the schema
-(is-a Norwegian Nationality)              ; ontology: the type tree
+(relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; a relation, its two slots labelled
+(is-a Norwegian Nationality)              ; two facts of the puzzle's grouping relation
 (is-a Englishman Nationality)
-(nation-loc Norwegian House-1 :source "condition (10)")   ; a fact
+(nation-loc Norwegian House-1 :source "condition (10)")   ; a clue
 ```
 
-Drawn compactly, that whole tiny model is just:
+Save it as `tiny.ein`, and `ein render kb tiny.ein` draws all of it as one graph, every name once:
 
 ```dot
-digraph { rankdir=LR; node [shape=box];
-  Norwegian  -> Nationality [label="is-a"];
-  Englishman -> Nationality [label="is-a"];
-  Norwegian  -> "House-1"   [label="nation-loc"];
+digraph kb {
+  rankdir=BT;
+  // types
+  "Nationality" [shape=box, label="Nationality"];
+  // instances
+  "Englishman" [shape=oval, label="Englishman"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+
+  // facts
+  f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
+  "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "Englishman" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "House-1" [label="nation-loc (10)", color="#d62728", fontcolor="#d62728", style=solid];
 }
 ```
+
+The drawing puts `Nationality` in a box and the two names with an `is-a` arrow into it in ovals, and its comments
+call them *types* and *instances*. That is a convention of the drawing, keyed on a relation named `is-a`
+([rendering](../04-reference/12-rendering.md)): it changes no answer, and a puzzle that named its grouping relation
+otherwise would see plain arrows. The clue's arrow carries its source, `(10)`.
 
 So far nothing is *derived*: these are all things we stated. In [Chapter 2](02-first-rules.md) we add **rules**, and
 Ein starts producing new facts on its own.
