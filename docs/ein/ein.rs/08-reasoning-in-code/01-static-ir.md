@@ -87,10 +87,10 @@ from one is the digraph the command names, with the layout hints and comment lin
 
 | page | drawing | command |
 |---|---|---|
-| the knowledge base | the graph of the four facts; the relation, its extent and two facts about it; the declaration of `lives-in`; what an arrow points at | **none**: drawn by hand, see below |
+| the knowledge base | the graph of the four facts; the relation, its extent and two facts about it; the declaration of `lives-in`; what an arrow points at; the three cases of a fact in a context; a negation beside a context | **none**: drawn by hand, see below |
 | the knowledge base | the definitions as a class diagram | by hand, in PlantUML |
 | the knowledge base | the two forms side by side | by hand; its right half is what `ein render program three-houses.ein` draws of two facts in its digraph `facts` |
-| the rules | the pattern, the match, the result of rewriting, the rule `transitive` with its activator pattern | **none**: drawn by hand |
+| the rules | the pattern, the match, the result of rewriting, the rule `transitive` with its activator pattern; a packing and an unpacking, each with its match and its result | **none**: drawn by hand |
 | the rules | `pet-follows-owner`, `nobody-home` | `ein render rules three-houses.ein` |
 | the rules | `pet-follows-owner` as one graph | `ein render rules --rule-mode overlay three-houses.ein` |
 | the rules | `domain-elimination` | `ein render rule --name domain-elimination stdlib/bijection.ein` |
@@ -101,8 +101,9 @@ name on the fact instead: as the label of an arrow, or, under `ein render progra
 fact, with numbered arrows to the arguments only. So `--levi` draws the name `left-of` on two octagons where the
 graph has one atom, and numbers the arrows by argument where the reasoning counts them from the relation's. The
 drawings of the graph on the two pages are written by hand in the reasoning's vocabulary: a box for an atom, an
-unlabelled octagon for a fact, filled where the knowledge base holds it, and a number on each arrow for its
-place. The other hand-drawn schematics are the chain of objects in their order, the gluing square and the four
+unlabelled octagon for a fact, filled where the knowledge base holds it, a number on each arrow for its place,
+and a dashed frame around a fact that a fact points at, named for the relation of the facts that point at it.
+`ein render kb` draws such a fact as a node labelled with its text and no frame. The other hand-drawn schematics are the chain of objects in their order, the gluing square and the four
 levels.
 
 ## The knowledge base
@@ -117,10 +118,11 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | one name, one node: an atom | interning: `ein-core/src/intern.rs`; `ein_core::terms::Terms::intern_text`, one `Symbol` per distinct text |
 | one list of arrows, one node: a fact | an interned row of its relation and its arguments, `Terms::intern_fact`; the facts as rows, `ein_core::facts` |
 | the knowledge base: the facts held | `ein_core::kb::Kb` ([`03-design/03-data-model.md`](../03-design/03-data-model.md)); a fact that is only pointed at is interned in `Terms` and in no `Kb` |
+| the global context, and the context of a fact | the global context is the held set of a `Kb`. No store keeps a fact's contexts: a fact in a context is an interned row that an argument of some held fact names (`Tag::Fact`), and a pattern reaches it through that held fact, by the matcher's `Nested` slot ([`03-design/05-matcher.md` § 3.1](../03-design/05-matcher.md#31-registers-trail-and-premise-slots)). A premise is matched among held facts only (`Kb::facts_of`, `Kb::facts_with`) |
 | the relation of a fact, its arguments | the row's first field and the rest; a relation is a `Symbol`, never a `Fact` |
 | the held extent of a relation, $\operatorname{ext}_K(r)$ | `Kb`'s index of the held facts by relation (`facts_by_relation`) |
 | the name characters, and a name as a run of them | the lexer's `NAME` rule in `ein-ir/src/ein.l`; `ein_core::text::is_name_char` and `is_symbol`, the printer's copy of it, held equal to the lexer's by a test |
-| the reserved words | `ein_core::terms::RESERVED` (what no declaration binds), `STRUCTURAL` and `PREDICATES` (the words of the pattern language); the grammar's own list in `ein-ir/src/grammar.rs` |
+| the reserved words: where the kernel meets a theory written in Ein | `ein_core::terms::RESERVED` (what no declaration binds), `STRUCTURAL` and `PREDICATES` (the words of the pattern language); the grammar's own list in `ein-ir/src/grammar.rs`; the names the kernel itself knows, `ein_core::terms::Kernel`. A relation that is none of these is read by rules only |
 | a name the loader makes up | `ein_core::text::INTERNAL_MARK`, `#`, and `INTERNAL_NAMES` ([`07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)) |
 | the kernel's two markers | `ein_core::terms::CLOSED`, `SYMMETRIC` |
 | a stored negation, falsity | a fact of the relation `not`, one argument, and the fact of `false`, none: `ein_core::terms::Terms`' `kernel` symbols |
@@ -150,6 +152,8 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | a relation nothing declares is a relation | the loader's unit test `an_undeclared_head_vivifies_a_relation_but_a_predicate_does_not` in `ein-ir/src/from_ir.rs` |
 | the loader states `written` for what a file nests and for a conclusion's ground nested facts, and a program may not write it | `ein-cli/tests/written_facts.rs`: `what_the_loader_states`, `a_program_does_not_write_written` |
 | a nested fact pairs with its negation by its arrows, at every depth | `ein-infer/tests/search_semantics.rs`: `a_nested_positive_pairs_through_structural_identity` |
+| a fact in a context is not held: a claim over its relation lists only what is held, and a rule that packs a held fact leaves what it points at as it was | the claims of [`examples/beliefs/02_packing.ein`](../../../../examples/beliefs/02_packing.ein), held with every corpus claim by `ein-cli/tests/corpus_cli.rs`: `every_cell_reproduces_its_exit_code`, its `test` run |
+| a declaration, a rule's activator, a marker and `(false)` under an arrow declare, apply, mark and refute nothing | no test of its own: the commands below show it |
 | a form that is no object is refused, and every form a knowledge base could hold loads | `ein-cli/tests/value_rule.rs`: `a_form_that_is_no_value_is_refused_on_every_command`, `what_a_state_could_hold_loads` |
 | `P` beside `(not P)` is a contradiction whatever either half's origin, and every pair is reported | `ein-infer/tests/search_semantics.rs`: `mutual_negation_is_detected_whatever_either_sides_origin`, `every_pair_is_reported_not_only_the_first` |
 | matching merges no two atoms | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
@@ -173,6 +177,27 @@ fact's relation, its *head-participations*, and how often as an argument, its *a
 facts held and their own arguments: an atom that stands only inside a nested fact, or as the relation of a fact
 that is only pointed at, is in neither count. Its row `category = object` is the engine's word for an atom it
 files under neither `relation` nor `rule`; in the reasoning's words every node is an object.
+
+**A fact in a context, shown.** A program of one written fact, a rule over what it points at, and a question:
+
+```lisp
+(think Alice (= 5 (+ 2 2)))
+(rule seen ()
+  :match  (= ?a ?b)
+  :assert (seen ?a)
+  :why    "an equality is held")
+(query :goal (= 5 ?x))
+```
+
+```sh
+ein saturate FILE --dump     # holds (think Alice (= 5 (+ 2 2))) and the loader's two `written` facts; no fact of `=`, none of `seen`
+ein solve FILE               # one state; the query's class reads `the goal has no row: undetermined here`
+```
+
+With the line `(= 5 (+ 2 2))` added the rule fires and the query answers `?x = (+ 2 2)`: the fact is then held,
+and in the context of the `think` fact as before. The same file with `(think Alice (relation p A B))`,
+`(think Alice (seen-by Bob))` beside a rule named `seen-by`, or `(think Alice (false))` loads, declares no `p`,
+applies no rule and is alive.
 
 **A declaration is a fact a rule's `:match` reads, and its labels are ordinary atoms**
 ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). The rule
@@ -244,6 +269,9 @@ out, a firing, is [saturation and negation](02-saturation-and-negation.md#1-firi
 | claim | test |
 |---|---|
 | a pattern matches into a nested fact | `ein-infer/tests/rule_semantics.rs`: `a_nested_pattern_binds_inside_the_nested_fact` |
+| a rule unpacks a fact by spelling it, one rule a shape, and holds it; a rule packs a held fact under an arrow of another | the claims of [`examples/beliefs/01_common_belief.ein`](../../../../examples/beliefs/01_common_belief.ein) and [`02_packing.ein`](../../../../examples/beliefs/02_packing.ein), by `ein-cli/tests/corpus_cli.rs`: `every_cell_reproduces_its_exit_code` |
+| a variable alone is no conclusion | `ein-cli/tests/cli_semantics.rs`: `a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` |
+| a rule for a context is the global rule wrapped, and neither matches the other's facts; the context's relation may be a parameter; `(false)` concluded in a context leaves the state alive and is read by a rule and under `forall` | no test of its own: [the user's page on rules](../../user/03-syntax-and-semantics/05-rules.md#rules-and-contexts) has the programs and what each answers |
 | `(not P)` in a premise matches a stored negation, not the absence of `P` | `ein-infer/tests/rule_semantics.rs`: `not_in_a_premise_is_stored_negation_not_negation_as_failure` |
 | `(unknown P)` admits exactly the facts neither held nor denied | `ein-infer/tests/naf_semantics.rs`: `unknown_admits_exactly_the_undecided_pairs` |
 | `eq` and `neq` are computed from the bindings, each admitting what the other rejects; a variable only a guard binds ranges over the program's names; a conclusion of either is checked and never stored | `ein-infer/tests/rule_semantics.rs`: `eq_admits_exactly_the_bindings_neq_rejects`, `a_guards_free_variable_ranges_over_the_programs_names`, `an_eq_or_neq_conclusion_is_checked_never_stored` |

@@ -129,7 +129,7 @@ copy that interns from where the original stood, so it hands out the ids the ori
 | tag bits | shape | payload |
 |---|---|---|
 | `0b00` | `Tag::Sym` | a `Symbol` |
-| `0b10` | `Tag::Fact` | a `FactId`, a nested relational node |
+| `0b10` | `Tag::Fact` | a `FactId`: a fact as an argument, held or not |
 | `0b01` | no value | `Value::from_bits` returns `None`; no constructor builds it, and a `.einb` value with these bits is refused |
 | `0b11` | `Value::UNBOUND` alone (`u32::MAX`) | the register file's *nothing bound yet*; `is_unbound` is one compare, and `as_sym` / `as_fact` return `None` on it |
 
@@ -315,8 +315,11 @@ Its four fields make 12 bytes, which does not pack into a `u64` (the symbol and 
 stays a struct key. A name in argument `slot` is keyed `(rel, slot, DIRECT, value)`. A nested fact in argument
 `slot` has no single name to key on, so the key reaches **one level inside** it instead: each name at position
 `inner` of the nested fact is keyed `(rel, slot, inner, value)`. A premise `(not (R ?a ?b))` with `?a` bound is then
-a bucket lookup rather than a scan of the held extent of `not`. One level only: the nesting a program writes is a
-negation around a fact, and a deeper key would add entries nothing asks for.
+a bucket lookup rather than a scan of the held extent of `not`. One level only. That serves a premise over a
+stored negation and one over a context whose fact holds names, `(says ?w (owns ?p ?x))` with `?p` bound. What is
+nested deeper is not keyed: a numeral of the standard library and a tag nest to any depth, and a premise whose
+only bound slots hold facts walks the held extent of its relation
+([05-matcher.md § 5.2](05-matcher.md#52-a-probe-into-the-participation-index)).
 
 The index is a narrowing. The matcher re-checks every slot of every candidate, so a key changes which facts are
 offered and never which ones match; buckets are appended in insertion order, so the facts that survive come in the
