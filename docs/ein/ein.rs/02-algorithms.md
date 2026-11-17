@@ -275,7 +275,7 @@ program scopes out proposes nothing and says so (`Mode::Stuck`). The filter that
 `hyp` event, and the generator's statistics assert that nothing is lost between the two counts:
 
 $$
-\mathit{raw} = \mathit{emitted} + \sum_{f \in \text{filters}} \mathit{dropped}_f
+\operatorname{raw} = \operatorname{emitted} + \sum_{f \in \text{filters}} \operatorname{dropped}_f
 $$
 
 ## 7. The node function
@@ -430,7 +430,7 @@ frontier, and the read-out says so.
 
 **Route 1** (`downset.rs`) walks a monotone program's alive down-set layer by layer from ∅: a commitment of size
 $k + 1$ is visited only when each of its $k$-subsets is alive, so it saturates the alive commitments and the
-minimal dead sets, $|\mathrm{alive}| + |N|$ nodes. **Route 2**, the cube (`region::compute_prepared`), saturates all $2^n$ commitments over $n$ candidates and reads the
+minimal dead sets, $|\operatorname{alive}| + |N|$ nodes. **Route 2**, the cube (`region::compute_prepared`), saturates all $2^n$ commitments over $n$ candidates and reads the
 topology off the status array; it is the only route a flagged program has, and `ein oracle` is that route asked
 for on any program, every node to quiescence. Every mode is held to it (`ein-infer/tests/explore.rs`).
 
