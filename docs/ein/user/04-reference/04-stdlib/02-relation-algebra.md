@@ -133,7 +133,7 @@ Read these before importing a relation-algebra module: they decide whether a rul
   as :expect        (model (same Ann Ann) (same Bob Bob) (same Cid Cid))
 ```
 
-The same state as `ein render kb` draws it, the declarations and the activators of three arguments left out: a fact the program wrote is a solid arrow,
+The same state as `ein render kb` draws it, the declarations left out: a fact the program wrote is a solid arrow,
 and one a rule derived is a dashed arrow labelled with the relation and the rule that derived it.
 
 ```dot

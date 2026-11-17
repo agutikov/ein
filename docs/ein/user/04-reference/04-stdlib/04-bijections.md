@@ -74,7 +74,7 @@ with the dual of each on the other side. Totality and its obligations are `std.a
 
 `ein render kb` draws the state, here with the declarations left out. The two dashed `wears` arrows are the facts
 elimination forced, each labelled with the rule; the arrows from `wears` to `is-a` are two of the activators the
-setup derived. A stored negation is not drawn.
+setup derived. The stored negations are not in the drawing.
 
 ```dot
 digraph kb {

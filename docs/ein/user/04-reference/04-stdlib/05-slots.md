@@ -139,7 +139,7 @@ What the partition produces, rule by rule:
   as :expect        (model (co-loc Green H3))
 ```
 
-The state as `ein render kb` draws it, the declarations and the two `slot-` facts left out. The solid `right-of` arrows are the row and the
+The state as `ein render kb` draws it, the declarations and the facts of more than two arguments left out. The solid `right-of` arrows are the row and the
 clue; each dashed `co-loc` arrow is a placement a rule derived, labelled with the rule.
 
 ```dot
