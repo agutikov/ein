@@ -26,6 +26,12 @@ agrees ([Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-r
 Since 2026-11-08 it also holds M1e2's no-owner items, as P1f.5's first
 thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
+**Phases left** (2026-11-17): [P1f.20](p1f.20_docs_refactor/README.md), whose last stage,
+[S1f.20.10](p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md), carries out the user's review of the
+documentation tree; and [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
+2026-11-17 on the user's instruction. The user accepted the tree on 2026-11-17 and asked for M1f's plans to be
+deleted on completion and for the work to stop after M1f; the close was started, then paused on the user's word,
+and resumes when both phases are done.
 
 ---
 
