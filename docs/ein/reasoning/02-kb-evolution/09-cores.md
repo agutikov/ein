@@ -43,14 +43,15 @@ record** $\delta$ is one of three kinds:
 | **a commitment** | $\operatorname{committed}(h)$ | the hypothesis $h \in C$ a node assumed |
 
 A fact's identity is its relation and its arguments, so a fact derived twice is one fact; the second derivation
-is recorded beside the first, as an **alternative**. Write
+is recorded beside the first, as an **alternative**. Write, with $J$ the provenance of
+[relations and facts](../01-static-ir/02-relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations),
 
 $$
-\Delta_K(f) = (\delta_1, \delta_2, \dots)
+J_K(f) = (\delta_1, \delta_2, \dots)
 $$
 
 for the records of $f$ in $K$, in the order they were made: $\delta_1$ is the **primary** derivation and the
-others are alternatives. A given and a commitment take none, $\Delta_K(f) = (\delta_1)$: a clue that happens to
+others are alternatives. A given and a commitment take none, $J_K(f) = (\delta_1)$: a clue that happens to
 be derivable again is still a clue.
 
 ## The proof graph
@@ -62,7 +63,7 @@ The records of a world form a graph with two kinds of node.
 
 $$
 \operatorname{rests}(\delta) \;=\; \operatorname{prem}(\delta) \;\cup\; \operatorname{all}(\delta) \;\cup\;
-\begin{cases} \lbrace a \rbrace & a \notin \operatorname{root} \\ \emptyset & a \in \operatorname{root} \end{cases}
+\begin{cases} \lbrace a \rbrace & a \notin \mathrm{root} \\ \emptyset & a \in \mathrm{root} \end{cases}
 $$
 
   a derivation through a universal rests on each fact the universal read
@@ -95,14 +96,14 @@ A plain box is a fact, double-bordered where it is a terminal; a coloured box is
 is an alternative. The arrows into a derivation are an AND, the arrows into a fact an OR. Following the primary
 alone, $F$ rests on $\lbrace A, B \rbrace$; searching both, on $\lbrace C \rbrace$.
 
-**What follows from a set of terminals.** For $E \subseteq \mathcal{T}(K)$, the facts that follow from $E$
+**What follows from a set of terminals.** For $Z \subseteq \mathcal{T}(K)$, the facts that follow from $Z$
 through the recorded derivations are the least set
 
 $$
-\operatorname{der}_K(E) \;=\; \mu X.\;\; E \;\cup\; \lbrace\, f \in K \;:\; \exists\, \delta \in \Delta_K(f).\;\; \operatorname{rests}(\delta) \subseteq X \,\rbrace
+\operatorname{der}_K(Z) \;=\; \mu X.\;\; Z \;\cup\; \lbrace\, f \in K \;:\; \exists\, \delta \in J_K(f).\;\; \operatorname{rests}(\delta) \subseteq X \,\rbrace
 $$
 
-and $E$ is a **frontier** of a set of facts $G$ when $G \subseteq \operatorname{der}_K(E)$.
+and $Z$ is a **frontier** of a set of facts $G$ when $G \subseteq \operatorname{der}_K(Z)$.
 
 The graph is legitimately **cyclic**: once alternatives are recorded, symmetric and transitive closure make
 $r(a, b)$ and $r(b, a)$ justify each other in any ordinary puzzle.
@@ -139,7 +140,7 @@ is never its own reason, and $r(b, a)$ rests on the given $r(a, b)$ and on nothi
 ([Q-M1e2.11](../../../decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)):
 
 $$
-\operatorname{core}(K) \;\in\; \operatorname*{arg\,min}_{E \subseteq \mathcal{T}(K)} \;\lbrace\, \lvert E \rvert \;:\; \exists\, G \in \operatorname{contr}(K).\;\; G \subseteq \operatorname{der}_K(E) \,\rbrace
+\operatorname{core}(K) \;\in\; \operatorname*{arg\,min}_{Z \subseteq \mathcal{T}(K)} \;\lbrace\, \lvert Z \rvert \;:\; \exists\, G \in \operatorname{contr}(K).\;\; G \subseteq \operatorname{der}_K(Z) \,\rbrace
 $$
 
 A contradiction's facts are explained together, a pair's two sides $\lbrace f, \lnot f \rbrace$ as one AND-node.
@@ -180,7 +181,7 @@ a dead node $C$
 $$
 \operatorname{core}(\operatorname{st}(C)) \cap C \neq \emptyset,
 \qquad
-\operatorname{dead}\Bigl(\operatorname{sat}\bigl(\operatorname{root} \cup (\operatorname{core}(\operatorname{st}(C)) \cap C)\bigr)\Bigr)
+\operatorname{dead}\Bigl(\operatorname{sat}\bigl(\mathrm{root} \cup (\operatorname{core}(\operatorname{st}(C)) \cap C)\bigr)\Bigr)
 $$
 
 the core names a fact of the node's commitment, and root's fixpoint with the core's commitment facts added is
@@ -207,7 +208,7 @@ alternative that it derives
 ([Q-M1e2.21](../../../decisions/read-out/Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md)):
 
 $$
-\operatorname{by}(f) \;=\; \rho_{\delta_i}, \qquad i = \min \lbrace\, j \;:\; \operatorname{rests}(\delta_j) \subseteq \operatorname{der}_K(\operatorname{core}(K)),\ \ \delta_j \in \Delta_K(f) \,\rbrace
+\operatorname{by}(f) \;=\; \rho_{\delta_i}, \qquad i = \min \lbrace\, j \;:\; \operatorname{rests}(\delta_j) \subseteq \operatorname{der}_K(\operatorname{core}(K)),\ \ \delta_j \in J_K(f) \,\rbrace
 $$
 
 ## How far the minimality goes
@@ -218,16 +219,16 @@ Every statement that a core is *smallest* carries three bounds.
    textbook way to get one, deleting a fact and saturating again, is unsound under absence: removing a fact can
    make a guard pass and fabricate a contradiction the full world never had
    ([absence](03-absent-and-naf.md#what-follows)). A core is found among the recorded derivations instead.
-2. **Over the derivations recorded.** $\Delta_K$ holds the firings the saturation made, so minimality is
+2. **Over the derivations recorded.** $J_K$ holds the firings the saturation made, so minimality is
    relative to the rule set and the order it fired in. A world may keep a bounded number of derivations per
    fact, those with the fewest premises and beside them the one with the smallest closure; no list of fixed
    length is every derivation, so a smaller core can lie among the derivations that were not kept. Keeping each
-   fact's first derivation alone, $\Delta_K(f) = (\delta_1)$, is the one choice of a run that may change a core,
+   fact's first derivation alone, $J_K(f) = (\delta_1)$, is the one choice of a run that may change a core,
    and it changes nothing else
    ([Q-M1e2.11](../../../decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)).
 3. **Budgeted.** A smallest frontier over an AND/OR graph is exponential to find in the worst case, so the
    search for one is bounded. A bounded search that was cut is still sound, every frontier it returns a real set
-   of terminals the contradiction follows from, $G \subseteq \operatorname{der}_K(E)$, and a core from a cut
+   of terminals the contradiction follows from, $G \subseteq \operatorname{der}_K(Z)$, and a core from a cut
    search is always marked as one.
 
 **A core is an explanation.** A dead node usually has many refutations, and which one a saturation meets first
@@ -248,7 +249,7 @@ dead commitment is dead, and one dead node decides every node above it,
 $$
 \operatorname{dead}(C) \;\land\; C \subseteq C' \;\implies\; \operatorname{dead}(C'),
 \qquad
-\lbrace\, C : \operatorname{dead}(C) \,\rbrace \;=\; \bigcup_{M \in N} \lbrace\, C : M \subseteq C \,\rbrace
+\lbrace\, C : \operatorname{dead}(C) \,\rbrace \;=\; \bigcup_{D \in N} \lbrace\, C : D \subseteq C \,\rbrace
 $$
 
 with $N$ the minimal dead sets.

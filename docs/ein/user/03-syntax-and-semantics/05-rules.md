@@ -249,12 +249,12 @@ $$
 and the state a program describes is the least fixpoint above its facts $S_0$:
 
 $$
-\operatorname{Cl}(S_0) = \bigcup_{k \ge 0} T_P^{\,k}(S_0)
+\operatorname{sat}(S_0) = \bigcup_{k \ge 0} T_P^{\,k}(S_0)
 $$
 
-For the program above $\operatorname{Cl}(S_0)$ is $S_0$ and the five derived facts listed under *In Ein*; the fact
+For the program above $\operatorname{sat}(S_0)$ is $S_0$ and the five derived facts listed under *In Ein*; the fact
 $\operatorname{ancestor}(\mathsf{Ann}, \mathsf{Cid})$ enters at $k = 2$, since `chain` reads what
-`parent-is-ancestor` adds at $k = 1$. On a program without `absent`, $T_P$ is monotone and $\operatorname{Cl}$ is
+`parent-is-ancestor` adds at $k = 1$. On a program without `absent`, $T_P$ is monotone and $\operatorname{sat}$ is
 unique, whatever order the rules fire in. An `(absent …)` over a pattern $\psi$ holds in a state $W$ under $\theta$
 when no extension of $\theta$ makes $\psi$ match a fact of $W$:
 
@@ -351,8 +351,8 @@ contradiction's core reads. A rule that concludes several facts derives each wit
 
 Rules fire in a fixed order: first what leads to `(false)`, a rule that concludes it, a stored negation, or a fact
 whose negation can be concluded, then the rest, each half in the order rules are written and facts arrive
-([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). On a program
-without a flagged `absent`, the order decides no answer: it decides the order of the trace's steps and which way of
+([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Where no
+rule's `absent` reads a relation that another rule waiting on an `absent` derives, the order decides no answer: it decides the order of the trace's steps and which way of
 reaching a fact is recorded first. The order is not a thing a program states: rules have no priority.
 
 ## What is refused

@@ -23,7 +23,7 @@ note *_ is reserved and names nothing: where any value will do, write a variable
 what to write where any value will do, and `_` anywhere else in a word is a name character, so `_a_in_b_` is a name
 and `?_x` a variable. Ein has no numbers and no ranges
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)): `1..5`, `7` and `07` are
-three names, and arithmetic is a theory in the standard library ([`04-stdlib/`](04-stdlib/README.md)).
+three names, and arithmetic is a theory in the standard library ([the calculator](04-stdlib/07-calculator.md)).
 
 The regexes above are the readable form; [`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar) is the exact one, with the
 order that settles a tie between a reserved word and `NAME` and the start condition that ends a token at a separator.
@@ -259,7 +259,7 @@ put there a name with no `is-a` fact into it:
 `ein solve` answers the query with `?label = Person · ?x = Tea`. Without the line `(first-slot likes)` the query
 has no row: both `likes` facts load either way, and `Person` and `Drink` say nothing. Everything type-like in the
 standard library is such a rule: `std.bijection`'s check, `std.algebra`'s converse domain and range check,
-`std.typing`'s hierarchy ([`04-stdlib/`](04-stdlib/README.md)). The engine never resolves a label to anything: a
+`std.typing`'s hierarchy ([labels, and the membership relation](04-stdlib/02-relation-algebra.md#labels-and-the-membership-relation)). The engine never resolves a label to anything: a
 signature holds opaque names.
 
 **The shape, by the engine**, in three places and no other, each about what may be guessed
@@ -372,8 +372,9 @@ A rule is a top-level `(rule …)` form, and an hrule the same shape headed `hru
 `:assert` ([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)). **A rule has no
 priority**: the saturation agenda fires first the rules whose conclusion leads to `(false)`, then the rest, in the
 order they are written and their facts arrive within each half
-([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). On a monotone
-program that order decides no answer; it orders the trace, and the derivation a core is explained from.
+([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Where no
+rule's `absent` reads a relation that another rule waiting on an `absent` derives, that order decides no answer;
+it orders the trace, and the derivation a core is explained from.
 
 **The parameter list** is required:
 
@@ -755,7 +756,7 @@ may write one of a module the program brings. The main file has no module name, 
 name no file declares, a slot's label, a digit, a relation a module states facts of and never declares, has no full name and
 is one name in every file.
 
-**A module's name is its path.** `std.x.y` is `x/y.ein` under the [standard library](04-stdlib/README.md); any other name is a
+**A module's name is its path.** `std.x.y` is `x/y.ein` under the [standard library](04-stdlib/README.md#importing-a-module); any other name is a
 path **from the program file's directory**, a dot per directory, for the imports a module writes too
 ([Q-M1f.235](../../../decisions/imports/Q-M1f.235-a-module-has-one-path-from-the-program-files.md)): from a program in
 `examples/word_problems/`, `(import word-theory.gaps :as gaps)` reads `word-theory/gaps.ein`, and that module imports
@@ -939,7 +940,7 @@ shows.
   or a cardinality has no spelling at all, and none is planned: Ein has no numbers
   ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)). *Only one candidate
   remains* is ordinary rules: `std.bijection`'s `domain-elimination` and `range-elimination`, and `std.slots`'
-  `slot-elimination` and `slot-fill`, each a `forall` decided at the closure boundary ([`04-stdlib/`](04-stdlib/README.md)).
+  `slot-elimination` and `slot-fill`, each a `forall` decided at the closure boundary ([bijections](04-stdlib/04-bijections.md#root-decides-negatives-and-elimination), [slots](04-stdlib/05-slots.md)).
 - **A host-language escape.** Every step the matcher takes is one the trace can name, and an opaque predicate would
   be an unexplained firing.
 

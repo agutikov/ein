@@ -1,5 +1,6 @@
-//! The modes' routes on a monotone program, each stated, with why it is
-//! sound, in
+//! The modes' routes on a monotone program, each a procedure of
+//! [02-algorithms.md § 8.2](../../../../docs/ein/ein.rs/02-algorithms.md#82-the-obligation-tree-and-the-lines),
+//! and each argued sound in
 //! [the routes, question by question](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question).
 //!
 //! Describe takes the state route ([`crate::states`]): it needs every state of

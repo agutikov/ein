@@ -10,15 +10,16 @@ when a proposition stops being true of the engine, and the `ein` command lines t
 | page | the reasoning it follows |
 |---|---|
 | [`01-static-ir.md`](01-static-ir.md) | [`reasoning/01-static-ir/`](../../reasoning/01-static-ir/): names and atoms, relations and facts, values and their order, rules as statements |
-| [`02-saturation-and-negation.md`](02-saturation-and-negation.md) | [`reasoning/02-kb-evolution/`](../../reasoning/02-kb-evolution/), the knowledge base as it saturates: firing, the fixpoint and the agenda, negation as failure |
-| [`03-hypotheses-and-the-answer.md`](03-hypotheses-and-the-answer.md) | [`reasoning/02-kb-evolution/`](../../reasoning/02-kb-evolution/), the hypothesis set and the region: generation, the hypothesis space, the region R and the routes over it, monotonicity, cores, satisfiability |
+| [`02-saturation-and-negation.md`](02-saturation-and-negation.md) | [`reasoning/02-kb-evolution/`](../../reasoning/02-kb-evolution/), six of its pages: firing a rule, saturation, absence, monotone and non-monotone programs, cores, satisfiability |
+| [`03-hypotheses-and-the-answer.md`](03-hypotheses-and-the-answer.md) | [`reasoning/02-kb-evolution/`](../../reasoning/02-kb-evolution/), the other four: hypothesis generation, the hypothesis space, solution semantics, finding R. It also holds the commands `ein show hyps` and `ein render h-space` and the file `h-space.json` |
 | [`04-rule-evolution.md`](04-rule-evolution.md) | [`reasoning/03-rule-evolution/`](../../reasoning/03-rule-evolution/): rules as data, analysis of rules, transformations of a rule set |
 
 ## How a page is laid out
 
 One section for each page of the reasoning, under that page's title, and in each section:
 
-- **Where it lives**: the notion beside the code that implements it, a module by its path under
+- **Where it lives**: the notion beside the code that implements it, in the reasoning's notation
+  ([its table](../../reasoning/README.md#notation)), a module by its path under
   [`ein.rs/crates/`](../../../../ein.rs/crates/) and an item by its Rust path. The modules themselves are mapped in
   [`01-architecture.md`](../01-architecture.md), and the contracts they keep are the
   [design pages](../03-design/README.md).
@@ -26,6 +27,8 @@ One section for each page of the reasoning, under that page's title, and in each
   fails when the claim stops being true. A test is named as `file`: `function`; a unit test is named with the
   source file it stands in. `cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p <crate> --test <file>`
   runs one integration test file, and `cargo test … -p <crate> --lib` a crate's unit tests.
+- **The algorithm** is not told here: each page names it and links where it is told once, a flow or pseudocode of
+  [`02-algorithms.md`](../02-algorithms.md) or a contract of the [design pages](../03-design/README.md).
 - **Commands that show it**: what to run to see the thing, and where a drawing on a page of the reasoning comes
   from. Every drawing there that the engine can draw is the DOT one of these commands writes, trimmed.
 

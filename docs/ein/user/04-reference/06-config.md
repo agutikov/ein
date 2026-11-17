@@ -274,7 +274,7 @@ a program to answer about.
   both. The work differs, and so does where a budget stops each, which the `exhausted` row and the stderr `note:`
   say, with the forecast and the other route.
 - **The hypothesis space** — `ein render h-space`'s `--view`, `--dump`, `--supports`, `--region-budget` and
-  `-j`/`--jobs` ([`docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md`](../../reasoning/02-kb-evolution/05-hypothesis-space.md)). **Does
+  `-j`/`--jobs` ([hypotheses and the answer, in code § 2.3](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#the-options)). **Does
   it change the answer: no.** The command asks about the hypothesis set H and not about R, and `ein solve` computes
   none of it ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)).
   `--view` chooses what stdout holds: the read-out, one graph as DOT, or the document; `--dump DIR` writes the

@@ -28,14 +28,14 @@ test under a crate's `tests/`.
 | $\operatorname{gen}(P, \mathrm{root})$, the ladder | `hypgen::rung` decides the case, a `Rung` (`NoSearch`, `Hrules`, `Obligations`, `Blind`), and `hypgen::generate_config_free` runs it: one entry for the search, the listing and the structure, with no configuration switch applied |
 | $\nu(P)$, nothing to guess | `hypgen::declares_no_search`: the program's `(solve :no-search)` |
 | $\operatorname{Hr}(P)$, $H_{\mathrm{hr}}$ | [`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs): each active `(hrule …)` is a compiled plan matched at root, its one `:assert` fact a candidate per match |
-| $\operatorname{Act}(P)$ | `mechanisms::obligation_plans`, the one reading of *an obligation activated at root*, which the ladder and the conflict check share |
+| $\operatorname{ActOb}(P)$ | `mechanisms::obligation_plans`, the one reading of *an obligation activated at root*, which the ladder and the conflict check share |
 | $\operatorname{pay}(o, a, \theta)$ | [`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs): the guard's own sub-plan run with the witness step skipped (`Matcher::scan_without` in `match_.rs`) |
-| $\operatorname{decl}(P)$ and its reason | `oblgen::generate` answers `Mode::Declined`, with the reason, before it emits anything |
+| $\operatorname{declines}(P)$ and its reason | `oblgen::generate` answers `Mode::Declined`, with the reason, before it emits anything |
 | $D^{+}$ | [`monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs) computes the relations a commitment can change once, for the static check, for *forbid* and for this rung |
-| $\operatorname{Act}^{+}$, $\Pi^{+}$: a debt root is not told of | `forbid::derivable_activators`; each such debt is an `oblgen::LaterDebt`, counted apart from what root owes |
+| $\operatorname{ActOb}^{+}$, $\Pi^{+}$: a debt root is not told of | `forbid::derivable_activators`; each such debt is an `oblgen::LaterDebt`, counted apart from what root owes |
 | stuck | `oblgen::Mode::Stuck` |
 | $\operatorname{Uncov}(P)$ | `RungReport::uncovered`, over `hypgen::eligible_relations` |
-| $\operatorname{Obj}(P)$ | `hypgen::candidate_objects`, seeded with `invariant::program_names` |
+| $\operatorname{obj}(P)$ | `hypgen::candidate_objects`, seeded with `invariant::program_names` |
 | $\operatorname{unsettled}$ | the candidate filters of `hypgen.rs`, in this order: `negated_fact`, `fact_already_exists`, `seen_in_call` |
 | $\operatorname{inscope}$ | the relation skips of `hypgen.rs`: `closed_relation`, `relation_not_whitelisted`, `no_hypothesis_relation`; and `self_edge` for a relation of two slots |
 | the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command; each refusal and each note, worded, is [`07-diagnostics.md` § 2.27](../../user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) |
@@ -43,33 +43,15 @@ test under a crate's `tests/`.
 
 ### 1.2 The ladder as the engine runs it
 
-```plantuml
-@startuml
-start
-if (the program states :no-search ?) then (yes)
-  :Mode::NoSearch\nnothing is compiled, nothing proposed;
-  stop
-endif
-:read :hypothesis-relations and :no-hypothesis;
-if (the program declares an hrule ?) then (yes)
-  :Mode::Hrules\neach active hrule's plan, matched at root\nno list and no closure filters it;
-  stop
-endif
-if (mechanisms::obligation_plans is empty ?) then (no)
-  :oblgen::generate\nscan each owed instance's guard, witness step skipped\nthen the debts a commitment can bring;
-  if (an obligation declines ?) then (no)
-    :Mode::Obligations, or Mode::Stuck\nwhere root owes and nothing is left to propose;
-    stop
-  else (yes)
-    :Mode::Declined, with the reason\nnothing was emitted;
-  endif
-else (yes)
-  :Mode::Blind;
-endif
-:candidate_objects, then for each object, each eligible relation, each slot:\none candidate per filler, no self-edge;
-stop
-@enduml
-```
+The choice between the rungs is one flow, drawn in
+[`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-ladder), and its contract is
+[`03-design/07-search.md` § 1](../03-design/07-search.md#1-hypothesis-generation). In the code's words: `hypgen::rung`
+answers `NoSearch`, `Hrules`, `Obligations` or `Blind` before any rung runs; the two lists,
+`:hypothesis-relations` and `:no-hypothesis`, are read once a call, and neither they nor a closure filter what an
+hrule proposes; `oblgen::generate` scans each owed instance's guard with the witness step skipped, then the debts
+a commitment can bring, and answers `Mode::Declined` with its reason before it emits anything; the blind
+enumerator takes `candidate_objects`, and for each object, each eligible relation and each slot, one candidate a
+filler, no fact of an object with itself.
 
 Every candidate a rung constructs goes through one pipeline, `emit`: it is counted as `raw`, then dropped by the
 first filter that names it or emitted, so `raw == emitted + Σ filtered` and a dropped candidate's `hyp` event names
@@ -594,7 +576,7 @@ third question of the hat, are not corpus programs; their graphs are what `ein r
 | in the reasoning | in `ein.rs` |
 |---|---|
 | $K_0$, the knowledge base as loaded | what `ein-ir` loads into an `ein_core::Kb`, before any saturation; every command reads a program through `ein-cli`'s `common::read_program` |
-| $\operatorname{Names}(P)$ | `invariant::program_names` |
+| $\operatorname{names}(P)$ | `invariant::program_names` |
 | $\mathrm{root}$ | `region::prepare`: root saturated once, and sealed |
 | $\operatorname{st}(C)$, the node function | [`region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs): a copy-on-write fork of root's KB, the commitment's facts written in candidate order, root's saturation resumed; reached by every route through one cache, `explore::Space::eval` |
 | $\operatorname{dead}$ | `contradiction.rs`: `(false)`, or a fact beside its stored `(not …)`, checked as each fact lands |
@@ -688,7 +670,7 @@ The files the three commands write are the region dump
 | the obligations rung's reading of later debts, and $R$ over its universe is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles` |
 | what the universe leaves out, a type bound as an object and a relation's name bound as an object are each one sentence on every surface | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface`, `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs` |
 | no option, lever or flag changes $R$ | `ein-cli/tests/lever_invariance.rs` |
-| on a monotone program the order rules fire in decides no answer | `ein-infer/tests/agenda.rs` |
+| the agenda and the written order alone answer every question and every claim alike on the corpus's monotone programs | `ein-infer/tests/agenda.rs` |
 
 ---
 
@@ -700,13 +682,13 @@ The files the three commands write are the region dump
 |---|---|
 | the oracle, the table of the node function | `ein oracle FILE`: route 2, the cube, in `region.rs`; `explore::of_cube` reads an answer off it |
 | a licence | `explore::Licence`, one variant a lemma: `ForkOnlyAdds` (L0), `DeadUpward` (L1), `DischargedUpward` (L2), `Closure` (L3), `LocalLines` (L4), `Exhaustive` (L5), `TheCube` (L7), `Denied` (L8), `Unheld` (L9). The read-out's `route` row prints the label of each one a run used |
-| a licensed instance and its alternatives $A(I)$ | `oblgen::Alternatives`, read at load, instance by instance; L9 is [`unheld.rs`](../../../../ein.rs/crates/ein-infer/src/unheld.rs) |
+| a licensed instance and its alternatives $\operatorname{alt}(I)$ | `oblgen::Alternatives`, read at load, instance by instance; L9 is [`unheld.rs`](../../../../ein.rs/crates/ein-infer/src/unheld.rs) |
 | $\mathcal{K}$, what is known dead | [`known_dead.rs`](../../../../ein.rs/crates/ein-infer/src/known_dead.rs): one memory every route on a monotone program asks before it saturates a set, and writes to |
 | a question | `explore::Mode`: which part of $R$ (`Which`: all, the minimal line, the maximal line) and what is asked of it (`Ask`) |
 | the alive states by extension, a class from its closed subsets (its § 6.1) | the state route, [`states.rs`](../../../../ein.rs/crates/ein-infer/src/states.rs); the tree and the classes, [`tree_classes.rs`](../../../../ein.rs/crates/ein-infer/src/tree_classes.rs) |
 | the leaves (its § 6.2) | the obligation tree, [`tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs); which instance it branches on, [`order.rs`](../../../../ein.rs/crates/ein-infer/src/order.rs) |
 | the two completeness criteria, the duality (its § 6.3, § 6.4) | [`transversal.rs`](../../../../ein.rs/crates/ein-infer/src/transversal.rs): minimal transversals, dualise and advance |
-| a dead root | route 1, [`downset.rs`](../../../../ein.rs/crates/ein-infer/src/downset.rs): one saturation |
+| a dead root | one saturation on every route: route 1, [`downset.rs`](../../../../ein.rs/crates/ein-infer/src/downset.rs), which visits root alone, and for a monotone program's describe the state route, which stops at root |
 | the static check that decides the class | `monotone::classify`; the detector, `detector.rs`, says more of a flagged program |
 
 ### 4.2 Which route answers which question
@@ -714,43 +696,16 @@ The files the three commands write are the region dump
 `explore::run` answers each question with the least work it needs
 ([Q-M1e2.31](../../../decisions/answer/Q-M1e2.31-each-question-about-r-does-the-least-work-it.md)).
 
-```plantuml
-@startuml
-start
-:region::prepare: root saturated, H built, the static check;
-if (--no-search ?) then (yes)
-  :root's node alone: no question about R is asked;
-  stop
-endif
-if (root is dead ?) then (yes)
-  :route 1: one saturation\nL0: every node is dead;
-  stop
-endif
-if (a minimal question, and ∅ is in R ?) then (yes)
-  :decided at root: the minimal line is {∅}\non a flagged program too;
-  stop
-endif
-if (the static check proves the program monotone ?) then (no)
-  :route 2: the cube, L7\nin layer order where the question can be decided early,\nwhole where it cannot, within --region-limit;
-  stop
-endif
-switch (the question)
-case (describe, --count)
-  if (root owes an instance L5 or L9 licenses,\nand --describe-route is not states ?) then (yes)
-    :the tree and the classes;
-  else (no)
-    :the state route;
-  endif
-case (-n N, --single)
-  :the obligation tree;
-case (--maximal)
-  :the tree, a climb,\ndualise and advance;
-case (--minimal)
-  :the tree, a shrink,\nthe duality against\nthe maximal owing states;
-endswitch
-stop
-@enduml
-```
+How a question reaches its route is one flow, drawn in
+[`02-algorithms.md` § 8](../02-algorithms.md#8-the-routes-over-r); the table of program, question and route is
+[`03-design/07-search.md` § 4](../03-design/07-search.md#4-the-routes). Three things of it:
+
+- **A dead root is one saturation on every route** (L0 on any program, L1 on a monotone one). A monotone
+  program's describe reads it by the state route, which stops at root; every other question, and a flagged
+  program, by route 1, which visits root alone. The read-out's `route` row names which.
+- **A minimal question where ∅ is in $R$ is decided at root**, on a flagged program too: the minimal line is
+  $\lbrace \emptyset \rbrace$.
+- **`--no-search` asks no question about $R$**: root's node alone.
 
 Describe, and `--count` by the same route, has two routes on a monotone program; `--describe-route tree|states`
 chooses between them, and no part of $R$ depends on which
@@ -772,14 +727,10 @@ Past the limit a line question certifies what describe certifies, no more
 
 ### 4.3 A node, as computed
 
-```text
-node(C):                                  one function, for every route and for the oracle
-    kb = a copy-on-write fork of root      root is sealed: nothing a node derives reaches it
-    write the facts of C into kb, in candidate order
-    resume root's saturation on kb         the agenda: first what leads to (false), then the rest, FIFO
-    read: dead? what it owes, its closure, its facts beyond root
-    drop kb
-```
+One function for every route and for the oracle: a copy-on-write fork of root, the commitment written in
+candidate order, root's saturation resumed, and the verdicts read off the result. Its flow is
+[`02-algorithms.md` § 7](../02-algorithms.md#7-the-node-function) and its contract
+[`03-design/07-search.md` § 2](../03-design/07-search.md#2-the-node).
 
 A route's node on a monotone program, root's excepted, is saturated to quiescence, **or to its first contradiction
 where it is dead**: the fork as it stands after the firing that makes the contradiction, every conclusion of that
@@ -793,115 +744,35 @@ is taken only where a surface prints one ([`03-design/07-search.md` § 6](../03-
 
 ### 4.4 The routes, as procedures
 
-Each step below is licensed by the proposition of the reasoning named beside it
-([Finding R § 6](../../reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question)).
+Each route is told once, as a procedure, in [`02-algorithms.md` § 8](../02-algorithms.md#8-the-routes-over-r). Every step
+of one is licensed by a proposition of the reasoning
+([Finding R § 6](../../reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question)):
 
-**The oracle.**
-
-```text
-for every subset C of H:                   2^n nodes, n = |H|
-    compute node(C) to quiescence
-    read dead(C), owes(C), cl(C), and its core if dead
-R = the C that are alive and owe nothing
-```
-
-It refuses a universe past its limit, `--region-limit`, 16 by default as `ein oracle --help` prints, and says how
-many saturations the region would have taken.
-
-**The state route**, every alive state once (Finding R § 6.1, the alive states by extension):
-
-```text
-visit the alive states by size, from cl of the empty commitment:
-    for each state S, for each candidate b outside S:
-        if S + b is known dead             skip                              (L1, L8)
-        elif S + b is a known state's      read it, no saturation            (L3)
-        else                               compute node(S + b)
-k_c(T) = 2^|T| - the sum of k_c(S) over the alive states S strictly inside T   (L3)
-N      = the minimal transversals of the complements of the maximal alive states  (L1)
-```
-
-$N$, the merged states, the two lines and an empty $R$'s owing frontier, its maximal alive states, are read off the
-states it met.
-
-**The tree and the classes**, the default where root owes an instance a licence takes (Finding R § 6.2 for the
-states, § 6.1 for each class):
-
-```text
-R's states   = the leaves of the obligation tree, exhausted, and every alive state above them   (L5, L9, L2, L3)
-dead alone   = the candidates b with cl(empty) + b dead
-for each state s of R, its class, the commitments C inside s with cl(C) = s:
-    M(s)          = the maximal closed proper subsets of s      dualise and advance inside 2^s, cl the oracle
-    generators(s) = the minimal transversals of the sets s - m, m in M(s)
-    |class(s)|    = the number of subsets of s that meet every s - m
-k_c = the sum of |class(s)| over the states of R
-the minimal line = the minimal sets among every state's generators       (the empty one where root is in R)
-the maximal line = the states of R every extension of which is dead      (L4)
-```
-
-Dualise and advance inside `s` asks each minimal transversal `T` of the complements known: where `cl(T) = s` it is a
-generator, and otherwise `cl(T)` is climbed inside `s` to a new maximal closed proper subset and the transversals are
-taken again; when every transversal generates `s`, `M(s)` is every maximal closed proper subset. Its seed is the
-closed subsets of `s` the run met, and where every one of them was extended by every candidate it is complete and
-nothing is asked. **It does not compute $N$**, the border of *alive*, nor an empty $R$'s owing frontier, the maximal
-alive sets: where root owes, that border can be far larger than the alive states the state route reads it off. The
-read-out says so, with the members met: the candidates dead alone, and the owing states met with every extension
-dead.
-
-**The obligation tree**, for `--single`, `-n N`, `--minimal` and `--maximal` (Finding R § 6.2, the leaves):
-
-```text
-tree(C):   if C is known dead, or node(C) is dead      nothing below C
-           elif C owes nothing                          a leaf: C is a state of R
-           elif C owes a licensed instance I            children cl(C + a), a an alternative of I    (L5, L9)
-           else                                         children cl(C + b), b outside C
-```
-
-- **Which instance a state branches on** decides the work and never the answer. The order is `order.rs`'s, by three
-  keys in turn: the instance closest to closing a coupling, once the couplings are read (§ 2.2); the fewest
-  alternatives not known dead; the first by rendered text. The owing state of the smallest closure is branched
-  next. The `route` row says in words which order a run took.
-- **`-n N`** lists the tree's leaves, then the states of $R$ above them (L2).
-- **`--minimal`** shrinks each leaf to a minimal commitment that stays discharged, and gets the rest of the line by
-  duality: the minimal commitments of $R$ are the alive minimal transversals of the complements of the maximal owing
-  states (Finding R § 6.4).
-- **`--maximal`** climbs a leaf to a maximal state (L4), then finds the others by dualise and advance (Finding R § 6.3).
-
-**`--single`**, *is $R$ one state?* ([Finding R § 7](../../reasoning/02-kb-evolution/07-finding-r.md#7-proving-that-r-is-one-state-without-the-lattice)):
-
-```text
-if the empty commitment is in R:   s = cl(empty)                 root's own state
-else:   run the tree; stop at the second distinct leaf            not one state
-        if no leaf                                                R is empty
-        if exactly one leaf state s                               every state of R holds s    (L5)
-
-then:   for each candidate b outside s:
-            if s + b is alive                                     it is in R (L2), another state: not one state
-        all dead                                                  every proper superset of s is dead (L1):
-                                                                  one state, proved                        (L4)
-```
+| route | the reasoning it carries out | its procedure |
+|---|---|---|
+| the oracle: every commitment, to quiescence | [Finding R § 2](../../reasoning/02-kb-evolution/07-finding-r.md#2-the-oracle-the-cube), the table of the node function | [§ 8.3](../02-algorithms.md#83-route-1-the-cube-and-the-oracle) |
+| the state route: every alive state once | Finding R § 6.1, the alive states by one-candidate extensions (L1, L3, L8) | [§ 8.1](../02-algorithms.md#81-the-state-route) |
+| the tree and the classes | Finding R § 6.2 for the states (L5, L9, L2, L3), § 6.1 for each class, counted from the closed sets inside it; the lines by L4 | [§ 8.2](../02-algorithms.md#82-the-obligation-tree-and-the-lines) |
+| the obligation tree, for `-n N` | Finding R § 6.2, the leaves and their covering (L5, L9), then the states above them (L2) | [§ 8.2](../02-algorithms.md#82-the-obligation-tree-and-the-lines) |
+| `--maximal`: a climb, then dualise and advance | Finding R § 6.3, which set of maximal elements is all of them (L4) | [§ 8.2](../02-algorithms.md#82-the-obligation-tree-and-the-lines) |
+| `--minimal`: a shrink, then the duality against the maximal owing states | Finding R § 6.4 | [§ 8.2](../02-algorithms.md#82-the-obligation-tree-and-the-lines) |
+| `--single`, *is $R$ one state?* | [Finding R § 7](../../reasoning/02-kb-evolution/07-finding-r.md#7-proving-that-r-is-one-state-without-the-lattice) (L5, L2, L1, L4) | [§ 8.2](../02-algorithms.md#82-the-obligation-tree-and-the-lines) |
+| route 1: the alive down-set | L1, layer by layer | [§ 8.3](../02-algorithms.md#83-route-1-the-cube-and-the-oracle) |
 
 ### 4.5 What a run knows dead
 
-Every route on a monotone program asks one memory before it saturates anything:
-
-```text
-known dead:   D            for every set D a saturation found dead
-              S + b        for every state S met whose own fixpoint stores (not b)      (L8)
-
-before computing C:   if some known-dead set lies inside C, C is dead, and is not saturated   (L1)
-```
+Every route on a monotone program asks one memory before it saturates a set, `known_dead.rs`: a set a saturation
+found dead (L1), or a state met with a candidate its own fixpoint denies (L8)
+([`03-design/07-search.md` § 3](../03-design/07-search.md#3-the-licences)).
 
 A refuted candidate goes into this memory and nowhere else: the fork that found the contradiction is dropped, and
 root holds no `(not h)`. The read-out names the candidate among those dead alone.
 
 ### 4.6 Budgets, the limit, and a refusal
 
-- **The region budget**, `--region-budget`, is facts beyond root summed over every fixpoint a run computes,
-  [2^20 by default](../../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md), and is checked
-  before each step. A run it stops has its certified part and its bounds, and nothing half-done: `exhausted` is false,
-  and it reports a part of $R$, never a different $R$.
-- **The region limit**, `--region-limit`, is the largest $n$ whose whole cube a flagged program, or the oracle,
-  gets.
+- **The region budget**, `--region-budget`, and **the region limit**, `--region-limit`, are
+  [`03-design/07-search.md` § 4.1](../03-design/07-search.md#41-budgets): a run a budget stops reports a part of $R$,
+  never a different $R$.
 - **A refusal.** Each licence's premise is checked, not assumed. L5's and L9's are read at load, instance by
   instance, and checked again on every node a route computes. A route that meets a state contradicting what it knows,
   an alive set it holds dead, a member of $R$ with an owing extension, a node owing an instance root did not, refuses

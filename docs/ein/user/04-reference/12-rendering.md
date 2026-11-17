@@ -379,9 +379,10 @@ ein render h-space examples/zebra2.ein --view cover | dot -Tsvg > cover.svg
 ```
 
 They use none of the shapes above. In `exclusion` a candidate is a box; in `cover` a group is a box and a candidate an
-oval; in the two hypergraphs a question is a box and an edge of three questions or more a point. What each object is,
-what each stroke means and what the document holds is
-[`05-hypothesis-space.md`](../../reasoning/02-kb-evolution/05-hypothesis-space.md).
+oval; in the two hypergraphs a question is a box and an edge of three questions or more a point. What each object is
+is [`05-hypothesis-space.md`](../../reasoning/02-kb-evolution/05-hypothesis-space.md); the command's options, what
+each stroke means and what the document `h-space.json` holds are
+[hypotheses and the answer, in code § 2.3](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#23-the-command).
 
 ## The trace — `ein solve --trace`
 

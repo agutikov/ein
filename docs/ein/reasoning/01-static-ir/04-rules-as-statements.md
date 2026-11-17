@@ -10,7 +10,7 @@ knowledge base describes itself in.
 
 ## A rule
 
-A rule is a triple, with a name and a reason beside it:
+A rule is a triple, with a name, $\operatorname{name}(\rho)$, and a reason beside it:
 
 $$
 \rho = (\bar{p},\ \varphi,\ \psi)
@@ -28,19 +28,19 @@ t &::= a \;\mid\; x \;\mid\; r(t_1, \dots, t_n) \;\mid\; \lnot\, r(t_1, \dots, t
 $$
 
 where $r$ is a relation name or a parameter. A **substitution** $\theta$ maps variables to values, and
-$\varphi\theta$ is $\varphi$ with each variable replaced. **Satisfaction** in a state $S$ is defined by the shape
+$\varphi\theta$ is $\varphi$ with each variable replaced. **Satisfaction** in a state $K$ is defined by the shape
 of the pattern:
 
 $$
 \begin{aligned}
-S &\models \top\theta && \text{always} \\
-S &\models r(t_1, \dots, t_n)\theta && \iff\ r(t_1, \dots, t_n)\theta \in S \\
-S &\models (\lnot\, r(t_1, \dots, t_n))\theta && \iff\ \lnot\, r(t_1, \dots, t_n)\theta \in S \\
-S &\models (t = t')\theta && \iff\ t\theta \text{ and } t'\theta \text{ are one value} \\
-S &\models (t \ne t')\theta && \iff\ t\theta \text{ and } t'\theta \text{ are two values} \\
-S &\models (\varphi_1 \land \varphi_2)\theta && \iff\ S \models \varphi_1\theta \ \text{ and } \ S \models \varphi_2\theta \\
-S &\models (\varphi_1 \lor \varphi_2)\theta && \iff\ S \models \varphi_1\theta \ \text{ or } \ S \models \varphi_2\theta \\
-S &\models \operatorname{absent}(\varphi)\theta && \iff\ \text{there is no } \theta' \supseteq \theta \text{ with } S \models \varphi\theta'
+K &\models \top\theta && \text{always} \\
+K &\models r(t_1, \dots, t_n)\theta && \iff\ r(t_1, \dots, t_n)\theta \in K \\
+K &\models (\lnot\, r(t_1, \dots, t_n))\theta && \iff\ \lnot\, r(t_1, \dots, t_n)\theta \in K \\
+K &\models (t = t')\theta && \iff\ t\theta \text{ and } t'\theta \text{ are one value} \\
+K &\models (t \ne t')\theta && \iff\ t\theta \text{ and } t'\theta \text{ are two values} \\
+K &\models (\varphi_1 \land \varphi_2)\theta && \iff\ K \models \varphi_1\theta \ \text{ and } \ K \models \varphi_2\theta \\
+K &\models (\varphi_1 \lor \varphi_2)\theta && \iff\ K \models \varphi_1\theta \ \text{ or } \ K \models \varphi_2\theta \\
+K &\models \operatorname{absent}(\varphi)\theta && \iff\ \text{there is no } \theta' \supseteq \theta \text{ with } K \models \varphi\theta'
 \end{aligned}
 $$
 
@@ -72,18 +72,19 @@ $$
 where a variable is bound by a conjunction when it stands in one of its atoms outside every absence. A variable
 in a relation's place is always a parameter ([below](#relation-polymorphic)).
 
-**What the rule states.** For a list of values $\bar{a}$ for the parameters, write $\varphi[\bar{a}]$ and
-$\psi[\bar{a}]$ for the pattern and the conclusion with the parameters replaced. A state $S$ **satisfies** $\rho$
-under $\bar{a}$ when
+**What the rule states.** For an activator $a$, a fact whose arguments are values for the parameters
+([below](#relation-polymorphic)), write $\varphi[a]$ and $\psi[a]$ for the pattern and the conclusion with each
+parameter replaced by the argument of $a$ in its place, and $\rho[a]$ for the rule so applied; a rule with no
+parameter is applied as it stands. A knowledge base $K$ **satisfies** $\rho$ under $a$ when
 
 $$
-\forall \theta.\ \ S \models \varphi[\bar{a}]\theta \ \implies\ \psi[\bar{a}]\theta \subseteq S
+\forall \theta.\ \ K \models \varphi[a]\theta \ \implies\ \psi[a]\theta \subseteq K
 $$
 
-This is a sentence about $S$ alone. A **firing** of $\rho$ makes one instance of it true by adding its conclusion:
+This is a sentence about $K$ alone. A **firing** of $\rho$ makes one instance of it true by adding its conclusion:
 
 $$
-S \;\longmapsto\; S \cup \psi[\bar{a}]\theta \qquad \text{where } S \models \varphi[\bar{a}]\theta
+K \;\longmapsto\; K \cup \psi[a]\theta \qquad \text{where } K \models \varphi[a]\theta
 $$
 
 **Rules only add.** A firing removes nothing. A negative conclusion adds a stored negation, which is a fact
@@ -146,15 +147,15 @@ for each **activator**: a fact whose relation is the rule's name and whose argum
 parameters,
 
 $$
-\operatorname{Act}_S(\rho) = \{\, \bar{a} \;:\; \operatorname{name}(\rho)(\bar{a}) \in S \,\}
+\operatorname{Act}_K(\rho) = \{\, a \in K \;:\; \operatorname{rel}(a) = \operatorname{name}(\rho) \,\}
 $$
 
-and under each $\bar{a} \in \operatorname{Act}_S(\rho)$ the rule fires as the rule with no parameter
-$(\varepsilon,\ \varphi[\bar{a}],\ \psi[\bar{a}])$ fires.
+and under each $a \in \operatorname{Act}_K(\rho)$ the rule fires as the rule with no parameter
+$(\varepsilon,\ \varphi[a],\ \psi[a])$ fires.
 
-With $\operatorname{transitive}(\operatorname{left-of}) \in S$, the rule above is the first-order rule
+With $\operatorname{transitive}(\operatorname{left-of}) \in K$, the rule above is the first-order rule
 $\operatorname{left-of}(a, b) \land \operatorname{left-of}(b, c) \land a \ne c \implies \operatorname{left-of}(a, c)$.
-If $\operatorname{Act}_S(\rho) = \emptyset$ a rule with parameters never fires
+If $\operatorname{Act}_K(\rho) = \emptyset$ a rule with parameters never fires
 ([Q27](../../../decisions/language/Q27-a-relations-properties-are-facts-beside.md)).
 
 ```dot
@@ -242,8 +243,8 @@ digraph rule_domain_elimination_lhs_rhs {
 ```
 
 The dashed box is the universal premise: the variable inside it is bound there, the red arrow is a stored
-negation, and the box reads *every other member of the second slot name is denied*. The octagon with three
-numbered arrows is the fact a declaration is held as: through it the rule reads the relation's slot names $A$
+negation, and the box reads *every other member of the second label is denied*. The octagon with three
+numbered arrows is the fact a declaration is held as: through it the rule reads the relation's labels $A$
 and $B$ as values, which is how a rule gives them a meaning
 ([names and atoms](01-names-and-atoms.md)). The statement is in the pattern language, not beneath it, so a firing
 of it is named and explained like any other; when its universal premise is decided is
@@ -268,7 +269,7 @@ $$
 I = L, \qquad l = \operatorname{id}, \qquad L^{+} = L \cup \psi
 $$
 
-and the double pushout reduces to one gluing. With $G = G(S)$ the graph of the state
+and the double pushout reduces to one gluing. With $G = G(K)$ the graph of the state
 ([relations and facts](02-relations-and-facts.md)) and the match $m$ the substitution $\theta$,
 
 ```dot
@@ -285,7 +286,7 @@ digraph pushout {
 }
 ```
 
-the square commutes and $G(S \cup \psi\theta)$ is the pushout: the state's graph with the conclusion glued on
+the square commutes and $G(K \cup \psi\theta)$ is the pushout: the state's graph with the conclusion glued on
 along the match. Both horizontal arrows are inclusions, so the graph only grows. The same rule drawn as one
 graph, $L$ solid and what $L^{+}$ adds dashed:
 
@@ -392,16 +393,16 @@ or derived ([names and atoms](01-names-and-atoms.md)). An L1 fact may be any of 
 **Where the stack folds back on itself.** The levels are read downward, and two folds keep that true:
 
 - **L2 is readable as L1.** A declaration is held as facts of the relation $\operatorname{relation}$, and a
-  property is a fact about a relation, so a rule reads a relation's slot names and its properties as it reads any
+  property is a fact about a relation, so a rule reads a relation's labels and its properties as it reads any
   fact ([names and atoms](01-names-and-atoms.md)). The levels are a reading of one graph, and the graph describes
   its own schema.
 - **L3 is the program's text.** A conclusion is a set of literals, the empty set or an obligation; no conclusion
   is a rule or a declaration, and no rule brings in a name
   ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)). So along every computation over
-  a knowledge base $(P, S, J)$
+  a knowledge base $K$ of a program $P$
 
 $$
-P \text{ is constant}, \qquad N \text{ is constant}, \qquad S \text{ grows by facts alone}
+P \text{ is constant}, \qquad \operatorname{names}(P) \text{ is constant}, \qquad K \text{ grows by facts alone}
 $$
 
 Rules that read and write rules, a level over L3, are what

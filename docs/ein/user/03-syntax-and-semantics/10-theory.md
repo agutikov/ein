@@ -184,7 +184,7 @@ died. A rule the program does not list in an import prints by its full name.
 ## In mathematics
 
 A theory is a pair $T = (P, F)$ of rules and facts over a set of relations. Its meaning on a state $S$ is the
-fixpoint $\operatorname{Cl}_T(S)$, the least set containing $S \cup F$ and closed under $P$ ([rules](05-rules.md)).
+fixpoint $\operatorname{sat}_T(S)$, the least set containing $S \cup F$ and closed under $P$ ([rules](05-rules.md)).
 `std.math.arith` is the theory whose rules are one implication and one axiom:
 
 $$
@@ -195,13 +195,13 @@ $$
 Two theories over shared relations compose by union, and their consequences interact:
 
 $$
-\operatorname{Cl}_{T_1 \cup T_2}(S) \supseteq \operatorname{Cl}_{T_1}(S) \cup \operatorname{Cl}_{T_2}(S)
+\operatorname{sat}_{T_1 \cup T_2}(S) \supseteq \operatorname{sat}_{T_1}(S) \cup \operatorname{sat}_{T_2}(S)
 $$
 
 in general strictly, since a rule of $T_2$ may read what only $T_1$ concludes. The division by zero is the strict
 case: with $S$ the one request, $\bot$ is in the closure under both theories and in the closure under neither
 alone, since the theory of division concludes the flag and `std.math.arith` reads it. Writing
-$\operatorname{Alive}(T)$ for the states $S$ with $\operatorname{Cl}_T(S)$ not dead
+$\operatorname{Alive}(T)$ for the states $S$ with $\operatorname{sat}_T(S)$ not dead
 ([constraints](06-constraints.md)), adding a rule or a fact to a theory without `absent` can only shrink it:
 
 $$
@@ -210,7 +210,7 @@ $$
 
 a derivation rule makes the closure larger, a refutation rule makes more of it dead. A theory computes a function
 $f$ by requests: for a request $q(\bar{a})$ in $S$, the result $q\text{-of}(\bar{a}, \bar{b})$ is in
-$\operatorname{Cl}_T(S)$ exactly when $\bar{b} = f(\bar{a})$, and for no request there is no result.
+$\operatorname{sat}_T(S)$ exactly when $\bar{b} = f(\bar{a})$, and for no request there is no result.
 
 ## A theory is a module, imported whole
 

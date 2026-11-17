@@ -46,18 +46,19 @@ $$
 $$
 
 $\operatorname{sat}$ fires its rules in one order, the same at root and at every node
-([Saturation](02-saturation.md)); on a monotone program the order decides no fixpoint and so no answer. A node's
+([Saturation](02-saturation.md)); on a monotone program the order decides no node's fixpoint beyond what it decides
+of root's ([Monotone and non-monotone programs § 3.4](08-monotonicity.md#34-the-verdict-is-relative-to-root)). A node's
 **core**, the facts its contradiction rests on, is an explanation and no part of the answer ([Cores](09-cores.md)).
 
-**A dead node is decided by its first contradiction.** Saturation only adds, so every knowledge base $S'$ it passes
+**A dead node is decided by its first contradiction.** Saturation only adds, so every knowledge base $K'$ it passes
 through on the way to $\operatorname{st}(C)$ is a subset of it:
 
 $$
-\mathrm{root} \cup C \;\subseteq\; S' \;\subseteq\; \operatorname{st}(C) \;\;\land\;\; \operatorname{dead}(S') \;\implies\; \operatorname{dead}(C)
+\mathrm{root} \cup C \;\subseteq\; K' \;\subseteq\; \operatorname{st}(C) \;\;\land\;\; \operatorname{dead}(K') \;\implies\; \operatorname{dead}(C)
 $$
 
 A contradiction once derived is never retracted. So where a computation needs of a dead node only that it is dead,
-any such $S'$ decides it. On a monotone program that is all any question needs of a dead node: $R$, $N$ and every
+any such $K'$ decides it. On a monotone program that is all any question needs of a dead node: $R$, $N$ and every
 count are functions of the alive nodes' states and the dead nodes' being dead. What a dead node owes, its closure,
 and its core are properties of the whole $\operatorname{st}(C)$, and a computation that reads one of them reads the
 whole state; so does the oracle, and so does every computation on a program that is not proved monotone, where
@@ -251,10 +252,10 @@ only through a licence.
 | **L2** discharged is upward-closed | $C \in R \land C \subseteq C' \land \operatorname{alive}(C') \implies C' \in R$ | what an alive node above a member of $R$ owes: nothing. Where $\emptyset \in R$, $R$ is the whole alive set |
 | **L3** a commitment's state is its closure's | $\operatorname{st}(C) = \operatorname{st}(\operatorname{cl}(C))$ | every commitment of a class but its closed set: closed **states** are evaluated, not commitments, and $k_c$ is counted (§ 6) |
 | **L4** the lines are local | $s \in R \land \forall b \notin s.\; \operatorname{dead}(s \cup \lbrace b \rbrace) \implies s \in \max R$; and $s \in R \land \forall b \in s.\; \operatorname{owes}(s \setminus \lbrace b \rbrace) > 0 \implies s \in \min R$ | everything above, or below, a member of a line: a member is certified from at most $n$ nodes |
-| **L5** an owed instance's alternatives are exhaustive | for $C$ alive, owing a licensed instance $I$ with alternatives $A(I)$: $\;D \in R \land C \subseteq D \implies \exists a \in A(I).\; a \in \operatorname{cl}(D)$ | every extension of $C$ by a candidate that is not an alternative of $I$. An alive node owing an instance whose every alternative is dead has no member of $R$ above it |
+| **L5** an owed instance's alternatives are exhaustive | for $C$ alive, owing a licensed instance $I$ with alternatives $\operatorname{alt}(I)$: $\;D \in R \land C \subseteq D \implies \exists a \in \operatorname{alt}(I).\; a \in \operatorname{cl}(D)$ | every extension of $C$ by a candidate that is not an alternative of $I$. An alive node owing an instance whose every alternative is dead has no member of $R$ above it |
 | **L7** the cube | the definition | nothing: $2^{n}$ evaluations decide everything. The oracle, and every question on a flagged program |
-| **L8** what a state denies is dead above it | $\lnot b \in \operatorname{st}(S) \implies \operatorname{dead}(S \cup \lbrace b \rbrace)$ | the extension of a state by a candidate the state's own rules have already denied |
-| **L9** a fact nothing proposes and nothing writes is in no state | a witness $w$ of $I$ with $w \notin H$, $w \notin \mathrm{root}$, of a relation no rule concludes and no symmetry mirrors, is in no $\operatorname{st}(C)$; so where every other witness of $I$ is a candidate or denied at root, L5 holds of $I$ with $A(I) = H \cap \operatorname{witnesses}(I)$ | what L5 decides, for an instance L5 alone does not license |
+| **L8** what a state denies is dead above it | $\lnot b \in \operatorname{st}(s) \implies \operatorname{dead}(s \cup \lbrace b \rbrace)$ | the extension of a state by a candidate the state's own rules have already denied |
+| **L9** a fact nothing proposes and nothing writes is in no state | a witness $w$ of $I$ with $w \notin H$, $w \notin \mathrm{root}$, of a relation no rule concludes and no symmetry mirrors, is in no $\operatorname{st}(C)$; so where every other witness of $I$ is a candidate or denied at root, L5 holds of $I$ with $\operatorname{alt}(I) = H \cap \operatorname{witnesses}(I)$ | what L5 decides, for an instance L5 alone does not license |
 
 There is no licence numbered six.
 
@@ -283,13 +284,13 @@ candidate, $w \in \operatorname{cl}(D)$, and $w \notin \operatorname{cl}(C)$ sin
 the payments that are candidates:
 
 $$
-A(I) \;=\; \operatorname{pay}(I) \cap H
+\operatorname{alt}(I) \;=\; \operatorname{pay}(I) \cap H
 $$
 
 The premise is needed: a guard that read a relation a commitment can grow could be paid by a fact already in $C$.
 Why an obligation's alternatives are jointly exhaustive in general is [Satisfiability § 4](10-satisfiability.md).
 
-*L8.* $\operatorname{st}(S \cup \lbrace b \rbrace) \supseteq \operatorname{st}(S) \ni \lnot b$, and it holds $b$: a
+*L8.* $\operatorname{st}(s \cup \lbrace b \rbrace) \supseteq \operatorname{st}(s) \ni \lnot b$, and it holds $b$: a
 fact beside its stored negation.
 
 *L9.* A fact enters a state only by being committed, by being in root, by a rule concluding it, or as the mirror of
@@ -343,7 +344,7 @@ A heavy outline is a node whose state was evaluated, a dashed outline a conclusi
 On a monotone program everything a computation has learnt about death is one family of sets, and its up-set:
 
 $$
-\mathcal{K} \;=\; \lbrace\, D : D \text{ was evaluated and found dead} \,\rbrace \;\cup\; \lbrace\, S \cup \lbrace b \rbrace : S \text{ an alive state met},\; \lnot b \in \operatorname{st}(S) \,\rbrace,
+\mathcal{K} \;=\; \lbrace\, D : D \text{ was evaluated and found dead} \,\rbrace \;\cup\; \lbrace\, s \cup \lbrace b \rbrace : s \text{ an alive state met},\; \lnot b \in \operatorname{st}(s) \,\rbrace,
 \qquad
 \bigcup_{D \in \mathcal{K}} \uparrow D \;\subseteq\; \operatorname{Dead}
 $$
@@ -391,32 +392,32 @@ anything is evaluated.
 
 ### 6.1 All of R: the alive states
 
-**The alive states are generated by one-candidate extensions.** Let $\mathcal{S}$ be the alive closed sets. By L3
+**The alive states are generated by one-candidate extensions.** Let $\mathcal{C}$ be the alive closed sets. By L3
 every alive commitment's state is a member's, and
 
 $$
-T \in \mathcal{S},\; T \neq \operatorname{cl}(\emptyset) \;\implies\; \exists S \in \mathcal{S},\; b \in T \setminus S.\quad S \subsetneq T \,\land\, T = \operatorname{cl}(S \cup \lbrace b \rbrace)
+T \in \mathcal{C},\; T \neq \operatorname{cl}(\emptyset) \;\implies\; \exists s \in \mathcal{C},\; b \in T \setminus s.\quad s \subsetneq T \,\land\, T = \operatorname{cl}(s \cup \lbrace b \rbrace)
 $$
 
-*Argument.* Take $S$ a maximal closed proper subset of $T$; one exists, since
-$\operatorname{cl}(\emptyset) \subsetneq T$ is closed. For $b \in T \setminus S$, the set
-$\operatorname{cl}(S \cup \lbrace b \rbrace)$ is closed, lies inside $T$, and is strictly larger than $S$, so it is
-$T$. And $S$ is alive, being below $T$ (L1).
+*Argument.* Take $s$ a maximal closed proper subset of $T$; one exists, since
+$\operatorname{cl}(\emptyset) \subsetneq T$ is closed. For $b \in T \setminus s$, the set
+$\operatorname{cl}(s \cup \lbrace b \rbrace)$ is closed, lies inside $T$, and is strictly larger than $s$, so it is
+$T$. And $s$ is alive, being below $T$ (L1).
 
-So the nodes $S \cup \lbrace b \rbrace$, $S \in \mathcal{S}$, $b \in H \setminus S$, decide everything: at most
-$\lvert \mathcal{S} \rvert \cdot n$ evaluations, where the table has $2^{n}$ rows. Of those, a node above a member
+So the nodes $s \cup \lbrace b \rbrace$, $s \in \mathcal{C}$, $b \in H \setminus s$, decide everything: at most
+$\lvert \mathcal{C} \rvert \cdot n$ evaluations, where the table has $2^{n}$ rows. Of those, a node above a member
 of $\mathcal{K}$ needs none (§ 5), and a node whose closure is a state already known adds none. Everything a
 description needs follows:
 
 $$
 \begin{aligned}
-R / {\sim} &= \lbrace\, T \in \mathcal{S} : \operatorname{owes}(T) = 0 \,\rbrace \\
-N &= \operatorname{MinTr} \lbrace\, H \setminus b : b \in \max \mathcal{S} \,\rbrace \\
-\max R &= \lbrace\, b \in \max \mathcal{S} : \operatorname{owes}(b) = 0 \,\rbrace
+R / {\sim} &= \lbrace\, T \in \mathcal{C} : \operatorname{owes}(T) = 0 \,\rbrace \\
+N &= \operatorname{MinTr} \lbrace\, H \setminus b : b \in \max \mathcal{C} \,\rbrace \\
+\max R &= \lbrace\, b \in \max \mathcal{C} : \operatorname{owes}(b) = 0 \,\rbrace
 \end{aligned}
 $$
 
-and where $R = \emptyset$ with root alive, $\max \mathcal{S}$ is the **owing frontier**: the maximal alive states,
+and where $R = \emptyset$ with root alive, $\max \mathcal{C}$ is the **owing frontier**: the maximal alive states,
 each owing.
 
 **A class is counted from the closed sets inside it.** For a closed alive $T$, let $M(T)$ be its maximal closed
@@ -432,7 +433,7 @@ $m \in M(T)$, and $C \subseteq m$ gives $\operatorname{cl}(C) \subseteq m \neq T
 closure among the closed subsets of $T$, so the classes of those partition $2^{T}$, and
 
 $$
-\lvert [T] \rvert \;=\; 2^{\lvert T \rvert} \;-\; \sum_{S \,\in\, \mathcal{S},\; S \subsetneq T} \lvert [S] \rvert, \qquad
+\lvert [T] \rvert \;=\; 2^{\lvert T \rvert} \;-\; \sum_{S \,\in\, \mathcal{C},\; s \subsetneq T} \lvert [s] \rvert, \qquad
 k_c \;=\; \sum_{T \,\in\, R / {\sim}} \lvert [T] \rvert, \qquad
 \min R \;=\; \min \bigcup_{T \,\in\, R / {\sim}} \min\, [T]
 $$
@@ -461,7 +462,7 @@ $$
 \begin{cases}
 \emptyset & \text{if } \operatorname{dead}(C) \\
 \lbrace C \rbrace & \text{if } \operatorname{alive}(C) \land \operatorname{owes}(C) = 0 \\
-\displaystyle\bigcup_{a \in A(I)} \operatorname{Leaves}\big( \operatorname{cl}(C \cup \lbrace a \rbrace) \big) & \text{if } C \text{ is alive and owes a licensed instance } I \\
+\displaystyle\bigcup_{a \in \operatorname{alt}(I)} \operatorname{Leaves}\big( \operatorname{cl}(C \cup \lbrace a \rbrace) \big) & \text{if } C \text{ is alive and owes a licensed instance } I \\
 \displaystyle\bigcup_{b \in H \setminus C} \operatorname{Leaves}\big( \operatorname{cl}(C \cup \lbrace b \rbrace) \big) & \text{if } C \text{ is alive and owes, and no instance it owes is licensed}
 \end{cases}
 $$
@@ -477,7 +478,7 @@ D \in R \,\land\, C \subseteq D \;\implies\; \exists \ell \in \operatorname{Leav
 $$
 
 *Argument*, by induction from the top of the lattice down. If $C$ is dead nothing above it is in $R$ (L1). If $C$ is
-in $R$ it is its own leaf. If $C$ owes a licensed $I$, then $\operatorname{cl}(D)$ holds some $a \in A(I)$ (L5), so
+in $R$ it is its own leaf. If $C$ owes a licensed $I$, then $\operatorname{cl}(D)$ holds some $a \in \operatorname{alt}(I)$ (L5), so
 $\operatorname{cl}(D) \supseteq \operatorname{cl}(C \cup \lbrace a \rbrace)$, and the induction applies to that set
 and $\operatorname{cl}(D)$, which is in $R$ (L3). Otherwise $D \neq C$, since $C$ owes, so some $b \in D \setminus C$
 gives $\operatorname{cl}(D) \supseteq \operatorname{cl}(C \cup \lbrace b \rbrace)$.
@@ -528,18 +529,18 @@ a chain $s = s_0 \subsetneq s_1 \subsetneq \dots$ of alive closed sets, each
 $s_{i+1} = \operatorname{cl}(s_i \cup \lbrace b \rbrace)$ for an alive extension, ends at a member of $R$ (L2) every
 extension of which is dead, which is maximal (L4).
 
-**Which set of maximal elements is all of them.** Let $\sigma$ be an alive set and $M$ a set of maximal alive sets
-above $\sigma$. Then
+**Which set of maximal elements is all of them.** Let $C_0$ be an alive set and $M$ a set of maximal alive sets
+above $C_0$. Then
 
 $$
-M \;=\; \max \operatorname{Alive} \cap \uparrow \sigma
+M \;=\; \max \operatorname{Alive} \cap \uparrow C_0
 \iff
-\forall X \in \operatorname{MinTr} \lbrace\, H \setminus b : b \in M \,\rbrace.\;\; \operatorname{dead}(\sigma \cup X)
+\forall X \in \operatorname{MinTr} \lbrace\, H \setminus b : b \in M \,\rbrace.\;\; \operatorname{dead}(C_0 \cup X)
 $$
 
-*Argument.* A maximal alive $b' \supseteq \sigma$ outside $M$ lies inside no member of $M$, so it meets each
-complement and holds a minimal transversal $X$, and $\sigma \cup X \subseteq b'$ is alive (L1). Conversely an alive
-$\sigma \cup X$ lies inside a maximal alive set, which holds $X$ and so is inside no member of $M$. This is the
+*Argument.* A maximal alive $b' \supseteq C_0$ outside $M$ lies inside no member of $M$, so it meets each
+complement and holds a minimal transversal $X$, and $C_0 \cup X \subseteq b'$ is alive (L1). Conversely an alive
+$C_0 \cup X$ lies inside a maximal alive set, which holds $X$ and so is inside no member of $M$. This is the
 criterion by which an enumeration of maximal sets knows it has ended: every transversal is either dead, or the seed
 of a maximal set not yet known. With it,
 
@@ -547,7 +548,7 @@ $$
 \max R \;=\; \lbrace\, b \in \max \operatorname{Alive} : \operatorname{owes}(b) = 0 \,\rbrace
 $$
 
-and every maximal state of $R$ lies above a minimal one, so taking $\sigma$ over the leaves of § 6.2 reaches all of
+and every maximal state of $R$ lies above a minimal one, so taking $C_0$ over the leaves of § 6.2 reaches all of
 them.
 
 ### 6.4 The minimal line

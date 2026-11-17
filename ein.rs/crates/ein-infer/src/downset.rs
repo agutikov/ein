@@ -1,5 +1,6 @@
 //! Route 1 — a monotone program's region, from its alive down-set
-//! ([07-finding-r.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question),
+//! (the procedure, [02-algorithms.md § 8.3](../../../../docs/ein/ein.rs/02-algorithms.md#83-route-1-the-cube-and-the-oracle);
+//! why it is sound, [07-finding-r.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md#6-the-routes-question-by-question);
 //! [03-design/07-search.md § 4](../../../../docs/ein/ein.rs/03-design/07-search.md#4-the-routes)).
 //!
 //! [`crate::region`] (route 2, *the oracle*) saturates all `2ⁿ` commitments.

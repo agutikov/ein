@@ -12,5 +12,7 @@ the reader who asks for it, and every question of `ein solve` keeps the least wo
 
 **Held by.** `ein-cli/tests/h_space_view.rs`: `the_document_is_the_owners_reading_on_every_instance`,
 `the_dump_is_every_view_and_moves_no_stdout`, `jobs_and_the_container_move_no_byte`;
-`ein-cli/tests/show_hyps.rs`: `stdout_is_the_facts_and_stderr_one_note`, `the_door`. The page:
-[The hypothesis space and its structure](../../ein/reasoning/02-kb-evolution/05-hypothesis-space.md).
+`ein-cli/tests/show_hyps.rs`: `stdout_is_the_facts_and_stderr_one_note`, `the_door`. The pages:
+[The hypothesis space and its structure](../../ein/reasoning/02-kb-evolution/05-hypothesis-space.md), what the
+structure is, and [hypotheses and the answer, in code](../../ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md),
+§ 1.3 for `ein show hyps` and § 2.3 and § 2.4 for `ein render h-space` and `h-space.json`.

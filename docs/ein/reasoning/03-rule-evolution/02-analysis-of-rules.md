@@ -10,7 +10,7 @@ decides is whether a stratification exists. It is a diagnostic: it orders nothin
 The graph is a signed directed graph
 
 $$
-G_P = (\mathcal{V},\ E), \qquad E \subseteq \mathcal{V} \times \mathcal{V} \times \{+, -\}
+G_P = (\mathcal{V},\ \mathcal{E}), \qquad \mathcal{E} \subseteq \mathcal{V} \times \mathcal{V} \times \{+, -\}
 $$
 
 **Its vertices** $\mathcal{V}$ are relations. The stored negations of a relation are a vertex of their own,
@@ -22,7 +22,7 @@ $\operatorname{symmetric}(\operatorname{next-to})$ makes it a rule over $\operat
 over the instances
 
 $$
-\{\, \rho[\bar{a}] \;:\; \rho \in P,\ \bar{a} \in \operatorname{Act}_{\operatorname{root}}(\rho) \,\}
+\{\, \rho[a] \;:\; \rho \in P,\ a \in \operatorname{Act}_{\mathrm{root}}(\rho) \,\}
 $$
 
 each rule once per activator the root holds, and a rule nothing applies adds no edge. For an instance with
@@ -31,7 +31,7 @@ its literals, and let $\operatorname{reads}(\varphi)$ be the pairs $(u, d)$ of a
 is of and the number $d$ of absences that atom stands under. Then
 
 $$
-E = \bigcup_{\rho[\bar{a}]}\ \Big( \big\{\, (u,\ w,\ \operatorname{sgn}(d)) \;:\; (u, d) \in \operatorname{reads}(\varphi),\ w \in \operatorname{writes}(\psi) \,\big\} \;\cup\; \big\{\, (\operatorname{name}(\rho),\ w,\ +) \;:\; w \in \operatorname{writes}(\psi),\ \bar{p} \ne \varepsilon \,\big\} \Big)
+\mathcal{E} = \bigcup_{\rho[a]}\ \Big( \big\{\, (u,\ w,\ \operatorname{sgn}(d)) \;:\; (u, d) \in \operatorname{reads}(\varphi),\ w \in \operatorname{writes}(\psi) \,\big\} \;\cup\; \big\{\, (\operatorname{name}(\rho),\ w,\ +) \;:\; w \in \operatorname{writes}(\psi),\ \bar{p} \ne \varepsilon \,\big\} \Big)
 $$
 
 $$
@@ -77,7 +77,7 @@ A **stratification** of $G_P$ is a map $\sigma : \mathcal{V} \to \mathbb{N}$ tha
 rises along a negative one:
 
 $$
-(u, w, +) \in E \implies \sigma(u) \le \sigma(w), \qquad\qquad (u, w, -) \in E \implies \sigma(u) < \sigma(w)
+(u, w, +) \in \mathcal{E} \implies \sigma(u) \le \sigma(w), \qquad\qquad (u, w, -) \in \mathcal{E} \implies \sigma(u) < \sigma(w)
 $$
 
 The **stratum** of a relation is the greatest number of negative edges on a path into it, counted over the
@@ -85,7 +85,7 @@ strongly connected components of the graph: the relations of one component $c$ s
 edges between components are counted,
 
 $$
-\sigma(c) = \max\Big( \{0\} \;\cup\; \big\{\, \sigma(c') + [\,\pm = -\,] \;:\; (u, w, \pm) \in E,\ u \in c' \ne c,\ w \in c \,\big\} \Big)
+\sigma(c) = \max\Big( \{0\} \;\cup\; \big\{\, \sigma(c') + [\,\pm = -\,] \;:\; (u, w, \pm) \in \mathcal{E},\ u \in c' \ne c,\ w \in c \,\big\} \Big)
 $$
 
 with $[\,\pm = -\,]$ one for a negative edge and zero for a positive one. The recursion is well founded because
@@ -122,7 +122,7 @@ edges, and *even* otherwise. A component is even exactly when it is **balanced**
 sets so that every negative edge crosses the split and every positive edge stays on one side,
 
 $$
-\operatorname{even}(c) \iff \exists\, \chi : c \to \{0, 1\}.\ \ \forall (u, w, \pm) \in E \cap c^2.\ \ \big(\chi(u) \ne \chi(w)\big) \leftrightarrow (\pm = -)
+\operatorname{even}(c) \iff \exists\, \chi : c \to \{0, 1\}.\ \ \forall (u, w, \pm) \in \mathcal{E} \cap c^2.\ \ \big(\chi(u) \ne \chi(w)\big) \leftrightarrow (\pm = -)
 $$
 
 The parity says what the graph allows of the root's fixpoint:
@@ -177,7 +177,8 @@ them, and the graph has the cycle all the same. The diagnostic's words are *may*
 that order is [saturation](../02-kb-evolution/02-saturation.md)'s, first what leads to falsity and then the
 written and arrival order
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). On a monotone
-program the order decides no answer, and a dead node's core, which it may decide, is an explanation
+program that is order-free at the boundary ([transformations](03-transformations.md#3-what-leaves-r-unchanged))
+the order decides no answer, and a dead node's core, which it may decide, is an explanation
 ([Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)).
 
 **It is read at the root, on every program.** The monotonicity check asks another question
@@ -185,7 +186,7 @@ program the order decides no answer, and a dead node's core, which it may decide
 an absence reads. Its cycles are the cycles of $G_P$ restricted to the relations a commitment can change,
 
 $$
-G_P \big|_{D} = \big(\mathcal{V} \cap D,\ \ E \cap (D \times D \times \{+, -\})\big)
+G_P \big|_{D} = \big(\mathcal{V} \cap D,\ \ \mathcal{E} \cap (D \times D \times \{+, -\})\big)
 $$
 
 with $D$ that set of relations. A negative cycle among relations no commitment changes leaves a program monotone

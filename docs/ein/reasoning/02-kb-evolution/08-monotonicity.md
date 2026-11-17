@@ -14,7 +14,7 @@ and [saturation](02-saturation.md).
 
 **What is claimed of a flagged program.** A program the static check cannot prove monotone is **flagged**. It
 is detected, warned of, and answered under one stated reading: every node is a fork of root,
-$\operatorname{st}(C) = \operatorname{sat}(\operatorname{root} \cup C)$, the answer says so, every way of asking
+$\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$, the answer says so, every way of asking
 gives the same $R$ under that reading, and nothing more is claimed about the program's solutions
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Which reading of a
 node a non-monotone program should have is not decided, and nothing below decides it.
@@ -61,7 +61,7 @@ digraph arrows {
   KB [label="knowledge bases"];
   B [label="{0, 1}²"];
   L -> KB [label="st\nthe state"];
-  KB -> B [label="(dead, owes ≠ ∅)\nthe status"];
+  KB -> B [label="(dead, owes > 0)\nthe status"];
 }
 ```
 
@@ -69,7 +69,7 @@ digraph arrows {
   lattice, neither monotone nor not.
 - **The state**, $\operatorname{st}(C)$, is the knowledge base a node holds.
 - **The status** is two functions of the state, $\operatorname{dead}$ and $\operatorname{owes}$, and
-  $C \in R \iff \lnot\operatorname{dead}(C) \land \operatorname{owes}(C) = \emptyset$.
+  $C \in R \iff \lnot\operatorname{dead}(C) \land \operatorname{owes}(C) = 0$.
 
 So *monotone* is asked of an arrow, and of three of them:
 
@@ -94,11 +94,12 @@ $\operatorname{rels}(H)$ be the relations of the candidates, what a commitment c
 commitment can **change**, the least set with
 
 $$
-D \;=\; \operatorname{rels}(H) \;\cup\; \lbrace\, r \in \operatorname{rels}(A_\rho) \;:\; \rho \text{ a saturation rule that reads a relation of } D \,\rbrace
+D \;=\; \operatorname{rels}(H) \;\cup\; \lbrace\, r \in \operatorname{rels}(\psi_\rho) \;:\; \rho \text{ a saturation rule that reads a relation of } D \,\rbrace
 $$
 
 A stored negation $\lnot r(\dots)$ is of its own pseudo-relation $\lnot r$, since what a commitment proposes is
-$r$, and $\lnot r$ changes only where a rule derives it.
+$r$, and $\lnot r$ changes only where a rule derives it. $D$ lies inside $D^{+}$ of [absence](03-absent-and-naf.md),
+which also follows a rule with parameters through its activator's relation.
 
 Write $\operatorname{depth}$ for the number of absences a read stands inside. Every relation $q$ a rule reads,
 at every depth, is then one of three:
@@ -187,7 +188,7 @@ add. It builds an over-approximation of every fact some node holds beyond root, 
 facts with some arguments replaced by a wildcard $\ast$:
 
 $$
-\Sigma \;=\; \mu X.\;\; H \;\cup\; \lbrace\, A_\rho\sigma \;:\; \text{a read of } \rho \text{ at even depth unifies with a shape of } X \text{ under } \sigma \,\rbrace
+\mathit{Sh} \;=\; \mu X.\;\; H \;\cup\; \lbrace\, \psi_\rho\eta \;:\; \text{a read of } \rho \text{ at even depth unifies with a shape of } X \text{ under } \eta \,\rbrace
 $$
 
 where a read at depth $0$ passes its bindings to the conclusion and every other variable becomes $\ast$. Only
@@ -208,7 +209,7 @@ A read of a relation outside $D$ is static because root's fixpoint completes it 
 again. So *monotone* says that the operator is monotone on root's fixpoint extended by commitments,
 
 $$
-K \mapsto \operatorname{sat}(\operatorname{root} \cup K), \qquad K \subseteq H,
+K \mapsto \operatorname{sat}(\mathrm{root} \cup K), \qquad K \subseteq H,
 $$
 
 which is what the theorem and every computation of $R$ need, and not on every knowledge base. What root itself
@@ -567,10 +568,10 @@ follows each rule's activator, and is not read off a derivation's premises alone
 - **$\operatorname{owes}$** does not. An instance is owed when its trigger holds and no witness does,
 
 $$
-\operatorname{owes}(o, a, \theta, S) \iff S \models T(\theta) \;\land\; \lnot \exists \bar y.\; S \models W(\theta, \bar y),
+\operatorname{owes}(o, a, \theta, S) \iff S \models T_o(a, \theta) \;\land\; \lnot \exists \bar y.\; S \models W_o(a, \theta, \bar y),
 $$
 
-  so a trigger $T$ over $D$, or an activator $a$ a commitment can derive, adds a debt over a monotone,
+  so a trigger $T_o$ over $D$, or an activator $a$ a commitment can derive, adds a debt over a monotone,
   path-independent state. The seated guest who dines (a trigger) and the kitchen that opens (an activator) have
   no absence site, so by § 8.4 one state per node by every construction, and each has an owing hole. **A hole
   needs no path dependence.** Holes are a question about the status, not about the state.
@@ -709,7 +710,7 @@ $$
 ### 11.3 Why it finds nothing on an unflagged program
 
 **Proposition.** On a program with no site there is nothing to find, on every node built by fork from root and
-on every split $\operatorname{sat}(\operatorname{sat}(\operatorname{root} \cup C_1) \cup (C \setminus C_1))$ from
+on every split $\operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup (C \setminus C_1))$ from
 a fixpoint that holds root's.
 
 *Argument.* No site means no read of a relation in $D$ under an odd number of absences. So there is no negative

@@ -1083,7 +1083,7 @@ decided at root, as nothing but the loader states it. Each `(written T)` is deri
 that rests on one names the fact as written**, and `refuted by` names the rule that read it; one stated from a rule's
 text rests on no fact, and its core is $\emptyset$. What reads it is a representation module's check of its own terms,
 `std.math.decimal`'s of a numeral, which so sees every numeral a file writes, wherever it sits, with no calculation
-started ([`04-stdlib/`](04-stdlib/README.md)).
+started ([malformed numbers](04-stdlib/07-calculator.md#malformed-numbers-what-is-flagged-and-where)).
 
 **Where it shows** is where the mirror facts show: `ein saturate --dump` lists each,
 `(written (n z 1) :rule "#written")`, in its `DERIVED` block, and counts it; a KB view draws it; a `.einb` stores it.

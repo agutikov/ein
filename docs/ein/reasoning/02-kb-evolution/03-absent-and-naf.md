@@ -20,7 +20,7 @@ Saturation is split along negation ([saturation](02-saturation.md)):
 
 $$
 K_0' = \operatorname{pos}(K), \qquad
-K_{i+1}' = \operatorname{pos}\bigl(K_i' \cup A_{\kappa_i}\theta_i\bigr), \qquad
+K_{i+1}' = \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr), \qquad
 \operatorname{sat}(K) = K_m'
 $$
 
@@ -155,10 +155,10 @@ $$
 - **One question, one world.** A guard is asked of the world it is judged in and its answer is acted on at once,
   so it has no interval in which to go stale.
 
-A fact $F$ is **unknown** in $K$ when neither it nor its stored negation is held, which is two guards:
+A fact $f$ is **unknown** in $K$ when neither it nor its stored negation is held, which is two guards:
 
 $$
-\operatorname{unknown}(F) \;\equiv\; \operatorname{absent}(F) \;\land\; \operatorname{absent}(\lnot F)
+\operatorname{unknown}(f) \;\equiv\; \operatorname{absent}(f) \;\land\; \operatorname{absent}(\lnot f)
 $$
 
 ## The boundary
@@ -216,16 +216,16 @@ Each of these holds wherever it applies; this page is the shared reason.
 
 - **Root is never written by a node.** A fact a node derives may rest on an absence that holds in that node and
   not in root's future, so nothing a node derives is written back into root. Every node is root's fixpoint and
-  its own commitment, $\operatorname{st}(C) = \operatorname{sat}(\operatorname{root} \cup C)$, and nothing else
+  its own commitment, $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$, and nothing else
   ([finding R](07-finding-r.md)).
 - **A derivation records the absences it rested on.** A firing admitted at the boundary records each question
   that had to fail, one pattern per guard with a position the question left free recorded as free, beside the
   positive premises it read:
 
 $$
-\delta = \bigl( \rho,\ a,\ \theta,\ \operatorname{prem}(\delta),\ \operatorname{abs}(\delta) \bigr),
+\delta = \bigl( \rho,\ a,\ \theta,\ \operatorname{prem}(\delta),\ \operatorname{all}(\delta),\ \operatorname{abs}(\delta) \bigr),
 \qquad
-\operatorname{dep}(f) = \operatorname{prem}(\delta) \cup \operatorname{abs}(\delta)
+\operatorname{dep}(f) = \operatorname{prem}(\delta) \cup \operatorname{all}(\delta) \cup \operatorname{abs}(\delta)
 $$
 
   Negative dependence is so visible: what a fact depends on is its positive premises and those absences
@@ -245,7 +245,7 @@ $$
 - **An absence is world-relative.** The same ground question can answer one way in root and another in a node,
 
 $$
-\operatorname{root} \models \operatorname{absent}(G)\theta
+\mathrm{root} \models \operatorname{absent}(G)\theta
 \qquad\text{and}\qquad
 \operatorname{st}(C) \not\models \operatorname{absent}(G)\theta ,
 $$
@@ -304,11 +304,11 @@ judged first. That order is not the order of the program's strata:
 A rule that concludes $\bot$ or a stored negation may not rest on an $\operatorname{absent}(G)$ over a relation a
 commitment can still extend: directly, through a fact a rule derived under such an absence, or through the
 activator its rule was applied with. Write $D^{+}$ for the relations a commitment can extend (below) and
-$\operatorname{rests}(\rho)$ for the absences $\rho$'s conclusion can depend on in those three ways:
+$\operatorname{abs}^{\ast}(\rho)$ for the absences $\rho$'s conclusion can depend on in those three ways:
 
 $$
-\bigl( \bot \in A_\rho \;\lor\; \exists f.\; \lnot f \in A_\rho \bigr) \;\land\;
-\exists\, \operatorname{absent}(G) \in \operatorname{rests}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset
+\bigl( \bot \in \psi_\rho \;\lor\; \exists f.\; \lnot f \in \psi_\rho \bigr) \;\land\;
+\exists\, \operatorname{absent}(G) \in \operatorname{abs}^{\ast}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset
 \;\;\implies\;\; P \text{ is refused}
 $$
 
@@ -356,11 +356,12 @@ parameters whose activator relation it holds, since an application a node makes 
 relations a commitment changes:
 
 $$
-D^{+} \;=\; \mu X.\;\; \operatorname{rels}(H) \;\cup\; \lbrace\, \operatorname{rels}(A_\rho) : \rho \text{ reads a relation of } X \,\rbrace
-\;\cup\; \lbrace\, \operatorname{rels}(A_{\rho[\cdot]}) : \text{the name of } \rho \text{ is in } X \,\rbrace
+D^{+} \;=\; \mu X.\;\; \operatorname{rels}(H) \;\cup\; \lbrace\, \operatorname{rels}(\psi_\rho) : \rho \text{ reads a relation of } X \,\rbrace
+\;\cup\; \lbrace\, \operatorname{rels}(\psi_\rho[\cdot]) : \text{the name of } \rho \text{ is in } X \,\rbrace
 $$
 
-with $\mu$ the least fixpoint: the relations of the candidates, what a rule that reads one of them concludes,
+with $\mu$ the least fixpoint, $D^{+} = D^{+}(\operatorname{rels}(H))$ in the notation of
+[hypothesis generation](04-hypothesis-generation.md#43-when-it-declines): the relations of the candidates, what a rule that reads one of them concludes,
 and what any application of a rule can conclude once its activator's relation is among them. Over a relation no commitment can extend, the same shape is closed-world
 reasoning and is accepted.
 

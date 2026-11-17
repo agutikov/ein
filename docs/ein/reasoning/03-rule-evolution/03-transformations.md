@@ -91,7 +91,7 @@ A rule concludes a conjunction of literals, and nesting adds nothing.
 ([rules as statements](../01-static-ir/04-rules-as-statements.md#relation-polymorphic)):
 
 $$
-\operatorname{inst}_S(P) = \{\, \rho[\bar{a}] \;:\; \rho \in P,\ \bar{a} \in \operatorname{Act}_S(\rho) \,\}, \qquad S \subseteq S' \implies \operatorname{inst}_S(P) \subseteq \operatorname{inst}_{S'}(P)
+\operatorname{inst}_K(P) = \{\, \rho[a] \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho) \,\}, \qquad K \subseteq K' \implies \operatorname{inst}_K(P) \subseteq \operatorname{inst}_{K'}(P)
 $$
 
 the values an activator supplies written into the rule before it matches anything. The set is monotone in the
@@ -111,34 +111,45 @@ $\operatorname{resolve}(P) = \operatorname{resolve}(P')$ as sets of declarations
 Identity is by full name, and every later map and every definition of the answer reads the resolved program
 alone. What is left of the difference is how a name is printed, which is the renaming. $\square$
 
+**A program is order-free at the boundary** when no rule reads, under an absence, a relation that a rule which
+itself reads an absence concludes, directly or through the rules its conclusion sets off. Where two such rules
+wait at one boundary the one written first is admitted first, and that order can decide the fixpoint: of root's
+as of a node's, and of a program the monotonicity check passes as of one it flags, since the check takes root as
+given ([monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md#34-the-verdict-is-relative-to-root)).
+
 **Proposition 2 (the written order).** Let $P$ be monotone
-([monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md)), and let $P'$ be $P$ with its facts
-and its rules written in another order. Then $\operatorname{Ans}(P') = \operatorname{Ans}(P)$.
+([monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md)) and order-free at the boundary, and
+let $P'$ be $P$ with its facts and its rules written in another order. Then
+$\operatorname{Ans}(P') = \operatorname{Ans}(P)$.
 
-*Argument.* Take first a program whose rules read no absence. One step of every rule at once is the operator
+*Argument.* Take first a program whose rules read no absence. One step of every rule at once is the consequence
+operator of [saturation](../02-kb-evolution/02-saturation.md),
 
 $$
-T_P(S) = S \;\cup\; \big\{\, f \in \psi[\bar{a}]\theta \;:\; \rho \in P,\ \bar{a} \in \operatorname{Act}_S(\rho),\ S \models \varphi[\bar{a}]\theta \,\big\}
+T_P(K) = K \;\cup\; \big\{\, f \in \psi_\rho[a]\theta \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho),\ K \models \varphi_\rho[a]\theta \,\big\}
 $$
 
-Without an absence, satisfaction is preserved when a state grows, so $T_P$ is monotone, $S \subseteq S'$ implies
-$T_P(S) \subseteq T_P(S')$, and it is inflationary. The chain
-$S_0 \subseteq T_P(S_0) \subseteq T_P^2(S_0) \subseteq \cdots$ is increasing, and its union is the least set of
-facts above $S_0$ closed under $T_P$, since a match reads finitely many facts and so whatever fires in the union
+Without an absence, satisfaction is preserved when a state grows, so $T_P$ is monotone, $K \subseteq K'$ implies
+$T_P(K) \subseteq T_P(K')$, and it is inflationary. The chain
+$K_0 \subseteq T_P(K_0) \subseteq T_P^2(K_0) \subseteq \cdots$ is increasing, and its union is the least set of
+facts above $K_0$ closed under $T_P$, since a match reads finitely many facts and so whatever fires in the union
 fires at some stage of the chain:
 
 $$
-\operatorname{sat}(S_0) = \bigcup_{k \ge 0} T_P^{\,k}(S_0)
+\operatorname{sat}(K_0) = \bigcup_{k \ge 0} T_P^{\,k}(K_0)
 $$
 
 Any order of single firings adds only facts of this union, and one that stops has reached a closed set above
-$S_0$, so it has reached the union. $T_P$ and $S_0$ are defined from the *sets* of rules and of written facts, so
+$K_0$, so it has reached the union. $T_P$ and $K_0$ are defined from the *sets* of rules and of written facts, so
 the union does not depend on the order they are written in; neither does the state of any node, nor which nodes
-are alive and discharged, which is $R$. With absences, the claim is the theory's for the programs the monotonicity check passes: there the
-fixpoint does not depend on the order rules fire in ([saturation](../02-kb-evolution/02-saturation.md)), and the
-written order enters a computation only as that order. $\square$
+are alive and discharged, which is $R$. With absences, the positive closure between two boundaries is such a
+union, and the written order enters only as the order the boundary admits in
+([saturation](../02-kb-evolution/02-saturation.md)). On a program order-free at the boundary no admission changes
+what another waiting rule's absence reads, so a rule that passes at one quiescence passes at every later one, and
+the set admitted is the same in every order; on a monotone program no commitment changes it either. $\square$
 
-**Proposition 3 (the order of firing).** On a monotone program, taking first the firings that can lead to
+**Proposition 3 (the order of firing).** On a monotone program order-free at the boundary, taking first the
+firings that can lead to
 falsity, and the rest in the written and arrival order, gives every question and every claim the answer that the
 written order alone gives
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
@@ -153,11 +164,11 @@ core is an explanation and not part of the answer
 | transformation | the answer | by |
 |---|---|---|
 | an import written selectively, whole, or under an alias | unchanged, up to how names are spelt | Proposition 1 |
-| the order a monotone program's facts and rules are written in | unchanged | Proposition 2 |
-| the order of firing, on a monotone program | unchanged; a dead node's core may differ | Proposition 3 |
+| the order the facts and rules of a monotone program, order-free at the boundary, are written in | unchanged | Proposition 2 |
+| the order of firing, on such a program | unchanged; a dead node's core may differ | Proposition 3 |
 
-**Where nothing is claimed.** Of a program the monotonicity check flags, no transformation is claimed to preserve
-the answer: there the state of a node can depend on the order facts arrive in, and Propositions 2 and 3 have no
+**Where nothing is claimed.** Of a program the monotonicity check flags, and of one that is not order-free at the
+boundary, no transformation is claimed to preserve the answer: there the state of a node can depend on the order facts arrive in, and Propositions 2 and 3 have no
 premise to stand on ([monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md)).
 
 **What is not performed.** Resolving, expanding, flattening and instantiating are the only rewrites reading

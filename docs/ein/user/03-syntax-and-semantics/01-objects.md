@@ -43,7 +43,7 @@ object of the facts that describe the relation, `(symmetric next-to)` among them
 `` $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ``. Nothing else, and never a character outside ASCII: those are written
 only in a string or a comment. A run of digits is a name like any other: `1` and `01` are two names, and Ein has no
 numbers ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)); arithmetic is a
-theory of the standard library ([the stdlib reference](../04-reference/04-stdlib/README.md)). What is **not** a name:
+theory of the standard library ([the calculator](../04-reference/04-stdlib/07-calculator.md)). What is **not** a name:
 a variable, `?x`, which a rule or a query binds and no fact holds; a keyword, `:why`, which marks a clause of a
 form; a string, `"…"`, which is natural-language text written only after `:why`, `:source` or `:goal-text`
 ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)); and the
@@ -311,7 +311,8 @@ $$
 Remove the two rules and `Person` means nothing again. A check that refutes a state whose fact does not fit, a
 hierarchy of labels, or inheritance along it is written the same way, as rules over the same facts
 ([ontology](04-ontology.md)); the standard library's bijection and typing rules read a declaration's labels so
-([the stdlib reference](../04-reference/04-stdlib/README.md)).
+([the relation algebra](../04-reference/04-stdlib/02-relation-algebra.md#labels-and-the-membership-relation),
+[bijections](../04-reference/04-stdlib/04-bijections.md#the-argument-check)).
 
 ## One name, one node
 

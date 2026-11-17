@@ -10,7 +10,7 @@ checked on every instance of a small domain, and number theory.
 Every program named here is in the repository, under [`examples/word_problems/`](../../../../examples/word_problems/)
 and [`examples/beyond_arith/`](../../../../examples/beyond_arith/), each with its answers stated as claims; the
 transcripts below are what `ein` prints for them, trimmed to the rows that matter. The calculator's modules and every
-relation they offer are on the [standard library's reference pages](../04-reference/04-stdlib/README.md).
+relation they offer are on the [standard library's reference pages](../04-reference/04-stdlib/07-calculator.md).
 
 ## Running the examples
 

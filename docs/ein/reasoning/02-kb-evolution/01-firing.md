@@ -12,12 +12,13 @@ $C$, sets of candidate facts drawn from a finite candidate set $H$, whose state 
 ([solution semantics](06-solution-semantics.md)):
 
 $$
-R = \lbrace\, C \subseteq H \;:\; \lnot\operatorname{dead}(C) \;\land\; \operatorname{owes}(C) = \emptyset \,\rbrace,
-\qquad \operatorname{st}(C) = \operatorname{sat}(\operatorname{root} \cup C)
+R = \lbrace\, C \subseteq H \;:\; \lnot\operatorname{dead}(C) \;\land\; \operatorname{owes}(C) = 0 \,\rbrace,
+\qquad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
 $$
 
-where $\operatorname{dead}(C)$ and $\operatorname{owes}(C)$ are read on the state $\operatorname{st}(C)$, and
-$\operatorname{root} = \operatorname{sat}(K_0)$ is the program's own facts saturated by its rules. Every question a
+where $\operatorname{dead}(C)$ and $\operatorname{owes}(C)$, the number of instances owed, are read on the state
+$\operatorname{st}(C)$, and
+$\mathrm{root} = \operatorname{sat}(K_0)$ is the program's own facts saturated by its rules. Every question a
 user asks is read off $R$, never chosen in advance. Write $\mathcal{S}(R) = \lbrace \operatorname{st}(C) : C \in R \rbrace$
 for the states of $R$:
 
@@ -67,18 +68,20 @@ $\bot$, the one fact that says a state is impossible (the language spells it `(f
 [constraints page](../../user/03-syntax-and-semantics/06-constraints.md) shows where it is written).
 
 **Knowledge base.** A **knowledge base** $K$ is a finite set of literals, read with the program $P$ whose rules
-act on it. $K_0$ is the knowledge base the program states. $K$ is **dead** when it holds a contradiction and
+act on it and with the provenance of its facts ([relations and facts](../01-static-ir/02-relations-and-facts.md)).
+$K_0$ is the knowledge base the program states. $K$ is **dead** when it holds a contradiction and
 **alive** otherwise:
 
 $$
 \operatorname{dead}(K) \iff \bot \in K \;\lor\; \exists f.\; f \in K \land \lnot f \in K
 $$
 
-**Rule.** A **rule** $\rho = (n, \bar p, M, A)$ has a name $n$, parameters $\bar p$, a **match** $M$, a pattern
-over variables, and a **conclusion** $A$, with a reason in words beside them
+**Rule.** A **rule** $\rho = (\bar p, \varphi, \psi)$ has parameters $\bar p$, a **match** $\varphi$, a pattern
+over variables, and a **conclusion** $\psi$, with a name, $\operatorname{name}(\rho)$, and a reason in words beside
+them
 ([rules as statements](../01-static-ir/04-rules-as-statements.md); the user's
-[rules page](../../user/03-syntax-and-semantics/05-rules.md) has the spelling). $A$ is a finite set of literals over
-the variables of $M$, read as their conjunction; or it is the single verdict that makes $\rho$ an **obligation**,
+[rules page](../../user/03-syntax-and-semantics/05-rules.md) has the spelling). $\psi$ is a finite set of literals over
+the variables of $\varphi$, read as their conjunction; or it is the single verdict that makes $\rho$ an **obligation**,
 which derives nothing ([satisfiability](10-satisfiability.md)).
 
 | object | what it is | elsewhere |
@@ -98,15 +101,15 @@ rules that read it make it mean.
 
 ## Firing a rule
 
-**Satisfaction.** A substitution $\theta$ maps variables to values. $K \models M\theta$, *$K$ satisfies $M$ under
+**Satisfaction.** A substitution $\theta$ maps variables to values. $K \models \varphi\theta$, *$K$ satisfies $\varphi$ under
 $\theta$*, is defined on the shape of the pattern, with $s, t$ terms and $\bar t$ a tuple of terms:
 
 $$
 \begin{aligned}
 K \models r(\bar t)\,\theta &\iff r(\bar t)\theta \in K \\
 K \models \lnot r(\bar t)\,\theta &\iff \lnot\bigl(r(\bar t)\theta\bigr) \in K \\
-K \models (M_1 \land M_2)\,\theta &\iff K \models M_1\theta \ \text{ and } \ K \models M_2\theta \\
-K \models (M_1 \lor M_2)\,\theta &\iff K \models M_1\theta \ \text{ or } \ K \models M_2\theta \\
+K \models (\varphi_1 \land \varphi_2)\,\theta &\iff K \models \varphi_1\theta \ \text{ and } \ K \models \varphi_2\theta \\
+K \models (\varphi_1 \lor \varphi_2)\,\theta &\iff K \models \varphi_1\theta \ \text{ or } \ K \models \varphi_2\theta \\
 K \models \operatorname{eq}(s, t)\,\theta &\iff s\theta = t\theta \\
 K \models \operatorname{neq}(s, t)\,\theta &\iff s\theta \neq t\theta \\
 K \models \operatorname{absent}(G)\,\theta &\iff \text{no } \theta' \supseteq \theta \text{ has } K \models G\theta'
@@ -118,27 +121,28 @@ objects, and nothing makes them equal. The last line is the one place a rule rea
 knowledge base it is read in is fixed by [the boundary](03-absent-and-naf.md).
 
 **Application.** A rule with parameters $\bar p = (p_1, \dots, p_m)$, $m \geq 1$, is applied once for each
-**activator**, a fact $a = n(v_1, \dots, v_m) \in K$ whose relation is the rule's name; the application
-$\rho[a]$ is $\rho$ with each $p_i$ replaced by $v_i$. A parameter may stand where a relation's name goes, so one
+**activator**, a fact $a = \operatorname{name}(\rho)(v_1, \dots, v_m) \in K$ whose relation is the rule's name; the
+application $\rho[a]$ is $\rho$ with each $p_i$ replaced by $v_i$, and $\varphi_\rho[a]$ and $\psi_\rho[a]$ are its
+match and its conclusion. A parameter may stand where a relation's name goes, so one
 rule states a property for every relation an activator names. A rule with no parameter has one application, and
 a rule with parameters and no activator has none.
 
-**Firing.** A **firing** is $\phi = (\rho, a, \theta)$: a rule, its activator, and a substitution of the variables
+**Firing.** A **firing** is $\xi = (\rho, a, \theta)$: a rule, its activator, and a substitution of the variables
 of its match. Its identity is that triple ([values and their order](../01-static-ir/03-values-and-order.md)). It
 is **enabled** in $K$ when the match holds there, and firing it adds the conclusion:
 
 $$
-\phi \in \operatorname{en}(K) \iff a \in K \;\land\; K \models M_{\rho[a]}\,\theta,
+\xi \in \operatorname{en}(K) \iff a \in K \;\land\; K \models \varphi_\rho[a]\,\theta,
 \qquad
-\operatorname{fire}(K, \phi) = K \cup A_{\rho[a]}\,\theta
+\operatorname{fire}(K, \xi) = K \cup \psi_\rho[a]\,\theta
 $$
 
 Three properties follow from the definition, and every later page rests on them:
 
 $$
-K \subseteq \operatorname{fire}(K, \phi), \qquad
-\operatorname{fire}(\operatorname{fire}(K, \phi), \phi) = \operatorname{fire}(K, \phi), \qquad
-\operatorname{dead}(K) \implies \operatorname{dead}(\operatorname{fire}(K, \phi))
+K \subseteq \operatorname{fire}(K, \xi), \qquad
+\operatorname{fire}(\operatorname{fire}(K, \xi), \xi) = \operatorname{fire}(K, \xi), \qquad
+\operatorname{dead}(K) \implies \operatorname{dead}(\operatorname{fire}(K, \xi))
 $$
 
 A firing only adds; firing it again adds nothing, so one identity fires at most once; and a dead knowledge base
@@ -199,7 +203,7 @@ $$
 \theta = \lbrace\, p \mapsto \mathsf{Norwegian},\ h \mapsto \mathsf{House\text{-}1},\ g \mapsto \mathsf{House\text{-}2} \,\rbrace,
 $$
 
-and the firing glues the conclusion onto the nodes $\theta$ found. After it, $\operatorname{fire}(K, \phi)$ holds
+and the firing glues the conclusion onto the nodes $\theta$ found. After it, $\operatorname{fire}(K, \xi)$ holds
 one arrow more, dashed because it is derived, and every arrow it held before:
 
 ```dot
@@ -221,13 +225,14 @@ digraph kb {
 ```
 
 $$
-\operatorname{fire}(K, \phi) = K \cup \lbrace\, \operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2}) \,\rbrace
+\operatorname{fire}(K, \xi) = K \cup \lbrace\, \operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2}) \,\rbrace
 $$
 
 In the algebraic reading of graph rewriting this is the degenerate span: nothing is deleted, the match is kept
 whole, and the conclusion is glued on ([rules as statements](../01-static-ir/04-rules-as-statements.md)). The new
-arrow carries its derivation record, $\delta = (\rho, a, \theta, \text{the premises } \theta \text{ matched})$,
-so the rewrite and its trace are one object.
+arrow carries its derivation record $\delta$, which holds $\rho$, $a$, $\theta$ and the premises $\theta$ matched
+([relations and facts](../01-static-ir/02-relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations)), so the
+rewrite and its trace are one object.
 
 ## Two layers
 
@@ -243,9 +248,9 @@ $\operatorname{absent}(G)$ are judged against that fixpoint ([saturation](02-sat
 fixpoint, and each commitment $C \subseteq H$ names a node, root's fixpoint with $C$ added and saturated again:
 
 $$
-\operatorname{root} = \operatorname{sat}(K_0), \qquad
-\operatorname{st}(C) = \operatorname{sat}(\operatorname{root} \cup C), \qquad
-\operatorname{st}(\emptyset) = \operatorname{root}
+\mathrm{root} = \operatorname{sat}(K_0), \qquad
+\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C), \qquad
+\operatorname{st}(\emptyset) = \mathrm{root}
 $$
 
 Nothing a node derives is written back into root. A commitment that leads to a contradiction is not retracted:
@@ -295,7 +300,7 @@ digraph main_steps {
 Every step but the last is a function of the program alone:
 
 $$
-P \;\longmapsto\; K_0 \;\longmapsto\; \operatorname{root} \;\longmapsto\; H \;\longmapsto\;
+P \;\longmapsto\; K_0 \;\longmapsto\; \mathrm{root} \;\longmapsto\; H \;\longmapsto\;
 \bigl( C \mapsto \operatorname{st}(C) \bigr) \;\longmapsto\; R
 $$
 
@@ -308,7 +313,7 @@ Strip away the puzzle vocabulary and the reasoning performs nine operations.
 
 | | operation | what it computes | page |
 |---|---|---|---|
-| **O1** | conjunctive matching | $\lbrace \theta : K \models M\theta \rbrace$, the substitutions under which a match holds | this page |
+| **O1** | conjunctive matching | $\lbrace \theta : K \models \varphi\theta \rbrace$, the substitutions under which a match holds | this page |
 | **O2** | saturation | $\operatorname{sat}(K)$, the least knowledge base containing $K$ that no firing changes | [saturation](02-saturation.md) |
 | **O3** | negation as failure | $K \models \operatorname{absent}(G)\theta$, asked once, of a quiescent $K$ | [absence](03-absent-and-naf.md) |
 | **O4** | equality | $s\theta = t\theta$, identity of values and nothing else | this page |
@@ -344,7 +349,7 @@ Strip away the puzzle vocabulary and the reasoning performs nine operations.
 
 ## The design principles
 
-1. **The graph is the knowledge, and reasoning only adds to it.** $K \subseteq \operatorname{fire}(K, \phi)$: a
+1. **The graph is the knowledge, and reasoning only adds to it.** $K \subseteq \operatorname{fire}(K, \xi)$: a
    world's facts only grow, a rule never removes a fact, and a fact never changes. What a search learns from a
    dead node, it learns by not entering it.
 2. **Rules may be higher-order.** A rule's parameters can stand for relations, bound by its activator facts, so

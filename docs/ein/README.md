@@ -9,7 +9,7 @@ three perspectives, each asked of every paragraph:
 |---|---|---|
 | [**user/**](user/README.md) | the language, how to run `ein`, what the answer means and every row it prints, a guide that solves the Zebra puzzle | *what do I write, and what does it tell me?* |
 | [**reasoning/**](reasoning/README.md) | what a loaded program means, how its knowledge base grows, what the answer is and why each way of finding it gives the same one | *what is computed, and why is it right?* — true of any implementation |
-| [**ein.rs/**](ein.rs/README.md) | the Rust workspace: its crates and modules, the design contracts the code cites, the engine's own read-outs, the library API | *how does this implementation compute it?* |
+| [**ein.rs/**](ein.rs/README.md) | the Rust workspace: its crates and modules, its algorithms, the design contracts the code cites, the engine's own read-outs, the library API, and for each page of the reasoning where the code implements it and which test holds it ([reasoning in code](ein.rs/08-reasoning-in-code/README.md)) | *how does this implementation compute it?* |
 
 A paragraph that would still be true of a second implementation is the reasoning's; one that names a crate, a module
 or a type is `ein.rs`'s; one about what a program says or what `ein` prints, with no word on how, is the user's.
@@ -21,7 +21,8 @@ or a type is `ein.rs`'s; one about what a program says or what `ein` prints, wit
   claim on these pages is held to: [what refutes one](../decisions/docs/Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md),
   [when an argument is enough](../decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md), and
   [what an exact number carries](../decisions/docs/Q-M1e.4-an-exact-number-in-a-page-carries-the-command.md).
-- [**Overview**](overview/README.md): how Ein relates to other reasoning systems, and the lineage of its language.
+- [**Overview**](overview/README.md): the lineage of Ein's language, what it takes from each tradition and where it
+  differs.
 - [**Demo**](../demo/README.md): the article and the talk.
 
 ## Where to start

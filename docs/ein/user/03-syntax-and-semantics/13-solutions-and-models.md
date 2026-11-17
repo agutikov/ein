@@ -156,14 +156,14 @@ Root is the program saturated, $H$ the candidates proposed at root, $n = |H|$, a
 node of the lattice $(2^H, \subseteq)$ ([hypotheses](09-hypotheses.md)):
 
 $$
-\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{state}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
 $$
 
 A node is judged by its state:
 
 $$
-\operatorname{dead}(C) \iff \bot \in \operatorname{state}(C), \qquad \operatorname{alive}(C) \iff \lnot \operatorname{dead}(C), \qquad
-\operatorname{discharged}(C) \iff \operatorname{owes}(\operatorname{state}(C)) = 0
+\operatorname{dead}(C) \iff \bot \in \operatorname{st}(C), \qquad \operatorname{alive}(C) \iff \lnot \operatorname{dead}(C), \qquad
+\operatorname{discharged}(C) \iff \operatorname{owes}(\operatorname{st}(C)) = 0
 $$
 
 with $\operatorname{owes}$ the count of obligation instances a state leaves unpaid ([obligations](08-obligations.md)).
@@ -176,13 +176,13 @@ $$
 It is counted two ways, in commitments and in states, and has two edges, its minimal and its maximal members:
 
 $$
-k_c = |R|, \qquad k_s = \bigl| \lbrace \operatorname{state}(C) \mid C \in R \rbrace \bigr|, \qquad \min(R), \quad \max(R)
+k_c = |R|, \qquad k_s = \bigl| \lbrace \operatorname{st}(C) \mid C \in R \rbrace \bigr|, \qquad \min(R), \quad \max(R)
 $$
 
 A model is what a solution's state adds to the program, positive facts only:
 
 $$
-\operatorname{model}(C) = \lbrace f \in \operatorname{state}(C) \mid f \text{ positive} \rbrace \setminus \lbrace f \in \mathrm{program} \mid f \text{ positive} \rbrace
+\operatorname{model}(C) = \lbrace f \in \operatorname{st}(C) \mid f \text{ positive} \rbrace \setminus \lbrace f \in \mathrm{program} \mid f \text{ positive} \rbrace
 $$
 
 For the chairs program $n = 4$, the lattice has $2^4 = 16$ nodes, no obligation is stated so every node is

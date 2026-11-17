@@ -121,7 +121,7 @@ $$
 $$
 
 A digest $d$ of a state may label it for a reader, and is never what decides that two states are one:
-$d(S) = d(S')$ does not imply $S = S'$, so a comparison of digests could count two states as one, and the
+$d(K) = d(K')$ does not imply $K = K'$, so a comparison of digests could count two states as one, and the
 comparison of sets cannot. What a state's identity leaves out is everything a fact's identity leaves out: how each
 fact came to be held, and in which order.
 
@@ -145,17 +145,17 @@ $\operatorname{cl}(C) \supsetneq C$ are two commitments with one state
 
 A rule $\rho$ with parameters $\bar{p} = (p_1, \dots, p_m)$ is applied once for each **activator**: a fact whose
 relation is the rule's name and whose arguments bind its parameters
-([rules as statements](04-rules-as-statements.md)). In a state $S$,
+([rules as statements](04-rules-as-statements.md)). In a state $K$,
 
 $$
-\operatorname{Act}_S(\rho) = \{\, \bar{a} \in V^{m} \;:\; \operatorname{name}(\rho)(a_1, \dots, a_m) \in S \,\}
+\operatorname{Act}_K(\rho) = \{\, a \in K \;:\; a = \operatorname{name}(\rho)(v_1, \dots, v_m),\ \ v_1, \dots, v_m \in V \,\}
 $$
 
 and a rule with no parameter, $m = 0$, has one application in every state. An **application** is a pair
-$(\rho, \bar{a})$. A **firing** is one application matched once, and its identity is the triple
+$(\rho, a)$, written $\rho[a]$. A **firing** is one application matched once, and its identity is the triple
 
 $$
-(\rho,\ \bar{a},\ \theta)
+(\rho,\ a,\ \theta)
 $$
 
 its rule, its activator, and the values its variables are bound to
@@ -164,7 +164,7 @@ when the three parts are equal, the activators compared **in every argument, as 
 alike ([Q-M1f.43](../../../decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)):
 
 $$
-(\rho, \bar{a}, \theta) = (\rho', \bar{a}', \theta') \iff \rho = \rho' \;\land\; \forall i \le m.\ a_i = a'_i \;\land\; \forall x.\ \theta(x) = \theta'(x)
+(\rho, a, \theta) = (\rho', a', \theta') \iff \rho = \rho' \;\land\; \forall i \le m.\ \operatorname{arg}_i(a) = \operatorname{arg}_i(a') \;\land\; \forall x.\ \theta(x) = \theta'(x)
 $$
 
 One identity fires at most once. Three consequences:
@@ -181,15 +181,15 @@ One identity fires at most once. Three consequences:
 **Proposition.** Let no rule of the program read an absence. Then the state its facts saturate to does not depend
 on the order they are written in, and writing one more activator only adds facts to it.
 
-*Argument.* The firings of $\rho$ in $S$ are the triples $(\rho, \bar{a}, \theta)$ with
-$\bar{a} \in \operatorname{Act}_S(\rho)$ and $S \models \varphi[\bar{a}]\theta$. Both conditions are conditions on
-the set $S$, not on the order its facts arrived in, and both are preserved when $S$ grows. So the saturated state
+*Argument.* The firings of $\rho$ in $K$ are the triples $(\rho, a, \theta)$ with
+$a \in \operatorname{Act}_K(\rho)$ and $K \models \varphi[a]\theta$. Both conditions are conditions on
+the set $K$, not on the order its facts arrived in, and both are preserved when $K$ grows. So the saturated state
 is the least state that holds the written facts and is closed under these firings, which is one state whatever
 the order. A new activator adds triples and, since every argument is part of the identity, is equal to none that
 was there; the least closed state above a larger set of facts is larger. $\square$
 
-An identity that kept only some of an activator's arguments, a projection $\pi(\bar{a})$ that is not injective,
-would make one identity of two applications with $\pi(\bar{a}) = \pi(\bar{a}')$ and one $\theta$, and would drop
+An identity that kept only some of an activator's arguments, a projection $\pi(a)$ that is not injective,
+would make one identity of two applications with $\pi(a) = \pi(a')$ and one $\theta$, and would drop
 the second firing as a repeat of the first: which conclusion survived would depend on which activator came first.
 
 **The example where that would show.** One rule with two parameters, $r$ in a relation's place and $f$ a value:

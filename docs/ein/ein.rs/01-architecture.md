@@ -110,7 +110,7 @@ The last three edges are `ein-corpus`'s own `[dev-dependencies]`, for its bench 
 - **`ein-core`** depends on no other crate of the workspace: interning, `Value` and `FactId`, the layered
   copy-on-write KB, provenance and its walks, the value printers, and `:why` template substitution, which the
   obligation pass needs below the renderers ([`03-design/03-data-model.md`](03-design/03-data-model.md)).
-- **`ein-ir`** parses, expands macros, resolves imports and loads: it builds the KB itself rather than handing an AST
+- **`ein-ir`** parses, resolves imports, expands macros and loads: it builds the KB itself rather than handing an AST
   to a separate loader, which is why it sits above the store ([`03-design/04-ir-frontend.md`](03-design/04-ir-frontend.md)).
 - **`ein-infer`** is the only writer of derived facts: compile, match, saturate, the boundary, the obligation pass,
   hypothesis generation, the routes over `R`, the cores

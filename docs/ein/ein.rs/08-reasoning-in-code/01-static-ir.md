@@ -110,7 +110,7 @@ The page: [names and atoms](../../reasoning/01-static-ir/01-names-and-atoms.md).
 | the declared count of arguments | `declared_counts` and `wrong_counts` in `ein-ir/src/from_ir.rs` |
 | `written` | `state_written` and `written_in_conclusions` in `ein-ir/src/from_ir.rs`; `ein_core::terms::WRITTEN`, and `WRITTEN_STEP`, the made-up rule name `#written` its facts are derived by |
 | the names of a program | `intern_program_names` in `ein-ir/src/from_ir.rs`; `ein_infer::invariant::program_names` |
-| the blind enumerator's objects | `ein_infer::hypgen::candidate_objects`; the rows that name a relation or a slot name bound as an object, `ein-infer/src/relation_names.rs` and `types_as_objects.rs` |
+| the blind enumerator's objects | `ein_infer::hypgen::candidate_objects`; the rows that name a relation or a label bound as an object, `ein-infer/src/relation_names.rs` and `types_as_objects.rs` |
 | the origin of a fact, read off its provenance | the three buckets of `ein saturate --dump` in `ein-cli/src/saturate.rs`; `ColourBy::Origin` in `ein-render/src/kb_dot.rs` |
 
 ### What holds it
@@ -121,9 +121,9 @@ The page: [names and atoms](../../reasoning/01-static-ir/01-names-and-atoms.md).
 | no name the loader makes up is a name a program can write | `ein-ir/tests/generated_parser.rs`: `no_name_the_loader_makes_up_is_a_name` |
 | a kernel marker is refused wherever a program binds it | `ein-ir/tests/engine_names.rs`: `a_dunder_is_refused_wherever_a_program_binds_it` |
 | one module reached through several imports is one copy; a short name is local to its file | `ein-ir/tests/imports_full_names.rs`: `the_users_dependency_graph`, `a_short_name_is_local_to_its_file`; `ein-ir/tests/imports_semantics.rs`: `one_module_under_two_spellings_is_one_copy` |
-| a form of a declared relation at another count is refused, and the slot names are no type check | `ein-cli/tests/declared_counts.rs`: `a_form_of_another_count_is_refused_on_every_command`, `what_is_not_a_declared_relations_form_loads` |
+| a form of a declared relation at another count is refused, and the labels are no type check | `ein-cli/tests/declared_counts.rs`: `a_form_of_another_count_is_refused_on_every_command`, `what_is_not_a_declared_relations_form_loads` |
 | a relation name, a rule name or an hrule name declared twice is refused at load | `ein-ir/tests/load_semantics.rs`: `the_load_negative_fixtures_are_byte_identical`, over `examples/broken/load/rule_duplicate_name.ein` and `hrule_duplicate_name.ein` |
-| a declaration is stored as the fact with its slot names and the fact of one argument; a bare one as one fact | `ein-infer/tests/compile_semantics.rs`: `a_bare_declaration_is_declared_with_an_empty_signature_and_stores_one_fact`; the loader's unit test `a_declaration_stores_itself_as_facts_so_rules_can_read_signatures` in `ein-ir/src/from_ir.rs` |
+| a declaration is stored as the fact with its labels and the fact of one argument; a bare one as one fact | `ein-infer/tests/compile_semantics.rs`: `a_bare_declaration_is_declared_with_an_empty_signature_and_stores_one_fact`; the loader's unit test `a_declaration_stores_itself_as_facts_so_rules_can_read_signatures` in `ein-ir/src/from_ir.rs` |
 | an undeclared head is a relation | the loader's unit test `an_undeclared_head_vivifies_a_relation_but_a_predicate_does_not` in `ein-ir/src/from_ir.rs` |
 | the loader states `written` for what a file nests and for a conclusion's ground nested facts, and a program may not write it | `ein-cli/tests/written_facts.rs`: `what_the_loader_states`, `a_program_does_not_write_written` |
 | a pattern matches into a nested fact, and a nested fact pairs with its negation by structure | `ein-infer/tests/rule_semantics.rs`: `a_nested_pattern_binds_inside_the_nested_fact`; `ein-infer/tests/search_semantics.rs`: `a_nested_positive_pairs_through_structural_identity` |
@@ -133,8 +133,9 @@ The page: [names and atoms](../../reasoning/01-static-ir/01-names-and-atoms.md).
 
 ### Commands that show it
 
-**A declaration is a fact a rule's `:match` reads, and its slot names are ordinary names.** The page's rule that
-gives a slot name a meaning, as a program. A variable in a relation's place must be a parameter, so the rule takes
+**A declaration is a fact a rule's `:match` reads, and its labels are ordinary names**
+([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). The page's rule that
+gives a label a meaning, as a program. A variable in a relation's place must be a parameter, so the rule takes
 `?R` and an activator names the relation:
 
 ```lisp
@@ -161,7 +162,7 @@ first-typed)`. `(lives-in House-1 Norwegian)` loads, and the rule concludes noth
 written `(rule first-typed () …)` the program is refused at load: *its :match writes (?R ?x1 ?x2) with ?R as its
 relation, which no parameter binds*.
 
-**The one place a slot name is read by name.** Two programs that differ only in the slot names of one
+**The one place a label is read by name.** Two programs that differ only in the labels of one
 declaration, `(relation lives-in Person House …)` against `(relation lives-in A B …)`, over the same four lines:
 
 ```lisp
@@ -177,8 +178,8 @@ ein show hyps FILE
 ```
 
 The first lists 4 candidates and the second 22: with the declaration naming `A` and `B`, `Person` and `House` are
-no longer slot names of any declaration, so the blind enumerator takes them for objects and proposes
-`(lives-in Person House-1)` and the like. No rule reads the slot names in either program
+no longer labels of any declaration, so the blind enumerator takes them for objects and proposes
+`(lives-in Person House-1)` and the like. No rule reads the labels in either program
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
 
 ## Relations and facts

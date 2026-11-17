@@ -31,7 +31,9 @@ The import brings `std.macro`. The module has no entry: what it closes is the pr
 
 ### Labels, and the membership relation
 
-Ein has no types. A declaration `(relation likes Person Food)` writes a name in each argument place, and those
+Ein has no types
+([Q-M1f.372](../../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). A
+declaration `(relation likes Person Food)` writes a name in each argument place, and those
 names are labels: they mean something only where a rule reads them. Some rules of this module do. They match the
 declaration itself, `(relation ?R ?A ?B)`, and take the *members* of the label `A` to be the names `a` of which
 the state holds `(isa a A)`, where `isa` is a relation the program has and passes in the activator:

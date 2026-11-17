@@ -190,7 +190,7 @@ an answer. What each view draws, and how, is [`12-rendering.md`](12-rendering.md
 | `ein render kb FILE` | a knowledge base, loaded and saturated, as one digraph; a state file of `--dump-answer` is a `FILE`, so a solution draws the way root does |
 | `ein render lattice FILE` | the nodes a describing `ein solve` run visits: R green, owing amber, dead red |
 | `ein render region DIR` | an `ein oracle --dump` directory as a Hasse diagram, with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`, `--answer`); it loads nothing |
-| `ein render h-space FILE` | the structure of the hypothesis set: which candidates exclude each other, the groups and grids, what couples the questions ([`docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md`](../../reasoning/02-kb-evolution/05-hypothesis-space.md)) |
+| `ein render h-space FILE` | the structure of the hypothesis set: which candidates exclude each other, the groups and grids, what couples the questions ([what the structure is](../../reasoning/02-kb-evolution/05-hypothesis-space.md); [the command, its read-out and `h-space.json`](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#23-the-command)) |
 | `ein show hyps FILE` | the hypothesis set H as Ein facts, one candidate a line, in the universe's order; a `note:` on stderr says which rung built H and how many it holds ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)) |
 
 ### 2.6 `ein kb`

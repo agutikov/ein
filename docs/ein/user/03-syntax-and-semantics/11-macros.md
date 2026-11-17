@@ -379,7 +379,7 @@ The form is `(macro NAME (PARAMETER…) BODY :why "TEXT")`, with one parameter o
   ([Q-M1f.131](../../../decisions/language/Q-M1f.131-no-relation-is-declared-under-a-macros-name.md)).
 
 `std.macro`'s two are imported like any module's names
-([the standard library](../04-reference/04-stdlib/README.md)). They are not reserved, and a program that writes
+([`std.macro`](../04-reference/04-stdlib/01-macros.md)). They are not reserved, and a program that writes
 `unknown` without importing it is refused, since unexpanded it would match nothing.
 
 ## Imports
@@ -460,7 +460,7 @@ depend on which is used**
 ### Where a module is found
 
 - `std.x.y` is the standard library's, `x/y.ein` under its root
-  ([the standard library](../04-reference/04-stdlib/README.md); which copy of it a binary reads is
+  ([the standard library](../04-reference/04-stdlib/README.md#importing-a-module); which copy of it a binary reads is
   [install](../01-install.md)'s).
 - Any other name is a path **from the program file's directory**, a dot per directory: `seating.rules` is
   `seating/rules.ein` beside the program. A module's own imports are found from the program's directory too, not the

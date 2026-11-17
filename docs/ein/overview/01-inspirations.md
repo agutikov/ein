@@ -7,7 +7,7 @@ lineage: what was taken, and what Ein does instead.
 |---|---|---|
 | **SMT-LIB 2** | S-expressions; `;` and `#\| … \|#` comments; `:keyword` arguments; meaning carried by named atoms | rules are part of the program, with no separate form for a recursive definition; no theory annotations; no `(check-sat)`: a program states what it asks with `(query …)` and `(solve …)` |
 | **miniKanren** | relations over atoms; the `?var` convention; a body as a conjunction of patterns | no `fresh` and no unification syntax: a rule's variables are bound by its `:match` |
-| **AtomSpace** | explicit declarations of relations, each slot given a name | no types: a slot's name is an ordinary name, a label with no meaning a rule does not give it; no probabilistic truth values and no weights: a fact holds, its negation is stored, or neither is known |
+| **AtomSpace** | explicit declarations of relations, each argument place given a label | no types: a label is an ordinary name, with no meaning a rule does not give it ([Q-M1f.372](../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)); no probabilistic truth values and no weights: a fact holds, its negation is stored, or neither is known |
 | **Datalog** | a rule as a head and a body, which Ein writes as `:assert` and `:match`; derivation to a fixpoint | S-expressions rather than infix clauses; every rule carries a `:why` text, so a firing reads as a sentence |
 | **Double-pushout graph rewriting** | `:match` and `:assert` read as the sub-graph before and the sub-graph after | a rule is not written as a span $L \leftarrow K \rightarrow R$, and the engine does not rewrite by pushouts: it adds facts |
 
@@ -38,7 +38,7 @@ digraph lineage {
 
   smt -> ein [label="S-expressions, comments,\n:keyword arguments"];
   mk  -> ein [label="relations over atoms,\n?var, a body as a conjunction"];
-  as  -> ein [label="explicit declarations of relations,\neach slot given a name"];
+  as  -> ein [label="explicit declarations of relations,\neach argument place given a label"];
   dl  -> ein [label="head and body: :assert and :match;\nderivation to a fixpoint"];
   dpo -> ein [label=":match and :assert as the\nsub-graph before and after"];
 

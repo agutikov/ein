@@ -360,7 +360,9 @@ are alive and every one of them owes.
 | `slot-owed-fill` | `std.slots` | each slot an item of each kind | `slot-partition-setup` |
 
 Each asserts `(open ?R)` and nothing else, and each is paired with the restriction that refutes the same requirement
-once it cannot be met. Their reference is [the standard library](../04-reference/04-stdlib/README.md).
+once it cannot be met. Their reference is the standard library's:
+[`total-owed` and `surjective-owed`](../04-reference/04-stdlib/02-relation-algebra.md#obligations-total-owed-and-surjective-owed),
+[`std.slots`](../04-reference/04-stdlib/05-slots.md#where-root-owes-the-search).
 
 ## Saying how many
 
