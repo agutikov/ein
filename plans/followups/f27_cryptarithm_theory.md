@@ -11,8 +11,9 @@ std.crypt, maybe std.math.arith.crypt"*), and the replies' index placed it as **
 later** ([`replies_2026-11-12.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md),
 row 42). The user fixed its id at **Q-M1f.337** with the map of local numbers (S1f.20.2's review, item 7). Being
 unbuilt, it has no file under `docs/decisions/`: a decision file states what holds, and nothing of this holds yet.
-`utils/decision_census.txt` carries it as `P1f.6#42`, `as Q-M1f.337`, flagged `pending`. When the theory ships, its
-decision file is written as `docs/decisions/stdlib/math/Q-M1f.337-<slug>.md` and the flag goes.
+The decision census carried it as `P1f.6#42`, `as Q-M1f.337`, flagged `pending`, until it was retired (S1f.20.9);
+this followup is its record now. When the theory ships, its decision file is written as
+`docs/decisions/stdlib/math/Q-M1f.337-<slug>.md`.
 
 **What it is.** The column rules of an addition with the digit tables read in every direction, written once, so a
 cryptarithm states only its letters and its columns; SEND + MORE = MONEY its example. The question's source is
