@@ -76,13 +76,16 @@ ein saturate three-houses.ein --dump
   (vacant House-3 :rule nobody-home)
 ```
 
-**Where each drawing of the reasoning comes from.** Every command writes DOT on stdout
-([rendering](../../user/04-reference/12-rendering.md) is the legend); a page pastes the digraph it names, with
-the layout hints and comment lines taken out, and where it says so, a part of it.
+**Where each drawing of the reasoning comes from.** The drawings of the two pages are files under
+[`reasoning/01-static-ir/diagrams/`](../../reasoning/01-static-ir/diagrams/): each a source, `.dot` or `.puml`,
+named for its page and what it shows, and the `.svg` drawn from it, which the page shows. Every command below
+writes DOT on stdout ([rendering](../../user/04-reference/12-rendering.md) is the legend); a source that comes
+from one is the digraph the command names, with the layout hints and comment lines taken out.
 
 | page | drawing | command |
 |---|---|---|
 | the knowledge base | the graph of the four facts; the relation, its extent and two facts about it; the declaration of `lives-in`; what an arrow points at | **none**: drawn by hand, see below |
+| the knowledge base | the definitions as a class diagram | by hand, in PlantUML |
 | the knowledge base | the two forms side by side | by hand; its right half is what `ein render program three-houses.ein` draws of two facts in its digraph `facts` |
 | the rules | the pattern, the match, the result of rewriting, the rule `transitive` with its activator pattern | **none**: drawn by hand |
 | the rules | `pet-follows-owner`, `nobody-home` | `ein render rules three-houses.ein` |

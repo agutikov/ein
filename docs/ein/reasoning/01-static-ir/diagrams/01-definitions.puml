@@ -1,0 +1,34 @@
+@startuml
+hide empty methods
+hide circle
+skinparam shadowing false
+skinparam nodesep 170
+skinparam classAttributeIconSize 0
+
+abstract class Object {
+  a node of the graph
+}
+class Atom {
+  {field} name  «identity»
+  --
+  no outgoing arrow
+}
+class Fact {
+  {field} the list of the objects under its arrows  «identity»
+  --
+  one or more outgoing arrows, in order
+}
+class "Relation declaration" as Decl {
+  first arrow: the atom named "relation"
+  second arrow: the declared relation
+  later arrows: its labels
+}
+
+Object <|-- Atom
+Object <|-- Fact
+note on link: every object is an atom or a fact,\nand none is both
+Fact <|-- Decl
+Fact "*" -up-> "1..* {ordered}" Object : arrows
+Fact "/extent  *" -left-> "relation  1" Atom : first arrow
+Decl "*" -left-> "declared relation  1" Atom : second arrow
+@enduml

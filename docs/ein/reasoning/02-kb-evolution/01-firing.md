@@ -152,7 +152,11 @@ one when the three parts are equal, the activators compared **in every argument,
 facts alike ([Q-M1f.43](../../../decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)):
 
 $$
-(\rho, a, \theta) = (\rho', a', \theta') \iff \rho = \rho' \;\land\; \forall i \le m.\ \operatorname{arg}_i(a) = \operatorname{arg}_i(a') \;\land\; \forall x.\ \theta(x) = \theta'(x)
+\begin{aligned}
+(\rho, a, \theta) = (\rho', a', \theta') \iff\ & \rho = \rho' \\
+\land\ & \forall i \le m.\ \operatorname{arg}_i(a) = \operatorname{arg}_i(a') \\
+\land\ & \forall x.\ \theta(x) = \theta'(x)
+\end{aligned}
 $$
 
 So two activators of one rule that differ in any argument are two applications, and each fires. An identity that
@@ -344,7 +348,7 @@ any order, and may share a run among any number $w$ of workers. Let $\operatorna
 run: the answer, a rendering of it, a narration, a core, a dump. Then
 
 $$
-\operatorname{Obs}(P;\ \iota,\ w) = \operatorname{Obs}(P;\ \iota',\ w') \qquad \text{for all } \iota, \iota', w, w'
+\forall \iota, \iota', w, w'.\ \ \operatorname{Obs}(P;\ \iota,\ w) = \operatorname{Obs}(P;\ \iota',\ w')
 $$
 
 so $\operatorname{Obs}$ is a function of the program alone. Every order a reader sees is therefore an order of

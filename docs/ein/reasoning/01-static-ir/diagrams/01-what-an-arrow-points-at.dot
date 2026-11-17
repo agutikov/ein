@@ -1,0 +1,26 @@
+digraph what_an_arrow_points_at {
+  rankdir=TB; nodesep=0.4; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  { rank=min; "transitive"; "not"; "says"; }
+  "left-of";
+  { rank=max; "House-1"; "House-2"; "Norwegian"; }
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  f3 [xlabel="f3"]; p [xlabel="p"]; n [xlabel="n"]; s [xlabel="s"];
+  g [xlabel="g", style=solid];
+  { rank=same; p; n; s; }
+  { rank=same; f3; g; }
+  p -> "transitive" [label="1"];
+  p -> "left-of" [label="2"];
+  n -> "not" [label="1"];
+  n -> g [label="2"];
+  s -> "says" [label="1"];
+  s -> "Norwegian" [label="2"];
+  s -> g [label="3"];
+  f3 -> "left-of" [label="1"];
+  f3 -> "House-1" [label="2"];
+  f3 -> "House-2" [label="3"];
+  g -> "left-of" [label="1"];
+  g -> "House-2" [label="2"];
+  g -> "House-1" [label="3"];
+}

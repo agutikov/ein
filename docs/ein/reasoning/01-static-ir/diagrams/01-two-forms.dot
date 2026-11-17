@@ -1,0 +1,22 @@
+digraph two_forms {
+  rankdir=TB; nodesep=0.4; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  subgraph cluster_graph { label="the graph"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    "left-of";
+    h1 [label="House-1"]; h2 [label="House-2"]; h3 [label="House-3"];
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    f3 [xlabel="f3"]; f4 [xlabel="f4"];
+    "left-of" -> f3 [label="1", dir=back];
+    f3 -> h1 [label="2"];
+    f3 -> h2 [label="3"];
+    "left-of" -> f4 [label="1", dir=back];
+    f4 -> h2 [label="2"];
+    f4 -> h3 [label="3"];
+  }
+  subgraph cluster_arrows { label="drawn with labelled arrows"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    a1 [label="House-1"]; a2 [label="House-2"]; a3 [label="House-3"];
+    a1 -> a2 [label="left-of"];
+    a2 -> a3 [label="left-of"];
+  }
+}

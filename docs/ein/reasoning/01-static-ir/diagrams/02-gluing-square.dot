@@ -1,0 +1,12 @@
+digraph gluing {
+  node [shape=box, style=rounded, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=10];
+  L  [label="L\nthe pattern"];
+  Lp [label="L⁺ = L ∪ ψ\nthe pattern with the conclusion"];
+  G  [label="G(K)\nthe knowledge base"];
+  Gp [label="G(K ∪ ψθ)\nthe result of rewriting"];
+  { rank=same; L -> Lp [label="  r, an inclusion  "]; }
+  { rank=same; G -> Gp [label="  an inclusion  "]; }
+  L -> G   [label="  m, the match"];
+  Lp -> Gp [label="  m, extended"];
+}

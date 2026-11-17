@@ -1,0 +1,27 @@
+digraph declaration {
+  rankdir=TB; nodesep=0.35; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  { rank=min; "relation"; }
+  "lives-in"; "is-a";
+  { rank=max; "Person"; "House"; "Norwegian"; "House-1"; }
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  d1 [xlabel="d1"]; d2 [xlabel="d2"]; f2 [xlabel="f2"]; m1 [xlabel="m1"]; m2 [xlabel="m2"];
+  { rank=same; d1; d2; }
+  { rank=same; f2; m1; m2; }
+  d1 -> "relation" [label="1"];
+  d1 -> "lives-in" [label="2"];
+  d1 -> "Person" [label="3"];
+  d1 -> "House" [label="4"];
+  d2 -> "relation" [label="1"];
+  d2 -> "lives-in" [label="2"];
+  "lives-in" -> f2 [label="1", dir=back];
+  f2 -> "Norwegian" [label="2"];
+  f2 -> "House-1" [label="3"];
+  "is-a" -> m1 [label="1", dir=back];
+  m1 -> "Norwegian" [label="2"];
+  m1 -> "Person" [label="3"];
+  "is-a" -> m2 [label="1", dir=back];
+  m2 -> "House-1" [label="2"];
+  m2 -> "House" [label="3"];
+}

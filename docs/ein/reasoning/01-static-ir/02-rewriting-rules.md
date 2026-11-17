@@ -17,7 +17,12 @@ one node, one list of arrows is one node, no path of arrows returns to its start
 node with no outgoing arrow, an atom or a variable. As terms:
 
 $$
-t \;::=\; a \;\mid\; x \;\mid\; s(t_1, \dots, t_n), \qquad a \in \Sigma^{+},\quad x \in X,\quad s \in (\Sigma^{+} \setminus W_{\!c}) \cup X
+\begin{aligned}
+t \;&::=\; a \;\mid\; x \;\mid\; s(t_1, \dots, t_n) \\
+a &\in \Sigma^{+} \\
+x &\in X \\
+s &\in (\Sigma^{+} \setminus W_{\!c}) \cup X
+\end{aligned}
 $$
 
 within the shapes the reserved atoms fix: $\lnot t$ is the fact pattern $\operatorname{not}(t)$ with $t$ a fact
@@ -27,27 +32,13 @@ of the facts of a knowledge base are held.
 
 The pattern graph below is two premises over three variables:
 
-```dot
-digraph pattern {
-  rankdir=TB; nodesep=0.4; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "owns"; "lives-in"; }
-  node [shape=diamond];
-  { rank=max; "?x"; "?p"; "?h"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  q1 [xlabel="q1"]; q2 [xlabel="q2"];
-  q1 -> "owns" [label="1"];
-  q1 -> "?p" [label="2"];
-  q1 -> "?x" [label="3"];
-  q2 -> "lives-in" [label="1"];
-  q2 -> "?p" [label="2"];
-  q2 -> "?h" [label="3"];
-}
-```
+![A pattern graph of two premises over three variables](diagrams/02-pattern.svg)
 
 $$
-q_1 = \operatorname{owns}(p, x), \qquad q_2 = \operatorname{lives-in}(p, h)
+\begin{aligned}
+q_1 &= \operatorname{owns}(p, x) \\
+q_2 &= \operatorname{lives-in}(p, h)
+\end{aligned}
 $$
 
 A diamond is a variable. A box is an atom and an octagon a fact pattern, filled where it is a premise, as in a
@@ -61,14 +52,18 @@ object. A **match** of a pattern graph in a knowledge base $K$ is a substitution
 which every premise is a held fact:
 
 $$
-t\theta \in K \qquad \text{for every premise } t
+\forall t \text{ a premise}.\ \ t\theta \in K
 $$
 
 On the graphs, a match is a **homomorphism** $m$ from the pattern graph to the graph of $K$: a map of nodes that
 fixes the atoms, keeps the arrows in their order, and sends a premise to a held fact,
 
 $$
-m(a) = a, \qquad \operatorname{out}(m(t)) = \big(m(t_1), m(t_2), \dots, m(t_k)\big) \ \text{ where } \operatorname{out}(t) = (t_1, t_2, \dots, t_k), \qquad m(t) \in K \ \text{ for a premise } t
+\begin{aligned}
+m(a) &= a && \text{for an atom } a \\
+\operatorname{out}(m(t)) &= \big(m(t_1), m(t_2), \dots, m(t_k)\big) && \text{where } \operatorname{out}(t) = (t_1, t_2, \dots, t_k) \\
+m(t) &\in K && \text{for a premise } t
+\end{aligned}
 $$
 
 and $m$ is $\theta$ on the variables and $t \mapsto t\theta$ on the fact patterns. Four things follow from the
@@ -84,51 +79,14 @@ definition:
 
 The pattern above has exactly one match in the knowledge base of three facts drawn beside it:
 
-```dot
-digraph a_match {
-  rankdir=TB; nodesep=0.45; ranksep=0.8;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  "owns"; "lives-in"; "left-of";
-  subgraph cluster_pattern { label="the pattern"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
-    node [shape=diamond];
-    "?x"; "?p"; "?h";
-    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-    q1 [xlabel="q1"]; q2 [xlabel="q2"];
-  }
-  subgraph cluster_kb { label="the knowledge base"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
-    "Dog"; "Norwegian"; "House-1"; "House-2";
-    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-    f1 [xlabel="f1"]; f2 [xlabel="f2"]; f3 [xlabel="f3"];
-  }
-  "owns" -> q1 [label="1", dir=back];
-  q1 -> "?p" [label="2"];
-  q1 -> "?x" [label="3"];
-  "lives-in" -> q2 [label="1", dir=back];
-  q2 -> "?p" [label="2"];
-  q2 -> "?h" [label="3"];
-  "owns" -> f1 [label="1", dir=back];
-  f1 -> "Norwegian" [label="2"];
-  f1 -> "Dog" [label="3"];
-  "lives-in" -> f2 [label="1", dir=back];
-  f2 -> "Norwegian" [label="2"];
-  f2 -> "House-1" [label="3"];
-  "left-of" -> f3 [label="1", dir=back];
-  f3 -> "House-1" [label="2"];
-  f3 -> "House-2" [label="3"];
-  edge [style=dotted, color="#1f77b4", fontcolor="#1f77b4", constraint=false, arrowhead=vee];
-  q1 -> f1 [label="m"];
-  q2 -> f2 [label="m"];
-  "?p" -> "Norwegian" [label="m"];
-  "?x" -> "Dog" [label="m"];
-  "?h" -> "House-1" [label="m"];
-}
-```
+![A match drawn as dotted arrows from a pattern into a knowledge base](diagrams/02-match.svg)
 
 $$
-\theta = \{\, p \mapsto \mathsf{Norwegian},\ x \mapsto \mathsf{Dog},\ h \mapsto \mathsf{House\text{-}1} \,\}, \qquad
-m(q_1) = f_1 = \operatorname{owns}(\mathsf{Norwegian}, \mathsf{Dog}), \qquad
-m(q_2) = f_2 = \operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1})
+\begin{aligned}
+\theta &= \{\, p \mapsto \mathsf{Norwegian},\ x \mapsto \mathsf{Dog},\ h \mapsto \mathsf{House\text{-}1} \,\} \\
+m(q_1) &= f_1 = \operatorname{owns}(\mathsf{Norwegian}, \mathsf{Dog}) \\
+m(q_2) &= f_2 = \operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1})
+\end{aligned}
 $$
 
 A dotted arrow is the match, drawn for the five nodes it moves; the atoms
@@ -190,9 +148,10 @@ $\operatorname{absent}(G)$ the substitution $\theta$ is the one the parts before
 variables are those of $G$ that nothing before it binds:
 
 $$
-\operatorname{owns}(p, x) \land \operatorname{absent}(\operatorname{lives-in}(p, h)) \ \ \text{reads} \ \ \lnot \exists h.\ \operatorname{lives-in}(p\theta, h),
-\qquad
-\operatorname{absent}(\operatorname{lives-in}(p, h)) \land \operatorname{owns}(p, x) \ \ \text{reads} \ \ \lnot \exists p, h.\ \operatorname{lives-in}(p, h)
+\begin{aligned}
+\operatorname{owns}(p, x) \land \operatorname{absent}(\operatorname{lives-in}(p, h)) \ \ &\text{reads} \ \ \lnot \exists h.\ \operatorname{lives-in}(p\theta, h) \\
+\operatorname{absent}(\operatorname{lives-in}(p, h)) \land \operatorname{owns}(p, x) \ \ &\text{reads} \ \ \lnot \exists p, h.\ \operatorname{lives-in}(p, h)
+\end{aligned}
 $$
 
 A **match** of a pattern $\varphi$ in $K$ over $N$ is a substitution $\theta$ of the variables that stand in
@@ -201,7 +160,10 @@ $\varphi$ outside every absence, with $K \models \varphi\theta$.
 **Two forms written with these**, and no part of the definition: the bounded universal and the open fact,
 
 $$
-\operatorname{forall}(x;\ G,\ B) \;=\; \operatorname{absent}\big(G \land \operatorname{absent}(B)\big), \qquad\qquad \operatorname{unknown}(t) \;=\; \operatorname{absent}(t) \land \operatorname{absent}(\lnot t)
+\begin{aligned}
+\operatorname{forall}(x;\ G,\ B) &= \operatorname{absent}\big(G \land \operatorname{absent}(B)\big) \\
+\operatorname{unknown}(t) &= \operatorname{absent}(t) \land \operatorname{absent}(\lnot t)
+\end{aligned}
 $$
 
 the first read *for every $x$ with $G$, $B$ holds*. With them each of the three statuses of a fact $f$ that an
@@ -217,7 +179,10 @@ has a pattern that holds exactly there:
 **The premise $\lnot f$ is never the absence of $f$**:
 
 $$
-K \models \lnot f \iff \lnot f \in K, \qquad\qquad K \models \operatorname{absent}(f) \iff f \notin K
+\begin{aligned}
+K \models \lnot f &\iff \lnot f \in K \\
+K \models \operatorname{absent}(f) &\iff f \notin K
+\end{aligned}
 $$
 
 for a fact $f$. The two differ on every open fact, where the second holds and the first does not.
@@ -227,27 +192,7 @@ A pattern with an absence, drawn with labelled arrows
 $\operatorname{is-a}(h, \mathsf{House}) \land \operatorname{absent}(\operatorname{lives-in}(p, h))$, with its
 conclusion $\operatorname{vacant}(h)$ in the lower panel.
 
-```dot
-digraph rule_nobody_home_lhs_rhs {
-  rankdir=TB;
-  label="nobody-home"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?h_L" [label="?h", shape=diamond];
-    "House_L" [label="House", shape=rectangle];
-    "?h_L" -> "House_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?p_L" [label="?p", shape=diamond];
-      "?p_L" -> "?h_L" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?h_R" [label="?h", shape=diamond];
-    "h1_vacant_R" [shape=octagon, label="vacant", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_vacant_R" -> "?h_R" [label="1", color="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule nobody-home, with its absence in a dashed box](diagrams/02-absence-nobody-home.svg)
 
 The dashed box is the absence: the variable $p$ is its own, and the match counts where no object in its place
 makes the arrow in the box a held fact.
@@ -267,10 +212,12 @@ substitution $\theta$ that gives every variable of $\psi$ an object, the **insta
 facts, the union over the literals of
 
 $$
-t \mapsto \{ t\theta \}, \qquad
-\lnot x \mapsto \begin{cases} \{ \lnot\,\theta(x) \} & \theta(x) \in F \\ \emptyset & \theta(x) \in \Sigma^{+} \end{cases}, \qquad
-(t = t') \mapsto \begin{cases} \emptyset & t\theta = t'\theta \\ \{ \bot \} & t\theta \neq t'\theta \end{cases}, \qquad
-(t \neq t') \mapsto \begin{cases} \{ \bot \} & t\theta = t'\theta \\ \emptyset & t\theta \neq t'\theta \end{cases}
+\begin{aligned}
+t &\mapsto \{ t\theta \} \\
+\lnot x &\mapsto \begin{cases} \{ \lnot\,\theta(x) \} & \theta(x) \in F \\ \emptyset & \theta(x) \in \Sigma^{+} \end{cases} \\
+(t = t') &\mapsto \begin{cases} \emptyset & t\theta = t'\theta \\ \{ \bot \} & t\theta \neq t'\theta \end{cases} \\
+(t \neq t') &\mapsto \begin{cases} \{ \bot \} & t\theta = t'\theta \\ \emptyset & t\theta \neq t'\theta \end{cases}
+\end{aligned}
 $$
 
 An atom has no negation, so the second literal adds nothing where its variable holds one
@@ -289,9 +236,11 @@ nodes of $\psi\theta$ glued on along the match: each new fact points at the obje
 atoms the conclusion names. Three things are true of it by the definition:
 
 $$
-K \subseteq K \cup \psi\theta, \qquad
-\psi\theta \subseteq K \implies K \cup \psi\theta = K, \qquad
-\operatorname{names}(K \cup \psi\theta) \subseteq \operatorname{names}(K) \cup \operatorname{names}(\psi) \cup N
+\begin{aligned}
+K &\subseteq K \cup \psi\theta \\
+\psi\theta \subseteq K &\implies K \cup \psi\theta = K \\
+\operatorname{names}(K \cup \psi\theta) &\subseteq \operatorname{names}(K) \cup \operatorname{names}(\psi) \cup N
+\end{aligned}
 $$
 
 Nothing is removed and no object is changed, so a rewriting never undoes a fact, and a negative conclusion adds
@@ -302,58 +251,20 @@ arrow of $K$, or an atom of $N$.
 The match above, with the conclusion $\operatorname{pet-at}(x, h)$, gives the knowledge base below. The dashed
 octagon and its dashed arrows are what the rewriting added:
 
-```dot
-digraph rewritten {
-  rankdir=TB; nodesep=0.35; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "owns"; "lives-in"; "left-of"; "pet-at"; }
-  { rank=max; "Dog"; "Norwegian"; "House-1"; "House-2"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  f1 [xlabel="f1"]; f2 [xlabel="f2"]; f3 [xlabel="f3"];
-  c [xlabel="c", style="filled,dashed"];
-  { rank=same; f1; f2; f3; c; }
-  f1 -> "owns" [label="1"];
-  f1 -> "Norwegian" [label="2"];
-  f1 -> "Dog" [label="3"];
-  f2 -> "lives-in" [label="1"];
-  f2 -> "Norwegian" [label="2"];
-  f2 -> "House-1" [label="3"];
-  f3 -> "left-of" [label="1"];
-  f3 -> "House-1" [label="2"];
-  f3 -> "House-2" [label="3"];
-  c -> "pet-at" [label="1", style=dashed];
-  c -> "Dog" [label="2", style=dashed];
-  c -> "House-1" [label="3", style=dashed];
-}
-```
+![The knowledge base after the rewriting, the added fact dashed](diagrams/02-rewritten.svg)
 
 $$
-K \cup \psi\theta \;=\; \{ f_1, f_2, f_3 \} \cup \{ c \}, \qquad c = \operatorname{pet-at}(x, h)\,\theta = \operatorname{pet-at}(\mathsf{Dog}, \mathsf{House\text{-}1})
+\begin{aligned}
+K \cup \psi\theta &= \{ f_1, f_2, f_3 \} \cup \{ c \} \\
+c &= \operatorname{pet-at}(x, h)\,\theta = \operatorname{pet-at}(\mathsf{Dog}, \mathsf{House\text{-}1})
+\end{aligned}
 $$
 
 The same pattern and conclusion drawn with labelled arrows, the pattern in the upper panel and the conclusion in
 the lower. A diamond is a variable, a solid arrow a premise with three arrows, a dashed arrow a fact the
 conclusion adds:
 
-```dot
-digraph rule_pet_follows_owner_lhs_rhs {
-  rankdir=TB;
-  label="pet-follows-owner"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "?x_L" [label="?x", shape=diamond];
-    "?h_L" [label="?h", shape=diamond];
-    "?p_L" -> "?x_L" [label="owns", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?p_L" -> "?h_L" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?x_R" [label="?x", shape=diamond];
-    "?h_R" [label="?h", shape=diamond];
-    "?x_R" -> "?h_R" [label="pet-at", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  }
-}
-```
+![The rule pet-follows-owner drawn with labelled arrows](diagrams/02-pet-follows-owner.svg)
 
 ### As a span
 
@@ -369,26 +280,17 @@ match $m : L \to G$ deletes from $G$ what $L$ has and $I$ lacks, and glues on wh
 the double-pushout construction. A pattern and a conclusion delete nothing, so their span is the degenerate one,
 
 $$
-I = L, \qquad l = \operatorname{id}, \qquad L^{+} = L \cup \psi
+\begin{aligned}
+I &= L \\
+l &= \operatorname{id} \\
+L^{+} &= L \cup \psi
+\end{aligned}
 $$
 
 with $L$ the pattern graph of the premises of $\varphi$, and the double pushout reduces to one gluing. With
 $G(K)$ the graph of $K$:
 
-```dot
-digraph gluing {
-  node [shape=box, style=rounded, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=10];
-  L  [label="L\nthe pattern"];
-  Lp [label="L⁺ = L ∪ ψ\nthe pattern with the conclusion"];
-  G  [label="G(K)\nthe knowledge base"];
-  Gp [label="G(K ∪ ψθ)\nthe result of rewriting"];
-  { rank=same; L -> Lp [label="  r, an inclusion  "]; }
-  { rank=same; G -> Gp [label="  an inclusion  "]; }
-  L -> G   [label="  m, the match"];
-  Lp -> Gp [label="  m, extended"];
-}
-```
+![The gluing square of a pattern, its conclusion, a knowledge base and the result](diagrams/02-gluing-square.svg)
 
 The drawing is of four graphs and three kinds of map, not of a knowledge base. The square commutes, and
 $G(K \cup \psi\theta)$ is its pushout **among the graphs in which one list of arrows is one node**: the
@@ -405,18 +307,7 @@ sets of facts. Both horizontal arrows are inclusions. The conditions are read on
 The pattern and the conclusion above drawn as one graph with labelled arrows, $L$ solid and what $L^{+}$ adds
 dashed:
 
-```dot
-digraph rule_pet_follows_owner_overlay {
-  label="pet-follows-owner"; labelloc=t;
-  ranksep=0.55;
-  "?p" [label="?p", shape=diamond];
-  "?x" [label="?x", shape=diamond];
-  "?h" [label="?h", shape=diamond];
-  "?p" -> "?x" [label="owns", color="#ff7f0e", fontcolor="#ff7f0e"];
-  "?p" -> "?h" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
-  "?x" -> "?h" [label="pet-at", color="#9467bd", fontcolor="#9467bd", style=dashed];
-}
-```
+![The rule pet-follows-owner as one graph, the conclusion dashed](diagrams/02-pet-follows-owner-overlay.svg)
 
 ## A rule, declared
 
@@ -424,7 +315,11 @@ A **rule** is a pattern and a conclusion declared under a name, with parameters 
 ([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)):
 
 $$
-\rho = (\bar{p},\ \varphi,\ \psi), \qquad \operatorname{name}(\rho) \in \Sigma^{+} \setminus W, \qquad \bar{p} = (p_1, \dots, p_m) \in X^{m},\ m \ge 0
+\begin{aligned}
+\rho &= (\bar{p},\ \varphi,\ \psi) \\
+\operatorname{name}(\rho) &\in \Sigma^{+} \setminus W \\
+\bar{p} &= (p_1, \dots, p_m) \in X^{m} && \text{with } m \ge 0
+\end{aligned}
 $$
 
 | part | in the terms above |
@@ -441,8 +336,10 @@ How each part is spelt is [the user's page on rules](../../user/03-syntax-and-se
 gives the parameters their objects:
 
 $$
-\operatorname{Act}_K(\rho) = \{\, a \in K \;:\; \operatorname{out}(a) = (\operatorname{name}(\rho), v_1, \dots, v_m) \,\}, \qquad
-\rho[a] = (\varphi[a],\ \psi[a]) \ \text{ with each } p_i \text{ replaced by } v_i
+\begin{aligned}
+\operatorname{Act}_K(\rho) &= \{\, a \in K \;:\; \operatorname{out}(a) = (\operatorname{name}(\rho), v_1, \dots, v_m) \,\} \\
+\rho[a] &= (\varphi[a],\ \psi[a]) && \text{with each } p_i \text{ replaced by } v_i
+\end{aligned}
 $$
 
 $\rho[a]$ is the rule **applied under** $a$: a pattern and a conclusion with no parameter left. A rule with no
@@ -467,36 +364,16 @@ $$
 The rule of transitivity has one parameter, which stands under the first arrow of its premises and of its
 conclusion. With its activator pattern:
 
-```dot
-digraph rule_transitive {
-  rankdir=TB; nodesep=0.4; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "transitive"; }
-  node [shape=diamond];
-  "?R";
-  { rank=max; "?a"; "?b"; "?c"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  act [xlabel="act"]; q1 [xlabel="q1"]; q2 [xlabel="q2"];
-  c [xlabel="c", style="filled,dashed"];
-  { rank=same; q1; q2; c; }
-  act -> "transitive" [label="1"];
-  act -> "?R" [label="2"];
-  "?R" -> q1 [label="1", dir=back];
-  q1 -> "?a" [label="2"];
-  q1 -> "?b" [label="3"];
-  "?R" -> q2 [label="1", dir=back];
-  q2 -> "?b" [label="2"];
-  q2 -> "?c" [label="3"];
-  "?R" -> c [label="1", dir=back, style=dashed];
-  c -> "?a" [label="2", style=dashed];
-  c -> "?c" [label="3", style=dashed];
-  "?a" -> "?c" [label="≠", dir=none, style=dotted, constraint=false];
-}
-```
+![The rule transitive as a pattern graph, with its activator pattern](diagrams/02-transitive.svg)
 
 $$
-\operatorname{transitive}[R]:\qquad \mathit{act} = \operatorname{transitive}(R), \qquad q_1 = R(a, b), \quad q_2 = R(b, c), \quad a \neq c, \qquad c = R(a, c)
+\begin{aligned}
+\mathit{act} &= \operatorname{transitive}(R) && \text{the activator pattern} \\
+q_1 &= R(a, b) && \text{a premise} \\
+q_2 &= R(b, c) && \text{a premise} \\
+a &\neq c && \text{a condition} \\
+e &= R(a, c) && \text{the conclusion}
+\end{aligned}
 $$
 
 The variable $R$ is one diamond: the activator pattern points at it with its second arrow, and both premises and
@@ -668,41 +545,7 @@ $$
 
 Drawn with labelled arrows:
 
-```dot
-digraph rule_domain_elimination_lhs_rhs {
-  rankdir=TB;
-  label="domain-elimination"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "h1_functional_L" [shape=octagon, label="functional", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_functional_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h2_total_L" [shape=octagon, label="total", color="#1f77b4", fontcolor="#1f77b4"];
-    "h2_total_L" -> "?R_L" [label="1", color="#1f77b4"];
-    "h3_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h3_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h3_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h3_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?a_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?b_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?b_other_L" [label="?b_other", shape=diamond];
-      "?b_other_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?b_other_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-      "?a_L" -> "?b_other_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?b_R" [label="?b", shape=diamond];
-    "?a_R" -> "?b_R" [label="?R", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  }
-}
-```
+![The rule domain-elimination drawn with labelled arrows](diagrams/02-domain-elimination.svg)
 
 The dashed box is the universal premise: the variable inside it is its own, the red arrow is a stored negation,
 and the box reads *every other member of the second label is denied*. The octagon with three numbered arrows is
@@ -725,21 +568,7 @@ One atom may play at several levels: $\mathsf{left\text{-}of}$ is the relation o
 third, and $\mathsf{transitive}$ names a rule and is the relation of its activator. **Each level reads the
 levels below it:**
 
-```dot
-digraph four_levels {
-  rankdir=LR;
-  node [shape=box, style=rounded, fontname="Helvetica", fontsize=11];
-  edge [fontname="Helvetica", fontsize=10];
-  L3 [label="L3 rules"];
-  L2 [label="L2 relations\ndeclarations and facts about relations"];
-  L1 [label="L1 facts"];
-  L0 [label="L0 the things named"];
-  L3 -> L1 [label="match, conclude"];
-  L3 -> L2 [label="applied under a fact about a relation", style=dashed];
-  L2 -> L1 [label="fix the count of"];
-  L1 -> L0 [label="point at, with an argument arrow"];
-}
-```
+![The four levels and what each reads](diagrams/02-four-levels.svg)
 
 The drawing is of the levels, not of a knowledge base.
 

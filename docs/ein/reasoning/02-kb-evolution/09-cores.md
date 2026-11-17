@@ -48,7 +48,10 @@ second derivation is recorded beside the first, as an **alternative**. The recor
 **provenance** $J$: for each fact $f \in K$ a non-empty finite sequence,
 
 $$
-J_K(f) = (\delta_1, \delta_2, \dots, \delta_k), \qquad k \ge 1
+\begin{aligned}
+J_K(f) &= (\delta_1, \delta_2, \dots, \delta_k) \\
+k &\ge 1
+\end{aligned}
 $$
 
 the records of $f$ in $K$, in the order they were made: $\delta_1$ is the **primary** derivation and the others

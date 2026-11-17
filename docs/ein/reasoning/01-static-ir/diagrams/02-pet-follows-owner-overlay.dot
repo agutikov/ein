@@ -1,0 +1,10 @@
+digraph rule_pet_follows_owner_overlay {
+  label="pet-follows-owner"; labelloc=t;
+  ranksep=0.55;
+  "?p" [label="?p", shape=diamond];
+  "?x" [label="?x", shape=diamond];
+  "?h" [label="?h", shape=diamond];
+  "?p" -> "?x" [label="owns", color="#ff7f0e", fontcolor="#ff7f0e"];
+  "?p" -> "?h" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
+  "?x" -> "?h" [label="pet-at", color="#9467bd", fontcolor="#9467bd", style=dashed];
+}

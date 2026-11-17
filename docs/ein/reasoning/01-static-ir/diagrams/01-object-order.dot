@@ -1,0 +1,13 @@
+digraph object_order {
+  rankdir=TB;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  n1 [label="10"]; n2 [label="2"]; n3 [label="a"];
+  f1 [label="adjacent(b, b)"];
+  f2 [label="co-located(a)"];
+  f3 [label="co-located(a, a)"];
+  f4 [label="co-located(a, b)"];
+  f5 [label="co-located(a, p(a))"];
+  f6 [label="co-located(b)"];
+  n1 -> n2 -> n3 -> f1 -> f2 -> f3 -> f4 -> f5 -> f6 [label="≺"];
+}

@@ -1,0 +1,13 @@
+digraph four_levels {
+  rankdir=TB;
+  node [shape=box, style=rounded, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=10];
+  L3 [label="L3 rules"];
+  L2 [label="L2 relations\ndeclarations and facts about relations"];
+  L1 [label="L1 facts"];
+  L0 [label="L0 the things named"];
+  L3 -> L1 [label="match, conclude"];
+  L3 -> L2 [label="applied under a fact about a relation", style=dashed];
+  L2 -> L1 [label="fix the count of"];
+  L1 -> L0 [label="point at, with an argument arrow"];
+}

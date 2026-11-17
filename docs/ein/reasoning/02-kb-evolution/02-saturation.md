@@ -216,11 +216,11 @@ fixpoint is one set whatever the order. A new activator adds triples and, since 
 is part of a firing's identity ([firing a rule](01-firing.md#firing-a-rule)), is equal to none that was there;
 $\operatorname{sat}$ is monotone, so the fixpoint of a larger set of facts is larger. $\square$
 
-**The example where a narrower identity would show.** One rule with two parameters, $r$ in a relation's place
-and $f$ any object:
+**The example where a narrower identity would show.** One rule, named $\operatorname{note}$, with two
+parameters, $r$ in a relation's place and $f$ any object:
 
 $$
-\operatorname{note}[r, f]:\qquad r(a, b) \;\land\; \operatorname{holds}(f) \;\implies\; \operatorname{noted}(a, f)
+r(a, b) \;\land\; \operatorname{holds}(f) \;\implies\; \operatorname{noted}(a, f)
 $$
 
 ```dot
@@ -248,9 +248,14 @@ the variable in a relation's place stands for a fact of whichever relation the a
 states four facts and two activators:
 
 $$
-\operatorname{edge}(\mathsf{1}, \mathsf{2}),\ \ \operatorname{edge}(\mathsf{2}, \mathsf{3}),\ \ \operatorname{holds}(\mathsf{1}),\ \ \operatorname{holds}(\mathsf{3}),
-\qquad
-\operatorname{note}(\operatorname{edge}, \mathsf{1}),\ \ \operatorname{note}(\operatorname{edge}, \operatorname{src}(\mathsf{Y}))
+\begin{aligned}
+&\operatorname{edge}(\mathsf{1}, \mathsf{2}) \\
+&\operatorname{edge}(\mathsf{2}, \mathsf{3}) \\
+&\operatorname{holds}(\mathsf{1}) \\
+&\operatorname{holds}(\mathsf{3}) \\
+&\operatorname{note}(\operatorname{edge}, \mathsf{1}) && \text{the first activator} \\
+&\operatorname{note}(\operatorname{edge}, \operatorname{src}(\mathsf{Y})) && \text{the second activator}
+\end{aligned}
 $$
 
 The first activator binds $f$ to the name $\mathsf{1}$, which holds, and derives

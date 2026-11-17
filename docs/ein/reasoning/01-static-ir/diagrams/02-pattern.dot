@@ -1,0 +1,16 @@
+digraph pattern {
+  rankdir=TB; nodesep=0.4; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  { rank=min; "owns"; "lives-in"; }
+  node [shape=diamond];
+  { rank=max; "?x"; "?p"; "?h"; }
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  q1 [xlabel="q1"]; q2 [xlabel="q2"];
+  q1 -> "owns" [label="1"];
+  q1 -> "?p" [label="2"];
+  q1 -> "?x" [label="3"];
+  q2 -> "lives-in" [label="1"];
+  q2 -> "?p" [label="2"];
+  q2 -> "?h" [label="3"];
+}

@@ -20,7 +20,11 @@ sorts of node: **nodes without outgoing arrows and nodes with them**. It is a fi
 are ordered at the node they leave:
 
 $$
-G = (O_K,\ \operatorname{out},\ \operatorname{name}), \qquad \operatorname{out} : O_K \to O_K^{\ast}, \qquad \operatorname{out}(o) = (o_1, o_2, \dots, o_k)
+\begin{aligned}
+G &= (O_K,\ \operatorname{out},\ \operatorname{name}) \\
+\operatorname{out} &: O_K \to O_K^{\ast} \\
+\operatorname{out}(o) &= (o_1, o_2, \dots, o_k)
+\end{aligned}
 $$
 
 $O_K$ is the finite set of its nodes, and $\operatorname{out}(o)$ is the list of the nodes that the arrows
@@ -45,30 +49,7 @@ These pages return to one small program, the **three-house example**
 ([its spelling](../../ein.rs/08-reasoning-in-code/01-static-ir.md#the-running-example)). The knowledge base of
 the four facts it writes with a source sentence is this graph:
 
-```dot
-digraph knowledge_base {
-  rankdir=TB; nodesep=0.35; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "owns"; "lives-in"; "left-of"; }
-  { rank=max; "Dog"; "Norwegian"; "House-1"; "House-2"; "House-3"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  f1 [xlabel="f1"]; f2 [xlabel="f2"]; f3 [xlabel="f3"]; f4 [xlabel="f4"];
-  { rank=same; f1; f2; f3; f4; }
-  f1 -> "owns" [label="1"];
-  f1 -> "Norwegian" [label="2"];
-  f1 -> "Dog" [label="3"];
-  f2 -> "lives-in" [label="1"];
-  f2 -> "Norwegian" [label="2"];
-  f2 -> "House-1" [label="3"];
-  f3 -> "left-of" [label="1"];
-  f3 -> "House-1" [label="2"];
-  f3 -> "House-2" [label="3"];
-  f4 -> "left-of" [label="1"];
-  f4 -> "House-2" [label="2"];
-  f4 -> "House-3" [label="3"];
-}
-```
+![The graph of four facts: eight atoms, four facts, left-of one node](diagrams/01-canonical-graph.svg)
 
 **How the graph is drawn**, here and wherever these pages draw it. A box is a node with no outgoing arrow, and
 the word in it is its label. An octagon is a node with outgoing arrows; it has no label, and the letter beside
@@ -78,10 +59,12 @@ octagons, and every octagon is held:
 
 $$
 \begin{aligned}
-\operatorname{out}(f_1) &= (\mathsf{owns},\ \mathsf{Norwegian},\ \mathsf{Dog}) & \operatorname{out}(f_3) &= (\mathsf{left\text{-}of},\ \mathsf{House\text{-}1},\ \mathsf{House\text{-}2}) \\
-\operatorname{out}(f_2) &= (\mathsf{lives\text{-}in},\ \mathsf{Norwegian},\ \mathsf{House\text{-}1}) & \operatorname{out}(f_4) &= (\mathsf{left\text{-}of},\ \mathsf{House\text{-}2},\ \mathsf{House\text{-}3})
+\operatorname{out}(f_1) &= (\mathsf{owns},\ \mathsf{Norwegian},\ \mathsf{Dog}) \\
+\operatorname{out}(f_2) &= (\mathsf{lives\text{-}in},\ \mathsf{Norwegian},\ \mathsf{House\text{-}1}) \\
+\operatorname{out}(f_3) &= (\mathsf{left\text{-}of},\ \mathsf{House\text{-}1},\ \mathsf{House\text{-}2}) \\
+\operatorname{out}(f_4) &= (\mathsf{left\text{-}of},\ \mathsf{House\text{-}2},\ \mathsf{House\text{-}3}) \\
+K &= \{f_1, f_2, f_3, f_4\}
 \end{aligned}
-\qquad K = \{f_1, f_2, f_3, f_4\}
 $$
 
 The box $\mathsf{left\text{-}of}$ is one node, under the first arrow of $f_3$ and of $f_4$; $\mathsf{Norwegian}$
@@ -95,10 +78,12 @@ The graph is the knowledge base, and not a picture of something else. What is wr
 program, is a **list of tuples**, and the four right-hand sides above are one:
 
 $$
-(\mathsf{owns},\ \mathsf{Norwegian},\ \mathsf{Dog}), \quad
-(\mathsf{lives\text{-}in},\ \mathsf{Norwegian},\ \mathsf{House\text{-}1}), \quad
-(\mathsf{left\text{-}of},\ \mathsf{House\text{-}1},\ \mathsf{House\text{-}2}), \quad
-(\mathsf{left\text{-}of},\ \mathsf{House\text{-}2},\ \mathsf{House\text{-}3})
+\begin{aligned}
+&(\mathsf{owns},\ \mathsf{Norwegian},\ \mathsf{Dog}) \\
+&(\mathsf{lives\text{-}in},\ \mathsf{Norwegian},\ \mathsf{House\text{-}1}) \\
+&(\mathsf{left\text{-}of},\ \mathsf{House\text{-}1},\ \mathsf{House\text{-}2}) \\
+&(\mathsf{left\text{-}of},\ \mathsf{House\text{-}2},\ \mathsf{House\text{-}3})
+\end{aligned}
 $$
 
 A list of tuples is a notation for the graph, and it repeats what the graph has once: the word
@@ -107,8 +92,10 @@ $\mathsf{Norwegian}$ twice each. Twelve words are written, and the graph has eig
 notation is a map $\nu$ from what is written to nodes:
 
 $$
-\nu(w) = \text{the node labelled } w, \qquad
-\nu\big((t_1, \dots, t_k)\big) = \text{the node } o \text{ with } \operatorname{out}(o) = \big(\nu(t_1), \dots, \nu(t_k)\big)
+\begin{aligned}
+\nu(w) &= \text{the node labelled } w \\
+\nu\big((t_1, \dots, t_k)\big) &= \text{the node } o \text{ with } \operatorname{out}(o) = \big(\nu(t_1), \dots, \nu(t_k)\big)
+\end{aligned}
 $$
 
 for a word $w$ and a tuple of words and tuples. By the first two conditions there is exactly one such node in
@@ -134,7 +121,10 @@ the atom and the word.
 point at. $F$ is the facts of every knowledge base, so
 
 $$
-O = \Sigma^{+} \cup F, \qquad \Sigma^{+} \cap F = \emptyset
+\begin{aligned}
+O &= \Sigma^{+} \cup F \\
+\emptyset &= \Sigma^{+} \cap F
+\end{aligned}
 $$
 
 An arrow of a fact points at an atom or at a fact, and a fact under an arrow of another is **nested** in it
@@ -146,7 +136,12 @@ The arrows of a fact after the first are its **argument arrows**, the objects un
 the fact is *a fact of* its relation:
 
 $$
-\operatorname{rel}(f) = o_1, \qquad \operatorname{arg}_i(f) = o_{i+1} \ \ (1 \le i \le n), \qquad \operatorname{ar}(f) = n, \qquad \text{where } \operatorname{out}(f) = (o_1, o_2, \dots, o_{n+1})
+\begin{aligned}
+\operatorname{out}(f) &= (o_1, o_2, \dots, o_{n+1}) \\
+\operatorname{rel}(f) &= o_1 \\
+\operatorname{arg}_i(f) &= o_{i+1} && \text{for } 1 \le i \le n \\
+\operatorname{ar}(f) &= n
+\end{aligned}
 $$
 
 **The first arrow points at the relation, the second at the first argument, and so on.** The fact with
@@ -162,7 +157,10 @@ points at the atom that names the declared relation, and its arrows after that p
 **labels**, one for each argument a fact of the relation has:
 
 $$
-\operatorname{decl}(r;\ T_1, \dots, T_n) \;=\; \operatorname{relation}(r, T_1, \dots, T_n), \qquad r, T_1, \dots, T_n \in \Sigma^{+}
+\begin{aligned}
+\operatorname{decl}(r;\ T_1, \dots, T_n) &= \operatorname{relation}(r, T_1, \dots, T_n) \\
+r, T_1, \dots, T_n &\in \Sigma^{+}
+\end{aligned}
 $$
 
 and beside it the knowledge base holds $\operatorname{relation}(r)$, which says that $r$ is declared whatever
@@ -178,42 +176,7 @@ $\mathsf{relation}$ is itself a relation, by the declarations, and cannot be dec
 The diagram below is of the definitions themselves, not of a knowledge base: it says how the terms above stand
 to one another and what identifies each.
 
-```plantuml
-@startuml
-hide empty methods
-hide circle
-skinparam shadowing false
-skinparam nodesep 170
-skinparam classAttributeIconSize 0
-
-abstract class Object {
-  a node of the graph
-}
-class Atom {
-  {field} name  «identity»
-  --
-  no outgoing arrow
-}
-class Fact {
-  {field} the list of the objects under its arrows  «identity»
-  --
-  one or more outgoing arrows, in order
-}
-class "Relation declaration" as Decl {
-  first arrow: the atom named "relation"
-  second arrow: the declared relation
-  later arrows: its labels
-}
-
-Object <|-- Atom
-Object <|-- Fact
-note on link: every object is an atom or a fact,\nand none is both
-Fact <|-- Decl
-Fact "*" -up-> "1..* {ordered}" Object : arrows
-Fact "/extent  *" -left-> "relation  1" Atom : first arrow
-Decl "*" -left-> "declared relation  1" Atom : second arrow
-@enduml
-```
+![The definitions as a class diagram: Object, Atom, Fact, Relation declaration](diagrams/01-definitions.svg)
 
 A box is a term, and the first line under its name is what identifies a thing of that kind where it is marked
 *identity*. An arrow with a hollow head reads *is a*: an atom is an object, a fact is an object, a relation
@@ -250,39 +213,14 @@ of the three a statement is about is read off where the atom stands in it:
 That one fact can speak of a whole relation is what the atom being one node makes possible. Part of the graph
 of the three-house example:
 
-```dot
-digraph one_relation {
-  rankdir=TB; nodesep=0.4; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "transitive"; "relation"; }
-  "left-of";
-  { rank=max; "House-1"; "House-2"; "House-3"; "House"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  p [xlabel="p"]; d1 [xlabel="d1"];
-  { rank=same; p; d1; }
-  subgraph cluster_extent { style="rounded,dashed"; color="#888888";
-    f3 [xlabel="f3"]; f4 [xlabel="f4"];
-  }
-  p -> "transitive" [label="1"];
-  p -> "left-of" [label="2"];
-  d1 -> "relation" [label="1"];
-  d1 -> "left-of" [label="2"];
-  d1 -> "House" [label="3"];
-  d1 -> "House" [label="4"];
-  "left-of" -> f3 [label="1", dir=back];
-  f3 -> "House-1" [label="2"];
-  f3 -> "House-2" [label="3"];
-  "left-of" -> f4 [label="1", dir=back];
-  f4 -> "House-2" [label="2"];
-  f4 -> "House-3" [label="3"];
-}
-```
+![The relation left-of, its extent of two facts, and two facts about it](diagrams/01-relation-extent.svg)
 
 $$
-\operatorname{ext}_K(\operatorname{left-of}) = \{ f_3, f_4 \}, \qquad
-p = \operatorname{transitive}(\operatorname{left-of}), \qquad
-d_1 = \operatorname{relation}(\operatorname{left-of}, \mathsf{House}, \mathsf{House})
+\begin{aligned}
+\operatorname{ext}_K(\operatorname{left-of}) &= \{ f_3, f_4 \} \\
+p &= \operatorname{transitive}(\operatorname{left-of}) \\
+d_1 &= \operatorname{relation}(\operatorname{left-of}, \mathsf{House}, \mathsf{House})
+\end{aligned}
 $$
 
 The first arrows of $f_3$ and $f_4$ meet at the atom $\mathsf{left\text{-}of}$, and the dashed frame around the
@@ -294,42 +232,16 @@ The graph below has the declaration of $\operatorname{lives-in}$, as its two fac
 the relation, $f_2$, and two facts of a relation $\operatorname{is-a}$ that the example declares as it declares
 any other:
 
-```dot
-digraph declaration {
-  rankdir=TB; nodesep=0.35; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "relation"; }
-  "lives-in"; "is-a";
-  { rank=max; "Person"; "House"; "Norwegian"; "House-1"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  d1 [xlabel="d1"]; d2 [xlabel="d2"]; f2 [xlabel="f2"]; m1 [xlabel="m1"]; m2 [xlabel="m2"];
-  { rank=same; d1; d2; }
-  { rank=same; f2; m1; m2; }
-  d1 -> "relation" [label="1"];
-  d1 -> "lives-in" [label="2"];
-  d1 -> "Person" [label="3"];
-  d1 -> "House" [label="4"];
-  d2 -> "relation" [label="1"];
-  d2 -> "lives-in" [label="2"];
-  "lives-in" -> f2 [label="1", dir=back];
-  f2 -> "Norwegian" [label="2"];
-  f2 -> "House-1" [label="3"];
-  "is-a" -> m1 [label="1", dir=back];
-  m1 -> "Norwegian" [label="2"];
-  m1 -> "Person" [label="3"];
-  "is-a" -> m2 [label="1", dir=back];
-  m2 -> "House-1" [label="2"];
-  m2 -> "House" [label="3"];
-}
-```
+![The declaration of lives-in as facts, beside a fact of it and two facts of is-a](diagrams/01-declaration.svg)
 
 $$
-d_1 = \operatorname{relation}(\operatorname{lives-in}, \mathsf{Person}, \mathsf{House}), \quad
-d_2 = \operatorname{relation}(\operatorname{lives-in}), \quad
-f_2 = \operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1}), \quad
-m_1 = \operatorname{is-a}(\mathsf{Norwegian}, \mathsf{Person}), \quad
-m_2 = \operatorname{is-a}(\mathsf{House\text{-}1}, \mathsf{House})
+\begin{aligned}
+d_1 &= \operatorname{relation}(\operatorname{lives-in}, \mathsf{Person}, \mathsf{House}) \\
+d_2 &= \operatorname{relation}(\operatorname{lives-in}) \\
+f_2 &= \operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1}) \\
+m_1 &= \operatorname{is-a}(\mathsf{Norwegian}, \mathsf{Person}) \\
+m_2 &= \operatorname{is-a}(\mathsf{House\text{-}1}, \mathsf{House})
+\end{aligned}
 $$
 
 The atom $\mathsf{lives\text{-}in}$ is under the second arrow of $d_1$ and of $d_2$, which makes it a declared
@@ -352,41 +264,17 @@ and it is stated [where it is used](../02-kb-evolution/04-hypothesis-generation.
 
 What a fact is about is what its arrows point at, and each of these is a fact like any other.
 
-```dot
-digraph what_an_arrow_points_at {
-  rankdir=TB; nodesep=0.4; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "transitive"; "not"; "says"; }
-  "left-of";
-  { rank=max; "House-1"; "House-2"; "Norwegian"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  f3 [xlabel="f3"]; p [xlabel="p"]; n [xlabel="n"]; s [xlabel="s"];
-  g [xlabel="g", style=solid];
-  { rank=same; p; n; s; }
-  { rank=same; f3; g; }
-  p -> "transitive" [label="1"];
-  p -> "left-of" [label="2"];
-  n -> "not" [label="1"];
-  n -> g [label="2"];
-  s -> "says" [label="1"];
-  s -> "Norwegian" [label="2"];
-  s -> g [label="3"];
-  f3 -> "left-of" [label="1"];
-  f3 -> "House-1" [label="2"];
-  f3 -> "House-2" [label="3"];
-  g -> "left-of" [label="1"];
-  g -> "House-2" [label="2"];
-  g -> "House-1" [label="3"];
-}
-```
+![A fact about a relation, a fact about a fact, and a stored negation](diagrams/01-what-an-arrow-points-at.svg)
 
 $$
-f_3 = \operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2}), \quad
-p = \operatorname{transitive}(\operatorname{left-of}), \quad
-g = \operatorname{left-of}(\mathsf{House\text{-}2}, \mathsf{House\text{-}1}), \quad
-n = \operatorname{not}(g), \quad
-s = \operatorname{says}(\mathsf{Norwegian}, g), \qquad K = \{f_3, p, n, s\}
+\begin{aligned}
+f_3 &= \operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2}) \\
+p &= \operatorname{transitive}(\operatorname{left-of}) \\
+g &= \operatorname{left-of}(\mathsf{House\text{-}2}, \mathsf{House\text{-}1}) \\
+n &= \operatorname{not}(g) \\
+s &= \operatorname{says}(\mathsf{Norwegian}, g) \\
+K &= \{f_3, p, n, s\}
+\end{aligned}
 $$
 
 - **A fact about a relation.** The second arrow of $p$ points at $\mathsf{left\text{-}of}$: the atom that is the
@@ -402,9 +290,10 @@ $$
 The atoms $\mathsf{not}$ and $\mathsf{false}$ are reserved, and the facts under them are of a fixed shape:
 
 $$
-\operatorname{rel}(f) = \mathsf{not} \implies \operatorname{ar}(f) = 1 \ \land\ \operatorname{arg}_1(f) \in F \ \land\ \operatorname{rel}(\operatorname{arg}_1(f)) \neq \mathsf{not},
-\qquad\qquad
-\operatorname{rel}(f) = \mathsf{false} \implies \operatorname{ar}(f) = 0
+\begin{aligned}
+\operatorname{rel}(f) = \mathsf{not} &\implies \operatorname{ar}(f) = 1 \ \land\ \operatorname{arg}_1(f) \in F \ \land\ \operatorname{rel}(\operatorname{arg}_1(f)) \neq \mathsf{not} \\
+\operatorname{rel}(f) = \mathsf{false} &\implies \operatorname{ar}(f) = 0
+\end{aligned}
 $$
 
 So $\lnot a$ of an atom $a$ is no fact, and $\lnot\lnot g$ is no fact; $\lnot\bot$ is one, and $\bot$ may be an
@@ -425,7 +314,7 @@ equality and inequality among them, which [the next page](02-rewriting-rules.md)
 test and no connective is a fact, and none is an object:
 
 $$
-\operatorname{rel}(f) \in \Sigma^{+} \setminus W_{\!c} \qquad \text{for every fact } f
+\forall f \in F.\ \ \operatorname{rel}(f) \in \Sigma^{+} \setminus W_{\!c}
 $$
 
 Two sorts of word stand beside the names and are no atom's name. A **text**, a quoted run of any characters, is
@@ -441,30 +330,7 @@ A fact with three arrows, a relation and two arguments, can be drawn as **one ar
 second arrow to the object under its third, labelled with the relation's name. Two facts of
 $\operatorname{left-of}$, as the graph on the left and as labelled arrows on the right:
 
-```dot
-digraph two_forms {
-  rankdir=TB; nodesep=0.4; ranksep=0.6;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  subgraph cluster_graph { label="the graph"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
-    "left-of";
-    h1 [label="House-1"]; h2 [label="House-2"]; h3 [label="House-3"];
-    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-    f3 [xlabel="f3"]; f4 [xlabel="f4"];
-    "left-of" -> f3 [label="1", dir=back];
-    f3 -> h1 [label="2"];
-    f3 -> h2 [label="3"];
-    "left-of" -> f4 [label="1", dir=back];
-    f4 -> h2 [label="2"];
-    f4 -> h3 [label="3"];
-  }
-  subgraph cluster_arrows { label="drawn with labelled arrows"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
-    a1 [label="House-1"]; a2 [label="House-2"]; a3 [label="House-3"];
-    a1 -> a2 [label="left-of"];
-    a2 -> a3 [label="left-of"];
-  }
-}
-```
+![Two facts of left-of as the graph and drawn with labelled arrows](diagrams/01-two-forms.svg)
 
 On the left there are two facts, and that they are of one relation is in the graph: their first arrows point at
 one atom. On the right each fact has become an arrow, and the relation has become a word written on it. **The
@@ -519,7 +385,10 @@ named $m\mathtt{.}d$: the module's name, a dot, the declared name. A file may wr
 the short names of a file are a partial function into the full names, local to that file:
 
 $$
-\alpha_{\text{file}} : \Sigma^{+} \rightharpoonup \Sigma^{+}, \qquad \alpha_{\text{file}}(d) = m\mathtt{.}d
+\begin{aligned}
+\alpha_{\text{file}} &: \Sigma^{+} \rightharpoonup \Sigma^{+} \\
+\alpha_{\text{file}}(d) &= m\mathtt{.}d
+\end{aligned}
 $$
 
 The atoms of $K_0$ carry full names. Two modules that each declare $d$ declare two atoms, and a module reached
@@ -550,7 +419,10 @@ every $i$, at every depth; a stored negation is a fact, so $\lnot f = \lnot g \i
 the objects of every knowledge base are the least set with
 
 $$
-O \;=\; \Sigma^{+} \;\cup\; \{\, (r, o_1, \dots, o_n) \;:\; r \in \Sigma^{+} \setminus W_{\!c},\ n \ge 0,\ o_1, \dots, o_n \in O \,\}
+\begin{aligned}
+O \;=\;\ & \Sigma^{+} \\
+\cup\ & \{\, (r, o_1, \dots, o_n) \;:\; r \in \Sigma^{+} \setminus W_{\!c},\ n \ge 0,\ o_1, \dots, o_n \in O \,\}
+\end{aligned}
 $$
 
 less the tuples under $\mathsf{not}$ and $\mathsf{false}$ that are not of the shape those atoms fix. $F$ is the
@@ -563,7 +435,10 @@ facts.
 of the theory:
 
 $$
-\mathsf{1} \ne \mathsf{01}, \qquad \mathsf{7},\ \mathsf{-7},\ \mathsf{1..5} \in \Sigma^{+}
+\begin{aligned}
+\mathsf{1} &\ne \mathsf{01} \\
+\mathsf{7},\ \mathsf{-7},\ \mathsf{1..5} &\in \Sigma^{+}
+\end{aligned}
 $$
 
 So **Ein has no numbers, no ranges and no integer kind**. A name of digits is compared and ordered as any other
@@ -586,9 +461,9 @@ arrow; it is the least relation on $O$ with
 
 $$
 \begin{aligned}
-a \prec f \quad & \text{for every atom } a \text{ and every fact } f \\
-a \prec b \quad & \text{iff } a \lt_{\text{lex}} b, \text{ for atoms } a, b \\
-f \prec g \quad & \text{iff } \operatorname{out}(f) \prec^{\ast} \operatorname{out}(g), \text{ for facts } f, g
+a &\prec f && \text{for every atom } a \text{ and every fact } f \\
+a &\prec b \iff a \lt_{\text{lex}} b && \text{for atoms } a, b \\
+f &\prec g \iff \operatorname{out}(f) \prec^{\ast} \operatorname{out}(g) && \text{for facts } f, g
 \end{aligned}
 $$
 
@@ -596,7 +471,10 @@ where $\prec^{\ast}$ compares two lists place by place by $\prec$, and puts a li
 another first:
 
 $$
-(u_1, \dots, u_m) \prec^{\ast} (v_1, \dots, v_n) \iff \exists k.\ \ \big(\forall i < k.\ u_i = v_i\big) \;\land\; \Big( \big(k \le \min(m, n) \land u_k \prec v_k\big) \ \lor\ \big(k = m + 1 \le n\big) \Big)
+\begin{aligned}
+(u_1, \dots, u_m) \prec^{\ast} (v_1, \dots, v_n) \iff \exists k.\ \ & \big(\forall i < k.\ u_i = v_i\big) \\
+\land\ & \Big( \big(k \le \min(m, n) \land u_k \prec v_k\big) \ \lor\ \big(k = m + 1 \le n\big) \Big)
+\end{aligned}
 $$
 
 and $u \preceq v$ means $u \prec v$ or $u = v$. In words:
@@ -620,21 +498,7 @@ facts. $\square$
 A chain of nine objects in the order, three atoms and six facts. The drawing is of the order and not of a
 knowledge base: each box is one object, written as a term.
 
-```dot
-digraph object_order {
-  rankdir=LR;
-  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
-  edge [fontname="Helvetica", fontsize=10];
-  n1 [label="10"]; n2 [label="2"]; n3 [label="a"];
-  f1 [label="adjacent(b, b)"];
-  f2 [label="co-located(a)"];
-  f3 [label="co-located(a, a)"];
-  f4 [label="co-located(a, b)"];
-  f5 [label="co-located(a, p(a))"];
-  f6 [label="co-located(b)"];
-  n1 -> n2 -> n3 -> f1 -> f2 -> f3 -> f4 -> f5 -> f6 [label="≺"];
-}
-```
+![Nine objects in the order, three atoms then six facts](diagrams/01-object-order.svg)
 
 Each arrow reads *comes before*. The third is an atom before a fact; the fourth is decided at the first arrow,
 by the relation's name; the fifth by the count, a prefix first; the seventh by an atom before a fact under the
@@ -649,14 +513,17 @@ fact, can stand under the same arrow of two facts of one relation, and the order
 An object has a **text**, a word that is again a function of the object alone:
 
 $$
-\operatorname{text}(a) = a, \qquad \operatorname{text}(r(v_1, \dots, v_n)) = \texttt{(}\; r\; \sqcup\; \operatorname{text}(v_1)\; \sqcup\; \cdots\; \sqcup\; \operatorname{text}(v_n)\; \texttt{)}
+\begin{aligned}
+\operatorname{text}(a) &= a \\
+\operatorname{text}(r(v_1, \dots, v_n)) &= \texttt{(}\; r\; \sqcup\; \operatorname{text}(v_1)\; \sqcup\; \cdots\; \sqcup\; \operatorname{text}(v_n)\; \texttt{)}
+\end{aligned}
 $$
 
 with $\sqcup$ one space, and $\texttt{(}\,r\,\texttt{)}$ for $n = 0$. It is the list of the objects under the
 fact's arrows, in order, between parentheses. Reading is its inverse,
 
 $$
-\operatorname{read}(\operatorname{text}(v)) = v \qquad \text{for every object } v
+\forall v \in O.\ \ \operatorname{read}(\operatorname{text}(v)) = v
 $$
 
 so $\operatorname{text}$ is injective: two objects are one exactly when their texts are one word. An object holds
@@ -665,12 +532,16 @@ which begins with a mark outside $\Sigma$, is set between quotation marks where 
 back, which is how a reader tells it apart.
 
 **Comparing texts is a second total order, and it is not $\prec$.** In the order of characters a space comes
-before a closing parenthesis, and an opening parenthesis before every letter and digit, so
+before a closing parenthesis, and an opening parenthesis before every letter and digit, so each of the two pairs
+below is put one way by its texts and the other way by $\prec$:
 
 $$
-\operatorname{text}(\operatorname{q}(\mathsf{10}, \mathsf{10})) \lt_{\text{lex}} \operatorname{text}(\operatorname{q}(\mathsf{10})) \ \ \text{but} \ \ \operatorname{q}(\mathsf{10}) \prec \operatorname{q}(\mathsf{10}, \mathsf{10}),
-\qquad
-\operatorname{text}(\operatorname{q}(\operatorname{p}(\mathsf{a}))) \lt_{\text{lex}} \operatorname{text}(\operatorname{q}(\mathsf{a})) \ \ \text{but} \ \ \operatorname{q}(\mathsf{a}) \prec \operatorname{q}(\operatorname{p}(\mathsf{a}))
+\begin{aligned}
+\operatorname{text}(\operatorname{q}(\mathsf{10}, \mathsf{10})) &\lt_{\text{lex}} \operatorname{text}(\operatorname{q}(\mathsf{10})) \\
+\operatorname{q}(\mathsf{10}) &\prec \operatorname{q}(\mathsf{10}, \mathsf{10}) \\
+\operatorname{text}(\operatorname{q}(\operatorname{p}(\mathsf{a}))) &\lt_{\text{lex}} \operatorname{text}(\operatorname{q}(\mathsf{a})) \\
+\operatorname{q}(\mathsf{a}) &\prec \operatorname{q}(\operatorname{p}(\mathsf{a}))
+\end{aligned}
 $$
 
 Each is total and each is a function of the objects alone. A listing says which of the two it is in.
@@ -680,8 +551,11 @@ and from lists $[v_1, \dots, v_n]$ of objects to ASCII words. It has three shape
 
 $$
 \begin{aligned}
-q(a) &= \texttt{'}a\texttt{'}, \quad \text{or } \ \texttt{"}a\texttt{"} \ \text{ where the name } a \text{ holds an apostrophe} \\
-q([v_1, \dots, v_n]) &= \texttt{(}\,q(v_1)\texttt{,}\sqcup\cdots\texttt{,}\sqcup q(v_n)\,\texttt{)} \quad (n \ge 2), \qquad q([v_1]) = \texttt{(}\,q(v_1)\texttt{,)}, \qquad q([\,]) = \texttt{()} \\
+q(a) &= \texttt{'}a\texttt{'} \\
+q(a) &= \texttt{"}a\texttt{"} && \text{where the name } a \text{ holds an apostrophe} \\
+q([\,]) &= \texttt{()} \\
+q([v_1]) &= \texttt{(}\,q(v_1)\texttt{,)} \\
+q([v_1, \dots, v_n]) &= \texttt{(}\,q(v_1)\texttt{,}\sqcup\cdots\texttt{,}\sqcup q(v_n)\,\texttt{)} && \text{for } n \ge 2 \\
 q(r(v_1, \dots, v_n)) &= \texttt{Fact(relation}\_\texttt{name=}\,q(r)\,\texttt{,}\sqcup\texttt{args=}\,q([v_1, \dots, v_n])\,\texttt{)}
 \end{aligned}
 $$
@@ -695,7 +569,7 @@ A fact has as many arguments as it has arrows after the first, and of a relation
 be of any count, each count giving different facts. A declaration fixes the count:
 
 $$
-P \text{ declares } r \text{ with the labels } T_1, \dots, T_n \ \land\ \operatorname{rel}(f) = r \implies \operatorname{ar}(f) = n \qquad \text{for every fact } f \text{ the text writes}
+P \text{ declares } r \text{ with the labels } T_1, \dots, T_n \ \land\ f \in T \ \land\ \operatorname{rel}(f) = r \implies \operatorname{ar}(f) = n
 $$
 
 so on the declared relations of a program $\operatorname{ar}$ is a function of the relation, the number of its
@@ -709,7 +583,11 @@ that fails one is no program.
 The **facts nested in** a fact are those under its argument arrows, at any depth:
 
 $$
-\operatorname{sub}(r(v_1, \dots, v_n)) = \bigcup_{i \le n} \big( (\{v_i\} \cap F) \cup \operatorname{sub}(v_i) \big), \qquad \operatorname{sub}(\lnot f) = \operatorname{sub}(f), \qquad \operatorname{sub}(a) = \emptyset
+\begin{aligned}
+\operatorname{sub}(r(v_1, \dots, v_n)) &= \bigcup_{i \le n} \big( (\{v_i\} \cap F) \cup \operatorname{sub}(v_i) \big) \\
+\operatorname{sub}(\lnot f) &= \operatorname{sub}(f) \\
+\operatorname{sub}(a) &= \emptyset
+\end{aligned}
 $$
 
 The second equation is the one exception to the arrows: a stored negation and the fact it denies are read as
@@ -718,7 +596,10 @@ $\operatorname{sub}(X)$ is the union over its members, and the **names of** $X$ 
 arrow of a fact of $X$, at any depth:
 
 $$
-\operatorname{names}(X) = \{\, a \in \Sigma^{+} \;:\; a = \operatorname{arg}_i(g) \ \text{ for some } i \text{ and some fact } g \text{ that is in } X \text{ or under an argument arrow of one, at any depth} \,\}
+\begin{aligned}
+\operatorname{names}(X) = \{\, a \in \Sigma^{+} \;:\;\ & a = \operatorname{arg}_i(g) \ \text{ for some } i \text{ and some fact } g \\
+& \text{that is in } X \text{ or under an argument arrow of a fact of } X \text{, at any depth} \,\}
+\end{aligned}
 $$
 
 An atom that the facts of $X$ point at with a first arrow alone is a relation of $X$ and not one of its names.
@@ -746,7 +627,10 @@ that it holds neither.
 **A contradiction** is a contradicted fact, or the fact of falsity:
 
 $$
-\operatorname{dead}(K) \iff \bot \in K \;\lor\; \exists f.\ \ f \in K \land \lnot f \in K, \qquad\qquad \operatorname{alive}(K) \iff \lnot \operatorname{dead}(K)
+\begin{aligned}
+\operatorname{dead}(K) &\iff \bot \in K \;\lor\; \exists f.\ \ f \in K \land \lnot f \in K \\
+\operatorname{alive}(K) &\iff \lnot \operatorname{dead}(K)
+\end{aligned}
 $$
 
 A set of facts that holds a contradiction is **dead**, and one that holds none is **alive**. Both are properties

@@ -1,0 +1,38 @@
+digraph a_match {
+  rankdir=TB; nodesep=0.45; ranksep=0.8;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "owns"; "lives-in"; "left-of";
+  subgraph cluster_pattern { label="the pattern"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    node [shape=diamond];
+    "?x"; "?p"; "?h";
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    q1 [xlabel="q1"]; q2 [xlabel="q2"];
+  }
+  subgraph cluster_kb { label="the knowledge base"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    "Dog"; "Norwegian"; "House-1"; "House-2";
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    f1 [xlabel="f1"]; f2 [xlabel="f2"]; f3 [xlabel="f3"];
+  }
+  "owns" -> q1 [label="1", dir=back];
+  q1 -> "?p" [label="2"];
+  q1 -> "?x" [label="3"];
+  "lives-in" -> q2 [label="1", dir=back];
+  q2 -> "?p" [label="2"];
+  q2 -> "?h" [label="3"];
+  "owns" -> f1 [label="1", dir=back];
+  f1 -> "Norwegian" [label="2"];
+  f1 -> "Dog" [label="3"];
+  "lives-in" -> f2 [label="1", dir=back];
+  f2 -> "Norwegian" [label="2"];
+  f2 -> "House-1" [label="3"];
+  "left-of" -> f3 [label="1", dir=back];
+  f3 -> "House-1" [label="2"];
+  f3 -> "House-2" [label="3"];
+  edge [style=dotted, color="#1f77b4", fontcolor="#1f77b4", constraint=false, arrowhead=vee];
+  q1 -> f1 [label="m"];
+  q2 -> f2 [label="m"];
+  "?p" -> "Norwegian" [label="m"];
+  "?x" -> "Dog" [label="m"];
+  "?h" -> "House-1" [label="m"];
+}

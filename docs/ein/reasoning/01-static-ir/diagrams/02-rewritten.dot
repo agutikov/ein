@@ -1,0 +1,23 @@
+digraph rewritten {
+  rankdir=TB; nodesep=0.35; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  { rank=min; "owns"; "lives-in"; "left-of"; "pet-at"; }
+  { rank=max; "Dog"; "Norwegian"; "House-1"; "House-2"; }
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  f1 [xlabel="f1"]; f2 [xlabel="f2"]; f3 [xlabel="f3"];
+  c [xlabel="c", style="filled,dashed"];
+  { rank=same; f1; f2; f3; c; }
+  f1 -> "owns" [label="1"];
+  f1 -> "Norwegian" [label="2"];
+  f1 -> "Dog" [label="3"];
+  f2 -> "lives-in" [label="1"];
+  f2 -> "Norwegian" [label="2"];
+  f2 -> "House-1" [label="3"];
+  f3 -> "left-of" [label="1"];
+  f3 -> "House-1" [label="2"];
+  f3 -> "House-2" [label="3"];
+  c -> "pet-at" [label="1", style=dashed];
+  c -> "Dog" [label="2", style=dashed];
+  c -> "House-1" [label="3", style=dashed];
+}
