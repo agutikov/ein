@@ -9,6 +9,15 @@ being an ordinary relation and an ordinary atom
 its own records, which no program writes, are
 [`07-reserved-engine-strings.md`](../../ein.rs/07-reserved-engine-strings.md).
 
+**The reserved names are the surface between the engine's kernel and a theory written in Ein**
+([Q-M1f.397](../../../decisions/docs/Q-M1f.397-the-reserved-words-are-mathematics.md)). They are where
+the kernel acts of its own accord: on a declaration, a stored negation, `(false)`, the two markers, and `written`,
+which it states. What a fact of any other relation means is what rules make of it, the program's own or the
+standard library's. So of whether a fact inside a fact holds, the kernel reads one thing, a held `(not P)`, and of
+such a fact it states one, `(written T)`; what `(claims Carol …)` or any other context says of the fact it points
+at is a theory's
+([a fact inside a fact](../03-syntax-and-semantics/03-facts.md#a-fact-inside-a-fact)).
+
 ## Quick reference — from intent to word
 
 *"I want to express X: what do I write?"* With this table, [`02-syntax.md`](02-syntax.md) and its § 3 on patterns, a

@@ -1,0 +1,23 @@
+digraph facts_in_contexts {
+  rankdir=TB; nodesep=0.45; ranksep=0.6; forcelabels=true;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "claims"; "knows";
+  c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="c"]; d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="d"];
+  subgraph cluster_ctx_claims { label="claims ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    g [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="g"];
+    f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="f"];
+  }
+  "claims" -> c [label="1", dir=back];
+  "claims" -> d [label="1", dir=back];
+  c -> "Carol" [label="2"];
+  c -> g [label="3"];
+  d -> "Dan" [label="2"];
+  d -> f [label="3"];
+  "knows" -> g [label="1", dir=back];
+  g -> "Carol" [label="2"];
+  g -> "Dan" [label="3"];
+  "knows" -> f [label="1", dir=back];
+  f -> "Bob" [label="2"];
+  f -> "Carol" [label="3"];
+}

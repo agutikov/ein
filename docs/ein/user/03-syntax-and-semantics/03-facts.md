@@ -197,17 +197,125 @@ An argument may be a fact ([Q40](../../../decisions/language/Q40-a-fact-may-hold
 `(n (n z 4) 2)`. The inner fact is an object like any other, identified by its arrows at every depth, and a
 pattern matches into it: `:match (claims ?who (knows ?who ?x))` binds both. It is not held by being written there.
 
+### The global context, and a fact's context
+
+A fact can be in two places, and neither decides the other
+([Q-M1f.394](../../../decisions/language/Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md)):
+
+- it is **held**: it is in the **global context**, the facts the knowledge base holds. That is where a rule's
+  premise, a query and a contradiction look;
+- it is **in a context**: a held fact points at it, as an argument or deeper, and speaks about it. That is a
+  **local** context, the fact's own: what Carol claims.
+
+So a fact is held, or in a context, or both, and it is one fact in each case.
+
+**In Ein.**
+
+```lisp
+(relation knows Person Person :why "{?1} knows {?2}")
+(relation claims Person Claim :why "{?1} claims that {?2}")
+
+(knows Bob Carol)
+(claims Carol (knows Carol Dan))
+(claims Dan (knows Bob Carol))
+
+(query :goal (knows ?a ?b))
+(query :goal (claims ?who (knows ?a ?b)))
+(solve :no-search)
+```
+
+`ein solve FILE` answers the two questions:
+
+```text
+  query 1 of 2      (knows ?a ?b)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?a = Bob · ?b = Carol
+  as :expect        (model (knows Bob Carol))
+
+  query 2 of 2      (claims ?who (knows ?a ?b))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?a = Bob · ?b = Carol · ?who = Dan
+                      ?a = Carol · ?b = Dan · ?who = Carol
+  as :expect        (model (claims Carol (knows Carol Dan))
+                           (claims Dan (knows Bob Carol)))
+```
+
+The first question reads the global context and finds one fact. `(knows Carol Dan)` is only in the context of
+Carol's claim, so it is no answer to it. `(knows Bob Carol)` is held and is also in the context of Dan's claim:
+the same fact, found by the first question because it is held and by the second because Dan claims it.
+
+**As a graph.** The graph has each fact once. A filled octagon is held; an octagon inside the dashed frame is in
+a context, and the frame is named for the relation of the facts that point into it:
+
+![Two held facts of claims, c and d, point into a frame named claims ctx: at g, empty, which only Carol claims, and at f, filled, which is held too](diagrams/03-facts-in-contexts.svg)
+
+$c$ and $d$ are the two claims, $g$ is `(knows Carol Dan)` and $f$ is `(knows Bob Carol)`. `ein render kb` draws
+a fact that is an argument as a node labelled with its text, as [above](#as-a-graph).
+
+**In words.** A fact in a context is read inside the statement of the fact that speaks about it. `ein solve FILE
+--dump-answer DIR` writes the state's three facts:
+
+```text
+(claims Carol (knows Carol Dan)) ; Carol claims that (knows Carol Dan)
+(claims Dan (knows Bob Carol)) ; Dan claims that (knows Bob Carol)
+(knows Bob Carol) ; Bob knows Carol
+```
+
+**In mathematics.** With $K$ the facts held, the context of a fact $g$ is the held facts from which argument
+arrows lead to it:
+
+$$
+\operatorname{ctx}_K(g) = \lbrace\, f \in K \;:\; \text{a path of argument arrows leads from } f \text{ to } g \,\rbrace
+$$
+
+and here
+
+$$
+\begin{aligned}
+\mathsf{knows}(\mathsf{Bob}, \mathsf{Carol}) &\in K, & \operatorname{ctx}_K &= \lbrace \mathsf{claims}(\mathsf{Dan}, \mathsf{knows}(\mathsf{Bob}, \mathsf{Carol})) \rbrace \\
+\mathsf{knows}(\mathsf{Carol}, \mathsf{Dan}) &\notin K, & \operatorname{ctx}_K &= \lbrace \mathsf{claims}(\mathsf{Carol}, \mathsf{knows}(\mathsf{Carol}, \mathsf{Dan})) \rbrace
+\end{aligned}
+$$
+
+[The knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)
+has the definition and the three cases drawn.
+
+### What a context does not do
+
+A context gives a fact no truth. With only `(claims Carol (knows Carol Dan))` written:
+
+- no premise `(knows ?a ?b)` matches it, and no query over `knows` answers it;
+- it contradicts nothing: `(claims Carol (not (knows Bob Carol)))` beside `(knows Bob Carol)` is alive, and so is
+  a state that holds `(claims Carol (false))`. A claim of what is impossible is a fact about the claim;
+- it declares, activates and marks nothing: `(claims Carol (relation p A B))` declares no `p`, and a rule's
+  activator written inside another fact applies no rule.
+
+One relation's facts are read as saying something of the fact they point at: `not`. `(not P)` is a held fact
+whose argument is `P`, so it is a context of `P` too, and the one the engine reads: a state that holds `P` and
+`(not P)` is dead ([constraints](06-constraints.md)). What any other context means, whether what a witness claims
+is to be held, is what a program's rules say, and a rule moves a fact from a context into the global one only by
+writing it out ([rules and contexts](05-rules.md#rules-and-contexts)).
+
+### What may be an argument
+
 What may be written as an argument is an object: an atom, or a fact a state could hold, which is a fact of an
-ordinary relation or its stored negation `(not F)`. `eq`, `neq`, `absent`, `and`, `or`, and `false` with an
-argument never head a nested form, since none of them is a fact any state holds, and each is refused where it is
-written ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)).
+ordinary relation, its stored negation `(not F)`, or `(false)`
+([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)). `eq`, `neq`,
+`absent`, `and`, `or`, and `false` with an argument never head a nested form, since none of them is a fact any
+state holds, and each is refused where it is written
+([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)).
 The refusal's line says `where a value goes`: *value* is the engine's word for an object in an argument's place.
 
-**`written` is the loader's.** For every fact nested in a fact a file writes, and for every fact a rule's conclusion
-nests that holds no variable, the loader states `(written T)`, derived by its own step `#written`
-([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)). A rule reads it to
-check what a file wrote where it was written, as the standard library's numerals do; no program writes a `written`
-fact and no declaration binds the name
+### `written`
+
+**`written` is the loader's.** For every fact nested in a fact a file writes, and for every fact a rule's or an
+hrule's conclusion nests that holds no variable, the loader states `(written T)`, derived by its own step
+`#written` ([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)). It is
+one more context of `T`, the one the loader makes: it says that a file wrote `T` as an argument, and not that `T`
+holds. A rule reads it to check what a file wrote where it was written, as the standard library's numerals do; no
+program writes a `written` fact and no declaration binds the name
 ([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md)).
 
 ## Facts in a state

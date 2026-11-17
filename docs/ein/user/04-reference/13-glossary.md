@@ -34,6 +34,15 @@ points at others, the arguments of the facts it holds. `ein` draws a fact as an 
 it, or, for a fact of two arguments in the compact view, as one arrow with the relation's name on it. See
 [`../03-syntax-and-semantics/03-facts.md`](../03-syntax-and-semantics/03-facts.md).
 
+### Held, global context, context
+A fact is **held** when the knowledge base holds it, and the facts held are the **global context**: where a rule's
+premise, a query and a contradiction look. A fact is **in a context** when a held fact points at it, as an argument
+or deeper: `(knows Carol Dan)` is in the context of `(claims Carol (knows Carol Dan))`, which speaks about it. A
+fact may be held, in a context, or both, and a context gives it no truth: only `(not P)`, which is a context of
+`P`, is read by the engine as saying something of `P`
+([Q-M1f.394](../../../decisions/language/Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md)). See
+[`../03-syntax-and-semantics/03-facts.md` § A fact inside a fact](../03-syntax-and-semantics/03-facts.md#a-fact-inside-a-fact).
+
 ### Relation
 The [atom](#atom) under the first arrow of a fact: one object, however many facts point at it. Three things go by
 its name:
@@ -73,9 +82,11 @@ row among them, for such an atom or for a label. See
 [`../03-syntax-and-semantics/04-ontology.md`](../03-syntax-and-semantics/04-ontology.md).
 
 ### Value
-Not a term of these pages. Where `ein` prints *value*, as in the refusal *where a value goes*, it means an
-[object](#object) in an argument's place. The word is used here only in its other senses: the value of a keyword,
-of a config field, of a variable.
+The [object](#object) a variable of a rule is bound to: in a match that binds `?a` to `Alice`, `Alice` is the value
+of `?a`; a variable has one value in each match, and over the matches of a pattern one or many. An object is a value only while a variable
+is bound to it; a node of the graph is an object. Where `ein` prints *value*, as in the refusal *where a value
+goes*, it means an object in an argument's place. The word also keeps its ordinary sense for the value of a keyword
+and of a config field.
 
 ### Rule
 A rewriting rule: a `:match`, what it reads, whose guards, `(neq ?a ?b)`, are premises in it; an `:assert`, what it

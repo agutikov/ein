@@ -226,6 +226,134 @@ activated on, and it is how the standard library's properties work: `(transitive
 `transitive` rule ([properties and operators](07-properties-and-operators.md)). A rule with parameters and no activator
 fact never fires; an activator may itself be derived by a rule, and then the rule starts firing once it is.
 
+## Rules and contexts
+
+A fact is held, in the global context, or in the context of a fact that points at it, or both
+([facts](03-facts.md#the-global-context-and-a-facts-context)). **Every rule is global**: a premise matches a held
+fact and nothing else. A pattern written *inside* a premise matches the fact that stands there, held or not. So
+a rule over `(knows ?a ?b)` reads what is held, and the same rule for what somebody claims is the same patterns,
+each written inside the claim:
+
+```lisp
+(relation knows  Person Person :why "{?1} knows {?2}")
+(relation claims Person Claim  :why "{?1} claims that {?2}")
+
+(rule knows-back ()
+  :match  (knows ?a ?b)
+  :assert (knows ?b ?a)
+  :why    "{?a} knows {?b}, so {?b} knows {?a}")
+
+(rule knows-back-claimed ()
+  :match  (claims ?who (knows ?a ?b))
+  :assert (claims ?who (knows ?b ?a))
+  :why    "{?who} claims that {?a} knows {?b}, and so that {?b} knows {?a}")
+
+(knows Alice Bob)
+(claims Carol (knows Carol Dan))
+
+(query :goal (knows ?a ?b))
+(query :goal (claims ?who (knows ?a ?b)))
+(solve :no-search)
+```
+
+`ein solve FILE` answers:
+
+```text
+  query 1 of 2      (knows ?a ?b)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?a = Alice · ?b = Bob
+                      ?a = Bob · ?b = Alice
+  as :expect        (model (knows Alice Bob) (knows Bob Alice))
+
+  query 2 of 2      (claims ?who (knows ?a ?b))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?a = Carol · ?b = Dan · ?who = Carol
+                      ?a = Dan · ?b = Carol · ?who = Carol
+  as :expect        (model (claims Carol (knows Carol Dan))
+                           (claims Carol (knows Dan Carol)))
+```
+
+`knows-back` fired on `(knows Alice Bob)` and not on `(knows Carol Dan)`, which Carol only claims.
+`knows-back-claimed` fired on Carol's claim and concluded another claim of Carol's; `(knows Dan Carol)` is not
+held. The two rules do not read one another's facts. The second, as a graph: its premise $q$ points into the
+context at $u$, and its conclusion $c$, dashed, at a fact $v$ it builds there:
+
+![The rule knows-back-claimed: a premise of claims pointing at a pattern of knows inside a frame named claims ctx, and a dashed conclusion of claims pointing at the reversed pattern in the same frame](diagrams/05-rule-in-a-context.svg)
+
+**A macro writes the wrapping.** A [macro](11-macros.md)'s parameter may stand for a whole pattern, so the
+context is named once and the rule reads as the global one does:
+
+```lisp
+(macro claimed (?who ?F)
+  (claims ?who ?F)
+  :why "{?who} claims that {?F}")
+
+(rule knows-back-claimed ()
+  :match  (claimed ?who (knows ?a ?b))
+  :assert (claimed ?who (knows ?b ?a))
+  :why    "{?who} claims that {?a} knows {?b}, and so that {?b} knows {?a}")
+```
+
+With `(claims Carol (knows Carol Dan))`, the query `(claimed ?who (knows Dan ?b))` answers `?b = Carol · ?who =
+Carol`. A macro is a pattern and writes no rule, so a rule meant for both the global context and a context is
+written twice, once bare and once wrapped.
+
+**The context may be a parameter**, as any relation may, and then one rule serves every context relation an
+activator names. `(false)` inside a context is a fact about that context, and it leaves the state alive until a
+rule says otherwise:
+
+```lisp
+(import std.macro :symbols (forall))
+(relation knows   Person Person :why "{?1} knows {?2}")
+(relation claims  Person Claim  :why "{?1} claims that {?2}")
+(relation witness Person        :why "{?1} is a witness")
+
+(rule contradicts-itself (?C ?R)
+  :match  (and (?C ?w (?R ?a ?b)) (?C ?w (not (?R ?a ?b))))
+  :assert (?C ?w (false))
+  :why    "{?w} says both that {?R} holds of {?a} and {?b} and that it does not")
+(contradicts-itself claims knows)
+
+(rule no-witness-left ()
+  :match  (forall ?w (witness ?w) (claims ?w (false)))
+  :assert (false)
+  :why    "every witness contradicts themself")
+
+(witness Carol)
+(witness Dan)
+(claims Carol (knows Carol Dan))
+(claims Carol (not (knows Carol Dan)))
+(claims Dan (knows Dan Carol))
+
+(query :goal (claims ?w (false)))
+(solve :no-search)
+```
+
+`ein solve FILE` prints `states (k_s) 1` and answers `?w = Carol`: the state holds `(claims Carol (false))` and is
+alive. With the line `(claims Dan (not (knows Dan Carol)))` added it prints `states (k_s) 0`, `refuted by
+no-witness-left`, and the core is the four claims. The `(false)` that ends a state is the one a rule concludes
+in the global context; one in a context is reached by a rule that reads it, and only so.
+
+**What a rule must spell.** A rule that moves a fact out of a context writes the fact as a pattern:
+`(claims ?who (knows ?a ?b))` with the conclusion `(knows ?a ?b)`. What is fixed in the text is the fact's count
+of arguments; its relation may be a parameter. A variable that stands for the whole fact is no conclusion,
+`:assert ?f`, and no premise, `?f`, `(not ?f)`, `(absent ?f)`; the one thing written over it is the conclusion
+`(not ?f)`, which denies whatever fact `?f` is bound to
+([Q-M1f.393](../../../decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)). In mathematics, with
+$K$ the facts held:
+
+$$
+\begin{aligned}
+K \models g\,\theta &\iff g\theta \in K && \text{a premise reads the global context} \\
+K \models c(u, g)\,\theta &\iff c(u, g)\theta \in K && \text{a pattern inside a premise reads a context, and says nothing of } g\theta \in K
+\end{aligned}
+$$
+
+[Packing and unpacking](../../reasoning/01-static-ir/02-rewriting-rules.md#packing-and-unpacking) has both
+directions as rewritings of the graph.
+
 ## Negation as failure: `absent`
 
 `(absent P)` holds where no fact of the state matches `P`, its variables that nothing outside it binds read as

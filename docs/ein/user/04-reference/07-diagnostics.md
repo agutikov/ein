@@ -715,8 +715,9 @@ A query's `:goal` is a premise, and the loader reads it as it reads a rule's `:m
 - **The expanded goal gets the checks a rule's `:match` gets**: § 2.9, § 2.15, § 2.16 and the macros' own.
 - **Every relation a goal asks about, and every relation a claim lists a fact of, is a relation of the program**
   ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)): § 2.20's
-  notion without the goals, so one the program declares, states a fact of, or writes in a rule, an hrule or an
-  obligation, at any depth, a rule's `:assert` among them, and one a `(solve :hrules …)` activator has its hrule
+  notion without the goals, so one the program declares, states a fact of, writes as the relation of a fact that
+  is an argument, or writes in a rule, an hrule or an obligation, at any depth, a rule's `:assert` among them, and
+  one a `(solve :hrules …)` activator has its hrule
   propose. `is-a`, `eq`, `neq` and the kernel's own relations, `(relation ?R ?T)`, are every program's.
 
 | the goal writes | the line, after `kb load error: ` |
@@ -1095,11 +1096,12 @@ text rests on no fact, and its core is $\emptyset$. What reads it is a represent
 started ([malformed numbers](04-stdlib/07-calculator.md#malformed-numbers-what-is-flagged-and-where)).
 
 **Where it shows** is where the mirror facts show: `ein saturate --dump` lists each,
-`(written (n z 1) :rule "#written")`, in its `DERIVED` block, and counts it; a KB view draws it; a `.einb` stores it.
+`(written (n z 1) :rule "#written")`, in its `DERIVED` block, and counts it; `ein render kb` draws it, an octagon
+that points at the fact; a `.einb` stores it.
 A `--dump-answer` state file writes none, as it writes no declaration's mirror, because the loader states them again
 from the facts the file holds, a fact the run derived among them, and says so in its header where the state holds
-any; `ein render`'s KB text leaves them out for the same reason; `-P`'s blocks, the facts *beyond the program as
-loaded*, and a `(model …)`'s comparison leave them out. The read-out prints none: a state's listing is its facts over
+any; a knowledge base written out as Ein text, one fact a line, leaves them out for the same reason; `-P`'s
+blocks, the facts *beyond the program as loaded*, and a `(model …)`'s comparison leave them out. The read-out prints none: a state's listing is its facts over
 the candidates' relations, and `written` is no candidate's.
 
 **A program does not write it**

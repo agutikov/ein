@@ -208,8 +208,8 @@ $$
   about the answer has no row, so a question about *the* answer is asked `:over maximal`
   ([solutions and models](13-solutions-and-models.md)).
 - **A goal is held to what a rule's `:match` is held to.** A macro's call in it is expanded, and the read-out prints the
-  goal as written. Every relation it names, at any depth, is one the program has: declared, stated, written in a
-  rule or an hrule, or proposed by an hrule a `(solve :hrules …)` activator turns on; `is-a`, `eq` and `neq` are every
+  goal as written. Every relation it names, at any depth, is one the program has: declared, stated, written as the
+  relation of a fact that is an argument, written in a rule or an hrule, or proposed by an hrule a `(solve :hrules …)` activator turns on; `is-a`, `eq` and `neq` are every
   program's. A relation written as a variable is refused, since a query has no activator to bind it
   ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)).
 - **`eq` and `neq` may be asked about**: `(query :goal (neq w ?y))` answers a row for each name of the program but
