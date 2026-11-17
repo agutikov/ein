@@ -1,7 +1,5 @@
 ;;; A name written **only inside a nested fact** never became a candidate —
-;;; M1e2 **W15**, register row `W15/negative-only` (`corpus/wrong_answers.toml`),
-;;; fixed by S1e2.2.14 (2026-11-04). Banked from S1e2.2.4's residue probe
-;;; of the same day.
+;;; **W15**, register row `W15/negative-only` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -9,14 +7,14 @@
 ;;; plus the stored negative `(not (q Z A))`. `Z` is written in a fact, but
 ;;; only inside the nested `(q Z A)`: the KB's names index does not index a
 ;;; nested fact's arguments (Q40, *the nested fact is interned, not
-;;; believed*), and `Z` is in no rule's `:assert`, so the blind enumerator's
-;;; objects were A and B alone.
+;;; believed*), and `Z` is in no rule's `:assert`, so an enumerator that takes
+;;; its objects from those two places proposes over A and B alone.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; The user ruled on 2026-11-04 that every constant a fact names, at any
-;;; depth, is a name of the program and so a candidate object (Q-M1e2.9 (a),
-;;; `solution_semantics.md` § 1.2 read literally). So H is `q` over A, B and Z
+;;; Every constant a fact names, at any depth, is a name of the program and so a
+;;; candidate object (`docs/ein/reasoning/kb-evolution/solution-semantics.md`
+;;; § 1.2, Q-M1e2.9). So H is `q` over A, B and Z
 ;;; without self-edges and without the negated `(q Z A)`: five candidates,
 ;;; three dead alone. `{(q A Z), (q B Z)}` is consistent and quiescent and is
 ;;; the maximal state: R is ∅, `{(q A Z)}`, `{(q B Z)}` and both —
@@ -24,12 +22,14 @@
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.14 H was 2 candidates, `(q A B)` and `(q B A)`, both dead
-;;; alone, and R was `{∅}` (`ein solve FILE` at `b63a8738`, 2026-11-04).
-;;; Since then the blind enumerator's objects are every name of the program
+;;; At `b63a8738` (`ein solve FILE`), H was 2 candidates, `(q A B)` and
+;;; `(q B A)`, both dead alone, and R was `{∅}`.
+;;; The blind enumerator's objects are every name of the program
 ;;; (`invariant::program_names`), a nested fact's arguments among them, and
 ;;; this file answers its control's R, which the `:expect` below states. The
 ;;; register row `W15/negative-only` is fixed.
+;;;
+;;;
 
 (relation p T T :why "p holds of {?1} and {?2}")
 (relation q T T :why "q holds of {?1} and {?2}")
@@ -50,7 +50,7 @@
 (solve
   :no-hypothesis (p)
   ;; `q` is named, so this closes `q`: exactly these positive `q` facts —
-  ;; the -declared control's R, which this file answers since S1e2.2.14.
+  ;; the -declared control's R, which this file answers too.
   :expect (region
             ;; state 1 of 4 — ∅, root itself · minimal
             (model)

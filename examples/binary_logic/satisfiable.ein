@@ -13,7 +13,7 @@
 ;;;
 ;;; The claim was computed in Python by enumeration.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md`.
+;;; `docs/ein/user/reference/stdlib.md` § Boolean functions and circuits.
 (import std.bool.inputs :symbols (inputs is-a in require))
 (import full_adder)
 

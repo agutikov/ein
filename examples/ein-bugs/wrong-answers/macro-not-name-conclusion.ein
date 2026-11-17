@@ -1,7 +1,6 @@
 ;;; A macro whose body writes `(not ?a)`, called with a name as a conclusion: the
 ;;; rule fires and stores `(not k)`, the negation of a name —
-;;; M1f **W68**, register row `W68/macro-not-name-conclusion`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W68**, register row `W68/macro-not-name-conclusion`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
 ;;; stored `(not k :rule r)` (`ein saturate --dump`), a fact no program can
 ;;; write.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

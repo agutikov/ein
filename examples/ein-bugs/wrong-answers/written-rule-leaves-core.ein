@@ -1,7 +1,7 @@
 ;;; A fact written with a `:rule` leaves every core: the refutation that rests on it reports the
 ;;; empty core —
-;;; M1f **W87**, register row `W87/written-rule-leaves-core`, filed by S1f.7.9 (T1f.7.9.2,
-;;; 2026-11-11).
+;;; **W87**, register row `W87/written-rule-leaves-core`.
+;;;
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;
@@ -12,9 +12,9 @@
 ;;; ── The answer, by hand ─────────────────────────────────────────────────────
 ;;;
 ;;; The refutation rests on the one fact the program writes, `(paid Ann)`: the twin's core.
-;;; Under F24's (c), and under (b) with a declared rule, a written fact with a provenance is a
-;;; given in every core, so the core is `(paid Ann)`. Under (a), and under (b) for `zzz`, the
-;;; program is refused at load.
+;;; If a written fact may carry a provenance, it is a given in every core, so the core is
+;;; `(paid Ann)`; if a program may not write `:rule`, or only a declared rule's, the program is
+;;; refused at load. Which of these holds is not decided.
 ;;;
 ;;; ── What the engine answered ────────────────────────────────────────────────
 ;;;
@@ -22,7 +22,7 @@
 ;;; rests on no fact`, `"core": []` in the summary and in `nogoods.json`, `refuted by clash`.
 ;;; The loader stores a written `:rule` fact as a derivation with no premises, so the core
 ;;; search follows it to nothing. `:rule seat`, a declared rule, gives the same.
-;;; Open, and F24's: what a written provenance may claim is the user's question, not ruled.
+;;; The row is open: what a written provenance may claim is not decided.
 
 (relation paid Guest :why "{?1} has paid")
 (relation seated Guest :why "{?1} is seated")

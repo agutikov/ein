@@ -1,7 +1,7 @@
 ;;; Ein — feature demo: `eq` and `neq` are relations, asked about in a goal.
 ;;;
-;;; M1f S1f.5.7 (T1f.5.7.2), on the user's ruling of 2026-11-07 (Q-M1e2.26):
-;;; `eq` and `neq` are the relations of equality and non-equality. Their facts
+;;; `eq` and `neq` are the relations of equality and non-equality
+;;; (Q-M1e2.26). Their facts
 ;;; are fixed by name identity — `(eq x x)` for every value, `(neq x y)` for
 ;;; every two different values — computed, never stored, and no fact, rule or
 ;;; commitment changes them. A query over them is answered, not refused:
@@ -13,7 +13,7 @@
 ;;;     side, and with both free every ordered pair of two different names.
 ;;;
 ;;; "The program's names" are the list H's candidates are built from
-;;; (Q-M1e2.9 (a)): every constant a fact names at any depth, and every
+;;; (Q-M1e2.9): every constant a fact names at any depth, and every
 ;;; constant of a rule's `:match` or `:assert`. A name only a query writes, `w`
 ;;; below, is none of them. Here they are `p` and `Node`, which
 ;;; `(relation p Node)` stores, and `a`.
@@ -27,9 +27,9 @@
 ;;;
 ;;; `ein solve examples/features/16_eq_neq_goal.ein` prints each query's one
 ;;; class, its rows, and the claim that states it, which holds; `ein test`
-;;; exits 0. Until S1f.5.7 the first query held with nothing bound, *the goal
-;;; holds: it has no variable*, the second had no row, and no claim naming
-;;; `eq` or `neq` loaded.
+;;; exits 0. Each guard here is answered as a relation: a free side is bound
+;;; to the names that make it hold, and a claim that names `eq` or `neq`
+;;; loads as one that names any relation.
 
 (relation p Node :why "{?1} is a node")
 (p a)

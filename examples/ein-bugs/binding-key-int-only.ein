@@ -1,36 +1,36 @@
-;;; W7's family, the `int` activator alone — M1e2 S1e2.2.7, register row
+;;; W7's family, the int activator alone — register row
 ;;; `W7/binding-key-layout` (`corpus/wrong_answers.toml`), Q-M1e.16.
 ;;;
-;;; `defined_behaviour.md` § 3.2's program with `(note edge (src Y))`
-;;; deleted. One activator compiles one plan, so the binding key has no
-;;; second register layout to compare against, and this file answers the
-;;; same in either build and under either key: it is a control, as
+;;; `binding-key-both.ein`'s program with `(note edge (src Y))` deleted. One
+;;; activator compiles one plan, so the binding key has no second register
+;;; layout to compare against, and this file answers the same in either
+;;; build and under either key: it is a control, as
 ;;; `binding-key-nested-only.ein` is for the other activator.
 ;;; `binding-key-both.ein` and `binding-key-swapped.ein` keep both
-;;; activators, in the two orders, and that pair is the test. It is
-;;; `corpus/fuzz_findings/binding-key-layout.ein` and its `-swapped` twin,
-;;; promoted here by the commit that fixes W7, the one after this file was
-;;; banked: a build with debug assertions aborted on both until then, and
-;;; every in-process corpus sweep is such a build.
+;;; activators, in the two orders, and that pair is the test, as
+;;; `corpus/fuzz_findings/binding-key-layout.ein` and its `-swapped` twin
+;;; are the fuzzer's.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; `(note edge 1)` binds `?R` to `edge` and `?f` to 1, so the rule derives
 ;;; `(noted ?a 1)` for each edge source `?a` once `(holds 1)` admits it:
-;;; `(noted 1 1)` and `(noted 2 1)`, and nothing about 3. H is empty (`ein
-;;; solve -H`, 2026-11-04), so R is `{∅}`: root, with those two, which the
-;;; `:expect` below states.
+;;; `(noted 1 1)` and `(noted 2 1)`, and nothing about 3.
 ;;;
-;;; ── Since M1f S1f.5.5's swap ───────────────────────────────────────────
+;;; ── H, and why it is scoped ────────────────────────────────────────────
 ;;;
-;;; A run of digits is a name (S1f.5.4's ruling), so `1`, `2` and `3`, the
-;;; edges' ends, are candidate objects, and unscoped H is 10 candidates and R
-;;; 640 states (T1f.5.5.9's sweep). The solve below holds `edge` and `noted`
-;;; out of the hypotheses, S1f.5.4's proposal A (accepted 2026-11-08), so H is
-;;; `(holds 2)` and R is two states, root and `{(holds 2)}`, which adds no
-;;; `noted` fact, the int activator binding `?f` to 1; `ein oracle` gives the
-;;; same R. The point stands: one activator, one plan, root's two `noted`
-;;; facts.
+;;; A run of digits is a name (Q-M1e2.24), so `1`, `2` and `3`, the edges'
+;;; ends, are candidate objects. Unscoped, H is 10 candidates and R 640 states
+;;; (`ein show hyps` and `ein solve` on a copy without the `:no-hypothesis`
+;;; line). The solve below holds `edge` and `noted` out of the hypotheses, so
+;;; H is `(holds 2)` and R is two states, root and `{(holds 2)}`, which adds
+;;; no `noted` fact, the int activator binding `?f` to 1; `ein oracle` gives
+;;; the same R. One activator, one plan, root's two `noted` facts.
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation edge  Node Node :why "there is an edge from {?1} to {?2}")
 (relation holds Node :why "{?1} holds")
@@ -46,9 +46,9 @@
 (note edge 1)
 
 (solve
-  ;; S1f.5.4's proposal A (accepted 2026-11-08), at M1f S1f.5.5's swap: a
-  ;; run of digits is a name, so `1`, `2` and `3` are candidate objects and
-  ;; unscoped H is 10 candidates and R 640 states; `edge` and `noted` held
+  ;; A run of digits is a name, so `1`, `2` and `3` are candidate objects,
+  ;; and unscoped H is 10 candidates and R 640 states; `edge` and `noted` held
+  ;;
   ;; out, H is `(holds 2)`, the oracle the same.
   :no-hypothesis (edge noted)
   ;; `holds` and `noted` are named, so both are closed: each state lists

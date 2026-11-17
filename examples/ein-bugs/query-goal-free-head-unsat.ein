@@ -1,16 +1,16 @@
-;;; M1a S1a.6.6 — the *other* arm of `query-goal-free-head.ein`.
+;;; The *other* arm of `query-goal-free-head.ein`.
 ;;;
 ;;; Same broken goal, `(?R …)` with a head variable that nothing can bind —
-;;; but the puzzle is **contradictory**, so the solve table prints an unsat
-;;; core and never renders a solution block. The goal is compiled only on
-;;; the path that renders a model, which is not taken, so this file **exits
-;;; 0** where its sibling exits 1.
+;;; but the puzzle is **contradictory**, so its answer, root dead and R
+;;; empty, never needs the goal. A goal checked only on the path that renders
+;;; a model let this file exit 0 where its sibling exited 1. The loader holds
+;;; a query's `:goal` to what a rule's `:match` is held to (Q-M1f.72),
+;;; whatever the answer, so this file is refused at load as its sibling is,
+;;; one `kb load error` line naming `(?R a b)`, exit 1: the refusal does not
+;;; wait on the verdict, which is what this file pins.
 ;;;
-;;; That asymmetry is the whole reason this file exists. The first fix for
-;;; the sibling checked the goal in the CLI before the verdict was known, and
-;;; so rejected this file too — a program whose answer, `Contradiction`, never
-;;; needs the goal. The check belongs on the path that renders a model, and
-;;; only there.
+;;;
+;;;
 
 (is-a a T)
 

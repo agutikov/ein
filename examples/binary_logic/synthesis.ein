@@ -13,12 +13,12 @@
 ;;; never 1 together, so the gate that joins them may be Or or Xor, which is
 ;;; what a textbook's two drawings of the adder show.
 ;;;
-;;; The table is `bin-fa`, the binary full adder of `std.math.bits` (M1f
-;;; S1f.6.16; until its build `fa2`, of a copy beside this file).
+;;; The table is `bin-fa`, the binary full adder of `std.math.bits`, the
+;;; table `std.math.binary-arith` adds with.
 ;;;
 ;;; The claim was computed in Python by enumeration.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md`.
+;;; `docs/ein/user/reference/stdlib.md` § Boolean functions and circuits.
 (import std.bool.gates :symbols (gate2 column-name Xor And Or))
 (import std.math.bits :symbols (bin-fa))
 (import std.algebra :symbols (total-owed functional))

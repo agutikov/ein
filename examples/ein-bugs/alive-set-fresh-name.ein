@@ -1,6 +1,6 @@
-;;; The **M1 alive-set invariant**, broken on purpose — M1e S1e.3.3, `ST-M1`;
-;;; and the program on which breaking it cost a model, M1e2's **W4**, fixed by
-;;; S1e2.2.4 (2026-11-04).
+;;; The **alive-set invariant**, broken on purpose, and the program on which
+;;; breaking it cost a model: **W4**, register row `W4/alive-set-fresh-name`.
+;;; Its control, which names the rule's constant in a fact, is below.
 ;;;
 ;;; ── The premise this tested ────────────────────────────────────────────
 ;;;
@@ -34,17 +34,17 @@
 ;;; Without `Z` among the objects, the candidates were `(q A B)` and
 ;;; `(q B A)`, both refuted in one firing. The walk answered
 ;;; `k = 0, exhausted = true`, *No solution — the constraints are
-;;; contradictory*, with the file's lookahead off; that refutation was M1e2's
-;;; W1 at layer 0 as much as this case (`wrong-answers/fresh-name-nospawn.ein`
-;;; is this file without `spawn`, and refuted the same way). Since M1e2
-;;; S1e2.1a.5 the answer is a region, and R was `{∅}`: W4 in isolation, which
+;;; contradictory*, with the file's lookahead off; that refutation was W1
+;;; at layer 0 as much as this case (`wrong-answers/fresh-name-nospawn.ein`
+;;; is this file without `spawn`, and refuted the same way). Answered as a
+;;; region, R was `{∅}`: W4 in isolation, which
 ;;; `wrong-answers/fresh-name-default.ein` is this file's program banked as.
 ;;;
-;;; The user ruled on 2026-10-16 that `Z` is not new (Q-M1e.21 (b)): *"rules
-;;; are part of root, so rules can't assert new names"*. A constant a rule
-;;; names is a name of the program, and since S1e2.2.4 the blind enumerator's
-;;; objects are seeded with every constant a rule's `:assert` names
-;;; (`hypgen::candidate_objects`, from `invariant::rule_constants`). H is the
+;;; `Z` is not new (Q-M1e.21): *"rules are part of root, so rules can't
+;;; assert new names"*. A constant a rule names is a name of the program,
+;;; and the blind enumerator's objects are seeded with every constant a
+;;; rule's `:assert` names (`hypgen::candidate_objects`, from
+;;; `invariant::rule_constants`). H is the
 ;;; six `q` candidates over A, B and Z, and R is the four states above —
 ;;; `examples/ein-bugs/alive-set-fresh-name-declared.ein`'s, which names `Z`
 ;;; in a fact. `ein-infer/tests/alive_invariant.rs` holds the pair to one R,
@@ -61,15 +61,15 @@
 ;;;
 ;;; [`alive-set-fresh-name-declared.ein`](alive-set-fresh-name-declared.ein)
 ;;; is this file plus **one fact**, `(seen Z)`, which changes no rule and no
-;;; constraint and does nothing but put `Z` in a fact at root. Until S1e2.2.4
-;;; that one fact was the whole difference between the model and none; since
-;;; then the two files describe one R.
+;;; constraint and does nothing but put `Z` in a fact at root. Without the
+;;; seed, that one fact was the whole difference between the model and
+;;; none; with it, the two files describe one R.
 ;;;
-;;; `:expect` states R. It stated `(region (model))`, ∅ alone, until the seed.
+;;; `:expect` states R, the four states.
 
-;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; The file sets no `(config …)`: every flag has its default, and no flag
+;; changes R.
+;;
 
 (relation p T T :why "p holds of {?1} and {?2}")
 (relation q T T :why "q holds of {?1} and {?2}")

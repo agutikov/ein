@@ -1,9 +1,9 @@
 ;;; A keyword pair beside an `:assert`'s conjuncts is dropped in silence —
-;;; M1f **W32**, register row `W32/kwpair-in-assert`
-;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
-;;; S1f.5.11's case (the inventory of 2026-11-06's G-22, its probe
-;;; `assert_and_kw.ein`, written over the case's program), filed `open` and
-;;; owned by S1f.5.11, on the user's ruling of 2026-11-07 (Q-M1e2.28).
+;;; **W32**, register row `W32/kwpair-in-assert` (`corpus/wrong_answers.toml`);
+;;; each form takes a closed list of keywords (Q-M1e2.28).
+;;;
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,10 +12,10 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A term takes no keyword (the user, 2026-11-07, on G-22: *"there are fixed
-;;; set of allowed kwargs"*), so the program is refused at load, with a line
-;;; naming the rule and the clause: every command that reads it exits 1 (`ein
-;;; test`: 2).
+;;; A term takes no keyword (Q-M1e2.28), so the program is refused at load, with
+;;; a line naming the rule and the clause: every command that reads it exits 1
+;;; (`ein test`: 2).
+;;;
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;

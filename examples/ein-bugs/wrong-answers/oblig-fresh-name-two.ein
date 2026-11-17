@@ -1,17 +1,15 @@
-;;; W14 seen from inside the lattice — M1e2 **W14**, register row
-;;; `W14/oblig-fresh-name-two` (`corpus/wrong_answers.toml`), fixed by
-;;; S1e2.2.15 (2026-11-04). Banked from S1e2.2.4's residue probe of the same
-;;; day.
+;;; W14 seen from inside the lattice — **W14**, register row
+;;; `W14/oblig-fresh-name-two` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `oblig-fresh-name.ein` plus `(person Bob)`, who may like Soup. Until
-;;; S1e2.2.15 the obligations rung's H was `(likes Ann Soup)`, dead alone, and
+;;; `oblig-fresh-name.ein` plus `(person Bob)`, who may like Soup. A rung that
+;;; reads root's `(food ?b)` scan proposes `(likes Ann Soup)`, dead alone, and
 ;;; `(likes Bob Soup)`. Committing `(likes Bob Soup)` derives `(food Z)`
 ;;; through `special`, and at that node the rung itself would propose
-;;; `(likes Ann Z)` for Ann's debt, which root's H did not hold. So
-;;; `{(likes Bob Soup)}` was an owing state whose debt the region could never
-;;; pay, and `{(likes Bob Soup), (likes Ann Z)}` a model outside the cube.
+;;; `(likes Ann Z)` for Ann's debt, which root's H does not hold. So
+;;; `{(likes Bob Soup)}` is an owing state whose debt that region can never
+;;; pay, and `{(likes Bob Soup), (likes Ann Z)}` a model outside its cube.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -21,19 +19,21 @@
 ;;; states. With the rung declined, the blind enumerator proposes every
 ;;; `likes` pair over Ann, Bob, Soup and Z, and the two no rule refutes or
 ;;; requires, `(likes Ann Bob)` and `(likes Bob Ann)`, are free: R is twelve
-;;; states. The user ruled the second on 2026-11-04 (Q-M1e2.10 (a),
-;;; `plans/m1e2_correctness/open_questions.md`): a guard over a relation in D
+;;; states. The second holds (Q-M1e2.10): a guard over a relation in D
 ;;; declines the rung, and the control, whose guard reads the same `food`,
 ;;; declines with it and answers the same twelve.
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.15 H was 2 candidates and R was empty: the one alive node
-;;; beyond root, `{(likes Bob Soup)}`, owed Ann's debt, `(region (owing (model
-;;; (likes Bob Soup))))` (`ein solve FILE` at `338b5892`, 2026-11-04). Since
-;;; then the rung declines and the blind enumerator builds H, twelve
-;;; candidates, and R is the twelve states the `:expect` below states. The
-;;; register row `W14/oblig-fresh-name-two` is fixed.
+;;; At `338b5892` (`ein solve FILE`), H was 2 candidates and R was empty: the
+;;; one alive node beyond root, `{(likes Bob Soup)}`, owed Ann's debt,
+;;; `(region (owing (model (likes Bob Soup))))`. The rung declines and the
+;;; blind enumerator builds H, twelve candidates, and R is the twelve states
+;;; the `:expect` below states. The register row `W14/oblig-fresh-name-two`
+;;; is fixed.
+;;;
+;;;
+;;;
 
 (relation person T :why "{?1} is a person")
 (relation food   T :why "{?1} is a food")
@@ -67,7 +67,7 @@
 (solve
   :no-hypothesis (person food)
   ;; `likes` is named, so this closes `likes`: exactly these positive facts —
-  ;; the blind enumerator's R, the rung declined (Q-M1e2.10 (a)), which the
+  ;; the blind enumerator's R, the rung declined (Q-M1e2.10), which the
   ;; -declared control answers too.
   :expect (region
             ;; state 1 of 12 — 2 candidates · minimal · from {(likes Ann Z), (likes Bob Soup)}

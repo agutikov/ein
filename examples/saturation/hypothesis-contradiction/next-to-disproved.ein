@@ -1,7 +1,7 @@
 ;;; next-to-disproved — a neighbour-of hypothesis is contradicted.
 ;;;
 ;;; The inner proposition is a `next-to` adjacency claim, again
-;;; exercising the nested-fact unification path (Q40 / R9).
+;;; exercising the nested-fact unification path (Q40).
 ;;;
 ;;; Ontology (background):
 ;;;   - `next-to` is the symmetric neighbour relation.

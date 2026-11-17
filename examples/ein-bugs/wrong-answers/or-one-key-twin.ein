@@ -1,5 +1,5 @@
-;;; The twin of `or-one-key.ein` — M1f **W39**, register row `W39/or-one-key`
-;;; (`corpus/wrong_answers.toml`), filed by S1f.5.1's T1f.5.1.3 (2026-11-09):
+;;; The twin of `or-one-key.ein` — **W39**, register row `W39/or-one-key`
+;;; (`corpus/wrong_answers.toml`):
 ;;; the same program with `w`'s `(or …)` written as two rules, `w1` and `w2`,
 ;;; one per disjunct.
 ;;;
@@ -7,7 +7,7 @@
 ;;;
 ;;; Root is dead. `(hit w)` has two derivations, through `(p w)` and through
 ;;; `(q w)`, and the smallest frontier over them, with `(c x)`, is `(c x)
-;;; (small s0)`: two facts (`glossary.md` § Smallest contradiction frontier).
+;;; (small s0)`: two facts (`docs/ein/user/reference/glossary.md` § Core).
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;

@@ -1,6 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to —
-;;; M1f **W84**, register row `W84/not-name-derived`, filed by S1f.7.4 (T1f.7.4.2,
-;;; 2026-11-11).
+;;; **W84**, register row `W84/not-name-derived`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -18,7 +17,8 @@
 ;;;
 ;;; At `55aadd0b`, release: the program loads and `deny` stores `(not Ann)` and `(not Bob)`;
 ;;; R is {∅}, exit 0 on every command.
-;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

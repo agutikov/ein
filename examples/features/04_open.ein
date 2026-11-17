@@ -1,6 +1,6 @@
 ;;; Ein — feature demo
 ;;;
-;;; S1.5.8c T1.5.8c.3b — `(unknown P)` parser sugar.
+;;; `(unknown P)`, a pattern macro of `std.macro`.
 ;;;
 ;;; The kernel distinguishes THREE storage states for any
 ;;; potential fact P:
@@ -9,8 +9,8 @@
 ;;;   - negated : (not P) is in the KB         → pattern `(not P)`
 ;;;   - open    : neither is in the KB         → pattern `(unknown P)`
 ;;;
-;;; `(unknown P)` is the third pattern shape. It desugars at compile
-;;; time to:
+;;; `(unknown P)` is the third pattern shape. It expands, where a rule
+;;; uses it, to:
 ;;;
 ;;;   (and (absent P) (absent (not P)))
 ;;;
@@ -20,8 +20,8 @@
 ;;; Use case: gate hypothesis emission on still-undecided slots.
 ;;; Without `(unknown …)`, an hrule would propose hypotheses even
 ;;; for already-decided pairs and the engine has to filter them
-;;; out downstream. With `(unknown …)` the rule writer expresses
-;;; the gate declaratively.
+;;; out downstream. With `(unknown …)` the rule writer states the
+;;; condition declaratively.
 ;;;
 ;;; This demo: a small hypgen-style rule that emits a candidate
 ;;; `(house-color ?h ?c)` ONLY for House-Color pairs still in
@@ -30,7 +30,7 @@
 ;; Demonstration rule — derives candidate facts.
 ;; In real puzzles this'd be an `hrule` (hypothesis rule); for
 ;; the demo we use `rule` so the firings land in (reasoning).
-;; stdlib pattern-macro sugar — forall/open from the std.macro module (S1.8.A5).
+;; stdlib pattern-macro sugar — forall/unknown from the std.macro module.
 (import std.macro :symbols (forall unknown))
 
 (rule open-candidate ()

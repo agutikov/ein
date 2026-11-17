@@ -1,7 +1,6 @@
-;;; The program a `--dump-answer` state file re-writes drops a rule that only
-;;; a selection names — M1f **W91**, register row `W91/dump-selection`
-;;; (`corpus/wrong_answers.toml`), filed by S1f.6.25 (T1f.6.25.3, 2026-11-13)
-;;; from E-11 of P1f.6's `findings.md`.
+;;; The program a `--dump-answer` state file re-writes dropped a rule that only
+;;; a selection names — **W91**, register row `W91/dump-selection`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -13,7 +12,7 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; The selection's closure is `palette` and `color`, which the rule writes.
+;;; The import brings `palette` and `color`, which the rule writes.
 ;;; Root fires `palette` and holds `(color Red)` and `(color Green)`; no
 ;;; candidate, so R is {∅}, one state. `ein solve --dump-answer DIR` writes
 ;;; that state as `DIR/models/01.ein`: *the program as loaded, imports
@@ -23,16 +22,17 @@
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; At `5e5685b7`, release: R as above, and a state file whose program is
-;;; empty. The file is written through the tree-shake
-;;; (`ein_ir::resolve_and_minimize`), which keeps an imported declaration
-;;; that a live name reaches or a live premise activates; a rule with an
-;;; empty `:match` that the import lists is reached by neither, and `color`
-;;; only through it. The file holds the two facts and no declaration, so
-;;; reloaded it is a program of two facts of an undeclared relation, with no
-;;; rule: `ein saturate --dump` on it lists no declared relation and no rule
+;;; empty. The file was written through the tree-shake
+;;; (`ein_ir::resolve_and_minimize`), which kept an imported declaration
+;;; that a live name reached or a live premise activated; a rule with an
+;;; empty `:match` that the import lists was reached by neither, and `color`
+;;; only through it. The file held the two facts and no declaration, so
+;;; reloaded it was a program of two facts of an undeclared relation, with no
+;;; rule: `ein saturate --dump` on it listed no declared relation and no rule
 ;;; where the run that wrote it had one of each.
-;;; The answer above by hand since S1f.6.25 (T1f.6.25.3): a name a
-;;; selection lists is live.
+;;; The engine now gives the answer above by hand: an import brings its
+;;; module whole (Q-M1f.247), so the state file holds both.
+;;;
 
 (import dump-selection-library :symbols (palette))
 

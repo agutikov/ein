@@ -1,6 +1,5 @@
 ;;; A written `(absent Bob)` adds `Bob` to the program's names, and H grows —
-;;; M1f **W80**, register row `W80/absent-fact-name`, filed by S1f.7.7 (T1f.7.7.2,
-;;; 2026-11-11).
+;;; **W80**, register row `W80/absent-fact-name`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -16,8 +15,9 @@
 ;;;
 ;;; At `52e05fc1`, release: the program loads and stores `(absent Bob)`; `Bob` is a name of
 ;;; the program, so H is `(paid Ann)` and `(paid Bob)` and R is four states, exit 0 on
-;;; every command.
-;;; Refused at load since S1f.7.7 (T1f.7.7.3).
+;;; every command. The engine now refuses it at the parse, on every command.
+;;;
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest)

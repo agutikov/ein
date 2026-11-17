@@ -1,46 +1,46 @@
 ;;; `binding-key-both.ein` with its two activator lines exchanged, and
-;;; nothing else — M1e2 **W7**'s twin, register row `W7/binding-key-layout`
-;;; (`corpus/wrong_answers.toml`), Q-M1e.16; fixed by S1e2.2.7 (2026-11-04).
-;;; Promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein`,
-;;; which stays there as a frontend-fuzzer seed.
+;;; nothing else — **W7**'s twin, register row `W7/binding-key-layout`
+;;; (`corpus/wrong_answers.toml`), Q-M1e.16.
+;;; `corpus/fuzz_findings/binding-key-layout-swapped.ein` is the same
+;;; program, a frontend-fuzzer seed.
 ;;;
 ;;; The answer is `binding-key-both.ein`'s, by the same hand derivation: the
-;;; order two facts are written in may not change what is derived. R is two
-;;; states, ∅ with `(noted 1 1)`, `(noted 1 3)`, `(noted 2 1)` and `(noted 2
-;;; 3)`, and `{(holds Y)}`, which adds `(noted 1 Y)` and `(noted 2 Y)`.
+;;; order two facts are written in may not change what is derived. Every
+;;; state holds `(noted 1 1)` and `(noted 2 1)` and no other `noted` fact:
+;;; `(note edge 1)` binds `?f` to `1`, and `(note edge (src Y))` binds it to
+;;; `(src Y)`, which no `holds` fact or candidate is (W33).
 ;;;
-;;; Until S1e2.2.7 this order answered right in a release build, because the
-;;; nested-fact plan, compiled first, derives every `noted` fact by itself,
-;;; so the int plan's applications it suppressed were duplicates; the other
-;;; order lost `(noted 1 3)`. A build with debug
-;;; assertions aborted on both, in `check_layout`. Since S1e2.2.7 each plan
-;;; has a binding-key space of its own and the two files answer alike; the
-;;; `:expect` below is `binding-key-both.ein`'s, word for word.
+;;; At `9c3c3fbc` this order answered right in a release build, because the
+;;; nested-fact plan, compiled first and binding no `?f`, derived every
+;;; `noted` fact by itself, so the int plan's applications it suppressed
+;;; were duplicates; the other order lost `(noted 1 3)`. A build with debug
+;;; assertions aborted on both, in `check_layout`. Each plan has a
+;;; binding-key space of its own (Q-M1e.16) and the two files answer alike;
+;;; the `:expect` below is `binding-key-both.ein`'s, word for word.
 ;;;
-;;; ── Since M1f S1f.5.5's swap ───────────────────────────────────────────
+;;; ── H, and why it is scoped ────────────────────────────────────────────
 ;;;
-;;; A run of digits is a name (S1f.5.4's ruling), so `1`, `2` and `3`, the
-;;; edges' ends, are candidate objects beside `Y`, and unscoped H is 21
-;;; candidates whose R passes the budget (T1f.5.5.9's sweep). The solve below
-;;; holds `edge` and `noted` out of the hypotheses, S1f.5.4's proposal A
-;;; (accepted 2026-11-08), so H is `(holds 2)` and `(holds Y)` and R is four
-;;; states, the two above and each with `(holds 2)` added, which adds `(noted
-;;; 1 2)` and `(noted 2 2)`; `ein oracle` gives the same R. The point stands:
-;;; root's `noted` facts are the same in either activator order, and `Y` is a
-;;; candidate.
+;;; A run of digits is a name (Q-M1e2.24), so `1`, `2` and `3`, the edges'
+;;; ends, are candidate objects beside `Y`, a name of the program though it is
+;;; written only inside `(src Y)` (Q-M1e2.9). Unscoped, H is 23 candidates
+;;; (`ein show hyps` on a copy without the `:no-hypothesis` line), and R
+;;; passes the budget. The solve below holds `edge` and `noted` out of the
+;;; hypotheses, so H is `(holds 2)` and `(holds Y)` and R is four states, each
+;;; with root's two `noted` facts; `ein oracle` gives the same R.
 ;;;
-;;; ── Since M1f S1f.5.18 ─────────────────────────────────────────────────
+;;; ── What `ein solve` reports ───────────────────────────────────────────
 ;;;
-;;; An activator binds a parameter to a nested fact as to a name (W33, the
-;;; user's ruling of 2026-11-08 on S1f.5.5's census, fixed by S1f.5.18's
-;;; T1f.5.18.2 on 2026-11-09). `(note edge (src Y))` binds `?f` to `(src Y)`,
-;;; and no `(holds (src Y))` is a fact or a candidate, so that plan derives
-;;; nothing; `(note edge 1)` binds `?f` to `1` and derives `(noted 1 1)` and
-;;; `(noted 2 1)`. Every state holds those two and no other `noted` fact, in
-;;; either activator order. The `:expect` below stated the four, and the two
-;;; more each candidate added, that the unbound `?f` derived, W33's wrong
-;;; answer, until that commit restated it. The two plans bind `?f` in their
-;;; seeds now, so their register layouts are one.
+;;; R, four states, every commitment of the two candidates: ∅ (root, which
+;;; owes nothing), `{(holds 2)}`, `{(holds Y)}` and both, the last the
+;;; maximal line. `ein test FILE` holds the `:expect` on that run, and
+;;; `ein oracle FILE`, which saturates all four nodes, lists the same four.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation edge  Node Node :why "there is an edge from {?1} to {?2}")
 (relation holds Node :why "{?1} holds")
@@ -57,9 +57,9 @@
 (note edge 1)
 
 (solve
-  ;; S1f.5.4's proposal A (accepted 2026-11-08), at M1f S1f.5.5's swap: a
-  ;; run of digits is a name, so `1`, `2` and `3` are candidate objects and
-  ;; unscoped H is 21 candidates whose R passes the budget; `edge` and
+  ;; A run of digits is a name, so `1`, `2` and `3` are candidate objects,
+  ;; and unscoped H is 23 candidates whose R passes the budget; `edge` and
+  ;;
   ;; `noted` held out, H is `(holds 2)` and `(holds Y)`, the oracle the same.
   :no-hypothesis (edge noted)
   ;; `holds` and `noted` are named, so both are closed: each state lists

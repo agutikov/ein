@@ -1,6 +1,5 @@
 ;;; A value `(eq Ann Bob)` inside a fact is stored —
-;;; M1f **W82**, register row `W82/eq-value-fact`, filed by S1f.7.10 (T1f.7.10.2,
-;;; 2026-11-11).
+;;; **W82**, register row `W82/eq-value-fact`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -8,16 +7,17 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────────
 ;;;
-;;; `eq` is the relation of equality, computed and never stored (S1f.5.7), so `(eq …)`
-;;; is no value: refused at the parse, at `eq`, on every command, as
-;;; `(says Ann (neq Ann Bob))` is.
+;;; `eq` is the relation of equality, computed and never stored (Q-M1e2.26), so
+;;; `(eq …)` is no value (Q-M1f.124): refused at the parse, at `eq`, on every
+;;; command, as `(says Ann (neq Ann Bob))` is.
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
 ;;; At `52e05fc1`, release: the program loads and stores `(says Ann (eq Ann Bob))`, an
 ;;; equality nothing computes, and the goal answers `?c = (eq Ann Bob)`, exit 0 on
 ;;; every command.
-;;; Refused at load since S1f.7.10 (T1f.7.10.3).
+;;; The engine now refuses it at the parse, on every command.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

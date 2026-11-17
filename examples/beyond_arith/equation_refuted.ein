@@ -8,8 +8,8 @@
 ;;; `ein solve` then names what the refutation rests on: the request and the
 ;;; three rows of the table it passed through. That core is the proof.
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.digits :symbols (md nz __closed__))
 
 (relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")

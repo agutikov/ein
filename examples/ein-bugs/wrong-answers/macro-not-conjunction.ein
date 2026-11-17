@@ -1,7 +1,6 @@
 ;;; A macro whose body writes `(not ?a)`, called with a conjunction under an
 ;;; `absent`: the stored negation of no fact is matched, and the rule fires —
-;;; M1f **W67**, register row `W67/macro-not-conjunction`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W67**, register row `W67/macro-not-conjunction`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release: every command answered, exit 0. The matcher read
 ;;; `(not (and …))` as a pattern no fact can match, so the `absent` held and `r`
 ;;; fired at root, deriving `(p k)` (`ein saturate --dump`).
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

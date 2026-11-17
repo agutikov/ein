@@ -24,20 +24,20 @@
 ;;;   no-room    P3 has every hole excluded — ⊥
 ;;;
 ;;; **Why it is forced rather than searched.** The blind three-pigeons-two-holes
-;;; version — no givens, an `(hrule …)` guessing placements — reports
-;;; **Ambiguity k = 6**, not a contradiction, because a state that places two
-;;; pigeons and leaves the third nowhere is *complete* as far as saturation is
-;;; concerned: nothing in an open world obliges a pigeon to be anywhere.
-;;; `no-room` is a refutation at the extreme, never an existence requirement —
-;;; it fires only once the stored negatives happen to cover a pigeon's whole
-;;; range. Turning `total` into a first-class obligation instead is exactly
-;;; what M1d is for: docs/history/m1d_satisfiability/.
+;;; version — no givens, no `forced`, an `(hrule …)` guessing placements — is
+;;; not a contradiction: `--single` says **Ambiguity**, and R's maximal line is
+;;; 6 states, each placing two pigeons and leaving the third nowhere, which is
+;;; alive as far as saturation is concerned: nothing in an open world obliges
+;;; a pigeon to be anywhere. `no-room` is a refutation at the extreme, never an
+;;; existence requirement — it fires only once the stored negatives happen to
+;;; cover a pigeon's whole range. A pigeon owes a hole only where a program
+;;; says so, as an obligation (docs/ein/user/syntax-and-semantics/obligations.md).
 ;;;
 ;;; The searched version also has **several equally small unsat cores**, and
-;;; which one the engine reports moves with the id space — the open finding
-;;; corpus/fuzz_findings/unsat-core-id-space.md, which until this fixture was
-;;; reachable only from generated input. Forcing the chain leaves one core, so
-;;; this file demonstrates `(false)` without also being a symmetry stress test.
+;;; which one the engine reports may move with the id space: a core is an
+;;; explanation (corpus/fuzz_findings/unsat-core-id-space.md). Forcing the
+;;; chain leaves one core, so this file demonstrates `(false)` without also
+;;; being a symmetry stress test.
 
 (relation instance Thing Type :why "{?1} is an instance of {?2}")
 (relation in       Pigeon Hole :why "{?1} is in {?2}")
@@ -87,13 +87,13 @@
 (in P1 H1)
 (not (in P2 H1))
 
-;; `instance` is closed too (M1e2 S1e2.2.5, 2026-11-04): `no-room` concludes
-;; (false) from a `forall`, an (absent …) over `instance`, and with `instance`
-;; open the blind enumerator proposed `(instance H1 P1)` and the like, a
-;; relation a commitment can extend, which *forbid* (ruled 2026-11-02) refuses.
-;; The types are given in full, so no commitment is meant to extend them. H was
-;; 20 such candidates, every one dead alone; it is now none, and the answer is
-;; root's, as it was.
+;; `instance` is out of the hypotheses too: `no-room` concludes (false) from a
+;; `forall`, an (absent …) over `instance`, and with `instance` open the blind
+;; enumerator would propose `(instance H1 P1)` and the like, a relation a
+;; commitment can extend, which *forbid* refuses (Q-M1e2.5). The types are
+;; given in full, so no commitment is meant to extend them. H is empty
+;; (`ein show hyps`), and the answer is root's.
+;;
 (solve
   :no-hypothesis (in instance)
   :expect (false))

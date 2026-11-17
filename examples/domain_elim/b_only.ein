@@ -1,5 +1,5 @@
-;;; S1.5b.32 fixture — hypothesis exploration ONLY (pathway B isolated).
-;;; The "B-only" measurement row: the domain/range-elimination rules
+;;; A fixture — hypothesis exploration ONLY (pathway B isolated).
+;;; Set against ab.ein: the domain/range-elimination rules
 ;;; (and their derive-* activators) are removed, so no positive is
 ;;; ever asserted by saturation. The survivor must be found by
 ;;; forking on each candidate and refuting the rest.
@@ -24,7 +24,7 @@
   :assert (false)
   :why "{?R} not injective: {?c} from both {?a} and {?b}.")
 
-;; ── d=0 negative completion (S1.5a.19 shape). Kept so the two
+;; ── d=0 negative completion. Kept so the two
 ;;    variants share an identical negative-derivation surface; with
 ;;    no elimination rule consuming them, these negatives do not by
 ;;    themselves assert any positive.

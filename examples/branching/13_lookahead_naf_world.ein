@@ -1,54 +1,54 @@
-;;; P1.21 R4 / M1a S1a.4.1 — the lookahead's NAF world includes the candidate.
+;;; A rule that can never fire, refused by its shape: a refusal fixture.
 ;;;
-;;; The one-step lookahead asks "does adding `h` to the saturated KB
-;;; produce a contradiction in a single rule firing?" by *positing* `h`
-;;; into a positive premise and running the rule's other premises against
-;;; the KB. Its contract is one-sided: it may miss a death (the branch
-;;; then forks and dies normally), but it must never report a live
-;;; hypothesis as dead — that loss is silent.
+;;; `self-block` concludes (false) from `(cand ?x)` and `(absent (cand ?x))`
+;;; at once. Its two premises are jointly unsatisfiable in any one world,
+;;; so it can never fire in a real match: no world both holds a
+;;; `(cand ?x)` and lacks it, whatever candidate a commitment adds to
+;;; it.
 ;;;
-;;; `self-block` is the shape that used to break it. Its two premises are
-;;; jointly unsatisfiable in any one world, so it can never fire in a real
-;;; match — yet the probe posited `h` into `(cand ?x)` while evaluating
-;;; `(absent (cand ?x))` against a KB *without* `h`. The NAF answered
-;;; about a different world than the probe hypothesised, the guard
-;;; "passed", `(false)` was derived, and every `cand` candidate was killed.
+;;; `cand` is a relation the blind enumerator proposes (`promote`
+;;; concludes it, and nothing closes it), so `(cand B)` is a candidate
+;;; and `cand` a relation a commitment can still extend. A refutation
+;;; that rests on an `absent` over such a relation is the shape *forbid*
+;;; refuses (Q-M1e2.5): every question about a commitment (`ein solve`,
+;;; `ein render lattice`) exits 1 naming `self-block`, and `ein saturate`
+;;; still saturates.
 ;;;
-;;; Since S1.21.8 the guard is judged in the world `kb` **plus** `h`: it
-;;; must find no match in `kb` *and* `h` must not create one. Here `h` is
-;;; exactly `(cand B)`, so it creates one, the guard fails, and the
-;;; candidate survives.
+;;; It shows a refusal no witness does: the check reads relations, not
+;;; matches, so a rule that can never fire is refused by its shape all
+;;; the same. Deleting the rule keeps R, three states — ∅, {(cand B)} and
+;;; the maximal state two commitments reach — with ?x = A in every one,
+;;; and ?x = B too where `(cand B)` holds, and leaves a file about
+;;; nothing.
 ;;;
-;;; What makes this a *whole-solve* fixture and not just a filter one is the
-;;; kill cache. A killed candidate is written back as `(not h)`, so a wrong
-;;; kill does not merely skip a branch — it poisons the root: `(not (cand B))`
-;;; lands there, the branch that would have derived `(cand B)` dies against
-;;; it, every branch dies, and the verdict flips.
+;;; The refusal names its repairs: close the relation, if no commitment
+;;; is meant to extend it; state a requirement as a decision or an
+;;; obligation; or conclude from a stored negative, `(not …)`.
 ;;;
-;;; Measured with `ein solve -e -s`, 2026-08-18:
 ;;;
-;;;   as shipped                          Solution, ?x = A, 2 enterings
-;;;   guard judged against `kb` alone     Contradiction, k = 0, 0 enterings
 ;;;
-;;; `cand` is rule-producible (`promote` concludes it), so the auto-closure
-;;; would leave it guessable — though note `emit_closed` runs only on a fork
-;;; under `--hyp-stats` and the JSON summary, never on the `solve` path
-;;; itself, so what the search actually sees is every relation open.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
-;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; The file sets no `(config …)`: every flag has its default.
 ;;
-;; ── 2026-11-04 — a refusal fixture (M1e2 S1e2.2.5) ──────────────────────
-;; `self-block` concludes (false) from an (absent …) over a relation the blind
-;; generator proposes, the shape *forbid* rules out (2026-11-02), so every
-;; question about a commitment (`ein solve`, `ein render lattice`) exits 1
-;; naming it, and `ein saturate` still saturates. The lookahead this file was
-;; written for left with the walk. It stays as written because it shows a
-;; refusal no witness does: a rule that can never fire (its match needs `(cand
-;; ?x)` and its absence at once) is refused by its shape, since the check
-;; reads relations, not matches. Deleting the rule keeps R, three states (M1e2
-;; S1e2.4.1 § 2.1), and leaves a file about nothing.
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
 
 (relation ok      T :why "{?1} is ok")
 (relation blessed T :why "{?1} is blessed")

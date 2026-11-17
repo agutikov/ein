@@ -1,5 +1,5 @@
-;;; One candidate, refuted in ONE firing — M1e2 **W2** under `-L`, and its
-;;; control under default flags. Register rows `W2/forced-1-L`
+;;; One candidate, refuted in ONE firing — **W2** under `-L`, and its control
+;;; under default flags. Register rows `W2/forced-1-L`
 ;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
@@ -13,21 +13,21 @@
 ;;; dead, so root is the one solution (Q-M1e.6, clause 3): **`Solution`, k = 1,
 ;;; a model with no `q` fact.**
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine answered before `fbcae3b2` ─────────────────────────────
 ;;;
-;;;   default  Solution k = 1 — the lookahead kills `(q one)` before layer 1
-;;;            and caches `(not (q one))`, so `alive` is empty and root is
+;;;   default  Solution k = 1 — the lookahead killed `(q one)` before layer 1
+;;;            and cached `(not (q one))`, so `alive` was empty and root was
 ;;;            recorded. Right.
 ;;;   -L       `No solution — the constraints are contradictory`, k = 0,
 ;;;            `exhausted = true`, **unsat core (0 facts)**. With the
-;;;            lookahead off, `alive` is the singleton `{(q one)}` and the
-;;;            forced-positive cascade writes it into root as a premise-less
-;;;            `<forced-positive>` fact; root is then contradictory and the run
-;;;            is refuted. Promotion is valid only when root ∪ {h} is
+;;;            lookahead off, `alive` was the singleton `{(q one)}` and the
+;;;            forced-positive cascade wrote it into root as a premise-less
+;;;            `<forced-positive>` fact; root was then contradictory and the
+;;;            run was refuted. Promotion is valid only when root ∪ {h} is
 ;;;            consistent — here the right conclusion was `¬(q one)`.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1. The twin with the death two firings
-;;; deep is `forced-2.ein`, which is wrong at default flags.
+;;; Now R is {∅}, root alone (`ein solve FILE`). The twin with the death two
+;;; firings deep is `forced-2.ein`, which was wrong at default flags.
 (relation thing T :why "{?1} is a thing")
 (relation q T :why "q holds of {?1}")
 (thing one)

@@ -5,11 +5,11 @@
 ;;; and an unknown flag would make the file a load-negative, which is what
 ;;; `examples/broken/config_unknown_flag.ein` is for.
 ;;;
-;;; It set `:lattice-order-seed 3` until M1e2 S1e2.1a.5 retired that flag (an
-;;; order lever, which no route reads), and `:warn-derived-naf true` until M1e2
-;;; S1e2.2.5 retired that one (its refutation half became *forbid*'s refusal);
-;;; `:record-alternative-justifications` is one of the two a program can still
-;;; set, and the one that moves no read-out of a program with no refutation.
+;;; `:record-alternative-justifications` is one of the two flags a program
+;;; can set, and the one that moves no read-out of a program with no
+;;; refutation: it may change which core a dead node's refutation names,
+;;; and this program has no dead node. A retired flag is refused at the parse
+;;; (`examples/broken/config_retired_flag.ein`).
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is

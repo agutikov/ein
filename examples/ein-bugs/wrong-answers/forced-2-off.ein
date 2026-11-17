@@ -1,30 +1,30 @@
-;;; `forced-2.ein` with the forced-positive cascade OFF — M1e2 **W1** at layer
+;;; `forced-2.ein` with the walk's forced-positive cascade off — **W1** at layer
 ;;; 0, reached once W2's mechanism is out of the way. Register row
 ;;; `W1/forced-2-off` (`corpus/wrong_answers.toml`).
 ;;;
-;;; Below this header the file is `forced-2.ein` plus the one `(config …)`
-;;; line. The answer by hand is the same: **`Solution`, k = 1, a model with no
-;;; `q` fact** — root is consistent and its one hypothesis dies.
+;;; Below this header the program is `forced-2.ein`'s: Ein has no flag that
+;;; turns the cascade off. The answer by hand is the same: **`Solution`, k = 1,
+;;; a model with no `q` fact** — root is consistent and its one hypothesis dies.
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine answered before `fbcae3b2` ─────────────────────────────
 ;;;
 ;;;   verdict         No solution — the constraints are contradictory
 ;;;   unsat core (1 facts)   (q one)
 ;;;   exhausted        true
 ;;;   enterings        1 (dead_post=1)
 ;;;
-;;; With no cascade, `(q one)` is entered at layer 1 and dies. Every layer-1
-;;; singleton is dead, so `phase2` breaks on an empty `a_layer` without asking
-;;; whether root is now complete, and `finalise` unions the dead cores into a
+;;; With no cascade, `(q one)` was entered at layer 1 and died. Every layer-1
+;;; singleton was dead, so `phase2` broke on an empty `a_layer` without asking
+;;; whether root was then complete, and `finalise` unioned the dead cores into a
 ;;; `Contradiction` — the core is a *hypothesis*, not a program fact.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;; Now R is {∅}, root alone (`ein solve FILE`), as `forced-2.ein`'s. No config
+;;; option changes R (Q-M1e2.30), and the register keeps the walk's answer above
+;;; as its `wrong`.
 ;;;
-;;; **Since M1e2 S1e2.1a.5 the program is `forced-2.ein`'s.** The switch retired
-;;; `:enable-forced-positive` (it wrote into root, which no route does), so the
-;;; `(config …)` line this file was is gone. R never read it — no config option
-;;; changes R (`config.md` § 2.5) — so the file's R is the one it had,
-;;; and the register keeps the walk's answer above as its `wrong`.
+;;;
+;;;
+;;;
 (relation thing T :why "{?1} is a thing")
 (relation q T :why "q holds of {?1}")
 (relation bad T :why "{?1} is bad")

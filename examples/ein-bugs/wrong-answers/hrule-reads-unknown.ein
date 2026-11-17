@@ -1,6 +1,6 @@
-;;; An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build —
-;;; M1f **W85**, register row `W85/hrule-reads-unknown`, filed by S1f.7.2 (T1f.7.2.2,
-;;; 2026-11-11).
+;;; An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`,
+;;; stops a debug build — **W85**, register row `W85/hrule-reads-unknown`.
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -16,9 +16,9 @@
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
-;;; At `55aadd0b`, release: this R, exit 0, and the claim holds. A build with debug
-;;; assertions stopped where `ein solve` took H, exit 101, on the same assertion.
-;;; One answer from both builds since S1f.7.2 (T1f.7.2.3).
+;;; At `55aadd0b`, release: this R, exit 0, and the claim holds. A build with
+;;; debug assertions stopped where `ein solve` took H, exit 101, on the same
+;;; assertion. Now one answer from both builds.
 
 (import std.macro :symbols (unknown))
 (relation paid Guest :why "{?1} has paid")

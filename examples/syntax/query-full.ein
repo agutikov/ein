@@ -1,10 +1,10 @@
 ;;; Syntax probe — query-full.
 ;;;
-;;; A `(query …)` carrying all three of its keywords, until M1e2 S1e2.1a.4
-;;; moved `:hrules` to the `(solve …)` it now sits beside: the query keeps
-;;; `:goal` and `:goal-text`, and the lattice is stated once. The two hrules
-;;; the list names are declared since M1f S1f.7.8, which refuses a `:hrules`
-;;; list naming an hrule the program does not declare.
+;;; A `(query …)` with its `:goal` and its `:goal-text`, beside the
+;;; `(solve …)` that holds the `:hrules` list: the query asks, and the
+;;; lattice is stated once, in the solve. The two hrules the list names
+;;; are declared: a `:hrules` list naming an hrule the program does not
+;;; declare is refused (Q-M1f.115).
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is

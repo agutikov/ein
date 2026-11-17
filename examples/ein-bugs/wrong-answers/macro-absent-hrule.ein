@@ -1,7 +1,6 @@
 ;;; A macro whose body writes `absent` over two premises, called in an hrule:
 ;;; `ein saturate` answers and every solve question stops —
-;;; M1f **W66**, register row `W66/macro-absent-hrule`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W66**, register row `W66/macro-absent-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,7 +20,8 @@
 ;;; stopped where the hypothesis layer compiles `h`, exit 1, on the compiler's
 ;;; line; `ein saturate` and `render kb`, which ask no hrule for candidates,
 ;;; answered, exit 0.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

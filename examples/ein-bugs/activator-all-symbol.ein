@@ -1,4 +1,4 @@
-;;; The control for W16's second shape — M1e2 S1e2.2.16, register rows
+;;; The control for W16's second shape — register rows
 ;;; `W16/activator-all-int` and `W16/activator-all-nested`
 ;;; (`corpus/wrong_answers.toml`).
 ;;;
@@ -8,11 +8,11 @@
 ;;; one, and its `(false)` rests through two activators on
 ;;; `(absent (checked ?x))`, over a relation a commitment can extend.
 ;;;
-;;; Refused since M1e2 S1e2.2.5 (*forbid*, F2's *per activator*): every
-;;; question about a commitment exits 1 naming `alarm`, in either build
-;;; (`ein solve FILE` at `6a775f3d`), and `ein saturate` still saturates.
-;;; The two witnesses answer this since S1e2.2.16 fixed W16, less the
-;;; `[activator a]` label.
+;;; Refused at load (*forbid*, followed through each activator, Q-M1e2.5):
+;;; every question about a commitment exits 1 naming `alarm [activator a]`,
+;;; in either build, and `ein saturate` still saturates. The two witnesses
+;;; answer the same, each naming its own activator.
+;;;
 
 (relation item    T :why "{?1} is an item")
 (relation checked T :why "{?1} is checked")

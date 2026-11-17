@@ -13,8 +13,8 @@
 ;;; digit is set: of the 1 000 full assignments 997 are dead, each found
 ;;; separately.
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith mul product-of add sum-of))
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))

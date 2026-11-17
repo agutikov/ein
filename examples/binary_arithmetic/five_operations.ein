@@ -18,9 +18,9 @@
 ;;; Every claim below was computed in Python and is checked by `ein test`.
 ;;; Search-free: no candidate, one state, one saturation.
 ;;;
-;;; M1f P1f.6 (S1f.6.16): `docs/ein/user/reference/stdlib.md` has
-;;; the prototype this program was banked from, its counts and its costs; the
-;;; theory is the stdlib's `std.math.binary-arith` since the stage's build.
+;;; `docs/ein/user/reference/stdlib.md` § Binary has the theory this
+;;; program requests, `std.math.binary-arith`, and its five operations'
+;;; requests and answers.
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-sub bin-mul bin-div bin-cmp
                                          bin-sum-of bin-diff-of bin-product-of bin-quot-of bin-cmp-of))
 (import std.math.binary :symbols (b2))

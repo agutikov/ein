@@ -1,9 +1,9 @@
-;;; An hrule's template writes a variable that no premise binds, and
-;;; proposes nothing, in silence — M1f **W57**, register row
-;;; `W57/hrule-assert-var` (`corpus/wrong_answers.toml`), filed by S1f.5.10
-;;; (T1f.5.10.1, 2026-11-09), `open` and owned by S1f.5.10, on the user's
-;;; ruling of 2026-11-07 on P1f.5's F13 (*"yes, file F13 with the
-;;; refusal"*).
+;;; An hrule's template writes a variable that no premise binds, and proposes
+;;; nothing, in silence — **W57**, register row `W57/hrule-assert-var`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,10 +12,10 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; The ruling holds an hrule's `:assert` to the rule a rule's is held to
-;;; (S1f.5.10's stage file): every variable bound on every way its `:match`
-;;; can hold. `?y` is not, so the program is refused at load, and every
-;;; command that loads it exits 1 with the loader's line (`ein test`: 2).
+;;; An hrule's `:assert` is held to the rule a rule's is held to (Q-M1e2.37):
+;;; every variable bound on every way its `:match` can hold. `?y` is not, so the
+;;; program is refused at load, and every command that loads it exits 1 with the
+;;; loader's line (`ein test`: 2).
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;

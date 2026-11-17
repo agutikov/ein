@@ -1,7 +1,6 @@
 ;;; A macro whose body writes `(neq ?a ?b)`, called with a conjunction as a value:
 ;;; the guard compares a name to a connective, holds, and the rule fires —
-;;; M1f **W67**, register row `W67/macro-neq-connective`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W67**, register row `W67/macro-neq-connective`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release: every command answered, exit 0. The guard compared
 ;;; `k` to the conjunction as if it were a fact, held, and `r` fired, deriving
 ;;; `(p k)` (`ein saturate --dump`).
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

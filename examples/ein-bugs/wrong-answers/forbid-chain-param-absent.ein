@@ -1,7 +1,7 @@
 ;;; *forbid* misses a refutation resting on an `absent` over the relation a
-;;; parameter names, in a plan only a node compiles — M1e2 **W17**, register
-;;; row `W17/forbid-chain-param-absent` (`corpus/wrong_answers.toml`), found
-;;; by S1e2.2.17 (2026-11-04) probing the witness's mechanism.
+;;; parameter names, in a plan only a node compiles — **W17**, register row
+;;; `W17/forbid-chain-param-absent` (`corpus/wrong_answers.toml`), found probing
+;;; the witness's mechanism.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,24 +12,24 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `{(p a)}` dies, `bad`'s `(false)` resting through `(y a)` on
-;;; `(absent (p2 a))`, and `{(p a), (p2 a)}` lives: a dead hole over a
-;;; relation a commitment can extend. *forbid* with F2's *via*: the program
-;;; is refused at every command that takes the universe.
+;;; `{(p a)}` dies, `bad`'s `(false)` resting through `(y a)` on `(absent (p2
+;;; a))`, and `{(p a), (p2 a)}` lives: a dead hole over a relation a commitment
+;;; can extend. *forbid*, through an activator (Q-M1e2.5): the program is
+;;; refused at every command that takes the universe.
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.17 it loaded: R three states, the one dead hole {(p a)},
-;;; exit 0, in every mode and `ein oracle` (at `3efd3f5f`). *forbid* read
-;;; `watch` from its pattern (its activator relation is in D) and would have
-;;; refused it were it the refutation (its parameter's relation read under an
-;;; `absent`), but it did not follow what `watch` derives into N, so `bad`'s
-;;; read of `y` was never tainted. The status line named no site. Since then
-;;; an open rule's `absent` over its parameter's relation taints what it
-;;; derives, whatever a node binds the parameter to, and every question
-;;; about a commitment exits 1: `rule 'bad': concludes (false) from y, which
-;;; rule 'watch' derives resting on (absent …) over the relation its
-;;; parameter ?R names`.
+;;; At `3efd3f5f` it loaded: R three states, the one dead hole {(p a)}, exit 0,
+;;; in every mode and `ein oracle` (at `3efd3f5f`). *forbid* read `watch` from
+;;; its pattern (its activator relation is in D) and would have refused it were
+;;; it the refutation (its parameter's relation read under an `absent`), but it
+;;; did not follow what `watch` derives into N, so `bad`'s read of `y` was never
+;;; tainted. The status line named no site. Now an open rule's `absent` over its
+;;; parameter's relation taints what it derives, whatever a node binds the
+;;; parameter to, and every question about a commitment exits 1: `rule 'bad':
+;;; concludes (false) from y, which rule 'watch' derives resting on (absent …)
+;;; over the relation its parameter ?R names`.
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation y T :why "y holds of {?1}") (relation watch T :why "the relation {?1} is watched")
 

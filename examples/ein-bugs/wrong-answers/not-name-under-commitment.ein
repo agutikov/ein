@@ -1,6 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` bound by a fact only a commitment states: every state past root stores the negation of a guest —
-;;; M1f **W84**, register row `W84/not-name-under-commitment`, filed by S1f.7.4 (T1f.7.4.2,
-;;; 2026-11-11).
+;;; **W84**, register row `W84/not-name-under-commitment`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `55aadd0b`, release: the program loads; H is `(seen Ann)` and `(seen Bob)` and R is
 ;;; four states, of which three store `(not Ann)`, `(not Bob)` or both. Their
 ;;; `--dump-answer` state files do not reload. Exit 0 on every command.
-;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

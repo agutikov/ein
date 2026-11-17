@@ -1,6 +1,6 @@
-;;; The alive-∅ record site BETWEEN LAYERS — the site `CO-M1` names, reached at
-;;; stock config with no flags. **Fixed** at M1e S1e.3.1; this is the
-;;; regression. Found and banked 2026-08-28 as M1e D1.
+;;; The alive-∅ record site BETWEEN LAYERS: a search that wrote negatives
+;;; into root recorded as a model a state its own rules refute, at stock
+;;; config with no flags. Register row W1/alive-empty-interlayer.
 ;;
 ;; `phase2` recomputed `alive` after a layer, found it empty, and recorded root
 ;; — which by then held this layer's singleton writeback `(not (p Z))` and the
@@ -9,39 +9,39 @@
 ;;
 ;; Three enterings, one layer. The recorded state was
 ;; `(is-a A T) (is-a B T) (is-a Z T) (not (p A)) (not (p B)) (not (p Z))`; feed
-;; it back as a program and this engine answered `Contradiction` on it.
+;; it back as a program and that engine answered `Contradiction` on it, as
+;; it did on this file once it re-saturated before recording. The trigger
+;; was the singleton writeback, not the kill cache, so turning the cache off
+;; did not repair it; `alive-empty-phase1.ein` is the other site.
 ;;
-;; `record_node` now re-saturates a KB written since its last saturation and
-;; declines to record one its own rules refute, so this file answers
-;; `Contradiction` — the `-L` column, and the hand derivation: `{(p Z)}` dies,
-;; so `(not (p Z))` is entailed; `mutex` then refutes every state holding any
-;; `(p ?x)` and `totality` refutes the state holding none.
+;; ── The answer ────────────────────────────────────────────────────────────
 ;;
-;; **`-K` does not repair the old behaviour here** — the trigger is the
-;; singleton writeback, not the cache — which is what made this the harder of
-;; the two witnesses and why both were banked.
+;; That `Contradiction` read the search's own negatives as the state's. A
+;; node is `sat(root ∪ C)` with nothing a search wrote (Q-M1e2.7), so no
+;; `(not (p Z))` is ever stored and `mutex` never fires. And `totality`
+;; concludes `(false)` from `(absent (p A))` over `p`, which the hrule
+;; proposes: a refutation resting on an `absent` a commitment can still
+;; fill (*forbid*, Q-M1e2.5), so the program is refused at load. Every
+;; question about a commitment exits 1 naming `totality` over `p`;
+;; `ein saturate` still saturates. A refused program has no R to check a
+;; claim against, so the file states none.
 ;;
-;; ── 2026-11-03 — what it answers now, and what it is to answer ───────────
+;; Deleting `totality` leaves a program the static check calls monotone,
+;; whose R is 4 states, maximal `{(p A), (p B)}`: the register row's
+;; alternative answer.
 ;;
-;; The `Contradiction` above was the walk's, and its hand derivation read the
-;; search's own negatives as the state's (Q-M1e.7 ruling A). Under R a node is
-;; `sat(root ∪ C)` with nothing the search wrote, so no `(not (p Z))` is ever
-;; stored, `mutex` and `totality` never fire, and R is 4 states, maximal
-;; `{(p A), (p B)}` (M1e2 S1e2.1a.5's switch).
-;; And `totality` concludes `(false)` from `(absent (p A))` over `p`, which the
-;; hrule proposes: the shape the user ruled out on 2026-11-02 (*forbid*,
-;; Q-M1e2.5), so the right answer is a refusal at load. Register row
-;; W1/alive-empty-interlayer, re-opened at the revisit (S1e2.1.7).
 ;;
-;; ── 2026-11-04 — refused ──────────────────────────────────────────────────
 ;;
-;; M1e2 S1e2.2.5 built the refusal and the row is fixed: every question about
-;; a commitment exits 1 naming `totality` over `p`; `ein saturate` still
-;; saturates. The region claim this file carried stated R's four states,
-;; which is what the program answered until then and the row keeps as its
-;; alternative; a refused program has no R to check a claim against, so the
-;; claim went. Deleting `totality` keeps those four states and is monotone
-;; (M1e2 S1e2.4.1 § 2.1).
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
 
 (relation is-a T T :why "{?1} is a {?2}")
 (relation p T :why "p holds of {?1}")
@@ -51,22 +51,22 @@
 
 (hrule guess () :match (is-a ?x T) :assert (p ?x) :why "guess (p {?x})")
 
-;; (p Z) dies in TWO steps, so the one-step pre-branch lookahead cannot see it
-;; and it survives into the layer as an entering. Z sorts last, so its
-;; entering is the layer's last and the two survivors are entered against a
-;; root that has not grown yet.
+;; (p Z) dies in TWO steps, `taint` then `kill`, so a one-step lookahead
+;; cannot see it and it survived into the search's layer as an entering. Z
+;; sorts last, so its entering was the layer's last and the two survivors
+;; were entered against a root that had not grown yet.
 (rule taint () :match (p Z)   :assert (bad Z) :why "p holds of Z, so Z is bad")
 (rule kill  () :match (bad Z) :assert (false) :why "Z is bad, which cannot be")
 
-;; Once Z is refuted, nothing may have p — ONE step from any (p ?x), which is
-;; what empties `alive` on the recompute.
+;; Once (not (p Z)) is stored, nothing may have p — ONE step from any
+;; (p ?x), which is what emptied `alive` on the search's recompute.
 (rule mutex ()
   :match  (and (not (p Z)) (p ?x))
   :assert (false) :why "p is false of Z, so it may hold of nothing, yet it holds of {?x}")
 
-;; Totality as a saturation refutation: something must have p. Dormant at
-;; phase 1 (no negative yet) and dormant in every fork entered before the
-;; writeback landed — so the two live branches are genuinely alive.
+;; Totality as a saturation refutation: something must have p. It reads
+;; `(absent (p A))` over `p`, which the hrule proposes, and that is the
+;; shape *forbid* refuses.
 (rule totality ()
   :match  (and (not (p Z)) (absent (p A)) (absent (p B)))
   :assert (false) :why "p is false of Z and holds of neither A nor B, yet something must have p")

@@ -1,5 +1,5 @@
-;;; S1.5b.32 fixture — domain-elim rule (A) + hypothesis exploration (B)
-;;; both available. The "A+B" measurement row.
+;;; A fixture — domain-elim rule (A) + hypothesis exploration (B)
+;;; both available, the two pathways side by side.
 ;;;
 ;;; Minimal exactly-one puzzle: a single bijective relation
 ;;; `color-loc` between Color = {Red, Green, Blue} and
@@ -7,19 +7,19 @@
 ;;; by injective-negative completion Blue is excluded from H2 and
 ;;; H3, leaving exactly one house — H1 — for Blue.
 ;;;
-;;; Pathway A (domain-elimination, priority 400) derives
+;;; Pathway A (domain-elimination) derives
 ;;; (color-loc Blue H1) at d=0 from the two negatives, no branching.
 ;;; Pathway B (the `guess` hrule) forks on each (color-loc Blue ?h):
 ;;; H2/H3 die by injective violation, H1 survives.
 ;;;
 ;;; Goal: (color-loc Blue ?h). Both pathways answer ?h = H1.
 ;;;
-;;; Sibling fixtures isolate each pathway:
-;;;   a_only.ein — `guess` hrule removed → A carries the solve.
-;;;   b_only.ein — elimination rules removed → B carries the solve.
+;;; Sibling fixtures isolate pathway B:
+;;;   b_only.ein   — elimination rules removed → B carries the solve.
+;;;   b_branch.ein — the negative completion removed too → B branches.
 
 ;; ── Bijection property expansion: (bijective R) ⟹ the four markers.
-;; stdlib pattern-macro sugar — forall/unknown from the std.macro module (S1.8.A5).
+;; stdlib pattern-macro sugar — forall/unknown from the std.macro module.
 (import std.macro :symbols (forall unknown))
 
 (rule bijective-properties ()
@@ -37,7 +37,7 @@
   :assert (false)
   :why "{?R} not injective: {?c} from both {?a} and {?b}.")
 
-;; ── d=0 negative completion (S1.5a.19 shape).
+;; ── d=0 negative completion.
 (rule functional-negative (?R)
   :match  (and (?R ?a ?b) (relation ?R ?A ?B)
                (is-a ?b_other ?B) (neq ?b_other ?b))
@@ -58,7 +58,7 @@
   :match (injective ?R) :assert (injective-negative ?R)
   :why "{?R} injective ⟹ injective-negative active.")
 
-;; ── Pathway A: domain / range elimination (priority 400).
+;; ── Pathway A: domain / range elimination.
 (rule domain-elimination (?R)
   :match  (and (functional ?R) (total ?R)
                (relation ?R ?A ?B)

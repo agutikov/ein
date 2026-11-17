@@ -1,12 +1,9 @@
 ;;; **W36's second witness (`W36/alt-flag-two-derivations`): the alternatives
 ;;; flag moves `refuted by` beside an unmoved core, in every order.**
 ;;;
-;;; M1f S1f.5.15, filed on the coordinator's follow-up of 2026-11-08 to the
-;;; user's ruling, *"Register row W36"*: one row per witness,
-;;; `open` and owned by F22. Written during the stage's T3 to find a program
-;;; that no rule order hides, which the first witness,
-;;; `alt-flag-refuted-by.ein`, is not: a derived order printed its right
-;;; answer there.
+;;; It is the program no rule order hides, which the first witness,
+;;; `alt-flag-refuted-by.ein`, is not: an order of its rules prints its
+;;; right answer there.
 ;;;
 ;;; ── The shape ──────────────────────────────────────────────────────────────
 ;;;
@@ -27,21 +24,24 @@
 ;;;
 ;;; ── What the engine says ───────────────────────────────────────────────────
 ;;;
-;;;   ein solve FILE, at a3cb1753 (2026-11-08), release:
+;;;   ein solve FILE, at a3cb1753, release:
 ;;;     as written, the flag off      unsat core (g1 a) (g2 a) · refuted by v, w
 ;;;     the config line taken out     unsat core (g1 a) (g2 a) · refuted by k1
 ;;;
 ;;; R is empty and exhausted either way, and `(solve :expect (false))` holds.
-;;; Under the order T3 derived from each rule's shape (never shipped) it said
-;;; the same (`build/s1f.5.15/w36b/`, 2026-11-08).
 ;;;
 ;;; ── Why it is wrong ────────────────────────────────────────────────────────
 ;;;
 ;;; As `alt-flag-refuted-by.ein`'s header says: the flag's exemption is the
-;;; core (Q-M1e2.11 (ii)), `refuted by` follows the core only where it moved
-;;; (Q-M1e2.21 (a)), and here it did not, so `refuted by` is the default's,
-;;; `k1`. F22 re-derives what the store does not keep when the search reaches
-;;; it, which makes `refuted by` a function of the core.
+;;; core (Q-M1e2.11), `refuted by` follows the core only where it moved
+;;; (Q-M1e2.21), and here it did not, so `refuted by` is the default's,
+;;; `k1`. Re-deriving what the store does not keep when the search reaches
+;;; it would make `refuted by` a function of the core.
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation g1 T :why "{?1} has g1")
 (relation g2 T :why "{?1} has g2")

@@ -1,31 +1,31 @@
-;;; A query's projection classes merged the int `1` and the name `"1"` — M1e2
+;;; A query's projection classes merged the int `1` and the name `"1"` —
 ;;; **W28**, register row `W28/classes-int-name`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.3.8 (2026-11-06) from its
-;;; step 1's probe, made smaller, on the user's ruling of that day: a claim
-;;; compares values, not their printed text.
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; One candidate relation, `pick`, over the objects `A`, `B` and the name
-;;; `1`, which rule `b`'s string `"1"` makes a name of the program. Rule `a`
-;;; concludes `(got 1)` over the int from `(pick A)`, rule `b` `(got "1")`
-;;; over the name from `(pick B)`. The query asks `(got ?v)` over all of R.
+;;; One candidate relation, `pick`, over the objects `A` and `B`. Rule `a`
+;;; concludes `(got 1)` from `(pick A)`, rule `b` `(got "1")`, a string as
+;;; the argument, from `(pick B)`. The query asks `(got ?v)` over all of R.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; Nothing refutes, so R is the eight subsets of the three candidates. A
-;;; state's answers to the goal are `(got 1)` where it holds `(pick A)` and
-;;; `(got "1")` where it holds `(pick B)`, so the states fall in four
-;;; projection classes: none (∅ and `{(pick "1")}`), `(got 1)` alone,
-;;; `(got "1")` alone, and both (two states each).
+;;; A string is natural-language text, never a value (Q-M1e2.23), so the
+;;; program is refused at the parse, at rule `b`'s `"1"`, on every command
+;;; (exit 1, `ein test`: 2). A run of digits is a name (Q-M1e2.24), so the
+;;; case this file was written for can no longer be written.
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `86227f9a` the classes were keyed by the goal's answers as printed
-;;; text, in which the int `1` and the name `"1"` were one text, `(got 1)`:
-;;; `ein solve FILE` said *8 states → 2 projection classes*, every state
-;;; holding either rule's conclusion in one class, in a release build and a
-;;; debug one.
+;;; At `86227f9a` the string made `1` a name of the program, apart from the
+;;; int `1` rule `a` concludes over, and the classes were keyed by the goal's
+;;; answers as printed text, in which the int `1` and the name `"1"` were one
+;;; text, `(got 1)`: `ein solve FILE` said *8 states → 2 projection classes*,
+;;; every state holding either rule's conclusion in one class, where the four
+;;; classes were none, `(got 1)` alone, `(got "1")` alone, and both; in a
+;;; release build and a debug one.
+;;;
+;;;
 
 (relation pick Node)
 (is-a A Node) (is-a B Node)

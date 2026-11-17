@@ -1,8 +1,6 @@
 ;;; A `:where` pair inside a pattern is dropped, so the rule fires without
-;;; its guard — M1f **W32**, register row `W32/where-in-pattern`
-;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
-;;; S1f.5.11's case (D-15), filed `open` and owned by S1f.5.11, on the user's
-;;; ruling of 2026-11-07 (Q-M1e2.28).
+;;; its guard — **W32**, register row `W32/where-in-pattern`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,16 +10,18 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; A term takes no keyword, and `:where` is on no form's list (Q-M1e2.28), so
-;;; the program is refused at load, with a line naming the rule and the
-;;; clause: every command that reads it exits 1 (`ein test`: 2).
+;;; the program is refused at the parse, at the keyword: every command that
+;;; reads it exits 1 (`ein test`: 2).
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The pair is dropped, so `r` fires for every `p`: root derives `(q a)`
-;;; and `(q b)`, with no line (`ein saturate FILE --dump`), and R is four
-;;; states over the candidates `(hit a)` and `(hit b)`, exit 0 (`ein solve
-;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
-;;; release and debug alike).
+;;; At `ec004a48` (the engine `916d97ac`'s), release and debug alike: the
+;;; pair was dropped, so `r` fired for every `p`: root derived `(q a)` and
+;;; `(q b)`, with no line (`ein saturate FILE --dump`), and R was four states
+;;; over the candidates `(hit a)` and `(hit b)`, exit 0 (`ein solve FILE`,
+;;; `ein oracle FILE`).
+;;;
+;;;
 
 (relation p Node) (relation q Node) (relation hit Node)
 (p a) (p b)

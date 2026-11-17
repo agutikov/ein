@@ -1,7 +1,7 @@
-;;; An activator whose every argument is a nested fact reads as no activator
-;;; to *forbid* — M1e2 **W16**'s second shape, register row
-;;; `W16/activator-all-nested` (`corpus/wrong_answers.toml`), banked and
-;;; fixed by S1e2.2.16 (2026-11-04).
+;;; An activator whose every argument is a nested fact read as no activator
+;;; to *forbid* — **W16**'s second shape, register row
+;;; `W16/activator-all-nested` (`corpus/wrong_answers.toml`).
+;;;
 ;;;
 ;;; `activator-all-int.ein` with `(item (box a))` for `(item 1)`, and
 ;;; nothing else: `flag` asserts `(watch (box a))` and `watch` asserts
@@ -17,11 +17,11 @@
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.16, R empty, every node dead, exit 0 (`ein solve FILE` at
-;;; `6a775f3d`, in either build): `Plan::activator_args` keeps symbols only,
-;;; so root's plan of `alarm` read as having no activator, as the int one
-;;; did. Since then *forbid* reads whether the plan's rule has parameters,
-;;; and the program is refused, as the control is.
+;;; At `6a775f3d`, R empty, every node dead, exit 0 (`ein solve FILE`, in
+;;; either build): `Plan::activator_args` kept symbols only, so root's plan
+;;; of `alarm` read as having no activator, as the int one did. *forbid*
+;;; reads whether the plan's rule has parameters, and the program is
+;;; refused, naming `alarm [activator (box a)]`, as the control is.
 
 (relation item    T :why "{?1} is an item")
 (relation checked T :why "{?1} is checked")

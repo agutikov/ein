@@ -1,6 +1,6 @@
 ;; LOAD NEGATIVE — `(owing …)` beside states.
 ;;
-;; M1e2 S1e2.1a.4: `(owing …)` says R is empty and lists the alive nodes that
+;; `(owing …)` says R is empty and lists the alive nodes that
 ;; owe, so a region that also lists states of R contradicts itself, and the
 ;; loader says so before anything runs.
 

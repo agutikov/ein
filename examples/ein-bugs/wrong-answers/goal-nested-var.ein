@@ -1,7 +1,7 @@
-;;; A query's class prints a pattern inside a pattern as written — M1f
-;;; **W54**, register row `W54/goal-nested-var` (`corpus/wrong_answers.toml`),
-;;; filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, `open` and owned
-;;; by S1f.5.7: found where `(not (eq ?x ?y))` in a goal printed its class.
+;;; A query's class prints a pattern inside a pattern as written — **W54**,
+;;; register row `W54/goal-nested-var` (`corpus/wrong_answers.toml`): found
+;;; where `(not (eq ?x ?y))` in a goal printed its class.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

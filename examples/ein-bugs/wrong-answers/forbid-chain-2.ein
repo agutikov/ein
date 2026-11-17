@@ -1,6 +1,6 @@
-;;; *forbid* misses a refutation whose activator chain first appears at a
-;;; node, two links past D — M1e2 **W17**, register row `W17/forbid-chain-2`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.17 (2026-11-04).
+;;; *forbid* misses a refutation whose activator chain first appears at a node,
+;;; two links past D — **W17**, register row `W17/forbid-chain-2`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,21 +12,21 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `{(p a)}` dies, its `(false)` resting through three activators on
-;;; `(absent (p2 a))`, and `{(p a), (p2 a)}` lives: a dead hole over a
-;;; relation a commitment can extend. *forbid* with F2's *via, per
-;;; activator*: the program is refused at every command that takes the
-;;; universe.
+;;; `{(p a)}` dies, its `(false)` resting through three activators on `(absent
+;;; (p2 a))`, and `{(p a), (p2 a)}` lives: a dead hole over a relation a
+;;; commitment can extend. *forbid*, through an activator (Q-M1e2.5): the
+;;; program is refused at every command that takes the universe.
+;;;
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.17 it loaded, as `forbid-chain-1.ein` did: R three states,
-;;; the one dead hole {(p a)}, exit 0, in every mode and `ein oracle` (at
+;;; At `3efd3f5f` it loaded, as `forbid-chain-1.ein` did: R three states, the
+;;; one dead hole {(p a)}, exit 0, in every mode and `ein oracle` (at
 ;;; `3efd3f5f`). Neither `r2`'s activator relation nor `r3`'s is in D, so
-;;; *forbid* read neither, and the status line named no site. Both are in
-;;; D⁺ since, and every question about a commitment exits 1: `rule 'r3':
-;;; concludes (false) from its activator, which rule 'r2' derives resting on
-;;; (absent …) over p2`.
+;;; *forbid* read neither, and the status line named no site. Both are in D⁺
+;;; now, and every question about a commitment exits 1: `rule 'r3': concludes
+;;; (false) from its activator, which rule 'r2' derives resting on (absent …)
+;;; over p2`.
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q T :why "q holds of {?1}") (relation r2 T :why "r2 holds of {?1}")
 (relation r3 T :why "r3 holds of {?1}")

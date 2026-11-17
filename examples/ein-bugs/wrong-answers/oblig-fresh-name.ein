@@ -1,7 +1,6 @@
 ;;; The obligations rung never proposed a domain value a commitment derives —
-;;; M1e2 **W14**, register row `W14/oblig-fresh-name`
-;;; (`corpus/wrong_answers.toml`), fixed by S1e2.2.15 (2026-11-04). Banked
-;;; from S1e2.2.4's residue probe of the same day.
+;;; **W14**, register row `W14/oblig-fresh-name`
+;;; (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -11,31 +10,32 @@
 ;;; anyone likes anything, Z is on the menu. `liker-is-person` only types the
 ;;; blind enumerator's candidates.
 ;;;
-;;; Until S1e2.2.15 the obligations rung built H by running `owes-food`'s
-;;; guard with its witness step skipped, over root's KB: `(food ?b)` found
-;;; Soup alone, so H was `(likes Ann Soup)`, dead alone. `food` grows by derivation from a
+;;; A rung that builds H by running `owes-food`'s guard with its witness step
+;;; skipped, over root's KB, finds Soup alone with `(food ?b)`, so its H is
+;;; `(likes Ann Soup)`, dead alone. `food` grows by derivation from a
 ;;; commitment (`special` reads `likes`), so it is in D, the relations a
-;;; commitment can change, and the rung's C4 check declined only on a
-;;; relation the rung itself proposed.
+;;; commitment can change; a check that declines only on a relation the rung
+;;; itself proposes does not see it.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; `{(likes Ann Z)}` saturates to `(food Z)`, which witnesses Ann's debt: an
 ;;; alive, discharged state, and the maximal one. With `(food Z)` declared at
 ;;; root (`oblig-fresh-name-declared.ein`) R is that one state, and so it is
-;;; when the rung declines and the blind enumerator, whose objects carry `Z`
-;;; since S1e2.2.4, builds H: six `likes` candidates over Ann, Soup and Z,
-;;; five dead alone. Monotone: `food` is in D but read only inside the
-;;; obligation's `absent`, where growth can only pay.
+;;; when the rung declines and the blind enumerator, whose objects carry `Z`,
+;;; builds H: six `likes` candidates over Ann, Soup and Z, five dead alone.
+;;; Monotone: `food` is in D but read only inside the obligation's `absent`,
+;;; where growth can only pay.
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.15 H was 1 candidate, dead alone, and R was empty: every
-;;; alive node owed, `(region (owing (model)))` (`ein solve FILE` at
-;;; `338b5892`, 2026-11-04). Since then the rung declines when an
-;;; obligation's guard scans a relation in D (here `food`), the blind
-;;; enumerator builds H, and this file answers its control's R, which the
-;;; `:expect` below states. The register row `W14/oblig-fresh-name` is fixed.
+;;; At `338b5892` (`ein solve FILE`), H was 1 candidate, dead alone, and R was
+;;; empty: every alive node owed, `(region (owing (model)))`. The rung
+;;; declines when an obligation's guard scans a relation in D (here `food`;
+;;; Q-M1e2.10), the blind enumerator builds H, and this file answers its
+;;; control's R, which the `:expect` below states. The register row
+;;; `W14/oblig-fresh-name` is fixed.
+;;;
 
 (relation person T :why "{?1} is a person")
 (relation food   T :why "{?1} is a food")
@@ -68,7 +68,7 @@
 (solve
   :no-hypothesis (person food)
   ;; `likes` is named, so this closes `likes`: exactly these positive facts —
-  ;; the -declared control's R, which this file answers since S1e2.2.15.
+  ;; the -declared control's R, which this file answers too.
   :expect (region
             ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Z)}
             (model (likes Ann Z))))

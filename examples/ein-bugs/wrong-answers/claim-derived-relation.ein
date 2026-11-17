@@ -1,7 +1,6 @@
 ;;; A query's claim that lists a fact of a relation only a rule's `:assert`
 ;;; derives is refused —
-;;; M1f **W78**, register row `W78/claim-derived-relation`, filed by S1f.7.11 (T1f.7.11.2,
-;;; 2026-11-11).
+;;; **W78**, register row `W78/claim-derived-relation`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,7 +20,8 @@
 ;;; declaration or fact makes a relation*, exit 1 on every command, where the
 ;;; goal alone loaded and answered `?g = Ann`.
 ;;; A claim's relation is a relation of the program, one a rule's `:assert` writes
-;;; among them, since S1f.7.11 (T1f.7.11.3): the claim loads and holds.
+;;; among them: the claim now loads and holds.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (rule welcome ()

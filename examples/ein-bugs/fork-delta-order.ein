@@ -1,21 +1,21 @@
-;;; M1e2 W11, register row `W11/fork-delta-order` (`corpus/wrong_answers.toml`),
-;;; fixed by S1e2.2.12 (T1e2.2.12.2, 2026-11-04). Promoted from
-;;; `corpus/fuzz_findings/fork-delta-order.ein`, which stays there as the
+;;; Which core a dead node reports moved with interner ids — **W11**,
+;;; register row `W11/fork-delta-order` (`corpus/wrong_answers.toml`).
+;;; `corpus/fuzz_findings/fork-delta-order.ein` is the same program, the
 ;;; finding's record.
 ;;;
-;;; ── Repaired 2026-11-04 ────────────────────────────────────────────────
+;;; ── What it reports ────────────────────────────────────────────────────
 ;;;
 ;;; A resumed fork's delta is in the order its commitment was written,
 ;;; candidate order, so a dead node's derivations arrive in an order the
 ;;; program decides: N's member reports (g G08) (h H40) (on A) (on B) under
-;;; every permutation of the interner, which `id_order_invariance` checks per
-;;; commit, the core in nogoods.json, nodes.json and the oracle's region.json
-;;; alike. The header below is the defect as S1e2.2.12 found it.
+;;; every permutation of the interner, which `id_order_invariance` checks,
+;;; the core in nogoods.json, nodes.json and the oracle's region.json
+;;; alike (`ein solve FILE --dump-answer D`). The rest is the defect.
 ;;;
-;;; M1e2 W11 (`W11/fork-delta-order`) — which core a dead node reports moved
-;;; with interner ids. Written by hand by S1e2.2.12 (T1e2.2.12.1, 2026-11-04,
-;;; at b364c11f), from the mechanism its id-order sweep found: no corpus core
-;;; moved, and this is the shape that makes one.
+;;; ── The defect ─────────────────────────────────────────────────────────
+;;;
+;;; Written by hand at `b364c11f`, from the mechanism the id-order property
+;;; found: no corpus core moved, and this is the shape that makes one.
 ;;;
 ;;; Two candidates, the hrule's `(on A)` and `(on B)`. Each alone is alive;
 ;;; together `clash` derives (false) from every pair (p ?x) (q ?y), 40 × 40 =
@@ -24,7 +24,7 @@
 ;;; and explain.rs reports the rank-least (size, then `repr`) of those the
 ;;; store offers it: (false)'s primary and the 32 alternatives a full list
 ;;; keeps, the first to arrive, beside the smallest-closure arrival, the first
-;;; among equals (S1e2.2.11). Which arrive first is which side the fork
+;;; among equals (Q-M1e2.11). Which arrive first is which side the fork
 ;;; derives first: every (p x) and then each (q y) against all forty, or the
 ;;; other way round. That is the order (on A) and (on B) entered the resumed
 ;;; fork's delta, which `Snapshot::new_facts_of` sorted by `FactId`: interning
@@ -44,7 +44,7 @@
 ;;; Over every derivation (an uncapped store) the core is (g G01) (h H01)
 ;;; (on A) (on B): every core is four facts, so the size the glossary promises
 ;;; holds, and which of the equal-size ones a full list leaves is the store's
-;;; bounded retention (W10/alt-cap-shared's class, deferred to F22), not this
+;;; bounded retention (W10/alt-cap-shared's class, an open row), not this
 ;;; row's. This row asks only that it not move with the ids.
 ;;;
 ;;; The g and h facts are written in descending order so that the order they

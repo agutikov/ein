@@ -1,7 +1,7 @@
 ;;; *forbid* misses a refutation whose `absent` is read by a plan only a node
-;;; compiles — M1e2 **W17**, register row `W17/forbid-chain-node-absent`
-;;; (`corpus/wrong_answers.toml`), found by S1e2.2.17 (2026-11-04) probing
-;;; the witness's mechanism.
+;;; compiles — **W17**, register row `W17/forbid-chain-node-absent`
+;;; (`corpus/wrong_answers.toml`), found probing the witness's mechanism.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -13,24 +13,24 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `{(p a)}` dies, its `(false)` resting through `r2`'s activator on
-;;; `(absent (p2 a))`, which `q`'s plan read, and `{(p a), (p2 a)}` lives: a
-;;; dead hole over a relation a commitment can extend. *forbid* with F2's
-;;; *via, per activator*: the program is refused at every command that takes
-;;; the universe.
+;;; `{(p a)}` dies, its `(false)` resting through `r2`'s activator on `(absent
+;;; (p2 a))`, which `q`'s plan read, and `{(p a), (p2 a)}` lives: a dead hole
+;;; over a relation a commitment can extend. *forbid*, through an activator
+;;; (Q-M1e2.5): the program is refused at every command that takes the universe.
+;;;
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.17 it loaded: R three states, the one dead hole {(p a)},
-;;; exit 0, in every mode and `ein oracle` (at `3efd3f5f`). *forbid* read `q`
-;;; from its pattern (its activator relation is in D), but only for what it
-;;; derives from a tainted relation, not for the `absent` it reads itself, so
-;;; `(r2 ?n)` was never tainted; and `r2`'s activator relation is not in D,
-;;; so `r2` was never read. The status line named no site. Since then an
-;;; open rule's own `absent` over a relation in D⁺ taints what it derives,
-;;; `r2` is read over D⁺, and every question about a commitment exits 1:
-;;; `rule 'r2': concludes (false) from its activator, which rule 'q' derives
-;;; resting on (absent …) over p2`.
+;;; At `3efd3f5f` it loaded: R three states, the one dead hole {(p a)}, exit 0,
+;;; in every mode and `ein oracle` (at `3efd3f5f`). *forbid* read `q` from its
+;;; pattern (its activator relation is in D), but only for what it derives from
+;;; a tainted relation, not for the `absent` it reads itself, so `(r2 ?n)` was
+;;; never tainted; and `r2`'s activator relation is not in D, so `r2` was never
+;;; read. The status line named no site. Now an open rule's own `absent` over a
+;;; relation in D⁺ taints what it derives, `r2` is read over D⁺, and every
+;;; question about a commitment exits 1: `rule 'r2': concludes (false) from its
+;;; activator, which rule 'q' derives resting on (absent …) over p2`.
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q T :why "q holds of {?1}") (relation r2 T :why "r2 holds of {?1}")
 

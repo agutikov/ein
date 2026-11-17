@@ -6,7 +6,7 @@
 ;;;
 ;;;   ein solve examples/binary_logic/simulation.ein
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md`.
+;;; `docs/ein/user/reference/stdlib.md` § Boolean functions and circuits.
 (import std.bool.circuit :symbols (circuit val))
 (import full_adder)
 

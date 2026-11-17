@@ -1,7 +1,7 @@
-;;; An activator whose every argument is an int reads as no activator to
-;;; *forbid* — M1e2 **W16**'s second shape, register row
-;;; `W16/activator-all-int` (`corpus/wrong_answers.toml`), banked and fixed
-;;; by S1e2.2.16 (2026-11-04) from S1e2.2.7's second parked note.
+;;; An activator whose every argument is not a symbol read as no activator
+;;; to *forbid* — **W16**'s second shape, register row
+;;; `W16/activator-all-int` (`corpus/wrong_answers.toml`). Its argument `1`
+;;; was an int then; Ein has no numbers, and `1` is a name (Q-M1e2.24).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -14,26 +14,26 @@
 ;;;
 ;;; `alarm`'s `(false)` rests on its activator, which `watch` derives from
 ;;; its own activator, which `flag` derives under `(absent (checked ?x))`,
-;;; and `checked` is a relation a commitment can extend. That is *forbid*
-;;; with F2's *per activator* (ruled 2026-11-04): the program is refused,
+;;; and `checked` is a relation a commitment can extend. That is *forbid*,
+;;; followed through each activator (Q-M1e2.5): the program is refused,
 ;;; as `activator-all-symbol.ein`, the same program with `(item a)`, is.
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.16, R empty, every node dead, exit 0 (`ein solve FILE` at
-;;; `6a775f3d`, and under every mode, `ein oracle` and a debug build alike).
+;;; At `6a775f3d`, R empty, every node dead, exit 0 (`ein solve FILE`, and
+;;; under every mode, `ein oracle` and a debug build alike).
 ;;; *forbid* asked whether a plan has an activator as
-;;; `!activator_args.is_empty()`, and `Plan::activator_args` keeps an
+;;; `!activator_args.is_empty()`, and `Plan::activator_args` kept an
 ;;; activator's symbol arguments only, so root's plan of `alarm`, compiled
 ;;; from `(alarm 1)`, read as a rule with no activator and its cause was
 ;;; never looked for. `watch`'s plan was missed the same way, but `watch`'s
 ;;; activator relation is one a commitment can change, so *forbid* reads
 ;;; that rule from its pattern too and found what it derives; `alarm`'s is
 ;;; not, which is why the chain takes three rules (with two the pattern
-;;; reading refuses an int activator as well). Since then the test reads
-;;; whether the plan's rule has parameters, and every question about a
-;;; commitment exits 1 naming `alarm`, as on the control; the line names no
-;;; activator, because its label prints the symbols.
+;;; reading refused an int activator as well). *forbid* reads whether the
+;;; plan's rule has parameters, and every question about a commitment exits
+;;; 1 naming `alarm [activator 1]`, as on the control, where `ein saturate`
+;;; still saturates.
 ;;; `activator-all-nested.ein` is the same shape with a nested fact.
 
 (relation item    T :why "{?1} is an item")

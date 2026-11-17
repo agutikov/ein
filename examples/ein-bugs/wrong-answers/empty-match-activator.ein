@@ -1,7 +1,5 @@
-;;; A rule with a parameter whose `:match` is `()` never fires — M1f **W31**,
-;;; register row `W31/empty-match-activator` (`corpus/wrong_answers.toml`),
-;;; banked by S1f.5.0 (2026-11-08) from S1f.5.9's case (P1f.5's F12), filed
-;;; `open` and owned by S1f.5.9, on the user's ruling of 2026-11-07 on F12.
+;;; A rule with a parameter whose `:match` is `()` never fired — **W31**,
+;;; register row `W31/empty-match-activator` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -11,22 +9,24 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; An empty conjunction is true, so the rule fires once per activator fact,
-;;; with only its parameters bound (F12's ruling): root holds `(hit a :rule
+;;; with only its parameters bound (Q-M1e2.36): root holds `(hit a :rule
 ;;; r)`, and R's minimal line is root's state.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The rule loads and never fires (`ein saturate FILE --dump`): root holds no
-;;; `hit`, `(hit a)` is a candidate, and R is four states, exit 0 (`ein solve
+;;; The rule loaded and never fired (`ein saturate FILE --dump`): root held no
+;;; `hit`, `(hit a)` was a candidate, and R four states, exit 0 (`ein solve
 ;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
 ;;; release and debug alike).
 ;;;
-;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; `:match ()` is the empty conjunction since T1f.5.9.2 (2026-11-09), so `r`
-;;; fires once on its activator: root holds `(hit a :rule r)`, H is `(p a)`,
-;;; and R two states, the answer above by hand. The register's `now` is that
-;;; answer; the section above is the record of the one it replaced.
+;;; `:match ()` is the empty conjunction, so `r` fires once on its activator:
+;;; root holds `(hit a :rule r)`, H is `(p a)`, and R two states, the answer
+;;; above by hand. The register's `now` is that answer; the section above is
+;;; the record of the one it replaced.
+;;;
+;;;
 
 (relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}") (relation hit Node :why "{?1} is a hit")
 (q a)

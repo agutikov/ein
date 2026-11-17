@@ -6,10 +6,10 @@
 ;;; concludes `(p a)` and `(q a)`; called as one conjunct beside `(r a)`, the
 ;;; expansion is `(and (r a) (and (p a) (q a)))`, `and-in-and.ein`'s conclusion,
 ;;; which nobody wrote. Its right answer is that file's: root holds `(r a)`,
-;;; `(p a)` and `(q a)`, R is {∅} and both claims hold. Until S1f.6.37 root held
-;;; `(r a)` and `(and (p a) (q a))`, both goals had no row and both claims
-;;; FAILED, exit 1. E-63 of P1f.6's `findings.md`: S1f.6.16's design met it
-;;; placing a macro's call in a closing rule's conclusion.
+;;; `(p a)` and `(q a)`, R is {∅} and both claims hold. The engine had root
+;;; hold `(r a)` and `(and (p a) (q a))`, both goals with no row and both claims
+;;; FAILED, exit 1; a macro's call in a closing rule's conclusion meets it.
+;;;
 (relation p Thing :why "p {?1}")
 (relation q Thing :why "q {?1}")
 (relation r Thing :why "r {?1}")

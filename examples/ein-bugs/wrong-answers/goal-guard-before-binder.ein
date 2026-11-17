@@ -1,9 +1,9 @@
-;;; A goal's guard written before the premise that binds its variable is
-;;; judged on a null — M1f **W55**, register row
-;;; `W55/goal-guard-before-binder` (`corpus/wrong_answers.toml`), filed by
-;;; S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, `open` and owned by
-;;; S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26: a conjunction means
-;;; the same in any order of its conjuncts).
+;;; A goal's guard written before the premise that binds its variable is judged
+;;; on a null — **W55**, register row `W55/goal-guard-before-binder`
+;;; (`corpus/wrong_answers.toml`) (Q-M1e2.26: a conjunction means the same in
+;;; any order of its conjuncts).
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

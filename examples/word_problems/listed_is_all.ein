@@ -1,9 +1,9 @@
 ;;; `listed_is_all` — *what is not listed is zero*, an assumption a problem
-;;; adopts by importing this module (M1f P1f.6, S1f.6.28, on the user's reply
-;;; 32 of 2026-11-12: *"what is not listed is zero - good idea, it could be a
-;;; reusable universal assumption"*, and round 2's: *"relation arguments are
-;;; marked with some objects that can be treated as types. So can add a rule
-;;; that assigns zero to every unknown"*). It is adopted for one relation,
+;;; adopts by importing this module (Q-M1f.333), reusable from problem to
+;;; problem. It needs no list of kinds: the arguments of the relation it
+;;; reads are typed, and the types name the objects to range over, so one
+;;; rule assigns zero to every quantity no sentence lists.
+;;; It is adopted for one relation,
 ;;; `has`, and says so in a fact, `(adopted listed-is-all has)`, which every
 ;;; zero it derives rests on. The arguments of `has` are typed, `(relation has
 ;;; Who Kind Number Moment)`: at each moment its sentences are about, the rule

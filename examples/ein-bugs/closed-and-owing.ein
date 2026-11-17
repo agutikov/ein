@@ -1,32 +1,18 @@
-;;; **Refused at load since M1f S1f.6.34**, and kept as that refusal's fixture:
-;;; an obligation on a closed relation. `(total-owed r is-a)` owes `r`, and
+;;; **Refused at load**, and kept as that refusal's fixture: an obligation on
+;;; a closed relation (Q-M1f.244). `(total-owed r is-a)` owes `r`, and
 ;;; `infer-closure` derives `(__closed__ r)` from `(functional r)` and
 ;;; `(total r)`, so the program says both that a state owes `r` a fact and that
-;;; no commitment extends `r`; the user, 2026-11-13: *"obligated relation can't
-;;; be __closed__ also"*. Every command refuses it, one line naming the
-;;; obligation, its activator, the closure and the rule that derives it, exit 1
-;;; (`ein test`: 2). Until then it was the stdlib test `03_closed_and_owing.ein`
-;;; and answered R empty, `Open — owes 1`, the rung *stuck* (`declined 1`), its
-;;; claim held: the corner below, which the language no longer has. Its twin
-;;; `tests/stdlib/closure/02_closed_and_satisfied.ein` keeps the closure and
-;;; drops the obligation. The text below is the fixture's as it was.
+;;; no commitment extends `r`: *"obligated relation can't be __closed__
+;;; also"*. Every command refuses it, one line naming the obligation, its
+;;; activator, the closure and the rule that derives it, exit 1 (`ein test`:
+;;; 2). Its twin `tests/stdlib/closure/02_closed_and_satisfied.ein` keeps the
+;;; closure and drops the obligation, and loads.
 ;;;
 ;;; `std.closure/infer-closure` — closed and **owing**: a state that can never
-;;; meet its requirement, and the word for it.
+;;; meet its requirement. The program is `02_closed_and_satisfied.ein` with
+;;; one fact deleted, the witness edge `(r a1 b1)`, and the obligation added.
 ;;;
-;;; `02_closed_and_satisfied.ein` with one fact deleted — the witness edge
-;;; `(r a1 b1)`. Until M1d S1d.2.6 **the verdict did not move**: both reported
-;;; `Solution`, and that standstill was the finding this file was banked to
-;;; hold still. It moves now. This half reports
-;;;
-;;;     solutions (k)   0
-;;;     open states     1
-;;;     verdict         Open — owes 1 (r: 1)
-;;;
-;;; and the twin still reports `Solution`. One fact apart, and now one word
-;;; apart.
-;;;
-;;; ── Why nothing catches it ─────────────────────────────────────────────────
+;;; ── Why nothing else catches it ────────────────────────────────────────────
 ;;;
 ;;; `a1` is an `A`, `r` is declared total, and `r` has no edges. So the
 ;;; requirement *every A has some B* is unmet. It is also **unreachable**:
@@ -43,10 +29,10 @@
 ;;; anything, and in a program with no negative-completion rule no such
 ;;; negative will ever be stored. The scan is activated, correct, and silent.
 ;;;
-;;; Nothing is left to check the requirement, so the engine falls back on the
-;;; only completeness test it has — *does the generator propose anything?* —
-;;; and the generator, having been closed, proposes nothing. Complete by
-;;; exhaustion; owing, by discharge.
+;;; Without the obligation, nothing checks the requirement: the generator,
+;;; closed, proposes nothing, and the state is complete by exhaustion. With
+;;; it, the state owes a debt no commitment can pay, and that pair is what
+;;; the loader refuses.
 ;;;
 ;;; ── The three ingredients, and each is individually reasonable ─────────────
 ;;;
@@ -57,50 +43,64 @@
 ;;;   2. `total`'s stored-negative discipline is what stops it firing `(false)`
 ;;;      on every empty-yet state, and is the *right* way to write it —
 ;;;      `connex` is what the other way looks like;
-;;;   3. `complete(kb)` meaning "the generator proposes nothing" is what the
-;;;      engine has, because it has no vocabulary for *what a state owes*.
+;;;   3. `total-owed`, the obligation dual, says what a state owes `r`, and an
+;;;      obligation needs no closed domain (Q-M1d.3).
 ;;;
-;;; The corner is their intersection, and it is the closed-and-owing case
-;;; [S1d.2.2](../../../docs/history/m1d_satisfiability/README.md#s1d22--the-domain-contract)
-;;; asks who is allowed to say `(false)` about.
-;;;
-;;; ── The answer, decided by the user 2026-08-25: nobody, still ──────────────
-;;;
-;;; `(false)` is a **derived** refutation — a rule fired and named a conflict —
-;;; and no rule fires here. Promoting on "the debt is unpayable" instead would
-;;; be a closed-world inference the engine refuses everywhere else, and it
-;;; would erase the one distinction the domain contract called strictly more
-;;; informative than the verdict: *owes, and cannot pay* against *owes, and
-;;; might*. So the word is `Open`, and the unreachability is said where it can
-;;; be said precisely — in the rung report, which for this file is
-;;;
-;;;     rung  mode=stuck  owed=1  branches=0  declined=1
-;;;
-;;; `declined=1` because `r` is `(__closed__ r)` and a closed relation is
-;;; scoped out of hypothesis generation: the debt is owed and unbranchable,
-;;; which is exactly *cannot pay*. A state owing only such debts is **stuck**,
-;;; reported, never silently complete.
-;;;
-;;; ── What changed in the file, and it is one line ───────────────────────────
-;;;
-;;; `(total-owed r is-a)`. Ingredient 3 above was *"`complete(kb)` meaning the
-;;; generator proposes nothing is what the engine has, because it has no
-;;; vocabulary for what a state owes"* — and since S1d.2.4 it has one. The
-;;; vocabulary only reaches a program that **uses** it: S1d.2.6's scope rule
-;;; judges by discharge where an obligation was stated and by exhaustion where
-;;; none was, so declaring the dual is what moves this file and nothing else
-;;; would have.
+;;; The corner is their intersection. `(false)` is a **derived** refutation —
+;;; a rule fired and named a conflict — and no rule fires here; promoting on
+;;; "the debt is unpayable" would be a closed-world inference the engine
+;;; refuses everywhere else. So the program is refused at load instead, where
+;;; the conflict is in what it writes, not in any state.
 ;;;
 ;;; ── What the expectation observes ──────────────────────────────────────────
 ;;;
-;;; The same lift as the twin: `closed-here` makes the derived closure
-;;; nameable. The expectation says the closure was derived — it does **not**
-;;; say the state is a model, and it still cannot: all three `:expect` forms
-;;; are assertions about *facts* and an `open` conclusion is never one. What
-;;; S1d.2.6 changed is that the claim below is now checked against an **open
-;;; state** rather than a model, which is why it holds unchanged — the facts a
-;;; state reached are the facts it reached, whatever the verdict calls it.
-;;; Growing `:expect` a word for the verdict is P1d.4's.
+;;; Nothing: the program is refused before any claim is read. The `:expect`
+;;; below states the owing state such a program would have, its derived
+;;; closure made nameable by `closed-here`; all three `:expect` forms are
+;;; assertions about *facts*, and an `open` conclusion is never one.
+;;;
+;;; ── What `ein solve` prints ────────────────────────────────────────────────
+;;;
+;;;   kb load error: examples/ein-bugs/closed-and-owing.ein:124:2: obligation
+;;;   'total-owed', activated by (total-owed r is-a), written at …:124:2,
+;;;   owes r, and (__closed__ r), which rule 'infer-closure' derives, says r
+;;;   is closed — an obligated relation is not closed: an obligation is paid
+;;;   by facts of the relation it owes, so a state that owes r and may not be
+;;;   given one is stuck; drop the closure, or the obligation
+;;;
+;;; `ein saturate` and `ein oracle` print the same line and exit 1, and
+;;; `ein test` exits 2. Line 124 is the `(total-owed r is-a)` below; every
+;;; line of this file keeps its place, since the refusal's position is part
+;;; of what the fixture records.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (import std.algebra :symbols (functional total total-owed))
 (import std.closure :symbols (infer-closure))
@@ -118,9 +118,9 @@
 ;; … and the activator the unreachability scan needs (arity 2). It is
 ;; activated here and it never fires — see above.
 (total r is-a)
-;; … and the obligation dual, which does not fire either — it *reports*. This
-;; single line is what puts the program in the read-out's scope and moves the
-;; verdict from `Solution` to `Open`.
+;; … and the obligation dual, which derives nothing either — it *owes*. This
+;; single line, beside the derived closure, is what the loader refuses
+;; (Q-M1f.244).
 (total-owed r is-a)
 
 (rule closed-observed ()

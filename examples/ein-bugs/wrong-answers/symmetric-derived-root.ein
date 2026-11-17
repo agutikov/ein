@@ -23,7 +23,7 @@
 ;;; so `ein saturate --dump` printed `(near a b)` and the mark and no `(near b
 ;;; a)`. The blind enumerator then proposed `(near b a)`, and R was two
 ;;; states, ∅ and `{(near b a)}`, each holding both facts once a later
-;;; saturation mirrored `near`. The answer is the one above now.
+;;; saturation mirrored `near`. Today the answer is the one above.
 
 (relation near Thing Thing :why "{?1} is near {?2}")
 (near a b)

@@ -1,12 +1,12 @@
 ;;; Ein — feature demo: natural-language text in Russian.
 ;;;
-;;; M1f S1f.5.2 (T1f.5.2.2). A string is natural-language text, written only
-;;; after `:why`, `:source` and `:goal-text`, and it is Unicode: the user,
-;;; 2026-11-06, *"potentially ein program can emit unicode text … dont force
-;;; using it in examples but place a couple of examples just to show that
-;;; option"*. This is one of the two. Names stay ASCII forever (`Anna`, `H1`,
-;;; `lives`); the Russian is in the text, which the read-out and `--trace` print
-;;; with the bindings filled.
+;;; A string is natural-language text, written only after `:why`,
+;;; `:source` and `:goal-text`, never a value (Q-M1e2.23), and it is
+;;; Unicode, so a program can emit text in any script. The examples need
+;;; not; two show that they can, this one and `15_unicode_escapes.ein`.
+;;; Names stay ASCII forever (`Anna`, `H1`, `lives`); the Russian is in
+;;; the text, which the read-out and `--trace` print with the bindings
+;;; filled.
 ;;;
 ;;; ── The puzzle ─────────────────────────────────────────────────────────────
 ;;;

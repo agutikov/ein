@@ -1,8 +1,7 @@
 ;;; A relation parameter a derived activator can bind to `eq` heads a premise
 ;;; of one argument, and only a commitment derives it, so `ein saturate`
-;;; answers where `ein solve` stops — M1f **W60**, register row
-;;; `W60/eq-arity-under-commitment` (`corpus/wrong_answers.toml`), filed by
-;;; S1f.5.9 (T1f.5.9.1, 2026-11-09), `open` and owned by S1f.5.9.
+;;; answered where `ein solve` stopped — **W60**, register row
+;;; `W60/eq-arity-under-commitment` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -15,25 +14,26 @@
 ;;;
 ;;; `mk` can bind `?R` to `eq`, which `(mark eq)` writes where `mk` reads it,
 ;;; and `(?R ?x)` is then `(eq ?x)`, which holds no fact of equality: the
-;;; program is refused at load, whether or not a state derives the activator,
-;;; as S1f.5.18 refuses a derived activator that can bind a relation
-;;; parameter to a fact (Q-M1f.1 (b)), and every command that loads it exits
-;;; 1 (`ein test`: 2).
+;;; program is refused at load (Q-M1f.46), whether or not a state derives the
+;;; activator, as a derived activator that can bind a relation parameter to a
+;;; fact is refused (Q-M1f.1), and every command that loads it exits 1 (`ein
+;;; test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; `ein saturate FILE --dump` answered root's fixpoint, exit 0; `ein solve`,
+;;; `solve --minimal` and `ein oracle` stopped at the first commitment that
+;;; derives `(r eq)`, where its plan is compiled, exit 1, with the compiler's
+;;; *`(eq …)` takes exactly 2 arguments and was given 1* (at `ee3da657`,
+;;; release and debug alike): two commands disagreed on one program.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; `ein saturate FILE --dump` answers root's fixpoint, exit 0; `ein solve`,
-;;; `solve --minimal` and `ein oracle` stop at the first commitment that
-;;; derives `(r eq)`, where its plan is compiled, exit 1, with the compiler's
-;;; *`(eq …)` takes exactly 2 arguments and was given 1* (at `ee3da657`,
-;;; release and debug alike): two commands disagree on one program.
-;;;
-;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
-;;;
-;;; The loader refuses the program (T1f.5.9.4, 2026-11-09): every command
-;;; that loads it exits 1 with one line, naming `r`, `?R`, the form, `(mark eq)` and `mk` (`ein test`: 2), in either
-;;; build, where `ein saturate` answered and `ein solve` stopped. The register's `now` is that refusal; the section
+;;; The loader refuses the program: every command that loads it exits 1 with
+;;; one line, naming `r`, `?R`, the form, `(mark eq)` and `mk` (`ein test`:
+;;; 2), in either build. The register's `now` is that refusal; the section
 ;;; above is the record of the answer it replaced.
+;;;
 
 (relation p Node :why "{?1} is a p")
 (relation hit Node :why "{?1} is hit")

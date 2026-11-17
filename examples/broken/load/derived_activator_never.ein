@@ -1,14 +1,14 @@
-;;; M1f S1f.5.18 — G-14's derived activator, where no run derives it:
-;;; `derived_activator.ein` without `(item (a b))` (S1f.5.5's probe
-;;; `g14/derived-activator-never.ein`, `:why`s added; register row
-;;; `W59/derived-activator-never`).
+;;; A derived activator, where no run derives it: `derived_activator.ein`
+;;; without `(item (a b))`, the witness of register row
+;;; `W59/derived-activator-never`. The loader refuses it with the same line
+;;; as its twin.
 ;;;
 ;;; No fact or candidate puts a fact in `item`, so no run derives an
-;;; activator binding `?R` to one. Until S1f.5.18 the program loaded and
-;;; answered, 64 states. The user ruled (b) on Q-M1f.1 on 2026-11-08 knowing
-;;; it refuses this program: some rule *could* derive such an activator,
-;;; `item` being declared, and the loader refuses it as it refuses
-;;; `derived_activator.ein`, with the same line.
+;;; activator binding `?R` to one. The loader refuses it all the same: a
+;;; rule *could* derive such an activator, `item` being declared, and a
+;;; declared relation's argument is any value, a fact among them
+;;; (Q-M1f.1, Q-M1f.41). The line is the one `derived_activator.ein` is
+;;; refused with.
 (relation box Node :why "{?1} is in the box")
 (relation hit Node :why "{?1} is hit")
 (relation item Node :why "{?1} is an item")

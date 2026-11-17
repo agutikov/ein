@@ -1,4 +1,4 @@
-;;; `:expect` — a query that states its own answer (M1c S1c.1.2).
+;;; `:expect` — a query that states its own answer.
 ;;;
 ;;; Every other check in this repo is *relative*: the goldens compare ein.rs to
 ;;; its own past, which says "still what it was" and never "and that is right".

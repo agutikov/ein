@@ -1,6 +1,6 @@
-;;; A goal's `(absent (false ?g))` holds of everything —
-;;; M1f **W81**, register row `W81/false-goal-argument`, filed by S1f.7.6 (T1f.7.6.2,
-;;; 2026-11-11).
+;;; A goal's `(absent (false ?g))` holds of everything — **W81**, register row
+;;; `W81/false-goal-argument`.
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -13,9 +13,9 @@
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
-;;; At `52e05fc1`, release: the program loads, and the goal answers `?g = Ann` and
-;;; `?g = Bob`, exit 0 on every command.
-;;; Refused at load since S1f.7.6 (T1f.7.6.3).
+;;; At `52e05fc1`, release: the program loads, and the goal answers `?g = Ann`
+;;; and `?g = Bob`, exit 0 on every command. Now refused at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

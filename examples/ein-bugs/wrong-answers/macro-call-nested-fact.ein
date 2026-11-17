@@ -1,7 +1,6 @@
 ;;; A macro's call inside a fact is stored as written, and the pattern that calls the macro does not
 ;;; match it —
-;;; M1f **W86**, register row `W86/macro-call-nested-fact`, filed by S1f.7.12 (T1f.7.12.2,
-;;; 2026-11-11).
+;;; **W86**, register row `W86/macro-call-nested-fact`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `91b12be8`, release: the program loads; `(says (settled Ann))` is stored; the rule
 ;;; matches nothing, so nobody is trusted and the goal has no row. R is {∅}, exit 0 on every
 ;;; command.
-;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

@@ -1,7 +1,7 @@
 ;;; A `(solve :hypothesis-relations …)` list that names a relation the program
 ;;; does not have loads, and leaves H empty —
-;;; M1f **W76**, register row `W76/hypothesis-relations`, filed by S1f.7.8 (T1f.7.8.2,
-;;; 2026-11-11).
+;;; **W76**, register row `W76/hypothesis-relations`.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -20,7 +20,7 @@
 ;;;
 ;;; At `63f1e569`, release: The program loads. No relation is in the list, so H
 ;;; is empty and R is {∅}, exit 0 on every command.
-;;; Refused at load since S1f.7.8 (T1f.7.8.3).
+;;; Today it is refused at load, at the `like`, on every command.
 
 (relation likes Person Color :why "{?1} likes {?2}")
 (rule glad ()

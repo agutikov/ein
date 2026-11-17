@@ -11,9 +11,9 @@
 ;;; The compiler split the top `(and …)` alone, so the inner one was a template
 ;;; headed `and`: root held `(r a)` and `(and (p a) (q a))`, a fact no state can
 ;;; hold, and neither `(p a)` nor `(q a)`. Both goals had no row and both claims
-;;; FAILED, exit 1. E-63 of P1f.6's `findings.md`, met by S1f.6.16's design;
-;;; S1f.6.37 reads a conclusion flat at any depth, as a premise is read (the
-;;; user's ruling of 2026-11-14, *"ok, flatten is fine, continue"*).
+;;; FAILED, exit 1. The engine reads a conclusion flat at any depth, as a
+;;; premise is read.
+;;;
 (relation p Thing :why "p {?1}")
 (relation q Thing :why "q {?1}")
 (relation r Thing :why "r {?1}")

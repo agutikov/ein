@@ -1,6 +1,6 @@
-;;; A wildcard `_` in an hrule's `:match` proposes nothing — M1e2 **W20**,
-;;; register row `W20/wild-in-hrule` (`corpus/wrong_answers.toml`), found by
-;;; S1e2.2.20 (2026-11-05) probing the case's mechanism.
+;;; A wildcard `_` in an hrule's `:match` proposes nothing — **W20**,
+;;; register row `W20/wild-in-hrule` (`corpus/wrong_answers.toml`), the
+;;; case's mechanism in an hrule.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -9,19 +9,19 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; An hrule's `:match` is a rule's pattern, so `_` matches any value: the
-;;; hrule proposes `(tag a)`, H is that one candidate, nothing refutes, and R
-;;; is `∅` and `{(tag a)}`. It is the answer of `wild-in-hrule-twin.ein`,
-;;; this file with `_` written as `?any`.
+;;; A bare `_` is reserved and refused wherever it is written (Q-M1e2.22):
+;;; the program is refused at the parse, at the `_`. With `_` written `?any`
+;;; (`wild-in-hrule-twin.ein`) the hrule proposes `(tag a)`, H is that one
+;;; candidate, nothing refutes, and R is `∅` and `{(tag a)}`.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.20 H was empty: `_` was an opaque slot that matched nothing,
-;;; so the hrule matched no fact and proposed no candidate. `ein solve FILE`
-;;; at `c73a0796` printed *no candidate: R is {∅} or empty, decided by root
-;;; alone*, and R was `{∅}`, in a release build and a debug one. Since then
-;;; `_` matches any value, the hrule proposes `(tag a)`, and the program
-;;; answers its twin's R.
+;;; At `c73a0796`, in a release build and a debug one, H was empty: `_` was
+;;; an opaque slot that matched nothing, so the hrule matched no fact and
+;;; proposed no candidate. `ein solve FILE` printed *no candidate: R is {∅}
+;;; or empty, decided by root alone*, and R was `{∅}`. Today the parse
+;;; refuses the `_`.
+;;;
 
 (relation holds Node Node) (relation tag Node)
 (holds a b)

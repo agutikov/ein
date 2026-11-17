@@ -5,9 +5,9 @@
 ;;; seats (S1 S2), the big one three (B1 B2 B3). Friends sit at one table
 ;;; together. Seat B1 faces the air-conditioner, and Eve will not sit there.
 ;;;
-;;; The obligation is the group's, not everyone's (the user, 2026-10-16: "if
-;;; group doesn't fit - group doesn't sit … So not total-owed, but local group
-;;; owed"): once a member of a group sits, every member of that group owes a
+;;; The obligation is the group's, not everyone's: a group that does not fit
+;;; does not sit, so the debt is not total-owed but owed within a group:
+;;; once a member of a group sits, every member of that group owes a
 ;;; seat. Nobody is owed a seat before their group sits, so ∅ — everyone goes
 ;;; elsewhere — is a solution. 06_friends_tables_everyone_sits.ein is the
 ;;; same program with total-owed instead.
@@ -20,11 +20,11 @@
 ;;; whose trigger, (sits ?a ?s), grows with the commitment: adding a fact adds
 ;;; a debt. So a partly seated group is a hole: {(sits Ann S1)} owes Bob a seat,
 ;;; and lies between ∅ and {(sits Ann S1), (sits Bob S2)}, both solutions. The
-;;; static check flags the rule, and what R means here is open: F21's.
+;;; static check flags the rule, and its nodes are forks of root (Q-M1e2.2).
 ;;;
-;;; Measured 2026-10-16, with
-;;;   ein solve -e examples/lattice/06_friends_tables.ein \
-;;;       --dump-region DIR --region-limit 19 --jobs 16
+;;; A bare `ein solve` stops at the default --region-limit, 2^16 nodes, with
+;;; a lower bound, since a flagged program's R needs the whole cube. With it,
+;;;   ein solve examples/lattice/06_friends_tables.ein --region-limit 19
 ;;; R is 21 nodes (k_s = k_c = 21), each its own component:
 ;;;   L0  ∅                                  everyone elsewhere
 ;;;   L2  8: the pair alone                  2 at the small table, 6 at the big
@@ -32,9 +32,9 @@
 ;;;   L5  8: both                            pair small, trio big
 ;;; 166 holes: every partly seated group. Minimal line {∅}; maximal line 14 —
 ;;; the pair alone at the big table (6, since the trio cannot then sit) and
-;;; both groups seated (8). `ein solve -e` answers k = 8, the both-seated eight:
-;;; it misses ∅ and the six pair-at-the-big-table nodes, and records 48 open
-;;; states. The everyone-sits twin has R = the same eight, and no holes.
+;;; both groups seated (8). The everyone-sits twin,
+;;; 06_friends_tables_everyone_sits.ein, has R = the both-seated eight, and
+;;; no holes.
 
 (import std.algebra :symbols (functional injective))
 

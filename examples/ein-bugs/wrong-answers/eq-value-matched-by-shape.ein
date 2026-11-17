@@ -1,6 +1,5 @@
 ;;; A pattern's argument `(eq ?a ?b)` matches a stored `(eq Ann Bob)` by its shape —
-;;; M1f **W82**, register row `W82/eq-value-matched-by-shape`, filed by S1f.7.10 (T1f.7.10.2,
-;;; 2026-11-11).
+;;; **W82**, register row `W82/eq-value-matched-by-shape`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -11,14 +10,15 @@
 ;;; ── The answer, by hand ───────────────────────────────────────────────────
 ;;;
 ;;; As a premise `(eq ?a ?b)` holds only of two equal values; as a pattern's argument
-;;; it would be a second meaning of the one spelling. Refused at the parse, at the
-;;; first `eq` a fact holds, on every command.
+;;; it would be a second meaning of the one spelling (Q-M1f.124). Refused at the
+;;; parse, at the first `eq` a fact holds, on every command.
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
 ;;; At `52e05fc1`, release: the program loads, and the rule derives `(same Ann Bob)`, of two
 ;;; names that are not equal, and `(same Bob Bob)`, exit 0 on every command.
-;;; Refused at load since S1f.7.10 (T1f.7.10.3).
+;;; The engine now refuses it at the parse, on every command.
+;;;
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

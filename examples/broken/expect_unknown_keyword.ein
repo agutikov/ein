@@ -1,5 +1,5 @@
 ;; A `(query …)` keyword the engine does not read is a load error and not a
-;; silent no-op — M1c S1c.1.2. The keyword this file mistypes carries a *test*,
+;; silent no-op (Q-M1e2.28). The keyword this file mistypes carries a *test*,
 ;; so a form that swallowed the typo would report success on a check nobody
 ;; ran, which is the one outcome the form exists to prevent.
 

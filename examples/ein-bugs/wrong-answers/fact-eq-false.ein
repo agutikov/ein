@@ -1,10 +1,10 @@
-;;; A written `eq` fact is stored, not checked against its definition — M1f
-;;; **W50**, register row `W50/fact-eq-false` (`corpus/wrong_answers.toml`),
-;;; filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, `open`
-;;; and owned by S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq`
-;;; and `neq` are relations whose facts are fixed by name identity, computed
-;;; and never stored, and no fact, rule or commitment changes them) and its
-;;; G-21 (a rule may conclude a false one, which is a contradiction).
+;;; A written `eq` fact is stored, not checked against its definition — **W50**,
+;;; register row `W50/fact-eq-false` (`corpus/wrong_answers.toml`) (Q-M1e2.26:
+;;; `eq` and `neq` are relations whose facts are fixed by name identity,
+;;; computed and never stored, and no fact, rule or commitment changes them; a
+;;; rule may conclude a false one, which is a contradiction).
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,12 +12,12 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A fact is a conclusion with no premise, so a written fact of `eq` is
-;;; checked as a rule's conclusion of one is (G-21; Q-M1f.33, taken by default
-;;; on the user's instruction of 2026-11-09): `a` and `w` are two names, so
-;;; `(eq a w)` is false, and root is a contradiction, `(false)` written where
-;;; it stands. R is empty. Since nothing is stored, `w` is in no fact, and no
-;;; name of the program: H is empty.
+;;; A fact is a conclusion with no premise, so a written fact of `eq` is checked
+;;; as a rule's conclusion of one is (Q-M1e2.26; Q-M1f.33): `a` and `w` are two
+;;; names, so `(eq a w)` is false, and root is a contradiction, `(false)`
+;;; written where it stands. R is empty. Since nothing is stored, `w` is in no
+;;; fact, and no name of the program: H is empty.
+;;;
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;

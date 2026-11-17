@@ -1,7 +1,7 @@
-;;; *forbid* misses a refutation resting on an `absent` over a relation only
-;;; a plan a node compiles writes — M1e2 **W17**, register row
-;;; `W17/forbid-chain-node-writes` (`corpus/wrong_answers.toml`), found by
-;;; S1e2.2.17 (2026-11-04) probing the witness's mechanism.
+;;; *forbid* misses a refutation resting on an `absent` over a relation only a
+;;; plan a node compiles writes — **W17**, register row
+;;; `W17/forbid-chain-node-writes` (`corpus/wrong_answers.toml`), found probing
+;;; the witness's mechanism.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,26 +12,26 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `{(p a)}` dies on `(absent (x a))`, and `{(p a), (p2 a)}` lives, `q2`'s
-;;; plan deriving `(x a)` there: a dead hole. `x` is a relation a commitment
-;;; can extend, through the activator a commitment derives, so this is
-;;; *forbid*'s `direct` case (the user's ruling of 2026-11-02): the program
-;;; is refused at every command that takes the universe.
+;;; `{(p a)}` dies on `(absent (x a))`, and `{(p a), (p2 a)}` lives, `q2`'s plan
+;;; deriving `(x a)` there: a dead hole. `x` is a relation a commitment can
+;;; extend, through the activator a commitment derives, so this is *forbid*'s
+;;; `direct` case (Q-M1e2.5): the program is refused at every command that takes
+;;; the universe.
 ;;;
 ;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.17 it loaded: R three states, the one dead hole {(p a)},
-;;; exit 0, in every mode and `ein oracle` (at `3efd3f5f`). *forbid*'s
-;;; *extendable* was D, and `x` is not in D: D's closure follows the plans
-;;; root compiled, and only a plan root never compiled writes `x`. Since
-;;; then it is D⁺, D followed through the rules root has no plan of, which
-;;; holds `x`, and every question about a commitment exits 1: `rule 'chk':
-;;; concludes (false) from (absent …) over x`. The static check still calls
-;;; `chk`'s read of `x` static and flags the program for `q2`'s activator
-;;; site alone: D is unchanged for every reader but *forbid*. Studied past
-;;; the refusal, the status names no site and says why: the death rests on
-;;; `(absent (x a))`, which no site reads, and no rule on its derivation is
-;;; an activator site.
+;;; At `3efd3f5f` it loaded: R three states, the one dead hole {(p a)}, exit 0,
+;;; in every mode and `ein oracle` (at `3efd3f5f`). *forbid*'s *extendable* was
+;;; D, and `x` is not in D: D's closure follows the plans root compiled, and
+;;; only a plan root never compiled writes `x`. Now it is D⁺, D followed through
+;;; the rules root has no plan of, which holds `x`, and every question about a
+;;; commitment exits 1: `rule 'chk': concludes (false) from (absent …) over x`.
+;;; The static check still calls `chk`'s read of `x` static and flags the
+;;; program for `q2`'s activator site alone: D is unchanged for every reader but
+;;; *forbid*. Studied past the refusal, the status names no site and says why:
+;;; the death rests on `(absent (x a))`, which no site reads, and no rule on its
+;;; derivation is an activator site.
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q2 T :why "q2 holds of {?1}") (relation x T :why "x holds of {?1}")
 

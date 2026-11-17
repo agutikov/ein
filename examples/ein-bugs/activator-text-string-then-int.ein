@@ -1,17 +1,17 @@
-;;; W16's twin — M1e2 S1e2.2.16, register row `W16/string-then-int`
-;;; (`corpus/wrong_answers.toml`). Promoted from
-;;; `corpus/fuzz_findings/activator-text-key-swapped.ein` by the fix.
+;;; W16's twin — register row `W16/string-then-int`
+;;; (`corpus/wrong_answers.toml`).
+;;;
 ;;;
 ;;; `activator-text-int-and-string.ein` with its two activator lines
 ;;; swapped, and nothing else. Unlike W7's twin, this order answered wrong
 ;;; too, the other way: the string's plan was compiled first and the int
 ;;; activator's key was the same text, so root held the string's two
 ;;; `noted` facts and not the int's (`ein saturate` at `6a775f3d`: `noted
-;;; 2`), and a debug build aborted on it as on the other order. Since
-;;; S1e2.2.16 the key is the activator's values, and both orders derive the
-;;; same four facts, in either build. The pair is the test: the same
-;;; `:expect`, word for word, holds on both, and as the other file's header
-;;; says, it is a count and `rule_semantics.rs` that tell the four apart.
+;;; 2`), and a debug build aborted on it as on the other order. A string is
+;;; never a value (Q-M1e2.23), so both orders are refused at the parse, at
+;;; their first string, `(holds "1")`'s, on every command; the same
+;;; `:expect`, word for word, is in both and is never read.
+;;;
 
 (relation edge  Node Node)
 (relation holds Node)

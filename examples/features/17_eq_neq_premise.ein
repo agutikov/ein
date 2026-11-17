@@ -1,23 +1,23 @@
 ;;; Ein — feature demo: `eq` and `neq` in a rule's premise, in any order.
 ;;;
-;;; M1f S1f.5.7 (T1f.5.7.3), on the user's ruling of 2026-11-07 (Q-M1e2.26):
-;;; a premise follows the reading a goal does. A rule's `:match` is a
+;;; A premise follows the reading a goal does (Q-M1e2.26). A rule's
+;;; `:match` is a
 ;;; conjunction, and its meaning does not depend on the order of its
 ;;; conjuncts: `(and (neq ?x a) (p ?x))` means what `(and (p ?x) (neq ?x a))`
 ;;; means, the guard judged once `(p ?x)` has bound `?x`. A guard whose
 ;;; variable no premise binds at all ranges over the program's names, every
 ;;; constant a fact writes in an argument, at any depth, and every constant
-;;; of a rule's `:match` or `:assert` (Q-M1e2.9 (a)): here `Node`, `a`, `b`,
+;;; of a rule's `:match` or `:assert` (Q-M1e2.9): here `Node`, `a`, `b`,
 ;;; `hit-eq`, `hit-form`, `hit-neq`, `p` and `sibling`, which each `(relation
 ;;; …)` stores as a fact, and no rule's name and no `f`, a nested fact's
 ;;; relation. A fact that holds no variable, `(f a)`, is a value, as it is in
 ;;; `(p (f a))`.
 ;;;
-;;; Until S1f.5.7 the loader refused each of the first three rules, a guard
-;;; before the premise that binds its variable and a form as a guard's
-;;; argument (M1e2 S1e2.2.24, W24); before that, each guard compared an unbound
-;;; variable as a null and a form as an IR node, so `e` never fired and `n`
-;;; fired for `a` too.
+;;; The first three rules load and fire as they read: a guard written before
+;;; the premise that binds its variable waits for it, and a fact that holds
+;;; no variable is a value a guard compares, so `e` fires for `a` alone, `n`
+;;; for `b` and `(f a)`, and `form` for `(f a)`; the claims below hold
+;;; (`ein test`).
 ;;;
 ;;; `(solve :hypothesis-relations ())` leaves H empty, so R is root alone and
 ;;; each claim is about root's fixpoint.

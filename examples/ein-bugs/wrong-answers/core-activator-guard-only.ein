@@ -1,8 +1,7 @@
 ;;; A dead node's core leaves out the activator its refutation rests on, where
-;;; the refuting plan matches no fact — M1e2 **W19**, register row
-;;; `W19/core-activator-guard-only` (`corpus/wrong_answers.toml`), banked by
-;;; S1e2.2.19 (2026-11-04), found by probing `forbid-chain-no-absent.ein`'s
-;;; mechanism.
+;;; the refuting plan matches no fact — **W19**, register row
+;;; `W19/core-activator-guard-only` (`corpus/wrong_answers.toml`), found by
+;;; probing `forbid-chain-no-absent.ein`'s mechanism.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -16,19 +15,20 @@
 ;;; R is two states, ∅ and {(p2 a)}; N is {(p a)}. Its refutation rests on
 ;;; the activator `(w a)`, which rests on `(p a)`: the core is `(p a)`.
 ;;;
-;;; ── What the engine answered, and what holds since ─────────────────────
+;;; ── What the engine answered, and what holds ───────────────────────────
 ;;;
-;;; Until S1e2.2.19, R as above, exit 0; and N's core empty, by `w`, in
+;;; R as above, exit 0; and N's core empty, by `w`, in
 ;;; `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s `nodes.json`,
 ;;; `--events`' `enter` line, `--trace` and `ein oracle --dump` (`ein solve
 ;;; FILE --dump-answer DIR` at `a41eb76e`, release and debug): a dead node
 ;;; with a 0-fact core, which a census of root cores had said no region
-;;; run reports. The derivation of `(false)` records no premise, so the
+;;; run reports. The derivation of `(false)` recorded no premise, so the
+;;; core search read it as an engine write, derivable from nothing. A firing
+;;; records the activator its plan was compiled from, and the core follows
+;;; one the node derived (Q-M1e2.12): N's core is `(p a)`, in either build.
 ;;;
-;;; core search read it as an engine write, derivable from nothing. Since
-;;; S1e2.2.19's fix the same day, on the user's ruling on Q-M1e2.12, (c), a
-;;; firing records the activator its plan was compiled from, and the core
-;;; follows one the node derived: N's core is `(p a)`, in either build.
+;;;
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation w T :why "w holds of {?1}, which activates rule w for {?1}")
 

@@ -1,5 +1,5 @@
-;;; The control of `oblig-derived-activator.ein` — M1e2 **W26**, register row
-;;; `W26/oblig-derived-activator`'s control, banked by S1e2.2.25 (2026-11-05).
+;;; The control of `oblig-derived-activator.ein` — **W26**, register row
+;;; `W26/oblig-derived-activator`'s control.
 ;;;
 ;;; The same program with the derived activator also stated,
 ;;; `(total-owed drinks is-a)`: root owes both debts, the obligations rung

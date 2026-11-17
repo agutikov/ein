@@ -1,16 +1,16 @@
 ;;; coloc-disproved — a co-located hypothesis is contradicted.
 ;;;
-;;; This demo exercises Q40 Option A end-to-end. The synthetic
+;;; This demo exercises Q40 end-to-end. The synthetic
 ;;; `(hypothesis …)` and `(contradiction-under …)` facts carry a
 ;;; NESTED FACT as their first argument — a relational node, per the
 ;;; kernel ein model's named-vs-relational duality
-;;; (`docs/ein/user/syntax-and-semantics/ontology.md` §3). R9 widened
-;;; `Fact.args` to accept this; the matcher unifies against the
+;;; (`docs/ein/user/syntax-and-semantics/ontology.md` § Five words). A
+;;; fact's arguments accept this, and the matcher unifies against the
 ;;; nested fact at runtime.
 ;;;
-;;; In production, P1.5's fork / contradict machinery emits the two
-;;; synthetic facts when a branch hits an inconsistency. This demo
-;;; loads them directly to exercise the rule independently of P1.5.
+;;; The engine's own search emits no such facts: a dead node is a
+;;; refutation, not a fact of a state. This demo writes them as givens
+;;; to exercise the rule on its own.
 ;;;
 ;;; Ontology (background):
 ;;;   - `co-located` is the standard zebra-puzzle equivalence between

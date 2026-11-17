@@ -1,7 +1,5 @@
-;;; The witness's shape under the budget — the twin of M1e2 **W23**, register
-;;; row `W23/core-search-cut` (`corpus/wrong_answers.toml`), banked by
-;;; S1e2.2.23 (2026-11-05) from the inventory of 2026-11-05's F2
-;;; (`plans/m1e2_correctness/inventory_2026-11-05/findings/F2_core_cut_5.ein`).
+;;; The witness's shape under the budget — the twin of **W23**, register
+;;; row `W23/core-search-cut` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,8 +17,10 @@
 ;;;
 ;;; At `e2a3263e`, release and debug: R empty, exit 0, and root's core
 ;;; `(y1 k) … (y5 k)`, refuted by `clash`, on every surface that prints it.
-;;; Since S1e2.2.23 every JSON says `core_status: "within-budget"` beside it,
-;;; and no text surface prints anything new, in either build.
+;;; Every JSON says `core_status: "within-budget"` beside it, and no text
+;;; surface prints a `core search` row, in either build.
+;;;
+;;;
 
 (relation x1 T :why "x1 holds of {?1}") (relation y1 T :why "y1 holds of {?1}") (relation p1 T :why "p1 holds of {?1}") (relation x2 T :why "x2 holds of {?1}") (relation y2 T :why "y2 holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation x3 T :why "x3 holds of {?1}") (relation y3 T :why "y3 holds of {?1}") (relation p3 T :why "p3 holds of {?1}") (relation x4 T :why "x4 holds of {?1}") (relation y4 T :why "y4 holds of {?1}") (relation p4 T :why "p4 holds of {?1}") (relation x5 T :why "x5 holds of {?1}") (relation y5 T :why "y5 holds of {?1}") (relation p5 T :why "p5 holds of {?1}") (relation A T :why "A holds of {?1}") (relation B T :why "B holds of {?1}")
 (x1 k) (y1 k) (x2 k) (y2 k) (x3 k) (y3 k) (x4 k) (y4 k) (x5 k) (y5 k)

@@ -1,7 +1,6 @@
-;;; A rule's false `(not (eq …))` conclusion is stored as a negation — M1f
-;;; **W51**, register row `W51/not-eq-assert` (`corpus/wrong_answers.toml`),
-;;; filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, `open`
-;;; and owned by S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21).
+;;; A rule's false `(not (eq …))` conclusion is stored as a negation —
+;;; **W51**, register row `W51/not-eq-assert` (`corpus/wrong_answers.toml`)
+;;; (Q-M1e2.26).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -9,18 +8,19 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `(not (eq x y))` is `(neq x y)` (Q-M1f.31, taken by default on the user's
-;;; instruction of 2026-11-09), and a rule's conclusion of one is checked
-;;; (G-21): at root `r` concludes `(neq a a)`, which is false, so root is a
-;;; contradiction, explained as `(false)` is: its core is `(p a)` and
-;;; `refuted by` names `r`. R is empty.
+;;; `(not (eq x y))` is `(neq x y)` (Q-M1f.31), and a rule's conclusion of one
+;;; is checked (Q-M1e2.26): at root `r` concludes `(neq a a)`, which is false,
+;;; so root is a contradiction, explained as `(false)` is: its core is `(p a)`
+;;; and `refuted by` names `r`. R is empty.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The conclusion is stored: root holds `(not (eq a a) :rule r)` (`ein
-;;; saturate FILE --dump`), no contradiction pairs it, H is empty and R is
-;;; {∅}, exit 0 (`ein solve FILE` and `ein oracle FILE` at `dc4c0bdc`, release
-;;; and debug alike).
+;;; At `dc4c0bdc` (`ein solve FILE` and `ein oracle FILE`, release and debug
+;;; alike), the conclusion was stored: root held `(not (eq a a) :rule r)` (`ein
+;;; saturate FILE --dump`), no contradiction paired it, H was empty and R was
+;;; {∅}, exit 0. The engine reads it as `(neq a a)`: R is empty.
+;;;
+;;;
 
 (relation p Node :why "{?1} is a node")
 (p a)

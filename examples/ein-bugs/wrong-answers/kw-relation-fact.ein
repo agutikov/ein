@@ -1,7 +1,7 @@
-;;; A top-level fact splits a name that starts with `relation` — M1e2 **W22**,
-;;; register row `W22/kw-relation-fact` (`corpus/wrong_answers.toml`), banked
-;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
-;;; user's ruling of that day; a reserved word is a keyword only as a whole token (Q-M1e2.17).
+;;; A top-level fact splits a name that starts with `relation` — **W22**,
+;;; register row `W22/kw-relation-fact` (`corpus/wrong_answers.toml`): a
+;;; reserved word is a keyword only as a whole token (Q-M1e2.17).
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────
 ;;;
@@ -17,15 +17,15 @@
 ;;;
 ;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; At `35186bc0` the parser read a reserved word as a prefix of a name, and
 ;;; this program answered wrong. The parser read `(relationship alice bob)` as
 ;;; `(relation ship alice bob)`, a declaration of a relation `ship` whose
 ;;; signature is `alice bob`, so the program stated no `relationship` fact.
 ;;; `alice` and `bob` were types, H was empty and R was {∅}. (`ein solve FILE`
-;;; at `35186bc0`, release and debug; every mode and `ein oracle` the same.)
-;;; Since then a keyword is a whole word, at the boundary `grammar.md` § 1
-;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
-;;; answers its twin's R.
+;;; at `35186bc0`, release and debug; every mode and `ein oracle` the same.) A
+;;; keyword is a whole word now, at the boundary `grammar.md` § 1 states
+;;; (Q-M1e2.17), and the program answers its twin's R.
+;;;
 
 (relation person Node :why "{?1} is a person") (relation relationship Node Node :why "{?1} has a relationship with {?2}")
 (person alice) (person bob)

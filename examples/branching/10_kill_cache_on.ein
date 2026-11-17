@@ -1,47 +1,47 @@
-;;; P1.5 demo 10/11 — the lookahead-kill cache (`enable-lookahead-kill-cache`).
+;;; Branching demo 10 — one of a pair with `11_kill_cache_off.ein`.
 ;;;
-;;; An on/off pair: 10_kill_cache_on.ein and 11_kill_cache_off.ein are
-;;; byte-identical except the single `(config …)` line below — diff them.
-;;; Sibling of demos 06/07, which toggle the lookahead itself; THIS pair
-;;; toggles the *cache* of the lookahead's kills.
+;;; 10_kill_cache_on.ein and 11_kill_cache_off.ein are the same program,
+;;; byte for byte outside their comments: no flag tells them apart, since
+;;; no flag changes R. Demos 06/07 are another such pair.
 ;;;
 ;;; Puzzle: 4 attributes x 2 instances over one `co-located` relation
 ;;; (symmetric + transitive). Three anchors pin everything to the Red
 ;;; house — Red=Tea, Red=Cat, Red=Pipe — so by per-attribute exclusivity
 ;;; the other house takes Milk, Dog, Cigar, and the Milk drinker owns the
-;;; Dog. The model is unique, so the verdict is Solution (run with
-;;; `--exhaustive` to prove uniqueness, k=1).
+;;; Dog. The model is unique: R's maximal line is one state, Blue, Milk,
+;;; Dog and Cigar together, and every row the query has says ?p = Dog.
 ;;;
-;;; The lookahead (demo 06) is a hypgen filter: before forking a candidate
-;;; `h` it runs ONE rule step against the saturated KB, and if that already
-;;; contradicts it drops `h` without forking. The lattice re-generates the
-;;; open candidates on every pass — the forced-positive cascade and every
-;;; fork's completeness check — so the SAME doomed `h` is offered again and
-;;; again.
+;;; The hrule `guess` proposes 18 candidates, 12 of them dead alone, and
+;;; every minimal dead set is one of those 12. The other six are the
+;;; pairs among Blue, Milk, Dog and Cigar; any set of them is alive, so R
+;;; is a sub-cube of dimension 6, 64 commitments, whose closures are 15
+;;; states: ∅ and every alive partial placement of the other house, each
+;;; reached by every commitment whose closure it is.
 ;;;
-;;;   cache ON  (`… true`):  the first kill writes a `(not h)` REASONING
-;;;     fact; later passes skip `h` via the O(1) `negated_fact` filter
-;;;     instead of re-simulating it.
-;;;   cache OFF (`… false`): nothing is written, so the one-step simulation
-;;;     re-runs for `h` on every pass.
+;;; `ein solve` on this file prints, among its rows:
 ;;;
-;;; The cache changes NEITHER the answer NOR the search shape — identical
-;;; verdict and identical enterings either way. It only cuts repeated
-;;; lookahead work, visible in `--json-summary`'s `root.hypgen.filtered`
-;;; block. Measured with
-;;; `ein solve <file> --exhaustive --json-summary s.json`:
+;;;   states (k_s)      15
+;;;   commitments (k_c) 64
+;;;   maximal line      1 state
+;;;   sub-cubes         1, of dimension 6
+;;;   merged            5 states reached by more than one commitment, with 28 minimal
+;;;   N                 12 minimal dead sets
+;;;   universe          18 candidates, 12 dead alone
 ;;;
-;;;   ON  (10):  Solution (k=1), enterings_total 41, negated_fact 12
-;;;   OFF (11):  Solution (k=1), enterings_total 41, lookahead_killed 12
+;;; and over the query, 4 projection classes: the 12 states where the goal
+;;; has no row, and three where it binds ?p = Dog, ?x Blue or Cigar or both.
+;;; `ein solve --maximal` lists the one maximal state alone.
 ;;;
-;;; — same Solution, same 41 enterings. With the cache on, root's
-;;; generation pass drops the same 12 doomed candidates by one bit test on
-;;; the negated index (`negated_fact`) instead of a one-step simulation
-;;; each (`lookahead_killed`).
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
-;; Its `(config :enable-lookahead-kill-cache true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; The file sets no `(config …)`: every flag has its default.
+;;
+;;
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

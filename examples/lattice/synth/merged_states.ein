@@ -1,8 +1,8 @@
-;;; merged_states — a program written for its region, by utils/region_synth.py
-;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
-;;;   python3 utils/region_synth.py --example merged_states --out <this file>
+;;; merged_states — a program written for its region by the region synthesizer,
+;;; from the region-spec below. Generated, not edited by hand: a change is
+;;; made to the spec, and the file is written again from it.
 ;;;
-;;; Q-M1e2.7 (e): saturation moves nodes. A brings B and C brings D, so a
+;;; Saturation moves nodes (Q-M1e2.7). A brings B and C brings D, so a
 ;;; commitment and its closure are one state; R is everything holding A or C
 ;;; and not both, so its minimal line {A}, {C} is two transient nodes whose
 ;;; saturation lands on {A,B} and {C,D}.
@@ -17,7 +17,7 @@
 ;;;
 ;;; 1 dead rule(s), 1 obligation rule(s), 2 implication(s), from the target's prime implicants.
 ;;;
-;;; region-spec: {"name":"merged_states","about":"Q-M1e2.7 (e): saturation moves nodes. A brings B and C brings D, so a\ncommitment and its closure are one state; R is everything holding A or C\nand not both, so its minimal line {A}, {C} is two transient nodes whose\nsaturation lands on {A,B} and {C,D}.","candidates":"ABCDE","implies":[["A","B"],["C","D"]],"R":[["A","ABDE"],["C","BCDE"]],"owing":[["","BDE"]]}
+;;; region-spec: {"name":"merged_states","about":"Saturation moves nodes (Q-M1e2.7). A brings B and C brings D, so a\ncommitment and its closure are one state; R is everything holding A or C\nand not both, so its minimal line {A}, {C} is two transient nodes whose\nsaturation lands on {A,B} and {C,D}.","candidates":"ABCDE","implies":[["A","B"],["C","D"]],"R":[["A","ABDE"],["C","BCDE"]],"owing":[["","BDE"]]}
 ;;; region-status: oRoRRxRxoRoRRxRxoRoRRxRxoRoRRxRx
 
 (relation h T :why "h holds of {?1}")

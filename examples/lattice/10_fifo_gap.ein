@@ -1,15 +1,15 @@
 ;;; The FIFO gap, the counter-example of
 ;;; docs/ein/reasoning/kb-evolution/monotonicity.md § 8.3 written out and run.
 ;;;
-;;; Two `absent` rules at one priority, the reader written first:
+;;; Two `absent` rules, the reader written first:
 ;;;
 ;;;   r2   a ∧ b ∧ absent(q) → p
 ;;;   r1   a ∧ absent(z)     → q
 ;;;
 ;;; The program is stratified (z < q < p: nothing derives z, and q is read by
 ;;; r2 only under an `absent`), so its perfect model at {a, b} is {a, b, q}.
-;;; The engine's boundary admits one parked candidate a round in (priority,
-;;; FIFO) order, not in stratum order, and r2 is written first:
+;;; The engine's boundary admits one parked candidate a round in the
+;;; agenda's order (Q-M1f.313), not in stratum order, and r2 is written first:
 ;;;
 ;;;   node        built at once (fork from root, = scratch here)   by way of {a}
 ;;;   ∅           {}                                               —
@@ -25,13 +25,13 @@
 ;;; status never shows it: the static check flags r2 (an `absent` over q, which
 ;;; a commitment changes), and the cube calls the program conservative.
 ;;;
-;;; Writing r1 before r2 gives {a, b, q} built at once, and so does putting the
-;;; two in stratum order by priority. Read both ways by
+;;; Writing r1 before r2 gives {a, b, q} built at once. `ein solve` on this
+;;; file names the gap on its `state` row (a stale fact) and its `paths` row
+;;; (path-dependent); node by node, both ways, by
 ;;;   cargo run --release -p ein-infer --example node_census -- --paths examples/lattice/10_fifo_gap.ein
 ;;;   cargo run --release -p ein-infer --example node_census -- --cumulative examples/lattice/10_fifo_gap.ein
-;;; (utils/censuses/node-census.md § 12).
-;;;
-;;; What a node's state is on it is F21's D2, open; this file pins the gap.
+;;; Every node is built by fork from root, an assumption on a flagged program
+;;; (Q-M1e2.2), and the engine claims nothing of its solutions; this file pins the gap.
 
 (relation thing T :why "{?1} is a thing")
 (relation a T :why "a holds of {?1}")

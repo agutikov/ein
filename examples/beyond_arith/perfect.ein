@@ -2,8 +2,8 @@
 ;;; divisors. For each n every k below n is tried, one division each, and
 ;;; the divisors are added up as they are found; the sum is then set against
 ;;; n: `eq` perfect, `lt` deficient, `gt` abundant. Saturation alone.
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is add-walk done div-call div-done))
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))

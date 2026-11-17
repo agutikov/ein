@@ -1,7 +1,6 @@
 ;;; The same `(not (and …))` in an obligation: the obligation pass matches it,
 ;;; and the state owes —
-;;; M1f **W67**, register row `W67/macro-not-conjunction-obligation`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W67**, register row `W67/macro-not-conjunction-obligation`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release: every command answered, exit 0. The obligation pass
 ;;; matched the malformed `not`, the `absent` held, and root owes (`Open`):
 ;;; R is empty, every state owing.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

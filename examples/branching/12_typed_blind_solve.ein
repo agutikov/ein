@@ -1,46 +1,46 @@
-;;; Ein — branching demo 12/…  + S1.7.23 standing regression fixture
+;;; Ein — branching demo 12: a typed puzzle the blind enumerator solves.
 ;;;
-;;; A no-hrule, NON-`T`-typed puzzle that ACTUALLY SOLVES via the
-;;; blind hypothesis enumerator (`hypgen::generate`'s no-`(hrule …)`
-;;; branch). It is the standing witness for retiring the kernel
-;;; `is-a` type-filter — S1.7.23 T1.7.23.1.
+;;; A no-hrule, NON-`T`-typed puzzle that solves via the blind
+;;; hypothesis enumerator, the rung H is built by when a program
+;;; declares no `(hrule …)`: its slots are real types, `House` and
+;;; `Color`, never `T`.
 ;;;
 ;;; Why it exists
 ;;; -------------
-;;; The M1 gate (zebra2) is hrule-driven, so it never exercises the
-;;; blind enumerator's `is-a` type-pruning — retiring
-;;; that filter is a measured no-op there (S1.7.8 / T1.7.7.1 spike).
-;;; The existing feature demos `features/04`,`05` run the blind path
-;;; but abort at k=0 (non-converging), so they cannot witness a
-;;; "still solves with the filter gone" regression. This puzzle does:
-;;; it solves on the blind path AND its slots are real types
-;;; (`House` / `Color`, never `T`), so the type-filter genuinely
-;;; prunes type-wrong fillers (`type_incompatible_*` skips > 0) —
-;;; exactly the kernel mechanism S1.7.23 removes.
+;;; The blind enumerator is untyped (Q-M1e.12): it proposes type-wrong
+;;; fillers too, `(color-of Red Blue)`, and here even the names the
+;;; positional activators write, `(color-of 0 1)`. `typecheck-arg-0` /
+;;; `typecheck-arg-1` are the contradiction rules that kill them, so the
+;;; puzzle converges on the blind path all the same: of H's 51
+;;; candidates, 47 die alone (`ein show hyps` lists them). The zebra
+;;; puzzles are hrule-driven and never take this path; this file is the
+;;; witness that a typed puzzle solves on it.
+;;;
+;;;
 ;;;
 ;;; Shape
 ;;; -----
-;;; A 3×3 bijection `color-of : House → Color` with NO positional
-;;; anchors. Nothing is forced at the root, so the engine must
-;;; *guess* a `(color-of H C)` (the blind enumerator's job), then
-;;; the bijection machinery propagates: `functional-negative` /
+;;; A 3×3 bijection `color-of : House → Color` with one anchor, H1 Red
+;;; (below). That leaves a 2×2 residue the bijection cannot *force*, so
+;;; the engine must *guess* a `(color-of H C)` (the blind enumerator's
+;;; job), then the bijection machinery propagates: `functional-negative` /
 ;;; `injective-negative` close the row + column, `domain-elimination`
 ;;; forces the survivor once a house has a single colour left, and
-;;; `functional` / `injective` kill any guess that collides. After
-;;; two guesses + propagation a complete consistent model exists, so
-;;; `solve(stop_after=1)` returns a Solution (k≥1). The model is not
-;;; unique (a bare 3×3 bijection has 3! = 6 of them) — uniqueness is
-;;; NOT the point; *converging on the blind path while type-pruning*
-;;; is.
+;;; `functional` / `injective` kill any guess that collides. One guess +
+;;; propagation gives a complete consistent model, and the residue has
+;;; two: R's maximal line is two states, Blue at H2 and Green at H3, or
+;;; the reverse, each reached by 3 commitments, 2 of them minimal.
+;;; Uniqueness is NOT the point; *converging on the blind path* is.
 ;;;
-;;; Once the kernel filter is retired (S1.7.23 T1.7.23.2) the blind
-;;; enumerator proposes type-wrong fillers too (e.g. `(color-of Red
-;;; Blue)`); `typecheck-arg-0` / `typecheck-arg-1` are the
-;;; contradiction rules that then kill them. So this file also
-;;; exercises that fallback.
+;;; `ein solve` lists R, three states: ∅ and the two maximal ones, H1 Red
+;;; in every one; `ein solve --maximal` lists the two.
+;;;
+;;;
+;;;
+;;;
 
 ;; ── Bijection violation rules (fire `(false)` on collision) ──
-;; stdlib pattern-macro sugar — forall/unknown from the std.macro module (S1.8.A5).
+;; stdlib pattern-macro sugar — forall/unknown from the std.macro module.
 (import std.macro :symbols (forall unknown))
 
 (rule functional (?R)

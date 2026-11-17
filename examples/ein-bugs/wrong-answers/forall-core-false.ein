@@ -1,7 +1,7 @@
-;;; A `(false)` concluded through a `forall`: its core leaves out every fact
-;;; the universal read — M1e2 **W21**, register row `W21/forall-core-false`
-;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.21 (2026-11-05), found
-;;; measuring W21's fix (Q-M1e2.15).
+;;; A `(false)` concluded through a `forall`: its core leaves out every fact the
+;;; universal read — **W21**, register row `W21/forall-core-false`
+;;; (`corpus/wrong_answers.toml`); a derivation through a `forall` rests on each
+;;; fact it read (Q-M1e2.15).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,16 +19,16 @@
 ;;; which names the commitment. `(item a)` alone is root's, and root is
 ;;; alive.
 ;;;
-;;; ── What the engine answered, and what holds since ─────────────────────
+;;; ── What the engine answered, and what holds now ───────────────────────
 ;;;
-;;; Until S1e2.2.21, R as above, exit 0; and N's core `(item a)` alone, by
-;;; `full`, on every surface that reports it (`ein solve FILE --dump-answer
-;;; DIR` at `a98a94e3`, release and debug). A firing recorded the facts its
-;;; plan matched, and an `absent` it judged as a pattern, and none of the
-;;; facts a universal that held had read. The user ruled Q-M1e2.15 (b) on
-;;; 2026-11-05: a derivation through a `forall` rests on each fact the
-;;; universal read, each at its own smallest frontier. Since S1e2.2.21's fix
-;;; N's core is `(item a) (tag s1) (tag s2)`, in either build.
+;;; At `a98a94e3`, R as above, exit 0; and N's core `(item a)` alone, by `full`,
+;;; on every surface that reports it (`ein solve FILE --dump-answer DIR` at
+;;; `a98a94e3`, release and debug). A firing recorded the facts its plan
+;;; matched, and an `absent` it judged as a pattern, and none of the facts a
+;;; universal that held had read. A derivation through a `forall` rests on each
+;;; fact the universal read, each at its own smallest frontier (Q-M1e2.15), so
+;;; N's core is now `(item a) (tag s1) (tag s2)`, in either build.
+;;;
 
 (import std.macro :symbols (forall))
 

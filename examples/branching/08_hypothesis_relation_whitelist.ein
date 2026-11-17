@@ -1,27 +1,27 @@
-;;; P1.5 demo 8 — relation whitelist (S1.5.6b T1.5.6b.1).
+;;; Branching demo 8 — the relation list, `:hypothesis-relations`.
 ;;;
-;;; The closed-relation inference already removes relations no rule
-;;; can ever conclude — here `is-a`, emitted as `(__closed__ is-a)`
-;;; before saturation. The `:hypothesis-relations` whitelist is the
-;;; *query-scoped* complement: it can exclude a relation that IS
-;;; rule-propagated, when this particular query has no use for
-;;; guessing it.
+;;; `(solve :hypothesis-relations (…))` names the relations H may hold
+;;; candidates of, and every other relation is left out of H — `is-a`
+;;; here, whose facts are all given, and a relation a rule propagates,
+;;; when this program has no use for guessing it. A `(__closed__ R)`
+;;; fact takes one relation out instead, and a relation may not be both
+;;; listed and closed.
 ;;;
 ;;; This puzzle has `co-located` (the attribute to pin down) and
 ;;; `next-to` (the house adjacency). `next-to` is propagated by
-;;; `(symmetric next-to)`, so the closed-inference leaves it OPEN —
-;;; the blind enumerator would build `next-to` candidates. But the
-;;; goal is about `co-located`; the `(query … :hypothesis-relations
-;;; (co-located))` keyword restricts the generator to `co-located`,
-;;; so the `next-to` candidates are skipped — counted as
-;;; `relation_not_whitelisted` in `bench_solve --hyp-stats`,
-;;; alongside the `closed_relation` skip for `is-a`.
+;;; `(symmetric next-to)`, and nothing closes it, so the blind
+;;; enumerator would build `next-to` candidates. But the goal is about
+;;; `co-located`, and `(solve :hypothesis-relations (co-located))`
+;;; restricts the generator to it: `ein show hyps` lists 38 candidates,
+;;; every one of `co-located`. The list is the program's, not a
+;;; query's: one program states one lattice.
 ;;;
-;;; Drop the `:hypothesis-relations` keyword and the generator also
-;;; enumerates `next-to` guesses — wasteful here, since the
-;;; adjacency is given in full.
+;;; Drop the list and the generator also enumerates `next-to` and `is-a`
+;;; guesses — wasteful here, since both are given in full.
 ;;;
-;;; verdict Solution, ?h = H3.
+;;; The signature is `T T`, so H binds type atoms as objects too: R is 34
+;;; states and its maximal line 8; where a state places Blue in a house,
+;;; ?h = H3.
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

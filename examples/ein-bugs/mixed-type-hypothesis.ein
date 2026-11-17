@@ -1,27 +1,27 @@
 ;;; Ein — mixed value kinds in one hypothesis slot
 ;;;
-;;; Two candidate `seat` facts whose second argument is the int `1` in one
-;;; and the symbol `left` in the other, on a KB that is otherwise perfectly
-;;; well-formed. **Since M1f S1f.5.5's swap `1` is a name** (S1f.5.4's
-;;; ruling, the int kind retired by its T1f.5.4.3, 2026-11-09), so the two
-;;; candidates are two names and sort by text; what follows is the case as
-;;; it was banked, and the program still answers `Solution`, `?s = 1`.
+;;; Two candidate `seat` facts whose second argument is `1` in one and
+;;; `left` in the other, on a KB that is otherwise perfectly well-formed.
+;;; **`1` is a name**: a run of digits is one (Q-M1e2.24), so the two
+;;; candidates are two names of one kind and sort by text. The file was
+;;; written for an int beside a symbol, a kind Ein does not have; it keeps
+;;; the shape, and R is four states, every commitment of the two.
 ;;;
-;;; What it pins. The commitment search orders its candidates by *content*
-;;; (`Terms::cmp_fact_semantic`, called from `apriori::layer_1`):
-;;; relation name first, then the arguments element-wise. Two candidates of
-;;; the same relation whose slot *i* holds an int in one and a symbol in the
-;;; other are therefore compared across value kinds, and `Value` is totally
-;;; ordered by construction — `Int < Sym < Fact` across tags — so the pair
-;;; sorts like any other and the run answers `Solution`, `?s = 1`.
+;;; What it pins. Candidates are ordered by *content*
+;;; (`Terms::cmp_fact_semantic`): relation name first, then the arguments
+;;; element-wise. Two candidates of the same relation whose slot *i* holds a
+;;; name in one and a nested fact in the other are compared across value
+;;; kinds, and values are totally ordered by construction
+;;; (`docs/ein/reasoning/static-ir/values-and-order.md` § Values are totally
+;;; ordered), so any such pair sorts like any other.
 ;;;
-;;; Why it needs an hrule. Blind hypothesis generation cannot reach it:
-;;; `hypgen::candidate_objects` builds candidates out of `kb.names()`, which
-;;; holds symbols only — so every blind candidate is all-symbols. An
-;;; `hrule` has no such filter: its `:assert` args come from *bindings*, and a
-;;; variable that matched an int arg carries the int through. Hence the shape
-;;; below — one `hrule`, one variable, two facts that bind it to `1` and to
-;;; `left`.
+;;; Why it uses an hrule. An `hrule`'s `:assert` args come from *bindings*:
+;;; a variable that matched a fact's argument carries that value through,
+;;; whatever its kind. Hence the shape below — one `hrule`, one variable, two
+;;; facts that bind it to `1` and to `left`.
+;;;
+;;; `ein solve FILE` lists the four states: ∅, `{(seat Ann 1)}`,
+;;; `{(seat Ann left)}` and both.
 ;;;
 ;;; `nested-fact-hypothesis.ein` is the other half of the same ordering: two
 ;;; candidates whose argument is a nested `Fact`, with no mixed slot types.
@@ -34,8 +34,8 @@
 (relation slotval T T :why "slot {?1} has the value {?2}")
 (relation seat    T T :why "{?1} sits at {?2}")
 
-;; The two bindings. `?v` matches the int 1 from one and the symbol `left`
-;; from the other, and both reach `alive` as candidate `seat` facts.
+;; The two bindings. `?v` matches the name `1` from one and the name `left`
+;; from the other, and both are candidate `seat` facts.
 (slotval x 1)
 (slotval y left)
 

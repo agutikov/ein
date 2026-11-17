@@ -1,6 +1,6 @@
 ;;; The greatest common divisor and the least common multiple, computed by
 ;;; saturation alone: the largest square tile for a floor of 1071 by 462, and
-;;; when two buses leave together again. M1f P1f.6 (S1f.6.32).
+;;; when two buses leave together again.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

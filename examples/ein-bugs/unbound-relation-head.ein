@@ -1,24 +1,24 @@
-;;; M1a S1a.6.6 — a premise whose relation head is an unbound variable.
+;;; A premise whose relation head is an unbound variable.
 ;;;
-;;; `(?R ?x)` in a `:match` needs `?R` bound by the rule's activator (Q29 —
-;;; M1 matches relations per activator). Here the rule declares one parameter
-;;; `(?S)` and the activator `(uses-free-head p)` binds it, so `?R` is free
-;;; and the compiler rejects the rule. The run exits 1 with the message on
-;;; one stderr line, after the error's class path:
+;;; `(?R ?x)` in a `:match` needs `?R` bound by the rule's activator (Q29: a
+;;; rule compiles once per activator). Here the rule declares one parameter
+;;; `(?S)` and the activator `(uses-free-head p)` binds it, so `?R` is free.
+;;; An earlier engine let the compiler reject the rule, exit 1, with the
+;;; message on one stderr line after the error's class path:
 ;;;
 ;;;     ein.inference.compile.CompileError: unbound relation head ?R …
 ;;;
-;;; **Refused at load since M1e2 S1e2.2.24** (W24, the stage file's default
-;;; 1): the loader reads a relation variable no parameter binds as it reads
-;;; the same shape inside a pattern, and every command that loads the file
-;;; exits 1, as before, with *kb load error: rule 'uses-free-head': its
-;;; :match writes (?R ?x) with ?R as its relation, which no parameter binds —
-;;; a relation is named by a name or by a parameter its activator binds*
-;;; where the `CompileError` above stood.
+;;; **Refused at load** (W24): the loader reads a relation variable no
+;;; parameter binds as it reads the same shape inside a pattern, and every
+;;; command that loads the file exits 1 with *kb load error: rule
+;;; 'uses-free-head': its :match writes (?R ?x) with ?R as its relation,
+;;; which no parameter binds — a relation is named by a name or by a
+;;; parameter its activator binds* where the `CompileError` above stood.
 ;;;
 ;;; A refusal rather than an answer, so what pins it is the corpus sweep's
-;;; banked golden — exit code and stderr. Found by the S1a.6.6 fuzzer's
+;;; banked golden — exit code and stderr. Found by the engine fuzzer's
 ;;; mutation arm, minimised to two forms.
+;;;
 
 (rule uses-free-head (?S)
   :match  (?R ?x)

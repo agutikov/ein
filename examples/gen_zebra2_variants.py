@@ -11,7 +11,7 @@ silently drifts a variant: just re-run this script.
   examples/ein-bugs/zebra2-bad.ein — CONTRADICTIONS fixture: an extra
                                    (color-loc Green House-1), which condition
                                    (6) forbids (no house is right-of House-1).
-  examples/zebra2-obligations.ein — M1d S1d.2.5: the `(hrule guess …)` and the
+  examples/zebra2-obligations.ein — the `(hrule guess …)` and the
                                    `(solve … :hrules …)` form removed, and
                                    NOTHING else. The theory alone drives the
                                    search — `(bijective *-loc)` fans out into
@@ -23,7 +23,7 @@ silently drifts a variant: just re-run this script.
                                    regime with no hypothesis rule.
 
 Usage:  python3 examples/gen_zebra2_variants.py [--check]
-        --check  exit non-zero if the on-disk variants are stale (CI guard),
+        --check  exit non-zero if the on-disk variants are stale (a test's guard),
                  without rewriting them.
 """
 from __future__ import annotations
@@ -77,8 +77,8 @@ HRULE_BLOCK = (
     '  :why    "guess: ({?R} {?a} {?b})?")\n'
 )
 
-# …and its activators, which since M1e2 S1e2.1a.4 are the whole `(solve …)` form:
-# the lattice's keywords left `(query …)`, and zebra2 states nothing else there.
+# …and its activators, which are the whole `(solve …)` form: zebra2 states
+# nothing else there.
 HRULES_KW = (
     "(solve\n"
     "  ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per\n"
@@ -103,14 +103,14 @@ OBLIGATIONS_MARK = (
     ";; What proposes the (?R ?v ?h) candidates instead is the theory the file\n"
     ";; already states. `(bijective color-loc)` and its four siblings fan out\n"
     ";; into std.algebra's `total-owed` / `surjective-owed`, each of which\n"
-    ";; reports an unwitnessed slot as `(open ?R)`; M1d S1d.2.5's obligations\n"
+    ";; reports an unwitnessed slot as `(open ?R)`; the obligations\n"
     ";; rung branches on exactly the facts that would discharge one. The hrule\n"
     ";; said \"guess a (value, house) pair\"; the bijection declaration had\n"
     ";; already said it, and now the engine hears it.\n"
     ";;\n"
-    ";; This file existing and solving is the idea note's complaint about\n"
-    ";; :hrules — \"while it is not part of the theory (rules + ontology)\" —\n"
-    ";; closed as a fixture. Regenerate with gen_zebra2_variants.py.\n"
+    ";; This file solving is the fixture for it: no hrule is needed where the\n"
+    ";; theory (rules + ontology) already says what to guess. Regenerate with\n"
+    ";; gen_zebra2_variants.py.\n"
 )
 
 OBLIGATIONS_KW_MARK = (

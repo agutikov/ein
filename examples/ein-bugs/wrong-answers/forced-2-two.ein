@@ -1,4 +1,4 @@
-;;; Two candidates, each refuted in TWO firings — M1e2 **W1** at layer 0, at
+;;; Two candidates, each refuted in TWO firings — **W1** at layer 0, at
 ;;; **default flags**. Register row `W1/forced-2-two`
 ;;; (`corpus/wrong_answers.toml`).
 ;;;
@@ -14,23 +14,23 @@
 ;;; Root is consistent and every hypothesis dies with it, so root is the one
 ;;; solution (Q-M1e.6, clause 3): **`Solution`, k = 1, a model with no `q`.**
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine answered before `fbcae3b2` ─────────────────────────────
 ;;;
 ;;;   verdict         No solution — the constraints are contradictory
 ;;;   unsat core (2 facts)   (q one)  (q two)
 ;;;   exhausted        true
 ;;;   enterings        2 (dead_post=2)
 ;;;
-;;; Both singletons are entered and die; `phase2` breaks on the empty layer
-;;; without asking whether root is now complete; `finalise` reports the union
+;;; Both singletons were entered and died; `phase2` broke on the empty layer
+;;; without asking whether root was then complete; `finalise` reported the union
 ;;; of the hypotheses' cores as the program's.
 ;;;
 ;;; ── The control ───────────────────────────────────────────────────────────
 ;;;
 ;;; `forced-1-two.ein` has the same content with each death ONE firing deep and
-;;; answers `Solution` k = 1. Same logical content, opposite verdicts.
+;;; answered `Solution` k = 1. Same logical content, opposite verdicts.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
+;;; Now both answer R = {∅}, root alone (`ein solve FILE`).
 (relation thing T :why "{?1} is a thing")
 (relation q T :why "q holds of {?1}")
 (relation bad T :why "{?1} is bad")

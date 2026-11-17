@@ -1,6 +1,6 @@
-;;; `ein saturate` resolves no file-relative import — M1f **W41**, register row
-;;; `W41/saturate-import` (`corpus/wrong_answers.toml`), filed and fixed by
-;;; S1f.5.5's T1f.5.5.13 (2026-11-09), from S1f.5.1's finding.
+;;; `ein saturate` resolves no file-relative import — **W41**, register row
+;;; `W41/saturate-import` (`corpus/wrong_answers.toml`).
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -15,16 +15,16 @@
 ;;; consistent answers: `ein saturate` loads this program as `ein solve` does,
 ;;; and answers it, exit 0.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; The right answer, since S1f.5.5's T1f.5.5.13 (2026-11-09): every command
-;;; loads a program through one path, against the file's own directory. Until
-;;; then `ein saturate` loaded it with no base directory, so it refused this
-;;; file, exit 1, with `kb load error: (import saturate-import-mod) —
-;;; file-relative import needs a base directory (load from a file path) at
-;;; None`, while `ein solve`, `oracle` and `test` answered it; its source said
-;;; it resolved against the working directory, and
-;;; `examples/broken/load/README.md` called the line not expressible as a file.
+;;; Every command loads a program through one path, against the file's own
+;;; directory, so `ein saturate` answers this file, exit 0. The wrong answer:
+;;; `ein saturate` loaded it with no base directory and refused this file,
+;;; exit 1, with `kb load error: (import saturate-import-mod) — file-relative
+;;; import needs a base directory (load from a file path) at None`, while
+;;; `ein solve`, `oracle` and `test` answered it.
+;;;
+;;;
 
 (import saturate-import-mod :symbols (q))
 

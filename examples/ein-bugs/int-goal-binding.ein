@@ -1,28 +1,28 @@
-;;; M1a S1a.6.6 — an INTEGER in a goal binding.
+;;; A RUN OF DIGITS in a goal binding.
 ;;;
-;;; Found by the engine fuzzer (`utils/fuzz_engine.py`) in its first two
-;;; minutes and minimised to these two forms. A goal binding is the *stored*
-;;; argument, and an int argument must reach `--json-summary` as a number:
+;;; Found by the engine fuzzer in its first two minutes and minimised to
+;;; these two forms. A goal binding is the *stored* argument, and it must
+;;; reach `--json-summary` as written. A run of digits is a name
+;;; (Q-M1e2.24), and every name is a JSON *string* in the summary's rows
+;;; (Q-M1f.340), so that `(p 007)` and `(p 7)`, two names, stay two there:
 ;;;
-;;;     "y": 8       ← right: the stored arg is an INT, so the summary
-;;;                    writes a NUMBER
-;;;     "y": "8"     ← what every binding was while it went through `sexpr_value`
+;;;     "rows": [{"x": "o3", "y": "8"}, {"x": "o4", "y": "-7"},
+;;;              {"x": "o5", "y": "99999999999999999999999"}]
 ;;;
-;;; stdout is the same either way, which is why no stdout golden saw it: no
-;;; corpus puzzle binds a query variable to an int.
-;;; The IR's INT is unbounded, so the fix carries arbitrary precision
-;;; (`Json::BigInt`) rather than clamping to i64 — `-2` and
-;;; `99999999999999999999999` both round-trip.
+;;; stdout is the same however the summary writes a binding, which is why no
+;;; stdout golden would see it. The name is carried as written, at any
+;;; width: no clamping to a machine integer, and
+;;; `99999999999999999999999` round-trips.
 ;;;
-;;; Fixed 2026-08-20 in ein.rs, in the JSON summary's writer of a binding.
 ;;; This file is the regression: `solve --json-summary` must agree.
 ;;;
-;;; **Since M1f S1f.5.5's swap there is no INT**: a run of digits is a name
-;;; (S1f.5.4's ruling), and every name is a JSON *string* in the summary's
-;;; bindings (Q-M1f.340), so that `(p 007)` and
-;;; `(p 7)`, two names, stay two there. The three bindings below are
-;;; `"8"`, `"-7"` and `"99999999999999999999999"`; the file is kept for the
-;;; width, which a name carries as written.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (r1 o3 8)
 (r1 o4 -7)

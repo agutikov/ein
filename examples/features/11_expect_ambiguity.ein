@@ -14,7 +14,7 @@
 ;;;     disagree with the models beside it, so "says k=2 and lists three" is
 ;;;     not writeable.
 ;;;   * the disjuncts compare as a **set**, never a sequence. The order the
-;;;     search finds models in is exactly what M1a S1a.7.0's invariance tests
+;;;     search finds models in is exactly what the id-order invariance tests
 ;;;     assert is not observable, so swapping the two `(model …)` blocks below
 ;;;     leaves this file passing.
 ;;;

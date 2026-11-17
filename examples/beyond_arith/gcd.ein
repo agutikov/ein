@@ -1,14 +1,14 @@
 ;;; The greatest common divisor by Euclid's chain, and the least common
 ;;; multiple from it: gcd(a, b) is gcd(b, a mod b), and gcd(a, 0) is a; the
 ;;; lcm is a x b divided by the gcd. Saturation alone.
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 ;;;
-;;; Since S1f.6.32 the six rules this program wrote over `std.math.decimal-arith`'s
-;;; tagged division are `std.math.gcd`'s (P1f.6's question 38, the user's
-;;; *"(a) but not into std.arith"*): `(gcd X Y)` answered by `(gcd-of X Y G)`,
-;;; `(lcm X Y)` by `(lcm-of X Y L)`. The claims are the ones the six rules
-;;; held, each pair now asked for both.
+;;; Euclid's chain over `std.math.decimal-arith`'s tagged division is
+;;; `std.math.gcd`'s, a module of its own and not the arithmetic's
+;;; (Q-M1f.336): `(gcd X Y)` answered by `(gcd-of X Y G)`,
+;;; `(lcm X Y)` by `(lcm-of X Y L)`. Each pair of numbers is asked for
+;;; both.
 (import std.math.gcd :symbols (gcd lcm gcd-of lcm-of))
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))

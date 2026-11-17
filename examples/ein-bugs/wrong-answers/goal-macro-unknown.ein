@@ -1,7 +1,7 @@
 ;;; A macro called in a query's `:goal` is not expanded, so the claim that lists
-;;; what the macro means is refused —
-;;; M1f **W77**, register row `W77/goal-macro-unknown`, filed by S1f.7.5 (T1f.7.5.2,
-;;; 2026-11-11).
+;;; what the macro means is refused — **W77**, register row
+;;; `W77/goal-macro-unknown`.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -18,12 +18,12 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; At `73a0c17d`, release: refused at load: the goal's `(unknown (paid ?g))` was read as a
-;;; pattern over a relation `unknown`, so *:expect lists (absent (not (paid
-;;; Bob))), which no atom of the query's :goal matches*, exit 1 on every command.
-;;; Without the claim the program loaded and the goal had no row.
-;;; The goal's macro calls are expanded at load, as a rule's `:match`'s are, since
-;;; S1f.7.5 (T1f.7.5.3): the claim loads and holds.
+;;; At `73a0c17d`, release: refused at load: the goal's `(unknown (paid ?g))`
+;;; was read as a pattern over a relation `unknown`, so *:expect lists (absent
+;;; (not (paid Bob))), which no atom of the query's :goal matches*, exit 1 on
+;;; every command. Without the claim the program loaded and the goal had no row.
+;;; The goal's macro calls are expanded at load now, as a rule's `:match`'s are:
+;;; the claim loads and holds.
 
 (import std.macro :symbols (unknown))
 (relation paid Guest :why "{?1} has paid")

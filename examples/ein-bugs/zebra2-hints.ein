@@ -1,12 +1,12 @@
-;;; Ein — Zebra puzzle WITH SOLUTION HINTS (S1.5a.11 diagnostic).
+;;; Ein — Zebra puzzle WITH SOLUTION HINTS, and one wrong pruner.
 ;;;
 ;;; Copy of examples/zebra2.ein extended with 10 hint facts from the
 ;;; known Wikipedia solution. Comment out individual hints (or all of
 ;;; them) to dial the difficulty up; the engine will branch more as
 ;;; fewer facts are known. Use for:
 ;;;
-;;;   - verifying the S1.5a.11 dump tree on a tractable run
-;;;     (`bench_solve examples/zebra2-hints.ein --dump-states`);
+;;;   - reading every state of a tractable run
+;;;     (`ein solve examples/zebra2-hints.ein --dump-answer DIR`);
 ;;;   - tuning the branch/firing budget while developing new rules;
 ;;;   - hand-checking that the hypothesis loop's intermediate
 ;;;     states converge toward the known answer.
@@ -21,45 +21,45 @@
 ;;;   H_4    Spaniard   Ivory   Juice   Lucky_Strike  Dog
 ;;;   H_5    Japanese   Green   Coffee  Parliament    Zebra
 ;;;
-;;; ── Status 2026-05-24 — KNOWN-BAD with all hints uncommented ──
+;;; ── KNOWN-BAD with all hints uncommented ─────────────────────
 ;;;
-;;; Running this file as-is produces Contradiction, not Solution.
-;;; The dump (S1.5a.11) reveals the bug: `disjunctive-prune` fires
+;;; Running this file as-is, root's own fixpoint derives (false):
+;;; R is empty, where the R of examples/zebra2-hints.ein holds the
+;;; solution.
+;;; The cause is its one `disjunctive-prune` rule: it fires
 ;;; with bwd-direction activator `(disjunctive-prune right-of
 ;;; color-loc Green color-loc Ivory)` and asserts
 ;;; `(not (color-loc Ivory House-4))` — claiming Ivory cannot be
 ;;; at H_4 even though the Wikipedia solution puts it there. The
 ;;; NAF check `(absent (?S ?h_other ?h1))` is correct for the fwd
 ;;; activator but wrong for bwd when ?S is asymmetric (right-of):
-;;; the bwd direction needs `(absent (?S ?h1 ?h_other))` instead.
-;;; Tracked in S1.5a.2 (re-opened) — first instance of the
-;;; dump-tree harness immediately surfacing a real inference bug,
-;;; which is exactly what S1.5a.11 was built for.
+;;; the bwd direction needs `(absent (?S ?h1 ?h_other))` instead,
+;;; which `disjunctive-prune-bwd` in examples/zebra2-hints.ein
+;;; reads.
 ;;;
-;;; ── 2026-08-20 — this copy keeps its `neq ?h_other ?h1` guard ──
+;;; ── This copy keeps its `neq ?h_other ?h1` guard ─────────────
 ;;;
-;;; The live puzzles dropped that guard on 2026-08-20: it exempted
+;;; The live puzzles carry no such guard: it exempts
 ;;; `h_other = h1`, so V1 and V2 could satisfy an `adjacent-via`
-;;; from the SAME house, and the under-determined variant reported
-;;; 55 models where the puzzle has 32. See `examples/zebra2.ein`
+;;; from the SAME house, and the under-determined variant would
+;;; have 55 models where the puzzle has 32. See `examples/zebra2.ein`
 ;;; for the reasoning and `examples/features/09_adjacent_via_same_house.ein`
 ;;; for the fixture.
 ;;;
-;;; This file is deliberately NOT updated. It is frozen at the
-;;; pre-S1.5a.2 encoding to reproduce a *different* bug — the
-;;; single `disjunctive-prune` rule with the wrong NAF operand
-;;; order — and editing its rules to match the live ones would
-;;; leave nothing reproducing it. An artefact that tracks the
-;;; current rule set is not an artefact.
+;;; This file deliberately does not track the live rules. It keeps
+;;; the single `disjunctive-prune` rule with the wrong NAF operand
+;;; order, to reproduce that bug, and editing its rules to match
+;;; the live ones would leave nothing reproducing it. An artefact
+;;; that tracks the current rule set is not an artefact.
 ;;;
 ;;; ── Background ───────────────────────────────────────────────
 ;;;
-;;; The pre-B1 zebra2 used a single symmetric+transitive
-;;; `co-located` relation to express the equivalence "same house"
-;;; across all five attribute kinds (Color, Nationality, Drink,
-;;; Cigarette, Pet). The B1 refactor (S1.5.8c §2.3) drops that
-;;; single equivalence relation and replaces it with five specific
-;;; attribute→House projections:
+;;; `zebra.ein` expresses "same house" as one symmetric and transitive
+;;; `co-located` relation across all five attribute kinds (Color,
+;;; Nationality, Drink, Cigarette, Pet). This file has no such
+;;; equivalence: each attribute kind has its own projection onto
+;;; House, five attribute→House relations:
+;;;
 ;;;
 ;;;   color-loc  : Color       → House
 ;;;   nation-loc : Nationality → House
@@ -68,15 +68,15 @@
 ;;;   pet-loc    : Pet         → House
 ;;;
 ;;; Each is a bijection (functional + total in both projections).
-;;; Spatial relations (right-of, next-to) stay as before, House×House.
+;;; Spatial relations (right-of, next-to) are House×House.
 ;;;
-;;; Naming convention (S1.5a.5, 2026-05-24): the relations are
+;;; Naming convention: the relations are
 ;;; named *-loc to read as "location of the X" — `(color-loc Red H1)`
 ;;; ≡ "the location of Red is H1". Attribute is in slot 0; House
 ;;; sits in slot 1. The cross-attribute primitives `co-located` and
 ;;; `adjacent-via` mirror that convention.
 ;;;
-;;; ── Condition encoding under B1 ──────────────────────────────
+;;; ── Condition encoding ───────────────────────────────────────
 ;;;
 ;;; The 15 puzzle conditions split into three groups:
 ;;;
@@ -98,19 +98,19 @@
 ;;;     passes for functional right-of; filters non-corner cases for
 ;;;     symmetric next-to (those need branching).
 ;;;
-;;; The four S1.5.8c.4 stdlib rules (typecheck-arg-{0,1},
-;;; domain-elimination, no-room-left) are inlined here until P1.8
-;;; imports land.
+;;; The bijection rules (typecheck-arg-{0,1}, domain- and
+;;; range-elimination, total, surjective) are written inline here,
+;;; where zebra2.ein imports them from the stdlib.
 
 
-;; stdlib pattern-macro sugar — forall/unknown from the std.macro module (S1.8.A5).
+;; stdlib pattern-macro sugar — forall/unknown from the std.macro module.
 (import std.macro :symbols (forall unknown))
 
-;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; The file sets no `(config …)`: every flag has its default, and no flag
+;; changes R.
+;;
 
-;; ──── General property rules — from std.algebra (S1.8.A5) ──
+;; ──── General property rules — from std.algebra ─────────────
 (import std.algebra :symbols (symmetric transitive includes))
 
 ;; ──── Binary-relation property contradiction rules ─────────
@@ -228,11 +228,11 @@
 ;; becomes the trigger. Together they cover both directions of
 ;; each spatial cross-attribute condition.
 ;;
-;; Priority 200 — these MUST fire AFTER all next-to derivations
-;; have drained at priority 100 (`includes right-of next-to` +
-;; `symmetric next-to`). The fire-time NAF re-eval (S1.5a.1)
-;; also catches the race; this priority gives the propagate
-;; band its turn first.
+;; The pruner's `absent` guard is judged at quiescence, once the
+;; positive closure has derived every next-to pair (`includes
+;; right-of next-to` + `symmetric next-to`): what goes wrong here
+;; is the swapped bwd operand order, not a guard read too early.
+;;
 (rule derive-disjunctive-prune-fwd ()
   :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (disjunctive-prune ?S ?R1 ?V1 ?R2 ?V2)
@@ -243,7 +243,7 @@
   :assert (disjunctive-prune ?S ?R2 ?V2 ?R1 ?V1)
   :why    "adjacent-via-bwd ⟹ disjunctive-prune (swapped sides).")
 
-;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
+;; ──── Bijection rules, written inline ──────────────────────
 ;; Typecheck against the transitive-closure relation `is-a*`
 ;; (declared in the ontology, with (subrel is-a is-a*) and
 ;; (transitive is-a*) activators lifting then closing the
@@ -252,8 +252,8 @@
 ;; DIRECTLY or via the type hierarchy — e.g. is-a is declared
 ;; `(relation is-a T T)` and House is-a Attribute is-a T, so
 ;; (is-a House Attribute) passes typecheck (House is-a* T).
-;; Priority 220 places these AFTER the transitive closure
-;; (priority 200) has fully saturated is-a*, so the NAF
+;; Their `absent` guard is judged at quiescence, once the
+;; transitive closure has saturated is-a*, so the NAF
 ;; evaluates against the closed relation.
 (rule typecheck-arg-0 (?R ?Dom)
   :match  (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
@@ -324,14 +324,14 @@
 
 ;; ──── Typecheck activator derivation from relation signature ─
 ;; The (relation R A B) declaration is auto-stored as a fact by
-;; the loader; rules can now match it directly to derive the
+;; the loader; rules match it directly to derive the
 ;; typecheck activators — no manual (typecheck-arg-* R T)
 ;; declarations needed per relation.
 ;; Typecheck activators auto-derived from bijective relations
 ;; only. The bijective relations (*-loc) have direct-parent arg
 ;; types (House-1's is-a-parent IS House, etc.), so subrel
-;; alone gives (is-a* House-1 House) at priority 100 — typecheck
-;; at 220 can NAF-check correctly.
+;; alone gives (is-a* House-1 House) before any guard is judged —
+;; typecheck can NAF-check correctly.
 ;;
 ;; Non-bijective declared relations (is-a, is-a*, right-of,
 ;; next-to) skip typecheck: is-a/is-a* have multi-level type
@@ -507,7 +507,7 @@
 ;; (15) The Norwegian lives next to the blue house.
 (adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source "condition (15)")
 
-;; ──── SOLUTION HINTS (S1.5a.11 diagnostic) ─────────────────
+;; ──── SOLUTION HINTS ──────────────────────────────────────
 ;; Ten facts pulled from the known solution. Comment any of
 ;; them out to widen the search; uncomment to narrow it. With
 ;; all ten asserted the engine has a near-trivial closure left

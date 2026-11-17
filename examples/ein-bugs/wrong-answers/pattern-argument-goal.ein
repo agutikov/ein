@@ -1,6 +1,6 @@
 ;;; A goal's `(absent (says (neq ?g Bob)))` holds of everything —
-;;; M1f **W83**, register row `W83/pattern-argument-goal`, filed by S1f.7.3 (T1f.7.3.2,
-;;; 2026-11-11).
+;;; **W83**, register row `W83/pattern-argument-goal`.
+;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
@@ -15,7 +15,7 @@
 ;;;
 ;;; At `52e05fc1`, release: the program loads, and the goal answers `?g = Ann` and
 ;;; `?g = Bob`, exit 0 on every command.
-;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+;;; Today it is refused at load, at the pattern, on every command.
 
 (relation paid Guest :why "{?1} has paid")
 (is-a Ann Guest) (is-a Bob Guest)

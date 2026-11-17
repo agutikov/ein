@@ -1,5 +1,5 @@
 ;;; `words` — what the words of an elementary-school word problem mean, as
-;;; rules (M1f P1f.6, S1f.6.20). An example theory, not a stdlib module: it
+;;; rules. An example theory, not a stdlib module (Q-M1f.334): it
 ;;; imports the calculator, `std.math.decimal-arith`, and is imported by the problems
 ;;; beside it, `(import words :symbols (words))`. README.md has the
 ;;; vocabulary. A problem states what its sentences say as facts

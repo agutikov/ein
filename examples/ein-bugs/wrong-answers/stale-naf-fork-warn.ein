@@ -1,28 +1,28 @@
 ;;; `stale-naf-fork.ein` with `(config :warn-derived-naf true)` — the twin that
-;;; shows M1e2 **W8** is *not* contained by the S1e.2.3 diagnostic. Register
-;;; row `W8/stale-naf-fork`, as a twin.
+;;; shows **W8** is *not* contained by the warning that flag turned on.
+;;; Register row `W8/stale-naf-fork`, as a twin.
 ;;;
 ;;; As banked, below this header the program was `stale-naf-fork.ein` plus the
-;;; one `(config …)` line. The walk's answer was the same — `Solution` k = 1,
-;;; `{(p one)}` — and the run narrated **no `warn` event of either category**:
-;;; the diagnostic named a rule that concludes `(false)` from an `(absent …)`
-;;; (`naf-upward-closure.ein`'s shape), and here the `absent` is in a rule that
-;;; concludes a positive, and the contradiction is reached by a different rule
-;;; reading what it left behind.
+;;; one `(config …)` line. The engine's answer was the same — `Solution`
+;;; k = 1, `{(p one)}` — and the run narrated **no `warn` event of either
+;;; category**: the diagnostic named a rule that concludes `(false)` from an
+;;; `(absent …)` (`naf-upward-closure.ein`'s shape), and here the `absent` is
+;;; in a rule that concludes a positive, and the contradiction is reached by a
+;;; different rule reading what it left behind.
 ;;;
-;;; Banked from M1e2's probes at S1e2.1.1.
-;;;
-;;; ── 2026-11-04 — refused, *via* (M1e2 S1e2.2.5) ───────────────────────────
+;;; ── Refused: *forbid*, through a derived fact ─────────────────────────────
 ;;;
 ;;; As `stale-naf-fork.ein`: `p-and-q-clash` rests on `(absent (q ?x))`
-;;; through `p`, which F2's *via* (ruled 2026-11-04) counts, so the program is
-;;; refused at load. What this twin showed, that S1e.2.3's warning does not
-;;; see the derived case, is why the refusal reads derivations and the warning
-;;; did not. The same stage retired `:warn-derived-naf`, so the `(config …)`
-;;; line went and the program below is `stale-naf-fork.ein`'s; the file stays as
-;;; the register's twin, whose record says what the walk answered with the flag.
-;;; Re-taken at M1e2 S1e2.2.6 (2026-11-04): refused at the same commands as
-;;; `stale-naf-fork.ein`, with the same line, and `ein saturate` still runs.
+;;; through `p`, which *forbid* counts (Q-M1e2.5), so the program is refused
+;;; at load. What this twin shows, that the warning did not see the derived
+;;; case, is why the refusal reads derivations. `:warn-derived-naf` is a
+;;; retired flag, refused at the parse, so the program below is
+;;; `stale-naf-fork.ein`'s; the file stays as the register's twin, whose
+;;; record says what the engine answered with the flag. It is refused at the
+;;; same commands as `stale-naf-fork.ein`, with the same line, and
+;;; `ein saturate` runs.
+;;;
+;;;
 
 (relation thing T :why "{?1} is a thing")
 (relation p T :why "p holds of {?1}")

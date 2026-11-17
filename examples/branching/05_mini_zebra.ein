@@ -1,4 +1,4 @@
-;;; P1.5 demo 5/5 — small mixed-attribute puzzle (a zebra-flavoured
+;;; Branching demo 5 of 5 — small mixed-attribute puzzle (a zebra-flavoured
 ;;; cross-attribute join).
 ;;;
 ;;; Three independent attributes — Nationality, Drink, Pet — each
@@ -41,7 +41,7 @@
   :assert (false)
   :why    "fn {?R}")
 
-;; S1.7.23 — `co-located` spans three attribute types
+;; `co-located` spans three attribute types
 ;; (Nationality/Drink/Pet) through one relation, so a 2-slot
 ;; signature can't name all three for hypgen's name-free object
 ;; exclusion. Instead, object selection moves into user space: this

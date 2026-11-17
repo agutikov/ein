@@ -1,13 +1,13 @@
 ;;; The **control** for [`oblig-derived-domain.ein`](oblig-derived-domain.ein)
-;;; — that file plus one fact, `(food Pie)` — M1e2 W14 (S1e2.2.15). Banked
-;;; from S1e2.2.4's residue probe of 2026-11-04.
+;;; — that file plus one fact, `(food Pie)` — case W14 of the register.
 ;;;
-;;; Until S1e2.2.15 the obligations rung built H here, and with `(food Pie)` at
-;;; root its `(food ?b)` scan found Pie: H was `(likes Ann Soup)` and `(likes
-;;; Ann Pie)`, and R one state, `{(likes Ann Pie)}`. Since then the rung
-;;; declines on a guard over a relation in D, `food` among them here too, so
+;;; With `(food Pie)` at root the obligations rung's `(food ?b)` scan would
+;;; find Pie, H `(likes Ann Soup)` and `(likes Ann Pie)`, and R one state,
+;;; `{(likes Ann Pie)}`. The rung declines on a guard over a relation in D,
+;;; `food` among them here too, so
 ;;; the blind enumerator builds H, six candidates, five dead alone; R is the
 ;;; same one state, which the `:expect` below states.
+;;;
 
 (relation person T :why "{?1} is a person")
 (relation food   T :why "{?1} is a food")

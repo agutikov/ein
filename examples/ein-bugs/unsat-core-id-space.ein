@@ -1,12 +1,12 @@
-;;; Which core a program reported moved with interner ids — M1e2 **W11**,
+;;; Which core a program reported moved with interner ids — **W11**,
 ;;; register row `W11/unsat-core-id-space` (`corpus/wrong_answers.toml`).
-;;; Promoted from `corpus/fuzz_findings/unsat-core-id-space.ein` by S1e2.2.12
-;;; (2026-11-04), which stays there as a frontend-fuzzer seed.
+;;; `corpus/fuzz_findings/unsat-core-id-space.ein` is the same program, a
+;;; frontend-fuzzer seed.
 ;;;
 ;;; ── What this program was ──────────────────────────────────────────────
 ;;;
-;;; The rewritten engine fuzzer's find of 2026-08-21 (`utils/fuzz_engine.py`,
-;;; 19 forms minimised to 4): the walk called it `Contradiction` and reported
+;;; The engine fuzzer's find (19 forms minimised to 4): the walk called it
+;;; `Contradiction` and reported
 ;;; the core (r1 o4 o5) as interned and (r1 o1 o5) (r1 o4 o1) under a
 ;;; permuted interner, one build and two answers
 ;;; (`corpus/fuzz_findings/unsat-core-id-space.md`).
@@ -21,14 +21,14 @@
 ;;; states, ∅, {(r1 o1 o5)} and {(r1 o4 o1)}, and N has four members, each
 ;;; with one derivation of (false) and so one core.
 ;;;
-;;; ── Since M1e2 ─────────────────────────────────────────────────────────
+;;; ── What it reports ────────────────────────────────────────────────────
 ;;;
 ;;; The walk's `Contradiction` rested on what its search wrote into root, the
-;;; kill cache's and the writeback's negatives, which no route writes
-;;; (S1e2.1a.5's switch, 2026-10-18; `solve_interface.md` § 0). S1e2.2.12
-;;; compared every core a run reports under eight permutations of the
-;;; interner, and none of this program's moved; `id_order_invariance`
-;;; permutes it per commit.
+;;; kill cache's and the writeback's negatives, which no route writes: a
+;;; node is `sat(root ∪ C)` with nothing a search wrote (Q-M1e2.7). `ein
+;;; solve FILE` reports the three states above, and no core of this program
+;;; moves under a permutation of the interner, which `id_order_invariance`
+;;; checks.
 
 (relation r1 T T :why "r1 holds of {?1} and {?2}")
 (is-a o1 T)

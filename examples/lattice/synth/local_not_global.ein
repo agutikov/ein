@@ -1,8 +1,8 @@
-;;; local_not_global — a program written for its region, by utils/region_synth.py
-;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
-;;;   python3 utils/region_synth.py --example local_not_global --out <this file>
+;;; local_not_global — a program written for its region by the region synthesizer,
+;;; from the region-spec below. Generated, not edited by hand: a change is
+;;; made to the spec, and the file is written again from it.
 ;;;
-;;; The lines, decided locally and globally (M1e2 S1e2.1b.6): A and B come
+;;; The lines, decided locally and globally: A and B come
 ;;; together or not at all, as lattice/06_friends_tables' groups do. Either
 ;;; alone owes the other, so ∅ and {A,B} are in R with a hole on each side.
 ;;; Every edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls
@@ -18,7 +18,7 @@
 ;;;
 ;;; 0 dead rule(s), 2 obligation rule(s), from the target's prime implicants.
 ;;;
-;;; region-spec: {"name":"local_not_global","about":"The lines, decided locally and globally (M1e2 S1e2.1b.6): A and B come\ntogether or not at all, as lattice/06_friends_tables' groups do. Either\nalone owes the other, so ∅ and {A,B} are in R with a hole on each side.\nEvery edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls\n∅ maximal and {A,B} minimal, and the cube says neither is.","candidates":"AB","R":[["",""],["AB","AB"]],"owing":[["A","A"],["B","B"]]}
+;;; region-spec: {"name":"local_not_global","about":"The lines, decided locally and globally: A and B come\ntogether or not at all, as lattice/06_friends_tables' groups do. Either\nalone owes the other, so ∅ and {A,B} are in R with a hole on each side.\nEvery edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls\n∅ maximal and {A,B} minimal, and the cube says neither is.","candidates":"AB","R":[["",""],["AB","AB"]],"owing":[["A","A"],["B","B"]]}
 ;;; region-status: RooR
 
 (relation h T :why "h holds of {?1}")

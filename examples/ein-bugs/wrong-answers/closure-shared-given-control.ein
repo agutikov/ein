@@ -1,5 +1,5 @@
-;;; The control of `closure-shared-given.ein` — M1e2 **W10**, register row
-;;; `W10/closure-shared-given`'s control, banked by S1e2.2.25 (2026-11-05).
+;;; The control of `closure-shared-given.ein` — **W10**, register row
+;;; `W10/closure-shared-given`'s control.
 ;;;
 ;;; The same program with 31 `x-cd` derivations instead of 33: `(x K)`'s
 ;;; list holds its primary and 30 alternatives when `x-uv` arrives, so it

@@ -1,46 +1,46 @@
-;;; `complete()` writes into the fork it is asked about — the record site every
-;;; corpus solve uses. **Fixed** at M1e S1e.3.1 (`CO-M1`); this is the
-;;; regression. Found and banked 2026-08-28 as M1e D3.
-;;
-;; The comment above that guard said consistency was already established
-;; because `result.kb` is "that unmutated fork". `complete()` then mutates it:
-;; generation runs the full filter pipeline, and the lookahead kill cache
-;; writes `(not h)` into the very KB the next lines record.
-;;
-;; So the engine recorded `S ∪ K`, where K is what the cache wrote, and had
+;;; A search that wrote into the fork it was asked about recorded a state its
+;;; own rules refute — register row W9/complete-records-stale-K.
+;;;
+;; That search's completeness check ran its full filter pipeline on the fork,
+;; and its lookahead kill cache wrote `(not h)` into the very KB it then
+;; recorded: it recorded `S ∪ K`, where K is what the cache wrote, and had
 ;; checked the criteria against `S`. Here a rule reads K:
 ;;
-;;   before : k=2, model 1 = {(q A), (not (p A)), (not (p B))} — re-saturates
-;;            to Contradiction. `k` was 2 either way, so nothing in the
-;;            read-out signalled it
-;;   -K     : k=2, models {(q A)} and {(p A),(p B)} — both correct
-;;   now    : k=1, {(p A), (p B), (not (q A))} — the refutable one is not
-;;            recorded, because `record_node` re-saturates a KB written since
-;;            its last saturation and declines to record one its own rules
-;;            refute
+;;   cache on  : k=2, model 1 = {(q A), (not (p A)), (not (p B))} —
+;;               re-saturates to Contradiction. `k` was 2 either way, so
+;;               nothing in the read-out signalled it
+;;   cache off : k=2, models {(q A)} and {(p A),(p B)} — both correct
+;;   re-saturated before recording : k=1, {(p A), (p B), (not (q A))} — the
+;;               refutable one not recorded, and `{(q A)}` lost with it
 ;;
-;; This is the path **every** corpus solve takes, and it is the reason the fix
-;; is priced in wall clock rather than in fixtures: 2 067 of the corpus's 2 149
-;; recorded states are written since their last saturation, and 6 of them —
-;; all in this directory — refute.
+;; ── The answer ────────────────────────────────────────────────────────────
 ;;
-;; ── 2026-11-03 — R's maximal line is the `-K` row's ───────────────────────
+;; A node is `sat(root ∪ C)` with nothing a search wrote (Q-M1e2.7), so the
+;; cache's negatives are no state's, and the cache-off row is the right one:
+;; R has 5 states, maximal `{(q A)}` and `{(p A), (p B)}`, which the
+;; `:expect` below states and `ein solve --maximal` lists.
 ;;
-;; Under R a node is `sat(root ∪ C)` with nothing the search wrote
-;; (solve_interface.md § 0, approved 2026-10-16), so the cache's negatives are
-;; no state's, and the `-K` row above is the right one: R has 5 states,
-;; maximal `{(q A)}` and `{(p A), (p B)}`, which the `:expect` below states.
-;; The `now` row was the walk's, and the section below is its record. Register
-;; row W9/complete-records-stale-K, confirmed at the revisit (M1e2 S1e2.1.7).
+;; ── The `:expect` ─────────────────────────────────────────────────────────
 ;;
-;; ── Why this file now carries an `:expect` ────────────────────────────────
+;; The two maximal states populate **different** relations — `{(q A)}` and
+;; `{(p A), (p B)}` — so whichever relation is the goal, one of them holds no
+;; row of it; a claim states that state as the class `(model)` (Q-M1e.13).
+;; The `:expect` is a region claim, every state listed, so it holds of R
+;; whatever the query's goal; a search that recorded the refutable state
+;; would fail it.
 ;;
-;; It did not before. Its two models populated **different** relations —
-;; `{(q A)}` and `{(p A), (p B)}` — and whichever relation was the goal, one
-;; of them held no row of it; a claim states that model as the class `(model)`
-;; (Q-M1e.13). With one model left there is one relation to ask about, and the
-;; goal moves to it. Remove
-;; the guard and this answers `Ambiguity` with k = 2, and the claim fails.
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
 
 (relation is-a T T :why "{?1} is a {?2}")
 (relation marker :why "the marker is present")
@@ -54,13 +54,13 @@
 (hrule guess-p () :match (is-a ?x T) :assert (p ?x) :why "guess that p holds of {?x}")
 
 ;; One step from any (p ?x) once (q A) holds, so inside the fork that committed
-;; to (q A) the lookahead kills every p candidate and caches both negatives.
+;; to (q A) every p candidate dies, and a kill cache would store both negatives.
 (rule kill-p ()
   :match  (and (q A) (p ?x))
   :assert (false) :why "q holds of A and p of {?x}, which cannot both be")
 
 ;; Reads stored negatives only — no `absent`, so no NAF boundary is in the
-;; argument. Dormant at root and in any fork holding a p fact.
+;; argument. Nothing stores them, so it never fires.
 (rule totality ()
   :match  (and (not (p A)) (not (p B)))
   :assert (false) :why "p is false of both A and B, yet something must have p")

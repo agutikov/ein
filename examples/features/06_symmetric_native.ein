@@ -6,17 +6,17 @@
 ;;; saturator closes R's extension under arg-swap directly (pop `(R a b)`,
 ;;; write `(R b a)`), skipping the JoinPlan + matcher the stdlib `symmetric`
 ;;; rule pays per mirror. Identical closure, one kernel fast-path —
-;;; `docs/ein/user/reference/reserved-names.md` for the reference, and
-;;; `utils/feature_matrix.py`'s `no-symmetric-mirror` cell for what the mirror
-;;; was worth to the walk.
+;;; `docs/ein/user/reference/reserved-names.md` for the reference.
 ;;;
-;;; **The mirror cannot be turned off since M1e2 S1e2.1a.6.** Off,
-;;; `(config :enable-symmetric-mirror false)` took the three mirrored facts
-;;; below out of root's fixpoint, so the query's goal was no longer derived:
-;;; the one config flag that changed R. The user ruled on 2026-11-01 that it
-;;; retires, and setting it is now a load error that says why
-;;; (`corpus/wrong_answers.toml`, W13). A relation that is not to be mirrored
-;;; is not marked.
+;;; **The mirror cannot be turned off.** A flag that took the three
+;;; mirrored facts below out of root's fixpoint would take the query's goal
+;;; with them and change R, and no flag changes R:
+;;; `(config :enable-symmetric-mirror false)` is refused at the parse
+;;; (register case W13, a config flag that changed R). A relation that is
+;;; not to be mirrored is not marked: symmetry is the program's, not the
+;;; engine's (Q6), and a program marks the relation the engine mirrors.
+;;;
+;;;
 ;;;
 ;;; Contrast with `saturation/symmetric/*.ein`, which exercise the *userspace*
 ;;; `symmetric` rule from `std.algebra`. Nothing else in `examples/` marks a

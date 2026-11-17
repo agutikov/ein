@@ -1,4 +1,4 @@
-;;; P1.5 demo 4/5 — two-level branching on a *genuinely* underspecified
+;;; Branching demo 4 of 5 — two-level branching on a *genuinely* underspecified
 ;;; puzzle.
 ;;;
 ;;; Three colors, three houses, exactly one anchor (Red↔H1). The
@@ -9,33 +9,33 @@
 ;;;   ?c = Blue   ⟺   (Blue at H3, Green at H2)
 ;;;   ?c = Green  ⟺   (Green at H3, Blue at H2)
 ;;;
-;;; **Ambiguity is the correct verdict here, not a defect of the
-;;; reasoner.** The demo's value is showing that the search descends
-;;; two levels and surfaces all consistent placements:
+;;; **Two maximal states are the correct answer here, not a defect of
+;;; the reasoner.** R holds every alive placement, and its maximal line
+;;; is the two full assignments, one per answer:
 ;;;
-;;;   Level 1 — a hypothesis placing Blue or Green in H2 doesn't
-;;;             satisfy the goal (which asks about H3); the branch
-;;;             stays alive but unsolved, so the search recurses.
-;;;   Level 2 — given the depth-1 placement, the remaining free
-;;;             color is forced into H3; the depth-2 hypothesis
-;;;             (co-located <other> H3) closes the goal.
+;;;   ∅                          root — the goal has no row
+;;;   one colour placed          four states, each a placement and its
+;;;                              symmetric mirror
+;;;   Blue at H3, Green at H2    maximal — ?c = Blue
+;;;   Green at H3, Blue at H2    maximal — ?c = Green
 ;;;
-;;; Hypotheses that place a color directly into H3 at depth 1 also
-;;; satisfy the goal and terminate at depth 1 — both paths lead to
-;;; the same set of consistent answers.
+;;; The query's projection classes say the same: over R's 7 states, ?c
+;;; is Blue in two, Green in two, and undetermined in three, ∅ among
+;;; them; `--single` says **Ambiguity**, R holding more than one state.
 ;;;
-;;; Without S1.5.3's state-key dedup the symmetric activator on
-;;; `co-located` further inflates each path; that's a pruning issue,
-;;; not a correctness one. The set of distinct bindings the demo
-;;; prints is exactly the puzzle's solution set.
+;;; A state is reached by every commitment whose closure it is, so the
+;;; symmetric activator on `co-located`, which proposes both directions
+;;; of each placement, merges commitments rather than adding states: 9
+;;; commitments reach each maximal state, 4 of them minimal.
 ;;;
-;;; Contrast with demos 2, 3, 5: those have enough anchors to make
-;;; the answer unique; Ambiguity there would indicate a bug.
+;;; Contrast with demos 3 and 5: their maximal line is one state, the
+;;; unique answer; two maximal states there would indicate a bug.
 ;;;
 ;;; Expected:
-;;;   verdict   Ambiguity (real — two valid answers)
-;;;   depth     2
-;;;   bindings  ?c=Blue AND ?c=Green   (both shown; both correct)
+;;;   states        7, ∅ among them
+;;;   maximal line  2 states
+;;;   bindings      ?c=Blue AND ?c=Green   (both shown; both correct)
+;;;
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
@@ -58,12 +58,12 @@
   :why    "fn {?R}")
 
 (relation is-a       T T :why "{?1} is a {?2}")
-;; S1.7.23 — `co-located` here relates a Color to a House. Naming
+;; `co-located` here relates a Color to a House. Naming
 ;; those types in the signature lets hypgen's name-free candidate set
 ;; exclude the type atoms (`Color`/`House`/`T`) and guess only over
 ;; the leaf instances — no kernel `is-a` read. (The signature is
-;; object-selection metadata; the type-compatibility filter is gone,
-;; so the symmetric `(co-located H1 Red)` direction is unaffected.)
+;; object-selection metadata, and no type-compatibility filter reads
+;; it, so the symmetric `(co-located H1 Red)` direction is unaffected.)
 (relation co-located Color House :why "{?1} is co-located with {?2}")
 
 (symmetric         co-located)

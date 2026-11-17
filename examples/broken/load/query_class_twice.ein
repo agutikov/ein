@@ -1,4 +1,4 @@
-;; M1e2 S1e2.1a.5: a query's `:expect` lists projection classes as a set, so a
+;; A query's `:expect` lists projection classes as a set, so a
 ;; class listed twice says nothing a single listing does not, and is a slip.
 
 (relation p Thing Place :why "p holds of {?1} and {?2}")

@@ -24,8 +24,8 @@
 ;;; It loaded: no candidate, root dead, R empty, and `lt` named outside the
 ;;; universe, *no obligation owes it*. The loaded obligation rules took the
 ;;; ladder's second rung, which owed nothing and proposed nothing, so no
-;;; commitment extended `lt` and the `absent` was read closed-world. The
-;;; second rung is taken where an obligation is activated at root now, and
+;;; commitment extended `lt` and the `absent` was read closed-world. Today
+;;; the second rung is taken where an obligation is activated at root, and
 ;;; the program is refused at load, as above: a program that loaded, and
 ;;; whose remedy is to say what it means, `(solve :no-hypothesis (lt))`.
 

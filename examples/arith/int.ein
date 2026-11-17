@@ -1,6 +1,6 @@
 ;;; Negative numbers, computed by saturation alone: -12 + 40 = 28, 4567 -
 ;;; 123078 = -118511, -123 x 456 = -56088, and -7 divided by 2 three ways.
-;;; M1f P1f.6 (S1f.6.7, and S1f.6.22 for the division).
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

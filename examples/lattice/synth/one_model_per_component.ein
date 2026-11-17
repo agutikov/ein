@@ -1,8 +1,8 @@
-;;; one_model_per_component — a program written for its region, by utils/region_synth.py
-;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
-;;;   python3 utils/region_synth.py --example one_model_per_component --out <this file>
+;;; one_model_per_component — a program written for its region by the region synthesizer,
+;;; from the region-spec below. Generated, not edited by hand: a change is
+;;; made to the spec, and the file is written again from it.
 ;;;
-;;; Q-M1e2.7 (i): a well-posed puzzle's shape. Exactly one of A, B, C, D, any
+;;; A well-posed puzzle's shape (Q-M1e2.7). Exactly one of A, B, C, D, any
 ;;; two exclude each other, none owes: R is four isolated nodes, each its own
 ;;; component and each on both lines. An Ambiguity of four, component by
 ;;; component.
@@ -17,7 +17,7 @@
 ;;;
 ;;; 6 dead rule(s), 1 obligation rule(s), from the target's prime implicants.
 ;;;
-;;; region-spec: {"name":"one_model_per_component","about":"Q-M1e2.7 (i): a well-posed puzzle's shape. Exactly one of A, B, C, D, any\ntwo exclude each other, none owes: R is four isolated nodes, each its own\ncomponent and each on both lines. An Ambiguity of four, component by\ncomponent.","candidates":"ABCD","R":[["A","A"],["B","B"],["C","C"],["D","D"]],"owing":[["",""]]}
+;;; region-spec: {"name":"one_model_per_component","about":"A well-posed puzzle's shape (Q-M1e2.7). Exactly one of A, B, C, D, any\ntwo exclude each other, none owes: R is four isolated nodes, each its own\ncomponent and each on both lines. An Ambiguity of four, component by\ncomponent.","candidates":"ABCD","R":[["A","A"],["B","B"],["C","C"],["D","D"]],"owing":[["",""]]}
 ;;; region-status: oRRxRxxxRxxxxxxx
 
 (relation h T :why "h holds of {?1}")

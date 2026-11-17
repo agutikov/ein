@@ -1,7 +1,6 @@
 ;;; The same `(neq ?x (and …))` in an hrule: the hypothesis layer matches it and
 ;;; proposes a candidate —
-;;; M1f **W67**, register row `W67/macro-neq-connective-hrule`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W67**, register row `W67/macro-neq-connective-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release and debug: every command answered, exit 0. The
 ;;; hypothesis layer evaluated the malformed guard, which held, and `h` proposed
 ;;; `(p k)`: R is two states.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

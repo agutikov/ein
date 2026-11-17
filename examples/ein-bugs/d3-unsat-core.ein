@@ -1,27 +1,27 @@
-;;; A refusal, and once a core that moved with interner ids — M1e2 **W11**
-;;; and **W1**, register rows `W11/d3-unsat-core` and `W1/d3-unsat-core`
-;;; (`corpus/wrong_answers.toml`). Promoted from
-;;; `corpus/fuzz_findings/d3-unsat-core.ein` by S1e2.2.12 (2026-11-04), which
-;;; stays there as a frontend-fuzzer seed.
+;;; A refusal, and a core that moved with interner ids — **W11** and **W1**,
+;;; register rows `W11/d3-unsat-core` and `W1/d3-unsat-core`
+;;; (`corpus/wrong_answers.toml`). `corpus/fuzz_findings/d3-unsat-core.ein`
+;;; is the same program, a frontend-fuzzer seed.
 ;;;
 ;;; ── What this program was ──────────────────────────────────────────────
 ;;;
-;;; `utils/fuzz_engine.py`'s find of 2026-08-20 (14 forms minimised to 9).
-;;; The walk's `solve -m 2` printed a 4-fact unsat core on the resumed fork
-;;; path and 6 under `EIN_FORK_DELTA=0`, and 4 against 6 again at the
-;;; id-order sweep's third seed, 15839 (`corpus/fuzz_findings/d3-unsat-core.md`).
+;;; The engine fuzzer's find (14 forms minimised to 9). The walk's
+;;; `solve -m 2` printed a 4-fact unsat core on the resumed fork path and 6
+;;; under `EIN_FORK_DELTA=0`, and 4 against 6 again at the id-order
+;;; property's third seed, 15839 (`corpus/fuzz_findings/d3-unsat-core.md`).
 ;;;
-;;; ── Since M1e2 ─────────────────────────────────────────────────────────
+;;; ── What it is ─────────────────────────────────────────────────────────
 ;;;
-;;; Refused (S1e2.2.5, *forbid* with F2's *via*, ruled 2026-11-04): `fire-0`
-;;; concludes (not …) from r1, which `fire-1` derives resting on
+;;; Refused at load (*forbid*, followed through derived facts, Q-M1e2.5):
+;;; `fire-0` concludes (not …) from r1, which `fire-1` derives resting on
 ;;; (absent (not (r1 o3 ?v1))), a relation a commitment can still extend, so
 ;;; every question about a commitment exits 1 naming the two rules. The
 ;;; refusal is the same under every permutation of the interner, which
-;;; `id_order_invariance` checks per commit. `fire-0` declares `?P`, which its
-;;; body never names; the loader accepts that silently (S1e2.2.12 § Notes).
+;;; `id_order_invariance` checks. `fire-0` declares `?P`, which its body
+;;; never names; the loader accepts that silently.
+;;;
 
-;;; case 6710 (seed 20260820) — utils/fuzz_engine.py
+;;; case 6710 (seed 20260820) of the engine fuzzer
 (relation r0 T T :why "r0 holds of {?1} and {?2}")
 (relation r1 T T :why "r1 holds of {?1} and {?2}")
 (relation is-a T T :why "{?1} is a {?2}")

@@ -14,8 +14,8 @@
 ;;; 1234. x + x = 1357: no x. An equation with no solution is answered by
 ;;; silence here: "no walk ends" is an absence, which a rule cannot match.
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.digits :symbols (fa md nz __closed__))
 
 (relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")

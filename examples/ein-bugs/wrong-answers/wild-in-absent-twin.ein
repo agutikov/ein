@@ -1,9 +1,9 @@
-;;; The twin of `wild-in-absent.ein` — M1e2 **W20**, banked by S1e2.2.20
-;;; (2026-11-05): the same program with the wildcard `_` written as `?any`, a
-;;; variable the rule reads nowhere else, which under `absent` asks after any
-;;; `holds` fact at all. Its answer is the witness's right one: `z` never
-;;; fires, and R is `∅` and `{(hit a)}` (`ein solve FILE` at `c73a0796`,
-;;; release and debug).
+;;; The twin of `wild-in-absent.ein` — **W20**: the same program with the
+;;; wildcard `_` written as `?any`, a variable the rule reads nowhere else,
+;;; which under `absent` asks after any `holds` fact at all. `z` never
+;;; fires, and R is `∅` and `{(hit a)}` (`ein solve FILE`): the answer the
+;;; witness's `_` was read as meaning, where the witness itself is refused
+;;; at the parse (Q-M1e2.22).
 
 (relation holds Node :why "{?1} holds") (relation hit Node :why "{?1} is hit")
 (holds a)

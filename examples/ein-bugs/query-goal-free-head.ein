@@ -1,25 +1,25 @@
-;;; M1a S1a.6.6 — a `(query :goal …)` whose relation head is a variable.
+;;; A `(query :goal …)` whose relation head is a variable.
 ;;;
 ;;; Two lines, and the shortest find the fuzzer has produced. `(?R Rex
-;;; Animal)` is the same shape the compiler rejects inside a rule — M1 matches
-;;; relations per activator (Q29), so a head variable must be bound by one —
-;;; but a *query* goal has no activator at all, so it can never be bound and
-;;; the pattern is uncompilable by construction.
+;;; Animal)` is the same shape the loader refuses inside a rule — a rule
+;;; compiles once per activator (Q29), so a head variable must be bound by
+;;; one — and a *query* goal has no activator at all, so it can never be
+;;; bound. A query's `:goal` is held to what a rule's `:match` is held to
+;;; (Q-M1f.72), so the program is refused at load, on every command, exit 1:
 ;;;
-;;; The goal is compiled only where a model is rendered: after the solve and
-;;; before the table, the CLI asks `verdict::goal_plan_error` whether the goal
-;;; compiles. It does not, so the run prints no table and exits 1 with one
-;;; stderr line:
+;;;     kb load error: query: its :goal writes (?R Rex Animal) with ?R as its
+;;;     relation, which nothing binds — a relation is named by a name, or by a
+;;;     rule's parameter its activator binds, and a query has no activator
 ;;;
-;;;     ein.inference.compile.CompileError: unbound relation head ?R …
+;;; The wrong answer it witnesses: no bindings, and "(no query goal to
+;;; project)", running a program that should have been refused; an engine
+;;; that compiled the goal only where a model is rendered printed
+;;; `ein.inference.compile.CompileError: unbound relation head ?R …` there.
 ;;;
-;;; Fixed 2026-08-20 in ein.rs, which until then returned no bindings and
-;;; printed "(no query goal to project)" — running a program it should have
-;;; refused. `saturate` answers, because it ignores the query, and `render
-;;; rules` rejects the file for its own reason (it has no rule forms).
+;;; `query-goal-free-head-unsat.ein` is the sibling whose puzzle is
+;;; contradictory, refused the same way.
 ;;;
-;;; `query-goal-free-head-unsat.ein` is the sibling that renders no model,
-;;; and so never compiles the goal.
+;;;
 
 (is-a Rex Animal)
 

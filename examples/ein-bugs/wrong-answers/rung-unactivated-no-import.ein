@@ -5,8 +5,8 @@
 ;;; obligation rule is loaded, so the blind enumerator builds H, eleven
 ;;; candidates of `at` and `near` over the program's three names, and R is
 ;;; the whole cube, 2 048 states. That is the witness's right answer, and
-;;; since the fix its answer: a module imported for a name the program does
-;;; not write chooses no rung.
+;;; its answer today: a module imported for a name the program does not
+;;; write chooses no rung.
 
 (relation at Color House :why "{?1} is at {?2}")
 (relation near House House :why "{?1} is near {?2}")

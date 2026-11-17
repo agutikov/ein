@@ -1,13 +1,12 @@
 ;;; A macro whose body writes `eq` with one argument, called as a conclusion:
 ;;; the rule fires and stores `(eq k)` —
-;;; M1f **W68**, register row `W68/macro-eq-conclusion`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W68**, register row `W68/macro-eq-conclusion`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; `one`'s body is `(eq ?a)`, so `:assert (one ?x)` expands to the conclusion
 ;;; `(eq ?x)`, which the grammar refuses where a rule writes it: `eq` holds
-;;; between two values, and is computed, never stored (G-21).
+;;; between two values, and is computed, never stored (Q-M1e2.26).
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;;
 ;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
 ;;; stored `(eq k :rule r)` (`ein saturate --dump`): the conclusion was executed.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

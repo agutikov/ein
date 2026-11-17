@@ -1,6 +1,5 @@
-;;; `ein solve --dump-answer` refuses a `.einb` — M1f **W43**, register row
-;;; `W43/einb-dump-answer` (`corpus/wrong_answers.toml`), filed by S1f.5.12's
-;;; T1f.5.12.4 and fixed by its T1f.5.12.5 (2026-11-09).
+;;; `ein solve --dump-answer` refused a `.einb` — **W43**, register row
+;;; `W43/einb-dump-answer` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -12,25 +11,26 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; AGENTS.md: *every command that takes a `.ein` path takes a `.einb` too,
-;;; dispatching on the magic bytes*, and the user's rule is one tool,
-;;; consistent answers: no two commands, or one command on two forms of one
-;;; program, may disagree. A `.einb` stores its program, resolved and
+;;; Every command that takes a `.ein` path takes a `.einb` too, dispatching on
+;;; the magic bytes (`docs/ein/ein.rs/design/binary-format.md`), and no two
+;;; commands, or one command on two forms of one program, may disagree
+;;; (Q-M1e2.32). A `.einb` stores its program, resolved and
 ;;; import-flattened, and every command reads it (W40's six rows), so `ein
 ;;; solve x.einb --dump-answer DIR` answers as `ein solve x.ein --dump-answer
-;;; DIR` does: exit 0, R's three states on stdout, and `DIR` holding a state
-;;; file for each, the stored program and then the state, and `nogoods.json`
-;;; with N's one member, its core (p a) (p b) and its rule, `clash`.
+;;; DIR` does (Q-M1f.27): exit 0, R's three states on stdout, and `DIR` holding
+;;; a state file for each, the stored program and then the state, and
+;;; `nogoods.json` with N's one member, its core (p a) (p b) and its rule, `clash`.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; The right answer, since S1f.5.12's T1f.5.12.5 (2026-11-09): the dump
-;;; writes every file from the program the container stores. Until then `ein
-;;; solve` refused the container before the run, exit 2, with `error:
-;;; --dump-answer DIR: a .einb container carries no program source, and every
-;;; file the answer directory holds starts with it — run it on the .ein`,
-;;; where `ein solve` on the container without `--dump-answer`, and every other
-;;; command, answered it.
+;;; The right answer: the dump writes every file from the program the
+;;; container stores. The engine had `ein solve` refuse the container before
+;;; the run, exit 2, with `error: --dump-answer DIR: a .einb container carries
+;;; no program source, and every file the answer directory holds starts with
+;;; it — run it on the .ein`, where `ein solve` on the container without
+;;; `--dump-answer`, and every other command, answered it.
+;;;
+;;;
 
 (relation p T :why "{?1} is picked")
 (relation seen T :why "{?1} is seen")

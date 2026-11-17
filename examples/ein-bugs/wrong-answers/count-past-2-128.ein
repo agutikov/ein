@@ -1,7 +1,5 @@
 ;;; A count of commitments past what the run holds is an exit 1 with no read-out
-;;; — M1f **W92**, register row `W92/count-past-2-128` (`corpus/wrong_answers.toml`),
-;;; filed by S1f.6.25 (T1f.6.25.5, 2026-11-13) from E-22 of P1f.6's
-;;; `findings.md`.
+;;; — **W92**, register row `W92/count-past-2-128` (`corpus/wrong_answers.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -17,7 +15,7 @@
 ;;; that reach ⊤, each of the 130 one-candidate sets a minimal one. The run
 ;;; classifies every commitment after 131 saturations, so the description
 ;;; is exhausted. A count past 2^63 − 1 is reported as *9 223 372 036 854 775
-;;; 807 or more*: that is an answer, and it exits 0.
+;;; 807 or more*: that is an answer, and it exits 0 (Q-M1f.218).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
@@ -29,7 +27,9 @@
 ;;; lost. Here the sentence was true: ⊤ alone
 ;;; is reached by 2^130 − 1 commitments, past the `u128` a state's were
 ;;; counted in.
-;;; The answer above by hand since S1f.6.25 (T1f.6.25.5).
+;;; The engine now gives the answer above by hand.
+;;;
+;;;
 
 (relation chosen Thing :why "{?1} is chosen")
 

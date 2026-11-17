@@ -1,14 +1,14 @@
-;;; P1.5b lattice fixture — state-hash collision (Q1.5b.4.c).
+;;; Lattice fixture — commitments that saturate to one state.
 ;;;
 ;;; Demonstrates: distinct commitments saturating to identical
-;;; post-saturation kbs collapse into one multilabel SetNode under
-;;; ``contradictions_solve(store_lattice=True)``. This is the
-;;; canonical small-fixture instance of the state-key dedup MERGE
-;;; path; the same phenomenon naturally occurs on
-;;; ``examples/zebra2-hints.ein`` at scale (S1.5b.28's Findings
-;;; section documents the larger case) but the saturation cost
-;;; there is ~1s per fork, making it impractical as a fast unit
-;;; test. This fixture saturates in microseconds.
+;;; states. R is a set of states, so commitments that saturate alike
+;;; are one state of R, which `ein solve` lists once, as `merged`, with
+;;; the commitments that reach it; `k_c` exceeds `k_s` by the
+;;; commitments a merged state absorbs past its first.
+;;; `examples/zebra2-hints.ein` shows the same at scale, four states
+;;; each reached by more than one commitment; this fixture shows it on
+;;; three candidates,
+;;; and saturates in microseconds.
 ;;;
 ;;; Three hypothesis candidates from three unary relations:
 ;;;
@@ -34,27 +34,27 @@
 ;;;
 ;;;   Layer 2 — commit {(h1 X), (h2 X)}: fork has h1, h2; rules
 ;;;             derive h3. Kb = {h1, h2, h3}. State_key = B (!)
-;;;             → MERGE with {(h2 X)}'s SetNode. state_key_merges += 1.
+;;;             → the same state as {(h2 X)}'s: one state, merged.
 ;;;   Layer 2 — commit {(h1 X), (h3 X)}: no h2 → no rules.
 ;;;             Kb = {h1, h3}. State_key = D.
 ;;;   Layer 2 — commit {(h2 X), (h3 X)}: rules derive h1.
 ;;;             Kb = {h1, h2, h3}. State_key = B (!)
-;;;             → MERGE with {(h2 X)}'s SetNode. state_key_merges += 1.
+;;;             → the same state as {(h2 X)}'s: one state, merged.
 ;;;
-;;; Expected counts under ``contradictions_solve(store_lattice=True,
-;;; max_set_size=2)``:
+;;; What `ein solve` reports:
 ;;;
-;;;   verdict           Contradiction (mode contract)
-;;;   enterings_total   6   (3 + 3)
-;;;   state_key_merges  2   (the two layer-2 collapses into the
-;;;                          {h2}-SetNode)
-;;;   kb_index size     4   (one node each for A, B, C, D)
-;;;   multilabel nodes  1   (B has labels = (h2,), (h1,h2), (h2,h3))
+;;;   states (k_s)      5: ∅, {h1}, {h3}, {h1, h3} and {h1, h2, h3}
+;;;   commitments (k_c) 8, every node of the cube: nothing dies
+;;;   merged            1 state reached by more than one commitment,
+;;;                     with 1 minimal: {h1, h2, h3}, reached by {h2},
+;;;                     {h1, h2}, {h2, h3} and {h1, h2, h3}, the least
+;;;                     of them {h2}
+;;;   maximal line      ⊤, the trivial line: no restriction bites
 ;;;
-;;; The dead_commitments list stays empty (every commitment is
-;;; alive — no contradiction fires) but the verdict is still
-;;; Contradiction by the mode contract; the test's pin is on the
-;;; merge counters, not on deaths.
+;;; Layer 3, all three committed, is the merged state as well. No
+;;; commitment dies: the fixture's point is the merge, not a death.
+;;;
+;;;
 
 (rule h2-derives-h1 ()
   :match  (h2 ?x)

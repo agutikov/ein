@@ -16,8 +16,8 @@
 ;;; one premise and reads what it needs out of the tag, so no rule joins two
 ;;; facts on a number.
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith add-walk mul-call done div-call div-done cmp-walk order-is))
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))

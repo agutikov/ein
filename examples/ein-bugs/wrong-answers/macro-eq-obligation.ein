@@ -1,7 +1,6 @@
 ;;; A macro whose body heads a form with its parameter, called with `eq` and one
 ;;; argument in an obligation: `ein saturate` answers and every solve question stops —
-;;; M1f **W66**, register row `W66/macro-eq-obligation`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W66**, register row `W66/macro-eq-obligation`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release: every solve question, `oracle` and `render lattice`
 ;;; stopped where the obligation pass compiles `o`, exit 1, on the compiler's
 ;;; line; `ein saturate` and `render kb` answered, exit 0.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

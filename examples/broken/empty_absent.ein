@@ -1,16 +1,16 @@
-; S1a.3.1 — an `(absent …)` whose sub-plan compiles to nothing.
+; An `(absent …)` whose sub-plan would compile to nothing.
 ;
-; `?x` is not a premise: the premise compiler returns no steps for it, and an
-; empty sub-plan does not mean "a query that finds nothing" — it matches
-; VACUOUSLY, so the matcher's `holds` is true and the guard fails against every
-; possible KB. The guard is monotone (no nested absent), so the candidate is
-; retired permanently on its first judgement: a guard that can never pass.
+; `?x` is not a premise: a premise compiler would return no steps for it, and
+; an empty sub-plan does not mean "a query that finds nothing" — it matches
+; VACUOUSLY, so the matcher's `holds` would be true and the guard would fail
+; against every possible KB. The guard is monotone (no nested absent), so the
+; candidate would be retired on its first judgement: a guard that never passes.
 ;
-; Compile-negative until M1e2 S1e2.2.24 (W24, Q-M1e2.18 (v)): the compiler
-; refused the empty sub-plan with a CompileError in the Python IR's spelling,
-; `(absent …) sub-plan compiled to no steps in SForm(…)`. Since then the
-; loader refuses `?x` as a premise that is not a form, before the compiler,
-; and this file moved here from `examples/broken/compile/`.
+; The grammar refuses `?x` there at the parse, as a premise that is not a
+; form, before any compiler sees it: a variable stands for a value, and
+; `absent` reads a premise. Register case W24 is this shape's class, a rule
+; shape that reads nothing, in silence; the guard this one may mean is
+; written `(absent (p ?x))`.
 (relation p Thing)
 
 (rule vacuous-guard ()

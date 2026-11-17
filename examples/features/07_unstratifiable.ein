@@ -2,14 +2,14 @@
 ;
 ; Both guards pass against the empty world, so a boundary that admitted a
 ; whole round's worth of candidates would derive **both** — and `{p, q}` is
-; not a model of this program under any reading. S1.21.8 admits **at most one
+; not a model of this program under any reading. The boundary admits **at most one
 ; candidate per round** for exactly this reason: the queue is empty at
 ; quiescence, so the admitted candidate fires immediately, against exactly the
 ; world its guard was judged against, and the other candidate is re-judged
 ; against the world that firing made.
 ;
 ; What this fixture pins is therefore not *which* of the two is derived — that
-; is the engine's own (priority, FIFO) order and it is deterministic — but that
+; is the agenda's order (Q-M1f.313), and it is deterministic — but that
 ; exactly one is, and that the second candidate is then **retired** rather than
 ; left waiting: its guard is monotone, so once it finds a match it finds one
 ; forever.
@@ -17,27 +17,27 @@
 ; The one-at-a-time discipline is a soundness requirement, not a throttle, and
 ; the argument for it is a fixture rather than a comment.
 ;
-; ── 2026-11-04 — what the search answers: M1e2 W8, deferred to F21 ─────────
+; ── What the search answers: register case W8 ──────────────────────────────
 ;
 ; Saturation derives `(p one)` alone. The search then commits the one
 ; candidate, `(q one)`, in a node built by fork from root, so that node holds
 ; `(p one)`, derived under `(absent (q one))`, beside `(q one)`: the `{p, q}`
-; above. Re-taken at M1e2 S1e2.2.6 (2026-11-04; `ein solve` in each mode and
-; `ein oracle`, every one exiting 0): R is two states, ∅ (root) and
+; above. `ein solve` in each mode and `ein oracle`, every one exiting 0:
+; R is two states, ∅ (root) and
 ; `{(q one)}` (the fork, holding both). `--maximal` prints `(q one)`,
 ; `--minimal` ∅, `--single` `Ambiguity`, and the oracle the same R. Every
-; read-out carries P1e2.1b's detector: not monotone, two `absent` sites in an
-; even cycle, and the stale fact, `(p one) ← derive-p (absent (q one))`, in R.
+; read-out carries the detector's verdict: not monotone, two `absent` sites in
+; an even cycle, and the stale fact, `(p one) ← derive-p (absent (q one))`, in R.
 ;
 ; Whether that is wrong, what a node holds when a guard's witness arrives in
 ; its commitment, is not decided: a node is a fork of root, an assumption on a flagged program (Q-M1e2.2). Register row `W8/features-07`
 ; (`corpus/wrong_answers.toml`), contested. Under *guards are premises* the
 ; maximal state is `{(q one)}` alone; under *refuse what cannot be stratified*
-; this file is a load error; under *append-only* today's R stands. The user
-; deferred the reading to F21's D2 and amended M1e2's acceptance on
-; 2026-11-03 (*"(2) Amend acceptance"*): the row stays `open`, reviewed
-; `deferred`, owner F21, and the milestone closes naming it. *Forbid* (M1e2
-; S1e2.2.5), which refuses `stale-naf-fork.ein`, does not reach this file:
+; this file is a load error; under *append-only* R stands as it is. Which
+; reading holds is not decided, and the row stays `open` until it is; of a
+; flagged program the engine claims nothing.
+;
+; *Forbid* (Q-M1e2.5), which refuses `stale-naf-fork.ein`, does not reach this file:
 ; both rules conclude a positive fact, so nothing here refutes. No `:expect`
 ; is stated, so `ein test` has nothing to check.
 (relation thing Thing :why "{?1} is a thing")

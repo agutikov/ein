@@ -1,7 +1,6 @@
-;;; A premise `(not (eq …))` matches stored negations, not `neq` — M1f
-;;; **W51**, register row `W51/not-eq-premise` (`corpus/wrong_answers.toml`),
-;;; filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, `open`
-;;; and owned by S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26).
+;;; A premise `(not (eq …))` matches stored negations, not `neq` —
+;;; **W51**, register row `W51/not-eq-premise` (`corpus/wrong_answers.toml`)
+;;; (Q-M1e2.26).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,18 +9,19 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `(not (eq ?x ?y))` is `(neq ?x ?y)` (Q-M1f.31, taken by default on the
-;;; user's instruction of 2026-11-09): the rule fires on `(a, b)` and `(b, a)`,
-;;; so root holds `(hit a b)` and `(hit b a)`. Those are the only `hit` facts
-;;; the blind enumerator would propose over `p`'s objects that root does not
-;;; already hold — none — so H is empty and R is {∅}.
+;;; `(not (eq ?x ?y))` is `(neq ?x ?y)` (Q-M1f.31): the rule fires on `(a, b)`
+;;; and `(b, a)`, so root holds `(hit a b)` and `(hit b a)`. Those are the
+;;; only `hit` facts the blind enumerator would propose over `p`'s objects
+;;; that root does not already hold — none — so H is empty and R is {∅}.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The premise is a pattern over the relation `not`, which no state holds a
-;;; `(not (eq …))` fact of: the rule never fires, root holds no `hit`, H is
-;;; `(hit a b)` and `(hit b a)`, and R is four states, exit 0 (`ein solve
-;;; FILE` and `ein oracle FILE` at `dc4c0bdc`, release and debug alike).
+;;; At `dc4c0bdc` (`ein solve FILE` and `ein oracle FILE`, release and debug
+;;; alike), the premise was a pattern over the relation `not`, which no state
+;;; held a `(not (eq …))` fact of: the rule never fired, root held no `hit`, H
+;;; was `(hit a b)` and `(hit b a)`, and R four states, exit 0. R is {∅} now.
+;;;
+;;;
 
 (relation p Node :why "{?1} is a node")
 (relation hit Node Node :why "{?1} and {?2} are two nodes")

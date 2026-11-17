@@ -1,7 +1,6 @@
 ;;; A macro whose body writes `false` with an argument, called as a conclusion:
 ;;; the rule fires, stores `(false k)`, and root is read as dead —
-;;; M1f **W68**, register row `W68/macro-false-argument`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W68**, register row `W68/macro-false-argument`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -19,7 +18,8 @@
 ;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
 ;;; stored `(false k :rule r)`, which the contradiction detector read as
 ;;; `(false)`: root is dead, R is empty, `refuted by r`.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

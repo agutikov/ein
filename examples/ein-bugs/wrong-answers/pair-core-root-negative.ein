@@ -1,6 +1,6 @@
-;;; A boundary of M1e2 **W21**, banked by S1e2.2.21 (2026-11-05): a pair
-;;; contradiction whose *negative* side is root's. No register row: the core
-;;; the engine reports names the commitment.
+;;; A boundary of **W21**: a pair contradiction whose *negative* side is
+;;; root's. No register row: the core the engine reports names the
+;;; commitment.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -13,15 +13,15 @@
 ;;; R is {∅}, and N is {(q a)}. The pair rests on `(p a)`, which rests on
 ;;; `(q a)`, and on `(not (p a))`, stated: the core is `(not (p a)) (q a)`.
 ;;;
-;;; ── What the engine answered, and what holds since ─────────────────────
+;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; Until S1e2.2.21, R as above, exit 0; and N's core `(q a)`, refuted by
-;;; `(given)` and `pos` (`ein solve FILE --dump-answer DIR` at `cdcc3994`,
-;;; release and debug): the positive side's frontier, which here is the
-;;; commitment's, so the core named it, and left out the stated `(not (p a))`
-;;; the pair rests on too. Since S1e2.2.21's fix it is `(not (p a)) (q a)`, in
-;;; either build; it names the commitment either way, which is why this file
-;;; is a boundary and not a row.
+;;; At `cdcc3994` (`ein solve FILE --dump-answer DIR`, release and debug): R
+;;; as above, exit 0; and N's core `(q a)`, refuted by `(given)` and `pos`:
+;;; the positive side's frontier, which here is the commitment's, so the core
+;;; named it, and left out the stated `(not (p a))` the pair rests on too.
+;;; Today it is `(not (p a)) (q a)`, in either build; it names the commitment
+;;; either way, which is why this file is a boundary and not a row.
+;;;
 
 (relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}") (relation seed T :why "{?1} is a seed")
 

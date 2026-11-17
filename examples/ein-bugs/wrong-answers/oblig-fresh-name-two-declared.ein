@@ -1,15 +1,15 @@
 ;;; The **control** for [`oblig-fresh-name-two.ein`](oblig-fresh-name-two.ein)
-;;; — that file plus one fact, `(food Z)` — M1e2 W14 (S1e2.2.15). Banked
-;;; from S1e2.2.4's residue probe of 2026-11-04.
+;;; — that file plus one fact, `(food Z)` — case W14 of the register.
 ;;;
-;;; Until S1e2.2.15 the obligations rung built H here, and with `(food Z)` at
-;;; root its `(food ?b)` scan found Z: H was `likes` from Ann and from Bob to
-;;; Soup and to Z, and R three states (`ein solve FILE` at `338b5892`,
-;;; 2026-11-04). `food` is in D here too, since `special` derives it from a
-;;; commitment, and the user ruled on 2026-11-04 that a guard over a relation
-;;; in D declines the rung (Q-M1e2.10 (a)): the blind enumerator builds H,
-;;; twelve candidates, and R is twelve states, `(likes Ann Bob)` and `(likes
-;;; Bob Ann)` free, which the `:expect` below states and its witness answers.
+;;; With `(food Z)` at root the obligations rung's `(food ?b)` scan would find
+;;; Z: H `likes` from Ann and from Bob to Soup and to Z, and R three states.
+;;; `food` is in D here too, since `special` derives it from a commitment,
+;;; and a guard over a relation in D declines the rung (Q-M1e2.10): the
+;;; blind enumerator builds H, twelve candidates, and R is twelve states,
+;;; `(likes Ann Bob)` and `(likes Bob Ann)` free, which the `:expect` below
+;;; states and its witness answers.
+;;;
+;;;
 
 (relation person T :why "{?1} is a person")
 (relation food   T :why "{?1} is a food")

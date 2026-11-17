@@ -17,12 +17,12 @@
 ;;; Guest)`, is static, and its witness `absent` pays as `meal` grows.
 ;;;
 ;;; Its rule concludes `(meal ?g Soup)`, not `(false)` or `(not …)`, so the
-;;; *forbid* ruling of 2026-11-02 (M1e2 S1e2.4.1), which is about a refutation
-;;; resting on an `absent`, does not reach it: this cause survives that ruling.
+;;; *forbid* refusal (Q-M1e2.5), which is about a refutation resting on an
+;;; `absent`, does not reach it: this cause survives that refusal.
 ;;; The rule fires at no root fixpoint (its positive premise is a candidate),
 ;;; so the fork route and the scratch route build the same nodes here.
 ;;;
-;;; What R means on it is open, F21's; this file's question is the cube.
+;;; Its nodes are forks of root (Q-M1e2.2); this file's question is the cube.
 
 (import std.algebra :symbols (total-owed))
 

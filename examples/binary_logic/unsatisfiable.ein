@@ -7,8 +7,8 @@
 ;;; So the read-out says *empty: every alive node owes*, not *every node is
 ;;; dead*, and `ein solve --single` answers `Open`, with *decided: yes*. That
 ;;; is the word's definition and not what a reader of a satisfiability
-;;; question expects: E-23 of the phase's `findings.md`, and the plan page's
-;;; sixth question, open.
+;;; question expects, who would say *unsatisfiable*; the read-out has no
+;;; such word.
 ;;;
 ;;; The claims are the ones that hold. The region claim lists the owing
 ;;; frontier, the eleven nodes of two inputs set that are alive (the twelfth,
@@ -21,7 +21,7 @@
 ;;;
 ;;; Both claims were computed in Python by enumeration.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md`.
+;;; `docs/ein/user/reference/stdlib.md` § Boolean functions and circuits.
 (import std.bool.inputs :symbols (inputs is-a in require))
 (import full_adder)
 

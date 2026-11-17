@@ -1,6 +1,6 @@
 ;;; A written fact's `:rule` that names no rule of the program is stored as derived by it —
-;;; M1f **W87**, register row `W87/written-rule-no-such-rule`, filed by S1f.7.9 (T1f.7.9.2,
-;;; 2026-11-11).
+;;; **W87**, register row `W87/written-rule-no-such-rule`.
+;;;
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;
@@ -9,9 +9,9 @@
 ;;;
 ;;; ── The answer, by hand ─────────────────────────────────────────────────────
 ;;;
-;;; Not ruled: it is F24's question. Under (a), a program may not write `:rule`, and under (b),
-;;; `:rule` must name a declared rule, the program is refused at load. Under (c) it loads as
-;;; written and every surface that names `zzz` says the provenance was not checked.
+;;; Not decided: what a written provenance may claim. If a program may not write `:rule`, or
+;;; `:rule` must name a declared rule, the program is refused at load; if it loads as written,
+;;; every surface that names `zzz` says the provenance was not checked.
 ;;;
 ;;; ── What the engine answered ────────────────────────────────────────────────
 ;;;
@@ -19,7 +19,7 @@
 ;;; prints `(paid Ann :rule zzz)` among the derived facts, `ein render kb` draws it as derived
 ;;; by `zzz`, and the state file `ein solve --dump-answer` writes says `(paid Ann) ; rule zzz —
 ;;; Ann has paid`.
-;;; Open, and F24's: what a written provenance may claim is the user's question, not ruled.
+;;; The row is open: what a written provenance may claim is not decided.
 
 (relation paid Guest :why "{?1} has paid")
 (relation seated Guest :why "{?1} is seated")

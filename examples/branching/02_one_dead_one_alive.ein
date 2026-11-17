@@ -1,4 +1,4 @@
-;;; P1.5 demo 2/5 — minimal branching: one anchor forces the lone
+;;; Branching demo 2 of 5 — minimal branching: one anchor forces the lone
 ;;; survivor.
 ;;;
 ;;; Two colors, two houses; Red is anchored to H1. The query asks
@@ -16,11 +16,11 @@
 ;;; `functional` on is-a kills the alternate-parent is-a hypotheses
 ;;; the generator produces in the absence of a typed signature.
 ;;;
-;;; Without S1.5.3 dedup the symmetric activator makes the generator
-;;; emit (Blue H2) AND (H2 Blue) as separate hypotheses; both survive
-;;; with the same closed KB, so the verdict packaging is Ambiguity
-;;; with two converging solution branches. The bindings printed by
-;;; the demo are the same either way.
+;;; The signature is `T T`, so the blind enumerator proposes type atoms
+;;; as objects too, `(co-located Blue Color)` and the like, and nothing
+;;; refutes them: R is 20 states and its maximal line 4, and the read-out
+;;; names the atoms on its `types` row. A typed signature keeps them out
+;;; (`03_five_hyps_one_alive.ein`).
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

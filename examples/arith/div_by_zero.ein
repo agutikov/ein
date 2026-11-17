@@ -1,4 +1,4 @@
-;;; A division by zero: the flag, and the contradiction. M1f P1f.6 (S1f.6.6).
+;;; A division by zero: the flag, and the contradiction.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -8,7 +8,7 @@
 ;;; ── What happens ───────────────────────────────────────────────────────
 ;;;
 ;;; `std.math.decimal-arith` has no answer for a division by zero and does not make one
-;;; up. It says so in two steps (the user's ruling of 2026-11-11):
+;;; up. It says so in two steps (Q-M1f.269):
 ;;;
 ;;;   1. the request derives a flag that names it,
 ;;;      `(division-by-zero (div takings customers))`;
@@ -28,8 +28,8 @@
 ;;; and the contradiction as two steps, and `ein saturate --dump` shows
 ;;; root's state, the flag and `(false)` in it, each with its rule.
 ;;;
-;;; Since S1f.6.24 a division by zero is flagged at the call, whoever made
-;;; it (the user's ruling of 2026-11-12). The request's division is a tagged
+;;; A division by zero is flagged at the call, whoever made it (Q-M1f.163,
+;;; Q-M1f.211). The request's division is a tagged
 ;;; call of the theory's own, so root's state holds a second flag beside the
 ;;; request's, `(division-by-zero (div-call (quotient takings customers)
 ;;; (n (n (n z 1) 2) 0) z))`, and the trace shows it and its contradiction

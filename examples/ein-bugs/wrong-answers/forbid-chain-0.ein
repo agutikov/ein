@@ -1,18 +1,18 @@
-;;; A control for M1e2 **W17** (`corpus/wrong_answers.toml`, S1e2.2.17,
-;;; 2026-11-04): `forbid-chain-1.ein` one link shorter, refused since
-;;; S1e2.2.5.
+;;; A control for **W17** (`corpus/wrong_answers.toml`): `forbid-chain-1.ein`
+;;; one link shorter, which *forbid* refuses (Q-M1e2.5).
 ;;;
-;;; `mk` derives the activator `(q a)` from `(p a)` while `a` has no `p2`,
-;;; and the plan of `q` it compiles concludes `(false)` itself. `q`'s
-;;; activator relation is in D (root's plan of `mk` writes it), so *forbid*
-;;; reads `q` from its pattern though root has no plan of it, and refuses:
-;;; `rule 'q': concludes (false) from its activator, which rule 'mk' derives
-;;; resting on (absent …) over p2`, every question about a commitment exit 1
-;;; (`ein solve FILE` at `3efd3f5f`), `ein saturate` still saturating. The
-;;; witnesses, one link longer and two, loaded at that commit, because the
-;;; refuting rule's activator relation is written only by a plan root never
-;;; compiled; since S1e2.2.17's fix *forbid* follows the chain, and they are
-;;; refused as this is.
+;;;
+;;; `mk` derives the activator `(q a)` from `(p a)` while `a` has no `p2`, and
+;;; the plan of `q` it compiles concludes `(false)` itself. `q`'s activator
+;;; relation is in D (root's plan of `mk` writes it), so *forbid* reads `q` from
+;;; its pattern though root has no plan of it, and refuses: `rule 'q': concludes
+;;; (false) from its activator, which rule 'mk' derives resting on (absent …)
+;;; over p2`, every question about a commitment exit 1 (`ein solve FILE` at
+;;; `3efd3f5f`), `ein saturate` still saturating. The witnesses, one link longer
+;;; and two, loaded at that commit, because the refuting rule's activator
+;;; relation is written only by a plan root never compiled; *forbid* follows the
+;;; chain now, and they are refused as this is.
+;;;
 
 (relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q T :why "q holds of {?1}")
 

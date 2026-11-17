@@ -1,7 +1,6 @@
 ;;; A macro whose body heads a form with its parameter, called with `absent` and
 ;;; two premises in a rule no activator reaches: every command answers —
-;;; M1f **W66**, register row `W66/macro-absent-never-compiled`,
-;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;; **W66**, register row `W66/macro-absent-never-compiled`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -14,13 +13,14 @@
 ;;; The expansion writes a malformed `absent`, so `r` is refused at load, whether
 ;;; or not anything activates it: every command exits 1 (`ein test`: 2)
 ;;; (Q-M1f.67, Q-M1f.80). The macro is used, so it is instantiated; a macro no
-;;; rule uses still loads (the user's ruling on Q-M1f.67).
+;;; rule uses still loads (Q-M1f.67).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; At `dbfd7862`, release: every command answered, exit 0, with no word of
 ;;; the `absent`.
-;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+;;; The engine refuses it at load.
+;;;
 
 (relation a Thing :why "{?1} is an a")
 (relation s Thing :why "{?1} is an s")

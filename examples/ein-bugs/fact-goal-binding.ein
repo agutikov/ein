@@ -1,19 +1,19 @@
-;;; M1a S1a.6.6 — a NESTED FACT in a goal binding.
+;;; A NESTED FACT in a goal binding.
 ;;;
 ;;; The sibling of `int-goal-binding.ein`, found the same way and in the same
-;;; family: `goal_bindings` returns the *stored* argument, and a nested
-;;; argument is stored as a `Fact`, which no JSON scalar can hold. The
-;;; summary renders it the way every other fact in that file is rendered —
-;;; as an s-expression string — and the run exits 0:
+;;; family: a goal binding is the *stored* argument, and a nested argument is
+;;; stored as a fact, which no JSON scalar can hold. The summary renders it
+;;; the way every other fact in that file is rendered — as an s-expression
+;;; string — and the run exits 0, the query's class listing the row
 ;;;
-;;;     "goal_bindings": [{"x": "(u0 o1)", "y": "o2"}]
+;;;     "rows": [{"x": "(u0 o1)", "y": "o2"}]
 ;;;
 ;;; A crash here, with no summary written, is not a semantics anyone wants
-;;; to preserve. The JSON summary keeps an
-;;; int a JSON number and writes every other binding through the same
-;;; `sexpr_value` as the `facts` list beside it.
+;;; to preserve. Every binding is written through the same writer as the
+;;; `facts` list beside it, and every name is a JSON string (Q-M1f.340).
 ;;;
 ;;; This file is the regression: `solve --json-summary` must agree.
+;;;
 
 (u0 o1)
 (r1 (u0 o1) o2)

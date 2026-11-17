@@ -1,12 +1,10 @@
 ;;; **W10's second witness (`W10/alt-cap-shared`): a saving between two facts,
 ;;; behind a full list, which no fix of the cap that keeps it bounded keeps.**
 ;;;
-;;; M1e2 S1e2.2.11. Banked at T1e2.2.11.1 as a probe, promoted into the corpus
-;;; at T1e2.2.11.2 on the user's ruling of 2026-11-04 on Q-M1e2.11, (i)(b):
-;;; the core promise is the smallest frontier over **every** derivation the
-;;; program records, `alt-cap-core.ein` is fixed by keeping each fact's
-;;; smallest-closure arrival beside its list, and this row
-;;; stays `open`, deferred to F22.
+;;; A core is the smallest frontier over **every** derivation the program
+;;; records (Q-M1e2.11). `alt-cap-core.ein` gets it, because the store keeps
+;;; each fact's smallest-closure arrival beside its list; this program does not,
+;;; and its row stays `open`.
 ;;;
 ;;; ── The shape ──────────────────────────────────────────────────────────────
 ;;;
@@ -18,28 +16,30 @@
 ;;; {(a K), (b K)}, 2, through x-join; through any x-chain it is
 ;;; {(c Cnn), (a K), (b K)}, 3.
 ;;;
-;;; `x-chain` fires first (priority 100), so (x K)'s primary and its 32
+;;; `x-chain` fires first (it is written first), so (x K)'s primary and its 32
 ;;; alternatives are one-premise chains, and `x-join` arrives at a full list
 ;;; with two premises and is refused. Any retention that ranks a fact's
 ;;; derivations by a per-fact metric, premise count, a frontier estimate or
-;;; the smallest closure (what the engine does since S1e2.2.11),
+;;; the smallest closure (what the engine does),
 ;;; ranks x-join last of the 34, because its saving is only visible from
 ;;; (false), between (x K) and (z K). A list of any fixed length drops one of
 ;;; a larger set of incomparable derivations, and a program can need it.
 ;;;
 ;;; ── What the engine says ───────────────────────────────────────────────────
 ;;;
-;;;   ein solve FILE, 2026-11-04:
+;;;   ein solve FILE:
 ;;;     at 3011fae2, MAX_ALT_JUSTIFICATIONS = 32    unsat core (a K) (b K) (c C01)
-;;;     since S1e2.2.11, (3)                        the same three
+;;;     with the smallest-closure arrival kept      the same three
 ;;;     MAX_ALT_JUSTIFICATIONS = 1 000 000          unsat core (a K) (b K)
 ;;;
 ;;; R is empty and exhausted either way, and `(solve :expect (false))` holds:
-;;; only the core is wrong. F22 is to re-derive a full list's refused
-;;; derivations when the search reaches the fact, which makes the core exact
-;;; with bounded memory. The explanation search's own budget has the same
+;;; only the core is wrong. Re-deriving a full list's refused derivations when
+;;; the search reaches the fact would make the core exact with bounded memory;
+;;; the engine does not. The explanation search's own budget has the same
 ;;; shape past 64 incomparable environments a label, and its cut is reported
 ;;; (`Explanation::exhausted`); the cap's is not.
+;;;
+;;;
 
 (relation c T :why "{?1} has c")
 (relation a T :why "{?1} has a")

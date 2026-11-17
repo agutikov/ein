@@ -1,32 +1,32 @@
-;;; A string written in a guard never equals a value — M1e2 **W18**, register
-;;; row `W18/str-in-guard` (`corpus/wrong_answers.toml`), found by S1e2.2.18
-;;; (2026-11-04) probing the case's mechanism.
+;;; A string written in a guard never equals a value — **W18**, register
+;;; row `W18/str-in-guard` (`corpus/wrong_answers.toml`), the case's
+;;; mechanism in a guard.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; Two `holds` facts, the atom `a` and the string `"b"`, which the loader
-;;; holds as the symbol `b`. `g` keeps the `holds` value that equals `"b"`,
-;;; and `n` every one that does not.
+;;; Two `holds` facts, one over the atom `a` and one over the string `"b"`.
+;;; `g` keeps the `holds` value that equals `"b"`, and `n` every one that
+;;; does not.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; A string in a rule means what it means in a fact, so `(eq ?x "b")` holds
-;;; for `?x = b` and `(neq ?x "b")` for `?x = a`: root derives `(hit b)` and
-;;; `(other a)`. The blind enumerator proposes `(hit a)` and `(other b)`, so
-;;; R is four states, root's holding the two. It is the answer of this file
-;;; with `"b"` written `b` in its rules.
+;;; A string is natural-language text, never a value (Q-M1e2.23), written
+;;; only after `:why`, `:source` or `:goal-text`: the program is refused at
+;;; the parse, at its first string, on every command.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; Until S1e2.2.18 `g` never fired and `n` fired on both: the rule compiler
-;;; lowered a guard's string to a raw node, which equals no value
-;;; (`compile.rs`' `guard_arg`, `match_.rs`' `resolved_eq`), so `eq` never
-;;; held and `neq` always did. Root derived `(other a)` and `(other b)` and no
-;;; `hit`; the candidates were `(hit a)` and `(hit b)`, and `ein solve FILE
-;;; --minimal` at `ff023413` printed root's state as `(model)`, over `hit`
-;;; alone, in a release build and a debug one. Since then a guard lowers a
-;;; string as the loader does, and root's state is `(model (hit b) (other
-;;; a))`.
+;;;
+;;; ── What the engine answered, and what it answers ──────────────────────
+;;;
+;;; At `ff023413`, in a release build and a debug one, `g` never fired and
+;;; `n` fired on both: the rule compiler lowered a guard's string to a raw
+;;; node, which equals no value (`compile.rs`' `guard_arg`, `match_.rs`'
+;;; `resolved_eq`), so `eq` never held and `neq` always did. Root derived
+;;; `(other a)` and `(other b)` and no `hit`; the candidates were `(hit a)`
+;;; and `(hit b)`, and `ein solve FILE --minimal` printed root's state as
+;;; `(model)`, over `hit` alone. Today the program is refused at the parse:
+;;; *unexpected `"b"`: a string*.
+;;;
 
 (relation holds Node) (relation hit Node) (relation other Node)
 (holds a) (holds "b")
