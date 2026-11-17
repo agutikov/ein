@@ -50,15 +50,27 @@ prints the format a build reads on its `container` line, `einb/2.0`.
 
 Everything is little-endian and fixed-width, by the format's definition and not the host's.
 
-```text
-+----------------------------------------------+  offset 0
-| header                          64 bytes     |
-+----------------------------------------------+  64
-| section table          n_sections × 32 bytes |
-+----------------------------------------------+
-| sections, each starting at a multiple of 8   |
-+----------------------------------------------+
+```dot
+digraph einb {
+  rankdir=LR;
+  node [shape=record, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  file [label="a .einb file | <h> header\n64 bytes, at offset 0 | <t> section table\nn_sections x 32 bytes, at offset 64 | <b> sections\neach at a multiple of 8: META, SYMBOLS,\nFACTS, PRESENT, PROV, PROGRAM, then\nSOLUTIONS, UNIVERSAL, CLOSURE\nwhere they are written"];
+
+  header [label="header (§ 2.1) | 0: magic  [u8; 8] | 8: major  u16 | 10: minor  u16 | 12: flags  u32 | 16: n_sections  u32 | 20: reserved  u32 | <d> 24: digest  [u8; 32] | 56: reserved  [u8; 8]"];
+
+  entry [label="one table entry (§ 2.2) | kind  u32 | flags  u32 | <o> off  u64 | len  u64 | raw_len  u64"];
+
+  file:h -> header;
+  file:t -> entry [label="n_sections of these"];
+  header:d -> file:t [style=dashed, label="BLAKE3 of every byte\nafter the header"];
+  entry:o -> file:b [style=dashed, label="a section's offset\nfrom the start of the file"];
+}
 ```
+
+The sections stand in the order the writer pushes them (`ein_einb::save_to_vec`); a reader finds each through the
+table and depends on no order.
 
 ### 2.1 The header
 
@@ -191,6 +203,33 @@ into the arena. So the reader takes `META`, then `SYMBOLS` and `FACTS`, then `PR
 (pushing the file's records), and only then parses and loads the stored program. In a fresh process the file's records
 therefore land at their own positions, and the loader's records come after them, where nothing in the file refers to
 them.
+
+```plantuml
+@startuml
+start
+:Header::read: the magic, the version;
+if (flags are 0, and the BLAKE3 of the bytes\nafter the header is the header's digest?) then (no)
+  :refused: Malformed, Digest;
+  stop
+endif
+:the section table: each entry's bounds; an unknown kind is skipped;
+:META, and Meta::freshness(engine, sources, stdlib);
+:SYMBOLS, then FACTS: re-intern entry i,\nlearn the live id of the file's i (tables::Maps);
+:PROGRAM's file names;
+:PROV: push the file's derivation records;
+:parse and load the stored program:\nthe registries, and the loader's own records after the file's;
+if (the file holds derived state,\nand it is not Fresh?) then (yes)
+  :return the loader's Kb;\nderived_dropped is true;
+  stop
+endif
+:PRESENT: Kb::restore_fact for each believed fact,\nwith its recorded primary;
+:CLOSURE, where the file has one;
+:Kb::rebuild_indexes_from;
+:SOLUTIONS, where the file has one;
+:Opened;
+stop
+@enduml
+```
 
 **The identity path is the normal one.** A fresh process opening one file re-interns into tables that hold only the
 kernel's names, gets every id back as the file stored it, and `Maps::identity()`, which tests the symbol and fact
