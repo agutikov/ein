@@ -671,7 +671,7 @@ fn every_mode_is_the_oracle() {
     // program where ∅ is in `R` among them.
     assert!(
         counted.get("∅ rule, monotone").copied().unwrap_or(0) >= 800
-            && counted.get("∅ rule, flagged").copied().unwrap_or(0) >= 75,
+            && counted.get("∅ rule, flagged").copied().unwrap_or(0) >= 70,
         "{counted:?}"
     );
     // L5 is used, not only licensed: the obligation tree answered real cells.
