@@ -115,6 +115,9 @@ constrained-reasoning research.
   cite it by its bare id, which the link check resolves to exactly one file.
   A question still open is a work item and lives in `plans/`, cited by
   nothing in the project; a decision about the process stays in `plans/` too.
+  **An id is kept and never reused**: a ruling with no id takes the next free
+  id of the milestone that ruled it, and a superseded id that is still cited
+  is rewritten to the id that carries the decision, with no redirect file.
 - **`docs/ein/ein.rs/`** — **the engine as built**: the crate and module map,
   the algorithms (`02-algorithms.md`), the design contracts the crates cite
   (`03-design/`), the `--events` protocol and the other engine read-outs, the
@@ -330,18 +333,15 @@ paragraph, no register count, no measurement (the user's rule).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  Three phases are left. **P1f.20, the documentation tree**
-  ([its README](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)):
-  the user reviewed and accepted the tree, and its last stage,
-  [S1f.20.10](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md),
-  carries out the review's rulings. **P1f.21, the kernel's verdicts as rules**
+  Two phases are left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   and **P1f.22, nested facts**
-  ([its README](plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/README.md)):
-  each has its survey and waits on the user's rulings on its questions
-  (Q-M1f.390; Q-M1f.391 to .396). The milestone's plans are deleted when the
-  three are done, and **the work stops after M1f** (the user's rulings); the
-  close was started and is paused.
+  ([its README](plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/README.md)).
+  Each has its survey and its questions put (Q-M1f.390; Q-M1f.391 to .396)
+  and is not started further; **neither is started without the user's
+  word**. The milestone's plans are deleted when both are done, and **the
+  work stops after M1f** (the user's rulings); the close of M1f was started
+  and is paused.
 - **A finished plan is deleted.** A milestone or phase whose README says
   *closed* or *done*, and a followup that says *done*, goes with its folder once
   what still reads it is re-aimed and what it still owns has moved to its owner;
@@ -352,10 +352,12 @@ paragraph, no register count, no measurement (the user's rule).
 - **What waits for the user**: milestone-wide questions, with every default
   taken, are
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
-  (Q-M1f.n); a default stands until the user revises it. A phase keeps what
-  it finds outside its scope in a findings page of its own and shows it:
-  P1f.20's [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/findings.md)
-  (L-n), P1f.21's (V-n) and P1f.22's (N-n), beside each phase's README.
+  (Q-M1f.n); a default stands until the user revises it. What the
+  documentation tree found and left, the user's calls among it marked, and
+  the defaults it took, are the milestone's
+  [`findings.md`](plans/m1f_hypothesis_and_documentation/findings.md) (L-n).
+  A phase keeps what it finds outside its scope in a findings page of its own
+  and shows it: P1f.21's (V-n) and P1f.22's (N-n), beside each phase's README.
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
   open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);

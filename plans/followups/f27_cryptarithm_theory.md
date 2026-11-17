@@ -1,8 +1,8 @@
 # F27 — A cryptarithm theory, `std.math.crypt`
 
-**Filed 2026-11-17** by M1f [S1f.20.8](../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/s1f.20.8_decisions.md),
+**Filed 2026-11-17** by M1f S1f.20.8, the stage of its documentation phase that wrote the decisions,
 on the user's ruling at S1f.20.2's review (item 11: *"std.math.crypt (P1f.6's #42) goes to a followup"*), so that
-the decision outlives P1f.6's folder, which S1f.20.9 deletes.
+the decision outlives P1f.6's folder, which S1f.20.9 deleted.
 
 **The decision, taken and not built.** P1f.6's question 42, *A small cryptarithm theory in the stdlib?*, was
 answered **yes** (the user, in

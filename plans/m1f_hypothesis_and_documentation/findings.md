@@ -5,7 +5,7 @@ user's word (*"go ahead to close p1f.20"*).
 
 P1f.20 kept what its stages found outside their scope in a findings page of its own, L-1 to L-75, and showed it.
 The phase's folder is deleted
-(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor`; its findings page is
+(`git log --diff-filter=D -- 'plans/m1f_hypothesis_and_documentation/p1f.20_*'`; its findings page is
 `findings.md` there), and this page is every finding of it that is **open and has no other owner**, each under
 its L-number, with its evidence. L-76 to L-90 were filed at the close: what the lanes that ran after the phase's
 page stopped at L-75 reported (the second notes on `reasoning/01-static-ir/`, the diagrams as files, the three

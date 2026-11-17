@@ -19,7 +19,7 @@ until the user says otherwise (a default is not a ruling, and any may be reopene
 | [Q-M1g.9](#q-m1g9--the-bound-of-an-exhaustive-check-and-its-tier) | the bound of an exhaustive check, and its tier | S1g.2.1, S1g.3.4 | open |
 | [Q-M1g.10](#q-m1g10--the-optional-proof-systems) | the optional proof systems: sequents, resolution, tableaux | S1g.3.5 | open |
 | [Q-M1g.11](#q-m1g11--how-far-induction-goes) | how far induction goes: a checked proof, or a bounded check | S1g.5.3 | open; **the user's** |
-| [Q-M1g.12](#q-m1g12--where-the-milestones-kernel-pages-go) | where the milestone's kernel pages go | S1g.4.1, S1g.4.5 | open; waits for P1f.20 |
+| [Q-M1g.12](#q-m1g12--where-the-milestones-kernel-pages-go) | where the milestone's kernel pages go | S1g.4.1, S1g.4.5 | open; the tree it waited for is there: P1f.20 is done (2026-11-17), and the pages are `docs/ein/` |
 | [Q-M1g.13](#q-m1g13--may-a-finished-search-call-an-unpayable-debt-dead) | may a finished search call an unpayable debt dead? | P1g.7 (S1g.7.3) | open; **the user's**, deferred on 2026-11-12 |
 | [Q-M1g.14](#q-m1g14--the-types-theory-its-shape-and-its-name) | the types theory: its shape and its name | P1g.8 (S1g.8.1) | open |
 | [Q-M1g.15](#q-m1g15--where-m1h-sits-against-this-milestone) | where M1h sits against this milestone | the coordinator, before either starts | open; **the user's** |
@@ -141,9 +141,12 @@ The plan aims at (b) for one theorem and names (c) as out of reach unless S1g.5.
 ## Q-M1g.12 — Where the milestone's kernel pages go
 
 The fragment table and the glossary of *consistent* and *complete* are kernel documentation, a current page
-each under `docs/kernel/`. [P1f.20](../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)
-rebuilds that tree as `docs/ein/` before M1g starts. Where the two pages live is decided against the tree as
-P1f.20 leaves it.
+each under what was `docs/kernel/`. P1f.20, M1f's documentation phase, rebuilt that tree as
+[`docs/ein/`](../../docs/ein/README.md) (done 2026-11-17). Where the two pages live is decided against that
+tree: three perspectives, each in its own languages
+([Q-M1f.370](../../docs/decisions/docs/Q-M1f.370-each-perspective-of-the-documentation-is-written.md)), so a page
+of `reasoning/` is mathematics, graphs and words and names no program, command or test, a page of `user/` is
+written in Ein, and what the engine does and which test holds it is `ein.rs/08-reasoning-in-code/`.
 
 ## Q-M1g.13 — May a finished search call an unpayable debt dead?
 

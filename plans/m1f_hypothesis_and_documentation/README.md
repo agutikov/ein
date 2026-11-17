@@ -2,7 +2,7 @@
 
 **Estimate:** ~18 weeks — 3 phases, 33 stages, **87.75 days** of stage
 estimates. It was 55.5 until 2026-11-08. That day the stage S1f.5.20 (23 days)
-became the phase [P1f.20](p1f.20_docs_refactor/README.md) (7 stages, 25 days),
+became the phase P1f.20 (7 stages, 25 days),
 and M1e2's P1e2.5 (13 stages, 25 days) moved here as the first thirteen stages
 of P1f.5, ahead of the two P1f.5 had,
 and S1f.5.0 (1 day) was added to file the wrong answers M1e2 closed naming,
@@ -26,12 +26,13 @@ agrees ([Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-r
 Since 2026-11-08 it also holds M1e2's no-owner items, as P1f.5's first
 thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
-**Phases left** (2026-11-17): [P1f.20](p1f.20_docs_refactor/README.md), whose last stage,
-[S1f.20.10](p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md), carries out the user's review of the
-documentation tree; [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules; and
-[P1f.22](p1f.22_nested_facts/README.md), nested facts; the two created 2026-11-17 on the user's instructions. The user accepted the tree on 2026-11-17 and asked for M1f's plans to be
-deleted on completion and for the work to stop after M1f; the close was started, then paused on the user's word,
-and resumes when the three are done.
+**Phases left** (2026-11-17): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, and
+[P1f.22](p1f.22_nested_facts/README.md), nested facts, both created 2026-11-17 on the user's instructions. Each has
+its survey done and its questions put (Q-M1f.390; Q-M1f.391 to .396), is not started further, and **is not started
+without the user's word**. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's word, *"go ahead
+to close p1f.20"*) and its folder deleted; what it found and left is [`findings.md`](findings.md). The user accepted
+the tree on 2026-11-17 and asked for M1f's plans to be deleted on completion and for the work to stop after M1f; the
+close of the milestone was started, then paused on the user's word, and resumes when the two phases are done.
 
 ---
 
@@ -49,13 +50,40 @@ M1e2's no-owner items ahead of its own two stages, and the user added a fourth, 
 | P1f.7 | The wrong answers P1f.5's stages found outside their scope, a stage each | 12 (+ later findings) | — | each finding confirmed on the release binary, filed as a register row before its fix, and fixed or ruled: a goal's nested variable relation, an hrule that reads `not`, a connective as a pattern's argument, the negation of a name concluded, a macro called in a goal (S1f.5.28's items 12 to 16, moved here on the user's instruction of 2026-11-10 so that P1f.5 can close); a written `(false k)`, an `(absent k)` fact, a `(solve …)` list naming nothing and a fact's `:rule` naming no rule (S1f.5.23's); and every one P1f.5's remaining stages find |
 | P1f.8 | ~~Middle-school algebra and geometry~~: **split and moved to M1g on 2026-11-13** | 0 here (11 moved) | — | **planned 2026-11-11 on the user's instruction of that day**, extended 2026-11-12, and on 2026-11-13 **split into two phases and moved to [M1g](../m1g_logic/README.md)** on the user's instruction (*"seems too complex having both algebra and geometry, let's split it into 2 phases and move into m1g"*): [P1g.10](../m1g_logic/p1g.10_school_algebra/README.md), school algebra (S1f.8.1 to .5, .10 and .11, now S1g.10.1 to S1g.10.7), and [P1g.11](../m1g_logic/p1g.11_school_geometry/README.md), school geometry (S1f.8.6 to .9, now S1g.11.1 to S1g.11.4). Nothing of the content was redesigned. The link here is a stub with the table of old and new ids; the number 8 is used and vacated, and is not reassigned |
 | P1f.10 | The structure of the hypothesis set — **closed 2026-11-16**, its close | 14 (**re-planned 2026-11-15** on the user's two ideas, against the engine after the walk's deletion: seven re-scoped in place, seven added; one dropped and one closed in M1e2 beside them) | — | **track S**, the structure as information: what one candidate and two decide at root, held to N; groups as a **cover**, not a partition; which exclusions are the theory's and which the puzzle's; *exactly one* and the grids, found beside declared; what couples the groups; all of it **shown on real programs**, then by a surface the user rules. **Track R**, independent of it: a price list first, and only where it says *go*, an excluded pair spent in the extension step and an order on the obligation tree read from the structure, with R identical on every corpus program and SEND + MORE = MONEY as written decided within the default budget; a *no* is a full result. **Track H**: the three owned findings about what H is (W26 and Q-M1e.11, E-1/E-7/E-54, E-51), each ruled |
-| [P1f.20](p1f.20_docs_refactor/README.md) | `docs/ein/`: the tree a released system would have | 9, every one done; the user's review of the new docs before the close | 25 d | every decision a file under `docs/decisions/`; `docs/history/` and every finished plan deleted, what is true of them rewritten into `docs/ein/`; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
+| P1f.20 | `docs/ein/`: the tree a released system would have — **closed 2026-11-17** | 10, every one done; the user reviewed the tree, and its last stage carried out the review's rulings | 25 d | every decision a file under `docs/decisions/`; `docs/history/` and every finished plan deleted, what is true of them rewritten into `docs/ein/`; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
+| [P1f.21](p1f.21_verdicts_as_rules/README.md) | The kernel's verdicts as rules | 4 planned; the first, the survey and the design, done | — | the contradiction, alive and dead, owed and discharged each stated as a rule on the reasoning pages; and `(open R <justification>)` built or not, on the user's ruling of Q-M1f.390. **Not started further without the user's word** |
+| [P1f.22](p1f.22_nested_facts/README.md) | Nested facts | 4 planned; the first, what we have, done | — | one consistent explanation of how a fact under an arrow of another is represented and how rules pack and unpack it, on the user's rulings of Q-M1f.391 to .396. **Not started further without the user's word** |
 
 **P1f.5, P1f.6, P1f.7, P1f.8 and P1f.10 are finished, and their folders were deleted by
-[S1f.20.9](p1f.20_docs_refactor/s1f.20.9_the_history_sweep.md)**: their records are in git
+P1f.20's history sweep, S1f.20.9**: their records are in git
 (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/<phase>`), their decisions are files under
 `docs/decisions/`, and what they handed on is with its owner (M1g, M1h, F21 to F24, F27, and this milestone's ledger).
 Links to them are their label text.
+
+**P1f.20 is closed** (2026-11-17, on the user's word), and its folder is deleted
+(`git log --diff-filter=D -- 'plans/m1f_hypothesis_and_documentation/p1f.20_*'`). What it delivered:
+
+- **[`docs/ein/`](../../docs/ein/README.md)**, the documentation of Ein as it ships, in three perspectives: `user/`
+  written in Ein, `reasoning/` in mathematics, graphs and words with no code or test named, `ein.rs/` as software
+  documentation, with `08-reasoning-in-code/` holding the engine to the reasoning page by page. Every folder and
+  page is numbered in its reading order, every diagram is a file whose picture the page shows, every formula is
+  TeX with one statement a row, and the pages use one vocabulary (object, atom, name, fact, relation, extent).
+- **[`docs/decisions/`](../../docs/decisions/README.md)**, every question about Ein that has an answer, a file
+  each under its id; `docs/history/`, `docs/kernel/` and every finished plan deleted, and no line of the project
+  naming a plan, a stage or a date.
+- **The project and the process as two things**: the wrong-answer register split into the open rows here
+  ([`plans/wrong_answers/`](../wrong_answers/README.md)) and the project's regressions; the crate tests reading
+  only the project, and what ties a process file to it a `utils/` check and a gate step.
+- **The checks that keep it so**, each a gate step: the link check over every tracked file, the release-voice
+  check with no baseline, `utils/check_doc_blocks.py` (the pages' rules and the diagrams' sources) with
+  `utils/render_diagrams.py --check`.
+
+What it owned went to its owners: the user's rulings it ran on are rules of [`AGENTS.md`](../../AGENTS.md) and
+decisions (Q-M1f.341 to .349, .367 to .371, .375 and .378 under `docs/decisions/docs/`; Q-M1f.372 and .379 to
+.382 under `docs/decisions/language/`), and Q-M1f.314 is [this ledger's](open_questions.md#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line);
+the wrong answer it found is the register's `W8/fifo-gap-root`, F21's; every open finding of its L-1 to L-90, and
+the defaults its stages took that the user never ruled on, are [`findings.md`](findings.md), which says where
+each one that moved to another owner is (F21, F23, M2's P2.1, P1f.22).
 
 The numbering is deliberate and the gaps are real: **1–4, 9 and 11–19 are
 unassigned** (8 too until 2026-11-11, when P1f.8 took it; since 2026-11-13, when the user split P1f.8 and moved it to M1g as P1g.10 and P1g.11, 8 is **used and vacated**, not free, and is not reassigned), and the phases here keep the positions they were given rather

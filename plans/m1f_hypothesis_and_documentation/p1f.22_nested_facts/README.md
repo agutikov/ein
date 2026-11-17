@@ -5,9 +5,10 @@
 [`analysis.md`](analysis.md) is what the engine and the pages do, the explanation drafted, and the six points for
 the user (Q-M1f.391 to .396); [`findings.md`](findings.md) is what it found outside its scope. **The phase waits
 for the user's rulings**; S1f.22.2 is next after them.
-**Depends on:** [S1f.20.10](../p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md) for its second stage,
-which writes into pages of `docs/ein/reasoning/` that S1f.20.10's remaining lanes still move. Its first stage
-reads the engine and the pages and writes here.
+**Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/` that S1f.20.10, the
+last stage of P1f.20, was still moving; that stage is done and P1f.20 is closed (2026-11-17). What P1f.20 found
+on those pages and left is [the milestone's findings page](../findings.md); its N-14 here came from there. Its
+first stage reads the engine and the pages and writes here.
 **Blocks:** the close of M1f, paused on the user's word; it resumes when this phase and
 [P1f.21](../p1f.21_verdicts_as_rules/README.md) are done.
 

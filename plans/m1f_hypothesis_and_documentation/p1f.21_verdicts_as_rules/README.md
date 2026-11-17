@@ -5,9 +5,11 @@
 is done: [`design.md`](design.md) is its survey and design, and its question is put as
 [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
 **not ruled**. The phase stops here for the user's ruling.
-**Depends on:** [S1f.20.10](../p1f.20_docs_refactor/s1f.20.10_the_review_of_the_tree.md) for its second stage,
-which writes into pages of `docs/ein/reasoning/02-kb-evolution/` that S1f.20.10's remaining lanes still move
-(the diagrams into files, the formulas onto several lines). Its first stage reads the engine and writes here.
+**Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/02-kb-evolution/` that
+S1f.20.10, the last stage of P1f.20, was still moving (the diagrams into files, the formulas onto several
+lines); that stage is done and P1f.20 is closed (2026-11-17), so the pages stand as S1f.21.2 will find them. What
+P1f.20 found on those pages and left is [the milestone's findings page](../findings.md), L-82 and L-83 among it.
+Its first stage reads the engine and writes here.
 **Blocks:** the close of M1f, which was started on the user's acceptance of the documentation tree and paused
 on the user's word; it resumes when this phase is done.
 

@@ -65,7 +65,7 @@ with a program per row, together with the parts of
 ## Acceptance
 
 - **The fragment table,** every row with a program whose answer is computed, and a BNF of the fragment over
-  the kernel's forms. A current kernel page, wherever P1f.20 leaves the kernel tree
+  the kernel's forms. A current page of `docs/ein/`, where P1f.20 left the kernel tree
   ([Q-M1g.12](../open_questions.md#q-m1g12--where-the-milestones-kernel-pages-go)).
 - **The relation-algebra inventory:** each of Tarski's operations and each property against the stdlib rule
   that gives it, with its formula in the three forms of F15, and the answer to F1b's two TODO questions.

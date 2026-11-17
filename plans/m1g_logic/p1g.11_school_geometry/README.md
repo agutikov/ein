@@ -195,8 +195,8 @@ Against the rest of M1g: after P1g.1's stop, as every phase of the milestone is;
 systems"*, though no stage of P1g.3 waits for it. S1g.11.3 and
 [S1g.3.3](../p1g.3_proof_systems/s1g.3.3_natural_deduction.md) ask Q-M1g.5 once, whichever runs first. It
 shares no file with M1f's P1f.10
-or [P1f.20](../../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md) but the kernel pages P1f.20
-moves, which it does not edit.
+or P1f.20 (done 2026-11-17) but the kernel pages P1f.20
+moved, `docs/ein/` now, which it does not edit.
 
 ## First probes (2026-11-11)
 

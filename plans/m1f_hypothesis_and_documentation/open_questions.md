@@ -317,7 +317,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, then, on S1f.10.17's measured *no* for the whole border route, *"2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one or another, verbose warning about budget"*. **Built** by S1f.10.17's T3: `--describe-route tree|states`, the tree and the classes by default |
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **ruled 2026-11-16: (e)**, both ops removed and what only they read deleted; the user's choice at the phase's close; **built 2026-11-16** by S1f.10.16's record as ruled (`26d0bc56`, the pages `ff63da53`): the golden's 1 322 `hyp` and `hyp+closed` lines gone, nothing else moved, and the walk's generator pass deleted with K-29 and K-30 |
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. **Built** by S1f.10.19: `pairs` everywhere, the engine's order |
-| [Q-M1f.314](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) | what the release-voice check reads, and what fails a line: the readings S1f.20.1 took where the stage file left them open | **ruled 2026-11-17 as defaulted** ([P1f.20 § The user's rulings at S1f.20.2's review](p1f.20_docs_refactor/README.md#the-users-rulings-at-s1f202s-review-2026-11-17), item 13): every doc comment of a shipped crate, tests included; every `.ein` comment; every ISO date; the folder `plans/` named alone passes; a count that falls is reported, not failed; F-, E-, W-, K- and review ids and `:why` strings not read yet; **readings revised by S1f.20.9 part C2** (the check now reads every crate comment, every project `.md`, `corpus/regressions.toml`, plan finding, followup and review ids, register cases and process paths, has no baseline and does not read itself; [its record](p1f.20_docs_refactor/s1f.20.9_the_history_sweep.md#record-part-c2-2026-11-17)) |
+| [Q-M1f.314](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) | what the release-voice check reads, and what fails a line: the readings S1f.20.1 took where the stage file left them open | **ruled 2026-11-17 as defaulted** (the user, at S1f.20.2's review, item 13, verbatim [below](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line)): every doc comment of a shipped crate, tests included; every `.ein` comment; every ISO date; the folder `plans/` named alone passes; a count that falls is reported, not failed; F-, E-, W-, K- and review ids and `:why` strings not read yet; **readings revised by S1f.20.9 part C2** (the check now reads every crate comment, every project `.md`, `corpus/regressions.toml`, plan finding, followup and review ids, register cases and process paths, has no baseline and does not read itself; the section says each) |
 | [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact) | what an obligation emits: the verdict, with its justification or as a fact. The user's *"maybe better would be to emit (open) facts as (open ?R <justification>)"* | **put 2026-11-17, not ruled**; [S1f.21.1](p1f.21_verdicts_as_rules/s1f.21.1_the_survey_and_the_design.md)'s [`design.md` § 5](p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation). Recommended default: **(b)**, the verdict carries its justification, the instance, and stays a verdict; nothing is built on a default, and [S1f.21.2](p1f.21_verdicts_as_rules/README.md#stages) writes the pages for today's kernel either way |
 | [Q-M1f.391](#q-m1f391--the-negation-of-a-negation-that-a-rule-builds) | the negation of a negation that a rule builds: a conclusion `(not ?x)` whose variable holds a stored negation stores `(not (not g))`, which the pages say is no fact and no file can write | **not ruled**; default **(a)**, the firing concludes nothing for it, as for a name (Q-M1f.128), with a `note:` at load; raised by S1f.22.1, [`analysis.md` § 4.1](p1f.22_nested_facts/analysis.md#41-q-m1f391--the-negation-of-a-negation-that-a-rule-builds). Nothing is built until it is ruled |
 | [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written) | a state file that reads back dead, through `written`: the reload states `written` for a fact a rule assembled under an arrow, and a rule over `written` fires | **not ruled**; default **(c)**, the answer-dump page, the rendering page and the file's header say so, and the engine is not changed; raised by S1f.22.1, [§ 4.2](p1f.22_nested_facts/analysis.md#42-q-m1f392--a-state-file-that-reads-back-dead-through-written) |
@@ -7278,8 +7278,8 @@ computes that cube under the switch, named in the test with why.
 
 ### Q-M1f.314 — What the release-voice check reads, and what fails a line
 
-**Raised** 2026-11-16 by [S1f.20.1](p1f.20_docs_refactor/s1f.20.1_the_two_checks.md#record-2026-11-16)'s
-T1f.20.1.3. **Defaulted, to be shown at [S1f.20.2](p1f.20_docs_refactor/s1f.20.2_the_disposition_table.md)'s
+**Raised** 2026-11-16 by S1f.20.1's
+T1f.20.1.3. **Defaulted, to be shown at S1f.20.2's
 review**, with the sweep's defaults. The stage file names the check's scope (`docs/ein/`, the shipped crates' doc
 comments, `.ein` header comments, `corpus.toml`, `AGENTS.md` but § Where the work is, `README.md`) and what fails
 (a milestone, phase, stage or task id, a path into `plans/`, a date that dates a development event; a decision id
@@ -7288,7 +7288,7 @@ baseline, 6 743 lines in 1 041 files, is of these readings.
 
 1. **A shipped crate's doc comments** are every `///` and `//!` line of a `.rs` file under the six shipped crates,
    their `tests/`, `examples/` and `benches/` included: 3 271 baseline lines. *Alternative:* `src/` only. Plain `//`
-   comments are not read; [S1f.20.9](p1f.20_docs_refactor/s1f.20.9_the_history_sweep.md) widens the check to code,
+   comments are not read; S1f.20.9 widens the check to code,
    comments and tests.
 2. **A `.ein` file's comments** are all of them, not only the leading block: 2 501 baseline lines. One reader serves
    both checks (`doc_audit.py`'s, the text after a `;` outside a string), and a body comment speaks the same voice
@@ -7308,6 +7308,21 @@ baseline, 6 743 lines in 1 041 files, is of these readings.
    cannot later rise back to its banked number unnoticed.
 7. **The check reads itself**, so its own docstring is held to the voice it enforces; its two lines of examples
    carry the escape, which were its first findings.
+
+**Ruled 2026-11-17 as defaulted.** The user, at S1f.20.2's review, item 13, verbatim: *"Q-M1f.314: the release-voice
+check reads every doc comment and every .ein comment, and every ISO date fails a line. A falling count is reported,
+not failed. F/E/W/K ids are not read yet."*
+
+**The readings S1f.20.9 changed**, when it widened the check and deleted its baseline: (1) every comment of every
+crate, plain, trailing and block, the dev-only crates and the grammar's sources too, not a shipped crate's doc
+comments; (4) `plans/` named alone fails, as `utils/` does: the project names no process; (5) followup, finding,
+register and review ids are read now, and what is still not read is a `.ein` string (`:why`, `:source`,
+`:goal-text`), a Rust string, a plan's `D<n>`, a `C<n>` case and a commit hash (L-2, L-49, L-54 and L-85 of
+[the milestone's findings page](findings.md)); (6) moot: with no baseline nothing is banked, so nothing falls; (7)
+the check does not read itself. The scope also widened from `docs/ein/`, `docs/decisions/` and `README.md` to
+every `.md` of the project, and gained `corpus/regressions.toml`; `AGENTS.md` left it, being the process's.
+Readings (2) and (3) stand. P1f.20's folder, with both stages' records, is deleted
+(`git log --diff-filter=D -- 'plans/m1f_hypothesis_and_documentation/p1f.20_*'`).
 
 
 ### Q-M1f.390 — What an obligation emits: the verdict, with its justification or as a fact

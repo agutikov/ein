@@ -246,8 +246,8 @@ of which it needs nothing; and before [P1g.3](../p1g.3_proof_systems/README.md),
 2026-11-11, *"between calculator and proof systems"*, though no stage of P1g.3 waits for it.
 [P1g.9](../p1g.9_one_equation_three_methods/README.md) waits for S1g.10.4. It shares no file with M1f's
 P1f.10 or
-[P1f.20](../../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md) but the kernel pages P1f.20
-moves, which it does not edit.
+P1f.20 (done 2026-11-17) but the kernel pages P1f.20
+moved, `docs/ein/` now, which it does not edit.
 
 ## First probes (2026-11-11)
 

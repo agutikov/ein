@@ -537,8 +537,8 @@ RANGE_BEFORE = re.compile(r"Q\d+`?\s*[–-]\s*`?$")
 
 #: Decision ids let stand where they are, (file, id) -> why. Each is an id in
 #: text the engine produces and a golden digests, so that re-aiming it moves the
-#: golden: the stage that re-aims the engine's own ids (P1f.20's finding L-12)
-#: removes the row with the golden's re-bank. A row whose id its file no longer
+#: golden: whoever re-aims the engine's own ids removes the row with the
+#: golden's re-bank (none is left today). A row whose id its file no longer
 #: cites is a finding, so the list cannot outlive what it excuses.
 DECISION_IDS_ALLOWED: dict[tuple[str, str], str] = {}
 

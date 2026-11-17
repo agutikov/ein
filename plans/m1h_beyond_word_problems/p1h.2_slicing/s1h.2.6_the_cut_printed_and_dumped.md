@@ -45,7 +45,7 @@ S1h.2.5's cut and computes nothing of its own.
 - **A kernel page that says what *used* means:** the definition ruled, what the cut names where a derivation
   has nothing to point at, the two opening questions each with its table, and what the surfaces print. It is
   a current page of the kernel tree where that tree then is
-  ([P1f.20](../../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md) rebuilds `docs/kernel/`),
+  (P1f.20 rebuilt `docs/kernel/` as [`docs/ein/`](../../../docs/ein/README.md), done 2026-11-17),
   held by whatever test holds its neighbours.
 - **The findings closed:** every row of this phase's `findings.md` with a ruling, a fix or an owner.
 - **Handed on by name:** to [P1h.3](../p1h.3_gaps_assumptions_and_readings/README.md), the surface an answer

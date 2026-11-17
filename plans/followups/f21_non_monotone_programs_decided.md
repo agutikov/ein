@@ -790,7 +790,7 @@ M1f's documentation phase, P1f.20, found it writing the saturation pages (its fi
 lane; reproduced on the gate binary), proposed a register row and left the row the user's call. It is filed at
 that phase's close, under the standing rule that a wrong answer is a row: **`W8/fifo-gap-root`**, open, this
 page's. With it this page owns five rows of W8. The phase's folder is deleted
-(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor`); what it found and
+(`git log --diff-filter=D -- 'plans/m1f_hypothesis_and_documentation/p1f.20_*'`); what it found and
 left is [the milestone's findings page](../m1f_hypothesis_and_documentation/findings.md).
 
 **What is false.** Rule order decides root's fixpoint on a program the static check calls monotone, and nothing
