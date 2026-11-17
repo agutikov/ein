@@ -903,7 +903,7 @@ impl<'a> Compiler<'a> {
     /// the one a rule derives through a variable, which only a run binds.
     ///
     /// Ein has no int kind: a run of digits is a name, which binds like any
-    /// other, so a value is a name or a fact and this is a fact.
+    /// other, so a `Value` is an atom or a fact and this is a fact.
     ///
     /// **No program reaches it**: the loader refuses every activator a
     /// program writes or a rule could derive that binds a relation parameter

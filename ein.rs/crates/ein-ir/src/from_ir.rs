@@ -2177,8 +2177,8 @@ fn refuse_nested_disjunctions(
 /// rule calls loads whatever its body (Q-M1f.67); one a rule calls is refused
 /// where it is called, at load, on every command (Q-M1f.80).
 ///
-/// **The walk holds the value rule too** (Q-M1f.113: *a value is a name, or a
-/// fact a state could hold: an atom of an ordinary relation, or its
+/// **The walk holds the value rule too** (Q-M1f.113: *an object is an atom, or a
+/// fact a state could hold: a fact of an ordinary relation, or its
 /// negation*). The grammar refuses what a program writes of it,
 /// through `ValueHead`; what is left to this walk is what a macro's expansion
 /// writes, and the one shape the grammar cannot refuse, a connective as a
@@ -2380,8 +2380,8 @@ impl<'a> Shapes<'a> {
     }
 
     /// Why the form `node` is no value, where it is one of the heads no value
-    /// has (the value rule, Q-M1f.113: *a value is a name, or a fact a state
-    /// could hold: an atom of an ordinary relation, or its negation*): a
+    /// has (the value rule, Q-M1f.113: *an object is an atom, or a fact a state
+    /// could hold: a fact of an ordinary relation, or its negation*): a
     /// connective, `and`, `or` or `neq`; `eq`, computed and never stored;
     /// `absent`, a premise's test; and `false` with an argument.
     fn no_value(&self, node: NodeId) -> Option<String> {
@@ -3385,8 +3385,8 @@ fn refuse_derived_relation_activators(
     /// fixpoint. A parameter that can hold `eq` is refused for each premise or
     /// conclusion it heads whose arity is not 2, one line each.
     ///
-    /// **The same reading holds a parameter to the value rule** (Q-M1f.113: a
-    /// value is a name, or a fact a state could hold). `c.word` is `eq`, `absent` or
+    /// **The same reading holds a parameter to the value rule** (Q-M1f.113: an
+    /// object is an atom, or a fact a state could hold). `c.word` is `eq`, `absent` or
     /// `false`, and a parameter that can hold it is refused for each premise
     /// or conclusion it heads that the grammar refuses written out, `(absent
     /// ?x)` at any arity and `(false ?x)` at one argument or more, and for
@@ -3707,8 +3707,8 @@ fn refuse_derived_relation_activators(
 }
 
 /// **A conclusion `(not ?x)` whose variable can hold a name**, under the
-/// value rule (Q-M1f.113: *a value is a name, or a fact a state could hold: an
-/// atom of an ordinary relation, or its negation*). `not` of a name is the
+/// value rule (Q-M1f.113: *an object is an atom, or a fact a state could hold: a
+/// fact of an ordinary relation, or its negation*). `not` of a name is the
 /// negation of no fact.
 ///
 /// The grammar takes `(not Var)` as a conclusion, for a variable bound to a

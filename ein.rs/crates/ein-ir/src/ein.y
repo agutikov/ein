@@ -76,8 +76,8 @@ FactHead -> b::Id:
   | "model" { b::name(p, $lexer, $1) }
   ;
 // The relation of a value: of a fact inside a fact, a pattern inside a
-// pattern, a conclusion's or a guard's argument. A value is a name, or a fact
-// a state could hold, an atom of an ordinary relation or its negation
+// pattern, a conclusion's or a guard's argument. An object is an atom, or a fact
+// a state could hold, a fact of an ordinary relation or its negation
 // (Q-M1f.113): so never `eq`, which is computed, `absent`, a test, or
 // `false`, which takes no argument and is shaped where it is written.
 ValueHead -> b::Id:
