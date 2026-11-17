@@ -31,9 +31,9 @@
 ;;; `compose-negative-s` read absence as negation, `undecided` would be empty
 ;;; and this file would fail on a missing fact.
 ;;;
-;;; Its priority is 500, above elimination's 400 and everything the stdlib
-;;; declares, because a probe that reads the world has to be the last thing to
-;;; read it.
+;;; Its `(unknown …)` is an `absent`, judged at the boundary on the closure's
+;;; fixpoint, so the probe reads the world after every positive rule has written
+;;; to it; no rule has a priority (Q-M1f.313).
 ;;;
 ;;; ── What this program does to them ─────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
-;;; Branching demo 2 of 5 — minimal branching: one anchor forces the lone
-;;; survivor.
+;;; Branching demo 2 of 5 — minimal branching: one anchor kills the
+;;; wrong-place guess, (co-located Blue H1); R is 20 states, not one.
 ;;;
 ;;; Two colors, two houses; Red is anchored to H1. The query asks
 ;;; who lives in H2. Saturation alone cannot answer (no positive

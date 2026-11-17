@@ -12,8 +12,8 @@
 ;;;     (import std.macro :symbols (forall unknown)) → `(forall …)` (short names)
 ;;;
 ;;; Each carries a `:why`, as every relation and rule here does: a macro's is
-;;; required as a rule's is (Q-M1f.59), so the stdlib loads under
-;;; `--require-why`.
+;;; required as a rule's is (Q-M1f.59), so the stdlib loads with a `:why`
+;;; required, the default.
 
 ;; `(forall ?b (G) (B))` — guarded universal ∀b. G(b) → B(b), encoded as the
 ;; classical ¬∃b. G(b) ∧ ¬B(b). The bound var ?b must appear in the guard G.

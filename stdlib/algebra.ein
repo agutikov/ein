@@ -171,8 +171,8 @@
   :why    "(meet {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
 
 ;; difference — (difference R1 R2 R3) ⟺ R3 ⊇ R1∖R2: in R1 but NOT R2 (NAF on R2).
-;; The `absent` is re-checked at fire time (`absents_still_pass`), but order R2's
-;; saturation before this fires for sane traces. Closed-world:
+;; The `absent` is judged at the boundary, on the fixpoint of the positive rules,
+;; so whatever saturation derives of R2 is there before it. Closed-world:
 ;; sound only when R2 is saturation-determined.
 (rule difference (?R1 ?R2 ?R3)
   :match  (and (?R1 ?a ?b) (absent (?R2 ?a ?b)))
@@ -237,9 +237,9 @@
 ;;   injective   — ∀b. |{a : R(a,b)}| ≤ 1  (left-unique): the dual.
 ;; Generic over R, activated per relation by `(functional R)` / `(injective R)`
 ;; (zebra2's *-loc bijections derive these from `(bijective R)`). They fire
-;; `(false)` on VIOLATION, not satisfaction. Priority 250 fires the violation
-;; after the d=0 negative-completion band (240) and before elimination (400),
-;; the band zebra2's pipeline expects.
+;; `(false)` on VIOLATION, not satisfaction. A rule that concludes `(false)` is
+;; in the agenda's first half (Q-M1f.313), so a violation fires as soon as it
+;; matches, before the rest.
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
@@ -257,8 +257,8 @@
 ;; A None-activator rule (generic-by-premise): it reads the `(bijective R)`
 ;; operand fact, so the importer needs only this one symbol — the derived
 ;; markers then activate `functional`/`injective` (here) and the importer's
-;; `total`/`surjective`/elimination rules. Priority 100 (propagate band) so the
-;; markers exist before any rule that consumes them fires.
+;; `total`/`surjective`/elimination rules, each as its marker is derived: the
+;; agenda's order decides no answer on a monotone program (Q-M1f.313).
 (rule bijective-properties ()
   :match  (bijective ?R)
   :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
@@ -318,9 +318,9 @@
 ;;
 ;; These rules are NOT in the saturation agenda: they derive nothing, and the
 ;; loader routes a rule asserting `open` into `Program::obligations`, read once
-;; per quiescent KB after the fixpoint. `:priority` therefore orders the
-;; REPORT, not the selection; 500 is the probe band, which reads as "after
-;; negative-completion (240) and elimination (400) have had their say".
+;; per quiescent KB after the fixpoint. So they read the fixpoint whole, what
+;; negative completion and elimination derived included, and no order among
+;; the rules moves what a state owes.
 (rule total-owed (?R ?isa)
   :match  (and (relation ?R ?A ?B)
                (?isa ?a ?A)

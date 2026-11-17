@@ -57,8 +57,8 @@
 (likes Bob Stew)
 (not (likes Ann Soup))
 
-;; Priority 500 — above everything the stdlib declares, so the probe reads the
-;; world after the rules under test have finished writing to it.
+;; The probe's `(unknown …)` is an `absent`, judged at the boundary on the
+;; closure's fixpoint: it reads the world the rules under test have written.
 (rule probe-undecided ()
   :match  (unknown (likes Ann Stew))
   :assert (undecided Ann Stew)
