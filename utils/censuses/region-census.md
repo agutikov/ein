@@ -2,7 +2,7 @@
 
 **S1e2.1a.3's measurement**: the region R of every corpus program the oracle
 reaches, put on the table beside the rulings of
-[Q-M1e2.7](../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice).
+[Q-M1e2.7](../../docs/decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md).
 The definition it measures is
 [`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md),
 which states it today.
@@ -35,7 +35,7 @@ the largest regions in the corpus (`features/02_star_in_identifiers`,
 `syntax/constraint-scopes`). The default selection's reach is in § 1.
 
 **The first take.** An unbanked take of the same afternoon
-([Q-M1e2.7 § Measured for these answers](../../plans/m1e2_correctness/open_questions.md#measured-for-these-answers))
+(Q-M1e2.7 § Measured for these answers)
 ran every `.ein` file under `examples/`, `tests/` and `corpus/`, so its counts
 differ: 154 cubes against 159 here, and 14 regions with k_c ≠ k_s against 13.
 This page replaces it.
@@ -177,7 +177,7 @@ Non-empty R, n > 0, monotone and flagged:
   P1e2.1b), and two programs S1e2.1a.8 wrote to have their holes. Whether
   today's answer on `lattice/04` is wrong depends on what R means on a
   non-monotone program, so its row waits for
-  [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s S1e2.1b.3, which
+  P1e2.1b's S1e2.1b.3, which
   now lists it.
 
 ## 6. Commitments against states (ruling (a) × (e))
@@ -264,7 +264,7 @@ facts of every state in R:
   state a node of a non-monotone lattice is belongs to P1e2.1b's S1e2.1b.2.
 - That **R** does not move is the half this stage can measure. Whether a lever
   moves what the **engine reports** is
-  [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)'s, against this R.
+  S1e2.1a.6's, against this R.
 - **Since S1e2.1a.6 (2026-11-01)** the mirror flag is retired, on the user's
   ruling of that day, and the register's W13 records it. The census was
   re-taken after the switch and after the retirement; both are in that
@@ -272,7 +272,7 @@ facts of every state in R:
 
 ## 10. Route 1's reach, for S1e2.1a.9
 
-[S1e2.1a.9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)'s route 1 enumerates a
+S1e2.1a.9's route 1 enumerates a
 monotone program's alive nodes and never generates a superset of a dead one,
 so a node is generated only when every one-smaller subset is alive and its
 dead border is exactly N.

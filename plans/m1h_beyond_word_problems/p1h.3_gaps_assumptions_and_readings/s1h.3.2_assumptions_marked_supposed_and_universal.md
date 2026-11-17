@@ -7,7 +7,7 @@
 [S1h.3.6](s1h.3.6_the_page_and_the_stop.md).
 **Depends on:** [S1h.3.1](s1h.3.1_the_three_forms_of_a_gap.md)'s problems and table;
 `examples/word_problems/listed_is_all.ein`, which
-[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)
+S1f.6.28
 banks (if that stage has not run, this one writes the module in scratch, to the user's reply below, and says
 so); [S1h.2.1](../p1h.2_slicing/s1h.2.1_what_a_slice_is_today.md)'s script, for the slice.
 

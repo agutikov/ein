@@ -361,8 +361,8 @@ fn extent(kb: &Kb, terms: &Terms, isa: Symbol, ty: Symbol) -> Vec<Symbol> {
 /// ```
 ///
 /// computed here from the fact store alone, with no reference to the pass. It
-/// is the `layer_census`
-/// style of claim: the engine can predict the ledger from the declarations, and
+/// is a claim of prediction:
+/// the engine can predict the ledger from the declarations, and
 /// a mismatch is an encoding bug with a number attached.
 ///
 /// Run over **every corpus program that declares a bijection**, so it is a

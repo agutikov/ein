@@ -86,7 +86,7 @@ Concrete measurement tracks:
   numbers.
 
 Mode coverage: report both `solve` and `prove` results (cf.
-[P1.9 modes idea](../followups/f9_e_catalog.md)),
+P1.9 modes idea),
 plus the `gaps` / `contradictions` task classes
 ([Idea 03](../ideas/03-three-task-classes.md)).
 
@@ -147,7 +147,7 @@ known unknowns rather than aspirational.
 ## Cross-links
 
 - M1 — core graph reasoning,
-  [M1a — the Rust engine](../../docs/history/m1a_rust/README.md),
+  M1a — the Rust engine,
   [M2 — EinAf](../m2_nl_to_ir/README.md) — the results the write-up
   reports on; [`EinAf.md` § Stage P](../m2_nl_to_ir/EinAf.md#stage-p--research-paper)
   is the outline.

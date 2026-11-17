@@ -4,9 +4,9 @@
 ([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-11, on the user's instruction of that day. Not started. **It is the phase's stop:**
 nothing outside `plans/` and `build/` is written before the user has read its page.
-**Depends on:** [S1f.6.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md), the four operations. The programs that need
-a sign or a fraction wait for [S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md) and
-[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md); the page marks each such program, and may be shown
+**Depends on:** S1f.6.6, the four operations. The programs that need
+a sign or a fraction wait for S1f.6.7 and
+S1f.6.8; the page marks each such program, and may be shown
 in two rounds, the natural-number programs first, as the calculator's design was shown in three.
 **The split (2026-11-13).** As S1f.8.1 this stage surveyed *both halves* of P1f.8 on one page. Its algebra half
 is here. Its geometry half, problems 10 to 14 of its table, probes G-1 to G-5, findings F-3 to F-5 and
@@ -52,7 +52,7 @@ problem that turns out not to be writable stays on the page with what happened.
 | 4 | *Solve 3x + 4 = 19.* | the derivation, three steps, and its trace beside a textbook's worked solution | A-1 |
 | 5 | *Solve 3x + 4 = 18*, *0·x + 4 = 19*, *0·x + 4 = 4*, *x + 5 = 2.* | no whole root; no root; every number; a negative root | A-2, A-3 |
 | 6 | Problem 4 with x known to be a digit, solved by search | the same answer from the lattice; the two costs side by side | A-4 |
-| 7 | *Bob has some apples. He gave 2 away and has 3. How many had he?* | [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)'s problem run backwards: the unknown is a start, not a result | — |
+| 7 | *Bob has some apples. He gave 2 away and has 3. How many had he?* | S1f.6.20's problem run backwards: the unknown is a start, not a result | — |
 | 8 | *x + y = 10, x − y = 2.* | two equations, by elimination | — |
 | 9 | *Prove (a + b)² = a² + 2ab + b².* | an identity by normal forms, two variables | — |
 
@@ -63,7 +63,7 @@ page, under the numbers they had here.
 ## What the page proposes, each on the programs above
 
 1. **Expressions:** the shape of the data, the spelling of its heads, and how it stands to
-   [S1f.6.14](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.14_expressions.md)
+   S1f.6.14
    ([README § Expressions, and S1f.6.14](README.md#expressions-and-s1f614)). Shown: problem 1 written three
    ways, as expression data with an evaluator; as request facts chained by rules of the program, the
    calculator's core way; and, for comparison only, as round 2's `(calc E)`, from the calculator's prototype.

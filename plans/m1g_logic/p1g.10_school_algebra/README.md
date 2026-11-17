@@ -10,26 +10,26 @@ stages are added.
 **Split off and moved to M1g on 2026-11-13,** on the user's instruction of that day
 ([§ The move](#the-move-of-2026-11-13)). The geometry is [P1g.11](../p1g.11_school_geometry/README.md).
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop, as M1g's phases do, and
-[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), the calculator. Specifically:
+P1f.6, the calculator. Specifically:
 
 - **the four operations and comparison,** `std.math.decimal-arith`
-  ([S1f.6.3](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md) to
-  [S1f.6.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md)),
+  (S1f.6.3 to
+  S1f.6.6),
   done 2026-11-11: every number here is the calculator's, `z` or `(n PREFIX DIGIT)`;
-- **[S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md), negative
+- **S1f.6.7, negative
   numbers:** `x + 5 = 2` has no answer without them, and a polynomial's coefficients are signed;
-- **[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md), rational
+- **S1f.6.8, rational
   numbers:** `3x = 7`, and the gcd chain that puts a fraction in lowest terms;
-- **[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md), word
+- **S1f.6.20, word
   problems:** its two kinds of gap, its readings as hypotheses and its *the problem is a model* are the pattern
   this phase's word problems follow;
-- **[S1f.6.14](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.14_expressions.md)'s ruling,** on
+- **S1f.6.14's ruling,** on
   whether Ein gets an expression layer (**ruled 2026-11-12:** both `(calc E)` and `(let NAME E)`, in this phase;
   [§ Additions of 2026-11-12](#additions-of-2026-11-12)).
   This phase cannot be written without expressions as *data*, so it is where that question's evidence comes
   from, and the ruling is taken at [S1g.10.1](s1g.10.1_survey_and_design.md)'s stop if it has not been taken
   before ([§ Expressions, and S1f.6.14](#expressions-and-s1f614));
-- **[S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)'s inverse
+- **S1f.6.10's inverse
   questions,** which hand over here: that stage asks what a table run backwards and a digit guessed make of
   `x + 4567 = 127645`; this phase asks what a pupil's derivation makes of it.
 
@@ -57,7 +57,7 @@ So P1f.8 is two phases of M1g: this one, the algebra, and [P1g.11](../p1g.11_sch
 geometry. The files were moved with `git mv`, so each stage's history follows it. **Nothing of the content was
 redesigned:** every target program, probe, task, acceptance line, risk, question and connection of P1f.8 is in
 exactly one of the two phases, or, where it covered both halves, in both. The old path keeps a
-[stub](../../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md), since pages that
+stub, since pages that
 hold the user's replies as typed link to it. The second sentence of the instruction is recorded on
 [S1g.11.2](../p1g.11_school_geometry/s1g.11.2_theorems_as_rules.md#the-users-note-of-2026-11-13).
 
@@ -150,7 +150,7 @@ figure and what is read off the picture, are [P1g.11's](../p1g.11_school_geometr
   simplification heuristics. A normal form for polynomials with rational coefficients, linear equations, two
   equations in two unknowns, and quadratics with a rational root: the school course to about the 8th grade, and
   where it stops is stated with a program.
-- **Not engine arithmetic.** [Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)
+- **Not engine arithmetic.** [Q-M1e2.24](../../../docs/decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)
   stands: no numbers, no ranges, no arithmetic predicate. Every number is the calculator's nested fact, and every
   computation a request the imported theory answers.
 - **Not a language of function calls.** The user, 2026-11-11: *"Ein is not Lisp, is it?"*. An expression here is a
@@ -169,7 +169,7 @@ figure and what is read off the picture, are [P1g.11's](../p1g.11_school_geometr
 The calculator's rulings left one thing open: the expression layer, `(calc E)` and `(let NAME E)`
 ([`stdlib.md` § The rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)).
 The user found it questionable, and
-[S1f.6.14](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.14_expressions.md) waits. Algebra meets
+S1f.6.14 waits. Algebra meets
 the same shape from the other side and the two must not be confused:
 
 - **S1f.6.14's question** is whether a program may *compute* by writing a tree: is `(calc (add N1 (div N2 N3)))`
@@ -245,7 +245,7 @@ extensions and word problems, since it imports them; beside [P1g.2](../p1g.2_pro
 of which it needs nothing; and before [P1g.3](../p1g.3_proof_systems/README.md), by the user's words of
 2026-11-11, *"between calculator and proof systems"*, though no stage of P1g.3 waits for it.
 [P1g.9](../p1g.9_one_equation_three_methods/README.md) waits for S1g.10.4. It shares no file with M1f's
-[P1f.10](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) or
+P1f.10 or
 [P1f.20](../../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md) but the kernel pages P1f.20
 moves, which it does not edit.
 
@@ -310,7 +310,7 @@ program is reproduced as a sketch in the stage that re-takes it. The geometry's 
   no word for a saturation that does not stop (M1g's C-1).
 - **The natural rules join on nested values.** *Value the two parts, then add* (A-7) joins an expression with
   its parts' values: the join the calculator's rule of the theory forbids, quadratic in a batch (E-3 of the
-  calculator's [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)). One
+  calculator's `findings.md`). One
   problem is small and does not notice. The phase **measures** each theory in a batch on the matcher's
   counters, and either rewrites it with tags, as the calculator did, or says that it is quadratic and why that
   is accepted. It does not build the index: that is
@@ -343,10 +343,10 @@ are P1f.8's and were not renumbered: g, h and i are [P1g.11's](../p1g.11_school_
 ## Additions of 2026-11-12
 
 The user replied to the calculator's questions on 2026-11-12
-([`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md), with what stayed open in
-[`questions_round2.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md); the index
+(`questions.md`, with what stayed open in
+`questions_round2.md`; the index
 of every reply is
-[`replies_2026-11-12.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)). Four
+`replies_2026-11-12.md`). Four
 of the replies sent work to P1f.8, and all four are the algebra's, so they are here. Where a reply says *p1f.8*
 it is quoted as typed; the phase it names is this one since 2026-11-13.
 
@@ -391,7 +391,7 @@ those last words name is this one.
 **The order, with the additions.** S1g.10.6 is independent and may run at any time. S1g.10.7 runs after the
 calculator's binary build, beside the algebra.
 
-**Names.** The calculator's modules are under `std.math` since [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
+**Names.** The calculator's modules are under `std.math` since S1f.6.31
 (2026-11-14): `std.math.decimal-arith`, `std.math.int` and `std.math.rat`, which this plan names; before that stage they
 were `std.arith`, `std.int` and `std.rat`. The relations kept their names.
 
@@ -413,15 +413,15 @@ geometry's four entries are [P1g.11's](../p1g.11_school_geometry/README.md#what-
 
 ## Connections
 
-- **[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** the numbers, the request
+- **P1f.6:** the numbers, the request
   protocol, the search-free test, the harness against Rust's integers, the rule of the theory and its reason,
   the ruling on division by zero, and
-  [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)'s E-3 and E-12, which
+  `findings.md`'s E-3 and E-12, which
   this phase's rules meet head on.
-  [S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) hands over
-  its equations; [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)
+  S1f.6.10 hands over
+  its equations; S1f.6.20
   its gaps and readings;
-  [S1f.6.14](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.14_expressions.md) its question.
+  S1f.6.14 its question.
 - **[P1g.11](../p1g.11_school_geometry/README.md):** the other half of what was P1f.8. The two meet where a
   figure's problem has an unknown (S1g.11.4 over S1g.10.4), where a theorem is a sum with letters for the
   angles (target 4 of S1g.11.2, over S1g.10.3's normal forms), in an order on names wanted twice (question d

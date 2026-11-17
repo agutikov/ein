@@ -5,13 +5,13 @@
 **Status:** planned 2026-11-12, on the user's reply of that day. Not started. **An investigation that stops
 for the user** with real programs computed on a prototype; it changes no shipped module before a ruling.
 **Depends on:** the calculator's extensions as shipped (`std.math.int`, `std.math.rat`), and binary arithmetic in the
-stdlib ([S1f.6.16's build](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-build-as-ruled-2026-11-12)),
+stdlib (S1f.6.16's build),
 since a second representation of the natural numbers is what the question is asked about. Until that has
 shipped, the banked `examples/binary_arithmetic/` theory can stand in for the prototype.
 
 ## The reply
 
-Question 14 of the calculator's [`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q14) asked for the binary
+Question 14 of the calculator's `questions.md` asked for the binary
 theory's names. The user, 2026-11-12, in full:
 
 > a is ambiguous, add2 looks like add with 2 operands etc. Take (b), but ints and rats - different question.
@@ -26,7 +26,7 @@ its distinction is the user's: **a representation** (binary, decimal) is how a n
 **a number type** (integer, rational, later complex) is built *from* naturals, of whatever representation.
 
 **The same question, asked again in round 2.** On the trial of rules shared between the bases
-([round 2, item 16](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q16)) the user replied, committed as `dc88520b`:
+(round 2, item 16) the user replied, committed as `dc88520b`:
 
 > So we potentially can import std.math.rat and std.math.binary-arith and then connect them with single fact?
 
@@ -55,7 +55,7 @@ try, each on real programs, none chosen before the measurement:
 - **An interface of calls.** The compound type calls a fixed set of tagged relations (*add*, *subtract both
   ways*, *multiply*, *divide*, *compare*), and each representation provides rules that answer them, with
   the representation read off the number's own head (`n` or `b2`). The calculator's tagged calls become an
-  interface in [S1f.6.30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md); this
+  interface in S1f.6.30; this
   asks whether one interface can be answered by two theories at once, and what the dispatch costs.
 - **Conversion at the boundary.** One compound theory over one representation, and numbers of another
   converted on the way in and out (`std.math.convert`). No genericity; a cost a request.

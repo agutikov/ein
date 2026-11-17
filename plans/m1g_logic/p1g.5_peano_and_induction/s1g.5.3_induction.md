@@ -5,7 +5,7 @@
 **Depends on:** [S1g.5.1](s1g.5.1_unary_numbers_and_the_axioms.md);
 [S1g.4.3](../p1g.4_first_order_logic/s1g.4.3_formulas_with_quantifiers.md)'s substitution and
 [S1g.4.4](../p1g.4_first_order_logic/s1g.4.4_quantifier_rules.md)'s proof checker.
-**Pulls in:** [S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)'s
+**Pulls in:** S1f.6.10's
 item 4, bounded theorem checking and the column lemma; [F26](../../followups/f26_consistency_and_completeness.md):
 *"The calculator computes, and does not quantify"*.
 **Stops for the user:** its first task, with

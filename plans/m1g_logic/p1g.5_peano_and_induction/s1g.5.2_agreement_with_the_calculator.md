@@ -4,8 +4,8 @@
 **Status:** planned 2026-11-11, not started.
 **Depends on:** [S1g.5.1](s1g.5.1_unary_numbers_and_the_axioms.md);
 [`std.math.decimal-arith`](../../../stdlib/math/decimal-arith.ein), the decimal calculator
-([P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)); and, if it shipped, the binary
-module of [S1f.6.16](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md).
+(P1f.6); and, if it shipped, the binary
+module of S1f.6.16.
 
 ## What it asks
 

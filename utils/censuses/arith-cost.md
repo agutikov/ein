@@ -11,7 +11,7 @@ The text below is as it was taken, dates and links kept.
 
 The user, 2026-11-11: *"add examples with long numbers and many calculations
 so we can compare load time with calculation time"* (M1f
-[S1f.6.15](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.15_load_against_calculation.md)).
+S1f.6.15).
 `ein saturate FILE` prints three times of its own: `parse:`, the program's
 text; `kb load:`, macros, imports and facts; and `saturate:`, the calculation.
 Three generated examples make a program long in three ways,
@@ -166,7 +166,7 @@ The same program, the whole process. `ein solve` saturates once, as `ein saturat
   in 6.7 ms against 18.1 as text (`ein kb save`, `ein solve`, best of 20,
   2026-11-11). A library has no cache of its own (E-15 and E-25 of the
   phase's
-  [`findings.md`](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)).
+  `findings.md`).
 - **For a sum, parsing the program's numbers costs about what adding them
   does.** 10 000 nine-digit sums are 1.1 MB of text: 737 ms to parse and
   829 ms to saturate, where the saturation was 502 ms before S1f.6.12's
@@ -211,7 +211,7 @@ some size arguments and generate an example"*; told that memory ends a
 calculation before time does, *"Ok, then pick the one that fits into memory,
 say ~16GB; do not call it in tests and in CI, just for manual solve call"*
 (M1f
-[S1f.6.29](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.29_the_biggest_calculation.md)).
+S1f.6.29).
 `python3 utils/gen_arith_examples.py --op …` writes such a program. It goes
 under `build/`, is never checked in, and no test, gate step, nightly step or
 dev-host step writes or runs one. `utils/bench_env.sh python3

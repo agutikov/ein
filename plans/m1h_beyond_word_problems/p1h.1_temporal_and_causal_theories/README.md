@@ -8,10 +8,10 @@ ruling of 2026-11-08). Its fifth stage **stops for the user** with real programs
 before either module is written; the three stages after the stop are named here and their tasks are written
 at the stop.
 **Depends on:** [M1f](../../m1f_hypothesis_and_documentation/README.md)'s calculator phase,
-[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md): the word theory banked under
+P1f.6: the word theory banked under
 [`examples/word_problems/`](../../../examples/word_problems/README.md), whose named moments are where the
 phase starts, and
-[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md),
+S1f.6.28,
 which banks `before.ein`, the witness of the phase's opening question (planned, not run on 2026-11-13; a
 stage that needs the file before it is banked uses a scratch copy and says so).
 **Read with:** [M1g's P1g.9](../../m1g_logic/p1g.9_one_equation_three_methods/README.md), whose three methods
@@ -28,7 +28,7 @@ page carries the user's words in full, what the phase starts from as it stands i
 ## Where it comes from
 
 Question 26 of the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q26) asked how a
+`questions.md` asked how a
 problem's order of events is written: (a) named moments, (b) nested events, (c) a chain of sentences. The
 user, 2026-11-12:
 
@@ -121,7 +121,7 @@ As the tree stands on 2026-11-13. Each figure is re-taken by the stage named bes
   `fire` line carries `rule`, `premises` and `derived`
   ([`events.md`](../../../docs/ein/ein.rs/events.md)).
 
-**Names.** [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
+**Names.** S1f.6.31
 moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which this
 phase's files name; the relations kept their names.
 
@@ -210,7 +210,7 @@ Against other phases and milestones, stated and not resolved:
 
 ## Connections
 
-- **[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** the word theory, its three
+- **P1f.6:** the word theory, its three
   forms of an order, and `before.ein`.
 - **[M1g](../../m1g_logic/README.md):** P1g.9, one equation by three methods; P1g.10's linear equations;
   C-1, a saturation that does not stop.

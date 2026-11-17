@@ -25,7 +25,7 @@ works - leave what is implemented already."*
   [S1h.1.2](s1h.1.2_an_event_as_an_instruction_or_a_relation.md)'s two ways lands under
   `examples/word_problems/`, it lands as a module beside `words.ein`, which is not rewritten, and
   `before.ein`'s claim moves to 7 in that commit, as
-  [S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s
+  S1f.6.28's
   T5 has it. If the user rules that nothing lands, `before.ein` keeps its claim and its header is restated
   to say where the comparison is.
 - **The phase's close:** every row of `findings.md` with a ruling, a fix or an owner; the phase's README and

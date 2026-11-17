@@ -22,10 +22,10 @@ motivation strikes.
 | F6  | [Modify own harness code](f6_modify_own_harness.md)               | rung 3 of self-modification: engine emits patches to its own source           |
 | F7  | [Rule taxonomy + rule induction](f7_rule_induction.md)            | when the rule library grows past hand-management. **Sub-track B left 2026-08-23** — it is M2's theory pass ([S2.2.4](../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md)): activators *selected* from the stdlib catalogue, a rule synthesised only when the catalogue lacks the property. B′ (instance → type properties), C and D stay parked |
 | F8  | [FCA / RCA, ODIS, TPTP](f8_FCA_RCA_odis_tptp/ideas.md)            | raw notes — formal concept analysis over the relation algebra, external corpora |
-| F9  | [Hypothesis-loop E-catalog](f9_e_catalog.md) — **closed**         | nothing to trigger: all 28 entries settled (2026-06-15 + 2026-08-17). Kept as the ledger — read it before proposing a search-layer optimisation, it is where nine of them were measured and rejected |
+| F9  | Hypothesis-loop E-catalog — **closed, deleted** | nothing to trigger: all 28 entries settled (2026-06-15 + 2026-08-17). It was the ledger of the walk's search-layer optimisations, nine of them measured and rejected; deleted with the finished plans at M1f's S1f.20.9 (`git log --diff-filter=D -- plans/followups/f9_e_catalog.md`) |
 | F11 | [Deductive-layer perf](f11_deductive_layer_perf.md)               | when a workload outgrows the matcher — RETE beta-memories + worst-case-optimal joins; the live perf work now that F9's search-layer catalog is closed |
-| F14 | Saturation and satisfiability — **promoted**                       | **promoted 2026-08-21 → [M1d](../../docs/history/m1d_satisfiability/README.md)**, at the user's direction. The note is now [`docs/history/m1d_satisfiability/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) and its argument is the milestone's [§ What the note says the engine is missing](../../docs/history/m1d_satisfiability/README.md) plus phase [P1d.2](../../docs/history/m1d_satisfiability/README.md#p1d2--obligations). Nothing is parked here any more |
-| F18 | [World-aware negatives](f18_world_aware_negatives.md)             | when a program needs the shape, or when M1f's S1f.10.8 rules that a refutation may rest on an `absent`. **Closed without being done** if that stage forbids the shape instead — `Prov::absent` is the starting point either way. **Forbidden 2026-11-02** (M1e2's S1e2.4.1); **closed without being done 2026-11-04**, when S1e2.2.5's refusal shipped with F2's *via*, and F21's D6 with it |
+| F14 | Saturation and satisfiability — **promoted**                       | **promoted 2026-08-21 → M1d**, at the user's direction. The note is now [`plans/ideas/11-saturation-and-satisfiability.md`](../ideas/11-saturation-and-satisfiability.md) and its argument is the milestone's § What the note says the engine is missing plus phase P1d.2. Nothing is parked here any more |
+| F18 | World-aware negatives — **closed, deleted** | deleted with the finished plans at M1f's S1f.20.9 (git history). It was: when a program needs the shape, or when M1f's S1f.10.8 rules that a refutation may rest on an `absent`. **Closed without being done** if that stage forbids the shape instead — `Prov::absent` is the starting point either way. **Forbidden 2026-11-02** (M1e2's S1e2.4.1); **closed without being done 2026-11-04**, when S1e2.2.5's refusal shipped with F2's *via*, and F21's D6 with it |
 | F20 | [The three rule kinds are the three sentence forms](f20_rule_kinds_as_sentence_moods.md) | when M2's formalizer decides which rule kind a clause becomes, or idea 08 renders rules back into text: assertion → positive fact, negation → restriction, question → obligation (the user, 2026-10-16) |
 | F21 | [Non-monotone programs: node functions and path dependence, decided](f21_non_monotone_programs_decided.md) | M1e2 P1e2.1b's deferred decisions (the user, 2026-11-02: detect, document, warn, decide nothing): what a node's state is (Q-M1e2.2, (A)–(E)), path dependence and incremental search, the hole report (Q-M1e2.7 (d)), the handling, learning before *forbid*'s refusal ships, the search past the oracle's limit (was S1e2.1c.3). When a route would extend a parent's fixpoint on a flagged program, when R is wanted past the limit on one, when S1e2.2.5 builds the refusal, or when the revisit cannot settle W8. **Since 2026-11-05** also the inventory's W-2, W-5 and W-6 (rows filed by S1e2.2.25) and five detector labels, S-6–S-9 and S-11 (Q-M1e2.16) |
 | F22 | [The exact unsat core: re-derive what a full alternatives list refused](f22_exact_core_past_the_cap.md) | M1e2 S1e2.2.11's deferred residual (the user, 2026-11-04, Q-M1e2.11 (i)(b)): `W10/alt-cap-shared`, a saving between two facts behind a full list, which no bounded retention keeps. At M1e2's close, which names the row; when a corpus program's core moves under an uncapped build; or when an explanation consumer needs the minimal core. **Widened 2026-11-05**: Q-M1e2.15 (b)'s residual, and the inventory's W-8, W-9, W-10 and W23's exact core past the budget (Q-M1e2.16) |
@@ -61,7 +61,10 @@ view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-mo
   obeys the one-page rule; the stage files are the parked detail. This
   is for content *relocated* out of a closed milestone, not a licence to
   draft stages here. When the last stub goes, the directory goes: F9 was
-  one of these until 2026-08-17 and is now a single file.
+  one of these until 2026-08-17, then a single file until it was deleted.
+  [`f21_probes/`](f21_probes/) is not a followup but F21's: the fourteen
+  probe programs its page and three censuses under `utils/censuses/` run,
+  moved out of M1e2's folder when that was deleted.
 - **Closing an entry keeps the reason, not the stub.** A settled entry's
   spec is history; what a future reader needs is one line saying *why* —
   especially for a measured rejection, which is otherwise indistinguishable
@@ -71,7 +74,7 @@ view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-mo
   proper stage files. **A note that turns out to be the *reason* for a
   milestone rather than the content of one phase lands at the milestone
   root instead**, verbatim: F14 became
-  [`m1d_satisfiability/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) on
+  [`m1d_satisfiability/ideas.md`, now `plans/ideas/11`](../ideas/11-saturation-and-satisfiability.md) on
   2026-08-21, with the milestone README doing the analysis and the phases
   carrying the work.
 

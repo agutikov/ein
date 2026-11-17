@@ -5,8 +5,8 @@
 **Status:** planned 2026-11-11. Not started. The optional part runs only on the user's word.
 **Depends on:** [S1g.10.4](s1g.10.4_linear_equations.md): the equation as a fact, the solver, the ruled outcomes
 for *no solution* and *every number*; [S1g.10.2](s1g.10.2_expressions_and_evaluation.md)'s substitution;
-[S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md) and
-[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md), without which almost no system and no quadratic has
+S1f.6.7 and
+S1f.6.8, without which almost no system and no quadratic has
 an answer the theory can write.
 
 ## The instruction's part
@@ -153,7 +153,7 @@ S1f.6.7's `(int P N)`.
 
 - **That every route costs too much.** Saturation explores all of them. If two equations are affordable and
   three are not, that is the measured edge of *derivation without a strategy*, and it is a result for
-  [P1f.10](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) and M1g's proof search to read, not a defect to fix here.
+  P1f.10 and M1g's proof search to read, not a defect to fix here.
 - **That the hrule over a derived domain does not do what is expected.** Then it is a finding with its witness,
   and factoring is shown by derivation alone: try each divisor by rules, which is a walk.
 - **Engine findings,** to [`findings.md`](findings.md).

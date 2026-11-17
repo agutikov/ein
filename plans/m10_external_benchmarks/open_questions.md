@@ -1,13 +1,13 @@
 # Open Questions — M10 (External benchmarks)
 
 Milestone-scoped questions. Ids are **sticky** — `Q-M10.<n>`, in the style
-[M1a](../../docs/history/m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
+M1a uses for `Q-M1a.<n>` rather than the
 global `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md),
 so the namespaces cannot collide. A closed id is never reused.
 
 **All three arrived 2026-08-23 with the promotion**, where they were
 `Q-M1c.3`, `.4` and `.5` in
-[M1c](../../docs/history/m1c_external_validation/open_questions.md). The text below is theirs,
+M1c. The text below is theirs,
 unchanged apart from ids and paths; M1c's index keeps the old ids as
 redirects, because a sticky id that silently disappears is worse than one that
 points somewhere.
@@ -67,10 +67,10 @@ Z3's is a category error.
 **Recommendation: (b).** And the reason is not diplomacy — a Lean development
 can prove that the model is the *only* model, which is exactly the guarantee
 the word `exhausted` claims in Ein's own verdict
-([Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)).
+([Q-M1d.1](../../docs/decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md)).
 Having one column in the corpus where that guarantee is machine-checked is
 worth more than a number, and it is the corpus's only link to
-[M1d](../../docs/history/m1d_satisfiability/README.md)'s subject.
+M1d's subject.
 
 ## Q-M10.3 — Where does the benchmark live, and is any of it a gate?
 

@@ -7,10 +7,10 @@ has a directory with a README and a file a stage ([§ The phases](#the-phases));
 its source and is kept as it was written on 2026-11-12, with a pointer at its head. The questions are in
 [`open_questions.md`](open_questions.md), Q-M1h.1 to .20, none ruled.
 **Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md)'s calculator phase,
-[P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md): the word problems banked under
+P1f.6: the word problems banked under
 [`examples/word_problems/`](../../examples/word_problems/README.md)
-([S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md),
-[S1f.6.28](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)) are
+(S1f.6.20,
+S1f.6.28) are
 what every question below was first met on, and
 [`word-problems.md`](../../docs/ein/user/guide/word-problems.md) is the
 investigation's page.
@@ -20,7 +20,7 @@ investigation's page.
 ## The instruction
 
 The user wrote the milestone into
-[`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md) of the calculator's
+`questions.md` of the calculator's
 phase on 2026-11-12, above the questions on word problems. In full, as typed:
 
 > TODO: New milestone M1h - further work beyond word problems. 3 phases:
@@ -143,7 +143,7 @@ On the banked theory the answer is no: the question has no row and the amount at
 stated (`ein solve` on a scratch copy of `examples/word_problems/words.ein` and `gaps.ein`, 2026-11-12).
 The rules read *gave* forwards only, *after = before − x*, and plan only from a later moment to an earlier
 one. The problem is banked as a witness by
-[S1f.6.28](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md),
+S1f.6.28,
 `examples/word_problems/before.ein`, with today's answer. Two ways to make it answer 7, for this phase to
 compare on programs:
 
@@ -191,7 +191,7 @@ the **program** (its facts, its rules, its imported modules' rules) and not of t
 dumped; and its complement, the part the answer did not touch.
 
 **Its two opening questions** are from
-[round 2, item 33](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q33), where the
+round 2, item 33, where the
 user's reply 33 (quoted under P1h.3) was answered and both points were sent here, to which the user replied
 *"OK"* (`dc88520b`):
 
@@ -283,7 +283,7 @@ imports; and a read-out row for what root owes (S1f.6.26).
 **What round 2 answered in outline,** which the user accepted there (`dc88520b`: *"OK (a)"* on item 30, *"OK"* on
 item 33) and which the phase starts from and re-takes on programs:
 
-- [Item 30](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q30), on the user's
+- Item 30, on the user's
   chain *ambiguity == non-monotone solution == required additional information*: *Not quite, and the
   difference is worth having for M1h.* **Ambiguity is monotone:** R has several states and nothing is
   retracted. What is non-monotone is one sentence, *Alice's amount is **not stated***, true of the problem
@@ -292,7 +292,7 @@ item 33) and which the phase starts from and re-takes on programs:
   the engine and not a rule that says *missing*. So: *required additional information = a debt; ambiguity =
   several states; neither needs non-monotone rules unless the program wants the missing thing as a fact to
   reason from.*
-- [Item 33](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q33), on whether the
+- Item 33, on whether the
   set of assumptions is finite: *In the world the set is not finite (the frame problem). In a theory it is
   bounded by the rules, not by the text's words. An assumption has to be stated exactly where a rule's
   conclusion depends on it.* *Things fit boxes* is needed although the text never says *fit*, because the
@@ -342,7 +342,7 @@ phase is the first part, and the line between the two.
 **What it starts from:**
 
 - **E-17** of the calculator's
-  [`findings.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md): `--trace` cannot show
+  `findings.md`: `--trace` cannot show
   an importing theory's steps without the imported theory's. The two-step word problem is 139 steps, 10 of
   them the word theory's and the rest the calculator's; `-l`, the goal-relevant slice, keeps 137. Nothing
   folds a call into one line, *12 ÷ 3 = 4, remainder 0 (116 steps of `std.arith`)*. A script on the
@@ -526,7 +526,7 @@ How the schema of [`plans/README.md`](../README.md) was applied when the phases 
 - **The numbers.** No stage is numbered into the gaps this README reserves: the phase numbers 5 to 9 and
   those between the user's three stay free. A phase's later stages are numbered on from its last (S1h.20.3,
   S1h.30.3) when its plan past a survey is written.
-- **Names.** [S1f.6.31](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
+- **Names.** S1f.6.31
   moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which the
   stage files name; the relations kept their names.
 
@@ -580,10 +580,10 @@ that puts it to the user and what waits for it.
 
 ## Connections
 
-- **[P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** the word problems, the
-  questions and their replies ([`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md),
-  [`questions_round2.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md), and
-  the index [`replies_2026-11-12.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)).
+- **P1f.6:** the word problems, the
+  questions and their replies (`questions.md`,
+  `questions_round2.md`, and
+  the index `replies_2026-11-12.md`).
 - **[P1g.10](../m1g_logic/p1g.10_school_algebra/README.md)** (school algebra; M1f's P1f.8 until 2026-11-13): expressions
   as data; *the trace is the school solution*, its acceptance line, is P1h.4's subject on equations.
 - **[M1g](../m1g_logic/README.md):** P1g.7, unsatisfiable against owing; P1g.8, a theory of types; and

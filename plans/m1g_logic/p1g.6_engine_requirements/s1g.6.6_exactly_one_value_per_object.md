@@ -6,14 +6,14 @@ Provisional until P1g.1's stop, as the phase's other stages are.
 **Depends on:** [S1g.2.2](../p1g.2_propositional_logic/s1g.2.2_valuations_as_hypotheses.md) and
 [S1g.2.4](../p1g.2_propositional_logic/s1g.2.4_applications_and_scale.md), which are the stages that need it
 and that bring its witnesses; of M1f,
-[P1f.10](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md), the structure of
+P1f.10, the structure of
 the hypothesis set, whose groups (*pick at most one from each*) are this shape seen from the other side.
 It starts from what P1f.10 built and does not repeat it.
 
 ## Where it comes from
 
 Question 25 of the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q25): *Is a cheaper
+`questions.md`: *Is a cheaper
 search for "exactly one value per object" a requirement?* With each input a hypothesis that takes 0 or 1,
 describing R costs 3ⁿ saturations for n inputs, and finding one state 2ⁿ; the same truth table from written
 input vectors is one saturation. Its options were (a) *the search form is a demonstration; truth tables are
@@ -22,7 +22,7 @@ cheaper route for this shape of hypothesis is planned there*. The user, 2026-11-
 
 > Is this about SAT, binary circuits or what? I don't see how (a) and (b) conflict, are they?
 
-[Round 2, item 25](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q25):
+Round 2, item 25:
 
 > It is about SAT, in Ein's form. […] Nothing in the engine knows that *exactly one value per object* is a
 > special, very common shape, which a SAT solver exploits with unit propagation and learned clauses.
@@ -77,7 +77,7 @@ Each on the witnesses first, measured in saturations and through `utils/bench_en
    propagation is settled at P1g.1's stop; here it is measured as an experiment on a prototype and priced.
 4. **E-31's transversal:** describing R spends its time on minimal transversals and not on saturations (94 %
    of 5.1 s on a five-digit equation, `questions.md` 72). M1f's
-   [S1f.6.27](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md)
+   S1f.6.27
    takes the part that is free; what is left of it on this shape is here.
 
 ## Tasks

@@ -2,14 +2,14 @@
 
 **Status:** planned 2026-11-12, on the user's note of that day. Not started. **A placeholder:** the note is
 one line, and this page adds no design to it. It carries no estimate (the user's ruling of 2026-11-08).
-**Depends on:** the engine that ships, [`ein.rs`](../../ein.rs/) ([M1a](../../docs/history/m1a_rust/README.md)).
+**Depends on:** the engine that ships, [`ein.rs`](../../ein.rs/) (M1a).
 Nothing else is known to be needed.
 **Blocks:** nothing.
 
 ## The instruction
 
 The user, 2026-11-12, in
-[`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md) of the calculator's
+`questions.md` of the calculator's
 phase, in full:
 
 > TODO: new milestone M15 - Ein MCP server

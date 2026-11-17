@@ -8,9 +8,9 @@ ruling of 2026-11-08). It is an investigation on programs: five stages each comp
 the same problems, the sixth **stops for the user**, and the seventh, whose tasks are written at the stop,
 builds what the user rules.
 **Depends on:** [M1f](../../m1f_hypothesis_and_documentation/README.md)'s calculator phase:
-[S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md), the read-out
+S1f.6.26, the read-out
 row for what root owes (done 2026-11-13), and
-[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md),
+S1f.6.28,
 which rebuilds the readings to *always owed* and banks `listed_is_all.ein` (done 2026-11-13: the files are
 banked under `examples/word_problems/`).
 **Reads:** [P1h.2](../p1h.2_slicing/README.md)'s slice, for how an answer reports what it rests on;
@@ -26,7 +26,7 @@ stages.
 ## Where it comes from
 
 Six replies of 2026-11-12 to the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q28), on what a problem
+`questions.md`, on what a problem
 leaves out. Each in full.
 
 **Question 28, how a missing quantity is detected** (*Bob has 5, gave 2 to Alice; how many together?* Nothing
@@ -78,7 +78,7 @@ and, in round 2, to the proposal that it be a module a problem imports when it a
 **What round 2 answered in outline,** which the user accepted there (`dc88520b`: *"OK (a)"* on item 30, *"OK"*
 on item 33) and which the phase starts from and re-takes on programs:
 
-- [Item 30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q30), on the user's
+- Item 30, on the user's
   chain *ambiguity == non-monotone solution == required additional information*: *Not quite, and the
   difference is worth having for M1h.* **Ambiguity is monotone:** R has several states and nothing is
   retracted. What is non-monotone is one sentence, *Alice's amount is **not stated***, true of the problem as
@@ -87,7 +87,7 @@ on item 33) and which the phase starts from and re-takes on programs:
   the engine and not a rule that says *missing*. So: *required additional information = a debt; ambiguity =
   several states; neither needs non-monotone rules unless the program wants the missing thing as a fact to
   reason from.*
-- [Item 33](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q33), on whether the
+- Item 33, on whether the
   set of assumptions is finite: *In the world the set is not finite (the frame problem). In a theory it is
   bounded by the rules, not by the text's words. An assumption has to be stated exactly where a rule's
   conclusion depends on it.* *Things fit boxes* is needed although the text never says *fit*, because the
@@ -159,9 +159,9 @@ As the tree stands on 2026-11-13. Each is re-taken by the stage that uses it.
   ([Q-M1f.219](../../m1f_hypothesis_and_documentation/open_questions.md#q-m1f219--a-querys-false-on-a-program-that-only-owes),
   defaulted to no change and P1g.7's), and E-44, on an R empty by owing root's own debts are on no stdout row
   where root is not on the frontier
-  ([`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)).
+  (`findings.md`).
 
-**Names.** [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
+**Names.** S1f.6.31
 moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which this
 phase's files name.
 
@@ -237,7 +237,7 @@ Against other phases and milestones, stated and not resolved:
 
 ## Connections
 
-- **[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** replies 28 to 33, round 2's
+- **P1f.6:** replies 28 to 33, round 2's
   items 30 to 33, the investigation's page and prototypes, S1f.6.26's row and S1f.6.28's rebuild.
 - **[P1h.2](../p1h.2_slicing/README.md):** the slice, through which an answer reports its assumptions.
 - **[P1h.4](../p1h.4_the_formula_and_the_calculation/README.md):** *answer correct, solution not* is its

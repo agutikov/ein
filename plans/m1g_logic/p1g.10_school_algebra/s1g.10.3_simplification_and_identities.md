@@ -4,8 +4,8 @@
 ([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-11. Not started.
 **Depends on:** [S1g.10.2](s1g.10.2_expressions_and_evaluation.md), the term language and the evaluator, which is
-this stage's check; [S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md), signed coefficients;
-[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md), fractional ones. A first cut over natural-number
+this stage's check; S1f.6.7, signed coefficients;
+S1f.6.8, fractional ones. A first cut over natural-number
 coefficients and no subtraction may run on S1f.6.6 alone, and says what it leaves out.
 
 ## The instruction's part

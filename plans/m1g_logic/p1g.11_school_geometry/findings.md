@@ -9,7 +9,7 @@ row in either takes the lowest id used in neither, so that an F-id names one fin
 
 The findings this phase's stages make about the engine or the language, outside their own scope. They are kept
 **in the phase**, on the user's ruling of 2026-11-11 (a phase keeps what it finds; F25 was for P1f.7 alone, as
-the calculator's [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) records).
+the calculator's `findings.md` records).
 Each row is shown to the user with the stage that found it and is fixed by a stage of this phase, ruled as it
 stands, or given an owner before the phase closes. A **wrong answer** among them is a row of
 [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml) before anything fixes it.

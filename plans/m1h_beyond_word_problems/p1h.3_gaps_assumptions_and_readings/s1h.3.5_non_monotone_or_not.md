@@ -17,7 +17,7 @@ The user, 2026-11-12, on a named gap together with a supposition (reply 30):
 > means ambiguity == non-monotone solution == required additional information? Again - those questions go
 > into M1h. Here I don't care - so pick (a).
 
-[Round 2, item 30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q30), to which
+Round 2, item 30, to which
 the user replied *"OK (a)"*:
 
 > Not quite, and the difference is worth having for M1h. **Ambiguity is monotone**: R has several states and

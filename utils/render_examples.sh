@@ -56,8 +56,7 @@
 #
 # Environment overrides:
 #   EIN_BIN         — the engine (default: ein.rs/target/release/ein). A path,
-#                     so a feature or allocator build is named the same way
-#                     `e2e_baseline.py --bin` names one.
+#                     so a feature or allocator build is named by its path.
 #   EIN_RULE_MODE   — `sidebyside` (default) or `overlay`, forwarded to
 #                     `ein render rules --rule-mode`.
 #   FORMATS         — space-separated Graphviz formats to rasterise

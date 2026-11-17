@@ -11,7 +11,7 @@ and built what the answer needs. Until then every stage below is provisional and
 [P1g.3](../p1g.3_proof_systems/README.md) (a proof checked by saturation, proof search, natural deduction),
 [P1g.5](../p1g.5_peano_and_induction/README.md) (Peano, induction), [P1g.10](../p1g.10_school_algebra/README.md)
 (identities by normal forms) and [P1g.11](../p1g.11_school_geometry/README.md) (theorems as rules); of M1f,
-[S1f.6.35](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md), an import
+S1f.6.35, an import
 one copy of a module by full name, which is how a module of theorems is reused.
 **Needed by:** [P1g.30](../p1g.30_ein_in_ein/README.md), whose encoded proof system is this phase's.
 
@@ -43,7 +43,7 @@ chain on real theories and measures what reuse buys.
 5. **S1g.20.5 — A theorem used as a rule changes nothing it should not.** A derived rule is admissible: adding it
    derives nothing the base system does not, checked up to a bound against the base, and, where the decision
    gives one, proved. The stdlib's own unproved theorems written as rules, `std.algebra`'s
-   `converse-pair-symmetric` first (M1f's [E-53](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md),
+   `converse-pair-symmetric` first (M1f's E-53,
    W93), each proved or marked as an assumption on its module's page.
 
 ## Acceptance

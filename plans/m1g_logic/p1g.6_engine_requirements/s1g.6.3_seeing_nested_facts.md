@@ -17,7 +17,7 @@ explanation between `ein-lang` and the human reading);
 user's standing rule that anything built for review carries every artefact, raw and rendered.
 
 **Added 2026-11-12, from the calculator's phase** (section J of its
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#j-findings-that-need-an-owner),
+`questions.md`,
 rows 60 and 62, each left empty and so taking its recommendation): this stage is the **owner** of E-9 (a
 rule's drawing that Graphviz warns on), E-10 (no view of a library of facts can be drawn: *what should a
 view draw of a table, a row a node or a table a node?*) and E-13 (a nested fact drawn as one opaque node,

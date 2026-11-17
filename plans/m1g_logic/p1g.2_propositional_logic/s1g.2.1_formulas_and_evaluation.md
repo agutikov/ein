@@ -46,7 +46,7 @@ What the stage settles about it:
 - **Two ways to write the evaluation rule,** both built and measured:
   - **(a) the join,** as in the sketch: one premise is the request, two look up the parts' values. A part is
     a nested fact, and its value is the free slot, so each lookup is the scan E-3 describes
-    ([`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)).
+    (`findings.md`).
   - **(b) the continuation,** the calculator's design: evaluation walks the formula carrying a tag that says
     what to do with the value, so no rule joins two facts on a formula. More rules, and a trace that is a
     sequence.

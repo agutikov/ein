@@ -53,7 +53,7 @@ theory*, and the prototype's file name is scratch.
    - nothing stated, and no rule asks: what the read-out says and does not;
    - **a debt:** the program states that any two events are ordered, and the state owes the order of these
      two (an obligation rule; the read-out's `owed` row, built by
-     [S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md), names
+     S1f.6.26, names
      it);
    - **states of R:** each order a hypothesis, the two orders two states, and the query's classes one or two
      according to whether the answer depends on the order.
@@ -72,7 +72,7 @@ theory*, and the prototype's file name is scratch.
 7. **T1h.1.3.7 — the page.** The section: the relations proposed for a first module with the cost of each;
    the names it would occupy in a program that imports it flat, each checked against the word theory's and
    the stdlib's (a clash is refused at load, and
-   [S1f.6.30](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)
+   S1f.6.30
    owns what an import could do about it); and Q-M1h.8 with what the runs support.
 
 ## The shared question

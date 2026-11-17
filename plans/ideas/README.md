@@ -62,6 +62,16 @@ These are seeds for further work, not specifications.
     [F5](../followups/f5_rules_as_data.md),
     [F6](../followups/f6_modify_own_harness.md).
 
+11. [Saturation and satisfiability](11-saturation-and-satisfiability.md)
+    *Saturation is not satisfiability*: the engine can say a state is
+    consistent and that it is false, and has no way to say a program
+    **requires** something, so it cannot tell *no model* from *not yet a
+    model*. Ex-followup F14, the note M1d was built on (in Russian, with the
+    reply it was discussed in). What shipped of it: obligations,
+    [`(open ?R)`](../../docs/ein/user/syntax-and-semantics/obligations.md), and
+    the hypothesis ladder they drive
+    ([`hypothesis-generation.md`](../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md)).
+
 ## Cross-cutting observations
 
 These are not standalone ideas but recurring framings worth keeping

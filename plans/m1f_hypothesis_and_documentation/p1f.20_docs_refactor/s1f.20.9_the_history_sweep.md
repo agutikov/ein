@@ -91,6 +91,120 @@ without it. `AGENTS.md` and `README.md` rewritten to the current state, last.
 - Every decision id cited outside `plans/` resolves (S1f.20.8's check).
 - `RUSTDOCFLAGS="-D warnings" cargo doc` and `./run_tests.sh` are green.
 
+## Record: part C1 (2026-11-17)
+
+Run in a worktree beside part C2 (the register's case ids in project files, the release-voice check widened), on
+parts A and B merged (`f3e540b2`). No file of C2's lane was edited: no project comment for an id, not
+`utils/check_release_voice.py`. It does T1f.20.9.4, the deletions, and brings the process files to the tree they
+leave. Each deletion is a commit of its own, made after `doc_audit.py --links --check --tracked` read 0 and 0
+without it.
+
+**The order.** The walk's instruments and the decision census went first, so their links into `docs/history/` went
+with them; then every reference into `docs/history/` and the tree; then what the finished plans still owned or were
+read by, every reference into them, and the folders one by one; then the process's indexes and `AGENTS.md`.
+
+**What was deleted**: 483 files.
+
+| what | files | why it is finished, or the ruling |
+|---|---:|---|
+| `docs/history/` | 63 | the user's rulings of 2026-11-15; 64 were tracked when the part began (the stages before it had rewritten the rest of the table's 77), less `ideas.md`, which moved |
+| `plans/m1e2_correctness/` | 219 | README: *Closed 2026-11-08* |
+| `plans/m1j_nlp_smt_poc/` | 1 | README: *done 2026-11-13* |
+| `p1f.5_the_no_owner_items/` | 105 | README: *Closed on 2026-11-11* (its parser probe's `.rs` and `.ein` files with it) |
+| `p1f.6_calculator/` and `p1f.8_school_algebra_and_geometry/` | 45 + 1 | README: *Closed 2026-11-15*; P1f.8 a redirect stub kept for P1f.6's replies |
+| `p1f.7_findings_outside_scope/` | 13 | README: *closed 2026-11-11* |
+| `p1f.10_hypothesis_structure/` | 24 | README: *Closed 2026-11-16* |
+| `plans/followups/f9_e_catalog.md`, `f18_world_aware_negatives.md` | 1 + 1 | *closed 2026-08-17*; *closed without being done, 2026-11-04* |
+| the walk's seven instruments in `utils/` | 7 | the user's ruling, item 4: `fork_split.py`, `e2e_baseline.py`, `feature_matrix.py`, `layer_census.py`, `openness_census.py`, `model_set_census.py`, `closure_census.py`; with `feature_matrix_results.json`'s `.gitignore` line, their `utils/README.md` rows and paragraph |
+| `utils/decision_census.py`, `.txt` | 2 | the default: its ledgers are deleted |
+| `utils/structure_bundle.py` | 1 | not in the task's list: P1f.10's review bundle, which renders that phase's pages and cannot run without them |
+
+**`ideas.md`** is [`plans/ideas/11-saturation-and-satisfiability.md`](../../ideas/11-saturation-and-satisfiability.md)
+(`git mv`, so the history follows it), verbatim under a title and a two-line note saying whose it is, indexed as idea
+11 in `plans/ideas/README.md` with what shipped of it; its 15 links followed it.
+
+**The census**, its last run, on `f3e540b2` before anything was deleted:
+
+```text
+$ python3 utils/decision_census.py --check
+620 ids; 0 gaps
+351 carried decisions, 351 files under docs/decisions/; 0 mismatches
+```
+
+Then retired with its hand half (L-17 closed). No gate step, workflow or `AGENTS.md` line ran it; F27 records the one
+pending id it carried (Q-M1f.337); `doc_audit.py`'s decision-id check, the gate's, stays.
+
+**References, re-aimed or text.** By a script over every tracked `.md` (each markdown link that resolves into a deleted
+path: from a page that stays, re-aimed where a successor states it, else its label text; from a finished folder, its
+label text), and by hand in the non-Markdown files.
+
+| into | from what stays | re-aimed | label text | from a finished folder | by hand |
+|---|---:|---:|---:|---:|---|
+| `docs/history/` | 185 | 52: a design contract to its `docs/ein/ein.rs/design/` page, `the_boundary.md` and `completeness.md` to `satisfiability.md`, a ledger anchor to its decision file | 133 | 131 | three workflows' headers (*Tier N of three* where they cited design/12 § 4, which the new page does not have), `release.yml`'s header and musl paragraph, `deny.toml` (re-aimed to § 2), `rust-toolchain.toml`, ten `utils/` scripts' docstrings and comments (`nl_census.py` and `check_hashmap_iteration.py` re-aimed, `doc_audit.py`'s a dangling reference definition), `AGENTS.md`'s bullet |
+| the finished plan folders | 1 142 | 17, each an M1e2 ledger anchor to its decision file | 1 125 | their links into one another | `nightly.yml`'s header, `nl_census.py`, `region_census.py` (re-aimed to Q-M1e2.7's file), the review driver (below) |
+| the seven instruments | 3 | 0 | 3 (M10's README and S10.3, M2's S2.5.3 say the script went with the walk) | 8 | `bench_env.sh`, `corpus_cost.py`, `region_census.py`, `render_examples.sh`, `zebra2_trace.sh`, and `ein-infer/tests/obligation_reports.rs`' doc comment (a project file that named `layer_census`; its line count kept) |
+| the census, `structure_bundle.py` | 4 | 0 | 4 (the S1f.20.8 records say the census is retired) | 1 (`structure_bundle.py`, from P1f.10) | F27's sentence |
+
+A link whose label would now mislead was relabelled (F20, F26, `docs/lib/03`: `satisfiability.md`). The finished
+folders' targets that have a successor page in `docs/ein/` (M1e2's `read_out.md`, `site_census.md`, `solve_interface.md`)
+are text, not re-aimed: the citing sentences name their sections, which the new pages do not have.
+
+**What still read or owned something in a finished folder moved first:**
+
+- **S1e2.4.1's fourteen probes** are [`plans/followups/f21_probes/`](../../followups/f21_probes/): the hole, node and taint
+  censuses run them in their re-take commands, and F21 cites `via_hole.ein`. Each probe's re-take comment and the
+  censuses' commands and recorded output follow the move; F21 and `plans/followups/README.md` say what the folder is.
+- **The review bundle** names no M1e2 page: its index says it is built from the open register, a trace page's
+  definitions cite `rendering.md` § The trace, the cross-checks page names no stage, and an open row's owner links to
+  its followup's page (the lookup searched M1e2's stage files, where no owner of an open row is).
+- **P1f.10's findings the user handed on** (its close, answer 3, *"Accept as proposed"*): H6-1, H6-3, H6-4 and K-41 are
+  a section of F21, verbatim, which they had not been; K-21 (*with Q-M1f.311*) and K-13's stdlib half (*a stdlib change
+  of its own, later*, no owner) are rows beside Q-M1f.311 in M1f's ledger. The K rows the close did not hand to an owner
+  went with the folder. M1e2's ledger had no open row; P1f.6's findings and P1f.7's open part were already with their
+  owners (M1g, M1h, F21 to F24, F27).
+
+**The process files, current.** `AGENTS.md`, 51 999 characters to 51 062: § Where the work is points at P1f.20 alone,
+every stage done, stopping for the user's review of the new docs and not closed before it, and states that a finished
+plan is deleted; § Where things live names idea 11, the `utils/` catalogue's groups and its censuses; the standing
+rules cite Q-M1f.313's decision file and drop E-32, E-33 and the P1f.20 sentence; § Running the gate keeps every
+command without its stage annotations, and its prose without its stage and date asides. `utils/README.md`: 42 scripts,
+sixteen not driving the engine, the measurement set six scripts and four Rust examples (K-3), one sentence where the
+walk's instruments' paragraph was. `plans/README.md`, `plans/followups/README.md` and M1f's README say which plans and
+records are deleted and in git; `plans/open_questions.md` and M1f's ledger keep their text with the links made text or
+re-aimed. The root `README.md` names nothing deleted.
+
+**Checks**, on the last commit: `doc_audit.py --links --check --tracked` (0 and 0), `check_release_voice.py` (0 lines),
+`check_gate_steps.py` (16, 75, 79 steps), `check_tool_mirrors.py`, `review_bundle.py --smoke` with the gate binary of
+the main checkout as `EIN_BIN` (15 rows read, 2 cases and 1 program built, 25 SVGs, the link check 0),
+`history_census.py` (the crates' links into `docs/history/` and into `plans/` both 0), and
+`git grep -n 'docs/history' -- ':!plans' ':!docs/history' ':!utils' ':!AGENTS.md' ':!run_tests.sh' ':!.github'`, and the
+same grep for every deleted path, print nothing. No `./run_tests.sh`; no crate test, since nothing the project runs
+changed (one Rust doc comment, two TOML comments).
+
+**Commits**: `8d7485a5` (`ideas.md` moved), `1626c688` (the instruments), `096b2cfd` (the census), `322f7a71` (references
+into `docs/history/`), `cf78590e` (`docs/history/` deleted), `8d9c0bbe` (`structure_bundle.py`), `e86c56f4` (the probes),
+`0cc689d9` (the review bundle), `75e91ff2` (references into the finished folders, the findings handed on), `1eff75e2`,
+`5d5101a7`, `653a123e`, `abe38379`, `3cd904eb`, `2a03a13b`, `be5e106d`, `7e88d2a7` (the eight deletions), `cc9cea82`
+(the process's indexes), `0e96cb09` (`AGENTS.md`), and this record.
+
+**Decisions the user may want to revisit**: `utils/structure_bundle.py` retired with P1f.10, which the task did not
+list; the probes' home, a folder beside F21's page rather than the page made a directory; the census retired rather than
+re-pointed; `release.yml`'s release notes no longer quote a figure for the musl build (it was the walk's, on
+`solve -e`), and the workflows' headers cite no page; `docs/lib/03` touched for one link, though the phase's acceptance
+says `docs/lib/` is untouched, because it would dangle otherwise; `rust-toolchain.toml` keeps *MSRV = stable-2* with no
+page behind it, since `toolchain-and-layout.md` states none.
+
+**Found outside the part**:
+
+- `plans/wrong_answers/register.toml:382`, a row's note, names `plans/m1e2_correctness/probes/alt-cap-shared.ein` as
+  text; the register keeps its notes whole, so it stays.
+- `utils/history_census.py` keeps a `docs/history` row, now 0, and `doc_audit.py --inbound` a `hist` column; both count
+  a category, not a page.
+- `history_census.py` finds 7 lines carrying an id in 4 crate files (part B's prototype spellings among them) and 34 in
+  `utils/README.md`, 14 in `AGENTS.md`; the latter two are process and may.
+- `1eff75e2`'s message says no file outside `plans/` names M1e2's folder; `AGENTS.md` still did, as text, until
+  `0e96cb09`.
+
 ## Record: part B (2026-11-17)
 
 Run in a worktree beside part A (the register's split and the project tests that read the process), on the
