@@ -81,7 +81,7 @@ It declares its own membership relations and links every attribute through a sin
 
 Nothing here is a keyword of the language: `type` and `instance` are ordinary relations the puzzle declares, exactly
 like `co-located`. **Ein has no types**: it special-cases no relation name and keeps no type or instance view of its
-own, and what this puzzle calls a type is a name its `type` and `instance` facts point at, which means what the
+own, and what this puzzle calls a type is an atom its `type` and `instance` facts point at, which means what the
 rules that read those facts make it mean.
 
 Clues between attributes are *ordinary facts* here, `(co-located Englishman Red)`, and so are the spatial ones,
@@ -140,7 +140,7 @@ ordinary facts, read by [`std.slots`](../../../../stdlib/slots.ein):
 ```
 
 > *`co-located` is an equivalence relation; its classes are **slots**; each slot holds exactly one `instance` of
-> every name that is a direct `type`-child of `Attribute`; and the `House` member of a slot is its name.*
+> every atom that is a direct `type`-child of `Attribute`; and the `House` member of a slot is its name.*
 
 Five arguments, and each carries weight. The membership relation (`instance`) and the relation that groups the
 attributes (`type`) are *parameters*, so the rules name no `is-a` and the module works for either membership

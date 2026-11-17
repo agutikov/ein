@@ -436,7 +436,7 @@ the flag.
 
 ## Using `std.math.digits` — the digit tables
 
-A library of facts: no rule and no entry. Each table is complete and closed by a written `(__closed__ R)` fact of
+A library of facts: no rule and no entry. Each table's held extent is complete, and closed by a written `(__closed__ R)` fact of
 the module
 ([Q-M1f.146](../../../../decisions/stdlib/math/Q-M1f.146-each-digit-table-is-closed-by-a-written-fact.md)), which
 every import brings, so no row is ever a hypothesis. The file is generated and not edited by hand, and every row

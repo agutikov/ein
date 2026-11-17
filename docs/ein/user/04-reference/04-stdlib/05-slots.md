@@ -25,6 +25,9 @@ comes with it.
 | `(slot-partition R isa sub Super Index)` | R is an equivalence relation; its classes are slots; each slot holds exactly one `isa`-member of every label that is a direct `sub`-child of `Super`; and a slot's `Index` member is its name |
 | `(slot-spatial R S isa PT)` | S relates two values exactly when it relates their slots, and the members of `PT` carry S's structure |
 
+A **value**, on this page and the next, is `std.slots`' word for an atom that sits in a slot: the value an
+attribute takes there, `Green` for the colour of a house. It is an atom like any other.
+
 With $\operatorname{slot}(v)$ for the member of `Index` that $v$ shares a class with, and $T_S$ for the members of
 a label $T$ in a state $S$ ([labels](02-relation-algebra.md#labels-and-the-membership-relation)):
 

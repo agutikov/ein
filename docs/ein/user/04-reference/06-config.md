@@ -299,7 +299,7 @@ a program to answer about.
   logs none, and a negative is refused, exit 2
   ([Q-M1e.17](../../../decisions/cli/Q-M1e.17-g-0-logs-no-node-line-and-a-negative-is-refused.md)). A
   `--diff-models` file is a line `closes R …` and `model` lines, with `;` comments, and its facts are read by the
-  parser and compared by value, so a fact may span lines and carry a comment, and `(p  a)` matches `(p a)`; a file
+  parser and compared as facts and not as text, so a fact may span lines and carry a comment, and `(p  a)` matches `(p a)`; a file
   whose facts do not parse is a usage error, exit 2, before the run, with every error the parser reaches and its
   line and column. **Six of them are forms printed after the read-out, and share its 100 lines**
   ([Q-M1e2.34](../../../decisions/read-out/Q-M1e2.34-stdouts-listings-share-100-lines-and-a-dump.md)): `-H`,
@@ -349,7 +349,7 @@ a variable this section does not name changes nothing `ein` does.
 | name | value | what it does |
 |---|---|---|
 | `EIN_STDLIB` | a directory | overrides where `std.*` modules are found, ahead of the checkout and the copy built into the binary. The directory **must carry `MANIFEST.sha256`**, the file that identifies a standard library, and the refusal names the variable at the first `std.*` import ([`01-install.md`](../01-install.md)). `ein --version` reports a directory it cannot prove as `unreadable` rather than refusing |
-| `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block: what the blind enumerator would still propose at each **listed state**, outside H. The block has three keys on every summary: `taken`, whether the variable was `1`; `states`, the count at each listed state, in `region.states`' listed order; and `states_by_relation`, that count split by relation, one object per listed state from a relation's name to its count. Both lists are empty when `taken` is false. It is computed with no configuration, as H is, on a copy of each state, so nothing else in the summary moves |
+| `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block: what the blind enumerator would still propose at each **listed state**, outside H. The block has three keys on every summary: `taken`, whether the variable was `1`; `states`, the count at each listed state, in `region.states`' listed order; and `states_by_relation`, that count split by relation, one map per listed state from a relation's name to its count. Both lists are empty when `taken` is false. It is computed with no configuration, as H is, on a copy of each state, so nothing else in the summary moves |
 
 ### No other name
 

@@ -301,7 +301,7 @@ The one `absent` of the theory, over its own `bin-let`.
 
 ### The entry
 
-The closing rule: it closes every relation of the module and the tables of `std.math.bits`, names the entries
+The closing rule: it closes the held extent of every relation of the module and of the tables of `std.math.bits`, names the entries
 `arith` and `binary` and each rule above, and calls the macro `positional` once with binary's relations. Its
 drawing is not shown.
 

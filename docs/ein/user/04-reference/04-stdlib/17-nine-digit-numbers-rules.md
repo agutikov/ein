@@ -1007,7 +1007,7 @@ gets $9 - k$ zeros in front, and the other way the zeros in front of the top dig
 
 ## The entry
 
-The closing rule: it closes the module's relations and names each rule above. Its
+The closing rule: it closes the held extent of each of the module's relations and names each rule above. Its
 drawing is not shown.
 
 #### `arith9`

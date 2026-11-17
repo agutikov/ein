@@ -2,9 +2,9 @@
 
 One small inference, stated four ways: **in words**, **in Ein**, **as a graph** and **in mathematics**, the four
 representations every [concept page](../03-syntax-and-semantics/README.md) uses. What it shows is a *type* made by a
-program. Ein has no types of its own: `is-a` is a relation the program names, `Human` and `Drink` are names like
-`Jack` and `Coffee`, and an `is-a` fact does nothing until a rule reads it. Here two rules do, and they make a name
-inherit the relations of the name it `is-a`: that is all *Jack is of type Human* means in this program
+program. Ein has no types of its own: `is-a` is a relation the program names, `Human` and `Drink` are atoms like
+`Jack` and `Coffee`, and an `is-a` fact does nothing until a rule reads it. Here two rules do, and they make an atom
+inherit the facts of the atom it `is-a`: that is all *Jack is of type Human* means in this program
 ([ontology](../03-syntax-and-semantics/04-ontology.md)).
 
 ## In words
@@ -106,8 +106,8 @@ and the trace below shows both.
 
 ## As a graph
 
-`ein render kb jack.ein` draws the saturated knowledge base as one graph: a name an `is-a` arrow points at as a box
-and a name one starts from as an oval (the drawing's comments call them *types* and *instances*, its convention for a
+`ein render kb jack.ein` draws the saturated knowledge base as one graph: an atom an `is-a` arrow points at as a box
+and an atom one starts from as an oval (the drawing's comments call them *types* and *instances*, its convention for a
 relation named `is-a`), an `is-a` fact as a dashed arrow with an open head, any other fact of two arguments as an
 arrow labelled by its relation, a derived one dashed and labelled with the rule that derived it. Leaving out the
 `(relation …)` declarations it also draws, it is:
@@ -116,13 +116,14 @@ arrow labelled by its relation, a derived one dashed and labelled with the rule 
 
 The three dashed `can-drink` arrows are the *inheritance closure* of the stated fact `(can-drink Human Drink)` across
 the `is-a` arrows: every pair of $\lbrace \mathsf{Human}, \mathsf{Jack} \rbrace \times \lbrace \mathsf{Drink},
-\mathsf{Coffee} \rbrace$ but the one it starts from. The compact view puts *two* relations,
-`can-drink` and `drinks`, on the same pair, from Jack to Coffee; only the labels tell them apart.
+\mathsf{Coffee} \rbrace$ but the one it starts from. The compact view puts facts of *two* relations,
+`can-drink` and `drinks`, on the same pair, from Jack to Coffee; only the names on the arrows tell them apart.
 
-The **detailed** view draws every fact as its own node, joined to its relation and to each argument by a numbered
-edge, the way [facts](../03-syntax-and-semantics/03-facts.md) states a fact and the way `ein render kb` draws a fact of any
-other number of arguments. It makes visible what the compact view hides: `(can-drink Human Drink)` and
-`(can-drink Jack Coffee)` are distinct facts about different argument tuples of one relation.
+The **detailed** view, drawn by hand, is the graph itself
+([objects](../03-syntax-and-semantics/01-objects.md#as-a-graph)): every fact is a node of its own, joined to its
+relation by a dashed arrow and to each argument by a numbered one, and each relation is one node, which all its
+facts point at. It makes visible what the compact view hides: `(can-drink Human Drink)` and `(can-drink Jack
+Coffee)` are distinct facts, of different argument tuples, of one relation.
 
 ![The same facts in the detailed view, every fact a node of its own](diagrams/05-jack-levi.svg)
 
@@ -166,7 +167,7 @@ $$
 (x, y) \in \lbrace \mathsf{Human}, \mathsf{Jack} \rbrace \times \lbrace \mathsf{Drink}, \mathsf{Coffee} \rbrace
 $$
 
-each slot's values closed downward along `is-a`, independently of the other. Nothing in the formulas sets
+each slot's arguments closed downward along `is-a`, independently of the other. Nothing in the formulas sets
 $\mathsf{Human}$ apart from $\mathsf{Jack}$: both are constants, and the two clauses are the only place `is-a` has a
 meaning.
 
@@ -228,7 +229,7 @@ Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
 
 ## See also
 
-- [Ontology](../03-syntax-and-semantics/04-ontology.md): the names a program groups its objects under, and the
-  relations stated of them.
+- [Ontology](../03-syntax-and-semantics/04-ontology.md): the atoms a program groups its other atoms under, and the
+  facts stated of them.
 - [Rules](../03-syntax-and-semantics/05-rules.md): a rule's parameters, its activation, and what a pattern matches.
 - [Rendering](../04-reference/12-rendering.md): every view `ein render` draws.

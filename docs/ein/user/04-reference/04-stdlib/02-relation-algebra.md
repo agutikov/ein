@@ -1,8 +1,9 @@
 # The relation algebra: `std.algebra`, `std.typing`, `std.closure`
 
-`std.algebra` is Tarski's relation algebra over binary relations, as generic rules: the operators that build one
-relation from others, and the property checks, closures and obligations a puzzle declares of a relation. In the
-algebra's own notation its signature is
+`std.algebra` is Tarski's relation algebra over relations of two arguments, each read as the set of pairs its held
+facts relate, as generic rules: the operators that derive the facts of one relation from those of others, and the
+property checks, closures and obligations a puzzle declares of a relation. In the algebra's own notation its
+signature is
 
 $$
 \langle\, \cup,\ \cap,\ \overline{\phantom{R}},\ 0,\ 1,\ ;\,,\ {}^{-1},\ 1' \,\rangle
@@ -34,8 +35,8 @@ The import brings `std.macro`. The module has no entry: what it closes is the pr
 Ein has no types
 ([Q-M1f.372](../../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). A
 declaration `(relation likes Person Food)` writes a name in each argument place, and those
-names are labels: they mean something only where a rule reads them. Some rules of this module do. They match the
-declaration itself, `(relation ?R ?A ?B)`, and take the *members* of the label `A` to be the names `a` of which
+atoms are labels: they mean something only where a rule reads them. Some rules of this module do. They match the
+declaration itself, `(relation ?R ?A ?B)`, and take the *members* of the label `A` to be the objects `a` of which
 the state holds `(isa a A)`, where `isa` is a relation the program has and passes in the activator:
 `(total likes is-a)`. Below, for a state $S$,
 
@@ -61,8 +62,8 @@ Read these before importing a relation-algebra module: they decide whether a rul
   owes is not an answer ([Obligations](../../03-syntax-and-semantics/08-obligations.md)).
 - **The closed-world caveat.** A rule that reads an absence — the extensive operators, `difference`,
   `compose-negative-*`, `std.closure`'s `infer-closure`, the `absent` guards of `std.slots`' spatial rules — is
-  sound only where its operand is decided by saturation, never where the operand is solved by hypotheses, as the
-  attribute relations of the Zebra puzzle are. Each is opted into per use.
+  sound only where the facts of its operand are decided by saturation, never where they are found by hypotheses, as
+  those of the attribute relations of the Zebra puzzle are. Each is opted into per use.
 
 ### Operators: the relative layer
 
@@ -899,12 +900,12 @@ The reflexive closure:
 
 | a program writes | it produces |
 |---|---|
-| `(import std.closure)`, and nothing more | `(__closed__ R)` for every R marked `(functional R)` and `(total R)`, so that no hypothesis about R is proposed |
+| `(import std.closure)`, and nothing more | `(__closed__ R)` for every R marked `(functional R)` and `(total R)`, so that no fact of R is proposed as a hypothesis |
 
 The import brings `std.algebra`, whose one-argument markers it reads. **The import is the switch**, and it is a
-completeness hazard: *functional and total* is a witness about how saturation reaches R, not about R itself, so it
-is safe only where R is decided by saturation. Imported into a puzzle that solves R by hypotheses, it closes R and
-takes away the candidates the search needs.
+completeness hazard: *functional and total* is a witness about how saturation reaches the facts of R, not about R
+itself, so it is safe only where the facts of R are decided by saturation. Imported into a puzzle that finds the
+facts of R by hypotheses, it closes R, fixing its held extent, and takes away the candidates the search needs.
 
 `ein show hyps` lists the candidates a program's search would try. Without the import, this program's candidates
 are the facts of `wears` it does not state:
@@ -958,7 +959,7 @@ note: closure-on.ein: H, built by the rung `blind`: no candidate
 ```
 
 [`tests/stdlib/closure/01_infer_closure.ein`](../../../../../tests/stdlib/closure/01_infer_closure.ein) is the case
-the module is for, a relation saturation decides, and `02_closed_and_satisfied.ein` its control.
+the module is for, a relation whose facts saturation decides, and `02_closed_and_satisfied.ein` its control.
 
 ## How it works
 

@@ -122,8 +122,8 @@ with an empty head. The same program with `is-instance` spelt `is-a`, the declar
 ![The same program with is-instance spelt is-a: boxes, ovals and dashed arrows](diagrams/01-is-a-convention.svg)
 
 The drawing is keyed on the spelling `is-a` and on nothing else: the two programs hold the same facts under two
-names, and answer alike. The option that leaves the boxes and their arrows out is spelt `--no-types`: *type* is
-the engine's word there for an atom it draws as a box, and such an atom is an atom like any other.
+names, and answer alike. The option that leaves the boxes out, and keeps every arrow, is spelt `--no-types`:
+*type* is the engine's word there for an atom it draws as a box, and such an atom is an atom like any other.
 
 ## In words
 

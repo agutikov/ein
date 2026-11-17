@@ -1,6 +1,6 @@
 # 4 — Solving the whole puzzle
 
-You've met objects and facts (Ch.1), how a rule derives new facts (Ch.2),
+You've met atoms and facts (Ch.1), how a rule derives new facts (Ch.2),
 and the rule families that prune the search (Ch.3). Now we assemble the real
 puzzle, solve it, and hand off to the full trace.
 

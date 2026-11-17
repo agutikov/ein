@@ -222,7 +222,7 @@ The table `gate2` is facts. Sixteen rules, one a function, copy a function's fou
 
 ### The entry
 
-The closing rule: it closes the table, the sixteen relations and the module's other relations, and names the
+The closing rule: it closes the held extents of the table, of the sixteen relations and of the module's other relations, and names the
 sixteen rules.
 
 #### `gates`
@@ -688,7 +688,7 @@ complete alone.
 
 ### The entry
 
-The closing rule: it closes the module's relations and names each rule above and the entry `gates`. Its drawing
+The closing rule: it closes the held extent of each of the module's relations and names each rule above and the entry `gates`. Its drawing
 is not shown: it has a node for each of those facts.
 
 #### `props`

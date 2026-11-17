@@ -89,7 +89,7 @@ shares with the rest of the match are outside. This is `ein render rule --name c
 
 Inside the cluster, the arrow from `?y` to `?g` labelled `member` is the guard, and the octagon `marked` over `?y` is the body.
 
-`forall` reads an absence, so it is sound only where the guard's relation and the body's are decided by saturation:
+`forall` reads an absence, so it is sound only where the facts of the guard's relation and of the body's are decided by saturation:
 the program above names all five relations in `:no-hypothesis`. `std.algebra`'s `total` and `surjective`, and the
 elimination and no-room rules of `std.bijection`, `std.elim` and `std.slots`, are written with it.
 

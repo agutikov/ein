@@ -1,6 +1,6 @@
 # Learn Ein by solving the Zebra puzzle
 
-A hands-on tutorial: you learn Ein by building up the classic **Zebra (Einstein) puzzle** from scratch, objects and
+A hands-on tutorial: you learn Ein by building up the classic **Zebra (Einstein) puzzle** from scratch, atoms and
 facts first, then rules, then the whole puzzle solved end to end.
 
 > **Audience: newcomers.** This is a *tutorial*, learned by example. It is **not** a reference, and it does **not**
@@ -14,9 +14,9 @@ facts first, then rules, then the whole puzzle solved end to end.
 
 ## Chapters
 
-1. **[Objects & relations](01-objects-and-relations.md)**: the three things every Ein model is made of (objects,
-   relations, facts), each shown three ways: ein-lang, as a graph, and in plain English. Ein has no types: a
-   declaration labels its slots, and a label is a name.
+1. **[Objects & relations](01-objects-and-relations.md)**: what every Ein model is made of, the objects of its
+   graph (atoms and facts) and the relations, each shown three ways: ein-lang, as a graph, and in plain English.
+   Ein has no types: a declaration labels its slots, and a label is an atom.
 2. **[First rules](02-first-rules.md)**: how a *rule* derives new facts: `symmetric`, `transitive`, `co-located`,
    each as Ein, as the graph of the rule, and as the graph of the facts once it has fired.
 3. **[The rule families](03-rule-families.md)**: the machinery that cracks the Zebra puzzle: domain- and
@@ -25,7 +25,7 @@ facts first, then rules, then the whole puzzle solved end to end.
 4. **[Solving the whole puzzle](04-solving-the-whole-puzzle.md)**: put it together, run `ein solve`, read the
    answer.
 5. **[Jack drinks coffee](05-jack-drinks-coffee.md)**: one small inference stated four ways, in words, in Ein, as a
-   graph and in mathematics: a type made by a program, two rules by which a name inherits the relations of the name
+   graph and in mathematics: a type made by a program, two rules by which an atom inherits the facts of the atom
    it `is-a`.
 6. **[The Zebra puzzle, step by step](06-zebra-walkthrough.md)**: the human solution, line by line, against what Ein
    derives on the same puzzle. Read it after chapter 4.

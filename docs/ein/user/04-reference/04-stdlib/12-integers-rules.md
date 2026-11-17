@@ -1152,7 +1152,7 @@ A digit or a named constant where a part goes, checked where the integer is writ
 
 ## The entry
 
-The closing rule: it closes every relation of the module, names each rule above, and names the entries
+The closing rule: it closes the held extent of every relation of the module, names each rule above, and names the entries
 `decimal-arith`, `decimal` and `arith`. Its drawing is not shown: it has a node for each of those facts.
 
 #### `int-arith`
