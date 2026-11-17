@@ -271,7 +271,10 @@ of the calculator gained its checks and labels, in every rendering of the state 
 - **Not this stage's, and next**: the multi-context drawings of [`diagrams/`](diagrams/)
   (`render-held-in-two-contexts`, `render-two-contexts-of-one-relation`, S1f.22.4's `render-two-contexts`) still
   show `written` octagons and frames; drawing them again, and S1f.22.5's resumption on its branch, are the stage
-  file's *After it* (N-35 names the five files the branch meets this stage in).
+  file's *After it* (N-35 names the five files the branch meets this stage in). **Drawn again** after the stage, with `ein render kb` of the
+  build at `dad4543f` and `dot -Tsvg` (Graphviz 16.0.0). Each changed in two ways: the dashed `written` octagons and
+  their arrows went, and a frame's label lost `written` (`says, think ctx`, `think ctx`, `= ctx`). S1f.22.4's
+  program is now kept beside its drawing as `render-two-contexts.ein`.
 - **`git grep -n -w written -- . ':!plans'`** prints 3 603 lines at `dad4543f`, every one in
   [`s1f.22.6_written_lines.txt`](s1f.22.6_written_lines.txt). None is the relation: no line holds `(written (`,
   `(written ?`, `(written T)`, `#written`, `written ctx`, `kernel.written` or `terms::WRITTEN`, nor names

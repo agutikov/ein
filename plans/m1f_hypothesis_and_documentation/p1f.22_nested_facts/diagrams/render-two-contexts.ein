@@ -1,0 +1,6 @@
+;; S1f.22.4's frame trial: a fact held, and under the arrows of think and says; a second fact over the same sum
+(= 5 (+ 2 2))
+(think Alice (= 5 (+ 2 2)))
+(says Bob (= 5 (+ 2 2)))
+(= 4 (+ 2 2))
+(solve :no-search)

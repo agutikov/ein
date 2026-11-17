@@ -21,13 +21,11 @@ digraph kb {
   "says" -> "says" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Alice" -> f_5b3adbf9bf [label="think", color="#17becf", fontcolor="#17becf", style=solid];
   "Carol" -> f_5b3adbf9bf [label="says", color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_7e4c4b22b6 [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_7e4c4b22b6 -> f_5b3adbf9bf [label="#1", color="#d62728", style=dashed];
 
   // facts in a context
   newrank=true;
   subgraph cluster_ctx_0 {
-    label="says, think, written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    label="says, think ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_5b3adbf9bf [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style="filled,solid", fillcolor="#d9d9d9"];
   }
   f_5b3adbf9bf -> "Bob" [label="#1", color="#ff7f0e", style=solid];
