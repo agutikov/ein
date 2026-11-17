@@ -15,7 +15,7 @@ check walks the numeral a place a firing from the units, `(check N REST)`: the w
 THING)`, from which `(false)` follows. The ask and the label are facts of the numeral, so a numeral is checked once
 whatever reads it. The turn that ends a walk of the arithmetic, and the division's end, label the number they make,
 so every number an operation answers with, a tagged call's included, is valid already; `z` is valid by its
-representation's closing rule. The loader states nothing of what a file nests, and `written` is an ordinary name.
+representation's closing rule. The loader states nothing of what a file nests.
 
 **Why.** A malformed number is found by the operation that would compute with it, and only there, so the check
 reads what an operation takes and needs no statement of the program's text: a check of what a file writes needed
