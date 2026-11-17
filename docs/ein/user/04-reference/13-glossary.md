@@ -32,8 +32,10 @@ that relation's name. See [`../03-syntax-and-semantics/04-ontology.md`](../03-sy
 The names a declaration lists after the relation's, one for each argument slot: `Nationality` and `House` in
 `(relation nation-loc Nationality House :why "…")`. Together they are the relation's **signature**. Their number is
 the number of arguments every form of the relation has, which the loader holds; a label itself is an ordinary name,
-no argument is checked against it, and a rule reads it through the stored declaration, `(relation ?R ?A ?B)`. See
-[`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator).
+no argument is checked against it, and a rule reads it through the stored declaration, `(relation ?R ?A ?B)`. The
+engine reads a signature only for what may be guessed: whether it is empty, how long it is, and which names it
+lists, about which the blind enumerator proposes nothing. See
+[`02-syntax.md` § What the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine).
 
 ### Relation
 Three uses worth telling apart:

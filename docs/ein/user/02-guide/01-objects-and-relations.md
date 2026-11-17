@@ -69,7 +69,10 @@ The declaration does two things. It fixes **how many arguments** a `nation-loc` 
 program that writes one with another count. And it gives each slot a **label**, `Nationality` and `House`. A label
 is an ordinary name, the same node the `is-a` facts above point at, and Ein checks no argument against it:
 `(nation-loc House-1 Norwegian)` loads. A label means what the rules that read the stored declaration make it
-mean, and the standard library's rules in Chapter 3 read it to know which objects a slot is filled from.
+mean, and the standard library's rules in Chapter 3 read it to know which objects a slot is filled from. Ein itself
+reads the labels in one place only, where a program leaves it to guess facts and says nothing of which: it then
+proposes no fact *about* a name that some declaration uses as a label
+([what the signature means](../04-reference/02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)).
 
 `is-a` is declared the same way, `(relation is-a T T :why "{?1} is a {?2}")`, when a puzzle wants Ein to guess its
 facts ([reserved names](../04-reference/03-reserved-names.md)); `T` there is a label that says nothing in

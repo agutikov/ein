@@ -271,6 +271,12 @@ signature holds opaque names.
 | **one or two labels long** | proposes one candidate per object for a unary relation, and one per pair of objects for a binary one; a relation of three arguments or more loads, stores facts and saturates, and is never guessed |
 | **its labels** | never proposes a fact *about* a name a signature lists as a label ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)) |
 
+So a label is not inert where the blind enumerator builds the candidates. `ein show hyps` on the two lines
+`(relation likes Person Drink :why "{?1} likes {?2}")` and `(likes Ann Tea)` lists one candidate, `(likes Tea Ann)`;
+with the first label written `Ann` in place of `Person` it lists none, `Ann` being a label and no object. Where an
+hrule proposes, the labels are not read: the same two lines with an hrule that proposes `(likes ?b ?a)` from
+`(likes ?a ?b)` list `(likes Tea Ann)` under either label.
+
 The `:why` template and the signature column of `ein saturate`'s relation table read a declaration too, as
 presentation.
 
