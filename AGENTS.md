@@ -91,17 +91,6 @@ constrained-reasoning research.
   Zebra puzzle"). User-facing; links the reference and the concept pages
   under `docs/ein/user/`, never explains internals; its chapter 6 is
   `06_zebra_walkthrough.md`.
-- **`docs/history/`** — **shipped milestones, kept as record**
-  (`docs/history/README.md`): a document goes there,
-  rather than staying only in git, when it is still read, as a specification,
-  as evidence, or as the reason something is the way it is; a shipped
-  milestone's plan folder is deleted and stays in
-  `git log --diff-filter=D -- plans/<milestone>`. **Read
-  M1e's § What this milestone
-  may claim before citing it**, and M1d's P1d.10 § Eight measurements with no
-  owner before re-opening any of them;
-  [`plans/ideas/11-saturation-and-satisfiability.md`](plans/ideas/11-saturation-and-satisfiability.md) is
-  authoritative on intent, as `plans/ideas/*` is.
 - **`docs/lib/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
   theory, graphs & rewrite systems, reasoning benchmarks, …), and a
