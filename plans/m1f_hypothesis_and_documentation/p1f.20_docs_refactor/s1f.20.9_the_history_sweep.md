@@ -226,3 +226,137 @@ its intermediate state, so each commit holds its own change alone.
 --tracked` (0 and 0), `check_release_voice.py` and `decision_census.py --check` are green, and the string scan of
 `ein.rs/crates/*/src` finds a milestone, stage, task or followup id, a plan or `utils/` path or a date in no printed
 string outside `register.rs`. No `./run_tests.sh`.
+
+## Record: part A (2026-11-17)
+
+Run in a worktree beside part B, on the findings [L-23, L-31, L-36, L-39, L-43](findings.md): the register's split
+and the project tests that read or run the process. Section 2 (the tests) ran in a fork of this part in the same
+worktree; part B's branch was merged in at the end and its forbid text applied to the rows that quote it.
+
+**The register splits** (L-39, the coordinator's reading of rulings 6 and 12, the user's to correct).
+
+- **A fixed row is a regression**: [`corpus/regressions.toml`](../../../corpus/regressions.toml), schema
+  `ein-regressions/1`, the format of `ein_corpus::regressions`. 333 rows: the 332 fixed ones and the one
+  `not-wrong` row, `branching/06`'s, read as a regression, since its right answer is decided (Q-M1e.12 (a)) and the
+  row holds a program's answer to it; what made it `not-wrong`, its review, is process and went. A row keeps what
+  a regression needs: a name, the title (the wrong answer it guards against; W16's and W28's say no *int*), the
+  settings (one stage id dropped), `decisions` (the decision ids among the old `question`, each resolving to a
+  file; the 81 entries that were stage ids, findings or reviews dropped), the witness, an `id_order` where a
+  permutation once moved the answer (three rows, lifted out of the dropped `[case.wrong]`), `[case.right]` with no
+  `reading`, `derived` or alternatives, `[case.region]` and `[case.now]`. Dropped: `case`, `class`, `owner`,
+  `status`, `look_at`, `note`, `open_because`, `[case.wrong]`, `[case.control]`, `[[case.twin]]`, `[case.review]`,
+  `[case.fixed]`, so no row carries a register id, an owner, a followup, a date, a commit or a stage id. The names
+  are the old id's slug; where two rows shared one, the witness's stem in front (`einb-every-command/saturate`);
+  where they shared both, by what they check (`d3-unsat-core-id-order`, `binding-key-layout-names`); W75's are
+  `closed-stdout/<run>`, and four short slugs take their witness's name. *Why `regressions`*: the corpus already
+  calls the witnesses' group `regression`, and the word says what a fixed row is in a project that tracks no
+  wrong answer.
+- **What holds them**: `ein-cli/tests/regressions.rs` runs every row's `[case.now]` through the binary and
+  recomputes every `[case.region]` with the library (`EIN_BLESS=1` re-banks the blocks); `ein-corpus`'s
+  `regressions` module holds the format, every row's `now` answering its `right` without a run (`Held::Right`), no
+  key the format does not read, every witness a corpus program and every decision a file;
+  `id_order_invariance.rs` holds the three `id_order` rows, now that none is open, to not moving.
+  `register_region.rs` and `wrong_answers.rs` are gone into those.
+- **An open row is a wrong answer, a work item**: [`plans/wrong_answers/register.toml`](../../wrong_answers/register.toml),
+  15 rows in the same format with the register's own keys beside it (kept whole, W ids, owners F21, F22, F24, the
+  recorded walk answers, reviews), and [its README](../../wrong_answers/README.md), the filing rules that were
+  AGENTS.md's (AGENTS.md now points there). [`fixed_rows.tsv`](../../wrong_answers/fixed_rows.tsv) maps the 333 old
+  ids to the regressions' names.
+- **The runner, generic, in the project**: `ein-cli`'s example `held_answers --ein BIN [--open] [--bless] FILE`
+  holds any file of the format: its format checks, every row right (`Held::Right`) or, with `--open`, none right by
+  the method (`Held::Open`: the old `an_open_row_is_open_by_the_method`, *contested* read as a `right` with
+  alternatives instead of the process word in `class`), every `[case.now]` through the binary given, every region
+  through the library. It shares `ein-cli/tests/held/` (the runner and the region check, `mod.rs` and
+  `regions.rs`) with `regressions.rs`, so the project's test and the process's step run one code. Not in
+  `ein-corpus`: `serde_json` in its graph made `assert_eq!(v, [])` ambiguous in three `ein-infer` tests
+  (`cover`, `theory_share`, `exactly_one`); not in `ein-infer`: it needs the binary and the library both, and
+  `ein-cli` has both.
+- **Where the gate runs it**: [`utils/wrong_answers.py`](../../../utils/wrong_answers.py), a step of `run_tests.sh`
+  and `per-commit.yml` after `check_region_routes.py`, outside the static-check guard (`check_gate_steps.py` holds
+  the two lists the same: 16 steps). It checks the register's own keys (the validation that was `register.rs`'s
+  and named plan ids: an owner is a followup with a file under `plans/followups/` or a stage, `status` open,
+  `open_because` stated, a review's vocabulary, date and bundle, `deferred` waiting on its owner, `look_at`'s
+  words, each recorded answer's `run`, `by` and `why`, one title and owner per case, no unknown key), builds `ein`
+  and the example under the gate profile, and runs `held_answers --open` on the register: 15 rows, 15 runs, 15
+  regions. A `[case.now]` changed by hand (`k = 1` → `9` on `W8/features-07`) fails it, exit 1, on the format and on
+  the run, so a silent fix still fails the gate.
+- **The witnesses**: the ten files used by nothing but their open rows moved to
+  [`plans/wrong_answers/witnesses/`](../../wrong_answers/witnesses/), with their corpus entries and their 20 lines
+  of `corpus_exits.txt` and 390 of `corpus_shapes.md5`: `closure-shared-given` and its control, `guard-only-second`
+  and `guard-only-first`, `alt-flag-refuted-by`, `alt-flag-two-derivations`, `written-rule-no-such-rule`,
+  `written-rule-leaves-core` and its twin, `written-using-never-held`. **Five stay, a decision the user may want to
+  revisit** (the default said the witness moves): a project test or page reads each for a claim of its own —
+  `alt-cap-shared` (Q-M1e2.11's documented limit, `explain_semantics.rs`), `f07-rules-swapped` and `f07-fpoff`
+  (`detector.rs`, `monotonicity.md`'s c8), `or-one-key` and its twin (`h_space_view.rs`, `show_hyps.rs`,
+  `alive_invariant.rs`) — and the five project programs that are open rows' witnesses (`features/07`,
+  `lattice/10_fifo_gap`, `corner-house`, `fork-delta-order`, `zebra2`) stay as they are. The project names no open
+  row: each states its gap in words.
+- **What followed** (L-39, L-23): `explain.rs`, `kb.rs`, `explain_semantics.rs` say *a known gap* for
+  `W10/alt-cap-shared`; `lever_invariance.rs`' exemption is `REFUTED_BY_MOVES`, `features/12` alone, held by
+  `the_refuted_by_gap_still_has_its_program` (the two W36 witnesses left with their rows); `answer_round_trip.rs`'
+  `WRITTEN_PROVENANCE` is empty (its one entry moved); `KNOWN_R1`, `DO_NOT_READ_BACK`, `DO_NOT_LOAD`,
+  `ORACLE_STOPS` and the lists beside them say *known wrong answer*, not *open register row*; `monotonicity.md`'s
+  c8 row says no test states it; `detector.rs` counts 47 flagged corpus programs, two flagged witnesses having
+  left; `answer_dump.rs`, `route_invariance.rs` and the thirty sweeps that added the register's witnesses (and
+  their controls and twins) add the regressions' (every one a corpus program); the review bundle reads the open
+  register, `guard_split.py` and `region_census.py` both files.
+- **Every project file names a fixed row by its regression's name** and `corpus/regressions.toml` for
+  `corpus/wrong_answers.toml`: 334 files by `fixed_rows.tsv` (a `W<n>/<slug>` id, with *register row(s)* →
+  *regression(s)*), then the register's other phrasings (*the register's witnesses*, *case W15 of the register*,
+  …) by hand or by phrase, the corpus's witness notes and witness headers among them, every `.ein` its line count
+  kept. `fuzz_seeds.txt` re-blessed, four seeds, each checked comment-only (its text with `;` comments stripped is
+  the same). The 116 witness notes of `corpus.toml` that narrated their defect in the past tense or cited a case id
+  are restated as what the regression checks.
+
+**The project tests that read or run the process** (L-31, L-36), each check moved, and where it runs now:
+
+| check | was | now |
+|---|---|---|
+| `run_tests.sh` against `per-commit.yml`, `--nightly` against `nightly.yml` (matrix expanded), `--dev-host` against the nightly and `DEV_HOST_ONLY`, `--tests-only`'s guard and the header's count, the fuzz budgets, the checked `TMPDIR`, every shard, every slow half on a tier | `gate_steps.rs`, `nightly_steps.rs`, `steps/mod.rs` | `utils/check_gate_steps.py`, a static gate step |
+| the editor grammar's four lists against the engine's, the NL census's kernel against `RESERVED`, the review driver's artefact flags against `ein solve --help` | `cli_semantics.rs`, `natural_language_page.rs`, `help_surface.rs` | `utils/check_tool_mirrors.py`, a static gate step |
+| every generator's `--check`: the digit and bit tables, `num9`, the gates, the arith examples, the read-out examples page, the zebra2 and SEND variants | `digit_tables.rs`, `num9_theory.rs`, `bool_theory.rs`, `arith_search_free.rs`, `read_out_examples.rs`, `cli_semantics.rs` | `utils/check_generated.py --bin ein.rs/target/gate/ein`, after the tests |
+| the oracle against `region.py` on ten programs, `region_synth.py --random 300` read back | `region_dump.rs` | `utils/check_region_routes.py`, after the tests |
+| the detector's 200 random programs, the width-2 num9 theory | `detector.rs` and `num9_theory.rs` spawning a script | banked in the project (`ein-infer/tests/golden/random_programs.txt`, `num2_theory.ein`), written by `gen_random_programs.py` and `gen_num9.py`, checked by `check_generated.py` |
+| the lexer over `plans/`' `.ein` files | `generated_parser.rs` | dropped (by part B and this part alike): the project's 901 files, 500 mutants, the edge cases and 20 000 random strings stay |
+| the page's kernel row; its decision ids | `natural_language_page.rs` against `utils/nl_census.py` and a plan's ledger | the same test, against `RESERVED` and `docs/decisions/` |
+
+What each test keeps of the project stays in the crate; `stdlib_coverage.rs`' two messages name no script. The
+two example generators moved from `examples/` to `utils/` (process tooling), and the five files they write say they
+are generated and name no tool, each line count kept. `--tests-only` now skips the two new static checks.
+
+**The process writes into the project** (L-43): `utils/fuzz_engine.py`'s `write_finding` writes no found-date and
+no command line (an engine find names its corpus run, an id-order find *under a permuted id space*);
+`tests/mutation_survivors.txt` stays in `tests/` (the suite's own record, explained line by line in
+`tests/README.md`), its header naming no script.
+
+**Part B, merged** (`6002b8b7`): three conflicts — `lever_invariance.rs` keeps this part's exemption over part B's
+rename of the W36 test it replaced; `region_modes.rs` takes part B's message; the shape golden drops the moved
+witnesses' lines and keeps part B's re-banked ones. Part B's forbid text, `…; Q-M1e2.5)` for `…; forbidden since
+M1e2 S1e2.2.5)`, is applied to the 16 `refused` lines of `corpus/regressions.toml` that quote it. The five
+qualifiers that said *open (F21)* were alternatives' and the note that cited `read_out.md § 8.2` a row's note: both
+went with the process fields, so no row records them, and the open register records neither.
+
+**Commits**: `05893b61` (L-43), `c965d070` (the tests that read the process), `7accb3be` (the split), `6002b8b7`
+(part B merged), `7982f4a9` (the witness notes), and this record with the followups' links.
+
+**Checks**, on the merged tree: `cargo test --profile gate --workspace --no-fail-fast`, 160 test binaries green (one floor moved with the corpus: `explore.rs`' flagged ∅-rule cells, 75 → 70, the moved flagged witnesses' five each gone, as `detector.rs`' count 49 → 47); `python3 utils/wrong_answers.py` (15 rows, 15 runs, 15 regions, 0 defects) and a hand-mutated `[case.now]` failing it; `python3 utils/review_bundle.py --smoke` (15 rows read, 2 cases and 1 program built, 25 SVGs, the link check 0); `check_gate_steps.py` (16, 75, 79 steps), `check_tool_mirrors.py`, `doc_audit.py --links --check --tracked` (0 and 0), `check_release_voice.py`, `decision_census.py --check`, `cargo fmt --check`, clippy `--all-targets -D warnings` and rustdoc `-D warnings`. No `./run_tests.sh`.
+
+**Decisions the user may want to revisit**: the name `regressions`; `branching/06`'s `not-wrong` row as a
+regression; the five witnesses an open row shares with a project test staying in the project; a regression row
+carries no explanation of its right answer beyond its title and decision ids (`derived` and `reading` are history
+and stayed in git); the runner as an `ein-cli` example sharing `tests/held/`; the review bundle reading the open
+register alone, so its smoke builds `W39/or-one-key` and `W87/written-rule-no-such-rule` and no longer exercises the
+container and closed-stdout pages, whose rows are regressions now; `fixed_rows.tsv` kept on the process side for
+the W ids the project still cites; the generators in `utils/`; `region.py` and `region_synth.py` read as the
+oracle's second route (a process check) rather than as fixture writers.
+
+**Found outside the part**:
+
+- **1 250 bare case ids (`W62`, `C1`) remain in 457 project files** (`git grep -cE '\b[WC][0-9]{1,3}\b' -- ein.rs
+  stdlib examples tests corpus docs README.md ':!docs/lib' ':!docs/history'`), none with a slug: a case is several
+  rows, so no map renames them; the release-voice check does not read them (Q-M1f.314). A pass that restates each
+  is the W ids' share of the sweep.
+- **The ten moved programs leave the project's sweeps** (oracle agreement, the routes, claims, the agenda, about
+  thirty): the process holds each row's recorded run and region, not those properties.
+- **Part B's forbid text and every printed string a regression records move together**: a later change to what
+  the binary prints edits `corpus/regressions.toml` in the same commit, as any golden.

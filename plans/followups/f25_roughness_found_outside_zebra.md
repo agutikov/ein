@@ -12,7 +12,7 @@
 program (`examples/zebra*.ein` and the files generated from them) and is not quick to fix where it was found. A
 finding is a row below: what, the smallest witness, where it was found, and the answer today. Nothing here is a
 question for the user, and nothing here is a stage. A finding that is a wrong answer also gets a row in
-`corpus/wrong_answers.toml`, `open` and owned by this followup, when its stage can file one at no cost; otherwise
+`plans/wrong_answers/register.toml`, `open` and owned by this followup, when its stage can file one at no cost; otherwise
 the row here is the record.
 
 **Whose findings.** P1f.7's alone (the user, 2026-11-11: *"my ruling … was about only one phase p1f.7"*). A

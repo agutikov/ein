@@ -64,7 +64,7 @@ and four of them fix wrong answers that S1f.5.0 filed as register rows first, W2
 rows on 2026-11-08, with three more from S1f.5.5's census, W33 to W35 (the register then at 103 fixed,
 33 open and 1 not-wrong, `grep '^status' corpus/wrong_answers.toml | sort | uniq -c`). They
 keep M1e2's discipline: a wrong answer is a row in
-[`corpus/wrong_answers.toml`](../wrong_answers/register.toml) before it is
+[`plans/wrong_answers/register.toml`](../wrong_answers/register.toml) before it is
 fixed, and every move is listed before it is made.
 
 **The order between the phases.** P1f.5 runs first. It changes the language

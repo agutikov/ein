@@ -24,7 +24,7 @@ it needs is the one the cap's needs, a target's derivations combined where
 a per-fact choice cannot see the saving.
 
 **What it owns.** Five register rows
-([`corpus/wrong_answers.toml`](../wrong_answers/register.toml)), each
+([`plans/wrong_answers/register.toml`](../wrong_answers/register.toml)), each
 `open`, reviewed `deferred`, with F22 as its `owner`: `W10/alt-cap-shared`
 (S1e2.2.11, 2026-11-04), and since M1e2
 [S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md)
