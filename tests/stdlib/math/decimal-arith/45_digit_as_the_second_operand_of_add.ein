@@ -1,4 +1,4 @@
-;;; `std.math.decimal-arith` — a digit as the second operand of `add`. M1f S1f.6.38.
+;;; `std.math.decimal-arith` — a digit as the second operand of `add`.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -8,8 +8,8 @@
 ;;; derives `(malformed (add (n z 5) 7))`, the request as written; `malformed-
 ;;; is-false` derives `(false)`. The operand's fault, `std.math.decimal-
 ;;; arith`'s: no numeral is malformed. One program a rule of the ten from a
-;;; tag to its request (S1f.6.38: the malformed numerals of `22` to `32`
-;;; reached them until the numeral's check became `std.math.decimal`'s).
+;;; tag to its request: the malformed numerals of `22` to `32` reach none of
+;;; them, a numeral's check being `std.math.decimal`'s (Q-M1f.210).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

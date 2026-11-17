@@ -1,5 +1,5 @@
 ;;; `std.math.int` — operands by name, and a rule of the program that reads an
-;;; answer's sign. M1f S1f.6.7.
+;;; answer's sign.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

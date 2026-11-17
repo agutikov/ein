@@ -1,5 +1,5 @@
 ;;; Ein stdlib — `std.bool.circuit`: a circuit as a program, simulated by
-;;; saturation (M1f P1f.6, S1f.6.17).
+;;; saturation (Q-M1f.328).
 ;;;
 ;;; Wires are names, a gate is a fact, and one rule carries values from a
 ;;; gate's inputs to its output, looking its function up in the table of
@@ -20,8 +20,8 @@
 ;;;     (import std.bool.circuit :symbols (gate val))
 ;;;     (import std.bool.gates :symbols (Xor And))
 ;;;
-;;; An import brings the module whole, `std.bool.gates` with it (M1f
-;;; S1f.6.35); a program lists the names it writes from the module that
+;;; An import brings the module whole, `std.bool.gates` with it
+;;; (Q-M1f.247); a program lists the names it writes from the module that
 ;;; declares each, and a function's name, written as a gate's FUNCTION, is
 ;;; `std.bool.gates`'s (that module's header says why it must be listed).
 ;;; `circuit` is the entry, the closing rule at the end of this file: gates

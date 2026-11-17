@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — a long product, and a product by name:
-;;; 123078 x 123078 = 15148194084. M1f S1f.6.5.
+;;; 123078 x 123078 = 15148194084.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

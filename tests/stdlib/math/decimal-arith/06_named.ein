@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — named constants: `(let NAME NUMBER)`, and a request that
-;;; names its operands. M1f S1f.6.3.
+;;; names its operands.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

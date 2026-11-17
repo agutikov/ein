@@ -1,16 +1,16 @@
 ;;; Ein stdlib — `std.math.int`: integers as a positive and a negative part, over
-;;; the natural numbers of `std.math.decimal-arith`, computed by saturation alone (M1f
-;;; P1f.6, S1f.6.7).
+;;; the natural numbers of `std.math.decimal-arith`, computed by saturation alone.
+;;; Its names carry the prefix `int-` (Q-M1f.174).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; This module is a theory written in Ein over `std.math.decimal-arith`, which it calls
 ;;; and does not edit: every step is one of that theory's walks, started with
 ;;; a tag of this module's, and nothing is guessed. On a program that imports
 ;;; it and states requests the universe has no candidate, R is {∅}, and the
 ;;; answer is root's fixpoint. No `absent`, no `not` and no guard of its own;
 ;;; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the undeclared
-;;; name's, and so two strata (S1f.6.12). An operand's faults and a malformed
-;;; integer are flagged (S1f.6.38, below), a malformed numeral by
+;;; name's, and so two strata (Q-M1f.317). An operand's faults and a malformed
+;;; integer are flagged (Q-M1f.206, Q-M1f.276, below), a malformed numeral by
 ;;; `std.math.decimal`, wherever it is written.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
@@ -20,7 +20,7 @@
 ;;;     (import std.math.arith :symbols (z))
 ;;;
 ;;; An import brings the module whole, `std.math.decimal-arith`, the modules
-;;; below it and the tables with it (M1f S1f.6.35); a program lists the names
+;;; below it and the tables with it (Q-M1f.247); a program lists the names
 ;;; it writes, from the module that declares each: `int-add`, `int`,
 ;;; `int-sum-of` from this one, `n` from `std.math.decimal` and `z` from
 ;;; `std.math.arith`. `int-arith` is the theory's entry, the closing rule at
@@ -31,9 +31,9 @@
 ;;; ── The integer ────────────────────────────────────────────────────────────
 ;;;
 ;;; An integer is `(int P N)`: two natural numbers of `std.math.decimal-arith`, and its
-;;; value is P less N (the user's proposal of 2026-11-08: "numbers containing
-;;; 2 parts - positive and negative, that can be simplified until one of them
-;;; is zero").
+;;; value is P less N: a number of two parts, a positive and a negative, which
+;;; can be simplified until one of them is zero, and no rule looks at a sign
+;;; (Q-M1f.176).
 ;;;
 ;;;     7        (int (n z 7) z)
 ;;;     -7       (int z (n z 7))
@@ -62,8 +62,8 @@
 ;;; says. A natural number is **not** an integer operand: `(int-add (n z 5)
 ;;; X)` is never answered. Write `(int (n z 5) z)`.
 ;;;
-;;; **Division names its convention** (M1f S1f.6.22, the user's ruling of
-;;; 2026-11-12). There is no bare `int-div`. For X divided by Y, Y not zero,
+;;; **Division names its convention** (Q-M1f.179, Q-M1f.200). There is no
+;;; bare `int-div`. For X divided by Y, Y not zero,
 ;;; each request is answered by one fact with a quotient and a remainder, X =
 ;;; Q x Y + R:
 ;;;
@@ -88,7 +88,7 @@
 ;;; The module sees the zero by the divisor's shape before it calls
 ;;; `std.math.decimal-arith`'s division, so it makes no call with a zero divisor and the
 ;;; request has one flag, its own; `std.math.decimal-arith` flags any such call, whoever
-;;; made it (S1f.6.24), and none is made here.
+;;; made it (Q-M1f.163), and none is made here.
 ;;;
 ;;; ── How it computes ────────────────────────────────────────────────────────
 ;;;
@@ -116,7 +116,7 @@
 ;;; **A call's tag is its request.** `(int-add X Y)` is the tag of its own
 ;;; computation, and the rule that answers reads `(int-done (int-add ?x ?y)
 ;;; ?s)`. **The tagged calls a later theory makes are an interface,** as
-;;; `std.math.decimal-arith`'s are (P1f.6's question 41, round 2, the user's *"(a)"*),
+;;; `std.math.decimal-arith`'s are (Q-M1f.189),
 ;;; held to these shapes by `ein-infer/tests/arith_theory.rs`'s
 ;;; `the_tagged_calls_keep_their_shapes`:
 ;;;
@@ -667,7 +667,7 @@
 ;; under the tag it was asked with, `(bad-operand TAG FAULT)`. These rules turn
 ;; this module's three tags into the request, `(bad-request REQUEST FAULT)`,
 ;; and `std.math.decimal-arith`'s flags and `(false)` follow, as they do for
-;; its own ten (S1f.6.38, the (b) part of the user's ruling on Q-M1f.210; E-38).
+;; its own ten (Q-M1f.206, Q-M1f.210).
 ;; A division's tag holds `(int-div-of REQUEST)`, which the three share, and
 ;; `int-bad-div` takes it to the request as written: such a request holds two
 ;; flags, its tag's and its own.
@@ -694,11 +694,11 @@
 ;; ── An integer's own shape ──────────────────────────────────────────────────
 ;; Each part of `(int P N)` is a natural number. A digit or a named constant
 ;; where a part goes is the integer's fault, this module's, seen where the
-;; integer is written as a numeral's is (S1f.6.38, Q-M1f.276 (a)): read off
+;; integer is written as a numeral's is (Q-M1f.276): read off
 ;; `(written (int P N))`, which the loader states for every integer a file
 ;; writes, wherever it sits. A part that is a malformed numeral is
 ;; `std.math.decimal`'s, which flags it; a natural number where an integer
-;; goes is not flagged (Q-M1f.277, (b)). No guard: a program that names `z`
+;; goes is not flagged (Q-M1f.277). No guard: a program that names `z`
 ;; with a `let` is flagged for the `let`, and an integer with a part `z` is
 ;; flagged beside it.
 (relation not-integer Integer Thing
@@ -742,19 +742,19 @@
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Every relation of the module is closed, so the search has no candidate
 ;; among them, and every rule is named. It names `decimal-arith`, `decimal` and
-;; `arith` too, the entries of the modules it imports. Until M1f S1f.6.35 the names were what made `(import std.math.int
-;; :symbols (int-arith))` bring the whole theory, the lower one's included, a
-;; selection's closure following the names a kept declaration writes (E-20 of
-;; P1f.6's `findings.md`); every import brings its module whole since, and the
-;; names stay for a program and a trace to read.
+;; `arith` too, the entries of the modules it imports (Q-M1f.283), for a
+;; program and a trace to read: an import brings the whole theory, the lower
+;; one's included, whether or not a program lists the entry (Q-M1f.240), so
+;; `(import std.math.int :symbols (int-arith))` and a bare import bring the
+;; same rules (Q-M1f.249).
 ;; `ein-infer/tests/int_theory.rs` holds that nothing is missing here.
 (relation int-rule Rule
   :why "{?1} is a rule std.math.int brings")
 
-;; The closing rule's own name, as a written fact: what kept it in a program
-;; that is inlined and tree-shaken (E-11 of P1f.6's `findings.md`), and no
-;; longer needed for that since M1f S1f.6.25, a name a selection lists being
-;; live. It stays: removing it would move every state of every program.
+;; The closing rule's own name, as a written fact, which an import brings
+;; with the module (Q-M1f.247). A name an import lists is live, so nothing
+;; needs it to keep `int-arith` in a program; it stays because every state
+;; of every program that imports the module holds it, and removing it would change them all.
 (int-rule int-arith)
 
 (rule int-arith ()

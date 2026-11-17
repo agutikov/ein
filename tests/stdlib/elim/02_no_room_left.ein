@@ -1,15 +1,15 @@
 ;;; `std.elim/no-room-left` — every value excluded for some `a`: nothing left
 ;;; to force, so ⊥.
 ;;;
-;;; ── The rule the corpus loaded and never satisfied ─────────────────────────
+;;; ── A refutation rule, in a program that refutes ───────────────────────────
 ;;;
-;;; One of the five rules the census found *compiled, activated and waiting*
-;;; with the state that fires them never arising (§3b). Every one of the five
-;;; asserts `(false)`, and the finding was not that a refutation rule fails to
-;;; fire in a corpus of solvable puzzles — that is expected — but that it had
-;;; never fired in a corpus of **broken** ones either: `examples/broken/` is
-;;; thirty-seven parse and load errors and not one program that loads, runs,
-;;; and is inconsistent.
+;;; `no-room-left` asserts `(false)`, and in a corpus of solvable puzzles the
+;;; state that fires it never arises: it is compiled, activated and waiting.
+;;; A refutation rule needs a program that loads, runs and is inconsistent,
+;;; and `examples/broken/` holds parse and load errors, none of which
+;;; runs.
+;;; This file is such a program, so the rule has a test in which it
+;;; fires.
 ;;;
 ;;; ── What this program does to it ───────────────────────────────────────────
 ;;;
@@ -35,12 +35,12 @@
 ;;; same and the diagnosis would not.
 ;;;
 ;;; Leaving it out is what makes this a test of `no-room-left` rather than of
-;;; the module, and it was measured rather than assumed: with both activated, a
+;;; the module, for a concrete reason: with both activated, a
 ;;; `no-room-left` mutated to quantify over the wrong type stops firing and the
 ;;; whole suite still passes, because elimination refutes anyway. With one, the
 ;;; same mutant turns this file into a `Solution` and is caught. An expectation
-;;; is made of facts and cannot say which rule produced them — the `route`
-;;; residue Q-M1c.2 parks (docs/history/m1c_external_validation/open_questions.md) —
+;;; is made of facts and cannot say which rule produced them — a claim says
+;;; which facts hold, never which rule derived them (Q-M1c.2) —
 ;;; so where two rules can reach one verdict, a fixture has to separate them by
 ;;; **activation**.
 ;;;

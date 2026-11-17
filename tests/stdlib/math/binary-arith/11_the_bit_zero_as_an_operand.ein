@@ -1,4 +1,4 @@
-;;; `std.math.binary-arith` — the bit 0 where a number goes. M1f S1f.6.16.
+;;; `std.math.binary-arith` — the bit 0 where a number goes.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

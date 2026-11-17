@@ -1,4 +1,4 @@
-;;; `std.math.num9` — a sum that does not fit: 999999999 + 1 overflows. M1f S1f.6.13.
+;;; `std.math.num9` — a sum that does not fit: 999999999 + 1 overflows.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,13 +1,13 @@
 ;;; Ein stdlib — `std.math.decimal-arith`: school arithmetic on natural numbers of any
-;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3;
-;;; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5; division,
-;;; S1f.6.6; malformed requests and undeclared names, S1f.6.12; a division by
-;;; zero flagged at the call, S1f.6.24; the numeral and its check moved to
-;;; `std.math.decimal`, and zero and the division by zero's flag to
-;;; `std.math.arith`, S1f.6.38; the rules every base shares moved to
-;;; `std.math.positional`, S1f.6.16).
+;;; length, computed by saturation alone (Q-M1f.261): addition, subtraction
+;;; and comparison, multiplication and division, malformed requests and
+;;; undeclared names flagged, and a division by zero flagged at the call.
+;;; The numeral and its check are `std.math.decimal`'s, zero and the division
+;;; by zero's flag `std.math.arith`'s, and the rules every base shares
+;;; `std.math.positional`'s, which this module activates for decimal
+;;; (Q-M1f.266).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; This module is a *theory* written in Ein over the decimal numerals of
 ;;; `std.math.decimal`, whose digits are the ten names `0` to `9`: the tables of
 ;;; `std.math.digits` are the gates, and the rules are the wiring. **Most of
@@ -15,8 +15,8 @@
 ;;; protocol of the five operations and an operand's faults do not know their
 ;;; base, and are `std.math.positional`'s, written once for decimal and binary
 ;;; and activated for this base by one call of its macro in the closing rule
-;;; below (S1f.6.16; the user's rulings of 2026-11-12, reply 16, and of
-;;; 2026-11-14, (iii)). What is decimal's own is here: the digit multiplier,
+;;; below (Q-M1f.266).
+;;; What is decimal's own is here: the digit multiplier,
 ;;; the division's nine multiples and its digit by bisection, and the operand
 ;;; that is a name, which reads the ten digits. Every step is a table lookup whose outcome the table decides, so
 ;;; nothing is guessed: on a program that imports the theory and states
@@ -25,8 +25,8 @@
 ;;; No `not` premise, and **one `absent`, over `let`**, a relation a program
 ;;; writes and no rule derives, and which the theory closes: so the premise
 ;;; is decided at root and nothing can make it stale, and a program that
-;;; imports the theory is monotone by the static check, in two strata (until
-;;; S1f.6.12 the theory read no `absent` and had one). Two rules conclude
+;;; imports the theory is monotone by the static check, in two strata
+;;; (Q-M1f.317). Two rules conclude
 ;;; `(false)`, each from a flag: a program that states a request the theory
 ;;; cannot read, or that names an operand no `let` states, is a contradiction
 ;;; (below), and so is one that divides by zero, by `std.math.arith`'s rule,
@@ -40,7 +40,7 @@
 ;;;
 ;;; An import brings the whole theory, the rows of its tables, the shared rules
 ;;; of `std.math.positional` and the two modules below it included, under full
-;;; names, `std.math.decimal-arith.add` (M1f S1f.6.35); a shared rule prints
+;;; names, `std.math.decimal-arith.add` (Q-M1f.247); a shared rule prints
 ;;; by its own full name, `std.math.positional.add-column`, in a trace, a
 ;;; core and `refuted by`. A program lists the names it writes from the module that
 ;;; declares each, the requests, the results and `let` from this one, `n` from
@@ -66,8 +66,8 @@
 ;;; with high zeros and is read by value; every answer is in normal form.
 ;;;
 ;;; **How long a number may be.** The theory has no width; three things
-;;; outside it bound a run (P1f.6's S1f.6.9; `stdlib/README.md` § How long a
-;;; number may be has the measurements, 2026-11-12):
+;;; outside it bound a run, none of them a width of the theory's
+;;; (Q-M1f.185):
 ;;;
 ;;;   - **A program can write a number of 999 digits and no longer.** A number
 ;;;     nests a level a digit and the parser nests to 1 000 parentheses. A
@@ -81,10 +81,10 @@
 ;;;     for the first three, and of 998 for the last two, though every
 ;;;     answer is right and printed.
 ;;;   - **Each step holds its numbers whole,** so the facts of a product or a
-;;;     quotient grow as the two lengths multiplied, a kilobyte of memory a
-;;;     fact, and the state as text as that times the digits again: two
-;;;     numbers of 100 digits multiply in 73 ms under `ein saturate`, and
-;;;     `ein solve` takes 18 s to write their 354 MB of state.
+;;;     quotient grow as the two lengths multiplied, and the state as text as
+;;;     that times the digits again: a long product is a query's to read,
+;;;     under `ein saturate` or a goal, rather than a state for `ein solve` to
+;;;     write out.
 ;;;
 ;;; ── The protocol: a request fact, answered by a result fact ────────────────
 ;;;
@@ -114,12 +114,12 @@
 ;;; divisor is zero, however it is written, derives the flag
 ;;; `(division-by-zero (div X Y))`, and the flag derives `(false)` by
 ;;; `std.math.arith`'s rule, the flag and the rule being arithmetic's own,
-;;; whatever the base (S1f.6.38). So root is
+;;; whatever the base (Q-M1f.269). So root is
 ;;; dead: R is empty, no query of the program has an answer, and the request
 ;;; is what `ein solve` names as the reason. A program that must not die
 ;;; compares its divisor with zero first, and asks only where it is not.
 ;;;
-;;; **It is flagged wherever it is called** (S1f.6.24). Every division goes
+;;; **It is flagged wherever it is called** (Q-M1f.163). Every division goes
 ;;; through the tagged call `(div-call TAG X Y)`, and a call whose Y is zero
 ;;; by value derives `(division-by-zero (div-call TAG X Y))`, the call as it
 ;;; was asserted, and `(false)` from it, whoever made the call: this module
@@ -147,11 +147,11 @@
 ;;;
 ;;; A result repeats its request's operands, so a rule that wants an answer
 ;;; for a purpose of its own must find it by its operands, a join on a
-;;; number, which the engine answers by a scan (E-3 of P1f.6's
-;;; `findings.md`). Inside, the theory calls itself with a TAG, a nested fact
+;;; number, which the engine answers by a scan (Q-M1f.362). Inside, the
+;;; theory calls itself with a TAG, a nested fact
 ;;; that names the caller, and hands the answer back under the tag, so the
 ;;; rule that reads it has one premise. **These calls are an interface**
-;;; (P1f.6's question 41, round 2, the user's reply of 2026-11-12: *"(a)"*):
+;;; (Q-M1f.189):
 ;;; what `std.math.int`, `std.math.rat` and a program's own theory call, held to these
 ;;; shapes by `ein-infer/tests/arith_theory.rs`'s
 ;;; `the_tagged_calls_keep_their_shapes`, which reads every module of the
@@ -189,20 +189,20 @@
 ;;; TAG is the caller's, a fact of a relation of its own, `(cnt K M)` in
 ;;; `examples/beyond_arith/casting_out_nines.ein`; one of this module's own
 ;;; tags, `(sum X Y)` or `(quotient X Y)`, is read back as a request of the
-;;; theory's (E-39). A tag names one call: two calls under one tag hand their
+;;; theory's. A tag names one call: two calls under one tag hand their
 ;;; answers back under one tag, and the rule that reads cannot tell them
 ;;; apart.
 ;;;
 ;;; ── Malformed requests: a flag, and `(false)` from it ──────────────────────
 ;;;
 ;;; A request the theory cannot read is a contradiction, in two steps, as a
-;;; division by zero is (S1f.6.12; the user's rulings of 2026-11-11 and
-;;; 2026-11-12). Root is dead, R is empty, every command exits 0, and `ein
+;;; division by zero is (Q-M1f.316). Root is dead, R is empty, every command
+;;; exits 0, and `ein
 ;;; solve` names the request, as written, in the unsat core.
 ;;;
-;;; **A malformed numeral is not this module's** (S1f.6.38, the user's ruling
-;;; of 2026-11-14 on Q-M1f.210: *"malformed decimal numbers is a problem of
-;;; decimal module"*). Whether `(n (n z 1) x)` is a number is
+;;; **A malformed numeral is not this module's**: a malformed decimal number
+;;; is a problem of the decimal module, `std.math.decimal` (Q-M1f.210).
+;;; Whether `(n (n z 1) x)` is a number is
 ;;; `std.math.decimal`'s question, asked of every numeral a file writes as it
 ;;; is written, wherever it sits, with no request reading it: its flag is
 ;;; `(not-decimal NUMERAL THING)`, and `(false)` follows. What is left here is
@@ -222,11 +222,11 @@
 ;;; The modules over this one, `std.math.int` and `std.math.rat`, look their
 ;;; operands up here, and turn the faults found under their tags into the
 ;;; same two request flags, so an undeclared name and a digit as an operand
-;;; of theirs are flagged too (S1f.6.38, E-38).
+;;; of theirs are flagged too (Q-M1f.206).
 ;;;
 ;;; **A flag means malformed; no flag does not mean well-formed.** These are
-;;; answered by silence, a request that is neither refused nor answered, as
-;;; every malformed request was until S1f.6.12:
+;;; answered by silence, a request that is neither refused nor answered
+;;; (Q-M1f.318):
 ;;;
 ;;;   - a number that ends in a name that is neither a digit nor a named
 ;;;     constant, `(n end 1)`, `std.math.decimal`'s silence: saying *a name*
@@ -237,12 +237,12 @@
 ;;;   - a name that stands for either of those;
 ;;;   - in the modules over this one, a natural number where `std.math.int`
 ;;;     expects an integer, and an integer or a natural number where
-;;;     `std.math.rat` expects a rational (Q-M1f.277, (b)).
+;;;     `std.math.rat` expects a rational (Q-M1f.277).
 ;;;
 ;;; A wrong count of arguments, `(add X)` or `(n 1)`, is refused when the
-;;; program is loaded (S1f.6.23), and so is not the theory's to flag.
+;;; program is loaded (Q-M1f.315), and so is not the theory's to flag.
 ;;;
-;;; ── How it computes (design K of P1f.6's `design.md`, round 3) ─────────────
+;;; ── How it computes ────────────────────────────────────────────────────────
 ;;;
 ;;;   1. **The operands.** Each is looked up: a number stands for itself, a
 ;;;      name for the number its `let` states.
@@ -286,9 +286,9 @@
 ;;; ── THE RULE OF THE THEORY: no rule joins two facts on a number ────────────
 ;;;
 ;;; A rule here has **one** premise that holds numbers. Its other premises are
-;;; rows of `std.math.digits`, looked up by digits. The reason is measured: the
-;;; engine's fact index does not key on a nested fact (E-3 of P1f.6's
-;;; `findings.md`), so a join of two facts on a number scans a relation for
+;;; rows of `std.math.digits`, looked up by digits. The reason is the
+;;; engine's fact index, which does not key on a nested fact (Q-M1f.362),
+;;; so a join of two facts on a number scans a relation for
 ;;; every fact of the other, and a batch of requests would cost the square of
 ;;; its count. Written this way, a batch costs in proportion to its count.
 ;;; `ein-infer/tests/arith_theory.rs` holds the rule on this file's text, and
@@ -309,14 +309,14 @@
 ;;; only a name gets past it to the `let`, which the index finds by the name.
 ;;; So an operand that is a number costs one lookup however many `let`s the
 ;;; program states. Written without `(named ?x)`, every number operand walked
-;;; every `let` (the stage's record has both measurements).
+;;; every `let`.
 ;;;
-;;; Since S1f.6.12 a rule may also hold **guards**, `eq` and `neq`, which
+;;; A rule may also hold **guards**, `eq` and `neq`, which
 ;;; compare two values and look nothing up, and a **probe**, `(nz ?m)` or
 ;;; `(named ?m)`, a premise of one argument that the first premise binds,
 ;;; which is one lookup whatever `?m` is. There is a second join on a name,
-;;; `let-twice`, two `let`s of one name. `named` is `std.math.decimal`'s since
-;;; S1f.6.38, which reads it to flag a named constant inside a numeral, and
+;;; `let-twice`, two `let`s of one name. `named` is `std.math.decimal`'s
+;;; (Q-M1f.278), which reads it to flag a named constant inside a numeral, and
 ;;; this module writes it, as the one that declares `let`. And one guard is
 ;;; not free:
 ;;; `operand-undeclared` asks whether an operand is a name by ranging a
@@ -336,8 +336,8 @@
 ;;; reads the rest and writes none of it: a written fact of a result or of
 ;;; the circuit is a fact like a derived one, and the theory computes with
 ;;; it, so `(sum-of X Y S)` written by hand is an answer nobody computed.
-;;; Nothing refuses it (the user's reply of 2026-11-12: a module does not
-;;; reserve its names). A second declaration of any of these names is
+;;; Nothing refuses it: a module does not reserve its names
+;;; (Q-M1f.319). A second declaration of any of these names is
 ;;; refused at load.
 ;;;
 ;;; **What a program reads:** the results `sum-of`, `diff-of`, `cmp-of`,
@@ -618,7 +618,7 @@
   :assert (mul-walk (div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8) ?m1 9 0 z)
   :why    "8 times the divisor is {?m8}: next, 9 times the divisor")
 
-;; The nine multiples travel on as one fact, `(multiples M1 … M9)`, and the
+;; The nine multiples travel on as one fact, `(multiples ?m1 … ?m9)`, and the
 ;; dividend is turned round, so that its top digit comes first.
 (rule div-turn ()
   :match  (done (div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8) ?m9)
@@ -747,12 +747,12 @@
   :assert (div-step ?k ?ms ?rest ?t z)
   :why    "the digit is 0 and the quotient so far is zero: no high zero is written")
 
-;; ── An operand's faults, and a `let`'s (S1f.6.12, S1f.6.38) ─────────────────
+;; ── An operand's faults, and a `let`'s (Q-M1f.316) ──────────────────────────
 ;; A request the theory cannot read is flagged, and the flag is a
-;; contradiction, as a division by zero is (the user's rulings of 2026-11-11
-;; and 2026-11-12). **A flag means malformed; no flag does not mean
-;; well-formed:** the header lists what stays silent. A malformed numeral is
-;; `std.math.decimal`'s, flagged where it is written (S1f.6.38). The rules that
+;; contradiction, as a division by zero is (Q-M1f.316). **A flag means
+;; malformed; no flag does not mean well-formed** (Q-M1f.318): the header
+;; lists what stays silent. A malformed numeral is `std.math.decimal`'s,
+;; flagged where it is written (Q-M1f.210). The rules that
 ;; flag an operand and a `let` are `std.math.positional`'s, but for the one
 ;; that reads the ten digits, `operand-undeclared`, below; the relations are
 ;; decimal's, declared here.
@@ -769,9 +769,9 @@
 ;; The circuit's own. `(bad-operand TAG FAULT)` and `(bad-request REQUEST
 ;; FAULT)`: what is wrong, first by the operand's tag and then by the request;
 ;; FAULT is `(not-a-number THING)`, what stands where a number goes, or
-;; `(no-let NAME)`. Until S1f.6.38 a found operand was also walked here a
-;; place a firing, `(check TAG NUMBER)`, for a malformed numeral, which is
-;; `std.math.decimal`'s now, seen where it is written.
+;; `(no-let NAME)`. A found operand is not walked here for a malformed
+;; numeral: that is `std.math.decimal`'s, seen where it is written
+;; (Q-M1f.210).
 (relation bad-operand Tag Fault
   :why "the operand looked up for {?1} is at fault: {?2}")
 (relation bad-request Request Fault
@@ -788,7 +788,7 @@
 ;; two guards on `?v`, in this order: `(neq ?v z)` ranges `?v` over the
 ;; program's names, and `(eq ?v ?x)` keeps the one that is the operand, so
 ;; a number, which is a fact, never passes. It costs a comparison a name of
-;; the program for each operand (`stdlib/README.md` has the measurement).
+;; the program for each operand, which `arith_batch.rs` pins.
 (rule operand-undeclared ()
   :match  (and (operand ?k ?x)
                (neq ?v z) (eq ?v ?x)
@@ -803,32 +803,32 @@
 ;; each table it reads, is closed, so the search has no candidate among them.
 ;; The rule also names every rule of the module, and the entries of the two
 ;; modules below, `std.math.arith`'s `arith` and `std.math.decimal`'s `decimal`
-;; (S1f.6.38), which until M1f S1f.6.35 was
-;; what made `(import std.math.decimal-arith :symbols (decimal-arith))` bring the whole theory, a
-;; selection's closure following the names a kept declaration writes; every
-;; import brings its module whole since, and the names stay for a program and
-;; a trace to read.
+;; (Q-M1f.283). The names are for a program and a trace to read: an import
+;; brings the whole theory whether or not a program lists the entry
+;; (Q-M1f.240), and lists only the names it writes, so `(import
+;; std.math.decimal-arith :symbols (decimal-arith))` and a bare import bring
+;; the same rules (Q-M1f.249).
 ;;
-;; **And it connects the base** (S1f.6.16, the user's ruling of 2026-11-14 on
-;; Q-M1f.266, (iii)): its last conjunct is one call of `std.math.positional`'s
+;; **And it connects the base** (Q-M1f.266): its last conjunct is one
+;; call of `std.math.positional`'s
 ;; macro with decimal's 61 relations, which derives the 77 activators of the
 ;; shared rules in this same firing. Those rules are named by their activators
 ;; and not here: a rule's name written as an argument makes every
 ;; parameterised conclusion of its arity a possible activator that binds a
-;; parameter to a fact, which the loader refuses (E-55).
+;; parameter to a fact, which the loader refuses (Q-M1f.1).
 ;; `ein-infer/tests/arith_theory.rs` holds that no relation and no rule of
 ;; this file is missing here, and that the call is the macro's whole order.
 (relation arith-rule Rule
   :why "{?1} is a rule std.math.decimal-arith brings")
 
-;; The closing rule's own name, as a written fact. A selection brings it,
-;; since `arith-rule` is a name `decimal-arith` writes. It was what kept `decimal-arith` in a
-;; program that is inlined and tree-shaken, as the program a `--dump-answer`
-;; state file re-writes is, while the tree-shake kept only a rule that a name
-;; or a premise reaches (E-11 of P1f.6's `findings.md`). Since M1f S1f.6.25 a
-;; name a selection lists is live, so the fact is no longer needed for that;
-;; it stays, since removing it would move every state of every program that
-;; imports the theory.
+;; The closing rule's own name, as a written fact.
+;; An import brings it, as it brings every fact of the module (Q-M1f.247).
+;; It is not what keeps `decimal-arith` in a program that is inlined and
+;; tree-shaken, as the program a `--dump-answer` state file re-writes is:
+;; a name an import lists is live whether or not a rule or a premise
+;; reaches it.
+;; It stays because every state of every program that imports the theory
+;; holds it, and removing it would change them all.
 (arith-rule decimal-arith)
 
 (rule decimal-arith ()

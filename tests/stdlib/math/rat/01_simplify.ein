@@ -1,6 +1,6 @@
 ;;; `std.math.rat` — a rational is an integer over a natural number, and its
 ;;; lowest terms are asked for by `rat-simplify`, the one request that
-;;; reduces. M1f S1f.6.8; S1f.6.33.
+;;; reduces.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -8,8 +8,8 @@
 ;;; number of `std.math.decimal-arith` that is not zero. A request fact `(rat-simplify X)`
 ;;; is answered by `(rat-simple-of X S)`: S is X's one normal form, the
 ;;; numerator simplified, the two with no common divisor but 1, the
-;;; denominator with no high zero, and zero written 0 over 1. Since S1f.6.33
-;;; no other request reduces (round 2's item 54, the user's *"(b)"*).
+;;; denominator with no high zero, and zero written 0 over 1. No other
+;;; request reduces (Q-M1f.183).
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────
 ;;;

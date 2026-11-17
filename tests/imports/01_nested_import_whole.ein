@@ -1,10 +1,10 @@
-;;; A theory built on a theory, imported by its entry: both come whole —
-;;; M1f S1f.6.25 (E-20 of P1f.6's `findings.md`), the twin of
+;;; A theory built on a theory, imported by its entry: both come whole
+;;; (Q-M1f.247), the twin of
 ;;; `02_nested_import_left_behind.ein`.
 ;;;
-;;; `upper`'s entry names `lower`, the lower theory's entry, so the closure
-;;; of `(upper)` reaches every rule of both. The request is answered, and the
-;;; loader prints nothing.
+;;; `upper`'s entry names `lower`, the lower theory's entry, and the import
+;;; brings every rule of both, as it would without that name. The request is
+;;; answered, and the loader prints nothing.
 
 (import upper :symbols (upper wanted got))
 

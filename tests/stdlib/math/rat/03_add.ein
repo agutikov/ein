@@ -1,11 +1,11 @@
 ;;; `std.math.rat` — addition: the cross products over the product of the
-;;; denominators, not reduced. M1f S1f.6.8; S1f.6.33.
+;;; denominators, not reduced.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `(rat-add X Y)` is answered by `(rat-sum-of X Y S)`, S the cross products
 ;;; over the product of the denominators, the numerator simplified, and
-;;; **nothing divided** (S1f.6.33, round 2's item 54, the user's *"(b)"*): a
+;;; **nothing divided** (Q-M1f.183): a
 ;;; common factor of the two stays, and zero is 0 over the product.
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────

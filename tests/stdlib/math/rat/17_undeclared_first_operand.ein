@@ -1,11 +1,11 @@
-;;; `std.math.rat` — an operand that is a name no `let` states. M1f S1f.6.38.
+;;; `std.math.rat` — an operand that is a name no `let` states.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `std.math.decimal-arith`'s `operand-undeclared` says the fault under this
 ;;; module's tag, `(rat-of (rat-first REQUEST Y))`; `rat-bad-first` turns it
-;;; into the request, which is flagged `(undeclared foo REQUEST)`. Until
-;;; S1f.6.38 the fault was silent (E-38).
+;;; into the request, which is flagged `(undeclared foo REQUEST)`: the fault
+;;; travels with its tag to the request (Q-M1f.206).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -1,17 +1,17 @@
 ;;; `std.algebra/functional` — ∀a. |{b : R(a,b)}| ≤ 1: one `a` with two
 ;;; distinct images is ⊥.
 ;;;
-;;; ── Why this file is the census's finding, not just its coverage ───────────
+;;; ── Why this rule is tested alone ──────────────────────────────────────────
 ;;;
-;;; `functional` fires in the corpus and has **never once been productive**:
-;;; 2 000 redundant firings, no productive ones, and outside
-;;; `examples/ein-bugs/zebra2-bad.ein` it is never activated at all
-;;; (utils/censuses/stdlib-census.md §5).
-;;; It is dominated twice over: `std.bijection`'s `functional-negative` at 240
-;;; excludes every other partner the moment a positive lands, and the totality
-;;; checks at 110 reach `(false)` first when a contradiction does occur. So in
-;;; a puzzle this rule is never the first to refute, and a fixture that merely
-;;; made it fire alongside the others would record that rather than test it.
+;;; In a puzzle `functional` is dominated twice over.
+;;; `std.bijection`'s `functional-negative` excludes every other partner the
+;;; moment a positive lands, and the totality checks reach `(false)` first
+;;; when a contradiction does occur.
+;;;
+;;; So in a puzzle this rule is never the first to refute, and its firings
+;;; there are redundant: a fixture that merely made it fire alongside the
+;;; others would record that rather than test it, which is why it is tested
+;;; alone.
 ;;;
 ;;; What this file does instead is put it somewhere nothing else can reach:
 ;;; **`functional` alone**, no bijection stack, no negative completion, no

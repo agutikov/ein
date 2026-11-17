@@ -1,11 +1,11 @@
-;;; `std.math.int` — a letter in a part of an integer. M1f S1f.6.38.
+;;; `std.math.int` — a letter in a part of an integer.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A malformed numeral is `std.math.decimal`'s, wherever it is written: here
 ;;; inside an integer, a request's operand. `(n z x)` holds `x` where a digit
-;;; goes, and `numeral-digit` flags it as it is written. Until S1f.6.38 an
-;;; integer's parts went straight to the walks and were never checked (E-38).
+;;; goes, and `numeral-digit` flags it as it is written: an integer's parts
+;;; are numerals like any other (Q-M1f.210).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

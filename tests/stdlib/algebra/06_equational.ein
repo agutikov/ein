@@ -22,7 +22,7 @@
 ;;;   (compose r s t) ⟹ (compose s-c r-c t-c) ⟹ (t-c C A)   from (s-c C B),(r-c B A)
 ;;;   (join    r s j) ⟹ (join    r-c s-c j-c) ⟹ (j-c B A),(j-c C B)
 ;;;
-;;; That is what the census calls a *consequence at a distance*: the claim is
+;;; That is a *consequence at a distance*: the claim is
 ;;; not "the lemma asserted an operator fact" but "an edge exists that only the
 ;;; lemma's asserted operator fact could have produced".
 ;;;

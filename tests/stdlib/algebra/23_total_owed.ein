@@ -10,8 +10,8 @@
 ;;; `19`'s own comment names this gap — *"it never obliges Ann to like
 ;;; anything … a state in which nothing at all is known about Ann is not a
 ;;; violation — it is an open world"* — and says that turning totality into a
-;;; first-class obligation is M1d's subject. This file is that subject,
-;;; arrived: the same open world, and now the engine can say what it owes in it.
+;;; first-class obligation is `total-owed`'s job. This file is that job: the
+;;; same open world, in which the engine says what it owes.
 ;;;
 ;;; ── What this program does to the rule ─────────────────────────────────────
 ;;;
@@ -30,16 +30,16 @@
 ;;;
 ;;; ── What the expectation can and cannot observe ────────────────────────────
 ;;;
-;;; `:expect` has three forms and all three are assertions about **facts**
-;;; (`syntax.md` § Query). An `open` conclusion is by construction never a
-;;; fact — it is a tally on the search-lattice node, because a stored one would
-;;; survive its own discharge in a fork that paid it — so no expectation here
-;;; can say "owes 1". The claim below is therefore about the model, which is
-;;; what pins the *state* the debt is read from; the owe count itself is
-;;; asserted in `ein-infer/tests/obligation_reports.rs`, the in-process sibling
-;;; of `stdlib_coverage.rs`. Growing `:expect` a word for an open verdict is a
-;;; verdict-vocabulary change and is deliberately not taken here — see
-;;; docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator.
+;;; `:expect` claims are assertions about **facts**, and a region claim's
+;;; `(owing …)` lists the alive states that owe
+;;; (docs/ein/user/syntax-and-semantics/query.md § Claims). An `open`
+;;; conclusion is by construction never a fact — it is a tally on the
+;;; search-lattice node, because a stored one would survive its own discharge
+;;; in a fork that paid it — so no expectation here can say "owes 1". The
+;;; claim below is therefore about the state the debt is read from, under
+;;; `owing`; the owe count itself is asserted in
+;;; `ein-infer/tests/obligation_reports.rs`, the in-process sibling of
+;;; `stdlib_coverage.rs`: a claim says that a state owes, and not how much.
 ;;;
 ;;; Note that `total` is **not** imported: where two rules could reach one
 ;;; verdict, a fixture separates them by activation (`05_no_room.ein`'s rule).
@@ -59,13 +59,13 @@
 
 (likes Bob Stew)
 
-;; Root alone (M1f S1f.6.36): this file's question is what root owes: nothing
-;; is guessed, so R is empty and root, which owes, is the owing node it stops
-;; at. Until S1f.6.34 it said so with `:no-hypothesis (is-a likes)`, keeping
-;; the obligation from proposing `likes`, which S1f.6.34 refused (*"filtered
-;; obligations are nonsense by definition"*, the user, 2026-11-13); S1f.6.34
-;; let the obligation propose instead, and the claim was the three states that
-;; pay. `:no-search` says what the list meant.
+;; Root alone (Q-M1f.254): this file's question is what root owes, so
+;; nothing is guessed. R is empty, and root, which owes, is the owing node
+;; it stops at. `:no-search` is the one way to say so: a `:no-hypothesis`
+;; list naming `likes`, the relation the obligation owes, contradicts the
+;; obligation and is refused (Q-M1f.244), and with the obligation free to
+;; propose, R would be the states that pay, which is another question.
+;; The claim is root's state, under `owing`.
 (solve
   :no-search
   :expect (region (owing (model (likes Bob Stew)))))

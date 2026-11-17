@@ -1,10 +1,10 @@
 ;;; `std.math.rat` — multiplication: the numerators' product over the
-;;; denominators'. M1f S1f.6.8.
+;;; denominators'.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `(rat-mul X Y)` is answered by `(rat-product-of X Y S)`, S the numerators'
-;;; product over the denominators', not reduced (S1f.6.33).
+;;; product over the denominators', not reduced (Q-M1f.183).
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────
 ;;;

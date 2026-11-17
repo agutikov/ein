@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — a tagged call whose divisor is not zero: the flag's rule
-;;; loaded and silent. M1f S1f.6.24.
+;;; loaded and silent.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

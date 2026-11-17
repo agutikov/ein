@@ -16,8 +16,8 @@
 ;;; hypothesis search has to take). These two subsume the "square rule" —
 ;;; projecting a directional spatial relation across the co-location bridge —
 ;;; as the special case where the uniqueness guard is vacuous, which is why
-;;; `examples/zebra.ein` no longer carries `square-fwd` / `square-bwd` of its
-;;; own.
+;;; `examples/zebra.ein` carries no `square-fwd` / `square-bwd` of its own:
+;;; these rules are its square rule.
 ;;;
 ;;; `07_spatial_prune.ein` is the other half of the spatial family, and it is
 ;;; deliberately built so these four are silent: there S has two sources for
@@ -53,9 +53,9 @@
 ;;; `slot-adjacent-fwd` fires and re-derives what elimination has already
 ;;; concluded, and on a three-seat row that is unavoidable: its productive
 ;;; case needs the *lower* end of a clue placed before the upper one, and here
-;;; both chains run the other way. It is productive 54 times in
+;;; both chains run the other way. It is productive in
 ;;; `examples/zebra.ein`, which is a five-seat row with enough slack for both
-;;; orders; the point of this file is that it is no longer the only program
+;;; orders; the point of this file is that zebra is not the only program
 ;;; that reaches the rule at all.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
@@ -92,13 +92,13 @@
 (right-of Ann Cat) (not (co-loc Ann S2))
 (right-of Bob Dog) (not (co-loc Dog S2))
 
-;; Root alone (M1f S1f.6.36): this file's question is root's verdict, and root
-;; owes nothing, so R is root alone. Until S1f.6.34 it said so with
-;; `:no-hypothesis (type instance co-loc right-of)`, keeping the obligation
-;; from proposing `co-loc`, which S1f.6.34 refused (*"filtered obligations are
-;; nonsense by definition"*, the user, 2026-11-13); S1f.6.34 took `co-loc` out
-;; of the list, which then filtered nothing. `:no-search` says what the list
-;; meant.
+;; Root alone (Q-M1f.254): this file's question is root's verdict, and root
+;; owes nothing, so R is root alone.
+;; `:no-search` says so. A `:no-hypothesis` list cannot: one that names
+;; `co-loc`, the relation the obligation owes, contradicts the obligation
+;; and is refused (Q-M1f.244), and one that leaves `co-loc` out filters
+;; nothing and is a note (Q-M1f.242).
+;; The claim is root's state, R's one state.
 (solve
   :no-search
   :expect (region (model (co-loc Cid S1) (co-loc S1 Cid)

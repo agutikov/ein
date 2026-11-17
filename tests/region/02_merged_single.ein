@@ -1,5 +1,5 @@
 ;;; REGION CLAIM — (merged …) with one minimal commitment per state.
-;;; M1e2 S1e2.1a.4.
+;;;
 ;;;
 ;;; A brings B and C brings D; an obligation needs one of A or C, and A with C
 ;;; is dead, so ∅ is not in R. Every state is reached by exactly two

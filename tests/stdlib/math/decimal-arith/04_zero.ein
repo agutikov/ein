@@ -1,4 +1,4 @@
-;;; `std.math.decimal-arith` — zero is `z`: asked, added and answered. M1f S1f.6.3.
+;;; `std.math.decimal-arith` — zero is `z`: asked, added and answered.
 ;;;
 ;;; Zero is the number with no digit, `z`, and never `(n z 0)`.
 ;;;

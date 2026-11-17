@@ -1,16 +1,16 @@
 ;;; Ein stdlib — `std.math.rat`: rational numbers, an integer over a natural
-;;; number, computed by saturation alone and reduced only when asked (M1f
-;;; P1f.6, S1f.6.8; S1f.6.33, round 2's item 54, the user's *"(b)"*).
+;;; number, computed by saturation alone and reduced only when asked
+;;; (Q-M1f.183). Its names carry the prefix `rat-` (Q-M1f.180).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; This module is a theory written in Ein over `std.math.int`,
 ;;; `std.math.decimal-arith` and `std.math.gcd`, which it calls and does not
 ;;; edit. Nothing is guessed: on a program that
 ;;; imports it and states requests the universe has no candidate, R is {∅},
 ;;; and the answer is root's fixpoint. No `absent`, no `not` and no guard of
 ;;; its own; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the
-;;; undeclared name's, and so two strata (S1f.6.12). An operand's faults and a
-;;; malformed rational are flagged (S1f.6.38, below), a malformed integer by
+;;; undeclared name's, and so two strata (Q-M1f.317). An operand's faults and a
+;;; malformed rational are flagged (Q-M1f.206, Q-M1f.276, below), a malformed integer by
 ;;; `std.math.int` and a malformed numeral by `std.math.decimal`, wherever
 ;;; each is written.
 ;;;
@@ -22,7 +22,7 @@
 ;;;     (import std.math.arith :symbols (z))
 ;;;
 ;;; An import brings the module whole, the theories below and the tables with
-;;; it (M1f S1f.6.35); a program lists the names it writes, from the module
+;;; it (Q-M1f.247); a program lists the names it writes, from the module
 ;;; that declares each. `rat-arith` is the theory's entry, the closing rule at
 ;;; the end of this file: it names every rule and closes every relation of the
 ;;; module, and it names `int-arith`, `decimal-arith`, `decimal`, `arith` and
@@ -31,17 +31,17 @@
 ;;; ── The rational ───────────────────────────────────────────────────────────
 ;;;
 ;;; A rational is `(rat Z D)`: Z an integer of `std.math.int`, `(int P N)`, and D
-;;; a natural number of `std.math.decimal-arith` that is not zero (the user's proposal of
-;;; 2026-11-08: "integer numerator and natural denominator").
+;;; a natural number of `std.math.decimal-arith` that is not zero: an integer
+;;; numerator over a natural denominator.
 ;;;
 ;;;     1/2      (rat (int (n z 1) z) (n z 2))
 ;;;     -3/4     (rat (int z (n z 3)) (n z 4))
 ;;;     0        (rat (int z z) (n z 1))
 ;;;     2/4      (rat (int (n z 2) z) (n z 4))       not in lowest terms
 ;;;
-;;; **An answer is not reduced** (S1f.6.33; round 2's item 54, the user's
-;;; *"(b)"*: *"I think we don't need to reduce every rational, can ask
-;;; explicitely for it?"*). An operation answers its numerator in
+;;; **An answer is not reduced** (Q-M1f.183, Q-M1f.302): a rational need not
+;;; be reduced every time, and lowest terms is asked for explicitly.
+;;; An operation answers its numerator in
 ;;; `std.math.int`'s normal form, one part `z`, and its denominator with no
 ;;; high zero, and divides nothing: only a common factor of the two stays, so
 ;;; 1/2 + 1/2 is 4/4, and zero is 0 over any denominator, 0/6. **An answer is
@@ -76,7 +76,7 @@
 ;;; written, and `std.math.arith`'s `division-by-zero-is-false` derives `(false)`
 ;;; from the flag. Root is dead and R is empty. A program that must not die
 ;;; compares its divisor with zero first, and asks only where it is not.
-;;; These rules are the module's own and stay (S1f.6.24): `std.math.decimal-arith` flags a
+;;; These rules are the module's own (Q-M1f.182): `std.math.decimal-arith` flags a
 ;;; division at its tagged call, whoever made it, but a request with a
 ;;; denominator of zero performs no division, and a `rat-div` by a rational
 ;;; that is zero is seen before any call. The module's own calls, `rat-simplify`'s
@@ -108,11 +108,11 @@
 ;;;     takes its sign off, asks `std.math.gcd`'s tagged call for the greatest
 ;;;     common divisor of its size and the denominator, Euclid's chain, and
 ;;;     divides both by it, two divisions of `std.math.decimal-arith`. The
-;;;     module holds no chain of its own (S1f.6.33).
+;;;     module holds no chain of its own (Q-M1f.303).
 ;;;
 ;;; **A call's tag is its request,** as in `std.math.int`. **The tagged calls a
-;;; later theory makes are an interface,** as `std.math.decimal-arith`'s are (P1f.6's
-;;; question 41, round 2, the user's *"(a)"*), held to these shapes by
+;;; later theory makes are an interface,** as `std.math.decimal-arith`'s are
+;;; (Q-M1f.189), held to these shapes by
 ;;; `ein-infer/tests/arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`:
 ;;;
 ;;;     (rat-norm TAG P N D)                  P less N over D, the numerator
@@ -139,8 +139,8 @@
 ;;; of one digit is some hundred firings, the cross products and a product of
 ;;; the denominators. Lowest terms is a chain of divisions, and a division
 ;;; computes its divisor's nine multiples first: some hundreds of firings
-;;; more, paid where `rat-simplify` is asked (`stdlib/README.md` §
-;;; `std.math.rat` has them measured). Nothing limits the length: cross
+;;; more, paid where `rat-simplify` is asked (`rat_theory.rs`'
+;;; `the_circuit_of_each_operation` pins them). Nothing limits the length: cross
 ;;; products are as long as their operands together, and nested numbers hold
 ;;; them; **a chain of operations grows**, the denominators multiplying at
 ;;; every step unless the program asks `rat-simplify`.
@@ -158,8 +158,8 @@
 ;;; `rat-sum-den`, `rat-cmp-num`, `rat-mul-num`, `rat-mul-den`, `rat-div-by`,
 ;;; `rat-num`, `rat-den-norm`, `rat-low`, `rat-g`, `rat-q-num` and
 ;;; `rat-q-den`; the flag `not-rational`; `rat-rule`, and the entry
-;;; `rat-arith`. Until S1f.6.33 it held Euclid's chain of its own, `rat-reduce`,
-;;; `rat-gcd`, `rat-gcd-is` and `rat-gcd-rem`.
+;;; `rat-arith`. Euclid's chain is `std.math.gcd`'s, which this module calls
+;;; (Q-M1f.303).
 ;;; Everything of `std.math.int`, `std.math.decimal-arith` and `std.math.gcd`
 ;;; comes with it,
 ;;; `std.math.arith`'s flag `division-by-zero` and the orders `lt`, `eq` and
@@ -323,7 +323,7 @@
 ;; ── The numerator simplified, and nothing divided ───────────────────────────
 ;; `(rat-norm TAG P N D)`: the numerator simplified by `std.math.int`, and D put
 ;; into normal form by an addition walk to zero, so that an answer has no high
-;; zero; nothing is divided, and a common factor of the two stays (S1f.6.33).
+;; zero; nothing is divided, and a common factor of the two stays (Q-M1f.183).
 (rule rat-norm-numerator ()
   :match  (rat-norm ?k ?p ?n ?d)
   :assert (int-norm (rat-num ?k ?d) ?p ?n)
@@ -340,7 +340,7 @@
   :why    "{?i} over {?e}, not reduced")
 
 ;; ── Lowest terms, on request ────────────────────────────────────────────────
-;; `rat-simplify` alone reduces (S1f.6.33): the numerator simplified, its sign
+;; `rat-simplify` alone reduces (Q-M1f.303): the numerator simplified, its sign
 ;; taken off, the greatest common divisor of its size and the denominator by
 ;; `std.math.gcd`'s tagged call, and both divided by it. A zero numerator is
 ;; `(int z z)`, whose size is `z`: gcd(0, D) is D, and the answer 0 over 1.
@@ -446,7 +446,7 @@
 
 ;; ── Addition, and subtraction ───────────────────────────────────────────────
 ;; The cross products are the numerator, simplified, and the denominator is the
-;; product of the two; nothing is reduced (S1f.6.33). The two rules after the
+;; product of the two; nothing is reduced (Q-M1f.183). The two rules after the
 ;; cross products serve a difference too, whose tag is its own request.
 (rule rat-sum-denominator ()
   :match  (rat-cross-is (rat-sum-num ?k ?d ?e) ?s ?t)
@@ -516,7 +516,7 @@
 ;; `(rat-mul-call TAG P1 N1 D1 P2 N2 D2)`: the numerators' product by
 ;; `std.math.int`, which hands over an integer in normal form; the denominators'
 ;; by `std.math.decimal-arith`, which has no high zero; nothing is reduced
-;; (S1f.6.33).
+;; (Q-M1f.183).
 (rule rat-mul-numerator ()
   :match  (rat-mul-call ?k ?p ?n ?d ?q ?m ?e)
   :assert (int-mul-call (rat-mul-num ?k ?d ?e) ?p ?n ?q ?m)
@@ -587,8 +587,8 @@
 ;; As `std.math.int`'s do: `std.math.decimal-arith`'s `operand` says what is
 ;; wrong with an operand under the tag it was asked with, and these rules turn
 ;; this module's three tags into the request, `(bad-request REQUEST FAULT)`,
-;; and `std.math.decimal-arith`'s flags and `(false)` follow (S1f.6.38, the
-;; (b) part of the user's ruling on Q-M1f.210; E-38).
+;; and `std.math.decimal-arith`'s flags and `(false)` follow (Q-M1f.206,
+;; Q-M1f.210).
 (rule rat-bad-only ()
   :match  (bad-operand (rat-of (rat-only ?request)) ?f)
   :assert (bad-request ?request ?f)
@@ -607,10 +607,10 @@
 ;; ── A rational's own shape ──────────────────────────────────────────────────
 ;; `(rat Z D)` holds an integer and a natural number. A digit or a named
 ;; constant where either goes is the rational's fault, this module's, seen
-;; where the rational is written (S1f.6.38, Q-M1f.276 (a)), off `(written (rat
+;; where the rational is written (Q-M1f.276), off `(written (rat
 ;; Z D))`. A malformed integer inside is `std.math.int`'s, a malformed numeral
 ;; `std.math.decimal`'s; a natural number where the integer goes is not
-;; flagged (Q-M1f.277, (b)). No guard, as `std.math.int`'s.
+;; flagged (Q-M1f.277). No guard, as `std.math.int`'s.
 (relation not-rational Rational Thing
   :why "{?1} is not a rational: {?2} stands where an integer or a natural number goes")
 
@@ -652,17 +652,17 @@
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Every relation of the module is closed and every rule named, with
 ;; `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`, the entries of
-;; the modules it imports. Until M1f
-;; S1f.6.35 a selection's closure followed the names a kept declaration
-;; writes (E-20 of P1f.6's `findings.md`); every import brings its module
-;; whole since, and the names stay for a program and a trace to read. `ein-infer/tests/rat_theory.rs` holds that nothing is
-;; missing here.
+;; the modules it imports (Q-M1f.283), for a program and a trace to read:
+;; an import brings the whole theory whether or not a program lists the
+;; entry (Q-M1f.240), so `(import std.math.rat :symbols (rat-arith))` and a
+;; bare import bring the same rules (Q-M1f.249).
+;; `ein-infer/tests/rat_theory.rs` holds that nothing is missing here.
 (relation rat-rule Rule
   :why "{?1} is a rule std.math.rat brings")
 
-;; The closing rule's own name, as a written fact (E-11 of P1f.6's
-;; `findings.md`): no longer needed since M1f S1f.6.25, a name a selection
-;; lists being live, and kept, since removing it would move every state.
+;; The closing rule's own name, as a written fact, which an import brings
+;; with the module (Q-M1f.247): kept because every state of every program
+;; that imports the module holds it, and removing it would change them all.
 (rat-rule rat-arith)
 
 (rule rat-arith ()

@@ -1,5 +1,5 @@
-;;; `std.bool.circuit` — `propagate`: a circuit simulated by saturation. M1f
-;;; S1f.6.17.
+;;; `std.bool.circuit` — `propagate`: a circuit simulated by saturation.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

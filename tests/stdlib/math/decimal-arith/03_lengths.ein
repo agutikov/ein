@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — operands of different lengths, either way round.
-;;; M1f S1f.6.3.
+;;;
 ;;;
 ;;; A number that has run out counts as zeros, and the carry goes on through
 ;;; the columns the longer number still has. Which rule takes those columns

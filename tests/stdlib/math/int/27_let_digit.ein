@@ -1,9 +1,9 @@
-;;; `std.math.int` — a digit as the name a `let` states. M1f S1f.6.38.
+;;; `std.math.int` — a digit as the name a `let` states.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `3` is a digit, and names no number: `let-digit` flags the `let`, as
-;;; before S1f.6.38.
+;;; `3` is a digit, and names no number: `let-digit` flags the `let`
+;;; (Q-M1f.207).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

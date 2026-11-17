@@ -4,8 +4,8 @@
 ;;;
 ;;; ── Why this file exists ───────────────────────────────────────────────────
 ;;;
-;;; `std.slots` is the one module at 100 % rule coverage and the most fragile
-;;; thing in the census's table: all eighteen of its rules are activated by
+;;; `std.slots` is the stdlib's most fragile module: outside `tests/`, all
+;;; eighteen of its rules are activated by
 ;;; `examples/zebra.ein` and by **nothing else**. Change that puzzle's encoding
 ;;; — which is exactly what a second Zebra formulation is for — and eighteen
 ;;; rules become untested silently. This file and its three siblings are the
@@ -61,8 +61,8 @@
 ;;; enumerating every pair inside a class. Transitivity still *holds*; it is
 ;;; simply not written down, and the authored clue `(co-loc Ann Cat)` is the
 ;;; one off-rectangle edge in the model because the program put it there.
-;;; Measured on the real Zebra, enumerating the closure costs ~4.3 s per
-;;; hypothesis against ~0.09 s.
+;;; On the real Zebra, enumerating the closure costs many times more per
+;;; hypothesis than the anchored policy.
 ;;;
 ;;; A closed extent can say the edge is missing; it cannot say the *exclusion*
 ;;; is missing too, since stored negatives are not closed. The `undecided`
@@ -100,13 +100,13 @@
   :assert (undecided Bob Dog)
   :why    "Bob and Dog share seat S2, and the anchored closure says so neither way")
 
-;; Root alone (M1f S1f.6.36): this file's question is root's verdict, and root
-;; owes nothing, so R is root alone. Until S1f.6.34 it said so with
-;; `:no-hypothesis (type instance co-loc undecided)`, keeping the obligation
-;; from proposing `co-loc`, which S1f.6.34 refused (*"filtered obligations are
-;; nonsense by definition"*, the user, 2026-11-13); S1f.6.34 took `co-loc` out
-;; of the list, which then filtered nothing. `:no-search` says what the list
-;; meant.
+;; Root alone (Q-M1f.254): this file's question is root's verdict, and root
+;; owes nothing, so R is root alone.
+;; `:no-search` says so. A `:no-hypothesis` list cannot: one that names
+;; `co-loc`, the relation the obligation owes, contradicts the obligation
+;; and is refused (Q-M1f.244), and one that leaves `co-loc` out filters
+;; nothing and is a note (Q-M1f.242).
+;; The claim is root's state, R's one state.
 (solve
   :no-search
   :expect (region (model (co-loc Ann Cat) (co-loc Cat Ann)

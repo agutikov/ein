@@ -1,8 +1,8 @@
 ;;; Ein stdlib — `std.math.decimal`: the decimal numeral, and whether a written
-;;; one is one (M1f P1f.6, S1f.6.38; the user's rulings of 2026-11-14 on
-;;; Q-M1f.210 and Q-M1f.272 to .277).
+;;; one is one (Q-M1f.273; Q-M1f.210, and Q-M1f.272 to
+;;; Q-M1f.277).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; This module is the decimal **representation**: the constructor `n` and
 ;;; what a numeral written with it must be. It computes nothing;
 ;;; `std.math.decimal-arith` is the arithmetic over it, and imports it.
@@ -14,7 +14,7 @@
 ;;;     (import std.math.arith :symbols (z))
 ;;;
 ;;; A program imports the arithmetic, which brings this module and
-;;; `std.math.arith` whole (M1f S1f.6.35), and lists `n` from here and `z`
+;;; `std.math.arith` whole (Q-M1f.247), and lists `n` from here and `z`
 ;;; from `std.math.arith`, since it writes them: nothing is re-exported.
 ;;; `decimal` is the module's entry, the closing rule at the end of this file.
 ;;;
@@ -34,18 +34,18 @@
 ;;;
 ;;; ── A numeral is well-formed from the start ────────────────────────────────
 ;;;
-;;; The user, 2026-11-14: *"malformed decimal numbers is a problem of decimal
-;;; module … If there is a malformed number, I expect it has to be detected
-;;; right away, without need to start calculations with it. Think about it
-;;; like written numbers on paper, if decimal number contains letters, signs,
-;;; whitespaces and hieroglyphs - it is not a decimal number from the
-;;; beginning."*
+;;; A malformed decimal number is a problem of this module (Q-M1f.210), and
+;;; it is detected right away, without a calculation started with it. Think
+;;; of it as a number written on paper: one that contains letters, signs,
+;;; whitespace or hieroglyphs is not a decimal number from the beginning,
+;;; whatever is later done with it, and no calculation has to start for that
+;;; to be seen.
 ;;;
 ;;; So the check is this module's, of what was written, and of nothing a
 ;;; calculation does. The loader states every fact nested in a fact a file
 ;;; writes, and in a rule's conclusion where it holds no variable, as
-;;; `(written T)` (the kernel relation `written`, M1f S1f.6.38;
-;;; `defined_behaviour.md` § 4.30). Every place of a numeral is a nested fact
+;;; `(written T)` (the kernel relation `written`, Q-M1f.275,
+;;; Q-M1f.272). Every place of a numeral is a nested fact
 ;;; of its own, so five rules over `(written (n P A))` see every place of
 ;;; every numeral a file writes, wherever it sits: a request's operand, a part
 ;;; of an integer or a rational, a `let`'s value nobody asks about, a fact of
@@ -72,7 +72,7 @@
 ;;;
 ;;;   - a prefix that is a name neither `z`, a digit nor a named constant,
 ;;;     `(n end 1)`: saying *a name* costs a walk of the program's names
-;;;     (E-36 of P1f.6's `findings.md`);
+;;;     (Q-M1f.318);
 ;;;   - a prefix that is a fact of another relation, `(n (pair 1 2) 3)`: no
 ;;;     rule can say *not of this shape*;
 ;;;   - a numeral a rule assembles from a variable, `(n ?p x)`: it is no term
@@ -80,7 +80,7 @@
 ;;;   - a numeral written as a top-level fact of `n`, which is no term.
 ;;;
 ;;; A wrong count of arguments, `(n 1)` or `(n z 1 2)`, is refused when the
-;;; program is loaded (S1f.6.23), and a character that is no name character
+;;; program is loaded (Q-M1f.315), and a character that is no name character
 ;;; at the parse: neither is this module's to flag.
 ;;;
 ;;; **A named constant** is a name that stands for a number: `named` is

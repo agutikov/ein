@@ -10,10 +10,10 @@
 ;;; loaded, activated, and satisfied**, so that a guard which admitted too much
 ;;; would turn a program with a perfectly ordinary model into a contradiction.
 ;;;
-;;; That is the shape of the bug this whole phase was opened by — a
-;;; `(neq …)` guard that was wrong for a year and that every *positive* test
-;;; passed. The census's §7 counts 27 `neq` guards over 25 rules and says the
-;;; identical case is what each of them is for; three of the seven below are
+;;; That is the shape of a bug no *positive* test finds: a `(neq …)` guard
+;;; that is wrong passes every one of them. Each `neq` guard of the stdlib's
+;;; rules is there for the identical case, the one a positive test never
+;;; writes; three of the seven below are
 ;;; exactly that shape.
 ;;;
 ;;; ── What this program does to them ─────────────────────────────────────────

@@ -1,9 +1,9 @@
 ;;; Ein stdlib — `std.math.positional`: the rules every positional base shares,
-;;; written once (M1f P1f.6, S1f.6.16; the user's rulings of 2026-11-12, reply
-;;; 16, *"extract common rules into separate file the both import"*, and of
-;;; 2026-11-14, (a) and then (iii)).
+;;; written once, in a file of their own that both bases import: a base
+;;; activates them with its own relations by one call of the module's macro
+;;; (Q-M1f.266, Q-M1f.270).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; School arithmetic is a theory over numerals written a digit at a time,
 ;;; `std.math.decimal`'s `(n PREFIX DIGIT)` and `std.math.binary`'s `(b2 PREFIX
 ;;; BIT)`, and most of it does not know its base: a walk takes a column a
@@ -32,7 +32,7 @@
 ;;; The call expands to one activator a rule, 77 facts, which the closing rule
 ;;; derives at root in the firing it closes the base's relations in, so a base
 ;;; costs no firing more; each activated rule compiles when its activator
-;;; appears (Q-M1f.266, ruled (iii)). A program imports a base,
+;;; appears (Q-M1f.266). A program imports a base,
 ;;; `std.math.decimal-arith` or `std.math.binary-arith`, and never this module:
 ;;; it comes with the base, one copy a program, so a program that imports both
 ;;; bases holds each rule once, activated twice.
@@ -40,11 +40,11 @@
 ;;; **Why a macro and not 77 written facts:** a rule with parameters fires for
 ;;; a fact headed by its own name, one plan a fact, and nothing lets one fact
 ;;; activate several rules; a call of a macro is the one hand-written form that
-;;; stands for 77 (S1f.6.16 § The design). **Why the closing rule does not name
+;;; stands for 77 (Q-M1f.266). **Why the closing rule does not name
 ;;; these rules:** a rule's name written as an argument, `(arith-rule
 ;;; add-end)`, makes every parameterised conclusion of the rule's arity a
 ;;; possible activator that binds a parameter to a fact, which the loader
-;;; refuses (S1f.5.18; E-55 of P1f.6's `findings.md`). So a base's closing rule
+;;; refuses (Q-M1f.1). So a base's closing rule
 ;;; names its own rules, and these are named by their activators.
 ;;;
 ;;; ── What it holds ──────────────────────────────────────────────────────────
@@ -64,8 +64,8 @@
 ;;;     `MALFORMED` and `UNDECLARED`, each with its rule to `(false)`.
 ;;;
 ;;; A numeral's own faults are no rule here: whether `(n (n z 1) x)` is a
-;;; number is the representation's question (Q-M1f.210, the user's ruling of
-;;; 2026-11-14), asked where the numeral is written, by `std.math.decimal` and
+;;; number is the representation's question (Q-M1f.210), asked where the
+;;; numeral is written, by `std.math.decimal` and
 ;;; `std.math.binary`.
 ;;;
 ;;; ── The parameters ─────────────────────────────────────────────────────────
@@ -76,7 +76,7 @@
 ;;; *not zero*; the rest are named as decimal names them, `?ADD-WALK` for
 ;;; `add-walk`. Capitals, because a parameter spelled as a relation's short name
 ;;; would intern that name bare, and a reader that looks a relation up by its
-;;; bare spelling would find the empty one (S1f.6.16's trial, point 4). What a
+;;; bare spelling would find the empty one. What a
 ;;; parameter must be is what the base's relation of that name is in
 ;;; `std.math.decimal-arith`'s header.
 ;;;
@@ -435,11 +435,11 @@
 ;; ── Division by zero, in two steps, at the call ─────────────────────────────
 ;; A division whose divisor is zero has no answer. It is flagged with
 ;; `std.math.arith`'s `division-by-zero`, arithmetic's own whatever the base,
-;; whose rule derives `(false)` from it (the user's ruling of 2026-11-14).
-;; **The flag is raised at the call, whoever made it** (S1f.6.24): every
+;; whose rule derives `(false)` from it (Q-M1f.269).
+;; **The flag is raised at the call, whoever made it** (Q-M1f.163): every
 ;; division passes through `(DIV-CALL TAG X Y)`, and `div-call-by-zero` flags
 ;; the call as it was asserted, for a Y that is zero by value. A public request
-;; is flagged as it always was too, the request as written, by `div-by-zero`,
+;; is flagged too, the request as written, by `div-by-zero` (Q-M1f.211),
 ;; which is written first so that the request's flag is the first derived: two
 ;; flags for one public division, and the contradiction from each.
 (rule div-by-zero (?DONE ?DIV-M1 ?QUOTIENT ?DIV)
@@ -452,12 +452,12 @@
   :assert (division-by-zero (?DIV-CALL ?k ?u ?v))
   :why    "the divisor of {?u} divided by {?v}, wanted for {?k}, is zero")
 
-;; ── An operand's faults, and a `let`'s (S1f.6.12, S1f.6.38) ─────────────────
+;; ── An operand's faults, and a `let`'s (Q-M1f.316) ──────────────────────────
 ;; A request the theory cannot read is flagged, and the flag is a
-;; contradiction, as a division by zero is (the user's rulings of 2026-11-11
-;; and 2026-11-12). **A flag means malformed; no flag does not mean
-;; well-formed.** A malformed numeral is its representation's, flagged where it
-;; is written (S1f.6.38); what is here is what is wrong with an operand or a
+;; contradiction, as a division by zero is (Q-M1f.316). **A flag means
+;; malformed; no flag does not mean well-formed** (Q-M1f.318). A malformed
+;; numeral is its representation's, flagged where it is written (Q-M1f.210);
+;; what is here is what is wrong with an operand or a
 ;; `let`. Whether an operand that is a name is one no `let` states reads an
 ;; `absent` and a guard over the base's digits, and is the base's own
 ;; (`operand-undeclared`, `bin-operand-undeclared`).

@@ -1,4 +1,4 @@
-;;; `std.math.int` — an operand that is a name no `let` states. M1f S1f.6.38.
+;;; `std.math.int` — an operand that is a name no `let` states.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -7,8 +7,8 @@
 ;;; let foo))` under this module's tag; `int-bad-first` turns the tag into the
 ;;; request, `(bad-request (int-add foo Y) (no-let foo))`, and
 ;;; `std.math.decimal-arith`'s rules derive `(undeclared foo (int-add foo Y))`
-;;; and `(false)`. Until S1f.6.38 no rule turned the tag into a request, and
-;;; the fault was silent (E-38).
+;;; and `(false)`: the fault travels with its tag to the request
+;;; (Q-M1f.206).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `std.math.bits` — the bit tables, imported and listed, a row of each claimed.
-;;; M1f S1f.6.16.
+;;;
 ;;;
 ;;; ── What the module promises ───────────────────────────────────────────────
 ;;;

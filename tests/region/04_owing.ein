@@ -1,4 +1,4 @@
-;;; REGION CLAIM — R empty, and the alive node that owes. M1e2 S1e2.1a.4.
+;;; REGION CLAIM — R empty, and the alive node that owes.
 ;;;
 ;;; Ann likes nothing and every person owes a liking, so root owes. Nothing is
 ;;; guessed, so root is the only node: R is empty of the second kind, and the
@@ -15,13 +15,13 @@
 (total-owed likes is-a)
 (likes Bob Stew)
 
-;; Root alone (M1f S1f.6.36): this file's question is what root owes: nothing
-;; is guessed, so R is empty and root, which owes, is the owing node it stops
-;; at. Until S1f.6.34 it said so with `:no-hypothesis (is-a likes)`, keeping
-;; the obligation from proposing `likes`, which S1f.6.34 refused (*"filtered
-;; obligations are nonsense by definition"*, the user, 2026-11-13); S1f.6.34
-;; stored Ann's two likings false to make the debt unpayable instead.
-;; `:no-search` says what the list meant.
+;; Root alone (Q-M1f.254): this file's question is what root owes, so
+;; nothing is guessed. R is empty, and root, which owes, is the owing node
+;; it stops at. `:no-search` is the one way to say so: a `:no-hypothesis`
+;; list naming `likes`, the relation the obligation owes, contradicts the
+;; obligation and is refused (Q-M1f.244), and with the obligation free to
+;; propose, R would be the states that pay, which is another question.
+;; The claim is root's state, under `owing`.
 (solve
   :no-search
   :expect (region

@@ -1,5 +1,5 @@
 ;;; `std.math.num9` — long division: 127645 divided by 25 is 5105, remainder 20,
-;;; eleven firings. M1f S1f.6.13.
+;;; eleven firings.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

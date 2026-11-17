@@ -1,5 +1,5 @@
 ;;; `std.math.gcd` — the greatest common divisor by Euclid's chain, each step
-;;; a division of `std.math.decimal-arith`. M1f S1f.6.32.
+;;; a division of `std.math.decimal-arith`.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

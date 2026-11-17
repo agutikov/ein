@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — division: a quotient that has every digit, so every trial
-;;; of the bisection is made. M1f S1f.6.6.
+;;; of the bisection is made.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

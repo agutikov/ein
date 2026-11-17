@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — subtraction: a borrow through every column, high zeros in
-;;; the answer, equal numbers, and zero on either side. M1f S1f.6.4.
+;;; the answer, equal numbers, and zero on either side.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,7 +1,7 @@
 ;;; Ein stdlib — `std.math.convert`: decimal to binary and back, as requests
-;;; (M1f P1f.6, S1f.6.16; P1f.6's reply 17, *"(b)"*: a module of its own, so
-;;; that a program that only computes in binary does not load decimal's
-;;; tables).
+;;; (Q-M1f.323): a module of its own, so that a program that only computes
+;;; in binary does not load decimal's tables, and one that converts imports
+;;; both bases by one import.
 ;;;
 ;;; A theory built on two others, `std.math.decimal-arith` and
 ;;; `std.math.binary-arith`, which it calls and edits neither of. Eleven rules,
@@ -26,7 +26,7 @@
 ;;;     (to-dec B)     a request: the binary number B written in decimal
 ;;;     (dec-of B X)   the answer, X in `std.math.decimal`'s normal form
 ;;;
-;;; The names are Q-M1f.267's default. An operand is a number as its
+;;; The names are Q-M1f.267's. An operand is a number as its
 ;;; representation writes it, high zeros allowed; a name, a `let` of decimal's
 ;;; or a `bin-let` of binary's, is not looked up, and a request over one is
 ;;; answered by silence. A malformed numeral is its representation's, flagged
@@ -47,8 +47,8 @@
 ;;;
 ;;; The two directions do not cost the same: a halving is a whole decimal
 ;;; division, where a doubling is one addition walk: 255 to binary is 826
-;;; firings and 1111101000 to decimal 100 (`stdlib/README.md` §
-;;; `std.math.convert` has the command).
+;;; firings and 1111101000 to decimal 100 (`ein saturate` of each request
+;;; alone, the closing rules' firings left out).
 ;;;
 ;;; It reaches into both theories: decimal's `div-call`, `div-done`,
 ;;; `add-walk` and `done` are its interface (the tagged calls), and binary's

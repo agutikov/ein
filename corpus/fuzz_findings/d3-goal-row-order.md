@@ -1,22 +1,17 @@
 # d3-goal-row-order
 
-**Gone since M1e2 T1e2.1a.5.2, and pinned since S1e2.3.4 (2026-11-03).** The
-region read-out sorts a class's rows and prints every one, so no row is
-chosen: state 5's class lists `?x = A` and then `?x = B` under any id order.
-The witness is banked as the `regression` corpus entry
-[`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein),
-which `ein-render/tests/id_order_invariance.rs` permutes on every commit
-([Q-M1e2.29](../../docs/decisions/corpus/Q-M1e2.29-a-witness-of-a-fixed-behaviour-is-a-corpus.md)). This note and the
-`.ein` beside it stay: the `.ein` is a frontend-fuzzer seed.
+One model that satisfies a query's goal twice. The region read-out sorts a class's rows and prints every one, so
+no row is chosen: a class whose states hold both lists `?x = A` and then `?x = B` under any id order. The witness's fixture is the
+`regression` corpus entry
+[`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein), which
+`ein-render/tests/id_order_invariance.rs` permutes on every commit
+([Q-M1e2.29](../../docs/decisions/corpus/Q-M1e2.29-a-witness-of-a-fixed-behaviour-is-a-corpus.md)). This note and
+the `.ein` beside it stay: the `.ein` is a frontend-fuzzer seed, and the program below is the signature a later find
+is compared against.
 
-- found: 2026-08-20, `utils/fuzz_engine.py --seed 20260820`, mode `mixed`
 - property: **id-order** — the same answer under a permuted interner
-- re-found: 2026-08-21, by the rewritten fuzzer
-  ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer)),
-  from a different seed and a different mutation source
-  (`examples/branching/13_lookahead_naf_world.ein`), minimised to **the same
-  seven forms**
-- minimised: 11 → 7 forms
+- minimised: 11 → 7 forms, reached from two seeds and two mutation sources, one of them
+  `examples/branching/13_lookahead_naf_world.ein`
 
 ```
 (relation ok      T)
@@ -31,50 +26,15 @@ which `ein-render/tests/id_order_invariance.rs` permutes on every commit
   :goal (cand ?x))
 ```
 
-## What happens
+## What it guards
 
-The goal `(cand ?x)` is satisfied **twice** in one model — the blind
-enumerator hypothesises `(cand A)` and `(cand B)` and both survive, which
-`--print-final-state` shows. The solve table prints **one** row, and which one
-is not determined by the data:
-
-```
-  query bindings
-    ?x  = A
-```
-
-## The re-find narrows what this file means
-
-It was filed as a consequence of the resumed fork saturator — a fork
-*resumes* root's saturation rather than re-deriving it, so it puts facts into
-the KB in a different order, and the row is `rows[0]` of an unsorted match —
-and that reading was too narrow. **The resumed fork is one thing that perturbs
-the row, not what makes it perturbable.** With the fork path held fixed — one
-build, `fork-delta` off in both runs — the row still moves when the interner
-assigns ids in a different order:
+The goal `(cand ?x)` is satisfied **twice** in one model: the blind enumerator proposes `(cand A)` and `(cand B)`,
+and both survive. A table that printed one row, `rows[0]` of an unsorted match, would print a row the data does not
+determine, and it would move when the interner assigns ids in another order, whether or not a fork resumes root's
+saturation: an observable that depends on the order ids were assigned in, which
+[the determinism contract](../../docs/ein/ein.rs/design/determinism-and-order.md#21-ids-are-not-an-output-order)
+forbids. The read-out prints every row, sorted, and `summary.json`'s `goal_bindings` carries both, sorted.
 
 ```sh
-mkdir -p /tmp/goal-row && cp corpus/fuzz_findings/d3-goal-row-order.ein /tmp/goal-row/
-EIN_ID_FILES=/tmp/goal-row cargo test --manifest-path ein.rs/Cargo.toml \
-    -p ein-render --test id_order_invariance
+ein solve corpus/fuzz_findings/d3-goal-row-order.ein   # class 4 of 4 lists ?x = A, then ?x = B
 ```
-
-```
-1 of 45 (file, op) pairs move when the ids do:
-  d3-goal-row-order.ein [trace[answer]] seed 1
-    line 11
-      plain:        ?x  = A
-      permuted:     ?x  = B
-```
-
-So the moving row is a *symptom* of an under-determined rendering, and
-either row is a legitimate one. Filed against the renderer the finding is the
-class
-[design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md) forbids —
-an observable that depends on the order ids were assigned in — and one of the
-first two the id-space sweep has found that the corpus does not reach.
-
-`summary.json` is already right: `goal_bindings` carries **both** rows,
-sorted. The table is the surface that picks one. Nobody has decided whether it
-should print every row, print the first in `Interner::rank` order, or say that
-there is more than one — which is why this is still a finding and not a fix.

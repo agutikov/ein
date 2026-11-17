@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — division by name, and a request a rule of the program
-;;; makes from another answer. M1f S1f.6.6.
+;;; makes from another answer.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

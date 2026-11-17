@@ -1,4 +1,4 @@
-;;; `std.math.binary-arith` — a bit where a number goes, as either operand of every request. M1f S1f.6.16.
+;;; `std.math.binary-arith` — a bit where a number goes, as either operand of every request.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

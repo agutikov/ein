@@ -1,5 +1,5 @@
 ;;; `std.math.int` — division, truncated, every combination of signs with a
-;;; remainder and without. M1f S1f.6.22.
+;;; remainder and without.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

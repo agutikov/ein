@@ -1,5 +1,5 @@
 ;;; `std.math.int` — an operand that is not simplified answers as its normal form
-;;; does. M1f S1f.6.7.
+;;; does.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

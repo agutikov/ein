@@ -25,12 +25,12 @@
 ;;; the other axis. Either way the verdict is ⊥ and the diagnosis is not this
 ;;; rule's.
 ;;;
-;;; It was measured rather than assumed: with the whole fan-out in place, a
-;;; version of this rule mutated to quantify over the wrong type stops firing
-;;; and the suite still passes. With the activators narrowed, the same mutant
+;;; The reason is concrete: with the whole fan-out in place, a version of
+;;; this rule mutated to quantify over the wrong type stops firing and the
+;;; suite still passes. With the activators narrowed, the same mutant
 ;;; turns this file into a `Solution` and is caught. An expectation is made of
-;;; facts and cannot say which rule produced them — the `route` residue
-;;; Q-M1c.2 parks (docs/history/m1c_external_validation/open_questions.md) — so where
+;;; facts and cannot say which rule produced them — a claim says which facts
+;;; hold, never which rule derived them (Q-M1c.2) — so where
 ;;; two rules reach one verdict, a fixture separates them by **activation**.
 ;;; `slot-partition-setup` itself is exercised by `01`–`04`.
 

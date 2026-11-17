@@ -1,5 +1,5 @@
 ;;; `std.math.gcd` — a second operand that is a name no `let` states, in a
-;;; least common multiple. M1f S1f.6.32.
+;;; least common multiple.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

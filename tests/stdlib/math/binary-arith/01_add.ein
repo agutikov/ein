@@ -1,4 +1,4 @@
-;;; `std.math.binary-arith` — a sum, bit by bit: 101 + 111 = 1100, and 123078 + 4567 in binary. M1f S1f.6.16.
+;;; `std.math.binary-arith` — a sum, bit by bit: 101 + 111 = 1100, and 123078 + 4567 in binary.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

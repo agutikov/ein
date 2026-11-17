@@ -1,8 +1,8 @@
-;;; Two activators of one rule share a binding key and a derivation is lost —
-;;; M1e2 W7, Q-M1e.16. Register row `W7/binding-key-layout`
-;;; (`corpus/wrong_answers.toml`); the note is `binding-key-layout.md`.
-;;;
-;;; Release: `(noted 1 3)` is never derived. Debug: `check_layout` aborts.
+;;; Two activators of one rule, a name of digits and a nested fact in one
+;;; position: each argument binds its parameter (Q-M1f.43), and a rule
+;;; application's identity is its activator's every argument (Q-M1e.16).
+;;; Register row `W7/binding-key-layout` (`corpus/wrong_answers.toml`); the
+;;; note is `binding-key-layout.md`. Root: `(noted 1 1)` and `(noted 2 1)`.
 (relation edge  Node Node :why "there is an edge from {?1} to {?2}")
 (relation holds Node      :why "{?1} holds")
 (relation noted Node Node :why "{?1} is noted with {?2}")
@@ -17,7 +17,7 @@
 (note edge 1)
 (note edge (src Y))
 
-;; M1f S1f.5.5's swap: a run of digits is a name, so `1`, `2` and `3` are candidate
-;; objects; scoped as the promoted witnesses are (S1f.5.4's proposal A), so that
-;; the seed costs what it did. H is `(holds 2)` and `(holds Y)`, R four states.
+;; A run of digits is a name (Q-M1e2.24), so `1`, `2` and `3` are candidate
+;; objects; the search is scoped as the fixtures in `examples/ein-bugs/` are.
+;; H is `(holds 2)` and `(holds Y)`, R four states.
 (solve :no-hypothesis (edge noted))

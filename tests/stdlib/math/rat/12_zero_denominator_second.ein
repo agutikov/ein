@@ -1,4 +1,4 @@
-;;; `std.math.rat` — a second operand with a denominator of zero, the zero written with digits and the operand named. M1f S1f.6.8.
+;;; `std.math.rat` — a second operand with a denominator of zero, the zero written with digits and the operand named.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

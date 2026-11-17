@@ -52,13 +52,13 @@
 
 (co-loc Ann S1)              ; Bob, Cat and Dog are still owed a seat
 
-;; Root alone (M1f S1f.6.36): this file's question is what root owes: nothing
-;; is guessed, so R is empty and root, which owes, is the owing node it stops
-;; at. Until S1f.6.34 it said so with `:no-hypothesis (type instance co-loc)`,
-;; keeping the obligation from proposing `co-loc`, which S1f.6.34 refused
-;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13);
-;; S1f.6.34 let the obligation propose instead, three negatives keeping R one
-;; state. `:no-search` says what the list meant.
+;; Root alone (Q-M1f.254): this file's question is what root owes, so
+;; nothing is guessed. R is empty, and root, which owes, is the owing node
+;; it stops at. `:no-search` is the one way to say so: a `:no-hypothesis`
+;; list naming `co-loc`, the relation the obligation owes, contradicts the
+;; obligation and is refused (Q-M1f.244), and with the obligation free to
+;; propose, R would be the states that pay, which is another question.
+;; The claim is root's state, under `owing`.
 (solve
   :no-search
   :expect (region (owing (model (co-loc Ann S1)))))

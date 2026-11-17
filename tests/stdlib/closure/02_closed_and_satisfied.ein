@@ -1,16 +1,16 @@
 ;;; `std.closure/infer-closure` — closed **and** the requirement met.
 ;;;
-;;; The control half of a pair until M1f S1f.6.34. Its twin, then
-;;; `03_closed_and_owing.ein` and `examples/ein-bugs/closed-and-owing.ein`
-;;; since, is the same program with one fact removed: until M1d S1d.2.6 the two
-;;; reported the **same verdict**, then this one `Solution` and the twin
-;;; `Open — owes 1`. Both declared `(total-owed r is-a)` beside the closure
-;;; `infer-closure` derives, and since S1f.6.34 an obligation on a closed
-;;; relation is refused at load (*"obligated relation can't be __closed__
-;;; also"*, the user, 2026-11-13): the twin is the refusal's fixture, and this
-;;; half keeps the closure and drops the obligation. Its R and its claim did not
-;;; move; it is `Solution` by exhaustion now, `r` closed and the other two
-;;; relations scoped out, where it was by discharge.
+;;; The control half of a pair. Its twin,
+;;; `examples/ein-bugs/closed-and-owing.ein`, is the same program with one
+;;; fact removed, `(r a1 b1)`, and `(total-owed r is-a)` declared beside the
+;;; closure `infer-closure` derives: an obligated relation is not closed,
+;;; and the conflict is refused at load (Q-M1f.244), so the twin is the
+;;; refusal's fixture. This half keeps the closure and declares no
+;;; obligation.
+;;;
+;;; It is `Solution` by exhaustion: `r` is closed, the other two relations
+;;; are scoped out, and the one authored edge meets the requirement `total`
+;;; states, so nothing is left to guess.
 ;;;
 ;;; ── The shape ──────────────────────────────────────────────────────────────
 ;;;
@@ -30,8 +30,8 @@
 ;;;                     the scan that fires (false) on unreachability
 ;;;
 ;;; The third, `(total-owed r is-a)`, the **obligation** dual of the same scan
-;;; (M1d S1d.2.4), was here until M1f S1f.6.34 and is refused beside a closure
-;;; of `r` since.
+;;; (Q-M1d.2), is not here: it is refused beside a closure of `r`
+;;; (Q-M1f.244).
 ;;;
 ;;; A rule is activated by a fact whose head is the rule's name and whose
 ;;; arity matches its parameter list, so the arity-1 marker does not activate
@@ -62,8 +62,8 @@
 (total      r)
 ;; … and the activator the unreachability scan needs (arity 2).
 (total r is-a)
-;; No `(total-owed r is-a)` since M1f S1f.6.34: `r` is closed, and an obligated
-;; relation is not.
+;; No `(total-owed r is-a)`: `r` is closed, and an obligated relation is not
+;; (Q-M1f.244).
 
 ;; `(__closed__ …)` is engine vocabulary; this lifts it into userspace so a
 ;; goal can name it.

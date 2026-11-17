@@ -1,10 +1,10 @@
-;;; `std.math.int` — a natural number where an integer goes, which stays silent. M1f S1f.6.38.
+;;; `std.math.int` — a natural number where an integer goes, which stays silent.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `(n z 5)` is a natural number, and an operand of this module is an
 ;;; integer: `(int (n z 5) z)`. An operand of another type is not flagged
-;;; (Q-M1f.277, (b), as S1f.6.12 left it): the request is neither answered nor
+;;; (Q-M1f.277): the request is neither answered nor
 ;;; flagged.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────

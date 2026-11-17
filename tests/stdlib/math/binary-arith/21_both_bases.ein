@@ -1,4 +1,4 @@
-;;; `std.math.decimal-arith` and `std.math.binary-arith` in one program: each computes in its own base. M1f S1f.6.16.
+;;; `std.math.decimal-arith` and `std.math.binary-arith` in one program: each computes in its own base.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `std.math.decimal-arith` — comparison by value: numbers of different lengths, high
-;;; zeros, zero, and named operands. M1f S1f.6.4.
+;;; zeros, zero, and named operands.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

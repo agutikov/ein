@@ -1,4 +1,4 @@
-;;; `std.math.int` — a division by zero, Euclidean: the divisor written `(int z z)`. M1f S1f.6.22.
+;;; `std.math.int` — a division by zero, Euclidean: the divisor written `(int z z)`.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

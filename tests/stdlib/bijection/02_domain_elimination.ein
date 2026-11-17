@@ -10,8 +10,8 @@
 ;;; The `forall` is the rule. Fire it one negative early and it forces a value
 ;;; that is merely *unrefuted* rather than *forced* — a wrong model, silently,
 ;;; because the answer still looks like an answer. That is the failure mode the
-;;; census's §7 singles out across ten quantifying rules, and this is the one
-;;; where a puzzle would believe the result.
+;;; every quantifying rule of the stdlib risks, and this is the one where a
+;;; puzzle would believe the result.
 ;;;
 ;;; ── What this program does to it ───────────────────────────────────────────
 ;;;
@@ -33,8 +33,8 @@
 ;;;
 ;;; `domain-elimination` and `range-elimination` reach the same positive from
 ;;; opposite directions, so a fact-shaped expectation cannot say which one got
-;;; there — the `route` residue
-;;; Q-M1c.2 parks (docs/history/m1c_external_validation/open_questions.md). What
+;;; there: a claim says which facts hold, never which rule derived them
+;;; (Q-M1c.2). What
 ;;; separates them here is the **premises**, not the conclusion:
 ;;; Ann's row is exhausted and Blue's column is not, so only the domain rule
 ;;; can fire first. `03_range_elimination.ein` is the same puzzle transposed.
@@ -62,15 +62,15 @@
   :assert (undecided Bob Red)
   :why    "Bob's row is only one-third excluded, so nothing may be forced into it")
 
-;; Root alone (M1f S1f.6.36): this file's question is root's saturation:
+;; Root alone (Q-M1f.254): this file's question is root's saturation, so
 ;; nothing is guessed, and root, which owes, is the owing node R stops at.
-;; Until S1f.6.34 it said so with `:no-hypothesis (is-a wears undecided)`,
-;; keeping the obligation from proposing `wears`, which S1f.6.34 refused
-;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13);
-;; S1f.6.34 wrote an hrule `as-stated` instead, proposing only the `wears` root
-;; holds, since letting the obligations propose solves the bijection and six
-;; mutants of the negative-completion and elimination rules survive it.
-;; `:no-search` says what the list meant.
+;; `:no-search` says so. A `:no-hypothesis` list cannot: one that names
+;; `wears`, the relation the obligations owe, contradicts them and is
+;; refused (Q-M1f.244). With the obligations free to propose, the search
+;; would solve the bijection, and a defect in a negative-completion or an
+;; elimination rule could leave its answer as it is; at root, the facts
+;; each of those rules derives are the claim's.
+;; The claim is root's saturation, under `owing`.
 (solve
   :no-search
   :expect (region (owing (model (wears Ann Blue)

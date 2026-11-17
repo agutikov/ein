@@ -1,4 +1,4 @@
-;;; `std.math.decimal` — `z` named by the program itself, beside a numeral that ends in it. M1f P1f.6's close.
+;;; `std.math.decimal` — `z` named by the program itself, beside a numeral that ends in it.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -17,8 +17,8 @@
 ;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
 ;;; nothing, so no flag has a fact, and the sum beside the numeral is
 ;;; answered. Without the guard root is dead and R is empty, which is how
-;;; this program kills that mutant (the user's ruling of 2026-11-15 on
-;;; P1f.6's close, (a)).
+;;; this program fails on a version of the rule that drops it, and why it is
+;;; in the suite.
 
 (import std.math.decimal-arith :symbols (decimal-arith add sum-of))
 (import std.math.decimal :symbols (n named))

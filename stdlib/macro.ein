@@ -1,19 +1,19 @@
-;;; Ein stdlib — `std.macro`: pattern-macro sugar (P1.8 S1.5.9 / A3).
+;;; Ein stdlib — `std.macro`: pattern-macro sugar.
 ;;;
 ;;; **Canonical** module: the import resolver (`ein-ir`'s
 ;;; `stdlib::resolve`) maps the logical name `std.macro` to THIS file under the
 ;;; stdlib root (`stdlib/README.md` has the three steps).
 ;;;
-;;; `forall` and `unknown` used to be compile-time desugars baked into the
-;;; compiler (as `forall`/`open`); since S1.5.9 they are ordinary
-;;; ein-lang `(macro …)` declarations. Reach them three ways:
+;;; `forall` and `unknown` are ordinary ein-lang `(macro …)` declarations, no
+;;; form of the compiler's: a program that does not import this module has
+;;; neither (Q-M1f.132). Reach them three ways:
 ;;;     (import std.macro)            → `(std.macro.forall …)`
 ;;;     (import std.macro :as m)      → `(m.forall …)`
 ;;;     (import std.macro :symbols (forall unknown)) → `(forall …)` (short names)
 ;;;
-;;; Each carries a `:why`, as every relation and rule here does, since M1f
-;;; S1f.5.5's swap made the one parser the one that reads a macro's, so the
-;;; stdlib loads under `--require-why`.
+;;; Each carries a `:why`, as every relation and rule here does: a macro's is
+;;; required as a rule's is (Q-M1f.59), so the stdlib loads under
+;;; `--require-why`.
 
 ;; `(forall ?b (G) (B))` — guarded universal ∀b. G(b) → B(b), encoded as the
 ;; classical ¬∃b. G(b) ∧ ¬B(b). The bound var ?b must appear in the guard G.
@@ -22,9 +22,9 @@
   :why "every {?b} the guard {?G} holds of satisfies {?B}: none satisfies the guard and not the body")
 
 ;; `(unknown P)` — third-state match: P is neither asserted nor negated in the
-;; KB. Named `open` until 2026-08-24 — renamed (M1d P1d.2 naming decision P3)
-;; so the obligations phase can reserve bare `open` for the KB-level verdict
-;; atom.
+;; KB. It is not named `open`, the word an obligation concludes: an
+;; obligation is a rule whose conclusion is `(open ?R)`, and `open` is that
+;; verdict's atom (Q-M1d.2).
 (macro unknown (?P)
   (and (absent ?P) (absent (not ?P)))
   :why "{?P} is unknown: neither it nor its negation holds")

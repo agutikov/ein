@@ -1,10 +1,10 @@
 ;;; `std.math.rat` — two answers of one value are two facts, and `rat-cmp` is
-;;; the equality. M1f S1f.6.33.
+;;; the equality.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; **An answer is not canonical** since S1f.6.33 (round 2's item 54, the
-;;; user's *"(b)"*): an operation answers unreduced, so two requests whose
+;;; **An answer is not canonical** (Q-M1f.183): an operation answers
+;;; unreduced, so two requests whose
 ;;; values are equal answer two different facts. A rule that wants *the same
 ;;; number* asks `rat-cmp`, which compares by cross products and needs no
 ;;; lowest terms, or `rat-simplify`, which gives every rational of one value

@@ -1,17 +1,17 @@
 ;;; `std.math.decimal-arith` — a malformed number: it ends in the digit 0 where `z` goes.
-;;; M1f S1f.6.12.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A malformed numeral is `std.math.decimal`'s, flagged as it is written,
-;;; wherever it sits, with no request reading it (S1f.6.38, the user's ruling
-;;; of 2026-11-14 on Q-M1f.210): the loader states every fact nested in a fact
-;;; the program writes, `(written T)`, and the module's rules read each place
-;;; of each numeral off it. The flag is `(not-decimal NUMERAL THING)`, on the
-;;; smallest numeral at fault, and `not-decimal-is-false` derives `(false)`
-;;; from it. Until S1f.6.38 this was `std.math.decimal-arith`'s check at a
-;;; request's operand, `check-step` a place a firing, and its flag the
-;;; request's, `(malformed REQUEST)` (S1f.6.12); the claim is the one it was.
+;;; wherever it sits, with no request reading it (Q-M1f.210): the loader
+;;; states every fact nested in a fact the program writes, `(written T)`, and
+;;; the module's rules read each place of each numeral off it (Q-M1f.272).
+;;; The flag is `(not-decimal NUMERAL THING)`, on the smallest numeral at
+;;; fault (Q-M1f.274), and `not-decimal-is-false` derives `(false)` from it.
+;;; The request that holds the numeral is checked for none of it: no walk of
+;;; `std.math.decimal-arith`'s reads a numeral's places for a fault, and the
+;;; request's own flag, `(malformed REQUEST)`, is a digit's where a number goes.
 ;;;
 ;;; `numeral-prefix-zero`: the table `nz` holds the nine digits that are not
 ;;; zero, so the digit 0 has a rule of its own. `(n 0 2)` is not 2 written

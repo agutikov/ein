@@ -6,14 +6,14 @@
 ;;;   (forall ?b (G) (B))   ≡   (absent (and G (absent B)))
 ;;;
 ;;; ∀b. G(b) → B(b), encoded classically as ¬∃b. G(b) ∧ ¬B(b). It is not a
-;;; kernel form: until M1 S1.5.9 it was a compile-time desugar baked into the
-;;; compiler, and it is now an ordinary `(macro …)` declaration in an ordinary
-;;; ein-lang file.
+;;; kernel form, and no desugaring the compiler does: it is an ordinary
+;;; `(macro …)` declaration in an ordinary ein-lang file, which a program
+;;; imports (Q-M1f.132).
 ;;;
 ;;; ── How a macro is tested at all ───────────────────────────────────────────
 ;;;
-;;; Macros expand at **load**, and expansion emits no `fire` event, so a firing
-;;; census cannot see one: `forall` appears in ten stdlib rule bodies and its
+;;; Macros expand at **load**, and expansion emits no `fire` event, so a count
+;;; of firings cannot see one: `forall` appears in stdlib rule bodies and its
 ;;; coverage is inherited from whether those rules fire. That is enough to say
 ;;; it *works* and nothing at all about whether it expands to the right thing.
 ;;;
@@ -24,7 +24,7 @@
 ;;; inner `absent`, or scoped the bound variable differently, they do not. The
 ;;; expectation closes both.
 ;;;
-;;; It also settles a question the stage list asked: whether an expectation
+;;; It also settles a question: whether an expectation
 ;;; sees the program before or after expansion. It sees neither — an
 ;;; expectation is about a **model**, and a model is facts, which exist only
 ;;; after everything has expanded and run.

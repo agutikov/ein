@@ -1,5 +1,5 @@
 ;;; `std.bool.inputs` — `required`: a required value makes a satisfiability
-;;; question. M1f S1f.6.17.
+;;; question.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

@@ -4,8 +4,8 @@
 ;;; ── Why there are two rules and not one ────────────────────────────────────
 ;;;
 ;;; The promise is one sentence — `(symmetric R)` ∧ ¬R(a,b) ⟹ ¬R(b,a) — and the
-;;; *shape* is a workaround, which the census files as one of the six promises
-;;; that do not fit in a sentence (§9). The matcher can scan a **variable**
+;;; *shape* is a workaround, a promise that does not fit in a sentence. The
+;;; matcher can scan a **variable**
 ;;; relation head inside `(not …)` only when that head is an activator
 ;;; parameter, not a premise-bound variable. So `symmetric-negative-setup`
 ;;; lifts the `(symmetric R)` tag into a `(symmetric-negative R)` activator,
@@ -13,11 +13,11 @@
 ;;; A reader cannot tell from the pair which half is the semantics; this file
 ;;; is where the semantics is stated on its own.
 ;;;
-;;; ── Why it matters, and where it was tested before ─────────────────────────
+;;; ── Why it matters, and where else it is tested ────────────────────────────
 ;;;
-;;; Both rules had exactly one activator in the whole corpus,
-;;; `examples/zebra.ein` — 4 651 firings inside a five-house puzzle, and no
-;;; other file loading them at all. In that puzzle the mirror is load-bearing:
+;;; Outside `tests/`, both rules have one activator in the corpus,
+;;; `examples/zebra.ein`, where they fire throughout a five-house puzzle,
+;;; and no other file loads them. In that puzzle the mirror is load-bearing:
 ;;; without it `(not (co-located House-2 Green))` never reaches a rule matching
 ;;; `(not (co-located Green House-2))`, and the human walkthrough's whole
 ;;; *Blue@H2 ⟹ ¬Green@H2 ⟹ ¬Ivory@H1 ⟹ Yellow@H1* chain stalls at step one.

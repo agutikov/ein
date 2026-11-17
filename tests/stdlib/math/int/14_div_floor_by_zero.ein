@@ -1,5 +1,5 @@
 ;;; `std.math.int` — a division by zero, floored: the divisor a name, its zero
-;;; written with digits. M1f S1f.6.22.
+;;; written with digits.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

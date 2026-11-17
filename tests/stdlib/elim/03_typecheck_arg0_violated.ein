@@ -2,13 +2,13 @@
 ;;; declared domain, so ⊥. The **positional** module's copy.
 ;;;
 ;;; It is byte-identical to `std.bijection`'s, up to alpha-renaming, and it is
-;;; not an alias: the priorities differ, **110 here against 220 there**, and
-;;; the census's §8 records that as a divergence nothing has ever had to
-;;; reconcile, because a puzzle cannot import both — a same-name differing body
-;;; is a load conflict. `std.bijection`'s 220 is documented (so that the NAF
-;;; evaluates after a transitive closure at 200 has saturated) and this one's
-;;; 110 is not. Whether that is a bug is outside this file; that both now run,
-;;; and can be compared, is what it is for.
+;;; not an alias: it is a rule of its own, `std.elim.typecheck-arg-0`, beside
+;;; `std.bijection.typecheck-arg-0`, each with its own full name
+;;; (Q-M1f.231). A file lists the short name from one module at most
+;;; (Q-M1f.234), and each rule has a program of its own that refutes: this
+;;; one, and `../bijection/04_typecheck_arg0_violated.ein`. That both run,
+;;; and can be compared, is what the pair is for: an expectation of facts
+;;; cannot tell two rules apart, and two programs can.
 ;;;
 ;;; The activator is declared by hand — the positional module has no
 ;;; `typecheck-setup`, so this is the only way in, and it is also what keeps

@@ -1,4 +1,4 @@
-;;; `std.math.decimal-arith` — comparison: `lt`, `eq` and `gt`. M1f S1f.6.4.
+;;; `std.math.decimal-arith` — comparison: `lt`, `eq` and `gt`.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

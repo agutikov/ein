@@ -1,10 +1,10 @@
-;;; `std.math.rat` — negation: the numerator's parts change places. M1f S1f.6.8.
+;;; `std.math.rat` — negation: the numerator's parts change places.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; `(rat-neg X)` is answered by `(rat-neg-of X S)`: S is 0 - X, its
 ;;; numerator simplified and its denominator with no high zero, **not
-;;; reduced** (S1f.6.33): a common factor stays, and zero is 0 over the
+;;; reduced** (Q-M1f.183): a common factor stays, and zero is 0 over the
 ;;; operand's denominator.
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────

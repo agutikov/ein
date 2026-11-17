@@ -1,19 +1,19 @@
 ;;; `std.math.decimal-arith` — a division by zero made by a rule of the program's own,
-;;; through the tagged call: flagged at the call. M1f S1f.6.24.
+;;; through the tagged call: flagged at the call.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A division by zero is flagged wherever it is called (the user's ruling
-;;; of 2026-11-12). This program states no `(div X Y)`. Its own rule,
+;;; A division by zero is flagged wherever it is called (Q-M1f.163). This
+;;; program states no `(div X Y)`. Its own rule,
 ;;; `share-ask`, calls the theory's division under a tag of its own,
 ;;; `(div-call (mine A B) A B)`, and one of its two shares is among nobody.
 ;;; `div-call-by-zero` derives the flag, naming the call as it was asserted:
 ;;;
 ;;;     (division-by-zero (div-call (mine (n z 7) z) (n z 7) z))
 ;;;
-;;; and `division-by-zero-is-false` derives `(false)` from it. Until S1f.6.24
-;;; this call derived nothing: the program was alive, the share among nobody
-;;; had no answer, and nothing said so.
+;;; and `division-by-zero-is-false` derives `(false)` from it. Unflagged, the
+;;; program would be alive, the share among nobody would have no answer, and
+;;; nothing would say so.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

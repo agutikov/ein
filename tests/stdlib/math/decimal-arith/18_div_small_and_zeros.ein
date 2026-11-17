@@ -1,6 +1,6 @@
 ;;; `std.math.decimal-arith` — division: a dividend smaller than the divisor, equal
 ;;; numbers, a divisor of one, zero divided, high zeros, and zeros inside the
-;;; quotient. M1f S1f.6.6.
+;;; quotient.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

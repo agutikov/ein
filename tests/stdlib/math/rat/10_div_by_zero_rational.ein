@@ -1,4 +1,4 @@
-;;; `std.math.rat` — a division by a rational that is zero. M1f S1f.6.8.
+;;; `std.math.rat` — a division by a rational that is zero.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

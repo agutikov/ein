@@ -1,5 +1,5 @@
-;;; `std.math.gcd` — a first operand that is a name no `let` states. M1f
-;;; S1f.6.32.
+;;; `std.math.gcd` — a first operand that is a name no `let` states.
+;;;
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;

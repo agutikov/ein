@@ -1,22 +1,22 @@
 ;;; `std.slots` — `slot-adjacent-bwd-neg`, and the **direction** of its
-;;; structure premise. M1e S1e.3.6 T6, and the fixture that kills the survivor
-;;; `tests/README.md` had recorded since M1c.
+;;; structure premise: the fixture that fails on a mutant of the rule that
+;;; exchanges that premise's two arguments.
 ;;;
 ;;; ── What this is for ───────────────────────────────────────────────────────
 ;;;
-;;; The mutation sweep (`utils/stdlib_mutants.py`) exchanges the two arguments
-;;; of one premise at a time and asks whether `ein test tests/` notices. On
+;;; A mutant of a rule exchanges the two arguments of one premise, and the
+;;; question is whether `ein test tests/` notices. On
 ;;;
 ;;;   (rule slot-adjacent-bwd-neg (?R ?S ?isa ?PT)
 ;;;     :match  (and (?S ?a ?b)
 ;;;                  (not (?R ?b ?p1)) (?isa ?p1 ?PT)
 ;;;                  (?S ?p2 ?p1) …            ←  this one
 ;;;
-;;; the exchange `(?S ?p1 ?p2)` **survived**: `08_spatial_adjacent.ein` needs
-;;; the rule, but on a three-seat row the exclusion it should derive is
-;;; reachable from the other clue's chain a pass later, so the suite still
-;;; passed. A mutation score with an unnamed survivor is a slogan, and one with
-;;; a *named* survivor is a debt.
+;;; the exchange `(?S ?p1 ?p2)` survives every other file:
+;;; `08_spatial_adjacent.ein` needs the rule, but on a three-seat row the
+;;; exclusion it should derive is reachable from the other clue's chain a
+;;; pass later, so the rest of the suite passes. This file is the one that
+;;; fails on it.
 ;;;
 ;;; ── Why the exchanged rule is not merely wrong but silent ──────────────────
 ;;;
@@ -52,8 +52,8 @@
 ;;;
 ;;; ── How the expectation sees a negative ────────────────────────────────────
 ;;;
-;;; Stored negatives are the one thing an `:expect` does not close (S1c.1.2's
-;;; rule 3), so *"the exclusion was derived"* cannot be said by listing the
+;;; Stored negatives are the one thing an `:expect` does not close
+;;; (Q-M1c.2), so *"the exclusion was derived"* cannot be said by listing the
 ;;; exclusions that were. `probe-excluded` turns the one that matters into an
 ;;; ordinary positive the expectation can close — `07_schroder.ein`'s idiom
 ;;; with the polarity reversed: there `(unknown …)` proves a negative was
@@ -100,13 +100,13 @@
   :assert (excluded Ann S4)
   :why    "slot-adjacent-bwd-neg reached ¬(co-loc Ann S4) from ¬(co-loc Cat S3)")
 
-;; Root alone (M1f S1f.6.36): this file's question is root's saturation:
+;; Root alone (Q-M1f.254): this file's question is root's saturation, so
 ;; nothing is guessed, and root, which owes, is the owing node R stops at.
-;; Until S1f.6.34 it said so with `:no-hypothesis (type instance co-loc
-;; right-of excluded)`, keeping the obligation from proposing `co-loc`, which
-;; S1f.6.34 refused (*"filtered obligations are nonsense by definition"*, the
-;; user, 2026-11-13); S1f.6.34 wrote `slot-partition`'s fan-out out without its
-;; two obligations instead. `:no-search` says what the list meant.
+;; `:no-search` says so. A `:no-hypothesis` list cannot: one that names
+;; `co-loc`, the relation the obligations owe, contradicts them and is
+;; refused (Q-M1f.244), and with the obligations free to propose, the
+;; search would solve the partition, which is not this file's question.
+;; The claim is root's saturation, under `owing`.
 (solve
   :no-search
   :expect (region (owing (model (excluded Ann S4)))))

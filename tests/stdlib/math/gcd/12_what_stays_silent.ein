@@ -1,10 +1,10 @@
 ;;; `std.math.gcd` — natural numbers only: what is no operand here is answered
-;;; by silence. M1f S1f.6.32.
+;;; by silence.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; The module's operands are natural numbers of `std.math.decimal-arith`; it
-;;; has no gcd of integers or rationals (the stage's ruling). An integer of
+;;; has no gcd of integers or rationals (Q-M1f.336). An integer of
 ;;; `std.math.int` where a number goes stands for itself, as that module's
 ;;; operands do, and no walk reads it: the request is neither refused nor
 ;;; answered, as `std.math.decimal-arith` answers a fact of another relation

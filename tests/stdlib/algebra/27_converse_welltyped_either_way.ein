@@ -1,6 +1,6 @@
 ;;; `std.algebra/converse-illtyped-dom` and `-ran`, loaded, activated and
-;;; satisfied **where the subtype runs the other way** — M1f S1f.6.35, W93,
-;;; E-53 of P1f.6's findings.
+;;; satisfied **where the subtype runs the other way**: the register's row
+;;; W93, fixed.
 ;;;
 ;;; ── What the rules promise ─────────────────────────────────────────────────
 ;;;

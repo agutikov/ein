@@ -1,10 +1,10 @@
-;;; `std.math.binary` — a malformed numeral: ends in a bit. M1f S1f.6.16.
+;;; `std.math.binary` — a malformed numeral: ends in a bit.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
 ;;; A malformed numeral is `std.math.binary`'s, flagged as it is written,
 ;;; wherever it sits, with no request reading it, on `std.math.decimal`'s
-;;; pattern (S1f.6.38). The flag is `(not-binary NUMERAL THING)`, on the
+;;; pattern (Q-M1f.295). The flag is `(not-binary NUMERAL THING)`, on the
 ;;; smallest numeral at fault, and `not-binary-is-false` derives `(false)`.
 ;;;
 ;;; `bin-numeral-prefix-bit`: the prefix of `(b2 1 1)` is the bit `1`, where

@@ -1,24 +1,24 @@
 ;;; Ein stdlib — `std.bool.props`: what is known of the sixteen functions of
-;;; `std.bool.gates`, derived from the table's 64 rows by rules (M1f P1f.6,
-;;; S1f.6.17).
+;;; `std.bool.gates`, derived from the table's 64 rows by rules
+;;; (Q-M1f.326).
 ;;;
 ;;; Thirty relations, every fact of them derived and none written: each
 ;;; function's column, five relations between two functions, and twenty-four
-;;; properties of one. The user ruled them rules in a module of their own
-;;; (reply 20 (b), 2026-11-12: "I think we want to have those rules in
-;;; separate reusable file"), so they can never disagree with the rows, a
-;;; program that does not import this module pays nothing for them, and one
-;;; that does pays 405 firings at root, beside `std.bool.gates`' 65 (`ein
-;;; saturate` on a program that imports it and writes nothing else,
-;;; 2026-11-14).
+;;; properties of one. They are rules, in a module of their own (Q-M1f.326),
+;;; and not written facts: each fact of them is derived from the rows, so the
+;;; two can never disagree.
+;;;
+;;; A program that does not import this module pays nothing for them, and one
+;;; that does pays 405 firings at root, beside `std.bool.gates`' 65: `ein
+;;; saturate` on a program that imports it and writes nothing else counts them.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
 ;;;     (import std.bool.props :symbols (commutative identity-of))
 ;;;     (import std.bool.gates :symbols (Xor And))
 ;;;
-;;; An import brings the module whole, `std.bool.gates` with it (M1f
-;;; S1f.6.35); a program lists the names it writes from the module that
+;;; An import brings the module whole, `std.bool.gates` with it
+;;; (Q-M1f.247); a program lists the names it writes from the module that
 ;;; declares each: a relation below from this one, a function's name from
 ;;; `std.bool.gates` (its header says why a function's name is listed). `props`
 ;;; is the entry, the closing rule at the end of this file: it closes every
@@ -67,12 +67,12 @@
 ;;;
 ;;; How many facts each holds is the rows' to say, not this page's: each
 ;;; relation's whole extent is claimed by a program under
-;;; `tests/stdlib/bool/props/`, which `utils/gen_gates.py` writes from the
-;;; columns, and `ein-infer/tests/bool_theory.rs` holds every fact to an
-;;; enumeration in Rust, the three counts the user confirmed (reply 22 (a))
-;;; among them: four swap pairs and eight functions their own swap; the duals
-;;; `Andn`/`Orn` and `Randn`/`Rorn`; twelve functions up to the order of the
-;;; inputs. `python3 utils/gen_gates.py --count` prints them.
+;;; `tests/stdlib/bool/props/`, generated from the columns, and
+;;; `ein-infer/tests/bool_theory.rs` holds every fact to an enumeration in
+;;; Rust, three counts among them (`the_three_corrected_counts`): four swap
+;;; pairs and eight functions their own swap; the duals `Andn`/`Orn` and
+;;; `Randn`/`Rorn`; twelve functions up to the order of the inputs. `ein test
+;;; tests/stdlib/bool/props/` checks every claim.
 ;;;
 ;;; ── How ────────────────────────────────────────────────────────────────────
 ;;;

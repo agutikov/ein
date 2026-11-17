@@ -1,5 +1,5 @@
 ;;; `std.math.num9` — subtraction, two numbers: 123078 - 4567, and the other way
-;;; round, and a number from itself. M1f S1f.6.13.
+;;; round, and a number from itself.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
