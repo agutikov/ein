@@ -8,17 +8,23 @@ what a refutation tells a search. The symbols are those of [firing a rule](01-fi
 
 ## A contradiction
 
-A world $K$ holds a **contradiction** when it holds $\bot$, which a rule concludes to say a state is impossible,
-or a fact beside its stored negation. The contradictions of $K$ are the sets
+A contradiction, and *dead* and *alive*, are those of
+[the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither): a world $K$ holds a
+contradiction when it holds $\bot$, which a rule concludes to say a state is impossible, or a fact beside its
+stored negation. This page needs the contradictions of $K$ as sets of facts,
 
 $$
-\operatorname{contr}(K) \;=\; \lbrace\, \lbrace \bot \rbrace : \bot \in K \,\rbrace \;\cup\; \lbrace\, \lbrace f, \lnot f \rbrace : f \in K \land \lnot f \in K \,\rbrace,
-\qquad
+\operatorname{contr}(K) \;=\; \lbrace\, \lbrace \bot \rbrace \;:\; \bot \in K \,\rbrace \;\cup\; \lbrace\, \lbrace f, \lnot f \rbrace \;:\; f \in K \land \lnot f \in K \,\rbrace
+$$
+
+so a world is dead exactly where it has one:
+
+$$
 \operatorname{dead}(K) \iff \operatorname{contr}(K) \neq \emptyset
 $$
 
-A world that holds one is **dead**; one that holds none is **alive**. A fact's origin plays no part: $f$ and
-$\lnot f$ are a contradiction whether each was given, derived or committed.
+A fact's origin plays no part: $f$ and $\lnot f$ are a contradiction whether each was given, derived or
+committed.
 
 A world never loses a fact, so a contradiction once derived is never retracted,
 
@@ -104,8 +110,7 @@ The records of a world form a graph with two kinds of node.
 - A **derivation** is an **AND-node** over its premises: it holds only if all of them do. Its premises are
 
 $$
-\operatorname{rests}(\delta) \;=\; \operatorname{prem}(\delta) \;\cup\; \operatorname{all}(\delta) \;\cup\;
-\begin{cases} \lbrace a \rbrace & a \notin \mathrm{root} \\ \emptyset & a \in \mathrm{root} \end{cases}
+\operatorname{rests}(\delta) \;=\; \operatorname{prem}(\delta) \;\cup\; \operatorname{all}(\delta) \;\cup\; \begin{cases} \lbrace a \rbrace & a \notin \mathrm{root} \\ \emptyset & a \in \mathrm{root} \end{cases}
 $$
 
   a derivation through a universal rests on each fact the universal read
@@ -196,16 +201,21 @@ terminals; the two givens no derivation of $\bot$ reads are outside it, and the 
 terminal:
 
 $$
-\operatorname{core}(K) = \lbrace\, \operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1}),\ \operatorname{next-to}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2}),\ \operatorname{owns}(\mathsf{Norwegian}, \mathsf{Fox}) \,\rbrace
+\begin{aligned}
+\operatorname{core}(K) = \lbrace\, & \operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1}), \\
+& \operatorname{next-to}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2}), \\
+& \operatorname{owns}(\mathsf{Norwegian}, \mathsf{Fox}) \,\rbrace
+\end{aligned}
 $$
 
 **A core of a node names its commitment.** On a program whose root is alive, root's facts refute nothing, so for
 a dead node $C$
 
 $$
-\operatorname{core}(\operatorname{st}(C)) \cap C \neq \emptyset,
-\qquad
-\operatorname{dead}\Bigl(\operatorname{sat}\bigl(\mathrm{root} \cup (\operatorname{core}(\operatorname{st}(C)) \cap C)\bigr)\Bigr)
+\begin{aligned}
+& \operatorname{core}(\operatorname{st}(C)) \cap C \neq \emptyset \\
+& \operatorname{dead}\Bigl(\operatorname{sat}\bigl( \mathrm{root} \cup (\operatorname{core}(\operatorname{st}(C)) \cap C)\bigr)\Bigr)
+\end{aligned}
 $$
 
 the core names a fact of the node's commitment, and root's fixpoint with the core's commitment facts added is
@@ -217,9 +227,10 @@ core at all
 ([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)):
 
 $$
-\operatorname{dead}(K) \;\land\; \operatorname{core}(K) = \emptyset
-\qquad\text{against}\qquad
-\lnot\operatorname{dead}(K) \;\land\; \operatorname{core}(K) \text{ undefined}
+\begin{aligned}
+&\operatorname{dead}(K) \;\land\; \operatorname{core}(K) = \emptyset && \text{the empty core} \\
+&\lnot\operatorname{dead}(K) \;\land\; \operatorname{core}(K) \text{ undefined} && \text{no core}
+\end{aligned}
 $$
 
 **A core names facts.** The absences a derivation rested on, $\operatorname{abs}(\delta)$, are recorded, and a
@@ -235,7 +246,10 @@ alternative that it derives
 ([Q-M1e2.21](../../../decisions/read-out/Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md)):
 
 $$
-\operatorname{by}(f) \;=\; \rho_{\delta_i}, \qquad i = \min \lbrace\, j \;:\; \operatorname{rests}(\delta_j) \subseteq \operatorname{der}_K(\operatorname{core}(K)),\ \ \delta_j \in J_K(f) \,\rbrace
+\begin{aligned}
+\operatorname{by}(f) &= \rho_{\delta_i} \\
+i &= \min \lbrace\, j \;:\; \operatorname{rests}(\delta_j) \subseteq \operatorname{der}_K(\operatorname{core}(K)),\ \ \delta_j \in J_K(f) \,\rbrace
+\end{aligned}
 $$
 
 ## How far the minimality goes
@@ -274,9 +288,10 @@ On a **monotone** program $\operatorname{dead}$ is closed upward: a world only g
 dead commitment is dead, and one dead node decides every node above it,
 
 $$
-\operatorname{dead}(C) \;\land\; C \subseteq C' \;\implies\; \operatorname{dead}(C'),
-\qquad
-\lbrace\, C : \operatorname{dead}(C) \,\rbrace \;=\; \bigcup_{D \in N} \lbrace\, C : D \subseteq C \,\rbrace
+\begin{aligned}
+\operatorname{dead}(C) \;\land\; C \subseteq C' &\implies \operatorname{dead}(C') \\
+\lbrace\, C : \operatorname{dead}(C) \,\rbrace &= \bigcup_{D \in N} \lbrace\, C : D \subseteq C \,\rbrace
+\end{aligned}
 $$
 
 with $N$ the minimal dead sets.
@@ -285,8 +300,9 @@ with $N$ the minimal dead sets.
 
 The heavy node is a minimal dead set, with core $\lbrace a, b \rbrace$; the dashed node above it is dead with no
 saturation of its own. A computation of $R$ may use that as a licence and conclude *dead* for a node it never
-saturates ([finding R](07-finding-r.md)). The licence is exactly what an absence over a relation a commitment
-can still extend would break, $\lbrace p(\mathsf{A}) \rbrace$ dead and
+saturates ([finding R](07-finding-r.md)). The licence is exactly what an absence over the held extent of a
+relation ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) that a
+commitment can still extend would break, $\lbrace p(\mathsf{A}) \rbrace$ dead and
 $\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace$ alive, which is why a refutation may not rest on one
 ([absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent)). On a program that may not be monotone the
 licence is not taken, and each node is computed ([monotonicity](08-monotonicity.md)).

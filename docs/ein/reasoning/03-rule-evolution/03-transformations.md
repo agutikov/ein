@@ -11,7 +11,13 @@ A **transformation** is a map $\tau$ from programs to programs. The **answer** o
 region determines ([solution semantics](../02-kb-evolution/06-solution-semantics.md)):
 
 $$
-\operatorname{Ans}(P) = \Big(\ R,\ \ \big(\operatorname{st}(C)\big)_{C \in R},\ \ k_s,\ \ k_c,\ \ \text{what the root holds and owes},\ \ \text{each query's classes and each claim's outcome}\ \Big)
+\begin{aligned}
+\operatorname{Ans}(P) = \Big(\ & R, \\
+& \big(\operatorname{st}(C)\big)_{C \in R}, \\
+& k_s,\ k_c, \\
+& \text{what the root holds and owes}, \\
+& \text{each query's classes and each claim's outcome} \ \Big)
+\end{aligned}
 $$
 
 A transformation **preserves the answer** up to a renaming when there is a bijection $\beta$ of names, the
@@ -45,28 +51,32 @@ $$
 $$
 
 a union of sets of declarations and facts, in which $\alpha$ replaces each short name a file writes by the full
-name it stands for ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program)). The ways an import may be
-written differ only in which names the file may write short, that is, in $\alpha$ before it is applied.
+name it stands for
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program)). The ways an import
+may be written differ only in which names the file may write short, that is, in $\alpha$ before it is applied.
 
 **Expand.** A macro $\mu$ with parameters $\bar{x}$ and body $\beta_\mu$ is called by a form
 $\mu(\bar{t})$ in a pattern, a conclusion or a goal, and expansion replaces the call by the body with the
 arguments put in:
 
 $$
-\operatorname{expand}:\quad \mu(\bar{t}) \;\longmapsto\; \beta_\mu[\bar{t} / \bar{x}]
+\operatorname{expand}:\ \ \mu(\bar{t}) \;\longmapsto\; \beta_\mu[\bar{t} / \bar{x}]
 $$
 
 repeated until no call is left, a body's own calls included
 ([Q-M1f.130](../../../decisions/language/Q-M1f.130-a-macros-call-in-a-conclusion-is-expanded.md)). What must be a
 well-formed pattern or conclusion is the result, so a body is judged where it is called and not where it is
 defined ([Q-M1f.67](../../../decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)). The
-bounded universal and the undecided fact are such macros, so a program that writes them is a program of absences
+bounded universal and the open fact are such macros, so a program that writes them is a program of absences
 before any rule fires ([rules as data](01-rules-as-data.md#3-what-already-describes-itself)).
 
 **Flatten.** A conclusion's conjunction is read as the set of its literals, at any depth of nesting:
 
 $$
-\operatorname{lits}(\psi_1 \land \psi_2) = \operatorname{lits}(\psi_1) \cup \operatorname{lits}(\psi_2), \qquad \operatorname{lits}(\lambda) = \{\lambda\} \ \text{ for a literal } \lambda
+\begin{aligned}
+\operatorname{lits}(\psi_1 \land \psi_2) &= \operatorname{lits}(\psi_1) \cup \operatorname{lits}(\psi_2) \\
+\operatorname{lits}(\ell) &= \lbrace \ell \rbrace && \text{for a literal } \ell
+\end{aligned}
 $$
 
 A rule concludes a conjunction of literals, and nesting adds nothing.
@@ -75,7 +85,10 @@ A rule concludes a conjunction of literals, and nesting adds nothing.
 ([the rules](../01-static-ir/02-rewriting-rules.md#a-rule-declared)):
 
 $$
-\operatorname{inst}_K(P) = \{\, \rho[a] \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho) \,\}, \qquad K \subseteq K' \implies \operatorname{inst}_K(P) \subseteq \operatorname{inst}_{K'}(P)
+\begin{aligned}
+\operatorname{inst}_K(P) &= \lbrace\, \rho[a] \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho) \,\rbrace \\
+K \subseteq K' &\implies \operatorname{inst}_K(P) \subseteq \operatorname{inst}_{K'}(P)
+\end{aligned}
 $$
 
 the objects an activator supplies written into the rule before it matches anything. The set is monotone in the
@@ -95,8 +108,8 @@ $\operatorname{resolve}(P) = \operatorname{resolve}(P')$ as sets of declarations
 Identity is by full name, and every later map and every definition of the answer reads the resolved program
 alone. What is left of the difference is how a name is printed, which is the renaming. $\square$
 
-**A program is order-free at the boundary** when no rule reads, under an absence, a relation that a rule which
-itself reads an absence concludes, directly or through the rules its conclusion sets off. Where two such rules
+**A program is order-free at the boundary** when no rule reads, under an absence, a fact of a relation of which
+a rule that itself reads an absence concludes a fact, directly or through the rules its conclusion sets off. Where two such rules
 wait at one boundary the one written first is admitted first, and that order can decide the fixpoint: of root's
 as of a node's, and of a program the monotonicity check passes as of one it flags, since the check takes root as
 given ([monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md#34-the-verdict-is-relative-to-root)).
@@ -110,7 +123,7 @@ $\operatorname{Ans}(P') = \operatorname{Ans}(P)$.
 operator of [saturation](../02-kb-evolution/02-saturation.md),
 
 $$
-T_P(K) = K \;\cup\; \big\{\, f \in \psi_\rho[a]\theta \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho),\ K \models \varphi_\rho[a]\theta \,\big\}
+T_P(K) = K \;\cup\; \big\lbrace\, f \in \psi_\rho[a]\theta \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho),\ K \models \varphi_\rho[a]\theta \,\big\rbrace
 $$
 
 Without an absence, satisfaction is preserved when a state grows, so $T_P$ is monotone, $K \subseteq K'$ implies
@@ -152,8 +165,8 @@ core is an explanation and not part of the answer
 | the order of firing, on such a program | unchanged; a dead node's core may differ | Proposition 3 |
 
 **Where nothing is claimed.** Of a program the monotonicity check flags, and of one that is not order-free at the
-boundary, no transformation is claimed to preserve the answer: there the state of a node can depend on the order facts arrive in, and Propositions 2 and 3 have no
-premise to stand on ([monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md)).
+boundary, no transformation is claimed to preserve the answer: there the state of a node can depend on the order
+facts arrive in, and Propositions 2 and 3 have no premise to stand on ([monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md)).
 
 **What is not performed.** Resolving, expanding, flattening and instantiating are the only rewrites reading
 applies. Splitting a rule, fusing two, specialising a rule to a relation ahead of its activator, or generalising

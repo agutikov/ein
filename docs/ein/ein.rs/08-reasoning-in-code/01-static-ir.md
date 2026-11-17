@@ -10,9 +10,10 @@ that hold it to them, and the commands that show each notion. The layout is the 
 
 **The words.** The reasoning calls every node of a knowledge base's graph an **object**: an **atom**, a node
 with a name and no outgoing arrow, or a **fact**, a node with outgoing arrows, the first of which points at its
-relation. In the code an object is a `Value`, an atom a `Symbol` and a fact a `FactId`; the code's own names say
-*value* and, for the atoms the blind enumerator guesses about, *object* (`candidate_objects`). This page uses
-the reasoning's words and names the code's items as they are spelt.
+relation. A **relation** is that one atom; the facts of it, held or not, are its **extent**, and those a
+knowledge base holds are its **held extent**. In the code an object is a `Value`, an atom a `Symbol` and a fact
+a `FactId`; the code's own names say *value* and, for the atoms the blind enumerator guesses about, *object*
+(`candidate_objects`). This page uses the reasoning's words and names the code's items as they are spelt.
 
 ## The running example
 
@@ -52,8 +53,10 @@ is its source. Save it as `three-houses.ein`:
 ```
 
 The pages use its **root**, the state its own facts saturate to, and never its answer: its third rule reads an
-`absent` over `lives-in`, a relation the blind enumerator may extend, so a bare `ein solve` flags the program as
-not monotone. `ein saturate` stops at the root, and `--dump` prints it by origin:
+`absent` over the facts of `lives-in` that a state holds, the relation's held extent
+([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)),
+which the blind enumerator's candidates may extend, so a bare `ein solve` flags the program as not monotone.
+`ein saturate` stops at the root, and `--dump` prints it by origin:
 
 ```sh
 ein saturate three-houses.ein --dump
@@ -115,7 +118,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | one list of arrows, one node: a fact | an interned row of its relation and its arguments, `Terms::intern_fact`; the facts as rows, `ein_core::facts` |
 | the knowledge base: the facts held | `ein_core::kb::Kb` ([`03-design/03-data-model.md`](../03-design/03-data-model.md)); a fact that is only pointed at is interned in `Terms` and in no `Kb` |
 | the relation of a fact, its arguments | the row's first field and the rest; a relation is a `Symbol`, never a `Fact` |
-| the extent of a relation | `Kb`'s index of the held facts by relation (`facts_by_relation`) |
+| the held extent of a relation, $\operatorname{ext}_K(r)$ | `Kb`'s index of the held facts by relation (`facts_by_relation`) |
 | the name characters, and a name as a run of them | the lexer's `NAME` rule in `ein-ir/src/ein.l`; `ein_core::text::is_name_char` and `is_symbol`, the printer's copy of it, held equal to the lexer's by a test |
 | the reserved words | `ein_core::terms::RESERVED` (what no declaration binds), `STRUCTURAL` and `PREDICATES` (the words of the pattern language); the grammar's own list in `ein-ir/src/grammar.rs` |
 | a name the loader makes up | `ein_core::text::INTERNAL_MARK`, `#`, and `INTERNAL_NAMES` ([`07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)) |
@@ -149,9 +152,9 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | a nested fact pairs with its negation by its arrows, at every depth | `ein-infer/tests/search_semantics.rs`: `a_nested_positive_pairs_through_structural_identity` |
 | a form that is no object is refused, and every form a knowledge base could hold loads | `ein-cli/tests/value_rule.rs`: `a_form_that_is_no_value_is_refused_on_every_command`, `what_a_state_could_hold_loads` |
 | `P` beside `(not P)` is a contradiction whatever either half's origin, and every pair is reported | `ein-infer/tests/search_semantics.rs`: `mutual_negation_is_detected_whatever_either_sides_origin`, `every_pair_is_reported_not_only_the_first` |
-| matching merges no names | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
+| matching merges no two atoms | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
 | names order by code point, whatever order they were read in | `ein-core/tests/values_semantics.rs`: `the_rank_table_orders_names_by_code_point`; the term store's unit test `semantic_order_sorts_names_by_text` in `ein-core/src/terms.rs` |
-| a name sorts before a fact; facts order by relation, then arguments, then count | the term store's unit tests `semantic_order_sorts_names_by_text`, `facts_order_as_their_identity_tuples_do` in `ein-core/src/terms.rs` |
+| an atom sorts before a fact; facts order by relation, then arguments, then count | the term store's unit tests `semantic_order_sorts_names_by_text`, `facts_order_as_their_identity_tuples_do` in `ein-core/src/terms.rs` |
 | a name is printed bare exactly where it reads back as that name | the grammar's unit test `the_printers_symbol_is_the_lexers` in `ein-ir/src/grammar.rs`; `ein-core/tests/values_semantics.rs`: `display_renders_every_value_shape` |
 | every knowledge base an answer's files hold reads back as it was written | `ein-cli/tests/answer_round_trip.rs` |
 | no keyword pair reaches an object's label in a drawing | the renderer's unit test `no_keyword_pair_reaches_a_values_label` in `ein-render/src/dot_util.rs`; `ein-ir/tests/grammar_pages.rs`: `every_row_of_the_grammars_table_is_refused_at_the_parse` |
@@ -165,12 +168,13 @@ ein render program three-houses.ein      # the facts drawn with labelled arrows:
 ein render program --levi three-houses.ein   # each fact an octagon with its relation's name in it, arrows to its arguments
 ```
 
-The census `ein saturate` prints counts, among the names, how often each stands as a fact's relation, its
-*head-participations*, and how often as an argument, its *arg-participations*. It reads the facts held and
-their own arguments: a name that stands only inside a nested fact, or as the relation of a fact that is only
-pointed at, is in neither count.
+The census `ein saturate` prints is of the atoms, under its row `names`, and counts how often each stands as a
+fact's relation, its *head-participations*, and how often as an argument, its *arg-participations*. It reads the
+facts held and their own arguments: an atom that stands only inside a nested fact, or as the relation of a fact
+that is only pointed at, is in neither count. Its row `category = object` is the engine's word for an atom it
+files under neither `relation` nor `rule`; in the reasoning's words every node is an object.
 
-**A declaration is a fact a rule's `:match` reads, and its labels are ordinary names**
+**A declaration is a fact a rule's `:match` reads, and its labels are ordinary atoms**
 ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). The rule
 of [the rules § Relation-polymorphic](../../reasoning/01-static-ir/02-rewriting-rules.md#relation-polymorphic) that
 gives a label a meaning, as a program. A variable in a relation's place must be a parameter, so the rule takes
@@ -244,10 +248,10 @@ out, a firing, is [saturation and negation](02-saturation-and-negation.md#1-firi
 | `(unknown P)` admits exactly the facts neither held nor denied | `ein-infer/tests/naf_semantics.rs`: `unknown_admits_exactly_the_undecided_pairs` |
 | `eq` and `neq` are computed from the bindings, each admitting what the other rejects; a variable only a guard binds ranges over the program's names; a conclusion of either is checked and never stored | `ein-infer/tests/rule_semantics.rs`: `eq_admits_exactly_the_bindings_neq_rejects`, `a_guards_free_variable_ranges_over_the_programs_names`, `an_eq_or_neq_conclusion_is_checked_never_stored` |
 | a `forall` over an empty domain holds | `ein-infer/tests/rule_semantics.rs`: `a_forall_over_an_empty_domain_is_vacuously_true` |
-| a rule with parameters and no activator has no application, and an activator applies it over the relation it names alone | `ein-infer/tests/rule_semantics.rs`: `a_parametrised_rule_with_no_activator_is_dormant` |
+| a rule with parameters and no activator has no application, and an activator applies it to the facts of the relation it names and of no other | `ein-infer/tests/rule_semantics.rs`: `a_parametrised_rule_with_no_activator_is_dormant` |
 | a rule with no parameters matches an empty pattern once, and once per activator with parameters | `ein-infer/tests/rule_semantics.rs`: `an_empty_match_fires_once_or_once_per_activator` |
 | an activator gives a parameter a nested fact | `ein-infer/tests/compile_semantics.rs`: `a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound` |
-| a relation parameter bound to a fact, written or derivable, is refused at load | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused` |
+| a parameter in a relation's place bound to a fact, written or derivable, is refused at load | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused` |
 | a rule name declared twice is refused at load | `ein-ir/tests/load_semantics.rs`: `the_load_negative_fixtures_are_byte_identical`, over `examples/broken/load/rule_duplicate_name.ein` and `hrule_duplicate_name.ein` |
 | `domain-elimination` concludes the last object left, and nothing while two survive | `ein-infer/tests/stdlib_semantics.rs`: `domain_elimination_forces_the_last_surviving_value`, `range_elimination_forces_the_last_surviving_object`, `domain_elimination_says_nothing_while_two_values_survive` |
 | a declaration is stored as facts of `relation` | `ein-infer/tests/compile_semantics.rs`: `a_bare_declaration_is_declared_with_an_empty_signature_and_stores_one_fact` |

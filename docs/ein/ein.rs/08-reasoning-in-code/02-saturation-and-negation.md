@@ -32,7 +32,7 @@ The reasoning: [firing a rule](../../reasoning/02-kb-evolution/01-firing.md).
 
 | notion | code |
 |---|---|
-| an object, a fact, a stored negation | [`ein-core/src/value.rs`](../../../../ein.rs/crates/ein-core/src/value.rs), [`terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs), [`facts.rs`](../../../../ein.rs/crates/ein-core/src/facts.rs): names and facts interned together, a fact a row of relation and arguments, `(not F)` a fact of `not` |
+| an object, a fact, a stored negation | [`ein-core/src/value.rs`](../../../../ein.rs/crates/ein-core/src/value.rs), [`terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs), [`facts.rs`](../../../../ein.rs/crates/ein-core/src/facts.rs): atoms and facts interned together, a fact a row of relation and arguments, `(not F)` a fact of `not` |
 | a knowledge base, a fork | [`ein-core/src/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs): a stack of immutable layers under one writable top ([`03-data-model.md`](../03-design/03-data-model.md)) |
 | a derivation record | [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs), `Prov`: kind, source, rule, premises, bindings in bind order, the absences, the branch |
 | an application: a rule and its activator | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs) compiles one plan per (rule, activator) pair, [`plan.rs`](../../../../ein.rs/crates/ein-infer/src/plan.rs) is the plan, [`engine.rs`](../../../../ein.rs/crates/ein-infer/src/engine.rs) the cache of plans and the record of what fired |
@@ -62,12 +62,12 @@ conclusion is present inserts nothing and is recorded as an alternative derivati
 | a satisfiable puzzle is never reported unsatisfiable, and an unsatisfiable one never solved | `ein-infer/tests/acceptance.rs`: `a_satisfiable_puzzle_is_never_unsat_and_an_unsat_one_is_never_solved` |
 | the two Zebra encodings, [`examples/zebra.ein`](../../../../examples/zebra.ein) with one generic relation and [`examples/zebra2.ein`](../../../../examples/zebra2.ein) with five, reach the same model | `ein-infer/tests/acceptance.rs`: `both_ontologies_reach_the_same_model`; `ein-cli/tests/acceptance_cli.rs`: `solve_zebra_prints_the_same_answer_through_the_generic_encoding` |
 | every route computes the R the definition gives | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
-| matching is structural, and two names are never resolved as one | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
+| matching is structural, and two atoms are never resolved as one | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
 | nothing is retracted | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
 | a fork and its parent diverge after the fork, each seeing only its own additions | the store's unit test `a_fork_reads_base_then_delta_and_the_two_histories_diverge` in `ein-core/src/kb.rs` |
-| no rendering of any corpus program depends on the order names were numbered in | `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`, `an_id_order_that_reaches_an_output_is_caught` |
+| no rendering of any corpus program depends on the order its objects were numbered in | `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`, `an_id_order_that_reaches_an_output_is_caught` |
 | no rendering depends on how many workers ran | `ein-render/tests/jobs_invariance.rs`: `jobs_does_not_move_any_observable` |
-| a rule written once with a relation parameter fires for each relation its activators name | `ein-infer/tests/stdlib_semantics.rs`: `a_bijective_declaration_fans_out_into_the_operational_activators` |
+| a rule written once with a parameter in a relation's place fires for each relation its activators name | `ein-infer/tests/stdlib_semantics.rs`: `a_bijective_declaration_fans_out_into_the_operational_activators` |
 
 ### 1.4 The drawings of the page
 
@@ -145,7 +145,7 @@ parked set and the events `park`, `admit` and `retire` ([`05-events.md`](../05-e
 | every name of the program is a guessable atom | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object` |
 | no run reaches a name the program does not have, against either baseline | `ein-infer/tests/alive_invariant.rs`: `no_run_reaches_a_name_the_program_does_not_have` |
 | a program and its twin that writes the same name in a fact answer one R | `ein-infer/tests/alive_invariant.rs`: `the_pair_answers_one_region` |
-| a relation parameter bound to a fact, written or derivable, is refused at load | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused` |
+| a parameter in a relation's place bound to a fact, written or derivable, is refused at load | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused` |
 | the search interns no name the load did not | `ein-infer/tests/interning.rs`: `the_search_interns_no_names`, `a_rule_only_constant_is_interned_at_load` |
 | a dunder is a name of the program where it is written as an argument, and not guessable | `ein-infer/tests/dunder_objects.rs`: `the_programs_names_hold_a_dunder_where_it_is_written_as_a_value`, `a_dunder_written_as_a_value_is_no_object` |
 
@@ -223,7 +223,7 @@ The reasoning: [absence](../../reasoning/02-kb-evolution/03-absent-and-naf.md).
 | a guard set aside | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs): every top-level `(absent …)` is lifted out of its disjunct into the plan's guards, so a plan's steps are a positive program ([`05-matcher.md` § 4](../03-design/05-matcher.md#4-predicates-and-guards)) |
 | parked, admitted, dropped | [`ein-infer/src/saturator.rs`](../../../../ein.rs/crates/ein-infer/src/saturator.rs): the parked set and the boundary's round, one admission each |
 | the absences a derivation rested on | `Prov::absent` in [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs); no walk for a core follows them ([`ein-core/src/walks.rs`](../../../../ein.rs/crates/ein-core/src/walks.rs)) |
-| a refutation resting on an `absent` | [`ein-infer/src/forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs): `check` refuses, `extendable` is the set of relations a commitment can extend, `message` the text; [`naf_deps.rs`](../../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the advisory map of which guards read what |
+| a refutation resting on an `absent` | [`ein-infer/src/forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs): `check` refuses, `extendable` is the set of relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can extend, `message` the text; [`naf_deps.rs`](../../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the advisory map of which guards read what |
 | the dependency graph and its strata | [`ein-infer/src/strata.rs`](../../../../ein.rs/crates/ein-infer/src/strata.rs) |
 | the universal and the *unknown* test | the macros `forall` and `unknown` of `std.macro`, which expand to nested `(absent …)` before a rule is compiled ([`02-syntax.md`](../../user/04-reference/02-syntax.md)) |
 
@@ -233,27 +233,29 @@ The compiler splits a match into disjuncts and each disjunct into its positive s
 the positive steps of a disjunct with guards is parked with its bindings; the boundary evaluates each guard as a
 query over the quiescent knowledge base under those bindings, variables the guard alone holds left free. A guard
 with no nested `absent` that fails is retired; one with a nested `absent` stays parked with a stamp of the sizes
-of the relations it reads, and is judged again when one of them grew. A candidate a node inherits parked from
-root keeps its stamp, so it is judged again in the node exactly where what its guard reads grew.
+of the held extents of the relations it reads, and is judged again when one of them grew. A candidate a node
+inherits parked from root keeps its stamp, so it is judged again in the node exactly where what its guard reads
+grew.
 
-*Forbid* runs at load, over root's compiled plans and, from its pattern, every rule with parameters whose
-activator relation a commitment can change. It computes the relations a plan writes when it reads an extendable
-relation inside an odd number of `absent`s, closed under *a plan that reads one of them positively, or is
-compiled from an activator among them, writes into the set*, and refuses each plan concluding `(false)` or a
-stored negation that reads an extendable relation inside an odd number of `absent`s, reads a relation of that
-set positively, or is compiled from an activator in it (`forbid::Cause`). The refused shape is
+Call a relation *extendable* where a commitment can extend its held extent. *Forbid* runs at load, over root's
+compiled plans and, from its pattern, every rule with parameters whose name, the relation of its activators, is
+extendable. It computes the relations a plan concludes facts of when it reads facts of an extendable relation
+inside an odd number of `absent`s, closed under *a plan that reads facts of one of them positively, or is
+compiled from an activator among them, concludes into the set*, and refuses each plan concluding `(false)` or a
+stored negation that reads facts of an extendable relation inside an odd number of `absent`s, reads facts of a
+relation of that set positively, or is compiled from an activator in it (`forbid::Cause`). The refused shape is
 [`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein).
 
 ### 3.3 What holds it
 
 | claim | test |
 |---|---|
-| a guard is judged against the positive fixpoint; the rules' written order decides nothing derivable where the guarded relation is produced by a positive rule | `ein-infer/tests/naf_semantics.rs`: `the_order_does_not_decide_what_is_derivable` |
+| a guard is judged against the positive fixpoint; the rules' written order decides nothing derivable where the facts a guard reads are concluded by a positive rule | `ein-infer/tests/naf_semantics.rs`: `the_order_does_not_decide_what_is_derivable` |
 | an unstratifiable loop converges to a supported fixpoint, and nothing is retracted | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
 | exactly one of `p` and `q` is derived on [`examples/features/07_unstratifiable.ein`](../../../../examples/features/07_unstratifiable.ein) | the corpus shape digest of its `saturate` run, `ein-render/tests/id_order_invariance.rs` |
 | a guard over a conjunction is a negated existential over its unbound variables | `ein-infer/tests/naf_semantics.rs`: `a_guard_over_a_conjunction_is_a_negated_existential` |
 | a disjunct's guards are judged at the boundary with that disjunct | `ein-infer/tests/naf_semantics.rs`: `an_or_disjuncts_guard_is_judged_on_the_boundary` |
-| a guard sees the closed extent of the relation it reads | `ein-infer/tests/naf_semantics.rs`: `a_guard_sees_the_closed_extent_of_its_watched_relation` |
+| a guard sees the held extent of the relation it reads as the positive closure leaves it, the test's *closed extent* | `ein-infer/tests/naf_semantics.rs`: `a_guard_sees_the_closed_extent_of_its_watched_relation` |
 | where a guard is written decides which question it asks | `ein-infer/tests/rule_semantics.rs`: `a_binding_guard_binds_where_it_is_written` |
 | a rule's parameter is bound when its guards are judged | `ein-infer/tests/naf_semantics.rs`: `a_rule_parameter_is_in_scope_for_its_guards` |
 | `(unknown P)` admits exactly the pairs neither stored nor negated | `ein-infer/tests/naf_semantics.rs`: `unknown_admits_exactly_the_undecided_pairs` |
@@ -261,7 +263,7 @@ set positively, or is compiled from an activator in it (`forbid::Cause`). The re
 | a `forall` that turns from failing to passing is judged again and admitted; a node and a fresh saturation agree at the boundary | `ein-infer/tests/explain_semantics.rs`: `fork_and_direct_agree_at_the_naf_boundary` |
 | a match inherited parked from root is judged again in the node exactly where what its guard reads grew | `ein-infer/tests/naf_semantics.rs`: `a_forked_candidate_is_rejudged_exactly_when_its_watched_extent_grew` |
 | an admitted firing records the absences it rested on, a free position as free, and a positive firing records none | `ein-infer/tests/naf_semantics.rs`: `a_boundary_admitted_firing_records_what_was_absent`, `a_free_position_in_a_negative_premise_is_recorded_as_free`, `a_nested_guard_records_both_levels` |
-| a refutation resting on an extendable `absent` is refused, and the line names the forms that say what was meant | `ein-infer/tests/refutation_under_absent.rs`: `the_probe_is_refused_and_the_message_names_the_replacements`, `the_written_activator_programs_are_refused` |
+| a refutation resting on an `absent` over the held extent of an extendable relation is refused, and the line names the forms that say what was meant | `ein-infer/tests/refutation_under_absent.rs`: `the_probe_is_refused_and_the_message_names_the_replacements`, `the_written_activator_programs_are_refused` |
 | every node is root's fixpoint and its commitment, as the oracle builds it | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
 | a negative cycle is reported and the program still answered | `ein-cli/tests/strata_diagnostic.rs`: `solve_names_each_negative_cycle_and_still_answers` |
 
@@ -314,8 +316,9 @@ The reasoning: [monotone and non-monotone programs](../../reasoning/02-kb-evolut
 ### 4.2 The algorithm
 
 `monotone::classify` reads root's compiled plans: it closes the candidates' relations under *a saturation plan
-that reads one concludes into the set*, classifies every read by that set and its `absent` depth, and reports a
-site for each dynamic read at non-monotone polarity and for each rule whose activator relation is in the set. It
+that reads facts of one concludes into the set*, classifies every read by that set and its `absent` depth, and
+reports a site for each dynamic read at non-monotone polarity and for each rule whose name, the relation of its
+activators, is in the set. It
 costs root's saturation and builds no node. A program with no site takes the routes with their licences; a
 flagged one takes the cube ([`07-search.md` § 7](../03-design/07-search.md#7-monotone-and-flagged-programs)).
 
@@ -341,7 +344,7 @@ The reasoning page states each cause by the shape of a program; these are the co
 | c10, the FIFO gap | [`examples/lattice/10_fifo_gap.ein`](../../../../examples/lattice/10_fifo_gap.ein) |
 | c12, a FIFO race over a static read | [`examples/lattice/11_fifo_gap_static.ein`](../../../../examples/lattice/11_fifo_gap_static.ein) |
 | a chain of activators that first appears at a node | [`examples/ein-bugs/wrong-answers/forbid-chain-1.ein`](../../../../examples/ein-bugs/wrong-answers/forbid-chain-1.ein) and its siblings |
-| what is no site | [`examples/zebra2.ein`](../../../../examples/zebra2.ein)'s spatial reads; `total-owed`'s witness in [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein); a stored negative of a hypothesised relation in [`examples/ein-bugs/complete-records-stale.ein`](../../../../examples/ein-bugs/complete-records-stale.ein) |
+| what is no site | [`examples/zebra2.ein`](../../../../examples/zebra2.ein)'s spatial reads; `total-owed`'s witness in [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein); a stored negation of a fact of a relation that has candidates in [`examples/ein-bugs/complete-records-stale.ein`](../../../../examples/ein-bugs/complete-records-stale.ein) |
 | the one-fact test misreads the lines | [`examples/lattice/synth/local_not_global.ein`](../../../../examples/lattice/synth/local_not_global.ein) |
 | the duality fails with no hole | [`examples/lattice/synth/maximal_not_top.ein`](../../../../examples/lattice/synth/maximal_not_top.ein) |
 
@@ -356,13 +359,13 @@ The reasoning page states each cause by the shape of a program; these are the co
 | the check reads at relation grain: a program whose dynamic reads no commitment can match is flagged all the same | `ein-infer/tests/region.rs`: `fact_grain_on_programs_written_to_test_it` |
 | fact grain calls no violated cube monotone, and leaves the set only where no commitment can match a read | `ein-infer/tests/region.rs`: `fact_grain_never_calls_a_violated_cube_monotone`, `fact_grain_on_programs_written_to_test_it` |
 | a *monotone* verdict is one state per node by fork and by every split from a fixpoint that holds root's, with no stale fact; from scratch it departs on `11_fifo_gap_static`'s `{b}` alone | `ein-infer/tests/detector.rs`: `a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`, `a_monotone_verdict_is_one_state_per_node_on_random_programs` |
-| zebra2's `absent`s read static relations, so the check calls it monotone | `ein-infer/tests/region.rs`: `zebra2_is_monotone_by_construction` |
+| zebra2's `absent`s read facts of static relations, those no commitment can add a fact of, so the check calls it monotone | `ein-infer/tests/region.rs`: `zebra2_is_monotone_by_construction` |
 | an obligation's witness `absent` is no site | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
 | one witness per cause, each its program's only site, with the hole its cause makes; an activator hides the refutation's `absent` from root's rules | `ein-infer/tests/region.rs`: `each_cause_has_a_fixture_whose_cube_shows_its_hole` |
 | without holes the minimal and maximal lines are E's and N's, and across a dead hole the N side fails | `ein-infer/tests/region.rs`: `the_duality_holds_without_holes_and_fails_on_the_hole` |
 | across a hole the one-fact test misreads the lines | `ein-infer/tests/region.rs`: `across_a_hole_the_one_fact_test_misreads_the_lines` |
 | on a monotone cube saturation is a closure operator, and on a flagged program written for the test it is not | `ein-infer/tests/region.rs`: `a_monotone_verdict_makes_saturation_a_closure_operator` |
-| a death that rests on no `absent` over an extendable relation, the activator of each rule followed, is dead in every superset, and read off premises alone it is not | `ein-infer/tests/region.rs`: `an_untainted_death_is_dead_in_every_superset` |
+| a death that rests on no `absent` over the held extent of an extendable relation, the activator of each rule followed, is dead in every superset, and read off premises alone it is not | `ein-infer/tests/region.rs`: `an_untainted_death_is_dead_in_every_superset` |
 | what an alive state denies is dead above it on every monotone cube, and a flagged program spends no denial | `ein-infer/tests/known_dead.rs`: `what_an_alive_node_denies_is_dead_above_it_on_every_monotone_cube`, `a_flagged_program_spends_no_denial` |
 | a one-step parent path reaches another state on `lattice/08` and `lattice/10_fifo_gap`, and on no node of `lattice/04` or `lattice/09` the spot check reads | `ein-infer/tests/detector.rs`: `the_spot_check_reads_three_parents_of_each_printed_state` |
 | `lattice/10_fifo_gap`'s `{a, b}` holds a stale `p` and is in R; `features/07`'s `{(q one)}` and `stale-naf-fork`'s dead `{(q one)}` hold one | `ein-infer/tests/detector.rs`: `the_stale_check_reads_every_node_the_run_computes` |
@@ -571,7 +574,7 @@ its § 2.3 are in the catalogue:
 | an obligation rule derives nothing and never reaches the firing stream; a state that owes is not a solution | `ein-infer/tests/obligation_reports.rs`: `an_obligation_rule_never_reaches_the_firing_stream`, `a_state_that_owes_is_open_and_not_a_solution` |
 | no option, lever or flag changes what is derived or which states are in R | `ein-cli/tests/lever_invariance.rs`: `every_declared_lever_cell_moves_no_line_of_any_mode` |
 | no order of the search, interning order or number of workers moves an answer | `ein-infer/tests/explore.rs`: `every_order_of_the_tree_is_the_oracle`; `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`; `ein-render/tests/jobs_invariance.rs`: `jobs_does_not_move_any_observable` |
-| naming a relation closes it in every state a claim lists | `ein-infer/tests/claim_semantics.rs`: `naming_a_relation_closes_it_in_every_model` |
+| a claim that names a relation states the whole of its held extent in every state it lists | `ein-infer/tests/claim_semantics.rs`: `naming_a_relation_closes_it_in_every_model` |
 | a claim the run did not decide is not checked; a run a budget stopped leaves its claim not checked and says why; under `--no-search` a claim not checked moves no exit code | `ein-infer/tests/expect_semantics.rs`: `a_claim_the_run_did_not_decide_is_not_checked`; `ein-cli/tests/test_cli.rs`: `a_budget_stopped_run_is_not_checked_and_says_why`; `ein-cli/tests/no_search.rs`: `test_decides_what_root_decides_and_a_claim_not_checked_exits_0` |
 | every route that branches on an owed instance's alternatives finds the oracle's R | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
 | on the zebra family, branching on what the obligations owe finds what the hrule finds | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |

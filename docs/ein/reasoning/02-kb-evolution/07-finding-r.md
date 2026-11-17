@@ -22,15 +22,20 @@ procedures, and the tests that hold them to the oracle are
 $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$; $\operatorname{dead}$, $\operatorname{alive}$,
 $\operatorname{Owed}$, $\operatorname{owes}$ and $\operatorname{discharged}$, read on a commitment through
 $\operatorname{st}$; $\operatorname{cl}(C) = \operatorname{st}(C) \cap H$; $\uparrow C$ and $\downarrow C$; $N$, $E$,
-$\min R$, $\max R$, $k_s$ and $k_c$. A commitment is **closed** when $\operatorname{cl}(C) = C$, and
-$\operatorname{MinTr}(\mathcal{F})$ is the minimal transversals of a family $\mathcal{F}$ of sets.
+$\min R$, $\max R$, $k_s$ and $k_c$; a commitment with $\operatorname{cl}(C) = C$, which is closed; and
+$\operatorname{MinTr}(\mathcal{F})$, the minimal transversals of a family $\mathcal{F}$ of sets.
 
 ## 1. A node
 
+The three definitions every statement of this page is about, as [Solution semantics](06-solution-semantics.md)
+gives them:
+
 $$
-\mathrm{root} = \operatorname{sat}(K_0), \qquad
-\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C) \quad (C \subseteq H), \qquad
-R = \lbrace\, C \subseteq H : \operatorname{alive}(C) \land \operatorname{owes}(C) = 0 \,\rbrace
+\begin{aligned}
+\mathrm{root} &= \operatorname{sat}(K_0) \\
+\operatorname{st}(C) &= \operatorname{sat}(\mathrm{root} \cup C) && \text{for } C \subseteq H \\
+R &= \lbrace\, C \subseteq H \;:\; \operatorname{alive}(C) \land \operatorname{owes}(C) = 0 \,\rbrace
+\end{aligned}
 $$
 
 Root is the program's own knowledge base saturated once, and it is never changed: a node's state is computed from a
@@ -42,7 +47,7 @@ copy of it, so nothing a node derives reaches root or another node. $H$ is built
 one node read the same state there, and can differ only in **which nodes they evaluate**:
 
 $$
-\forall C \subseteq H:\quad \big( \operatorname{dead}(C),\; \operatorname{Owed}(C),\; \operatorname{cl}(C) \big) \text{ is one value, whoever asks}
+\forall C \subseteq H.\ \ \big( \operatorname{dead}(C),\; \operatorname{Owed}(C),\; \operatorname{cl}(C) \big) \text{ is one value, whoever asks}
 $$
 
 $\operatorname{sat}$ fires its rules in one order, the same at root and at every node
@@ -69,9 +74,11 @@ nothing is known of a node but its own fixpoint.
 **The oracle is the table of the node function**, and $R$ read off it:
 
 $$
-\mathcal{O} \;=\; \big\lbrace\, \big( C,\; \operatorname{dead}(C),\; \operatorname{Owed}(C),\; \operatorname{cl}(C) \big) \;:\; C \subseteq H \,\big\rbrace,
-\qquad \lvert \mathcal{O} \rvert = 2^{n},
-\qquad R = \lbrace\, C : \lnot \operatorname{dead}(C) \land \operatorname{Owed}(C) = \emptyset \,\rbrace
+\begin{aligned}
+\mathcal{O} &= \big\lbrace\, \big( C,\; \operatorname{dead}(C),\; \operatorname{Owed}(C),\; \operatorname{cl}(C) \big) \;:\; C \subseteq H \,\big\rbrace \\
+\lvert \mathcal{O} \rvert &= 2^{n} \\
+R &= \lbrace\, C \;:\; \lnot \operatorname{dead}(C) \land \operatorname{Owed}(C) = \emptyset \,\rbrace
+\end{aligned}
 $$
 
 It concludes nothing it has not evaluated, so on a monotone program it is $R$ by definition, and on any other it is
@@ -86,8 +93,8 @@ Its cost is $2^{n}$ evaluations of $\operatorname{st}$, so it exists as a comput
 definition it exists for every program.
 
 The running example of [the hypothesis space](05-hypothesis-space.md): one guest owed a chair, $c_1$ or $c_2$, and a
-drink, $t$ or $m$, each relation functional, and nobody at the first chair drinks milk. Its table has sixteen rows,
-drawn by the engine as the lattice, $\emptyset$ at the top:
+drink, $t$ or $m$, each of the two relations stated functional, and nobody at the first chair drinks milk. Its
+table has sixteen rows, drawn by the engine as the lattice, $\emptyset$ at the top:
 
 ![The sixteen commitments of the running example as the lattice](diagrams/07-cube.svg)
 
@@ -96,17 +103,19 @@ a member of $R$, each a component of its own and so each a colour of its own
 ([Solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state) has the legend). Read off the table:
 
 $$
-R = \lbrace \lbrace c_1, t \rbrace, \lbrace c_2, t \rbrace, \lbrace c_2, m \rbrace \rbrace, \qquad
-N = \lbrace \lbrace c_1, c_2 \rbrace, \lbrace t, m \rbrace, \lbrace c_1, m \rbrace \rbrace, \qquad
-\operatorname{Dead} = \bigcup_{D \in N} \uparrow D \;\; (8 \text{ nodes})
+\begin{aligned}
+R &= \lbrace \lbrace c_1, t \rbrace, \lbrace c_2, t \rbrace, \lbrace c_2, m \rbrace \rbrace \\
+N &= \lbrace \lbrace c_1, c_2 \rbrace, \lbrace t, m \rbrace, \lbrace c_1, m \rbrace \rbrace \\
+\operatorname{Dead} &= \bigcup_{D \in N} \uparrow D && \text{8 nodes}
+\end{aligned}
 $$
 
 The sections below say how much of this table a computation may leave unevaluated.
 
 **What the oracle is not.** It evaluates each node by saturation and takes $H$ from the ladder, so it is the
 reference every route is held to, not a check of those two: a derivation saturation would miss, or a candidate the
-ladder never proposes, is missing from the oracle's $R$ as from every route's. A relation the ladder leaves out is
-named in every answer
+ladder never proposes, is missing from the oracle's $R$ as from every route's. A relation of which the ladder
+proposes no fact is named in every answer, where that puts it outside the universe
 ([Solution semantics § 1.4](06-solution-semantics.md#14-candidate-and-universe)).
 
 ## 3. A program the static check flags
@@ -116,8 +125,10 @@ A program is **flagged** when it is not proved monotone
 and an alive superset of a member of $R$ can owe:
 
 $$
-\operatorname{dead}(D) \land D \subseteq C \;\not\Rightarrow\; \operatorname{dead}(C), \qquad
-C \in R \land C \subseteq C' \land \operatorname{alive}(C') \;\not\Rightarrow\; C' \in R
+\begin{aligned}
+\operatorname{dead}(D) \land D \subseteq C &\;\not\Rightarrow\; \operatorname{dead}(C) \\
+C \in R \land C \subseteq C' \land \operatorname{alive}(C') &\;\not\Rightarrow\; C' \in R
+\end{aligned}
 $$
 
 No conclusion from one node about another is sound, and every question needs the table of § 2. A computation that
@@ -151,7 +162,9 @@ Short of the whole table a question about a line certifies what a description ce
 Saturation there can depend on the path a node is built by,
 
 $$
-\operatorname{sat}(\mathrm{root} \cup C_1 \cup C_2) \;\neq\; \operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup C_2) \quad \text{is possible}
+\begin{aligned}
+\operatorname{sat}(\mathrm{root} \cup C_1 \cup C_2) &\neq \operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup C_2) && \text{is possible}
+\end{aligned}
 $$
 
 and on the order rules fire in, so *the set of nodes* is not one thing. Every node is built one way,
@@ -187,7 +200,7 @@ only through a licence.
 | **L5** an owed instance's alternatives are exhaustive | for $C$ alive, owing a licensed instance $I$ with alternatives $\operatorname{alt}(I)$: $\;D \in R \land C \subseteq D \implies \exists a \in \operatorname{alt}(I).\; a \in \operatorname{cl}(D)$ | every extension of $C$ by a candidate that is not an alternative of $I$. An alive node owing an instance whose every alternative is dead has no member of $R$ above it |
 | **L7** the cube | the definition | nothing: $2^{n}$ evaluations decide everything. The oracle, and every question on a flagged program |
 | **L8** what a state denies is dead above it | $\lnot b \in \operatorname{st}(s) \implies \operatorname{dead}(s \cup \lbrace b \rbrace)$ | the extension of a state by a candidate the state's own rules have already denied |
-| **L9** a fact nothing proposes and nothing writes is in no state | a witness $w$ of $I$ with $w \notin H$, $w \notin \mathrm{root}$, of a relation no rule concludes and no symmetry mirrors, is in no $\operatorname{st}(C)$; so where every other witness of $I$ is a candidate or denied at root, L5 holds of $I$ with $\operatorname{alt}(I) = H \cap \operatorname{witnesses}(I)$ | what L5 decides, for an instance L5 alone does not license |
+| **L9** a fact nothing proposes and nothing writes is in no state | a witness $w$ of $I$ with $w \notin H$, $w \notin \mathrm{root}$, of a relation of which no rule concludes a fact and no symmetry mirrors one, is in no $\operatorname{st}(C)$; so where every other witness of $I$ is a candidate or denied at root, L5 holds of $I$ with $\operatorname{alt}(I) = H \cap \operatorname{witnesses}(I)$ | what L5 decides, for an instance L5 alone does not license |
 
 There is no licence numbered six.
 
@@ -206,9 +219,11 @@ $s \setminus \lbrace b \rbrace \supseteq C'$ would be alive, being below $s$, an
 says it owes.
 
 *L5.* Let $C$ owe $I$ and let $D \supseteq C$ be a member of $R$. On a monotone program the trigger of $I$ reads only
-relations no commitment changes, so $I$ is an instance at $D$ too, and $D$ is discharged, so the witness of $I$ holds
-there. **The premise**, which is what *licensed* means: every read of the witness beside its witness step reads a
-relation no commitment changes, so the witness holds at $D$ exactly when a witness fact $w$ is in
+facts of relations whose held extent
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) no commitment
+changes, so $I$ is an instance at $D$ too, and $D$ is discharged, so the witness of $I$ holds there. **The
+premise**, which is what *licensed* means: every read of the witness beside its witness step reads facts of a
+relation whose held extent no commitment changes, so the witness holds at $D$ exactly when a witness fact $w$ is in
 $\operatorname{st}(D)$, and $w$ is one of the payments the guard admits at root
 ([Hypothesis generation § 4.1](04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it)); and
 each payment is a candidate, or has its negation stored at root, which no alive state can hold beside it. So $w$ is a
@@ -219,15 +234,17 @@ $$
 \operatorname{alt}(I) \;=\; \operatorname{pay}(I) \cap H
 $$
 
-The premise is needed: a guard that read a relation a commitment can grow could be paid by a fact already in $C$.
+The premise is needed: a guard that read facts of a relation whose held extent a commitment can extend could be
+paid by a fact already in $C$.
 Why an obligation's alternatives are jointly exhaustive in general is [Satisfiability § 4](10-satisfiability.md).
 
 *L8.* $\operatorname{st}(s \cup \lbrace b \rbrace) \supseteq \operatorname{st}(s) \ni \lnot b$, and it holds $b$: a
 fact beside its stored negation.
 
 *L9.* A fact enters a state only by being committed, by being in root, by a rule concluding it, or as the mirror of
-a fact of a symmetric relation. A witness that is no candidate, is not in root, and is of a relation no rule
-concludes and no symmetry mirrors enters none, so the alternatives of the instance are its witnesses in $H$.
+a fact of a relation marked symmetric. A witness that is no candidate, is not in root, and is a fact of a relation of
+which no rule concludes a fact and no symmetry mirrors one enters none, so the alternatives of the instance are its
+witnesses in $H$.
 
 **The trivial lines.** On a program with restrictions only, root alive gives $\emptyset \in R$, so
 $\min R = \lbrace \emptyset \rbrace$ from one evaluation; with obligations only, $\max R = \lbrace H \rbrace$: both
@@ -254,9 +271,11 @@ A heavy outline is a node whose state was evaluated, a dashed outline a conclusi
 On a monotone program everything a computation has learnt about death is one family of sets, and its up-set:
 
 $$
-\mathcal{K} \;=\; \lbrace\, D : D \text{ was evaluated and found dead} \,\rbrace \;\cup\; \lbrace\, s \cup \lbrace b \rbrace : s \text{ an alive state met},\; \lnot b \in \operatorname{st}(s) \,\rbrace,
-\qquad
-\bigcup_{D \in \mathcal{K}} \uparrow D \;\subseteq\; \operatorname{Dead}
+\begin{aligned}
+\mathcal{K} &= \lbrace\, D \;:\; D \text{ was evaluated and found dead} \,\rbrace \\
+&\phantom{{}={}} \cup\; \lbrace\, s \cup \lbrace b \rbrace \;:\; s \text{ an alive state met},\; \lnot b \in \operatorname{st}(s) \,\rbrace \\
+\bigcup_{D \in \mathcal{K}} \uparrow D &\subseteq \operatorname{Dead}
+\end{aligned}
 $$
 
 by L1 and L8. A node above a member of $\mathcal{K}$ needs no evaluation: it is dead.
@@ -269,15 +288,19 @@ by L1 and L8. A node above a member of $\mathcal{K}$ needs no evaluation: it is 
 - **In general, a dead set $D$ takes all of $\uparrow D$ out of where $R$ can be.**
 
 $$
-\operatorname{dead}(\lbrace h \rbrace) \implies R \subseteq 2^{H \setminus \lbrace h \rbrace}, \qquad
-\operatorname{dead}(D) \implies R \cap \uparrow D = \emptyset
+\begin{aligned}
+\operatorname{dead}(\lbrace h \rbrace) &\implies R \subseteq 2^{H \setminus \lbrace h \rbrace} \\
+\operatorname{dead}(D) &\implies R \cap \uparrow D = \emptyset
+\end{aligned}
 $$
 
 **Why a refutation is a constraint on commitments and not a fact of root.** Were $\lnot h$ added to root, every node
 would be computed from another root:
 
 $$
-\operatorname{sat}(\mathrm{root} \cup \lbrace \lnot h \rbrace \cup C) \;\neq\; \operatorname{sat}(\mathrm{root} \cup C) \quad \text{is possible}
+\begin{aligned}
+\operatorname{sat}(\mathrm{root} \cup \lbrace \lnot h \rbrace \cup C) &\neq \operatorname{sat}(\mathrm{root} \cup C) && \text{is possible}
+\end{aligned}
 $$
 
 1. **It would change the answer.** $R$ is defined over $\operatorname{st}(C)$, root's fixpoint with $C$ added and
@@ -306,7 +329,7 @@ anything is evaluated.
 every alive commitment's state is a member's, and
 
 $$
-T \in \mathcal{C},\; T \neq \operatorname{cl}(\emptyset) \;\implies\; \exists s \in \mathcal{C},\; b \in T \setminus s.\quad s \subsetneq T \,\land\, T = \operatorname{cl}(s \cup \lbrace b \rbrace)
+T \in \mathcal{C},\; T \neq \operatorname{cl}(\emptyset) \;\implies\; \exists s \in \mathcal{C},\; b \in T \setminus s.\ \ s \subsetneq T \,\land\, T = \operatorname{cl}(s \cup \lbrace b \rbrace)
 $$
 
 *Argument.* Take $s$ a maximal closed proper subset of $T$; one exists, since
@@ -334,8 +357,10 @@ each owing.
 proper subsets. A commitment $C \subseteq T$ generates $T$ exactly when it lies inside none of them:
 
 $$
-[T] \;=\; \lbrace\, C \subseteq T \;:\; \forall m \in M(T).\; C \not\subseteq m \,\rbrace, \qquad
-\min\, [T] \;=\; \operatorname{MinTr} \lbrace\, T \setminus m : m \in M(T) \,\rbrace
+\begin{aligned}
+[T] &= \lbrace\, C \subseteq T \;:\; \forall m \in M(T).\; C \not\subseteq m \,\rbrace \\
+\min\, [T] &= \operatorname{MinTr} \lbrace\, T \setminus m \;:\; m \in M(T) \,\rbrace
+\end{aligned}
 $$
 
 since $\operatorname{cl}(C) \neq T$ puts the closed set $\operatorname{cl}(C)$, and $C$ with it, inside some
@@ -343,9 +368,11 @@ $m \in M(T)$, and $C \subseteq m$ gives $\operatorname{cl}(C) \subseteq m \neq T
 closure among the closed subsets of $T$, so the classes of those partition $2^{T}$, and
 
 $$
-\lvert [T] \rvert \;=\; 2^{\lvert T \rvert} \;-\; \sum_{S \,\in\, \mathcal{C},\; s \subsetneq T} \lvert [s] \rvert, \qquad
-k_c \;=\; \sum_{T \,\in\, R / {\sim}} \lvert [T] \rvert, \qquad
-\min R \;=\; \min \bigcup_{T \,\in\, R / {\sim}} \min\, [T]
+\begin{aligned}
+\lvert [T] \rvert &= 2^{\lvert T \rvert} \;-\; \sum_{S \,\in\, \mathcal{C},\; s \subsetneq T} \lvert [s] \rvert \\
+k_c &= \sum_{T \,\in\, R / {\sim}} \lvert [T] \rvert \\
+\min R &= \min \bigcup_{T \,\in\, R / {\sim}} \min\, [T]
+\end{aligned}
 $$
 
 $k_c$ is counted, and the minimal line found, without one commitment of a class being evaluated beyond what decides
@@ -383,8 +410,10 @@ set, so the recursion ends.
 **Covering.** Every leaf is a member of $R$, and every member of $R$ above $C$ has a leaf inside its closure:
 
 $$
-\operatorname{Leaves}(C) \subseteq R, \qquad
-D \in R \,\land\, C \subseteq D \;\implies\; \exists \ell \in \operatorname{Leaves}(C).\;\; \ell \subseteq \operatorname{cl}(D)
+\begin{aligned}
+& \operatorname{Leaves}(C) \subseteq R \\
+& D \in R \,\land\, C \subseteq D \;\implies\; \exists \ell \in \operatorname{Leaves}(C).\;\; \ell \subseteq \operatorname{cl}(D)
+\end{aligned}
 $$
 
 *Argument*, by induction from the top of the lattice down. If $C$ is dead nothing above it is in $R$ (L1). If $C$ is
@@ -424,9 +453,7 @@ extension of which is dead, which is maximal (L4).
 above $C_0$. Then
 
 $$
-M \;=\; \max \operatorname{Alive} \cap \uparrow C_0
-\iff
-\forall X \in \operatorname{MinTr} \lbrace\, H \setminus b : b \in M \,\rbrace.\;\; \operatorname{dead}(C_0 \cup X)
+M \;=\; \max \operatorname{Alive} \cap \uparrow C_0 \iff \forall X \in \operatorname{MinTr} \lbrace\, H \setminus b : b \in M \,\rbrace.\;\; \operatorname{dead}(C_0 \cup X)
 $$
 
 *Argument.* A maximal alive $b' \supseteq C_0$ outside $M$ lies inside no member of $M$, so it meets each
@@ -484,7 +511,7 @@ $$
 \Lambda = \emptyset &\implies R = \emptyset \\
 \lvert \Lambda \rvert \ge 2 &\implies k_s \ge 2 \\
 \Lambda = \lbrace s \rbrace \,\land\, \exists b \notin s.\; \operatorname{alive}(s \cup \lbrace b \rbrace) &\implies k_s \ge 2 \\
-\Lambda = \lbrace s \rbrace \,\land\, \forall b \notin s.\; \operatorname{dead}(s \cup \lbrace b \rbrace) &\implies R = [s], \quad k_s = 1
+\Lambda = \lbrace s \rbrace \,\land\, \forall b \notin s.\; \operatorname{dead}(s \cup \lbrace b \rbrace) &\implies R = [s] \;\land\; k_s = 1
 \end{aligned}
 $$
 
