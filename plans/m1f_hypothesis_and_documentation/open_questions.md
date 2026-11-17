@@ -7407,6 +7407,17 @@ have.
 wait: it states today's kernel as rules under every ruling, and the ruling decides how it writes the verdict and
 the remark ([`design.md` § What S1f.21.2 writes under each ruling](p1f.21_verdicts_as_rules/design.md#what-s1f212-writes-under-each-ruling)).
 
+**The user's direction, 2026-11-18**, verbatim in [P1f.21 § The second instruction](p1f.21_verdicts_as_rules/README.md#the-second-instruction) (*"instead of emitting (open ?R) emit (open (?R ?a
+?b)) - the actual hypothesis … Can it be flexible or transactional move from open into global true context or into
+not context?"*). Not a ruling among the four options: it takes (d) further. The open facts are the hypotheses
+themselves, rules read them, and they leave the open context as a state decides them. Worked out in
+[`open_facts.md`](p1f.21_verdicts_as_rules/open_facts.md):
+- the open facts are $H$, and a debt is a disjunction of them, so `(open F J)` keeps the count;
+- the move is per node, after the fixpoint;
+- rules over open facts run in a stratum of their own and conclude no held fact.
+
+S1f.21.4 puts it again on programs.
+
 ### Q-M1f.391 — The negation of a negation that a rule builds
 
 **Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), finding N-1 of
@@ -7641,6 +7652,13 @@ also can infer (false) in global context, but the state considered dead only if 
 (ein.contradiction) from global (false), or from global (whatever); both (false) renaming and (open) facts belongs
 to p1f.21"*. Read: `false` is not renamed and stops being the kernel's; the kernel's verdict is a fact of its own,
 under the kernel's prefix, and what makes a state dead is a rule a theory states. Not built, and not this phase's.
+
+**The user's second direction, 2026-11-18**, verbatim in [P1f.21 § The second instruction](p1f.21_verdicts_as_rules/README.md#the-second-instruction): *"(false) controls not search but
+saturation, right? if we have dead node then somebody has to kill it, maybe (ein.kill) or (ein.die) or
+(ein.saturation.kill) ?"*. Read: the kernel's fact is a verb a rule concludes from a global `(false)`, and
+`(false)` is a proposition; `(ein.kill)` is the leaning
+([`open_facts.md` § 2 and § 3](p1f.21_verdicts_as_rules/open_facts.md#3-who-kills-a-dead-node-einkill)). S1f.21.4
+puts it on programs, with the reserved names that are left (§ 8 there).
 
 ### Q-M1f.400 — How a saved file states the choices made
 
