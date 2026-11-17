@@ -333,8 +333,8 @@ Every question prints these, since every question is over the same H.
 |---|---|---|---|---|---|
 | `later debt` | per debt root does not owe and a commitment can bring, where H holds a candidate for it that no debt of root's proposes | the activator, the rules whose `:assert` concludes it, how many such candidates would pay the debt, and the candidates, at most four named and the rest counted; `--dump-answer`'s `answer.txt` names them all. What H is on the obligations rung is [`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)'s | around R | `root.hypgen.later_debts[k].activator`, `root.hypgen.later_debts[k].added` | [X20](09-read-out-examples.md#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) |
 | `outside` | when H leaves out a relation the program can conclude or ask about | the relations, why no rung proposes their facts, and what every state of R holds of them | around R | `root.hypgen.outside[].relation` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
-| `types` | when a candidate the blind enumerator proposed names the second argument of an `is-a` fact, which the row calls a type | the objects, how many candidates of which relations name them, and why | around R | `root.hypgen.types_as_objects.objects`, `root.hypgen.types_as_objects.candidates` | [X13](09-read-out-examples.md#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) |
-| `relation names` | when the blind enumerator binds a relation's name as an object: a candidate names the head of a fact root's fixpoint holds, or a relation a rule's `:assert` names, that no file declares or writes a fact of | the names, how many candidates of which relations name them, and why they are objects. The candidates stay in H; declaring the relation takes its name out ([`06-solution-semantics.md` § 1.2](../../reasoning/02-kb-evolution/06-solution-semantics.md#12-names)) | around R | `root.hypgen.relation_names_as_objects.objects`, `root.hypgen.relation_names_as_objects.candidates` | [X15](09-read-out-examples.md#x15--features01_not_and_absentein-the-warning-past-four-rows) |
+| `types` | when a candidate the blind enumerator proposed has as an argument the second argument of an `is-a` fact, an atom the row calls a *type* | the atoms, how many candidates of which relations *name* them *as an object*, the row's words for having a guessable atom as an argument, and why | around R | `root.hypgen.types_as_objects.objects`, `root.hypgen.types_as_objects.candidates` | [X13](09-read-out-examples.md#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) |
+| `relation names` | when a relation is a guessable atom, which the row says as *name it as an object*: a candidate has as an argument the relation of a fact root's fixpoint holds, or a relation a rule's `:assert` names, that no file declares or writes a fact of | the relations, how many candidates of which relations have them as an argument, and why they are guessable. The candidates stay in H; declaring the relation takes it out of the guessable atoms ([`06-solution-semantics.md` § 1.2](../../reasoning/02-kb-evolution/06-solution-semantics.md#12-names)) | around R | `root.hypgen.relation_names_as_objects.objects`, `root.hypgen.relation_names_as_objects.candidates` | [X15](09-read-out-examples.md#x15--features01_not_and_absentein-the-warning-past-four-rows) |
 <!-- /rows -->
 
 ---
@@ -366,7 +366,7 @@ writes no answer directory, so its lines name `ein solve FILE --dump-answer DIR`
 a row prints at most four rows of a kind, and three kinds say where the rest is: the warning's `site` and `stale` rows
 (§ 5.1) and `∅`'s `owed` rows (§ 2).
 
-**Two objects called *model*.** A listing's `(model …)`, and the summary's `region.states[].facts`, is a state's facts
+**Two things called *model*.** A listing's `(model …)`, and the summary's `region.states[].facts`, is a state's facts
 over the candidates' relations, root's included: what tells R's states apart, and the region language's claim form.
 [`13-solutions-and-models.md` § Model](../03-syntax-and-semantics/13-solutions-and-models.md#model)'s **model**, a state's positive
 facts minus the positive initial KB, is what `-P` prints (§ 8). `-t`'s `read-out` row says *model* of the first. The
@@ -442,7 +442,7 @@ Asked for by flag, each after the whole read-out, drawn from the states stdout s
 of the 100 lines; a form's head is never cut, and its last line, when it cut, names what it left out and the file
 `--dump-answer DIR` writes it to whole, `DIR/forms/<form>.txt`, drawn from every listed state.
 
-| flag | its head | what it prints, per listed state | the object |
+| flag | its head | what it prints, per listed state | what it is about |
 |---|---|---|---|
 | `-H` | H's size, over how many relations, and how many dead alone | each relation's candidates, and those dead alone | H, the universe |
 | `--models key` | the set it keys, and the key's size | the smallest set of slots that tells the states apart, and the combinations that occur | the listed states, as a key |
@@ -525,8 +525,8 @@ not apply (`ein-summary/2`). Every bound sits beside `exhausted`.
 
 **`[]` and `null`**
 ([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md)): `[]` is a
-set known to be empty, and `null` an object that does not exist or that the run does not state, on every field of every
-JSON surface. A core is one object, the set of facts a dead node's contradiction rests on, so a dead node's core and
+set known to be empty, and `null` a thing that does not exist or that the run does not state, on every field of every
+JSON surface. A core is one thing, the set of facts a dead node's contradiction rests on, so a dead node's core and
 rules are lists, and a node that is not dead, whose core does not exist, has `null`: `region.core` and
 `region.refuted_by` are root's lists where R is empty of the dead kind and `null` where root is not dead;
 `region.holes.minimal[].core` is a dead hole's list and an owing hole's `null`. Under `--count` and a mode they are

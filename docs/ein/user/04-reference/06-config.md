@@ -120,7 +120,7 @@ opened, so a container whose program sets a retired flag is refused where its `.
 
 | flag | why it went |
 |---|---|
-| `warn-derived-naf` | **two questions, one flag.** Its refutation half is *forbid*'s refusal: a rule that concludes `(false)` or `(not …)` from an `absent` over a relation a commitment can still extend refuses the program at load, whatever the configuration says ([`07-diagnostics.md`](07-diagnostics.md)). Its stratification half is the static check's warning, printed beside every answer that reports R on a program it flags |
+| `warn-derived-naf` | **two questions, one flag.** Its refutation half is *forbid*'s refusal: a rule that concludes `(false)` or `(not …)` from an `absent` over facts of a relation a commitment can still add to refuses the program at load, whatever the configuration says ([`07-diagnostics.md`](07-diagnostics.md)). Its stratification half is the static check's warning, printed beside every answer that reports R on a program it flags |
 | `enable-pre-branch-lookahead` | a one-step pre-filter of candidates, which no route runs: every route saturates each candidate's own node |
 | `enable-lookahead-kill-cache` | it wrote the pre-filter's kills into root, which no route does: a candidate dead alone leaves the universe, and nothing is written |
 | `enable-path-nogoods` | learned clauses: every route reads N, the minimal dead sets, by construction |

@@ -24,16 +24,17 @@ renderer has a command that reaches it
 
 | element | DOT shape |
 |---|---|
-| a name an `is-a` fact points at, and in the program view a name a declaration labels a slot with: a *type*, in the drawings' word | `box` |
-| a name an `is-a` fact starts from and none points at: an *instance*, in the drawings' word | `oval` (ellipse) |
-| any other name | `rectangle` |
-| a fact of three arguments or more, Levi-bipartite | `octagon` |
+| an atom an `is-a` fact points at, and in the program view an atom a declaration labels a slot with: a *type*, in the drawings' word | `box` |
+| an atom an `is-a` fact starts from and none points at: an *instance*, in the drawings' word | `oval` (ellipse) |
+| any other atom that a drawn fact has as an argument | `rectangle` |
+| a fact's relation | no node: its name is written on the fact's edge or in the fact's octagon. A relation is a node only where a drawn fact has it as an argument |
+| a fact of three arguments or more, Levi-bipartite | `octagon`, the relation's name in it |
 | a fact of `=` with two arguments, an equality node | `doublecircle` |
 | a pattern variable `?x` | `diamond` |
 | a relation's declaration, in the program view | a dashed edge between its two labels, labelled with the relation |
-| a relation's declaration, in the KB view | an `octagon`, the fact it is stored as, with an edge to the relation's name and to each label |
-| a fact | a solid, labelled edge |
-| a derived or committed fact | a dashed, labelled edge |
+| a relation's declaration, in the KB view | an `octagon`, the fact it is stored as, with an edge to the declared relation and to each label |
+| a fact of two arguments | a solid edge from the first argument to the second, labelled with the relation's name |
+| a derived or committed fact of two arguments | a dashed edge, labelled the same way |
 | an `is-a` fact | a dashed edge with an empty arrowhead, labelled `is-a` |
 
 A relation's edges share a colour, picked from a fixed palette by the relation's name, the same on every run.
@@ -41,19 +42,28 @@ A relation's edges share a colour, picked from a fixed palette by the relation's
 **Ein has no types.** *Type* and *instance* are words of the drawings, in their comments and in two options of
 `ein render kb`, for the two ends of a fact of a relation named `is-a`: the box and the oval are a convention keyed
 on that name, and on a declaration's labels in the program view. They change no answer, and a program that writes
-its grouping with a relation of another name is drawn with plain arrows.
+its grouping with a relation of another name is drawn with plain arrows. An atom drawn as a box or an oval is an
+atom like any other.
 
 ## Hyperedge encoding — Levi-bipartite
 
 DOT has no hyperedge. A fact of any arity `(name a b c)` is encoded **Levi-bipartite**: one `octagon` node for the
-fact, with a directed edge to each argument labelled by its position. That is the canonical drawing of every fact
-([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)), and the facts of three arguments
+fact, with the relation's name in it and a directed edge to each argument, labelled by the argument's place
+([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md)). The facts of three arguments
 or more are always drawn so.
 
-**The default is compact.** A binary fact `(rel a b)` is drawn as one labelled, relation-coloured arrow, `a -> b
-[label="rel"]`, and a **unary** fact `(rel a)` as a labelled self-loop, `a -> a [label="rel"]`, which is how a property
-tag reads: `(symmetric R)`, `(bijective R)`, `(relation R)`. `ein render program --levi` draws every fact as an
-octagon instead. What a fact is, drawn both ways, is
+**The drawing is of the graph, and is not the graph.** In the knowledge base a fact is a node with ordered arrows,
+the first at its relation, an atom, which is one node for every fact of it
+([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-graph)). Every view of `ein render`
+writes the relation's name in the fact's node, or on an arrow, and draws no node for the relation; an edge's number
+counts arguments, so the drawing's `1` is the graph's second arrow. What the drawings fold, case by case, is
+[drawn with labelled arrows](../../reasoning/01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows), and
+[objects](../03-syntax-and-semantics/01-objects.md#as-a-graph) has the graph beside the drawings of one program.
+
+**The default is compact.** A fact of two arguments `(rel a b)` is drawn as one labelled, relation-coloured arrow,
+`a -> b [label="rel"]`, and a fact of **one** argument `(rel a)` as a labelled self-loop, `a -> a [label="rel"]`,
+which is how a property tag reads: `(symmetric R)`, `(bijective R)`, `(relation R)`. `ein render program --levi`
+draws every fact as an octagon instead. What a fact is, drawn both ways, is
 [`../03-syntax-and-semantics/03-facts.md`](../03-syntax-and-semantics/03-facts.md).
 
 ## The program as written — `ein render program`
@@ -100,16 +110,16 @@ rule as its match and its conclusion, in one of two modes, `--rule-mode`:
 
 Within each panel the drawing tells apart the three things a `:match` or an `:assert` holds:
 
-- **a relation** `(R a b)` is a labelled arrow from `a` to `b`, relation-coloured, `R` possibly a `?var`;
-  `(R a b c …)` is a Levi octagon;
+- **a pattern** of two arguments, `(R a b)`, is a labelled arrow from `a` to `b`, relation-coloured, `R` possibly a
+  `?var`; `(R a b c …)` is a Levi octagon;
 - **a guard**, `(neq ?a ?b)` or `(eq …)`, is a *dotted, undirected* `≠` or `=` link: it is computed, not data, so it
-  is never drawn as a relation's arrow;
+  is never drawn as a fact's arrow;
 - **an `(absent …)`** is a cluster labelled `absent (∄)`: what it holds is drawn inside, the variables it alone binds
   inside and the shared ones outside, so the *no such match exists* reading survives. A `(not P)` is drawn red with a
   `¬` before its label.
 
 The `match` and `assert` copies of a variable are two nodes, so the panels do not collapse, and both are labelled
-with the variable's name. Variables are diamonds and names rectangles.
+with the variable's name. Variables are diamonds and atoms rectangles.
 
 ## Constraints — `ein render constraints`
 
@@ -122,16 +132,16 @@ draws whatever rules a program activates.
 
 ## The KB — `ein render kb`
 
-`ein render kb FILE` loads `FILE`, saturates it, and draws the result as **one graph**, every name fused across the
-forms it appears in: `Norwegian` appears **once**, with its `is-a` edge to `Nationality`, its given fact edge to
+`ein render kb FILE` loads `FILE`, saturates it, and draws the result as **one graph**, every atom one node across
+the forms that write it: `Norwegian` appears **once**, with its `is-a` edge to `Nationality`, its given fact edge to
 `House-1` and every derived edge that names it.
 
 | element | DOT shape and style |
 |---|---|
-| a name an `is-a` fact points at, under the comment `// types` | `shape=box` |
-| a name an `is-a` fact starts from and none points at, under `// instances` | `shape=oval` |
-| a binary fact `(rel a b)` | an edge `a -> b [label=rel …]` |
-| a unary fact `(rel a)` | a self-loop `a -> a [label=rel …]` |
+| an atom an `is-a` fact points at, under the comment `// types` | `shape=box` |
+| an atom an `is-a` fact starts from and none points at, under `// instances` | `shape=oval` |
+| a fact of two arguments `(rel a b)` | an edge `a -> b [label=rel …]` |
+| a fact of one argument `(rel a)` | a self-loop `a -> a [label=rel …]` |
 | a fact of another arity | a `shape=octagon` node and an edge to each argument, labelled `#1`, `#2`, … |
 | an `is-a` fact | `style=dashed, arrowhead=empty, label="is-a"` |
 | a background fact | `style=solid` |
@@ -146,7 +156,7 @@ forms it appears in: `Norwegian` appears **once**, with its `is-a` edge to `Nati
 `is-a` is the one relation the drawing knows a convention for, and it is a convention of presentation, not of
 reasoning: a program that writes membership with relations of its own, as `zebra.ein` writes `type` and `instance`,
 has those facts drawn as ordinary coloured arrows. A declaration is drawn as the fact it is stored as, an octagon
-with an arrow to the relation's name and one to each label, beside the loop of its membership fact. For the program
+with an arrow to the declared relation and one to each label, beside the loop of its membership fact. For the program
 above, whose one given fact is *"The Norwegian lives in the first house"*, condition (10):
 
 ![ein render kb: the knowledge base of the same program](diagrams/12-kb-view.svg)
@@ -161,8 +171,8 @@ ein render kb out/models/02.ein --since out/root.ein    # a state, and what it a
 A `--dump-answer` state file ([`10-answer-dump.md`](10-answer-dump.md)) is a `FILE`: it loads as a program and saturates to
 itself, so a state is drawn the way root is. `--since FILE` loads and saturates a second file and draws at
 `penwidth=3` every fact it lacks: a state against its `root.ein` is what the commitment added. `--no-types` leaves out
-the lines under `// types`, which give a box to each name an `is-a` fact points at, and `--no-instances` those under
-`// instances`, which give an oval; either way every edge stays, the `is-a` edges among them, and a name that lost
+the lines under `// types`, which give a box to each atom an `is-a` fact points at, and `--no-instances` those under
+`// instances`, which give an oval; either way every edge stays, the `is-a` edges among them, and an atom that lost
 its line is drawn in Graphviz's default shape.
 
 ## The lattice — `ein render lattice`
@@ -303,7 +313,7 @@ ein render h-space examples/zebra2.ein --view cover | dot -Tsvg > cover.svg
 ```
 
 They use none of the shapes above. In `exclusion` a candidate is a box; in `cover` a group is a box and a candidate an
-oval; in the two hypergraphs a question is a box and an edge of three questions or more a point. What each object is
+oval; in the two hypergraphs a question is a box and an edge of three questions or more a point. What each of these is
 is [`05-hypothesis-space.md`](../../reasoning/02-kb-evolution/05-hypothesis-space.md); the command's options, what
 each stroke means and what the document `h-space.json` holds are
 [hypotheses and the answer, in code § 2.3](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#23-the-command).

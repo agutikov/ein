@@ -47,13 +47,14 @@ which the rung that built the list proposes no fact
 `region.md` says it under its candidate count, as the read-out's `outside` row does, and `region.json` lists it as
 `outside`.
 
-**What it binds as an object** is named: where the blind enumerator built the list, the names on the right of an
-`is-a` that a candidate names, the candidates' relations and how many there are
+**What it proposes about, where a program may not mean it,** is named: where the blind enumerator built the list,
+the atoms on the right of an `is-a` that a candidate names, the candidates' relations and how many there are
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). `region.md`
 says it as `**Types as objects**`, under its candidate count, as the read-out's `types` row does, and `region.json`
-carries it as `types_as_objects`.
+carries it as `types_as_objects`. The words are the engine's: its *type* is an atom an `is-a` fact points at, and
+its *object* a guessable atom, one the enumerator proposes about.
 
-**A relation's name bound as an object** is named the same way: where the blind enumerator built the list and a
+**A relation among the guessable atoms** is named the same way: where the blind enumerator built the list and a
 candidate names a relation only a rule concludes, `region.md` says it as `**Relation names as objects**`, as the
 read-out's `relation names` row does, and `region.json` carries it as `relation_names_as_objects`, a key written only
 then.
@@ -89,7 +90,7 @@ does not owe: `--json-summary`'s `root.hypgen.later_debts`, one `{obligation, ac
 candidates}` each), `outside` (one `{relation, arity, why}` per relation outside the universe, `--json-summary`'s
 `root.hypgen.outside`, `[]` when none), `types_as_objects` (`{objects, relations, candidates}`, `--json-summary`'s
 `root.hypgen.types_as_objects`, the lists empty and the count 0 when none), `relation_names_as_objects` (written only
-where the blind enumerator bound a relation's name as an object: `{objects, relations, candidates}`,
+where a candidate of the blind enumerator has such a relation as an argument: `{objects, relations, candidates}`,
 `--json-summary`'s `root.hypgen.relation_names_as_objects`), `monotonicity` (below), then either `region` with
 `refused: null`, or `region: null` with `refused` (`n`, `limit`, `note`). `region` holds:
 
@@ -111,7 +112,7 @@ where the blind enumerator bound a relation's name as an object: `{objects, rela
 
 Two lines describe `R` only when `R` has no holes, and a hole needs a commitment that grows and takes a conclusion
 away, or grows and adds a debt. The static check decides from the program's rules whether it can do either. Let `H` be
-the relations of the candidate list, and `D` the relations a commitment can change: `H` closed under *a saturation
+the relations of the candidate list, and `D` the relations a commitment can add a fact of: `H` closed under *a saturation
 rule that reads `D` asserts into `D`*, with `(not (R …))` as its own `¬R`. Every read is then:
 
 | class | condition | growth can… | example |
@@ -161,9 +162,9 @@ fork*).
 
 ### The `monotonicity` block, field by field
 
-The block is the same object in `--json-summary` (every run, monotone or not, `ein-summary/2` having one shape) and in
+The block is the same in `--json-summary` (every run, monotone or not, `ein-summary/2` having one shape) and in
 `region.json`, which adds `absents` and writes `status`, `state` and `paths` only on a flagged program. A list of
-objects is written `name[]`, and its rows name the fields of each element. Every field a run writes has a row here and
+records is written `name[]`, and its rows name the fields of each element. Every field a run writes has a row here and
 every row is a field some run writes; the test suite holds the table to the binary both ways.
 
 | field | what |

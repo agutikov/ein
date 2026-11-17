@@ -90,10 +90,10 @@ says so where the state holds any. So the file **loads as a program**, and satur
 `(false)`**. It holds every candidate of its state's closure and no other candidate. Each state is read again the way
 every route reads a node, so the file is the state the read-out names and not a copy of one.
 
-**It loads to the state.** Each fact is written as text the loader reads back to the same value: a name bare where it
+**It loads to the state.** Each fact is written as text the loader reads back to the same object: a name bare where it
 reads as one name (`House-1`, `neqw`, `1`, `07`, `1..5`), a nested fact `(rel …)`. A name the loader made up, which
-starts with `#`, is written quoted and does not load back. So loading `models/NN.ein` gives that state's facts **by
-value**, each fact as given.
+starts with `#`, is written quoted and does not load back. So loading `models/NN.ein` gives that state's facts, **the
+same objects**, each fact as given.
 
 **What a reloaded state's facts rest on: nothing; each reads as given.** A fact's provenance is written as a
 **comment** after it, which the loader skips: `; source "…"` for a fact the program states with a source, `; rule r`
@@ -154,7 +154,7 @@ recorded* can move with rule order: a reason is an explanation, as a core is
 
 ## The run summary
 
-`answer.json` is `--json-summary`'s object, `ein-summary/2`: `schema`, `source`, `asked`, `region`, `verdict` (under
+`answer.json` is `--json-summary`'s document, `ein-summary/2`: `schema`, `source`, `asked`, `region`, `verdict` (under
 `--single` only), `queries` and `claim`, each field defined by
 [`08-read-out.md` § 11](08-read-out.md#11---json-summary-the-answer-blocks) beside the row that prints it; `work`,
 `monotonicity` ([`11-region-dump.md` § Monotonicity](11-region-dump.md#monotonicity--the-static-check)), `leftover`, `root`,
@@ -192,14 +192,14 @@ are the full run's `region.root`, `root_owes` and `root_owed`.
 | `root.saturator.naf_dropped` | always 0: a guard is judged once, at the boundary, so no admitted firing is dropped later. A boundary that judged wrong would show here |
 | `root.hypgen.raw` | candidates the generator built at root's fixpoint, with no field of the config reaching it, the obligations rung in report order, before any filter. It is `emitted` plus the sum of `filtered` |
 | `root.hypgen.emitted` | the candidates that survived every filter: **H**, the universe every route reads, so it equals `region.universe.candidates` and is the universe `ein solve --monotone` prints, whose `region` is `null`. A repeat is dropped as `seen_in_call` before it counts |
-| `root.hypgen.filtered` | why a built candidate is not in H, sparse, only the keys that fired: `fact_already_exists` (root holds it), `negated_fact` (root holds its `(not …)`), `seen_in_call` (proposed again, from another focal object) |
-| `root.hypgen.pre_candidate` | relation and slot skips before any candidate exists, sparse: `closed_relation` (a `(__closed__ R)` root holds, which the program states or derives through `std.closure`), `no_hypothesis_relation` and `relation_not_whitelisted` (the `(solve …)` lists `:no-hypothesis` and `:hypothesis-relations`), `self_edge` (both slots the same object) |
+| `root.hypgen.filtered` | why a built candidate is not in H, sparse, only the keys that fired: `fact_already_exists` (root holds it), `negated_fact` (root holds its `(not …)`), `seen_in_call` (proposed again, from another atom the enumerator proposes about) |
+| `root.hypgen.pre_candidate` | relation and slot skips before any candidate exists, sparse: `closed_relation` (a `(__closed__ R)` root holds, which the program states or derives through `std.closure`), `no_hypothesis_relation` and `relation_not_whitelisted` (the `(solve …)` lists `:no-hypothesis` and `:hypothesis-relations`), `self_edge` (both arguments the same atom) |
 | `root.hypgen.later_debts` | what H holds for debts root does not owe and a commitment can bring, **written only where H holds a candidate for one**, so the key is absent from every other summary: one `{obligation, activator, relation, by, added, candidates}` per activator of an obligation rule that root's fixpoint does not hold and a rule's `:assert` concludes, in the order the obligations rung read them. `obligation` is the rule, `activator` the fact that would activate it, `relation` the relation its plan owes, `by` the rules that conclude the activator, `candidates` the facts of H that would pay the debt and that no debt before it proposed, in H's order, and `added` their count. The read-out's `later debt` rows say the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
 | `root.hypgen.outside` | what the universe leaves out ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)): one `{relation, arity, why}` per relation the program can conclude or ask about, does not scope out itself, and of which the rung that built H proposes no fact, sorted by name, `[]` when none. `why` is `not-owed` (the obligations rung: no obligation owes it), `no-hrule` (the hrules: none asserts it) or `arity` (the blind enumerator, which proposes arity 1 and 2 only). The read-out's `outside` row says the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
-| `root.hypgen.types_as_objects.objects` | the names the untyped rung bound as objects ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)): where the blind enumerator built H, each name that is the second argument of an `(is-a x y)` fact at root's fixpoint and an argument of a candidate, sorted, `[]` when none. The read-out's `types` row under `universe` says the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
+| `root.hypgen.types_as_objects.objects` | the atoms the key calls *types as objects*, its *type* an atom an `is-a` fact points at and its *object* a guessable atom ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)): where the blind enumerator built H, each atom that is the second argument of an `(is-a x y)` fact at root's fixpoint and an argument of a candidate, sorted, `[]` when none. The read-out's `types` row under `universe` says the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
 | `root.hypgen.types_as_objects.relations` | the relations of the candidates that name one, sorted, `[]` when none |
 | `root.hypgen.types_as_objects.candidates` | how many candidates of H name one, `0` when none |
-| `root.hypgen.relation_names_as_objects.objects` | the relations' names the blind enumerator bound as objects, **the three keys written only where it bound one**, so they are absent from every other summary: where the blind enumerator built H, each argument of a candidate that is the head of a fact root's fixpoint holds or a relation a rule's `:assert` names, sorted. No file declares such a relation or writes a fact of it. The read-out's `relation names` row under `universe` says the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
+| `root.hypgen.relation_names_as_objects.objects` | the relations that are guessable atoms and that a candidate has as an argument, the key's *relation names as objects*, **the three keys written only where there is one**, so they are absent from every other summary: where the blind enumerator built H, each argument of a candidate that is the head of a fact root's fixpoint holds or a relation a rule's `:assert` names, sorted. No file declares such a relation or writes a fact of it. The read-out's `relation names` row under `universe` says the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
 | `root.hypgen.relation_names_as_objects.relations` | the relations of the candidates that name one, sorted |
 | `root.hypgen.relation_names_as_objects.candidates` | how many candidates of H name one |
 

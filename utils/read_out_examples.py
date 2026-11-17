@@ -211,7 +211,7 @@ Two pairs of friends, two tables of two seats, friends sit together. R is the ei
 lines coincide. The goal `(sits ?p ?s)` names the seats, so each state is its own projection class.
 """)
 add(block(["examples/lattice/07_two_pairs_two_tables.ein"]))
-add("""A goal that hides the seat needs a relation that does not carry it: a projection class is the goal's **atoms**
+add("""A goal that hides the seat needs a relation that does not carry it: a projection class is the goal's **patterns**
 under its bindings. The program below is 07 with one relation and one rule added, and it is **not an example file**:
 
 ```lisp
@@ -246,7 +246,7 @@ add("""## X6 — `tests/region/04_owing.ein`: R empty, alive nodes owe
 Root owes one `total-owed` instance, Ann's Food, and the program states `(solve :no-search)`, so nothing is proposed:
 no candidate, and R is empty of the second kind. The `owing` rows are the frontier, the alive owing nodes with no alive node one fact up (here root itself), each with
 what it owes through the rule's `:why`. The printed form is `(region (owing (model)))`: it names no fact because the
-printer closes the **candidates'** relations, which tell R's states apart, and this program has none. The query's
+printer lists the facts of the **candidates'** relations, which tell R's states apart, and this program has none. The query's
 `over` row says which kind of empty R is: root is alive and owes one instance.
 """)
 add(block(["tests/region/04_owing.ein"]))
@@ -374,7 +374,8 @@ in one would claim to be all of R, then says what it left out and that `--dump-a
 `(region …)` to `DIR/answer.txt`. The query still gets its `over` row, its one class and its one-line `as :expect`.
 The rows are never cut. Stdout is {stdout_lines} lines, and `answer.txt` is {file_lines}. The state numbers are the
 same in both, so *state {last}* on the screen is *state {last}* in the file. The blind enumerator proposes facts about
-`Color`, the name the program's `is-a` facts point at, and the `types` row says so.
+`Color`, the atom the program's `is-a` facts point at, and the `types` row says so: *type* and *object* are the
+row's words, for that atom and for an atom the enumerator proposes about.
 """)
 add(block(colors))
 
@@ -398,8 +399,8 @@ then one `…` row counts the rest and names what writes them, so the warning st
 the listings' 100 lines.
 
 Under `universe`, the `relation names` row: the rule `see-stored-neg` concludes `explicitly-dislikes` facts, no file
-declares the relation or writes a fact of it, so its name is an object of the blind enumerator and a candidate can name
-it. The candidates stay in H, and the row counts them.
+declares the relation or writes a fact of it, so the relation is an atom the blind enumerator proposes about, the
+row's *object*, and a candidate can have it as an argument. The candidates stay in H, and the row counts them.
 """)
 add(block(["examples/features/01_not_and_absent.ein"]))
 
@@ -466,7 +467,7 @@ from any `likes` fact, so the node that holds `(likes Ann Soup)` owes Ann a Drin
 obligations rung reads the activator off `arm`'s `:assert` and proposes at root what would pay the debt it brings: H
 holds `(drinks Ann Tea)` beside `(likes Ann Soup)`, the `later debt` row under `universe` says which candidate is there
 for which activator, and R is the one state that pays both debts. The program is one the static check flags, the
-activator's relation being one a commitment can change, so the cube answers it.
+activator's relation being one a commitment can add a fact of, so the cube answers it.
 """)
 add(block(["examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"]))
 
