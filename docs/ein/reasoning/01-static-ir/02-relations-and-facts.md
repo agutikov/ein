@@ -1,15 +1,18 @@
 # Relations and facts
 
-A **knowledge base** is a program, the facts that hold, and how each came to hold:
+A **knowledge base** is the facts that hold, read with a program and with how each fact came to hold:
 
 $$
-K = (P,\ S,\ J)
+K \subseteq F \ \text{ finite}, \qquad \text{read with } P \text{ and } J
 $$
 
-$P$ is the **program**: what the text declares, its relations and its rules, with its questions. $S \subseteq F$ is
-the **state**: a finite set of facts ([names and atoms](01-names-and-atoms.md) defines $F$). $J$ is the
-**provenance**: for each $f \in S$, the derivations recorded for it ([below](#provenance-a-fact-is-an-or-of-derivations)). This page states what the state is,
-which operations it has, and what $J$ records.
+$K$ is a finite set of facts ([names and atoms](01-names-and-atoms.md) defines $F$), and that set is its
+**state**: $f \in K$, $K \subseteq K'$ and $K \cup \Delta$ are statements about the set. $P$ is the **program**:
+what the text declares, its relations and its rules, with its questions. $J$ is the **provenance**: for each
+$f \in K$, the derivations recorded for it ([below](#provenance-a-fact-is-an-or-of-derivations)), written $J_K$
+where the knowledge base has to be named. $K_0$ is the knowledge base a program's text is read into, and $S$ is
+kept for the state a saturation ends in, root's or a node's. This page states what the state is, which operations
+it has, and what $J$ records.
 
 ## A hypergraph with provenance
 
@@ -17,7 +20,7 @@ The knowledge base is a **hypergraph**: its vertices are the names and the facts
 its arguments, labelled by its relation,
 
 $$
-G(S) = \big(\ \operatorname{names}(S) \cup S,\ \ \{\, (f,\ i,\ \operatorname{arg}_i(f)) \;:\; f \in S,\ 1 \le i \le \operatorname{ar}(f) \,\}\ \big)
+G(K) = \big(\ \operatorname{names}(K) \cup K,\ \ \{\, (f,\ i,\ \operatorname{arg}_i(f)) \;:\; f \in K,\ 1 \le i \le \operatorname{ar}(f) \,\}\ \big)
 $$
 
 A relation of three arguments is one edge, not a construction of edges of two, and a fact is a vertex as well as
@@ -62,12 +65,12 @@ what tells the three kinds of arrow apart.
 A state holds a fact $f \in A$, or its stored negation, or neither, or both:
 
 $$
-\operatorname{status}_S(f) =
+\operatorname{status}_K(f) =
 \begin{cases}
-\text{asserted} & f \in S,\ \lnot f \notin S \\
-\text{negated} & f \notin S,\ \lnot f \in S \\
-\text{open} & f \notin S,\ \lnot f \notin S \\
-\text{contradicted} & f \in S,\ \lnot f \in S
+\text{asserted} & f \in K,\ \lnot f \notin K \\
+\text{negated} & f \notin K,\ \lnot f \in K \\
+\text{open} & f \notin K,\ \lnot f \notin K \\
+\text{contradicted} & f \in K,\ \lnot f \in K
 \end{cases}
 $$
 
@@ -84,7 +87,7 @@ of its shape. **The pattern $\lnot f$ matches a stored negation and nothing else
 failure:
 
 $$
-S \models \lnot f \iff \lnot f \in S, \qquad\qquad S \models \operatorname{absent}(f) \iff f \notin S
+K \models \lnot f \iff \lnot f \in K, \qquad\qquad K \models \operatorname{absent}(f) \iff f \notin K
 $$
 
 for a fact $f$ with no variable. The two differ on every open fact, where the second holds and the first does
@@ -94,7 +97,7 @@ not. The absence is a test of a state, and it is read against a saturated state,
 **A contradiction** is a contradicted fact, or the fact of falsity:
 
 $$
-\operatorname{dead}(S) \iff \bot \in S \;\lor\; \exists f \in A.\ \ f \in S \land \lnot f \in S, \qquad\qquad \operatorname{alive}(S) \iff \lnot \operatorname{dead}(S)
+\operatorname{dead}(K) \iff \bot \in K \;\lor\; \exists f \in A.\ \ f \in K \land \lnot f \in K, \qquad\qquad \operatorname{alive}(K) \iff \lnot \operatorname{dead}(K)
 $$
 
 A knowledge base whose state is dead is dead. Which facts a contradiction rests on is its core
@@ -105,10 +108,10 @@ A knowledge base whose state is dead is dead. Which facts a contradiction rests 
 No operation removes a fact. Every operation on a state is an addition,
 
 $$
-S \;\longmapsto\; S \cup \Delta, \qquad \Delta \subseteq F
+K \;\longmapsto\; K \cup \Delta, \qquad \Delta \subseteq F
 $$
 
-so along any computation $S_0 \subseteq S_1 \subseteq S_2 \subseteq \cdots$. A rule adds facts; a stored negation
+so along any computation $K_0 \subseteq K_1 \subseteq K_2 \subseteq \cdots$, each the one before with facts added. A rule adds facts; a stored negation
 is an added fact; nothing deletes one. A state is a set: stating a fact twice states one fact, and the provenance
 of the first statement is the one kept, whether the two statements are in one file, in a module and the program,
 or in two modules
@@ -118,10 +121,10 @@ assumes is undone by discarding a fork ([below](#a-fork)), never by taking a fac
 ## Reading a program into a state
 
 Each form of a program's text is a declaration, a question, or a **fact**. Reading gives the program $P$ and the
-initial state
+initial knowledge base
 
 $$
-S_0 \;=\; T \;\cup\; D \;\cup\; \{\, \operatorname{written}(t) \;:\; t \in \operatorname{sub}(f),\ f \in T \,\}
+K_0 \;=\; T \;\cup\; D \;\cup\; \{\, \operatorname{written}(t) \;:\; t \in \operatorname{sub}(f),\ f \in T \,\}
 $$
 
 where $T$ is the facts the text writes and $D$ the facts its declarations are held as
@@ -143,7 +146,7 @@ names every failure together:
 $$
 \begin{aligned}
 &\text{each relation name and each rule name is declared at most once;} \\
-&\operatorname{ar}(f) = n \quad \text{for every fact or pattern } f \text{ of a relation declared with } n \text{ slot names;} \\
+&\operatorname{ar}(f) = n \quad \text{for every fact or pattern } f \text{ of a relation declared with } n \text{ labels;} \\
 &\text{the relation } g \rightarrow f \text{ (} g \text{ is a premise the text states for } f \text{) has no cycle on } T.
 \end{aligned}
 $$
@@ -174,14 +177,15 @@ that rests on itself alone.
 
 ## A fork
 
-A **fork** of a knowledge base $K = (P, S, J)$ is a knowledge base $K' = (P, S', J')$ that starts as $K$ stands,
-$S' = S$ and $J' = J$, and from then on is its own. Writing $S(t)$ for a state after $t$ further additions:
+A **fork** of a knowledge base $K$, with its provenance $J$, is a knowledge base $K'$ of the same program, with
+provenance $J'$, that starts as $K$ stands, with the same facts and $J' = J$, and from then on is its own. Writing
+$K(t)$ and $K'(t)$ for the two after $t$ further additions:
 
 $$
 \begin{aligned}
-S'(t) &\supseteq S && \text{the fork keeps what its parent held when it was made;} \\
-S'(t) \setminus S &\ \text{is the fork's alone} && \text{nothing a fork adds reaches its parent or a sibling;} \\
-S(t) \setminus S &\ \text{is the parent's alone} && \text{nothing the parent adds afterwards reaches the fork;} \\
+K'(t) &\supseteq K && \text{the fork keeps what its parent held when it was made;} \\
+K'(t) \setminus K &\ \text{is the fork's alone} && \text{nothing a fork adds reaches its parent or a sibling;} \\
+K(t) \setminus K &\ \text{is the parent's alone} && \text{nothing the parent adds afterwards reaches the fork;} \\
 J'(f) \setminus J(f) &\ \text{stays in } K' && \text{a derivation recorded in a fork is the fork's.}
 \end{aligned}
 $$
@@ -194,9 +198,9 @@ digraph forks {
   rankdir=TB;
   node [shape=box, style=rounded];
   root [label="root\nthe program's facts, saturated"];
-  c1   [label="node C1\nsat(root + C1)"];
-  c2   [label="node C2\nsat(root + C2)"];
-  c12  [label="node C1 ∪ C2\nsat(root + C1 ∪ C2)"];
+  c1   [label="node C1\nsat(root ∪ C1)"];
+  c2   [label="node C2\nsat(root ∪ C2)"];
+  c12  [label="node C1 ∪ C2\nsat(root ∪ C1 ∪ C2)"];
   root -> c1  [label="fork, add C1"];
   root -> c2  [label="fork, add C2"];
   root -> c12 [label="fork, add C1 ∪ C2"];
@@ -207,7 +211,7 @@ Every arrow starts at root: **every node a search reads is a fork of root**, roo
 commitment added and saturated,
 
 $$
-\operatorname{st}(C) = \operatorname{sat}(\operatorname{root} + C)
+\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
 $$
 
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). A node's state is
@@ -219,37 +223,38 @@ and reaches the fixpoint that a saturation started afresh from the grown state r
 
 ## Provenance: a fact is an OR of derivations
 
-For each fact $f \in S$, $J(f)$ is a non-empty finite sequence of **derivations**, in the order they were
+For each fact $f \in K$, $J(f)$ is a non-empty finite sequence of **derivations**, in the order they were
 recorded:
 
 $$
-J(f) = (j_1, j_2, \dots, j_k), \qquad k \ge 1
+J(f) = (\delta_1, \delta_2, \dots, \delta_k), \qquad k \ge 1
 $$
 
 A derivation is a **terminal**, *given* (with its source sentence where the text writes one) or *committed* (a
 hypothesis), or it is a **firing**:
 
 $$
-j = (\rho,\ \bar{a},\ \Pi,\ \Omega,\ \Phi)
+\delta = \big(\rho,\ a,\ \theta,\ \operatorname{prem}(\delta),\ \operatorname{all}(\delta),\ \operatorname{abs}(\delta)\big)
 $$
 
 | part | what it records |
 |---|---|
 | $\rho$ | the rule that fired |
-| $\bar{a}$ | the activator the rule was applied under ([values and their order](03-values-and-order.md)) |
-| $\Pi \subseteq S$ | the positive premises the pattern matched |
-| $\Omega$ | the absences: the patterns that had to match nothing for the firing to be admitted |
-| $\Phi \subseteq S$ | for each universal premise, the facts its body matched over its domain |
+| $a$ | the activator the rule was applied under ([values and their order](03-values-and-order.md)) |
+| $\theta$ | the substitution the pattern matched under |
+| $\operatorname{prem}(\delta) \subseteq K$ | the positive premises the pattern matched |
+| $\operatorname{all}(\delta) \subseteq K$ | for each universal premise, the facts its body matched over its domain |
+| $\operatorname{abs}(\delta)$ | the absences: the patterns that had to match nothing for the firing to be admitted |
 
 ([Q18](../../../decisions/engine/Q18-provenance-is-per-fact-an-or-of-derivations-over.md)). The proof structure is
 an **AND/OR graph**: a fact is an OR over its derivations, and a derivation is an AND over what it rests on,
 
 $$
-\operatorname{supported}(f) \iff \bigvee_{j \in J(f)} \Big( j \text{ is a terminal} \;\lor \bigwedge_{g \in \operatorname{prem}(j)} \operatorname{supported}(g) \Big)
+\operatorname{supported}(f) \iff \bigvee_{\delta \in J(f)} \Big( \delta \text{ is a terminal} \;\lor \bigwedge_{g \in \operatorname{rests}(\delta)} \operatorname{supported}(g) \Big)
 $$
 
-read as a least fixpoint, where $\operatorname{prem}(j) = \Pi \cup \Phi$, with the activator fact too where a node
-derived or committed it, and where a firing with $\operatorname{prem}(j) = \emptyset$ counts as a terminal
+read as a least fixpoint, where $\operatorname{rests}(\delta) = \operatorname{prem}(\delta) \cup \operatorname{all}(\delta)$, with the activator $a$ too where a node
+derived or committed it, and where a firing with $\operatorname{rests}(\delta) = \emptyset$ counts as a terminal
 ([Q-M1e2.12](../../../decisions/answer/Q-M1e2.12-a-dead-nodes-core-follows-an-activator-only.md),
 [Q-M1e2.15](../../../decisions/answer/Q-M1e2.15-a-derivation-through-a-forall-rests-on-each-fact.md)). Two firings of the
 three-house example, as premises, the firing, and the fact it adds:
@@ -280,39 +285,39 @@ premises, the bold arrow out of it the fact it adds. The four facts on the left 
 
 What is true of $J$ in every implementation:
 
-- **The primary derivation is the first one recorded**, $j_1$. Deriving the fact again never changes it, so
+- **The primary derivation is the first one recorded**, $\delta_1$. Deriving the fact again never changes it, so
   everything that reads one derivation of a fact reads one stable story.
-- **A terminal takes no other derivation**: if $j_1$ is a terminal then $k = 1$. A given fact and a commitment are
+- **A terminal takes no other derivation**: if $\delta_1$ is a terminal then $k = 1$. A given fact and a commitment are
   the frontier of every explanation, and a given that some rule could also derive is still given. A firing with no
   premise is a terminal too: the frontier stops at it.
 - **Two firings of one rule over the same premises under the same activator are one derivation**:
-  $(\rho, \bar{a}, \Pi)$ is what tells two derivations apart. The substitution a firing used is read for display
-  and is no part of it.
+  $(\rho, a, \operatorname{prem}(\delta))$ is what tells two derivations apart. The substitution $\theta$ is recorded to be
+  shown, and is no part of a derivation's identity.
 - **What is recorded is what saturation attempted.** A derivation no firing reached is in no $J(f)$. An
-  implementation may bound $k$, and a program may ask for the primary alone. Neither changes $S$, nor the answer:
+  implementation may bound $k$, and a program may ask for the primary alone. Neither changes $K$, nor the answer:
   what they may change is a dead node's core, which is an explanation and not part of the answer
   ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md),
   [Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)).
 
-**The derivation graph of a fact** is its premises, followed to the terminals: through $j_1$ alone, which is one
+**The derivation graph of a fact** is its premises, followed to the terminals: through $\delta_1$ alone, which is one
 proof a reader can follow, or through every recorded derivation, which is the AND/OR graph. The **frontier** of a
 fact is the set of terminals the second reaches, the least sets with
 
 $$
 \operatorname{front}(f) =
 \begin{cases}
-\{f\} & j_1(f) \text{ is a terminal} \\
-\bigcup_{j \in J(f)}\ \bigcup_{g \in \operatorname{prem}(j)} \operatorname{front}(g) & \text{otherwise}
+\{f\} & \delta_1 \text{ of } J(f) \text{ is a terminal} \\
+\bigcup_{\delta \in J(f)}\ \bigcup_{g \in \operatorname{rests}(\delta)} \operatorname{front}(g) & \text{otherwise}
 \end{cases}
 $$
 
-An **explanation** of a set $X$ of facts is the set $E$ of terminals that a *witness* ends in, a witness being a
+An **explanation** of a set $X$ of facts is the set $Z$ of terminals that a *witness* ends in, a witness being a
 choice of one recorded derivation for each fact reached from $X$ along the derivations chosen.
 
-**Proposition (the frontier bounds every explanation).** For every explanation $E$ of $X$,
+**Proposition (the frontier bounds every explanation).** For every explanation $Z$ of $X$,
 
 $$
-E \subseteq \bigcup_{f \in X} \operatorname{front}(f)
+Z \subseteq \bigcup_{f \in X} \operatorname{front}(f)
 $$
 
 *Argument.* A witness follows, from each $f \in X$, one derivation of $J(f)$ and then one derivation of each of
@@ -330,9 +335,9 @@ No fact makes two names one. Equality is name identity, a relation computed from
 stored, and inequality is its complement:
 
 $$
-S \models (u = v) \iff u \text{ and } v \text{ are one value}, \qquad S \models (u \ne v) \iff \lnot\, S \models (u = v)
+K \models (u = v) \iff u \text{ and } v \text{ are one value}, \qquad K \models (u \ne v) \iff \lnot\, K \models (u = v)
 $$
 
-for every state $S$ alike. Nothing merges two names into one node, and a pattern matches a name only where that
+for every state $K$ alike. Nothing merges two names into one node, and a pattern matches a name only where that
 name is written ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-typed-labelled.md),
 [Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)).

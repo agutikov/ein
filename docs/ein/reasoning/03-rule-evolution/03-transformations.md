@@ -91,7 +91,7 @@ A rule concludes a conjunction of literals, and nesting adds nothing.
 ([rules as statements](../01-static-ir/04-rules-as-statements.md#relation-polymorphic)):
 
 $$
-\operatorname{inst}_S(P) = \{\, \rho[\bar{a}] \;:\; \rho \in P,\ \bar{a} \in \operatorname{Act}_S(\rho) \,\}, \qquad S \subseteq S' \implies \operatorname{inst}_S(P) \subseteq \operatorname{inst}_{S'}(P)
+\operatorname{inst}_K(P) = \{\, \rho[a] \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho) \,\}, \qquad K \subseteq K' \implies \operatorname{inst}_K(P) \subseteq \operatorname{inst}_{K'}(P)
 $$
 
 the values an activator supplies written into the rule before it matches anything. The set is monotone in the
@@ -118,21 +118,21 @@ and its rules written in another order. Then $\operatorname{Ans}(P') = \operator
 *Argument.* Take first a program whose rules read no absence. One step of every rule at once is the operator
 
 $$
-T_P(S) = S \;\cup\; \big\{\, f \in \psi[\bar{a}]\theta \;:\; \rho \in P,\ \bar{a} \in \operatorname{Act}_S(\rho),\ S \models \varphi[\bar{a}]\theta \,\big\}
+T_P(K) = K \;\cup\; \big\{\, f \in \psi_\rho[a]\theta \;:\; \rho \in P,\ a \in \operatorname{Act}_K(\rho),\ K \models \varphi_\rho[a]\theta \,\big\}
 $$
 
-Without an absence, satisfaction is preserved when a state grows, so $T_P$ is monotone, $S \subseteq S'$ implies
-$T_P(S) \subseteq T_P(S')$, and it is inflationary. The chain
-$S_0 \subseteq T_P(S_0) \subseteq T_P^2(S_0) \subseteq \cdots$ is increasing, and its union is the least set of
-facts above $S_0$ closed under $T_P$, since a match reads finitely many facts and so whatever fires in the union
+Without an absence, satisfaction is preserved when a state grows, so $T_P$ is monotone, $K \subseteq K'$ implies
+$T_P(K) \subseteq T_P(K')$, and it is inflationary. The chain
+$K_0 \subseteq T_P(K_0) \subseteq T_P^2(K_0) \subseteq \cdots$ is increasing, and its union is the least set of
+facts above $K_0$ closed under $T_P$, since a match reads finitely many facts and so whatever fires in the union
 fires at some stage of the chain:
 
 $$
-\operatorname{sat}(S_0) = \bigcup_{k \ge 0} T_P^{\,k}(S_0)
+\operatorname{sat}(K_0) = \bigcup_{k \ge 0} T_P^{\,k}(K_0)
 $$
 
 Any order of single firings adds only facts of this union, and one that stops has reached a closed set above
-$S_0$, so it has reached the union. $T_P$ and $S_0$ are defined from the *sets* of rules and of written facts, so
+$K_0$, so it has reached the union. $T_P$ and $K_0$ are defined from the *sets* of rules and of written facts, so
 the union does not depend on the order they are written in; neither does the state of any node, nor which nodes
 are alive and discharged, which is $R$. With absences, the claim is the theory's for the programs the monotonicity check passes: there the
 fixpoint does not depend on the order rules fire in ([saturation](../02-kb-evolution/02-saturation.md)), and the

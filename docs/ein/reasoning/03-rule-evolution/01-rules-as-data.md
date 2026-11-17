@@ -117,7 +117,7 @@ one from the membership relation to $\mathsf{Object}$ is the conclusion of the d
 | level | what it is | as a formula |
 |---|---|---|
 | a fact | a relation applied to values | $\operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2})$ |
-| a relation | a name and its slot names | $\operatorname{decl}(\operatorname{left-of};\ \mathsf{House}, \mathsf{House})$ |
+| a relation | a name and its labels | $\operatorname{decl}(\operatorname{left-of};\ \mathsf{House}, \mathsf{House})$ |
 | a relation's property | a fact whose argument is the relation's name | $\operatorname{transitive}(\operatorname{left-of})$ |
 | a rule | parameters, a pattern and a conclusion | $\operatorname{transitive}[r]:\ r(a, b) \land r(b, c) \land a \ne c \implies r(a, c)$ |
 
@@ -139,8 +139,8 @@ A pattern matches a fact only of its own count of arguments, so
 
 $$
 \begin{aligned}
-x\theta \text{ is declared with the two slot names } y\theta,\ z\theta \ &\implies\ S \models \operatorname{relation}(x, y, z)\theta \\
-x\theta \text{ is declared, with any count} \ &\implies\ S \models \operatorname{relation}(x)\theta
+x\theta \text{ is declared with the two labels } y\theta,\ z\theta \ &\implies\ K \models \operatorname{relation}(x, y, z)\theta \\
+x\theta \text{ is declared, with any count} \ &\implies\ K \models \operatorname{relation}(x)\theta
 \end{aligned}
 $$
 
@@ -150,8 +150,8 @@ fact like any other and declares nothing. The relations of a program are fixed w
 
 ## 3. What already describes itself
 
-**Slot names are data rules consume.** Because a declaration is a fact, rules read the schema and act on it. The
-standard library's check of a converse reads two declarations and refuses a pair whose slot names do not fit,
+**Labels are data rules consume.** Because a declaration is a fact, rules read the schema and act on it. The
+standard library's check of a converse reads two declarations and refuses a pair whose labels do not fit,
 with $m^{*}$ the program's membership closure as a parameter:
 
 $$
@@ -161,9 +161,9 @@ $$
 \end{aligned}
 $$
 
-and its rule of domain elimination reads a declaration's slot names to know which values to range over
+and its rule of domain elimination reads a declaration's labels to know which values to range over
 ([rules as statements](../01-static-ir/04-rules-as-statements.md#structural)). The theory itself reads of a
-declaration only how many slot names it has; it never reads a name as a type
+declaration only how many labels it has; it never reads a name as a type
 ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). What a program calls its
 type system is this: membership is a relation, and what a type check concludes, a rule concludes.
 
@@ -171,21 +171,21 @@ type system is this: membership is a relation, and what a type check concludes, 
 a declaration, and its meaning is an ordinary rule the fact applies
 ([Q27](../../../decisions/language/Q27-a-relations-properties-are-facts-beside.md),
 [Q16](../../../decisions/stdlib/Q16-general-rule-families-are-stdlib-modules.md)). With
-$\operatorname{ext}_S(r) = \lbrace (u, v) : r(u, v) \in S \rbrace$ the extent of a relation of two arguments, the rules of
-the standard library's relation algebra make these true of every saturated state $S$ of a program that brings
+$\operatorname{ext}_K(r) = \lbrace (u, v) : r(u, v) \in K \rbrace$ the extent of a relation of two arguments, the rules of
+the standard library's relation algebra make these true of every saturated state $K$ of a program that brings
 them in:
 
-| the property fact in $S$ | what its rule makes true of $S$ |
+| the property fact in $K$ | what its rule makes true of $K$ |
 |---|---|
-| $\operatorname{symmetric}(r)$ | $\operatorname{ext}_S(r)^{-1} \subseteq \operatorname{ext}_S(r)$ |
-| $\operatorname{transitive}(r)$ | $(a, b), (b, c) \in \operatorname{ext}_S(r) \land a \ne c \implies (a, c) \in \operatorname{ext}_S(r)$ |
-| $\operatorname{includes}(r, s)$ | $\operatorname{ext}_S(r) \subseteq \operatorname{ext}_S(s)$ |
-| $\operatorname{converse}(r, s)$ | $\operatorname{ext}_S(r)^{-1} \subseteq \operatorname{ext}_S(s)$ |
-| $\operatorname{compose}(r, s, t)$ | $\operatorname{ext}_S(r) \mathbin{;} \operatorname{ext}_S(s) \subseteq \operatorname{ext}_S(t)$ |
-| $\operatorname{meet}(r, s, t)$ | $\operatorname{ext}_S(r) \cap \operatorname{ext}_S(s) \subseteq \operatorname{ext}_S(t)$ |
-| $\operatorname{join}(r, s, t)$ | $\operatorname{ext}_S(r) \cup \operatorname{ext}_S(s) \subseteq \operatorname{ext}_S(t)$ |
-| $\operatorname{functional}(r)$ | $(a, b), (a, c) \in \operatorname{ext}_S(r) \land b \ne c \implies \bot \in S$ |
-| $\operatorname{injective}(r)$ | $(a, c), (b, c) \in \operatorname{ext}_S(r) \land a \ne b \implies \bot \in S$ |
+| $\operatorname{symmetric}(r)$ | $\operatorname{ext}_K(r)^{-1} \subseteq \operatorname{ext}_K(r)$ |
+| $\operatorname{transitive}(r)$ | $(a, b), (b, c) \in \operatorname{ext}_K(r) \land a \ne c \implies (a, c) \in \operatorname{ext}_K(r)$ |
+| $\operatorname{includes}(r, s)$ | $\operatorname{ext}_K(r) \subseteq \operatorname{ext}_K(s)$ |
+| $\operatorname{converse}(r, s)$ | $\operatorname{ext}_K(r)^{-1} \subseteq \operatorname{ext}_K(s)$ |
+| $\operatorname{compose}(r, s, t)$ | $\operatorname{ext}_K(r) \mathbin{;} \operatorname{ext}_K(s) \subseteq \operatorname{ext}_K(t)$ |
+| $\operatorname{meet}(r, s, t)$ | $\operatorname{ext}_K(r) \cap \operatorname{ext}_K(s) \subseteq \operatorname{ext}_K(t)$ |
+| $\operatorname{join}(r, s, t)$ | $\operatorname{ext}_K(r) \cup \operatorname{ext}_K(s) \subseteq \operatorname{ext}_K(t)$ |
+| $\operatorname{functional}(r)$ | $(a, b), (a, c) \in \operatorname{ext}_K(r) \land b \ne c \implies \bot \in K$ |
+| $\operatorname{injective}(r)$ | $(a, c), (b, c) \in \operatorname{ext}_K(r) \land a \ne b \implies \bot \in K$ |
 
 Union, intersection, composition, converse and inclusion are one rule each over the one notion of a match, and
 the cardinality properties are rules that conclude $\bot$. The one kernel counterpart is the marker that closes a
@@ -212,13 +212,13 @@ $$
 r(a, b) \quad \text{a fact}, \qquad \operatorname{relation}(r, x, y) \quad \text{a declaration}, \qquad \operatorname{symmetric}(r) \quad \text{a property}
 $$
 
-and none for a rule. Three statements make the line exact. For every program $P$ and every state $S$ any
+and none for a rule. Three statements make the line exact. For every program $P$ and every state $K$ any
 computation over it reaches:
 
 $$
 \begin{aligned}
-&\rho \notin S \quad \text{for every rule } \rho \in P && \text{a state holds facts, and a rule is no fact;} \\
-&S \models \varphi\theta \ \text{ depends on } S \text{ alone} && \text{no atom of a pattern is satisfied by a member of } P; \\
+&\rho \notin K \quad \text{for every rule } \rho \in P && \text{a state holds facts, and a rule is no fact;} \\
+&K \models \varphi\theta \ \text{ depends on } K \text{ alone} && \text{no atom of a pattern is satisfied by a member of } P; \\
 &\psi\theta \subseteq F && \text{a conclusion is facts, and a declaration is a form of the text.}
 \end{aligned}
 $$
@@ -255,7 +255,7 @@ The solid arrows are what a level reads or writes of the levels below it; the tw
 that are missing.
 
 The relation $\operatorname{relation}$ describes itself only in part. It is a reserved word that no declaration
-binds, so its own slot names are nothing a program can declare; the facts $\operatorname{relation}(r)$ of § 2 are
+binds, so its own labels are nothing a program can declare; the facts $\operatorname{relation}(r)$ of § 2 are
 its whole description in Ein.
 
 What lies past this line, rules that match or generate rules, is a change to the language and not a property of

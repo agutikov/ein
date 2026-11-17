@@ -30,17 +30,19 @@ monotone ([monotonicity](08-monotonicity.md)). Restrictions bound $R$ from above
 **An obligation** is a rule $o$ whose whole conclusion is the verdict $\operatorname{open}(r)$, and whose match
 holds while a witness is missing
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). Its match
-is a **trigger** $T$, the positive part that says who owes, and the absence of a **witness** $W$. A state at
+is a **trigger** $T_o$, the positive part that says who owes, and the absence of a **witness** $W_o$. A state at
 which it matches **owes** that instance; a state that owes nothing is **discharged**:
 
 $$
-\operatorname{owes}(o, a, \theta, S) \iff S \models T(\theta) \;\land\; \lnot \exists \bar y.\; S \models W(\theta, \bar y)
+\operatorname{owes}(o, a, \theta, S) \iff S \models T_o(a, \theta) \;\land\; \lnot \exists \bar y.\; S \models W_o(a, \theta, \bar y)
 $$
 
 $$
-\operatorname{owes}(S) = \lbrace\, (o, a, \theta) : \operatorname{owes}(o, a, \theta, S) \,\rbrace,
+\operatorname{Owed}(S) = \lbrace\, (o, a, \theta) : \operatorname{owes}(o, a, \theta, S) \,\rbrace,
 \qquad
-\operatorname{discharged}(S) \iff \operatorname{owes}(S) = \emptyset
+\operatorname{owes}(S) = \lvert \operatorname{Owed}(S) \rvert,
+\qquad
+\operatorname{discharged}(S) \iff \operatorname{owes}(S) = 0
 $$
 
 Obligations bound $R$ from below: they set its **minimal line**. The verdict is written nowhere else
@@ -247,7 +249,9 @@ A search need not enumerate the subsets of $H$ to find $R$. Where a state owes a
 the instance's alternatives alone**, the candidates that would pay it, and lose nothing. This section is why.
 
 **The branch.** An owed instance $I$ of totality says *$a$ has an $r$-arrow to some member of $B$*. Its
-alternatives at a state $S$ are the witnesses not already refuted:
+alternatives at a state $S$ are the witnesses not already refuted; where the instance is licensed they are
+$\operatorname{alt}(I)$ of [finding R](07-finding-r.md#4-a-monotone-program-three-properties-and-the-licences) less
+those $S$ denies:
 
 $$
 \operatorname{alt}(I, S) \;=\; \lbrace\, r(a, b) \;:\; b \in \operatorname{ext}(B) \,\rbrace \;\setminus\; \lbrace\, h : \lnot h \in S \,\rbrace
@@ -308,9 +312,9 @@ is a duplicate, not a gap, and $R$ is a set, so it holds the state once.
 so no branch is longer than the number of instances root owes:
 
 $$
-h \in \operatorname{alt}(I, \operatorname{st}(C)) \;\implies\; \operatorname{owes}(C \cup \lbrace h \rbrace) \subsetneq \operatorname{owes}(C),
+h \in \operatorname{alt}(I, \operatorname{st}(C)) \;\implies\; \operatorname{Owed}(C \cup \lbrace h \rbrace) \subsetneq \operatorname{Owed}(C),
 \qquad
-\text{depth} \;\leq\; \lvert \operatorname{owes}(\emptyset) \rvert
+\text{depth} \;\leq\; \operatorname{owes}(\emptyset)
 $$
 
 *Argument.* An instance's trigger reads only relations no commitment changes, so a state above root owes only

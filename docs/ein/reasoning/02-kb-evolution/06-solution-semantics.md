@@ -26,7 +26,7 @@ the region of that construction; nothing more is claimed of the program's soluti
 | symbol | what it is | where |
 |---|---|---|
 | $K_0$ | the knowledge base as loaded, before any saturation | § 1.1 |
-| $\operatorname{Names}(P)$, $\operatorname{Obj}(P)$ | the names of the program $P$; the objects among them | § 1.2 |
+| $\operatorname{names}(P)$, $\operatorname{obj}(P)$ | the names of the program $P$; the objects among them | § 1.2 |
 | $\operatorname{sat}$, $\mathrm{root}$ | saturation; root's fixpoint $\operatorname{sat}(K_0)$ | § 1.3 |
 | $H$, $n$ | the candidate set, and $n = \lvert H \rvert$ | § 1.4 |
 | $C$, $\operatorname{st}(C)$, $S$ | a commitment $C \subseteq H$; its state; a state | § 1.5 |
@@ -69,7 +69,7 @@ A **name** is a constant the program writes
 ([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)):
 
 $$
-\operatorname{Names}(P) \;=\; \lbrace\, c \;:\; c \text{ is a constant in an argument position of a fact of } K_0 \text{, at any depth} \,\rbrace
+\operatorname{names}(P) \;=\; \lbrace\, c \;:\; c \text{ is a constant in an argument position of a fact of } K_0 \text{, at any depth} \,\rbrace
 \;\cup\; \lbrace\, c \;:\; c \text{ is a constant of a rule of } P \,\rbrace
 $$
 
@@ -79,7 +79,7 @@ query never changes $R$. No rule brings in a name of its own and nothing makes a
 ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)):
 
 $$
-\forall C \subseteq H:\quad \operatorname{names}(\operatorname{st}(C)) \;\subseteq\; \operatorname{Names}(P) \cup \operatorname{names}(\mathrm{root})
+\forall C \subseteq H:\quad \operatorname{names}(\operatorname{st}(C)) \;\subseteq\; \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root})
 $$
 
 so the lattice of § 1.5 is finite.
@@ -90,11 +90,12 @@ out, each by name and none by a type system
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)):
 
 $$
-\operatorname{Obj}(P) \;=\; \big( \operatorname{Names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{Roles}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
+\operatorname{obj}(P) \;=\; \big( \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
 $$
 
 - $\operatorname{names}(\mathrm{root})$ counts a fact's head beside its top-level arguments;
-- $\operatorname{Roles}(P)$ is the names a relation's signature declares for its slots;
+- $\operatorname{labels}(P)$ is the labels, the names a relation's declaration writes for its argument places
+  ([names and atoms](../01-static-ir/01-names-and-atoms.md#the-kinds-of-thing));
 - $\operatorname{Kw}$ is the seven words of the rule language, *not*, *false*, *and*, *or*, *absent*, *equal* and
   *unequal*, whether or not a program writes one as a value;
 - $\operatorname{Res}$ is the two reserved relations of the kernel, *closed* and *symmetric*
@@ -164,10 +165,10 @@ answer is the whole cube's.
 **What the universe leaves out, the answer names**
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). $R$ is over $H$ as
 the ladder scopes it, so a certificate that $R$ is exhausted certifies all of $R$ over $H$ and nothing beyond it. Let
-$\operatorname{Rel}(X)$ be the relations of the facts in $X$. A relation $r$ is **outside the universe** when
+$\operatorname{rels}(X)$ be the relations of the facts in $X$. A relation $r$ is **outside the universe** when
 
 $$
-r \notin \operatorname{Rel}(H) \;\land\; \big( \text{a rule concludes } r \;\lor\; \text{a query's goal reads } r \big) \;\land\; \text{the program does not scope } r \text{ out}
+r \notin \operatorname{rels}(H) \;\land\; \big( \text{a rule concludes } r \;\lor\; \text{a query's goal reads } r \big) \;\land\; \text{the program does not scope } r \text{ out}
 $$
 
 and of such a relation $R$ holds only what the program states and saturation derives. It is said at relation grain:
@@ -177,8 +178,8 @@ the facts of a covered relation that the rung does not propose are not named.
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). The blind
 enumerator is untyped: every object fills every slot. Where a program states
 $\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and declares a relation $\operatorname{co-located}$ of two slots
-with the same role, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state of $R$ may
-hold it. $R$ is right for the program as written, and a signature that names $\mathsf{Color}$ as a role keeps it out
+with the same label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state of $R$ may
+hold it. $R$ is right for the program as written, and a declaration that writes $\mathsf{Color}$ as a label keeps it out
 of $H$. Where the blind enumerator built $H$ and a candidate names the second argument of a membership fact of root,
 every answer names that name. It decides nothing: $H$, $R$ and every count are the same without the sentence.
 

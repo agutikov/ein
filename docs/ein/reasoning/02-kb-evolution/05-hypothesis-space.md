@@ -160,15 +160,15 @@ it, and has its pairs there like any other. So the theory may exclude more pairs
 member dead alone at root.
 
 **Which statements are the puzzle's** nothing declares; $\operatorname{Puz}(P)$ is read off the candidates. Let
-$F \subseteq K_0$ be the facts the program states, $\operatorname{Rel}(H)$ the candidates' relations,
+$T \subseteq K_0$ be the facts the program states, $\operatorname{rels}(H)$ the candidates' relations,
 $O_H$ the names the candidates hold as arguments, and $\operatorname{Rd}$ the relations the rung that built $H$
-reads at root. For $f \in F$, with $\operatorname{names}(f)$ the names $f$ holds as arguments:
+reads at root. For $f \in T$, with $\operatorname{names}(f)$ the names $f$ holds as arguments:
 
 $$
-f \in \operatorname{Puz}(P) \iff \operatorname{rel}(f) \in \operatorname{Rel}(H) \;\;\lor\;\;
+f \in \operatorname{Puz}(P) \iff \operatorname{rel}(f) \in \operatorname{rels}(H) \;\;\lor\;\;
 \begin{cases}
 \operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd} & \text{where hypothesis rules or obligations built } H \\
-\lvert \operatorname{names}(f) \cap O_H \rvert \ge 2 \;\lor\; \big( \operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{names}(f) \cap \operatorname{Rel}(H) \neq \emptyset \big) & \text{where the blind enumerator built } H
+\lvert \operatorname{names}(f) \cap O_H \rvert \ge 2 \;\lor\; \big( \operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{names}(f) \cap \operatorname{rels}(H) \neq \emptyset \big) & \text{where the blind enumerator built } H
 \end{cases}
 $$
 
@@ -261,16 +261,16 @@ A group says *at most one*. *Exactly one* needs a *must*, and Ein has one source
 that owes an instance is not in $R$ until a fact witnesses it. For an instance $I$ root owes, the lemma of the
 exhaustive alternatives ([Finding R § 4](07-finding-r.md#4-a-monotone-program-three-properties-and-the-licences))
 gives, where its premise holds of $I$, the candidates that can witness it: $I$ is then **licensed**, and those
-candidates are its **alternatives** $A(I) \subseteq H$. Read against the cover:
+candidates are its **alternatives** $\operatorname{alt}(I) \subseteq H$. Read against the cover:
 
 | object | what it is | what every $C \in R$ holds |
 |---|---|---|
-| **owed group** | $g \in \mathcal{G}$ with $g = A(I)$ for a licensed $I$ | $\lvert \operatorname{cl}(C) \cap g \cap H^{\mathrm{o}} \rvert = 1$: exactly one of its open members |
-| **owed set that is no group** | a licensed $I$ whose alternatives do not pairwise exclude | $\lvert \operatorname{cl}(C) \cap A(I) \rvert \ge 1$: at least one |
+| **owed group** | $g \in \mathcal{G}$ with $g = \operatorname{alt}(I)$ for a licensed $I$ | $\lvert \operatorname{cl}(C) \cap g \cap H^{\mathrm{o}} \rvert = 1$: exactly one of its open members |
+| **owed set that is no group** | a licensed $I$ whose alternatives do not pairwise exclude | $\lvert \operatorname{cl}(C) \cap \operatorname{alt}(I) \rvert \ge 1$: at least one |
 | **group nothing owes** | $g \in \mathcal{G}$ with no such instance | $\lvert \operatorname{cl}(C) \cap g \rvert \le 1$: at most one, and nothing says a member must hold |
 | **unlicensed instance** | an instance the lemma does not license: no alternatives, only the reason | nothing is concluded |
 
-*Exactly one* is the conjunction of the two bounds: a state of $R$ has paid $I$, so it holds a member of $A(I) = g$,
+*Exactly one* is the conjunction of the two bounds: a state of $R$ has paid $I$, so it holds a member of $\operatorname{alt}(I) = g$,
 and it holds no two members of a group. A member dead alone is an alternative like any other and is in no alive
 state, so the one member is an open one.
 
@@ -279,14 +279,14 @@ candidates whose own node holds it, at root and in the small KB. Where the candi
 theory alone are exactly a group's members, and every witness root does not deny is so brought, the instance is
 **about** that group. **The group is not owed by it**: nothing is concluded from a witness a candidate brings.
 
-**A grid** is found from the groups and their members alone. It is a connected component $K$ of the graph
-$(H, X^{\circ})$, with $\mathcal{G}_K$ the groups inside it, such that
+**A grid** is found from the groups and their members alone. It is a connected component $Y$ of the graph
+$(H, X^{\circ})$, with $\mathcal{G}_Y$ the groups inside it, such that
 
 $$
 \begin{aligned}
-& \forall a \in K.\;\; \lvert \lbrace g \in \mathcal{G}_K : a \in g \rbrace \rvert = 2 \\
-& \mathcal{G}_K = \mathcal{F}_1 \uplus \mathcal{F}_2, \qquad \forall g \neq g' \in \mathcal{F}_i.\;\; g \cap g' = \emptyset \\
-& \forall g \neq g' \in \mathcal{G}_K.\;\; \lvert g \cap g' \rvert \le 1
+& \forall a \in Y.\;\; \lvert \lbrace g \in \mathcal{G}_Y : a \in g \rbrace \rvert = 2 \\
+& \mathcal{G}_Y = \mathcal{F}_1 \uplus \mathcal{F}_2, \qquad \forall g \neq g' \in \mathcal{F}_i.\;\; g \cap g' = \emptyset \\
+& \forall g \neq g' \in \mathcal{G}_Y.\;\; \lvert g \cap g' \rvert \le 1
 \end{aligned}
 $$
 
@@ -354,8 +354,8 @@ holds a question of each.
 - **Over the conflicts' and the derivations' edges alone**, the debts' left out: what no debt joins. Where a debt's
   payers lie in two of them, $R$ is no product over those.
 
-With the components over every edge $H^{\mathrm{o}} = K_1 \uplus \dots \uplus K_p$, and $R_i$ the region of the
-commitments inside $K_i$:
+With the components over every edge $H^{\mathrm{o}} = Y_1 \uplus \dots \uplus Y_p$, and $R_i$ the region of the
+commitments inside $Y_i$:
 
 $$
 R \;=\; \lbrace\, C_1 \cup \dots \cup C_p \;:\; C_i \in R_i \,\rbrace, \qquad
@@ -398,7 +398,7 @@ Both layers are statements about many more nodes than a search for $R$ needs to 
 computation of $R$ that wants to know which questions bear on each other cannot afford them. One reading takes
 neither, and is a statement about **one node**:
 
-- **a question is what root owes**: the alternatives $A(I)$ of a licensed instance, *which of these*. Every other
+- **a question is what root owes**: the alternatives $\operatorname{alt}(I)$ of a licensed instance, *which of these*. Every other
   candidate is a question alone;
 - **the node** is $\operatorname{st}(H)$, the whole node with **every** candidate of $H$ committed, since which are
   alive alone is a layer's to say, read as above: every application, every derived premise followed back to the
@@ -407,7 +407,7 @@ neither, and is a statement about **one node**:
   The edges one application back are kept beside, as above.
 
 $$
-Q' \;=\; \lbrace\, A(I) : I \in \operatorname{Owed}(\mathrm{root}),\; I \text{ licensed} \,\rbrace \;\cup\; \lbrace\, \lbrace a \rbrace : a \text{ in no such } A(I) \,\rbrace, \qquad W' = \operatorname{st}(H)
+Q' \;=\; \lbrace\, \operatorname{alt}(I) : I \in \operatorname{Owed}(\mathrm{root}),\; I \text{ licensed} \,\rbrace \;\cup\; \lbrace\, \lbrace a \rbrace : a \text{ in no such } \operatorname{alt}(I) \,\rbrace, \qquad W' = \operatorname{st}(H)
 $$
 
 **What it does not see:**
@@ -465,7 +465,7 @@ theory from the puzzle the way a reader would.
 |---|---|
 | **a clue written as a rule** | $K_0^{\circ}$ keeps every rule, so what such a rule says is the theory's. The rules that name one of the candidates' objects are the ones to suspect |
 | **a clue that names none of the candidates' objects** | kept, as a declaration is: a gate between two wires no candidate holds |
-| **the blind enumerator's universe** | $H$ holds facts of every open relation over every object, so a role's name and a relation's are among $O_H$, and the statements that say what an object is go with the clues. A cover there can be all of candidates nobody would propose, every member of every group dead alone at root: its groups are true and say nothing of the search |
+| **the blind enumerator's universe** | $H$ holds facts of every open relation over every object, so a label and a relation's name are among $O_H$, and the statements that say what an object is go with the clues. A cover there can be all of candidates nobody would propose, every member of every group dead alone at root: its groups are true and say nothing of the search |
 | **a table a module states over the candidates' objects** | dropped with the clues. Nothing in a loaded fact says which text stated it |
 
 And one more can show in the structure itself: a program not proved monotone whose small KB is. The small KB's layer

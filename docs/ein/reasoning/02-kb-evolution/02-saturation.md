@@ -1,8 +1,8 @@
 # Saturation
 
 Saturation is the one computation every answer is made of. Root is the program's own facts saturated by its
-rules, $\operatorname{root} = \operatorname{sat}(K_0)$; every node of the search is root's fixpoint with a
-commitment added, saturated again, $\operatorname{st}(C) = \operatorname{sat}(\operatorname{root} \cup C)$; the
+rules, $\mathrm{root} = \operatorname{sat}(K_0)$; every node of the search is root's fixpoint with a
+commitment added, saturated again, $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$; the
 candidate set $H$ is read off root's fixpoint, and whether a node is dead and what it owes off its own
 ([solution semantics](06-solution-semantics.md)). This page states what $\operatorname{sat}$ computes, the order
 it derives in and what that order can and cannot decide, what it derives before anything is supposed, and the
@@ -13,7 +13,7 @@ invariant that lets $H$ be taken once, at root. The symbols are those of [firing
 **The consequence operator.** One step applies every enabled firing at once:
 
 $$
-T_P(K) \;=\; K \;\cup \bigcup_{(\rho, a, \theta) \,\in\, \operatorname{en}(K)} A_{\rho[a]}\,\theta
+T_P(K) \;=\; K \;\cup \bigcup_{(\rho, a, \theta) \,\in\, \operatorname{en}(K)} \psi_\rho[a]\,\theta
 $$
 
 $T_P$ is **inflationary**, $K \subseteq T_P(K)$: firing adds the literals a conclusion states, stored negations
@@ -100,11 +100,11 @@ Saturation alternates two phases, and that shape is the contract.
 **Candidates.** Write a rule's match in disjunctive form, each disjunct a positive part and its guards:
 
 $$
-M \;=\; \bigvee_{d} \Bigl( M_d^{+} \;\land\; \bigwedge_{j} \operatorname{absent}(G_{d,j}) \Bigr)
+\varphi \;=\; \bigvee_{d} \Bigl( \varphi_d^{+} \;\land\; \bigwedge_{j} \operatorname{absent}(G_{d,j}) \Bigr)
 $$
 
-where $M_d^{+}$ holds facts, stored negations and comparisons, and no absence. A **candidate** is
-$\kappa = (\rho, a, \theta, d)$ with $K \models M_d^{+}\theta$. It is **positive** when its disjunct has no guard,
+where $\varphi_d^{+}$ holds facts, stored negations and comparisons, and no absence. A **candidate** is
+$\kappa = (\rho, a, \theta, d)$ with $K \models \varphi_d^{+}\theta$. It is **positive** when its disjunct has no guard,
 and **parked** otherwise. A parked candidate **passes** in $K$ when every guard of its disjunct holds there:
 
 $$
@@ -114,7 +114,7 @@ $$
 **The closure** consults no negation. It is the least fixpoint of the positive candidates alone:
 
 $$
-T_P^{+}(K) \;=\; K \;\cup \bigcup_{\kappa \text{ positive in } K} A_\kappa\,\theta,
+T_P^{+}(K) \;=\; K \;\cup \bigcup_{\kappa \text{ positive in } K} \psi_\kappa\,\theta,
 \qquad
 \operatorname{pos}(K) \;=\; \bigcup_{n \geq 0} \bigl(T_P^{+}\bigr)^{n}(K)
 $$
@@ -122,13 +122,13 @@ $$
 $K$ is **quiescent** when $\operatorname{pos}(K) = K$.
 
 **The boundary** speaks only at a quiescence. It judges the parked candidates against that fixpoint and admits
-**at most one**, the first in the agenda's order $\prec$ (next section) that passes and was not admitted before.
+**at most one**, the first in the agenda's order $\lhd$ (next section) that passes and was not admitted before.
 Saturation is the sequence
 
 $$
 K_0' = \operatorname{pos}(K), \qquad
-K_{i+1}' = \operatorname{pos}\bigl(K_i' \cup A_{\kappa_i}\theta_i\bigr), \qquad
-\kappa_i = \min_{\prec} \,\lbrace\, \kappa \text{ parked} : \operatorname{passes}(\kappa, K_i') \,\rbrace \setminus \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace
+K_{i+1}' = \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr), \qquad
+\kappa_i = \min_{\lhd} \,\lbrace\, \kappa \text{ parked} : \operatorname{passes}(\kappa, K_i') \,\rbrace \setminus \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace
 $$
 
 and its **fixpoint** is the first quiescence at which the boundary admits nothing:
@@ -179,21 +179,21 @@ Every saturation, root's, each node's and that of any reading of a fixpoint, der
 **Leads to $\bot$.** A candidate leads to a contradiction when its rule's conclusion can make one:
 
 $$
-\operatorname{lead}(\kappa, K) \iff \bot \in A_\rho \;\lor\; \exists f.\; \lnot f \in A_\rho \;\lor\;
-\exists\, r(\bar t) \in A_\rho.\; \bigl( \text{some rule of } P \text{ concludes } \lnot r(\cdot) \;\lor\; \exists \bar v.\; \lnot r(\bar v) \in K \bigr)
+\operatorname{lead}(\kappa, K) \iff \bot \in \psi_\rho \;\lor\; \exists f.\; \lnot f \in \psi_\rho \;\lor\;
+\exists\, r(\bar t) \in \psi_\rho.\; \bigl( \text{some rule of } P \text{ concludes } \lnot r(\cdot) \;\lor\; \exists \bar v.\; \lnot r(\bar v) \in K \bigr)
 $$
 
 **Arrival.** $\operatorname{arr}(\kappa) \in \mathbb{N}$ is the candidate's place in the sequence in which
 candidates become enabled; candidates that become enabled together are taken in the written order of their rules.
 
 $$
-\kappa \prec \kappa' \iff
+\kappa \lhd \kappa' \iff
 \bigl( \lnot\operatorname{lead}(\kappa, K),\ \operatorname{arr}(\kappa) \bigr) <_{\text{lex}}
 \bigl( \lnot\operatorname{lead}(\kappa', K),\ \operatorname{arr}(\kappa') \bigr)
 $$
 
 with *false* before *true*: first what leads to $\bot$, then the rest, and within each half first in, first out.
-The $j$-th firing of a saturation is the $\prec$-least candidate enabled after the first $j - 1$; the boundary
+The $j$-th firing of a saturation is the $\lhd$-least candidate enabled after the first $j - 1$; the boundary
 takes its parked candidates in the same order; a saturation that continues another keeps it
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
 
@@ -225,14 +225,14 @@ A node's saturation is root's, continued. It starts from root's fixpoint, with w
 has parked, adds the commitment's facts, and saturates to quiescence; it does not derive root's fixpoint again,
 and every candidate it inherits parked is judged again in its own world before it can be admitted.
 
-**Proposition (continuing is saturating afresh).** Let $\operatorname{root}$ be quiescent with fired set $F$ and
-parked set $Q$. The saturation continued from $(\operatorname{root}, F, Q)$ with $C$ added reaches the fixpoint a
-fresh saturation of the set $\operatorname{root} \cup C$ reaches
+**Proposition (continuing is saturating afresh).** Let $\mathrm{root}$ be quiescent with fired set $\Xi$ and
+parked set $Q$. The saturation continued from $(\mathrm{root}, \Xi, Q)$ with $C$ added reaches the fixpoint a
+fresh saturation of the set $\mathrm{root} \cup C$ reaches
 ([Q-M1a.18](../../../decisions/engine/Q-M1a.18-a-node-resumes-roots-saturation.md)).
 
-*Argument.* A fresh saturation of $\operatorname{root} \cup C$ meets three kinds of candidate. One whose match
-lies in $\operatorname{root}$ and is positive was fired at root, is in $F$, and adds nothing a second time. One
-whose match lies in $\operatorname{root}$ and is parked is in $Q$, and the continued saturation judges it again in
+*Argument.* A fresh saturation of $\mathrm{root} \cup C$ meets three kinds of candidate. One whose match
+lies in $\mathrm{root}$ and is positive was fired at root, is in $\Xi$, and adds nothing a second time. One
+whose match lies in $\mathrm{root}$ and is parked is in $Q$, and the continued saturation judges it again in
 the node's own world. One whose match reads a fact of $C$ or a fact derived from one is new to both, and both
 find it, since the continued saturation starts from the facts the node has and root lacked. $\square$
 
@@ -349,7 +349,7 @@ the program's facts and of its rules, match and conclusion alike
 invariant, *no rule asserts a name the program lacks*, is
 
 $$
-\forall C \subseteq H.\quad \operatorname{names}\bigl(\operatorname{st}(C)\bigr) \;\subseteq\; \operatorname{names}(\operatorname{root}) \cup \operatorname{names}(P)
+\forall C \subseteq H.\quad \operatorname{names}\bigl(\operatorname{st}(C)\bigr) \;\subseteq\; \operatorname{names}(\mathrm{root}) \cup \operatorname{names}(P)
 $$
 
 and it has three clauses:
@@ -376,7 +376,7 @@ Three readings of the invariant, each stronger than the one before:
 |---|---|
 | **static** | $\operatorname{names}(P) \setminus X \subseteq \operatorname{obj}(P)$: every name of the program, less the excluded kinds $X$ below, is an object candidates are proposed about when nothing narrower is stated |
 | **at the fixpoint** | $\operatorname{names}(\operatorname{sat}(K_0)) \subseteq \operatorname{names}(K_0) \cup \operatorname{names}(P)$: nothing a saturation derives names what the program as read, its facts and its rules' constants, did not |
-| **in the search** | $\forall C \subseteq H.\; \operatorname{names}(\operatorname{st}(C)) \subseteq \operatorname{names}(\operatorname{root}) \cup \operatorname{names}(P)$: nothing a node reaches names what root's fixpoint and the rules' constants did not |
+| **in the search** | $\forall C \subseteq H.\; \operatorname{names}(\operatorname{st}(C)) \subseteq \operatorname{names}(\mathrm{root}) \cup \operatorname{names}(P)$: nothing a node reaches names what root's fixpoint and the rules' constants did not |
 
 The third is the one $R$'s soundness rests on, and the first is what makes it hold for a rule's constant: a
 constant a rule writes, and that would be reached only inside a commitment, is an object from root on. The static

@@ -151,15 +151,16 @@ Every node of the knowledge base is of one of four kinds, and the first three ar
 program calls a type is an object: the name $\mathsf{House}$ in the membership fact
 $\operatorname{is-a}(\mathsf{House\text{-}1}, \mathsf{House})$ is an argument of a fact of a relation the program
 declares itself, and a variable is confined to houses by a premise that reads such a fact
-([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)).
+([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md),
+[Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)).
 
-A relation's **declaration** gives it a name and a list of **slot names**, one for each argument:
+A relation's **declaration** gives it a name and a list of **labels**, one for each argument:
 
 $$
 \operatorname{decl}(r;\ T_1, \dots, T_n), \qquad r \in \Sigma^{+} \setminus W, \quad T_1, \dots, T_n \in \Sigma^{+}, \quad n \ge 0
 $$
 
-The slot names are ordinary names. They are labels, and what they mean is what the program's rules make of them:
+The labels are ordinary names, and what they mean is what the program's rules make of them:
 
 - the declaration fixes **how many** arguments a fact of $r$ has, and nothing about what fills each place:
   $\operatorname{ar}(f) = n$ for every fact $f$ of a declared $r$, written or matched, and
@@ -167,11 +168,11 @@ The slot names are ordinary names. They are labels, and what they mean is what t
   ([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). A declaration
   with $n = 0$ declares a relation of no argument
   ([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md));
-- a **rule** reads the slot names as it reads any fact, through the facts a declaration is held as
+- a **rule** reads the labels as it reads any fact, through the facts a declaration is held as
   ([below](#a-relation-is-an-object)), and it is such a rule that gives $T_i$ the meaning *the $i$-th argument is
   one of these*;
 - they are read by name in one more place, stated [below](#a-relation-is-an-object): the last rung of hypothesis
-  generation proposes no fact about a name that some declaration uses as a slot name.
+  generation proposes no fact about a name that some declaration writes as a label.
 
 A name is declared once: two declarations of one relation name, or of one rule name, are no program.
 
@@ -189,12 +190,12 @@ $$
 \operatorname{decl}(r;\ T_1, \dots, T_n) \;\longmapsto\; \{\ \operatorname{relation}(r, T_1, \dots, T_n),\ \ \operatorname{relation}(r)\ \}
 $$
 
-the first fact carrying the slot names and the second saying only that $r$ is a relation; for $n = 0$ the two are
+the first fact carrying the labels and the second saying only that $r$ is a relation; for $n = 0$ the two are
 one fact. A pattern over them is an ordinary premise: $\operatorname{relation}(r, x, y)$ binds $x$ and $y$ to the
-slot names of each relation of two arguments, and $\operatorname{relation}(r)$ holds of every declared relation
+labels of each relation of two arguments, and $\operatorname{relation}(r)$ holds of every declared relation
 whatever its count. In the three-house example the declaration of $\operatorname{lives-in}$ is the fact drawn
 below, in a fragment of the drawing of the example's knowledge base: an octagon with three numbered arrows, whose
-slot names $\mathsf{Person}$ and $\mathsf{House}$ are the same nodes the membership facts point at:
+labels $\mathsf{Person}$ and $\mathsf{House}$ are the same nodes the membership facts point at:
 
 ```dot
 digraph kb {
@@ -218,19 +219,19 @@ The loop on $\operatorname{lives-in}$ is the fact $\operatorname{relation}(\oper
 one argument drawn as an arrow from its argument to itself. The boxes and ovals are the drawing's convention for
 the two ends of a membership fact, and mark no kind of the theory.
 
-So a rule can state what the slot names are for. With $r$ a parameter of the rule (a
+So a rule can state what the labels are for. With $r$ a parameter of the rule (a
 [relation-polymorphic rule](04-rules-as-statements.md#relation-polymorphic)),
 
 $$
 \operatorname{relation}(r, t_1, t_2) \;\land\; r(x_1, x_2) \;\land\; \operatorname{is-a}(x_1, t_1) \;\implies\; \operatorname{typed-first}(x_1, t_1)
 $$
 
-concludes of each fact of $r$ whose first argument is a member of the first slot name that it is one. Applied to
+concludes of each fact of $r$ whose first argument is a member of the first label that it is one. Applied to
 $\operatorname{lives-in}$ over the example's facts, it concludes
 $\operatorname{typed-first}(\mathsf{Norwegian}, \mathsf{Person})$ from
 $\operatorname{lives-in}(\mathsf{Norwegian}, \mathsf{House\text{-}1})$, and it concludes nothing from a fact
 $\operatorname{lives-in}(\mathsf{House\text{-}1}, \mathsf{Norwegian})$, which is a fact all the same. A program
-with no such rule gives its slot names no meaning: what is left of them is their count, and the exclusion below.
+with no such rule gives its labels no meaning: what is left of them is their count, and the exclusion below.
 
 **A relation nothing declares is still a relation.** A fact whose relation no declaration names makes that name a
 relation, with no declared count. A rule may read a relation that nothing in the program makes, and then never
@@ -253,7 +254,7 @@ representation reads them, to check its own terms where they are written
 the semantics. When nothing better proposes hypotheses, the last rung of
 [hypothesis generation](../02-kb-evolution/04-hypothesis-generation.md) proposes facts about the program's objects,
 and its objects are the names less four sets: the names the program declares as a relation, writes as a fact's
-relation or names a rule by; the slot names of its declarations; the words of the pattern language; and the
+relation or names a rule by; the labels of its declarations; the words of the pattern language; and the
 kernel's markers. A relation's name that only a rule's conclusion writes is not declared, and stays an object
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md),
 [Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). Nothing stops a
@@ -264,18 +265,18 @@ rule from concluding a fact about a relation, and nothing reads such a fact diff
 A program is a finite text, and its **names** are the finite set
 
 $$
-N = \{\, a \in \Sigma^{+} \;:\; a \text{ stands in an argument place of a fact the text writes, at any depth} \,\} \;\cup\; \{\, a \in \Sigma^{+} \;:\; a \text{ stands anywhere in a rule} \,\}
+\operatorname{names}(P) = \{\, a \in \Sigma^{+} \;:\; a \text{ stands in an argument place of a fact the text writes, at any depth} \,\} \;\cup\; \{\, a \in \Sigma^{+} \;:\; a \text{ stands anywhere in a rule} \,\}
 $$
 
-a rule's pattern and its conclusion alike. A name that only a query writes is not in $N$: a query asks about the
+a rule's pattern and its conclusion alike. A name that only a query writes is not in $\operatorname{names}(P)$: a query asks about the
 answer and does not change it
 ([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)).
 
-**Proposition (a rule brings in no name).** Write $\operatorname{names}(S)$ for the names that stand in an
-argument place of a fact of $S$, at any depth. For every state $S$ that any computation over the program reaches,
+**Proposition (a rule brings in no name).** Write $\operatorname{names}(K)$ for the names that stand in an
+argument place of a fact of $K$, at any depth. For every state $K$ that any computation over the program reaches,
 
 $$
-\operatorname{names}(S) \subseteq N
+\operatorname{names}(K) \subseteq \operatorname{names}(P)
 $$
 
 *Argument.* A state is reached from the facts the text writes by firing rules and by committing candidates. A
@@ -284,7 +285,7 @@ rule, or in the range of $\theta$, which matched values of the state fired in. A
 the program. By induction on the number of steps no step adds a name
 ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)). $\square$
 
-$N$ is fixed when the program is read, before anything is derived, which is what makes every set a search ranges
+$\operatorname{names}(P)$ is fixed when the program is read, before anything is derived, which is what makes every set a search ranges
 over finite. [Saturation](../02-kb-evolution/02-saturation.md) states what the proposition buys.
 
 ## Identity, stated once
@@ -308,7 +309,7 @@ which every order a reader can observe is built from, is [values and their order
 ([relations and facts](02-relations-and-facts.md)) sorts the facts of a state into three classes,
 
 $$
-\operatorname{origin} : S \to \{\text{given},\ \text{background},\ \text{derived}\}
+\operatorname{origin} : K \to \{\text{given},\ \text{background},\ \text{derived}\}
 $$
 
 a fact the text writes with a source sentence, a fact written with none or stated by reading a declaration, and a
