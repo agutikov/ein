@@ -2,7 +2,10 @@
 
 **Phase:** [P1f.20](README.md) (`docs/ein/`: the tree a released system would have)
 **Status:** planned 2026-11-15 on the user's rulings of that day
-([P1f.20 § The user's rulings](README.md#the-users-rulings-2026-11-15)). Not started.
+([P1f.20 § The user's rulings](README.md#the-users-rulings-2026-11-15)). **Done 2026-11-17**, in four parts: A (the
+register's split, the project tests that read the process moved to its side), B (what the binary and the tests say),
+C1 (the deletions) and C2 (the register's case ids, the release-voice check widened and with no baseline); their
+records below, and [§ The gates](#the-gates-2026-11-17).
 **Depends on:** [S1f.20.8](s1f.20.8_decisions.md), since a ledger is deleted only once its decisions are
 files, and [S1f.20.6](s1f.20.6_dehistoricise_the_code.md), which rewrites the code's references. **It runs
 last**, and takes over S1f.20.6's dissolve of `docs/history/`.
@@ -592,3 +595,13 @@ shape moved by a comment); `check_gate_steps.py`; `history_census.py` runs. No `
   (`utils/censuses/hole-census.md` cites `site_census --json`); they are instruments in a shipped crate's
   `examples/`.
 - `doc_audit.py`'s `NOT_PROJECT` still lists `docs/history/`, which no longer exists.
+
+## The gates (2026-11-17)
+
+- **Parts A and B: green on `f3e540b2`**, `./run_tests.sh` exit 0, 160 test binaries, none failed (three fewer than
+  before: the tests that read the process are process checks now, `check_gate_steps.py`, `check_tool_mirrors.py`,
+  `check_generated.py`, `check_region_routes.py` and `wrong_answers.py`, each a gate step that ran).
+- **Parts C1 and C2** (deletions, comments, the voice check, a few renamed tests): the stage's last verification is
+  `utils/ci_container.sh` on the merged tree, since the stage changed a DOT writer's text (the region legend), the
+  review bundle and the workflows (AGENTS.md § When `utils/ci_container.sh` is part of done).
+

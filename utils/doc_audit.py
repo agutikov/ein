@@ -508,10 +508,10 @@ def check_links(
 DECISIONS = REPO / "docs" / "decisions"
 #: What is not the project, and so not read for decision ids: the process
 #: (the plans, the scripts, the gate and CI, the agents' guide), what is
-#: external to both, the history record and third-party source.
+#: external to both, and third-party source.
 NOT_PROJECT = (
     "plans/", "utils/", ".github/", "run_tests.sh", "AGENTS.md", "CLAUDE.md",
-    "c/", "nl2smt/", "docs/lib/", "docs/history/", "ein.rs/vendor/",
+    "c/", "nl2smt/", "docs/lib/", "ein.rs/vendor/",
 )
 #: A decision file's name: its id, then the slug of its title.
 DECISION_FILE = re.compile(r"^(Q-M\d+(?:[a-z]\d*)?\.\d+|Q\d+)-[a-z0-9][a-z0-9-]*\.md$")

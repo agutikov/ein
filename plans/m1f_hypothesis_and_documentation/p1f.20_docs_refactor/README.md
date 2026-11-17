@@ -9,7 +9,8 @@ p1f.20"*. **In progress** since 2026-11-16: [S1f.20.1](s1f.20.1_the_two_checks.m
 and [S1f.20.8](s1f.20.8_decisions.md) are done, and on 2026-11-17 [S1f.20.3](s1f.20.3_user.md),
 [S1f.20.4](s1f.20.4_reasoning.md), [S1f.20.5](s1f.20.5_ein_rs.md), [S1f.20.7](s1f.20.7_the_two_empty_homes.md) and
 [S1f.20.6](s1f.20.6_dehistoricise_the_code.md) (its six lanes, the release-voice baseline to 0, `docs/kernel/` deleted);
-[S1f.20.9](s1f.20.9_the_history_sweep.md) is next, then the user's review (the phase is not closed before it).
+[S1f.20.9](s1f.20.9_the_history_sweep.md), the history sweep: **every stage is done**, and the phase stops for the
+user's review of the new documentation; it is not closed before it.
 **Was S1f.5.20**, a stage of P1f.5, until 2026-11-08. Since it
 was written on 2026-08-28, its § How to cut it had proposed splitting it into seven stages and left taking
 the split to the user. This phase takes it. No stage had run, so nothing shipped is renumbered:

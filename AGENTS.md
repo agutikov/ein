@@ -466,11 +466,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `.md`'s links, the links in a Rust comment and the bare paths in a `.ein`
   comment and in `corpus/corpus.toml`, and `--inbound --tracked --target
   PREFIX` counts them per target.
-- **The release voice is a ratchet**: `utils/check_release_voice.py` fails
-  where a file's count of lines carrying a milestone, phase, stage or task id,
-  a path into `plans/` or a date rises above `utils/release_voice_baseline.txt`,
-  or a file not listed there has one. A decision id passes. The commit that
-  lowers a count re-banks the baseline (`--bless`).
+- **The release voice has no baseline**: `utils/check_release_voice.py` fails
+  on any line of the project's prose (every project `.md`, every crate comment,
+  every `.ein` comment, `corpus/corpus.toml` and `corpus/regressions.toml`)
+  that carries a milestone, phase, stage or task id, a plan's finding, followup
+  or review id, a case of the wrong-answer register, a path into the process,
+  or a date. A decision id passes; a line that must keep one says
+  `release-voice-ok: <reason>`.
 - **The project and the process are two things, and the dependency runs one
   way.** The project is `README.md`, `ein.rs/` with its tests, `stdlib/`,
   `examples/`, `tests/`, `corpus/` and `docs/` but `docs/lib/`; the process is
@@ -561,7 +563,7 @@ python3 utils/review_bundle.py --regions                     # build/review/regi
 python3 utils/region_synth.py --example three_components     # a program written for a chosen region (--check, --random)
 python3 utils/read_out_examples.py                           # the read-out reference's examples page, written from the binary
 python3 utils/doc_audit.py --inbound --tracked --target docs/ein/      # per target file, the references a move rewrites, by referrer kind
-python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check counts; --bless re-banks its baseline
+python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check finds
 python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ reference, a date
 ```
 
