@@ -9,7 +9,7 @@ stopped at the phase's one stop ([S1f.10.12](s1f.10.12_the_structure_shown.md)).
 first, the register's W97 filed `open`, the switch, the rows flipped, the ladder restated. **An exception to *no
 answer changes***: W97's three witnesses, one of them a program that loaded and is refused at load.
 **Depends on:** nothing in the phase.
-**Owns:** E-51 of the calculator's [`findings.md`](../p1f.6_calculator/findings.md), given to this phase on
+**Owns:** E-51 of the calculator's `findings.md`, given to this phase on
 2026-11-14 and until the re-plan in no stage file.
 
 ## The finding

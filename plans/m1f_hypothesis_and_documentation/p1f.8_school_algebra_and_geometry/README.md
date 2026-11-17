@@ -18,8 +18,8 @@ Nothing of the content was redesigned, and the files were moved with `git mv`
 ([P1g.10 § The move](../../m1g_logic/p1g.10_school_algebra/README.md#the-move-of-2026-11-13) has the record and
 the choices the split forced). This page stays because pages that hold the user's replies as typed, and are
 never edited, link to it and name the phase as *P1f.8*
-([`questions.md`](../p1f.6_calculator/questions.md),
-[`questions_round2.md`](../p1f.6_calculator/questions_round2.md)). M1f's phase number 8 is used and vacated; it
+(`questions.md`,
+`questions_round2.md`). M1f's phase number 8 is used and vacated; it
 is not reassigned.
 
 | old id | new id |

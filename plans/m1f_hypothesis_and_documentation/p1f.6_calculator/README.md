@@ -54,12 +54,12 @@ search, cryptarithms, bounded theorem checking, number theory and explanations, 
 sixteen probes banked under `examples/beyond_arith/`; E-29 to E-31 found; what becomes a stage is the user's
 ([`word-problems.md`](../../../docs/ein/user/guide/word-problems.md), [its records](s1f.6.10_beyond_arithmetic.md#t1-record-2026-11-12)).
 **The user replied to the phase's questions on 2026-11-12** ([`questions.md`](questions.md), `c828dac3`; what stayed open is [`questions_round2.md`](questions_round2.md), replied and committed as `dc88520b`). Every reply and what it became is [`replies_2026-11-12.md`](replies_2026-11-12.md): thirteen stages planned, S1f.6.21 to S1f.6.33, the builds of S1f.6.12, S1f.6.16 and S1f.6.17 ruled, and S1f.6.14 moved to P1f.8 (now M1g's P1g.10).
-**Depends on:** [P1f.5](../p1f.5_the_no_owner_items/README.md), for the language the theory is written in.
-[S1f.5.4](../p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) makes `0` to `9` plain names, so
+**Depends on:** P1f.5, for the language the theory is written in.
+S1f.5.4 makes `0` to `9` plain names, so
 `(num9 0 0 0 1 2 3 0 7 8)` is nine names and not nine ints. It lands with S1f.5.5's swap, and T1f.5.4.3 retires
-the int kind. [S1f.5.7](../p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md),
-[S1f.5.11](../p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md) and
-[S1f.5.14](../p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) settle the guards, the keywords and a
+the int kind. S1f.5.7,
+S1f.5.11 and
+S1f.5.14 settle the guards, the keywords and a
 required `:why`. S1f.6.1 can run once the swap has landed, since it writes programs in the final grammar. The
 theory stages, S1f.6.2 onward, run after P1f.5 closes, so the theory is written once.
 **Blocks:** nothing.
@@ -147,7 +147,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 ## What this is not
 
 - **Not native numbers.** The user's ruling of 2026-11-06 stands
-  ([Q-M1e2.24](../../m1e2_correctness/open_questions.md)): Ein has no numbers, no ranges, and no arithmetic
+  (Q-M1e2.24): Ein has no numbers, no ranges, and no arithmetic
   predicate or token. This phase writes a theory *in* Ein, over ten digit names.
 - **Not an engine change, except the ones a ruling made or may make.** One is ruled: a flat import brings a
   module's facts ([S1f.6.11](s1f.6.11_importing_facts.md)). One is a question S1f.6.12 puts to the user: the

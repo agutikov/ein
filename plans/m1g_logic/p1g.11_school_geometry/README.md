@@ -8,7 +8,7 @@ first stage **stops for the user** with real programs computed on a prototype, b
 ([§ The move](#the-move-of-2026-11-13)), which also said of its second stage that it *"probably will require
 new features in the engine"*. The algebra is [P1g.10](../p1g.10_school_algebra/README.md).
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop, as M1g's phases do;
-[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), the calculator; and
+P1f.6, the calculator; and
 [P1g.10](../p1g.10_school_algebra/README.md) at two points. Specifically:
 
 - **[S1g.10.1](../p1g.10_school_algebra/s1g.10.1_survey_and_design.md)'s rulings** on what the two phases share:
@@ -17,10 +17,10 @@ new features in the engine"*. The algebra is [P1g.10](../p1g.10_school_algebra/R
 - **[S1g.10.4](../p1g.10_school_algebra/s1g.10.4_linear_equations.md), linear equations,** for the last stage
   only: a figure's problem with an unknown is that stage's equation over this phase's facts;
 - **the four operations and comparison,** `std.math.decimal-arith`
-  ([S1f.6.3](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md) to
-  [S1f.6.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md)),
+  (S1f.6.3 to
+  S1f.6.6),
   done 2026-11-11: every measure here is the calculator's number, `z` or `(n PREFIX DIGIT)`;
-- **[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md), word
+- **S1f.6.20, word
   problems:** its two kinds of gap, its readings as hypotheses and its *the problem is a model* are the pattern
   this phase's geometry computations follow;
 - **[P1g.6](../p1g.6_engine_requirements/README.md), the engine requirements,** for whatever the phase's
@@ -50,7 +50,7 @@ So P1f.8 is two phases of M1g: [P1g.10](../p1g.10_school_algebra/README.md), the
 geometry. The files were moved with `git mv`, so each stage's history follows it. **Nothing of the content was
 redesigned:** every target program, probe, task, acceptance line, risk, question and connection of P1f.8 is in
 exactly one of the two phases, or, where it covered both halves, in both. The old path keeps a
-[stub](../../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md), since pages that
+stub, since pages that
 hold the user's replies as typed link to it.
 
 **The instruction's second sentence** is about the stage that is now
@@ -149,7 +149,7 @@ systems, are [P1g.10's](../p1g.10_school_algebra/README.md#what-it-is).
   large classes of geometry statements (coordinates and polynomial ideals: Wu's method, Gröbner bases, the area
   method) are named in [S1g.11.1](s1g.11.1_what_school_geometry_is.md) and not built: they are not how a pupil
   proves anything, and they need arithmetic Ein does not have.
-- **Not engine arithmetic.** [Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)
+- **Not engine arithmetic.** [Q-M1e2.24](../../../docs/decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)
   stands: no numbers, no ranges, no arithmetic predicate. Every number is the calculator's nested fact, and every
   computation a request the imported theory answers.
 - **Not new syntax.** Every program is written in the grammar as it ships. A grammar change needs the user's
@@ -194,7 +194,7 @@ Against the rest of M1g: after P1g.1's stop, as every phase of the milestone is;
 [P1g.3](../p1g.3_proof_systems/README.md), by the user's words of 2026-11-11, *"between calculator and proof
 systems"*, though no stage of P1g.3 waits for it. S1g.11.3 and
 [S1g.3.3](../p1g.3_proof_systems/s1g.3.3_natural_deduction.md) ask Q-M1g.5 once, whichever runs first. It
-shares no file with M1f's [P1f.10](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md)
+shares no file with M1f's P1f.10
 or [P1f.20](../../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md) but the kernel pages P1f.20
 moves, which it does not edit.
 
@@ -271,7 +271,7 @@ survey, as S1f.8.1 was to re-take them.
 - **The natural rules join on nested values.** `sas` joins two `triangle` facts and three facts on nested
   values, five premises, on a state where every triangle has several readings: the join the calculator's rule
   of the theory forbids, quadratic in a batch (E-3 of the calculator's
-  [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)). One figure is small
+  `findings.md`). One figure is small
   and does not notice. The phase **measures** each target on the matcher's counters and reports it. It does
   not build the index: that is [S1g.6.2](../p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md).
 - **The trace buries the proof.** A fixpoint over a figure holds many true facts nobody asked for, so a
@@ -318,7 +318,7 @@ user only when a program of this phase has shown it, and is then asked by P1g.6 
 ## Names
 
 The calculator's modules are under `std.math` since
-[S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md) (2026-11-14): the
+S1f.6.31 (2026-11-14): the
 decimal calculator is `std.math.decimal-arith`, `std.arith` before that stage. The relations kept their names. (From P1f.8's
 § Additions of 2026-11-12, whose four additions are otherwise all the algebra's,
 [P1g.10's](../p1g.10_school_algebra/README.md#additions-of-2026-11-12).)
@@ -344,11 +344,11 @@ algebra's two entries are [P1g.10's](../p1g.10_school_algebra/README.md#what-is-
 
 ## Connections
 
-- **[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** the numbers, the request
+- **P1f.6:** the numbers, the request
   protocol, the search-free test, the harness against Rust's integers, the rule of the theory and its reason,
-  and [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)'s E-3 and E-12,
+  and `findings.md`'s E-3 and E-12,
   which this phase's rules meet head on.
-  [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) hands over its
+  S1f.6.20 hands over its
   gaps and readings.
 - **[P1g.10](../p1g.10_school_algebra/README.md):** the other half of what was P1f.8. The two meet where a
   figure's problem has an unknown (S1g.11.4 over S1g.10.4), where a theorem is a sum with letters for the

@@ -10,7 +10,7 @@
 - Half a day for the tests, the fixtures and the pages.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-18, its two questions and G-21
-([Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations)), and on what stays refused in a guard
+(Q-M1e2.26), and on what stays refused in a guard
 ([§ Questions](#questions-it-has-to-settle)). Nothing is open.
 **Done 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), on the user's instruction of that day (*"just continue with
 default decisions till the end of the phase"*), in seven commits: T1f.5.7.1 ([its record](#t1f571-record-2026-11-09)),
@@ -59,7 +59,7 @@ the place the language did not yet admit it.
 ## The case
 
 Taken on 2026-11-07 at `916d97ac`, on the release binary, a program of `(relation p Node)` and `(p a)` with
-one query (the inventory's [probe](../../m1e2_correctness/inventory_2026-11-06/probes/goal_guard.ein) and variations):
+one query (the inventory's probe and variations):
 
 | `:goal` | `ein solve` today | its suggested `:expect` | after |
 |---|---|---|---|
@@ -180,7 +180,7 @@ as answerable: *"Seems we already decided not to use `_`? So (eq _ _), (neq ?x _
 (eq ?x :k a) is wrong for 2 reasons - there is no defined `:k` kvarg and `eq` is 2-ary relation"*.
 
 - **`_` in a guard stays refused.** A bare `_` is reserved and refused wherever it is written
-  ([Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard),
+  (Q-M1e2.22,
   [S1f.5.1](s1f.5.1_bare_underscore_refused.md)), and `W24/wild-in-guard` keeps its `right`.
 - **A keyword pair as a guard's argument stays refused** (Q-M1e2.18 (iii)(a)): `(eq ?x :k a)` names a keyword
   `eq` does not take, and gives a relation of two places three arguments. Its line becomes
@@ -484,9 +484,9 @@ sentence that did says what it was and what it is since this stage.
 - [`glossary.md`](../../../docs/ein/user/reference/glossary.md): an entry for `eq` and `neq`.
 - [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals) § 2.1's claim rows (a region claim naming
   either, a goal's form that holds a variable) and § 4.9's guard rows and its paragraph.
-- The inventory's [S-18 and G-21](../../m1e2_correctness/inventory_2026-11-06_no_owner.md) say what fixed them, and
-  [Q-M1e2.18](../../m1e2_correctness/open_questions.md#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) and
-  [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations) that they are built.
+- The inventory's S-18 and G-21 say what fixed them, and
+  Q-M1e2.18 and
+  Q-M1e2.26 that they are built.
 
 M1e2's `read_out.md` is the record and is not edited; the live read-out page is S1f.5.16's, on `master`, and what this
 stage changes on it is the coordinator's to write at the merge ([§ For the merge](#for-the-merge)).

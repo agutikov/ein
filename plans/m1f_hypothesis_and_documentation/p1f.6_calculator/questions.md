@@ -872,7 +872,7 @@ the same file, *Solution — R is one state*, 0.5 s (2026-11-12).
 state, and nothing says the order mattered. Source: beyond_arithmetic.md Q3; E-29 of
 [`findings.md`](findings.md).
 
-- **(a) Yes, and it is [P1f.10](../p1f.10_hypothesis_structure/README.md)'s,** with this witness: fewest alive
+- **(a) Yes, and it is P1f.10's,** with this witness: fewest alive
   alternatives first.
 - **(b) Yes, in this phase.**
 - **(c) No;** the page of any search theory says *declare what is checked first, first*.
@@ -1229,7 +1229,7 @@ Source: E-14.
 
 | # | finding | in plain words | recommendation |
 |---|---|---|---|
-| <a id="q56"></a>56 | E-1, E-7 | The blind guesser proposes `__closed__`, and relation names a rule asserts as values, as if they were objects: `(total __closed__)` is a candidate | *suggested:* (b) [P1f.10](../p1f.10_hypothesis_structure/README.md), which plans how the candidates are built. The rows name no owner; you ruled the case behind them (a program's own open relations) left as it is |
+| <a id="q56"></a>56 | E-1, E-7 | The blind guesser proposes `__closed__`, and relation names a rule asserts as values, as if they were objects: `(total __closed__)` is a candidate | *suggested:* (b) P1f.10, which plans how the candidates are built. The rows name no owner; you ruled the case behind them (a program's own open relations) left as it is |
 | <a id="q57"></a>57 | E-3, E-12 | The fact index does not key on a nested fact, and keys a premise on its first bound argument whatever it selects; a join on a number scans | (b) [M1g's S1g.6.2](../../m1g_logic/p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md), which lists both. The theory avoids the join by rule |
 | <a id="q58"></a>58 | E-5 | `--trace`'s *Derives* line names only a firing's first conclusion | *suggested:* (a), a small change to the trace. No shipped rule depends on it |
 | <a id="q59"></a>59 | E-8 | A qualified import (`:as`) brings the module's `(query …)`, `(solve …)` and `(config …)`, so the importer is asked the module's queries and configured by its flags | *suggested:* (a), beside S1f.6.11's import fix, with a register row first if you call it a wrong answer |

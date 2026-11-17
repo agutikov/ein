@@ -439,4 +439,4 @@ moved (`git diff --stat b9e03aa4 9ac0f7ab`):
 
 The merge of M1j, `3d941d81`, and S1f.6.25's records, `e4dd886c`, lie between this stage's first commit
 and its second, so both runs cover them too; the merge commit had a gate of its own, exit 0
-([M1j's record](../../m1j_nlp_smt_poc/README.md#the-merge)).
+(M1j's record).

@@ -5,7 +5,7 @@ profile. **A throwaway, kept so the numbers can be re-taken.** It changes no eng
 in `ein.rs/` depends on it. `harness` links `ein-ir`, read-only, for today's parser.
 
 The grammar is a by-position draft under the user's name rule of 2026-11-07
-([Q-M1e2.24](../../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)), written once per notation. It
+(Q-M1e2.24), written once per notation. It
 is a working draft for choosing a generator. T1f.5.5.2 writes the real one, and it is here since
 2026-11-08: [§ Steps 1 and 2](#steps-1-and-2-the-census-and-the-final-grammar).
 

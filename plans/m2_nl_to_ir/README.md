@@ -250,7 +250,7 @@ reading, which the user may correct:
 - **It bears on faithfulness** ([S2.4.4](p2.4_loop/s2.4.4_faithfulness.md)): a reasoning the reader can read
   rule by rule is one whose invented constraint can be seen.
 
-**The first worked instances are M1f's.** [S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) solves elementary-school word problems (*"Bob has 5
+**The first worked instances are M1f's.** S1f.6.20 solves elementary-school word problems (*"Bob has 5
 apples. He gave 2 to Alice. How many apples they have together?"*) as Ein programs written by hand: the
 arithmetic is an imported theory, the meaning of the words is rules (*gave* is a subtraction, *together* a
 sum), and a missing quantity is detected and named instead of assumed. Each problem there is recorded as the
@@ -307,7 +307,7 @@ and whether the fixed point is syntactic or semantic
   [`docs/install.md`](../../docs/ein/user/install.md), `--json-summary`
   (`ein-summary/1`) and [`--events`](../../docs/ein/ein.rs/events.md)
   (`ein-events/1`) — what a Python one drives; Q25 chooses.
-- [M1f S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) — word problems as hand-written Ein programs over the calculator theory: the first
+- M1f S1f.6.20 — word problems as hand-written Ein programs over the calculator theory: the first
   instances of § The reasoning as a program, and candidates for the benchmark once it has run.
 - [M20](../m20_gui/README.md) — displays whatever the loop records; not a
   dependency either way.

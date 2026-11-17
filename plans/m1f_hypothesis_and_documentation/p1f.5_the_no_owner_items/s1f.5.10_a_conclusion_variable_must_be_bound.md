@@ -266,9 +266,9 @@ as what every such program meets:
   refusal: the line and its disjunction form, what binds, what it replaced (W57), and what pins it.
 - [`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s *Conclusion forms in `:assert`*: every variable
   a conclusion writes is bound, on every way the `:match` can hold, an hrule's too, and what the refusal names.
-- The inventory's [F13](../../m1e2_correctness/inventory_2026-11-06_no_owner.md) and
-  [G-14](../../m1e2_correctness/inventory_2026-11-06.md) say what did it, G-14's derived activator left to S1f.5.18;
-  and Q-M1e2.26's F13 paragraph ([`open_questions.md`](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations))
+- The inventory's F13 and
+  G-14 say what did it, G-14's derived activator left to S1f.5.18;
+  and Q-M1e2.26's F13 paragraph (`open_questions.md`)
   says it is built.
 - [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md)'s stage file gains W58: its seed fixes W58 with W33, and it
   retires `FireError::UnboundVar`, its line, and `fuzz_properties`' parameter exception, the acceptance item S1f.5.10

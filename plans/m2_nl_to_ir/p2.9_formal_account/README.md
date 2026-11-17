@@ -40,7 +40,7 @@ the kernel does them and a reader who checks will find them:
    stratification does not cover).
 2. **The search is a lattice, not a tree.** Commitment sets ordered by
    cardinality, Apriori-generated, pruned by no-goods and downward closure —
-   [F9](../../followups/f9_e_catalog.md)'s ledger is the evidence that this
+   F9's ledger is the evidence that this
    matters (*every branch-count optimisation failed, the one cost
    optimisation worked, because the search is a complete cardinality-BFS*).
    An account that draws a DPLL tree describes a different engine.

@@ -13,7 +13,7 @@ it was 1.5.
 
 **Status:** specified 2026-11-06 on the user's ruling of that day, and extended 2026-11-07 on the
 user's rulings on F8 and on what a name is
-([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
+(Q-M1e2.24).
 **Started 2026-11-08**, on the user's go-ahead to run the phase stage by stage (*"run
 plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage in separate subagent, …, ask if
 decision required"*). **Step 1 done** (T1f.5.4.1, [§ Step 1](#step-1--every-move-listed-2026-11-08)), and the
@@ -339,7 +339,7 @@ T7 keeps the grammar pages' prose: what this commit restates there is only the d
 - Beyond the stage's list, each a sentence that described the int as live: `02-data-model/03_implementation.md`'s
   `value.rs` and `terms.rs` rows, `01_entities.md`'s `Fact.args`, `architecture_and_algorithms.md`'s `FactId` row,
   `inference/README.md`'s two, `answer_dump.md`'s printer, and `docs/api/rust.md`'s `Terms`.
-- [Q-M1e2.20](../../m1e2_correctness/open_questions.md#q-m1e220--does-a-claim-compare-values-or-their-printed-text):
+- Q-M1e2.20:
   overtaken, its case unwritable since the swap and the int kind gone, the printer's comparison by value standing.
 
 **The register's id.** `W37/template-var-star`'s `[case.fixed]` names `eccf4186`, where T1f.5.4.5 left the null id,
@@ -582,7 +582,7 @@ and `?_` are parse errors, and `Жук` in a `:why` loads. Today `a?x`, `?x?y` a
 `DIGITS` and its catch-alls). It says more in five places, which the prototype follows and the acceptance should
 name: `_x`, `__`, `_-1` and `?_x` are a name and a variable (any name character first; [C1](#for-the-coordinator));
 `rule-x`, `rule.x`, `neq-1` and `not-a` are names, a reserved word being a whole token, which overrides
-[Q-M1e2.17](../../m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end) (i)(a) as
+Q-M1e2.17 (i)(a) as
 [the name rule](s1f.5.5_the_grammar.md#the-name-rule) says; `=` is a name, so `(= a b c)` is a fact; `(1 a)` and
 `(relation 1 T)` are a fact of and a declaration of the relation `1`; and a keyword is `:` and a run of name
 characters, any unknown one refused ([C2](#for-the-coordinator)). The finding above is the one place it says nothing.

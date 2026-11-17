@@ -206,7 +206,7 @@ of the cartesian product, not a free design choice. Deriving it from the
 positive tag is rule-from-rule synthesis
 ([F7 sub-track D](f7_rule_induction.md#sub-track-d--companion-rule-synthesis-property-duals)),
 and it is the home of the former
-[P1.9 E5](f9_e_catalog.md)
+P1.9 E5
 "static mutex pre-analysis": the mutex *is* the `functional` / `injective`
 negative companion.
 
@@ -619,5 +619,5 @@ way" until 2026-08-20; they now record the measurement instead.
 **Trigger.** Any work that touches `open_hypotheses` / `complete` — or the
 first user who reports `Contradiction` on a satisfiable puzzle. Related:
 `docs/kernel/inference/features.md`
-(the measurement), [F9](f9_e_catalog.md) (where the search layer's other
+(the measurement), F9 (where the search layer's other
 levers were settled).

@@ -41,7 +41,7 @@ _and_, __and, AND, And, l_and, And2 - whatever"*.
   conjunction, disjunction, implication, pierse arrow - also should be 16, if not - explain why"*): there are
   sixteen, each with a name, and the table with the proposed spellings (`Bot And Nimp Fst Nrimp Snd Xor Or Nor
   Iff Nsnd Rimp Nfst Imp Nand Top`) is in
-  [S1f.6.17 § All sixteen functions of two inputs](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md#all-sixteen-functions-of-two-inputs-the-user-2026-11-11).
+  S1f.6.17 § All sixteen functions of two inputs.
   S1g.1.3 and S1g.2.1 take all sixteen as connectives of the formula language, with `Not` the one unary;
   S1g.2.3's normal forms say which they rewrite away, and P1g.3's proof systems which they take as primitive.
 - **(b)** a prefix, `l-and`, `l-or`: reads as a family, and sorts together.
@@ -148,7 +148,7 @@ P1f.20 leaves it.
 ## Q-M1g.13 — May a finished search call an unpayable debt dead?
 
 Added 2026-11-12, from question 24 of the calculator's
-[`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q24) and the user's reply
+`questions.md` and the user's reply
 (*"this question open vs. false is deep. […] It looks like an entire separate phase."*). Where every alive
 node owes and no extension pays, R is empty and `--single` says `Open`, which reads as *not yet* where the
 run has shown *never, among the candidates*.

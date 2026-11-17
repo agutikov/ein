@@ -260,7 +260,7 @@ constrained-reasoning research.
   depends on them. [`c/README.md`](c/README.md) is the catalogue and carries
   the argument.
 - **`nl2smt/`** — **the Zebra puzzle's sentences through link grammar to
-  SMT**, a proof of concept ([M1j](plans/m1j_nlp_smt_poc/README.md)), wired
+  SMT**, a proof of concept (M1j), wired
   into nothing: no crate depends on it and the gate does not run it.
   [`nl2smt/README.md`](nl2smt/README.md) is the page, with the command and
   its tests, which skip where `link-parser`, `racket` or every solver is
@@ -282,9 +282,9 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
   P1f.5, P1f.7, P1f.6 (the calculator,
-  [its close](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md))
+  its close)
   and P1f.10 (the structure of the hypothesis set,
-  [its close](plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/close.md))
+  its close)
   are closed. **P1f.20, the documentation tree, is current**: every stage but S1f.20.9, the history sweep, is done; when it is, the phase stops for the user's review of the new docs and is not closed before it:
   [its README](plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)
   (the user's ruling of 2026-11-15).
@@ -293,7 +293,7 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
   (Q-M1f.n); a default stands until the user revises it. A phase keeps what
   it finds outside its scope in a findings page of its own and shows it, as
-  P1f.6's [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)
+  P1f.6's `findings.md`
   (E-n) did.
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the

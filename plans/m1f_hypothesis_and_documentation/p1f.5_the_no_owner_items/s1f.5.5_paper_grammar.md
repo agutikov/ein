@@ -124,7 +124,7 @@ ruling the draft predates, or a position the draft left to one `Term`.
 | `?_` | a variable | refused | ruled; the stage noted the draft did not do it |
 | a string's escapes | any `\X` | `\n \t \r \" \\ \u{…}`; any other refused at the token | S1f.5.2's reading of *reasonable* |
 | `#\|` after a name | part of a bad token | ends the name, as `;` does | a comment is a separator (the stage's *A token ends at a separator*) |
-| keywords | `query` took `:no-hypothesis`; `step` took 3; `config` any keyword and any name | S1f.5.11's lists: `query` four, `step` five, `config` its two flags with `true` or `false` | ruled 2026-11-07 ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)) |
+| keywords | `query` took `:no-hypothesis`; `step` took 3; `config` any keyword and any name | S1f.5.11's lists: `query` four, `step` five, `config` its two flags with `true` or `false` | ruled 2026-11-07 (Q-M1e2.28) |
 | a premise, a conclusion, a guard, a goal, a macro body | one `Term` | five productions; `absent` and `eq` take one and two, `open` is a whole conclusion, `(and)` refused | each position its production; the arity checks of `compile.rs` and `validate_open` move up |
 | a macro call's arguments | any `Item` | a premise may stand there | `forall`'s guard and body are premises: this grammar's first version refused ten corpus files for it, three stdlib modules among them |
 | a claim | a `Term` | its shapes, `(model …)`, `(or …)`, `(false)`, `(region …)` and its items | the shape checks of `expect.rs` and `claim.rs` move up |

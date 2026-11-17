@@ -397,7 +397,7 @@ over the cube.
 
 **Where ∅ ∈ R, every minimal question is decided at root**, on a flagged program
 too, within `--region-limit` and past it: M1f
-[S1f.5.6](../../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md),
+S1f.5.6,
 on the user's ruling of 2026-11-07 on S-16 (*"b, use the ∅ rule in both"*). ∅ is
 below every commitment, so the minimal line is {∅} on any program, and whether ∅
 is in R is root's fixpoint alone: `--minimal`, `--minimal -n N` and `--minimal

@@ -461,7 +461,7 @@ are **not** added to the stdlib now. Two plans take the subject:
 - a phase of [M1g](../../m1g_logic/README.md), *unsatisfiable against owing*: the open state's core, the
   read-out row for N, and whether a finished search may call an unpayable debt dead. M1g's first probes
   already met it.
-- [P1f.8](../p1f.8_school_algebra_and_geometry/README.md) compares the three methods on school equations,
+- P1f.8 compares the three methods on school equations,
   where the choice between them is the subject.
 
 **Reply:** This Arithmetic read backwards vs Search vs Algebra comparison is somethinig like number theory and goes into separate phase in M1g. p1f.8 remain incomplete naive school algebra.

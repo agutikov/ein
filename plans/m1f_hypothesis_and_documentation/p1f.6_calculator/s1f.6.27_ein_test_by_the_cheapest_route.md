@@ -108,7 +108,7 @@ byte-identical after. Anything more is a finding with an owner, not this stage's
   claim: all as they are. E-18's question stays asked and unanswered.
 - **Not add a flag that picks the route.** The route is a function of the claim; config never changes an
   answer, and a route that could change an outcome would be a bug, not an option.
-- **Not order the obligation tree by the state.** That is [P1f.10](../p1f.10_hypothesis_structure/README.md)'s
+- **Not order the obligation tree by the state.** That is P1f.10's
   ([reply 40](questions.md#q40)); this stage takes the tree as it branches today.
 - **Not build the cryptarithm theory** (`std.math.crypt`, reply 42), which waits for this stage and for
   P1f.10.

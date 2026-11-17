@@ -101,13 +101,13 @@ may be reopened by a later finding.
 ## Q-M1h.5 — Where the temporal and causal modules live, and their names
 
 `std.math` and `std.bool` are the calculator's
-([S1f.6.31](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)); the two
+(S1f.6.31); the two
 theories are neither. Open with it, and found by the stage files:
 
 - **the names the modules occupy when imported flat.** A temporal theory wants ordinary words, `before`,
   `after`, `during`; the word theory already occupies `has`, `gave`, `holds`, `asked`, `value`. What a clash
   does and what an import could do about it is
-  [S1f.6.30](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)'s
+  S1f.6.30's
   investigation, which stops for the user; S1h.1.5 reads its ruling if there is one;
 - **whether the rule that joins the two** (*a cause is before its effect*) is in the causal module, which
   then imports the temporal one, or in a third module a program imports when it wants both.
@@ -135,7 +135,7 @@ reverse arithmetic?"*). S1h.1.2 compares the two ways on programs; what is the u
   ([M1g's P1g.9](../m1g_logic/p1g.9_one_equation_three_methods/README.md));
 - and, with either: **whether it lands under `examples/word_problems/`** as a module beside `words.ein`, so
   that `before.ein`'s claim moves to 7
-  ([S1f.6.28](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s
+  (S1f.6.28's
   T5: *when either lands, the file's claim moves to 7 in that commit*), or stays a prototype. The user's
   *"leave what is implemented already"* rules out rewriting `words.ein`; it does not say whether a module may
   be added beside it;

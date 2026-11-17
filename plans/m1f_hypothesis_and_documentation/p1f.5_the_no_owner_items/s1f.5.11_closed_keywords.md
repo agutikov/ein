@@ -13,7 +13,7 @@ was 1.5.
   its swap (T1f.5.5.4), where each keyword is a token of its form and no loader list is written.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on D-15, G-15 and G-22
-([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
+(Q-M1e2.28).
 **Not started** until the swap, which moved its refusals, fixtures and rows (below). **Done 2026-11-09**
 ([§ T1f.5.11.2 record](#t1f5112-record-2026-11-09), [§ T1f.5.11.3 record](#t1f5113-record-2026-11-09)): T1f.5.11.2,
 the compiler's drop and its filters, the expander's arity filter, the loader validator's skips and the renderers'
@@ -53,7 +53,7 @@ kwarg - it is an error"*.
    [Q32](../../open_questions.md#q32--where-semantics) (2026-05-20) that left a `:where` pair to be dropped.
    Q32 removed `:where` and kept dropping its pair in silence.
 3. **The four defaults stand:**
-   - `:cardinality` is retired: it was never read, and its value is a range ([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
+   - `:cardinality` is retired: it was never read, and its value is a range (Q-M1e2.24).
    - `:mode` on a query is retired: it is obsolete, accepted and ignored.
    - `:rule` and `:using` stay on a fact.
    - `:why` on a fact is refused.
@@ -154,7 +154,7 @@ fact for a pair.
     [`examples/broken/kwpair-below-the-filter.ein`](../../../examples/broken/kwpair-below-the-filter.ein),
     refused at the parse) and its fuzz find, `corpus/fuzz_findings/kwpair-below-the-filter.ein`: `(tracex (step s1 :rule … :using …
     :derives …) …)`. It was banked for a render crash, *not a value node: KwPair*, which
-    [S1e2.3.2](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md) fixed
+    S1e2.3.2 fixed
     by labelling a pair `:key value`. Once no pair loads below a form, the crash's path is closed at load.
     **Default:** the fixture moves to `examples/broken/load/` as a refusal with its `.expected`, and the fuzz
     find's note says why. Step 1 says whether `value_label`'s `KwPair` arm is still reached, by a form's own

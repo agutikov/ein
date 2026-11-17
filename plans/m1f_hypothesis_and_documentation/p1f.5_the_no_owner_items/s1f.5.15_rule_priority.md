@@ -65,7 +65,7 @@ a cleanup.
 > second has a fixture (Q-M1e.15).
 >
 > **A dated note, 2026-11-04, nothing re-scoped** (M1e2
-> [S1e2.2.11](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md)):
+> S1e2.2.11):
 > a full list now keeps its smallest-closure arrival beside it, so the
 > `alt-cap-core` pair report one core, 2 facts, and are no longer consumer
 > 6b's fixture. 6b stands on
@@ -695,7 +695,7 @@ Three decisions, in order:
 
    **Settled for the generated grammar on 2026-11-08, the other way.** The user ruled on 2026-11-07 that each
    form takes a fixed set of keywords and any other is an error
-   ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take),
+   (Q-M1e2.28,
    [S1f.5.11](s1f.5.11_closed_keywords.md)). That overtakes the `QUERY_KEYWORDS` precedent: S1f.5.11 refuses
    `:mode`, and S1f.5.5's T5 deletes `QUERY_KEYWORDS`. The generated grammar refuses `:priority` like any keyword a
    rule does not take (T3, `54715b5f`). What is left is the hand-written parser, between this stage and the
@@ -854,7 +854,7 @@ Two follow-ups from the coordinator's review of the stage, one commit (T1f.5.15.
   admission order, and need not be unique*. Every sentence it prints is a possibility the graph licenses or a fact
   about the graph (its relations, its edges, *not stratifiable*), never a fact about the run.
   `strata_diagnostic.rs` holds the wording on `features/07` and on `rule-guards`, where no line claims *one of
-  several*. The read-out vocabulary's `strata` row ([`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) § 4) says the same, and [`absent_semantics.md` § The stratification diagnostic](../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md) has every line the diagnostic prints, the row, the sub-row and the `rule-guards` example; `01_grammar.md` and `glossary.md` say the same.
+  several*. The read-out vocabulary's `strata` row (`read_out.md` § 4) says the same, and [`absent_semantics.md` § The stratification diagnostic](../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md) has every line the diagnostic prints, the row, the sub-row and the `rule-guards` example; `01_grammar.md` and `glossary.md` say the same.
 
 ### Task T1f.5.15.9 — the three scripts that still wrote `:priority`
 

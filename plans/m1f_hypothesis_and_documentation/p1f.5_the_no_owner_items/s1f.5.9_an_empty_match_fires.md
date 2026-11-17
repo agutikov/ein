@@ -46,7 +46,7 @@ over `examples/`, `tests/`, `stdlib/` and `corpus/`).
 
 | the rule | today | right |
 |---|---|---|
-| `(rule r () :match () :assert (false))` | loads, never fires: ∅ in R | root is dead, so R is empty. Its core is `[]`, the empty set ([Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)), and `refuted by r` |
+| `(rule r () :match () :assert (false))` | loads, never fires: ∅ in R | root is dead, so R is empty. Its core is `[]`, the empty set (Q-M1e2.27), and `refuted by r` |
 | `(rule r () :match () :assert (q b))` | loads, never fires: no `(q b)` | root holds `(q b :rule r)` |
 | `(rule r (?x) :match () :assert (hit ?x))` with `(r a)` | loads, never fires: no `(hit a)` | root holds `(hit a :rule r)`, one firing per activator |
 | `(hrule h () :match () :assert (q b))` with `(solve :hrules (h))` | proposes nothing: *no candidate* | proposes `(q b)`, as `:match (p ?x)` does: one candidate |
@@ -371,9 +371,9 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
   `defined_behaviour.md` § 2.2 and
   [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md): no run reaches a value `#empty` since W34;
   `defined_behaviour.md` § 4.13: the rule whose `:match` was empty fires since.
-- The inventory's [F12](../../m1e2_correctness/inventory_2026-11-06_no_owner.md), the census's
+- The inventory's F12, the census's
   [W34 finding](s1f.5.5_census.md#findings-outside-the-grammar) and
-  [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations)'s F12 paragraph say what
+  Q-M1e2.26's F12 paragraph say what
   fixed them.
 
 W31's four and W34's `[case.fixed]` blocks carry ``2c79af6d``, T1f.5.9.2's, where that commit wrote the null id.

@@ -10,7 +10,7 @@ and [S1f.20.8](s1f.20.8_decisions.md) are done, and on 2026-11-17 [S1f.20.3](s1f
 [S1f.20.4](s1f.20.4_reasoning.md), [S1f.20.5](s1f.20.5_ein_rs.md), [S1f.20.7](s1f.20.7_the_two_empty_homes.md) and
 [S1f.20.6](s1f.20.6_dehistoricise_the_code.md) (its six lanes, the release-voice baseline to 0, `docs/kernel/` deleted);
 [S1f.20.9](s1f.20.9_the_history_sweep.md) is next, then the user's review (the phase is not closed before it).
-**Was S1f.5.20**, a stage of [P1f.5](../p1f.5_the_no_owner_items/README.md), until 2026-11-08. Since it
+**Was S1f.5.20**, a stage of P1f.5, until 2026-11-08. Since it
 was written on 2026-08-28, its § How to cut it had proposed splitting it into seven stages and left taking
 the split to the user. This phase takes it. No stage had run, so nothing shipped is renumbered:
 `T1f.5.20.1`–`.7` are `S1f.20.1`–`.7`, in the same order.
@@ -19,8 +19,8 @@ S1e.3.7 and
 S1e.3.8. The dependency
 was hard: those three stages triaged and fixed 38 pages, and a page fixed and then moved is cheap, where a
 move followed by a re-triage of 38 renamed files is not. **Satisfied 2026-08-31**: all three ran. It runs
-after [P1f.5](../p1f.5_the_no_owner_items/README.md), which edits kernel pages this phase moves. M1f follows
-[M1e2](../../m1e2_correctness/README.md), so this phase runs on the tree M1e2 leaves
+after P1f.5, which edits kernel pages this phase moves. M1f follows
+M1e2, so this phase runs on the tree M1e2 leaves
 ([§ What moved since it was written](#what-moved-since-it-was-written)).
 **Blocks:** nothing. Everything downstream of it wants it and nothing waits on it.
 **Source:** the user's note of 2026-08-28, restated in [§ The instruction](#the-instruction), and the user's
@@ -325,11 +325,11 @@ The plan was written on 2026-08-28. Taken on 2026-11-08:
   ([`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)). `inference/features.md`'s
   levers are mostly retired ([`config.md`](../../../docs/ein/user/reference/config.md) lists them).
 - **User-facing references live under `plans/`.** The read-out's vocabulary,
-  [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md), its golden page
-  [`read_out_examples.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md), and
-  [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) describe what
+  `read_out.md`, its golden page
+  `read_out_examples.md`, and
+  `solve_interface.md` describe what
   `ein solve` prints, and the map has no row for any of them. Since
-  [S1f.5.16](../p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) the first two are records, and the live
+  S1f.5.16 the first two are records, and the live
   pages are [`docs/ein/user/reference/read-out.md`](../../../docs/ein/user/reference/read-out.md) and its
   [examples](../../../docs/ein/user/reference/read-out-examples.md); `solve_interface.md` is the one left.
 - **`CLAUDE.md` is a symlink to `AGENTS.md`.** Both names are one file.
@@ -440,7 +440,7 @@ meets that only by two rules, which the single stage did not need:
 **The order.** S1f.20.1, then S1f.20.2, before anything moves; S1f.20.2's review shows the decisions' layout
 and the sweep's defaults too. Then **S1f.20.8**, the decisions, so the rewritten pages cite them. Then
 S1f.20.3, S1f.20.4 and S1f.20.5, in any order, each moving its pages with their links. S1f.20.4's `analysis-of-rules.md` is sequenced with
-[S1f.5.15](../p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md), so the page is written once. S1f.20.6
+S1f.5.15, so the page is written once. S1f.20.6
 runs after all three. S1f.20.7 can run any time after S1f.20.2, since it moves `05_inspirations.md`.
 **S1f.20.9 runs last**: the deletions, and the references brought to 0.
 
@@ -477,7 +477,7 @@ twice. That is satisfied. The same rule holds for M1e2's edits to kernel pages: 
 ## Risks
 
 - **The tree is rebuilt while another milestone edits it.** This was M1e's three stages when the plan was
-  written. It is now [P1f.5](../p1f.5_the_no_owner_items/README.md), M1e2's P1e2.5 until 2026-11-08, which
+  written. It is now P1f.5, M1e2's P1e2.5 until 2026-11-08, which
   edits kernel pages: S1f.5.5 generates `00_ebnf.md`'s blocks, and S1f.5.11 removes `:where` from six pages.
   P1f.5 runs first, so the order holds: fix first, then move. If the user wants this phase first, those
   stage files must be re-aimed at the new paths *before* it starts, not afterwards.
@@ -510,7 +510,7 @@ twice. That is satisfied. The same rule holds for M1e2's edits to kernel pages: 
   written into the *old* tree; both are `docs/ein/user/` pages by this
   phase's map, and both are cited by anchor text rather than section number so
   the move does not break them.
-- [S1f.5.15](../p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) — writes the first content of
+- S1f.5.15 — writes the first content of
   `reasoning/rule-evolution/analysis-of-rules.md`.
 - [M5](../../m5_presentation/README.md) Track A and
   [`EinAf.md`](../../m2_nl_to_ir/EinAf.md) — the owners of items 3, 4 and 5 of

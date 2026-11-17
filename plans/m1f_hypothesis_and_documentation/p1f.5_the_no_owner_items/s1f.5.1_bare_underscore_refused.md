@@ -14,7 +14,7 @@ it was 2.
   (T1f.5.5.9) and its swap (T1f.5.5.4).
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
-([Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)), and revised 2026-11-07 on the
+(Q-M1e2.22), and revised 2026-11-07 on the
 user's rule for a name ([S1f.5.5](s1f.5.5_the_grammar.md#the-name-rule)): a run of underscores is a
 name, and only a bare `_` and `?_` stay refused.
 **Not started** until the swap, which moved its refusal, fixtures and rows (below). **Done 2026-11-09**
@@ -53,8 +53,8 @@ where it is dropped.
 
 | position | today | settled by |
 |---|---|---|
-| argument in a rule's or hrule's `:match`, at any depth, under `absent` too | matches any value, binds nothing | W20, on [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) (a) |
-| as a relation, `(_ a)`, in a rule | refused at load | [Q-M1e2.14](../../m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation) (c) |
+| argument in a rule's or hrule's `:match`, at any depth, under `absent` too | matches any value, binds nothing | W20, on Q-M1e2.13 (a) |
+| as a relation, `(_ a)`, in a rule | refused at load | Q-M1e2.14 (c) |
 | in a guard, or as a whole premise | refused at load | W24 |
 | in `:expect` | refused at load | S1c.1.2's load error |
 | argument in a rule's `:assert` | stops the run at the first firing; a rule that never fires loads (G-14) | S1e2.2.18 |
@@ -104,9 +104,9 @@ The user, 2026-11-06, on Q-M1e2.22: *"I agree, simple `_` reserved and refused
 because of potential ambiguity, but remain valid in any place in atom and variable
 names `_a_in_b_` `_______01` `A________B`"*.
 
-This reverses [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
+This reverses Q-M1e2.13
 (a) for `_` (its ruling on a range stands) and absorbs
-[Q-M1e2.14](../../m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation)
+Q-M1e2.14
 (c), and W20's `_` rows move with them.
 
 ## What it changes
@@ -445,7 +445,7 @@ After the swap, beside S1f.5.5's T7.
 guard sentences), `04_dot_rendering.md`, `06_reserved_names.md`,
 `defined_behaviour.md` (§ 4, § 4.8, § 4.9), `README.md`, `examples/README.md`. The
 two Q entries the ruling reverses say so. W-22 and F3 marked in
-[the no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md).
+the no-owner inventory.
 `docs/history/` is a record, and does not change.
 
 ### T1f.5.1.4 record, 2026-11-09
@@ -473,13 +473,13 @@ only `_`.
   two rows and its *what stays* sentence.
 - The root `README.md`'s W20 paragraph and `examples/README.md`'s W20 and W29 families, each witness refused at the
   parse since the swap.
-- [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean):
+- Q-M1e2.13:
   **reversed for `_` on 2026-11-06** by Q-M1e2.22, and what (a) built gone; its index row.
-  [Q-M1e2.14](../../m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation):
+  Q-M1e2.14:
   **absorbed** by Q-M1e2.22; its index row.
-  [Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard): **built 2026-11-09**, the
+  Q-M1e2.22: **built 2026-11-09**, the
   swap's commit and this stage's three.
-- [The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md): **W-22** marked done in its
+- The no-owner inventory: **W-22** marked done in its
   table row and its section, and **F3** in its bullet, with W39.
 - AGENTS.md, one sentence: S1f.5.1 ran to its end, F3's cause and W39, the positions held, the node and slot gone.
 - `docs/history/` is a record, and does not change.

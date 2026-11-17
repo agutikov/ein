@@ -8,7 +8,7 @@ at load wherever the program shows that the variable can hold a name, and the fi
 
 ## The finding
 
-Recorded in [S1f.5.24's T2 record](../p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md#t2-record-2026-11-10)
+Recorded in S1f.5.24's T2 record
 on the release binary at `dbfd7862`:
 
 > **A conclusion `(not ?x)` whose variable binds a name stores the negation of a name.** `(rule r () :match (a

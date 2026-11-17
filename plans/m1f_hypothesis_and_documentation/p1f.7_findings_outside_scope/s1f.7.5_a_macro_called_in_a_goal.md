@@ -10,7 +10,7 @@ reads a goal after expansion.
 
 ## The finding
 
-Recorded in [S1f.5.24's T2 record](../p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md#t2-record-2026-11-10)
+Recorded in S1f.5.24's T2 record
 on the release binary at `dbfd7862`:
 
 > **A macro called in a query's `:goal` is not expanded.** `(macro pp (?a) (p ?a))` and `(query :goal (pp ?x))`:

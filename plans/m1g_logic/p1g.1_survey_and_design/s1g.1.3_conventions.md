@@ -3,7 +3,7 @@
 **Phase:** [P1g.1](README.md)
 **Status:** planned 2026-11-11, not started.
 **Depends on:** [S1g.1.1](s1g.1.1_what_ein_represents_today.md); and
-[S1f.6.17](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md)'s ruling on the
+S1f.6.17's ruling on the
 gates' names, which this stage follows.
 **For the user:** three questions, [Q-M1g.1](../open_questions.md#q-m1g1--the-spelling-of-the-connectives)
 (already defaulted), [Q-M1g.2](../open_questions.md#q-m1g2--where-the-logic-ships) and
@@ -25,7 +25,7 @@ syntax: real examples first).
    - **(b) A circuit:** S1f.6.17's shape, a gate instance a fact and a wire a name:
      `(gate g1 And p q) (gate g2 Imp g1 p)`. Flat, joins on names (so the fact index serves it, where it does
      not serve (a): E-3 of the calculator's
-     [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)), but a formula is
+     `findings.md`), but a formula is
      then a set of facts and cannot be passed as one value.
    - **(c) Both, with a conversion:** a request that names a tree's subformulas, which is what probe 1's
      `eval` requests already do.

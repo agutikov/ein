@@ -3,8 +3,8 @@
 **Phase:** [P1f.6](README.md). Prepared 2026-11-15, once every stage was built. **The phase closed the same day**,
 on the user's answers to [§ What the user is asked](#what-the-user-is-asked): [§ The close](#the-close-2026-11-15).
 The sections before it are the page as the user read it. The pattern is the two closes before it,
-[P1f.5's](../p1f.5_the_no_owner_items/README.md#the-close-2026-11-11) and
-[P1f.7's](../p1f.7_findings_outside_scope/README.md#the-close-2026-11-11): where the stages stand, the findings, the
+P1f.5's and
+P1f.7's: where the stages stand, the findings, the
 defaults, the acceptance re-taken, and what is left for the user. Like them, it proposes no `docs/history/` record:
 this directory stays where it is.
 
@@ -41,7 +41,7 @@ this directory stays where it is.
 |---|---:|---|
 | fixed or closed by a stage of this phase | 27 | E-2 (S1f.6.23); E-5, E-8, E-11, E-22 (S1f.6.25: `ab36658d`, `a4bf10f8`, `076bb20e`, `e9d692e0`); E-19 (S1f.6.26); E-27 (S1f.6.12's build); E-30, E-46 (S1f.6.27); E-33 (S1f.6.28, `41806bcd`); E-20, E-32, E-41, E-49, E-50, E-53 (S1f.6.35; E-53 is W93, `dc94b947`); E-38 (S1f.6.38's build); E-47, E-52 (S1f.6.34); E-58, E-59 (S1f.6.31); E-63, E-65, E-67 (S1f.6.37; W94 `0d144bef`, W95 `fc9bd066`); E-48 ([Q-M1f.226](../open_questions.md#q-m1f226--an-obligations-name-in-a-closing-rule-and-alive_invariants-r0) (b)); E-73 (S1f.6.39's T4, `13cdfbb1`); E-74 (S1f.6.16's build, `a2f9ca5a`) |
 | ruled to stay as it is | 5 | E-4 (reply 44 (a)); E-28 (reply 50 (a)); E-62 and E-64 (accepted 2026-11-14); E-31's remainder ([Q-M1f.224](../open_questions.md#q-m1f224--what-a-bare-description-pays-for-n), defaulted; its free part built by S1f.6.27) |
-| owned outside the phase | 23 | [P1f.10](../p1f.10_hypothesis_structure/README.md): E-29, E-51, and its S1f.10.9 E-1, E-7, E-54; M1g's [S1g.6.2](../../m1g_logic/p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md): E-3, E-12, E-15, E-24, E-25, E-26; [S1g.6.3](../../m1g_logic/p1g.6_engine_requirements/s1g.6.3_seeing_nested_facts.md): E-9, E-10, E-13, E-14; [P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md): E-18's claim ([Q-M1f.219](../open_questions.md#q-m1f219--a-querys-false-on-a-program-that-only-owes)), E-23; M1h's [P1h.4](../../m1h_beyond_word_problems/README.md#p1h4--the-formula-and-the-calculation): E-17; [F21](../../followups/f21_non_monotone_programs_decided.md): E-66; [F23](../../followups/f23_diagnostics_in_eins_words.md): E-21, E-68 (D-14); [F24](../../followups/f24_written_provenance.md): E-6; [Q-M1f.8](../open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it): E-16 |
+| owned outside the phase | 23 | P1f.10: E-29, E-51, and its S1f.10.9 E-1, E-7, E-54; M1g's [S1g.6.2](../../m1g_logic/p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md): E-3, E-12, E-15, E-24, E-25, E-26; [S1g.6.3](../../m1g_logic/p1g.6_engine_requirements/s1g.6.3_seeing_nested_facts.md): E-9, E-10, E-13, E-14; [P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md): E-18's claim ([Q-M1f.219](../open_questions.md#q-m1f219--a-querys-false-on-a-program-that-only-owes)), E-23; M1h's [P1h.4](../../m1h_beyond_word_problems/README.md#p1h4--the-formula-and-the-calculation): E-17; [F21](../../followups/f21_non_monotone_programs_decided.md): E-66; [F23](../../followups/f23_diagnostics_in_eins_words.md): E-21, E-68 (D-14); [F24](../../followups/f24_written_provenance.md): E-6; [Q-M1f.8](../open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it): E-16 |
 | owned by this phase's S1f.6.39, T7 | 1 | E-72 |
 | **open, no owner: a disposition proposed below** | 19 | E-34, E-35, E-36, E-37, E-39, E-40, E-42, E-43, E-44, E-45 (its remainder), E-55, E-56, E-57, E-60, E-61, E-69, E-70, E-71, E-75 |
 
@@ -275,7 +275,7 @@ banked. Whether to kill the pair, or keep it banked with the reason made exact, 
    revision would move for a user. And marking the five **moot** rows (.191, .192, .209, .213, .217) *superseded*
    in `open_questions.md`, proposed.
 4. **The order of P1f.10 and P1f.20**, neither started, after this phase:
-   [P1f.10](../p1f.10_hypothesis_structure/README.md), the structure of the hypothesis set, which now also holds
+   P1f.10, the structure of the hypothesis set, which now also holds
    E-1, E-7, E-29, E-51 and E-54 and which `std.math.crypt` waits for; and
    [P1f.20](../p1f.20_docs_refactor/README.md), the documentation tree.
 5. **The close itself**: the default is that P1f.6 closes once T7 is committed on a green gate and what item 1

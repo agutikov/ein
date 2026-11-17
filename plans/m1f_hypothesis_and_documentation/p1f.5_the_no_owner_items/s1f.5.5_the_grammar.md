@@ -36,7 +36,7 @@ estimate](s1f.5.5_census.md#the-estimate-re-taken)), and 8.5 before that.
 ([§ Acceptance re-taken](#acceptance-re-taken-2026-11-09)).
 Specified 2026-11-06 on the user's instruction of that day; extended 2026-11-07 with the
 user's name rule and instruction to generate the parser
-([Q-M1e2.25](../../m1e2_correctness/open_questions.md#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it)).
+(Q-M1e2.25).
 **Steps 1 and 2 done on 2026-11-08, on the user's go-ahead of that day; stopped there, to show the user
 before any edit**: the census is [`s1f.5.5_census.md`](s1f.5.5_census.md), and the final grammar, the
 real programs with their answers and the two questions are [`s1f.5.5_paper_grammar.md`](s1f.5.5_paper_grammar.md).
@@ -234,12 +234,12 @@ the tree is already a `SYMBOL`, `VAR`, `KEYWORD`, `INT`, `RANGE`, `STRING`, `_` 
 | `$x`, `%`, `^`, `a^b`, `*`, `-`, `+1` | refused | a name | the ruling |
 | `-7` | an int | **a name**, and `(p -7)` and `(p 7)` differ | the ruling; `-` is a connector |
 | `1..5`, `1..*` | a range | **a name**, with no range reading | the ruling; `.` is a name character today (`std.elim`). S1f.5.3's default 1 is withdrawn |
-| `neq-1`, `rule-x`, `rule.x`, `not-a` | a keyword and the rest, or refused | **a name** | a reserved word is a whole token. This overrides [Q-M1e2.17](../../m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end) (i)(a) |
+| `neq-1`, `rule-x`, `rule.x`, `not-a` | a keyword and the rest, or refused | **a name** | a reserved word is a whole token. This overrides Q-M1e2.17 (i)(a) |
 | `=` | its own token | a name | `(= a b)` is then a fact of a relation named `=`; the loader's reading stays |
 | `__`, `___`, `_-`, `_*` | refused | a name | S1f.5.1's default 1 is withdrawn |
 | `'name'`, `f'`, `{}`, `[a]` | refused | a name, quotes and brackets included | the ruling, *"for now"* |
 | `a\b` | refused | refused | `\` is the escape character |
-| `_` | the wildcard | refused | [Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard) |
+| `_` | the wildcard | refused | Q-M1e2.22 |
 
 **What the user ruled on the agent's readings**, 2026-11-07:
 
@@ -285,7 +285,7 @@ ruling, and a macro takes a `:why` ([§ T3 record](#t3-record-2026-11-08)).*
 
 **Closed keywords.** Each form names the keywords it takes, with what each holds. An unknown keyword is
 refused at the parse, rather than dropped. **The lists are ruled** (2026-11-07,
-[Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)), and
+Q-M1e2.28), and
 [S1f.5.11 § The lists](s1f.5.11_closed_keywords.md#the-lists) states them. Here each keyword becomes a token of
 its form at the swap, credited to S1f.5.11's ruling; since the re-plan of 2026-11-08 the lists are never
 written into the loader first, and the lines the loader has today, for `query`, `solve` and `config`, go in T5.
@@ -514,7 +514,7 @@ one error per round costs a round per mistake. That is M2's to use, and this sta
 
 Each goes to the user with real programs, not in this stage's prose:
 - **G-15 and G-22:** ruled 2026-11-07 with D-15
-  ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)): a keyword pair inside a
+  (Q-M1e2.28): a keyword pair inside a
   pattern, or beside an `:assert`'s conjuncts, is refused, as the draft refuses it. A term takes no keyword.
   [S1f.5.11](s1f.5.11_closed_keywords.md) refuses it in the loader first.
 - **G-21:** ruled 2026-11-07: a rule may conclude `eq` or `neq`, as the draft allows; what it means is
@@ -2223,7 +2223,7 @@ help golden blessed (`EIN_BLESS=1 cargo test -p ein-cli --test help_surface`).
   `a\b`, `Жук` and `"a"b` are refused, and no token splits in silence; `Жук` in a `:why` loads.
 - **Where the paper grammar says more**, from S1f.5.4's step 1: `_x`, `__`, `_-1` and `?_x` are a name and a
   variable; `rule-x`, `rule.x`, `neq-1` and `not-a` are names, a reserved word being a whole token, which
-  overrides [Q-M1e2.17](../../m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end) (i)(a);
+  overrides Q-M1e2.17 (i)(a);
   `=` is a name, so `(= a b c)` is a fact; `(1 a)` and `(relation 1 T)` are a fact of, and a declaration of, the
   relation `1`; and a keyword is `:` and a run of name characters, one its form does not take refused.
 - **The grammar is the phase's final one** (the user's rulings of 2026-11-08). It has no `:priority`: a rule's

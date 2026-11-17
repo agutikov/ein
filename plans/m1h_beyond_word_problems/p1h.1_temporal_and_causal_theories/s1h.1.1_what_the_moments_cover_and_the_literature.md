@@ -6,7 +6,7 @@
 the user.
 **Depends on:** the word problems as banked under
 [`examples/word_problems/`](../../../examples/word_problems/README.md) (`f3fe6ff0`, and
-[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s
+S1f.6.28's
 changes if that stage has run).
 
 ## What it rests on

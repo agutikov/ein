@@ -10,7 +10,7 @@
 Two halves, and both run the engine ($EIN_BIN or --bin, default
 `ein.rs/target/release/ein`):
 
-1. **The flag** ([T1f.5.14.6](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)):
+1. **The flag** (`--no-require-why`):
    every `.ein` under `examples/`, `tests/`, `corpus/` and `stdlib/`, per root:
    how many files the loader reads at all (`ein kb save` with `:why` not
    required), and of those how many it refuses when a `:why` is required, with

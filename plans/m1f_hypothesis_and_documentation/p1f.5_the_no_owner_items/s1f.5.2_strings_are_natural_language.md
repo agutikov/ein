@@ -14,7 +14,7 @@ it was 2.5.
   its swap (T1f.5.5.4).
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
-([Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
+(Q-M1e2.23).
 **Done 2026-11-09**, on the generated parser, in four commits: T1f.5.2.5, W38 filed and fixed (`90774a44`, [its
 record](#t1f525-record-2026-11-09)); T1f.5.2.2, the ruling held in every place and the text on every surface
 (`bbab388a`, [its record](#t1f522-record-2026-11-09)); T1f.5.2.3, no string a value anywhere in the engine, each arm
@@ -451,7 +451,7 @@ T7 keeps the grammar pages' prose: what this commit restates there is only the s
 - `glossary.md`'s **Atom**: a string is no atom. `inference/README.md`'s alive-set names and `answer_dump.md`'s
   printer, each *until M1f S1f.5.5's swap*. `examples/README.md`'s W18 and W28 families: each witness refused at
   the parse since the swap, at its string.
-- [Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for): **built 2026-11-09**, with
+- Q-M1e2.23: **built 2026-11-09**, with
   G-6 ruled and what S1f.5.2 added; its index row. S1e2.2.18's default fix: **overridden 2026-11-06** by Q-M1e2.23,
   built at the swap and retired by T1f.5.2.3. Q-M1e2.20 already said what overtook it (T1f.5.4.4: *a string is a
   value no fact holds (S1f.5.2)*).

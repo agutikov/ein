@@ -1,9 +1,9 @@
 # The taint census — 2026-11-02
 
-**S1e2.1b.4's measurement** ([the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)),
+**S1e2.1b.4's measurement** (the stage),
 the evidence for [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s
 D6, *may a route learn from a refutation that rests on an `absent`?*, and for
-[S1e2.2.5](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)'s F1–F3. It
+S1e2.2.5's F1–F3. It
 reads every dead node of every flagged cube the oracle reaches, and what its
 death rests on. It decides nothing: *forbid* stands as S1e2.4.1 ruled it, and
 until D6 is decided no route learns on a flagged program.
@@ -247,10 +247,10 @@ fact.
 
 ## 8. Handed on
 
-- [Q-M1e2.5](../../plans/m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-ruling-move-here):
+- [Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md):
   a dated note, the census and the test, and that learning before the refusal
   ships is F21's D6.
-- [S1e2.2.5](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md#the-evidence-from-s1e21b4-2026-11-02):
+- S1e2.2.5:
   F1 per dead node (§ 3), the `via` deaths for F2 (§ 2, § 5), and the
   compiled refutation for F3 (§ 7), each with its numbers, and that
   `ACTIVATOR_UNDER_ABSENT` escapes both of F3's placements.

@@ -5,7 +5,7 @@
 **Status:** planned 2026-11-11. Not started. Its report is **shown** to the user; it asks nothing new.
 **Depends on:** [S1g.11.2](s1g.11.2_theorems_as_rules.md), the rule base and its metric layer;
 [S1g.11.3](s1g.11.3_constructions_contradiction_cases.md), cases; [S1g.10.4](../p1g.10_school_algebra/s1g.10.4_linear_equations.md) for
-problems with an unknown; [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md), whose pattern it follows
+problems with an unknown; S1f.6.20, whose pattern it follows
 and whose ruled gap mechanism it uses.
 
 ## The instruction's part
@@ -19,7 +19,7 @@ justify, because the picture shows them.
 ## 1. Computation problems
 
 A geometry computation is a word problem whose words are a figure. The pattern is
-[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)'s: facts of the problem; a theory that turns them
+S1f.6.20's: facts of the problem; a theory that turns them
 into the calculator's requests, a rule a reading, each with its `:why`; the calculator's answers read back as
 facts about the figure. The theory here is S1g.11.2's rule base at the metric level.
 
@@ -35,7 +35,7 @@ facts about the figure. The theory here is S1g.11.2's rule base at the metric le
 
 **Units and what the model leaves out.** Degrees and a length's unit are names the problem states; an area's
 unit is a product the theory does not compute and says so. S1f.6.20's *the problem is a model*
-([its section](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md#the-problem-is-a-model-and-says-where-it-ends))
+(its section)
 applies with a new entry in the list of what the model leaves out: **the theory does not know where the points
 are.** It has no coordinates. Everything it knows of position is the facts of incidence and order it was given.
 
@@ -56,7 +56,7 @@ apart:
 | a point is **inside** a triangle or an angle | every proof that cuts a figure in two |
 | three points are **not collinear**, two points are distinct | every rule about a triangle |
 
-**The detection.** [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) detects a missing quantity: the
+**The detection.** S1f.6.20 detects a missing quantity: the
 theory's own rules ask for something the problem does not give. This is the same, with a relation of position
 in place of a number. Each rule of S1g.11.2 that has a side condition is the place: where every other premise
 holds and the side condition is neither stated nor derived, the theory reports *this step needs to know whether

@@ -34,7 +34,7 @@ answer, so it is where the milestone shows what answering it looks like.
 **The induction step is the part no bounded check gives.** Rows two and three *are* the induction's base and
 step for soundness, checked by Ein: every axiom valid, the rule truth-preserving. From them soundness for
 proofs of every length follows by an induction made outside Ein, as the calculator's column lemma does for
-every width ([S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md),
+every width (S1f.6.10,
 item 4). The page states exactly which part Ein checked. Whether that induction can itself be written and
 checked in Ein is [S1g.5.3](../p1g.5_peano_and_induction/s1g.5.3_induction.md)'s question about a different
 induction, and is not attempted here.

@@ -1,7 +1,7 @@
 # S1f.7.6 — A written `(false k)`: `false` with an argument
 
 **Phase:** [P1f.7](README.md) (The wrong answers P1f.5's stages found outside their scope)
-**Status:** new 2026-11-10, from [S1f.5.23's T2 record](../p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md#t2-record-2026-11-10)
+**Status:** new 2026-11-10, from S1f.5.23's T2 record
 (its out-of-scope finding 1), filed here under [Q-M1f.85](../open_questions.md#q-m1f85--which-findings-p1f7-takes).
 **Done 2026-11-11**: W81, five rows filed and fixed; refused at the parse, and at load where a macro or a parameter
 writes it ([the records](#t1-record-2026-11-11)).

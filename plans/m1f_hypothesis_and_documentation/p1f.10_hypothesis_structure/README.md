@@ -89,7 +89,7 @@ the groups.
 ruled 2026-11-16, and the register's `W26/oblig-derived-activator`, fixed that day
 ([S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)): no open row of the register has a stage of this phase
 for an owner; and five findings of the calculator's
-[`findings.md`](../p1f.6_calculator/findings.md): E-29 (S1f.10.5), E-1, E-7 and E-54
+`findings.md`: E-29 (S1f.10.5), E-1, E-7 and E-54
 ([S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md)), E-51
 ([S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md)).
 
@@ -155,12 +155,12 @@ enumerate all possible N-sets* and *ordered by the structure* are the search (S1
 ## Additions of 2026-11-12
 
 Two things came to this phase from the user's replies of 2026-11-12 to the calculator's questions
-([`questions.md`](../p1f.6_calculator/questions.md); the index of every reply is
-[`replies_2026-11-12.md`](../p1f.6_calculator/replies_2026-11-12.md)).
+(`questions.md`; the index of every reply is
+`replies_2026-11-12.md`).
 
 ### The order of the search is this phase's, and the structure comes first
 
-[Question 40](../p1f.6_calculator/questions.md#q40) asked: *Should the search choose which owed thing to
+Question 40 asked: *Should the search choose which owed thing to
 branch on by the state?*, with (a) *yes, and it is P1f.10's, with this witness: fewest alive alternatives
 first*. The user, 2026-11-12:
 
@@ -174,7 +174,7 @@ first*. The user, 2026-11-12:
 - **Discovery is automated.** The exclusions, the groups, the bounded groups and what couples them are computed
   from the program; none is declared by the program's author to get an order.
 
-**The witness, E-29** of the calculator's [`findings.md`](../p1f.6_calculator/findings.md): the obligation
+**The witness, E-29** of the calculator's `findings.md`: the obligation
 tree branches in the order the obligations are written, and that order decides whether a search ends.
 SEND + MORE = MONEY, 80 candidates, under `ein solve --single`: with its letters declared by column, D E Y N
 R O S M, *Solution — R is one state* in 17 747 saturations; the same program with the letters declared as the
@@ -190,7 +190,7 @@ program sets.
 
 ### What the blind enumerator takes for an object
 
-Row 56 of the calculator's [section J](../p1f.6_calculator/questions.md#j-findings-that-need-an-owner),
+Row 56 of the calculator's section J,
 **E-1 and E-7**, was left empty by the user and so took its suggestion: *(b) P1f.10, which plans how the
 candidates are built*. **E-54** joined them on 2026-11-14. They are
 [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md). The user ruled the case behind them, a

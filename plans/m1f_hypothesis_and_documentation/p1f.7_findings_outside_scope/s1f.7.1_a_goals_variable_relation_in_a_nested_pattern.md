@@ -8,7 +8,7 @@ expanded.
 
 ## The finding
 
-Recorded in [S1f.5.21's T1 record](../p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md#t1-record-2026-11-10)
+Recorded in S1f.5.21's T1 record
 on the release binary at `864b16ed`, not re-checked since:
 
 > A query's goal that writes a pattern inside a pattern whose relation is a variable, `(query :goal (p (?R ?x)))`,

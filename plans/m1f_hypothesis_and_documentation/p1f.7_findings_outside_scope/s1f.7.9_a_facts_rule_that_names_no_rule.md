@@ -1,7 +1,7 @@
 # S1f.7.9 — A fact's `:rule` that names no rule
 
 **Phase:** [P1f.7](README.md) (The wrong answers P1f.5's stages found outside their scope)
-**Status:** new 2026-11-10, from [S1f.5.23's T2 record](../p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md#t2-record-2026-11-10)
+**Status:** new 2026-11-10, from S1f.5.23's T2 record
 (its out-of-scope finding 4), filed here under [Q-M1f.85](../open_questions.md#q-m1f85--which-findings-p1f7-takes).
 Not started. **Reduced to its rows on 2026-11-11** (the user: *"yes S1f.7.9 moves to a new F24"*): the fix and the
 question under it are [F24](../../followups/f24_written_provenance.md)'s, and this stage does T1 and T2 below and

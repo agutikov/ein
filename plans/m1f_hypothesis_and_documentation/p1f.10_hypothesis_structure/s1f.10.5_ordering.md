@@ -9,7 +9,7 @@ order's input; [S1f.10.13](s1f.10.13_the_price_list.md), for the ceiling. It doe
 [S1f.10.3](s1f.10.3_the_restricted_join.md), and where both are built the order is measured with it on.
 **Waited for by:** `std.math.crypt`, the cryptarithm theory (reply 42 of the calculator's questions), whose
 example's cost hangs on declaration order until an order is derived.
-**Owns:** E-29 of the calculator's [`findings.md`](../p1f.6_calculator/findings.md).
+**Owns:** E-29 of the calculator's `findings.md`.
 
 ## Context
 

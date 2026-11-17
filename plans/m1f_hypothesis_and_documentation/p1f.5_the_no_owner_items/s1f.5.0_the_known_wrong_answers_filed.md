@@ -20,7 +20,7 @@ so that each row holds today's wrong answer before its fix.
 
 M1e2 closed on 2026-11-08 with about twenty wrong answers known and in no register row. Each is owned by a
 stage of this phase, which planned to file its own rows as its step 1. The user's ruling of 2026-11-05,
-[Q-M1e2.16](../../m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)
+Q-M1e2.16
 (5), files a live wrong answer that has an owner and no row as an `open` row with that owner, so that a
 close can name it. The agent asked whether to file them before M1e2's close or later. The user: *"plan adding
 rows in p1f.5"*. So this stage files them, all at once and first, and M1e2 closed naming them.

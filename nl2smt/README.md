@@ -1,6 +1,6 @@
 # `nl2smt/` — Zebra sentences through link grammar to SMT
 
-A proof of concept, [M1j](../plans/m1j_nlp_smt_poc/README.md): the Zebra
+A proof of concept, M1j: the Zebra
 puzzle's clues as English lines go in, and a solver's answer comes out.
 
 ```

@@ -1,7 +1,7 @@
 # S1f.7.8 — A `(solve …)` list that names nothing the program declares
 
 **Phase:** [P1f.7](README.md) (The wrong answers P1f.5's stages found outside their scope)
-**Status:** new 2026-11-10, from [S1f.5.23's T2 record](../p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md#t2-record-2026-11-10)
+**Status:** new 2026-11-10, from S1f.5.23's T2 record
 (its out-of-scope finding 3), filed here under [Q-M1f.85](../open_questions.md#q-m1f85--which-findings-p1f7-takes).
 **Done 2026-11-11**: the records are below ([T1](#t1-record-2026-11-11), [T2](#t2-record-2026-11-11),
 [T3](#t3-record-2026-11-11), [T4](#t4-record-2026-11-11)). W76, five rows, filed and fixed; Q-M1f.114 to .116

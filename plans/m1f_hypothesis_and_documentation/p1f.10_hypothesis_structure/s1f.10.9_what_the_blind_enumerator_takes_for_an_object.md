@@ -15,11 +15,11 @@ this phase"*: H9-4 filed and fixed as the register's W98; H9-1 stopped for the u
 opposite ways.
 **Depends on:** nothing in the phase. [S1f.10.1](s1f.10.1_exclusion_census.md)'s census reads the same
 candidate sets, and the bundle marks the candidates this stage counts.
-**Source:** row 56 of [section J](../p1f.6_calculator/questions.md#j-findings-that-need-an-owner) of the
-calculator's questions, E-1 and E-7 of its [`findings.md`](../p1f.6_calculator/findings.md). The row's
+**Source:** row 56 of section J of the
+calculator's questions, E-1 and E-7 of its `findings.md`. The row's
 suggestion was *(b) P1f.10, which plans how the candidates are built*; the user left the line empty on
 2026-11-12, and an empty line takes the recommendation
-([round 2, § Left empty](../p1f.6_calculator/questions_round2.md#empty)). So this stage stands on an empty
+(round 2, § Left empty). So this stage stands on an empty
 line and is dropped if the user names the row.
 
 ## The three findings
@@ -1112,12 +1112,12 @@ left; no reading below moves them.
 
 **Why the pages do not decide it.**
 
-- [Q-M1e2.9](../../m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program) (a),
+- Q-M1e2.9 (a),
   ruled 2026-11-04, *meant literally*: every constant in an argument position is a name of the program, and
   [`solution-semantics.md` § 1.2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names) says every name
   is in the candidate list, a list that left one out an engine bug (W4, W15). Read so, `eq` in `(order eq)` is
   an object, and H9-1 is a wrong answer. The close's line was this reading.
-- [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations), ruled 2026-11-07:
+- Q-M1e2.26, ruled 2026-11-07:
   `eq` is *the relation of equality*, in every place a relation can be written. Read with § 1.2's relation
   rule, a value `eq` is a relation's name and no object, as `colour` in `(order colour)` is none where `colour`
   is declared. **The register holds this reading as right**: `W52/relvar-eq-premise`, `fixed`, binds a relation

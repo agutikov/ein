@@ -8,7 +8,7 @@ D4,
 where B (a diagnostic) was taken now and this was filed as the real fix.
 
 **Trigger:** when a program that needs the shape shows up, or when
-[S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
+S1f.10.8
 rules that a refutation resting on an `absent` stays **legal**. There is now a
 third: `ein-infer/tests/refutation_under_absent.rs` fails the moment the
 corpus's exposed set moves in either direction, so a program written with the
@@ -18,9 +18,9 @@ is nothing left to be careful about — and that is the cheapest outcome
 available.
 
 **2026-11-02: the shape is forbidden.** The ruling moved from S1f.10.8 to
-M1e2's [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling),
+M1e2's S1e2.4.1,
 and the user ruled *forbid*. This theme closes without being done when
-[S1e2.2.5](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)'s
+S1e2.2.5's
 refusal ships, if that refusal covers the derived case (its F2) and the plans a
 node compiles (its F3). Until then, and for whatever those leave loading, what
 a route may learn is [F21](f21_non_monotone_programs_decided.md)'s D6, whose

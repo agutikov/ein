@@ -30,7 +30,7 @@ The minimal line is the members of R with no smaller member of R. ∅ is a subse
 **where ∅ is in R, the minimal line is {∅}**, and no other state can be on it. Whether ∅ is in R is root's
 fixpoint alone: root alive and owing nothing, one saturation. The rule holds on every program, monotone or
 not, within `--region-limit` or past it. It needs no assumption about what a node is
-([Q-M1e2.2](../../m1e2_correctness/open_questions.md), F21), since ∅ is root itself.
+(Q-M1e2.2, F21), since ∅ is root itself.
 
 ## The case
 
@@ -308,11 +308,11 @@ Run last, after T1f.5.6.6, so that it writes W42's hash. The pages each output-c
 - **The live read-out reference** said each change in the commit that made it: § 3's `verdict` and mode `minimal line`
   rows and a paragraph under them (T2), § 2's describe `minimal line` row and § 11.2's `region.minimal.trivial` (T3), and
   § 1's column (T6); its examples page was re-written by `utils/read_out_examples.py` in T2 and T3.
-- **[`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3.3**, a closed
+- **`solve_interface.md` § 3.3**, a closed
   plan's page and the reference for how each mode is computed: a paragraph under its table, the ∅ rule on a flagged
   program, and that the route row still names L7 (Q-M1f.23). M1e2's `read_out.md` is a record and is not edited, nor are
   the probe outputs under `p1e2.1b_non_monotone_programs/detector_proposal/outputs/`.
-- **[The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md)**: S-16, P-14, S-17 and F1 each
+- **The no-owner inventory**: S-16, P-14, S-17 and F1 each
   say what fixed them, in the summary table and above each item, which stays as it was taken.
 - **The register**: W42's two `[case.fixed]` carry `31e9c7f7`, and its header says so;
   [Q-M1f.22](../open_questions.md#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value) names the commit.

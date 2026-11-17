@@ -1,7 +1,7 @@
 # F21 — Non-monotone programs: node functions and path dependence, decided
 
 **Filed 2026-11-02**, from M1e2's
-[P1e2.1b](../m1e2_correctness/p1e2.1b_non_monotone_programs/README.md), on
+P1e2.1b, on
 the user's direction of that day, verbatim:
 
 > Currently my goal is not to build complete theory os solving the
@@ -26,7 +26,7 @@ what the engine does until it is taken. The docs half of the analysis, each
 claim labelled by its standing, is
 [`monotonicity.md` § 2](../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program).
 Each option's measured consequences per program are P1e2.1b's
-[S1e2.1b.7](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_the_consequences_written_down.md)'s.
+S1e2.1b.7's.
 
 **Trigger** (any one):
 
@@ -34,15 +34,15 @@ Each option's measured consequences per program are P1e2.1b's
   program the static check flags (D2, D3);
 - R is wanted past the oracle's limit on a flagged program, such as
   `lattice/06_friends_tables`, the conditional obligation (D7);
-- M1e2's [S1e2.2.5](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
+- M1e2's S1e2.2.5
   builds *forbid*'s refusal: (E) is taken with it or explicitly declined, and
   D6's window closes. **Fired 2026-11-04**: the refusal is built, with the
   user's F2, *via, per activator*; (E) was declined for that build (D1 stays
   open, below), and D6's window closed (below);
-- the wrong-answer revisit ([S1e2.1.7](../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md))
+- the wrong-answer revisit (S1e2.1.7)
   cannot settle W8 under today's documented node
-  ([S1e2.2.6 § The deferral](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md#the-deferral-and-the-milestones-acceptance));
-- M1f's [S1f.5.15](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md),
+  (S1e2.2.6 § The deferral);
+- M1f's S1f.5.15,
   which plans the stratification diagnostic, starts (D2's (D) and stratum
   order);
 - the detector (P1e2.1b's S1e2.1b.5) flags a program added to the corpus that
@@ -145,7 +145,7 @@ Argued, not tested:
     bottom is root, and the meet exists but is not the intersection.
   - This is the read-out's `merged`, k_c commitments onto k_s states. Zebra's
     270 454 alive commitments land on 27 alive states
-    ([`walk_and_region.md` § 6](../m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md#6-what-this-means-for-question-3)).
+    (`walk_and_region.md` § 6).
 - **Path-dependent: memoizing by C is unsound**, which is exactly the
   parent-path difference above.
   - Memoizing by state stays sound, but the DAG is not a lattice: one C
@@ -288,7 +288,7 @@ monotone as well.
 ### What *forbid* covers, and what it does not
 
 *Forbid*, ruled 2026-11-02
-([S1e2.4.1 § 5](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)),
+(S1e2.4.1 § 5),
 refuses `(absent P)` ⟹ `(false)` or `(not …)` over a relation a commitment
 can still extend. Its refusal is not built: S1e2.2.5 builds it, with F1–F5
 open, in P1e2.2, the last phase of the milestone's order. It does not cover:
@@ -325,7 +325,7 @@ were false"*.
   only trigger and activator holes remain (D4). That holds if the refusal
   reads D, not fact grain, and sees the plans a node compiles (F1, F3); it is
   an argument from the two sections above.
-- **What it costs.** [`site_census.md` § 2](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)
+- **What it costs.** `site_census.md` § 2
   (`4b822a8d`) lists 12 programs with an `absent` site that concludes a
   positive fact, and `lattice/08` was banked after it (`6743dd17`): 13.
 
@@ -346,7 +346,7 @@ were false"*.
   | `lattice/08_absent_witness_hole.ein` | `soup-unless-allergic` → `meal` | no |
 
   The last column is read off the `direct` and `via` sets of
-  [S1e2.4.1 § 1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#1-the-exposed-set-re-counted)
+  S1e2.4.1 § 1
   (`6e7dfc49`). Under F1 (b) and F2 with `via`, (E) refuses 8 programs
   *forbid* does not, 9 since S1e2.1b.7 banked `lattice/10_fifo_gap`. Under F1
   (c), fact grain, `features/05` and `/12` load under both. **Each reading,
@@ -380,7 +380,7 @@ decided:** *forbid* as ruled, and the 13 programs load, 14 with
 
 ### D2 — Q-M1e2.2: what a node's state is
 
-[Q-M1e2.2](../m1e2_correctness/open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in),
+[Q-M1e2.2](../../docs/decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md),
 asked of every node. Moot under D1's (E).
 
 | | a node's state | measured consequence |
@@ -412,7 +412,7 @@ the one row this followup owned, until M1e2 S1e2.2.25 filed three more
 `W8/f07-rules-swapped`, `W8/fifo-gap` and `W8/corner-house`, all four
 reviewed `deferred` with this page as `owner`.
 
-**At M1e2's wrong-answer revisit** ([S1e2.1.7](../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03),
+**At M1e2's wrong-answer revisit** (S1e2.1.7,
 2026-11-03) the user kept this deferral and amended the milestone's acceptance
 instead (*"(2) Amend acceptance"*): W8's two rows, `W8/features-07` and
 `W8/stale-naf-fork`, stay `open` in `corpus/wrong_answers.toml`, reviewed
@@ -446,12 +446,12 @@ programs.
 
 ### D4 — what is reported when R has holes: Q-M1e2.7 (d)
 
-[Q-M1e2.7 (d)](../m1e2_correctness/open_questions.md#sub-questions-for-p1e21as-first-stage):
+Q-M1e2.7 (d):
 (a) R, its lines named as R's extremes, every minimal hole with its cause and
 repair edges; (b) R as convex pieces; (c) a qualifier; (d) a refusal. With
 (d1) dead and owing holes, one word or two, (d2) a claim form, (d3) the stub's
 words, (d4) `lattice/04`'s register row. Evidence:
-[S1e2.1b.3](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s
+S1e2.1b.3's
 [`hole-census.md`](../../utils/censuses/hole-census.md)
 (2026-11-02, `cargo run --release -p ein-infer --example hole_census`):
 
@@ -474,7 +474,7 @@ named apart and the dead row naming the `absent` its refutation rests on
 `docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D4.
 **Until decided:** the listing is R, and the `lattice` row names up to four
 minimal holes with why each is out
-([`read_out.md` § 6.3](../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent)).
+(`read_out.md` § 6.3).
 
 ### D5 — the handling: refuse, qualify, or search differently
 
@@ -493,9 +493,9 @@ compiles through an activator): may a route carry such a refutation past the
 node that derived it? (a) per program: no route learns on a flagged program;
 (b) per refutation: learn from a dead node whose derivation has no `absent`
 premise over D, read off provenance, which is
-[F18](f18_world_aware_negatives.md)'s narrow form; (c) the refusal first, a
+F18's narrow form; (c) the refusal first, a
 reorder of the milestone. Evidence:
-[S1e2.1b.4](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)'s
+S1e2.1b.4's
 [taint census](../../utils/censuses/taint-census.md)
 (2026-11-02, `cargo run --release -p ein-infer --example taint_census`) and the
 test it banks, `ein-infer/tests/region.rs::an_untainted_death_is_dead_in_every_superset`:
@@ -535,7 +535,7 @@ has to be taken, for `ACTIVATOR_UNDER_ABSENT` to be covered.
 
 ### D7 — the non-monotone search past the oracle's limit
 
-Was M1e2's [S1e2.1c.3](../m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.3_the_non_monotone_search.md),
+Was M1e2's S1e2.1c.3,
 moved here 2026-11-02; its file keeps the design notes. (a) the guard split;
 (b) the cube past the limit when asked by name, `--region-limit`; (c) partial,
 C3. Evidence: `docs/kernel/inference/monotonicity.md` at `50739fdb` § 6.4:
@@ -548,14 +548,14 @@ split presumes D2. Re-taken by S1e2.1b.7, 20 of 22 agree:
 
 ## Handed over by M1e2's inventory, 2026-11-05
 
-[The inventory of 2026-11-05](../m1e2_correctness/inventory_2026-11-05.md), taken before M1e2's close at the user's
+The inventory of 2026-11-05, taken before M1e2's close at the user's
 request, found items on flagged programs that had this followup's decisions as
 their owner and no record here. The user ruled where each goes the same day
-([Q-M1e2.16](../m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3) and (5)).
+(Q-M1e2.16 (3) and (5)).
 
 **Three wrong answers, filed as rows.** Each answers by today's documented
 node, (A), and is wrong under at least one reading D2 lists.
-[S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) filed each as an `open` register row, reviewed `deferred`,
+S1e2.2.25 filed each as an `open` register row, reviewed `deferred`,
 with this page as its `owner` (2026-11-05), each re-taken at `94c75204` in
 release and debug, and each row's `right` giving the answer under each
 reading D2 lists:
@@ -574,21 +574,21 @@ M1e2's close hands them over here:
 
 | inventory id | what | source |
 |---|---|---|
-| S-6 | the detector's `RootPlans` keys root's plans by the activator's symbols, so an all-int obligation activator derived at a node would read as root's and its hole go unattributed. No witness | [S1e2.2.16 § Notes](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.16_activator_text_key.md#notes) |
-| S-7 | the detector's chain attribution reads every application of a rule as its activator, and seeds an owing node from symbol arguments only. No witness; S1e2.2.19's `Prov::activator` could feed it | [S1e2.2.17 § Notes](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.17_forbid_activator_chain.md#notes) |
+| S-6 | the detector's `RootPlans` keys root's plans by the activator's symbols, so an all-int obligation activator derived at a node would read as root's and its hole go unattributed. No witness | S1e2.2.16 § Notes |
+| S-7 | the detector's chain attribution reads every application of a rule as its activator, and seeds an owing node from symbol arguments only. No witness; S1e2.2.19's `Prov::activator` could feed it | S1e2.2.17 § Notes |
 | S-8 | the static check's D does not follow activators, so its site list calls a read static that a plan compiled at a node makes dynamic; the verdict holds. `forbid-chain-node-writes.ein`, which *forbid* refuses | S1e2.2.17 § Notes (its default 2) |
 | S-9 | `absent_premises` (the dumps, `region.md`'s *rests on*, the detector's input) is read off the first contradiction's positive side, and follows neither the activator nor the negative side the core follows since S1e2.2.19 and S1e2.2.21. Library only | S1e2.2.19 § Notes; S1e2.2.21 § Notes |
-| S-11 | `features/01`'s activator site is a relation-grain name collision: the rule writes `unknown-feeling` at arity 2, its activator has arity 1. It cannot bite, and it keeps the program flagged | [`site_census.md` § 2](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md) |
+| S-11 | `features/01`'s activator site is a relation-grain name collision: the rule writes `unknown-feeling` at arity 2, its activator has arity 1. It cannot bite, and it keeps the program flagged | `site_census.md` § 2 |
 
 ## Handed over by M1f, 2026-11-14
 
-One label more, [E-66](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) of M1f's P1f.6, moved here
+One label more, E-66 of M1f's P1f.6, moved here
 on the user's word of 2026-11-14 (*"Q-M1f.271 (a) is fine, E-66 and E-68 - to followups"*). Like S-6 to S-11 above it moves no answer and no command's output: it
 is a reading the static check makes of a program's rules, and it is decided with what that check labels.
 
 | id | what | source |
 |---|---|---|
-| E-66 | the static map of what rules derive, `ein_infer::compile::asserted_relation` and `negated_relation`, reads a plan's first conclusion alone (`plan.assert_template()`), so a relation a rule concludes only as its second or a later conjunct is not *producible* to it: `naf_deps::compute_naf_map` files an `(absent …)` over it as watching a declared-only relation, so the stratification advisory (*watches rule-derived relation(s)*) is not given for it, and `closed::emit_closed`, the auto-closure pass, closes it; `naf_deps::refuting_conclusion` reads every conclusion. No command prints either: the shape digests (`shape::naf_map`, `hyp_shape_with`) and tests read them. Reading every conclusion moves those digests on each program whose rule concludes two relations and reads the second under `absent` elsewhere | [S1f.6.37](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md)'s T1f.6.37.2, the inventory of what reads a conclusion (2026-11-14) |
+| E-66 | the static map of what rules derive, `ein_infer::compile::asserted_relation` and `negated_relation`, reads a plan's first conclusion alone (`plan.assert_template()`), so a relation a rule concludes only as its second or a later conjunct is not *producible* to it: `naf_deps::compute_naf_map` files an `(absent …)` over it as watching a declared-only relation, so the stratification advisory (*watches rule-derived relation(s)*) is not given for it, and `closed::emit_closed`, the auto-closure pass, closes it; `naf_deps::refuting_conclusion` reads every conclusion. No command prints either: the shape digests (`shape::naf_map`, `hyp_shape_with`) and tests read them. Reading every conclusion moves those digests on each program whose rule concludes two relations and reads the second under `absent` elsewhere | S1f.6.37's T1f.6.37.2, the inventory of what reads a conclusion (2026-11-14) |
 
 ## Handed over by M1f, 2026-11-16: rewriting a non-monotone program
 
@@ -657,6 +657,132 @@ activator classes, obligation triggers); for each class whether a rewrite exists
 rewrite held to the oracle on both forms; and the semantics chosen. Nothing is built; it is parked with the rest of
 this page.
 
+## Handed over by M1f, 2026-11-16: four findings of P1f.10
+
+P1f.10's close proposed these four for this followup, and the user accepted them as proposed (*"Accept as
+proposed"*, 2026-11-16). They are moved here verbatim from the phase's `findings.md` when its folder is deleted
+(S1f.20.9); links into the phase's own pages are their label text. H6-1 is the static check's (an hrule that reads
+what a commitment can change, which nothing flags); H6-3 and H6-4 go with it; K-41 is the coupling's view of a
+native mirror.
+
+#### H6-1 — An hrule that reads what a commitment can change proposes at a node what it did not at root, and nothing flags it
+
+Q-M1e.11's loss without an obligation derived at a node. H is the generator's list at root's fixpoint, and an
+hrule is matched there and nowhere else. Where an hrule's `:match` reads a relation another hrule proposes, the
+facts it would propose once a commitment holds one are never candidates.
+
+`hr/reads_h.ein`:
+
+```
+;; S1f.10.6, T1, the hrule rung with no derived activator: both debts are
+;; stated, there is no rule `arm`, and the hrule that proposes a drink reads
+;; `likes`, which the other hrule proposes.
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation likes  Person Food :why "{?1} likes {?2}")
+(relation drinks Person Drink :why "{?1} drinks {?2}")
+(is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
+(total-owed likes is-a)
+(total-owed drinks is-a)
+(hrule guess-likes  () :match (and (is-a ?a Person) (is-a ?b Food))  :assert (likes ?a ?b)  :why "guess: (likes {?a} {?b})?")
+(hrule guess-drinks () :match (and (likes ?p ?f) (is-a ?d Drink)) :assert (drinks ?p ?d) :why "{?p} likes {?f}; guess: (drinks {?p} {?d})?")
+```
+
+`hr/reads_h_stated.ein`:
+
+```
+;; S1f.10.6, T1: hr/reads_h.ein with the fact its second hrule reads stated.
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation likes  Person Food :why "{?1} likes {?2}")
+(relation drinks Person Drink :why "{?1} drinks {?2}")
+(is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
+(total-owed likes is-a)
+(total-owed drinks is-a)
+(likes Ann Soup)
+(hrule guess-likes  () :match (and (is-a ?a Person) (is-a ?b Food))  :assert (likes ?a ?b)  :why "guess: (likes {?a} {?b})?")
+(hrule guess-drinks () :match (and (likes ?p ?f) (is-a ?d Drink)) :assert (drinks ?p ?d) :why "{?p} likes {?f}; guess: (drinks {?p} {?d})?")
+```
+
+`ein solve` and `ein oracle` on the first: H is `(likes Ann Soup)`, one candidate; the node that holds it owes
+*drinks owes Ann a Drink*; **R is empty, every alive node owing**. On the second, which states the fact the
+second hrule reads: H is `(drinks Ann Tea)` and R one state. `owed_census --iterate` on the first: the
+generator at `{(likes Ann Soup)}` proposes `(drinks Ann Tea)`, and R over the two candidates is one state,
+`{(drinks Ann Tea) (likes Ann Soup)}`, which `ein oracle` answers on the copy that states both
+(`price/reads_h_r2.ein`).
+
+**Nothing detects it.** No rule concludes an activator and the static check does not read an hrule's plan, so
+the program is *monotone*: `ein solve` takes the state route and `--single` the obligation tree with L5. Root
+owes both instances, so `check_owed` has nothing to refuse. The read-out's `outside` row is silent: no
+saturation rule writes `drinks`, no query reads it, and an hrule asserts it.
+
+**The corpus** (`owed_census`, 2026-11-15, the command in the stage's record). Four programs have an active
+hrule whose `:match` reads a relation in `D`: `examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein`
+(`paid`), and `examples/ein-bugs/wrong-answers/past-limit-lines.ein`,
+`examples/lattice/04_obligation_trigger_hole.ein` and `tests/region/07_cube.ein` (`is-a`). On none does a node
+propose a fact outside H: three by the cube at the oracle's default limit, the second at `--limit 17`. Of the
+88 programs on the hrule rung the cube read 61, and **no corpus answer is known to be concerned**.
+
+**How it reads against the rulings.**
+[`solution-semantics.md` § 1.4](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe) defines a candidate as
+*a fact the generator proposes at root*, so R is right by the definition. The same section holds that *H must
+contain every fact a model needs* (ruling (h)), and that where it does not *either the program is wrong … or
+the engine is*: which of the two an hrule conditioned on a guess is, is the user's. **Not filed as a register
+row.**
+
+**What it bears on.**
+
+- **Q-M1f.307.** Answer (A) read over nodes (the record's reading 2) gives the twin's model here. Read
+  statically from activators (reading 1) it does not reach this program, and (B), (C) and (D) as worded do
+  not either: no activator is derived, and the program is monotone.
+- **README § The domain's second paragraph**, *H does not grow*, is enforced for
+  debts on a monotone program and for nothing an hrule proposes. Track S reads H as root builds it either way;
+  what is not enforced is that no node would propose more.
+
+**Today:** open, to be shown with Q-M1f.307. No owner.
+
+#### H6-3 — The mechanisms check reads root's activators, so a list that takes out what a later debt owes is accepted
+
+`mechanisms::check` refuses a program in which an obligation owes a relation that `:no-hypothesis`,
+`:hypothesis-relations` or a closure takes out (O + NH, O + HR, O + C), and reads an obligation as *a plan
+root's activators compile*. An obligation whose activator only a commitment derives is not read, so the same
+list beside it loads.
+
+The witness with `drinks` in its list, `(solve :no-hypothesis (is-a drinks))`: it loads, H is
+`{(likes Ann Soup)}`, and R is empty, every alive node owing; the node that likes Soup owes a drink no commitment
+may be about. With `(total-owed drinks is-a)` also stated the program is refused at load: *solve: its
+:no-hypothesis names drinks, and obligation 'total-owed', activated by (total-owed drinks is-a) … owes drinks — an
+obligation is paid by facts of the relation it owes, so a state that owes drinks and may not be given one is
+stuck: drop drinks from the list*. Both runs are the same before task 4 and after it (`ein solve` on the two
+programs, the binary of `a3c719bf` and the fixing commit's).
+
+Since task 4 the obligations rung knows that debt: it reads the activator off `arm`, compiles its plan, and
+scopes it out by the list, as it scopes out a plan of root's, without the `hypskip` line or the *stuck* report a
+debt root owes gets. So the engine now holds, at load, the fact the check would need. **Today:** an empty R of
+the owing kind where the twin that states the activator gets a load error that says why. Not a wrong answer by
+the definitions: the program says no commitment is about `drinks`. A fix would have the check read the rung's
+later debts, which is one more reader of `forbid::derivable_activators`; whether a debt a commitment *can*
+bring refuses a program at load, at relation grain and so on the *over* case too, is a ruling.
+
+#### H6-4 — `hypgen::eligible_relations` does not name a later debt's relation
+
+`eligible_relations` answers *which relations can this program's generator still propose*, for
+`naf_deps`' refutation advisory and for `structure.rs`, and on the obligations rung it is the `(open ?R)`
+arguments of the plans root's activators compile. Since task 4 the rung proposes facts of a later debt's
+relation too, and that relation is not in the set (the function's doc says so). Reading it there would mean
+running the rung's scans, which the advisory's one caller does before root has a hypothesis.
+
+**Today:** no corpus program differs: the one program with a later debt, the witness, has no `absent` for the
+advisory to read, and *forbid*, which is what refuses a refutation resting on an `absent` over a relation a
+commitment extends, reads `D` from H's own relations and so does see it. `scope::outside`, the read-out's
+`outside` row, was given the later relations in task 4 and is right.
+
+#### K-41
+
+| id | what | witness, and the command | found by | today | state |
+|---|---|---|---|---|---|
+| K-41 | **The whole node does not read a native mirror's derivation of a fact committed in it, so the coupling can leave a member of N in no edge.** The saturator's `__symmetric__` mirror returns a firing only where it writes a new fact; where the mirror is there already it records an alternative justification, which the store refuses for a fact whose primary is a commitment (`Kb::accepts_justification`) and which `:record-alternative-justifications false` does not ask for. The whole node commits every candidate, so of two candidates that mirror each other neither is read as derived from the other, and a death that reads one through the other's mirror is read as reading it committed. The probe: `(__symmetric__ knows)`, hrules proposing `(knows Ann Bob)` and `(knows Bob Ann)` (from `(pair Ann Bob)`, `(pair Bob Ann)`), `(likes Cid)` and `(sings Cid)`, and one rule concluding `(false)` from `(knows Bob Ann)`, `(likes Cid)` and `(sings Cid)`. The oracle's N is `{(knows Ann Bob), (likes Cid), (sings Cid)}` and the same with `(knows Bob Ann)`; the structure's coupling has two edges, `{(knows Ann Bob), (knows Bob Ann)}` (a tie, *implies*) and `{(knows Bob Ann), (likes Cid), (sings Cid)}`, so no edge holds a question of each member of the first. That is the claim `ein-infer/tests/coupling.rs` holds wherever a describe exhausts on the corpus, *every member of N lies inside one edge*; of the corpus programs that search, one writes `__symmetric__`, `ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein`, and nothing in it dies | the program above, kept as `build/s18/probes/p5_native_mirror.ein`; `ein render h-space FILE --dump DIR`, then `jq '.coupling.edges[].questions' DIR/h-space.json`; `ein oracle FILE --dump DIR2`, N in `DIR2/region.md` | S1f.10.18, 2026-11-16, T1's item *the kernel's mirror* | not a wrong answer: the coupling orders the tree and moves no answer. A claim of the structure that holds on the corpus and not in general, and a premise of S1f.10.18's narrowed claim (no `__symmetric__` relation) | open, no owner. The next way is the whole node reading a mirror's redundant application as a firing (`Nodes::with_fixpoint_supported_within`), and the probe banked with a corpus entry |
+
 ## Why it is parked
 
 - The user's direction, above.
@@ -675,13 +801,13 @@ this page.
   kinds of program compared; § 7, this analysis with every claim labelled by
   its standing; § 8, what is open.
 - [`node-census.md`](../../utils/censuses/node-census.md)
-  (D2, D3), [`site_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md)
+  (D2, D3), `site_census.md`
   (D1, D7), S1e2.1b.3's `hole_census.md` (D4), S1e2.1b.4's taint census (D6),
   S1e2.1b.7's consequences (`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1–8.2,
   all) and its path and cumulativity censuses
   ([`node-census.md` § 11–12](../../utils/censuses/node-census.md#11-the-path-census--s1e21b7), D2 and D3).
   The causes as one table: [`monotonicity.md` § 9](../../docs/ein/reasoning/kb-evolution/monotonicity.md#9-the-causes).
-- [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md):
+- S1e2.4.1:
   *forbid*, its F1–F5, the `via` set and the rewrites that keep R. Its fourteen
   probes are kept here, in [`f21_probes/`](f21_probes/), since M1e2's folder is
   deleted: the hole, node and taint censuses run them, and `via_hole.ein` is
@@ -689,7 +815,7 @@ this page.
 - [`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*, which D2's (B) and (C)
   would qualify.
-- [F18](f18_world_aware_negatives.md), whose closure rode on *forbid* (D6).
+- F18, whose closure rode on *forbid* (D6).
 - Prior art: stable models (Gelfond & Lifschitz, ICLP 1988), the guard split's
   move; stratified programs and their perfect model (Apt, Blair & Walker,
   1988), D2's (D) and stratum order; the well-founded semantics (Van Gelder,

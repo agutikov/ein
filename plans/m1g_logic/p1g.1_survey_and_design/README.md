@@ -3,7 +3,7 @@
 **Milestone:** [M1g](../README.md)
 **Status:** planned 2026-11-11, not started.
 **Depends on:** M1f complete; of P1f.6,
-[S1f.6.17](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md)'s gates and its
+S1f.6.17's gates and its
 ruling on their names.
 **Stops for the user:** the whole phase is one stop. Its page, `design.md` in this directory, is read and
 ruled on before any other phase writes a file outside `plans/` and `build/`.
@@ -17,7 +17,7 @@ The instruction asks five things that a design must answer before a theory is wr
 > what we can implement already and how, what is nearly possible, what is required.
 
 The phase answers each **on a program whose answer the binary computed**, the way
-[S1f.6.1](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.1_design_proposal.md) did for the
+S1f.6.1 did for the
 calculator: a prototype under `build/m1g/` (gitignored), a page that shows each program with every artefact
 of its run, the questions each with a recommendation, and nothing under `stdlib/`, `examples/` or `tests/`
 until the user rules. It sorts what it tries into three piles, which are the instruction's own:

@@ -5,11 +5,11 @@
 **Status:** planned 2026-11-11. Not started. **Stops for the user once,** before the degenerate cases are built:
 what an equation with no solution, or with every number as one, *is*.
 **Depends on:** [S1g.10.3](s1g.10.3_simplification_and_identities.md), the normal form each side is brought to;
-[S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md) and
-[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md) for roots that are not natural numbers;
-[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) for the word problems, whose theory this stage
+S1f.6.7 and
+S1f.6.8 for roots that are not natural numbers;
+S1f.6.20 for the word problems, whose theory this stage
 extends and does not rewrite. It takes over the equations of
-[S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md), items 1 and 2.
+S1f.6.10, items 1 and 2.
 
 ## The instruction's part
 
@@ -86,7 +86,7 @@ with and without.
 
 ### Word problems that need an unknown
 
-[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) reads *gave* as a subtraction from a known quantity.
+S1f.6.20 reads *gave* as a subtraction from a known quantity.
 *Bob has some apples. He gave 2 away and has 3. How many had he?* has the same words and the unknown at the
 start. Two ways, both tried:
 

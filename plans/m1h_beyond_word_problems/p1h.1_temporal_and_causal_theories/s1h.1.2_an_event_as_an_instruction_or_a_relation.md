@@ -7,7 +7,7 @@
 [S1h.1.5](s1h.1.5_the_design_page_and_the_stop.md).
 **Depends on:** [S1h.1.1](s1h.1.1_what_the_moments_cover_and_the_literature.md)'s problem set;
 `examples/word_problems/before.ein`, which
-[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)
+S1f.6.28
 banks. If that stage has not run, this one writes the three facts beside scratch copies of `words.ein` and
 `gaps.ein`, as the planning did on 2026-11-13 (`build/m1h/before/before.ein`), and says so.
 **Read with:** [M1g's P1g.9](../../m1g_logic/p1g.9_one_equation_three_methods/README.md), whose S1g.9.1 lists

@@ -8,7 +8,7 @@ commit; the assertion is gone, and where an hrule reads `not` every hrule is mat
 
 ## The finding
 
-Recorded in [S1f.5.24's T2 record](../p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md#t2-record-2026-11-10)
+Recorded in S1f.5.24's T2 record
 on the release binary at `dbfd7862`:
 
 > **An hrule whose `:match` reads `not` stops a debug build.** `(hrule h () :match (and (a ?x) (absent (not (p

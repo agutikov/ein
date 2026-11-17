@@ -110,6 +110,6 @@ on [F8](../../followups/f8_FCA_RCA_odis_tptp/ideas.md)'s `C(n)` question.
 - [P2.4](../p2.4_loop/README.md) — the knobs; [P2.5](../p2.5_harness/README.md) —
   the table these rows join; [P2.7](../p2.7_failure_scaling_generalization/README.md) —
   where the failures these runs produce are classified.
-- [F9](../../followups/f9_e_catalog.md) — the repo's precedent for a
+- F9 — the repo's precedent for a
   ledger of measured-and-declined mechanisms; this phase's tables are the
   same discipline applied to feedback.

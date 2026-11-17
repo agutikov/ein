@@ -17,7 +17,7 @@ S1e2.1b.4 applies the ruling S1e2.4.1 takes; it was briefly ordered after
 P1e2.1c the same day.
 **Blocks:** S1e2.4.1 blocks [S1e2.2.5](../p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
 (W3), P1e2.1b's S1e2.1b.4 and M1f's
-[S1f.10.8](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
+S1f.10.8
 corollary. S1e2.4.2 blocks `utils/review_bundle.py --regions` building
 without a process killed.
 

@@ -37,7 +37,7 @@ status box above first, then this for the arc:
 - **P1.8a's split still holds: ~95 % of a solve is the matcher inside
   saturation** (O1+O2), not the search
   ([`algorithms.md` § 2](../../docs/ein/ein.rs/algorithms.md#2-what-it-is-shaped-against)). Every *search*-layer optimisation was tried and rejected against
-  that split ([F9 ledger](f9_e_catalog.md)).
+  that split (F9 ledger).
 - **S1.9.E23 removed the largest chunk of pointless matching**: over half
   the exhaustive wall-clock was saturating forks already known to be dead.
   What's left is saturation of forks that genuinely live — i.e. the matcher
@@ -212,7 +212,7 @@ Promote into a perf phase (not into this file) when **any** holds:
 
 ## Cross-links
 
-- [F9 ledger](f9_e_catalog.md) — the closed *search*-layer catalog; read
+- F9 ledger — the closed *search*-layer catalog; read
   its "what the catalog taught" section before opening a perf entry here.
 - [`algorithms.md`](../../docs/ein/ein.rs/algorithms.md)
   § 1 and § 2 — the operation-by-operation SOTA comparison these two entries

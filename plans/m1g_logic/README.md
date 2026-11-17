@@ -9,8 +9,8 @@ into two phases and moved here as P1g.10 and P1g.11, and one more stage of P1g.6
 ([§ Additions of 2026-11-13](#additions-of-2026-11-13)).
 **Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md), complete (the user, 2026-11-11: *"first
 we will complete M1f"*). Specifically:
-[S1f.6.16](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md), binary
-arithmetic, and [S1f.6.17](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md),
+S1f.6.16, binary
+arithmetic, and S1f.6.17,
 gates and truth tables, which are this milestone's starting point and stay stages of P1f.6. **That starting
 point is in the stdlib since 2026-11-14** (S1f.6.17's build): `std.bool.gates`, the sixteen functions of two
 inputs as a table and as a relation each; `std.bool.props`, thirty relations known of them, derived by rules;
@@ -18,7 +18,7 @@ inputs as a table and as a relation each; `std.bool.props`, thirty relations kno
 ([`stdlib/README.md` § `std.bool`](../../stdlib/README.md#stdbool-the-sixteen-functions-of-two-inputs-and-circuits)),
 with the six applications in [`examples/binary_logic/`](../../examples/binary_logic/README.md). `std.logic` is
 left free for this milestone. `std.math.decimal-arith`, the
-decimal calculator ([P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)), which P1g.5
+decimal calculator (P1f.6), which P1g.5
 holds Peano's numbers to; and the language as P1f.5 and P1f.7 ruled it, the value rule above all
 ([`diagnostics.md` § 2.22](../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)).
 **Blocks:** nothing.
@@ -94,7 +94,7 @@ It works at **two levels**, and keeping them apart is half of what it has to say
 - **Not a theorem prover that competes with Lean, Coq or a SAT solver.** A truth table of n letters is 2ⁿ
   states of R, and the region limit is where it ends. The milestone measures how small *small* is and says so;
   [M10](../m10_external_benchmarks/README.md) is where Ein is compared with other tools.
-- **Not engine arithmetic.** [Q-M1e2.24](../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)
+- **Not engine arithmetic.** [Q-M1e2.24](../../docs/decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)
   stands: no numbers, no ranges, no arithmetic predicate. Peano's numbers are nested facts, `z` and `(s N)`,
   as the calculator's are `(n PREFIX DIGIT)`.
 - **Not new syntax by default.** Every program in the plan is written in the grammar as it ships. Where the
@@ -234,10 +234,10 @@ banked.
 ## Additions of 2026-11-12
 
 The user replied to the calculator's questions on 2026-11-12
-([`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md); what stayed open is
-[`questions_round2.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md); the index
+(`questions.md`; what stayed open is
+`questions_round2.md`; the index
 of every reply is
-[`replies_2026-11-12.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)). Three
+`replies_2026-11-12.md`). Three
 replies send work here.
 
 **A types theory, and promotion of a smaller number kind** (reply 12):
@@ -274,7 +274,7 @@ user, is where it is asked again.
 
 **Where the starting point lives.** S1f.6.16 and S1f.6.17 ship as `std.math.binary-arith` and, by the
 user's reply to the layout question (`dc88520b`), **`std.bool.*`**, not `std.logic.*`
-([S1f.6.31](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-reply)).
+(S1f.6.31).
 `std.logic` is free, and [Q-M1g.2](open_questions.md#q-m1g2--where-the-logic-ships) is asked knowing it.
 
 **[M1h](../m1h_beyond_word_problems/README.md)** was created the same day for the work beyond word
@@ -296,7 +296,7 @@ here: [P1g.10](p1g.10_school_algebra/README.md), school algebra, seven stages, a
 [P1g.11](p1g.11_school_geometry/README.md), school geometry, four. The files were moved with `git mv` and
 nothing of the content was redesigned. The table of old and new ids, and the choices the split forced, are in
 [P1g.10 § The move](p1g.10_school_algebra/README.md#the-move-of-2026-11-13); the old path keeps a
-[stub](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md). M1f's phase number 8
+stub. M1f's phase number 8
 is used and vacated.
 
 **What it changes for this milestone.** The title says *logic*, and the two phases are school mathematics;
@@ -349,13 +349,13 @@ milestone finds out, not a premise it starts from ([§ Three groups of phases](#
    fact about a formula, `(theorem F)` with its proof, at the object level; or a rule of Ein, a derived rule
    applied forward, at the meta level; or both, one made from the other. **The stdlib already has the second
    kind, unproved:** `std.algebra`'s `converse-pair-symmetric` is a theorem written as a rule, and M1f's
-   [E-53](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) is what one costs when nothing
+   E-53 is what one costs when nothing
    proves it: it does not compose with the converse type checks, and a well-typed pair is refuted.
 4. **How a theorem is searched, verified and proved:** proof search
    ([S1g.3.2](p1g.3_proof_systems/s1g.3.2_finding_a_proof.md)), proof checking by saturation (S1g.3.1), and,
    for a theorem written as a rule, a proof that the rule is admissible, which nothing in the plan does yet.
 5. **How a theorem is saved and reused,** so that new theorems are proved with old ones: a module of proved
-   theorems, imported as any module is (M1f's [S1f.6.35](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md)
+   theorems, imported as any module is (M1f's S1f.6.35
    makes an import one copy by full name); and **the bridge** the user names as unclear, *"theorems as ein
    rules, but it is not clear how it could even work"*: a proved object-level theorem with schematic letters
    turned into an Ein rule. That turn reads a formula as a rule, which is rules as data
@@ -492,7 +492,7 @@ The instruction's last question, and how this plan answered it, under the schema
 
 - **The object level is quadratic by nature.** Rules about formulas join facts on nested values, which the
   fact index does not key on (E-3 of the calculator's
-  [`findings.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)). The calculator avoided
+  `findings.md`). The calculator avoided
   it by a rule of the theory; a logic's natural rules do not. Every stage measures its batch cost on the
   matcher's counters, and S1g.6.2 is where the index is taken up.
 - **2ⁿ.** A truth table by hypotheses is R of 2ⁿ states, and satisfiability by region is a search with no
@@ -528,9 +528,9 @@ The instruction's last question, and how this plan answered it, under the schema
   them.
 - **M1d:** *from saturation to satisfiability* is this
   milestone's distinction between derivation and model, drawn for puzzles.
-- **[P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** the request protocol, the
+- **P1f.6:** the request protocol, the
   search-free test, the harness against Rust's integers, and
-  [S1f.6.10](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)'s bounded
+  S1f.6.10's bounded
   theorem checking, which P1g.5 continues.
 - **[P1g.10](p1g.10_school_algebra/README.md) and [P1g.11](p1g.11_school_geometry/README.md)** (planned
   2026-11-11 as M1f's P1f.8, the user: *"between calculator and proof systems"*; split and moved here on

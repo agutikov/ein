@@ -18,7 +18,7 @@ incompleteness* ([P2.8](../m2_nl_to_ir/p2.8_representations/README.md)); and
 
 **Theme owner:** the user (research interest).
 **Trigger:** when F1b is taken up, since the fragment decides most of the answers below; when
-[P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)'s last stage, S1f.6.10, asks what the
+P1f.6's last stage, S1f.6.10, asks what the
 arithmetic theory can do beyond arithmetic; when M2 or M5 has to say in a paper what Ein's verdicts certify; or
 when [F5](f5_rules_as_data.md) makes rules data, which is where self-reference becomes writable.
 
@@ -118,7 +118,7 @@ problem's text, and where Ein's verdicts are meant to be read as plain statement
 - **Contradictory:** *Bob has 5 apples and gave 7 away*. Root is dead, and the core is the two sentences.
 - **Not enough information:** *how many do they have together* with Alice's apples unstated. A state that owes,
   or a region of several states, and the gap **named**
-  ([S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)'s two kinds: a
+  (S1f.6.20's two kinds: a
   missing quantity and a missing reading).
 - **Complete relative to what?** Common sense fills gaps silently (Alice had none; a box holds any three
   apples). A formal theory is complete only against its own language, and Ein's part is to make the filling

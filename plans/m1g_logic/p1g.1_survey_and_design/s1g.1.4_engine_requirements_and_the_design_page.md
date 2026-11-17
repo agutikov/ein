@@ -35,7 +35,7 @@ stage confirms with a witness, corrects or drops, and adds what the survey found
 
 **The discipline every row is held to,** stated once on the page: a wrong answer is a register row before it
 is fixed; a grammar change needs the user's ruling; config never changes the answer; no native numbers
-([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein) stands), and
+([Q-M1e2.24](../../../docs/decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md) stands), and
 nothing here adds engine arithmetic.
 
 ## The design page

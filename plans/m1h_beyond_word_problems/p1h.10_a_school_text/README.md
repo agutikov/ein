@@ -25,7 +25,7 @@ as written.
 ## The instruction
 
 The user, 2026-11-12, in the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md), above the questions
+`questions.md`, above the questions
 on word problems. As typed:
 
 > p1h.10 - pick a prose text for like end of elementry school (3-5th grade) 50-100 sentences, very famous

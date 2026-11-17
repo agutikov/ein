@@ -9,7 +9,7 @@
 
 **Status:** specified 2026-11-06 on the user's ruling of that day, and revised 2026-11-07 on the
 user's rule for a name
-([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)): `1..5` stops being a range and
+(Q-M1e2.24): `1..5` stops being a range and
 becomes a plain name, where this page had it refused.
 **Done 2026-11-08**, on the user's go-ahead to run the phase stage by stage (*"run
 plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage in separate subagent, …, ask if
@@ -302,7 +302,7 @@ the relation declarator), `02_patterns.md` (a guard's refusals; the registry's s
 `04_dot_rendering.md` (the ontology sketch's `(1..1)`), `defined_behaviour.md` (§ 4.8 is the wildcard
 relation, with the range's history; § 4's *conclusion no fact can hold* bullet), `examples/README.md`,
 `predicates.rs`' module line (what the ruling says: no numeric, cardinality or aggregation primitive, and
-none planned), [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
-and [Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein) (built),
+none planned), Q-M1e2.13
+and Q-M1e2.24 (built),
 [S1f.5.11](s1f.5.11_closed_keywords.md)'s rows this stage touched, the phase README's rows, and `AGENTS.md`.
 `docs/history/` is a record and did not change.

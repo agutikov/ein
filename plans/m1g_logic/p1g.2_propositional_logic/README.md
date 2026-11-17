@@ -3,7 +3,7 @@
 **Milestone:** [M1g](../README.md)
 **Status:** planned 2026-11-11, not started.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s rulings, for the conventions; of M1f,
-[S1f.6.17](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md)'s gate tables,
+S1f.6.17's gate tables,
 which the connectives' tables are or are held equal to.
 **Blocks:** [P1g.3](../p1g.3_proof_systems/README.md), whose soundness and completeness are stated against
 this phase's truth tables.

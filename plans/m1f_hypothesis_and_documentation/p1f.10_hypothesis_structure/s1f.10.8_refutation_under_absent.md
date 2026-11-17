@@ -16,9 +16,9 @@ one fails.
 
 | | |
 |---|---|
-| **2026-11-01** | the ruling moved to M1e2's S1e2.4.1 ([Q-M1e2.5](../../m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-ruling-move-here)) |
-| **2026-11-02** | the user ruled ***forbid*** ([S1e2.4.1 § 5](../../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)) |
-| **2026-11-04** | built by M1e2's [S1e2.2.5](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md), with the user's *via, per activator*; followup F18, world-aware negatives, closed without being done |
+| **2026-11-01** | the ruling moved to M1e2's S1e2.4.1 (Q-M1e2.5) |
+| **2026-11-02** | the user ruled ***forbid*** (S1e2.4.1 § 5) |
+| **2026-11-04** | built by M1e2's S1e2.2.5, with the user's *via, per activator*; followup F18, world-aware negatives, closed without being done |
 
 ## Where it stands in the engine
 

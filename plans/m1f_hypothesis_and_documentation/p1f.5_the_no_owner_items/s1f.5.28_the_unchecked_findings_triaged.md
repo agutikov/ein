@@ -46,7 +46,7 @@ citation, so the coordinator placed it here by default, recorded as a Q-M1f row.
 
 Items 12 to 16, the wrong answers S1f.5.21's and S1f.5.24's records found outside their scope, were given here by
 the coordinator on 2026-11-10. **They moved the same day to a phase of their own,
-[P1f.7](../p1f.7_findings_outside_scope/README.md), a stage each (S1f.7.1 to S1f.7.5)**, on the user's instruction:
+P1f.7, a stage each (S1f.7.1 to S1f.7.5)**, on the user's instruction:
 *"new batch of findings … creates new phase p1f.7 with stage per finding to allow to close current phase"*. A wrong
 answer this stage finds outside items 1 to 11 goes there too, as a new stage.
 

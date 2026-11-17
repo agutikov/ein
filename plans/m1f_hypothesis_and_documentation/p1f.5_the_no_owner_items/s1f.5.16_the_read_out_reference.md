@@ -45,7 +45,7 @@ counts what the run did.
 
 ### The vocabulary is a closed milestone's plan
 
-[`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) was T1e2.1a.5.1's page diff,
+`read_out.md` was T1e2.1a.5.1's page diff,
 proposed and ruled on 2026-10-16. Every M1e2 stage that changed the read-out amended it in place, and `AGENTS.md`
 names it *the read-out's vocabulary*. Three things follow from where it lives.
 
@@ -57,7 +57,7 @@ names it *the read-out's vocabulary*. Three things follow from where it lives.
    under `docs/kernel/` is that a reader looking for what `ein solve` prints looks there, and that nothing holds
    the plan's prose to the printer (2).
 2. **Nothing holds its prose to the printer.** The prose is a hand copy, AR-M1's shape. Only the examples are
-   held: [`read_out_examples.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md), which
+   held: `read_out_examples.md`, which
    [`utils/read_out_examples.py`](../../../utils/read_out_examples.py) writes from the binary and
    [`read_out_examples.rs`](../../../ein.rs/crates/ein-cli/tests/read_out_examples.rs) compares block by block.
    That golden page lives in the same closed directory, so a stage that changes the read-out re-blesses a file
@@ -196,7 +196,7 @@ its test cannot see.
 - the `monotonicity` block and the warning's theory: `region_dump.md`;
 - the `--events` stream: [`events.md`](../../../docs/ein/ein.rs/events.md);
 - how each mode is computed, what it costs, and which command answers which question:
-  [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3 and § 4, until
+  `solve_interface.md` § 3 and § 4, until
   P1f.20 re-homes it;
 - the rulings that made the vocabulary: `read_out.md`, linked once as the record.
 
@@ -544,7 +544,7 @@ each is P1e2.3's class (*a surface that misreports*), shown and not fixed here, 
 - **(a) Route 2's licence, in two words.** Describe's and `ein oracle`'s `route` row on route 2 says *no licence*
   (`2, the cube — no licence: the static check flags the program`, `… asked for by name`), where the summary's
   `region.licences` and a mode's `route` row on the same route name `L7 the cube` (every mode run on route 2 prints
-  `2, the cube — L7 the cube`), the licence [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)'s
+  `2, the cube — L7 the cube`), the licence `solve_interface.md`'s
   table calls *always*. [Q-M1f.20](../open_questions.md#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another),
   defaulted: documented, not moved.
 - **(b) `stopped.layer` in two units.** On route 1 it is the commitment size the route stopped before; on the state

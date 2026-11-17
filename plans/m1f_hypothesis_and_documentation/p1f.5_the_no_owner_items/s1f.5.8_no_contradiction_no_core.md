@@ -4,7 +4,7 @@
 **Was S1e2.5.8**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 
 **Status:** specified 2026-11-07 on the user's ruling of that day on D-14
-([Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)). **Done
+(Q-M1e2.27). **Done
 2026-11-09**, on the user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with
 default decisions till the end of the phase"*), beside the second lane's S1f.5.18, in three commits: T1f.5.8.1, every
 surface listed (`2b63223d`, [its record](#t1-record-2026-11-09)); T1f.5.8.2, `null` (`c4708638`, [its
@@ -246,9 +246,9 @@ with the rule: `null`, the core does not exist; `[]`, the empty set. The invento
 
 T2 carried the kernel pages, in the commit that moved the spelling. This task wrote the records:
 - **AGENTS.md**: one sentence in the P1f.5 account, with the register's counts.
-- **[The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md)**: D-14 says what fixed it, in the
+- **The no-owner inventory**: D-14 says what fixed it, in the
   summary table and under its item, which stays as it was taken.
-- **[Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)** says what
+- **Q-M1e2.27** says what
   built it, in its table and its section.
 - **[`glossary.md`](../../../docs/ein/user/reference/glossary.md)**'s sentence on which surfaces take a core, which still said
   `--dump-answer` and `--trace` take every dead node's they visit (T1's second finding): `--dump-lattice`, `--events`

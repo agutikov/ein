@@ -10,9 +10,9 @@ ships; the two stages after the stop are named here and their tasks are written 
 **Depends on:** [M1f](../../m1f_hypothesis_and_documentation/README.md)'s calculator phase: the word problems
 banked under [`examples/word_problems/`](../../../examples/word_problems/README.md), and the three checks of
 a formula's form that phase built
-([S1f.6.23](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md),
-[S1f.6.12](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md)'s build,
-[S1f.6.24](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md),
+(S1f.6.23,
+S1f.6.12's build,
+S1f.6.24,
 each done by 2026-11-13).
 **Reads:** [P1h.2](../p1h.2_slicing/README.md)'s slice and
 [P1h.3](../p1h.3_gaps_assumptions_and_readings/README.md)'s page on readings, *both*, by the milestone's
@@ -28,7 +28,7 @@ re-taken on the binary, and the stages.
 ## Where it comes from
 
 Question 36 of the calculator's
-[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q36) asked whether
+`questions.md` asked whether
 folding an imported theory's steps in a trace (*the trace as the pupil's page*) is part of the word-problem
 stage. The user, 2026-11-12:
 
@@ -90,7 +90,7 @@ As the tree stands on 2026-11-13, on the release binary found in `ein.rs/target/
 figure is re-taken by the stage that uses it.
 
 - **E-17** of the calculator's
-  [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md): `--trace` cannot show
+  `findings.md`: `--trace` cannot show
   an importing theory's steps without the imported theory's. On the prototype of 2026-11-11 the two-step
   word problem was 139 steps, 10 of them the word theory's, and `-l` kept 137. On the banked
   `examples/word_problems/boxes12.ein` today it is **145 steps, 12 of them by rules declared under
@@ -114,7 +114,7 @@ figure is re-taken by the stage that uses it.
   expression layer (reply 10) and which is not built; *no division by zero*, the flag at the call
   (S1f.6.24).
 - **Two states with one answer.**
-  [S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)
+  S1f.6.28
   banks the first corpus witness of *answer correct, solution not necessarily* (12 apples and boxes of 3:
   two readings, two states, one answer) and writes down what the trace says of *why divided* as far as the
   rules go (planned, not run on 2026-11-13).
@@ -123,7 +123,7 @@ figure is re-taken by the stage that uses it.
   with `(evaluate E)` answered by `(value-of E N)`, and the calculator's `(calc E)` and `(let NAME E)` moved
   there by the user's reply 10. Not built on 2026-11-13.
 
-**Names.** [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
+**Names.** S1f.6.31
 moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which this
 phase's files name; a line quoted from the S1f.6.20 investigation's output keeps the name it printed.
 
@@ -218,7 +218,7 @@ Where the phase changes the engine or a surface (S1h.4.6), the repo's rules, whi
 
 ## Connections
 
-- **[P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md):** replies 31 and 36; E-17;
+- **P1f.6:** replies 31 and 36; E-17;
   the three checks; S1f.6.28's witness.
 - **[P1g.10](../../m1g_logic/p1g.10_school_algebra/README.md):** expressions as data; *the trace is the
   school solution*, its acceptance line, is this phase's subject on equations; F-2 and question f.

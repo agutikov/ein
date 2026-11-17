@@ -3,7 +3,7 @@
 **Phase:** [P1h.3](README.md) of [M1h](../README.md)
 **Status:** planned 2026-11-13. Not started. A comparison on prototypes: nothing outside `plans/` and
 `build/` moves.
-**Depends on:** [S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md),
+**Depends on:** S1f.6.26,
 the read-out row for what root owes (done 2026-11-13).
 **Read with:** [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md), which rules open
 against false, and [S1h.1.3](../p1h.1_temporal_and_causal_theories/s1h.1.3_the_temporal_theory_on_a_prototype.md),

@@ -327,7 +327,7 @@ among them, is the re-scoping P1e2.1c's last stage does.
 - [`lattice-dump.md`](../../../docs/ein/ein.rs/lattice-dump.md) and
   [`rendering.md`](../../../docs/ein/user/reference/rendering.md)
   are the pages the drawing extends.
-- [M1f S1f.10.3](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.3_the_restricted_join.md)
+- M1f S1f.10.3
   restricts the join and claims *not one model moved*. The oracle is what
   can check that claim on small programs.
 - [M20](../../m20_gui/README.md): a GUI that draws the lattice binds

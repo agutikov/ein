@@ -5,7 +5,7 @@ same day, option (e), which adds [S1f.10.17](s1f.10.17_describe_by_borders.md), 
 for it, and for [S1f.10.18](s1f.10.18_no_edge_no_death.md) and [S1f.10.19](s1f.10.19_a_dead_node_stopped_early.md),
 which the user took up the same day (*"Yes, both"*). All three are merged, and the user's answers at the close are
 built ([§ The user's answers at the close](#the-users-answers-at-the-close-2026-11-16)).** It follows the pattern of
-[P1f.6's close](../p1f.6_calculator/close.md): where the phase stands, what each track delivered, the acceptance
+P1f.6's close: where the phase stands, what each track delivered, the acceptance
 re-taken, the defaults, the findings, and what is left for the user. It proposes no `docs/history/` record: this
 directory stays where it is. [`state.md`](state.md), written at the pause, is folded in here and is kept only as the
 record of the pause.

@@ -35,13 +35,13 @@ rule on, not five stage files to find.
 | [Q-M1e2.19](#q-m1e219--what-do---minimal-and---maximal-answer-past-the-limit) | What do `--minimal` and `--maximal` answer past the limit? | [S1e2.2.26](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md) (W27) | **ruled 2026-11-05: (1) and (2), as recommended**, put to the user the same day by S1e2.2.25's re-take (T1e2.2.25.1): past `--region-limit` on a flagged program the line modes label every member met as on their line (65 214 on `square-unique/corner-house`), where describe certifies one minimal state; S1e2.2.26 files it as W27 and fixes it before the close, `--minimal` certifying exactly what describe certifies and `--maximal` none, the maximal line not known. **Built 2026-11-05** by S1e2.2.26 (`c21f93fc`): W27's four rows fixed |
 | [Q-M1e2.20](#q-m1e220--does-a-claim-compare-values-or-their-printed-text) | Does a claim compare values, or their printed text? | [S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md) (N5) | **ruled 2026-11-06: (a), as recommended**, put to the user the same day by S1e2.3.8's step 1 (T1e2.3.8.1): a claim and a query's projection classes compare printed text, which printed the int `1` and the name `"1"` alike, so a false claim held and two classes were one on three probes (no corpus program); the one printer moves them, and the case is W28, filed `open` (T1e2.3.8.2) and fixed with the printer. **Built 2026-11-06** (`712f23fd`). **Overtaken 2026-11-09** by M1f S1f.5.4: there is no int, so its case cannot be written |
 | [Q-M1e2.21](#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two) | Which rule does `refuted by` name where the core derives its contradiction through two? | [S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md) (N7) | **ruled 2026-11-06: (a), as recommended**, put to the user the same day by S1e2.3.10's step 1, which paused on it (5 041 distinct printed cores per commit, 6 917 nightly, derive a fact of their contradiction through two rules): `refuted by` names the first recorded derivation the core supports, the alternatives flag's exemption as it stands, the `two-rules` pair the accepted cost; **built** the same day (`a3bb9e70`) |
-| [Q-M1e2.22](#q-m1e222--does-ein-need-a-wildcard) | Does Ein need a wildcard? | [S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md) (W-22) | **ruled 2026-11-06**: a bare `_` is reserved and refused, and `_` is valid anywhere in a name. **Built 2026-11-09**: refused at the parse by S1f.5.5's swap (`8c3fe86e`), W29 fixed; F3 traced and W39 filed (`728e716a`), `Slot::Any` and `Node::Wildcard` retired (`ef5374a1`), by S1f.5.1 |
-| [Q-M1e2.23](#q-m1e223--what-is-a-string-for) | What is a string for? | [S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md) (F4) | **ruled 2026-11-06**: natural language, only in `:why`, `:source` and `:goal-text`; G-6 ruled the same day, a variable in a fact refused. **Built 2026-11-09** by M1f S1f.5.5's swap and S1f.5.2 |
-| [Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein) | Are there numbers in Ein? | [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md) (F6), [S1f.5.4](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) (F7) | **ruled 2026-11-06 and -07**: no numbers and no ranges, now or planned; any run of name characters is a name, digits included, and a digit label is a candidate; a name's characters are an ASCII allow-list, forever, `\` never and quotes and brackets for now; **the range token retired 2026-11-08** by S1f.5.3 (`65d1ad85`), the rest not built |
-| [Q-M1e2.25](#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it) | How strict is the grammar, and what holds the parser to it? | [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md) (F9) | **the user's instructions, 2026-11-06 and -07**: revisit it, and generate the parser; **ruled 2026-11-07: grmtools, with recovery on**, made deterministic (F11); not built |
-| [Q-M1e2.26](#q-m1e226--are-eq-and-neq-relations) | Are `eq` and `neq` relations? | [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (S-18, G-21) | **ruled 2026-11-07**: yes, of equality and non-equality, their facts fixed by name identity and computed, in a goal, a premise and a conclusion, a free variable over the program's names; supersedes Q-M1e2.18 (ii)(a); a nested fact as a guard's argument answered; **built 2026-11-09** by S1f.5.7 (W30, W24's two, W50 to W55), five readings defaulted, [Q-M1f.30](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument) to Q-M1f.34 |
-| [Q-M1e2.27](#q-m1e227--what-do--and-null-mean-in-eins-json) | What do `[]` and `null` mean in Ein's JSON? | [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (D-14) | **ruled 2026-11-07**: `[]` is the empty set, `null` an object that does not exist; a node that is not dead has `core: null`; **built 2026-11-09** by S1f.5.8 (`c4708638`) |
-| [Q-M1e2.28](#q-m1e228--which-keywords-does-each-form-take) | Which keywords does each form take? | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md) (D-15, G-15, G-22) | **ruled 2026-11-07**: a fixed list per form, and any other keyword is an error; a term and a nested fact take none, so `:where` is refused wherever written; `:cardinality` and `:mode` retired, a fact keeps `:rule` and `:using`, and `:why` on a fact is refused; supersedes Q32's drop; not built |
+| [Q-M1e2.22](#q-m1e222--does-ein-need-a-wildcard) | Does Ein need a wildcard? | S1f.5.1 (W-22) | **ruled 2026-11-06**: a bare `_` is reserved and refused, and `_` is valid anywhere in a name. **Built 2026-11-09**: refused at the parse by S1f.5.5's swap (`8c3fe86e`), W29 fixed; F3 traced and W39 filed (`728e716a`), `Slot::Any` and `Node::Wildcard` retired (`ef5374a1`), by S1f.5.1 |
+| [Q-M1e2.23](#q-m1e223--what-is-a-string-for) | What is a string for? | S1f.5.2 (F4) | **ruled 2026-11-06**: natural language, only in `:why`, `:source` and `:goal-text`; G-6 ruled the same day, a variable in a fact refused. **Built 2026-11-09** by M1f S1f.5.5's swap and S1f.5.2 |
+| [Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein) | Are there numbers in Ein? | S1f.5.3 (F6), S1f.5.4 (F7) | **ruled 2026-11-06 and -07**: no numbers and no ranges, now or planned; any run of name characters is a name, digits included, and a digit label is a candidate; a name's characters are an ASCII allow-list, forever, `\` never and quotes and brackets for now; **the range token retired 2026-11-08** by S1f.5.3 (`65d1ad85`), the rest not built |
+| [Q-M1e2.25](#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it) | How strict is the grammar, and what holds the parser to it? | S1f.5.5 (F9) | **the user's instructions, 2026-11-06 and -07**: revisit it, and generate the parser; **ruled 2026-11-07: grmtools, with recovery on**, made deterministic (F11); not built |
+| [Q-M1e2.26](#q-m1e226--are-eq-and-neq-relations) | Are `eq` and `neq` relations? | S1f.5.7 (S-18, G-21) | **ruled 2026-11-07**: yes, of equality and non-equality, their facts fixed by name identity and computed, in a goal, a premise and a conclusion, a free variable over the program's names; supersedes Q-M1e2.18 (ii)(a); a nested fact as a guard's argument answered; **built 2026-11-09** by S1f.5.7 (W30, W24's two, W50 to W55), five readings defaulted, [Q-M1f.30](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument) to Q-M1f.34 |
+| [Q-M1e2.27](#q-m1e227--what-do--and-null-mean-in-eins-json) | What do `[]` and `null` mean in Ein's JSON? | S1f.5.8 (D-14) | **ruled 2026-11-07**: `[]` is the empty set, `null` an object that does not exist; a node that is not dead has `core: null`; **built 2026-11-09** by S1f.5.8 (`c4708638`) |
+| [Q-M1e2.28](#q-m1e228--which-keywords-does-each-form-take) | Which keywords does each form take? | S1f.5.11 (D-15, G-15, G-22) | **ruled 2026-11-07**: a fixed list per form, and any other keyword is an error; a term and a nested fact take none, so `:where` is refused wherever written; `:cardinality` and `:mode` retired, a fact keeps `:rule` and `:using`, and `:why` on a fact is refused; supersedes Q32's drop; not built |
 
 C1's reading is Q-M1e.12's
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -212,7 +212,7 @@ and no member of N reports a 0-fact core but on a run stopped past
 
 W3 cannot be fixed until someone rules *forbid* or *respect* on a refutation
 that rests on `(absent P)` over an extendable relation, and that ruling is
-M1f's [S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).
+M1f's S1f.10.8.
 The proposal is to run its T1 and its ruling as S1e2.2.5's first task, leaving
 S1f.10.8 the corollary it writes into `absent_semantics.md`. The alternative
 is that W3 waits for M1f.
@@ -931,7 +931,7 @@ an obligation root discharges, and a stopped run said it or not by its
 `1 state — ∅`, the `∅` row above it gives the reason, and the summary's
 `minimal.trivial` reads *∅ is in R*. The maximal line's name, printed only on
 an exhausted run, stays. **Not built**:
-[S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md).
+S1f.5.6.
 
 **(g) Yes, with one correction to today's word.**
 
@@ -1639,7 +1639,7 @@ sweep, 438 files, 2026-11-05).
 [Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein): Ein has no numbers and no
 ranges, so the token goes rather than a range in a rule being refused at load.
 **Built 2026-11-08** by
-[S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md)
+S1f.5.3
 (T1f.5.3.2, `65d1ad85`): there is no `RANGE` token, the loader's range line is
 gone, and `1..3` was a parse error wherever it was written until M1f S1f.5.5's
 swap (T1f.5.5.4, 2026-11-09) made it one name, S1f.5.4's ruling: `(n 1..3)` in
@@ -1654,7 +1654,7 @@ Q-M1e2.22).
 and names nothing, and a variable used once is what to write where any value
 will do. Built at S1f.5.5's swap (T1f.5.5.4, `8c3fe86e`, 2026-11-09), which
 refuses `_` and `?_` at the parse with S1f.5.1's note, and by
-[S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s T1f.5.1.3 (`ef5374a1`, 2026-11-09), which retired
+S1f.5.1's T1f.5.1.3 (`ef5374a1`, 2026-11-09), which retired
 `Slot::Any` and the AST's `Wildcard` node, no answer moving. What (a) built
 for `_` is gone; its ruling on a range stood until Q-M1e2.24.
 
@@ -2145,7 +2145,7 @@ with parameters (`defined_behaviour.md` § 4.9).
 **(ii)(a) superseded 2026-11-07** by [Q-M1e2.26](#q-m1e226--are-eq-and-neq-relations): `eq` and `neq` are
 relations, and a rule's premise means the same in any order of its conjuncts, so a guard on a variable no
 premise before it binds is answered, not refused. `W24/guard-before-binder`'s `right` is restated by
-[S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#premises). (i)(a) is superseded
+S1f.5.7. (i)(a) is superseded
 too, the same day: a nested fact as a guard's argument is answered; (iii)(a) and (iv)(a) stand, and `_` in a guard stays refused (Q-M1e2.22).
 **Built 2026-11-09** by S1f.5.7's T1f.5.7.3: both shapes load, `W24/guard-before-binder` and `W24/form-in-guard` fixed to
 their restated rights, and a form that holds a variable stays refused
@@ -2235,7 +2235,7 @@ the oracle does not, so the ruling's scope was the whole defect.
 *may hold more*, which this ruling did not name. The user ruled (b): *"b, use
 the ∅ rule in both"*. Where ∅ is in R the minimal line is {∅}, so every
 minimal question answers it after one saturation. **Not built**:
-[S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md),
+S1f.5.6,
 which restates the `right` of W27's two minimal rows (`exhausted`, `others`).
 
 ## Q-M1e2.20 — Does a claim compare values, or their printed text?
@@ -2323,7 +2323,7 @@ prints `(hit "1")`, the same candidate over the name `1` (the row's note says
 so). T2 re-banks the text; no status, verdict or count moves.
 
 **Overtaken 2026-11-09 by M1f S1f.5.4**
-([its stage](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#t1f543-record-2026-11-09)).
+(its stage).
 The case this question was about, the int `1` beside the name `"1"`, cannot be
 written since S1f.5.5's swap (T1f.5.5.4): a run of digits is a name (the user's
 ruling of 2026-11-06,
@@ -2471,7 +2471,7 @@ nothing: where any value will do, write a variable used once`*, and makes `_a`,
 T1f.5.1.3 traced F3, whose cause, a rule application's identity, reaches a
 disjunction too (`W39/or-one-key`, `open` for F22, `728e716a`), held `_` and `?_`
 refused in every position on every command, and retired `Slot::Any` and the
-AST's `Wildcard` node, moving no answer (`ef5374a1`). Was **not built** until then. Owner: [S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md),
+AST's `Wildcard` node, moving no answer (`ef5374a1`). Was **not built** until then. Owner: S1f.5.1,
 which records the defaults the ruling leaves.
 
 ## Q-M1e2.23 — What is a string for?
@@ -2501,7 +2501,7 @@ a string was needed for but a non-ASCII letter, and widening bare names for that
 no string. It withdrew its recommendation.
 
 It overrides S1e2.2.18's default. **Not built.** Owner:
-[S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md). **One
+S1f.5.2. **One
 part is put to the user**: G-6, a variable or a range written in a fact, default
 refused, since a state file could not reload a name printed `"?x"` or `"1..5"`.
 
@@ -2514,7 +2514,7 @@ The agent reads *reasonable* as `\n` `\t` `\r` `\"` `\\`, a new `\u{…}`, and a
 **Built 2026-11-09.** M1f S1f.5.5's swap (T1f.5.5.4) made the generated grammar the only
 parser, whose `TEXT` is the value of `:why`, `:source` and `:goal-text` alone, a string
 anywhere else and a variable in a fact (G-6, ruled the same day as default 1 of
-[S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md))
+S1f.5.2)
 refused at the parse with a note, and the escapes the agent's reading: `\n` `\t` `\r` `\"` `\\`
 and `\u{…}`, any other refused. S1f.5.2 then refused a `\u{…}` that names no character (W38,
 T1f.5.2.5), held the ruling in every place a value goes and the text on every surface that
@@ -2527,25 +2527,25 @@ carries it (T1f.5.2.2), and retired the engine's string value arms (T1f.5.2.3).
 Raised 2026-11-06 by the user, on being told G-6 covers *a range written in a fact*: *"Wait,
 what range????? `1..5` - what it is? Where did you find it in Ein?"* The agent traced it to the
 first grammar's *UML-style cardinality*, for a `:cardinality` no program has written and no code
-reads ([F6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#f6-a-range-has-no-user)).
+reads (F6).
 
 **Ruled 2026-11-06.** The user: *"we don't have native numbers in Ein and therefore we don't have
 number ranges either, and never had and don't have plant to have numbers or ranges"*.
 
 **Ranges.** The `RANGE` token goes, with
-[S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md). **Built 2026-11-08**
+S1f.5.3. **Built 2026-11-08**
 (T1f.5.3.2, `65d1ad85`): no terminal reads a range, and `1..5` was a parse error until M1f S1f.5.5's swap
 (T1f.5.5.4, 2026-11-09) made it one name, S1f.5.4's ruling. It supersedes
 [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) on a range.
 
 **Numbers.** No operation reads a value as a quantity: the built-in predicates are `eq` and
 `neq`. The agent put to the user that the language still has an `INT` token and a value kind, on
-[F7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#f7-digits-in-a-value). **Ruled the same day:** *"YES, digits
+F7. **Ruled the same day:** *"YES, digits
 are not numbers, digits are plain names, and refuse ?x in facts; (p 1) and (p 01) are VERY DIFFERENT
 facts, (p "1") has to be refused"*. **Not built.** Owner:
-[S1f.5.4](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md), with `(p "1")` and `?x` in
-[S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md).
-[F8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#f8-a-digit-label-becomes-a-candidate), whether a digit label
+S1f.5.4, with `(p "1")` and `?x` in
+S1f.5.2.
+F8, whether a digit label
 joins the universe, was put to the user. `predicates.rs`' *numeric … primitives are deferred to
 followups* no longer states the intent, and S1f.5.3 corrects it.
 
@@ -2554,8 +2554,8 @@ connectors signs (`_`,`-`) plus decorators signs (`$`, `%`, `^`, `*`, ...) strin
 a NAME, except variables that marked with `?` that sits in front of the name"*. **Not built.** A digit
 label is a candidate like any other name. `-7` and `1..5` are plain names, where the plans had them refused,
 and a reserved word is a whole token, so `neq-1` is a name, which overrides
-[Q-M1e2.17](#q-m1e217--where-does-a-keyword-end) (i)(a). [S1f.5.5 § The name
-rule](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#the-name-rule) holds the rule, what it moves and the
+[Q-M1e2.17](#q-m1e217--where-does-a-keyword-end) (i)(a). S1f.5.5 § The name
+rule holds the rule, what it moves and the
 agent's readings: `?` and `:` only in front, `?_` refused, `#` and `|` not name characters, names ASCII.
 
 **Ruled the same day, on those readings.** The user: *"`?` and `:` - only for variables and kvargs, not
@@ -2566,9 +2566,9 @@ plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rul
 Russian: *no "Жук"s in the code; in natural-language strings, anything, but not in code*). **Not built.**
 A name is spelled from a list of allowed characters: ASCII letters, digits, the connectors `_ - .` and
 thirteen decorators, of which `$ % ^ *` are the user's and the other nine the agent's reading of *"..."*
-([S1f.5.5 § The name rule](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#the-name-rule)). Names
+(S1f.5.5 § The name rule). Names
 are ASCII forever, which replaces S1f.5.2's default 3, *parked for M2*. `:priority` gets nothing new here:
-it keeps a run of digits until [S1f.5.15](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)
+it keeps a run of digits until S1f.5.15
 deletes it.
 
 **Ruled the same day, on the agent's list.** The user: *"escape char `\` is forbidden in names, but others ' `
@@ -2593,7 +2593,7 @@ parity. What the rewrite lost is the single source: the grammar file was the par
 every position also moves what a position may hold into `from_ir.rs`, refusal by refusal, and M2's GBNF
 is generated from the same permissive `00_ebnf.md`.
 
-**The instruction stands as a stage**: [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md), a
+**The instruction stands as a stage**: S1f.5.5, a
 production for each position. The agent put two routes to the user: the hand-written parser held to the
 EBNF by a test, which it recommended, or a parser generated at build time.
 
@@ -2602,7 +2602,7 @@ recommendation, and design/04 § 1 and design/12 § 2 as records of the earlier 
 
 **Proposed the same day: LALRPOP, with its own lexer. Put to the user.** The agent wrote one grammar for six
 generators and measured them against today's parser
-([the probe](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_parser_probe/README.md)). LALRPOP fails the build on an
+(the probe). LALRPOP fails the build on an
 ambiguous grammar, where pest builds it in silence; it parses `zebra2.ein` in 240 µs against today's 165, plus
 150 µs once per run; and it costs 5 crates at run time and 45 with the build. Its grammar file holds Rust
 actions and has no public reader, so a small script takes the grammar back out, for `00_ebnf.md` and M2's
@@ -2617,12 +2617,12 @@ run time (F2), and recovery that reports every error of a run with ranked repair
 last two were tried on Ein's draft: the grammar read at run time agrees with the compiled build on 390 of 390
 files, and CPCT+ reported three of four planted mistakes in one run. It parses `zebra2.ein` in 2.1 ms, 1.9 ms
 of it its lexer, and adds 41 crates at run time
-([S1f.5.5 § Which supports the most](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#which-supports-the-most)).
+(S1f.5.5 § Which supports the most).
 **Ruled the same day: grmtools.** The user: *"Let's take grmtools now because of features, if speed will
 ever become an issue - will add super-optimized hand-written parser"*. **Not built.** The grammar becomes
 `ein-ir`'s `ein.l` and `ein.y`, generated at compile time, so a conflict fails the build; `cfgrammar` and
 `lrlex` read them for `00_ebnf.md`'s blocks, in a test. Choosing it found
-[F11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so): CPCT+'s
+F11: CPCT+'s
 report can differ between two runs on the same file, since equal-length repairs are ranked in a `HashSet`'s
 order and recovery stops at a 500 ms wall-clock budget. The agent's default was to parse with recovery off.
 **Ruled the same day: recovery on.** The user: *"no, enable recovery, let's benefit from full-featured
@@ -2636,7 +2636,7 @@ sent**. The user: *"don't send the lrpar patch upstream either"*, as on the Grap
 **S-15, ruled the same day, as recommended:** `ein solve --diff-models FILE` reads the file's facts through
 the generated parser and compares them by value, so other spacing or a trailing comment still matches, and a
 fact that does not parse is refused before the run. A task of S1f.5.5,
-[T1f.5.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#task-t1f556----diff-models-compares-by-value-s-15).
+T1f.5.5.6.
 
 ## Q-M1e2.26 — Are `eq` and `neq` relations?
 
@@ -2645,7 +2645,7 @@ fact that does not parse is refused before the run. A task of S1f.5.5,
 Raised 2026-11-07 by the user, reading the inventory's S-18: a query whose goal is a guard prints *the goal
 holds: it has no variable* for `(neq w ?y)`, and a goal that holds a guard can carry no claim that holds,
 since the class lists `(neq w a)` and the loader refuses a claim that names `neq`
-([S1f.5.7 § The case](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#the-case)). The agent
+(S1f.5.7 § The case). The agent
 had proposed refusing a guard on its own in a goal and leaving it out of the class.
 
 The user: *"the question is much deeper here; At some point I said that some forms that are not relations
@@ -2662,7 +2662,7 @@ w ?y)) are all objects from the program except w - (model (neq w a)) (model (neq
 correctly instead of reject"*. So `eq` and `neq` are relations whose facts are fixed by name identity,
 computed and never stored, and a query over them is answered: `neq` with a free side gives every name of the
 program but the other, and `eq` binds the free side to the other. A claim may name them. **Not built**:
-[S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md).
+S1f.5.7.
 
 **Ruled the same day, on the two questions and G-21.** The user: *"1 - default is true; 2 - we have to
 follow logical correctness at first, so premises should follow the same rule; G-21 - yes, rule can conclude
@@ -2684,7 +2684,7 @@ default"*).
 an hrule with `:match ()` fires, once or once per activator, where today it never does; `(and)` stays
 refused, since `and` takes a conjunct (the user: *"1 fire; 2 same; 3 reject (and) while it is the same as ()
 and `and` should have arguments"*). **Built 2026-11-09** by
-[S1f.5.9](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md): an
+S1f.5.9: an
 empty `:match` fires once, or once per activator, in rules and hrules (W31, T1f.5.9.2), the empty conclusion asserts
 nothing (W34), and `(and)`'s parse error names the rule and the clause and says the empty conjunction is `()`
 (T1f.5.9.3).
@@ -2694,12 +2694,12 @@ binds, `(rule r () :match (p ?x) :assert (q ?y))`, logically concludes `(q y)` o
 its value; the agent found almost none, and the meaning stays writable explicitly, with a typed premise or
 `(eq ?y ?y)`. So the implicit form is refused at load, a restriction with a reason: it forbids nothing that
 can be meant, and catches a likely typo. The user: *"yes, file F13 with the refusal"*. **Built 2026-11-09**
-by [S1f.5.10](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s
+by S1f.5.10's
 T1f.5.10.2: every command refuses the implicit form at load, one line per variable naming both spellings, and W57's
 four rows, the ways it stopped or answered until then, are fixed; a parameter its activator binds to a nested fact,
 read only by a conclusion, still stops the run (W58), which S1f.5.18 fixes.
 
-**Built 2026-11-09** by [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md),
+**Built 2026-11-09** by S1f.5.7,
 in four commits: the relations in a goal (T1f.5.7.2), premises (T1f.5.7.3) and conclusions (T1f.5.7.4), W30's three,
 W24's two restated rows and W50 to W55's ten fixed, every move listed first (T1f.5.7.1); where the ruling is silent the
 stage took five readings by default, on the user's instruction of 2026-11-09, each a row of M1f's
@@ -2713,7 +2713,7 @@ Q-M1f.30 to Q-M1f.34.
 Raised 2026-11-07 by the user, reading the inventory's D-14: an owing hole is written `"core": []` beside
 `"core_status": null`, where S1e2.3.9 spells *no core* `null`, and the re-take found `ein oracle --dump` writing
 `core: []` and `refuted_by: []` on every node that is not dead
-([S1f.5.8 § The case](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md#the-case)).
+(S1f.5.8 § The case).
 
 The user: *"[] - meaning is something like "empty set"; null - meaning is "some single object does not
 exist"; which fits better in which case?"* The agent's answer: a core is one object, a set of facts, so a node
@@ -2722,7 +2722,7 @@ facts suffices*, which no corpus program reaches today (F12). A dead node whose 
 `null` with `core_status: "not-kept"` saying why. **Ruled the same day:** *"Yes, plan it that way"*. The rule
 holds for every field of every JSON surface: `[]` where the set is known and empty, `null` where the object
 does not exist or is not known. The summary's `holes` already follows it. **Built 2026-11-09** by
-[S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (`c4708638`):
+S1f.5.8 (`c4708638`):
 every JSON surface writes a node that is not dead `core: null`, and its rules `null` beside it, where the summary's
 holes, `region.json`, `nodes.json` and `--events`' `enter` lines wrote `[]`, and a dead node's as lists; held over
 the corpus by `ein-cli/tests/answer_round_trip.rs`. M1e2 S1e2.3.9's `not-kept`, the ruling's *not kept* case, retired
@@ -2739,7 +2739,7 @@ unknown one on the release binary. Only `query`, `solve` and `config` refuse a k
 `relation`, a `rule`, an `hrule`, a fact, an `import` and a trace `step` ignore one. A keyword pair inside a
 term is dropped: in a `:match` (Q32's `:where`), a pattern, an `:assert`, a `:goal` and a macro call. So
 `:match (and (p ?x) :where (neq ?x a))` fires on `(p a)`
-([S1f.5.11 § The case](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md#the-case)).
+(S1f.5.11 § The case).
 
 The agent proposed a closed list per form and four defaults: `:cardinality` retired, never read and its value
 a range; a query's `:mode` retired, obsolete and ignored; a fact's `:rule` and `:using` kept; `:why` on a fact
@@ -2748,14 +2748,14 @@ conjuncts, the same day: *"G-22 already answered also - there are fixed set of a
 :k or :G :notes or whatever else unknown kwarg - it is an error"*.
 
 **Ruled:** each form takes the keywords its row of
-[S1f.5.11 § The lists](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md#the-lists) names, and any
+S1f.5.11 § The lists names, and any
 other keyword is an error, refused before anything runs. A term and a nested fact take no keyword, so
 `:where` is refused wherever it is written. That settles G-15 and G-22 with D-15. It supersedes the half of
 [Q32](../open_questions.md#q32--where-semantics) (2026-05-20) that left a `:where` pair to be dropped in
 silence. Q32's move of a guard to a positional premise, `(neq ?a ?c)`, stands. A retired keyword gets no
 hint of its own: it is an unknown keyword like any other. **Not built**:
-[S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s generated parser makes them
+S1f.5.5's generated parser makes them
 parse errors at its swap, credited to
-[S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), which keeps the pages and the
+S1f.5.11, which keeps the pages and the
 compiler's drops. Until the user's re-plan of 2026-11-08 S1f.5.11 was to check the lists in the loader first,
 on the hand-written parser.

@@ -9,7 +9,7 @@ Nothing else is known to be needed.
 ## The instruction
 
 The user, 2026-11-12, in
-[`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md) of the calculator's
+`questions.md` of the calculator's
 phase, in full:
 
 > TODO: new milestone M15 - Ein MCP server

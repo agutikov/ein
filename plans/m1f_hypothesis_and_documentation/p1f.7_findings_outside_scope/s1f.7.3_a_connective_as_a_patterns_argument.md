@@ -3,12 +3,12 @@
 **Phase:** [P1f.7](README.md) (The wrong answers P1f.5's stages found outside their scope)
 **Status:** new 2026-11-10, from S1f.5.28's item 14. **Done 2026-11-11**: W83, five rows filed and fixed; refused at
 load, after macro expansion ([the records](#t1-record-2026-11-11)).
-**Depends on:** nothing. It extends [S1f.5.24](../p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s
+**Depends on:** nothing. It extends S1f.5.24's
 walk, `ein_ir::from_ir::refuse_malformed_primitives`.
 
 ## The finding
 
-Recorded in [S1f.5.24's T2 record](../p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md#t2-record-2026-11-10)
+Recorded in S1f.5.24's T2 record
 on the release binary at `dbfd7862`:
 
 > **A connective written as a premise pattern's argument reads nothing, in silence.** `(rule r () :match (and (p

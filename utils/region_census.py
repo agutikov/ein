@@ -2,7 +2,7 @@
 """The solution region of every corpus program the oracle reaches — M1e2
 S1e2.1a.3's instrument.
 
-[Q-M1e2.7](../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)
+[Q-M1e2.7](../docs/decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)
 made the answer to a program a **region** of its hypothesis lattice,
 `R = { C : C alive and discharged }`, and the user ruled its sub-questions
 for the monotone case on 2026-10-16. A definition ruled from five hand-picked

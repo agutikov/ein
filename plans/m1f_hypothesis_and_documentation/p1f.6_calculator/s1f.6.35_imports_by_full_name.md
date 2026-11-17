@@ -1024,7 +1024,7 @@ the user's to weigh.
 no conflict; `at None` stays F23's); E-32 restated as ruled; E-39 re-read (a program writes `std.arith`'s tags
 only by listing them); E-41 closed (a state file holds the whole module); E-48 re-read, closed; E-49 closed as
 ruled; E-50 closed (both pairs and `difference` coexist, the probes re-run); E-51 extended and **E-54** filed, both
-owned by [P1f.10](../p1f.10_hypothesis_structure/) on the coordinator's word; E-53 fixed (W93); **E-55** filed, open,
+owned by P1f.10 on the coordinator's word; E-53 fixed (W93); **E-55** filed, open,
 shown: S1f.5.18's check reads every rule a program holds, so `std.algebra`'s generic `imply1` refuses a program
 that writes `injective` as an argument once the module comes whole, as today's whole import did; **E-56** filed,
 open, shown: eleven mutants of `std.algebra`'s and `std.typing`'s rules survive since the lemmas come with every

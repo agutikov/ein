@@ -370,7 +370,7 @@ or a derived activator binding a relation parameter to a fact as loading:
 - [`syntax.md`](../../../docs/ein/user/reference/syntax.md): the parameter list says an activator binds each
   parameter to its argument, any value, a nested fact included, and a relation parameter bound to a fact is refused where
   written and where a rule could derive it; *What a premise may be* names the derived case.
-- The inventory's [G-14](../../m1e2_correctness/inventory_2026-11-06.md) says its derived activator is done, and the
+- The inventory's G-14 says its derived activator is done, and the
   census's [W33 finding](s1f.5.5_census.md#findings-outside-the-grammar) says what fixed it.
 
 W59's two `[case.fixed]` blocks carry `52d45b11`, T1f.5.18.3's, where that commit wrote the null id. The phase README's

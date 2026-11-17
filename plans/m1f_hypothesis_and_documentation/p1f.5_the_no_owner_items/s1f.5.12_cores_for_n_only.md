@@ -35,7 +35,7 @@ question*): a core is taken only where a surface prints one. The user, 2026-11-0
 
 | program | the run | today |
 |---|---|---|
-| `lattice/06_friends_tables` | `ein solve FILE --dump-answer D` | 65 022 core searches, 0.58 s of 2.55 s, no surface prints them; `nogoods.json`: 68 of 68 `not-kept` ([S1e2.3.9 § Notes](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md#notes), 2026-11-06; not re-taken) |
+| `lattice/06_friends_tables` | `ein solve FILE --dump-answer D` | 65 022 core searches, 0.58 s of 2.55 s, no surface prints them; `nogoods.json`: 68 of 68 `not-kept` (S1e2.3.9 § Notes, 2026-11-06; not re-taken) |
 | `ein-bugs/wrong-answers/past-limit-lines` | the same | stops at the limit (`n` 17, `limit` 16), 3 state files, 1.23 s; `nogoods.json`: 15 of 15 `not-kept` (2026-11-08, `916d97ac`, release) |
 
 **Where.**
@@ -319,9 +319,9 @@ work.
   member of N's core and no row of a `.einb`'s dump. M1e2's `read_out.md` § 6.2 and § 8.2 are a record and are not
   edited.
 - **AGENTS.md**: S1e2.3.9's paragraph says what retired `not-kept`, and the P1f.5 account says what the stage did.
-- **[The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md)**: P-15 says what fixed it, in
-  the summary table and under its item, which stays as it was taken; and [S1e2.3.9's
-  notes](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md#notes),
+- **The no-owner inventory**: P-15 says what fixed it, in
+  the summary table and under its item, which stays as it was taken; and S1e2.3.9's
+  notes,
   whose first note put the two options P-15 ruled, say what built them.
 - **The register**: W43's `[case.fixed]` carries `a0435da0`, and its header says so.
 - **The records**: this file's status and acceptance, [the phase README](README.md)'s S1f.5.12 row, its P-15 row and
