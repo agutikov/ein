@@ -3,7 +3,7 @@
 ;;; `(absent (q ?x))`. {(r one), (s one)} is dead, {(q one), (r one), (s one)}
 ;;; is alive. S1e.2.3's warning and a per-rule check both miss it: the
 ;;; refutation rests on the absent through a derived relation.
-;;; Re-take: ein oracle plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein
+;;; Re-take: ein oracle plans/followups/f21_probes/via_hole.ein
 
 (relation thing T)
 (relation s T)

@@ -298,7 +298,7 @@ open, in P1e2.2, the last phase of the milestone's order. It does not cover:
   difference above is of this kind;
 - **the derived refutation**, the `via` class: `stale-naf-fork`'s
   `p-and-q-clash` reads a `p` derived under `absent`, and
-  [`via_hole.ein`](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein)
+  [`via_hole.ein`](f21_probes/via_hole.ein)
   is a dead hole through one. Unless F2 takes `via`;
 - **a refutation compiled at a node** through an activator
   (`ACTIVATOR_REFUTES`), unless F3's refusal reads the plans a node compiles;
@@ -682,7 +682,10 @@ this page.
   ([`node-census.md` § 11–12](../../utils/censuses/node-census.md#11-the-path-census--s1e21b7), D2 and D3).
   The causes as one table: [`monotonicity.md` § 9](../../docs/ein/reasoning/kb-evolution/monotonicity.md#9-the-causes).
 - [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md):
-  *forbid*, its F1–F5, the `via` set and the rewrites that keep R.
+  *forbid*, its F1–F5, the `via` set and the rewrites that keep R. Its fourteen
+  probes are kept here, in [`f21_probes/`](f21_probes/), since M1e2's folder is
+  deleted: the hole, node and taint censuses run them, and `via_hole.ein` is
+  this page's dead hole through `via`.
 - [`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*, which D2's (B) and (C)
   would qualify.

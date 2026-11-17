@@ -12,7 +12,7 @@ until D6 is decided no route learns on a flagged program.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census                 # § 1–5 and § 7, 0.2 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- --written    # the programs in shared/written.rs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- \
-    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                               # S1e2.4.1's probes
+    plans/followups/f21_probes/*.ein                                                                       # S1e2.4.1's probes
 cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-infer --test region an_untainted_death_is_dead_in_every_superset   # § 6
 ```
 

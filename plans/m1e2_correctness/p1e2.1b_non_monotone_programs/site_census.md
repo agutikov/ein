@@ -349,7 +349,7 @@ The census asks the shipped check what each would do to the flag.
 
   The first five are S1e2.1a.1's five. S1e2.4.1 made the edit on two of them
   and both became monotone: `features05_scoped` and `features12_scoped` in
-  [`s1e2.4.1_probes/`](../p1e2.4_what_the_switch_left/s1e2.4.1_probes/).
+  [`s1e2.4.1_probes/`](../../followups/f21_probes).
   `features05_scoped` has an exact R, 32 states over 26 candidates.
   `features/04`'s `house-color` is the puzzle's own relation with one clue
   given. A mechanical rule, *the blind rung does not propose a relation the
@@ -393,7 +393,7 @@ evidence.
 ## 6. The S1e2.4.1 probes
 
 A second invocation over the 14 files in
-[`s1e2.4.1_probes/`](../p1e2.4_what_the_switch_left/s1e2.4.1_probes/). It
+[`s1e2.4.1_probes/`](../../followups/f21_probes). It
 gets its own run, because `plans/` is deleted at the milestone's close.
 
 | | |

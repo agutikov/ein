@@ -117,7 +117,7 @@ of `node_census`'s `stratified_stale` and `written.rs`'s
 | [`fifo_gap.ein`](detector_proposal/fifo_gap.ein), *drafted* | 2 | the FIFO gap | `… — no hole …` | 0 · 0 — *break nothing here* | 0 · 6.9 ms · 36 |
 | [`stratified_stale.ein`](detector_proposal/stratified_stale.ein), *drafted* | 1 | the FIFO gap, stratified, at root | `… 2 sites … — no hole …` | 0 · 0 — *break nothing here* | 0 · 7.1 ms · 32 |
 | [`activator_under_absent.ein`](detector_proposal/activator_under_absent.ein), *drafted* | 3 | an activator derived under an `absent` | `… 2 sites … — 1 hole; …` + 1 | 1 · 0 | 0 · 6.9 ms · 35 |
-| [`via_hole.ein`](../p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein) (probe) | 3 | `via` | `… — 1 hole; …` + 1 | 1 · 0 | 0 · 6.9 ms · 43 |
+| [`via_hole.ein`](../../followups/f21_probes/via_hole.ein) (probe) | 3 | `via` | `… — 1 hole; …` + 1 | 1 · 0 | 0 · 6.9 ms · 43 |
 | [`lattice/06_friends_tables`](../../../examples/lattice/06_friends_tables.ein) | 19 | past the limit, a trigger | `… — holes not known: the cube was not enumerated; …` | refused, exit 2: 2^19 | 0 · 2 447 ms · 114 |
 | [`features/04_open`](../../../examples/features/04_open.ein) | 81 | past the limit, an `absent` | as `06` | refused, exit 2: 2^81 | 0 · 1 241 ms · 121 |
 
