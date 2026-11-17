@@ -37,6 +37,74 @@ index.
 proposition is a bit in that KB (§ 5). A fork may intern freely without its parent ever seeing the proposition, which
 is what makes an O(1) fork correct as well as cheap.
 
+The two halves, and what one holds of the other. `Terms` is identity, one per run and append-only: it numbers
+names, propositions and derivation records. A `Kb` is belief, one per branch of the search: which of those numbers
+it holds, in layers. A layer names facts and records by id and holds no text and no argument list.
+
+```plantuml
+@startuml
+hide empty methods
+skinparam classAttributeIconSize 0
+
+package "identity: one per run" {
+  class Terms {
+    syms : Table<Interner>
+    facts : Table<FactStore>
+    provs : ProvArena
+    kernel : Kernel
+  }
+  class Interner {
+    arena : String
+    spans : Vec<(u32, u32)>
+    lookup : FxHashMap<Box<str>, Symbol>
+    rank : OnceLock<Vec<u32>>
+  }
+  class FactStore {
+    rows : Vec<Row>
+    args : Vec<Value>
+    table : Vec<u32>
+  }
+  class ProvArena {
+    records : Arc<Vec<Prov>>
+    fork : Region
+  }
+}
+
+package "belief: one per branch" {
+  class Kb {
+    sealed : Vec<Arc<Layer>>
+    top : Layer
+    n_by_rel : FxHashMap<Symbol, u32>
+    classes : EqClasses
+    saturated_facts : usize
+  }
+  class Layer {
+    facts : Vec<FactId>
+    present, negated : BitSet
+    by_rel, by_rel_slot_val
+    rule_apps_by_rule, rule_apps_on_rel
+    names : Registry<NameEntry>
+    primary, alts, closure, best
+  }
+  class Program {
+    relations, rules, hrules,
+    obligations, macros : Registry
+    queries, solve, config
+  }
+}
+
+Terms *-- Interner
+Terms *-- FactStore
+Terms *-- ProvArena
+Kb o-- "0..*" Layer : sealed, shared by Arc
+Kb *-- "1" Layer : top, the only writable one
+Kb o-- "1" Program : shared by Arc
+Layer ..> FactStore : FactId
+Layer ..> ProvArena : ProvId
+Layer ..> Interner : Symbol
+@enduml
+```
+
 **Ids are process-local and assignment-ordered.** A `Symbol` or `FactId` is the position its first interning took,
 so its numeric order is first-seen order. No answer and no rendering depends on it: observable orders go through
 the rank table (§ 2.1) and the semantic comparators (§ 3), and
@@ -219,6 +287,65 @@ asserts the top is empty, in every build, and builds the child:
 | `classes` | copied (§ 10) |
 | `saturated_facts` | inherited, so a branch of a saturated root starts clean |
 
+A fork in the two steps it is made of. Before it, root's writes since the last seal are in its `top`. `seal_top`
+moves that layer behind an `Arc`; `branch` then copies the vector of `Arc`s. Afterwards the two KBs share every
+layer that existed and each writes a top of its own, which the other never reads.
+
+```dot
+digraph fork {
+  rankdir=LR;
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_before {
+    label="before"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    b_root [shape=record, label="root : Kb | <s> sealed | <t> top"];
+    b_l0   [shape=box, style=filled, fillcolor=gray90, label="Layer 0\n(the load)"];
+    b_top  [shape=box, label="Layer\nroot's writes"];
+    b_root:s -> b_l0;
+    b_root:t -> b_top;
+  }
+
+  subgraph cluster_after {
+    label="after  let child = root.fork()"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
+    a_root  [shape=record, label="root : Kb | <s> sealed | <t> top"];
+    a_child [shape=record, label="child : Kb | <s> sealed | <t> top"];
+    a_l0    [shape=box, style=filled, fillcolor=gray90, label="Layer 0\n(the load)"];
+    a_l1    [shape=box, style=filled, fillcolor=gray90, label="Layer 1\nroot's writes, sealed"];
+    a_rt    [shape=box, label="empty Layer\nroot's later writes"];
+    a_ct    [shape=box, label="empty Layer\nthe child's writes"];
+    a_root:s  -> a_l0;  a_root:s  -> a_l1;  a_root:t  -> a_rt;
+    a_child:s -> a_l0;  a_child:s -> a_l1;  a_child:t -> a_ct;
+  }
+  b_top -> a_root [style=invis];
+  b_top -> a_child [style=invis];
+}
+```
+
+A route makes many children of one root, and from several threads: it seals root once, through `&mut`, and every
+node then branches through `&`.
+
+```plantuml
+@startuml
+participant "a route" as route
+participant "root : Kb" as root
+participant "node 1" as n1
+participant "node 2" as n2
+
+route -> root : sealed()
+note right of root : top moved behind an Arc,\nonce, by the one &mut
+route -> root : branch()
+root --> n1 : a Kb: root's layers, an empty top
+route -> root : branch()
+root --> n2 : a Kb: root's layers, an empty top
+route -> n1 : add_and_index_fact (the commitment),\nthen its saturation's facts
+route -> n2 : add_and_index_fact, ...
+note over n1, n2 : each append lands in the node's own top:\nroot and the other node read none of it
+route -> n1 : drop
+note right of n1 : retraction: the fork is discarded,\nand its top with it
+@enduml
+```
+
 Because sealing is the half that mutates, a layer of the search seals once and then branches from many threads
 through `&` ([`07-search.md`](07-search.md), [`08-parallelism.md`](08-parallelism.md)). After a fork the parent's later appends
 land in a new top its child never sees (`kb.rs`: `a_fork_reads_base_then_delta_and_the_two_histories_diverge`).
@@ -329,6 +456,36 @@ Every fact a KB holds records how it came to be there, and a fact is an OR over 
 over its premises ([Q18](../../../decisions/engine/Q18-provenance-is-per-fact-an-or-of-derivations-over.md)). In
 `ein.rs` the records live in one arena beside the fact store, and which record justifies which fact is a per-KB
 table.
+
+One fact's provenance in one KB, with two derivations recorded: the fact is the OR-node, each record an AND-node
+over its premises. The records live in the arena and the KB's tables say which of them this fact cites; a premise is
+itself a fact with records of its own, down to the facts the program wrote.
+
+```dot
+digraph prov {
+  rankdir=BT;
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  f  [shape=box, label="fact F\n(the OR-node: Kb::justifications)"];
+  p1 [shape=ellipse, label="Prov #1  kind Rule\nrule r1\n(an AND-node)"];
+  p2 [shape=ellipse, label="Prov #2  kind Rule\nrule r2\n(an AND-node)"];
+  a  [shape=box, label="fact A"];
+  b  [shape=box, label="fact B"];
+  c  [shape=box, label="fact C"];
+  s1 [shape=ellipse, style=dashed, label="Prov  kind Source\n(terminal)"];
+  s2 [shape=ellipse, style=dashed, label="Prov  kind Source\n(terminal)"];
+  h  [shape=ellipse, style=dashed, label="Prov  kind Hypothesis\n(terminal)"];
+
+  p1 -> f [label="primary: the first recorded"];
+  p2 -> f [label="alts: kept by premise count"];
+  a -> p1 [label="premises[0]"];
+  b -> p1 [label="premises[1]"];
+  c -> p2 [label="premises[0]"];
+  s1 -> a [label="primary"];  s2 -> b [label="primary"];
+  h -> c  [label="primary"];
+}
+```
 
 ### 8.1 The derivation record
 
