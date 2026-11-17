@@ -168,7 +168,9 @@ digraph recorded_cycle {
 }
 ```
 
-A walk over provenance does not expand a fact twice, so it ends on such a cycle.
+What is defined over provenance [below](#provenance-a-fact-is-an-or-of-derivations), support and the frontier,
+is defined as a least fixpoint, and so is well defined on such a cycle: a fact is not supported by a derivation
+that rests on itself alone.
 
 ## A fork
 
@@ -247,7 +249,7 @@ $$
 $$
 
 read as a least fixpoint, where $\operatorname{prem}(j) = \Pi \cup \Phi$, with the activator fact too where a node
-derived or committed it
+derived or committed it, and where a firing with $\operatorname{prem}(j) = \emptyset$ counts as a terminal
 ([Q-M1e2.12](../../../decisions/answer/Q-M1e2.12-a-dead-nodes-core-follows-an-activator-only.md),
 [Q-M1e2.15](../../../decisions/answer/Q-M1e2.15-a-derivation-through-a-forall-rests-on-each-fact.md)). Two firings of the
 three-house example, as premises, the firing, and the fact it adds:
@@ -282,7 +284,7 @@ What is true of $J$ in every implementation:
   everything that reads one derivation of a fact reads one stable story.
 - **A terminal takes no other derivation**: if $j_1$ is a terminal then $k = 1$. A given fact and a commitment are
   the frontier of every explanation, and a given that some rule could also derive is still given. A firing with no
-  premise is a terminal too, and a walk over provenance grounds out on it.
+  premise is a terminal too: the frontier stops at it.
 - **Two firings of one rule over the same premises under the same activator are one derivation**:
   $(\rho, \bar{a}, \Pi)$ is what tells two derivations apart. The substitution a firing used is read for display
   and is no part of it.
@@ -319,7 +321,8 @@ premise. So each path of the witness is a path the frontier follows, and the ter
 $\operatorname{front}(f)$. $\square$
 
 So no core of a contradiction names a fact outside the frontier of the facts it rests on. Choosing a *smallest*
-explanation is a search over the AND/OR graph, not a walk, and is [cores](../02-kb-evolution/09-cores.md)' subject.
+explanation is a minimisation over the AND/OR graph, which the frontier does not solve, and is
+[cores](../02-kb-evolution/09-cores.md)' subject.
 
 ## Equality
 
