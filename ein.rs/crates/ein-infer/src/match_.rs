@@ -1,4 +1,4 @@
-//! The register matcher — S1a.3.2,
+//! The register matcher —
 //! [design/matcher.md](../../../../docs/ein/ein.rs/design/matcher.md).
 //!
 //! Variables live in a register file, binding is `regs[r] = v` plus a push
@@ -24,7 +24,7 @@
 //!
 //! ### Recursion, and why the cursor loop is not here
 //!
-//! design/05 §3 sketches an explicit cursor loop over a step index, to avoid
+//! An explicit cursor loop over a step index would avoid
 //! a frame and a fresh step tuple per level; a recursive walk over a step
 //! slice allocates neither — the candidate iterator is a stack value and the
 //! step slice is borrowed. So
@@ -74,8 +74,8 @@ impl<'a> Match<'a> {
     }
 
     /// This disjunct's lifted `(absent …)` guards. Pairing them with the match
-    /// is what closes the S1.21.8 D5 gap structurally: a caller cannot see a
-    /// match without seeing which guards must hold for it.
+    /// is structural: a caller cannot see a match without seeing which guards
+    /// must hold for it.
     pub fn guards(&self) -> &'a [NafGuard] {
         self.plan.guards(self.plan.disjuncts[self.disjunct].guards)
     }
@@ -167,7 +167,7 @@ pub struct Matcher {
     in_guard: bool,
     /// What [`Matcher::universal_support`] collects while it walks: the facts
     /// each holding nested `(absent …)` of the guard matched, `None` on every
-    /// other walk (M1e2 S1e2.2.21).
+    /// other walk.
     support: Option<Vec<FactId>>,
     /// How many nested `(absent …)` the walk is inside, so a universal's own
     /// body is read and not what a deeper one matched.
@@ -194,7 +194,7 @@ impl Matcher {
     ///
     /// A rule whose `:match` is a top-level `(or …)` carries its extra
     /// disjuncts in the same plan, and each runs from a fresh seed, so every
-    /// caller sees all of them without any rule-split (S1.8.A13).
+    /// caller sees all of them without any rule-split.
     pub fn run(&mut self, kb: &Kb, terms: &Terms, ast: &Ast, plan: &Plan, f: Emit<'_>) {
         let c = Ctx {
             kb,
@@ -236,7 +236,7 @@ impl Matcher {
         self.run(kb, terms, ast, plan, f)
     }
 
-    /// The semi-naive delta match (S1.8.B2v D5).
+    /// The semi-naive delta match.
     ///
     /// Every match in which the newly-derived `fact` plays a *positive*
     /// premise. For each top-level `Scan`/`Join` on the fact's relation, that
@@ -344,7 +344,7 @@ impl Matcher {
     /// in the order the walk found them, each once. Empty for a guard with no
     /// nested query, which rests on an absence and on no fact.
     ///
-    /// M1e2 S1e2.2.21 (Q-M1e2.15 (b)): the saturator records these on the
+    /// The saturator records these (Q-M1e2.15) on the
     /// firing ([`ein_core::Prov::universal`]), and the core search folds each
     /// in. The walk is [`Matcher::holds`]', run to the end instead of to the
     /// first match, with the nested query's matched facts read off the
@@ -657,9 +657,9 @@ impl Matcher {
         let mark = self.trail.len();
         // **Every** slot is re-checked, even the one the probe narrowed on.
         // That re-check is what makes the narrowing behaviour-preserving
-        // rather than merely equivalent-if-the-index-agrees; design/05 §6
-        // lists dropping it as an optimisation to measure before taking, not
-        // to assume.
+        // rather than merely equivalent-if-the-index-agrees; dropping it is an
+        // optimisation to measure before taking, not to assume
+        // ([design/matcher.md § 6](../../../../docs/ein/ein.rs/design/matcher.md#6-which-optimisations-are-legal)).
         let ok = self.unify(terms, plan, step.slots, terms.facts.args(fact));
         let out = if ok {
             self.prems[w.ordinal] = fact;
@@ -675,9 +675,9 @@ impl Matcher {
 
     fn unify(&mut self, terms: &Terms, plan: &Plan, slots: Span, args: &[Value]) -> bool {
         ein_core::counters::bump(|c| c.unify += 1);
-        // Both sides as slices, then one zip: 50.2 M calls on an exhaustive
-        // `zebra` average **1.02 slots each** (T1a.6.2.2), so what this loop
-        // costs is its prologue and its bounds checks, not its compares.
+        // Both sides as slices, then one zip: on an exhaustive `zebra` a call
+        // compares about one slot, so what this loop costs is its prologue
+        // and its bounds checks, not its compares.
         let slots = &plan.slots[slots.range()];
         if slots.len() != args.len() {
             return false;
@@ -708,8 +708,8 @@ impl Matcher {
                 None => false,
                 Some(id) => {
                     // One row read, then the relation, and the arguments only
-                    // if it matched: **79 %** of an exhaustive `zebra2`'s
-                    // candidates die on this comparison (T1a.6.2.2) and never
+                    // if it matched: most of an exhaustive `zebra2`'s
+                    // candidates die on this comparison and never
                     // look at the arguments, while an exhaustive `zebra`'s
                     // almost all pass it and want them immediately. Reading
                     // the row once serves both; either half alone loses one of
@@ -732,7 +732,7 @@ impl Matcher {
     // ── Guards ─────────────────────────────────────────────────────
 
     /// An `eq` / `neq` guard: a relation whose facts are computed, never
-    /// stored (M1f S1f.5.7, the user's ruling of 2026-11-07 on Q-M1e2.26).
+    /// stored (Q-M1e2.26).
     ///
     /// With both sides bound it is a test. A side that is a variable nothing
     /// bound is **bound by the guard**, as a relation premise binds it:
@@ -745,12 +745,10 @@ impl Matcher {
     /// "The program's names" is [`crate::predicates::domain`]. The compiler
     /// puts a guard after the relation premise that binds its variable, where
     /// one does ([`crate::compile`]'s `Seq`), so a variable is free here only
-    /// where nothing in the conjunction binds it.
-    ///
-    /// Until S1f.5.7 an unbound variable resolved to a null, equal to another
-    /// unbound one and to nothing else, so `(eq ?a ?b)` on two unbound
-    /// variables passed, `(neq w ?y)` held with nothing bound, and `(eq w ?y)`
-    /// never did.
+    /// where nothing in the conjunction binds it. It is never a null: a null
+    /// equal to another unbound one and to nothing else would pass
+    /// `(eq ?a ?b)` on two unbound variables, hold `(neq w ?y)` with nothing
+    /// bound, and never hold `(eq w ?y)`.
     fn guard(
         &mut self,
         c: Ctx<'_>,
@@ -761,14 +759,11 @@ impl Matcher {
     ) -> ControlFlow<()> {
         let plan = c.plan;
         let args = plan.guard_args(args);
-        // **Unreachable by construction since M1e S1e.2.1** — `Compiler::premise`
-        // refuses any arity but [`Pred::arity`] before a `Step::Guard` is ever
-        // pushed, so this span is exactly two wide. Kept as a `debug_assert!`
-        // rather than deleted, because it is now a claim about the compiler
-        // and not a check on the program: it was the *only* check until
-        // S1e.2.1, and what it did when it fired was take the process down at
-        // exit 101 with a panic for a message
-        // ([`CO-H1`](../../../../docs/history/m1e_review_processing/review/correctness/high.md)).
+        // **Unreachable by construction** — `Compiler::premise` refuses any
+        // arity but [`Pred::arity`] before a `Step::Guard` is ever pushed, so
+        // this span is exactly two wide. Kept as a `debug_assert!` rather than
+        // deleted, because it is a claim about the compiler and not a check on
+        // the program, which the compiler makes before any match runs.
         debug_assert_eq!(
             args.len(),
             pred.arity(),
@@ -910,7 +905,8 @@ impl Matcher {
             candidates_scan(plan, &self.regs, step),
             "the compiled probe list disagrees with a live `_candidates` scan"
         );
-        // The differential harness of T1a.6.3.1 runs the same plans with the
+        // The differential harness (`narrowing_never_changes_the_match_sequence`
+        // below) runs the same plans with the
         // narrowing off, and "off" has to mean *only* off: the mirror above
         // is checked either way.
         #[cfg(test)]
@@ -1000,7 +996,7 @@ fn candidates_scan(plan: &Plan, regs: &[Value], step: RelStep) -> Option<SlotKey
     };
     for (slot, i) in plan.slots(step.slots).iter().zip(0u16..) {
         if let Slot::Nested { slots, .. } = *slot {
-            // T1a.6.3.0's second level, in the same left-to-right order the
+            // The second level, in the same left-to-right order the
             // compiled list is built in.
             for (deep, j) in plan.slots(slots).iter().zip(0u16..) {
                 if let Some(value) = usable(deep) {
@@ -1087,7 +1083,7 @@ mod tests {
         out
     }
 
-    /// T1a.6.3.1 — the narrowing argument, executed rather than argued.
+    /// The narrowing argument, executed rather than argued.
     ///
     /// A probe replaces "every fact of the relation" with "every fact in a
     /// bucket", and that is sound iff two things hold: the bucket **contains
@@ -1099,8 +1095,8 @@ mod tests {
     /// emitted matches — bindings in bind order, premises in step order — are
     /// identical and only the number of *rejected* candidates differs.
     ///
-    /// The interesting case is T1a.6.3.0's second level: a `(not (likes …))`
-    /// premise used to have no key at all and now has one per inner slot. The
+    /// The interesting case is the second level: a `(not (likes …))` premise
+    /// has no key of its own and one per inner slot. The
     /// insertion order is randomised because "in extent order" is the half of
     /// the argument that a single fixed order cannot test.
     #[test]
@@ -1161,7 +1157,7 @@ mod tests {
         (ast, terms, kb, plan)
     }
 
-    /// Which x's guard passes, for the two premise orders — the S1.21.8 scope
+    /// Which x's guard passes, for the two premise orders — the guard's scope
     /// contract, executed rather than inspected.
     ///
     /// `(and (a ?x) (absent (block ?x)))` asks "is there no block for *this*
@@ -1211,17 +1207,11 @@ mod tests {
     }
 
     /// **A `neq` on two variables nothing binds ranges over the program's
-    /// names** (M1f S1f.5.7, the user's ruling of 2026-11-07 on Q-M1e2.26):
+    /// names** (Q-M1e2.26):
     /// every ordered pair of two different names, `Thing`, `a` and `one` here,
     /// so six matches of the one `(a ?x)`. A direct caller of `compile_rule`
     /// that binds no parameter reaches it: `?p` and `?q` are parameters, which
     /// the loader takes as bound, and the plan is compiled with no activator.
-    ///
-    /// It was `two_unbound_guard_arguments_compare_equal` until S1f.5.7: an
-    /// unbound variable resolved to a null, two nulls were equal, and the
-    /// guard *failed*, so nothing matched. The loader refused a guard on a
-    /// variable no premise before it binds from M1e2 S1e2.2.24 (W24, Q-M1e2.18
-    /// (ii)) to S1f.5.7, which is why this test compiled the plan by hand.
     #[test]
     fn two_free_guard_arguments_range_over_the_programs_names() {
         let (ast, terms, kb, plan) = setup(

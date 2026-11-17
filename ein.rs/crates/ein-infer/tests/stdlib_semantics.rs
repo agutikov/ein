@@ -1,4 +1,4 @@
-//! The stdlib as **semantics** — S1a.10.2 T1a.10.2.2.
+//! The stdlib as **semantics**.
 //!
 //! `stdlib/*.ein` is the language's own library, not "ein.rs behaviour", and
 //! what is asserted here is what those rules *mean*: that `(bijective R)` fans
@@ -87,7 +87,7 @@ impl Sat {
 fn try_saturate(src: &str, max_steps: usize) -> Result<Sat, SaturateError> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    // The fixture names what it writes (M1f S1f.6.35): every module of the
+    // The fixture names what it writes: every module of the
     // stack lists the names the fixture writes of it.
     let src = &ein_corpus::listed(src);
     let forms = parse(&mut ast, src, Some("<stdlib-fixture>")).expect("the fixture parses");
@@ -736,11 +736,9 @@ fn a_derived_mark_answers_what_its_control_answers() {
 // ── symmetric relations under search ───────────────────────────────
 
 /// `ein solve FILE --maximal`, exhausted: the maximal line's states, each
-/// read whole through the node function every route uses. Since M1e2
-/// S1e2.1c.5 the two tests below ask a route: the walk they first asked, whose
-/// models were the maximal line's states, was deleted on the user's ruling of
-/// 2026-11-03. The claim is the same one — two orientations of one guess are
-/// one state, and two placements are two.
+/// read whole through the node function every route uses. The two tests
+/// below claim that two orientations of one guess are one state, and two
+/// placements are two.
 fn maximal_line<R>(rel: &str, read: impl FnOnce(&mut [Kb], &mut Terms) -> R) -> R {
     use ein_infer::explore::{self, Ask, Mode, Which};
     let mut ast = Ast::new();
@@ -787,8 +785,9 @@ fn holds(kb: &Kb, terms: &Terms, rel: &str, a: &str, b: &str) -> bool {
 /// `05_mini_zebra` branches on `co-located`, a relation the puzzle declares
 /// symmetric, so every commitment has a twin: guessing `(co-located Bob
 /// Coffee)` and guessing `(co-located Coffee Bob)` are the same guess. The
-/// kernel used to know that — it canonicalised symmetric pairs and mirrored on
-/// death — and S1.7.24 took all of it out. Nothing replaced it *specifically*:
+/// kernel knows nothing of it — symmetry is the program's (Q6), so it neither
+/// canonicalises symmetric pairs nor mirrors on death. Nothing does it
+/// *specifically*:
 /// the two orientations saturate to the same KB through the puzzle's own
 /// `(rule symmetric)`, so they collide at the generic `state_key` dedup, and
 /// `k` comes back 1 for a reason that has nothing to do with symmetry. This
@@ -850,11 +849,10 @@ fn a_genuinely_ambiguous_symmetric_puzzle_reports_exactly_its_two_models() {
 ///
 /// `mark` is a marker, as the stdlib's `bijective` is: no `(relation …)`
 /// declares it, so the loader reads its argument by what the program does with
-/// it, which is pass a relation's name on to `a` (M1f S1f.5.18, Q-M1f.41).
-/// Until S1f.5.18 the fixture declared `(relation mark T)`, whose argument
-/// holds any value of `T`, a fact among them, so `mark` could derive an
-/// activator binding `a`'s relation parameter to a fact, which the loader
-/// refuses since (Q-M1f.1 (b)).
+/// it, which is pass a relation's name on to `a` (Q-M1f.41). Declared
+/// `(relation mark T)`, its argument would hold any value of `T`, a fact
+/// among them, so `mark` could derive an activator binding `a`'s relation
+/// parameter to a fact, which the loader refuses (Q-M1f.1).
 #[test]
 fn a_rule_that_derives_its_own_activator_still_reaches_a_fixpoint() {
     let src = "(rule a (?rel) :match (?rel ?x ?y) :assert (mark ?rel) :why \"{?rel} holds of {?x} and {?y}, so {?rel} is marked\")

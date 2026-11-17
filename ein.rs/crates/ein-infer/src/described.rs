@@ -1,8 +1,6 @@
-//! `R`, described: what every surface says about the region, built once —
-//! M1e2
-//! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! second step, for the read-out
-//! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines.
+//! `R`, described: what every surface says about the region, built once, for
+//! the read-out [`read-out.md`](../../../../docs/ein/user/reference/read-out.md)
+//! defines.
 //!
 //! A [`Described`] is read off route 1's down-set ([`of_downset`]) or off the
 //! cube ([`of_cube`]), and nothing else computes one: the read-out, the
@@ -15,7 +13,7 @@
 //! past `--region-limit`) the states are the members met, each line flag is
 //! set only where it is **certified**, and the shape is `None`: components,
 //! sub-cubes and merged states need all of `R`
-//! ([`read_out.md` § 6.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#62-a-partial-run-c3)).
+//! ([read-out.md § 2](../../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
 
 use rustc_hash::{FxHashMap, FxHashSet};
 
@@ -36,7 +34,7 @@ pub struct Root {
     pub owed: Vec<String>,
     /// A dead root's unsat core.
     pub core: Vec<String>,
-    /// What the core's search established (M1e2 S1e2.2.23); `None` where no
+    /// What the core's search established; `None` where no
     /// core was taken.
     pub core_status: Option<crate::explain::CoreStatus>,
     /// The rules whose firing produced root's contradiction.
@@ -87,7 +85,7 @@ pub struct Dead {
     pub set: Box<[u32]>,
     /// Its unsat core, where the run took one: every member, under
     /// [`crate::region::Cores::nogoods`], the walk's core or one taken after
-    /// the walk against its snapshot (M1f S1f.5.12).
+    /// the walk against its snapshot.
     pub core: Vec<String>,
     /// What the core's search established; `None` where the run took no
     /// core, which no surface that prints `N` reads.
@@ -162,8 +160,8 @@ pub struct Described {
     /// no route, lever or `-j`.
     pub states: Vec<State>,
     /// The commitments of `R` met: `k_c`, or its lower bound. As a run
-    /// reports a count: [`crate::count::CAP`] reads *this many or more* (M1f
-    /// S1f.6.25), which is not the lower bound of a partial run.
+    /// reports a count: [`crate::count::CAP`] reads *this many or more*
+    /// (Q-M1f.218), which is not the lower bound of a partial run.
     pub k_c: u64,
     /// The minimal line as commitments, in visit order: the minimal elements
     /// of `R` — those certified, on a partial run. Its smallest is the least
@@ -175,7 +173,7 @@ pub struct Described {
     pub dead: Vec<Dead>,
     /// `N` was not taken: the description is exhausted, and the run was asked
     /// by a surface that prints neither `N` nor its count
-    /// ([`crate::explore::Options::nogoods`], M1f S1f.6.27), or the route
+    /// ([`crate::explore::Options::nogoods`]), or the route
     /// does not compute it ([`Route::TreeClasses`]). [`Self::nogoods`] and
     /// [`Self::dead`] then hold the members the walk met; a surface that
     /// prints them says which they are.
@@ -612,8 +610,8 @@ fn maximal_met(d: &DownSet, index: &FxHashMap<&[u32], u32>) -> FxHashSet<u32> {
         .collect()
 }
 
-/// How a state-route description its budget stopped is partial — M1e2
-/// S1e2.1c.2. Route 1's partial run is complete up to commitments of a size
+/// How a state-route description its budget stopped is partial. Route 1's
+/// partial run is complete up to commitments of a size
 /// ([`Described::complete_up_to`]); the state route's is complete up to
 /// **states** of a size.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

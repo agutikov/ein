@@ -1,4 +1,4 @@
-//! The search layer's semantics — T1a.10.2.2.
+//! The search layer's semantics.
 //!
 //! Everything above the saturator and below the CLI: contradiction detection
 //! ([`ein_infer::contradiction`]), the minimal-explanation search
@@ -9,19 +9,14 @@
 //! |---|
 //! | the two contradiction shapes and the incremental check |
 //! | `examples/saturation/`'s 24 per-rule demos |
-//! | the OR-aware smallest frontier (S1.21.7) |
+//! | the OR-aware smallest frontier |
 //! | `:hypothesis-relations` / `:no-hypothesis` |
-//! | canonical model identity (P1.21 R1) |
+//! | canonical model identity |
 //! | the blind enumerator's solve |
 //!
-//! Two subjects went with the walk on the user's ruling of 2026-11-03 (M1e2
-//! S1e2.1c.5): the walk's lattice arithmetic (`apriori`) and its commitment
-//! primitive (`commitment`, with fail-fast). The routes' node function and
-//! licences are `region.rs`'s and `explore.rs`'s tests. The two identity
-//! tests and the blind enumerator's ask `--maximal`. Two more went with the
-//! walk's own generator pass: its one-step lookahead's kill conditions, and
-//! its definition of a solution node, `consistent ∧ complete`; the answer is
-//! `R`.
+//! The routes' node function and licences are `region.rs`'s and
+//! `explore.rs`'s tests. The two identity tests and the blind enumerator's
+//! ask `--maximal`; the answer is `R`.
 //!
 //! Internals — the alternative-justification table, what a generator was
 //! asked for — are not asserted; where one protects an observable, the
@@ -151,13 +146,12 @@ fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> 
 
 // ── Contradiction detection ────────────────────────────────────────
 
-/// A pair is a contradiction however each side entered the KB — the S1.22.1b
-/// soundness fix.
+/// A pair is a contradiction however each side entered the KB.
 ///
 /// `(sits A S1)` and `(sits B S1)` are both authored clues; `one-per-seat`
-/// derives the negation of each from the other. Until S1.22.1b the detector
-/// skipped a pair whose facts sat in different knowledge layers, so this KB —
-/// flatly inconsistent with its own input — reported **zero** contradictions.
+/// derives the negation of each from the other. A detector that skipped a
+/// pair whose facts sat in different knowledge layers would report **zero**
+/// contradictions on this KB, flatly inconsistent with its own input.
 /// The corpus-scale instance of the same bug is
 /// `examples/ein-bugs/zebra2-bad.ein`, whose `Contradiction` verdict
 /// `acceptance.rs` owns; this is the unit-level pin, and it checks the
@@ -265,7 +259,7 @@ fn a_malformed_negation_is_tolerated_rather_than_crashing() {
     let (_ast, mut terms, mut kb) =
         kb_of("(relation r T T :why \"r holds of {?1} and {?2}\")\n(r A B :source \"(1)\")\n");
     let not = terms.kernel.not;
-    // `5` is a name since M1f S1f.5.4 (an int until then): either way, no fact.
+    // `5` is a name: no fact.
     let five = terms.value_text("5").expect("room");
     let malformed = terms.intern_fact(not, &[five]).expect("room");
     kb.add_and_index_fact(&mut terms, not, &[five], None)
@@ -320,7 +314,7 @@ fn witness_is_the_positive_for_a_pair_and_the_false_fact_for_a_direct() {
 /// Replaying a saturation firing by firing, the incremental check flips true
 /// at exactly the firing at which a full scan first becomes non-empty.
 ///
-/// This is the equivalence S1.9.E23's fail-fast fork rests on, and it is a
+/// This is the equivalence the fail-fast fork rests on, and it is a
 /// claim about a *running* saturation rather than a static KB: a
 /// `contradicts` that only consulted the KB's own indexes would agree with
 /// `detect` on any settled state and still be a firing late during the run —
@@ -516,8 +510,8 @@ fn each_demo_carries_a_query_goal() {
 ///
 /// `(X a)` follows from `(A a) ∧ (B a)` via `join` and from `(C a)` alone via
 /// `chain`; `(X a) ∧ (Y a)` is absurd. Only the two rules' written order
-/// moves between instantiations, and the first written fires first (FIFO
-/// since M1f S1f.5.15; until then their `:priority`, lower first) — so which
+/// moves between instantiations, and the first written fires first (FIFO,
+/// Q-M1f.313) — so which
 /// derivation wins the dedup race and becomes `(X a)`'s *primary* provenance
 /// flips with it.
 fn two_derivations(join_first: bool) -> String {
@@ -559,15 +553,15 @@ fn saturated(src: &str) -> (Ast, Terms, Kb) {
     (ast, terms, kb)
 }
 
-/// Flipping the two rules' written order (their priorities until M1f
-/// S1f.5.15) flips which derivation is recorded primary and leaves the
+/// Flipping the two rules' written order flips which derivation is recorded
+/// primary and leaves the
 /// reported frontier identical.
 ///
-/// The deliberate inversion of a test that used to pin the opposite. With one
-/// justification per fact, the frontier was `{C, Y}` when `chain` fired first
-/// and `{A, B, Y}` when `join` did — even though the two-fact explanation
-/// still existed in the second run and nothing about the puzzle had changed.
-/// S1.21.7 records the loser as an alternative and searches the AND/OR graph,
+/// With one justification per fact, the frontier would be `{C, Y}` when
+/// `chain` fired first and `{A, B, Y}` when `join` did — even though the
+/// two-fact explanation still exists in the second run and nothing about the
+/// puzzle has changed. The store records the loser as an alternative
+/// (Q18) and the search walks the AND/OR graph,
 /// so what a reader is told no longer depends on a dedup race. The primary
 /// provenance is asserted here *because* it still flips: that is what shows
 /// the fix is in the search rather than in which derivation wins.
@@ -610,7 +604,7 @@ fn the_reported_frontier_does_not_depend_on_which_derivation_fired_first() {
 /// would satisfy that half on every input. The second assertion is what
 /// separates them: in the `join`-first run the primary-only core is
 /// `{A, B, Y}`, and reporting `{C, Y}` means stepping *outside* it. That
-/// over-report is exactly what S1.21.7 removed.
+/// over-report is exactly what the AND/OR search rules out.
 #[test]
 fn an_explanation_is_a_subset_of_the_or_aware_closure_and_not_of_the_primary_only_union() {
     let (_ast, terms, kb) = saturated(FUNCTIONAL);
@@ -744,9 +738,7 @@ fn candidates(src: &str) -> (BTreeSet<String>, Vec<String>, HypGenStats) {
 }
 
 /// A `:hypothesis-relations` / `:no-hypothesis` value is a list, and a bare
-/// name is refused at the parse — restated at M1f S1f.5.5's swap, the user's
-/// ruling of 2026-11-08 on its review stop, item 10 (the paper grammar takes
-/// a list, the one form).
+/// name is refused at the parse: the grammar takes a list, the one form.
 ///
 /// Until the swap a bare SYMBOL meant exactly what the one-element list
 /// means, which this test held because no corpus file uses the bare form and
@@ -822,9 +814,7 @@ fn no_hypothesis_overrides_the_whitelist() {
 
 /// `ein solve FILE --maximal`: R's maximal line, exhausted, each state's
 /// fixpoint handed to `read` as the node function every route uses builds it
-/// ([`ein_infer::region::Nodes`]). Since M1e2 S1e2.1c.5 these tests ask a
-/// route: the walk they first asked, whose models were the maximal line's
-/// states, was deleted on the user's ruling of 2026-11-03.
+/// ([`ein_infer::region::Nodes`]).
 fn maximal_line<R>(rel: &str, read: impl FnOnce(&mut [Kb], &mut Terms) -> R) -> R {
     use ein_infer::explore::{self, Ask, Mode, Which};
     let mut ast = Ast::new();
@@ -920,9 +910,9 @@ const BLIND: &str = "examples/branching/12_typed_blind_solve.ein";
 /// that the anchor `(color-of H1 Red)` leaves. The walk, asked for its first
 /// model, reported one; R holds both.
 ///
-/// The M1 gate (`zebra2`) is hrule-driven, so it never enters the blind
-/// branch of the generator at all. Without a fixture that both takes that path
-/// *and* converges, retiring the kernel `is-a` type-filter would have been a
+/// The acceptance program (`zebra2`) is hrule-driven, so it never enters the
+/// blind branch of the generator at all. Without a fixture that both takes
+/// that path *and* converges, a change to the blind enumerator would be a
 /// silent change: the demos that run blind abort at `k = 0`, so they cannot
 /// witness "still solves". The `hrules.is_empty()` assertion is what keeps
 /// this test on the path it names — an hrule added to the fixture would make

@@ -70,13 +70,14 @@ pub type Reg = u16;
 ///
 /// A fixed-size array is what keeps the inner loop allocation-free, so the
 /// count has to be bounded somewhere. 256 distinct variables in one `:match`
-/// is two orders of magnitude past anything in the corpus (the widest rule in
-/// `stdlib/` binds seven). It is the engine's one compile-time bound and it says
-/// so out loud: overflowing it was a [`crate::CompileError`] rather than a panic
-/// from S1a.3.1, and since M1f S1f.5.21 the loader refuses a `:match` or a
-/// `:goal` that writes more distinct variables than this, a rule's parameters
-/// among them ([`ein_ir::MAX_MATCH_VARIABLES`], which this is, W63), so every
-/// command refuses it alike and the compiler's check is an invariant.
+/// is two orders of magnitude past the rules people write; `std.math.num9`'s
+/// generated rules are wide by design, and its widest, `div9-start`, binds
+/// 162 (`tests/compile_limits.rs` holds both distances). It is the engine's
+/// one compile-time bound and it says so out loud: the loader refuses a
+/// `:match` or a `:goal` that writes more distinct variables than this, a
+/// rule's parameters among them ([`ein_ir::MAX_MATCH_VARIABLES`], which this
+/// is, `W63`), so every command refuses it alike and the compiler's check is
+/// an invariant.
 pub const MAX_REGS: usize = ein_ir::MAX_MATCH_VARIABLES;
 
 /// A compiled argument position.
@@ -86,26 +87,17 @@ pub enum Slot {
     Reg(Reg),
     /// An `Atom` literal, or a parameter the activator bound.
     Const(Value),
-    /// A sub-pattern matched against a `Fact`-valued argument (Q40 option A).
+    /// A sub-pattern matched against a `Fact`-valued argument (Q40).
     Nested { rel: Symbol, slots: Span },
-    // `Any`, the wildcard `_` in a pattern, unified with any value and bound
-    // nothing from M1e2 S1e2.2.20 (W20) until M1f S1f.5.5's
-    // swap refused a bare `_` at the parse (S1f.5.1, Q-M1e2.22), and S1f.5.1's
-    // T1f.5.1.3 retired it: a premise's fact is a function of the register
-    // file since (F3's trace, W39 the one exception, a disjunction).
+    // There is no wildcard slot: a bare `_` is refused at the parse
+    // (Q-M1e2.22), so a premise's fact is a function of the register file,
+    // a disjunction the one exception (`W39`).
     /// An IR node the compiler's `slot` returned unchanged — an `SForm` whose
-    /// head is a variable the activator does not bind. A `String` was one
-    /// until M1e2 S1e2.2.18, and a `Wildcard` and a `Range` until S1e2.2.20,
-    /// which lowered the first to `Slot::Any` (retired with the node by M1f
-    /// S1f.5.1) and refused the second, and a wildcard as a relation, at load
-    /// (and M1f S1f.5.3 retired the range token). **Since S1e2.2.24** (W24)
-    /// the loader refuses a relation variable no parameter
-    /// binds, and the compiler a parameter its activator bound to a nested
-    /// fact, so no program the loader accepts reaches one in a `:match`. A
-    /// `KwPair` was one too, in a nested pattern until S1e2.2.24 and at an
-    /// `:assert`'s conclusion's top level, where it stopped the firing, until
-    /// M1f S1f.5.5's swap refused a keyword pair inside a term (S1f.5.11);
-    /// `slot` holds the arm unreachable since S1f.5.11's T1f.5.11.2.
+    /// head is a variable the activator does not bind. The loader refuses a
+    /// relation variable no parameter binds (`W24`), and the compiler a
+    /// parameter its activator bound to a nested fact, so no program the
+    /// loader accepts reaches one in a `:match`. A string, a range and a
+    /// keyword pair inside a term are refused at the parse, so none is one.
     ///
     /// The unifier compares it to the argument by equality, and no IR node is
     /// ever equal to a name or a `Fact`, so an opaque slot **never
@@ -150,9 +142,8 @@ pub struct RelStep {
 /// (never keyed) and a variable bound to a nested `Fact` (not keyed).
 ///
 /// The first skip is static and is applied here — an opaque or nested slot
-/// never produces a `Probe`. The other two conditions are **not** static, and
-/// [design/matcher.md § 5.2](../../../../docs/ein/ein.rs/design/matcher.md#52-a-probe-into-the-participation-index)'s claim that
-/// they are is the one thing in that section this stage had to correct:
+/// never produces a `Probe`. The other two conditions are **not** static
+/// ([design/matcher.md § 5.2](../../../../docs/ein/ein.rs/design/matcher.md#52-a-probe-into-the-participation-index)):
 ///
 /// - whether a register is bound at this step depends on the *entry point* —
 ///   `run_seeded` removes a step from the sequence and binds it first, so a
@@ -174,9 +165,9 @@ pub struct Probe {
     /// [`SlotKey::DIRECT`](ein_core::SlotKey::DIRECT) when the probe keys on
     /// the argument itself.
     ///
-    /// T1a.6.3.0. A `Nested` slot contributes no direct key — there is no
-    /// single value at that position — but its own slots do, and the index
-    /// has held them since the same task. This is the compile-time half:
+    /// A `Nested` slot contributes no direct key — there is no single value
+    /// at that position — but its own slots do, and the index holds them.
+    /// This is the compile-time half:
     /// `(not (?R ?b ?i))` with `?b` already bound probes
     /// `(not, slot 0, inner 0) = ?b` instead of walking `not`'s extent.
     pub inner: u16,
@@ -212,30 +203,20 @@ pub enum GuardArgKind {
     /// A `Var`: its bound value where the guard is judged, or, where nothing
     /// before it bound it, a variable the guard binds — to the other side's
     /// value for `eq`, over the program's names for `neq` and for `eq` whose
-    /// other side is free too (M1f S1f.5.7, Q-M1e2.26: `eq` and `neq` are
-    /// relations). Until then an unbound one was a null, equal only to another
-    /// unbound value, so `(eq ?a ?b)` on two unbound variables passed, and
-    /// from M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii)) to S1f.5.7 the loader refused
-    /// a guard on a variable no premise before it binds; until then `(and
-    /// (neq ?x a) (p ?x))` fired for `a` too.
+    /// other side is free too (Q-M1e2.26: `eq` and `neq` are relations). It
+    /// is never a null: `(eq ?a ?b)` on two unbound variables holds of each
+    /// name with itself, and `(and (neq ?x a) (p ?x))` never fires for `a`.
     Reg(Reg),
-    /// A name, the symbol it names, as the loader holds it in a fact (and an
-    /// `Int`, its value, until M1f S1f.5.4 retired the kind); and since M1f
-    /// S1f.5.7 a fact that holds no variable, the nested fact it spells (the
-    /// user's ruling of 2026-11-07 on `W24/form-in-guard`). A string was a
-    /// node until M1e2 S1e2.2.18, so `(eq ?x "b")` never held, and the symbol
-    /// it names until M1f S1f.5.5's swap refused one in a guard (S1f.5.2;
-    /// T1f.5.2.3 retired the arm).
+    /// A name, the symbol it names, as the loader holds it in a fact; or a
+    /// fact that holds no variable, the nested fact it spells
+    /// (`W24/form-in-guard`). A string is refused in a guard at the parse.
     Const(Value),
-    // `Node` was a third kind until M1f S1f.5.7: anything else (an `SForm`, a
-    // `Wildcard` until M1f S1f.5.1, a `KwPair` until S1f.5.5's swap), compared
-    // by IR-node equality and so equal to no value; the loader refused each
-    // as a guard's argument from M1e2 S1e2.2.24 (W24, Q-M1e2.18 (i), (iii)).
-    // A form that holds no variable is a `Const` since, and one that holds a
-    // variable is refused (Q-M1f.30).
+    // There is no third kind: a form that holds no variable is a `Const`,
+    // one that holds a variable is refused (Q-M1f.30), and a keyword pair is
+    // no guard's argument (Q-M1e2.18).
 }
 
-/// A top-level `(absent …)` lifted out of a disjunct — S1.21.8.
+/// A top-level `(absent …)` lifted out of a disjunct.
 ///
 /// The closure runs purely positive plans; the guard is judged on the
 /// closure/world boundary instead, against a positive fixpoint.
@@ -291,12 +272,12 @@ pub struct Disjunct {
     /// guards happen to be the same query really do collapse there, and a key
     /// on the disjunct index would enqueue one candidate twice.
     ///
-    /// Keying on the guards rather than on the disjunct is also the S1.22.0
-    /// fix in the other direction: without it, two disjuncts with equal
-    /// bindings but *different* guards collide, only the first is ever
+    /// Keying on the guards rather than on the disjunct matters in the other
+    /// direction too: without it, two disjuncts with equal bindings but
+    /// *different* guards would collide, only the first would ever be
     /// admitted, and — because a failing monotone guard retires its candidate
-    /// — a disjunct whose guards would have passed is masked permanently.
-    /// `(or …)` became order-dependent.
+    /// — a disjunct whose guards would have passed would be masked
+    /// permanently, so `(or …)` would depend on the order it is written in.
     pub guard_key: Span,
     /// Relation steps including those inside nested `(absent …)` queries — the
     /// size of the premise-slot array a run needs. A nested query writes into
@@ -311,28 +292,16 @@ pub struct Disjunct {
 pub struct Plan {
     pub rule: Symbol,
     /// `plan.activator_args` — the activator's **every** argument, as values,
-    /// the compile key's list ([`crate::compile::PlanKey`]), since M1f
-    /// S1f.5.18 (Q-M1f.43, taken by default on the user's instruction of
-    /// 2026-11-09). It is what the `enqueue`, `fire` and `owe` events print,
-    /// what the static checks print as a label, and a plan's activator where
-    /// an analysis keys on one (`oblgen`'s `InstanceKey`, the region's owed
-    /// instances, `detector`'s root plans, `naf_deps`); since S1f.5.18 every
-    /// argument binds its parameter (W33), so two plans that differ only in a
-    /// nested fact bind two values, and each key tells them apart.
-    ///
-    /// **Until S1f.5.18 it kept the symbol arguments only**, an asymmetry: a
-    /// nested fact bound nothing, so two plans that differed
-    /// in one alone were equal but for it, and an event printed such an
-    /// activator as `[]`. Until M1e2 S1e2.2.7 it was the binding key's
-    /// activator half too, and an `int` beside a nested `Fact` in one position
-    /// lost a derivation (Q-M1e.16, M1e2's W7); it was empty for an activator
-    /// whose every argument is a nested fact, so it does not say whether a plan
-    /// *has* an activator, which is whether its rule has parameters: *forbid*
-    /// read it so until M1e2 S1e2.2.16, and a refutation resting on such an
-    /// activator loaded (W16).
+    /// the compile key's list ([`crate::compile::PlanKey`], Q-M1f.43). It is
+    /// what the `enqueue`, `fire` and `owe` events print, what the static
+    /// checks print as a label, and a plan's activator where an analysis keys
+    /// on one (`oblgen`'s `InstanceKey`, the region's owed instances,
+    /// `detector`'s root plans, `naf_deps`); every argument binds its
+    /// parameter (`W33`), so two plans that differ only in a nested fact bind
+    /// two values, and each key tells them apart.
     pub activator_args: Box<[Value]>,
     /// The activator fact this plan was compiled from, `None` for a rule
-    /// with no parameters — M1e2 S1e2.2.19. A plan is a pure function of its
+    /// with no parameters. A plan is a pure function of its
     /// [`crate::compile::PlanKey`], and the key's values are this fact's
     /// arguments under the rule's name, so one key names one fact. Every
     /// firing records it ([`ein_core::Prov::activator`]), and a dead node's
@@ -342,8 +311,8 @@ pub struct Plan {
     /// at match start, and the name is what provenance renders.
     pub seed: Box<[(Symbol, Value)]>,
     pub disjuncts: Box<[Disjunct]>,
-    /// One `:assert` conclusion template per top-level conjunct (A13
-    /// multi-assert). Slots into [`Plan::slots`].
+    /// One `:assert` conclusion template per conjunct, at any depth
+    /// ([`ein_ir::Ast::conjuncts`]). Slots into [`Plan::slots`].
     pub asserts: Box<[Slot]>,
     pub why: Option<Symbol>,
     /// The plan's register-space size, seeds included.

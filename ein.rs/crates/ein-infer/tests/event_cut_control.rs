@@ -1,4 +1,4 @@
-//! **The event cut's negative control** — T1a.10.3.3.
+//! **The event cut's negative control.**
 //!
 //! `ein_narration::events::diff` compares two event streams by "what each
 //! segment derived" rather than as whole streams, because a fork resumes
@@ -19,10 +19,9 @@
 //! still be comparing narration. Run all three and the cut is calibrated in
 //! both directions rather than asserted.
 //!
-//! **Since M1e2 S1e2.1c.5 the streams are a route's** (`ein solve FILE
-//! --events`, describe): the walk whose streams this first cut was deleted on
-//! the user's ruling of 2026-11-03, and the cut is what `id_order_invariance`
-//! and `jobs_invariance` compare route streams with.
+//! **The streams are a route's** (`ein solve FILE --events`, describe), and
+//! the cut is what `id_order_invariance` and `jobs_invariance` compare route
+//! streams with.
 
 use ein_core::Terms;
 use ein_corpus::repo_root;

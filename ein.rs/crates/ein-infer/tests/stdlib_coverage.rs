@@ -1,22 +1,17 @@
-//! **Every stdlib rule is activated by a program written to activate it** —
-//! M1c [S1c.1.5](../../../../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate).
+//! **Every stdlib rule is activated by a program written to activate it.**
 //!
-//! [S1c.1.1](../../../../docs/history/m1c_external_validation/README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised)
-//! measured the gap this closes: **38 of the stdlib's 73 rules never fired**
-//! in any of 400 corpus runs (2026-08-23), and 20 more were activated by
-//! `examples/zebra.ein` and by nothing else.
-//! [S1c.1.4](../../../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)
-//! wrote the programs under [`tests/stdlib/`](../../../../tests/README.md)
-//! that took the zero set to 0. This is what stops it growing back — and the
-//! count of rules and of programs is deliberately not repeated here, because
-//! **this file computes both**: whatever `stdlib/*.ein` declares and whatever
-//! is under the suite directory is what it asserts about (M1e `DO-M1`).
+//! A rule the corpus never fires, or that one example alone activates, is a
+//! rule nothing tests. The programs under
+//! [`tests/stdlib/`](../../../../tests/README.md) activate every one, and this
+//! is what keeps the zero set at 0 — and the count of rules and of programs
+//! is deliberately not repeated here, because **this file computes both**:
+//! whatever `stdlib/*.ein` declares and whatever is under the suite directory
+//! is what it asserts about.
 //!
 //! ## The claim is about the *suite*, not about the corpus
 //!
-//! [`utils/stdlib_census.py --check`](../../../../utils/stdlib_census.py)
-//! sweeps every corpus entry (`grep -c '^\[\[entry\]\]' corpus/corpus.toml`)
-//! and exits 1 while any rule is at zero. That is the weaker claim, and it is
+//! A census that sweeps every corpus entry and fails while any rule is at
+//! zero makes the weaker claim, and it is
 //! weak in the way that matters here: a rule added tomorrow that happens to
 //! fire somewhere inside `examples/zebra.ein` would pass it **with no test
 //! written**. So the sweep below is scoped to `tests/stdlib/` — the directory
@@ -33,13 +28,10 @@
 //!
 //! ## Why this is a test and not the script
 //!
-//! The script shells out to a release binary hundreds of times and takes
-//! ~38 s (2026-09-01); a check shaped like that runs when somebody remembers
-//! it — which from M1e S1e.4.5 (`TE-L4`) was a **nightly**
-//! (`.github/workflows/nightly.yml`) rather than nobody, and since M1f
-//! S1f.5.27 is the dev host, `./run_tests.sh --dev-host`. This one runs in
-//! `cargo test`, needs no binary, and costs **0.04 s** — a program of three
-//! declarations and two facts exhausts in microseconds. **It fails the
+//! A census shells out to a release binary hundreds of times, and a check
+//! shaped like that runs when somebody remembers it. This one runs in
+//! `cargo test`, needs no binary, and costs next to nothing — a program of
+//! three declarations and two facts exhausts in microseconds. **It fails the
 //! moment a rule is added without a program**, which is the only moment anyone
 //! will read it.
 //!
@@ -58,8 +50,8 @@
 //! four fixtures would fail it: `algebra/08_checks_satisfied.ein` and
 //! `18_totality_open_world.ein` exist to show a rule is loaded, activated and
 //! *silent*, and the two `macro/` programs test expansion, which `std.macro`
-//! does with no rules at all. A rule not firing is the case S1c.1.4's notes
-//! call the one that finds bugs; a gate that forbade it would forbid the
+//! does with no rules at all. A rule not firing is the case that finds
+//! bugs; a gate that forbade it would forbid the
 //! better half of the suite.
 //!
 //! Nor is *sensitivity*. A program can fire a rule and still pass with the
@@ -77,8 +69,8 @@ use ein_infer::events::{Buffer, Events, Level};
 use ein_infer::{explore, read_out};
 use ein_ir::{Ast, Node, NodeId, load_query, parse};
 
-/// The suite under test — the directory S1c.1.4 put the programs in, and the
-/// third corpus root beside `examples/` and `stdlib/`.
+/// The suite under test — the third corpus root beside `examples/` and
+/// `stdlib/`.
 const SUITE: &str = "tests";
 
 /// The subject.
@@ -86,10 +78,10 @@ const STDLIB: &str = "stdlib";
 
 /// The modules that declare no rules, and so are absent from the inventory
 /// by construction. Named rather than inferred: `std.macro` ships `forall` and
-/// `open`, which are *macros*, and `std.math.digits` (M1f S1f.6.2) is a library of
+/// `open`, which are *macros*, and `std.math.digits` is a library of
 /// **facts**, the calculator's digit tables, with no rule for this gate to ask
 /// about: what holds its rows is `ein-ir/tests/digit_tables.rs`, every one
-/// against Rust's integers, and so `std.math.bits` (S1f.6.16), binary's. A day
+/// against Rust's integers, and so `std.math.bits`, binary's. A day
 /// when `algebra.ein` parses to zero rules must not read the same as any.
 const RULE_FREE_MODULES: [&str; 3] = ["std.math.digits", "std.math.bits", "std.macro"];
 
@@ -146,7 +138,7 @@ fn inventory() -> (Vec<Decl>, BTreeMap<String, Vec<String>>) {
 }
 
 /// Every module file under `stdlib/`, **at any depth**: `std.math.x` is
-/// `stdlib/math/x.ein` (M1f S1f.6.31), and a reader of one directory would
+/// `stdlib/math/x.ein`, and a reader of one directory would
 /// leave such a module's rules out of the claim in silence.
 /// [`the_inventory_reads_every_module_the_manifest_lists`] holds the two to
 /// the manifest.
@@ -233,15 +225,15 @@ struct Ran {
 }
 
 /// Load one program and describe its R to exhaustion, and record what that
-/// activated. It was the run `ein test` makes until M1f S1f.6.27, since when
-/// the runner asks a file the least question that decides its claims, which
-/// can visit fewer nodes; this gate keeps the description, the run that
+/// activated. `ein test` asks a file the least question that decides its
+/// claims (Q-M1f.221), which can visit fewer nodes; this gate keeps the
+/// description, the run that
 /// visits every alive state, because its question is what a program *can*
 /// activate and not what a claim needs.
 ///
-/// Exhaustive rather than a bare `saturate`, though on the suite as it stood
-/// at S1c.1.5 the two reached exactly the same rules (measured, 2026-08-24).
-/// The difference is what happens to a rule whose only firing is *inside* a
+/// Exhaustive rather than a bare `saturate`, though on most of the suite the
+/// two reach the same rules. The difference is what happens to a rule whose
+/// only firing is *inside* a
 /// hypothesis: under saturation the gate would report it untested and the
 /// fixture's author would have to find out why. It costs nothing to be right
 /// about that — programs of this size exhaust in 0.04 s, all told.
@@ -257,8 +249,8 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
         (ast, terms, kb, forms)
     };
 
-    // `ein test`'s shape from M1e2 S1e2.1a.5 to M1f S1f.6.27: load once to
-    // find out what the file claims, and run **one** region run, the
+    // Load once to find out what the file claims, and run **one** region
+    // run, the
     // description, which every claim's set is part of. A file that claims
     // nothing is not run, and the one fixture in the repo that would cost most
     // to enter (`features/04_open.ein`, an unbounded enumeration) is exactly
@@ -297,14 +289,13 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
 ///
 /// **Two kinds, and the second is not an optimisation of the first.** A
 /// saturation rule reaches the agenda and emits `fire`. An **obligation** rule
-/// (M1d S1d.2.4) never can — it derives nothing and is deliberately kept out
+/// never can — it derives nothing and is deliberately kept out
 /// of the agenda, so its only evidence is the `owe` it emits from the
 /// post-fixpoint pass. Both lines carry `rule` and `activator` and both mean
 /// the same thing here: this program activated that rule and observed what it
 /// concluded. Reading only `fire` would have put every obligation rule
-/// permanently in the zero set — which is why
-/// [S1d.2.3](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)
-/// deferred shipping the duals until this pass existed.
+/// permanently in the zero set
+/// ([obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)).
 fn read_activations(path: &Path, log: &str) -> Vec<(String, usize)> {
     let mut out = Vec::new();
     for line in log.lines() {
@@ -361,8 +352,8 @@ fn resolve(
     if ran.local.contains(name) {
         return Vec::new();
     }
-    // A rule the program does not name short fires under its full name since
-    // M1f S1f.6.35, `std.algebra.total-owed`: the module is in its name.
+    // A rule the program does not name short fires under its full name,
+    // `std.algebra.total-owed`: the module is in its name.
     if let Some((module, short)) = name.rsplit_once('.')
         && module.starts_with("std.")
     {
@@ -408,8 +399,7 @@ fn programs() -> Vec<PathBuf> {
 ///
 /// The failure message names the rules and their modules, because the fix is
 /// a program under `tests/stdlib/<module>/` and the module says which
-/// directory. `stdlib_census.md` §6 is where the smallest activating program
-/// for a rule was worked out the first time.
+/// directory.
 #[test]
 fn every_stdlib_rule_is_activated_by_a_program() {
     let (decls, imports) = inventory();
@@ -493,7 +483,7 @@ fn every_program_states_an_expectation() {
                 .unwrap_or_else(|e| panic!("{}: {e}", path.display()));
             let kb = load_query(&mut ast, &mut terms, &forms, path.parent(), 0)
                 .unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-            // A query's `:expect`, or since M1e2 S1e2.1a.4 the region claim
+            // A query's `:expect`, or the region claim
             // on `(solve …)`: either is a statement the runner checks.
             let solve_claims = kb
                 .program()
@@ -520,13 +510,13 @@ fn every_program_states_an_expectation() {
     );
 }
 
-/// **The inventory reads every module the manifest lists, and no other**
-/// (M1f S1f.6.31, T1f.6.31.7). The calculator's modules live under
-/// `stdlib/math/` since that stage, and both readers of the stdlib that a
+/// **The inventory reads every module the manifest lists, and no other.**
+/// The calculator's modules live under `stdlib/math/`, and both readers of
+/// the stdlib that a
 /// subdirectory could hide a module from are held here: this file's
 /// [`module_files`], and `stdlib/MANIFEST.sha256`, which `ein-ir`'s
-/// `the_embedded_copy_has_no_extra_modules` holds the embedded copy to and
-/// `utils/stdlib_manifest.py` writes. A `.ein` under `stdlib/` at any depth
+/// `the_embedded_copy_has_no_extra_modules` holds the embedded copy to. A
+/// `.ein` under `stdlib/` at any depth
 /// that either does not see fails here, named.
 #[test]
 fn the_inventory_reads_every_module_the_manifest_lists() {

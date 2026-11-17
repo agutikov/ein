@@ -1,7 +1,7 @@
 //! What a root saturation costs, and how much work `match_hot` measures.
 //!
-//! The companion to `compile_cost`: a program that reports the figures the
-//! stage's acceptance quotes, with the **work** beside the wall clock rather
+//! The companion to `compile_cost`: a program that reports the figures,
+//! with the **work** beside the wall clock rather
 //! than a wall clock alone. `match_hot` in particular is only comparable
 //! across commits if both runs enumerate the same matches and consume the
 //! same premises — which this prints.

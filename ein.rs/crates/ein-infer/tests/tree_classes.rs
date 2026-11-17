@@ -8,7 +8,7 @@
 //!   the same (`Described::differences`), with `N` taken and without; where
 //!   the state route stops and the tree and the classes do not, every state
 //!   the state route met is one of theirs. The `slow` entries are read under
-//!   `EIN_CORPUS_SLOW=1`, which the nightly sets.
+//!   `EIN_CORPUS_SLOW=1`.
 //! - [`both_routes_are_the_oracle_where_it_reaches`]: each against the cube on
 //!   every such program within `--region-limit`.
 //! - [`the_default_takes_the_tree_where_it_branches`]: describe takes the tree

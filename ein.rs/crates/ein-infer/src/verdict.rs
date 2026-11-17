@@ -2,10 +2,8 @@
 //! rows ([`goal_bindings`]) and whether its plan compiles
 //! ([`goal_plan_error`]) — what the read-out answers each `(query …)` with.
 //!
-//! The module was the walk's verdict types too — `Solution`, `Ambiguity`,
-//! `Contradiction` and `Open` over the models it recorded, and the count that
-//! qualified them. They went with the walk at M1e2 S1e2.1c.5 (2026-11-03):
-//! `--single`'s four words are [`crate::explore::Verdict`], read off `R`.
+//! `--single`'s four words are not here: they are
+//! [`crate::explore::Verdict`], read off `R`.
 
 use ein_core::entities::{ExprRef, Pattern, Query, Rule};
 use ein_core::{Kb, Symbol, Terms, Value};
@@ -22,7 +20,7 @@ pub fn query_value(ast: &Ast, query: &Query, kw_name: &str) -> Option<NodeId> {
 
 /// A query's `:goal` as the program wrote it, for a surface that prints it:
 /// [`query_value`]'s `goal` is the goal with its macro calls expanded, which
-/// is what is matched (M1f S1f.7.5, Q-M1f.117).
+/// is what is matched (Q-M1f.117).
 pub fn goal_written(ast: &Ast, query: &Query) -> Option<NodeId> {
     query
         .goal_written
@@ -30,8 +28,8 @@ pub fn goal_written(ast: &Ast, query: &Query) -> Option<NodeId> {
         .or_else(|| query_value(ast, query, "goal"))
 }
 
-/// A `(solve …)` keyword's value, by keyword name — M1e2 S1e2.1a.4, where the
-/// lattice's keywords moved. The **first** match wins, as in [`query_value`].
+/// A `(solve …)` keyword's value, by keyword name. The **first** match wins,
+/// as in [`query_value`].
 pub fn solve_value(ast: &Ast, solve: &ein_core::Solve, kw_name: &str) -> Option<NodeId> {
     kw_value(ast, &solve.kw_pairs, kw_name)
 }
@@ -110,9 +108,8 @@ pub fn goal_bindings(
         // A top-level `(absent …)` is lifted out of the plan, as a rule's is,
         // for the boundary to judge, and a goal has no boundary: it is judged
         // here, against the state, which is a fixpoint. It holds where its
-        // query has no match (M1f S1f.5.7's T1f.5.7.6, W56; until then it was
-        // never judged, so `(and (p ?y) (absent (q ?y)))` answered `?y = b`
-        // beside `(q b)`).
+        // query has no match (`W56`: so `(and (p ?y) (absent (q ?y)))` never
+        // answers `?y = b` beside `(q b)`).
         if m.guards()
             .iter()
             .any(|g| judge.holds(kb, terms, ast, &plan, g, m.regs()))
@@ -172,11 +169,10 @@ mod tests {
     use super::*;
     use ein_ir::{from_ir::load, parse};
 
-    /// **A goal's `(absent …)` is judged** (M1f S1f.5.7's T1f.5.7.6, W56): the
-    /// lifted guard holds where its query has no match in the state, so a row
-    /// whose `(q ?y)` the state holds is no row; a `forall`'s nested shape is
-    /// judged the same way. Until then the goal's evaluation never judged it,
-    /// and `?y = b` was a row beside `(q b)`.
+    /// **A goal's `(absent …)` is judged** (`W56`): the lifted guard holds
+    /// where its query has no match in the state, so a row whose `(q ?y)` the
+    /// state holds is no row; a `forall`'s nested shape is judged the same
+    /// way.
     #[test]
     fn a_goals_absent_is_judged() {
         let rows = |goal: &str| -> Vec<String> {

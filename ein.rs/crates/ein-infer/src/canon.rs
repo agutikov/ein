@@ -4,7 +4,7 @@
 //! one lattice node, which is what makes the search space a DAG rather than a
 //! tree.
 //!
-//! **The guarantee (P1.21 R1): identity is the canonical representation
+//! **The guarantee: identity is the canonical representation
 //! itself, never a hash of it.** [`state_key`] returns the sorted fact list and
 //! every identity site keys on that list directly, so correctness does not
 //! depend on hash quality — a collision costs a comparison, not a wrong answer.
@@ -32,11 +32,11 @@ use ein_core::{FactId, Kb};
 /// sorted.
 pub fn state_key(kb: &Kb) -> Box<[FactId]> {
     let mut out: Vec<FactId> = kb.facts().collect();
-    // determinism-ok: identity order, and this is class A of the T1a.7.1.5
-    // audit — a canonical *key*, compared for equality and never rendered.
-    // Any total order gives the same equivalence classes (design/02 §6); what
-    // the order has to be is a function of the input, which it is, because
-    // ids are assigned at load and the search assigns none (T1a.7.1.1/.2).
+    // determinism-ok: identity order — a canonical *key*, compared for
+    // equality and never rendered. Any total order gives the same
+    // equivalence classes; what the order has to be is a function of the
+    // input, which it is, because ids are assigned at load and the search
+    // assigns none (`docs/ein/ein.rs/design/determinism-and-order.md` § 2.1).
     // The dumper re-sorts by repr before printing — `dump::snapshot`'s
     // `repr_sorted`, and the paragraph above.
     out.sort_unstable();
@@ -51,8 +51,8 @@ pub fn state_key(kb: &Kb) -> Box<[FactId]> {
 /// solution table counted `k` that way, `expect` compared claims that way
 /// (its doc comment said *keyed the way `answer.rs` counts `k`*, which is a
 /// parallel copy admitting to being one), and the key table filtered that way
-/// inline. M1e `AR-M1`'s shape, and `AR-M2` is what it costs when the copies
-/// are counts.
+/// inline. Parallel copies of one definition drift apart, and where the
+/// copies are counts the drift is two surfaces disagreeing on `k`.
 ///
 /// Quadratic in the number of items and linear in a KB's facts per item. Both
 /// are `k`-sized here — the corpus's largest model set is 32 — so a linear

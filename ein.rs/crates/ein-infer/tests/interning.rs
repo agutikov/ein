@@ -1,4 +1,4 @@
-//! T1a.7.1.0 — **what a run interns, and when.**
+//! **What a run interns, and when.**
 //!
 //! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 //! has to make [`Terms`] shareable across workers, and the interner is the
@@ -9,39 +9,39 @@
 //! the write sites.
 //!
 //! It does not have to, because of what this file measures: **the symbol table
-//! does not grow during the search** (nor did the integer pool, until M1f
-//! S1f.5.4 retired it with the int kind). An engine that never grows a table
-//! can share it by `&`, with no lock at all and no change to a single reader.
+//! does not grow during the search**. An engine that never grows a table can
+//! share it by `&`, with no lock at all and no change to a single reader.
 //!
-//! That was not true when the question was first asked (2026-08-22). **Four
-//! names arrived after root saturation, on 24 of the 90 corpus files that
-//! reach a solve**, in two groups, and both are now closed:
+//! Two groups of names could arrive after root saturation, and each is
+//! interned before it:
 //!
-//! | group | names | closed by |
+//! | group | names | interned by |
 //! |---|---|---|
 //! | the engine's own | `<lookahead-dies-immediately>` (19 files), `<forced-positive>` (4), `<monotonic-unconditional>` (4) | [`ein_core::terms::ENGINE`], interned by `Terms::new` with the rest of the kernel vocabulary |
 //! | a rule's constants | `Ann`, from `(hrule guess … :assert (seat Ann ?v))` in `examples/ein-bugs/mixed-type-hypothesis.ein` — a name no fact mentions, so the compiler was the first to see it | `ein_ir::from_ir::intern_program_names`, a load pass over the registered rules and the query |
 //!
 //! `ENGINE` holds **eight**. The other five land during *root saturation*,
-//! which is single-threaded and so never a hazard — but `__symmetric__` was
-//! interned by every `Saturator::new` on 94 of the files, and `a` / `b`, the
-//! names the native mirror reports a firing's bindings under, were interned
-//! **per mirror firing**. Both are now a field read.
+//! which is single-threaded and so never a hazard; `__symmetric__`, which
+//! every `Saturator::new` reads, and `a` / `b`, the names the native mirror
+//! reports a firing's bindings under, are each a field read, never an intern
+//! per saturator or per mirror firing.
 //!
 //! # What this asserts, and what it deliberately does not
 //!
-//! The claim is about the **search**, because that is the only region P1a.7
-//! shares anything across. So each file is loaded, saturated at root, marked,
+//! The claim is about the **search**, because that is the only region the
+//! worker threads share anything across. So each file is loaded, saturated at
+//! root, marked,
 //! and then solved: growth before the mark is the loader's and the root
 //! saturation's business and is single-threaded by construction.
 //!
-//! It is a corpus-scale measurement, not a proof. One shape was known to be
-//! outside it and was named rather than hidden — a pattern head `(?rel ?a ?b)`
-//! whose `?rel` binds to an **integer**, whose decimal text the compiler
-//! interns as a symbol. Nothing in the corpus has one, and since M1e2
-//! S1e2.2.4 no program can: the loader refuses the activator where it is
-//! written down and the compiler where a rule derives it, before the name is
-//! interned (`docs/kernel/defined_behaviour.md` § 4.6). A worker that cannot
+//! It is a corpus-scale measurement, not a proof. The one shape that could
+//! be outside it is a pattern head `(?rel ?a ?b)` whose `?rel` binds to a
+//! name no text of the program holds, and no program can write one: a run of
+//! digits is a name the program has, and a relation parameter bound to a fact
+//! is refused, by the loader where the activator is written down and by the
+//! compiler where a rule derives it, before anything is interned
+//! ([diagnostics.md § 2.6](../../../../docs/ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number),
+//! Q-M1e.21). A worker that cannot
 //! intern can only fall back, which is
 //! [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)'s
 //! to build and this file's to keep honest.
@@ -55,8 +55,7 @@ use ein_ir::{Ast, parse};
 /// The whole corpus is swept, so a run has to be bounded: a describe that
 /// stops at a small budget, and a flagged program's cube only where it is
 /// small. The question is *whether* the search interns, which the first nodes
-/// answer as well as the last. Since M1e2 S1e2.1c.5 the search is a route's:
-/// the walk this first swept was deleted on the user's ruling of 2026-11-03.
+/// answer as well as the last. The search is a route's.
 fn options() -> explore::Options {
     let mut o = explore::Options::new(Mode {
         which: Which::All,
@@ -71,7 +70,7 @@ fn options() -> explore::Options {
 fn the_search_interns_no_names() {
     let mut grew: Vec<String> = Vec::new();
     let (mut solved, mut skipped) = (0usize, 0usize);
-    // On the corpus sweeps' pool (M1f S1f.6.39), a program a unit: whether it
+    // On the corpus sweeps' pool, a program a unit: whether it
     // was solved or skipped, and what its search interned, read in order.
     let files = corpus_files();
     let found = ein_corpus::pool::map(

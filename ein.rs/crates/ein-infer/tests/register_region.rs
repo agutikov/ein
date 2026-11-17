@@ -1,30 +1,25 @@
-//! Every register row's `[case.region]` is its witness's R — M1e2
-//! [S1e2.1a.10](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.10_the_register_under_r.md)
-//! T1e2.1a.10.3.
+//! Every register row's `[case.region]` is its witness's R.
 //!
-//! `corpus/wrong_answers.toml` states each witness's region beside the walk's
-//! answers, so that the switch (S1e2.1a.5) flips a row against a right answer
-//! that was already checked rather than written the day before. This test
+//! `corpus/wrong_answers.toml` states each witness's region, so that a row
+//! flips against a right answer that is already checked. This test
 //! recomputes it with [`explore`], the code `ein solve` runs (route 1 on a
 //! monotone program, the cube on a flagged one), and holds every field to it:
 //! the route, the static verdict, k_s, k_c, the kind of an empty R, and both
-//! lines as commitments. A row whose `now` is a refusal (M1e2 S1e2.2.5) states
-//! no region, and the library refuses its witness too.
+//! lines as commitments. A row whose `now` is a refusal states no region, and
+//! the library refuses its witness too.
 //!
 //! ```text
 //! cargo test -p ein-infer --test register_region
 //! EIN_BLESS=1 cargo test -p ein-infer --test register_region   # re-bank the blocks
 //! ```
 //!
-//! **Since M1e2 S1e2.2.25 a region can be a stopped description** (schema
-//! /10): a row whose witness is past the oracle's limit (W8's rows on
+//! **A region can be a stopped description** (schema /10): a row whose
+//! witness is past the oracle's limit (`W8`'s rows on
 //! `square-unique/corner-house.ein`) states the lower bounds the description
 //! reached, the minimal line members it certified, no maximal line, and why
 //! it stopped, and this test holds those.
 //!
-//! Both builds hold every row. A debug build skipped W7's witnesses, which
-//! it aborted on, until M1e2 S1e2.2.7 fixed W7, and W16's order pair until
-//! M1e2 S1e2.2.16 fixed W16.
+//! Both builds hold every row.
 
 use std::path::Path;
 
@@ -46,13 +41,11 @@ fn loaded(path: &Path) -> (Kb, Terms, Ast) {
 }
 
 /// The refusal of a witness the parser or the loader refuses, as the binary's
-/// first line on stderr, or `None` where it loads: a refusal at load (M1e2
-/// S1e2.2.20, W20's wildcard relation), which the binary prints as `kb load
-/// error: …`, and since M1f S1f.5.3 one at the parse, `<witness>:<line>:<col>:
-/// unexpected …` (W20's range until S1f.5.5's swap made it a name, and since
-/// the swap every witness of a shape the grammar refuses: W29's, W32's and
-/// W35's, and the W16, W18, W20 and W28 rows restated to the refusal). The
-/// library cannot get past either.
+/// first line on stderr, or `None` where it loads: a refusal at load, which
+/// the binary prints as `kb load error: …`, or one at the parse,
+/// `<witness>:<line>:<col>: unexpected …` (every witness of a shape the
+/// grammar refuses: `W29`'s, `W32`'s and `W35`'s, and the `W16`, `W18`, `W20`
+/// and `W28` rows that state the refusal). The library cannot get past either.
 fn refusal(witness: &str) -> Option<String> {
     let path = repo_root().join(witness);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{witness}: {e}"));
@@ -64,7 +57,7 @@ fn refusal(witness: &str) -> Option<String> {
     };
     // The binary is run from the repository's root on the witness's relative
     // path, so a path its line names, an imported module's, is relative to
-    // the root too (M1f S1f.5.22, W74).
+    // the root too (`W74`).
     let root = format!("{}/", repo_root().display());
     load(&mut ast, &mut terms, &forms, path.parent())
         .err()
@@ -149,8 +142,8 @@ fn route_word(r: Route) -> String {
     .to_string()
 }
 
-/// A description that stopped before R was exhausted (schema /10, M1e2
-/// S1e2.2.25: W8's rows past the oracle's limit): the lower bounds it reached,
+/// A description that stopped before R was exhausted (schema /10: `W8`'s rows
+/// past the oracle's limit): the lower bounds it reached,
 /// the minimal line members it certified, and no maximal line, which needs
 /// the whole cube.
 fn stopped(a: &Answer) -> Result<Region, String> {
@@ -371,18 +364,16 @@ fn every_row_states_its_witness_s_region() {
         if row.status.starts_with("merged:") {
             continue;
         }
-        // A refused row (M1e2 S1e2.2.5, *forbid*) states no region, and the
-        // library refuses its witness as the binary does: at load since M1e2
-        // S1e2.2.20 (W20, a wildcard relation in a rule), the binary's line
-        // the loader's, at the parse since M1f S1f.5.3 (W20's range, until
-        // S1f.5.4), the parser's, or by *forbid*.
-        // A command's refusal or error (schema /16, M1f T1f.5.5.13) is the
+        // A refused row states no region, and the library refuses its witness
+        // as the binary does: at load, the binary's line the loader's, at the
+        // parse, the parser's, or by *forbid*.
+        // A command's refusal or error (schema /16) is the
         // command's own: the library answers the witness, and the row states
         // its region, as an answering row does. So is a solve's usage
-        // refusal, exit 2 (schema /19, M1f S1f.5.12, W43): the binary refuses
+        // refusal, exit 2 (schema /19, `W43`): the binary refuses
         // what the run was asked to write, and the library answers. But a
         // command's refusal where the right answer is one is the loader's
-        // (schema /20, M1f S1f.5.21, W62 to W65): the row states no region, and
+        // (schema /20, `W62` to `W65`): the row states no region, and
         // the library refuses the witness as the command does.
         if let Some(want) = row.now.refused.as_ref().filter(|_| {
             (!row.now.is_command() || (row.right.refused && row.region.is_none()))
@@ -391,7 +382,7 @@ fn every_row_states_its_witness_s_region() {
             if let Some(e) = refusal(&row.witness) {
                 // `{FILE}` is the path the run was handed, as `wrong_answers.rs`
                 // reads it (schema /16): a line that places its form, a
-                // macro's expansion's since M1f S1f.5.24 (W66 to W69).
+                // macro's expansion's too (`W66` to `W69`).
                 let want = want.replace("{FILE}", &row.witness);
                 if want != e {
                     bad.push(format!(
@@ -418,14 +409,12 @@ fn every_row_states_its_witness_s_region() {
             checked += 1;
             continue;
         }
-        // A row whose run ends in an error (M1e2 S1e2.2.18, W18) states no
-        // region either: the program loads, and the library stops where the
-        // binary does, at a firing, with a saturation error, or, where a rule
-        // the run compiles before it saturates does not compile, with a
-        // compile error (M1e2 S1e2.2.22, `W22/kw-or-in-obligation`: an
-        // obligation's guard read as a nested `(or …)`). (For one commit, while
-        // W92 was open, M1f S1f.6.25, also with the line the row recorded,
-        // where the state route could not hold a count; fixed, it answers.)
+        // A row whose run ends in an error (`W18`) states no region either:
+        // the program loads, and the library stops where the binary does, at
+        // a firing, with a saturation error, or, where a rule the run compiles
+        // before it saturates does not compile, with a compile error
+        // (`W22/kw-or-in-obligation`: an obligation's guard read as a nested
+        // `(or …)`).
         if row.now.error.is_some() && !row.now.is_command() {
             let describe = Mode {
                 which: Which::All,

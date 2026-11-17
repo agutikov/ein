@@ -1,7 +1,6 @@
 //! The hypothesis mechanisms each program declares, and every pair of them,
-//! read at root's fixpoint — M1f
-//! [S1f.6.34](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md)'s
-//! T1.
+//! read at root's fixpoint
+//! ([hypothesis-generation.md § 6](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#6-scoping-and-the-mechanisms-judged-together)).
 //!
 //! A derived closure (`std.closure`'s `infer-closure`, a calculator module's
 //! closing rule) and a derived obligation activator (`bijective-setup`'s

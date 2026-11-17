@@ -1,6 +1,4 @@
-//! How far route 1 reaches — M1e2
-//! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
-//! T1e2.1a.9.1, in process.
+//! How far route 1 reaches, in process.
 //!
 //! Every corpus file and register witness that loads, through
 //! [`ein_infer::downset`] (route 1) at a budget, and through the oracle too
@@ -15,15 +13,15 @@
 //!     [--budget N] [--facts F] [--jobs J] [--oracle] [FILE…] > rows.jsonl
 //! ```
 //!
-//! `--budget` is in **visited commitments**, default `2¹⁶`, the unit
-//! `route1_reach.md`'s sweeps were taken in. `--facts` adds the ruled unit,
-//! facts beyond root (`downset::DEFAULT_BUDGET`), and is off unless given.
+//! `--budget` is in **visited commitments**, default `2¹⁶`. `--facts` adds
+//! the engine's unit, facts beyond root (`downset::DEFAULT_BUDGET`), and is
+//! off unless given.
 //!
 //! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses.
-//! `route1_reach.md`'s tables were read off the rows; no script reads them.
+//! The rows are its output; no script reads them.
 //!
 //! A row's `layers` are `[visited, dead, owing, in R, facts, wall]` per layer.
-//! Since M1e2 S1e2.1c.1 (`alive_set_reach.md`) a row also carries, read off
+//! A row also carries, read off
 //! the class each visited point already has and from the same run:
 //! `layer_states`, per layer `[alive states, states in R, alive states first
 //! met]`; `alive_states`, the distinct alive states visited; `r_states_met`,
@@ -159,9 +157,8 @@ fn main() {
             .collect();
         // The alive states' one-up extensions, distinct: each alive state's
         // candidate set (its first point's closure) plus one candidate it does
-        // not hold. S1e2.1c.2's state route saturates exactly these, beside
-        // root, so this counts its work where `walk_and_region.md` § 6 bounded
-        // it by alive states × n.
+        // not hold. The state route saturates exactly these, beside root, so
+        // this counts its work, which alive states × n bounds.
         let mut extensions: FxHashSet<Box<[u32]>> = FxHashSet::default();
         for (i, p) in d.points.iter().enumerate() {
             if p.status & region::DEAD != 0 || p.class as usize != i {

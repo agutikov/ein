@@ -1,5 +1,5 @@
-//! A `(solve … :expect …)` claim against R — M1e2
-//! [S1e2.1a.4](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md).
+//! A `(solve … :expect …)` claim against R
+//! ([query.md § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
 //!
 //! `tests/region/` holds one program per form, each a claim that holds. This
 //! file holds the other half: every way a claim can be false is reported as
@@ -440,14 +440,13 @@ fn a_route_that_stops_leaves_the_claim_unchecked() {
 
 // ── What the loader refuses ────────────────────────────────────────────
 
-/// What is not a claim is refused. Until M1f S1f.5.5's swap the loader
-/// refused every shape a claim may not take with a line of its own; since, the
-/// grammar states a claim's shapes, so a top-level `(region …)` or `(owing
+/// What is not a claim is refused. The grammar states a claim's shapes, so a
+/// top-level `(region …)` or `(owing
 /// …)`, a claim that is no `(region …)`, a variable in a claim's fact, a
 /// `(merged …)` with no `<from>`, an empty `(owing)` and a fact where a
 /// `(model …)` goes are parse errors at their place, rows of `ein-ir`'s
-/// grammar table since T1f.5.5.5 deleted the loader's lines for them
-/// (`ein-ir/tests/grammar_pages.rs`). The loader keeps what a context-free
+/// grammar table (`ein-ir/tests/grammar_pages.rs`). The loader keeps what a
+/// context-free
 /// grammar does not see: an `(owing …)` beside listed states, a merged state
 /// the region does not list, and a relation no declaration or fact makes.
 #[test]

@@ -1,13 +1,12 @@
-//! The node census — M1e2
-//! [S1e2.1b.2](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md):
-//! a node's state built two ways, compared node for node on every cube the
+//! The node census: a node's state built two ways, compared node for node on
+//! every cube the
 //! oracle reaches.
 //!
 //! - **Fork** is the oracle's node (`region.rs` § What a node is): root's
 //!   fixpoint, the commitment written in, the saturation resumed. It is read
 //!   through [`region::Nodes`], the node function every route shares, and its
 //!   two status bits are held to [`region::compute`]'s on a second load.
-//! - **Scratch** is `utils/region.py`'s node: the program's text with the
+//! - **Scratch** is a node built from the text: the program's text with the
 //!   commitment appended as given facts, loaded and saturated from nothing.
 //!
 //! Both are read the same way: the two status bits, every fact of the
@@ -20,10 +19,9 @@
 //! fact as *inexact*.
 //!
 //! Per program it also takes the rule dependency graph and its cycles through
-//! an odd `absent`, over all relations and over `D` (option (D)'s refusal).
-//! Its column of the parent-path check `-y` used to run, the walk's
-//! `sanity::check_commutativity`, went with the walk at M1e2 S1e2.1c.5
-//! (2026-11-03); `-y` is the detector's spot check now (`read_out.rs`).
+//! an odd `absent`, over all relations and over `D` (what a refusal of such
+//! cycles would read). The parent-path check is the detector's spot check,
+//! `-y` (`read_out.rs`), and no column of this census.
 //! `--invariance` runs both routes under `--jobs`, permuted interners
 //! (`id_order_invariance`'s permutation), every order of equal-priority rules
 //! and every `(config …)` flag flipped. `--cost` times both routes per node.
@@ -35,7 +33,7 @@
 //! cargo run --release -p ein-infer --example node_census -- --written        # the programs written into this file
 //! cargo run --release -p ein-infer --example node_census -- --invariance     # the levers, on the flagged cubes
 //! cargo run --release -p ein-infer --example node_census -- --cost [--control]
-//! cargo run --release -p ein-infer --example node_census -- [--json] FILE…   # any files, e.g. S1e2.4.1's probes
+//! cargo run --release -p ein-infer --example node_census -- [--json] FILE…   # any files
 //! ```
 //!
 //! The selection is `site_census`'s, `corpus_files()` plus the register's
@@ -66,13 +64,12 @@ use ein_infer::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
 use ein_infer::region::{self, DEAD, OWING, Outcome, Topology};
 use ein_infer::saturator::{Saturator, Session};
 
-/// What every rule's priority was when it wrote none. No rule has a priority
-/// since M1f S1f.5.15 (the agenda and the boundary are FIFO, the user's ruling
-/// of 2026-11-08 on Q-M1f.6), and the loader drops a `:priority` written
-/// anyway until S1f.5.5's swap refuses it: so this census's equal-priority
-/// groups are one group, and its stratum emulation, which rewrote priorities,
-/// reads nothing since. Kept so the census runs as the record of what it
-/// measured.
+/// What every rule's priority would be if it wrote none. No rule has a
+/// priority (the agenda and the boundary are FIFO within each half of the
+/// agenda, Q-M1f.313), and a `:priority` written is refused at the parse: so
+/// this census's equal-priority groups are one group, and its stratum
+/// emulation, which rewrites priorities, reads nothing. Kept so the census
+/// runs whole.
 const DEFAULT_PRIORITY: i64 = 1000;
 use ein_infer::{contradiction, obligations};
 use ein_ir::{Ast, load, parse};
@@ -133,7 +130,7 @@ const WRITTEN: &[(&str, &str)] = &[
          (rule dead-0 () :match (and (thing ?x) (absent (h ?x))) :assert (false) :priority 300)\n\
          (query :goal (h ?x))\n",
     ),
-    // The same, through a derived positive (S1e2.4.1's `via` class): `p ← ¬h`,
+    // The same, through a derived positive (*forbid*'s `via`): `p ← ¬h`,
     // `p → ⊥`. The refutation reads no `absent`; the rule that derived its
     // premise did.
     (
@@ -1226,9 +1223,8 @@ fn permutations(v: &[usize]) -> Vec<Vec<usize>> {
     out
 }
 
-/// The two `(config …)` flags and their defaults (`config.md` § 2.1),
-/// since M1e2 S1e2.2.5 retired `warn-derived-naf` (three after S1e2.1c.5
-/// retired the four `enable-*` levers).
+/// The two `(config …)` flags and their defaults
+/// ([config.md](../../../../docs/ein/user/reference/config.md)).
 const FLAGS: &[(&str, bool)] = &[
     ("lattice-sanity-check", false),
     ("record-alternative-justifications", true),
@@ -1521,7 +1517,7 @@ fn scratch_cube_row(src: &Source, jobs: usize) -> Json {
             "first_not_dead": alive, "seconds": (t.elapsed().as_secs_f64() * 10.0).round() / 10.0 })
 }
 
-// ── The path census (S1e2.1b.7) ─────────────────────────────────────
+// ── The path census ────────────────────────────────────────────────
 
 /// One program loaded once, every construction of a node run in it. Every KB
 /// shares one `Terms`, one `Ast` and one memo, so a step is the same function
@@ -1652,7 +1648,7 @@ struct Reached {
     /// path from P counts): what a route that never extends a dead node meets.
     alive_path: bool,
     /// Reached by a path from root, sat(P), one or more facts a step: the
-    /// path tree as F21 states it, which never builds from P with a
+    /// path tree, which never builds from P with a
     /// commitment written in.
     rooted: bool,
     /// Reached by these constructions: `fork`, `scratch`, a split, a chain,
@@ -1959,7 +1955,7 @@ fn path_census(src: &Source, chain_bound: u128, keep: bool) -> Json {
                         .is_some_and(|x| x.st.status == o.reads[m].status())
             })
     });
-    // And is scratch here `utils/region.py`'s, the text load?
+    // And is scratch here the text load?
     let scratch_is_text = (0..size as u64).all(|m| {
         scratch_node(src, &commitment_text(&w.texts, m), false, Terms::new())
             .is_some_and(|r| r.digest == scratch[m as usize].1.digest)
@@ -2219,7 +2215,7 @@ fn print_paths(row: &Json) {
     }
 }
 
-// ── The cumulativity census (S1e2.1b.7) ─────────────────────────────
+// ── The cumulativity census ────────────────────────────────────────
 
 /// Is saturation **cumulative** on this program, X ⊆ Y ⊆ sat(X) ⇒ sat(Y) =
 /// sat(X)? Read one fact at a time: for every node, each construction's X
@@ -2311,12 +2307,12 @@ fn cumulative_in(w: &mut World, base: Kb, src: &Source, keep: bool, row: &mut Js
     row["ms"] = json!((t0.elapsed().as_secs_f64() * 1e4).round() / 10.0);
 }
 
-// ── Admission in stratum order, emulated (S1e2.1b.7) ────────────────
+// ── Admission in stratum order, emulated ───────────────────────────
 
 /// The program's text with every saturation rule that reads under an `absent`
 /// given the priority of its stratum, so that the boundary, which admits the
-/// lowest priority first, admits in stratum order. An emulation of F21's
-/// *admission in stratum order*, not the option built: the engine is
+/// lowest priority first, admits in stratum order. An emulation of
+/// *admission in stratum order*, not an option the engine has: the engine is
 /// unchanged, and only the rules written in the program's own text are moved.
 ///
 /// A relation's stratum is the most `absent` edges on a path into it, over

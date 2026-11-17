@@ -1,6 +1,5 @@
-//! **`std.math.binary-arith` and `std.math.convert`, held to the integers** —
-//! M1f
-//! [S1f.6.16](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md).
+//! **`std.math.binary-arith` and `std.math.convert`, held to the integers**
+//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md), Q-M1f.321).
 //!
 //! `stdlib/math/binary-arith.ein` is school arithmetic on binary numerals,
 //! `(b2 PREFIX BIT)` of `std.math.binary`, over the four tables of
@@ -815,9 +814,9 @@ fn circuit(body: &str) -> (usize, usize) {
 /// a change to the wiring shows as a change to them: `cargo test -p
 /// ein-infer --test binary_theory the_circuit` re-takes them. Binary's firings
 /// are its walks' and no check's: a numeral is `std.math.binary`'s, checked
-/// where it is written at no firing. They are the example theory's of
-/// 2026-11-12 to the firing (`examples/binary_arithmetic/`, generated then),
-/// against decimal's 21, 28, 28, 13, 72, 220 and 12 (`arith_theory.rs`): a
+/// where it is written at no firing. They are the example theory's
+/// (`examples/binary_arithmetic/`) to the firing, against decimal's 21, 28,
+/// 28, 13, 72, 220 and 12 (`arith_theory.rs`): a
 /// walk is three times as long, a product's row needs no walk of its own, and
 /// a quotient's bit is one subtraction where decimal's digit is up to four.
 #[test]
@@ -928,7 +927,7 @@ fn conversions_are_right_both_ways() {
     assert_eq!(round, written, "a round trip is the number");
 }
 
-/// **Both bases in one program** (S1f.6.16's design § 3): each imported
+/// **Both bases in one program**: each imported
 /// whole, they share `z`, `0`, `1`, `std.math.arith` and the shared rules,
 /// each activated once a base. The same requests asked in decimal and in
 /// binary answer the same values, each in its own base, and neither base

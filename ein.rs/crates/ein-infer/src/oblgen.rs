@@ -12,7 +12,7 @@
 //!
 //! | the program declares | hypotheses come from |
 //! |---|---|
-//! | any `(hrule …)` | the user's hrules — an override, exactly as before |
+//! | any `(hrule …)` | the program's hrules — an override |
 //! | an obligation activated at the state, no hrule | **this module** |
 //! | neither | the blind combinatorial enumerator |
 //!
@@ -62,16 +62,15 @@
 //! obligation takes the whole call back to the blind generator, which is what
 //! keeps completeness a property of the ladder rather than of the puzzle.
 //!
-//! **A relation grows by derivation too** (M1e2
-//! [S1e2.2.15](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md),
-//! W14). The candidates are the guard's scan over *root's* KB, so a domain
-//! value only a commitment derives is in no candidate, and R missed the model
-//! it licenses. Since then the rung also declines when an obligation's trigger,
+//! **A relation grows by derivation too** (`W14`). The candidates are the
+//! guard's scan over *root's* KB, so a domain value only a commitment derives
+//! would be in no candidate, and R would miss the model it licenses. So the
+//! rung also declines when an obligation's trigger,
 //! or a guard beside its witness step, reads a relation in `D`: the relations
 //! a commitment can change, seeded with what this rung proposes and closed
 //! under the saturation plans, which [`crate::monotone`] computes once for
-//! this and for its static check. The user ruled the fall-through on
-//! 2026-11-04 (Q-M1e2.10 (a)): R is then the blind enumerator's region, which
+//! this and for its static check. On the fall-through (Q-M1e2.10) R is the
+//! blind enumerator's region, which
 //! on an untyped relation holds facts no rule refutes or requires. `D` is at
 //! relation grain, so a program that names the value at root declines too.
 //! Scoping is the other half: `:no-hypothesis`, `:hypothesis-relations` and
@@ -141,18 +140,18 @@ pub enum Mode {
     /// No obligation is activated at the state — the blind enumerator.
     #[default]
     Blind,
-    /// A `(hrule …)` overrides the ladder. Never narrated — rung 1 emits the
-    /// stream it emitted before M1d, to the byte.
+    /// A `(hrule …)` overrides the ladder. Never narrated — rung 1 emits no
+    /// `rung` line.
     Hrules,
     /// The rung generated: every owed obligation's candidates, deduped.
     Obligations,
     /// Owed, and nothing may be branched on — the ladder's dead end.
     Stuck,
-    /// An obligation was declined (C4, over what the rung proposes or since
-    /// M1e2 S1e2.2.15 over `D`, or a projection that will not resolve), so
+    /// An obligation was declined (C4, over what the rung proposes or over
+    /// `D`, or a projection that will not resolve), so
     /// the call fell through to the blind enumerator.
     Declined,
-    /// The program states `(solve :no-search)` (M1f S1f.6.36): no rung ran,
+    /// The program states `(solve :no-search)`: no rung ran,
     /// and nothing was proposed. Never narrated, as rung 1 is not.
     NoSearch,
 }
@@ -323,8 +322,9 @@ fn admit(
     for plan in plans {
         // The bare `(open)` counts and reports and names nothing, so there is
         // no relation to branch on and no guard to read a domain out of
-        // (S1d.2.3 item 4's table: `(open)` counts, `(open ?R)` also
-        // attributes and branches). One of them in the program is enough to
+        // (`(open)` counts, `(open ?R)` also attributes and branches,
+        // [obligations.md](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)).
+        // One of them in the program is enough to
         // stop the rung claiming exhaustiveness, so the call falls through
         // rather than silently owing something nobody proposes for.
         if crate::obligations::open_argument(&plan, terms).is_none() {
@@ -464,7 +464,7 @@ pub(crate) fn generate(
                 return Ok(declined(s, &reason));
             }
         }
-        // C4 over `D` (M1e2 S1e2.2.15, W14): nor may it grow by derivation. A
+        // C4 over `D` (`W14`): nor may it grow by derivation. A
         // relation a commitment can change — `D`, seeded with what this rung
         // proposes and closed under the saturation plans, `crate::monotone`'s
         // one computation of it — can gain at a node a domain value root's
@@ -884,7 +884,7 @@ fn witness_args(plan: &Plan, slots: Span, regs: &[Value]) -> Option<Vec<Value>> 
     Some(args)
 }
 
-// ── L5's table: each owed instance's alternatives (M1e2 S1e2.1c.4) ─────────
+// ── L5's table: each owed instance's alternatives ──────────────────────────
 
 /// One obligation instance as the table and the node function both key it:
 /// the rule, the activator's arguments and the match's bindings, which is
@@ -896,7 +896,7 @@ pub type InstanceKey = (Symbol, Box<[Value]>, Box<[(Symbol, Value)]>);
 /// Built once at root by `alternatives`, held to the oracle by
 /// `ein-infer/tests/region.rs`'s
 /// `l5_is_the_oracle_on_every_monotone_program_it_reaches`, and read by the
-/// modes' obligation tree (`crate::tree`, T1e2.1c.4.2), whose every node
+/// modes' obligation tree (`crate::tree`), whose every node
 /// names the instances it owes by their place here.
 #[derive(Clone, Debug, Default)]
 pub struct Alternatives {
@@ -979,8 +979,7 @@ impl Alternatives {
     }
 }
 
-/// **L5's premise, checked at load** — M1e2
-/// [S1e2.1c.4](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md),
+/// **L5's premise, checked at load** —
 /// [L5 and its argument](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
 ///
 /// `kb` is root's fixpoint, on a program the static check calls monotone, and
@@ -1006,8 +1005,8 @@ impl Alternatives {
 ///
 /// Every scan is root's own matcher, run once; nothing is interned and no
 /// event is narrated. The guard's sub-plan is scanned with the witness step
-/// skipped, as the obligations rung does ([`generate`]), which is the reuse
-/// of the walk's library T1e2.1c.4.4 records.
+/// skipped, as the obligations rung does ([`generate`]), whose library it
+/// reuses.
 pub(crate) fn alternatives(
     kb: &ein_core::Kb,
     terms: &mut ein_core::Terms,
@@ -1454,7 +1453,7 @@ mod tests {
     }
 
     /// **A bare `(open)` declines the whole call.** It counts and reports —
-    /// S1d.2.3 kept it for that — but it names no relation, so there is no
+    /// that is what it is for — but it names no relation, so there is no
     /// branch to take and the rung may not claim to be exhaustive. Falling
     /// through to the blind enumerator is the only answer that stays complete.
     #[test]
@@ -1567,8 +1566,8 @@ mod tests {
                              \x20               (absent (and (food ?b) (likes ?a ?b))))\n\
                              \x20 :assert (open likes) :why \"{?a} is a person who likes no food yet — one is still owed\"\n)\n";
 
-    /// **C4 over `D`** (M1e2 S1e2.2.15, W14; Q-M1e2.10 (a), ruled
-    /// 2026-11-04): a guard that scans a relation a commitment can change
+    /// **C4 over `D`** (`W14`, Q-M1e2.10): a guard that scans a relation a
+    /// commitment can change
     /// declines the rung, and its `rung` line says so. Without `special`,
     /// `food` is static and the same obligation branches.
     #[test]

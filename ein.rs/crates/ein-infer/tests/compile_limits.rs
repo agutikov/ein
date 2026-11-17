@@ -1,5 +1,5 @@
-//! `MAX_REGS` overflow is a clean refusal — S1a.3.1, and the engine's one
-//! compile-time bound.
+//! `MAX_REGS` overflow is a clean refusal — the engine's one compile-time
+//! bound.
 //!
 //! ein.rs resolves every variable to a register in a fixed-size file, because
 //! that is what makes the matcher's inner loop allocation-free
@@ -11,12 +11,11 @@
 //! program hits it), and a fixture. The fixture is built here rather than
 //! checked into `examples/`.
 //!
-//! **Refused at load since M1f S1f.5.21** (W63, Q-M1f.73): the loader counts
-//! every distinct variable a `:match` writes, the rule's parameters among
-//! them, against [`ein_ir::MAX_MATCH_VARIABLES`], which `MAX_REGS` is, so every
-//! command refuses a rule past it alike and the compiler's check is an
-//! invariant. Until then the compiler refused it where it compiled the plan,
-//! so a rule no state activated loaded and answered.
+//! **Refused at load** (`W63`, Q-M1f.73): the loader counts every distinct
+//! variable a `:match` writes, the rule's parameters among them, against
+//! [`ein_ir::MAX_MATCH_VARIABLES`], which `MAX_REGS` is, so every command
+//! refuses a rule past it alike, a rule no state activates included, and the
+//! compiler's check is an invariant.
 
 use ein_core::Terms;
 use ein_ir::{Ast, from_ir::load, parse};
@@ -59,7 +58,7 @@ fn a_rule_at_the_ceiling_compiles() {
 
 /// One variable past the ceiling is refused **at load**, with a line that
 /// says what to do — and never reaches the compiler, whose check is an
-/// invariant since M1f S1f.5.21.
+/// invariant.
 #[test]
 fn one_variable_past_the_ceiling_is_refused_at_load() {
     assert_eq!(ein_infer::MAX_REGS, ein_ir::MAX_MATCH_VARIABLES);
@@ -79,13 +78,13 @@ fn one_variable_past_the_ceiling_is_refused_at_load() {
     );
 }
 
-/// The one module whose rules are wide **by design**: `std.math.num9` (M1f
-/// S1f.6.13), school arithmetic on nine digits in one fact. A rule of it has
+/// The one module whose rules are wide **by design**: `std.math.num9`,
+/// school arithmetic on nine digits in one fact. A rule of it has
 /// a premise a column, so it binds some multiple of nine variables: 35 for a
 /// sum, and [`WIDEST_BY_DESIGN`] for the one that computes a divisor's
 /// multiples by 2 to 9, eight rows of nine columns in one firing. The module
-/// is generated (`utils/gen_num9.py`), its width is fixed, and no rule of it
-/// grows unless the generator is changed, which moves the number below.
+/// is generated, its width is fixed, and no rule of it grows unless the
+/// generator is changed, which moves the number below.
 const WIDE_BY_DESIGN: &str = "stdlib/math/num9.ein";
 
 /// `div9-start`: nine digits of the dividend, nine of the divisor, and for
@@ -104,8 +103,7 @@ fn wide_by_design() -> std::collections::BTreeSet<String> {
         .filter(|&&f| ast.head_name(f) == Some("rule"))
         .filter_map(|&f| ast.form_args(f).first().and_then(|&a| ast.atom_name(a)))
         // Each by its short name, as `stdlib/math/num9.ein` loaded alone prints it,
-        // and by its full name, as a program that imports it does since M1f
-        // S1f.6.35.
+        // and by its full name, as a program that imports it does.
         .flat_map(|n| [n.to_string(), format!("std.math.num9.{n}")])
         .collect()
 }
@@ -114,9 +112,8 @@ fn wide_by_design() -> std::collections::BTreeSet<String> {
 /// ever approaches it, the bound stops being acceptable — so the distance is
 /// measured rather than asserted from memory.
 ///
-/// **Since M1f S1f.6.13 one module is measured apart**
-/// ([Q-M1f.173](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f173--max_regs-and-the-wide-rules-of-stdnum9),
-/// defaulted, the user's to overrule). `std.math.num9`'s generated rules are
+/// **One module is measured apart** (Q-M1f.173). `std.math.num9`'s generated
+/// rules are
 /// within 8× of the ceiling by what they are, and the widest takes 162 of
 /// the 256 registers. That is held as a number, [`WIDEST_BY_DESIGN`], and
 /// under the ceiling; every other rule of the corpus is held to the distance

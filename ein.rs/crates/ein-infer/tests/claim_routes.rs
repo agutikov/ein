@@ -1,7 +1,6 @@
 //! **A claim is decided alike by its least question, by the description and
-//! by the oracle** — M1f
-//! [S1f.6.27](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md)'s
-//! T1f.6.27.2, the test that exists before `ein test` asks the question.
+//! by the oracle** (Q-M1f.221,
+//! [cli.md § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
 //!
 //! `ein test` reads a file's claims by their shapes and asks the least
 //! question that can decide them ([`read_out::least`]): `--single` for
@@ -591,8 +590,7 @@ fn sweep(path: &Path) -> Swept {
 #[test]
 fn every_claim_is_decided_as_the_oracle_decides_it() {
     let files = corpus_and_register();
-    // On the corpus sweeps' pool (M1f S1f.6.39; sixteen threads of its own
-    // until then), a program a unit, read back in order.
+    // On the corpus sweeps' pool, a program a unit, read back in order.
     let found = ein_corpus::pool::map(
         "claim_routes",
         &files,
@@ -626,7 +624,7 @@ fn every_claim_is_decided_as_the_oracle_decides_it() {
     eprintln!("{counted:#?}");
     let n = |k: &str| counted.get(k).copied().unwrap_or(0);
     // Not vacuous: every row of the table occurred, and each way a claim is
-    // decided. The counts of 2026-11-13 are in the stage's record.
+    // decided.
     assert!(n("programs the oracle reaches") >= 300, "{counted:?}");
     assert!(
         n("claims") >= 1000 && n("claims over a line") >= 400,
@@ -715,8 +713,8 @@ fn a_program_less_its_claims_keeps_everything_else() {
     );
 }
 
-/// **The question is a function of the claims' shapes**, row by row of the
-/// stage's table, and of nothing else: the same program asks another
+/// **The question is a function of the claims' shapes**, rule by rule of
+/// [`ein_infer::read_out::least`]'s table, and of nothing else: the same program asks another
 /// question when its claims change, and no option is read.
 #[test]
 fn the_least_question_is_read_off_the_claims_shapes() {

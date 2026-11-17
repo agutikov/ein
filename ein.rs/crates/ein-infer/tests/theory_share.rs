@@ -19,7 +19,7 @@
 //!    excludes the same pairs under the renaming;
 //! 4. **a smaller program derives no more**: what is dead in the small KB is
 //!    dead at root, and the small KB's fixpoint is inside root's, on every
-//!    corpus program the pair layer's own per-commit sweep reads;
+//!    corpus program the pair layer's own default sweep reads;
 //! 5. **the two readings of a pair agree**: the support of each pair root
 //!    excludes ([`ein_infer::explain::support_frontier`]) lies inside the
 //!    small KB exactly where the small KB kills the pair, and the small KB

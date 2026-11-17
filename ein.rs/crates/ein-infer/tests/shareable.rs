@@ -1,4 +1,4 @@
-//! T1a.7.1.4 — **the `KbCore` / `Program` audit, as assertions.**
+//! **The `KbCore` / `Program` audit, as assertions.**
 //!
 //! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 //! asks for a confirmation that nothing a worker holds is secretly
@@ -11,10 +11,10 @@
 //! [design/data-model.md § 2](../../../../docs/ein/ein.rs/design/data-model.md#2-symbols-and-the-interner),
 //! for exactly this reason. This is the same assertion widened to everything
 //! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
-//! puts on a worker — **and to the one thing that fails it**, which is the
-//! audit's only finding to date and is recorded rather than fixed, because
-//! fixing it is [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)'s
-//! ordered commit and not this stage's.
+//! puts on a worker — **and to the one thing that failed it**, `events::Buffer`,
+//! whose fix is the ordered commit of
+//! [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
+//! (the test of the finding, below).
 
 use std::marker::PhantomData;
 
@@ -27,7 +27,7 @@ fn shareable<T: Send + Sync>() {}
 /// when the bound holds, and a blanket trait method that method resolution
 /// falls back to when it does not. It is the only trick in this file, and it
 /// is here because the alternative — a comment saying "note: `Buffer` is not
-/// `Send`" — is what the stage is trying to stop relying on.
+/// `Send`" — is what this file exists not to rely on.
 ///
 /// **A macro, not a function**, and that is the whole subtlety: inside a
 /// `fn is_send<T>()` the parameter is opaque, so the inherent `impl` can never
@@ -78,11 +78,10 @@ fn every_structure_a_worker_touches_is_send_and_sync() {
     shareable::<ein_core::Program>();
     // The AST, which a fork reads to compile a plan it has not seen.
     shareable::<ein_ir::Ast>();
-    // The per-engine plan list and the memo under it — design/06 § Win A.
+    // The per-engine plan list and the memo under it, shared by the run.
     shareable::<ein_infer::Engine>();
     shareable::<ein_infer::SharedMemo>();
-    // The options a route's workers all read (the walk's `SolveOptions` and
-    // its commitment result went with the walk at M1e2 S1e2.1c.5).
+    // The options a route's workers all read.
     shareable::<ein_infer::explore::Options>();
     shareable::<ein_core::config::SolverConfig>();
     // What a route returns.
@@ -92,8 +91,8 @@ fn every_structure_a_worker_touches_is_send_and_sync() {
 /// **The finding, and its fix.** `events::Buffer` was `Rc<RefCell<Vec<u8>>>`
 /// when [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 /// asked this question, so `Events` was the one thing on a worker's list that
-/// could not cross a thread — which design/08 §3's "no shared queue" hid,
-/// because a sink is not a queue.
+/// could not cross a thread — which the rule of no shared queue hid, because
+/// a sink is not a queue.
 ///
 /// The fix was not a lock. It is the shape the counters already have: a
 /// per-worker buffer replayed at the **ordered commit**, so the stream a reader

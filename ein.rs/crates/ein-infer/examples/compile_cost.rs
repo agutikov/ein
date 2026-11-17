@@ -1,11 +1,10 @@
-//! What compiling a whole program's plans costs — S1a.3.1's acceptance number.
+//! What compiling a whole program's plans costs.
 //!
-//! Not a `criterion` bench: the M1a bench set is fixed
+//! Not a `criterion` bench: the bench set is fixed
 //! ([`crates/ein-corpus/benches/engine.rs`](../../ein-corpus/benches/engine.rs)),
 //! chosen before there were results to be tempted by, and growing it for one
-//! stage's number would undo that. This is the same shape as `ein-ir`'s
-//! `load_rss` example — a program that reports one figure, run by hand and
-//! quoted in the stage's close-out.
+//! number would undo that. This is the same shape as `ein-ir`'s
+//! `load_rss` example — a program that reports one figure, run by hand.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example compile_cost

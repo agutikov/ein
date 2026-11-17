@@ -49,7 +49,7 @@ impl Hrules {
                 continue;
             }
             for argtuple in activators.get(&h.name).map_or(&[][..], |v| &v[..]) {
-                // S1.22.0 — an arity-mismatched activator cannot bind the
+                // An arity-mismatched activator cannot bind the
                 // parameters, so every parameter-headed premise would compile
                 // with an unbound head var. `Engine::activators_for` skips
                 // these for ordinary rules; the same skip belongs here.
@@ -83,9 +83,9 @@ impl Hrules {
     }
 
     /// The relations these plans conclude — what an hrule-driven search can
-    /// still propose, for M1e S1e.2.3's eligibility
-    /// ([`crate::hypgen::eligible_relations`]) and, since M1e2 S1e2.2.8, what
-    /// the hrules' universe covers ([`crate::scope`]).
+    /// still propose, for the eligibility
+    /// ([`crate::hypgen::eligible_relations`]) and for what the hrules'
+    /// universe covers ([`crate::scope`]).
     pub(crate) fn asserted_relations(
         &self,
         terms: &ein_core::Terms,
@@ -115,14 +115,11 @@ impl Hrules {
     /// a stored negation, `(absent (not …))`, the stdlib's `unknown`),
     /// **every** hrule is matched before any candidate is emitted, and no
     /// write a caller makes is visible to the enumeration: an hrule that reads
-    /// `not` reads the state it was asked about (M1f S1f.7.2, W85). Where none
-    /// reads it the two orders agree, and each hrule is matched as it is
-    /// reached, so a caller that stops early matches no hrule it does not
-    /// reach.
-    ///
-    /// Until S1f.7.2 a `debug_assert!` held that no hrule read `not`, so a
-    /// debug build stopped, exit 101, on a program a release build answered,
-    /// and answered as `ein oracle` does.
+    /// `not` reads the state it was asked about (`W85`). Where none reads it
+    /// the two orders agree, and each hrule is matched as it is reached, so a
+    /// caller that stops early matches no hrule it does not reach. A debug
+    /// build and a release build answer such a program alike, as `ein oracle`
+    /// does.
     pub fn candidates(
         &self,
         s: &mut Session<'_>,
@@ -141,7 +138,7 @@ impl Hrules {
         // A plan that proposes: its `:assert` is a fact's template, and not an
         // `eq` / `neq` instance, which is no hypothesis: a commitment states a
         // fact a state stores, and a state stores neither, whose facts are
-        // computed (M1f S1f.5.7, Q-M1e2.26; Q-M1f.32, taken by default).
+        // computed (Q-M1e2.26, Q-M1f.32).
         let proposes = |s: &Session<'_>, plan: &Plan| -> Option<Slot> {
             let template = plan.assert_template()?;
             (matches!(template, Slot::Nested { .. })
@@ -178,20 +175,17 @@ impl Hrules {
                 match build_fact(s.terms, s.ast, plan, env, template) {
                     Ok(Some(fact)) => f(s, fact)?,
                     // The negation of a name is no fact, and no hypothesis
-                    // (M1f S1f.7.4, W84): `(not ?x)` with `?x` bound to a
+                    // (`W84`): `(not ?x)` with `?x` bound to a
                     // name the loader could not foresee.
                     Ok(None) => continue,
                     // `NotAFact` — a malformed template yields no candidate.
-                    // No template is a whole conclusion that is no fact since
-                    // M1f S1f.5.24, which refuses one a macro's expansion
-                    // writes at load; until then it proposed nothing, in
-                    // silence (`W69/macro-bare-conclusion-hrule`).
-                    // No template reads a variable nothing binds since M1f
-                    // S1f.5.10: the loader refuses one no premise or
-                    // parameter binds, and S1f.5.18 retired the error it
-                    // stopped with, `FireError::UnboundVar`. Until S1f.5.10 a
-                    // template that wrote one proposed nothing, in silence
-                    // (`W57/hrule-assert-var`). An `Overflow` is not that,
+                    // No template is a whole conclusion that is no fact: the
+                    // loader refuses one a macro's expansion writes
+                    // (`W69/macro-bare-conclusion-hrule`). No template reads
+                    // a variable nothing binds: the loader refuses one no
+                    // premise or parameter binds (`W57/hrule-assert-var`).
+                    // Either would propose nothing, in silence. An
+                    // `Overflow` is not that,
                     // but it is unreachable here for the same reason it is
                     // elsewhere: the interner holds 2^30 rows.
                     Err(_) => continue,
@@ -222,8 +216,7 @@ fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
 }
 
 /// Activator argument-tuples per hrule name, read from the
-/// `(solve … :hrules (NAME (a b) …))` keywords — on `(query …)` until M1e2
-/// S1e2.1a.4 moved the lattice's keywords to `(solve …)`.
+/// `(solve … :hrules (NAME (a b) …))` keywords.
 ///
 /// A `:hrules` value is `(NAME (args…) (args…) …)`: its head is the hrule
 /// name, and each remaining item is one argument tuple binding that hrule's

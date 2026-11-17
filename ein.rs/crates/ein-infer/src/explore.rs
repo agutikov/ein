@@ -1,13 +1,11 @@
 //! Every question `ein solve` asks about `R`, each answered with the least
-//! work it needs — M1e2
-//! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
-//! T1e2.1a.9.4, the design the user approved on 2026-10-16
-//! ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
+//! work it needs (Q-M1e2.31,
+//! [design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
 //!
 //! A question is a [`Mode`]: **which** part of `R` (all of it, the minimal
 //! line, the maximal line) and **what is asked** (describe it, find `N` of
 //! its states, or expect exactly one; or, over all of `R` only, count it).
-//! [`run`] answers it. `--count` (M1e2 T1e2.1c.4.6) is describe's question
+//! [`run`] answers it. `--count` is describe's question
 //! with the listing left out: [`run`] answers it by describe's route, and
 //! the read-out ([`crate::read_out`]) reads no state for it.
 //!
@@ -42,28 +40,26 @@
 //!
 //! **Describe** on a monotone program takes **the tree and the classes**
 //! ([`crate::tree_classes`]) where root owes an instance a licence takes, and
-//! **the state route** ([`crate::states`], M1e2 S1e2.1c.2) elsewhere or when
+//! **the state route** ([`crate::states`]) elsewhere or when
 //! asked: every alive state once, its one-up extensions saturated, `R` read
 //! off the states (§ Describe's route). **Every other question on a
 //! monotone program** takes the least of the same lattice of states it needs
-//! (`crate::tree`, M1e2 S1e2.1c.4): the **obligation tree**, where an owing
+//! (`crate::tree`): the **obligation tree**, where an owing
 //! state branches on one owed instance's alternatives (L5), for `-n`,
 //! `--single` and a first state of either line; a **climb** and **dualise
 //! and advance** for the maximal line; a **shrink** and the duality against
-//! the maximal owing states for the minimal line. Until S1e2.1c.4 they took
-//! route 1 ([`crate::downset`]) with a cut per mode. A flagged program takes
+//! the maximal owing states for the minimal line. A flagged program takes
 //! **route 2**, the cube: in layer order where the question can be decided
 //! early (`-n`, `--single`, over all of `R` or the minimal line), and whole
 //! ([`crate::region`]) where it cannot. Past `--region-limit` a question that
 //! needs the whole cube meets the members of `R` in layer order up to the
 //! limit; describe certifies what it can of them (`Space::partial_cube`),
-//! and since M1e2 S1e2.2.26 (W27) a line mode answers from the same
-//! description, so it certifies what describe certifies and no more. A
-//! program whose root is dead is decided by route 1 in one saturation (L0,
-//! L1). **Since M1f S1f.5.6 a minimal question where ∅ is in `R` is decided
-//! at root on every route**, a flagged program's within the limit or past it
-//! (`Space::empty_state`): ∅ is below every commitment, so the minimal line
-//! is {∅}, on the user's ruling of 2026-11-07 on S-16.
+//! and a line mode answers from the same description (`W27`, Q-M1e2.19), so
+//! it certifies what describe certifies and no more. A program whose root is
+//! dead is decided by route 1 in one saturation (L0, L1). **A minimal
+//! question where ∅ is in `R` is decided at root on every route**, a flagged
+//! program's within the limit or past it (`Space::empty_state`): ∅ is below
+//! every commitment, so the minimal line is {∅} (Q-M1f.23).
 //!
 //! ### Describe's route
 //!
@@ -88,12 +84,12 @@
 //! alive commitments it saturates are distinct, so they are at most route 1's;
 //! a dead extension it saturates is pruned from every superset (L1), and
 //! the commitments that are a state already are read, not saturated (L3).
-//! That bounds the alive half and not the dead half, so the premise is
-//! measured and held: over the 181 monotone programs the corpus holds it
-//! saturates fewer nodes on 32 and the same on the rest, and derives no more
-//! facts on any (`alive_set_reach.md` § 9), and
-//! `the_state_route_never_does_more_than_route_1` fails on the first program
-//! where it would, at which point this rule is revisited. Where both routes
+//! That bounds the alive half and not the dead half, so the premise is held
+//! by a test: `ein-infer/tests/region.rs`'s
+//! `the_state_route_is_the_oracle_on_every_monotone_program_it_reaches`
+//! fails on the first monotone program the oracle reaches where the state
+//! route saturates more nodes than route 1, at which point this rule is
+//! revisited. Where both routes
 //! finish, their read-outs are identical apart from the `route` and `work`
 //! rows (`ein-infer/tests/explore.rs`).
 
@@ -137,8 +133,8 @@ pub enum Ask {
     Find(u64),
     /// Is it exactly one state?
     Single,
-    /// How many states and commitments does it hold? `--count`, M1e2
-    /// T1e2.1c.4.6, the user's ruling of 2026-11-03: over all of `R` only,
+    /// How many states and commitments does it hold? `--count`: over all of
+    /// `R` only,
     /// since k_s and k_c are `R`'s. [`run`] answers it by describe's route,
     /// so its counts are describe's by construction, and the read-out reads
     /// no state ([`crate::read_out`]).
@@ -156,7 +152,7 @@ pub struct Mode {
 impl Mode {
     /// The question as `ein solve` is asked it: its flags, and `describe` for
     /// the bare run that has none. What `ein test` names a claim's route by
-    /// (M1f S1f.6.27).
+    /// (Q-M1f.223).
     pub fn flags(self) -> String {
         let line = match self.which {
             Which::All => "",
@@ -182,8 +178,8 @@ impl Mode {
 #[derive(Clone, Copy, Debug)]
 pub struct Options {
     pub mode: Mode,
-    /// Facts beyond root, summed over every fixpoint the run computes — the
-    /// ruled unit (2026-10-16). Route 1 checks it before each layer, every
+    /// Facts beyond root, summed over every fixpoint the run computes
+    /// (Q-M1e2.35). Route 1 checks it before each layer, every
     /// other step before itself; the whole cube is bounded by
     /// [`Self::limit`] instead.
     pub budget: u64,
@@ -195,15 +191,14 @@ pub struct Options {
     /// `-y`: the parent-path spot check, unbounded and on every program — read
     /// by the read-out ([`crate::read_out`]), not by a route, so no answer and
     /// no `work` count depends on it. The program's own `(config
-    /// :lattice-sanity-check true)` turns it on as well (M1e2 S1e2.1c.5).
+    /// :lattice-sanity-check true)` turns it on as well.
     pub sanity: bool,
     /// Which dead nodes' unsat cores the run takes beyond root's and, on the
     /// cube, the minimal holes', which the read-out and the summary print
     /// ([`Cores`]): every one the walk visits (`--dump-lattice`, `--events`),
     /// and after the walk each member of `N` a description holds
-    /// (`--dump-answer`, `--trace`). M1e2 S1e2.2.21 and M1f S1f.5.12, the
-    /// user's rulings of 2026-11-05 and 2026-11-08, *minimum work per
-    /// question*: every core taken is the one an eager walk takes, and no
+    /// (`--dump-answer`, `--trace`), *the least work each question needs*
+    /// (Q-M1e2.31, Q-M1f.25): every core taken is the one an eager walk takes, and no
     /// answer depends on it. [`Options::new`] asks [`Cores::READ_OUT`], what
     /// `ein solve` asks for the same question with no artefact that prints
     /// another core, so the library's question does the binary's work; a
@@ -212,7 +207,7 @@ pub struct Options {
     /// does.
     pub cores: Cores,
     /// The run is asked to **decide the program's claims**, as `ein test`
-    /// asks (M1f S1f.6.27): a claim the answer does not decide by exhausting
+    /// asks (Q-M1f.221): a claim the answer does not decide by exhausting
     /// what the claim is about is still **refuted** by what the run found, a
     /// query's by a class of a state found that it does not list, and
     /// `(solve … :expect (false))` by an alive root
@@ -226,16 +221,15 @@ pub struct Options {
     /// `N` is taken, the minimal dead sets and so their count: the default,
     /// and what every surface that prints either asks. Off, an exhausted
     /// description on the state route does not search for it
-    /// ([`crate::states::describe_with`], M1f S1f.6.27, E-31): what `ein solve
+    /// ([`crate::states::describe_with`]): what `ein solve
     /// --count` and `ein test` ask where they write no artefact that carries
     /// it, since neither prints `N` or how many it holds. `R`, its two counts, its
     /// states, its lines and every claim's outcome are the same either way
     /// (`ein-infer/tests/explore.rs`). Route 1 and the cube read `N` off what
     /// they visited, and take it regardless.
     pub nogoods: bool,
-    /// `--no-search` (M1f S1f.6.36, the user's words of 2026-11-14: *"flag
-    /// that disables search doesn't change R, it disables discovering of
-    /// R"*): the run saturates root, reads root's node through the node
+    /// `--no-search`, which declines to discover R and changes no R
+    /// (Q-M1e2.30, Q-M1f.258): the run saturates root, reads root's node through the node
     /// function every route uses, and builds no other node, whatever
     /// [`Self::mode`] says. Its answer is a description of what root alone
     /// establishes ([`Route::Root`]): ∅ in `R` or not, and, on a dead root,
@@ -308,16 +302,16 @@ pub enum Route {
     /// Route 2: the cube, in layer order or whole.
     Cube,
     /// The state route: a monotone program's alive states, each at most once,
-    /// and `R` read off them ([`crate::states`]) — describe's since
-    /// S1e2.1c.2, and the modes' over states (`crate::tree`) since
-    /// S1e2.1c.4 where no owed instance's alternatives were branched on.
+    /// and `R` read off them ([`crate::states`]) — describe's, and the
+    /// modes' over states (`crate::tree`) where no owed instance's
+    /// alternatives were branched on.
     States,
-    /// The obligation tree (`crate::tree`, M1e2 S1e2.1c.4): the modes' route
+    /// The obligation tree (`crate::tree`): the modes' route
     /// over states on a monotone program, where an owing state branched on one
     /// owed instance's alternatives (L5).
     Tree,
     /// No route: `--no-search` read root's node alone, and searched no
-    /// further (M1f S1f.6.36, [`Options::no_search`]).
+    /// further ([`Options::no_search`]).
     Root,
     /// The tree and the classes ([`crate::tree_classes`]): describe and
     /// `--count` on a monotone program by `R`'s states, found by the
@@ -332,7 +326,7 @@ pub enum Route {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Licence {
     /// L0: a fork only adds — every node is root's fixpoint and more, so when
-    /// root is dead every node is, on any program (M1e2 T1e2.1a.5.3). It is
+    /// root is dead every node is, on any program. It is
     /// the node function's own construction, not a theorem about the program,
     /// and it is what decides a flagged program whose root is dead.
     ForkOnlyAdds,
@@ -344,14 +338,14 @@ pub enum Licence {
     /// L3: a commitment's state is its closure's — so the state route visits
     /// states, not commitments, and counts `k_c` over them as
     /// `f(T) = 2^|T| − Σ f(S)` over the alive states `S ⊊ T`
-    /// ([`crate::states`], M1e2 S1e2.1c.2).
+    /// ([`crate::states`]).
     Closure,
     /// L4: a node of `R` is maximal when every one-up extension is dead.
     LocalLines,
     /// L5: an owed instance's alternatives are exhaustive — an owing state
     /// branches on one owed instance's alternatives, and one whose every
     /// alternative is dead has no member of `R` above it
-    /// (`crate::tree`, M1e2 S1e2.1c.4).
+    /// (`crate::tree`).
     Exhaustive,
     /// L7: every node of the cube, nothing skipped.
     TheCube,
@@ -532,7 +526,7 @@ pub struct Answer {
     /// The obligation instances root's own fixpoint leaves undischarged, as
     /// `region::Prepared::root_owes` counts them for every route: with
     /// [`Self::root_dead`], which kind of empty an empty `R` is, on every
-    /// question (M1f S1f.6.26, E-18). An alive root that owes none is in `R`.
+    /// question (Q-M1f.219). An alive root that owes none is in `R`.
     pub root_owes: u32,
     pub route: Route,
     pub licences: Vec<Licence>,
@@ -557,8 +551,8 @@ pub struct Answer {
     /// the one rule: a member met with no member of `R` met below it is
     /// minimal, and the maximal line, which needs the whole cube, is not
     /// known. The read-out counts the other members met and does not list
-    /// them, and `--dump-answer` writes each (M1e2 S1e2.2.26, W27, the user's
-    /// ruling of 2026-11-05 on Q-M1e2.19). `None` on every other run.
+    /// them, and `--dump-answer` writes each (`W27`, Q-M1e2.19). `None` on
+    /// every other run.
     pub partial: Option<Box<Described>>,
     /// The chosen part of `R` was exhausted: [`Self::states`] is all of it.
     pub exhausted: bool,
@@ -634,7 +628,7 @@ pub fn run(
 
 /// [`run`], narrating into `events`: root as the walk narrates it, then every
 /// node visited — its saturation's events and an `enter` line, in visit order
-/// whatever `-j` is — and route 1's `layer` lines (M1e2 T1e2.1a.5.2).
+/// whatever `-j` is — and route 1's `layer` lines.
 pub fn run_with(
     root: &mut Kb,
     terms: &mut Terms,
@@ -698,7 +692,7 @@ pub fn run_with(
                 describe_route_1(root, terms, ast, prepared, t0, opts, events)?
             }
         } else {
-            // The modes' routes over states (`crate::tree`, S1e2.1c.4); a dead
+            // The modes' routes over states (`crate::tree`); a dead
             // root is the whole answer, in one saturation (L0, L1).
             let mut sp = Space::open(root, terms, ast, prepared, opts, events);
             sp.stopping_dead_nodes();
@@ -726,7 +720,7 @@ pub fn run_with(
     Ok(answer)
 }
 
-/// `--no-search`'s answer (M1f S1f.6.36): root's node, read through the node
+/// `--no-search`'s answer (Q-M1f.255, Q-M1f.256): root's node, read through the node
 /// function every route uses, and nothing past it. What root alone
 /// establishes is described and no more: ∅ is in `R` exactly when root is
 /// alive and owes nothing, and so on the minimal line; a dead root leaves
@@ -1495,8 +1489,7 @@ impl<'a> Space<'a> {
         })
     }
 
-    /// **The ∅ rule** (M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16,
-    /// *"b, use the ∅ rule in both"*): the minimal line is the members of `R`
+    /// **The ∅ rule** (Q-M1f.23): the minimal line is the members of `R`
     /// with no smaller member, and ∅ is below every commitment, so where ∅ is
     /// in `R` the minimal line is {∅} and no other state is on it. Whether ∅
     /// is in `R` is root's fixpoint alone, so every minimal question is
@@ -1724,13 +1717,13 @@ impl<'a> Space<'a> {
     /// [`Self::cube_in_order`] met. Each is in `R`. Every proper subset of a
     /// member was met in an earlier layer, so a member with no member of `R`
     /// below it is certified minimal, monotone or not. The maximal line needs
-    /// the whole cube, and is not certified. Describe's, and since M1e2
-    /// S1e2.2.26 (W27) every line mode's past the limit too
+    /// the whole cube, and is not certified. Describe's, and every line
+    /// mode's past the limit too (`W27`)
     /// (`certified_line`): the one rule, so the two cannot disagree.
     ///
     /// With `nogoods`, each member of `N` met is given its core after the
-    /// walk, through the node function against the walk's snapshot (M1f
-    /// S1f.5.12, P-15 (c)): the walk keeps a node as its two bits, so a member
+    /// walk, through the node function against the walk's snapshot
+    /// (Q-M1f.25): the walk keeps a node as its two bits, so a member
     /// is taken then even where the walk took a core. Without it a member
     /// carries none, and no surface that prints `N` reads it.
     fn partial_cube(&mut self, nogoods: bool) -> Result<Described, SolveError> {
@@ -1787,7 +1780,7 @@ impl<'a> Space<'a> {
             .copied()
             .filter(|d| proper_subsets(d).all(|p| alive.contains(&p[..])))
             .collect();
-        // N's cores, after the walk (M1f S1f.5.12). Root's is root's node's.
+        // N's cores, after the walk. Root's is root's node's.
         let taken: Vec<region::Node> = if nogoods {
             let sets: Vec<Vec<FactId>> = minimal_dead
                 .iter()
@@ -2139,7 +2132,7 @@ fn describe_states(
     };
     let d = crate::states::describe_with(&s, opts.nogoods)?;
     let mut described = described::of_states(&s, &d);
-    // N's cores, after the walk (M1f S1f.5.12): the route reads `N` off its
+    // N's cores, after the walk: the route reads `N` off its
     // maximal alive states, so a member it did not saturate, or saturated
     // without taking a core, is taken now, through the node function against
     // the walk's snapshot.
@@ -2409,7 +2402,7 @@ fn flagged(
         (Which::All | Which::Minimal, Ask::Find(_) | Ask::Single)
     );
     let within = n <= opts.limit as usize && n < 64;
-    // The ∅ rule (M1f S1f.5.6): a minimal question, under any ask, where ∅
+    // The ∅ rule (Q-M1f.23): a minimal question, under any ask, where ∅
     // is in `R` — root is alive here, so where it owes nothing — is decided
     // by root's node, within the limit or past it (`Space::empty_state`).
     let empty_in_r = opts.mode.which == Which::Minimal && prepared.root_owes == 0;
@@ -2453,8 +2446,8 @@ fn flagged(
         });
         // A line mode past the limit (`!early` here is past it) answers from
         // describe's partial description, by its rule, so the two certify the
-        // same line members (M1e2 S1e2.2.26, W27; Q-M1e2.19). Until then it
-        // labelled every member met with its line.
+        // same line members (`W27`, Q-M1e2.19), and labels no member met with
+        // a line it does not certify.
         let line_past_limit = !early && !empty_in_r && opts.mode.which != Which::All;
         // Only describe prints `N`, so only describe takes its cores.
         let partial = if describe_all || line_past_limit {
@@ -2524,8 +2517,8 @@ type MinimalAt = (Box<[u32]>, usize);
 
 /// A line mode's states past `--region-limit` on a flagged program, read off
 /// describe's partial description `d` ([`Space::partial_cube`]), so that the
-/// mode certifies what describe certifies and nothing more (M1e2 S1e2.2.26,
-/// W27). On the minimal line, the states `d` marks minimal, each with the
+/// mode certifies what describe certifies and nothing more (`W27`). On the
+/// minimal line, the states `d` marks minimal, each with the
 /// minimal commitments that reach it, in layer order: the order the minimal
 /// line has within the limit ([`of_cube`]). The maximal line needs the whole
 /// cube, so `d` certifies no state on it, and none is listed. `-n N` keeps the
@@ -2714,10 +2707,9 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
 // ── `--monotone`: a question about the program ──────────────────────────
 
 /// `ein solve FILE --monotone`'s answer, a question about the **program**
-/// rather than about `R` — M1e2 S1e2.1b.5, the form the user approved on
-/// 2026-11-03 ((a1) of
-/// [design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs)
-/// § 2.2). Its work is root's fixpoint and the static check, and nothing
+/// rather than about `R`
+/// ([design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs)).
+/// Its work is root's fixpoint and the static check, and nothing
 /// else: no node is built, so it has no `R` to disagree with `ein solve`
 /// about, and its verdict and sites are the ones every surface prints, from
 /// the same [`crate::monotone::classify`].

@@ -1,5 +1,5 @@
-//! The detector — M1e2
-//! [S1e2.1b.5](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md).
+//! The detector
+//! ([monotonicity.md § 11](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#11-the-detector)).
 //!
 //! What a program the static check flags is warned of, held to the corpus:
 //! the static half ([`ein_infer::detector::Static`]) on every corpus program,
@@ -20,23 +20,18 @@ use ein_infer::region::{self, Nodes, Options, Outcome};
 use ein_infer::saturator::{Saturator, Session};
 use ein_ir::{Ast, load, parse};
 
-/// `stratified_stale`, `node_census`'s written program (`node_census.md`
-/// § 2.3): stratified (r < q < p), one priority, `derive-p` written first, so
-/// root holds a stale `(p one)` beside `(q one)` from scratch, and swapping
-/// the two rules' text changes the universe (§ 7.1 there).
+/// `stratified_stale`, a program the `node_census` example writes too:
+/// stratified (r < q < p), `derive-p` written first, so root holds a stale
+/// `(p one)` beside `(q one)` from scratch, and swapping the two rules' text
+/// changes the universe.
 const STRATIFIED_STALE: &str = "(relation thing T :why \"{?1} is a thing\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\")
      (thing one)
      (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) :why \"{?x} is a thing and q does not hold of it, so p holds of {?x}\")
      (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :why \"{?x} is a thing and r does not hold of it, so q holds of {?x}\")
      (query :goal (r ?x))";
 
-/// `lattice/10_fifo_gap.ein`'s program, written here with its own `:why`s.
-/// Until M1f S1f.5.15 removed `:priority` it carried the reader `r2` at
-/// priority 100, admitted before `r1` in every written order, so no
-/// equal-priority pair existed for a reorder to move, and the order check
-/// still reported it (the proposal's § 7, item 4). With the clause gone it is
-/// the file's program, `r2` written first, and its race is the written
-/// order's, as the file's is.
+/// `lattice/10_fifo_gap.ein`'s program, written here with its own `:why`s:
+/// `r2` written first, and its race is the written order's, as the file's is.
 const FIFO_GAP_WRITTEN: &str = "(relation thing T :why \"{?1} is a thing\") (relation a T :why \"a holds of {?1}\") (relation b T :why \"b holds of {?1}\")
      (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation z T :why \"z holds of {?1}\")
      (thing one)
@@ -61,7 +56,7 @@ const ROOT_DEAD_PAST_THE_LIMIT: &str = "
 
 /// The static check of `text` (read from `at`), through the oracle's own
 /// preparation — the cube is refused past the limit and the check still runs.
-/// Read past *forbid*'s refusal (M1e2 S1e2.2.5), which comes after the check:
+/// Read past *forbid*'s refusal, which comes after the check:
 /// the static half is the program's, refused or not.
 fn checked(text: &str, at: &Path) -> Option<(Monotonicity, Terms)> {
     let mut ast = Ast::new();
@@ -91,7 +86,7 @@ fn written(text: &str) -> (Monotonicity, Terms) {
 }
 
 /// `reader ← writer: relations`, one per order finding. No rule has a
-/// priority since M1f S1f.5.15, so every race is the written order's.
+/// priority, so every race is the written order's.
 fn races(s: &Static) -> Vec<String> {
     s.order
         .iter()
@@ -147,55 +142,10 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
             found_races.push(format!("{rel} {r}"));
         }
     }
-    // 24 since M1e2 S1e2.2.5 (2026-11-04): `features/05` and `/12` close the
-    // relation their `std.elim`-shaped refutations read, which *forbid* asked
-    // of them, and are monotone; the programs it refuses keep their static
-    // half, which `checked` reads before the refusal. 26 since S1e2.2.15
-    // banked W14's `oblig-stdlib-total-owed` pair the same day, each an
-    // `obligation-trigger` site on `is-a`. 27 since S1e2.2.12 promoted the
-    // fuzz finding `d3-unsat-core` into the corpus the same day, which the
-    // static check flags and *forbid* refuses (a `via` program). 30 since
-    // S1e2.2.16 banked W16's second shape the same day, three programs with an
-    // `absent` site and an `activator` site each: the symbol control and the
-    // int and nested witnesses, all three refused by *forbid* since W16's
-    // fix, which keep their static half as the refused programs above do. 38
-    // since S1e2.2.17 banked W17's family the same day: its five witnesses,
-    // its two controls (`forbid-chain-0`, refused, and `-no-absent`) and
-    // `lattice/12_activator_chain_hole.ein`, each with an `activator` site.
-    // 40 since S1e2.2.19 banked W19's two shapes the same day,
-    // `core-activator-committed` and `-guard-only`, each an `activator` site
-    // root compiled no plan of; its two boundaries, whose activator root
-    // holds, are monotone. 41 since S1e2.2.22 banked W22's family on
-    // 2026-11-05: `kw-neq-in-absent-twin`, an `absent` over `nneqw`, which a
-    // commitment can extend, is an `absent` site. 42 since the stage's fix the
-    // same day: its witness's `(neqw ?x)`, which the parser read as the guard
-    // `(neq w ?x)` until then, is an `absent` over `neqw`, as the twin's is.
-    // 47 since S1e2.2.25 banked the inventory's owned wrong answers the same
-    // day: `f07-rules-swapped` (W8, `features/07`'s rules in the other order,
-    // its cycle and its two races below), `guard-only-second` and
-    // `-first` (W25, an `activator` site each), and
-    // `oblig-derived-activator` and `-declared` (W26, `total-owed`'s
-    // activator relation one a commitment can change). 48 since S1e2.2.26
-    // banked W27's witness the same day, `past-limit-lines`, whose
-    // `total-owed` reads `is-a`, which `seated-dines` derives from a
-    // commitment: an `obligation-trigger` site. 49 since M1f S1f.5.0 banked
-    // W32's `kwpair-in-macro` on 2026-11-08: its `forall` is an `absent`
-    // over `q`, which a commitment can extend, an `absent` site. 48 since
-    // S1f.5.5's swap the same day, which refuses `kwpair-in-macro` at the
-    // parse (S1f.5.11), so it loads here no more. 49 since M1f S1f.5.18
-    // banked W59's `derived-activator-never` on 2026-11-09 (T1f.5.18.1): its
-    // `r` is an `activator` site root compiled no plan of, `mk` deriving the
-    // activator from `item`, which a commitment can change. 48 since
-    // T1f.5.18.3 refused it at load the same day, so it loads here no more.
-    // 49 since M1f S1f.5.9 banked W60's `eq-arity-under-commitment` the same
-    // day (T1f.5.9.1): its `r` is an `activator` site root compiled no plan
-    // of, `mk` deriving the activator only where a `p`, which a commitment can
-    // change, holds. 48 since T1f.5.9.4 refused it at load the same day.
-    // 49 with W97's `rung-connex-import`, which *forbid* refuses since the
-    // ladder's second rung is taken where an obligation is activated at root
-    // and not where one is loaded: the blind enumerator proposes `lt`, so
-    // `connex`'s `absent` over it is a site, and the program keeps its static
-    // half as the refused programs above do.
+    // Every corpus program the static check flags, *forbid*'s refusals among
+    // them: each keeps its static half, which `checked` reads before the
+    // refusal. A program the check flags moves this count when it joins the
+    // corpus, and one it no longer flags when it changes.
     assert_eq!(flagged, 49, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
@@ -221,8 +171,7 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
 }
 
 /// The cycle through an `absent` over `D`, with its parity, on the three
-/// programs `node_census.md` § 5 found it on; `d3-unsat-core`, a fuzz
-/// finding, is a corpus entry since M1e2 S1e2.2.12 promoted it (2026-11-04).
+/// programs that have one; `d3-unsat-core`, a fuzz finding, is a corpus entry.
 #[test]
 fn a_cycle_through_an_absent_is_found_with_its_parity() {
     for rel in [
@@ -242,9 +191,8 @@ fn a_cycle_through_an_absent_is_found_with_its_parity() {
 
 /// **Order sensitivity has no false negative** on the programs whose state or
 /// universe moves with the written order of two `absent` rules
-/// (`node_census.md` § 7.1: `features/07`, `f07-fpoff`, the written
-/// `stratified_stale`), on the FIFO-gap fixture (§ 12.1), and on the reader
-/// written at an earlier priority, which is one race more since M1f S1f.5.15.
+/// (`features/07`, `f07-fpoff`, the written `stratified_stale`), on the
+/// FIFO-gap fixture, and on the reader written first, which is one race more.
 #[test]
 fn the_order_check_finds_every_fifo_race() {
     for rel in [
@@ -262,9 +210,7 @@ fn the_order_check_finds_every_fifo_race() {
     assert_eq!(races(&m.detector), ["r2 ← r1: q"]);
     let (m, _) = written(STRATIFIED_STALE);
     assert_eq!(races(&m.detector), ["derive-p ← derive-q: q"]);
-    // The reader at an earlier priority was the one order no reorder moved,
-    // until M1f S1f.5.15 took `:priority` out: written so, it is a race like
-    // any other, the written order's.
+    // The reader written first: a race like any other, the written order's.
     let (m, _) = written(FIFO_GAP_WRITTEN);
     assert_eq!(races(&m.detector), ["r2 ← r1: q"]);
     // The static variant: `q` is outside D, so the program is monotone and
@@ -310,7 +256,7 @@ fn each_site_names_what_it_concludes_and_puts_at_stake() {
 }
 
 /// The warning a run of `mode` gives on `rel`, read-out and all — `limit` is
-/// `--region-limit`. Studied past *forbid*'s refusal (M1e2 S1e2.2.5): the
+/// `--region-limit`. Studied past *forbid*'s refusal: the
 /// warnings these tests hold are on the shapes it refuses, the dead hole and
 /// the stale fact, as a library-level fixture.
 fn warned(rel: &str, mode: Mode, limit: u32) -> Warning {
@@ -384,7 +330,7 @@ fn the_stale_check_reads_every_node_the_run_computes() {
 }
 
 /// **The status, attributed** — the cube's half, with the sites its
-/// violations are attributed to by S1e2.1b.3's rule; and *not known* where
+/// violations are attributed to; and *not known* where
 /// the run did not read the cube, said three ways.
 #[test]
 fn the_status_names_the_sites_its_violations_are_attributed_to() {
@@ -415,7 +361,7 @@ fn the_status_names_the_sites_its_violations_are_attributed_to() {
             "examples/lattice/synth/trigger_hole.ein",
             exercised(&["dead-1", "owe-2"], 7, 3, 4),
         ),
-        // M1e2 S1e2.2.17: where S1e2.1b.3's rule names no site, the
+        // Where the attribution names no site, the
         // derivation followed through each plan's activator. `lattice/12`'s
         // `total-owed` activator is derived by a plan of `serves`, which root
         // never compiled; W17's witnesses, studied past *forbid*, die through
@@ -496,9 +442,8 @@ fn the_status_names_the_sites_its_violations_are_attributed_to() {
     assert_eq!(w.status, Status::Conservative);
     assert!(w.state.cube);
     // A dead root kills every node (L0), and the route reads root alone.
-    // `features/12` was the corpus's one flagged program with a dead root past
-    // the limit until M1e2 S1e2.2.5 closed its `instance`; a written one, an
-    // obligation's trigger beside a refutation root fires, holds the status.
+    // A written program, an obligation's trigger beside a refutation root
+    // fires, holds the status.
     let path = repo_root().join("written.ein");
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -596,11 +541,10 @@ fn the_spot_check_reads_three_parents_of_each_printed_state() {
 // ── (c): robust, on the corpus ──────────────────────────────────────
 
 /// The bound on `n` for the split sweep: every split `C1 ⊆ C` of every node
-/// is `3ⁿ` saturations a program, so `n ≤ 10` is at most 59 049. Measured
-/// 2026-11-03: 147 monotone corpus cubes, 1 941 nodes, 37 172 splits, 4.8 s in
-/// a release build and 6.0 s in the gate's test profile. The eight monotone
-/// cubes at `n = 11…16` are past it; `node_census -- --paths --control
-/// --max-n 12` reads to 12 (`node_census.md` § 11.4).
+/// is `3ⁿ` saturations a program, so `n ≤ 10` is at most 59 049; the test
+/// prints how many cubes, nodes and splits it swept. The monotone cubes past
+/// it are read by `cargo run --release -p ein-infer --example node_census --
+/// --paths --control --max-n 12`, to 12.
 const SPLIT_BOUND: usize = 10;
 
 /// `sat(P ∪ C)` with `P` the program as loaded and not saturated: a node
@@ -713,15 +657,15 @@ fn sweep(text: &str, at: &Path, bound: usize) -> Option<Swept> {
     Some(out)
 }
 
-/// **(c) 2 and 3: a *Monotone* verdict means one state per node, whatever
+/// **A *Monotone* verdict means one state per node, whatever
 /// built it, and the dynamic detector has nothing to find.** On every
 /// monotone corpus cube with `n ≤` [`SPLIT_BOUND`], every node built by fork
 /// is the node built by every split from a fixpoint that holds root's, fact
 /// for fact, and holds no stale fact — so no parent path can differ and the
 /// stale check would read nothing, which is why the detector is gated on the
 /// verdict (`detector.rs`'s module docs). **From scratch the verdict does not
-/// reach**: on `examples/lattice/11_fifo_gap_static.ein` an equal-priority
-/// race over a static read leaves `{(b one)}` a stale `(p one)` that the fork
+/// reach**: on `examples/lattice/11_fifo_gap_static.ein` a FIFO race over a
+/// static read leaves `{(b one)}` a stale `(p one)` that the fork
 /// never holds (`monotonicity.md` § 3.4), and it is the one corpus node
 /// where scratch departs.
 #[test]
@@ -758,10 +702,9 @@ fn a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split() {
     assert!(programs > 140 && nodes > 1900, "the sweep is not vacuous");
 }
 
-/// **(c) 2 and 3 on random programs**: `utils/region_synth.py --random`
-/// writes a program for a random region, as `region_dump.rs`'s round trip
-/// draws them per commit (whose check holds (c) 1 on them: a *Monotone*
-/// verdict beside a cube violation fails it). Here every one the static
+/// **The same on random programs**: a program is written for a random
+/// region, as `region_dump.rs`'s round trip draws them (whose check holds a
+/// *Monotone* verdict to no cube violation on them). Here every one the static
 /// check calls monotone is swept as the corpus is — by fork, by every split,
 /// from scratch, and read for stale facts — and none departs: no random
 /// program races two `absent` rules over a static read.

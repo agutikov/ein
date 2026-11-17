@@ -48,13 +48,13 @@ pub struct Engine {
     keys: Vec<PlanKey>,
     by_key: FxHashMap<PlanKey, usize>,
     /// The interned compile key's argument list of each plan, `PlanKey::activator`
-    /// — every argument, since M1e2 S1e2.2.7, and as values, not their text,
-    /// since S1e2.2.16 — parallel to `plans`.
+    /// — every argument, as values, not their text — parallel to `plans`.
     activators: Vec<ActivatorId>,
     activator_ids: FxHashMap<Box<[Value]>, ActivatorId>,
     /// Binding keys that have already been applied.
     pub fired: FxHashSet<BindingKey>,
-    /// Shared with every other engine of this run — design/06 § Win A. What
+    /// Shared with every other engine of this run
+    /// ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)). What
     /// may **not** be shared is the order below it, which is why `plans` is
     /// per-engine and this is not.
     memo: SharedMemo,
@@ -140,13 +140,11 @@ impl Engine {
             return Ok(());
         }
         self.last_rule_apps = n;
-        // T1a.6.4.0b — the walk allocated a `Vec<Rule>` (one `Box<[Symbol]>`
-        // per rule, cloned) and a `Vec<Option<FactId>>` per rule, on every
-        // call. Neither is needed: `rules` borrows the program and `compile_for`
-        // touches `self`, `terms` and `events`, so the two borrows never meet,
-        // and one buffer serves every rule. The walk's lookahead threw its
-        // engine away after one pass, which made this walk ~120 pairs of pure
-        // setup, ~40 times per solve ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
+        // No `Vec<Rule>` and no `Vec<Option<FactId>>` per rule, per call:
+        // `rules` borrows the program and `compile_for` touches `self`,
+        // `terms` and `events`, so the two borrows never meet, and one buffer
+        // serves every rule. This walk runs once per hypothesis generation
+        // ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
         let mut acts: Vec<Option<FactId>> = Vec::new();
         for rule in kb.program().rules.values() {
             activators_into(kb, terms, rule, &mut acts);
@@ -201,17 +199,16 @@ impl Engine {
             });
         }
         // `plan` is a local `Arc`, not a borrow of `self`, so the two reads
-        // below need no copy of what they read (T1a.6.4.0b): `reg_names` is
+        // below need no copy of what they read: `reg_names` is
         // only ever read by `check_layout`, which is a debug-build assertion,
         // and cloning it in the shipping build was one allocation per engine
         // miss for nothing at all.
         //
-        // The activator id is the compile key's list, every argument, and not
-        // `plan.activator_args`, the symbols — M1e2 S1e2.2.7, Q-M1e.16's first
-        // fix. With the symbols an `int` and a nested `Fact` in one position
-        // gave two plans one binding-key space and two register layouts, and
-        // a release build lost a derivation (W7). With the compile key's list
-        // the id and the plan are one-to-one within an engine.
+        // The activator id is the compile key's list, every argument
+        // (Q-M1e.16). On part of them, two plans could share one binding-key
+        // space with two register layouts, and a release build would lose a
+        // derivation (`W7`). With the compile key's list the id and the plan
+        // are one-to-one within an engine.
         let activator_id = self.intern_activator(&key.activator);
         self.check_layout(plan.rule, activator_id, &plan.reg_names);
         self.plans.push(id);
@@ -235,21 +232,15 @@ impl Engine {
     /// built: two plans sharing `(rule, activator)` have one register layout.
     ///
     /// A register layout is a function of the rule and of *which* parameters
-    /// the activator bound, and a name binds its parameter where a nested
-    /// `Fact` does not (as an `int` did, until M1f S1f.5.4 retired the kind). Until M1e2 S1e2.2.7 the activator id interned the
-    /// **symbol** arguments, so `(r a 1)` and `(r a (f X))` shared an id and
-    /// disagreed here: M1e
-    /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)
-    /// wrote the shape in thirteen lines, and in a **release** build, where
-    /// this assertion is compiled out, it cost a derivation with no diagnostic
-    /// ([Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
-    /// M1e2's W7). The doc comment before that called it *"a shape no rule
-    /// application has"*.
+    /// the activator bound. An activator id over part of the arguments would
+    /// let `(r a b)` and `(r a (f X))` share an id and disagree here, and in a
+    /// **release** build, where this assertion is compiled out, cost a
+    /// derivation with no diagnostic (`W7`).
     ///
-    /// Since S1e2.2.7 the id interns the compile key's list, every argument,
-    /// so two plans of one rule with one id have one compile key and are one
+    /// The id interns the compile key's list, every argument (Q-M1e.16), so
+    /// two plans of one rule with one id have one compile key and are one
     /// plan, and this cannot fire. It stays, debug-only, as the guard that the
-    /// two keys have not parted again:
+    /// two keys have not parted:
     /// `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`
     /// and `examples/ein-bugs/binding-key-both.ein` run the shape in a debug
     /// build.

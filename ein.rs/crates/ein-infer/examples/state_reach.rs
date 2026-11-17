@@ -1,6 +1,5 @@
-//! How far the state route reaches — M1e2
-//! [S1e2.1c.2](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md),
-//! in process, beside [`route1_reach`](route1_reach.rs).
+//! How far the state route reaches, in process, beside
+//! [`route1_reach`](route1_reach.rs).
 //!
 //! Every corpus file and register witness that loads (or the `FILE`s given),
 //! through [`ein_infer::states`] at a budget: one JSON line per program with
@@ -22,8 +21,8 @@
 //!
 //! `--budget` is in visited commitments and `--facts` in facts beyond root,
 //! both off unless given, as in `route1_reach`. With no `FILE` it sweeps
-//! `corpus_files()` plus the register's witnesses. `alive_set_reach.md`'s
-//! second half was read off the rows; no script reads them.
+//! `corpus_files()` plus the register's witnesses. The rows are its output;
+//! no script reads them.
 
 use std::path::{Path, PathBuf};
 use std::time::Instant;

@@ -1,5 +1,5 @@
-//! **`std.bool`, held to an enumeration of the sixteen columns** — M1f
-//! [S1f.6.17](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md).
+//! **`std.bool`, held to an enumeration of the sixteen columns**
+//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md)).
 //!
 //! `stdlib/bool/` is four modules: `std.bool.gates`, the sixteen Boolean
 //! functions of two inputs as one table and as a relation each;
@@ -14,14 +14,14 @@
 //! | claim | where |
 //! |---|---|
 //! | the table is the sixteen columns, every row once, none missing and none twice, and each function's second name its column | [`the_table_is_the_sixteen_columns`] |
-//! | the second layout, `(And A B OUT)`, is the table's rows and no other (the user's reply 19 (c)) | [`each_relation_of_a_function_is_its_rows`] |
+//! | the second layout, `(And A B OUT)`, is the table's rows and no other (Q-M1f.263) | [`each_relation_of_a_function_is_its_rows`] |
 //! | **every fact `std.bool.props` derives is the enumeration's**, relation by relation, and every fact the enumeration has is derived | [`every_property_is_its_definition`] |
-//! | the three counts the user confirmed (reply 22 (a)), on the facts the rules derive: four swap pairs and eight functions their own swap; the duals `Andn`/`Orn` and `Randn`/`Rorn`; twelve functions up to the order of the inputs | [`the_three_corrected_counts`] |
-//! | the one-sided identity and absorbing facts are derived (reply 21 (b)), eight a relation over seven functions, and their two-sided meets four | [`the_one_sided_forms_are_derived`] |
+//! | three counts, on the facts the rules derive: four swap pairs and eight functions their own swap; the duals `Andn`/`Orn` and `Randn`/`Rorn`; twelve functions up to the order of the inputs | [`the_three_corrected_counts`] |
+//! | the one-sided identity and absorbing facts are derived (Q-M1f.327), eight a relation over seven functions, and their two-sided meets four | [`the_one_sided_forms_are_derived`] |
 //! | each module's closing rule closes its relations and names every rule and the entry of the module below it | [`each_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | the modules are monotone: no `absent`, no `not`, no `or`, no hrule and no macro; `neq` and `(false)` only in the two rules that refute | [`the_modules_write_no_negation`] |
-//! | the generated files are what `utils/gen_gates.py` writes — the script's `--check`, which is how that check is in the gate | [`the_files_are_what_the_generator_writes`] |
-//! | **the full adder built from five gates is the binary adder's table** (S1f.6.17's T1f.6.17.7): on every one of its eight inputs, its sum and carry are `std.math.bits`' `bin-fa` row, and both are Rust's sum | [`the_full_adder_from_gates_is_the_bits_table`] |
+//! | the generated files are what their generator writes — its `--check` | [`the_files_are_what_the_generator_writes`] |
+//! | **the full adder built from five gates is the binary adder's table**: on every one of its eight inputs, its sum and carry are `std.math.bits`' `bin-fa` row, and both are Rust's sum | [`the_full_adder_from_gates_is_the_bits_table`] |
 //!
 //! The generator computes the same relations in Python, from the columns,
 //! and writes them as the claims of the programs under `tests/stdlib/bool/`;
@@ -448,7 +448,7 @@ fn the_table_is_the_sixteen_columns() {
     assert_eq!(distinct.len(), 16, "sixteen names, one a column");
 }
 
-/// **The second layout** (reply 19 (c)): a program that imports the module
+/// **The second layout** (Q-M1f.263): a program that imports the module
 /// derives `(And A B OUT)` exactly where `(gate2 And A B OUT)` holds, for all
 /// sixteen, and no other fact of those relations.
 #[test]
@@ -493,11 +493,9 @@ fn every_property_is_its_definition() {
     }
 }
 
-/// **The three counts the user confirmed** (reply 22 (a) of 2026-11-12, to
-/// three corrections of the stage file's hand counts), on what the rules
-/// derive: four swap pairs, and eight functions their own swap; the duals
-/// `Andn`/`Orn` and `Randn`/`Rorn`, where the stage file had written the
-/// complements; and twelve functions up to the order of the inputs.
+/// **Three counts**, on what the rules derive: four swap pairs, and eight
+/// functions their own swap; the duals `Andn`/`Orn` and `Randn`/`Rorn`, not
+/// their complements; and twelve functions up to the order of the inputs.
 #[test]
 fn the_three_corrected_counts() {
     let got = derived_props();
@@ -566,7 +564,7 @@ fn the_three_corrected_counts() {
     }
 }
 
-/// **The one-sided forms** (reply 21 (b)): each of the four one-sided
+/// **The one-sided forms** (Q-M1f.327): each of the four one-sided
 /// relations is derived, eight facts over seven functions, since `Fst` or
 /// `Snd` has both bits on its free side; the two-sided forms are their
 /// meets, four each. `Andn`, a and not b, has a right identity, 0, and no
@@ -610,7 +608,7 @@ fn the_one_sided_forms_are_derived() {
 /// module declares, but `std.bool.inputs`' `in`, the hypothesis; names every
 /// other rule of the module, and the entry of the module it imports; and the
 /// module writes its entry's own name as a fact, as the calculator's
-/// modules do (E-11).
+/// modules do.
 #[test]
 fn each_closing_rule_names_every_rule_and_closes_every_relation() {
     for (name, entry, named_by, below, open) in [
@@ -733,10 +731,9 @@ fn the_modules_write_no_negation() {
     assert_eq!(seen, ["one-value", "required"]);
 }
 
-/// `utils/gen_gates.py --check`, run here so that it is in the gate: the
-/// per-commit tier runs `cargo test --workspace`, and its job installs a
-/// `python3` for `cli_semantics.rs`'s `gen_zebra2_variants.py --check`, the
-/// same shape as `ein-ir/tests/digit_tables.rs`'.
+/// The generator's `--check`: the gates' rows and their programs are what
+/// the generator writes. It needs a `python3`, the same shape as
+/// `ein-ir/tests/digit_tables.rs`'.
 #[test]
 fn the_files_are_what_the_generator_writes() {
     let probe = Command::new("python3")
@@ -767,9 +764,8 @@ fn the_files_are_what_the_generator_writes() {
 
 // ── the full adder from gates, against the calculator's table ──────
 
-/// **The full adder built from five gates is `std.math.bits`' `bin-fa`**
-/// (M1f S1f.6.17's T1f.6.17.7, the stage's acceptance line, which waited on
-/// S1f.6.16's build for the table): the five gates of
+/// **The full adder built from five gates is `std.math.bits`' `bin-fa`**:
+/// the five gates of
 /// `examples/binary_logic/full_adder.ein`, read off that file, are driven on
 /// all eight inputs at once, each value carrying the vector it belongs to, by
 /// `std.bool.gates`' table; the outputs on each vector are set against the

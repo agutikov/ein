@@ -1,15 +1,12 @@
 //! What a `:expect` check reports: its [`Outcome`] and its [`Report`], and a
 //! fact's provenance as a claim's diagnostic prints it.
 //!
-//! The comparison is [`crate::claim`]'s since M1e2: a query's `:expect` lists
-//! its projection classes over the states its `:over` names, and a program's
+//! The comparison is [`crate::claim`]'s: a query's `:expect` lists its
+//! projection classes over the states its `:over` names, and a program's
 //! `(solve … :expect (region …))` is checked against the `R` the run
-//! described ([`crate::claim::check_described`]). The walk's comparison of a
-//! `:expect` against its verdict, `check`, which M1c
-//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
-//! T1c.1.2.4 wrote here with its relation-closure rule (*naming a relation
-//! asserts its complete extent*, now the claim's), had no caller since M1e2
-//! S1e2.1a.5's switch, and went with the walk at S1e2.1c.5 (2026-11-03).
+//! described ([`crate::claim::check_described`]), with the claim's
+//! relation-closure rule, *naming a relation asserts its complete extent*
+//! ([query.md § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
 
 use ein_core::{FactId, Kb, ProvKind, Terms};
 
@@ -59,11 +56,11 @@ impl Report {
 /// Why this fact is in the model — one line, because "and where did *that*
 /// come from" is `--trace`'s question and not this report's.
 ///
-/// A surplus fact is the case [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
-/// built relation-closure for, and the *next* thing its reader wants is the
-/// rule that put it there — the `disjunctive-prune` guard bug this milestone
-/// is written around was found exactly one step past "there is an extra fact
-/// here". One level of premises, not a walk: the primary justification is what
+/// A surplus fact is the case relation-closure
+/// ([query.md § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims))
+/// is for, and the *next* thing its reader wants is the rule that put it
+/// there, one step past "there is an extra fact here". One level of
+/// premises, not a walk: the primary justification is what
 /// the engine chose, and a reader who needs the rest reaches for `--trace`.
 pub(crate) fn provenance(terms: &Terms, kb: &Kb, id: FactId) -> Option<String> {
     let prov = terms.provs.get(kb.primary(id)?);

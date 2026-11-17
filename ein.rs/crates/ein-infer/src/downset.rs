@@ -1,5 +1,6 @@
-//! Route 1 — a monotone program's region, from its alive down-set. M1e2
-//! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md).
+//! Route 1 — a monotone program's region, from its alive down-set
+//! ([finding-r.md § 6](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#6-the-routes-question-by-question),
+//! [design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
 //!
 //! [`crate::region`] (route 2, *the oracle*) saturates all `2ⁿ` commitments.
 //! When [`crate::monotone`] finds no site, the theorem there says `dead` is
@@ -37,8 +38,8 @@
 //! ### Where it stops
 //!
 //! At a budget of **facts beyond root**, summed over the visited fixpoints —
-//! the unit the user ruled on 2026-10-16, because per node the cost spreads
-//! 400× across the corpus and per fact 28× (`route1_reach.md` § 3). A layer's
+//! the unit, because the cost of a node varies across the corpus far more
+//! than the cost of a fact does. A layer's
 //! facts are known only once it has run, so the budget is checked before each
 //! layer against a projection: the layer's size times the facts per node of
 //! the layer before, at least one. A declined run has visited whole layers
@@ -58,13 +59,10 @@ use crate::region::{
     Axes, Candidate, Cores, Cost, DEAD, OWING, Prepared, cores_after, fan_out, pool_of, prepare,
 };
 
-/// Facts beyond root past which a run stops, in every mode: `2²⁰`, ruled
-/// 2026-11-03 (S1e2.1c.2's T1e2.1c.2.6). The user first ruled `2²⁴`, which a
-/// bare describe needs to reach every monotone corpus program by the state
-/// route; at that value the gate's sweeps ran out of memory, and they ruled the
-/// smaller raise. `2²⁰` certifies `zebra.ein`'s `--single`, `--maximal` and
-/// `--minimal` (`alive_set_reach.md` § 9.6). It was `2¹⁹`, ruled 2026-10-16 on
-/// T1e2.1a.9.1's measurement (`route1_reach.md` § 4).
+/// Facts beyond root past which a run stops, in every mode: `2²⁰`
+/// (Q-M1e2.35). It is large enough to certify `zebra.ein`'s `--single`,
+/// `--maximal` and `--minimal`, and small enough that a run over every corpus
+/// program fits in memory.
 pub const DEFAULT_BUDGET: u64 = 1 << 20;
 
 /// Nodes per fan-out, as the oracle's.
@@ -76,8 +74,8 @@ pub struct Options {
     /// The most facts beyond root it derives, summed over its fixpoints and
     /// checked against each layer's projection.
     pub budget: u64,
-    /// The most commitments it visits — the measurement examples' unit,
-    /// which `route1_reach.md`'s visit tables were taken in.
+    /// The most commitments it visits — the unit the measurement examples
+    /// (`route1_reach`) count visits in.
     pub max_visits: u64,
     /// Threads, with [`crate::region::Options::jobs`]' contract: any value
     /// gives the same record.
@@ -208,7 +206,7 @@ pub struct Component {
 /// A state with more than one generating commitment: its minimal generators
 /// (`from`) and the candidates its fixpoint holds (`to`). For a monotone
 /// program the class is the union of `[from … to]` over the generators
-/// ([Q-M1e2.7 § The third answer](../../../../plans/m1e2_correctness/open_questions.md#the-third-answer-2026-10-16)).
+/// ([solution-semantics.md § 1.5](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#15-commitment-node-state)).
 #[derive(Clone, Debug)]
 pub struct Merged {
     /// The class's first visited point.
@@ -257,7 +255,7 @@ pub struct DownSet {
     /// ⊤, every candidate, saturated once when the budget stopped the route:
     /// in `R`, it certifies the trivial maximal line (L6) on a run that is
     /// otherwise partial
-    /// ([`read_out.md` § 6.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#62-a-partial-run-c3)).
+    /// ([read-out.md § 2](../../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
     /// Not one of [`Self::points`], whose visit order it would break.
     pub top: Option<Point>,
     /// The facts beyond root's that ⊤'s fixpoint holds.
@@ -313,7 +311,7 @@ pub fn compute(
 ///
 /// `events` hears every node visited, in visit order — its saturation's
 /// events and an `enter` line — and one `layer` line per layer with route 1's
-/// counters (M1e2 T1e2.1a.5.2).
+/// counters.
 pub(crate) fn compute_prepared(
     root: &mut Kb,
     terms: &mut Terms,
@@ -547,7 +545,7 @@ pub(crate) fn compute_prepared(
             closure: o.closure.into_boxed_slice(),
         });
     }
-    // N's cores, after the walk (M1f S1f.5.12): route 1 visits a set only
+    // N's cores, after the walk: route 1 visits a set only
     // when every subset is alive, so each dead point is a member of `N`, and
     // where the walk took no core each is taken now, through the node
     // function against the same snapshot, so each is the core an eager walk

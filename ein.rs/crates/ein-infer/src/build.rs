@@ -1,7 +1,6 @@
 //! What this build of the engine has compiled in — the half of `ein
 //! --version` that the binary cannot work out for itself
-//! ([design/toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#7-what-a-binary-says-it-is)
-//! T1a.9.3.4).
+//! ([design/toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#7-what-a-binary-says-it-is)).
 //!
 //! `cfg!(feature = "parallel")` in `ein-cli` reads **`ein-cli`'s** feature
 //! table, not this crate's, so a dependent has no way to ask. It asks here

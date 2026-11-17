@@ -1,4 +1,4 @@
-//! `std.algebra` — the relation-algebra library as *behaviour* (T1a.10.2.2).
+//! `std.algebra` — the relation-algebra library as *behaviour*.
 //!
 //! Three groups:
 //!
@@ -194,8 +194,8 @@ fn the_two_arg_implications_copy_forward_and_swap() {
 
 // ── the reflective lemmas ──────────────────────────────────────────
 
-// `symmetric` is listed because the tests write it: since M1f S1f.6.35 an
-// import brings the module whole, and a list names what the file writes.
+// `symmetric` is listed because the tests write it: an import brings the
+// module whole, and a list names what the file writes.
 const LEMMAS: &str = "converse symmetric-is-self-converse self-converse-is-symmetric \
                       converse-pair-symmetric symmetric";
 
@@ -294,7 +294,7 @@ fn the_algebra_lemma_loop_terminates() {
 
 // ── the converse type-check ────────────────────────────────────────
 
-// `converse` is listed because the tests write it (M1f S1f.6.35).
+// `converse` is listed because the tests write it.
 const TYPECHECK: &str = "converse-illtyped-dom converse-illtyped-ran converse";
 
 /// `converse-with-incompatible-signatures-derives-false` — a reverse-

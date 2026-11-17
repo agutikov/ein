@@ -1,5 +1,5 @@
-//! A query's `:expect` — the comparison, since M1e2 S1e2.1a.5 over
-//! **projection classes** (`query.md`).
+//! A query's `:expect` — the comparison, over **projection classes**
+//! ([query.md § The query's claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-querys-claim)).
 //!
 //! A query's `:expect` lists its classes: each `(model …)` is the goal's atoms
 //! under one class of rows over the set its `:over` names, `(model)` the class
@@ -341,9 +341,10 @@ fn an_exhausted_find_decides_its_part() {
 
 /// `ein_ir::expect::render` and `ein_infer::events::sexpr` must agree byte for
 /// byte, because the comparison holds one against the other. Facts compare by
-/// *content* and never by `FactId` — `fork_audit`'s reason: two runs do not
-/// share an interner, and an expectation is written by a person in the first
-/// place.
+/// *content* and never by `FactId`, which is no output order
+/// ([design/determinism-and-order.md § 2.1](../../../../docs/ein/ein.rs/design/determinism-and-order.md#21-ids-are-not-an-output-order)):
+/// two runs do not share an interner, and an expectation is written by a
+/// person in the first place.
 #[test]
 fn rendering_agrees_with_the_fact_dump() {
     let src = "(relation p Thing Place :why \"p holds of {?1} and {?2}\")\n(relation q Thing :why \"q holds of {?1}\")\n\

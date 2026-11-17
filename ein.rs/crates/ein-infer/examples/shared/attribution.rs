@@ -1,7 +1,6 @@
-//! Which site made a node fall out of R — M1e2
-//! [S1e2.1b.3](../../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md).
+//! Which site made a node fall out of R.
 //!
-//! One rule, read by `site_census` (S1e2.1b.1) and `hole_census` (S1e2.1b.3),
+//! One rule, read by `site_census` and `hole_census`,
 //! so the two name the same site for the same node. Given a node the cube
 //! puts outside R, it names a **cause**, one of the six below, and the
 //! [`Site`]s of the static check that made it:
@@ -17,10 +16,10 @@
 //!
 //! *Below* is the node of R the debt is new against: for a hole, the largest
 //! subset of it in R ([`r_below`]); for a discharged node with an owing
-//! superset, the node itself. The first two rules and the trigger rule are
-//! S1e2.1b.1's, unchanged. `AbsentWitness` and `ActivatorObligation` are the
-//! two S1e2.1b.3 adds for the gap S1e2.1b.6's fixtures found (`lattice/08`,
-//! `lattice/09`). `ActivatorRefutes` reads `refuted_by` rather than the
+//! superset, the node itself. `AbsentWitness` and `ActivatorObligation`
+//! cover the causes `lattice/08` and `lattice/09` show, which the first two
+//! rules and the trigger rule do not. `ActivatorRefutes` reads `refuted_by`
+//! rather than the
 //! node's `absent` premises, because a refutation a node compiles can rest on
 //! an `absent` that no premise records (the `activator_under_absent` program
 //! in `written.rs`).
@@ -221,7 +220,7 @@ pub fn dead(sites: &[SiteText], root: &RootPlans, node: &region::Node) -> Attrib
     if !named.is_empty() {
         return finish(causes, named);
     }
-    // S1e2.1b.1's rule: the `absent` sites over a premise's relation, and of
+    // The first rule: the `absent` sites over a premise's relation, and of
     // those, the ones whose rule refuted the node, where there are any.
     let labels: BTreeSet<String> = node
         .absent_premises

@@ -1,10 +1,9 @@
-//! What a refutation rests on — M1e2
-//! [S1e2.1b.4](../../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md).
+//! What a refutation rests on.
 //!
 //! A dead node's **taint** is the `absent` premises its death rests on, read
-//! off its fixpoint's provenance. Option (b) of F21's D6 would let a route
-//! learn from a dead node whose refutation has no `absent` premise over `D`,
-//! and that is sound only if this reading misses nothing. So the walk here is
+//! off its fixpoint's provenance. A route that learned from a dead node
+//! whose refutation has no `absent` premise over `D` would be sound
+//! only if this reading misses nothing. So the walk here is
 //! wider than the oracle's own `region::Node::absent_premises`, which follows
 //! the first contradiction's witness alone:
 //!
@@ -47,7 +46,7 @@ pub struct Premise {
     /// The relation is in `D`.
     pub dynamic: bool,
     /// Recorded on a fact the contradiction itself is made of, the refuting
-    /// rule's own read: S1e2.4.1's `direct`. Else on a fact further down: `via`.
+    /// rule's own read: *forbid*'s `direct`. Else on a fact further down: `via`.
     pub direct: bool,
     /// Recorded on a fact root's fixpoint holds.
     pub at_root: bool,

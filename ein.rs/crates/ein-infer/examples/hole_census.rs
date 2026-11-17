@@ -1,6 +1,5 @@
-//! The hole census — M1e2
-//! [S1e2.1b.3](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md):
-//! every hole of every flagged cube the oracle reaches, by kind and by cause,
+//! The hole census: every hole of every flagged cube the oracle reaches, by
+//! kind and by cause,
 //! each attributed to the site that made it, and R's shape around its holes.
 //!
 //! A **hole** is a node outside R with a node of R below it and one above
@@ -17,10 +16,11 @@
 //!   between two members is a member) and connected by one-fact edges. On a
 //!   convex component the piece is the component. The pieces of a component
 //!   with a hole between two of its members can overlap;
-//! - each hole's status built from scratch (`utils/region.py`'s node: the
-//!   program's text with the commitment written in as given facts), against
+//! - each hole's status built from scratch (the program's text with the
+//!   commitment written in as given facts), against
 //!   the oracle's fork, node for node (`--no-scratch` skips it);
-//! - with `--drafts`, each reporting option of F21's D4 drafted as read-out
+//! - with `--drafts`, each way a flagged program's holes could be reported,
+//!   drafted as read-out
 //!   rows on the program: (a) R, its lines and its holes named, (b) R as
 //!   convex pieces, (c) a qualifier, (d) a refusal. **Drafted**: no command
 //!   prints them.
@@ -292,7 +292,8 @@ fn repairs_of(r: &Region, h: u64) -> Vec<(String, String)> {
         .collect()
 }
 
-/// The four options of F21's D4, drafted as the rows each would print.
+/// The four ways a flagged program's holes could be reported, drafted as
+/// the rows each would print.
 fn drafts(
     r: &Region,
     src: &Source,

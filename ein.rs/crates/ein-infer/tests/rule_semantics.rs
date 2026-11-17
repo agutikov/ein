@@ -1,4 +1,4 @@
-//! What a rule *means* when it fires — S1a.10.2 **T1a.10.2.2**.
+//! What a rule *means* when it fires.
 //!
 //! The common subject is what one rule application *is*: which bindings a
 //! premise admits (repeated variables, nested patterns, stored `not`), which
@@ -84,7 +84,7 @@ impl Run {
 
     /// The same conclusions **by value**: each fact's `repr`, which keeps a
     /// string quoted and an int bare. `derived` prints a fact as the trace
-    /// does, and that printer drops a string's quotes (P1e2.3's N5), so the
+    /// does, and that printer drops a string's quotes, so the
     /// int `1` and the string `"1"` would be one line there.
     fn derived_values(&self) -> BTreeSet<String> {
         self.firings
@@ -128,7 +128,7 @@ impl Run {
 
 // ── `forall` ───────────────────────────────────────────────────────────────
 //
-// Since P1.8 S1.5.9 `forall` is not kernel vocabulary: it is a `(macro …)` in
+// `forall` is not kernel vocabulary: it is a `(macro …)` in
 // `stdlib/macro.ein`, expanded by the loader to `(absent (and G (absent B)))`
 // before the compiler sees anything. Every fixture below therefore imports it,
 // and what is under test is the classical ¬∃b. G(b) ∧ ¬B(b) reduction rather
@@ -191,11 +191,10 @@ fn a_forall_over_an_empty_domain_is_vacuously_true() {
 /// firing's bindings, which `--events` prints verbatim, name `?p` and nothing
 /// else; and a rule that puts `?q` in its head is refused, naming `?q` as the
 /// variable no premise binds. A leaked binding would satisfy that head
-/// instead. **Since M1f S1f.5.10 the refusal is the loader's** (F13): until
-/// then the rule loaded and its first firing stopped the run with a message
-/// that named `?q` unbound while showing `?p` bound. `all-beaten` is declared
-/// by nothing here: the fixture concludes it with one argument and with two,
-/// and a declared relation has one count (M1f S1f.6.23).
+/// instead. **The refusal is the loader's**, so the rule never loads and no
+/// firing meets `?q` unbound. `all-beaten` is declared by nothing here: the
+/// fixture concludes it with one argument and with two, and a declared
+/// relation has one count (Q-M1f.315).
 #[test]
 fn the_forall_bound_variable_does_not_escape_the_guard() {
     let tournament = |head: &str| {
@@ -248,11 +247,11 @@ fn the_forall_bound_variable_does_not_escape_the_guard() {
 /// **A `forall` whose bound variable never appears in its guard still
 /// compiles** — and this is a deliberate loss, not an oversight.
 ///
-/// Before P1.8 S1.5.9 the compiler desugared `forall` itself and refused such
-/// a rule ("?bound must appear in the guard", because there is no domain to
-/// enumerate). `forall` is now an ordinary `(macro …)`, and macro
-/// expansion does no per-macro validation, so the rejection left with the
-/// desugar. What is left is a rule that means something other than what its
+/// A compiler that desugared `forall` itself could refuse such a rule
+/// ("?bound must appear in the guard", because there is no domain to
+/// enumerate). `forall` is an ordinary `(macro …)`, and macro expansion does
+/// no per-macro validation, so nothing refuses it. What is left is a rule
+/// that means something other than what its
 /// author wrote, and the two cells below show it *runs*: with no `(whatever …)`
 /// fact the expansion `(absent (and (player ?other) (absent (whatever ?v))))`
 /// is false and nothing fires; add one and it fires. A test that only checked
@@ -332,7 +331,7 @@ fn a_repeated_variable_is_an_equality_constraint() {
 
 /// **`(not P)` in a premise is stored negation, never negation-as-failure.**
 ///
-/// K-Δ.1 (S1.5.8c): `not` is a relation head like any other, so `(not P)`
+/// `not` is a relation head like any other, so `(not P)`
 /// matches a fact that was *written down* as `(not P)` and nothing else. The
 /// tempting reading is the opposite one — "P is not derivable" — and the two
 /// fixtures separate them exactly: they differ only in whether the KB carries
@@ -416,16 +415,16 @@ fn a_nested_pattern_binds_inside_the_nested_fact() {
 
 // ── one match, several conclusions ─────────────────────────────────────────
 //
-// P1.8 S1.8.A13: `:assert (and c1 … ck)` and `:match (or d1 … dm)` are lowered
-// to several assert templates and several match plans on **one** rule. They
-// used to SPLIT the rule into `__and<j>` / `__or<i>` clones, and the two tests
-// below are the two things that split broke.
+// `:assert (and c1 … ck)` and `:match (or d1 … dm)` are lowered to several
+// assert templates and several match plans on **one** rule, never split into
+// `__and<j>` / `__or<i>` clones; the two tests below are the two things a
+// split would break.
 
 /// **A parameterised rule may multi-assert.**
 ///
-/// This is the case the clone-based lowering had to reject outright (S1.8.A11):
-/// a generic rule is reached by an activator fact that names it, and splitting
-/// `place-and-exclude` into `place-and-exclude__and0/1` left no name for
+/// This is the case a clone-based lowering would have to reject outright: a
+/// generic rule is reached by an activator fact that names it, and splitting
+/// `place-and-exclude` into `place-and-exclude__and0/1` would leave no name for
 /// `(place-and-exclude color-loc)` to resolve to. So the assertion that matters
 /// is not "two facts appeared" but "two facts appeared *from a rule the
 /// activator could reach*" — hence the firing's own rule name is checked
@@ -583,9 +582,9 @@ fn eq_admits_exactly_the_bindings_neq_rejects() {
 /// real answer, and getting it wrong is not loud: an implementation that
 /// resolved `Red` as an unbound *variable* would compare against "nothing" and
 /// silently admit nothing, or everything. The fixture pins an `Atom` of
-/// letters and one of digits, each a name (`5` was an `Int`, a number, until
-/// M1f S1f.5.4 retired the kind: since S1f.5.5's swap a run of digits is a
-/// name), and each rule is given a non-matching companion fact so that "fires
+/// letters and one of digits, each a name (Ein has no numbers: a run of
+/// digits is a name), and each rule is given a non-matching companion fact so
+/// that "fires
 /// for the right one" and "fires for everything" are distinguishable.
 #[test]
 fn a_guard_argument_may_be_a_literal() {
@@ -676,32 +675,22 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
 //
 // | key | what it keeps of the activator |
 // |---|---|
-// | [`PlanKey`] — the compile cache | every argument, stringified |
+// | [`PlanKey`] — the compile cache | every argument, as a value |
 // | `BindingKey.activator` — an interned `PlanKey.activator` | the same list: every argument |
-// | `BindingKey.values` — the register file | every argument that **binds a parameter**: symbols *and* ints |
+// | `BindingKey.values` — the register file | every argument that **binds a parameter**: names *and* nested facts |
 //
-// Until M1e2 S1e2.2.7 the middle row was an interned `plan.activator_args`,
-// the **symbol** arguments. `defined_behaviour.md` §3.2 read it alone and
-// concluded that two activators differing only in an `int` argument share an
-// identity. They did not: `bind_activator` seeds a register for every
-// argument that is not a nested `Fact` (`compile.rs`, `if a.as_fact().is_some()
-// { continue; }`), so the int is in `values` (M1e S1e.1.4). The arguments that
-// reached **neither** half were exactly the nested `Fact`s, and an int beside
-// a nested `Fact` in one position put two register layouts in one space and
-// cost a derivation (Q-M1e.16, M1e2's W7). Since S1e2.2.7 the middle row is
-// the compile key's list, so every plan has a space of its own. The three
-// tests below are the three shapes, held under the key as it is now.
+// The middle row is the compile key's list, so every plan has a space of its
+// own (Q-M1e.16): a key on part of the arguments would let an argument
+// that reaches **neither** half put two register layouts in one space and
+// cost a derivation (`W7`). The three tests below are the three shapes.
 //
-// Since M1f S1f.5.4 retired the int kind (a run of digits is a name since
-// S1f.5.5's swap), the `int` the tests below name is a name of digits: their
-// programs are unchanged, and a name binds a parameter and seeds a register
-// as the int did, so each holds its case for names, the register row's
-// "ints" being symbols.
+// Ein has no int kind, so the `int` the tests below name is a name of
+// digits: a name binds a parameter and seeds a register, so each holds its
+// case for names.
 
-/// **Two activators differing only in an `int` argument both fire** — which is
-/// what `defined_behaviour.md` §3.2 said they could not do, and the probe that
-/// refutes it (M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-/// the review's `Q3`).
+/// **Two activators differing only in an `int` argument both fire**: the
+/// argument binds a parameter, so it is in the binding key's values, and the
+/// two applications are two keys.
 ///
 /// The conclusions carry the int, so a suppressed firing is visible as a
 /// missing *fact* rather than only as a missing event: `(tag edge 1)` and
@@ -745,11 +734,10 @@ fn activators_differing_only_by_an_int_argument_both_fire() {
 }
 
 /// **Two activators differing only in a nested `Fact` argument have two
-/// binding keys** since M1e2 S1e2.2.7, and the second application is a
-/// redundant firing — where until then they shared one key and it was never
-/// enqueued, the collision §3.2 was reaching for.
+/// binding keys**, and the second application is a redundant firing, never
+/// a candidate dropped because it shared the first's key.
 ///
-/// Since M1f S1f.5.18 (W33) a nested `Fact` binds its parameter as a name
+/// A nested `Fact` binds its parameter as a name (`W33`)
 /// does, so it reaches `values` as well as the activator half, which is the
 /// compile key's every argument. The same fixture is run four ways and only
 /// the *kind* of the second argument varies:
@@ -757,19 +745,17 @@ fn activators_differing_only_by_an_int_argument_both_fire() {
 /// | second argument | plans | firings | productive |
 /// |---|---:|---:|---:|
 /// | one nested `Fact` | 1 | 1 | 1 |
-/// | two nested `Fact`s | 2 | **2** (1 until S1e2.2.7) | 1 |
+/// | two nested `Fact`s | 2 | **2** | 1 |
 /// | two symbols | 2 | 2 | 1 |
 /// | two ints | 2 | 2 | 1 |
 ///
 /// **And nothing changes but a duplicate.** The rule reads `?f` nowhere, so
 /// whatever value each plan's seed binds it to, the second application
 /// derives what the first derived, which is why the derived set is the same
-/// in all four cells and one firing in each is productive. Until M1f S1f.5.18
-/// `bind_activator` skipped a `Fact` argument outright, so the two plans were
-/// equal in every field of [`Plan`] but their activator list; since, each
-/// seed holds its own fact (W33), and the cells count as they did. Q-M1e.16's second fix, the layout in the key, would have kept
-/// this collapse; the first, which S1e2.2.7 took, gives each plan its space.
-/// The shape the collapse's key cost a derivation on is the next test.
+/// in all four cells and one firing in each is productive. Each seed holds
+/// its own fact (`W33`), and the activator half of the key is every argument
+/// (Q-M1e.16), which gives each plan its space. The shape a shared key would
+/// cost a derivation on is the next test.
 #[test]
 fn activators_differing_only_by_a_nested_fact_argument_both_fire() {
     let program = |activators: &str| {
@@ -821,28 +807,22 @@ fn activators_differing_only_by_a_nested_fact_argument_both_fire() {
 }
 
 /// **An `int` in the position another activator gives a nested `Fact` loses
-/// no derivation, in either order and in either build** — M1e2 S1e2.2.7's
-/// regression for a latent bug of the binding key, which until then this test
-/// pinned as a defect (Q-M1e.16). The `int` is the name `1` since M1f S1f.5.4, and since
-/// M1f S1f.5.18 (W33) the nested `Fact` binds `?f` too, so each plan derives
-/// its own `(noted ?a ?f)`, and the two together their union.
+/// no derivation, in either order and in either build** (Q-M1e.16, `W7`).
+/// The `int` is the name `1`, and the nested `Fact` binds `?f` too (`W33`),
+/// so each plan derives its own `(noted ?a ?f)`, and the two together their
+/// union.
 ///
-/// Both activators drop their second argument from `plan.activator_args`, and
-/// until S1e2.2.7 that list was the binding key's activator half, so the two
-/// plans shared a `(rule, activator)` space. The int seeds a register and the
-/// `Fact` does not, so they disagree on their *register layout*: `?f` is
-/// register 1 in one plan and register 3 in the other, and `BindingKey`
-/// compared `(?R ?f ?a ?b)` against `(?R ?a ?b ?f)` position by position.
-/// `(edge 1 2 3)` is a legitimate match of both, so whichever fired first
-/// suppressed the other, and with the int first the lost application was the
-/// only one that derives `(noted 1 3)`. `Engine::check_layout` asserted the
-/// invariant under `debug_assertions`, so a debug build panicked and a release
-/// one answered wrongly.
+/// The two plans have two *register layouts*: `?f` is register 1 in one and
+/// register 3 in the other. Were they one `(rule, activator)` space,
+/// `BindingKey` would compare `(?R ?f ?a ?b)` against `(?R ?a ?b ?f)`
+/// position by position; `(edge 1 2 3)` is a legitimate match of both, so
+/// whichever fired first would suppress the other, and with the int first the
+/// lost application would be the only one that derives `(noted 1 3)` — a
+/// panic in a debug build, where `Engine::check_layout` asserts the
+/// invariant, and a wrong answer in a release one.
 ///
-/// The fix,
-/// [Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)'s
-/// first: the activator half is the compile key's list, every argument, so
-/// the two plans have two spaces and both fire. `check_layout` stays, and
+/// The activator half is the compile key's list, every argument, so the two
+/// plans have two spaces and both fire. `check_layout` stays, and
 /// cannot fire unless the two keys part again. The corpus family is
 /// `examples/ein-bugs/binding-key-{both,swapped,int-only,nested-only}.ein`.
 #[test]
@@ -865,9 +845,8 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
     };
     // The controls: one plan each, no layout to disagree with. The nested-fact
     // activator derives the two with `?f` = `(src Y)`, the name one the two
-    // with `?f` = 1. Until M1f S1f.5.18 the nested fact bound nothing, `?f`
-    // was `(holds ?f)`'s to bind, and the nested-fact activator derived every
-    // `(noted ?a ?f)`, which this control stated (W33).
+    // with `?f` = 1. The nested fact binds `?f`, so the nested-fact
+    // activator derives only its own `(noted ?a ?f)` (`W33`).
     let nested = BTreeSet::from([
         "(noted 1 (src Y))".to_string(),
         "(noted 2 (src Y))".to_string(),
@@ -901,19 +880,13 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
 }
 
 /// **Two activators of one rule are two plans, in either order and in either
-/// build** — M1e2 S1e2.2.16's regression for W16, restated at M1f S1f.5.5's
-/// swap.
+/// build** (`W16`).
 ///
-/// Until the swap the loader held `1` and `"1"` as two values, an `Int` and a
-/// `Sym` whose text is `1`, so the program had two `holds` facts and each
-/// activator alone derived its own two `noted` facts; until S1e2.2.16 the
-/// compile key rendered a non-symbol argument and interned its text, so the two
-/// activators keyed one plan and the second's conclusions were lost (a debug
-/// build aborted). Since the swap neither value can be written: a run of
-/// digits is a name (S1f.5.4's ruling) and a string is refused at the parse
-/// (S1f.5.2's), so the program W16's witnesses write is refused at its `"1"`s
-/// (the user's ruling of 2026-11-08 on the review stop, item 2). What the key
-/// must still keep apart is two names of digits, `1` and `01`, which it does by
+/// A compile key over an argument's text would key two activators whose
+/// arguments print alike on one plan, and the second's conclusions would be
+/// lost. A run of digits is a name and a string is refused at the parse, so
+/// the program `W16`'s witnesses write is refused at its `"1"`s. What the key
+/// must keep apart is two names of digits, `1` and `01`, which it does by
 /// value: each activator derives its own two conclusions, and both derive the
 /// four, in either order. The corpus witnesses are
 /// `examples/ein-bugs/activator-text-{int-and-string,string-then-int}.ein`.
@@ -978,20 +951,14 @@ fn an_int_and_a_string_with_one_text_are_two_activators() {
     }
 }
 
-// ── a string in a rule — M1e2 S1e2.2.18 ────────────────────────────────────
+// ── a string in a rule ─────────────────────────────────────────────────────
 
-/// **A string in a rule is refused at the parse, as in a fact** — M1e2
-/// S1e2.2.18's regression for W18, restated at M1f S1f.5.5's swap.
+/// **A string in a rule is refused at the parse, as in a fact** (`W18`).
 ///
-/// From S1e2.2.18 to the swap a string in a rule meant what it meant in a
-/// fact, the symbol it names: it matched the fact it named, and an `:assert`
-/// stored it (until S1e2.2.18 a string in a `:match` was an opaque slot that
-/// matched nothing, so `s` never fired, and in an `:assert` the run stopped).
-/// Since the swap a string is natural-language text, written only after
-/// `:why`, `:source` or `:goal-text` (S1f.5.2's ruling), so every string
-/// below, in a fact, a `:match` and an `:assert`, top-level and nested, is
-/// refused at the parse, each with S1f.5.2's note (the review stop's item 3),
-/// and the name written bare is what to write: the program so written
+/// A string is natural-language text, written only after `:why`, `:source`
+/// or `:goal-text`, so every string below, in a fact, a `:match` and an
+/// `:assert`, top-level and nested, is refused at the parse, each with its
+/// note, and the name written bare is what to write: the program so written
 /// derives what the string program derived. The corpus witnesses are
 /// `examples/ein-bugs/wrong-answers/str-in-*.ein`.
 #[test]
@@ -1039,11 +1006,8 @@ fn a_string_in_a_rule_means_what_it_means_in_a_fact() {
     );
 }
 
-/// M1e2 S1e2.2.20 (W20) — **a wildcard in a pattern matched
-/// any value and bound nothing**, in either build (until S1e2.2.20 the rule
-/// compiler lowered `_` as an opaque slot, so `w` never fired on `(holds a)`).
-/// **Since M1f S1f.5.5's swap a bare `_` is refused at the parse, in every
-/// position** (S1f.5.1's ruling), each with its note, and a variable used
+/// **A bare `_` is refused at the parse, in every position** (`W20`,
+/// Q-M1e2.22), each with its note, and a variable used
 /// once is what to write: it concludes what the wildcard did, one application
 /// per match where two matches under `_` alone were one. The corpus witnesses
 /// are `examples/ein-bugs/wrong-answers/wild-in-*.ein`.
@@ -1089,17 +1053,12 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
 }
 
 /// **An empty conclusion and a conclusion a program names `@empty` are two
-/// facts** (M1f S1f.5.5's T1f.5.5.8), through the generated parser, which reads
-/// `@empty` as a name (S1f.5.4's ruling) and `()` only as a whole `:match` or
-/// `:assert`.
+/// facts**, through the generated parser, which reads `@empty` as a name and
+/// `()` only as a whole `:match` or `:assert`.
 ///
-/// `:assert ()` asserts nothing since M1f S1f.5.9's T1f.5.9.2 (2026-11-09,
-/// W34): `empty-form` matches and derives nothing, and is no firing. Until
-/// then it stored a fact under the parser's synthetic head for `()`, whose
-/// name joined H; until T1f.5.5.8 that head was `@empty`, so `at-empty`'s
-/// `(@empty)` was the fact `empty-form` had already stored, and its firing
-/// re-derived it. `at-empty` stores its own fact either way. (The rule was
-/// named `written` until M1f S1f.6.38 reserved the name.)
+/// `:assert ()` asserts nothing (`W34`): `empty-form` matches and derives
+/// nothing, and is no firing; no fact is stored under a synthetic head and no
+/// name joins H. `at-empty` stores its own fact, `(@empty)`.
 #[test]
 fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
     let text = "(relation q Node :why \"q holds of {?1}\")\n(q a)\n\
@@ -1140,13 +1099,10 @@ fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
     );
 }
 
-/// **An empty `:match` fires once, or once per activator fact** — M1f
-/// S1f.5.9, on the user's ruling of 2026-11-07 on P1f.5's F12 (*"1 fire; 2
-/// same"*). `()` is the empty conjunction, which is true, so a rule whose
-/// `:match` is `()` fires once at root with nothing bound, and a rule with
-/// parameters once per activator, its parameters alone bound. Until S1f.5.9
-/// `()` was a premise over the parser's synthetic `#empty`, which no fact
-/// holds, so neither fired, in silence (W31).
+/// **An empty `:match` fires once, or once per activator fact** (`W31`).
+/// `()` is the empty conjunction, which is true, so a rule whose `:match` is
+/// `()` fires once at root with nothing bound, and a rule with parameters
+/// once per activator, its parameters alone bound.
 #[test]
 fn an_empty_match_fires_once_or_once_per_activator() {
     let run = saturate(
@@ -1183,18 +1139,16 @@ fn an_empty_match_fires_once_or_once_per_activator() {
     );
 }
 
-// ── `eq` and `neq` are relations (M1f S1f.5.7) ─────────────────────────────
+// ── `eq` and `neq` are relations ───────────────────────────────────────────
 //
-// The user's ruling of 2026-11-07 on Q-M1e2.26: `eq` and `neq` are the
+// Q-M1e2.26: `eq` and `neq` are the
 // relations of equality and of non-equality, computed and never stored, and a
 // premise follows the reading a goal does.
 
 /// **A premise means the same in any order of its conjuncts.** A guard written
 /// before the relation premise that binds its variable waits for it, so each
-/// pair of rules below derives one set of facts. Until S1f.5.7 the loader
-/// refused the first of each pair (W24, Q-M1e2.18 (ii)(a)), and before M1e2
-/// S1e2.2.24 the guard compared the unbound variable as a null, so `eq-first`
-/// never fired and `neq-first` fired for `a` too.
+/// pair of rules below derives one set of facts: `eq-first` fires, and
+/// `neq-first` never fires for `a` (Q-M1e2.26).
 #[test]
 fn a_premise_means_the_same_in_any_order_of_its_conjuncts() {
     let run = saturate(
@@ -1268,10 +1222,9 @@ fn a_guards_free_variable_ranges_over_the_programs_names() {
 }
 
 /// **A guard that binds its variable binds it where it is written**, as a
-/// relation premise in its place would (Q-M1f.34, taken by default on the
-/// user's instruction of 2026-11-09): an `(absent …)` after it reads the
-/// variable, and one before it does not, which is the order rule an `(absent
-/// …)` already has (S1.21.8). Here `(neq ?x a)` before `(absent (q ?x))` is
+/// relation premise in its place would (Q-M1f.34): an `(absent …)` after it
+/// reads the variable, and one before it does not, which is the order rule
+/// an `(absent …)` already has. Here `(neq ?x a)` before `(absent (q ?x))` is
 /// *every name but `a` with no `q`*, and after it *every name but `a`, if there
 /// is no `q` at all*, which there is.
 #[test]
@@ -1302,9 +1255,8 @@ fn a_binding_guard_binds_where_it_is_written() {
 }
 
 /// **`(not (eq ?x ?y))` is `(neq ?x ?y)`, and a relation its activator binds
-/// to `eq` is `eq`** (Q-M1f.31, taken by default on the user's instruction of
-/// 2026-11-09; Q-M1e2.26). Until S1f.5.7 each was a pattern over stored
-/// facts, which no state holds, and neither rule fired (W51, W52).
+/// to `eq` is `eq`** (Q-M1f.31, Q-M1e2.26). As patterns over stored facts,
+/// which no state holds, neither rule would fire (`W51`, `W52`).
 #[test]
 fn not_eq_and_a_relation_bound_to_eq_are_the_guards() {
     let run = saturate(
@@ -1333,11 +1285,10 @@ fn not_eq_and_a_relation_bound_to_eq_are_the_guards() {
     );
 }
 
-/// **A rule's `eq` or `neq` conclusion is checked, never stored** (the user's
-/// G-21 of 2026-11-07, M1f S1f.5.7): one that holds adds nothing, and one that
-/// does not is `(false)`, derived by the rule from the premises it matched.
-/// Until S1f.5.7 each was stored as an ordinary fact (W30), so a false one sat
-/// in the KB while a guard computed the opposite.
+/// **A rule's `eq` or `neq` conclusion is checked, never stored**
+/// (Q-M1e2.26, `W30`): one that holds adds nothing, and one that does not is
+/// `(false)`, derived by the rule from the premises it matched. Stored, a
+/// false one would sit in the KB while a guard computed the opposite.
 #[test]
 fn an_eq_or_neq_conclusion_is_checked_never_stored() {
     let holds = saturate(
@@ -1403,10 +1354,8 @@ fn an_eq_or_neq_conclusion_is_checked_never_stored() {
 }
 
 /// **A written fact of `eq`, or the negation of one, is a conclusion with no
-/// premise** (Q-M1f.33 and Q-M1f.31, taken by default on the user's
-/// instruction of 2026-11-09): a true one is not stored, and a false one is
-/// `(false)`, written where it stands. Until S1f.5.7 each was stored (W50,
-/// W51).
+/// premise** (Q-M1f.33 and Q-M1f.31, `W50`, `W51`): a true one is not
+/// stored, and a false one is `(false)`, written where it stands.
 #[test]
 fn a_written_eq_fact_is_checked_never_stored() {
     for (fact, dead) in [

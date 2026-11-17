@@ -1,5 +1,5 @@
-//! The hypothesis mechanisms a program declares, read at a state — M1f
-//! [S1f.6.34](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md).
+//! The hypothesis mechanisms a program declares, read at a state
+//! ([hypothesis-generation.md § 6](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#6-scoping-and-the-mechanisms-judged-together)).
 //!
 //! Five declarations steer what a commitment may be about, and a sixth
 //! mechanism, the blind enumerator, is what runs where none of the generating
@@ -27,9 +27,9 @@
 //!
 //! ### The check
 //!
-//! [`check`] judges the pairs on root's fixpoint, the user's ruling of
-//! 2026-11-13 on E-47 (*"report conflict if any hypothesis mechanism
-//! constradicts itself"*) and their table of the same day. A **conflict** is a
+//! [`check`] judges the pairs on root's fixpoint, at load (Q-M1f.245), and
+//! reports a conflict wherever two mechanisms contradict each other. A
+//! **conflict** is a
 //! pair whose two declarations say opposite things of one relation; a **dead**
 //! list is one that filters no candidate, and a **redundant** name one that
 //! says what another declaration already says:
@@ -51,14 +51,14 @@
 //! root owes it, as an hrule is read as active whether or not its `:match`
 //! has a row; the generation ladder reads it so too, its second rung taken
 //! where one is (`obligation_plans`). Under an hrule the two lists filter
-//! nothing (E-52), so their dead note replaces a redundancy note about them.
+//! nothing (Q-M1f.242), so their dead note replaces a redundancy note about
+//! them.
 //! The lines carry no prefix: `ein-cli` prints a conflict as a load error and
 //! a note as `note:`, on every command, before the command reads anything
 //! else.
 //!
-//! **`(solve :no-search)`** (M1f
-//! [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md)),
-//! [`Mechanisms::no_search`], states that the lattice is root alone: no rung
+//! **`(solve :no-search)`** (Q-M1f.254), [`Mechanisms::no_search`], states
+//! that the lattice is root alone: no rung
 //! runs ([`crate::hypgen::declares_no_search`]). Beside an obligation it is
 //! silent, the obligation judging root alone, which is its use; beside a
 //! closure silent too. Beside an hrule it is one note, *the hrule proposes no
@@ -112,7 +112,7 @@ pub struct Mechanisms {
     /// Every `R` with `(__closed__ R)` at this state.
     pub closed: FxHashSet<Symbol>,
     /// `(solve :no-search)`: the program states its lattice is root alone,
-    /// so no rung runs (M1f S1f.6.36).
+    /// so no rung runs.
     pub no_search: bool,
 }
 
@@ -439,7 +439,7 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
             .collect::<Vec<_>>()
             .join(", ")
     };
-    // `(solve :no-search)` (M1f S1f.6.36): no rung runs, so an hrule proposes
+    // `(solve :no-search)`: no rung runs, so an hrule proposes
     // nothing and a list filters nothing, each a note; beside an obligation
     // it is silent, the obligation judging root alone, which is its use. The
     // conflicts above are read as declared, as an obligation is, and stand.
@@ -536,7 +536,9 @@ impl Words<'_> {
 
     /// The form that writes `fact`: the first of the program's forms whose
     /// head and arguments are the fact's names, a fact being stated with no
-    /// position of its own (`defined_behaviour.md` § 1.5) while its form's
+    /// position of its own
+    /// ([diagnostics.md § 1.5](../../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none))
+    /// while its form's
     /// words carry theirs. `None` for a fact with a nested argument.
     fn form_of(&self, fact: FactId) -> Option<NodeId> {
         let (rel, args) = self.terms.facts.get(fact);

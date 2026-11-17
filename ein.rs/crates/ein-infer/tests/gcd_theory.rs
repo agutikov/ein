@@ -1,6 +1,5 @@
-//! **`std.math.gcd`, held to Rust's integers and to the rule of the theory** —
-//! M1f
-//! [S1f.6.32](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.32_gcd_and_lcm.md).
+//! **`std.math.gcd`, held to Rust's integers and to the rule of the theory**
+//! ([stdlib.md](../../../../docs/ein/user/reference/stdlib.md), Q-M1f.336).
 //!
 //! `stdlib/math/gcd.ein` answers `(gcd X Y)` by `(gcd-of X Y G)` and `(lcm X
 //! Y)` by `(lcm-of X Y L)`, on natural numbers of `std.math.decimal-arith`, by
@@ -464,7 +463,7 @@ fn the_tagged_call_answers_under_its_tag() {
 }
 
 /// **An operand's fault is flagged on the request** (as `std.math.int`'s and
-/// `std.math.rat`'s, S1f.6.38): a digit, the digit 0, or a name no `let`
+/// `std.math.rat`'s): a digit, the digit 0, or a name no `let`
 /// states, in either place of either request, is `std.math.decimal-arith`'s
 /// flag on the request as written, and `(false)`; the request is never
 /// answered.
@@ -573,7 +572,7 @@ fn circuit(body: &str) -> (usize, usize) {
 /// division, which computes its divisor's nine multiples first; the least
 /// common multiple is the chain, one product and one division more. The
 /// firings count `std.math.decimal`'s check of each numeral the program
-/// writes, as every circuit of the calculator's does since S1f.6.38.
+/// writes, as every circuit of the calculator's does.
 ///
 /// `cargo test -p ein-infer --test gcd_theory the_circuit -- --nocapture`
 /// re-takes them.
@@ -687,7 +686,8 @@ impl Module {
 /// **The rule of the theory, on the text**, in its strongest form: every
 /// rule of `std.math.gcd` but the closing rule has exactly **one** premise. It
 /// reads no table and joins nothing: all it needs travels in the call's tag
-/// (E-3 of P1f.6's `findings.md` is why).
+/// (the index does not key a nested fact, so a second premise looked up by a
+/// number would make a batch cost the square of its count).
 #[test]
 fn every_rule_has_one_premise() {
     let m = module();

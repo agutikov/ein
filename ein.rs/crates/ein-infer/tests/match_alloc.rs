@@ -1,4 +1,4 @@
-//! S1a.3.2 acceptance — the inner loop allocates nothing.
+//! The inner loop allocates nothing.
 //!
 //! The claim is not "matching got faster". It is that the *per-candidate* cost
 //! is not an allocation: a bind writes a register in a fixed-size file rather

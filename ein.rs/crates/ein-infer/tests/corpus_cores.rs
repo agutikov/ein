@@ -1,10 +1,9 @@
-//! **Every core names its commitment, and derives its contradiction** — M1e2
-//! [S1e2.2.21](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md)'s
-//! step 4, the class-4 claim no test held until then.
+//! **Every core names its commitment, and derives its contradiction**
+//! ([cores.md](../../../../docs/ein/reasoning/kb-evolution/cores.md#the-core)).
 //!
 //! A dead node's unsat core is the facts its refutation rests on, the
-//! smallest frontier over every derivation the program records (Q-M1e2.11
-//! (i)(b)). On a program whose root is alive, two things follow, and this test
+//! smallest frontier over every derivation the program records
+//! (Q-M1e2.11). On a program whose root is alive, two things follow, and this test
 //! holds both for every core a run reports:
 //!
 //! 1. **it names a fact root does not hold**, a fact of the node's commitment:
@@ -17,51 +16,41 @@
 //!    over an `is-a` the core does not name would refute anything on an empty
 //!    KB.
 //!
-//! It would have caught W19 (a core leaving out the activator its refutation
-//! rests on, `(seed a)` alone) and W21 (a pair's core naming its positive side
-//! alone, `zebra2.ein`'s N 201 of 366; and a `(false)` through a `forall`
-//! naming the two facts its rule matched): each fails the first claim, and
+//! It catches `W19` (a core leaving out the activator its refutation rests
+//! on, `(seed a)` alone) and `W21` (a pair's core naming its positive side
+//! alone; and a `(false)` through a `forall` naming the two facts its rule
+//! matched): each fails the first claim, and
 //! `saturation/type-exclusivity/*`'s fail the second.
 //!
 //! **Which cores.** Every surface prints a core the node function takes, as
 //! the walk visits a node or, for a member of N whose core the walk did not
-//! take, after the walk against the walk's snapshot (M1f S1f.5.12,
-//! `region::Cores`). Until S1f.5.12 `--dump-answer` and `--trace` took a
-//! member of N the state route did not saturate through
-//! `region::Nodes::refutation`, over a second preparation of root, and a run
-//! past `--region-limit` printed its members with no core, `not-kept` (M1e2
-//! S1e2.3.9). So the test reads the oracle's cube, every dead node, where the
+//! take, after the walk against the walk's snapshot (Q-M1f.25,
+//! `region::Cores`), past `--region-limit` too. So the test reads the
+//! oracle's cube, every dead node, where the
 //! oracle enumerates it, and describe's N as the run gives it, every member
 //! with its core, past the limit too. Every corpus file and register witness
 //! the loader accepts and *forbid* does not refuse; the slow entries under
-//! `EIN_CORPUS_SLOW=1`, the nightly's.
+//! `EIN_CORPUS_SLOW=1`.
 //!
-//! At S1e2.2.21's HEAD it fails, in either build, on 69 271 cores that name
-//! none of their commitment and 28 that derive no contradiction (the
-//! per-commit half; 2026-11-05). It reads the corpus's entries that are not
-//! slow in the per-commit tier, 18 s in the dev profile, and the zebra
-//! family's too in the nightly, 67 s in release (2026-11-05).
+//! It reads the corpus's entries that are not slow by default, and the
+//! zebra family's too under `EIN_CORPUS_SLOW=1`.
 //!
-//! **And no core is printed unqualified from a cut search** (M1e2
-//! S1e2.2.23, W23): [`no_core_is_printed_unqualified_from_a_cut_search`]
+//! **And no core is printed unqualified from a cut search** (`W23`):
+//! [`no_core_is_printed_unqualified_from_a_cut_search`]
 //! reads every core a surface prints with the status printed beside it, root's
 //! on a dead root and every dead node a route visits included, and holds each
 //! status to its search's.
 //!
-//! **And every core's `refuted by` names its derivation's last step** (M1e2
-//! S1e2.3.10, P1e2.3's N7): the same test reads the rules printed beside each
-//! core, and holds them to one last step per fact of the contradiction the
-//! core was taken over, the first the store records where the core supports
-//! several (the user's ruling on Q-M1e2.21, (a)), read without the search by
-//! a closure from the core ([`last_steps`]). At S1e2.3.10's HEAD it failed
-//! on 65 559 distinct printed cores over 9 programs, release, per commit
-//! (67 928 over 15 nightly; 2026-11-06): the first contradiction's
-//! primaries, `bijection/06`'s cube most of them.
+//! **And every core's `refuted by` names its derivation's last step**
+//! (Q-M1e2.21): the same test reads the rules printed beside each core, and
+//! holds them to one last step per fact of the contradiction the core was
+//! taken over, the first the store records where the core supports several,
+//! read without the search by a closure from the core ([`last_steps`]) —
+//! never the first contradiction's primaries.
 //!
-//! The slow half runs in the CI nightly in shards, `EIN_TEST_SHARD=k/n`
-//! (M1f S1f.6.39): each shard reads the
+//! The slow half runs in shards, `EIN_TEST_SHARD=k/n`: each shard reads the
 //! programs `ein_corpus::shard` deals it, and holds its share of the programs
-//! floor; the floors on what the cores are hold per commit.
+//! floor; the floors on what the cores are hold on every run.
 //!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test corpus_cores
@@ -111,7 +100,7 @@ fn files() -> Vec<PathBuf> {
     files.sort();
     files.dedup();
     files.retain(|f| slow_too() || !slow.contains(f));
-    // The nightly's shard of them (`EIN_TEST_SHARD`, M1f S1f.6.39).
+    // This shard's share of them (`EIN_TEST_SHARD`).
     ein_corpus::shard::keep(files, |f| rel_of(f))
 }
 
@@ -286,7 +275,7 @@ fn check(path: &Path) -> Option<Checked> {
 #[test]
 fn every_core_names_its_commitment_and_derives_its_contradiction() {
     let files = files();
-    // On the corpus sweeps' pool (M1f S1f.6.39; its own threads until then).
+    // On the corpus sweeps' pool.
     let results = ein_corpus::pool::map(
         "corpus_cores::check",
         &files,
@@ -310,12 +299,10 @@ fn every_core_names_its_commitment_and_derives_its_contradiction() {
 "
         )
     );
-    // Not vacuous: 203 programs, 163 477 cores read, 162 363 of them the
-    // cubes' (2026-11-05, at S1e2.2.21 T4; under `EIN_CORPUS_SLOW=1` 217,
-    // 233 212 and 227 786).
-    // A shard of the nightly's (`EIN_TEST_SHARD`) holds its share of the
+    // Not vacuous: the floors are under what the sweep reads.
+    // A shard (`EIN_TEST_SHARD`) holds its share of the
     // programs; the cores, most of them a few programs', are the whole run's
-    // floor, held per commit.
+    // floor, held on every run.
     assert!(
         programs >= ein_corpus::shard::share(100),
         "{programs} programs read"
@@ -327,7 +314,7 @@ fn every_core_names_its_commitment_and_derives_its_contradiction() {
     eprintln!("{programs} programs, {cores} cores, {cube} of them the cubes'");
 }
 
-// ── No core is printed unqualified from a cut search — M1e2 S1e2.2.23 ─────
+// ── No core is printed unqualified from a cut search ─────────────────────
 
 /// A budget sixteen times the default's on every cap: where the default's
 /// search is inside its budget, this one does the same work and names the
@@ -351,7 +338,7 @@ struct Stated {
     set: Vec<FactId>,
     core: Vec<String>,
     status: Option<CoreStatus>,
-    /// Its `refuted by` (M1e2 S1e2.3.10).
+    /// Its `refuted by` (Q-M1e2.21).
     refuted_by: Vec<String>,
 }
 
@@ -508,8 +495,8 @@ struct Claims {
     seen: BTreeSet<Seen>,
     cut: usize,
     /// Cores whose contradiction has a fact the core derives through two
-    /// rules, where `refuted by` names the first the store records (M1e2
-    /// S1e2.3.10, Q-M1e2.21 (a)).
+    /// rules, where `refuted by` names the first the store records
+    /// (Q-M1e2.21).
     two_rules: usize,
 }
 
@@ -556,8 +543,8 @@ impl Claims {
             })
             .ok()?;
         // `refuted by` names one last step per fact of a contradiction the
-        // printed core derives (M1e2 S1e2.3.10, P1e2.3's N7): the core's, and
-        // of each fact's steps the first the store records (Q-M1e2.21 (a)).
+        // printed core derives: the core's, and of each fact's steps the
+        // first the store records (Q-M1e2.21).
         if !s.core.is_empty() {
             let named = steps.iter().any(|(_, sides)| {
                 sides
@@ -628,8 +615,8 @@ enum Printed {
 }
 
 /// One run's reading: what it printed, and how many members of N a run past
-/// `--region-limit` met, each printed with the core taken after the walk (M1f
-/// S1f.5.12; `not-kept` since M1e2 S1e2.3.9 until then). `None` where the program does not load, or the run
+/// `--region-limit` met, each printed with the core taken after the walk.
+/// `None` where the program does not load, or the run
 /// is refused, which drops the program as one refused run did.
 type Read = Option<(Vec<Printed>, usize)>;
 
@@ -731,8 +718,8 @@ fn read(path: &Path, rel: &str, run: Run) -> Read {
             .map(|&b| a.candidates[b as usize].fact)
             .collect();
         if x.core_status.is_none() || (x.core.is_empty() && !x.set.is_empty()) {
-            // Every member is printed with its core since M1f S1f.5.12,
-            // past `--region-limit` too.
+            // Every member is printed with its core, past `--region-limit`
+            // too.
             out.push(Printed::Bad(format!(
                 "{rel}: N {:?} carries no core ({:?}), on a run {} --region-limit",
                 set,
@@ -760,7 +747,7 @@ fn read(path: &Path, rel: &str, run: Run) -> Read {
 }
 
 /// How many distinct cores one unit of [`hold_chunk`] holds: a program with
-/// thousands, the zebra family's, is spread over the workers (M1f S1f.6.39).
+/// thousands, the zebra family's, is spread over the workers.
 const CHUNK: usize = 200;
 
 /// One core's holding: the failures, and whether it was cut and derives its
@@ -804,20 +791,17 @@ fn hold_chunk(path: &Path, rel: &str, cores: &[&Stated]) -> Option<Vec<Held>> {
 /// `--maximal` visit, against a fresh one, as each run prepares its own; and
 /// describe's dead root and N, every member against a fresh one, since the
 /// run takes each member's core during its walk or after it against the
-/// walk's snapshot, which a fresh preparation's equals (M1f S1f.5.12). A
-/// member with no core is a failure, past `--region-limit` too, where until
-/// S1f.5.12 a run printed its members `not-kept`. The failures, how many
+/// walk's snapshot, which a fresh preparation's equals. A member with no
+/// core is a failure, past `--region-limit` too. The failures, how many
 /// distinct cores were read, how many of them were cut, how many members of N
 /// a run past the limit met, and how many cores derive their contradiction
 /// through two rules; `None` where the program does not load or is refused.
 ///
-/// **On the pool in two stages** (M1f S1f.6.39): each (program, run) reads
+/// **On the pool in two stages**: each (program, run) reads
 /// its cores, a unit; the program's distinct cores, the first of each in the
 /// runs' order as one loop met them, are held in chunks of [`CHUNK`], a unit
 /// each; and every program's failures are read back in the order that loop
-/// found them. One program's cores were one unit until then, and
-/// `zebra2-minus-15`'s took 210 s on one thread, its share of a nightly
-/// shard's five minutes on the runner.
+/// found them, so no program's cores are one long unit on one thread.
 fn statuses(files: &[PathBuf]) -> Vec<Option<Statuses>> {
     let runs = [Run::Cube, Run::Maximal, Run::Describe];
     let rels: Vec<String> = files.iter().map(|p| rel_of(p)).collect();
@@ -937,15 +921,14 @@ fn statuses(files: &[PathBuf]) -> Vec<Option<Statuses>> {
     out
 }
 
-/// **No core is printed unqualified from a cut search** — M1e2
-/// [S1e2.2.23](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md)'s
-/// claim, W23's, over the corpus and the register's witnesses.
+/// **No core is printed unqualified from a cut search** (`W23`), over the
+/// corpus and the register's witnesses.
 ///
 /// Every core a surface prints, with the status printed beside it
 /// ([`stated`]): the cube's dead nodes, root's among them, `ein oracle
 /// --dump`'s; describe's dead root and N, the summary's, the read-out's and
 /// `--dump-answer`'s, every member's as the run takes it, after the walk
-/// where the walk took none (M1f S1f.5.12); and every dead node describe and
+/// where the walk took none; and every dead node describe and
 /// `--maximal` visit, `--dump-lattice`'s and `--events`'. For each distinct
 /// one, three things:
 ///
@@ -957,25 +940,21 @@ fn statuses(files: &[PathBuf]) -> Vec<Option<Statuses>> {
 /// 3. **a core printed as within its budget is no cut core**: a budget
 ///    sixteen times larger on every cap gives the same core.
 ///
-/// The cut cores the per-commit half reads are the witness's and its
+/// The cut cores the default half reads are the witness's and its
 /// control's; the slow entries' (`zebra.ein` at the rounds, the `zebra2`
-/// family at the environments) are the nightly's. At S1e2.2.23's T1 no
-/// surface printed a status (2026-11-05).
+/// family at the environments) are read under `EIN_CORPUS_SLOW=1`.
 ///
-/// **And `refuted by` is the core's derivation's last step** (M1e2
-/// S1e2.3.10, N7): beside each such core, the rules printed are, for each
-/// fact of the contradiction the core was taken over, the first step the
-/// store records that the core derives ([`last_steps`], Q-M1e2.21 (a)); and
+/// **And `refuted by` is the core's derivation's last step** (Q-M1e2.21):
+/// beside each such core, the rules printed are, for each fact of the
+/// contradiction the core was taken over, the first step the store records
+/// that the core derives ([`last_steps`]); and
 /// at least they name one step per fact of some contradiction the core
 /// derives, the acceptance's claim, reported apart. The cores whose
-/// contradiction the core derives through two rules are counted, 5 041 of
-/// 230 154 per commit (2026-11-06).
+/// contradiction the core derives through two rules are counted.
 ///
 /// **And every member of N is printed with its core, past `--region-limit`
-/// too** (M1f S1f.5.12, the user's ruling of 2026-11-08 on P-15, (c)): the
-/// run takes each member's core after its walk where the walk took none, so
-/// no member carries no core and none is `not-kept`, M1e2 S1e2.3.9's word for
-/// a member a run past the limit had kept as its two bits. The members of N
+/// too** (Q-M1f.26): the run takes each member's core after its walk where
+/// the walk took none, so no member carries no core. The members of N
 /// runs past the limit met are counted, each held as any other core.
 #[test]
 fn no_core_is_printed_unqualified_from_a_cut_search() {
@@ -1000,8 +979,8 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
         programs >= ein_corpus::shard::share(100),
         "{programs} programs read"
     );
-    // The ruling has witnesses: 5 041 per commit (2026-11-06, S1e2.3.10). A
-    // shard's floor is its programs' alone, as above.
+    // Q-M1e2.21 has witnesses in the corpus. A shard's floor is its
+    // programs' alone, as above.
     assert!(
         ein_corpus::shard::current().is_some()
             || (cores >= 100_000 && cut >= 10 && past_limit >= 1 && two_rules >= 100),
@@ -1014,10 +993,10 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
     );
 }
 
-// ── A rule with no premise: the empty core — M1f S1f.5.9 ────────────────────
+// ── A rule with no premise: the empty core ─────────────────────────────────
 
-/// **A rule with no premise refutes root with the empty core** — M1f S1f.5.9
-/// (W31), on the user's ruling of 2026-11-07 on P1f.5's F12: `:match ()` is
+/// **A rule with no premise refutes root with the empty core** (`W31`):
+/// `:match ()` is
 /// the empty conjunction, true, so `(rule r () :match () :assert (false))`
 /// fires once at root and root is dead. Its refutation rests on no fact, so
 /// its core is `[]`, the empty set (Q-M1e2.27), the first in Ein, taken
@@ -1025,7 +1004,7 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
 /// alike. [`every_core_names_its_commitment_and_derives_its_contradiction`]
 /// skips a dead root, and [`no_core_is_printed_unqualified_from_a_cut_search`]
 /// holds its status and rules with every other's; this test holds the core
-/// itself. Until S1f.5.9 the rule never fired and root was alive.
+/// itself.
 #[test]
 fn a_rule_with_no_premise_refutes_root_with_the_empty_core() {
     let path = repo_root().join("examples/ein-bugs/wrong-answers/empty-match-false.ein");

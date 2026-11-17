@@ -1,10 +1,10 @@
-//! The oracle and the static check — M1e2
-//! [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+//! The oracle and the static check
+//! ([finding-r.md § 2](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#2-the-oracle-the-cube),
+//! [monotonicity.md § 3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#3-the-static-check)).
 //!
-//! Every number here is Q-M1e2.7's tables, which were taken by a different
-//! route (`utils/region.py`: one `ein saturate` per subset); the comparison
-//! node for node is `ein-cli/tests/region_dump.rs`'s, because that route runs
-//! the binary.
+//! Every number here was taken by a different route, one `ein saturate` per
+//! subset; the comparison node for node is `ein-cli/tests/region_dump.rs`'s,
+//! because that route runs the binary.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -19,7 +19,7 @@ use ein_infer::states;
 use ein_ir::{Ast, load, parse};
 
 // The fact-grain prototype and the loader it shares with `site_census`
-// (M1e2 S1e2.1b.1). Neither ships: they are examples' code, held to the cube
+// Neither ships: they are examples' code, held to the cube
 // here.
 #[allow(dead_code)]
 #[path = "../examples/shared/census.rs"]
@@ -27,11 +27,11 @@ mod census;
 #[allow(dead_code)]
 #[path = "../examples/shared/fact_grain.rs"]
 mod fact_grain;
-// The programs written for this file and for P1e2.1b's censuses (S1e2.1b.3).
+// The programs written for this file and for the censuses.
 #[allow(dead_code)]
 #[path = "../examples/shared/written.rs"]
 mod written;
-// The taint walk `taint_census` reads (S1e2.1b.4).
+// The taint walk `taint_census` reads.
 #[allow(dead_code)]
 #[path = "../examples/shared/taint.rs"]
 mod taint;
@@ -44,7 +44,7 @@ fn compute(rel: &str) -> (Outcome, Terms) {
     let forms = parse(&mut ast, &text, path.to_str()).expect("parses");
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
     // A named fixture is read for its region, which is what these tests
-    // study, including the shapes *forbid* refuses (M1e2 S1e2.2.5): the dead
+    // study, including the shapes *forbid* refuses (Q-M1e2.5): the dead
     // holes of `naf-upward-closure` and the two `lattice/synth/` witnesses.
     let out = forbid::studying(|| {
         region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
@@ -267,15 +267,16 @@ fn monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged() 
 // An activator compiling a **refutation** at a node (`written.rs` has the text
 // and why): its one site is the activator, and a check that runs on root's
 // plans cannot see the refutation. The text lives beside the censuses that
-// read it too (M1e2 S1e2.1b.3), so a census and this test read one program.
+// read it too, so a census and this test read one program.
 use written::ACTIVATOR_REFUTES;
 
-/// **One fixture per cause** — S1e2.1b.6, the comparison's *what causes it*
-/// row. Each program's only site is of its cause, and its cube shows the hole
+/// **One fixture per cause**
+/// ([monotonicity.md § 9](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#9-the-causes)).
+/// Each program's only site is of its cause, and its cube shows the hole
 /// that cause makes: an `absent` that takes a witness away
 /// (`lattice/08`), an obligation's trigger (`lattice/04`), and an activator
 /// (`lattice/09`, the same cube as `lattice/04` by another mechanism). None
-/// of the three concludes a refutation, so S1e2.4.1's *forbid* reaches none of
+/// of the three concludes a refutation, so *forbid* reaches none of
 /// them. [`ACTIVATOR_REFUTES`] is the third cause carrying a refutation: a
 /// dead hole, with the activator still the only site.
 #[test]
@@ -310,7 +311,7 @@ fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
     }
 
     let (mut kb, mut terms, ast) = loaded_text("activator-refutes", ACTIVATOR_REFUTES);
-    // Refused since M1e2 S1e2.2.5 (F3's read of a rule with parameters), and
+    // Refused by *forbid* (`Cause::Parameter`, a rule with parameters), and
     // studied here for the hole it would have.
     let Outcome::Region(r) = forbid::studying(|| {
         region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
@@ -324,8 +325,9 @@ fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
     assert_eq!(r.nodes[1].refuted_by, ["watch"]);
 }
 
-/// **Across a hole the one-fact test misreads the lines** — S1e2.1b.6, the
-/// comparison's *lines* row. On a monotone cube a node of R is maximal exactly
+/// **Across a hole the one-fact test misreads the lines**
+/// ([monotonicity.md § 6](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)).
+/// On a monotone cube a node of R is maximal exactly
 /// when every edge up leaves R, and the corpus never disagrees. On
 /// `synth/local_not_global`, *A and B together or not at all*, ∅ and {A,B}
 /// are in R with a hole on each side: the one-fact test calls ∅ maximal and
@@ -340,7 +342,7 @@ fn across_a_hole_the_one_fact_test_misreads_the_lines() {
     assert_eq!(names(&r, &r.topology.local_min), ["{(h A), (h B)}"]);
 }
 
-// ── Fact grain — S1e2.1b.1 ──────────────────────────────────────────
+// ── Fact grain ──────────────────────────────────────────────────────
 
 /// Programs written to test the fact-grain prototype, each with what it is
 /// for: `(name, program, leaves the set at fact grain, its closure complete,
@@ -459,7 +461,7 @@ fn violated(r: &Region) -> bool {
         || t.discharged_not_upward_closed.count > 0
 }
 
-/// **The fact-grain prototype against the cube** — S1e2.1b.1 T1e2.1b.1.2.
+/// **The fact-grain prototype against the cube.**
 /// `examples/shared/fact_grain.rs` reads a site at fact grain: dynamic only
 /// when a candidate, or a fact a saturation plan derives from candidates, can
 /// match its pattern. Its claim is the theorem at that grain: **on no cube the
@@ -467,10 +469,11 @@ fn violated(r: &Region) -> bool {
 /// violation** (a hole, a dead node with an alive superset, a discharged node
 /// with an owing superset). Checked on every corpus file and register witness
 /// within the limit, and on [`FACT_GRAIN_PROGRAMS`]. No route reads the
-/// prototype; the shipped check reads at relation grain until the user rules.
+/// prototype; the shipped check reads at relation grain
+/// ([monotonicity.md § 3.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#33-the-grain)).
 ///
 /// **The closure runs only where a site reads it**, and a program on which
-/// it gives up fails here (M1f S1f.6.28, E-33): its verdict would be the safe
+/// it gives up fails here: its verdict would be the safe
 /// one, *not monotone*, and this test reads no cube of such a program, so a
 /// give-up would narrow what the test checks without saying so.
 #[test]
@@ -482,7 +485,7 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
     let mut failures: Vec<String> = Vec::new();
     let mut cubes = 0usize;
     // One program's findings and whether its cube was read: a unit of the
-    // corpus sweeps' pool (M1f S1f.6.39), and the written programs after.
+    // corpus sweeps' pool, and the written programs after.
     let check = |name: &str, load: &dyn Fn() -> Option<(Kb, Terms, Ast)>| -> (Vec<String>, usize) {
         let mut failures: Vec<String> = Vec::new();
         let mut cubes = 0usize;
@@ -496,7 +499,7 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
             };
             if gave_up {
                 failures.push(format!(
-                    "{name}: the fact-grain closure gave up past {} shapes (E-33), so its verdict \
+                    "{name}: the fact-grain closure gave up past {} shapes, so its verdict \
                  is the safe one and no cube of it is read here",
                     fact_grain::MAX_SHAPES
                 ));
@@ -514,10 +517,9 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
             cubes += 1;
             // The shipped check reads at relation grain, which flags a superset
             // of fact grain's programs, so every cube it calls monotone is read
-            // here too: **a Monotone verdict implies no cube violation** — M1e2
-            // S1e2.1b.5's test (c) 1, on every corpus file and register witness
-            // within the limit (`region_synth.py --random`'s check holds it on
-            // random programs).
+            // here too: **a Monotone verdict implies no cube violation**, on
+            // every corpus file and register witness within the limit
+            // (`ein-cli/tests/region_dump.rs` holds it on random programs).
             if !flagged && violated(&r) {
                 failures.push(format!(
                     "{name}: the static check says monotone, and the cube has a violation"
@@ -568,8 +570,9 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
         cubes += c;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // 146 monotone cubes on 2026-10-16, all of them monotone at fact grain
-    // too. A sweep that silently found none would pass the loop above.
+    // A floor under the count the sweep finds, every one of them monotone at
+    // fact grain too: a sweep that silently found none would pass the loop
+    // above.
     assert!(cubes >= 140, "{cubes} cubes checked");
 }
 
@@ -608,7 +611,7 @@ fn fact_grain_on_programs_written_to_test_it() {
     }
 }
 
-/// **Where the closure runs, and where it gives up** (M1f S1f.6.28, E-33).
+/// **Where the closure runs, and where it gives up.**
 /// Two programs on which a supposed fact concludes a request to `std.math.decimal-arith`
 /// whose dividend the commitment does not bind, `(div _ (n z 3))`, which sends
 /// the closure through every shape of the division's circuits. Without a site
@@ -678,7 +681,7 @@ fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side()
 /// four, node for node and reason for reason — including the core, whose
 /// choice depends on interner order (W11), because a worker never numbers a
 /// fact and every new number is the calling thread's, in layer order.
-/// **Saturation is a move inside the cube** (S1e2.1a.2). Every node's
+/// **Saturation is a move inside the cube.** Every node's
 /// closure — the candidates its fixpoint holds — contains its own mask, and an
 /// alive node and its closure are one state: committing to what saturation
 /// derived changes nothing. The second is what lets `ein render region` draw
@@ -758,8 +761,9 @@ const CL_NOT_MONOTONE: &str = "(relation p T :why \"p holds of {?1}\") (relation
      (hrule g3 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
      (rule derive-s () :match (and (p ?x) (absent (q ?x))) :assert (s ?x) :why \"p holds of {?x} and q does not, so s holds of {?x}\")";
 
-/// **A *Monotone* verdict makes saturation a closure operator on the cube** —
-/// S1e2.1b.6, the comparison's *saturation on the cube* row. `cl(C)` is the
+/// **A *Monotone* verdict makes saturation a closure operator on the cube**
+/// ([monotonicity.md § 6](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)).
+/// `cl(C)` is the
 /// candidates `C`'s fixpoint holds (`Node::closure`). On every corpus and
 /// register cube within the limit that the static check calls monotone, `cl`
 /// is extensive, idempotent and monotone on every node (`closure_operator_breaks`).
@@ -775,8 +779,8 @@ fn a_monotone_verdict_makes_saturation_a_closure_operator() {
     };
     let mut failures: Vec<String> = Vec::new();
     let (mut cubes, mut moving) = (0usize, 0usize);
-    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
-    // with its own tallies, folded back in the programs' order.
+    // One unit per program on the corpus sweeps' pool, each with its own
+    // tallies, folded back in the programs' order.
     let paths = corpus_and_register();
     let found = ein_corpus::pool::map(
         "region::closure_operator",
@@ -832,11 +836,8 @@ fn a_monotone_verdict_makes_saturation_a_closure_operator() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     eprintln!("{cubes} monotone cubes; saturation moves a node on {moving}");
-    // 172 monotone cubes in a debug build on 2026-11-04, saturation moving a
-    // node on 16 of them; 153 and 15 on 2026-11-02, when a debug build
-    // skipped W7's two witnesses, before M1e2 S1e2.2.7 fixed W7 and the
-    // stages since banked their witnesses. A sweep that silently found none
-    // would pass.
+    // Floors under the counts the sweep finds: a sweep that silently found
+    // none would pass.
     assert!(cubes >= 150, "{cubes} monotone cubes checked");
     assert!(moving >= 10, "saturation moves a node on {moving} of them");
 
@@ -855,9 +856,9 @@ fn a_monotone_verdict_makes_saturation_a_closure_operator() {
     );
 }
 
-/// **The opposite direction** (S1e2.1a.8). Every program under
-/// `examples/lattice/synth/` was written by `utils/region_synth.py` for a
-/// region it carries in its header (`;;; region-status:`, one class per node
+/// **The opposite direction.** Every program under
+/// `examples/lattice/synth/` was written for a region it carries in its
+/// header (`;;; region-status:`, one class per node
 /// in mask order). The oracle has to find exactly that region, node for node,
 /// and the static check has to call the program monotone exactly when the
 /// target is: no dead node below an alive one, no owing node above one in R.
@@ -1119,7 +1120,7 @@ fn census_for_inspection() {
     );
 }
 
-// ── A refutation's taint — S1e2.1b.4 ────────────────────────────────
+// ── A refutation's taint ────────────────────────────────────────────
 
 /// Every dead node of `r`, as `(mask, untainted, a proper superset is
 /// alive)`, its taint read by `walk` off the node's own fixpoint, a premise
@@ -1139,8 +1140,8 @@ fn deaths(
     let alive_above = |m: u64| {
         (0..size).any(|x| x != m && x & m == m && r.status[x as usize] & region::DEAD == 0)
     };
-    // The deaths of a program *forbid* refuses are what this reads (M1e2
-    // S1e2.2.5): studied, past the refusal.
+    // The deaths of a program *forbid* refuses are what this reads: studied,
+    // past the refusal.
     let mut nodes =
         forbid::studying(|| region::Nodes::new(kb, terms, ast, &r.candidates)).expect("prepares");
     let mut out = Vec::new();
@@ -1162,18 +1163,18 @@ fn deaths(
     out
 }
 
-/// **Option (b) of F21's D6, held to the oracle** — S1e2.1b.4. (b) would let
-/// a route learn from a dead node whose refutation rests on no `absent` over
-/// `D`, so it is sound only if every such death is upward-closed: **no
+/// **An untainted death is upward-closed, held to the oracle.** A route that
+/// learned from a dead node whose refutation rests on no `absent` over `D`
+/// would be sound only if every such death is upward-closed: **no
 /// untainted dead node has an alive superset**, and so every dead hole is
 /// tainted. Checked on every flagged corpus and register cube within the
 /// limit and on the programs in `written.rs`, with the taint read by
 /// `examples/shared/taint.rs`: every contradiction, both sides of a pair, and
 /// the activator of each plan a fact was derived by.
 ///
-/// **`D` is read as *forbid* reads it** since M1e2 S1e2.2.17: `D⁺`, the
-/// static check's `D` followed through the rules root has no plan of
-/// (`forbid::extendable`). Read as `D`, W17's `forbid-chain-node-writes` is a
+/// **`D` is read as *forbid* reads it**: `D⁺`, the static check's `D`
+/// followed through the rules root has no plan of (`forbid::extendable`).
+/// Read as `D`, `W17`'s `forbid-chain-node-writes` is a
 /// counterexample: its death rests on `(absent (x a))`, `x` outside `D`, and
 /// a plan only a node compiles writes `x` at the alive superset.
 ///
@@ -1196,10 +1197,10 @@ fn an_untainted_death_is_dead_in_every_superset() {
         // The static check first, on its own load, so a monotone cube is
         // never enumerated; and what *forbid* calls extendable, `D⁺`, the
         // static check's `D` followed through the rules root has no plan of.
-        // Until M1e2 S1e2.2.17 this read `D`, and W17's
-        // `forbid-chain-node-writes` was a counterexample to that reading and
-        // not to the claim: its dead hole {(p a)} rests on `(absent (x a))`,
-        // and only a plan a node compiles writes `x`, at the alive superset.
+        // Read as `D`, `W17`'s `forbid-chain-node-writes` would be a
+        // counterexample to that reading and not to the claim: its dead hole
+        // {(p a)} rests on `(absent (x a))`, and only a plan a node compiles
+        // writes `x`, at the alive superset.
         let Some((mut kb, mut terms, ast)) = load() else {
             return;
         };
@@ -1214,8 +1215,8 @@ fn an_untainted_death_is_dead_in_every_superset() {
                 _ => return,
             };
         let (mut kb, mut terms, ast) = load().expect("loaded once already");
-        // A study of the shape: the programs *forbid* refuses are read too
-        // (M1e2 S1e2.2.5), since every dead hole is on one of them.
+        // A study of the shape: the programs *forbid* refuses are read too,
+        // since every dead hole is on one of them.
         let Ok(Outcome::Region(r)) =
             forbid::studying(|| region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {}))
         else {
@@ -1252,8 +1253,8 @@ fn an_untainted_death_is_dead_in_every_superset() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     eprintln!("{cubes} flagged cubes, {dead} dead nodes, {untainted} untainted");
-    // 2026-11-02: 20 flagged cubes (18 corpus and register, 2 written), 124
-    // dead nodes, 100 of them untainted. A sweep that found none would pass.
+    // Floors under the counts the sweep finds: a sweep that found none would
+    // pass.
     assert!(cubes >= 20, "{cubes} flagged cubes");
     assert!(
         untainted >= 90 && dead > untainted,
@@ -1294,7 +1295,7 @@ fn an_untainted_death_is_dead_in_every_superset() {
     );
 }
 
-// ── Route 1 — S1e2.1a.9 ─────────────────────────────────────────────
+// ── Route 1 ─────────────────────────────────────────────────────────
 
 /// A program's own load, or `None` for a file that does not load (the
 /// negative fixtures).
@@ -1307,9 +1308,7 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once. A debug build left
-/// out W7's two witnesses, which it aborted on, until M1e2 S1e2.2.7 fixed W7,
-/// and W16's order pair until M1e2 S1e2.2.16 fixed W16.
+/// Every corpus file and every register witness, once, in either build.
 fn corpus_and_register() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
@@ -1484,7 +1483,7 @@ fn route_1_against_oracle(rel: &str, r: &Region, d: &DownSet) -> Vec<String> {
     bad
 }
 
-/// **Route 1 equals the oracle** — S1e2.1a.9's acceptance, the empirical half
+/// **Route 1 equals the oracle** — the empirical half
 /// of `monotone.rs`'s theorem made a test. On every corpus file and register
 /// witness whose cube the oracle enumerates and whose static verdict is
 /// monotone, route 1 visits exactly the alive nodes and `N`, agrees with the
@@ -1503,8 +1502,8 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
         jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
         ..Options::default()
     };
-    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
-    // with its own tallies, folded back in the programs' order.
+    // One unit per program on the corpus sweeps' pool, each with its own
+    // tallies, folded back in the programs' order.
     let paths = corpus_and_register();
     let found = ein_corpus::pool::map(
         "region::route_1_is_the_oracle",
@@ -1548,11 +1547,9 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
                 if !r.monotonicity.is_monotone() {
                     flagged += 1;
                     // A dead root decides a flagged program too (L0, a fork only
-                    // adds: `downset::compute` since the switch), and route 1 reads
-                    // root alone. No program the oracle answers has the shape: W16's
-                    // second-shape witnesses had it from their banking until W16's
-                    // fix the same day (M1e2 S1e2.2.16), and *forbid* refuses them
-                    // since. This expected a decline there until that banking.
+                    // adds: `downset::compute`), and route 1 reads root alone.
+                    // No program the oracle answers has the shape: *forbid*
+                    // refuses `W16`'s second-shape witnesses.
                     if d.root_dead {
                         failures.extend(route_1_against_oracle(&rel, &r, &d));
                     } else if d.declined != Some(Declined::NotMonotone) {
@@ -1579,10 +1576,9 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
         saved.1 += u_saved.1;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // The census of 2026-10-16 (`region_census.md`): 146 monotone cubes and
-    // 13 flagged. A sweep that silently found none would pass the loop above.
-    // 2026-11-04: 158 monotone and 9 flagged, since *forbid* (M1e2 S1e2.2.5)
-    // refuses nine of the flagged cubes, which no route answers.
+    // Floors under the counts the sweep finds, *forbid*'s refusals left out
+    // (no route answers them): a sweep that silently found none would pass
+    // the loop above.
     assert!(
         monotone >= 140 && flagged >= 8,
         "{monotone} monotone, {flagged} flagged"
@@ -1643,7 +1639,7 @@ fn route_1_declines_at_its_budget_with_whole_layers() {
     assert!(d.description.is_none());
 }
 
-/// The ruled unit, facts beyond root: the budget is checked before each
+/// The budget's unit, facts beyond root (Q-M1e2.35): the budget is checked before each
 /// layer against the layer's size times the facts per node of the layer
 /// before, so a run declines on a projection and never mid-layer, and what it
 /// spent is at most the budget.
@@ -1678,7 +1674,7 @@ fn route_1_declines_at_a_facts_budget_before_the_layer_that_would_pass_it() {
     assert!(d.description.is_none());
 }
 
-// ── The state route — S1e2.1c.2 ─────────────────────────────────────────
+// ── The state route ─────────────────────────────────────────────────────
 
 /// The state route against the oracle on one program: every disagreement, as
 /// lines.
@@ -1832,7 +1828,7 @@ fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> 
     bad
 }
 
-/// **The state route equals the oracle** — S1e2.1c.2's acceptance. On every
+/// **The state route equals the oracle.** On every
 /// corpus file and register witness whose cube the oracle enumerates and whose
 /// static verdict is monotone, the route meets exactly the alive states, each
 /// with the cube's status, extends every one, and reads off them the oracle's
@@ -1849,8 +1845,8 @@ fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
         jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
         ..Options::default()
     };
-    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
-    // with its own tallies, folded back in the programs' order.
+    // One unit per program on the corpus sweeps' pool, each with its own
+    // tallies, folded back in the programs' order.
     let paths = corpus_and_register();
     let found = ein_corpus::pool::map(
         "region::the_state_route_is_the_oracle",
@@ -1932,14 +1928,14 @@ fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
         fewer += u_fewer;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // 2026-11-04: 158 monotone and 9 flagged, as route 1's sweep above.
+    // The floors of route 1's sweep above.
     assert!(
         monotone >= 140 && flagged >= 8,
         "{monotone} monotone, {flagged} flagged"
     );
     eprintln!("{monotone} monotone, {flagged} flagged; fewer saturations on {fewer}");
-    // 2026-11-03: fewer saturations than route 1 on 13 of the monotone cubes,
-    // and the same number on the rest.
+    // Fewer saturations than route 1 on some of the monotone cubes, and the
+    // same number on the rest.
     assert!(fewer >= 10, "fewer saturations on {fewer} programs");
 }
 
@@ -1973,13 +1969,10 @@ fn r_by_size(s: &states::StateRoute, d: &states::Description, k: usize) -> Vec<u
 }
 
 /// **Past the oracle's limit, the state route is route 1 where route 1
-/// finishes** — on `zebra2-minus-15`, which route 1 runs to layer 6 under a
-/// 2²² ceiling and no further (`alive_set_reach.md` § 2.3, 2026-11-03, 495 s at
-/// `-j 16`). Its R per size and its N per size, through layer 6, are route
-/// 1's, banked here from that run; and the state route finishes it, with the
-/// 32 states M1d's tree found. `EIN_CORPUS_SLOW=1` only: about 10 s at
-/// `-j 16` in a release build. The CI nightly runs it since M1f S1f.5.27,
-/// where no tier had.
+/// finishes** — on `zebra2-minus-15`, which route 1 reaches to layer 6 at a
+/// budget of 2²² facts and no further. Its R per size and its N per size,
+/// through layer 6, are route 1's, banked here from such a run; and the state
+/// route finishes it, with 32 states. `EIN_CORPUS_SLOW=1` only.
 #[test]
 fn the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6() {
     if std::env::var_os("EIN_CORPUS_SLOW").is_none() {
@@ -2015,7 +2008,7 @@ fn the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6() {
     assert_eq!(d.k_c, 241_462_963);
 }
 
-// ── L5 — S1e2.1c.4 ──────────────────────────────────────────────────
+// ── L5 ──────────────────────────────────────────────────────────────
 
 /// **L5 is the oracle's**: an owed instance's alternatives are exhaustive.
 /// On every monotone cube the oracle enumerates whose program states an
@@ -2042,8 +2035,8 @@ fn l5_is_the_oracle_on_every_monotone_program_it_reaches() {
         jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
         ..Options::default()
     };
-    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
-    // with its own tallies, folded back in the programs' order.
+    // One unit per program on the corpus sweeps' pool, each with its own
+    // tallies, folded back in the programs' order.
     let paths = corpus_and_register();
     let found = ein_corpus::pool::map(
         "region::l5_is_the_oracle",
@@ -2177,9 +2170,8 @@ fn l5_is_the_oracle_on_every_monotone_program_it_reaches() {
         owing += u_owing;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // Not vacuous: the licence binds on real programs and real debts — 40
-    // programs, 12 with a licensed instance, 284 states and 299 owed licensed
-    // instances on 2026-11-03.
+    // Not vacuous: the licence binds on real programs and real debts, and the
+    // floors below are under what the sweep finds.
     assert!(
         programs >= 35 && licensed >= 10 && checked >= 250 && owing >= 250,
         "{programs} programs, {licensed} with a licensed instance, {checked} states, \
@@ -2214,8 +2206,7 @@ fn l5_licenses_what_its_premise_holds_of_on_the_zebra_family() {
             "{file}"
         );
         for i in &t.instances {
-            // The program writes no `slot-owed-fill`: its full name since M1f
-            // S1f.6.35.
+            // The program writes no `slot-owed-fill`: its full name.
             let rule = terms.sym(i.key.0).to_string();
             let short = rule.strip_prefix("std.slots.").unwrap_or(&rule);
             match (&i.alternatives, short) {
@@ -2308,19 +2299,18 @@ fn a_witness_two_candidates_derive_together_stands_for_neither() {
 }
 
 /// **A dead node's core follows the activator its refutation rests on, where
-/// a node derived or committed it** — M1e2 S1e2.2.19, W19, on the user's
-/// ruling of 2026-11-04 on Q-M1e2.12, (c).
+/// a node derived or committed it** (`W19`, Q-M1e2.12).
 ///
-/// A plan of a rule with parameters is compiled from an activator, and until
-/// S1e2.2.19 a derivation recorded the premises the plan matched and not the
-/// activator, so a commitment that reaches a refutation only through one was
-/// in no core: `forbid-chain-no-absent`'s dead `{(p a)}` reported `(seed a)`,
-/// a fact of root's while root is alive, `core-activator-committed`'s
-/// `{(r2 a)}` the same, and `core-activator-guard-only`'s `{(p a)}` nothing.
-/// Root's activators, stated (`core-activator-given`) or derived
+/// A plan of a rule with parameters is compiled from an activator. A core
+/// that followed only the premises the plan matched would leave out a
+/// commitment that reaches a refutation only through one:
+/// `forbid-chain-no-absent`'s dead `{(p a)}` would report `(seed a)`, a fact
+/// of root's while root is alive, `core-activator-committed`'s `{(r2 a)}`
+/// the same, and `core-activator-guard-only`'s `{(p a)}` nothing. Root's
+/// activators, stated (`core-activator-given`) or derived
 /// (`core-activator-root-derived`), are the program's, as the plans root
-/// compiles from them are its rules, and are followed into no core. W17's
-/// five, studied past *forbid*'s refusal, report the core that names the
+/// compiles from them are its rules, and are followed into no core. `W17`'s
+/// five, read past *forbid*'s refusal, report the core that names the
 /// commitment too, but `-node-writes`, whose refutation matches it.
 #[test]
 fn a_dead_nodes_core_follows_an_activator_only_a_node_derives() {
@@ -2364,17 +2354,16 @@ fn a_dead_nodes_core_follows_an_activator_only_a_node_derives() {
 }
 
 /// **A contradiction's core covers what it rests on: both sides of a pair, and
-/// the facts a `forall` read** — M1e2 S1e2.2.21, W21, on the user's ruling of
-/// 2026-11-05 on Q-M1e2.15, (b).
+/// the facts a `forall` read** (`W21`, Q-M1e2.15).
 ///
-/// Until S1e2.2.21 the core search explained a contradiction by its witness
-/// alone, a pair's positive `X`, and a firing recorded none of the facts its
-/// universal read: `pair-core-root-given`'s dead `{(q a)}` reported `(p a)`,
-/// which the program states, `pair-core-root-derived`'s `(seed a)`,
-/// `forall-core-false`'s `{(tag s1), (tag s2)}` `(item a)` and
-/// `forall-core-elim`'s `{(tag s1)}` `(item a) (slot s1)`, each a set of facts
-/// root holds while root is alive; and `pair-core-root-negative`'s `(q a)`,
-/// which named the commitment and left out the stated `(not (p a))`. Every
+/// A core search that explained a contradiction by its witness alone, a
+/// pair's positive `X`, with a firing that recorded none of the facts its
+/// universal read, would report `pair-core-root-given`'s dead `{(q a)}` as
+/// `(p a)`, which the program states, `pair-core-root-derived`'s as
+/// `(seed a)`, `forall-core-false`'s `{(tag s1), (tag s2)}` as `(item a)` and
+/// `forall-core-elim`'s `{(tag s1)}` as `(item a) (slot s1)`, each a set of
+/// facts root holds while root is alive; and `pair-core-root-negative`'s as
+/// `(q a)`, naming the commitment and leaving out the stated `(not (p a))`. Every
 /// dead node of each cube reports the core below, which names its commitment
 /// and, with root, derives the contradiction.
 #[test]

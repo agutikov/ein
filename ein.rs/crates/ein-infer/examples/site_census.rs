@@ -1,6 +1,5 @@
-//! The site census — M1e2
-//! [S1e2.1b.1](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md):
-//! where the static check's sites are, per site rather than per program, and
+//! The site census: where the static check's sites are, per site rather than
+//! per program, and
 //! what the cube observes about each flagged program.
 //!
 //! For every file it reads root's fixpoint as `refutation_census` does
@@ -15,8 +14,8 @@
 //! the limit**: the cube's three violations, each with its smallest witness,
 //! every minimal hole and every witness attributed to a cause and the sites
 //! that made it (`shared/attribution.rs`, which `hole_census` reads too: a dead
-//! node by its refutation, an owing one by its debt, since S1e2.1b.3 including
-//! a witness an `absent` took away and an obligation a node compiled), and
+//! node by its refutation, an owing one by its debt, including a witness an
+//! `absent` took away and an obligation a node compiled), and
 //! *exercised* or *conservative*.
 //! Past the limit: what route 2 certifies today (`explore::run`, as a bare
 //! `ein solve` asks it), and for `n` = 17–19 the oracle's projected cost.
@@ -102,7 +101,7 @@ fn at_root(root: &Root, kb: &Kb, site: &Site) -> usize {
 
 /// The cube's half of a row: violations, holes, and each minimal hole and
 /// each violation's smallest witness attributed to a cause and its sites, by
-/// `shared/attribution.rs`'s rule (S1e2.1b.3), which `hole_census` reads too.
+/// `shared/attribution.rs`'s rule, which `hole_census` reads too.
 fn cube_row(r: &Region, kb_r: &mut Kb, terms_r: &mut Terms, ast_r: &Ast, root: &RootPlans) -> Json {
     let t = &r.topology;
     let sites = attribution::site_texts(&r.monotonicity.sites, terms_r);
@@ -260,10 +259,10 @@ fn projection(path: &Path, n: usize) -> Option<region::Projection> {
     got
 }
 
-/// What C1 could do to the flag, at relation grain and with the check as it
-/// ships: the verdict over `H` without the candidates that name a type
-/// (Q-M1e.12's reading (c), with S1e2.2.10's definition: a type is an object
-/// on the right of an `is-a`), and each relation of `H` whose removal alone
+/// What typing the blind rung could do to the flag, at relation grain and
+/// with the check as it ships: the verdict over `H` without the candidates
+/// that name a type (a type is an object on the right of an `is-a`,
+/// Q-M1e.12), and each relation of `H` whose removal alone
 /// leaves no site — what the blind rung no longer proposing it would do —
 /// with how many of its facts root holds and whether a rule derives it, so
 /// a given-only relation can be told from a derived one.
@@ -373,7 +372,7 @@ fn main() {
             "--json" => as_json = true,
             "--jobs" => jobs = args.next().and_then(|v| v.parse().ok()).expect("--jobs J"),
             // A path from the working directory, else from the repository —
-            // so `plans/…` works from `ein.rs/` as from the root.
+            // so a repository path works from `ein.rs/` as from the root.
             _ => {
                 let p = PathBuf::from(&a);
                 let p = if p.exists() {

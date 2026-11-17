@@ -1,16 +1,14 @@
-//! MT19937 and a downward Fisher–Yates shuffle — what `--shuffle` draws from.
+//! MT19937 and a downward Fisher–Yates shuffle — the seeded generator the
+//! tests and measurement examples that permute an order draw from (the id
+//! space's permutations, the matcher's insertion orders)
+//! ([design/determinism-and-order.md § 9.1](../../../../docs/ein/ein.rs/design/determinism-and-order.md#91-the-seeded-generator)).
 //!
-//! `solve` shuffles each layer's candidates through one seeded generator
-//! whose state **advances across layers**, so reproducing the traversal means
-//! reproducing the generator bit for bit: the Mersenne Twister, its standard
-//! `init_by_array` seeding, `getrandbits`, the rejection-sampling `randbelow`
-//! and the shuffle's exact Fisher–Yates direction
-//! ([`defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md) §3.1).
-//!
-//! The alternative was to fix only a shuffled run's answer and
-//! leave its order unspecified, and the argument against it is what
-//! `--shuffle` is *for*: it exists to probe whether the verdict depends on
-//! traversal order, so a silent ordering difference there is exactly the one
+//! One generator carries its state **across shuffles**, so reproducing a
+//! permuted run means reproducing the generator bit for bit: the Mersenne
+//! Twister, its standard `init_by_array` seeding, `getrandbits`, the
+//! rejection-sampling `randbelow` and the shuffle's exact Fisher–Yates
+//! direction. A permutation exists to probe whether a result depends on an
+//! order, so a silent difference in the order it draws is exactly the one
 //! easiest to dismiss as "well, it is shuffled".
 //!
 //! Checked by table rather than by reading: this file's own tests pin the

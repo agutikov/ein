@@ -1,7 +1,5 @@
 //! The read-out's data: what `ein solve` and `ein oracle` print, computed
-//! once — M1e2
-//! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! third step, for the layout
+//! once, for the layout
 //! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines.
 //!
 //! [`run`] asks [`crate::explore`] the question, then reads every state it
@@ -14,7 +12,7 @@
 //!
 //! What is printed, and how, is `ein-render`'s. Nothing here decides a word.
 //!
-//! **And which question a program's claims are** (M1f S1f.6.27): [`least`]
+//! **And which question a program's claims are** (Q-M1f.221): [`least`]
 //! reads the claims' shapes and names the least question that can decide
 //! them, [`describing`] the one that describes what they are about, and
 //! [`stands`] says which of the two runs a claim is read off where both were
@@ -79,14 +77,13 @@ pub enum Listing {
     /// R is empty and every alive node owes: `(region (owing …))`.
     Owing(Vec<OwingState>),
     /// A partial description: its certified line members, as states. `others`
-    /// members met are not listed. Since M1e2 S1e2.2.26 (W27) a line mode's
-    /// past `--region-limit` on a flagged program too: the members it
+    /// members met are not listed. A line mode's past `--region-limit` on a
+    /// flagged program too (`W27`): the members it
     /// certifies on its line, which are describe's, and the others met.
     Certified { others: u64 },
     /// A mode's answer: a line, an `-n` cut, `--single`'s one or two states.
     Members,
-    /// `--count`'s: nothing is listed, and no state is read (M1e2
-    /// T1e2.1c.4.6).
+    /// `--count`'s: nothing is listed, and no state is read.
     Counted,
 }
 
@@ -110,8 +107,7 @@ pub struct Class {
 pub struct Query {
     /// The goal, as written.
     pub goal: String,
-    /// What it asks about: its `:over`, all of `R` by default (M1e2
-    /// T1e2.1a.5.3).
+    /// What it asks about: its `:over`, all of `R` by default.
     pub over: Over,
     /// The classes are over the set [`Self::over`] names. When the run asked
     /// another — a mode's line, an `-n` cut, `--single` — they are over the
@@ -254,7 +250,7 @@ pub fn of_answer(
                 // states are the line members describe's partial description
                 // certifies, and the other members met are counted, not
                 // listed, and written by `--dump-answer`, as describe's are
-                // (M1e2 S1e2.2.26, W27).
+                // (`W27`).
                 Some(d) => {
                     let on_line = |s: &crate::described::State| match answer.mode.which {
                         Which::Minimal => s.minimal,
@@ -296,7 +292,7 @@ pub fn of_answer(
     };
     // A goal the compiler rejects — `(query :goal (?R Rex Animal))`, an
     // unbound relation head — ends the run where a state would be answered
-    // from it, rather than projecting no row (M1a S1a.6.6). With no state
+    // from it, rather than projecting no row. With no state
     // listed the goal is never compiled, which is the asymmetry
     // `query-goal-free-head-unsat.ein` pins.
     if !states.is_empty() {
@@ -311,8 +307,7 @@ pub fn of_answer(
     let mut owing_states: Vec<OwingState> = Vec::new();
     // The detector's spot check: on a flagged program the parent paths of
     // each printed state of two commitments or more, at most `SPOT_PARENTS`
-    // of each; under `-y` every one, and on a monotone program too (M1e2
-    // S1e2.1c.5, the user's ruling of 2026-11-03).
+    // of each; under `-y` every one, and on a monotone program too.
     let unbounded = sanity(root, opts);
     let bound = (!unbounded).then_some(SPOT_PARENTS);
     let per_state = |n: usize| bound.map_or(n, |b| n.min(b));
@@ -408,7 +403,7 @@ pub fn of_answer(
     }
     let spot = match (paths, answer.warning.as_mut()) {
         // A flagged program: the warning's `paths` row, which reports and
-        // never fails the run (F21: detect, do not decide).
+        // never fails the run: detect, do not decide (Q-M1e2.2).
         (Some(p), Some(w)) => {
             w.paths = Some(p);
             None
@@ -475,7 +470,7 @@ pub fn of_answer(
                     // asked for, so it listed the whole part.
                     let exact = asked && (whole || answer.exhausted);
                     // Over the states listed: a line mode past the limit
-                    // meets members it does not list (M1e2 S1e2.2.26).
+                    // meets members it does not list.
                     let listed: Vec<usize> =
                         (0..states.len()).filter(|&i| states[i].listed).collect();
                     (listed, asked, exact)
@@ -523,7 +518,7 @@ pub fn of_answer(
     })
 }
 
-// ── The question a program's claims are — M1f S1f.6.27 ──────────────────
+// ── The question a program's claims are ────────────────────────────────
 
 /// The claims a program states, by their shapes: whether its `(solve …)`
 /// states one, and for each query's the part its classes are over, how many
@@ -555,8 +550,7 @@ fn stated(root: &Kb, ast: &Ast) -> (bool, Vec<(Over, usize, bool)>) {
 /// `R` where the `(solve …)` states a claim, a query's claim is over all of
 /// `R`, or the queries' claims are over both lines; otherwise the one line
 /// they are over. An exhausted answer to it decides every claim, so it is
-/// what [`least`] falls back to, and it was the one question `ein test` asked
-/// from M1e2 S1e2.1a.5 to M1f S1f.6.27.
+/// what [`least`] falls back to.
 pub fn describing(root: &Kb, ast: &Ast) -> explore::Mode {
     let (solve, queries) = stated(root, ast);
     let asks = |o: Over| queries.iter().any(|(over, _, _)| *over == o);
@@ -578,9 +572,8 @@ pub fn describing(root: &Kb, ast: &Ast) -> explore::Mode {
 }
 
 /// **The least question that can decide every claim a program states**, by
-/// the claims' shapes alone (M1f S1f.6.27, the user's reply (a) of
-/// 2026-11-12 on question 39, *minimum work per question* applied to the
-/// runner). No option chooses it.
+/// the claims' shapes alone (Q-M1f.221, *the least work each question needs*
+/// applied to the runner). No option chooses it.
 ///
 /// - A `(solve … :expect …)` is about `R` as a whole, its states one to one,
 ///   its merged states or its owing frontier, or says root is dead: it asks
@@ -682,7 +675,7 @@ pub fn undecided_words(answer: &Answer) -> String {
 struct Asked {
     /// The goal as matched, its macro calls expanded.
     goal: NodeId,
-    /// The goal as written, which is what is printed (M1f S1f.7.5).
+    /// The goal as written, which is what is printed (Q-M1f.117).
     written: NodeId,
     text: Option<String>,
     over: Over,
@@ -719,8 +712,8 @@ fn asked(root: &Kb, ast: &Ast) -> Vec<Asked> {
 pub const COUNT_CHECKS_NO_CLAIM: &str =
     "--count reads no state, so it checks no claim: a bare `ein solve FILE` checks it";
 
-/// `--count`'s read-out — M1e2 T1e2.1c.4.6, the user's ruling of 2026-11-03:
-/// describe's answer, read no further. No state's model is read, so nothing is
+/// `--count`'s read-out: describe's answer, read no further. No state's
+/// model is read, so nothing is
 /// listed and no query is answered. Each query is kept with no class over the
 /// states listed, which are none, and each claim the program states, a query's
 /// `:expect` or its `(solve … :expect …)`, is not checked, with why, so that
@@ -802,8 +795,7 @@ fn counted(
 }
 
 /// `-y`, or the program's own `(config :lattice-sanity-check true)`: the
-/// parent-path spot check unbounded, on every program (M1e2 S1e2.1c.5, the
-/// user's ruling of 2026-11-03).
+/// parent-path spot check unbounded, on every program.
 fn sanity(root: &Kb, opts: &explore::Options) -> bool {
     opts.sanity
         || root
@@ -814,7 +806,7 @@ fn sanity(root: &Kb, opts: &explore::Options) -> bool {
 }
 
 /// What root alone says of `R`, for a claim `--no-search` leaves unchecked
-/// (M1f S1f.6.36): ∅ is in it, or root owes and ∅ is not; past ∅, `R` was
+/// (Q-M1f.256): ∅ is in it, or root owes and ∅ is not; past ∅, `R` was
 /// not searched.
 fn root_words(answer: &Answer) -> String {
     match answer.described.as_deref().map(|d| &d.root) {
@@ -861,10 +853,11 @@ struct Coverage {
     exact: bool,
 }
 
-/// A query's `:expect` against its classes (`query.md`): the
+/// A query's `:expect` against its classes
+/// ([query.md § The query's claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-querys-claim)): the
 /// classes it lists, as a set, are the query's. Checked when the classes are
 /// over the set the query asks about and complete; otherwise not checked,
-/// with why. With `refute` ([`explore::Options::refute`], M1f S1f.6.27),
+/// with why. With `refute` ([`explore::Options::refute`], Q-M1f.222),
 /// classes over a part of that set still refute a claim that does not list
 /// one of them.
 fn query_claim(
@@ -918,7 +911,7 @@ fn query_claim(
         // The classes are a lower bound: every state they are over is a
         // certified member of what the claim is about, so one the claim does
         // not list refutes it whatever the run left unvisited, and classes
-        // that are all listed decide nothing (M1f S1f.6.27).
+        // that are all listed decide nothing.
         let unlisted: Vec<&Vec<String>> =
             have.iter().copied().filter(|c| !want.contains(c)).collect();
         if refute && let Some(first) = unlisted.first() {
@@ -1035,7 +1028,7 @@ fn check_claim(
     if !d.exhausted {
         let root_alone = answer.route == explore::Route::Root;
         // `(false)` says every node is dead, root among them: an alive root
-        // refutes it, whatever of R the run did not reach (M1f S1f.6.27).
+        // refutes it, whatever of R the run did not reach.
         if opts.refute && matches!(claim, ein_ir::claim::Claim::False) && d.root.alive {
             return Ok(Report {
                 outcome: Outcome::Failed,
@@ -1132,18 +1125,17 @@ fn bindings(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: NodeId) -> Vec<Row> {
 }
 
 /// The goal's atoms, an `(and …)` flattened at every depth, as the loader
-/// reads them for a claim (`ein_ir::expect::goal_atoms`). Until M1f S1f.7.5
-/// only the top `(and …)` was, so a goal holding an `(and …)` inside one,
-/// which a macro's expansion writes (`unknown`), had a class listing `(and
-/// …)`, which no claim can write.
+/// reads them for a claim (`ein_ir::expect::goal_atoms`), so a goal holding
+/// an `(and …)` inside one, which a macro's expansion writes (`unknown`), has
+/// no class listing `(and …)`, which no claim can write.
 fn conjuncts(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
     ein_ir::expect::goal_atoms(ast, goal)
 }
 
 /// A conjunct with a row's bindings substituted, at any depth: `(not (eq ?x
-/// ?y))` and `(p (f ?x))` print their instances. Until M1f S1f.5.7 a pattern
-/// inside a pattern printed as written, so two rows gave one fact with its
-/// variables in it, a class no claim could state (W54).
+/// ?y))` and `(p (f ?x))` print their instances, never the pattern as
+/// written, which would give two rows one fact with its variables in it, a
+/// class no claim could state (`W54`).
 fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
     let Node::SForm { head, .. } = ast.node(conj) else {
         return None;

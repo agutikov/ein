@@ -6,14 +6,15 @@
 //! [design/search.md](../../../../docs/ein/ein.rs/design/search.md) (the
 //! hypothesis loop above it). The search is the region's: every question
 //! about `R` is [`explore`]'s, answered by a route over nodes that are root
-//! with a subset of H committed and saturated ([`region`]). P1a.4's
-//! hypothesis loop, the walk, is deleted, and its own pass over the
-//! generator with it. The generator ([`hypgen`]) builds H by its ladder,
-//! config-free, once at root.
+//! with a subset of H committed and saturated ([`region`]). The generator
+//! ([`hypgen`]) builds H by its ladder, config-free, once at root.
 //!
 //! The shape of a plan, the order of a firing sequence and the text of an
-//! error are all observable, and fixed: where no other page states one, it is
-//! [`docs/kernel/defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md)'s.
+//! error are all observable, and fixed:
+//! [design/determinism-and-order.md](../../../../docs/ein/ein.rs/design/determinism-and-order.md)
+//! states what a run's output depends on, and
+//! [diagnostics.md](../../../../docs/ein/user/reference/diagnostics.md) every
+//! refusal's text.
 //! What is free is the encoding, and that is where the cost lives —
 //! [design/matcher.md § 1](../../../../docs/ein/ein.rs/design/matcher.md#1-the-costs-it-is-shaped-against) attributes 46 %
 //! of an exhaustive solve's self time to unification.

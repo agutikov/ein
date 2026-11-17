@@ -12,8 +12,8 @@
 //! the written order, at the default budget and limit, and every claim the
 //! program states is read under each: the two are held to the definition
 //! below. On a program the check flags nothing is held: what is solved of one
-//! is not claimed sound, correct or complete (the user's ruling on
-//! Q-M1f.313), and such programs are counted and left.
+//! is not claimed sound, correct or complete (Q-M1f.313), and such
+//! programs are counted and left.
 //!
 //! ## What *the same answer* means, written before the cells were read
 //!
@@ -47,9 +47,9 @@
 //!   read off the question `ein test` asks first and off the describing one,
 //!   one outcome under each order.
 //!
-//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, the
-//! nightly's, in four shards (`EIN_TEST_SHARD=k/4`), each holding its share
-//! of the floors; the two zebra puzzles every run.
+//! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, which runs
+//! in four shards (`EIN_TEST_SHARD=k/4`), each holding its share of the
+//! floors; the two zebra puzzles every run.
 //!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test agenda
@@ -606,7 +606,7 @@ fn every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order
         all.unheld
     );
     // Not vacuous: the monotone programs are read, their claims too, and the
-    // order moves the work somewhere. A shard of the nightly's holds its
+    // order moves the work somewhere. A shard (`EIN_TEST_SHARD`) holds its
     // share of each floor.
     let share = ein_corpus::shard::share;
     assert!(

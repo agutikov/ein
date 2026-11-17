@@ -21,8 +21,8 @@
 //!
 //! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, as the
 //! other corpus sweeps read them, but for the instances the tests below name,
-//! which every run reads. One test reads the flag, the sweep, and the nightly
-//! runs it by name.
+//! which every run reads. One test reads the flag, the sweep, which is run
+//! by name.
 //!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test pair_layer

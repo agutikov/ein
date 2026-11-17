@@ -3,16 +3,16 @@
 //! `eq` and `neq` are relations whose facts are computed, never stored
 //! (Q-M1e2.26), and the registry holds those two: a predicate's truth is
 //! *computed* from the bindings, where a relation's truth is *data*. Ein has no numbers and none
-//! is planned (the user, 2026-11-06, Q-M1e2.24), so no numeric, cardinality
-//! or aggregation primitive is either.
+//! is planned (Q-M1e2.24), so no numeric, cardinality or aggregation
+//! primitive is either.
 //!
 //! It is an enum with a four-function surface, because a `PredId`-indexed
 //! table is what the matcher wants and because the *set* of names is fixed:
 //! `names()` is sorted, and the blind hypothesis enumerator reserves both
 //! names, which is what stops it proposing `eq` as a graph object.
 //!
-//! **Since M1f S1f.5.7 the two are relations**, of equality and of
-//! non-equality (the user's ruling of 2026-11-07 on Q-M1e2.26): `(eq x x)` for
+//! **The two are relations**, of equality and of non-equality
+//! (Q-M1e2.26): `(eq x x)` for
 //! every value, and `(neq x y)` for every two different values, computed and
 //! never stored, so no fact, rule or commitment changes them. A guard binds a
 //! variable nothing else binds — `eq` to the other side, and `neq`, or `eq`
@@ -46,15 +46,15 @@ impl Pred {
     }
 
     /// How many arguments the predicate reads — **and therefore how many it
-    /// may be written with**, M1e S1e.2.1.
+    /// may be written with**.
     ///
     /// It lives on the predicate rather than in the compiler because that is
     /// what makes the check a property of the registry: a third predicate
     /// registered here declares its arity in the same line that declares its
-    /// name, and cannot be lowered without one. Both of M1's read exactly two
-    /// — `Matcher::guard_holds` resolves `args[0]` against
-    /// `args[1]` — and until S1e.2.1 nothing checked it: below two the matcher
-    /// panicked, above two the tail was dropped in silence.
+    /// name, and cannot be lowered without one. Both read exactly two —
+    /// `Matcher::guard_holds` resolves `args[0]` against `args[1]` — so
+    /// unchecked, below two the matcher would panic and above two the tail
+    /// would be dropped in silence.
     pub fn arity(self) -> usize {
         match self {
             Pred::Eq | Pred::Neq => 2,
@@ -82,8 +82,8 @@ pub fn names() -> [&'static str; 2] {
 }
 
 /// What a guard's variable ranges over where nothing else binds it: **the
-/// program's names** ([`crate::invariant::program_names`], the user's ruling
-/// of 2026-11-04 on Q-M1e2.9 (a)), each once, sorted by text so that no
+/// program's names** ([`crate::invariant::program_names`], Q-M1e2.9), each
+/// once, sorted by text so that no
 /// interning order reaches a guard's rows.
 ///
 /// A name only a query writes is none of them: `(query :goal (neq w ?y))`
@@ -119,7 +119,7 @@ mod tests {
     }
 
     /// Every registered predicate declares an arity, and the compiler refuses
-    /// anything else — M1e S1e.2.1, `CO-H1`'s class.
+    /// anything else.
     #[test]
     fn every_registered_predicate_declares_its_arity() {
         for name in names() {
@@ -128,8 +128,8 @@ mod tests {
         }
     }
 
-    /// **`eq` and `neq` are their definition over the program's names** (M1f
-    /// S1f.5.7, the user's ruling of 2026-11-07 on Q-M1e2.26), each argument
+    /// **`eq` and `neq` are their definition over the program's names**
+    /// (Q-M1e2.26), each argument
     /// a name of the program, a name only the query writes, or a variable,
     /// free or one the other side shares: a goal's rows are every assignment
     /// of its variables that makes the fact hold, a variable no premise binds

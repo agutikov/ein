@@ -1,6 +1,5 @@
 //! Minimal transversals of a hypergraph, and the count of the sets that hit
-//! every edge — the state route's arithmetic, M1e2
-//! [S1e2.1c.2](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md).
+//! every edge — the state route's arithmetic.
 //!
 //! A **transversal** of a family of sets (the *edges*) is a set that meets
 //! every edge. The state route asks for the minimal ones twice
@@ -11,11 +10,10 @@
 //!   when `C ⊆ S` and `C` lies under no closed proper subset of `S`;
 //! - **`N`**, the minimal dead sets, are the minimal transversals of the
 //!   complements of the maximal alive states: a set is dead exactly when it lies
-//!   under no maximal alive one. That is the duality of
-//!   [Q-M1e2.7](../../../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice),
-//!   read from the alive side.
+//!   under no maximal alive one. That is the duality of the two lines
+//!   (Q-M1e2.7), read from the alive side.
 //!
-//! ### The algorithm, a decision taken without a ruling
+//! ### The algorithm, and why it is this one
 //!
 //! **MMCS** (Murakami & Uno, *Discrete Applied Mathematics* 2014): a
 //! depth-first search that adds one vertex of an uncovered edge at a time and
@@ -24,8 +22,7 @@
 //! minimal transversal is reached once. It is chosen over Berge's sequential
 //! product, whose intermediate families can be far larger than the answer,
 //! and over Fredman & Khachiyan's quasi-polynomial dualisation, whose bound
-//! matters on inputs far larger than the corpus's. Its cost is measured, per
-//! program, on `alive_set_reach.md`'s second half, and the oracle holds its
+//! matters on inputs far larger than the corpus's. The oracle holds its
 //! output on every monotone cube it enumerates
 //! (`ein-infer/tests/region.rs`), which is what lets the argument stand: the
 //! premise is enforced by a test that fails when it stops being true.

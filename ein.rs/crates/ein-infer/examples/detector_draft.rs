@@ -1,7 +1,5 @@
-//! The detector, drafted — M1e2
-//! [S1e2.1b.5](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)'s
-//! T1e2.1b.5.1: the rows its proposal,
-//! [design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs),
+//! The detector, drafted: the rows
+//! [design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs)
 //! shows on real programs, computed here rather than written by hand.
 //!
 //! Per program:
@@ -10,7 +8,7 @@
 //!   root's tally and [`monotone::classify`], through `census::root_of`, which
 //!   is `region::prepare` as a reader outside the crate runs it; timed from the
 //!   load;
-//! - **the static detector** of the stage's (b), on a flagged program only:
+//! - **the static detector**, on a flagged program only:
 //!   the cycles through an `absent` over `D` with their parity
 //!   (`node_census`'s graph, copied), and the **order** check, new: an
 //!   `absent` rule that reads under an `absent` a relation in `D` which
@@ -68,7 +66,7 @@ use ein_infer::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
 use ein_infer::region::{self, DEAD, OWING, Topology};
 use ein_infer::saturator::{Saturator, Session};
 
-/// Every rule's priority since M1f S1f.5.15 removed the keyword: one, so the
+/// Every rule's priority, no rule having one: one, so the
 /// draft's order check reads every pair as at one priority, as the shipped
 /// detector does (`detector::order`).
 const DEFAULT_PRIORITY: i64 = 1000;
