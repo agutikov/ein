@@ -79,8 +79,8 @@ def models_file(right: dict) -> str | None:
 
 
 def owner_page(owner: str) -> Path | None:
-    stage = owner.lower()
-    for p in (REPO / "plans/m1e2_correctness").rglob(f"{stage}_*.md"):
+    """The open row's owner, a followup's page under `plans/followups/`."""
+    for p in sorted((REPO / "plans/followups").glob(f"{owner.lower()}_*.md")):
         return p
     return None
 
@@ -945,8 +945,7 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
     version = run("version", [bin, "--version"]).stdout.splitlines()
     lines = ["# The review bundle", "",
              f"> Built {date.today().isoformat()} at commit `{git_commit()}` · `{version[0] if version else bin}` · "
-             f"from [`plans/wrong_answers/register.toml`]({rel(REGISTER, page)}) — M1e2 P1e2.1, for "
-             f"[the review]({doc('plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md', page)}). "
+             f"from [`plans/wrong_answers/register.toml`]({rel(REGISTER, page)}), the open wrong answers. "
              "`build/` is gitignored: rebuild with `python3 utils/review_bundle.py`.", ""]
     if built:
         lines += ["## The register", "",
