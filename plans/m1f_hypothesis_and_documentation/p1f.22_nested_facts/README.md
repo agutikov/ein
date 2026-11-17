@@ -16,9 +16,11 @@ words), Q-M1f.395 (every object drawn once), Q-M1f.396 (sections), Q-M1f.397 (th
 the user's direction recorded in its V-5. **[S1f.22.2](s1f.22.2_the_explanation_written.md) is done**: the explanation is on the pages, with the framed
 drawings and five decisions. **Q-M1f.392 is ruled** in full: an invariance in both
 directions, a saved solution the program unchanged with the choices made, in one file. **Every question of the
-phase is ruled.** S1f.22.2, S1f.22.3 and S1f.22.4 are done. **The work is stopped here on the user's word**
-(2026-11-17, *"stop after current stage"*): S1f.22.5, save and load, and the close are not started without it.
-What waits for the user is in [`findings.md`](findings.md): N-15, N-22 and N-23 to N-28.
+phase is ruled.** S1f.22.2, S1f.22.3 and S1f.22.4 are done. The work stopped there on the user's word
+(2026-11-17, *"stop after current stage"*), and **S1f.22.5, save and load, is started on the user's word**
+(2026-11-17, *"start s1f.22.5"*); its first task ends with the user's look at the format, and the close is not
+started without the user's word. What waits for the user is in [`findings.md`](findings.md): N-15, N-22 and N-23
+to N-28.
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/` that S1f.20.10, the
 last stage of P1f.20, was still moving; that stage is done and P1f.20 is closed (2026-11-17). What P1f.20 found
 on those pages and left is [the milestone's findings page](../findings.md); its N-14 here came from there. Its
@@ -70,7 +72,7 @@ consistent explanation.
 | [S1f.22.2](s1f.22.2_the_explanation_written.md) | **The explanation, written.** In `docs/ein/reasoning/` (the knowledge base, the rewriting rules, and the pages of `02-kb-evolution/` that fire rules over nested facts), every figure of the graph with the frame, the user's pages, and the decisions | **done 2026-11-17**: `9eda1a04`, `729094b8`, `27baf9f2`, record `a9f54d25`; findings N-17 to N-21 |
 | [S1f.22.3](s1f.22.3_the_negation_of_a_negation.md) | **The negation of a negation is a fact** (Q-M1f.391): the grammar admits `(not (not g))`, the kernel is not changed, the witnesses are corpus programs, the pages follow | **done 2026-11-17**: `b1a9a635`, record `9519208a`; the gate and the parser's fuzz on both seeds exit 0; finding N-22 |
 | [S1f.22.4](s1f.22.4_every_object_drawn_once.md) | **`ein render` draws every object once** (Q-M1f.395, Q-M1f.398): a fact that a fact points at is its node, filled where held, in a frame named for the context's relation | **done 2026-11-17**: `811846ce`, record `e506bfd9`; the gate here and `utils/ci_container.sh` on the commit exit 0; findings N-23 to N-28, each the user's call |
-| [S1f.22.5](s1f.22.5_save_and_load.md) | **A saved solution loads back as itself, in both directions** (Q-M1f.392): the program unchanged with the choices made, in one file; the two invariances as tests over the corpus | planned 2026-11-17; **not started, and not to be started without the user's word**: the user, 2026-11-17, *"stop after current stage"*, S1f.22.4 running. Its first task ends with the user's look at the format |
+| [S1f.22.5](s1f.22.5_save_and_load.md) | **A saved solution loads back as itself, in both directions** (Q-M1f.392): the program unchanged with the choices made, in one file; the two invariances as tests over the corpus | **started 2026-11-17** on the user's word (*"start s1f.22.5"*); its first task ends with the user's look at the format |
 | S1f.22.6 | **The close.** | last |
 
 ## Rules of the phase

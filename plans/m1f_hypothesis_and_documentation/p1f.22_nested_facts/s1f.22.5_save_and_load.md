@@ -1,8 +1,8 @@
 # S1f.22.5 — a saved solution loads back as itself, in both directions
 
 **Phase:** [P1f.22](README.md)
-**Status:** planned 2026-11-17; **not started**. Its first task ends with the user's look at the format on real
-programs; nothing is built before it.
+**Status:** planned 2026-11-17; **started 2026-11-17** on the user's word (*"start s1f.22.5"*). Its first task
+ends with the user's look at the format on real programs; nothing is built before it.
 **Ruling:** [Q-M1f.392](../open_questions.md#q-m1f392--a-state-file-that-reads-back-dead-through-written).
 
 ## The requirement, in the user's words
