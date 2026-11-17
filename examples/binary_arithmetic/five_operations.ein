@@ -18,7 +18,7 @@
 ;;; Every claim below was computed in Python and is checked by `ein test`.
 ;;; Search-free: no candidate, one state, one saturation.
 ;;;
-;;; `docs/ein/user/04-reference/04-stdlib.md` § Binary has the theory this
+;;; `docs/ein/user/04-reference/04-stdlib/14-binary.md` has the theory this
 ;;; program requests, `std.math.binary-arith`, and its five operations'
 ;;; requests and answers.
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-sub bin-mul bin-div bin-cmp

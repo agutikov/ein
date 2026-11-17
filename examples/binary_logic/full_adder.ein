@@ -13,7 +13,7 @@
 ;;; module that declares it). A program that writes `gate` itself lists it
 ;;; from `std.bool.circuit`.
 ;;;
-;;; `docs/ein/user/04-reference/04-stdlib.md` § `std.bool.circuit`.
+;;; `docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md` § Using `std.bool.circuit`.
 (import std.bool.circuit :symbols (gate))
 (import std.bool.gates :symbols (Xor And Or))
 

@@ -18,7 +18,7 @@ this page is where the user answers on evidence.
 
 `design.md` in this directory, whole: the four stages' sections brought to one page, the proposals, and the
 questions. The model is the calculator's
-[`04-stdlib.md`](../../../docs/ein/user/04-reference/04-stdlib.md#the-calculator-stdmath): target programs, each run
+[`04-stdlib/07-calculator.md`](../../../docs/ein/user/04-reference/04-stdlib/07-calculator.md): target programs, each run
 on the release binary and shown with what the run wrote, then the conventions proposed, then the questions,
 each with a recommendation that a run supports or with none. The commit at the stop is pages only.
 

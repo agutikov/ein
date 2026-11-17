@@ -24,7 +24,7 @@ as a formula, what the algebra's laws say of the rules, and F1b's two open TODO 
 (reflexive, irreflexive, symmetric, antisymmetric, asymmetric, transitive, connex, functional, injective,
 total, surjective, difunctional, and the ones F1b's TODO names as missing: *coreflexive, etc.*), against the
 stdlib activator that gives it, read off
-[`04-stdlib.md`](../../../docs/ein/user/04-reference/04-stdlib.md) and the module. For each: whether
+[`04-stdlib/`](../../../docs/ein/user/04-reference/04-stdlib/README.md) and the module. For each: whether
 it **derives** edges (a closure), **checks** (a restriction, `(false)` on violation), or **owes** (an
 obligation); whether it is intrinsic or ranges over a typed universe; and whether it is sound open-world or
 only for a closed relation. Gaps are listed, and F1b's *"converse - what? rule?"* is answered from the

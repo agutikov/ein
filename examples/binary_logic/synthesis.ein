@@ -18,7 +18,7 @@
 ;;;
 ;;; The claim was computed in Python by enumeration.
 ;;;
-;;; `docs/ein/user/04-reference/04-stdlib.md` § Boolean functions and circuits.
+;;; `docs/ein/user/04-reference/04-stdlib/18-boolean-functions.md`.
 (import std.bool.gates :symbols (gate2 column-name Xor And Or))
 (import std.math.bits :symbols (bin-fa))
 (import std.algebra :symbols (total-owed functional))

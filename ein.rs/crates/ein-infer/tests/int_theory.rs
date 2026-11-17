@@ -1,5 +1,5 @@
 //! **`std.math.int`, held to the signed integers and to the rule of the theory**
-//! ([04-stdlib.md](../../../../docs/ein/user/04-reference/04-stdlib.md)).
+//! ([04-stdlib/11-integers-rationals-gcd.md](../../../../docs/ein/user/04-reference/04-stdlib/11-integers-rationals-gcd.md#using-stdmathint--integers)).
 //!
 //! `stdlib/math/int.ein` is the calculator's first extension: an integer is
 //! `(int P N)`, two natural numbers of `std.math.decimal-arith`, and its value is P less
