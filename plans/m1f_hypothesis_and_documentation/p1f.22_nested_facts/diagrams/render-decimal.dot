@@ -1,0 +1,27 @@
+digraph ontology {
+  ranksep=0.55;
+  newrank=true;
+  "std.math.decimal" [shape=rectangle];
+  "std.math.arith" [shape=rectangle];
+  "Apple" [shape=rectangle];
+  "Pear" [shape=rectangle];
+  "2" [shape=rectangle];
+  "z" [shape=rectangle];
+  "4" [shape=rectangle];
+  subgraph cluster_ctx_0 {
+    label="n, price ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "(n z 4)" [shape=octagon, label="n"];
+  }
+  subgraph cluster_ctx_1 {
+    label="price ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "(n (n z 4) 2)" [shape=octagon, label="n"];
+  }
+  "std.math.decimal" -> "std.math.decimal" [label="import", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "std.math.arith" -> "std.math.arith" [label="import", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Apple" -> "(n (n z 4) 2)" [label="price", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Pear" -> "(n z 4)" [label="price", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "(n (n z 4) 2)" -> "(n z 4)" [label="1"];
+  "(n (n z 4) 2)" -> "2" [label="2"];
+  "(n z 4)" -> "z" [label="1"];
+  "(n z 4)" -> "4" [label="2"];
+}
