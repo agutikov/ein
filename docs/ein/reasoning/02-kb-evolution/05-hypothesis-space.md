@@ -65,7 +65,7 @@ $$
 \operatorname{deadalone}(a) &\iff \operatorname{dead}(\lbrace a \rbrace) \\
 a \rightarrow b &\iff \operatorname{alive}(\lbrace a \rbrace) \,\land\, b \in \operatorname{cl}(\lbrace a \rbrace) \\
 a \leftrightarrow b &\iff \operatorname{alive}(\lbrace a \rbrace) \,\land\, \operatorname{alive}(\lbrace b \rbrace) \,\land\, \operatorname{cl}(\lbrace a \rbrace) = \operatorname{cl}(\lbrace b \rbrace) \\
-a \mathrel{\#} b &\iff \operatorname{alive}(\lbrace a \rbrace) \,\land\, \operatorname{alive}(\lbrace b \rbrace) \,\land\, a \not\rightarrow b \,\land\, b \not\rightarrow a \,\land\, \operatorname{dead}(\lbrace a, b \rbrace) \\
+a \perp b &\iff \operatorname{alive}(\lbrace a \rbrace) \,\land\, \operatorname{alive}(\lbrace b \rbrace) \,\land\, a \not\rightarrow b \,\land\, b \not\rightarrow a \,\land\, \operatorname{dead}(\lbrace a, b \rbrace) \\
 a \bowtie b &\iff \operatorname{alive}(\lbrace a, b \rbrace) \,\land\, \operatorname{st}(\lbrace a, b \rbrace) \not\subseteq \operatorname{st}(\lbrace a \rbrace) \cup \operatorname{st}(\lbrace b \rbrace)
 \end{aligned}
 $$
@@ -76,13 +76,13 @@ $$
 | **dead alone** | the node $\lbrace a \rbrace$ | it is dead |
 | **implies**, $a \rightarrow b$ | the node $\lbrace a \rbrace$, alive | $b$ is in its closure: committing $a$ brings $b$ |
 | **equivalent**, $a \leftrightarrow b$ | two alive single nodes | one closure |
-| **excludes**, $a \mathrel{\#} b$ | the node $\lbrace a, b \rbrace$, each alive alone, neither implying the other | it is dead |
+| **excludes**, $a \perp b$ | the node $\lbrace a, b \rbrace$, each alive alone, neither implying the other | it is dead |
 | **interacts**, $a \bowtie b$ | the same node, alive | its state holds a fact that neither $\lbrace a \rbrace$'s nor $\lbrace b \rbrace$'s does |
 
 The excluded pairs are the minimal dead sets of two candidates:
 
 $$
-X \;=\; \lbrace\, \lbrace a, b \rbrace : a \mathrel{\#} b \,\rbrace \;=\; \lbrace\, D \in N : \lvert D \rvert = 2 \,\rbrace
+X \;=\; \lbrace\, \lbrace a, b \rbrace : a \perp b \,\rbrace \;=\; \lbrace\, D \in N : \lvert D \rvert = 2 \,\rbrace
 $$
 
 **A candidate's mark** is what root says of it alone: *at root*, *dead alone*, or *alive alone*. A candidate alive
@@ -146,7 +146,7 @@ $$
 
 The commitments are over the same $H$, root's: the small KB's own candidate set would be another program's. Every
 object of the pair layer has its twin there, written with the same mark: $\operatorname{dead}^{\circ}$,
-$\mathrel{\#}^{\circ}$, $X^{\circ}$.
+$\perp^{\circ}$, $X^{\circ}$.
 
 $$
 \operatorname{theory}(\lbrace a, b \rbrace) \iff \operatorname{dead}^{\circ}(\lbrace a, b \rbrace), \qquad
@@ -162,15 +162,19 @@ member dead alone at root.
 **Which statements are the puzzle's** nothing declares; $\operatorname{Puz}(P)$ is read off the candidates. Let
 $F \subseteq K_0$ be the facts the program states, $\operatorname{Rel}(H)$ the candidates' relations,
 $O_H$ the names the candidates hold as arguments, and $\operatorname{Rd}$ the relations the rung that built $H$
-reads at root. A stated fact $f$ is in $\operatorname{Puz}(P)$ when
+reads at root. For $f \in F$, with $\operatorname{names}(f)$ the names $f$ holds as arguments:
 
 $$
-\begin{aligned}
-& \operatorname{rel}(f) \in \operatorname{Rel}(H) && \text{a given, stated or denied} \\
-\text{or, where the program's own rules or obligations built } H:\quad & \operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd} \\
-\text{or, where the blind enumerator built } H:\quad & f \text{ names a relation of } \operatorname{Rel}(H) \text{ and a name of } O_H \text{, or two names of } O_H
-\end{aligned}
+f \in \operatorname{Puz}(P) \iff \operatorname{rel}(f) \in \operatorname{Rel}(H) \;\;\lor\;\;
+\begin{cases}
+\operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd} & \text{where hypothesis rules or obligations built } H \\
+\lvert \operatorname{names}(f) \cap O_H \rvert \ge 2 \;\lor\; \big( \operatorname{names}(f) \cap O_H \neq \emptyset \,\land\, \operatorname{names}(f) \cap \operatorname{Rel}(H) \neq \emptyset \big) & \text{where the blind enumerator built } H
+\end{cases}
 $$
+
+The first disjunct is a given: a fact of a relation a candidate is of, stated or denied. The second is a clue about
+the candidates' objects: on the program's own rungs, any other fact that names one of them; under the blind
+enumerator, only a fact that names two of them, or one of them with a candidates' relation.
 
 A fact that names none of them is kept: a declaration that names a relation and no object speaks of the relation
 whole. A fact of a relation the rung reads says what the universe is made of, and is kept. What loading records of a
@@ -320,7 +324,7 @@ excludes, of which one implies the other, or that interact:
 
 $$
 \operatorname{Ties} \;=\; \lbrace\, \lbrace a, b \rbrace \subseteq H^{\mathrm{o}} \;:\; \nexists q \in Q.\; \lbrace a, b \rbrace \subseteq q,\;\;
-a \mathrel{\#} b \,\lor\, a \rightarrow b \,\lor\, b \rightarrow a \,\lor\, a \bowtie b \,\rbrace
+a \perp b \,\lor\, a \rightarrow b \,\lor\, b \rightarrow a \,\lor\, a \bowtie b \,\rbrace
 $$
 
 And **the whole node**, root with every open candidate committed, with every rule application of its saturation:

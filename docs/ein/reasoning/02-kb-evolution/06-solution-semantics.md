@@ -463,7 +463,7 @@ What makes a shorter description exact is a property of the program, in order:
 
 [Monotone and non-monotone programs](08-monotonicity.md) writes the same ladder from the non-monotone side.
 
-### 2.2 ∅
+### 2.2 The empty commitment
 
 $$
 \emptyset \in R \iff \operatorname{alive}(\mathrm{root}) \land \operatorname{discharged}(\mathrm{root})

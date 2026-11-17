@@ -261,12 +261,14 @@ There is no licence numbered six.
 *L0.* $\operatorname{st}(C) \supseteq \mathrm{root}$ for every $C$, and a contradiction is facts.
 
 *L1, L2, L3* are the three properties. L2 follows from the second: $C$ is discharged, so $C'$ is, and $C'$ is alive
-by assumption. L3 is the third: $\operatorname{cl}(C)$ adds to $C$ only facts $\operatorname{st}(C)$ already holds.
+by assumption. L3 is the third: $\operatorname{cl}(C)$ adds to $C$ only facts $\operatorname{st}(C)$ already holds,
+so saturating with them added derives nothing more and, the state being monotone in the commitment, nothing less.
 
 *L4.* If some $C' \in R$ had $C' \supsetneq s$, then for $b \in C' \setminus s$ the node
-$s \cup \lbrace b \rbrace \subseteq C'$ would be alive, by L1 read downward. If some $C' \in R$ had
-$C' \subsetneq s$, then for $b \in s \setminus C'$ the node $s \setminus \lbrace b \rbrace \supseteq C'$ would be
-alive, being below $s$, and discharged, by L2.
+$s \cup \lbrace b \rbrace \subseteq C'$ would be alive, by L1 read downward, and the premise says it is dead. If
+some $C' \in R$ had $C' \subsetneq s$, then for $b \in s \setminus C'$ the node
+$s \setminus \lbrace b \rbrace \supseteq C'$ would be alive, being below $s$, and discharged, by L2, and the premise
+says it owes.
 
 *L5.* Let $C$ owe $I$ and let $D \supseteq C$ be a member of $R$. On a monotone program the trigger of $I$ reads only
 relations no commitment changes, so $I$ is an instance at $D$ too, and $D$ is discharged, so the witness of $I$ holds
@@ -324,8 +326,8 @@ digraph licences {
   subgraph cluster_l4 {
     label="L4: {c2, t} in R, both extensions dead; maximal concluded"; fontsize=10; color="#006d2c";
     s [label="{c2, t}\nevaluated: in R", fillcolor="#a1d99b", penwidth=2];
-    s1 [label="{c1, c2, t}\ndead", fillcolor="#fcbba1"];
-    s2 [label="{c2, t, m}\ndead", fillcolor="#fcbba1"];
+    s1 [label="{c1, c2, t}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
+    s2 [label="{c2, t, m}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
     s3 [label="every proper superset\ndead by L1: {c2, t} is maximal", shape=box, fillcolor="#f7f7f7", style="filled,dashed"];
     s -> s1; s -> s2; s1 -> s3; s2 -> s3;
   }
