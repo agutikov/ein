@@ -1,0 +1,15 @@
+digraph ctx_marks {
+  rankdir=TB; nodesep=0.45; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "think"; "Alice"; "says"; "Bob"; "="; "5"; "4"; "+"; "2";
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  t [xlabel="t"]; b [xlabel="b"]; h [xlabel="h"];
+  e [xlabel="e", shape=doubleoctagon, width=0.36, height=0.36];
+  s [xlabel="s", shape=doubleoctagon, width=0.36, height=0.36, style=solid];
+  t -> "think" [label="1"]; t -> "Alice" [label="2"]; t -> e [label="3"];
+  b -> "says" [label="1"]; b -> "Bob" [label="2"]; b -> e [label="3"];
+  e -> "=" [label="1"]; e -> "5" [label="2"]; e -> s [label="3"];
+  h -> "=" [label="1"]; h -> "4" [label="2"]; h -> s [label="3"];
+  s -> "+" [label="1"]; s -> "2" [label="2"]; s -> "2" [label="3"];
+}

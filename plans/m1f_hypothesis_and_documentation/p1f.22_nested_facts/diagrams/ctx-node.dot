@@ -1,0 +1,16 @@
+digraph ctx_node {
+  rankdir=TB; nodesep=0.45; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "think"; "Alice"; "says"; "Bob"; "="; "5"; "4"; "+"; "2";
+  K [shape=doublecircle, label="K", width=0.35, height=0.35, fixedsize=true];
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid];
+  t [xlabel="t"]; b [xlabel="b"]; e [xlabel="e"]; h [xlabel="h"]; s [xlabel="s"];
+  K -> t [style=dashed, arrowhead=empty]; K -> b [style=dashed, arrowhead=empty];
+  K -> e [style=dashed, arrowhead=empty]; K -> h [style=dashed, arrowhead=empty];
+  t -> "think" [label="1"]; t -> "Alice" [label="2"]; t -> e [label="3"];
+  b -> "says" [label="1"]; b -> "Bob" [label="2"]; b -> e [label="3"];
+  e -> "=" [label="1"]; e -> "5" [label="2"]; e -> s [label="3"];
+  h -> "=" [label="1"]; h -> "4" [label="2"]; h -> s [label="3"];
+  s -> "+" [label="1"]; s -> "2" [label="2"]; s -> "2" [label="3"];
+}

@@ -1,0 +1,22 @@
+digraph ctx_frame {
+  rankdir=TB; nodesep=0.45; ranksep=0.6; newrank=true;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "think"; "Alice"; "says"; "Bob"; "="; "5"; "4"; "+"; "2";
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid];
+  subgraph cluster_K {
+    label="K, the global context"; labeljust=l; style="rounded"; color="#555555"; fontname="Helvetica"; fontsize=10; fontcolor="#555555";
+    node [style=filled, fillcolor="#d9d9d9"];
+    t [xlabel="t "]; b [xlabel="b "]; e [xlabel="e "]; h [xlabel="h "];
+  }
+  s [xlabel="s ", style=solid];
+  { rank=same; t; b; h; }
+  { rank=same; "think"; "Alice"; "says"; "Bob"; "4"; e; }
+  { rank=same; "="; "5"; s; }
+  { rank=same; "+"; "2"; }
+  t -> "think" [label="1"]; t -> "Alice" [label="2"]; t -> e [label="3"];
+  b -> "says" [label="1"]; b -> "Bob" [label="2"]; b -> e [label="3"];
+  e -> "=" [label="1"]; e -> "5" [label="2"]; e -> s [label="3"];
+  h -> "=" [label="1"]; h -> "4" [label="2"]; h -> s [label="3"];
+  s -> "+" [label="1"]; s -> "2" [label="2"]; s -> "2" [label="3"];
+}
