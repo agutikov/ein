@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Does a documentation page still describe the engine that ships? (M1e S1e.2.2)
 
-`docs/kernel/` is the only statement of intent in this repo that is not also
+`docs/ein/` is the only statement of intent in this repo that is not also
 the implementation, so a claim there is checked by `cargo test --workspace` and
 by nothing else — which means a page nothing runs is a page nothing checks.
 [S1a.10.6] was a doc pass and it missed **every** page of `CD-H1`, for a reason
@@ -14,10 +14,10 @@ every page, none of which needs to know what changed:
 
     python3 utils/doc_audit.py                  # all three, as a report
     python3 utils/doc_audit.py --links --check --tracked   # the gate step, decision ids too
-    python3 utils/doc_audit.py --inbound --tracked [--target docs/kernel]
+    python3 utils/doc_audit.py --inbound --tracked [--target docs/ein/]
     python3 utils/doc_audit.py --identifiers -k ein.rs/lattice-dump.md
 
-The default tree is `docs/kernel`, which is what the three questions are
+The default tree is `docs/ein`, which is what the three questions are
 *about*. The **links** half is not — a relative link resolves or it does not
 wherever it is written — so it takes any number of directories and files, or
 `--tracked`: every file `git ls-files` lists of the four kinds it reads.
@@ -37,7 +37,7 @@ the referrer and its line:
 - **`corpus/corpus.toml`**: every bare path in the file.
 
 A bare path starts at a top-level directory of the repository
-(`docs/kernel/README.md`), or at a crate's directory, which the repo writes
+(`docs/ein/README.md`), or at a crate's directory, which the repo writes
 short for `ein.rs/crates/<crate>/` (`ein-cli/tests/gate_steps.rs`), and names
 a file with an extension or a directory with a trailing `/`: `tests/stdlib/
 typing/03` is a prefix, not a path, and `ein-corpus/2` a schema. A path with
@@ -110,18 +110,17 @@ list, and it is **noisy on purpose**: it reports rather than fails, because
 distinguishes them from ones that are. A human skims the list; the signal is a
 name that *looks* like the engine's and is not there.
 
-**states** — every page declares which of the three states it is in
-(`docs/kernel/README.md` § Which pages to trust). *current* is the default and
-carries no banner, so what this reports is the pages that **do** claim to be
-superseded, for comparison against that README's table.
+**states** — a page of `docs/ein/` is current or it is deleted: none keeps a
+banner saying it is superseded or historical. *current* carries no banner, so
+what this reports is the pages that **do** carry one, which under `docs/ein/`
+should be none.
 
 **The links half is a gate step**, `--links --check --tracked`, the decision
 ids with it. The other two report and do not fail: `--check` exits 1 on the
 unambiguous half alone (links, prose §-references and decision ids).
 
-What this cannot check, and what the checklist in `docs/kernel/README.md`
-§ Keeping this true asks a reader to do by hand: run the commands a page
-shows. Four of S1e.2.2's findings were *invocations* — a CLI line producing
+What this cannot check, and what `AGENTS.md` asks a reader to do by hand:
+run the commands a page shows. Four of S1e.2.2's findings were *invocations* — a CLI line producing
 neither artifact it names, `(instnce ?a ?T)` claimed to be a parse error — and
 the only instrument for those is a shell.
 
@@ -140,7 +139,7 @@ from urllib.parse import unquote
 
 REPO = Path(__file__).resolve().parents[1]
 CRATES = REPO / "ein.rs" / "crates"
-DEFAULT_TREE = REPO / "docs" / "kernel"
+DEFAULT_TREE = REPO / "docs" / "ein"
 #: Third-party source, edited only through a patch: its doc links are
 #: rustdoc's, relative to the rendered HTML rather than to the file.
 VENDOR = REPO / "ein.rs" / "vendor"
@@ -739,7 +738,7 @@ def main() -> int:
         "tree",
         nargs="*",
         help="directories to walk for .md pages, and single files of the four "
-        "kinds; default docs/kernel, or nothing beside --tracked",
+        "kinds; default docs/ein, or nothing beside --tracked",
     )
     ap.add_argument("--links", action="store_true")
     ap.add_argument("--identifiers", action="store_true")
@@ -875,8 +874,7 @@ def main() -> int:
         print("   whole-page banner from one scoping a single section:")
         for p, n in marked:
             print(f"     {n}× {rel(p)}")
-        print("   compare against docs/kernel/README.md § Which pages to trust,")
-        print("   which names the whole-page ones and there are three")
+        print("   a page of docs/ein/ keeps none: it is current or it is deleted")
 
     return 1 if (args.check and failures) else 0
 

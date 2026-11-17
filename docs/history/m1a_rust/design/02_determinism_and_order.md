@@ -175,7 +175,7 @@ and
 
 `Value` has a total order by construction, so the sort always answers:
 `Int < Sym < Fact` by tag, then within a tag
-([defined_behaviour.md §2.1](../../../kernel/defined_behaviour.md#21-fact-arguments-are-totally-ordered-int--sym--fact)).
+([values-and-order.md § Values are totally ordered](../../../ein/reasoning/static-ir/values-and-order.md#values-are-totally-ordered)).
 
 ### H3 — `--shuffle` is one seeded generator across layers
 
@@ -187,7 +187,7 @@ seed's absolute value split into 32-bit words, least significant first —
 and the shuffle is a downward Fisher–Yates that, for `i` from `len − 1`
 down to 1, swaps `x[i]` with `x[randbelow(i+1)]`, `randbelow` drawing by
 rejection from `getrandbits` (`ein-infer/src/mt19937.rs`,
-[defined_behaviour.md §3](../../../kernel/defined_behaviour.md#3-search)).
+defined_behaviour.md §3).
 ≈ 60 lines, deterministic, pinned by a table of draws.
 
 **Confirmed at S1a.0.1**: two `--shuffle` runs at the same seed are

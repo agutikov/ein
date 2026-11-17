@@ -44,7 +44,7 @@ shape without anyone writing it: a macro whose body is an `(and …)`, called as
 
 **Where "one of" lives instead.** A rule asserts no disjunction; *A or B* is said to the hypothesis layer, an
 hrule's proposals or an obligation `(open R)` and the candidates that discharge it, and each alternative is a
-state of R ([`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)). A formula as an
+state of R ([`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)). A formula as an
 object, `(And X Y)` written with ordinary names, is M1g's
 ([S1g.3.3](../../m1g_logic/p1g.3_proof_systems/s1g.3.3_natural_deduction.md)): to the engine it is an atom like
 any other.

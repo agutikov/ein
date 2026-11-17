@@ -47,7 +47,7 @@ test holds it), **refuted** (the probe came back the other way, and the probe is
 banked), **accepted** (real, deliberately left, with the reason at the site),
 **deferred** (real, out of scope, with a named owner). The rules for which one a
 finding may take were ratified on 2026-08-28 and live in
-[`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md),
+[`docs/ein/standard-of-proof.md`](../../ein/standard-of-proof.md),
 not here. A **behaviour** is refuted only by a banked probe, an **absence** by
 naming the thing that checks it, and a **risk** not by argument at all. An
 argument holds only while its premise is enforced, and since
@@ -60,13 +60,13 @@ named test enforce the premise, or something adjacent to it?*
 |---|---|
 | **The ledger is full** | all 63 findings dispositioned and all ten questions answered. § [The findings](#the-findings) is the ledger as it closed |
 | **No known panic on a well-formed program** | `CO-H1`'s class swept (21 cells, seven wrong) and refused at compile time; `CO-L1`'s three-line exit-101 program a load error. [`diagnostics.md` § 2.5](../../ein/user/reference/diagnostics.md#25-the-stores-own-limits) |
-| **One list per semantics** | `AR-M1`'s four parallel-copy pairs unified or diffed by a test, and the rule written as [`architecture.md` § One artifact, one owner](../../kernel/architecture.md), with the legitimate case (`SE-L2`'s rename) beside it |
+| **One list per semantics** | `AR-M1`'s four parallel-copy pairs unified or diffed by a test, and the rule written as [`architecture.md` § One artifact, one owner](../../ein/ein.rs/architecture.md#6-one-artefact-one-owner), with the legitimate case (`SE-L2`'s rename) beside it |
 | **`docs/kernel` triaged page by page** | 40 pages: 37 current, 3 with a banner, 0 moved. The whole tree at **0** broken links, anchors and prose `§x.y`, and the link sweep is the gate's seventh static step |
 | **The verdict read-out has one owner** | `Verdict::read_out`. The `k`-vs-`solution_nodes` seam was nine copies over three surfaces |
 | **Every recorded state is a fixpoint of its own rules** | `record_node` re-saturates a dirty KB and refuses one its rules then refute (`CO-M1`). 2 067 of 2 149 corpus records were dirty, 6 refuted, at ≤ 1.08× |
 | **The gate is not softer than CI, and its floors are derived** | `gate_steps.rs` diffs `run_tests.sh` against the workflow; the corpus floors read off the manifest; no silent skip (`require_python3`) |
 | **Two censuses that ran when remembered now run nightly** | `stdlib_census.py --check` and the new [`stdlib_mutants.py`](../../../utils/stdlib_mutants.py) (157 of 217 mutants killed; 48 of 60 survivors in `slots.ein`) |
-| **Pages that did not exist** | [`config.md`](../../ein/user/reference/config.md) (17 flags, 52 options, the `EIN_*` census) and [`solution_semantics.md`](../../kernel/inference/solution_semantics.md) (what a solution is, and what a model is) |
+| **Pages that did not exist** | [`config.md`](../../ein/user/reference/config.md) (17 flags, 52 options, the `EIN_*` census) and [`solution-semantics.md`](../../ein/reasoning/kb-evolution/solution-semantics.md) (what a solution is, and what a model is) |
 | **A rule about numbers** | [Q-M1e.4](open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all): an exact count in prose carries the command that re-takes it, the date it was taken, or the test that pins it, or it is not written |
 
 The gate went from **738 tests** at the review's base to **821 over 93
@@ -162,7 +162,7 @@ and it satisfied M1f S1f.5.6's hard dependency.
 ### S1e.1.4 — Q-M1a.8's real trigger: Q3
 
 `CD-H3` taken as all three outcomes at once. The doc correction:
-[`defined_behaviour.md`](../../kernel/defined_behaviour.md) §3.2 rewritten to
+`defined_behaviour.md` §3.2 rewritten to
 the shape that reproduces, and the same claim corrected in nine other places.
 `Q-M1a.8` closed as stated: the `int` reaches the key, and a nested `Fact`
 collides harmlessly. And a **different** engine bug: an `int` *beside* a
@@ -391,7 +391,7 @@ on 2026-08-29.
 
 ### S1e.5.1 — The configuration reference
 
-[`docs/kernel/config.md`](../../ein/user/reference/config.md), pinned by
+[`docs/ein/user/reference/config.md`](../../ein/user/reference/config.md), pinned by
 `config_reference.rs`, whose defaults block **is** `ein solve --dump-config`'s
 output. Five of the stage's own reconnaissance numbers were wrong. There are
 **52** CLI options across eleven parsers, not 50. **Six** options shadow five
@@ -402,7 +402,7 @@ claim about `zebra2`). And **two flags are inert**, not probes, which is
 
 ### S1e.5.2 — What a solution is, and what a model is
 
-[`solution_semantics.md`](../../kernel/inference/solution_semantics.md),
+[`solution-semantics.md`](../../ein/reasoning/kb-evolution/solution-semantics.md),
 taken first and out of order because Q5 needed a definition to derive
 against. It states the vocabulary, the operational form (*a maximal alive
 commitment*), the worked `lattice/02`, and § 6 on where `complete()` differs from
@@ -439,7 +439,7 @@ one.
 | `SE-M2` | the `Aborted` summary breaks the no-sometimes-fields principle | [S1e.3.2](#s1e32--semantics-medium) | **fixed 2026-08-31 at the seam**: `build_aborted` is now `build` with an `Answer::Aborted`, so *every arm emits the same key set* holds by construction and not by inspection. It was **three** asymmetries, not the review's two — `verdict.reason` existed only on the aborted arm, which is the same rule broken in the other direction, and it is `null` everywhere else now. `the_summary_has_one_shape_on_every_arm` compares the key frame across the four verdict words and the abort; its control (`reason` pushed conditionally again) fails it |
 | `SE-M3` | tree-traversal reporting semantics under-specified relative to the shipped surface | [S1e.3.2](#s1e32--semantics-medium) | **documented 2026-08-31** — [`events.md` § `traversal`](../../ein/ein.rs/events.md) and [`config.md` § What `EIN_TRAVERSAL=tree` reports](../../ein/user/reference/config.md), independent of `T1d.10.6.4` as the stage required. **Five** shipped facts, not four: the fifth is that `ein test` can never mark a claim `held` on a program the tree accepts, because an expectation is a claim about the *exhausted* answer and a tree reports `exhausted = false` by design — `0 held, 1 not checked`, exit 1, where the lattice holds the same claim. Also new: `enter` / `layer` / `nogood` / `writeback` are **not emitted at all** under this traversal, so the enterings are invisible in a stream that still counts them |
 | `ST-M1` | the M1 alive-set invariant — the warrant for state-key dedup — is enforced nowhere | [S1e.3.3](#s1e33--state-model-medium) | **checked 2026-08-31, and the invariant is false.** [`ein-infer/src/invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs) reads the rules' `:assert` constants at load — **static**, not the post-fixpoint scan the finding asked for, because that form is free (**7 µs** on `zebra2`), total (it answers for every run the program could have) and finds every breach the scan finds. **Two corpus programs break it**, `mixed-type-hypothesis.ein` and `tests/stdlib/algebra/07_schroder.ein`, and neither pays for it — one drives the hrule rung, the other fires before `alive₀` is taken. What a breach costs is an **answer**: `examples/ein-bugs/alive-set-fresh-name.ein` says `k = 0, exhausted = true`, *No solution*, where a model exists, and its `-declared` twin is the same file plus one fact naming the invented object and answers `Solution k = 1` over that model. Reported as a `warn` event, the disposition `warn_derived_naf` already carries; the defect is [Q-M1e.21](open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) |
-| `AR-M1` | hand-maintained parallel copies as the recurring drift mechanism — four pairs, one already bit | [S1e.3.4](#s1e34--architecture-medium) | **fixed 2026-08-30**, three of the four pairs here (reserved names were S1e.2.1's, the macro pipeline is `CO-M4`'s): the entering event **unified**, the gate lists **compared by a test**, the read-out **unified**. The rule is now a page section rather than a plan paragraph — [`architecture.md` § One artifact, one owner](../../kernel/architecture.md), five rows with what each cost, and the **legitimate** case (`SE-L2`'s two `RESERVED` sets, where the fix is a rename) with the test for telling the two apart |
+| `AR-M1` | hand-maintained parallel copies as the recurring drift mechanism — four pairs, one already bit | [S1e.3.4](#s1e34--architecture-medium) | **fixed 2026-08-30**, three of the four pairs here (reserved names were S1e.2.1's, the macro pipeline is `CO-M4`'s): the entering event **unified**, the gate lists **compared by a test**, the read-out **unified**. The rule is now a page section rather than a plan paragraph — [`architecture.md` § One artifact, one owner](../../ein/ein.rs/architecture.md#6-one-artefact-one-owner), five rows with what each cost, and the **legitimate** case (`SE-L2`'s two `RESERVED` sets, where the fix is a rename) with the test for telling the two apart |
 | `AR-M2` | verdict read-out ownership split across three crates | [S1e.3.4](#s1e34--architecture-medium) | **fixed 2026-08-30 — the seam, and it had nine copies rather than two.** `Verdict::read_out` carries the count and the qualifier; `render_solution_table` **drops** its `solution_nodes` parameter, so an arm has nothing to choose with. Beside the count, the same `match` was hand-written for *which branches are distinct models* (three, one of them documenting itself as a copy), *which states does a verdict carry* (three) and *`Aborted` falls back to the counter* (three) — nine sites, three functions. The refactor's own cost was **measured first and was zero**: the printed count equals `verdict.k` on all 230 corpus runs that render a table, before and after |
 | `EH-M1` | artefact-write failures never affect the exit code | [S1e.3.5](#s1e35--error-handling-medium) | **reproduced** 2026-08-29 by [S1e.1.6](#s1e16--what-nothing-pins-q8-q9-q10)'s sweep, **ruled 2026-08-31**: the exit code stays, and that is now a written contract with a test rather than an accident with five spellings — [`diagnostics.md` § 2.4](../../ein/user/reference/diagnostics.md#24-an-artefact-flags-failure), `ein-cli/tests/artefact_contract.rs`. What had no defence was the *message*: four flags, four diagnostics, three of them a bare OS error on a run that may carry three artefact flags. One shape now — `error: --<flag> <path>: <os error>`. And the sweep's *empty path* half was worse than reported: `--dump-states ""` **succeeded**, dropping four artefacts into the caller's working directory, because `create_dir_all("")` is `Ok`. Empty is a usage error now, exit 2, on all five. The exit-code residue is [Q-M1e.22](open_questions.md#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own), filed with `TE-M4` |
 | `EH-M2` | `$EIN_STDLIB` accepted with no validation while the checkout walk requires the marker | [S1e.3.5](#s1e35--error-handling-medium) | **fixed 2026-08-31**: the override must carry `MANIFEST.sha256`, the marker the walk already required, and the refusal names the variable, the path and what is missing — where a typo used to surface as *module not found at &lt;path&gt;/algebra.ein*, a true sentence naming the module rather than the cause. Asked at the first `std.*` import, so a program importing nothing from the stdlib is unaffected; `ein --version` still prints `unreadable` rather than refusing. The `current_exe()` walk is **kept with a written reason** ([`docs/install.md`](../../ein/user/install.md)): the stage's preferred guard — warn when the resolved manifest differs from the embedded one — fires on the *normal* state of stdlib development, which is how a warning gets turned off. All three tiers now have a test that cannot skip: `resolve` is `resolve_with(from, override)` plus one line that reads the environment |

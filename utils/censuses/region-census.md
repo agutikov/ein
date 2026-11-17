@@ -4,8 +4,8 @@
 reaches, put on the table beside the rulings of
 [Q-M1e2.7](../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice).
 The definition it measures is
-[`solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md),
-rewritten by the same stage.
+[`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md),
+which states it today.
 
 ```sh
 python3 utils/region_census.py --all --levers --json rows.json   # 191 s on 12 jobs

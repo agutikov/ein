@@ -71,7 +71,7 @@ scanned,** and they are where a program that loads today and would be refused ca
 5. **T1f.6.23.5 — the sweep.** Old release binary against new over every tracked `.ein` file, `ein solve`
    and `ein saturate --dump`: nothing moves but T2's witnesses and what T1's census named. Anything else that
    moves is shown before a golden is blessed; every golden expected to move is named in the record first.
-6. **T1f.6.23.6 — the pages:** [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md), a section
+6. **T1f.6.23.6 — the pages:** `defined_behaviour.md`, a section
    of its own under the next free number; `01_grammar.md` § Relation, that a declaration's argument list is
    held; the calculator's module pages, whose table of malformations loses its wrong-count rows to *refused
    at load*; `examples/README.md` for the witnesses; `AGENTS.md`; E-2's row of [`findings.md`](findings.md)

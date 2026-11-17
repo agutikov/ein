@@ -65,7 +65,7 @@
 #   check_hashmap_iteration.py    no hash-map iteration at an observable site
 #   doc_audit.py --links --check  **264** dangling links and nonexistent
 #                                 anchors the first time it ran over the whole
-#                                 tree rather than over `docs/kernel/` — 251 of
+#                                 tree rather than over the docs tree — 251 of
 #                                 them in one milestone record that had moved
 #                                 out of `plans/` (M1e S1e.3.8, `DO-M2`); 15
 #                                 more when it read the links of Rust comments
@@ -755,7 +755,7 @@ if [[ "${CHECKS}" == 1 ]]; then
 
     # Every tracked file that refers to another: each `.md`'s links, the links
     # in a Rust comment, and the bare paths in a `.ein` comment and in
-    # `corpus/corpus.toml`. Not scoped to `docs/kernel/`, which `doc_audit.py`
+    # `corpus/corpus.toml`. Not scoped to `docs/ein/`, which `doc_audit.py`
     # defaults to: a relative link resolves or it does not wherever it is
     # written, and a page that moves takes every reference to it along. With
     # them, every decision id the project cites names exactly one file under

@@ -491,7 +491,7 @@ The **kernel** pages define the verdict by `k` and never mention exhaustion:
 `k = 0 → Contradiction` in
 [`reserved-engine-strings.md`](../../ein/ein.rs/reserved-engine-strings.md),
 `Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)` in
-[`architecture_and_algorithms.md`](../../kernel/inference/architecture_and_algorithms.md).
+`architecture_and_algorithms.md`.
 By those, the engine is correct as written.
 
 So this is not a doc-versus-code defect anybody can just fix. It is a
@@ -519,7 +519,7 @@ none of them would be lying.
   `k = 0` is a budget cut. Sound, and the honest reading of the api page. It
   moves every checked-in fixture that reports one — the corpus exit golden
   (`Contradiction` exits 0, an abort exits 2), `corpus_shapes.md5`, the trace
-  goldens, and [`features.md`](../../kernel/inference/features.md)'s lever
+  goldens, and `features.md`'s lever
   tables, which are *written in* the current word.
 - **(b) Keep the verdict, qualify the rendering.** One clause — "no solution
   **found**; the lattice was not exhausted (`-m 5`)" — and `summary.json`

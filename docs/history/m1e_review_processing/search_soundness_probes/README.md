@@ -158,7 +158,7 @@ which changes what several of the others are about.
 ### Task T1e.1.1.1 — Ratify the standard of proof — **both rules** ✅
 
 > **Done 2026-08-28.** Both rules are
-> [`docs/kernel/standard-of-proof.md`](../../../ein/standard-of-proof.md),
+> [`docs/ein/standard-of-proof.md`](../../../ein/standard-of-proof.md),
 > the register marks both questions decided, the milestone README carries the
 > one-line version, and `docs/kernel/README.md` points at the page from its
 > load-bearing-claims note and its Conventions.
@@ -191,7 +191,7 @@ here.
 Write both into `open_questions.md` as **decided**, with the date; add the
 one-line version of each to the milestone README's disposition table; and put
 the rules themselves in `docs/kernel/` prose, with
-[`defined_behaviour.md`](../../../kernel/defined_behaviour.md) the
+`defined_behaviour.md` the
 likelier home now that Q3 is amending it and [D9](d9_kernel_page_overclaims.md)
 is re-drafting its neighbour.
 

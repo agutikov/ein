@@ -738,9 +738,9 @@ milestone cites them across the boundary, as M1f does.
   held by `ein-cli/tests/wrong_answers.rs`.
 - [M1e](../../docs/history/m1e_review_processing/README.md): where most of these were found
   and filed.
-- [`docs/kernel/inference/solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md):
+- [`docs/ein/reasoning/kb-evolution/solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md):
   the definition every right answer is derived against.
-- [`docs/kernel/standard-of-proof.md`](../../docs/ein/standard-of-proof.md):
+- [`docs/ein/standard-of-proof.md`](../../docs/ein/standard-of-proof.md):
   what *fixed*, *refuted* and *not-wrong* have to rest on.
 - [M2 P2.1](../m2_nl_to_ir/p2.1_kernel_as_instrumentation/README.md): the
   next consumer of the verdict vocabulary, and the reason a false

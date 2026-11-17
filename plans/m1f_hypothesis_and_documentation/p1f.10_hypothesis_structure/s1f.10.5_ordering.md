@@ -190,7 +190,7 @@ whose `--single`, `-n`, `--minimal` or `--maximal` names L5:
 
 | golden | which part | re-banked by |
 |---|---|---|
-| [`docs/kernel/inference/read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md) | every example under a mode whose route is the tree: the `route` row, which gains the order's words on every one of them, and the `work` row and the state's `from {…}` where the order moves the nodes | `python3 utils/read_out_examples.py` |
+| [`docs/ein/user/reference/read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md) | every example under a mode whose route is the tree: the `route` row, which gains the order's words on every one of them, and the `work` row and the state's `from {…}` where the order moves the nodes | `python3 utils/read_out_examples.py` |
 | `ein-render/tests/golden/corpus_shapes.md5` | for each such program its `read-out[…]`, `region-trace`, `region-lattice` and `cores[…]` lines of the modes, and no `states` line and no describe's line | `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance` |
 | `ein-render/tests/golden/trace_*.md` | a trace of a mode that takes the tree | `EIN_BLESS=1 cargo test … -p ein-render --test golden_trace` |
 | `README.md` and `docs/guide/04_solving_the_whole_puzzle.md`, the marked transcript | `ein solve examples/zebra2.ein --single`: the `route` row, and the `work` row and `from {…}` if they move | `EIN_BLESS=1 cargo test … -p ein-cli --test guide_transcripts` |

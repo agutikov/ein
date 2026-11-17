@@ -309,8 +309,8 @@ is more than 1-D `next-to`.
 
 Connection: [idea 06](../ideas/06-inference-rules-completeness.md)
 §rule families, M1 P1.3 S1.3.1
-(rule presentation language), [`docs/ir.md` §3 predicate
-registry](../../docs/kernel/README.md), [F1](f1_categorical_formulation.md).
+(rule presentation language), `docs/ir.md` §3 predicate
+registry, [F1](f1_categorical_formulation.md).
 
 ## Variable typing via `:match (is-a ?var Type)` (Q35)
 
@@ -618,6 +618,6 @@ way" until 2026-08-20; they now record the measurement instead.
 
 **Trigger.** Any work that touches `open_hypotheses` / `complete` — or the
 first user who reports `Contradiction` on a satisfiable puzzle. Related:
-[`docs/kernel/inference/features.md`](../../docs/kernel/inference/features.md)
+`docs/kernel/inference/features.md`
 (the measurement), [F9](f9_e_catalog.md) (where the search layer's other
 levers were settled).

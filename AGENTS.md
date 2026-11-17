@@ -10,57 +10,70 @@ constrained-reasoning research.
 
 ## Where things live
 
-- **`docs/kernel/`** — **canonical M1 kernel documentation**: graph
-  semantics (`ir/01-ein-graph/`), the data model (`ir/02-data-model/`),
-  surface S-expression language (`ir/03-ein-lang/`), inference engine
-  (`inference/`). Start here for any "what does Ein reason about / how"
-  question. See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
-  The pages an agent most often needs:
-  [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes), the
-  diagnostics, orderings and load refusals the engine defines normatively
-  (§ 2 has one section per refusal);
-  [`inference/solution_semantics.md`](docs/kernel/inference/solution_semantics.md),
+- **`docs/ein/`** — **the documentation of Ein as it ships**, in three
+  perspectives ([`docs/ein/README.md`](docs/ein/README.md) is the index):
+  **`user/`**, the black box — the language, the command line, what the
+  answer means and every row `ein solve` prints, the guide;
+  **`reasoning/`**, what is computed and why it is right, true of any
+  implementation (`static-ir/`, `kb-evolution/`, `rule-evolution/`); and
+  **`ein.rs/`**, how this implementation computes it (below). Start here for
+  any "what does Ein reason about / how" question. The pages an agent most
+  often needs:
+  [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes),
+  the parse and load diagnostics and the load refusals the engine defines
+  normatively (§ 2 has one section per refusal);
+  [`solution-semantics.md`](docs/ein/reasoning/kb-evolution/solution-semantics.md),
   the answer as a region R;
   [`read-out.md`](docs/ein/user/reference/read-out.md), every row
   `ein solve` prints and what it counts;
-  [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
+  [`hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
   `h-space.json`;
   [`config.md`](docs/ein/user/reference/config.md), the `(config …)` flags,
   the CLI options and the `EIN_*` names, each with a *does it change the
   answer* column;
-  [`syntax.md`](docs/ein/user/reference/syntax.md)
-  and `grammar.md`, the language;
+  [`syntax.md`](docs/ein/user/reference/syntax.md) and
+  [`grammar.md`](docs/ein/user/reference/grammar.md), the language;
   [`natural-language.md`](docs/ein/user/syntax-and-semantics/natural-language.md),
   `:why` texts and how a fact reads as English; and
-  [`docs/ein/ein.rs/architecture.md`](docs/ein/ein.rs/architecture.md), the
-  module map, with the design contracts under `docs/ein/ein.rs/design/`. What is true of the language and the answer today is
+  [`architecture.md`](docs/ein/ein.rs/architecture.md), the crate and module
+  map, with the design contracts the code cites under `docs/ein/ein.rs/design/`.
+  What is true of the language and the answer today is
   [§ Standing rules](#standing-rules) below; how each rule came to be is in
   the stage records under `plans/` and in `git log`, not here.
   **This tree is the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
-  sentence on a page is such a claim**, and since M1e
-  [Q-M1e.4](docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
-  a reader can tell which are: an exact number carries the **command** that
-  re-takes it or the **test** that pins it, and a number that can carry
-  neither is not written down (a date is no warrant).
+  sentence on a page is such a claim**, and a reader can tell which are: an
+  exact number carries the **command** that re-takes it or the **test** that
+  pins it, and a number that can carry neither is not written down
+  ([Q-M1e.4](docs/decisions/docs/Q-M1e.4-an-exact-number-in-a-page-carries-the-command.md)).
+  **It states the current state and nothing else**
+  ([Q-M1f.341](docs/decisions/docs/Q-M1f.341-the-project-documents-only-its-current-state.md)):
+  a page that stops being true is rewritten or deleted, never kept with a
+  banner; no page names a plan, a stage or a date, and a page that needs a
+  reason cites the decision that carries it.
   What it takes to call a claim *settled* is
-  [`standard-of-proof.md`](docs/ein/standard-of-proof.md): a behaviour is
+  [`docs/ein/standard-of-proof.md`](docs/ein/standard-of-proof.md): a behaviour is
   refuted only by a banked probe, an absence by naming the thing that checks
   it, a **risk not by argument at all**, and an argument for leaving something
   alone holds only while its premise is enforced by something that fails when
   it stops being true.
-  Every page is in exactly one of three declared states, visible from the
-  page: *current*, *superseded with a banner*, or *moved to `docs/history/`*
-  ([README § Which pages to trust](docs/kernel/README.md)). **A page is moved
-  *into* an existing milestone record, never made into one.** **Do not
-  rewrite a superseded page to match today's engine**: it is neither a record
-  nor a specification afterwards, and `docs/history/m1a_rust/design/07` cites
-  `inference/algorithm_layer_n.md` as the search layer's contract. [README §
-  Keeping this true](docs/kernel/README.md) is the pass that keeps the
-  current pages honest — six checks, five of them `utils/doc_audit.py` and
-  the sixth a shell, and the sixth is the one that found the most.
+  **What keeps the pages true**: `utils/doc_audit.py --links --check
+  --tracked`, a gate step (every link and anchor, every prose `§` number
+  written after a link, every decision id the project cites); its
+  `--identifiers` report (every backticked name that looks like code, looked
+  up in `ein.rs/crates/`: a report, never a gate, since a page that rightly
+  says a name is gone still names it); the release-voice check; and running
+  the commands a page shows, which no script does and which finds the most.
+- **`docs/decisions/`** — **every question about Ein that has an answer, as
+  that answer** ([`docs/decisions/README.md`](docs/decisions/README.md)): one
+  file a decision, `<subject>/<id>-<slug>.md`, the final answer only, under
+  the id of the question it answers (`Q-M1e2.24`, `Q-M1f.313`, `Q23`). A page
+  links a decision's file; a code, doc or `.ein` comment and a corpus note
+  cite it by its bare id, which the link check resolves to exactly one file.
+  A question still open is a work item and lives in `plans/`, cited by
+  nothing in the project; a decision about the process stays in `plans/` too.
 - **`docs/ein/ein.rs/`** — **the engine as built**: the crate and module map,
   the design contracts the crates cite (`design/`), the `--events` protocol and
   the other engine read-outs, and **how to drive Ein as a library**,
@@ -75,8 +88,9 @@ constrained-reasoning research.
   to check a binary's stdlib against the checkout's manifest, and
   `$EIN_STDLIB`. **`pip install` is not a channel.**
 - **`docs/ein/user/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
-  Zebra puzzle"). User-facing; references `docs/kernel/` + `docs/ein/`, never
-  explains internals; complements `docs/ein/user/guide/06_zebra_walkthrough.md`.
+  Zebra puzzle"). User-facing; links the reference and the concept pages
+  under `docs/ein/user/`, never explains internals; its chapter 6 is
+  `06_zebra_walkthrough.md`.
 - **`docs/history/`** — **shipped milestones, kept as record**
   ([`docs/history/README.md`](docs/history/README.md)): a document goes there,
   rather than staying only in git, when it is still read, as a specification,
@@ -342,7 +356,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   that holds no variable, derived from the fact it was read in. A rule reads
   it, which is how a representation module checks its own terms where they
   are written (`std.math.decimal`'s numeral); no program writes it, and no
-  declarator binds it (`defined_behaviour.md` § 4.30).
+  declarator binds it (`diagnostics.md` § 2.30).
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.
@@ -433,8 +447,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`examples/gen_send_written.py`);
   `read-out-examples.md` (`utils/read_out_examples.py`); `config.md`'s
-  defaults block and `docs/ein/ein.rs/api.md`'s `rust` block. All of those have a
-  `--check` or a test in the gate.
+  defaults block and `docs/ein/ein.rs/api.md`'s `rust` block;
+  `ein-core/src/printable.rs` (`utils/gen_unicode_printable.py`, with
+  `ein-core/tests/golden/repr_escapes.txt` re-blessed). All of those have a
+  `--check` or a test in the gate. None names its generator; this list and
+  `utils/README.md` are where the script is written down.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
 - A change to what `ein solve` prints changes `read-out.md` in the same
@@ -539,7 +556,7 @@ python3 utils/review_bundle.py                               # M1e2: build/revie
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)
 python3 utils/read_out_examples.py                           # M1f S1f.5.16: the read-out reference's examples page, written from the binary
-python3 utils/doc_audit.py --inbound --tracked --target docs/kernel/   # per target file, the references a move rewrites, by referrer kind
+python3 utils/doc_audit.py --inbound --tracked --target docs/ein/      # per target file, the references a move rewrites, by referrer kind
 python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check counts; --bless re-banks its baseline
 python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ or docs/history/ reference, a date
 ```

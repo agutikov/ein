@@ -5,7 +5,7 @@
 > probe edited it. § 6's first table now carries **three** rows, the
 > `complete(S) ⇒ solution(S)` direction reads **no**, and the sentence *"so the
 > engine never records a false model"* is gone from
-> [`docs/kernel/inference/solution_semantics.md`](../../../kernel/inference/solution_semantics.md)
+> `docs/kernel/inference/solution_semantics.md`
 > and named in its place as withdrawn, with the date. § 6 also gained a section
 > the options below did not anticipate — **What is recorded is `S ∪ K`** — and
 > § 6's closing premise now says C3 **wins**.
@@ -15,7 +15,7 @@
 > own § 2 table, decided by the user on the same page; that copy is corrected
 > too, with a ⚠ marking what it used to say.
 
-**Touches:** [`docs/kernel/inference/solution_semantics.md`](../../../kernel/inference/solution_semantics.md)
+**Touches:** `docs/kernel/inference/solution_semantics.md`
 §6, committed 2026-08-28 in `429777f` and rewritten the same day.
 
 ## The claim as written

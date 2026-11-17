@@ -8,7 +8,7 @@
 - **The runs.** Every run used `EIN_STDLIB=src/stdlib`, one engine process at a time, under `nice -n 19`.
 - **The numbers.** A number marked *re-taken* was taken on that binary on 2026-11-06, by the command in its row or in § C.1. Any other number is quoted from the page it cites.
 - **The paths.** Commands run from the snapshot's root, so every path is repo-relative. Each command also runs as written from the repository's root, with `ein.rs/target/release/ein`.
-- **The words.** *Monotone* and *non-monotone* describe a **program**. R is [`solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md)'s.
+- **The words.** *Monotone* and *non-monotone* describe a **program**. R is [`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md)'s.
 
 ---
 

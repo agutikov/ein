@@ -56,7 +56,7 @@ the two namespaces cannot collide. A closed id is never reused.
 
 ## Q-M1a.3 — Parse-error messages
 
-> **Stated as ein's defined behaviour** — [`docs/kernel/diagnostics.md` §1.1–1.4](../../ein/user/reference/diagnostics.md#11-the-end-of-input-is-where-the-text-ends) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
+> **Stated as ein's defined behaviour** — [`docs/ein/user/reference/diagnostics.md` §1.1–1.4](../../ein/user/reference/diagnostics.md#11-the-end-of-input-is-where-the-text-ends) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 A parse error is `{file}:{line}:{col}: unexpected input\n{context}`.
 Observed quirks: EOF errors report `-1:-1`, and the caret lands one past
@@ -95,7 +95,7 @@ diagnostics — stays open.
 
 ## Q-M1a.6 — `at None` in loader messages
 
-> **Stated as ein's defined behaviour** — [`docs/kernel/diagnostics.md` §1.5](../../ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
+> **Stated as ein's defined behaviour** — [`docs/ein/user/reference/diagnostics.md` §1.5](../../ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 Top-level `SForm`s are constructed without a `loc`
 ([design/04](design/04_ir_frontend.md) §3), so loader errors that
@@ -224,7 +224,7 @@ S1a.7.2's debug assertion is what would notice.
 
 ## Q-M1a.8 — `_binding_key` drops non-string activator args
 
-> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
+> **Stated as ein's defined behaviour** — [`values-and-order.md` § A rule application's identity](../../ein/reasoning/static-ir/values-and-order.md#a-rule-applications-identity) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 A rule application's binding key takes `plan.activator_args`, which the
 compiler builds from the activator's **symbol** arguments only — while the
@@ -259,7 +259,7 @@ demonstrates it, and fix it after.
 > activator gives a nested `Fact`: same key space, **different register
 > layouts**, and the identity then compares different variables by position.
 > That is a live bug, it is stated in
-> [`defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md#32-a-rule-applications-identity-is-its-activators-every-argument),
+> [`values-and-order.md` § A rule application's identity](../../ein/reasoning/static-ir/values-and-order.md#a-rule-applications-identity),
 > and it is owned by
 > [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 > No corpus program can reach any of the three shapes: every plan compiled by
@@ -348,7 +348,7 @@ never an auth system inside the engine.
 
 ## Q-M1a.13 — Help and usage-error text
 
-> **Stated as ein's defined behaviour** — [`docs/kernel/cli.md` §5](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
+> **Stated as ein's defined behaviour** — [`docs/ein/user/reference/cli.md` §5](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 **Resolved 2026-08-18: (b), with (c)'s content half made binding.** ein.rs
 uses `clap`; `--help` layout *and* usage-error text are `clap`'s. Everything

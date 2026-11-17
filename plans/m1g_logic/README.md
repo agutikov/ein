@@ -72,7 +72,7 @@ So:
 A study, in runnable programs, of what Ein's saturation and hypothesis lattice do with logic. Ein has two
 mechanisms: **saturation**, which closes a state under rules, and **the lattice of commitments**, whose alive
 and discharged part is the answer, the region R
-([`solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md)). Logic has several things
+([`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md)). Logic has several things
 that look like each: derivation and valuation, proof and model, assumption and case. The milestone writes each
 part of elementary logic as an Ein program, computes its answers, holds them to an independent check, and says
 which of Ein's two mechanisms did the work.

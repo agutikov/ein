@@ -407,7 +407,7 @@ milestone's own `:expect` work**, and nothing anywhere would have said so.
   wrote, its four idioms, and the mutation survivor
 - [`stdlib/README.md`](../../../stdlib/README.md) — the seven modules under
   test, and the growth rule the gate now enforces
-- [`docs/kernel/ir/03-ein-lang/syntax.md` § Query](../../ein/user/reference/syntax.md#query)
+- [`docs/ein/user/reference/syntax.md` § Query](../../ein/user/reference/syntax.md#query)
   — `:expect` as it is specified today
 - [`utils/stdlib_census.py`](../../../utils/stdlib_census.py) — the instrument,
   still runnable; `--check` is the corpus-wide measurement, not the gate

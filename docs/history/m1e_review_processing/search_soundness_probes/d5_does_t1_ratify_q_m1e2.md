@@ -81,7 +81,7 @@ price of the first `accepted` disposition deciding the rule implicitly.
 Not in the plan. [Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
 own third clause says an argument *"goes beside the code, not into a plan
 file"*, and the same applies to the rule itself. Candidates:
-[`defined_behaviour.md`](../../../kernel/defined_behaviour.md) (which
+`defined_behaviour.md` (which
 P1e.1 Q3 is amending anyway) or a `design/`-style page. **Still T1's to pick**,
 and `defined_behaviour.md` is the likelier of the two now that two other stages
 are already opening it — Q3's amendment, and

@@ -288,5 +288,5 @@ output) is the fixture.
 
 - [03 — Data model](03_data_model.md) — where parsed atoms go.
 - [11 — Shared assets](11_shared_assets.md) — stdlib resolution.
-- [`docs/kernel/ir/03-ein-lang/`](../../../ein/user/reference/README.md)
+- [`docs/ein/user/reference/`](../../../ein/user/reference/README.md)
   — the language reference the grammar implements.

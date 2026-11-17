@@ -16,8 +16,8 @@ records which question became which id.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md); ratified in [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
-| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
+| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/ein/standard-of-proof.md`](../../ein/standard-of-proof.md); ratified in [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
+| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/ein/standard-of-proof.md`](../../ein/standard-of-proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T1. The destination was already written into [`docs/history/README.md`](../README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | **answered 2026-08-31 — yes, if the sentence carries the warrant**, and there are three: a **command** that re-takes it, a **date**, or a **test** that pins it. A count that can carry none is deleted. Which warrant fits follows from what the number *is* — a **size** takes the command (and all nine drifted counts are sizes), a **measurement** takes the date, a **test-pinned** count takes the test's name. The fourth shape the question lists — a checker asserting prose against a command — is **refused**: the counts that are right are the ones behind an instrument that is *run*, not one that exists |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | **closed 2026-11-03 — no**, by the user's ruling (a) on M1e2 [S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q4: the ruling of 2026-10-16 answers it — *no two commands may disagree, and every answer agrees with the oracle* — and makes no exception for a surface called experimental ([§ Closed](#closed-2026-11-03--answered-by-the-ruling-of-2026-10-16)). Both instances are gone: `ein test`'s sentence at M1e2 S1e2.1a.5's switch, the tree with the walk at S1e2.1c.5. The learning half, learning on tree deaths, is M1f's [S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md) |
@@ -45,7 +45,7 @@ records which question became which id.
 
 > **Decided 2026-08-28 and written down.** Both this and
 > [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) are now
-> [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md),
+> [`docs/ein/standard-of-proof.md`](../../ein/standard-of-proof.md),
 > which carries the two rules, the four-row calibration table and the worked
 > example. This entry stays as the argument that produced them. Later stages
 > **cite the page**, not this entry.
@@ -76,7 +76,7 @@ binding on every stage:
 
 > **Decided 2026-08-28, beside Q-M1e.1** — *an argument suffices when its
 > premise is itself enforced* — and written into
-> [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md)
+> [`docs/ein/standard-of-proof.md`](../../ein/standard-of-proof.md)
 > as Rule 2.
 
 Several findings are of the form *this is stated but not enforced*
@@ -119,7 +119,7 @@ named test — so a comment at the future wiring point is enough.
 
 If that rule holds, it decides most of the `accepted` dispositions
 mechanically, and it should be written into
-[`docs/kernel/defined_behaviour.md`](../../kernel/defined_behaviour.md)
+`docs/kernel/defined_behaviour.md`
 or `design/`-style prose rather than living only here.
 
 ### Owner, assigned 2026-08-28 — ratified beside Q-M1e.1
@@ -361,7 +361,7 @@ ruling it comes back held to the oracle like every other route.
 > **Since 2026-10-16 a special case of M1e2's
 > [Q-M1e2.7](../../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)**:
 > the answer is the region of nodes that are alive and discharged, and this
-> definition is its [§ 2.6](../../kernel/inference/solution_semantics.md#26-the-old-definition-as-a-special-case).
+> definition is its `solution_semantics.md` § 2.6.
 
 **Decided 2026-08-28**, by the user, in answer to
 [S1e.1.1](search_soundness_probes/README.md)'s Q5 —
@@ -1324,7 +1324,7 @@ is deterministic and it is not a
 [design/02](../m1a_rust/design/02_determinism_and_order.md)
 violation, since the order two facts were written is part of the input; it is
 the same *shape* as the unsorted goal row in
-[`defined_behaviour.md` §6](../../kernel/defined_behaviour.md#6-what-is-not-defined-and-is-filed),
+`defined_behaviour.md` §6,
 one severity up, because here the answer is wrong rather than arbitrary.
 
 **Two profiles, and only one of them is quiet.** `Engine::check_layout`
@@ -1395,7 +1395,7 @@ bare `-E -3` is `clap`'s own *unexpected argument*):
 | `-E`/`--max-enterings` | `** aborted: max-enterings (0) reached **` | **clamped to 0** — and see below | open |
 | `saturate --max-steps` | the limit is hit at once | **honoured**: the message says `max_steps=-3` | fine, and it is the precedent |
 | `-g`/`--progress-every` | documented *0 disables* | disabled, by the same `> 0` guard | fine |
-| `-d`/`--seed` | — | **normative**: `--seed=-7` is `--seed 7`, [`defined_behaviour.md` §3.1](../../kernel/defined_behaviour.md) | fine |
+| `-d`/`--seed` | — | **normative**: `--seed=-7` is `--seed 7`, `defined_behaviour.md` §3.1 | fine |
 
 **`-E`'s is the one that is more than untidy.** The abort line is built from
 `self.opts.max_enterings` — the *clamped* value — so a run given `-E=-3`
@@ -1663,7 +1663,7 @@ pre-empts M20, which binds the same crates.
 > `hypgen::candidate_objects` unions `invariant::rule_constants` into the
 > KB's names, both W4 witnesses answer the control's R, and the
 > `alive-set-invariant` `warn` left with the premise it narrated
-> ([`defined_behaviour.md` § 3.3](../../kernel/defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
+> ([`saturation.md` § The alive-set invariant](../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant)).
 > The residue below, a `(?R ?a ?b)` head bound to an integer, is refused at
 > load where the activator is written down and at compile where a rule
 > derives it ([§ 2.6](../../ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number)).

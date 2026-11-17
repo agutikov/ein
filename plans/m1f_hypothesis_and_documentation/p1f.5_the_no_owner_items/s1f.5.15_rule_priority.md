@@ -949,7 +949,7 @@ first code commit, T1f.5.15.7's, which writes the ruling there.
   called advisory.
 - [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) — the
   existing advisory map, and the half of the graph that is already built.
-- [`docs/kernel/inference/absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)
+- [`docs/ein/reasoning/kb-evolution/absent-and-naf.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)
   — P1/P2, the normative statement that the guard is judged at the closure
   boundary, which is *why* priority stopped deciding derivability.
 - [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — Q2,

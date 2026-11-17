@@ -230,7 +230,7 @@ Flagged as Q-M1a.8.
 > `int` — so an `int` is in the key after all and two activators differing
 > only there both fire. What reaches neither component is a nested `Fact`.
 > The key above is unaffected. What changed is what the asymmetry costs, which
-> is [`defined_behaviour.md` §3.2](../../../kernel/defined_behaviour.md#32-a-rule-applications-identity-is-its-activators-every-argument)
+> is [`values-and-order.md` § A rule application's identity](../../../ein/reasoning/static-ir/values-and-order.md#a-rule-applications-identity)
 > and
 > [Q-M1e.16](../../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 
@@ -349,7 +349,7 @@ rather than assuming it.
 - [03 — Data model](03_data_model.md) — `Value`, `FactId`, the extents.
 - [06 — Saturation](06_saturation.md) — the caller, and where the
   delta comes from.
-- [`architecture_and_algorithms.md` §O1](../../../kernel/inference/architecture_and_algorithms.md)
+- [`algorithms.md` § 1](../../../ein/ein.rs/algorithms.md#1-the-operations-and-the-choice-for-each)
   — RETE / TREAT / WCOJ context and the SOTA framing.
 - [F11](../../../../plans/followups/f11_deductive_layer_perf.md) — D1/D2, absorbed by
   [P1a.6](../README.md#p1a6--performance).

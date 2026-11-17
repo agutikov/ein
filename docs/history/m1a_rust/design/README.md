@@ -147,7 +147,7 @@ surface is CLI and trace, which is
   a *shape* (how many bytes, how many indirections, what is copied on a
   fork). Names will drift; the byte counts must not.
 - **`§Ox`** refers to the operation numbering in
-  [`docs/kernel/inference/architecture_and_algorithms.md`](../../../kernel/inference/architecture_and_algorithms.md)
+  `docs/kernel/inference/architecture_and_algorithms.md`
   §4–§6 (O1 join, O2 saturation, O3 NAF, O4 equality, O5 clash,
   O6 provenance, O7 lattice, O8 pruning, O9 canonicalisation). That
   document is the shared vocabulary; these docs extend it rather than

@@ -123,7 +123,7 @@ Constraints:
 - The simulation writes nothing except the kill-cache `(not h)`.
 - Because it runs the matcher, it inherits [05](05_matcher.md)'s speedup
   wholesale — which may flip the lever's sign back to positive. Re-run
-  [`features.md`](../../../kernel/inference/features.md)'s matrix
+  `features.md`'s matrix
   in [P1a.6](../README.md#p1a6--performance) and record the
   new table; do **not** change the default without that measurement.
 
@@ -153,7 +153,7 @@ happens once per layer.
 This matters more than zebra2 suggests: with
 `enable_singleton_writeback` off, the exhaustive search explodes to
 3 336+ enterings and a correspondingly large clause set
-([`features.md`](../../../kernel/inference/features.md)), and that
+(`features.md`), and that
 is the regime where clause checking dominates.
 
 > **It does not — measured in exactly that regime at
@@ -273,7 +273,7 @@ Notes:
 
 - The three acceptance fixtures (`ein-infer/tests/acceptance.rs`) pass
   with their expected models.
-- The [`features.md`](../../../kernel/inference/features.md) lever
+- The `features.md` lever
   matrix regenerated, verdicts and entering counts beside a wall-clock
   column. `enable_singleton_writeback` must still be the
   one load-bearing lever (if it is not, something is wrong).
@@ -285,6 +285,6 @@ Notes:
 - [06 — Saturation](06_saturation.md) — the inner engine.
 - [08 — Parallelism](08_parallelism.md) — the layer loop is the main
   parallel opportunity.
-- [`algorithm_layer_n.md`](../../../kernel/inference/algorithm_layer_n.md)
+- `algorithm_layer_n.md`
   — the per-step contract.
 - [F9 ledger](../../../../plans/followups/f9_e_catalog.md) — what not to try again.

@@ -75,7 +75,7 @@ S1f.10.11 took). A way of spending is priced with the cost of **every object it 
 alone.
 
 **Why not a saturation rule instead.**
-[`domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md) measured the
+`domain_elim_vs_hypothesis.md` measured the
 same structure written as rules (`domain-elimination`, `no-room-left`). The stage restates that comparison in
 today's terms: what the rules derive at a node is already in every number above, so what is priced here is only
 what remains after them.
@@ -545,7 +545,7 @@ against 3; I-Z2 45 and 5 against 3; I-Z2M 39 against 6, two leaves, and 36 again
 
 ### Why not a saturation rule: the comparison restated
 
-[`domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md) set a rule that
+`domain_elim_vs_hypothesis.md` set a rule that
 derives an answer at root against a search that forks and refutes, on three fixtures. In today's terms
 (`ein.rs/target/release/examples/price_list --all --out DIR examples/domain_elim/*.ein`, 2026-11-16): with the
 elimination rules, `ab.ein`, root's saturation decides every placement, **H is empty** and each of the six

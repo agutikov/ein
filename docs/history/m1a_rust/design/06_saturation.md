@@ -373,4 +373,4 @@ which advances the tiebreaker and therefore changes later ordering.
   parallelisable.
 - [`absent_semantics.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md)
   — the normative reading of `(absent …)` this loop implements.
-- [`architecture_and_algorithms.md` §O2/§O3/§O5](../../../kernel/inference/architecture_and_algorithms.md).
+- [`algorithms.md` § 1](../../../ein/ein.rs/algorithms.md#1-the-operations-and-the-choice-for-each).

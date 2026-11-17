@@ -48,10 +48,7 @@ def md_in(prefix: str):
 
 
 ROWS = (
-    ("`docs/kernel`", md_in("docs/kernel/")),
-    ("`docs/api`", md_in("docs/api/")),
-    ("`docs/guide`", md_in("docs/guide/")),
-    ("`docs/install.md`", lambda r: r == "docs/install.md"),
+    ("`docs/ein`", md_in("docs/ein/")),
     ("`docs/history`", md_in("docs/history/")),
     ("`docs/lib`", md_in("docs/lib/")),
     ("`ein.rs/crates/**/*.rs`", lambda r: r.startswith("ein.rs/crates/") and r.endswith(".rs")),

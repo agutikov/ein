@@ -37,7 +37,7 @@ tested when the theme is taken up, and may be wrong.
 ## What Ein means by the two words
 
 Ein already uses both ideas, under other names, and it keeps them apart
-([`solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md)):
+([`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md)):
 
 | | Ein's notion | where it shows |
 |---|---|---|

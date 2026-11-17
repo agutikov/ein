@@ -346,7 +346,7 @@ Stack-specific:
   [design/12 § workspace](../../docs/history/m1a_rust/design/12_toolchain_and_layout.md)
   for the crate layout, [P1a.8](../../docs/history/m1a_rust/README.md#p1a8--binary-kb-container)
   for `.einb` saved sessions.
-- [`docs/kernel/`](../../docs/kernel/README.md) — the semantics the views
+- [`docs/ein/`](../../docs/ein/README.md) — the semantics the views
   render; [ein model §Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words)
   for compact vs Levi-bipartite.
 - [`utils/render_knowledge_graph_cy.py`](../../utils/render_knowledge_graph_cy.py)

@@ -42,7 +42,7 @@ artefact raw and rendered, a sortable survey, the price list, every default and 
 **its second task is the phase's one stop, pending**, and no surface is designed before the ruling.
 [Its third and fourth tasks](s1f.10.12_the_structure_shown.md#record-2026-11-16-the-surface-and-the-page) ran on
 2026-11-16 on the ruling of Q-M1f.309, (a): `ein render structure FILE` shows the structure through the one owner,
-and [`docs/kernel/inference/structure.md`](../../../docs/ein/reasoning/kb-evolution/hypothesis-space.md) defines it; the gate, the
+and [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](../../../docs/ein/reasoning/kb-evolution/hypothesis-space.md) defines it; the gate, the
 runner's container and the wall of the two nightly steps that grew are owed, and one finding,
 [K-17](findings.md), is open.
 [On the user's instruction of 2026-11-16](s1f.10.12_the_structure_shown.md#record-2026-11-16-the-view-renamed-h-dumped-plain-k-17)
@@ -464,11 +464,11 @@ The defaults the re-plan took are
 
 ## Connections
 
-- [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) — the
+- [`docs/ein/reasoning/kb-evolution/solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md) — the
   answer as a region R; the structure is of the lattice R is a region of.
-- [`docs/kernel/standard-of-proof.md`](../../../docs/ein/standard-of-proof.md) — an argument for a skip
+- [`docs/ein/standard-of-proof.md`](../../../docs/ein/standard-of-proof.md) — an argument for a skip
   holds only while its premise is enforced by something that fails; every licence track R adds is held so.
-- [`docs/kernel/inference/domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md)
+- `docs/kernel/inference/domain_elim_vs_hypothesis.md`
   — the same structure as a saturation rule (`domain-elimination`, `no-room-left`). S1f.10.13 says why a
   structure read by the search is not simply that.
 - [`c/README.md`](../../../c/README.md) § Circular dependencies between levels — three baselines that differ

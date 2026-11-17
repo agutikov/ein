@@ -85,7 +85,7 @@ commitment, because k_c and the merged form are defined over commitments.
 | **`exhausted`** | R is complete | the walk ran out of frontier inside `-m` ([Q-M1e.8](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)) |
 | **cost** | \|alive\| + \|N\| saturations | enterings up to completion, typically far fewer |
 
-[`solution_semantics.md` § 6](../../../docs/kernel/inference/solution_semantics.md#6-what-the-engine-implements-and-where-it-differs)
+`solution_semantics.md` § 6
 describes each difference. This page measures them.
 
 ## 3. Where they are equivalent
@@ -130,7 +130,7 @@ R is the region, and the walk reports one line of it.
 
 - **∅ is in R on 118 of the 172**: every program whose root is alive and
   discharged. The walk records ∅ only when the generator proposes nothing
-  at all ([§ 6.1](../../../docs/kernel/inference/solution_semantics.md#61-the-walk-looks-for-the-maximal-line)).
+  at all (`solution_semantics.md` § 6.1).
 - **R equals its maximal line on 79 of the 132 non-empty regions**: there,
   the walk's question and R coincide. On the other 53, R has states the walk
   never reports by design. The largest:
@@ -167,7 +167,7 @@ not a defect.
 ### 4.3 A different node
 
 The walk writes into root as it goes
-([§ 6.2–6.3](../../../docs/kernel/inference/solution_semantics.md#62-what-is-recorded-is-s--k-and-the-criteria-were-checked-against-s)):
+(`solution_semantics.md` § 6.2–6.3):
 
 - the singleton writeback stores `(not h)` for every singleton that died;
 - the kill cache stores `(not h)` for every candidate the lookahead killed;
@@ -281,7 +281,7 @@ in special case with no obligations"* were about.
 - **What neither route sees.** Both share the saturator (W7) and the
   generator's candidate list (W4, W6's uncovered relations), so a defect
   there is invisible to this comparison
-  ([§ 6.6](../../../docs/kernel/inference/solution_semantics.md#66-what-the-oracle-does-not-check)).
+  (`solution_semantics.md` § 6.6).
 - **Open states beside models.** On six programs, among them the zebra
   family, the walk finds a model and R also has maximal alive nodes that owe.
   The walk reports open states only when it has no model, so they are not
@@ -428,7 +428,7 @@ be consistent: region is a region of oracle"*. The oracle's node is
   has two maximal states there, so the restatement moves it.
 - **The walk's stronger node** is a fourth way a search write reaches an
   answer, after the three in
-  [§ 6.2](../../../docs/kernel/inference/solution_semantics.md#62-what-is-recorded-is-s--k-and-the-criteria-were-checked-against-s).
+  `solution_semantics.md` § 6.2.
   It is not a row of its own: its answer-changing witnesses are W9's two,
   W11's, and the `zebra2-hints` row above. On zebra it changes no answer and
   is a third of the walk's enterings.

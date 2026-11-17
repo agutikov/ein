@@ -29,7 +29,7 @@ scripts under `utils/` for the same reason.
 
 **M1e is the one whose subject was the tree itself** rather than a feature:
 a full review, processed finding by finding, under a standard of proof it
-wrote into [`docs/kernel/standard-of-proof.md`](../ein/standard-of-proof.md).
+wrote into [`docs/ein/standard-of-proof.md`](../ein/standard-of-proof.md).
 Read its § What this milestone may claim before citing it as evidence that
 anything is clean. It says what was not swept, and that the engine's answers
 were not what it checked.
@@ -41,11 +41,11 @@ there — two of the eight are about *shipped* engine behaviour rather than abou
 the milestone's plan.
 
 **M1** (core graph reasoning, shipped 2026-06-17) predates this directory: what
-survived its plan tree went to [`docs/kernel/inference/`](../kernel/inference/README.md)
+survived its plan tree went to `docs/kernel/inference/`
 and [`plans/followups/`](../../plans/followups/README.md) at P1.22, and the
 rest is in git history.
 
-Distinct from [`docs/kernel/`](../kernel/README.md), which is the *current*
+Distinct from [`docs/ein/`](../ein/README.md), which is the *current*
 specification and is checked by the gate; from [`docs/api/`](../ein/ein.rs/README.md),
 which is how to drive the engine today; and from `plans/`, which is what has
 not been built yet.

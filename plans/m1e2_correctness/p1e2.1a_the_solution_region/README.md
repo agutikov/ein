@@ -12,7 +12,7 @@ sub-question but (d) for the monotone case, and the shape of `solve`'s default
 ([§ The rulings of 2026-10-16](#the-rulings-of-2026-10-16)). S1e2.1a.3 was
 done the same day: the census ([`../../../utils/censuses/region-census.md`](../../../utils/censuses/region-census.md))
 contradicts no ruling, and
-[`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+[`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)
 now defines R. The terms are in [`definitions.md`](definitions.md), and on
 that page since S1e2.1a.3.
 S1e2.1a.9 was done the same day, apart from the switch, which is S1e2.1a.5's.

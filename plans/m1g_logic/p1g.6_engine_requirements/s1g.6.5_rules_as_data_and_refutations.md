@@ -61,7 +61,7 @@ To be written from the theory stages' experience, with numbers:
 - **(b) A refutation written back, on request.** A program declares that a relation's dead singletons are
   stored as negations at root: `{(holds A)}` dead alone gives `(not (holds A))`, or a fact the program
   names. The walk did a form of this (`writeback`), and M1e2 replaced the walk with routes that describe R
-  and write nothing into root ([`solution_semantics.md` § 6.3](../../../docs/kernel/inference/solution_semantics.md):
+  and write nothing into root (`solution_semantics.md` § 6.3:
   *the search writes into root, and its universe is not H*, listed there as a way the walk differed from the
   definition). So the first task is the history: what exactly was wrong with it, whether a declared, scoped
   form avoids that, and what it does to the definition of R, since root would then depend on the lattice

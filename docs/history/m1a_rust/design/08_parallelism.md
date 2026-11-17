@@ -441,7 +441,7 @@ Three readings, and the third was not expected:
 
 The other half of what a parallel layer needs is that the *order* of the
 candidates does not reach the answer. That is not new — it is what `--shuffle`
-has always claimed ([defined_behaviour.md §3.1](../../../kernel/defined_behaviour.md#31---shuffle-is-the-mersenne-twister-exactly)) — but nothing asserted it directly until
+has always claimed (defined_behaviour.md §3.1) — but nothing asserted it directly until
 `the_answer_does_not_depend_on_the_entering_order`: `lex`, `score-sum` and two seeded shuffles, same verdict
 and same model set.
 

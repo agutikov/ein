@@ -19,7 +19,7 @@ says so and points at
 [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md).
 
 **Moved 2026-10-16.** S1e2.1a.3 rewrote
-[`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+[`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)
 from this table. The page is the definition now, and this file is the plan's
 record of where each term came from and what its status was.
 

@@ -81,5 +81,5 @@ For each part the user picks:
   quantifier rules are better stated over sequents, and S1g.4.4 says so.
 - **That tableaux are the cleanest statement of what Ein's search already is.** That would be a sentence for
   [M5](../../m5_presentation/README.md)'s paper and for
-  [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)'s readers, and it goes to
+  [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)'s readers, and it goes to
   the user as a finding.

@@ -360,7 +360,7 @@ drops the two witnesses' names, which load no more, and `detector` counts 48 fla
 **The pages.** No current kernel page describes a nested fact as binding no parameter, the `KeyError` line as reachable,
 or a derived activator binding a relation parameter to a fact as loading:
 
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md): § 3.2's table and prose, an activator's every
+- `defined_behaviour.md`: § 3.2's table and prose, an activator's every
   argument binding its parameter, a nested fact too, with what it did until then (W33, W58), `Plan::activator_args`
   (Q-M1f.43), and the `binding-key` family's restated `:expect` and its `--dump` since; § 4's table loses the `KeyError`
   row, a paragraph saying why (Q-M1f.37), and the class names Python spells are two; § 4.6's last paragraph; § 4.9's

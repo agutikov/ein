@@ -159,10 +159,10 @@ when they do.
 
 - [Q-M1e.20](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)
   is answered by S1e2.1.3.
-- [`docs/kernel/ir/03-ein-lang/rendering.md`](../../../docs/ein/user/reference/rendering.md)
+- [`docs/ein/user/reference/rendering.md`](../../../docs/ein/user/reference/rendering.md)
   covers the views and their legend. § How to ask for this view is rewritten
   when the door exists.
-- [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+- [`docs/ein/reasoning/kb-evolution/solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)
   defines a solution and a model. The bundle renders against it.
 - [M20](../../m20_gui/README.md) is the other consumer Q-M1e.20 named. Nothing
   here pre-empts it: a GUI binds the crates, and these doors are thin CLI

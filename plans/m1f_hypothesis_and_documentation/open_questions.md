@@ -6769,7 +6769,7 @@ activators compile, and a rule nothing activates is not among a program's mechan
 **What M1d ruled.** Its decision table has *obligations supersede `:hrules` as the generator, as a ladder*
 (user, 2026-08-24) and *the read-out is scoped — discharge where stated, exhaustion where not* (2026-08-25).
 The second was a rule about the verdict, and under R it is gone:
-[`solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md) has *one definition for every
+[`solution-semantics.md`](../../docs/ein/reasoning/kb-evolution/solution-semantics.md) has *one definition for every
 program*. What is left of *where stated* is this switch, and its reason is `oblgen.rs`'s: *falling back to the
 blind enumerator whenever nothing was owed would put exhaustion back in charge of completeness*. That is said
 of a discharged state under a stated obligation. In M1d a program loaded an obligation rule only by naming
@@ -6920,7 +6920,7 @@ also can we get plain dump of hypothesis? we should be able to"*. The view shows
 set H alone, so it is renamed: **`ein render h-space FILE`**, the main session's choice between the user's two
 examples and a default the user may change, with no alias; its document is `h-space.json`, schema
 `ein-h-space/1`, and its page
-[`docs/kernel/inference/hypothesis_space.md`](../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). And of the dump,
+[`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). And of the dump,
 the same day: *"ein render writes dot, by listing hypothesis I meant listing them as ein facts, so add one more
 top level command `show` and one sub-command `show hyps` that lists them"*. So: **`ein show hyps FILE`**, a new
 top-level command with one subcommand, prints H as Ein facts, one candidate a line and nothing else on stdout,

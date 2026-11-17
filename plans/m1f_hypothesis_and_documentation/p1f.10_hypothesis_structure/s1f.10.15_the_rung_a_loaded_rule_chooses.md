@@ -143,7 +143,7 @@ Each premise of [§ The finding](#the-finding) was read against the sources and 
   rows: *obligations supersede `:hrules` as the generator, as a ladder* (user, 2026-08-24), and *the read-out
   is scoped — discharge where stated, exhaustion where not* (2026-08-25, with no name in its *taken* column).
   The second was a rule about the verdict, and
-  [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) records that under R it is
+  [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md) records that under R it is
   gone: *under R there is one definition for every program*. What is left of *where stated* is the switch
   above, and its reason is `oblgen.rs`'s header: *falling back to the blind enumerator whenever nothing was
   owed would put exhaustion back in charge of completeness*. That reason is about a rung that owes nothing

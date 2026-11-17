@@ -475,7 +475,8 @@ def root_page(p: Pages, summary: dict | None, trace: list[dict]) -> None:
     page = p.dir / "root.md"
     lines = header("Root, after saturation", "the KB before any hypothesis: what the program derives on its own",
                    "`--json-summary` (`root`), `ein render kb FILE`, the trace's § Root",
-                   [("solution_semantics.md § 1.3", "docs/kernel/inference/solution_semantics.md")],
+                   [("solution-semantics.md § 1.3",
+                     "docs/ein/reasoning/kb-evolution/solution-semantics.md#13-root")],
                    [p.raw / "summary.json", p.raw / "render-root.stdout.txt"], page,
                    "**Root is never written by a region run**: it is `sat(program)`, and every node is "
                    "`sat(root ∪ C)` — there are no root writes to show.")
@@ -554,7 +555,8 @@ def trace_pages(p: Pages) -> list[dict]:
         p.add("Trace", tdir / "index.md", header("The trace", "not written", "`--trace`", [], [raw], tdir / "index.md"))
         return []
     pre, sections = split_trace(text)
-    defined = [("solution_semantics.md", "docs/kernel/inference/solution_semantics.md"),
+    defined = [("solution-semantics.md § 1",
+                "docs/ein/reasoning/kb-evolution/solution-semantics.md#1-the-vocabulary"),
                ("read_out.md § 8.4", "plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md")]
     out: list[dict] = []
     block = 0
@@ -863,7 +865,8 @@ def answer_pages(p: Pages, s: dict | None) -> None:
     region = (s or {}).get("region") or index.get("region") or {}
     states = region.get("states") or []
     defined = [("answer-dump.md", "docs/ein/user/reference/answer-dump.md"),
-               ("solution_semantics.md", "docs/kernel/inference/solution_semantics.md")]
+               ("solution-semantics.md § 2",
+                "docs/ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r")]
     listed = [x for x in states if x.get("listed")]
     lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: grid, graph, "
                    "commitment, its `(model …)`", "`--dump-answer DIR`, `--models grid`, `--models key`, "

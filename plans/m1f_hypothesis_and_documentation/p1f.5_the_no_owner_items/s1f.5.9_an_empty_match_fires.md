@@ -368,7 +368,7 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
 - [`ontology.md`](../../../docs/ein/user/syntax-and-semantics/ontology.md#two-forms-that-look-alike) § 7.1 and its table: two of `()`'s three
   places have engine semantics; `()` as a value, Q28's question, is a parse error.
 - [`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md),
-  [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 2.2 and
+  `defined_behaviour.md` § 2.2 and
   [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md): no run reaches a value `#empty` since W34;
   `defined_behaviour.md` § 4.13: the rule whose `:match` was empty fires since.
 - The inventory's [F12](../../m1e2_correctness/inventory_2026-11-06_no_owner.md), the census's

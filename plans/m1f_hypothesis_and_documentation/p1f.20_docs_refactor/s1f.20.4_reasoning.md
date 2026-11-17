@@ -31,7 +31,7 @@ Four known traps:
   written once.
 - **`kb-evolution/search.md`** was mapped from `inference/algorithm_layer_n.md`, a page about a walk that has
   had no code since M1e2 S1e2.1c.5. What it states now is the region R and its routes
-  ([`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)), as the redrawn table
+  ([`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md)), as the redrawn table
   says.
 
 ## How it moves a page

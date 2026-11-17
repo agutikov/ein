@@ -23,9 +23,9 @@ exists, which is the part that makes it work rather than decoration:
 
 | the plan's object | what it is on this kernel | where the kernel pins it |
 |---|---|---|
-| `K = (O, R, F, Γ, P)` — objects, relations, facts, rules / constraints, provenance | the typed hypergraph: `Value` / `FactId`, relations with signatures, the layered KB, the AND/OR provenance DAG | [`01-ein-graph/`](../../../docs/kernel/ir/01-ein-graph/), [`02-data-model/`](../../../docs/kernel/ir/02-data-model/) |
-| `T_Γ` monotone, `K* = lfp(T_Γ)` | saturation — semi-naive, to a fixpoint; **with a seam**: `(absent P)` is judged at the closure / world boundary, so `T_Γ` is monotone on the positive fragment and the NAF step is a separate, stratified operator | [`architecture_and_algorithms.md`](../../../docs/kernel/inference/architecture_and_algorithms.md) O2, O3; [`absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md) — the part the plan's one-line `T_Γ` does not have and the account must |
-| hypotheses / commitments; the model space `{M ⊇ K* : M ⊨ Γ}` | the commitment lattice: layer *k* the size-*k* commitment sets over `alive`, each saturated, killed by `(false)` or a no-good; a model is a complete, consistent leaf, identified by its sorted fact list | [design/07](../../../docs/history/m1a_rust/design/07_search_layer.md); [`defined_behaviour.md` § 2.4](../../../docs/kernel/defined_behaviour.md) |
+| `K = (O, R, F, Γ, P)` — objects, relations, facts, rules / constraints, provenance | the typed hypergraph: `Value` / `FactId`, relations with signatures, the layered KB, the AND/OR provenance DAG | [`syntax-and-semantics/`](../../../docs/ein/user/syntax-and-semantics/), [`static-ir/`](../../../docs/ein/reasoning/static-ir/) |
+| `T_Γ` monotone, `K* = lfp(T_Γ)` | saturation — semi-naive, to a fixpoint; **with a seam**: `(absent P)` is judged at the closure / world boundary, so `T_Γ` is monotone on the positive fragment and the NAF step is a separate, stratified operator | [`firing.md`](../../../docs/ein/reasoning/kb-evolution/firing.md#the-core-operations) O2, O3; [`absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md) — the part the plan's one-line `T_Γ` does not have and the account must |
+| hypotheses / commitments; the model space `{M ⊇ K* : M ⊨ Γ}` | the commitment lattice: layer *k* the size-*k* commitment sets over `alive`, each saturated, killed by `(false)` or a no-good; a model is a complete, consistent leaf, identified by its sorted fact list | [design/07](../../../docs/history/m1a_rust/design/07_search_layer.md); [`values-and-order.md` § A state is its facts](../../../docs/ein/reasoning/static-ir/values-and-order.md#a-state-is-its-facts) |
 | `|𝓜| = 0 / 1 / > 1` → contradiction / unique / ambiguity | the verdict, read off `k` — **with `exhausted`**: `|𝓜|` is known only when the lattice is exhausted, and the engine's fourth state (`Aborted`, and the `-m`-cap case [Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false) names) is a lower bound on `|𝓜|`, not a value | [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs); [P2.1 § The sixth outcome](../p2.1_kernel_as_instrumentation/README.md#the-sixth-outcome-today) |
 | `A_θ(x) → T`; `E(T) → (v, d)`; `Tᵢ₊₁ = A_θ(x, Tᵢ, E(Tᵢ))` | the formalizer, the feedback object, the loop | [P2.2](../p2.2_formalizer/README.md), [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md), [P2.4](../p2.4_loop/README.md) |
 | `P(faithful(Tₙ) ∧ correct(Tₙ))` as a function of `E` | the milestone's dependent variable, with `E` ranging over F0–F8 | [S2.5.3](../p2.5_harness/s2.5.3_metrics.md), [P2.6](../p2.6_ablations/README.md) |
@@ -56,7 +56,7 @@ the kernel does them and a reader who checks will find them:
 - **S2.9.1** — the kernel: the definitions in the table, the two operators
   (positive saturation, the NAF step), the lattice, the verdict with
   `exhausted`; each definition followed by the sentence that says which
-  page of [`docs/kernel/`](../../../docs/kernel/README.md) is its
+  page of [`docs/ein/`](../../../docs/ein/README.md) is its
   specification and which test holds it.
 - **S2.9.2** — the loop: `A_θ`, `E`, the iteration, the two fixed points
   ([Q-M2.4](../open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic) —
@@ -83,7 +83,7 @@ the kernel does them and a reader who checks will find them:
 ## Connections
 
 - [`EinAf.md` § Stage M](../EinAf.md#stage-m--formalize-the-conceptual-model).
-- [`docs/kernel/`](../../../docs/kernel/README.md) — the specification the
+- [`docs/ein/`](../../../docs/ein/README.md) — the specification the
   account formalises; [`glossary.md`](../../../docs/ein/user/reference/glossary.md).
 - [F1](../../followups/f1_categorical_formulation.md), [F1b](../../followups/f1b_logical_formulation.md),
   [F12](../../followups/f12_rules_and_relations/ideas.md), [F15](../../followups/f15_math_formulae/ideas.md)

@@ -316,7 +316,7 @@ later found was re-deriving root's fixpoint once per entering.
 #### S1a.4.5 — The solve loop and verdict synthesis
 The three-phase loop and the verdict, plus `--shuffle`'s generator — MT19937
 with `init_by_array` seeding and a downward Fisher–Yates
-([`defined_behaviour.md` §3.1](../../kernel/defined_behaviour.md)), checked by
+(`defined_behaviour.md` §3.1), checked by
 table.
 
 #### S1a.4.6 — Explanation and unsat cores
@@ -683,7 +683,7 @@ amended.
 **6 stages, shipped 2026-08-21.** `cargo test --workspace` became the whole
 gate, the corpus a sweep, and the behaviours the engine's output carried
 without a written statement became
-[`defined_behaviour.md`](../../kernel/defined_behaviour.md). Two submodules
+`defined_behaviour.md`. Two submodules
 that made every recursive clone fetch large upstream repositories for work
 that has not started went with them.
 
@@ -727,7 +727,7 @@ something, and they are what went.
 
 #### S1a.10.6 — Defined behaviour
 **Shipped 2026-08-21, closing the phase.** Its substantive output is
-[`docs/kernel/defined_behaviour.md`](../../kernel/defined_behaviour.md) —
+`docs/kernel/defined_behaviour.md` —
 **thirteen behaviours whose only statement was the code**, now
 normative — and enumerating them found two that are **bugs rather than
 quirks**: the binding key that drops non-string activator args
@@ -804,9 +804,9 @@ Also in git history and not in this record: `design/09` (server mode, deleted
 
 ## Cross-links
 
-- [`docs/kernel/`](../../kernel/README.md) — the specification ein.rs
+- [`docs/ein/`](../../ein/README.md) — the specification ein.rs
   implements, and since S1a.10.6 the only statement of intent that is not also
-  the implementation; [`defined_behaviour.md`](../../kernel/defined_behaviour.md)
+  the implementation; `defined_behaviour.md`
   states the behaviours whose only statement was the code
 - [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md) — the embedding surface S1a.9.4
   wrote, whose worked example is a test

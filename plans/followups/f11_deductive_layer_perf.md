@@ -7,7 +7,7 @@ beta-memories) and D2 (worst-case-optimal joins).
 
 **Why it's a followup and not a phase.** No workload is currently blocked
 on it. `zebra2` solves fast / exhaustive in **6.3 ms / 26.8 ms** at `--jobs 1`
-([features.md](../../docs/kernel/inference/features.md), 2026-08-23), and a
+(features.md, 2026-08-23), and a
 fanned-out exhaustive run is 3.17–4.40× faster again on 8 cores. Both readings
 are inside every ergonomic envelope the project has. This is the file to
 promote when one isn't.
@@ -36,8 +36,7 @@ status box above first, then this for the arc:
 
 - **P1.8a's split still holds: ~95 % of a solve is the matcher inside
   saturation** (O1+O2), not the search
-  ([`architecture_and_algorithms.md`](../../docs/kernel/inference/architecture_and_algorithms.md)
-  §7). Every *search*-layer optimisation was tried and rejected against
+  ([`algorithms.md` § 2](../../docs/ein/ein.rs/algorithms.md#2-what-it-is-shaped-against)). Every *search*-layer optimisation was tried and rejected against
   that split ([F9 ledger](f9_e_catalog.md)).
 - **S1.9.E23 removed the largest chunk of pointless matching**: over half
   the exhaustive wall-clock was saturating forks already known to be dead.
@@ -215,8 +214,8 @@ Promote into a perf phase (not into this file) when **any** holds:
 
 - [F9 ledger](f9_e_catalog.md) — the closed *search*-layer catalog; read
   its "what the catalog taught" section before opening a perf entry here.
-- [`architecture_and_algorithms.md`](../../docs/kernel/inference/architecture_and_algorithms.md)
-  §O1/§O2/§7 — the operation-by-operation SOTA comparison these two entries
+- [`algorithms.md`](../../docs/ein/ein.rs/algorithms.md)
+  § 1 and § 2 — the operation-by-operation SOTA comparison these two entries
   are the open rows of.
-- [`features.md`](../../docs/kernel/inference/features.md) — the measured
+- `features.md` — the measured
   lever matrix; regenerate it alongside any perf change.

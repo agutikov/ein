@@ -30,7 +30,7 @@ models and which what the search did.* Three of M1e's findings are about that co
   [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium) gave it one
   builder, and since M1e2 R's counts have one too, `ein_infer::described`.
 - **AR-M1**: hand-maintained parallel copies as the tree's recurring drift mechanism, whose rule is now
-  [`architecture.md` § One artifact, one owner](../../../docs/kernel/architecture.md#one-artifact-one-owner).
+  [`architecture.md` § One artifact, one owner](../../../docs/ein/ein.rs/architecture.md#6-one-artefact-one-owner).
 
 A fourth item came to this stage by name. M1e's
 [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
@@ -185,7 +185,7 @@ its test cannot see.
 **What the page links and does not restate:**
 
 - what R, k_s, k_c, a line and a model are:
-  [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md);
+  [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md);
 - exit codes, and which stream each byte goes to:
   [`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) and
   [§ 5](../../../docs/ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line). The stderr section lists the shapes of the
@@ -248,7 +248,7 @@ The summary is *"the same facts as stdout"*, from the same `ReadOut` (`region_an
   asks. It would leave one golden page and no frozen one. It is not the default for two reasons. It edits nine
   M1e2 records for link targets alone. And it points each record at blocks that later stages change, so a record
   that quotes X9 would cite an X9 it never saw. The frozen copy is the legitimate case of
-  [One artifact, one owner](../../../docs/kernel/architecture.md#one-artifact-one-owner): two artifacts, a
+  [One artifact, one owner](../../../docs/ein/ein.rs/architecture.md#6-one-artefact-one-owner): two artifacts, a
   snapshot and a live page, annotated at both sites with why they differ.
 
 ### The test: `ein-cli/tests/read_out_reference.rs`
@@ -624,7 +624,7 @@ T4 has no head to edit.
 
 ### T2 record, 2026-11-09
 
-**The page**, [`docs/kernel/inference/read-out.md`](../../../docs/ein/user/reference/read-out.md), current and with no
+**The page**, [`docs/ein/user/reference/read-out.md`](../../../docs/ein/user/reference/read-out.md), current and with no
 banner, written from T1's census in the spec's twelve sections. Its row tables are marked, `<!-- rows: NAME -->`, one
 per printer section: `describe` (a bare `ein solve`, `--count`'s subset and `ein oracle`), `mode`, `monotone`,
 `lattice`, `strata`, `universe`, `empty` (why R is empty), `queries`, `claims`, `clock` (`-s` and `-t`) and `oracle`
@@ -638,7 +638,7 @@ owners of the other five keys a third, § 11.1. § 6 names the two objects calle
 are stated where their rows are (`route`, § 11.2's `region.licences` and `region.stopped.layer`). The clock rows'
 masked run is a marked block in § 9, for T3's test to compare.
 
-**The live examples**, [`docs/kernel/inference/read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md),
+**The live examples**, [`docs/ein/user/reference/read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md),
 written by `utils/read_out_examples.py`, re-pointed: 41 blocks, 40 of them whole runs, where M1e2's page had 32 and 31. X1 to
 X13 keep their numbers, headings and anchors, their prose re-voiced as reference and its plan links re-pointed; X2
 gains `--monotone` and `-y`; four new sections print every label no block printed: X14

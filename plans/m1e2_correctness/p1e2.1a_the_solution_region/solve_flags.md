@@ -276,4 +276,4 @@ prints its certified part and its bounds, and runs no walk.
 - **Root is never written by routes 1 and 2.** `ein-infer/tests/region.rs`
   holds route 1's root equal to `sat(program)` on every program it runs.
   Route 3 is the walk, which keeps its root writes until S1e2.1c.5
-  ([`solution_semantics.md` § 6.3](../../../docs/kernel/inference/solution_semantics.md#63-the-search-writes-into-root-and-its-universe-is-not-h)).
+  (`solution_semantics.md` § 6.3).

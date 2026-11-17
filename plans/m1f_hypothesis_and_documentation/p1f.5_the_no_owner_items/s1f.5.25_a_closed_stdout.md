@@ -245,7 +245,7 @@ on its 101s; the precondition and the control pass; with the stage's tree, all f
 ## T4 record, 2026-11-10
 
 **The pages.**
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md): a new
+- `defined_behaviour.md`: a new
   [§ 2.19](../../../docs/ein/user/reference/diagnostics.md#219-a-closed-stdout-ends-ein-by-sigpipe), what a closed
   stdout does since and until, the race under `| head`, why it is no exit code, where the disposition lives and what an
   embedder keeps; § 4.4's table, a row for a pipe whose reader has gone (Q-M1f.100); § 5, a paragraph under the exit

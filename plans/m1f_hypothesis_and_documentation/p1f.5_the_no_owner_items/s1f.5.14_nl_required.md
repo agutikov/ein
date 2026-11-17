@@ -492,7 +492,7 @@ ruling it is this stage's T1f.5.14.7, not a separate stage.*
 
 **Rung (d), through the loader flag**, as the user ruled on 2026-11-08; § T4's recommendation stays above as the record
 of what the user overrode and of the risk T7 answers. The page is
-[`docs/kernel/ir/03-ein-lang/natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md),
+[`docs/ein/user/syntax-and-semantics/natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md),
 *current*, 46 kernel pages since (`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-10): the four texts and where
 each is printed (§ 1), the mandate and what an honest `:why` says per form (§ 2), a fact in English, the four
 provenance kinds and the fallback ladder, with a state file's lines (§ 3), the four registers and the census's numbers
@@ -820,10 +820,10 @@ the answer, which is backwards.
 
 ## Connections
 
-- [`docs/kernel/ir/03-ein-lang/syntax.md`](../../../docs/ein/user/reference/syntax.md)
+- [`docs/ein/user/reference/syntax.md`](../../../docs/ein/user/reference/syntax.md)
   § `:why` render template and § the division of labour — the normative
   statement the new page extends rather than restates.
-- [`docs/kernel/inference/06_zebra_walkthrough.md`](../../../docs/ein/user/guide/06_zebra_walkthrough.md)
+- [`docs/ein/user/guide/06_zebra_walkthrough.md`](../../../docs/ein/user/guide/06_zebra_walkthrough.md)
   — the NL ⇄ ein-rule table, and the target this stage is the return leg of.
 - [`plans/ideas/08-human-style-deductive-trace.md`](../../ideas/08-human-style-deductive-trace.md)
   — the user's own framing, authoritative on intent.

@@ -102,10 +102,10 @@ does.
   because D4 goes with M1e's plan tree and the fixture does not: its `:expect`
   states today's wrong answer and **breaks when this theme lands**, which is
   the acceptance test a proposal here does not have to write.
-- [`docs/kernel/inference/absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)
+- [`docs/ein/reasoning/kb-evolution/absent-and-naf.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)
   — C1–C6, and C3 in particular.
 - [design/08 § The objects](../../docs/history/m1a_rust/design/08_parallelism.md)
   — the monotonicity definition this theme exists because of, and the worked
   example in
-  [`docs/kernel/standard-of-proof.md`](../../docs/ein/standard-of-proof.md)
+  [`docs/ein/standard-of-proof.md`](../../docs/ein/standard-of-proof.md)
   of what it cost to leave it unenforced.
