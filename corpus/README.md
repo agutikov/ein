@@ -178,7 +178,7 @@ its `note`. Every reason is about the **puzzle**:
   `features/04_open` demonstrates the `unknown` macro and
   `features/05_stdlib_domain_elim` the stdlib's elimination rules. None of them
   bounds what may be guessed, so `solve` on one is not solving the demo: it is
-  enumerating every fact that could be built out of the demo's objects.
+  enumerating every fact that could be built out of the demo's atoms.
   `saturate` is the run that asks the demo's question.
 - **The `syntax/` probes** exist to be drawn: each is one shape the renderers
   must handle, and its runs are the views

@@ -7,16 +7,17 @@ owes nothing. Every derived fact carries its provenance, so an answer can be exp
 and a contradiction names the facts it rests on.
 
 Ein is built to be the symbolic half of a loop in which a language model proposes a formalization of an informal
-problem (its objects, relations, facts, rules and goal) and the reasoner judges it: a solution, the ambiguity that
-is left, a contradiction with its core, a requirement nobody met. That loop is not in this repository; the reasoner
-is, with its language, its standard library and its documentation.
+problem (its atoms, relations, facts, rules and goal) and the reasoner judges it: a solution, the ambiguity that is
+left, a contradiction with its core, a requirement nobody met. That loop is not in this repository; the reasoner is,
+with its language, its standard library and its documentation.
 
 ## What it does
 
-- **A program is a typed hypergraph written as text.** Relations are declared with their argument types, facts
-  are atoms over them, and rules read facts (`:match`) and conclude facts, stored negations or `(false)`
-  (`:assert`). Negation as failure, `(absent P)`, is judged once, at the closure's fixpoint. A relation property
-  such as `(bijective pet-loc)` is a fact, and the standard library's rules give it meaning.
+- **A program is a hypergraph written as text.** Its nodes are atoms, each a name, and facts, each joining a
+  relation to its arguments, atoms or facts. Relations are declared with a label for each argument, and rules read
+  facts (`:match`) and conclude facts, stored negations or `(false)` (`:assert`). Negation as failure, `(absent P)`,
+  is judged once, at the closure's fixpoint. A relation property such as `(bijective pet-loc)` is a fact, and the
+  standard library's rules give it meaning.
 - **Saturation** fires the rules, semi-naively, to a least fixpoint. A fact never changes and is never removed.
 - **Hypotheses** are the candidate facts the program leaves undecided: proposed by the program's `(hrule …)`, or
   read off what its obligations owe, or enumerated blind. A **commitment** is a set of them; its **state** is what
@@ -32,8 +33,8 @@ is, with its language, its standard library and its documentation.
 ## The running example
 
 The Zebra puzzle, in two encodings that reach the same model: [`examples/zebra2.ein`](examples/zebra2.ein), one
-typed relation per attribute and `std.bijection`, and [`examples/zebra.ein`](examples/zebra.ein), one generic
-`co-located` relation and `std.slots`:
+relation per attribute and `std.bijection`, and [`examples/zebra.ein`](examples/zebra.ein), one generic `co-located`
+relation and `std.slots`:
 
 <!-- transcript: ein solve examples/zebra2.ein --single -->
 ```sh
@@ -93,7 +94,7 @@ the seam between what only grows and what a guess can retract
 | O1 matching | bind a rule's premises against the knowledge base, structurally | relational join, RETE / LEAPS, worst-case-optimal joins |
 | O2 saturation | fire rules to a least fixpoint, semi-naively | Datalog bottom-up evaluation, magic sets, differential dataflow |
 | O3 negation as failure | `(absent P)` judged once, at the closure's fixpoint ([`absent`](docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md)) | stratified Datalog, the closed-world assumption, stable models |
-| O4 equality | none of its own: equality is whatever relation a program states; `eq` and `neq` compare two values as written | union-find, congruence closure, e-graphs |
+| O4 equality | none of its own: equality is whatever relation a program states; `eq` and `neq` compare two objects as written | union-find, congruence closure, e-graphs |
 | O5 contradiction | `(false)`, or a fact beside its stored negation | clause violation, tableau clash |
 | O6 provenance and the core | every derivation recorded; the smallest set of givens and commitments a contradiction rests on ([cores](docs/ein/reasoning/02-kb-evolution/09-cores.md)) | ATMS / JTMS justifications, provenance semirings, MUS |
 | O7 the candidate set and the lattice | the undecided candidates read off root's fixpoint, commitments as subsets of them ([the hypothesis space](docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md)) | DPLL decisions, Apriori, ATMS environments |
@@ -119,7 +120,7 @@ tests/` runs them all. The per-symbol reference is [`04-stdlib/`](docs/ein/user/
 | `std.slots` | the same inference for one co-location relation whose classes are slots (`zebra.ein`'s formulation) |
 | `std.elim` | closed-world domain elimination with positional markers |
 | `std.closure` | a total function closed: `functional ∧ total ⇒ (__closed__ R)` |
-| `std.typing` | a type hierarchy, named once |
+| `std.typing` | a membership hierarchy, named once |
 | `std.macro` | the `forall` and `unknown` pattern macros |
 | `std.math.*` | the calculator: decimal and binary numerals, natural numbers, integers, rationals, gcd and lcm, conversion between bases, computed by saturation over digit tables. Ein has no numbers of its own |
 | `std.bool.*` | the sixteen Boolean functions of two inputs, what is known of them, circuits, and a circuit's inputs as hypotheses |
@@ -171,7 +172,7 @@ A `.ein` file is a **flat** sequence of S-expression forms, each classified by i
 
 | head | role |
 |---|---|
-| `relation` | declare a relation, its argument types, and the `:why` template that renders its facts |
+| `relation` | declare a relation, a label for each of its arguments, and the `:why` template that renders its facts |
 | `rule` / `hrule` | a saturation rule / a hypothesis rule: `:match` → `:assert`, with a `:why` |
 | `query` | a question about the answer: a `:goal`, a `:goal-text` template, and with `:expect` what the answer should be |
 | `solve` | the problem's lattice, stated once (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`, `:no-search`), and the expected region |
