@@ -123,7 +123,7 @@ puzzle.
   [S1d.4.3](../../docs/history/m1d_satisfiability/the_vocabulary.md)).
 - Timings are **processes, cold**, taken through
   [`utils/bench_env.sh`](../../utils/bench_env.sh) exactly as
-  [`e2e_baseline.py`](../../utils/e2e_baseline.py) takes Ein's — "the same
+  `e2e_baseline.py` took Ein's (deleted with the walk; in git) — "the same
   workloads as *processes*, which is what M1a's targets meant".
 - **A missing system is a reported cell, never a skipped one.**
 - The report states where Ein loses, by how much, and why the author thinks so.

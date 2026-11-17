@@ -516,7 +516,7 @@ state: `verdict.solutions[i].facts` in `--json-summary`, the `model n/k`
 blocks in `ein solve`, the `BTreeSet<Vec<String>>` that
 `tree_traversal.rs`
 compares fact for fact, and the variables
-[`model_set_census.py`](../../../utils/model_set_census.py) derives. All four
+`model_set_census.py` derives. All four
 include the negatives, the ontology and the rule markers —
 `lattice/02`'s "model" is nine facts of which **six** are `(relation …)`.
 

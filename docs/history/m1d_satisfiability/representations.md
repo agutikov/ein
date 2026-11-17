@@ -3,8 +3,8 @@
 **Stage:** [S1d.3.2](README.md#s1d32--representations) · **Phase:** [P1d.3](README.md)
 **Taken:** 2026-08-25, on `examples/zebra2-minus-15.ein` at `-m 3` — the depth
 that finds all 32 models.
-**Instrument:** [`utils/model_set_census.py --form
-{envelope,key,list,diagram}`](../../../utils/model_set_census.py), which
+**Instrument:** `utils/model_set_census.py --form
+{envelope,key,list,diagram}`, which
 renders a model set as one of the candidates. No engine change: every form is
 a rendering of the `verdict.solutions` the census
 already reads.

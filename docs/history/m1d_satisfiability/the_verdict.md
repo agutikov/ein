@@ -187,7 +187,7 @@ back.
 ### 3.1 It is the census's table, row for row — on every model set the corpus has
 
 The claim that mattered most and is cheapest to check. The shipped Rust form
-and [`utils/model_set_census.py --form key`](../../../utils/model_set_census.py)
+and `utils/model_set_census.py --form key`
 are **two independent implementations** of the decision-variable rules and the
 minimum-hitting-set search, and this is what they were diffed on rather than
 eyeballed:
@@ -240,7 +240,7 @@ along, so declining is a first-class answer rather than an error — exit 0, all
 
 That number is small and it is not the reason for the budget. The reason is the
 **shape** of the problem: the search is a minimum hitting set, and the same
-search in [the census's Python](../../../utils/model_set_census.py) takes
+search in the census's Python takes
 **12.4 s** on this entry — 300× — because a per-node scan over `pairs ×
 variables` is what the obvious implementation does. The shipped one precomputes
 the branch table once (which pair is hardest does not depend on the path, so the

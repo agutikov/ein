@@ -410,7 +410,7 @@ field. The day one is written, this is the entry to revisit.
 ## Q-M1a.16 — How does the corpus drive the lever matrix?
 
 The corpus run matrix is meant to include "each `SolverConfig` lever flipped
-off (the same matrix [`utils/feature_matrix.py`](../../../utils/feature_matrix.py)
+off (the same matrix `utils/feature_matrix.py`
 already drives)". Building the manifest at
 [S1a.0.1](README.md#s1a01--corpus-manifest-and-determinism-audit)
 found that only **four of the ten** are reachable from the CLI — `-L`

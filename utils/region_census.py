@@ -36,8 +36,7 @@ in.
 2026-10-15: *no config option affects the problem's search lattice*). Every
 program the oracle reaches is run again once per lever — the four CLI shadows
 the corpus sweeps, the three `EIN_*` search levers, and every `(config …)`
-flag flipped in an appended block, [`feature_matrix.py`](feature_matrix.py)'s
-cell — and its answer is compared with the default's: the candidates, every
+flag flipped in an appended block — and its answer is compared with the default's: the candidates, every
 node's status and state class, root's fixpoint, and the facts of every state
 in R (`--states`, so a lever that moves a model without moving the
 shape is still caught). This asks whether a lever changes **R**. Whether it
@@ -376,7 +375,7 @@ def levers(args, path: str, base: tuple, config: dict | None, root: Path) -> dic
 def config_block(config: dict, flag: str, value: str) -> str:
     """The program's own resolved config with one flag changed — one block,
     because the loader keeps the **last** `(config …)` whole rather than
-    merging ([`feature_matrix.py`](feature_matrix.py)'s cell)."""
+    merging."""
     pairs = []
     for k, v in config.items():
         k = k.replace("_", "-")

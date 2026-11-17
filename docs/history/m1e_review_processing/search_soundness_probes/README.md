@@ -240,7 +240,7 @@ the fixture in two steps rather than guessing:
    `models` counters — a record between layers belongs to no layer's census row,
    so `solution_nodes > Σ layer.models` is its signature — and therefore a
    streaming transport: `--events` materialised per entry fills a 16 GB tmpfs,
-   which is why [`utils/layer_census.py`](../../../../utils/layer_census.py)
+   which is why `utils/layer_census.py`
    reads through a **FIFO**. That script already sums `models` per entry, so
    the measurement is one column on it and not a fourth instrument
    ([AR-M1](../README.md#the-findings), and
