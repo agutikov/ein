@@ -15,7 +15,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-2](#v-2--the-surfaces-say-derives-false-of-a-state-that-holds-none) | the surfaces say *derives (false)* of a state that holds none | S1f.21.1 | open |
 | [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | open |
 | [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
-| [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399 |
+| [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -157,3 +157,8 @@ inferable under an arrow and globally, with no effect of its own; the kernel rea
 `(ein.contradiction)`, and a state is dead where it holds that; and what leads there is a rule a theory states,
 `(false)` ⟹ `(ein.contradiction)` the plain one. That is [`design.md` § 2.2](design.md#22-dead-from-false-alive-from-its-absence)'s
 *dead from `(false)`* made a rule a program can see and replace, and the prefix is option (d) of Q-M1f.399.
+
+**Taken further on 2026-11-18** by the user's second instruction to the phase ([the README](README.md#the-second-instruction)):
+the kernel's fact is a verb, `(ein.kill)` among the names offered, and an obligation emits the hypotheses
+themselves under `open`, which rules read and which leave the open context as a state decides them. Point 1 of
+this entry is § 6's row *ask* there. Worked out in [`open_facts.md`](open_facts.md), for S1f.21.4.
