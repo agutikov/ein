@@ -1,25 +1,34 @@
-# `absent`: negation as failure
+# Absence: negation as failure
 
-`(absent P)` is the one place a rule reads what a world lacks. Everything else a rule does is positive: it reads
-facts and adds facts, and a knowledge base only grows. This page states what `(absent P)` means, the one moment at
-which it is asked, what follows from that for the rest of the engine, and what it does not give.
+$\operatorname{absent}(G)$ is the one place a rule reads what a world lacks. Everything else a rule does is
+positive: it reads facts and adds facts, and a knowledge base only grows. This page states what
+$\operatorname{absent}(G)$ means, the one moment at which it is asked, what follows from that for the rest of the
+reasoning, and what it does not give. The symbols are those of [firing a rule](01-firing.md) and
+[saturation](02-saturation.md).
 
-The one distinction that matters: **`(absent P)` is a query about a saturated world, never a fact.** It is asked,
-answered and acted on, and its answer is not stored, cached or carried to another world. Of the three readings of
-negation as failure a reasoner could take, closed-world, stratified and world-relative epistemic, Ein takes the
-third; the worked examples below are where the other two give other answers.
+The one distinction that matters: **$\operatorname{absent}(G)$ is a question about a saturated world, never a
+fact.** It is asked, answered and acted on, and its answer is not stored, kept or carried to another world. Of the
+three readings of negation as failure a reasoner could take, closed-world, stratified and world-relative
+epistemic, Ein takes the third; the worked examples below are where the other two give other answers.
 
-The surface forms that write it, `(absent P)` in a `:match` and the `forall` and `unknown` macros of `std.macro`, are
-the grammar's ([`02-syntax.md`](../../user/04-reference/02-syntax.md#premise-forms-in-match)).
+How a program writes an absence, and the universal and the *unknown* test built from it, is the user's
+[rules page](../../user/03-syntax-and-semantics/05-rules.md) and [macros page](../../user/03-syntax-and-semantics/11-macros.md).
 
 ## Two halves: a positive closure and a boundary
 
 Saturation is split along negation ([saturation](02-saturation.md)):
 
-- **the closure** fires the purely positive part of every rule to quiescence and consults no negation at all. A
-  rule's `(absent …)` premises are set aside; a match whose premises carry one is **parked**, not fired;
-- **the boundary**, at each quiescence of the closure, judges the parked matches against that fixpoint, admits at
-  most one whose every guard passes, and hands it back to the closure.
+$$
+K_0' = \operatorname{pos}(K), \qquad
+K_{i+1}' = \operatorname{pos}\bigl(K_i' \cup A_{\kappa_i}\theta_i\bigr), \qquad
+\operatorname{sat}(K) = K_m'
+$$
+
+- **the closure** $\operatorname{pos}$ fires the purely positive part of every rule to quiescence and consults
+  no negation at all. A rule's absences are set aside; a candidate whose disjunct carries one is **parked**, not
+  fired;
+- **the boundary**, at each quiescence $K_i'$, judges the parked candidates against that fixpoint, admits at most
+  one whose every guard passes, $\kappa_i$, and hands it back to the closure.
 
 So the deductive part of Ein is monotone, and the non-monotone part, absence, is confined to one place with one
 world to look at. Nothing is ever retracted: a world's facts only grow.
@@ -27,172 +36,389 @@ world to look at. Nothing is ever retracted: a world's facts only grow.
 ## Worlds
 
 A **world** is one knowledge base under saturation: root, the program's own facts saturated by its rules, or a
-node, root's fixpoint with a commitment `C` of hypotheses written in and the saturation resumed
-([solution semantics](06-solution-semantics.md)). Within one saturation a world is **append-only**: `W(t)`, its fact
-set after `t` firings, is contained in `W(t + 1)`. Two worlds are related only by the fork that made one from the
-other; a question asked in one is not an answer in another.
+node, root's fixpoint with a commitment $C$ added and the saturation continued
+([solution semantics](06-solution-semantics.md)). Write $K_t$ for a world's facts after $t$ firings. Within one
+saturation a world is **append-only**:
+
+$$
+K_t \subseteq K_{t+1}
+$$
+
+Two worlds are related only by the fork that made one from the other; a question asked in one is not an answer
+in another.
 
 ## The definition
 
-**Boundary epistemic negation as failure.** For a match considered in world `W` at a **positive quiescence**, a
-point at which the closure has run to a fixpoint, with bindings `θ`:
+**Boundary epistemic negation as failure.** For a candidate considered in a world at a **positive quiescence**
+$K = \operatorname{pos}(K)$, with bindings $\theta$:
 
-> `(absent P)` holds ⟺ there is no extension `θ′ ⊇ θ` under which `P θ′` matches a stored fact of `W`; that is,
-> `W ⊭ ∃x̄. P θ`, where `x̄` are the variables of `P` that `θ` leaves unbound.
+$$
+K \models \operatorname{absent}(G)\,\theta
+\;\iff\; \lnot \exists\, \theta' \supseteq \theta.\;\; K \models G\theta'
+\;\iff\; K \not\models \exists \bar x.\; G\theta
+$$
 
-`θ` is the match's bindings **as far as the premises written before the guard bind them**. Where a guard is
-written decides which question it asks: `(and (absent (P ?x)) (Q ?x))` asks whether there is no `P` at all, and
-`(and (Q ?x) (absent (P ?x)))` whether there is no `P` for this `x`. Setting the guard aside until the boundary
-asks exactly the question it would have asked in place.
+where $\bar x$ are the variables of $G$ that $\theta$ leaves unbound. In words: no extension of the bindings
+makes the pattern match facts $K$ holds.
 
-Three consequences of the wording:
+**$\theta$ is the bindings as far as the premises written before the guard bind them.** Where a guard is written
+decides which question it asks:
 
-- **Membership, of a saturated store.** `absent` reads the store, not the theory. Since the store it reads is the
-  positive fixpoint, everything positively derivable is there, so for the positive part of a program membership
-  and derivability coincide. They do not coincide on what a later boundary round admits: a fact admitted through
-  one guard is not in the world an earlier guard was judged in.
-- **A variable inside the guard is existential.** The guard is ¬∃ over the variables of its pattern that nothing
-  bound before it. A conjunction inside a guard is one existential: `(absent (and (g ?x ?y) (h ?y)))` fails for
-  `x` exactly when some `y` has both. The `forall` macro's universal is this existential negated twice:
-  `(forall ?b G B)` is `(absent (and G (absent B)))`, *no `b` satisfies `G` and not `B`*.
+$$
+\begin{aligned}
+\operatorname{absent}(p(x)) \land q(x) \quad &\text{asks} \quad \lnot \exists x.\; p(x) && \text{there is no } p \text{ at all} \\
+q(x) \land \operatorname{absent}(p(x)) \quad &\text{asks} \quad \lnot\, p(x\theta) && \text{there is no } p \text{ for this } x
+\end{aligned}
+$$
+
+Setting the guard aside until the boundary asks exactly the question it would have asked in place.
+
+**As a graph.** A rule with an absence is drawn with the absent pattern in a dashed cluster: the match is the
+solid part, found in the graph, and the cluster is a part that must not be found. The rule below gives a seated
+guest the soup unless the guest is allergic,
+
+$$
+\operatorname{seats}(g, c) \;\land\; \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr) \;\implies\; \operatorname{meal}(g, \mathsf{Soup})
+$$
+
+```dot
+digraph rule_soup_unless_allergic_lhs_rhs {
+  rankdir=TB;
+  label="soup-unless-allergic"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?g_L" [label="?g", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    "?g_L" -> "?c_L" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "h1_allergic_L" [shape=octagon, label="allergic", color="#2ca02c", fontcolor="#2ca02c"];
+      "h1_allergic_L" -> "?g_L" [label="1", color="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?g_R" [label="?g", shape=diamond];
+    "Soup_R" [label="Soup", shape=rectangle];
+    "?g_R" -> "Soup_R" [label="meal", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+  }
+}
+```
+
+and in the saturated world below, where two guests are seated and one is allergic, it has fired for one of them.
+A fact of one argument is a loop on its argument; the dashed arrow is the fact the rule derived.
+
+```dot
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  "Chair" [shape=box, label="Chair"];
+  "Food" [shape=box, label="Food"];
+  "Guest" [shape=box, label="Guest"];
+  "Ann" [shape=oval, label="Ann"];
+  "Bob" [shape=oval, label="Bob"];
+  "C1" [shape=oval, label="C1"];
+  "C2" [shape=oval, label="C2"];
+  "Soup" [shape=oval, label="Soup"];
+  "Ann" -> "Guest" [style=dashed, arrowhead=empty, label="is-a"];
+  "Bob" -> "Guest" [style=dashed, arrowhead=empty, label="is-a"];
+  "C1" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
+  "C2" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
+  "Soup" -> "Food" [style=dashed, arrowhead=empty, label="is-a"];
+  "Ann" -> "C1" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "Bob" -> "C2" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "Bob" -> "Bob" [label="allergic", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  "Ann" -> "Soup" [label="meal by soup-unless-allergic", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+}
+```
+
+$$
+K \models \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr)\lbrace g \mapsto \mathsf{Ann} \rbrace,
+\qquad
+K \not\models \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr)\lbrace g \mapsto \mathsf{Bob} \rbrace
+$$
+
+Three consequences of the definition:
+
+- **Membership, of a saturated store.** An absence reads the facts held, not the theory. Since the store it
+  reads is the positive fixpoint, everything positively derivable is there, so for the positive part of a program
+  membership and derivability coincide. They do not coincide on what a later round of the boundary admits: a fact
+  admitted through one guard is not in the world an earlier guard was judged in.
+- **A variable inside the guard is existential.** The guard is $\lnot\exists$ over the variables of its pattern
+  that nothing bound before it. A conjunction inside a guard is one existential, and the universal is this
+  existential negated twice:
+
+$$
+\operatorname{absent}\bigl(g(x, y) \land h(y)\bigr) \;\equiv\; \lnot \exists y.\; g(x, y) \land h(y),
+\qquad
+\forall b.\; \bigl( G \to B \bigr) \;\equiv\; \operatorname{absent}\bigl( G \land \operatorname{absent}(B) \bigr)
+$$
+
 - **One question, one world.** A guard is asked of the world it is judged in and its answer is acted on at once,
   so it has no interval in which to go stale.
 
-`(unknown P)` is two guards, `(and (absent P) (absent (not P)))`: neither `P` nor its stored negation holds.
+A fact $F$ is **unknown** in $K$ when neither it nor its stored negation is held, which is two guards:
+
+$$
+\operatorname{unknown}(F) \;\equiv\; \operatorname{absent}(F) \;\land\; \operatorname{absent}(\lnot F)
+$$
 
 ## The boundary
 
 There is **one** point at which a guard is evaluated, and it is the boundary.
 
-- **At quiescence, once.** The closure runs to its fixpoint with the guards set aside, so a match the closure finds
-  says nothing about negation. At quiescence each parked match is judged: its guards are asked of the world, under
-  their bindings, and the match is admitted if every guard passes. That judgement is the decision, and there is no
-  other.
-- **One admission per round, into an empty queue.** At quiescence the closure has nothing left to fire, so the one
-  admitted match fires at once, against exactly the world its guards were judged in, and the closure resumes.
-  This is a soundness requirement, not a throttle: on `p ← absent q; q ← absent p` both guards pass in the world
-  that holds neither, so admitting both would derive `{p, q}`, which is a model of that program under no reading.
-  Admitting one and re-judging the other against the world the first made derives one of the two.
+- **At quiescence, once.** The closure runs to its fixpoint with the guards set aside, so a candidate the closure
+  finds says nothing about negation. At a quiescence $K_i'$ each parked candidate is judged,
+  $\operatorname{passes}(\kappa, K_i') \iff \forall j.\; K_i' \models \operatorname{absent}(G_{d,j})\theta$, and
+  it is admitted if it passes. That judgement is the decision, and there is no other.
+- **One admission a round.** At quiescence the closure has nothing left to fire, so the one admitted candidate
+  fires at once, against exactly the world its guards were judged in, and the closure resumes. This is a
+  soundness requirement. With the two rules $t \land \operatorname{absent}(q) \implies p$ and
+  $t \land \operatorname{absent}(p) \implies q$ both guards pass in the world that holds neither, so admitting
+  both would derive $\lbrace p, q \rbrace$, which is a model of that program under no reading. Admitting one and
+  judging the other again in the world the first made derives one of the two.
 - **Never after a firing.** Nothing is retracted. A fact admitted through a guard stays, whatever the world later
-  comes to hold.
-- **The fixpoint is a quiescence that admits nothing.** A saturation that ends with parked matches still parked
-  ends because none of them passes; a world whose closure has quiesced while a parked match would pass is not at
+  comes to hold: $f \in K_i' \implies f \in \operatorname{sat}(K)$.
+- **The fixpoint is a quiescence that admits nothing.** A saturation that ends with candidates still parked ends
+  because none of them passes; a world whose closure has quiesced while a parked candidate would pass is not at
   its fixpoint.
 
-How a guard's answer can change while the world grows, and what that means for a match parked on it:
+```dot
+digraph boundary {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  w0 [label="{ t }\nquiescent: both guards pass"];
+  wp [label="{ t, p }\nfixpoint: absent(p) fails", penwidth=2];
+  wq [label="{ t, q }\nfixpoint: absent(q) fails", penwidth=2];
+  wpq [label="{ t, p, q }\nneither guard holds", style="rounded,dashed", color="#d62728", fontcolor="#d62728"];
+  w0 -> wp [label="admit p"];
+  w0 -> wq [label="admit q"];
+  w0 -> wpq [label="admit both: never", style=dashed, color="#d62728", fontcolor="#d62728"];
+}
+```
 
-- a guard with **no nested `absent`** is anti-monotone in the world: once its pattern matches it matches forever, so
-  a match rejected by it can never pass and is dropped;
-- a guard **with a nested `absent`**, a `forall`'s, can turn from failing to passing as the world grows: adding a
-  `B` makes the inner `absent` fail and the outer one pass. Its match stays parked and is judged again at a later
-  quiescence, where a relation the guard reads has grown.
+A solid box is a world a saturation can reach, a heavy one a fixpoint; the agenda's order takes one of the two
+solid arrows. The red dashed world is the one a batch admission would make.
+
+**How a guard's answer can change while the world grows**, and what that means for a candidate parked on it. Let
+$K \subseteq K'$:
+
+$$
+G \text{ holds no absence:} \qquad K \not\models \operatorname{absent}(G)\theta \;\implies\; K' \not\models \operatorname{absent}(G)\theta
+$$
+
+Such a guard is anti-monotone in the world: once its pattern matches it matches for ever, so a candidate it
+rejects can never pass and is dropped. A guard **with a nested absence**, a universal's, can turn from failing
+to passing as the world grows: adding a $B$ makes the inner absence fail and the outer one pass. Its candidate
+stays parked and is judged again at a later quiescence, where a relation the guard reads has grown.
 
 ## What follows
 
-Each of these is enforced where it applies; this page is the shared reason.
+Each of these holds wherever it applies; this page is the shared reason.
 
-- **Root is never written by a node.** A fact a node derives may rest on an absence that holds in that node and not
-  in root's future, so nothing a node derives is written back into root. Every node is root's fixpoint and its own
-  commitment, and nothing else ([finding R](07-finding-r.md)).
-- **A derivation records the absences it rested on.** A firing admitted at the boundary records each query that had
-  to fail, one pattern per guard with a position the query left free recorded as free, beside the positive premises
-  it read. Negative dependence is so visible: what a fact `Y` depends on is its positive premises and those
-  absences together. A core names facts only and does not count the absences
-  ([cores](09-cores.md)); the check of a program that may not be monotone reads them
-  ([monotonicity](08-monotonicity.md)).
-- **Deleting a fact can fabricate a contradiction.** Under `absent`, removing a fact can make a guard pass and so
-  derive a contradiction the full world never had. A smallest explanation of a contradiction is therefore found by
-  search over the derivations a world recorded, never by deleting facts and saturating again
-  ([cores](09-cores.md)).
-- **`absent` is world-relative.** The same ground query can answer one way in root and another in a node, so a
-  guard's answer is never cached across worlds nor stored as a fact; a match a node inherits parked from root is
-  judged again in the node's own world before it can be admitted. A fact root admitted through a guard is, though,
-  part of root's fixpoint, and every node, a fork of root, holds it; where a commitment can fill the absence that
-  fact rested on, the node holds it beside the fact that denies its premise. That is the case in which a node's state
-  depends on the path to it, and a program that can reach it is not monotone
-  ([monotonicity](08-monotonicity.md),
+- **Root is never written by a node.** A fact a node derives may rest on an absence that holds in that node and
+  not in root's future, so nothing a node derives is written back into root. Every node is root's fixpoint and
+  its own commitment, $\operatorname{st}(C) = \operatorname{sat}(\operatorname{root} \cup C)$, and nothing else
+  ([finding R](07-finding-r.md)).
+- **A derivation records the absences it rested on.** A firing admitted at the boundary records each question
+  that had to fail, one pattern per guard with a position the question left free recorded as free, beside the
+  positive premises it read:
+
+$$
+\delta = \bigl( \rho,\ a,\ \theta,\ \operatorname{prem}(\delta),\ \operatorname{abs}(\delta) \bigr),
+\qquad
+\operatorname{dep}(f) = \operatorname{prem}(\delta) \cup \operatorname{abs}(\delta)
+$$
+
+  Negative dependence is so visible: what a fact depends on is its positive premises and those absences
+  together. A core names facts only and does not count the absences ([cores](09-cores.md)); the check of a
+  program that may not be monotone reads them ([monotonicity](08-monotonicity.md)).
+- **Deleting a fact can fabricate a contradiction.** With an absence, a smaller knowledge base can be dead where
+  a larger one is alive: under the rule $p(x) \land \operatorname{absent}(q(x)) \implies \bot$,
+
+$$
+\lnot\operatorname{dead}\bigl(\operatorname{sat}(\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace)\bigr)
+\qquad\text{and}\qquad
+\operatorname{dead}\bigl(\operatorname{sat}(\lbrace p(\mathsf{A}) \rbrace)\bigr)
+$$
+
+  A smallest explanation of a contradiction is therefore found among the derivations a world recorded, never by
+  deleting facts and saturating again ([cores](09-cores.md)).
+- **An absence is world-relative.** The same ground question can answer one way in root and another in a node,
+
+$$
+\operatorname{root} \models \operatorname{absent}(G)\theta
+\qquad\text{and}\qquad
+\operatorname{st}(C) \not\models \operatorname{absent}(G)\theta ,
+$$
+
+  so a guard's answer is never carried across worlds nor stored as a fact; a candidate a node inherits parked
+  from root is judged again in the node's own world before it can be admitted. A fact root admitted through a
+  guard is, though, part of root's fixpoint, and every node holds it, $\operatorname{root} \subseteq
+  \operatorname{st}(C)$; where a commitment can fill the absence that fact rested on, the node holds it beside
+  the fact that denies its premise. That is the case in which a node's state depends on the path to it, and a
+  program that can reach it is not monotone ([monotonicity](08-monotonicity.md),
   [Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)).
-- **The answer inherits the semantics.** A node's dead and owing bits are read off its fixpoint, and the candidate
-  set H off root's, so the region R, every count and every claim are downstream of the same boundary queries.
+- **The answer inherits the semantics.** Whether a node is dead and what it owes are read off its fixpoint, and
+  the candidate set $H$ off root's, so the region $R$, every count and every claim are downstream of the same
+  questions asked at the boundary.
 
 ## What is not provided
 
 - **Stable or well-founded models.** The fixpoint is *supported at the boundary*: every admitted fact had its
-  guards pass when it was admitted. It need not be stable. `p ← seed ∧ absent q; q ← p` has no stable model and
-  converges to `{p, q}`; `p ← absent q; q ← absent p` has two, and the boundary's order picks one.
-- **Retraction or truth maintenance.** A world never loses a fact. What a search learns from a dead node it learns
-  by not entering it, not by retracting what led there.
-- **Stratification as a refusal.** A program whose rules read through an `absent` in a cycle has no stratification;
-  it is loaded and answered, and the cycle is reported as a diagnostic ([stratification](#stratification)).
+  guards pass when it was admitted. It need not be stable. The program $s \land \operatorname{absent}(q)
+  \implies p$, $p \implies q$ with $s$ given has no stable model and converges to $\lbrace s, p, q \rbrace$; the
+  program $\operatorname{absent}(q) \implies p$, $\operatorname{absent}(p) \implies q$ has two, and the boundary's
+  order picks one.
+- **Retraction or truth maintenance.** A world never loses a fact. What a search learns from a dead node it
+  learns by not entering it, not by retracting what led there.
+- **Stratification as a refusal.** A program whose rules read through an absence in a cycle has no
+  stratification; it is read and answered, and the cycle is reported as a diagnostic
+  ([stratification](#stratification)).
 
-On a **stratified** program the order rules fire in decides nothing derivable: the closure is complete before any
-guard is asked, so a producer of a relation a guard reads has always finished before the guard is judged, whatever
-the order the rules are written in. On a program **with no stratification** the boundary's order, the agenda's
-([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)), picks which of
-several supported fixpoints root reaches, and nothing tells the others exist.
+**What the order of admission can decide.** Call a guard **settled by the closure** when no relation it reads
+is, or can be reached from, a relation that a rule carrying a guard concludes, in the graph of
+[§ Stratification](#stratification): every fact it could read is derived by positive candidates alone.
 
-## A refutation resting on an `absent`
+**Proposition.** If every guard of $P$ is settled by the closure, $\operatorname{sat}(K)$ does not depend on the
+order rules are written in or admitted in.
 
-A rule that concludes `(false)` or a stored negation may not rest on an `(absent P)` over a relation a commitment can
-still extend: directly, through a fact a rule derived under such an `absent`, or through the activator its rule was
-applied with. A program that writes one is refused, one line per refusing rule, by every command that takes the
-candidate set ([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
+*Argument.* Let $Q$ be the relations the guards read. An admitted candidate adds facts of relations from which
+no relation of $Q$ can be reached, and the closure that follows adds only what is reachable from them; so every
+quiescence holds the same facts of $Q$, $K_i' \cap Q = K_0' \cap Q$, and a guard passes at one quiescence exactly
+when it passes at every other. Each guarded rule then acts as a positive rule under a fixed side condition, and
+the fixpoint of positive rules does not depend on the order ([saturation](02-saturation.md)). $\square$
 
-The reason is what such a rule says. Over an extendable relation it judges a state that has not yet decided `P` as if
-`P` were false: it says *contradiction* where the truth is *not yet*, an obligation written as a refutation. And
-*dead* stops being closed upward: `{(p A)}` dies on `(and (p ?x) (absent (q ?x))) ⟹ (false)` while `{(p A), (q A)}`
-lives, so a search that took a superset of a dead set for dead would lose a state of R. The refusal names the forms
-that say what was meant: close the relation if no commitment is meant to extend it; make the attribute one the
-search must decide and refute the decided *no*; state the requirement as an obligation, `(open ?R)`; or conclude from
-a stored negative, as the stdlib's `total` does. `examples/ein-bugs/naf-upward-closure.ein` is the shape, refused.
+The producer of a relation a guard reads has then always finished before the guard is judged, whatever the
+order. Where a guard reads a relation that another guarded rule concludes, the two candidates wait at the same
+boundary and the agenda's order
+([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)) says which is
+judged first. That order is not the order of the program's strata:
 
-*Extendable* is the set of relations a commitment can change, followed through every rule with parameters whose
-activator relation it holds, since a plan a node applies that root never had can write relations a commitment
-changes. Over a relation no commitment can extend, the same shape is closed-world reasoning and loads.
+- on a **stratified** program a reader can be admitted before the producer of what it reads, and the fixpoint
+  then holds a fact whose guard the fixpoint itself falsifies, which the stratum-by-stratum model does not hold
+  ([monotonicity § 8.3](08-monotonicity.md#83-the-fifo-gap));
+- on a program **with no stratification** the order picks which of several supported fixpoints root reaches,
+  and nothing tells the others exist.
 
-This is not the stratification hazard and the two do not overlap. A guard over a relation a rule derives can change
-its answer during saturation, and judging it at the fixpoint makes that sound. A guard over an extendable relation
-is discharged by a commitment, in a world the guard was never asked in.
+## A refutation resting on an absent
+
+A rule that concludes $\bot$ or a stored negation may not rest on an $\operatorname{absent}(G)$ over a relation a
+commitment can still extend: directly, through a fact a rule derived under such an absence, or through the
+activator its rule was applied with. Write $D^{+}$ for the relations a commitment can extend (below) and
+$\operatorname{rests}(\rho)$ for the absences $\rho$'s conclusion can depend on in those three ways:
+
+$$
+\bigl( \bot \in A_\rho \;\lor\; \exists f.\; \lnot f \in A_\rho \bigr) \;\land\;
+\exists\, \operatorname{absent}(G) \in \operatorname{rests}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset
+\;\;\implies\;\; P \text{ is refused}
+$$
+
+A program that writes one is refused when it is read, with one line for each refusing rule
+([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md); the user's
+[diagnostics](../../user/04-reference/07-diagnostics.md) has the refusal as it is printed).
+
+The reason is what such a rule says. Over an extendable relation it judges a state that has not yet decided $G$
+as if $G$ were false: it says *contradiction* where the truth is *not yet*, an obligation written as a
+refutation. And *dead* stops being closed upward. Under $p(x) \land \operatorname{absent}(q(x)) \implies \bot$,
+with $p(\mathsf{A})$ and $q(\mathsf{A})$ candidates:
+
+```dot
+digraph dead_not_upward_closed {
+  rankdir=TB;
+  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
+  e [label="∅\nalive", fillcolor="#a1d99b"];
+  p [label="{ p(A) }\ndead", fillcolor="#fcbba1"];
+  q [label="{ q(A) }\nalive", fillcolor="#a1d99b"];
+  pq [label="{ p(A), q(A) }\nalive", fillcolor="#a1d99b"];
+  e -> p [color="#cb181d"];
+  e -> q [color="#238b45"];
+  p -> pq [color="#ae017e", style=bold, label="revives"];
+  q -> pq [color="#238b45"];
+}
+```
+
+$$
+\operatorname{dead}\bigl(\lbrace p(\mathsf{A}) \rbrace\bigr), \qquad
+\lbrace p(\mathsf{A}) \rbrace \subseteq \lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace, \qquad
+\lnot\operatorname{dead}\bigl(\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace\bigr)
+$$
+
+Each node is a commitment, an arrow adds one candidate, green is alive and red dead. A search that took a
+superset of a dead set for dead would lose the bottom state, a member of $R$. The refusal names the forms that
+say what was meant:
+
+1. close the relation, if no commitment is meant to extend it;
+2. make the attribute one the search must decide, and refute the decided *no*, a stored negation;
+3. state the requirement as an obligation ([satisfiability](10-satisfiability.md));
+4. conclude from a stored negative, as the standard library's totality does.
+
+**Extendable.** $D^{+}$ is the set of relations a commitment can change, followed through every rule with
+parameters whose activator relation it holds, since an application a node makes that root never had can conclude
+relations a commitment changes:
+
+$$
+D^{+} \;=\; \mu X.\;\; \operatorname{rels}(H) \;\cup\; \lbrace\, \operatorname{rels}(A_\rho) : \rho \text{ reads a relation of } X \,\rbrace
+\;\cup\; \lbrace\, \operatorname{rels}(A_{\rho[\cdot]}) : \text{the name of } \rho \text{ is in } X \,\rbrace
+$$
+
+with $\mu$ the least fixpoint: the relations of the candidates, what a rule that reads one of them concludes,
+and what any application of a rule can conclude once its activator's relation is among them. Over a relation no commitment can extend, the same shape is closed-world
+reasoning and is accepted.
+
+This is not the stratification hazard and the two do not overlap. A guard over a relation a rule derives can
+change its answer during saturation, and judging it at the fixpoint makes that sound. A guard over an extendable
+relation is discharged by a commitment, in a world the guard was never asked in.
 
 ## Stratification
 
-The relations a program's rules read and write form a graph, and an edge read under an `absent` is negative. A cycle
-through a negative edge is what makes a program unstratifiable, and its parity says what it may mean: an even cycle
-may have several supported fixpoints, an odd one may have none. Ein reports such a cycle as a diagnostic, never as a
-refusal, and only ever as what the graph licenses, since a cycle whose rules never fire changes nothing. The graph,
-its strata and what each surface prints of it are the [analysis of rules](../03-rule-evolution/02-analysis-of-rules.md).
+The relations a program's rules read and write form a directed graph: an edge $q \to r$ for each rule that reads
+$q$ and concludes $r$, **negative**, written $q \xrightarrow{\lnot} r$, where the read is under an absence. A
+**stratification** is a map $\sigma$ from relations to natural numbers with
+
+$$
+q \to r \implies \sigma(q) \leq \sigma(r), \qquad q \xrightarrow{\lnot} r \implies \sigma(q) < \sigma(r),
+$$
+
+and one exists exactly when no cycle runs through a negative edge. The parity of the negative edges on such a
+cycle says what it may mean: an even cycle may have several supported fixpoints, an odd one may have none.
+
+```dot
+digraph strata {
+  rankdir=LR;
+  node [fontname="Inter", shape=ellipse];
+  subgraph cluster_strat { label="stratified: σ(z) < σ(q) < σ(p)";
+    z1 [label="z"]; q1 [label="q"]; p1 [label="p"]; a1 [label="a"];
+    z1 -> q1 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    a1 -> q1;
+    q1 -> p1 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    a1 -> p1;
+  }
+  subgraph cluster_even { label="an even cycle: two supported fixpoints";
+    p2 [label="p"]; q2 [label="q"];
+    p2 -> q2 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    q2 -> p2 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+  subgraph cluster_odd { label="an odd cycle: may have no stable fixpoint";
+    p3 [label="p"]; q3 [label="q"];
+    q3 -> p3 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    p3 -> q3;
+  }
+}
+```
+
+A node is a relation, a black arrow a positive read, a red dashed arrow a read under an absence. Such a cycle is
+reported as a diagnostic, never as a refusal, and only ever as what the graph licenses, since a cycle whose
+rules never fire changes nothing. The graph, its strata and what is reported of them are the
+[analysis of rules](../03-rule-evolution/02-analysis-of-rules.md).
 
 ## Worked examples
 
-Each program is written `head ← body`; every fact is given at load.
+Each program is its rules; every fact named as given is in $K$.
 
-| program | what saturation derives | what it shows |
-|---|---|---|
-| `p ← seed ∧ absent q`; `q ← t`; given `seed`, `t` | `{q}` and no `p`, in either written order of the two rules | the guard is judged against the positive fixpoint, in which `q` already holds; the order the rules are written in decides nothing derivable |
-| `p ← seed ∧ absent q`; `q ← p`; given `seed` | `{p, q}` | the fixpoint is supported at the boundary, not stable: this program has no stable model |
-| `p ← thing ∧ absent q`; `q ← thing ∧ absent p`; given `thing` (`examples/features/07_unstratifiable.ein`) | exactly one of `p` and `q` | two stable models; the boundary admits one match per round and the other's guard then fails |
-| `ok ← seed ?x ∧ absent (and (g ?x ?y) (h ?y))`; seeds `A`, `B`, a `g`–`h` chain from `A` only | `(ok B)` only | a guard over a conjunction is ¬∃ over its unbound variables |
-| `gated ← (or (t1 ∧ absent r1) (t2 ∧ absent r2))`; `r2 ← raw`; given `t2`, `raw` | no `gated` | each disjunct's guards are judged with that disjunct, at the boundary |
-| `non-neighbour ← anchor ∧ other ∧ absent (next-to …)`, with `next-to` derived from `right-of` and closed by symmetry | no `non-neighbour` | a guard sees the closed extent of what it reads, however many firings built it |
-
-## What holds it
-
-| claim | test |
-|---|---|
-| a guard is judged against the positive fixpoint; the rules' written order decides nothing derivable | `ein-infer/tests/naf_semantics.rs`: `the_order_does_not_decide_what_is_derivable` |
-| an unstratifiable loop converges to a supported fixpoint, and nothing is retracted | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
-| exactly one of `p` and `q` is derived on `examples/features/07_unstratifiable.ein` | the corpus shape digest of its `saturate` run, `ein-render/tests/id_order_invariance.rs` |
-| a guard over a conjunction is ¬∃ over its unbound variables | `ein-infer/tests/naf_semantics.rs`: `a_guard_over_a_conjunction_is_a_negated_existential` |
-| a disjunct's guards are judged at the boundary with that disjunct | `ein-infer/tests/naf_semantics.rs`: `an_or_disjuncts_guard_is_judged_on_the_boundary` |
-| a guard sees the closed extent of the relation it reads | `ein-infer/tests/naf_semantics.rs`: `a_guard_sees_the_closed_extent_of_its_watched_relation` |
-| where a guard is written decides which question it asks | `ein-infer/tests/rule_semantics.rs`: `a_binding_guard_binds_where_it_is_written` |
-| a rule's parameter is bound when its guards are judged | `ein-infer/tests/naf_semantics.rs`: `a_rule_parameter_is_in_scope_for_its_guards` |
-| `(unknown P)` admits exactly the pairs neither stored nor negated | `ein-infer/tests/naf_semantics.rs`: `unknown_admits_exactly_the_undecided_pairs` |
-| a world whose closure quiesced while a parked match would pass is not at its fixpoint | `ein-infer/tests/naf_semantics.rs`: `the_boundary_decides_whether_a_saturator_is_stalled` |
-| a `forall` that turns from failing to passing is judged again and admitted; a node and a fresh saturation agree at the boundary | `ein-infer/tests/explain_semantics.rs`: `fork_and_direct_agree_at_the_naf_boundary` |
-| a match inherited parked from root is judged again in the node exactly where what its guard reads grew | `ein-infer/tests/naf_semantics.rs`: `a_forked_candidate_is_rejudged_exactly_when_its_watched_extent_grew` |
-| an admitted firing records the absences it rested on, a free position as free, and a positive firing records none | `ein-infer/tests/naf_semantics.rs`: `a_boundary_admitted_firing_records_what_was_absent`, `a_free_position_in_a_negative_premise_is_recorded_as_free`, `a_nested_guard_records_both_levels` |
-| matching is structural: two names are two objects | `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes` |
-| a refutation resting on an extendable `absent` is refused, and the line names the forms that say what was meant | `ein-infer/tests/refutation_under_absent.rs`: `the_probe_is_refused_and_the_message_names_the_replacements`, `the_written_activator_programs_are_refused` |
-| every node is root's fixpoint and its commitment, as the oracle builds it | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
-| a negative cycle is reported and the program still answered | `ein-cli/tests/strata_diagnostic.rs`: `solve_names_each_negative_cycle_and_still_answers` |
+| program | given | $\operatorname{sat}(K)$ adds | what it shows |
+|---|---|---|---|
+| $s \land \operatorname{absent}(q) \implies p$; $\ t \implies q$ | $s$, $t$ | $q$, and no $p$, in either written order of the two rules | the guard is judged against the positive fixpoint, in which $q$ already holds; its guard is settled by the closure, so the order decides nothing derivable |
+| $s \land \operatorname{absent}(q) \implies p$; $\ p \implies q$ | $s$ | $p$, $q$ | the fixpoint is supported at the boundary, not stable: this program has no stable model |
+| $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$; $\ t(x) \land \operatorname{absent}(p(x)) \implies q(x)$ | $t(\mathsf{one})$ | exactly one of $p(\mathsf{one})$, $q(\mathsf{one})$ | two stable models; the boundary admits one candidate a round and the other's guard then fails |
+| $s(x) \land \operatorname{absent}\bigl(g(x, y) \land h(y)\bigr) \implies \operatorname{ok}(x)$ | $s(\mathsf{A})$, $s(\mathsf{B})$, $g(\mathsf{A}, \mathsf{C})$, $h(\mathsf{C})$ | $\operatorname{ok}(\mathsf{B})$ only | a guard over a conjunction is $\lnot\exists$ over its unbound variables |
+| $\bigl( t_1 \land \operatorname{absent}(r_1) \bigr) \lor \bigl( t_2 \land \operatorname{absent}(r_2) \bigr) \implies u$; $\ w \implies r_2$ | $t_2$, $w$ | $r_2$, and no $u$ | each disjunct's guards are judged with that disjunct, at the boundary |
+| $a(x) \land o(y) \land \operatorname{absent}\bigl(n(x, y)\bigr) \implies m(x, y)$, with $n$ derived from another relation and closed by symmetry | an $a$ and an $o$ that are neighbours only through the derived, mirrored $n$ | no $m$ | a guard sees the closed extent of what it reads, however many firings built it |
