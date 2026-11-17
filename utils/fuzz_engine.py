@@ -669,16 +669,20 @@ def id_order_predicate(case: Path, work: Path, seeds: int, prop: str):
 
 def write_finding(name: str, prop: str, run: str, small: str, detail: str,
                   origin: str, seed: int, mode: str, forms_before: int) -> Path:
-    """The `.ein` and the `.md` beside it."""
+    """The `.ein` and the `.md` beside it.
+
+    The note is a project file (`corpus/fuzz_findings/` is in the corpus), so
+    it carries what the find is and nothing of the session that made it: no
+    date, and no command line — the run is named by its corpus run name, and a
+    find of the id-order sweep by the property alone."""
     FINDINGS.mkdir(parents=True, exist_ok=True)
     out = FINDINGS / f"{name}.ein"
     out.write_text(small, encoding="utf-8")
     (FINDINGS / f"{name}.md").write_text(
         f"# {name}\n\n"
-        f"- found: {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
         f"- property: **{prop}** — {PROPERTIES[prop]}\n"
-        + (f"- reached by: `{run}`\n" if run == SWEEP
-           else f"- run: `ein {run} {name}.ein`\n")
+        + (f"- run: under a permuted id space\n" if run == SWEEP
+           else f"- run: `{run}`\n")
         + f"- seed: {seed}, mode: {mode}\n"
         f"- minimised: {forms_before} → {len(split_forms(small))} forms\n"
         f"- from: `{origin}`\n\n"

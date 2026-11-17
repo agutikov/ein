@@ -440,7 +440,8 @@ def main() -> int:
     if args.bless:
         BASELINE.write_text(
             "# Mutants of `stdlib/` that `ein test tests/` does not kill.\n"
-            "# Written by `utils/stdlib_mutants.py --bless`; read by `--check`.\n"
+            "# Banked by the mutation sweep, which fails on a new survivor and on a\n"
+            "# banked one that is killed: the set is what the suite does not notice.\n"
             "#\n"
             "# A set rather than a score: a new line is a rule whose tests stopped\n"
             "# noticing a defect in it, and a removed line is a fixture that started.\n"
