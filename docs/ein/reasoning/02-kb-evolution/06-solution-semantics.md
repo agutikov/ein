@@ -1,16 +1,39 @@
 # Solution semantics: the region R
 
-The answer to a program is a **region R** of its hypothesis lattice: the commitments whose saturated state is alive
-and discharged ([Q-M1e2.7](../../../decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)). This
-page defines it, every term in terms of the ones before it, and says what a shorter description of R can rest on.
-How R is computed, and why every way of computing it gives this R, is [Finding R](07-finding-r.md); what the user reads
-of it is the read-out's.
+The answer to a program is a **region** $R$ of its hypothesis lattice: the commitments whose saturated state is alive
+and discharged ([Q-M1e2.7](../../../decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)).
+
+$$
+R \;=\; \lbrace\, C \subseteq H \;:\; \operatorname{alive}(\operatorname{st}(C)) \,\land\, \operatorname{discharged}(\operatorname{st}(C)) \,\rbrace,
+\qquad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+$$
+
+This page defines every symbol of that line, each in terms of the ones before it, then the shape of $R$, what a
+shorter description of $R$ can rest on, and the questions a reader can ask of it. Why every way of finding $R$ gives
+this $R$ is [Finding R](07-finding-r.md); how a program spells each notion is
+[solutions and models](../../user/03-syntax-and-semantics/13-solutions-and-models.md), and what is printed of $R$ is
+the [read-out](../../user/04-reference/08-read-out.md).
 
 **Scope.** Every definition holds of every program. Where a statement needs the program to be **monotone** (§ 1.6),
-it says so. On a program the static check flags, every node is still built one way, by fork from root, and R is the
-region of that construction; every command agrees on it, and nothing more is claimed of the program's solutions
+it says so. On a program that is not proved monotone every node is still built one way, by fork from root, and $R$ is
+the region of that construction; nothing more is claimed of the program's solutions
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md);
 [Monotone and non-monotone programs](08-monotonicity.md) sets the two kinds side by side).
+
+**The symbols**, in the order they are defined:
+
+| symbol | what it is | where |
+|---|---|---|
+| $K_0$ | the knowledge base as loaded, before any saturation | § 1.1 |
+| $\operatorname{Names}(P)$, $\operatorname{Obj}(P)$ | the names of the program $P$; the objects among them | § 1.2 |
+| $\operatorname{sat}$, $\mathrm{root}$ | saturation; root's fixpoint $\operatorname{sat}(K_0)$ | § 1.3 |
+| $H$, $n$ | the candidate set, and $n = \lvert H \rvert$ | § 1.4 |
+| $C$, $\operatorname{st}(C)$, $S$ | a commitment $C \subseteq H$; its state; a state | § 1.5 |
+| $\operatorname{dead}$, $\operatorname{alive}$, $\operatorname{owes}$, $\operatorname{discharged}$ | the status of a state | § 1.5 |
+| $\operatorname{cl}(C)$, $[C]$ | the closure of a commitment; its state class | § 1.5 |
+| $R$, $k_c$, $k_s$ | the region, and its two counts | § 2 |
+| $\min R$, $\max R$, $N$, $E$ | the two lines; the minimal dead sets; the minimal discharging sets | § 2.4 |
+| $\operatorname{model}(C)$, $\pi_g$ | a solution's model; its projection on a goal $g$ | § 3 |
 
 ---
 
@@ -18,380 +41,692 @@ region of that construction; every command agrees on it, and nothing more is cla
 
 ### 1.1 Context and problem
 
-| term | what it is | in [`zebra2.ein`](../../../../examples/zebra2.ein) |
-|---|---|---|
-| **theory** | relations, their properties, and the rules that give them meaning | `(relation drink-loc Drink House)`, `(bijective drink-loc)`, the `co-located` rules, and the stdlib rules behind them |
-| **ontology** | facts a solution needs that the problem does not state, because they are obvious | `(is-a Tea Drink)` |
-| **context** | theory + ontology | everything that is not a clue, a hint or the query |
-| **problem** | facts + query + hypothesis hints, stated in a context | the clue facts, each with `:source "condition (n)"`, the `(query …)`, the `(hrule guess …)` |
-| **program** | context + problem, as Ein text. Its imports bring context in: theory from the [stdlib](../../../../stdlib/), ontology from a library of facts | one `.ein` file and what it imports |
+A program $P$ is loaded as a knowledge base $K_0$ of facts, with its rules. A reader splits it in two, and each half
+in two again:
 
-**The boundary is not in the language.** One file can mix all four, and nothing but a reader's eye (and zebra2's
-`:source` strings) says which part is which. An import carries either half of a context: it brings a module's facts
-as it brings its rules, and an imported fact's constants are names of the program like any other
-([Q-M1f.137](../../../decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)). **R is a property of a
+$$
+K_0 \;=\; \underbrace{\Theta \,\cup\, \Omega}_{\text{context}} \;\cup\; \underbrace{\Phi}_{\text{problem}}
+$$
+
+| term | what it is | in the Zebra puzzle |
+|---|---|---|
+| **theory** $\Theta$ | relations, their properties, and the rules that give them meaning | *a drink is drunk in a house*, *that relation is a bijection*, the rules that say what *lives beside* means |
+| **ontology** $\Omega$ | facts a solution needs that the problem does not state, because they are obvious | *tea is a drink* |
+| **context** | $\Theta \cup \Omega$ | everything that is not a clue, a hint or the query |
+| **problem** $\Phi$ | the stated facts, the query, and the hints about what to guess, all in a context | the clues, *who owns the zebra?*, *guess where each thing is* |
+| **program** | context and problem together, as one text; what it imports brings context in | one file and what it imports |
+
+**The boundary is not in the language.** One text can mix all four, and nothing but a reader's eye says which part is
+which. An import carries either half of a context: it brings a module's facts as it brings its rules, and an imported
+fact's constants are names of the program like any other
+([Q-M1f.137](../../../decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)). **$R$ is a property of a
 problem in a context**: the same problem in another context has another region.
 
 ### 1.2 Names
 
-A **name** is a constant the program writes: every constant in an argument position of a fact, at any depth, a
-nested fact's arguments included, and every constant anywhere in a rule, an hrule or an obligation, its `:match` as
-well as its `:assert` ([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)).
-**A constant written only in a `(query …)` is not a name**: R is the program's, and a query asks about it, so adding
-a query never changes R. No rule brings in a name of its own and nothing makes a name at run time
-([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)), so the lattice below is finite.
+A **name** is a constant the program writes
+([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)):
 
-**What the blind enumerator takes for an object** is narrower than *a name*, by four exclusions, each by name and
-none a type system ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).
-Its objects are every name of the program and every name root's fixpoint holds, a fact's head beside its top-level
-arguments, less:
+$$
+\operatorname{Names}(P) \;=\; \lbrace\, c \;:\; c \text{ is a constant in an argument position of a fact of } K_0 \text{, at any depth} \,\rbrace
+\;\cup\; \lbrace\, c \;:\; c \text{ is a constant of a rule of } P \,\rbrace
+$$
 
-- the names a relation's signature declares, its type roles;
-- the kernel's words `not`, `false`, `and`, `or`, `absent`, `eq` and `neq`, whether or not a program writes one as
-  a value;
-- **the kernel's two dunders, `__closed__` and `__symmetric__`**: never an object, neither where a rule derives the
-  fact one heads nor where a program writes one in an argument position, which stays legal and keeps it a name of
-  the program. So a closure or a symmetry stated by a fact and the same one derived by a rule give one H and one R;
-- every name the program declares as a relation, or writes as the head of a fact, or names a rule by. The head of a
-  fact that only a rule concludes is none of these, so **a relation only a rule concludes is an object**, and a
-  candidate can name it. The candidate stays, and the read-out names it (§ 1.4); declaring the relation takes its
-  name out.
+A rule's constants are those of its premise and of its conclusion alike, whether the rule derives, proposes or owes.
+**A constant written only in a query is not a name**: $R$ is the program's, and a query asks about it, so adding a
+query never changes $R$. No rule brings in a name of its own and nothing makes a name while a state is saturated
+([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)):
+
+$$
+\forall C \subseteq H:\quad \operatorname{names}(\operatorname{st}(C)) \;\subseteq\; \operatorname{Names}(P) \cup \operatorname{names}(\mathrm{root})
+$$
+
+so the lattice of § 1.5 is finite.
+
+**An object** is narrower than a name. The objects are what the blind enumerator of
+[hypothesis generation](04-hypothesis-generation.md) fills a relation's slots with, and four kinds of name are left
+out, each by name and none by a type system
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)):
+
+$$
+\operatorname{Obj}(P) \;=\; \big( \operatorname{Names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{Roles}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
+$$
+
+- $\operatorname{names}(\mathrm{root})$ counts a fact's head beside its top-level arguments;
+- $\operatorname{Roles}(P)$ is the names a relation's signature declares for its slots;
+- $\operatorname{Kw}$ is the seven words of the rule language, *not*, *false*, *and*, *or*, *absent*, *equal* and
+  *unequal*, whether or not a program writes one as a value;
+- $\operatorname{Res}$ is the two reserved relations of the kernel, *closed* and *symmetric*
+  ([reserved names](../../user/04-reference/03-reserved-names.md) has their spelling): never an object, neither where
+  a rule derives the fact one heads nor where a program writes one in an argument position, which stays legal and
+  keeps it a name of the program. So a closure or a symmetry stated by a fact and the same one derived by a rule give
+  one $H$ and one $R$;
+- $\operatorname{RelNames}(P)$ is every name the program declares as a relation, writes as the head of a fact, or
+  names a rule by. The head of a fact that only a rule concludes is none of these, so **a relation only a rule
+  concludes is an object**, and a candidate can name it. The candidate stays, and the answer names it (§ 1.4);
+  declaring the relation takes its name out.
 
 ### 1.3 Root
 
-**Root** is `sat(program)`: the program's facts saturated to quiescence by its rules, with nothing hypothesised. It
-is a node like any other, the node ∅ of § 1.5. **Nothing a computation of R does is written into root**: every answer
-is the oracle's ([Q-M1e2.32](../../../decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)), and
-the oracle never writes, so every node is a fork of the one root. What a run learns of a refuted candidate is a
-constraint on the commitments it visits, never a fact of root ([Finding R](07-finding-r.md) says why).
+$$
+\mathrm{root} \;=\; \operatorname{sat}(K_0)
+$$
+
+**Root** is the program's facts saturated to quiescence by its rules, with nothing hypothesised
+([Saturation](02-saturation.md) defines $\operatorname{sat}$). It is a node like any other, the node $\emptyset$ of
+§ 1.5. **Nothing a computation of $R$ does is written into root**: every answer is the one the definition gives
+([Q-M1e2.32](../../../decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)), and the definition
+reads root and never writes it, so every node is a fork of the one root. What a computation learns of a refuted
+candidate is a constraint on the commitments it considers, never a fact of root
+([Finding R § 5](07-finding-r.md) says why).
 
 ### 1.4 Candidate and universe
 
-A **candidate** (a hypothesis) is a fact the generator proposes at root. Nothing a run is configured with moves
-which facts those are: no option, lever or flag changes the lattice
-([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)). Which facts can
-be proposed at all is decided by:
+A **candidate** (a hypothesis) is a ground fact proposed at root, and the **universe** $H$ is the set of them:
 
-- **the generation ladder** ([Hypothesis generation](04-hypothesis-generation.md)): the program's own `(hrule …)` if it
-  declares one; else, where an obligation is **activated** at root, the facts that would discharge what root owes and
-  what a commitment can bring it to owe
-  ([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)), so a root
-  that owes nothing under an activated obligation proposes nothing; else the blind combinatorial enumerator. An
-  obligation rule a program loads and nothing activates chooses no rung: an import brings its module whole, and a
-  module imported for another of its names leaves the program's own open relations to the blind enumerator. The
-  middle rung reads each obligation's domain at root, so it **declines**, and the blind enumerator builds H, where a
-  domain could grow under it: a guard over a relation the rung proposes, or a trigger or a guard over a relation a
-  commitment can change, read at relation grain
+$$
+H \;=\; \operatorname{gen}(P, \mathrm{root}), \qquad n = \lvert H \rvert, \qquad
+\forall h \in H:\; h \notin \mathrm{root} \,\land\, \lnot h \notin \mathrm{root}
+$$
+
+$\operatorname{gen}$ is the **generation ladder** of [Hypothesis generation](04-hypothesis-generation.md), a function
+of the program and of root's fixpoint and of nothing else. Nothing a computation is configured with moves which facts
+those are: no option changes the lattice
+([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)). Every later
+definition quantifies over $H$. Three things decide it:
+
+- **which rung of the ladder applies**: the program's own hypothesis rules if it declares one; else, where an
+  obligation is activated at root, the facts that would pay what root owes and what a commitment can bring it to owe
+  ([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)); else every
+  fact the blind enumerator can form. The middle rung reads each obligation's domain at root, so it **declines**, and
+  the blind enumerator builds $H$, where a domain could grow under it
   ([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md));
-- **the scoping a `(solve …)` states**: `:hypothesis-relations`, `:no-hypothesis`, and a `(__closed__ R)` fact. A
-  fact of an excluded relation is no candidate at all.
+- **what the program scopes out**: a fact of a relation the program excludes from guessing is no candidate at all;
+- **what root settles**: a fact root holds, or whose negation root stores, is no candidate.
 
-The **universe** H is the candidate list, and n = |H|. Every later definition quantifies over it.
+**$H$ must contain every fact a model needs.** If it does not, either the program is wrong, a name it never writes,
+or the generator is, a candidate it never proposes. $H$ is defined by the ladder, not declaratively: it is not every
+ground atom of every relation a commitment may extend.
 
-**H must contain every fact a model needs.** If it does not, either the program is wrong, a name it never writes, or
-the generator is, a candidate it never proposes. H is defined by the ladder, not declaratively: it is not every
-type-correct ground atom of every relation a commitment may extend.
+**On the obligations rung, $H$ holds what a debt root does not owe would propose**
+([Q-M1e.11](../../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). $H$ is taken
+once, at root, and what activates an obligation is an ordinary fact, so a rule can derive one at a node: that node
+owes what root never did, and root proposed nothing that pays it. The rung therefore also proposes, at root, the
+payments of every debt a commitment can bring, read off the rules alone
+([Hypothesis generation § 4.4](04-hypothesis-generation.md) has the definition). The reading is at relation grain and
+inexact both ways. *Over*: $H$ may hold a candidate for a debt no node owes, a member of a state of $R$ wherever
+nothing refutes it. *Under*: an activator its rule writes with a variable is not read, and the node that derives it
+owes what no candidate pays. So $H$ is not that of the program with the activator stated. A program this reading adds
+a candidate to derives an obligation's activator from a commitment, so it is not proved monotone (§ 1.6), and its
+answer is the whole cube's.
 
-**On the obligations rung, H holds what a debt root does not owe would propose**
-([Q-M1e.11](../../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). H is taken once,
-at root, and an obligation's activator is an ordinary fact, so a rule can derive one at a node: that node owes what
-the activator's plan matches, and root, which never held the activator, proposed nothing that pays it. The rung
-therefore reads, from the rules and root's plans and with no saturation:
+**What the universe leaves out, the answer names**
+([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). $R$ is over $H$ as
+the ladder scopes it, so a certificate that $R$ is exhausted certifies all of $R$ over $H$ and nothing beyond it. Let
+$\operatorname{Rel}(X)$ be the relations of the facts in $X$. A relation $r$ is **outside the universe** when
 
-1. **the activators a commitment can derive**: every conclusion that holds no variable and would activate an
-   obligation rule, in the `:assert` of a rule that reads a relation of D⁺ or is activated by one. D⁺ is the
-   relations a commitment can change (D of § 1.6), followed through the rules root has no plan of, seeded with the
-   relations of the rung's own candidates; *forbid* reads the same set;
-2. for each such activator root's fixpoint does not hold, **the rung's own scan, at root**: the instances the
-   activator's plan matches there, each one's guard read as the rung reads a guard of a debt root owes;
-3. a candidate that adds a relation extends D⁺, so both steps are **repeated until they add nothing**.
+$$
+r \notin \operatorname{Rel}(H) \;\land\; \big( \text{a rule concludes } r \;\lor\; \text{a query's goal reads } r \big) \;\land\; \text{the program does not scope } r \text{ out}
+$$
 
-A plan read this way is held to every decline of the rung beside root's own: where its guard scans a relation a
-commitment can change, the rung declines and the blind enumerator builds H. The scoping a `(solve …)` states binds
-it as it binds any plan, and the read-out names what H holds for each such debt.
+and of such a relation $R$ holds only what the program states and saturation derives. It is said at relation grain:
+the facts of a covered relation that the rung does not propose are not named.
 
-The reading is **at relation grain and inexact both ways**. *Over*: a rule that reads what a commitment can change
-need fire at no alive node, and H then holds a candidate for a debt no node owes, a member of a state of R wherever
-nothing refutes it. *Under*: an activator its rule writes with a variable is not read, whatever binds the variable,
-and the node that derives it owes what no candidate pays. So H is not *the program with the activator stated*: where
-one choice switches a second debt on and another does not, R holds a state that makes the other choice and pays
-nothing, which the program that states the activator does not have. The reading is the obligations rung's alone. An
-hrule proposes at root what its `:match` finds there, and one whose `:match` reads a relation a commitment can change
-would propose at a node what it did not at root: H does not hold that. The blind enumerator reads no state and has no
-such case. A program this reading adds a candidate to derives an obligation's activator from a commitment, so the
-static check flags it (§ 1.6) and the cube answers it.
-
-**What the universe leaves out, the read-out names**
-([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). R is over H as the
-ladder scopes it, so a certificate that R is exhausted certifies all of R over H and nothing beyond it. Where the
-rung that built H proposes no fact of a relation the program can conclude or ask about (a saturation rule writes it,
-or a query's `:goal` reads it), and the program does not scope the relation out itself, every surface says the
-relation is outside the universe, and that R holds of it only what the program states and saturation derives. It is
-said at relation grain: the facts of a covered relation the rung does not propose (the blind enumerator's
-self-edges, an obligation's typed candidates) are not named.
-
-**What the universe binds as an object, the read-out names too**
+**What the universe binds as an object, the answer names too**
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). The blind
-enumerator is untyped: every name of the program that no signature declares is a candidate object, so where a
-program writes `(is-a Red Color)` and declares `(relation co-located T T)`, `(co-located Blue Color)` is a candidate
-and a state of R may hold it. R is right for the program as written, and a signature that names the type keeps it
-out of H. Where the blind enumerator built H and a candidate names the second argument of an `is-a` fact at root's
-fixpoint, every surface names that type. The row reads `is-a` by its name and decides nothing: H, R, every count and
-every exit code are the same without it.
+enumerator is untyped: every object fills every slot. Where a program states
+$\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and declares a relation $\operatorname{co-located}$ of two slots
+with the same role, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state of $R$ may
+hold it. $R$ is right for the program as written, and a signature that names $\mathsf{Color}$ as a role keeps it out
+of $H$. Where the blind enumerator built $H$ and a candidate names the second argument of a membership fact of root,
+every answer names that name. It decides nothing: $H$, $R$ and every count are the same without the sentence.
 
-**A relation's name bound as an object is named as well** (§ 1.2). Where a program derives `(liquid Tea)` by a rule,
-declares `liquid` nowhere and leaves `(relation tasty Thing)` open, `(tasty liquid)` is a candidate and a state of R
-may hold it. The candidate stays, R is right for the program as written, and declaring the relation takes its name
-out of H. Where the blind enumerator built H and a candidate names the head of a fact root's fixpoint holds, or a
-relation a rule's `:assert` names, every surface names it. A relation a rule writes through a parameter, `(?Q ?r)`, is
-named only where root holds a fact of it, and a kernel dunder never is, being no object. It decides nothing either.
+**A relation's name bound as an object is named as well** (§ 1.2). Where a rule derives
+$\operatorname{liquid}(\mathsf{Tea})$, nothing declares $\operatorname{liquid}$, and a declared one-slot relation
+$\operatorname{tasty}$ is open, $\operatorname{tasty}(\mathsf{liquid})$ is a candidate and a state of $R$ may hold it.
+The candidate stays, and declaring the relation takes its name out of $H$. It decides nothing either.
 
 ### 1.5 Commitment, node, state
 
-A **commitment** C is a subset of H. Seen as a point of the lattice, it is a **node**. Without merging, the lattice
-is the **n-cube**: a node is an n-bit word, an edge adds or removes one candidate, and layer L*k* holds the C(n, k)
-commitments of k candidates.
+A **commitment** $C$ is a subset of $H$. Seen as a point of the lattice it is a **node**, and the lattice is the
+Boolean lattice of all of them:
 
-A node's **state** is `sat(root + C)`: root's fixpoint, forked, with C's facts written in and the saturation resumed
-to quiescence. The definition never stops at a first contradiction; what a computation of R may stop at, and why
-stopping changes no answer, is [Finding R § 1](07-finding-r.md#1-a-node).
+$$
+\mathcal{L} \;=\; (2^{H}, \subseteq), \qquad \lvert \mathcal{L} \rvert = 2^{n}, \qquad
+L_k = \lbrace\, C \subseteq H : \lvert C \rvert = k \,\rbrace, \quad \lvert L_k \rvert = \binom{n}{k}
+$$
 
-**The state is the fork's.** Building a state from scratch, `sat(program + C)`, is another construction, and on a
-program with an `absent` it need not give the fork's fact set even where the program is monotone: inside a node built
-from scratch the saturation re-derives root's facts, and a rule that reads an `absent` over one of them can fire
-before that fact is derived again, leaving a fact the fork does not hold.
-[`examples/lattice/11_fifo_gap_static.ein`](../../../../examples/lattice/11_fifo_gap_static.ein) is written for that
-case. The state defined here is the fork's, and it is the one every computation of R builds.
+It is the **$n$-cube**: a node is an $n$-bit word, an edge joins $C$ and $C \cup \lbrace h \rbrace$ for $h \notin C$,
+and layer $L_k$ holds the commitments of $k$ candidates. A node $C$ has an **up-set** and a **down-set**:
 
-| | the state |
-|---|---|
-| **dead** | holds `(false)` |
-| **alive** | is not dead |
-| **owing n** | has n obligation instances with no witness (§ 4). Read on a dead state too |
-| **discharged** | owes nothing |
+$$
+\uparrow C = \lbrace\, C' \subseteq H : C \subseteq C' \,\rbrace, \qquad \downarrow C = \lbrace\, C' : C' \subseteq C \,\rbrace
+$$
 
-**Closure.** cl(C) is the set of candidates the state holds. Always C ⊆ cl(C). A node with cl(C) ≠ C is
-**transient**: saturation moves it, `C ⇒ cl(C)`.
+**The node function** gives each node its **state**:
 
-**State class.** The commitments that reach one state. For a monotone program saturation is a closure operator on
-the cube (extensive, idempotent, monotone), so a state s has:
+$$
+\operatorname{st} : 2^{H} \to \text{states}, \qquad \operatorname{st}(C) \;=\; \operatorname{sat}(\mathrm{root} \cup C)
+$$
 
-- a **top**, s itself, the closed set;
-- **bottoms**, its **minimal generators**: the smallest commitments that force it. Their size is how many facts a
-  solution needs guessed.
+root's fixpoint, with the facts of $C$ added and the saturation resumed to quiescence. The definition never stops at
+a first contradiction; what a computation of $R$ may stop at, and why stopping changes no answer, is
+[Finding R § 1](07-finding-r.md#1-a-node).
 
-The class is the union of the intervals [g … s] over its minimal generators: if g ⊆ C ⊆ s and cl(g) = s, then
-s = cl(g) ⊆ cl(C) ⊆ cl(s) = s.
+**The state is the fork's.** Building a state from scratch, $\operatorname{sat}(K_0 \cup C)$, is another
+construction, and on a program that reads an absence it need not give the fork's fact set even where the program is
+monotone:
+
+$$
+\operatorname{sat}(\operatorname{sat}(K_0) \cup C) \;\neq\; \operatorname{sat}(K_0 \cup C) \quad \text{is possible}
+$$
+
+Inside a node built from scratch the saturation derives root's facts again, and a rule that reads the absence of one
+of them can fire before that fact is derived again, leaving a fact the fork does not hold
+([Monotone and non-monotone programs](08-monotonicity.md) has the case). The state defined here is the fork's.
+
+**The status of a state** $S$ is four predicates. Write $\bot$ for the contradiction a rule concludes and $\lnot f$
+for the stored negation of a fact $f$. An obligation rule $o$, activated by $a$, has a trigger $T_o$ and a witness
+$W_o$ ([obligations](../../user/03-syntax-and-semantics/08-obligations.md)), and is **owed** at the bindings $\theta$
+of its trigger where no witness exists:
+
+$$
+\begin{aligned}
+\operatorname{dead}(S) &\iff \bot \in S \;\lor\; \exists f.\; f \in S \land \lnot f \in S \\
+\operatorname{alive}(S) &\iff \lnot \operatorname{dead}(S) \\
+\operatorname{owes}(o, a, \theta, S) &\iff S \models T_o(a, \theta) \;\land\; \lnot \exists \bar{y}.\; S \models W_o(a, \theta, \bar{y}) \\
+\operatorname{Owed}(S) &= \lbrace\, (o, a, \theta) : \operatorname{owes}(o, a, \theta, S) \,\rbrace, \qquad \operatorname{owes}(S) = \lvert \operatorname{Owed}(S) \rvert \\
+\operatorname{discharged}(S) &\iff \operatorname{owes}(S) = 0
+\end{aligned}
+$$
+
+A state that is not discharged is **owing**. What a state owes is read on a dead state too. Each predicate is lifted
+to commitments through the node function: $\operatorname{dead}(C)$ means $\operatorname{dead}(\operatorname{st}(C))$,
+and so on. The three sets a status cuts the lattice into are
+
+$$
+\operatorname{Dead} = \lbrace C : \operatorname{dead}(C) \rbrace, \qquad
+\operatorname{Owing} = \lbrace C : \operatorname{alive}(C) \land \operatorname{owes}(C) > 0 \rbrace, \qquad
+R = 2^{H} \setminus (\operatorname{Dead} \cup \operatorname{Owing})
+$$
+
+**The three sets, drawn.** One guest, $\mathsf{Ann}$, owes a drink: an obligation says she drinks something, and a
+restriction says a vegan drinks no milk. The candidates are
+
+$$
+t = \operatorname{drinks}(\mathsf{Ann}, \mathsf{Tea}), \qquad
+m = \operatorname{drinks}(\mathsf{Ann}, \mathsf{Milk}), \qquad
+v = \operatorname{vegan}(\mathsf{Ann}), \qquad H = \lbrace t, m, v \rbrace
+$$
+
+and the eight nodes of $(2^{H}, \subseteq)$ are drawn below as the engine draws a region, with $\emptyset$ at the top
+and one candidate added along each edge downward, so a node's supersets are below it.
+
+```dot
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 3 · |R| = 4 of 8 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
+  L1 [shape=plaintext, fontsize=9, label="L1 · 3"];
+  L2 [shape=plaintext, fontsize=9, label="L2 · 3"];
+  L3 [shape=plaintext, fontsize=9, label="L3 · 1"];
+  L0 -> L1 [style=invis];
+  L1 -> L2 [style=invis];
+  L2 -> L3 [style=invis];
+  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
+  m1 [label="(drinks Ann Milk)\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m2 [label="(drinks Ann Tea)\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m4 [label="(vegan Ann)\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
+  m3 [label="(drinks Ann Milk)\n(drinks Ann Tea)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m5 [label="(drinks Ann Milk)\n(vegan Ann)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m6 [label="(drinks Ann Tea)\n(vegan Ann)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m7 [label="(drinks Ann Milk)\n(drinks Ann Tea)\n(vegan Ann)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  { rank=same; L0; m0 }
+  { rank=same; L1; m1; m2; m4 }
+  { rank=same; L2; m3; m5; m6 }
+  { rank=same; L3; m7 }
+  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
+  m0 -> m2 [color="#2171b5", style=solid, penwidth=2];
+  m0 -> m4 [color="#fdae6b", style=solid, penwidth=1.2];
+  m1 -> m3 [color="#238b45", style=solid, penwidth=2];
+  m1 -> m5 [color="#cb181d", style=solid, penwidth=1.2];
+  m2 -> m3 [color="#238b45", style=solid, penwidth=2];
+  m2 -> m6 [color="#238b45", style=solid, penwidth=2];
+  m4 -> m5 [color="#cb181d", style=dashed, penwidth=1.2];
+  m4 -> m6 [color="#2171b5", style=solid, penwidth=2];
+  m3 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
+  m5 -> m7 [color="#bdbdbd", style=solid, penwidth=0.6];
+  m6 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
+}
+```
+
+A node is a commitment, labelled with its candidates. Its fill is its status: amber is owing, red is dead, green is
+in $R$. A double border marks a minimal element of $R$ and a heavy green one a maximal element. An edge adds one
+candidate, and its colour says what the addition does: blue pays the last debt, green stays inside $R$, red kills,
+orange still owes, grey goes from dead to dead. Read off the picture:
+
+$$
+\operatorname{Owing} = \lbrace \emptyset, \lbrace v \rbrace \rbrace, \qquad
+\operatorname{Dead} = \lbrace \lbrace m, v \rbrace, \lbrace t, m, v \rbrace \rbrace = \uparrow \lbrace m, v \rbrace, \qquad
+R = \lbrace \lbrace t \rbrace, \lbrace m \rbrace, \lbrace t, m \rbrace, \lbrace t, v \rbrace \rbrace
+$$
+
+The owing nodes are a down-set near $\emptyset$, the dead nodes an up-set far from it, and $R$ is the band between
+them. § 2.4 says when that picture is the general one.
+
+**Closure.** The closure of a commitment is the set of candidates its state holds:
+
+$$
+\operatorname{cl}(C) \;=\; \operatorname{st}(C) \cap H, \qquad C \subseteq \operatorname{cl}(C)
+$$
+
+A node with $\operatorname{cl}(C) \neq C$ is **transient**: saturation moves it to $\operatorname{cl}(C)$. A node with
+$\operatorname{cl}(C) = C$ is **closed**.
+
+**State class.** Two commitments are one **state** when their states hold the same facts
+([values and their order](../01-static-ir/03-values-and-order.md) has the identity of a state):
+
+$$
+C \sim C' \iff \operatorname{st}(C) = \operatorname{st}(C'), \qquad [C] = \lbrace\, C' \subseteq H : C' \sim C \,\rbrace
+$$
+
+On a monotone program $\operatorname{cl}$ is a closure operator on the cube,
+
+$$
+C \subseteq \operatorname{cl}(C), \qquad \operatorname{cl}(\operatorname{cl}(C)) = \operatorname{cl}(C), \qquad
+C \subseteq C' \implies \operatorname{cl}(C) \subseteq \operatorname{cl}(C')
+$$
+
+and $\operatorname{st}(C) = \operatorname{st}(\operatorname{cl}(C))$, so a class has
+
+- a **top**, its closed set $s = \operatorname{cl}(C)$;
+- **bottoms**, its **minimal generators**: the minimal commitments $g$ with $\operatorname{cl}(g) = s$. Their size is
+  how many facts a solution needs guessed.
+
+**The class is the union of the intervals from its minimal generators to its top**:
+
+$$
+[s] \;=\; \bigcup_{g \,\in\, \min [s]} \lbrace\, C : g \subseteq C \subseteq s \,\rbrace
+$$
+
+since $g \subseteq C \subseteq s$ and $\operatorname{cl}(g) = s$ give
+$s = \operatorname{cl}(g) \subseteq \operatorname{cl}(C) \subseteq \operatorname{cl}(s) = s$.
+
+A second small universe shows a class of two nodes. A rule says a vegan is picky, and the candidates are
+$v = \operatorname{vegan}(\mathsf{Ann})$ and $p = \operatorname{picky}(\mathsf{Ann})$:
+
+```dot
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 2 · |R| = 4 of 4 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
+  L1 [shape=plaintext, fontsize=9, label="L1 · 2"];
+  L2 [shape=plaintext, fontsize=9, label="L2 · 1"];
+  L0 -> L1 [style=invis];
+  L1 -> L2 [style=invis];
+  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m1 [label="(picky Ann)\nR", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#525252", penwidth=1];
+  m2 [label="(vegan Ann)\nR\n⇒ +1 by saturation", shape=ellipse, style="filled,dashed", fillcolor="#a1d99b99", color="#525252", penwidth=1];
+  m3 [label="(picky Ann)\n(vegan Ann)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  { rank=same; L0; m0 }
+  { rank=same; L1; m1; m2 }
+  { rank=same; L2; m3 }
+  m0 -> m1 [color="#238b45", style=solid, penwidth=2];
+  m0 -> m2 [color="#238b45", style=solid, penwidth=2];
+  m1 -> m3 [color="#238b45", style=solid, penwidth=2];
+  m2 -> m3 [color="#969696", style=dotted, arrowhead=none, penwidth=0.8];
+  m2 -> m3 [color="#08519c", penwidth=2.2, arrowhead=vee, constraint=false, label="sat", fontsize=8, fontcolor="#08519c"];
+}
+```
+
+The dashed node $\lbrace v \rbrace$ is transient: $\operatorname{cl}(\lbrace v \rbrace) = \lbrace v, p \rbrace$, the
+arrow labelled *sat*, and the dotted edge beside it adds a fact saturation has already derived. So
+$[\lbrace v, p \rbrace] = \lbrace \lbrace v \rbrace, \lbrace v, p \rbrace \rbrace$, with top $\lbrace v, p \rbrace$
+and one minimal generator $\lbrace v \rbrace$: four commitments, three states.
 
 ### 1.6 Monotone
 
-A program is **monotone** when no read of its compiled plans can take a conclusion away or add a debt as the
-commitment grows: no `absent` at odd depth in a saturation rule over a relation a commitment can change, and no
-obligation trigger over one. How a program is checked, and what a flagged one is, is
-[Monotone and non-monotone programs](08-monotonicity.md). On a monotone program:
+A program is **monotone** when growth of a commitment can neither take a conclusion away nor add a debt: no rule
+that derives reads, under an odd number of absences, a relation a commitment can change, and no obligation's trigger
+reads one. How that is decided for a program, and what a program that fails the test is, is
+[Monotone and non-monotone programs](08-monotonicity.md). On a monotone program, for all $C \subseteq C' \subseteq H$:
 
-- **dead is upward-closed**: a contradiction stays as facts are added;
-- **discharged is upward-closed**: a witness stays, and no new debt arrives;
-- so R (§ 2) has no holes, and its two lines describe it;
-- and cl is a closure operator (§ 1.5).
+$$
+\begin{aligned}
+\operatorname{st}(C) &\subseteq \operatorname{st}(C') && \text{the state is monotone} \\
+\operatorname{dead}(C) &\implies \operatorname{dead}(C') && \text{dead is upward-closed} \\
+\operatorname{discharged}(C) &\implies \operatorname{discharged}(C') && \text{discharged is upward-closed}
+\end{aligned}
+$$
+
+- a contradiction stays as facts are added;
+- a witness stays, and no new debt arrives;
+- so $R$ (§ 2) has no hole, and its two lines describe it;
+- and $\operatorname{cl}$ is a closure operator (§ 1.5).
 
 **Which property this is.** *Monotone* is a property of the **program**: its consequence operator is monotone on
 every knowledge base. The lattice of commitments is the domain, and is never itself monotone or not. What a monotone
-program guarantees is two properties of the functions on its nodes, which a non-monotone program can lose
-separately: the **state** is monotone in C, which, where saturation is cumulative, is the same as being independent
-of the path that built the node; and the **status** is monotone, `dead` and *discharged* both upward-closed. An
-`absent` over a relation a commitment can change can break the first; an obligation's trigger breaks the second with
-no `absent` at all. The static check flags the program, so it also flags programs whose node functions keep both
-properties: its flags are *conservative*.
+program guarantees is two properties of the functions on its nodes, which a non-monotone program can lose separately:
+the **state** is monotone in $C$, which, where saturation is cumulative, is the same as being independent of the path
+that built the node; and the **status** is monotone, *dead* and *discharged* both upward-closed. A read of an absence
+over a relation a commitment can change can break the first; an obligation's trigger breaks the second with no
+absence at all.
 
-The static check is a sufficient condition, and the cube is its check: on a monotone program no dead node has an
-alive superset and no discharged node has an owing one. It reads at **relation grain**: a read is dynamic when its
-relation is one a commitment can change, whatever its pattern, and the theorem is stated at that grain.
+The test is a sufficient condition, stated at **relation grain**: a read is of something a commitment can change
+when its relation is one, whatever its pattern. A program it does not prove monotone may still have node functions
+with both properties: the test is *conservative*, and the full lattice is what shows whether a program it flags has
+a dead node with an alive superset or a discharged node with an owing one.
 
 ---
 
 ## 2. The answer: the region R
 
-> **R = { C ⊆ H : sat(root + C) is alive and discharged }.**
-> A **solution** is a node of R.
+$$
+R \;=\; \lbrace\, C \subseteq H \;:\; \operatorname{alive}(\operatorname{st}(C)) \,\land\, \operatorname{discharged}(\operatorname{st}(C)) \,\rbrace
+$$
+
+A **solution** is a node of $R$.
 
 ### 2.1 In general, R is its node set
 
-On a monotone program that set is exact. **On a non-monotone program it is not**, and the engine claims nothing of
-its answer there: not soundness, correctness or completeness. A node's state can depend on the path it is built by,
-`sat(root + C₁ + C₂) ≠ sat(sat(root + C₁) + C₂)`, and on the order rules fire in
-([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)), so *the full set of
-nodes* is not one object. Every node is built one way, the fork of § 1.5, and R on a flagged program is the region
-of that construction: every command agrees on it, and nothing more is claimed.
+On a monotone program that set is exact. **On a non-monotone program it is not**, and nothing is claimed of the
+answer there: not soundness, correctness or completeness. A node's state can depend on the path it is built by,
 
-A non-monotone program can have almost any subset of the cube as its region; the one exception is a dead root under
-a non-empty R, since a fork only adds and a dead root makes every node dead. The programs under
-[`examples/lattice/synth/`](../../../../examples/lattice/synth/) are each written for a chosen region. There are
-2^(2ⁿ) subsets of the cube, so nothing shorter describes every region; the shortest exact form of any one is the
-union of its maximal sub-cubes (§ 2.4).
+$$
+\operatorname{sat}(\mathrm{root} \cup C_1 \cup C_2) \;\neq\; \operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup C_2) \quad \text{is possible}
+$$
+
+and on the order rules fire in
+([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)), so *the full set of
+nodes* is not one object. Every node is built one way, the fork of § 1.5, and $R$ on such a program is the region of
+that construction: every computation agrees on it, and nothing more is claimed.
+
+A non-monotone program can have almost any subset of the cube as its region. The one exception is a non-empty $R$
+under a dead root: a fork only adds, so
+
+$$
+\operatorname{dead}(\emptyset) \implies \forall C \subseteq H.\; \operatorname{dead}(C), \qquad \text{and then } R = \emptyset
+$$
+
+There are $2^{2^{n}}$ subsets of the cube, so nothing shorter than the set describes every region; the shortest exact
+form of any one is the union of its maximal sub-cubes (§ 2.4).
 
 What makes a shorter description exact is a property of the program, in order:
 
 | property | what it licenses |
 |---|---|
-| **convex** (no hole) | the two lines describe R exactly: R = ⋃ [a … b] over minimal a ⊆ maximal b |
-| **monotone** (§ 1.6) | convex, and the lines follow from N and E without visiting the cube (§ 2.4), with N, E and the static verdict as a certificate |
-| **shape** | restrictions only: the minimal line is {∅}. Obligations only: the maximal line is {⊤}, every candidate (§ 4) |
+| **convex** (no hole) | the two lines describe $R$ exactly: $R = \bigcup \lbrace [a, b] : a \in \min R,\ b \in \max R,\ a \subseteq b \rbrace$ |
+| **monotone** (§ 1.6) | convex, and the lines follow from $N$ and $E$ without evaluating the cube (§ 2.4), with $N$, $E$ and the proof of monotonicity as a certificate |
+| **shape** | restrictions only: $\min R = \lbrace \emptyset \rbrace$. Obligations only: $\max R = \lbrace H \rbrace$, every candidate (§ 4) |
 
 [Monotone and non-monotone programs](08-monotonicity.md) writes the same ladder from the non-monotone side.
 
 ### 2.2 ∅
 
-**∅ ∈ R exactly when root is alive and discharged, whatever the generator proposes**, including when it proposes
-nothing. A program that states no obligation and whose root is consistent always has ∅ in R. That is no defect: a
-puzzle that does not say what it requires is solved by saying nothing more.
+$$
+\emptyset \in R \iff \operatorname{alive}(\mathrm{root}) \land \operatorname{discharged}(\mathrm{root})
+$$
+
+**whatever the generator proposes**, including when it proposes nothing. A program that states no obligation and
+whose root is consistent always has $\emptyset$ in $R$. That is no defect: a puzzle that does not say what it requires
+is solved by saying nothing more.
 
 ### 2.3 How many: k_s and k_c
 
-R is counted twice.
+$R$ is counted twice:
+
+$$
+k_c \;=\; \lvert R \rvert, \qquad
+k_s \;=\; \lvert R / {\sim} \rvert \;=\; \lvert \lbrace\, \operatorname{st}(C) : C \in R \,\rbrace \rvert, \qquad k_s \le k_c
+$$
 
 | | counts | |
 |---|---|---|
-| **k_c** | \|R\| in **commitments** | the ways to guess a solution |
-| **k_s** | \|R\| in **states** (state classes, § 1.5) | the different solutions |
+| $k_c$ | $R$ in **commitments** | the ways to guess a solution |
+| $k_s$ | $R$ in **states** (state classes, § 1.5) | the different solutions |
 
-They differ exactly where saturation derives a candidate at a node of R: there the node and its closure are two
-commitments with one state.
-[`examples/features/02_star_in_identifiers.ein`](../../../../examples/features/02_star_in_identifiers.ein) is a
-program whose region has far more commitments than states. A discharged superset of a discharged state is a node of
-R in its own right, counted in k_c and, where its state differs, in k_s
+They differ exactly where saturation derives a candidate at a node of $R$: there the node and its closure are two
+commitments with one state, as $\lbrace v \rbrace$ and $\lbrace v, p \rbrace$ in § 1.5, where $k_c = 4$ and
+$k_s = 3$. A discharged superset of a discharged state is a node of $R$ in its own right, counted in $k_c$ and, where
+its state differs, in $k_s$
 ([Q-M1e2.1](../../../decisions/answer/Q-M1e2.1-a-discharged-superset-of-a-discharged-state-is.md)). A count is exact,
 and reported up to a fixed bound past which it reads *this many or more*
 ([Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)).
 
 **One solution** has two readings, and an expectation of exactly one has to say which:
 
-- **k_s = 1**: what a program that states what it requires can mean;
-- **one maximal state**: what a program with restrictions only can mean, since there ∅ ∈ R and k_s = 1 only when
-  nothing can be added at all.
+- $k_s = 1$: what a program that states what it requires can mean;
+- $\lvert \max R / {\sim} \rvert = 1$, one maximal state: what a program with restrictions only can mean, since there
+  $\emptyset \in R$ and $k_s = 1$ only when nothing can be added at all.
 
 ### 2.4 Shape
 
-| term | what it is |
+**The two lines** are the minimal and the maximal elements of $R$:
+
+$$
+\min R = \lbrace\, C \in R : \nexists C' \in R.\; C' \subsetneq C \,\rbrace, \qquad
+\max R = \lbrace\, C \in R : \nexists C' \in R.\; C \subsetneq C' \,\rbrace
+$$
+
+With restrictions only the minimal line is $\lbrace \emptyset \rbrace$; with obligations only, on a monotone program,
+the maximal line is $\lbrace H \rbrace$. These are the **trivial lines**, visible from the program's shape and never
+in need of enumeration.
+
+| term | definition |
 |---|---|
-| **minimal line** / **maximal line** | R's minimal and maximal elements. With restrictions only the minimal line is {∅}; with obligations only the maximal line is {⊤}. These are the **trivial lines**, visible from the program's shape, never to be enumerated (on a monotone program) |
-| **convex** | no **hole**: no node outside R between two members of R. A monotone program is convex |
-| **sub-cube** [a … b] | every commitment between a and b. Its **dimension** \|b\| − \|a\| is its number of free facts. R is the union of its maximal sub-cubes |
-| **component** | a maximal part of R connected by one-fact edges inside R. **Not a model**: a set of models. A well-posed puzzle is one where every component is a point |
-| **N** | the minimal dead sets: the minimal nogoods |
-| **E** | the minimal discharging sets, dead or not |
+| **hole** | a node outside $R$ between two members: $C \notin R$ with $a \subseteq C \subseteq b$ for some $a, b \in R$ |
+| **convex** | no hole. A monotone program is convex |
+| **sub-cube** $[a, b]$ | $\lbrace C : a \subseteq C \subseteq b \rbrace$, every commitment between $a$ and $b$. Its **dimension** $\lvert b \rvert - \lvert a \rvert$ is its number of free facts. $R$ is the union of its maximal sub-cubes |
+| **component** | a maximal part of $R$ connected by one-candidate edges inside $R$. **Not a model**: a set of models. A well-posed puzzle is one where every component is a point |
+| $N$ | the minimal dead sets, the minimal nogoods: $N = \min \operatorname{Dead}$ |
+| $E$ | the minimal discharging sets, dead or not: $E = \min \lbrace C : \operatorname{discharged}(C) \rbrace$ |
 
-**The duality.** Without holes, the minimal line is E's alive members, and the maximal line is the largest sets
-containing no member of N, kept where discharged: Reiter's diagnosis duality, and MUS/MCS enumeration's. Read the
-other way, N is the minimal transversals of the complements of the maximal alive states, which is how a computation
-that meets only states obtains it ([Finding R § 6](07-finding-r.md#6-the-routes-question-by-question)). On a monotone
-program both directions hold. On a non-monotone one they are not guaranteed, with a hole or without one:
-[`synth/maximal_not_top.ein`](../../../../examples/lattice/synth/maximal_not_top.ein) has no hole, and its top owes.
+In the drawing of § 1.5: $\min R = \lbrace \lbrace t \rbrace, \lbrace m \rbrace \rbrace$,
+$\max R = \lbrace \lbrace t, m \rbrace, \lbrace t, v \rbrace \rbrace$, $N = \lbrace \lbrace m, v \rbrace \rbrace$,
+$E = \lbrace \lbrace t \rbrace, \lbrace m \rbrace \rbrace$; $R$ is one component, the union of the three sub-cubes
+$[\lbrace t \rbrace, \lbrace t, m \rbrace]$, $[\lbrace m \rbrace, \lbrace t, m \rbrace]$ and
+$[\lbrace t \rbrace, \lbrace t, v \rbrace]$, each of dimension 1.
 
-**Locally.** Without holes, a node of R is maximal exactly when every edge up leads to a dead node, and minimal
-exactly when every edge down leads to an owing one. Across a hole the local test and the cube can disagree:
-[`synth/local_not_global.ein`](../../../../examples/lattice/synth/local_not_global.ein) is a program written to make
-them disagree.
+**The band.** On a monotone program the dead nodes are the up-set of $N$, the discharged nodes the up-set of $E$,
+and $R$ is what lies in the second and outside the first:
 
-### 2.5 Worked: `examples/lattice/02_genuine_3set_death.ein`
+$$
+\operatorname{Dead} = \bigcup_{D \in N} \uparrow D, \qquad
+\lbrace C : \operatorname{discharged}(C) \rbrace = \bigcup_{e \in E} \uparrow e, \qquad
+R = \bigcup_{e \in E} \uparrow e \;\setminus\; \bigcup_{D \in N} \uparrow D
+$$
 
-Three candidates `a = (a-prop X)`, `b = (b-prop X)`, `c = (c-prop X)`; one rule asserting `(false)` when all three
-hold; no obligation ([the program](../../../../examples/lattice/02_genuine_3set_death.ein)).
-
-| commitment | alive? | owes? | in R? |
-|---|---|---|---|
-| `∅` | yes | no | **yes**: minimal |
-| `{a}`, `{b}`, `{c}` | yes | no | **yes** |
-| `{a,b}`, `{a,c}`, `{b,c}` | yes | no | **yes**: maximal |
-| `{a,b,c}` | **no** | no | no |
-
-**R has 7 nodes and 7 states** (k_c = k_s = 7; no rule derives a candidate). Its minimal line is {∅}, the trivial
-line of a program with restrictions only. Its maximal line is the three pairs. It is one component, the union of
-three sub-cubes [∅ … pair] of dimension 2. N = {{a,b,c}}, E = {∅}, and the duality gives both lines. The conflict is
-genuinely three-way, which is what the program is named for.
-
-![lattice/02's region, with a bare ein solve on it](diagrams/region_02_genuine_3set_death.svg)
-
-Drawn by [`ein render region`](../../user/04-reference/12-rendering.md#the-region--ein-render-region)
-([`.dot`](diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve` on the cube. Re-made with:
-
-```sh
-ein oracle examples/lattice/02_genuine_3set_death.ein --dump cube/
-ein solve  examples/lattice/02_genuine_3set_death.ein --dump-lattice run/lattice --dump-answer run/answer
-ein render region cube/ --visited run/lattice --answer run/answer \
-    > docs/ein/reasoning/02-kb-evolution/diagrams/region_02_genuine_3set_death.dot
-dot -Tsvg docs/ein/reasoning/02-kb-evolution/diagrams/region_02_genuine_3set_death.dot \
-    -o docs/ein/reasoning/02-kb-evolution/diagrams/region_02_genuine_3set_death.svg
+```dot
+digraph band {
+  graph [rankdir=TB, nodesep=0.5, ranksep=0.45, fontname="Helvetica", fontsize=10];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="filled,rounded"];
+  edge [arrowsize=0.6, fontname="Helvetica", fontsize=9];
+  bottom [label="∅", shape=ellipse, fillcolor="#fee391"];
+  owing [label="Owing\nalive, a debt unpaid\na down-set of the alive nodes", fillcolor="#fee391"];
+  minl [label="min R\nthe alive members of E", fillcolor="#a1d99b", peripheries=2];
+  r [label="R\nalive and discharged", fillcolor="#a1d99b"];
+  maxl [label="max R\nthe discharged maximal sets holding no member of N", fillcolor="#a1d99b", penwidth=3, color="#006d2c"];
+  dead [label="Dead = ↑N\nan up-set", fillcolor="#fcbba1"];
+  top [label="H", shape=ellipse, fillcolor="#fcbba1"];
+  bottom -> owing [label="add candidates"];
+  owing -> minl [label="the last debt is paid", color="#2171b5", fontcolor="#2171b5"];
+  minl -> r [color="#238b45"];
+  r -> maxl [color="#238b45"];
+  maxl -> dead [label="one more candidate kills", color="#cb181d", fontcolor="#cb181d"];
+  dead -> top [color="#bdbdbd"];
+}
 ```
 
-Fill is the node's status in the cube, shape is what the run did there, and border is the lines and the defects. The
-run describes all of R, so it is compared with all of R: the seven octagons are the seven states it reported, the
-dead triple is a box because the run visited all eight nodes, and nothing is *MISSING* or *SPURIOUS*.
+The schematic reads from $\emptyset$ at the top to $H$ at the bottom, as the region drawings do. Obligations cut $R$
+off from $\emptyset$, restrictions cut it off from $H$, and where a program states only one of the two the other
+border is the trivial line.
+
+**The duality.** On a monotone program each line is computed from one of the two families, and $N$ from the maximal
+alive sets. Write $\operatorname{MinTr}(\mathcal{F})$ for the minimal transversals of a family $\mathcal{F}$ of sets,
+the minimal sets that meet every member:
+
+$$
+\begin{aligned}
+\min R &= \lbrace\, e \in E : \operatorname{alive}(e) \,\rbrace \\
+\max R &= \lbrace\, b \in \max \operatorname{Alive} : \operatorname{discharged}(b) \,\rbrace,
+  \qquad \max \operatorname{Alive} = \max \lbrace\, C : \nexists D \in N.\; D \subseteq C \,\rbrace \\
+N &= \operatorname{MinTr} \lbrace\, H \setminus b : b \in \max \operatorname{Alive} \,\rbrace
+\end{aligned}
+$$
+
+*Argument.* A minimal element of $R$ is discharged, and no proper subset of it is discharged: such a subset would be
+alive, dead being upward-closed, and so in $R$. So it is in $E$, and alive. Conversely an alive member of $E$ is in
+$R$, and nothing below it is discharged. For the maximal line: an alive superset of a member of $R$ is in $R$,
+discharged being upward-closed, so a maximal element of $R$ is a maximal alive set; and a maximal alive set that is
+discharged is in $R$ with nothing alive above it. For $N$: a set is dead exactly when it lies inside no maximal alive
+set, that is, when it meets the complement of each, and the minimal such sets are the minimal transversals. This is
+the duality between conflicts and diagnoses, and between minimal unsatisfiable and maximal satisfiable sets. In the
+drawing of § 1.5 the maximal alive sets are $\lbrace t, m \rbrace$ and $\lbrace t, v \rbrace$, their complements
+$\lbrace v \rbrace$ and $\lbrace m \rbrace$, and the one minimal transversal is $\lbrace m, v \rbrace$, which is $N$.
+
+On a non-monotone program neither direction is guaranteed, with a hole or without one: a program with obligations
+whose debts grow with the commitment can have nothing dead, so that the dual's maximal set is $H$, while $H$ owes.
+
+**Locally.** On a convex $R$ the two lines are decided one edge at a time:
+
+$$
+C \in \max R \iff C \in R \,\land\, \forall h \notin C.\; C \cup \lbrace h \rbrace \notin R, \qquad
+C \in \min R \iff C \in R \,\land\, \forall h \in C.\; C \setminus \lbrace h \rbrace \notin R
+$$
+
+since a member above $C$ would put a one-candidate extension of $C$ between two members. On a monotone program the
+edge up leaves $R$ only into a dead node and the edge down only into an owing one. Across a hole the local test and
+the lattice can disagree: where two candidates are in $R$ together or not at all, the local test calls $\emptyset$
+maximal and the pair minimal, and neither is.
+
+### 2.5 Worked: a conflict of three
+
+Three candidates $a$, $b$, $c$, one a fact of each of three relations about one object; one restriction, which
+concludes $\bot$ when all three hold; no obligation.
+
+| commitment | alive | owes | in $R$ |
+|---|---|---|---|
+| $\emptyset$ | yes | 0 | **yes**: minimal |
+| $\lbrace a \rbrace$, $\lbrace b \rbrace$, $\lbrace c \rbrace$ | yes | 0 | **yes** |
+| $\lbrace a, b \rbrace$, $\lbrace a, c \rbrace$, $\lbrace b, c \rbrace$ | yes | 0 | **yes**: maximal |
+| $\lbrace a, b, c \rbrace$ | **no** | 0 | no |
+
+$$
+k_c = k_s = 7, \qquad \min R = \lbrace \emptyset \rbrace, \qquad
+\max R = \lbrace \lbrace a, b \rbrace, \lbrace a, c \rbrace, \lbrace b, c \rbrace \rbrace, \qquad
+N = \lbrace \lbrace a, b, c \rbrace \rbrace, \qquad E = \lbrace \emptyset \rbrace
+$$
+
+No rule derives a candidate, so every class is a point. The minimal line is the trivial line of a program with
+restrictions only. $R$ is one component, the union of three sub-cubes $[\emptyset, \text{pair}]$ of dimension 2, and
+the duality gives both lines: the complements of the three maximal alive sets are the three singletons, whose one
+minimal transversal is the triple. The conflict is of three and of no two: no pair is dead, and nothing smaller than
+the whole triple decides it.
+
+![the region of the conflict of three, with one computation of it overlaid](diagrams/region_02_genuine_3set_death.svg)
+
+The picture is the engine's drawing of this region ([its source](diagrams/region_02_genuine_3set_death.dot);
+[rendering](../../user/04-reference/12-rendering.md) is the legend). Fill is the node's status in the lattice and
+border is the lines, as in § 1.5. This drawing also overlays one computation of $R$ on the lattice, by a node's
+shape: an octagon is a state the computation reported and a rounded box a node it evaluated. It reported the seven
+states of $R$ and evaluated all eight nodes, the dead triple among them, since no smaller dead set decides it.
 
 ---
 
 ## 3. Model
 
-> A **model** is the **positive part of a solution's state, minus the positive part of the initial knowledge base**
-> ([Q-M1e.6](../../../decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)).
+A **model** is the positive part of a solution's state, less the positive part of the knowledge base as loaded
+([Q-M1e.6](../../../decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)). With $X^{+}$ the facts of
+$X$ that are not stored negations:
 
-The **initial knowledge base** is the program as loaded, *before the first saturation*: problem statements,
-`(relation …)` signatures, `(is-a …)` declarations, rules, no derived facts. So a model carries no `(not …)`, nothing
-the file itself states, and nothing the loader writes down. It is **what the puzzle did not say and the solution
-established**: what a node of R adds.
+$$
+\operatorname{model}(C) \;=\; \operatorname{st}(C)^{+} \setminus K_0^{+}, \qquad C \in R
+$$
+
+$K_0$ is the program as loaded, *before the first saturation*: the problem's statements, the declarations of
+relations and of membership, no derived fact. So a model carries no stored negation, nothing the program itself
+states, and nothing loading writes down. It is **what the puzzle did not say and the solution established**: what a
+node of $R$ adds.
 
 The state is what is judged, and the model is a projection of it
-([Q-M1e.7](../../../decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)): dead, alive,
-owing and discharged are each read on the whole state, its negations included, and no computation of R writes into a
-state anything its own fixpoint does not derive. Two computations can agree on every model and differ in what else a
-state holds; the model is the part of a solution that answers the puzzle.
+([Q-M1e.7](../../../decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)): dead, alive, owing
+and discharged are each read on the whole state, its negations included, and no computation of $R$ writes into a state
+anything its own fixpoint does not derive. Two computations can agree on every model and differ in what else a state
+holds; the model is the part of a solution that answers the puzzle.
 
-**Projection.** A query's goal cuts a model down to the goal's rows. Models that differ only in facts the goal does
-not name give one row set, so a query answers with **projection classes**: the models with one projection. Two
-friends' groups choosing between two tables have one projection class per choice of table, and the seats inside it
-are hidden information. In a program with restrictions only, the goal has no row at ∅, so a query over R has to say
-*undetermined in these solutions*.
+**Projection.** A query's goal $g$, with variables $\bar{x}$, cuts a model down to the goal's rows, and solutions
+with the same rows are one **projection class**:
+
+$$
+\pi_g(C) \;=\; \lbrace\, \theta : \operatorname{st}(C) \models g(\theta) \,\rbrace, \qquad
+C \sim_g C' \iff \pi_g(C) = \pi_g(C')
+$$
+
+Models that differ only in facts the goal does not name give one row set, so a query answers with the classes of
+$R / {\sim_g}$. Two groups of friends choosing between two tables have one projection class per choice of table, and
+the seats inside it are hidden information. In a program with restrictions only, the goal has no row at $\emptyset$,
+so a query over $R$ has to say *undetermined in these solutions*.
 
 ---
 
 ## 4. Restrictions and obligations: the two lines
 
-A **restriction** is a rule that asserts `(false)`. It kills nodes, and sets the **maximal line**: R's upper bound is
-where restrictions bite.
+A **restriction** is a rule that concludes $\bot$. It kills nodes, and sets the **maximal line**: $R$'s border on
+the side of $H$ is where restrictions bite.
 
-An **obligation** is a rule that asserts the verdict atom `(open ?R)` while a witness is missing
-([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). What a state
-**owes** is its undischarged instances, and a state that owes none is **discharged**. It sets the **minimal line**:
-R's lower bound is where the debts are paid.
+An **obligation** is a rule whose verdict is that a relation's facts are incomplete, concluded while a witness is
+missing ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). What a
+state **owes** is its unwitnessed instances, $\operatorname{Owed}(S)$ of § 1.5, and a state that owes none is
+**discharged**. It sets the **minimal line**: $R$'s border on the side of $\emptyset$ is where the debts are paid.
 
-| program states | R | minimal line | maximal line |
+| the program states | $R$ | $\min R$ | $\max R$ |
 |---|---|---|---|
-| neither | the whole cube [∅ … ⊤] | {∅} | {⊤} |
-| restrictions only | every alive node | {∅}, while root is alive | where restrictions bite |
-| obligations only | every discharged node | where the debts are paid | {⊤}, on a monotone program |
+| neither | the whole cube $[\emptyset, H]$ | $\lbrace \emptyset \rbrace$ | $\lbrace H \rbrace$ |
+| restrictions only | every alive node | $\lbrace \emptyset \rbrace$, while root is alive | where restrictions bite |
+| obligations only | every discharged node | where the debts are paid | $\lbrace H \rbrace$, on a monotone program |
 | both | between the two | where the debts are paid | where restrictions bite. A well-posed puzzle has the two meet in one state |
 
-There is one definition for every program: a program that states no obligation simply has ∅ in R when its root is
-consistent. What an obligation quantifies over is its domain contract,
-[C1–C4](../../user/03-syntax-and-semantics/08-obligations.md#what-an-obligation-quantifies-over); why an owed instance's alternatives are jointly
-exhaustive, which the obligation tree rests on, is [Satisfiability](10-satisfiability.md).
+There is one definition for every program: a program that states no obligation simply has $\emptyset$ in $R$ when its
+root is consistent. What an obligation quantifies over is its domain contract
+([obligations](../../user/03-syntax-and-semantics/08-obligations.md)); why an owed instance's alternatives are jointly
+exhaustive is [Satisfiability](10-satisfiability.md).
 
 ---
 
-## What holds it
+## 5. The questions asked of R
 
-| claim | test |
+$R$ is one object, and a reader asks for a part of it. Each question below has one answer, a function of $R$ alone,
+so two computations of the same question cannot differ ([Finding R](07-finding-r.md)), and each needs only as much of
+the lattice as decides it
+([Q-M1e2.31](../../../decisions/answer/Q-M1e2.31-each-question-about-r-does-the-least-work-it.md)). How a question
+is spelt is the [command line](../../user/04-reference/05-cli.md)'s.
+
+| the question | its answer |
 |---|---|
-| R as defined: every node's status and R on the fixtures, `lattice/02_genuine_3set_death.ein` and `owed-seats.ein` among them, the latter with its seven nodes | `ein-infer/tests/region.rs`: `the_seven_programs_have_the_tables_regions` |
-| every way of computing R gives the oracle's, which computes every node of § 1.5 whole | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
-| a node's state is root's fork with the commitment written in, and owes what its fixpoint owes and nothing the computation wrote | `ein-infer/tests/region.rs`: `a_commitment_owes_what_its_fixpoint_owes_and_nothing_the_search_wrote`, `a_dead_node_still_says_what_it_owes` |
-| a node and its closure are one state; on a monotone program saturation is a closure operator on every cube within the oracle's limit | `ein-infer/tests/region.rs`: `a_node_and_its_closure_are_one_state`, `a_monotone_verdict_makes_saturation_a_closure_operator` |
-| a monotone program's cube shows no dead node with an alive superset and no discharged node with an owing one; the static check flags the non-monotone fixtures | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
-| the duality holds without holes and fails on the hole; across a hole the local test misreads the lines | `ein-infer/tests/region.rs`: `the_duality_holds_without_holes_and_fails_on_the_hole`, `across_a_hole_the_one_fact_test_misreads_the_lines` |
-| each `synth/` program has the region it was written for | `ein-infer/tests/region.rs`: `every_synthetic_program_has_the_region_it_was_written_for` |
-| every name of the program is a candidate object, and no run reaches a name the program does not have | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
-| a dunder is no object, and a closure stated by a rule answers what one stated by a fact answers | `ein-infer/tests/dunder_objects.rs` |
-| the obligations rung's reading of later debts, and R over its universe is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles` |
-| what the universe leaves out, a type bound as an object and a relation's name bound as an object are each one sentence on every surface | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface`, `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs` |
-| no option, lever or flag changes R | `ein-cli/tests/lever_invariance.rs` |
-| on a monotone program the order rules fire in decides no answer | `ein-infer/tests/agenda.rs` |
+| **describe $R$** | the states of $R$, $\min R$, $\max R$, $k_s$, $k_c$, the components, the sub-cubes, $N$, and whether $\emptyset \in R$ |
+| **the minimal elements** | $\min R$, as states |
+| **the maximal elements** | $\max R$, as states |
+| **$j$ elements** | some $j$ distinct states of $R$, or all of them where $k_s < j$ |
+| **is $R$ one state?** | the verdict below |
+| **the cardinalities** | $k_s$ and $k_c$, no state listed |
+| **a query**, with goal $g$ | the classes of $R / {\sim_g}$, or of one line's states, each with its rows $\pi_g$ |
+
+$$
+\operatorname{verdict}(R) \;=\;
+\begin{cases}
+\text{one solution} & k_s = 1 \\
+\text{several} & k_s \ge 2 \\
+\text{contradiction} & k_s = 0 \,\land\, \forall C.\; \operatorname{dead}(C) \\
+\text{open} & k_s = 0 \,\land\, \exists C.\; \operatorname{alive}(C)
+\end{cases}
+$$
+
+The last two are the two kinds of empty $R$: no node is alive, or nodes are alive and every one of them owes. A
+question about a line is the same question over $\min R$ or $\max R$ in place of $R$. Where $\emptyset \in R$ every
+question about the minimal line is answered by root alone, since $\min R = \lbrace \emptyset \rbrace$.
+
+**A claim** is a statement of the answer to one of these questions, made by the program about itself and compared
+with $R$: it holds, fails, or is not decided by the part of $R$ that was computed
+([Satisfiability § 3](10-satisfiability.md)).
