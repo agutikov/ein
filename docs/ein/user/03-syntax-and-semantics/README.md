@@ -37,11 +37,13 @@ A formula is TeX. After the four come the details, each refusal linked to the
 
 **What the knowledge base holds**
 
-- [Objects](01-objects.md): a name and the node it names; no types, and how a rule gives a label a meaning; the compact
-  and the detailed drawing.
-- [Relations](02-relations.md): a declaration, its labels and arity, and a relation as data.
-- [Facts](03-facts.md): a relation applied to values, where each fact came from, and a fact held inside a fact.
-- [Ontology](04-ontology.md): everything is a node, membership and inheritance are a relation and rules of the
+- [Objects](01-objects.md): the graph and its two sorts of node, the atom with its name and the fact with its
+  arrows; no types, and how a rule gives a label a meaning; the graph beside the compact and the detailed drawing.
+- [Relations](02-relations.md): the atom under a fact's first arrow, its extent and a fact of it; a declaration,
+  its labels and arity, and a relation as data.
+- [Facts](03-facts.md): a relation with its arguments, where each fact came from, and a fact as an argument of a
+  fact.
+- [Ontology](04-ontology.md): everything is an object, membership and inheritance are a relation and rules of the
   program's own, and nothing about them is built in.
 
 **What a program says about it**

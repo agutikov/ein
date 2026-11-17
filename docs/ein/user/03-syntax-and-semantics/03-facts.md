@@ -1,9 +1,11 @@
 # Facts
 
-A **fact** is a relation applied to its arguments: `(knows Alice Bob)`. The knowledge base a program describes is a
-**set** of facts: the ones the program writes, and the ones its rules derive from them. Every fact records where it
-came from, and that record is what an explanation is made of: why a fact holds, and which facts a contradiction
-rests on.
+A **fact** is a node of the graph with outgoing arrows, in order: the first points at its relation, and the
+others at its arguments. `(knows Alice Bob)` is the fact of the relation `knows` with the arguments `Alice` and
+`Bob`. A fact has no name: it is identified by the list of objects its arrows point at. The knowledge base a
+program describes is a **set** of facts, the ones it **holds**: the ones the program writes, and the ones its
+rules derive from them. Every held fact records where it came from, and that record is what an explanation is
+made of: why a fact holds, and which facts a contradiction rests on.
 
 ## In Ein
 
@@ -23,7 +25,7 @@ rests on.
 (solve :no-search)
 ```
 
-A fact is written as a form, the relation first and the arguments after it, each a name or a fact. It may carry a
+A fact is written as a form, the relation first and the arguments after it, each an atom or a fact. It may carry a
 `:source "…"`, the sentence of the problem it states. `ein saturate --dump FILE` lists the saturated knowledge base
 grouped by where each fact came from:
 
@@ -47,9 +49,10 @@ grouped by where each fact came from:
   (written (knows Carol Dan) :rule "#written")
 ```
 
-`(knows Carol Dan)` inside the `claims` fact is a **value**, not a fact of the knowledge base: Carol claims it, and
-nothing says it holds, so `knows-back` does not fire on it. The loader states `(written (knows Carol Dan))`, its
-record that the file wrote that fact as a value (below).
+`(knows Carol Dan)` inside the `claims` fact is an **argument**, a fact the knowledge base points at and does not
+hold: Carol claims it, and nothing says it holds, so `knows-back` does not fire on it. It is a fact of `knows`
+all the same, one of the relation's extent and not of its held extent. The loader states `(written (knows Carol
+Dan))`, its record that the file wrote that fact as an argument (below).
 
 ## As a graph
 
@@ -60,7 +63,8 @@ above, its declarations' facts left out:
 
 A **given** fact is a solid arrow whose label carries its source, the short `(N)` where the source has one and the
 whole sentence otherwise; a **background** fact is a plain solid arrow; a **derived** fact is dashed, labelled with
-the rule that derived it. A fact held as a value is a node of its own, named by its form. `--colour-by origin`
+the rule that derived it. A fact that is an argument of another is a node of its own, with its text in it.
+`--colour-by origin`
 colours the arrows by the same three origins instead of by relation, and `--since OTHER` draws thick every fact that
 `OTHER` lacks, which is how a state is drawn against root. The view leaves out a rule's activator facts and stored
 negations; `ein render program FILE` draws a program's written negations.
@@ -95,20 +99,37 @@ background fact has no reason, only its statement. [Natural language](14-natural
 
 ## In mathematics
 
-A fact is a ground atom $r(v_1, \dots, v_n)$ with each $v_i$ a value, a name or a fact. A knowledge base is a finite
-set $K$ of facts. Two facts are one exactly when their relations and argument lists are equal, so $K$ is a set and
-a fact has one node however often it is stated or derived. The program above describes
+A fact is a tuple $r(o_1, \dots, o_n)$: $r$ an atom, its relation, and each $o_i$ an object, an atom or a fact.
+A knowledge base is a finite set $K$ of facts. Two facts are one exactly when their relations and argument lists
+are equal, so $K$ is a set and a fact has one node however often it is stated or derived. The program above
+describes
 
 $$
-K = \lbrace \mathsf{knows}(\mathsf{Alice}, \mathsf{Bob}),\ \mathsf{knows}(\mathsf{Bob}, \mathsf{Carol}),\ \mathsf{claims}(\mathsf{Carol}, \mathsf{knows}(\mathsf{Carol}, \mathsf{Dan})),\ \mathsf{knows}(\mathsf{Bob}, \mathsf{Alice}),\ \mathsf{knows}(\mathsf{Carol}, \mathsf{Bob}),\ \dots \rbrace
+\begin{aligned}
+K = \lbrace\ & \mathsf{knows}(\mathsf{Alice}, \mathsf{Bob}), \\
+& \mathsf{knows}(\mathsf{Bob}, \mathsf{Carol}), \\
+& \mathsf{claims}(\mathsf{Carol}, \mathsf{knows}(\mathsf{Carol}, \mathsf{Dan})), \\
+& \mathsf{knows}(\mathsf{Bob}, \mathsf{Alice}), \\
+& \mathsf{knows}(\mathsf{Carol}, \mathsf{Bob}), \\
+& \dots\ \rbrace
+\end{aligned}
 $$
 
-where the dots are the declarations' facts and the loader's `written`; $\mathsf{knows}(\mathsf{Carol},
-\mathsf{Dan})$ is an argument of a member of $K$ and not a member. Each fact $f \in K$ has a record of
-justifications, the ways it was reached, in the order they were recorded:
+where the dots are the declarations' facts and the loader's `written`. One fact is an argument of a member of $K$
+and not a member:
 
 $$
-J(f) = (j_1, j_2, \dots), \qquad j = (\operatorname{kind}, \rho, P, \theta, A), \qquad \operatorname{kind} \in \lbrace \text{source}, \text{rule}, \text{hypothesis} \rbrace
+\mathsf{knows}(\mathsf{Carol}, \mathsf{Dan}) \notin K
+$$
+
+Each fact $f \in K$ has a record of justifications, the ways it was reached, in the order they were recorded:
+
+$$
+\begin{aligned}
+J(f) &= (j_1, j_2, \dots) \\
+j &= (\operatorname{kind}, \rho, P, \theta, A) \\
+\operatorname{kind} &\in \lbrace \text{source}, \text{rule}, \text{hypothesis} \rbrace
+\end{aligned}
 $$
 
 with $\rho$ the rule that fired, $P \subseteq K$ the premises it read, $\theta$ its bindings and $A$ the absences
@@ -124,7 +145,12 @@ file writes with no source, as its terminals. For $f = \mathsf{knows}(\mathsf{Bo
 one firing, the step drawn above:
 
 $$
-J(f) = \bigl( (\text{rule},\ \text{knows-back},\ \lbrace \mathsf{knows}(\mathsf{Alice}, \mathsf{Bob}) \rbrace,\ \lbrace a \mapsto \mathsf{Alice},\ b \mapsto \mathsf{Bob} \rbrace,\ \emptyset) \bigr)
+\begin{aligned}
+J(f) &= (j_1) \\
+j_1 &= \bigl( \text{rule},\ \text{knows-back},\ P,\ \theta,\ \emptyset \bigr) \\
+P &= \lbrace \mathsf{knows}(\mathsf{Alice}, \mathsf{Bob}) \rbrace \\
+\theta &= \lbrace a \mapsto \mathsf{Alice},\ b \mapsto \mathsf{Bob} \rbrace
+\end{aligned}
 $$
 
 ## Where a fact came from
@@ -168,13 +194,14 @@ fire in: a reason is an explanation, as a core is, and it is not part of the ans
 
 An argument may be a fact ([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)):
 `(claims Carol (knows Carol Dan))`, `(hypothesis (co-located Norwegian House-2))`, a numeral built of digits,
-`(n (n z 4) 2)`. The inner fact is an ordinary value, identified by its structure at every depth, and a pattern
-matches into it: `:match (claims ?who (knows ?who ?x))` binds both. It is not asserted by being written there.
+`(n (n z 4) 2)`. The inner fact is an object like any other, identified by its arrows at every depth, and a
+pattern matches into it: `:match (claims ?who (knows ?who ?x))` binds both. It is not held by being written there.
 
-What may be written as a value is a name, or a fact a state could hold: a fact of an ordinary relation, or its
-stored negation `(not F)`. `eq`, `neq`, `absent`, `and`, `or`, and `false` with an argument never head a nested form,
-since none of them is a fact any state holds, and each is refused where it is written
-([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)).
+What may be written as an argument is an object: an atom, or a fact a state could hold, which is a fact of an
+ordinary relation or its stored negation `(not F)`. `eq`, `neq`, `absent`, `and`, `or`, and `false` with an
+argument never head a nested form, since none of them is a fact any state holds, and each is refused where it is
+written ([Q-M1f.113](../../../decisions/language/Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md)).
+The refusal's line says `where a value goes`: *value* is the engine's word for an object in an argument's place.
 
 **`written` is the loader's.** For every fact nested in a fact a file writes, and for every fact a rule's conclusion
 nests that holds no variable, the loader states `(written T)`, derived by its own step `#written`
@@ -194,7 +221,8 @@ come from is [hypotheses](09-hypotheses.md).
 
 ## See also
 
-- [Relations](02-relations.md): what a fact is an instance of.
+- [Relations](02-relations.md): what a fact's first arrow points at, and the extent a fact is one of.
+- [Objects](01-objects.md): the graph, its two sorts of node, and how `ein` draws it.
 - [Rules](05-rules.md): how a derived fact is made, and what its record holds.
 - [Constraints](06-constraints.md): a stored negation, and the three states of a fact.
 - [Natural language](14-natural-language.md): the statement and the reason, everywhere they are printed.

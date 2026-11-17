@@ -6,7 +6,8 @@ writes to use it is [the page before](05-slots.md); how to read a drawing is
 
 The parameters every rule shares: `?R` is the co-location relation, `?isa` the membership relation, `?sub` the
 relation that puts a label under `?super`, `?index` the label whose members name the slots; in the spatial rules
-`?S` is the relation that holds between slots and between values, and `?PT` the label of the positions.
+`?S` is the relation that holds between slots and between values, and `?PT` the label of the positions. A *value*
+is the module's word for an atom that sits in a slot ([the page before](05-slots.md#using-it)).
 
 ## The setup
 

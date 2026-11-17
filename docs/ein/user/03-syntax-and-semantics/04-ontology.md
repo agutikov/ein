@@ -1,10 +1,11 @@
 # Ontology
 
-Ein has one kind of thing, the node, and describes itself with it: an object, a relation, a rule and a fact are each
-a node, and *being an instance of something* is itself a relation whose facts are nodes too. **There are no types.**
-What a program calls a type is a name other names are classified under by a fact of the program's own relation, and
-**inheritance** is whatever the program's rules derive from those facts. This page is the vocabulary for that, and
-the reason Ein's rules can read relations, labels and rules as ordinary data.
+Ein has one kind of thing, the object, a node of the graph, and describes itself with it: the thing a puzzle is
+about, a relation, a rule's name and a label are each an atom, a fact is a node too, and *being an instance of
+something* is itself a relation whose facts are nodes. **There are no types.** What a program calls a type is an
+atom other atoms are classified under by a fact of the program's own relation, and **inheritance** is whatever
+the program's rules derive from those facts. This page is the vocabulary for that, and the reason Ein's rules can
+read relations, labels and rules as ordinary data.
 
 ## In Ein
 
@@ -32,8 +33,8 @@ the reason Ein's rules can read relations, labels and rules as ordinary data.
 (solve :no-search)
 ```
 
-`is-a` and `T` are names this program declares: neither is reserved, and the engine gives neither a meaning. `Human`
-and `Drink` are names like `Jack` and `Coffee`. They stand for *every human* and *every drink* only because the
+`is-a` and `T` are names this program writes: neither is reserved, and the engine gives neither a meaning. `Human`
+and `Drink` are atoms like `Jack` and `Coffee`. They stand for *every human* and *every drink* only because the
 program says something of them that it means to carry over, `(can-drink Human Drink)`, and its two rules carry it
 over along `is-a`, one per argument position. The fact the puzzle cares about, *Jack can drink coffee*, is not
 written: it follows by the two rules chained.
@@ -49,7 +50,7 @@ written: it follows by the two rules chained.
   as :expect        (model (can-drink Jack Coffee) (can-drink Jack Drink))
 ```
 
-The second row is as true as the first: `Drink` is a name, and the rules derived `(can-drink Jack Drink)` on the
+The second row is as true as the first: `Drink` is an atom, and the rules derived `(can-drink Jack Drink)` on the
 way. Nothing tells the engine that one is an answer about a thing and the other about a class of things. The
 guide's [Jack drinks coffee](../02-guide/05-jack-drinks-coffee.md) works the same example through every
 representation.
@@ -63,11 +64,12 @@ representation.
 The solid arrow is the fact the program wrote, and the three dashed ones what the rules derived from it. The two
 dashed arrows out of `Jack` and `Human` each lift one end of the solid one, and the third lifts both. The boxes and
 ovals are the view's reading of the facts of a relation spelt `is-a`: the second argument of one is drawn as a box,
-a name that is only ever a first argument as an oval. It is a drawing convention and decides nothing
-([objects](01-objects.md)).
+an atom that is only ever a first argument as an oval. It is a drawing convention and decides nothing, and each
+arrow of the drawing is a fact, with its relation's name written on it ([objects](01-objects.md#as-a-graph)).
 
-The two rules, as `ein render rules FILE` draws them. Each matches an arrow of the relation it is activated on and an
-`is-a` arrow into one of its ends, and asserts the arrow moved to the `is-a` arrow's tail:
+The two rules, as `ein render rules FILE` draws them. Each matches a fact of the relation it is activated on and an
+`is-a` fact whose second argument is one of that fact's arguments, and asserts the fact with the `is-a` fact's
+first argument in that place:
 
 ![The rule inherit-left: what it matches and what it asserts](diagrams/04-rule-inherit-left.svg)
 
@@ -91,37 +93,40 @@ statement: they are facts about a rule, and no declaration carries a sentence fo
 
 ## In mathematics
 
-Read as sets: the name $t$ stands for the set of names classified under it in a state $S$,
+Read as sets: the atom $t$ stands for the set of objects classified under it in a state $S$,
 
 $$
 \operatorname{inst}_S(t) = \lbrace x \mid \text{is-a}(x, t) \in S \rbrace
 $$
 
-and a fact over such names is meant as a statement about every member. The two rules say so, for each relation $r$
+and a fact over such atoms is meant as a statement about every member. The two rules say so, for each relation $r$
 they are activated on:
 
 $$
-r(t, o) \land \text{is-a}(i, t) \implies r(i, o) \qquad (\text{inherit-left})
-$$
-
-$$
-r(o, t) \land \text{is-a}(i, t) \implies r(o, i) \qquad (\text{inherit-right})
+\begin{aligned}
+r(t, o) \land \text{is-a}(i, t) &\implies r(i, o) && \text{(inherit-left)} \\
+r(o, t) \land \text{is-a}(i, t) &\implies r(o, i) && \text{(inherit-right)}
+\end{aligned}
 $$
 
 Saturation takes their least fixpoint, so from $\text{can-drink}(\mathsf{Human}, \mathsf{Drink})$ the state holds
 
 $$
-\text{can-drink}(i, j) \quad \text{for every } i \in \operatorname{inst}_S(\mathsf{Human}) \cup \lbrace \mathsf{Human} \rbrace,\ j \in \operatorname{inst}_S(\mathsf{Drink}) \cup \lbrace \mathsf{Drink} \rbrace
+\begin{aligned}
+\text{can-drink}(i, j) &\in S && \text{for every } i \in \operatorname{inst}_S(\mathsf{Human}) \cup \lbrace \mathsf{Human} \rbrace \\
+&&& \text{and every } j \in \operatorname{inst}_S(\mathsf{Drink}) \cup \lbrace \mathsf{Drink} \rbrace
+\end{aligned}
 $$
 
-reached by chaining one rule after the other: there is no separate rule for both ends at once. A relation of $n$
-arguments takes $n$ such rules, one per position. A unary relation is a subset, said as a predicate: `(adult Jack)`
-carves the adults out of the names as `(is-a Jack Human)` carves out the humans.
+reached by chaining one rule after the other: there is no separate rule for both ends at once. A relation whose
+facts have $n$ arguments takes $n$ such rules, one per argument. The held extent of a relation of one argument
+is a subset, said as a predicate: `(adult Jack)` carves the adults out of the atoms as `(is-a Jack Human)` carves
+out the humans.
 
 ## Everything is a node, and a fact can be about any of them
 
-A fact's argument is a name or a fact, and a relation's name, a rule's name and a label are names. So a program can
-say something of each of them, with the relation it says things of `Jack` with:
+A fact's argument is an object, an atom or a fact, and a relation, a rule's name and a label are atoms. So a
+program can say something of each of them, with the relation it says things of `Jack` with:
 
 ```lisp
 (relation is-a T T :why "{?1} is a {?2}")
@@ -132,8 +137,8 @@ say something of each of them, with the relation it says things of `Jack` with:
   :assert (?r ?inst ?other)
   :why    "{?inst} is a {?t}, so {?inst} inherits {?r} from {?t}")
 
-(is-a Jack Human)                   ; about an object
-(is-a Human Kind)                   ; about the name Jack is classified under
+(is-a Jack Human)                   ; about a thing of the puzzle
+(is-a Human Kind)                   ; about the atom Jack is classified under
 (is-a can-drink Relation)           ; about a relation
 (is-a is-a Relation)                ; about the relation the sentence itself uses
 (is-a inherit-left Rule)            ; about a rule
@@ -143,13 +148,15 @@ say something of each of them, with the relation it says things of `Jack` with:
 (solve :no-search)
 ```
 
-It loads, and the seven facts are seven arrows of one relation, as `ein render program FILE` draws them:
+It loads, and the seven are facts of one relation, each drawn by `ein render program FILE` as an arrow from its
+first argument to its second:
 
 ![Seven is-a facts: about an instance, a kind, two relations, a rule, a fact and a label](diagrams/04-facts-about-anything.svg)
 
-`Kind`, `Relation`, `Rule`, `Fact` and `Label` are names this program made up, and mean what its rules make of
+`Kind`, `Relation`, `Rule`, `Fact` and `Label` are atoms this program made up, and mean what its rules make of
 them, which here is nothing. The arrow from `is-a` to `Relation` is the fixed point: the relation that says what a
-thing is can be said to be something, by a fact of itself. Nothing in the language is exempt from being data, which
+thing is can be said to be something, by a fact of itself. In the graph that fact has two arrows to one atom: its
+first, to its relation, and its second, to its first argument. Nothing in the language is exempt from being data, which
 is why a rule can match a relation's declaration, a property of a relation, or a fact about a fact, with the same
 patterns it matches anything with.
 
@@ -157,16 +164,16 @@ patterns it matches anything with.
 
 | word | meaning |
 |---|---|
-| **name** | a token that identifies a node: `Alice`, `co-located`, `T`, `relation`. The name is what is written, the node is what it names, and two occurrences of one name are one node |
-| **node** | a vertex of the graph, with an identity |
-| **arrow** | a directed edge from one node to another, numbered by position when a node has several |
-| **object** | a node named by a name, which arrows point at |
-| **relation** | a node with arrows out of it to its arguments; see [relations](02-relations.md) for the word's three uses |
+| **object** | a node of the graph. Every object is an atom or a fact |
+| **atom** | a labelled node with no outgoing arrow: `Alice`, `co-located`, `T`, `relation` |
+| **name** | the label of an atom. The name is what is written, the atom is the node, and two occurrences of one name are one atom |
+| **fact** | a node with outgoing arrows, in order: `(co-located Norwegian House-1)`. The first arrow points at its relation and the others at its arguments, each an object |
+| **relation** | the atom under the first arrow of a fact; see [relations](02-relations.md) for the relation, its extent and a fact of it |
 
-A node is one of two shapes: **named**, a bare name, `Norwegian`; or **relational**, a parenthesised list, `(co-located
-Norwegian House-1)`, a node with one ordered arrow to each argument. **Identity has no exceptions.** A named node is
-one per name, a relational node one per relation and argument list, a variable `?x` is local to its rule or query,
-and a keyword `:why` is no node at all but marks a clause.
+An **arrow** leaves a fact and points at an object, and has a place in the fact's list: first, second, third. A
+program writes an atom as a bare name, `Norwegian`, and a fact as a parenthesised list, `(co-located Norwegian
+House-1)`. **Identity has no exceptions.** An atom is one per name and a fact one per list of arrows, a variable
+`?x` is local to its rule or query, and a keyword `:why` is no node at all but marks a clause.
 
 ## No types, and nothing built in
 
@@ -175,26 +182,26 @@ The engine has no type system ([Q23](../../../decisions/language/Q23-a-premise-t
 variable, relation, rule or fact has a slot for one. A relation's declaration writes a label per argument, and the
 engine reads how many there are; a rule reads which they are through the declaration's stored fact, `(relation ?R
 ?A ?B)`. A variable is restricted by a premise that reads the program's membership relation, `(is-a ?h House)`, and
-what an object is classified under is a fact of that relation. A program that wants inheritance, a check that an
+what an atom is classified under is a fact of that relation. A program that wants inheritance, a check that an
 argument is an instance of its relation's label, or a hierarchy of labels writes it as rules, as this page and
 [objects](01-objects.md#giving-labels-a-meaning) do; the standard library has the common ones
 ([`std.typing`](../04-reference/04-stdlib/02-relation-algebra.md#using-stdtyping--a-hierarchy-named-once),
 [`std.bijection`'s argument check](../04-reference/04-stdlib/04-bijections.md#the-argument-check)).
 
-**A hierarchy is facts.** `(is-a Dog Mammal)` and `(is-a Rex Dog)` are one relation in a program that writes them
-so, and differ only in where the name sits in the forest: `Rex` has nothing under it, `Dog` has. What propagates
+**A hierarchy is facts.** `(is-a Dog Mammal)` and `(is-a Rex Dog)` are facts of one relation in a program that
+writes them so, and differ only in where the atom sits in the forest: `Rex` has nothing under it, `Dog` has. What propagates
 along each, the facts about `Mammal` to `Dog` or the facts about `Dog` to `Rex`, is what the program's rules say. A
 program may also keep two relations, a direct one and its transitive closure
 ([properties and operators](07-properties-and-operators.md)).
 
 **Symmetry is not built in either.** `symmetric` is a property fact like `transitive`, given its meaning by the
 standard library's rule `(rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) …)`, and no search the
-engine runs knows that a relation is symmetric. Two orders of one symmetric pair saturate to the same state, so they
+engine runs knows that a relation's held extent is symmetric. Two orders of one symmetric pair saturate to the same state, so they
 are one state of the answer.
 
 ## The words the kernel reserves
 
-A few names introduce a kind of form, and are no relation a program can bind:
+A few names introduce a kind of form, and are no relation a program can declare:
 
 | word | introduces |
 |---|---|
@@ -211,8 +218,8 @@ The rest of the reserved vocabulary is the [reserved names](../04-reference/03-r
 
 **`()`, the empty list.** As a rule's whole `:match` it is the empty conjunction, which is true, so the rule fires
 once, or once per activator; as a whole `:assert` it is the empty conclusion, which asserts nothing
-([Q-M1e2.36](../../../decisions/language/Q-M1e2.36-an-empty-match-is-true-and-fires-once.md)). Anywhere else, as a
-value or inside another premise, it is refused at the parse.
+([Q-M1e2.36](../../../decisions/language/Q-M1e2.36-an-empty-match-is-true-and-fires-once.md)). Anywhere else, as an
+argument or inside another premise, it is refused at the parse.
 
 **A declaration and its properties.** A relation is declared flat, `(relation R L1 L2 :why "…")`, and its
 properties are separate facts, `(transitive R)`, never a block inside the declaration
@@ -221,8 +228,8 @@ properties are separate facts, `(transitive R)`, never a block inside the declar
 
 ## See also
 
-- [Objects](01-objects.md), [relations](02-relations.md) and [facts](03-facts.md): the three things the graph holds.
+- [Objects](01-objects.md), [relations](02-relations.md) and [facts](03-facts.md): the graph, its atoms and its facts.
 - [Rules](05-rules.md): how a rule reads relations and labels as data.
 - [Properties and operators](07-properties-and-operators.md): the relation algebra, written in Ein.
-- The four levels of a knowledge base, objects, facts, relations and rules, and what each consumes:
+- The four levels of a knowledge base, atoms, facts, relations and rules, and what each consumes:
   [the four-level page](../../reasoning/01-static-ir/02-rewriting-rules.md#the-four-levels-a-knowledge-base-describes-itself-in).

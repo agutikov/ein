@@ -23,7 +23,7 @@ A program that writes one in its own rule lists it. The module imports nothing a
 `(forall ?b G B)` is a premise that holds where no `?b` satisfies the guard `G` and not the body `B`:
 
 $$
-\forall b.\; G(b) \to B(b) \quad\equiv\quad \lnot \exists b.\; G(b) \land \lnot B(b)
+\forall b.\; G(b) \to B(b) \;\;\equiv\;\; \lnot \exists b.\; G(b) \land \lnot B(b)
 $$
 
 The program below is [`tests/stdlib/macro/01_forall.ein`](../../../../../tests/stdlib/macro/01_forall.ein). A group
@@ -89,7 +89,7 @@ shares with the rest of the match are outside. This is `ein render rule --name c
 
 Inside the cluster, the arrow from `?y` to `?g` labelled `member` is the guard, and the octagon `marked` over `?y` is the body.
 
-`forall` reads an absence, so it is sound only where the guard's relation and the body's are decided by saturation:
+`forall` reads an absence, so it is sound only where the facts of the guard's relation and of the body's are decided by saturation:
 the program above names all five relations in `:no-hypothesis`. `std.algebra`'s `total` and `surjective`, and the
 elimination and no-room rules of `std.bijection`, `std.elim` and `std.slots`, are written with it.
 

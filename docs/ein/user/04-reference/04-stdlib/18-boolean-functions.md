@@ -1,7 +1,7 @@
 # Boolean functions and circuits: `std.bool.*`
 
 The two bits are the names `0` and `1`, which are decimal's digits too: Ein has no truth values of its own, as it
-has no numbers. Four modules, each entered by its last name, which closes its relations
+has no numbers. Four modules, each entered by its last name, which closes the held extent of each of its relations
 ([Q-M1f.265](../../../../decisions/stdlib/bool/Q-M1f.265-each-std-bool-module-is-entered-by-its-last-name.md),
 [Q-M1f.328](../../../../decisions/stdlib/bool/Q-M1f.328-boolean-functions-and-circuits-ship-as-four-std.md)). An
 arrow reads *imports*:
@@ -35,9 +35,9 @@ Two layouts ([Q-M1f.325](../../../../decisions/stdlib/bool/Q-M1f.325-a-boolean-f
 
 | fact | meaning |
 |---|---|
-| `(gate2 NAME A B OUT)` | the table, a row for each function and each input, $16 \cdot 4 = 64$, generated: NAME of A and B is OUT. A function is a value, so a rule about any function needs no parameter, and a search can make the function a hypothesis |
+| `(gate2 NAME A B OUT)` | the table, a row for each function and each input, $16 \cdot 4 = 64$, generated: NAME of A and B is OUT. A function is an argument of the table's facts, an atom, so a rule about any function needs no parameter, and a search can make the function a hypothesis |
 | `(NAME A B OUT)`, `(Xor 0 1 1)` | a relation a function, its four rows, derived from the table by sixteen rules, `Zero-rows` to `One-rows`, in every program that imports the module ([Q-M1f.263](../../../../decisions/stdlib/bool/Q-M1f.263-every-program-that-imports-std-bool-gates.md)) |
-| `(column-name NAME COLUMN)` | the column as a second name, `(column-name Xor f0110)`: a value, which any program may write |
+| `(column-name NAME COLUMN)` | the column as a second name, `(column-name Xor f0110)`: an atom, which any program may write |
 | `(inv A B)`, `(le A B)`, `(bit A)` | not A is B; A is at most B; A is a bit |
 
 ```lisp
@@ -105,7 +105,7 @@ Two layouts ([Q-M1f.325](../../../../decisions/stdlib/bool/Q-M1f.325-a-boolean-f
 The first query is `Xor`'s truth table. The second reads the table the other way, the functions that give `0` at
 11; a name the file does not list is printed by its full name.
 
-**A function's name is the module's**, as a relation and as the value in the table, `std.bool.gates.Xor`, so a
+**A function's name is the module's**, as a relation and as an argument of the table's facts, `std.bool.gates.Xor`, so a
 program that writes one, as a gate's function too, lists it: `(import std.bool.gates :symbols (Xor And))`. A name
 a program writes and does not list is its own, a name no row has: a gate of that function computes nothing, and
 nothing says so
@@ -374,7 +374,7 @@ also what proposes the candidates, `(in w 0)` and `(in w 1)` for each input, and
 nothing:
 
 $$
-R = \{\, \sigma : \mathit{Inputs} \to \{0, 1\} \;:\; \text{every required wire carries its required bit under}\ \sigma \,\}
+R = \lbrace \, \sigma : \mathit{Inputs} \to \lbrace 0, 1 \rbrace \;:\; \text{every required wire carries its required bit under}\ \sigma \, \rbrace
 $$
 
 With no requirement R is every assignment, and a query's classes are a truth table's rows:

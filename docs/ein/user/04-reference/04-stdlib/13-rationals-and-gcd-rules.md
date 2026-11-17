@@ -173,7 +173,10 @@ The numerator in the integers' normal form, the denominator with no high zero, a
 ### Lowest terms, on request
 
 $$
-\frac{a}{d} = \frac{a / g}{d / g}, \qquad g = \gcd(\lvert a \rvert, d)
+\begin{aligned}
+\frac{a}{d} &= \frac{a / g}{d / g} \\
+g &= \gcd(\lvert a \rvert, d)
+\end{aligned}
 $$
 
 The greatest common divisor is `std.math.gcd`'s tagged call, and the two quotients are the natural numbers'
@@ -909,7 +912,7 @@ A digit or a named constant where the integer or the denominator goes, checked w
 
 ### The entry
 
-The closing rule: it closes every relation of the module, names each rule above, and names the entries
+The closing rule: it closes the held extent of every relation of the module, names each rule above, and names the entries
 `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`. Its drawing is not shown.
 
 #### `rat-arith`
@@ -1239,7 +1242,7 @@ and zero where the divisor is zero, which is where both operands are.
 
 ### The entry
 
-The closing rule, which is also the request's name: it closes every relation of the module, names each rule
+The closing rule, which is also the request's name: it closes the held extent of every relation of the module, names each rule
 above, and names the entries `decimal-arith`, `decimal` and `arith`.
 
 #### `gcd`

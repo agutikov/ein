@@ -31,7 +31,7 @@ The flag is a contradiction.
 
 #### `arith`
 
-The entry: it closes the flag's relation and names the module's one rule.
+The entry: it closes the held extent of the flag's relation and names the module's one rule.
 
 <!-- rule std.math.arith arith -->
 ```lisp
@@ -130,7 +130,7 @@ The flag is a contradiction.
 
 #### `decimal`
 
-The entry: it closes the module's relations, names its rules, and names `arith`.
+The entry: it closes the held extent of each of the module's relations, names its rules, and names `arith`.
 
 <!-- rule std.math.decimal decimal -->
 ```lisp
@@ -161,7 +161,10 @@ A product is summed from the multiplier's top digit: the sum so far, times ten, 
 walk over the multiplicand's columns through the table `md`,
 
 $$
-x_i \cdot m + c_i = 10 \cdot c_{i+1} + s_i, \qquad c_0 = 0
+\begin{aligned}
+x_i \cdot m + c_i &= 10 \cdot c_{i+1} + s_i \\
+c_0 &= 0
+\end{aligned}
 $$
 
 with $m$ the multiplier's digit and $c_i$ a carry from `0` to `8`.
@@ -670,7 +673,7 @@ The one `absent` of the theory, over its own `let`, which no rule may derive.
 
 ### The entry
 
-The closing rule. It closes every relation of the module and the seven tables of `std.math.digits`, names the
+The closing rule. It closes the held extent of every relation of the module and of the seven tables of `std.math.digits`, names the
 entries `arith` and `decimal` and each rule above, and calls the macro `positional` once, with this module's
 relations, which activates every shared rule for decimal. Its drawing is not shown: it has a node for each of
 those facts.

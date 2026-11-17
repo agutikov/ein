@@ -1,8 +1,9 @@
 # The relation algebra: `std.algebra`, `std.typing`, `std.closure`
 
-`std.algebra` is Tarski's relation algebra over binary relations, as generic rules: the operators that build one
-relation from others, and the property checks, closures and obligations a puzzle declares of a relation. In the
-algebra's own notation its signature is
+`std.algebra` is Tarski's relation algebra over relations of two arguments, each read as the set of pairs its held
+facts relate, as generic rules: the operators that derive the facts of one relation from those of others, and the
+property checks, closures and obligations a puzzle declares of a relation. In the algebra's own notation its
+signature is
 
 $$
 \langle\, \cup,\ \cap,\ \overline{\phantom{R}},\ 0,\ 1,\ ;\,,\ {}^{-1},\ 1' \,\rangle
@@ -34,13 +35,13 @@ The import brings `std.macro`. The module has no entry: what it closes is the pr
 Ein has no types
 ([Q-M1f.372](../../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). A
 declaration `(relation likes Person Food)` writes a name in each argument place, and those
-names are labels: they mean something only where a rule reads them. Some rules of this module do. They match the
-declaration itself, `(relation ?R ?A ?B)`, and take the *members* of the label `A` to be the names `a` of which
+atoms are labels: they mean something only where a rule reads them. Some rules of this module do. They match the
+declaration itself, `(relation ?R ?A ?B)`, and take the *members* of the label `A` to be the objects `a` of which
 the state holds `(isa a A)`, where `isa` is a relation the program has and passes in the activator:
 `(total likes is-a)`. Below, for a state $S$,
 
 $$
-A_S = \{\, a : \operatorname{isa}(a, A) \in S \,\}
+A_S = \lbrace \, a : \operatorname{isa}(a, A) \in S \, \rbrace
 $$
 
 is the set of members of a label, and $R(a, b)$ stands for the fact `(R a b)` in $S$.
@@ -61,8 +62,8 @@ Read these before importing a relation-algebra module: they decide whether a rul
   owes is not an answer ([Obligations](../../03-syntax-and-semantics/08-obligations.md)).
 - **The closed-world caveat.** A rule that reads an absence — the extensive operators, `difference`,
   `compose-negative-*`, `std.closure`'s `infer-closure`, the `absent` guards of `std.slots`' spatial rules — is
-  sound only where its operand is decided by saturation, never where the operand is solved by hypotheses, as the
-  attribute relations of the Zebra puzzle are. Each is opted into per use.
+  sound only where the facts of its operand are decided by saturation, never where they are found by hypotheses, as
+  those of the attribute relations of the Zebra puzzle are. Each is opted into per use.
 
 ### Operators: the relative layer
 
@@ -73,7 +74,7 @@ Read these before importing a relation-algebra module: they decide whether a rul
 | `(imply2-fwd R1 R2)` | `(R2 a b)` for each `(R1 a b)`: $R_2 \supseteq R_1$ | intrinsic |
 | `(imply2-reverse R1 R2)` | `(R2 b a)` for each `(R1 a b)`, the same as `converse` | intrinsic |
 | `(compose R1 R2 R3)` | `(R3 a c)` for each `(R1 a b)` and `(R2 b c)`: $R_3 \supseteq R_1 ; R_2$. `(compose R R R)` is R's transitive closure | intrinsic |
-| `(identity R isa Dom)` | `(R a a)` for every member `a` of `Dom`: $R \supseteq \{(a, a) : a \in \mathit{Dom}_S\}$ | extensive |
+| `(identity R isa Dom)` | `(R a a)` for every member `a` of `Dom`: $R \supseteq \lbrace (a, a) : a \in \mathit{Dom}_S \rbrace$ | extensive |
 
 ```lisp
 (import std.algebra :symbols (converse compose includes identity))
@@ -315,9 +316,9 @@ A closure derives the edges that make a property hold.
 
 $$
 \begin{aligned}
-\operatorname{symmetric}(R) &: \quad R(a, b) \implies R(b, a) \\
-\operatorname{transitive}(R) &: \quad R(a, b) \land R(b, c) \land a \neq c \implies R(a, c) \\
-\operatorname{difunctional}(R) &: \quad R(a, b) \land R(c, b) \land R(c, d) \implies R(a, d)
+\operatorname{symmetric}(R) &:\ \ R(a, b) \implies R(b, a) \\
+\operatorname{transitive}(R) &:\ \ R(a, b) \land R(b, c) \land a \neq c \implies R(a, c) \\
+\operatorname{difunctional}(R) &:\ \ R(a, b) \land R(c, b) \land R(c, d) \implies R(a, d)
 \end{aligned}
 $$
 
@@ -410,11 +411,11 @@ A check derives nothing: a state that violates the property derives `(false)` an
 
 $$
 \begin{aligned}
-\operatorname{functional}(R) &: \quad R(a, b) \land R(a, c) \land b \neq c \implies \bot \\
-\operatorname{injective}(R) &: \quad R(a, c) \land R(b, c) \land a \neq b \implies \bot \\
-\operatorname{total}(R, \mathit{isa}) &: \quad a \in A_S \land \forall b \in B_S.\ \lnot R(a, b) \in S \implies \bot \\
-\operatorname{surjective}(R, \mathit{isa}) &: \quad b \in B_S \land \forall a \in A_S.\ \lnot R(a, b) \in S \implies \bot \\
-\operatorname{connex}(R, \mathit{isa}, D) &: \quad a, b \in D_S \land a \neq b \land R(a, b) \notin S \land R(b, a) \notin S \implies \bot
+\operatorname{functional}(R) &:\ \ R(a, b) \land R(a, c) \land b \neq c \implies \bot \\
+\operatorname{injective}(R) &:\ \ R(a, c) \land R(b, c) \land a \neq b \implies \bot \\
+\operatorname{total}(R, \mathit{isa}) &:\ \ a \in A_S \land \forall b \in B_S.\ \lnot R(a, b) \in S \implies \bot \\
+\operatorname{surjective}(R, \mathit{isa}) &:\ \ b \in B_S \land \forall a \in A_S.\ \lnot R(a, b) \in S \implies \bot \\
+\operatorname{connex}(R, \mathit{isa}, D) &:\ \ a, b \in D_S \land a \neq b \land R(a, b) \notin S \land R(b, a) \notin S \implies \bot
 \end{aligned}
 $$
 
@@ -768,7 +769,10 @@ Schröder's law is opted into per triple, for a composite $T = R ; S$ that compo
 | `(compose-negative-r R S T)` | `(not (R a b))` for each `(not (T a c))` and `(S b c)` |
 
 $$
-\lnot T(a, c) \land R(a, b) \implies \lnot S(b, c) \qquad\qquad \lnot T(a, c) \land S(b, c) \implies \lnot R(a, b)
+\begin{aligned}
+\lnot T(a, c) \land R(a, b) &\implies \lnot S(b, c) && \text{(compose-negative-s)} \\
+\lnot T(a, c) \land S(b, c) &\implies \lnot R(a, b) && \text{(compose-negative-r)}
+\end{aligned}
 $$
 
 Both are closed-world, so each is declared per triple.
@@ -896,12 +900,12 @@ The reflexive closure:
 
 | a program writes | it produces |
 |---|---|
-| `(import std.closure)`, and nothing more | `(__closed__ R)` for every R marked `(functional R)` and `(total R)`, so that no hypothesis about R is proposed |
+| `(import std.closure)`, and nothing more | `(__closed__ R)` for every R marked `(functional R)` and `(total R)`, so that no fact of R is proposed as a hypothesis |
 
 The import brings `std.algebra`, whose one-argument markers it reads. **The import is the switch**, and it is a
-completeness hazard: *functional and total* is a witness about how saturation reaches R, not about R itself, so it
-is safe only where R is decided by saturation. Imported into a puzzle that solves R by hypotheses, it closes R and
-takes away the candidates the search needs.
+completeness hazard: *functional and total* is a witness about how saturation reaches the facts of R, not about R
+itself, so it is safe only where the facts of R are decided by saturation. Imported into a puzzle that finds the
+facts of R by hypotheses, it closes R, fixing its held extent, and takes away the candidates the search needs.
 
 `ein show hyps` lists the candidates a program's search would try. Without the import, this program's candidates
 are the facts of `wears` it does not state:
@@ -955,7 +959,7 @@ note: closure-on.ein: H, built by the rung `blind`: no candidate
 ```
 
 [`tests/stdlib/closure/01_infer_closure.ein`](../../../../../tests/stdlib/closure/01_infer_closure.ein) is the case
-the module is for, a relation saturation decides, and `02_closed_and_satisfied.ein` its control.
+the module is for, a relation whose facts saturation decides, and `02_closed_and_satisfied.ein` its control.
 
 ## How it works
 

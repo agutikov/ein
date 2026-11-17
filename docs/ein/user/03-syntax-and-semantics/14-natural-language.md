@@ -24,7 +24,7 @@ a program writes, what the engine prints from it and where, and whose words are 
 Four texts: the relation's `:why`, a template filled by position; the rule's `:why`, filled by the firing's
 variables; the fact's `:source`, the sentence of the problem it states; and the query's `:goal-text`, filled per
 answer. A string is natural-language text, any Unicode, with the escapes `\n \t \r \" \\ \u{…}`, and is written only
-after `:why`, `:source` and `:goal-text`: it is never a value
+after `:why`, `:source` and `:goal-text`: it is never an object, and no fact has one as an argument
 ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)).
 
 The three keywords are the built-in connection between a form and its English, and that is all they are: a text

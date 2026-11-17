@@ -59,6 +59,10 @@ claim on any of these pages settled.
   importer), or a program shown beside the refusal it gets.
 - Output shown on a page is the binary's, pasted, not written by hand; where a page is held to the binary by the
   test suite, it says so.
-- **Ein has no types.** Where a page says *type*, it is a program's word for a name it groups its objects under, or
-  a word `ein` itself prints; a declaration's slots carry *labels*, which are ordinary names.
+- **The words.** The knowledge base is a graph, and an *object* is a node of it: an *atom*, a node with a *name*
+  and no outgoing arrow, or a *fact*, a node with arrows, the first to its *relation*. Where `ein` prints
+  *value*, *object*, *atom* or *type* in another sense, a page quotes it as printed and says what it is
+  ([objects](03-syntax-and-semantics/01-objects.md), [the glossary](04-reference/13-glossary.md)).
+- **Ein has no types.** Where a page says *type*, it is a program's word for an atom it groups other atoms under,
+  or a word `ein` itself prints; a declaration's slots carry *labels*, which are ordinary atoms.
 - A decision is cited as a link to its file under [`docs/decisions/`](../../decisions/README.md).

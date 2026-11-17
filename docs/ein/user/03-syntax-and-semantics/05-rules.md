@@ -128,29 +128,26 @@ A good reason says what the rule concludes and from what; a refutation's says wh
 A rule is an implication, universally quantified over its variables. The four above:
 
 $$
-\operatorname{parent}(a, b) \implies \operatorname{ancestor}(a, b)
-$$
-
-$$
-r(a, b) \land r(b, c) \land a \ne c \implies r(a, c) \qquad \text{for each activator } \operatorname{chain}(r)
-$$
-
-$$
-\text{has-cat}(p) \lor \text{has-dog}(p) \implies \text{pet-owner}(p)
-$$
-
-$$
-\operatorname{parent}(x, y) \land \lnot \exists z.\ \operatorname{parent}(y, z) \implies \operatorname{childless}(y)
+\begin{aligned}
+\operatorname{parent}(a, b) &\implies \operatorname{ancestor}(a, b) \\
+r(a, b) \land r(b, c) \land a \ne c &\implies r(a, c) && \text{for each activator } \operatorname{chain}(r) \\
+\text{has-cat}(p) \lor \text{has-dog}(p) &\implies \text{pet-owner}(p) \\
+\operatorname{parent}(x, y) \land \lnot \exists z.\ \operatorname{parent}(y, z) &\implies \operatorname{childless}(y)
+\end{aligned}
 $$
 
 In general a rule is a triple $(\bar{p}, \varphi, \psi)$: parameters $\bar{p}$, a premise $\varphi(\bar{p}, \bar{x})$
-over the variables $\bar{x}$, and a conclusion $\psi(\bar{p}, \bar{x})$, a set of atoms. For an activator binding
-$\bar{p} \mapsto \bar{a}$ and a state $S$, a **match** is a substitution $\theta$ of the variables by values with
-$S \models \varphi[\bar{a}]\theta$, and the firing adds $\psi[\bar{a}]\theta$. With $P$ the program's rules, the
-immediate consequence of a state is
+over the variables $\bar{x}$, and a conclusion $\psi(\bar{p}, \bar{x})$, a set of facts written over them. For an
+activator binding $\bar{p} \mapsto \bar{a}$ and a state $S$, a **match** is a substitution $\theta$ of the
+variables by objects with $S \models \varphi[\bar{a}]\theta$, and the firing adds $\psi[\bar{a}]\theta$. With $P$
+the program's rules, the immediate consequence of a state is
 
 $$
-T_P(S) = S \cup \lbrace \psi[\bar{a}]\theta \mid (\bar{p}, \varphi, \psi) \in P,\ \bar{a} \text{ an activator of it in } S,\ S \models \varphi[\bar{a}]\theta \rbrace
+\begin{aligned}
+T_P(S) = S \cup \lbrace\, \psi[\bar{a}]\theta \mid\ & (\bar{p}, \varphi, \psi) \in P, \\
+& \bar{a} \text{ an activator of it in } S, \\
+& S \models \varphi[\bar{a}]\theta \,\rbrace
+\end{aligned}
 $$
 
 and the state a program describes is the least fixpoint above its facts $S_0$:
@@ -178,11 +175,11 @@ A `:match` is a **premise**, made of these:
 
 | premise | example | holds where |
 |---|---|---|
-| a pattern | `(parent ?a ?b)`, `(?r ?a ?b)` | a fact of the state matches it, binding its variables; a nested pattern matches into a fact held as an argument |
+| a pattern | `(parent ?a ?b)`, `(?r ?a ?b)` | a fact of the state matches it, binding its variables; a nested pattern matches into a fact that is an argument |
 | a stored negation | `(not (in Cat B1))` | the state holds that negation as a fact ([constraints](06-constraints.md)) |
 | a conjunction | `(and P Q …)` | every conjunct holds, under one binding; read flat at any depth |
 | a disjunction | `(or P Q …)` | some disjunct holds; each disjunct binds what the conclusion uses |
-| a guard | `(eq ?a ?b)`, `(neq ?a ?b)` | the two values are the same name or fact, or are not |
+| a guard | `(eq ?a ?b)`, `(neq ?a ?b)` | the two objects are one, the same atom or the same fact, or are not |
 | negation as failure | `(absent P)` | no fact of the state matches `P` (below) |
 | the empty conjunction | `()`, as a whole `:match` | always: the rule fires once, or once per activator |
 
@@ -200,13 +197,13 @@ rule that never fires.
 
 `eq` and `neq` are relations, computed and never stored
 ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)): `(eq x x)`
-for every value, `(neq x y)` for every two different values. A guard whose two sides are bound is a test. One whose
+for every object, `(neq x y)` for every two different objects. A guard whose two sides are bound is a test. One whose
 side nothing else in its conjunction binds binds it: `eq` to the other side, `neq` over the program's names but the
 other, in the place it is written
 ([Q-M1f.34](../../../decisions/language/Q-M1f.34-a-guard-that-binds-its-variable-binds-it-where.md)). A conjunction
 means the same in any order of its conjuncts. `(not (eq ?a ?b))` is `(neq ?a ?b)`
 ([Q-M1f.31](../../../decisions/language/Q-M1f.31-not-eq-x-y-is-neq-x-y-in-every-place.md)). A guard's argument is a
-value: a variable, a name, or a fact that holds no variable
+variable or an object: an atom, or a fact that holds no variable
 ([Q-M1f.30](../../../decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)). As a
 conclusion, a guard is checked: a true one adds nothing, a false one is `(false)`.
 
@@ -217,7 +214,8 @@ them; or `()`, which concludes nothing; or, whole, an obligation `(open ?R)` ([o
 never a disjunction: *one of these* is the [hypotheses](09-hypotheses.md)' job. Every variable a conclusion writes is
 bound by a parameter or a premise on every way of satisfying the `:match`, each disjunct of an `(or …)` included
 ([Q-M1e2.37](../../../decisions/language/Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md)); to conclude a
-fact of every name, write the binding out, a membership premise such as `(is-a ?y Person)`, or `(eq ?y ?y)`.
+fact about every name of the program, write the binding out, a membership premise such as `(is-a ?y Person)`, or
+`(eq ?y ?y)`.
 
 ## Parameters and activators
 
@@ -259,8 +257,9 @@ contradiction's core reads. A rule that concludes several facts derives each wit
 Rules fire in a fixed order: first what leads to `(false)`, a rule that concludes it, a stored negation, or a fact
 whose negation can be concluded, then the rest, each half in the order rules are written and facts arrive
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Where no
-rule's `absent` reads a relation that another rule waiting on an `absent` derives, the order decides no answer: it decides the order of the trace's steps and which way of
-reaching a fact is recorded first. The order is not a thing a program states: rules have no priority.
+rule's `absent` reads facts of a relation that another rule waiting on an `absent` derives facts of, the order
+decides no answer: it decides the order of the trace's steps and which way of reaching a fact is recorded first.
+The order is not a thing a program states: rules have no priority.
 
 ## What is refused
 
@@ -271,8 +270,8 @@ At the parse or at load, on every command, one line each ([diagnostics](../04-re
 - a relation variable no parameter binds, and a parameter whose activator would bind it to a fact;
 - a conclusion variable nothing binds;
 - `not`, `eq`, `neq` or `absent` at another count of arguments, `(and)` and `(or)` with nothing to join, and a
-  connective, a guard or an `absent` where a value goes, written or produced by a macro's expansion;
-- a conclusion `(not ?x)` where the program shows that `?x` can hold a name, which has no negation;
+  connective, a guard or an `absent` where an argument goes, written or produced by a macro's expansion;
+- a conclusion `(not ?x)` where the program shows that `?x` can be bound to an atom, which has no negation;
 - a premise that reads nothing: a name, a variable or a string where a premise goes.
 
 ## See also

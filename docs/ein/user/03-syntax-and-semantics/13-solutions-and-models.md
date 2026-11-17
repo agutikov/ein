@@ -123,14 +123,21 @@ Root is the program saturated, $H$ the candidates proposed at root, $n = |H|$, a
 node of the lattice $(2^H, \subseteq)$ ([hypotheses](09-hypotheses.md)):
 
 $$
-\mathrm{root} = \operatorname{sat}(\mathrm{program}), \qquad C \subseteq H, \qquad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+\begin{aligned}
+\mathrm{root} &= \operatorname{sat}(\mathrm{program}) \\
+C &\subseteq H \\
+\operatorname{st}(C) &= \operatorname{sat}(\mathrm{root} \cup C)
+\end{aligned}
 $$
 
 A node is judged by its state:
 
 $$
-\operatorname{dead}(C) \iff \bot \in \operatorname{st}(C), \qquad \operatorname{alive}(C) \iff \lnot \operatorname{dead}(C), \qquad
-\operatorname{discharged}(C) \iff \operatorname{owes}(\operatorname{st}(C)) = 0
+\begin{aligned}
+\operatorname{dead}(C) &\iff \bot \in \operatorname{st}(C) \\
+\operatorname{alive}(C) &\iff \lnot \operatorname{dead}(C) \\
+\operatorname{discharged}(C) &\iff \operatorname{owes}(\operatorname{st}(C)) = 0
+\end{aligned}
 $$
 
 with $\operatorname{owes}$ the count of obligation instances a state leaves unpaid ([obligations](08-obligations.md)).
@@ -143,13 +150,21 @@ $$
 It is counted two ways, in commitments and in states, and has two edges, its minimal and its maximal members:
 
 $$
-k_c = |R|, \qquad k_s = \bigl| \lbrace \operatorname{st}(C) \mid C \in R \rbrace \bigr|, \qquad \min(R), \quad \max(R)
+\begin{aligned}
+k_c &= |R| \\
+k_s &= \bigl| \lbrace \operatorname{st}(C) \mid C \in R \rbrace \bigr| \\
+\min(R) &= \lbrace C \in R \mid \text{no } C' \in R \text{ has } C' \subsetneq C \rbrace \\
+\max(R) &= \lbrace C \in R \mid \text{no } C' \in R \text{ has } C \subsetneq C' \rbrace
+\end{aligned}
 $$
 
 A model is what a solution's state adds to the program, positive facts only:
 
 $$
-\operatorname{model}(C) = \lbrace f \in \operatorname{st}(C) \mid f \text{ positive} \rbrace \setminus \lbrace f \in \mathrm{program} \mid f \text{ positive} \rbrace
+\begin{aligned}
+\operatorname{model}(C) =\ & \lbrace f \in \operatorname{st}(C) \mid f \text{ positive} \rbrace \\
+\setminus\ & \lbrace f \in \mathrm{program} \mid f \text{ positive} \rbrace
+\end{aligned}
 $$
 
 For the chairs program $n = 4$, the lattice has $2^4 = 16$ nodes, no obligation is stated so every node is
@@ -160,14 +175,19 @@ On a monotone program, one where adding a fact never takes a conclusion away or 
 both upward-closed: a dead commitment stays dead and a discharged one stays discharged as candidates are added.
 
 $$
-C \subseteq C' \land \operatorname{dead}(C) \implies \operatorname{dead}(C'), \qquad
-C \subseteq C' \land \operatorname{discharged}(C) \implies \operatorname{discharged}(C')
+\begin{aligned}
+C \subseteq C' \land \operatorname{dead}(C) &\implies \operatorname{dead}(C') \\
+C \subseteq C' \land \operatorname{discharged}(C) &\implies \operatorname{discharged}(C')
+\end{aligned}
 $$
 
 $R$ then has no hole, and its two lines describe it, as the union of the intervals between them:
 
 $$
-R = \bigcup \lbrace [a, b] \mid a \in \min(R),\ b \in \max(R),\ a \subseteq b \rbrace, \qquad [a, b] = \lbrace C \mid a \subseteq C \subseteq b \rbrace
+\begin{aligned}
+R &= \bigcup \lbrace [a, b] \mid a \in \min(R),\ b \in \max(R),\ a \subseteq b \rbrace \\
+[a, b] &= \lbrace C \mid a \subseteq C \subseteq b \rbrace
+\end{aligned}
 $$
 
 The full definition, stated for a second implementation, is
@@ -314,14 +334,15 @@ flag or option changes R** ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-c
 bounds and say so, `exhausted` says *no*, and every state it does print is a certified member of R. What every row
 prints, and what it counts, is [the read-out](../04-reference/08-read-out.md); the commands are [the CLI](../04-reference/05-cli.md).
 
-**R is over H.** A relation H has no candidate of holds in R only what the program states and saturation derives, and
-the read-out names it, an `outside` row under `universe`
+**R is over H.** Of a relation H has no candidate of, a state of R holds only the facts the program states and
+saturation derives, and the read-out names the relation, an `outside` row under `universe`
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)).
 
 ## A program the engine cannot vouch for
 
 Everything above holds of a **monotone** program, and the read-out's `lattice` row says whether a program is one: no
-`absent` over a relation a commitment can change, and no obligation trigger over one. A program that fails that check
+`absent` over facts of a relation a commitment can add to, and no obligation trigger over such facts. A program that
+fails that check
 is **flagged**: R is still the set of alive, discharged nodes, each built as root with its commitment added, and every
 command agrees on it, but the engine claims nothing more of it, not soundness and not completeness
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Such a region may have

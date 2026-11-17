@@ -29,9 +29,10 @@ What a bijection asserts of a state, with $R(a, b)$ for the fact `(R a b)`:
 
 $$
 \begin{aligned}
-\text{negative completion} &: \quad R(a, b) \implies \lnot R(a, b') \ \text{for each}\ b' \in B_S,\ b' \neq b; \qquad \lnot R(a', b) \ \text{for each}\ a' \in A_S,\ a' \neq a \\
-\text{elimination} &: \quad a \in A_S \land b \in B_S \land \forall b' \in B_S.\ (b' \neq b \to \lnot R(a, b') \in S) \implies R(a, b) \\
-\text{the argument check} &: \quad R(a, b) \land a \notin A_S \implies \bot
+\text{negative completion} &:\ \ R(a, b) \implies \lnot R(a, b') && \text{for each } b' \in B_S,\ b' \neq b \\
+&\phantom{:}\ \ R(a, b) \implies \lnot R(a', b) && \text{for each } a' \in A_S,\ a' \neq a \\
+\text{elimination} &:\ \ a \in A_S \land b \in B_S \land \forall b' \in B_S.\ (b' \neq b \to \lnot R(a, b') \in S) \implies R(a, b) \\
+\text{the argument check} &:\ \ R(a, b) \land a \notin A_S \implies \bot
 \end{aligned}
 $$
 
@@ -281,7 +282,7 @@ are no module's names: a file that also lists `functional` or `total` from `std.
 | `(typecheck-arg-0 R isa Dom)`, `(typecheck-arg-1 R isa Ran)` | a check: argument 0 or 1 not an `isa`-member of `Dom` or `Ran` is a contradiction |
 
 [`tests/stdlib/elim/01_domain_elimination.ein`](../../../../../tests/stdlib/elim/01_domain_elimination.ein): two
-of three values are excluded for the first slot, and nothing for the second.
+of three members of `VT` are excluded for the first member of `OT`, and nothing for the second.
 
 ```lisp
 (import std.macro :symbols (forall unknown))
@@ -536,7 +537,7 @@ Refutes a fact whose second argument is no member of `?Ran`.
 
 #### `domain-elimination`
 
-Forces the one value left for an object.
+Forces the one member of `VT` left for a member of `OT`.
 
 <!-- rule std.elim domain-elimination -->
 ```lisp
@@ -557,7 +558,7 @@ Forces the one value left for an object.
 
 #### `no-room-left`
 
-Refutes an object every value of which is excluded.
+Refutes a member of `OT` for which every member of `VT` is excluded.
 
 <!-- rule std.elim no-room-left -->
 ```lisp

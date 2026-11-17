@@ -604,7 +604,7 @@ const PHRASE_GROUPS: &[(&str, &str, &str)] = &[
     ),
     (
         "Fact",
-        "A fact, a stored negation and a fact as a value",
+        "A fact, a stored negation and a fact as an argument",
         "fact",
     ),
     ("Relation", "A relation's declaration", "relation"),

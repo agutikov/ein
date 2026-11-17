@@ -218,7 +218,10 @@ One walk from the units. With $x_i$ and $y_i$ the digits of the two numbers, $c_
 $b$ the base, each column is one row of the adder's table:
 
 $$
-x_i + y_i + c_i = b \cdot c_{i+1} + s_i, \qquad c_0 \in \{0, 1\}
+\begin{aligned}
+x_i + y_i + c_i &= b \cdot c_{i+1} + s_i \\
+c_0 &\in \lbrace 0, 1 \rbrace
+\end{aligned}
 $$
 
 `add-column` takes a column where both numbers have a digit, `add-column-first` and `add-column-second` one where
@@ -426,7 +429,10 @@ becomes the result fact with the operands as the request wrote them.
 The walk is the addition's over the subtractor's table,
 
 $$
-x_i - y_i - e_i = s_i - b \cdot e_{i+1}, \qquad e_0 = 0
+\begin{aligned}
+x_i - y_i - e_i &= s_i - b \cdot e_{i+1} \\
+e_0 &= 0
+\end{aligned}
 $$
 
 with $e_i$ the borrow. Which number is the smaller is not known before the top column, so `sub-start` runs two

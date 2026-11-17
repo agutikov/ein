@@ -122,8 +122,12 @@ fixpoint $\operatorname{sat}_T(S)$, the least set containing $S \cup F$ and clos
 `std.math.arith` is the theory whose rules are one implication and one axiom:
 
 $$
-\text{division-by-zero}(q) \implies \bot, \qquad
-\top \implies \operatorname{closed}(\text{division-by-zero}) \land \operatorname{closed}(\text{arith-module-rule}) \land \text{arith-module-rule}(\text{division-by-zero-is-false})
+\begin{aligned}
+\text{division-by-zero}(q) \implies\ & \bot \\
+\top \implies\ & \operatorname{closed}(\text{division-by-zero}) \\
+\land\ & \operatorname{closed}(\text{arith-module-rule}) \\
+\land\ & \text{arith-module-rule}(\text{division-by-zero-is-false})
+\end{aligned}
 $$
 
 Two theories over shared relations compose by union, and their consequences interact:
@@ -203,23 +207,24 @@ The standard library's theories refute in **two steps**: a rule derives a **flag
 and the core names the fact the fault was written in. A flag means the request is malformed; no flag does not mean
 it is well-formed, since a theory flags what it can detect
 ([Q-M1f.318](../../../decisions/stdlib/math/Q-M1f.318-a-flag-means-malformed-and-no-flag-does-not-mean.md)). A
-malformed value is flagged by the theory that defines the representation, where it is written, and not by the theories
+malformed term is flagged by the theory that defines the representation, where it is written, and not by the theories
 that compute with it ([Q-M1f.210](../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md)).
 
 ## What a theory owes
 
 Besides what holds and what cannot, a theory can say what a state still **owes**: a rule whose whole conclusion is
-`(open ?R)` reports that `?R`'s extent is incomplete where its pattern matches, and derives nothing. `std.algebra`'s
+`(open ?R)` reports that `?R`'s held extent is incomplete where its pattern matches, and derives nothing. `std.algebra`'s
 `total-owed` is the dual of the check `total`: where `total` refutes a state in which every partner of an `a` is
 excluded, `total-owed` reports an `a` that has no partner yet. A state that owes nothing is **discharged**, and the
 answer is the alive and discharged states. [Obligations](08-obligations.md) has the form and what reads it.
 
 ## The closing rule: what a theory never guesses
 
-The engine proposes hypotheses for relations a program leaves open, and a computed relation is not open: guessing a
-sum would be wrong, not just slow. So each module of the calculator ends in a **closing rule**, its entry, with an
-empty `:match`: it fires once in every program that imports the module, concludes `(__closed__ R)` for every relation
-of the module and every table it reads, so that no hypothesis is ever proposed for one, and names every rule of the
+The engine proposes as hypotheses facts of the relations a program does not close, and the facts of a computed
+relation are not to be guessed: guessing a sum would be wrong, not just slow. So each module of the calculator ends
+in a **closing rule**, its entry, with an empty `:match`: it fires once in every program that imports the module,
+concludes `(__closed__ R)` for every relation of the module and every table it reads, so that no fact of one is
+ever proposed as a hypothesis, and names every rule of the
 module ([Q-M1f.240](../../../decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md),
 [Q-M1f.365](../../../decisions/stdlib/math/Q-M1f.365-the-calculator-closes-its-own-relations-so.md)). A program that
 imports the calculator and states requests therefore has nothing to search: one saturation decides it. A relation the
@@ -274,7 +279,7 @@ trace of the division above shows those activators among what `decimal-arith` co
 ## Two theories over one relation
 
 Two theories meet wherever they share a relation, and what they say there is the union of what each says, plus what
-follows from both. `(symmetric knows)` with `(transitive knows)` closes `knows` in both directions; `(symmetric
+follows from both. `(symmetric knows)` with `(transitive knows)` closes the facts of `knows` under both; `(symmetric
 above)` with `(asymmetric above)` contradicts on the first pair. Nothing warns of either: the fixpoint is the
 meaning.
 
@@ -312,4 +317,4 @@ answer as a whole is stated beside the theory, as a query's `:expect`, and check
 - [Properties and operators](07-properties-and-operators.md): `std.algebra`, a theory of relations.
 - [Macros and imports](11-macros.md): how a theory is brought into a program, and its names.
 - [The stdlib reference](../04-reference/04-stdlib/README.md): every theory the standard library ships.
-- [Hypotheses](09-hypotheses.md): what the engine guesses where a theory leaves a relation open.
+- [Hypotheses](09-hypotheses.md): what the engine guesses where a theory does not close a relation.

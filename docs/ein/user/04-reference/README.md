@@ -13,7 +13,7 @@ states one surface completely. What a concept means, in four representations, is
 - [`02-syntax.md`](02-syntax.md): the lexical rules, every top-level form, the keywords each takes and what the loader holds
   it to, and the pattern language of a rule's `:match` and `:assert`.
 - [`03-reserved-names.md`](03-reserved-names.md): the names a program writes and does not redefine, an *intent to word*
-  card, the verdict atom `open`, `written`, and the hypothesis mechanisms and how each pair reads.
+  card, the verdict `open`, `written`, and the hypothesis mechanisms and how each pair reads.
 - [`04-stdlib/`](04-stdlib/README.md): the standard library, `std.*`, a page a family of modules: what a program
   imports and writes, what each symbol produces, and the module's rules apart.
 

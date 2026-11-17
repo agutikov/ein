@@ -270,7 +270,10 @@ a column, so a sum is one firing of one rule, and a product or a quotient a step
 `std.math.decimal-arith` walks the recurrence
 
 $$
-x_i + y_i + c_i = 10 \cdot c_{i+1} + s_i, \qquad c_0 = 0
+\begin{aligned}
+x_i + y_i + c_i &= 10 \cdot c_{i+1} + s_i \\
+c_0 &= 0
+\end{aligned}
 $$
 
 one column a firing, `add9-fits` states all nine columns in one `:match`, with the carries $c_1$ to $c_8$ as

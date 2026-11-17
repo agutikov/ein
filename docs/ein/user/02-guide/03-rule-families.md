@@ -38,7 +38,7 @@ in four cardinality properties, `functional`, `injective`, `total` and
 
 ## domain- and range-elimination — "must be, because nothing else can"
 
-The workhorses. On a bijective relation, once every value but one is
+The workhorses. On a bijective relation, once every partner but one is
 excluded, the survivor is *forced*. There is one rule for each direction of
 `(color-loc Color House)`:
 
@@ -156,7 +156,7 @@ out:
 **This rule reads a declaration.** `(relation ?R2 ?A ?B)` matches the stored
 fact of `?R2`'s declaration, the octagon, and binds `?B` to the label of its
 second slot: for `(relation pet-loc Pet House …)` that is `House`. Then
-`(is-a ?h_other ?B)` ranges `?h_other` over every name with an `is-a` fact
+`(is-a ?h_other ?B)` ranges `?h_other` over every atom with an `is-a` fact
 into that label, the five houses. This is the whole of what Chapter 1 meant
 by *a label means what the rules that read it make it mean*: Ein has no
 types, and here a rule uses a slot's label and the puzzle's `is-a` facts to

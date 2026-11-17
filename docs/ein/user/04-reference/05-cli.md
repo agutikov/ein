@@ -403,7 +403,7 @@ and a reader of the same version marker on both would be right to expect the sam
 |---|---|
 | `path`, `place` | the file, and whether the row is its `(solve …)` claim (`solve`) or a `(query …)` (`query`); a file's solve row is first among its rows, as its header is first among its lines |
 | `query`, `queries` | the query's 1-based index, 0 on a solve row, and how many queries the file has |
-| `goal`, `goal_relations` | the query's goal as written and the relations it closes; `null` and `[]` on a solve row |
+| `goal`, `goal_relations` | the query's goal as written and the relations it names, whose facts a claim's class lists whole; `null` and `[]` on a solve row |
 | `outcome` | `held`, `failed`, `not-checked`, `no-expect` or `error` |
 | `expect` | the claim's shape (`model`, `or`, `false` for a query; `region` or `false` for a solve claim), how many models it lists, its facts and negated facts, the relations it names, and what part of R it is over; a solve claim adds `merged` and `owing`. `null` where the query states no claim |
 | `answer` | what a query's classes are over, whether that is exact, and how many classes and states |

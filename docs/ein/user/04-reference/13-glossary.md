@@ -5,51 +5,77 @@ CSP, an SMT solver, are catalogued in [`docs/lib/`](../../../lib/README.md).
 
 ## The language
 
-### Atom, name
-A *name*: a token that identifies a node, `Norwegian`, `House-1`, `Red`, `co-located`, `T`. Two occurrences of the
-same name denote the same node. **A run of digits is a name like any other**: `1`, `01` and `-7` are three names, and
-`(p 1)` and `(p 01)` two facts; Ein has no numbers
+### Object
+A node of the knowledge-base graph, and nothing else. Every object is an [atom](#atom) or a [fact](#fact). An
+object's identity is its name or its list of arrows: one atom for a name, one fact for a list. See
+[`../03-syntax-and-semantics/01-objects.md`](../03-syntax-and-semantics/01-objects.md), and
+[the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md) for the graph defined.
+
+### Atom
+A labelled node with no outgoing arrow: `Norwegian`, `House-1`, `Red`, `co-located`, `T`. Its label is its
+[name](#name), and two occurrences of one name are one atom. What an atom is called, a relation, an argument, a
+label, says which arrow of a fact points at it, and nothing about the atom. See
+[`../03-syntax-and-semantics/01-objects.md`](../03-syntax-and-semantics/01-objects.md).
+
+### Name
+The label of an [atom](#atom), and the word a program writes for it. **A run of digits is a name like any other**:
+`1`, `01` and `-7` are three names, and `(p 1)` and `(p 01)` two facts; Ein has no numbers
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)). **A string is no name**:
 it is natural-language text, the value of `:why`, `:source` or `:goal-text`, and `"Red"` where a name goes is a parse
 error ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md)). A name
-is ASCII; a string is any Unicode. See [`02-syntax.md` § 1](02-syntax.md#1-lexical-rules) and
-[`../03-syntax-and-semantics/01-objects.md`](../03-syntax-and-semantics/01-objects.md).
+is ASCII; a string is any Unicode. See [`02-syntax.md` § 1](02-syntax.md#1-lexical-rules).
 
-### Object
-A node *named by a name* that stands for a concrete thing of a puzzle, `Norwegian`, `House-1`, `Red`. Drawn as an
-ellipse when an `is-a` fact makes it an instance. The name is its label; the object is the node. See
-[`../03-syntax-and-semantics/01-objects.md`](../03-syntax-and-semantics/01-objects.md).
+### Fact
+A node with outgoing arrows, in order: the first points at its [relation](#relation), the others at its
+**arguments**, each an [object](#object), an atom or a fact
+([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)). A fact has no name and is
+identified by that list. It is the unit of statement in a knowledge base, which **holds** some facts and only
+points at others, the arguments of the facts it holds. `ein` draws a fact as an octagon with its relation's name in
+it, or, for a fact of two arguments in the compact view, as one arrow with the relation's name on it. See
+[`../03-syntax-and-semantics/03-facts.md`](../03-syntax-and-semantics/03-facts.md).
 
-### Type
-**Ein has no types** ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). The
-word is a program's, for a name it groups objects under, `Nationality`, `House`, `Color`: the name its membership
-facts point at, `(is-a Norwegian Nationality)`, or a [label](#label-signature) of a declaration. Such a name is a
-node like any other and takes part in facts as any object does, and it means what the rules that read those facts
-make it mean. `ein render kb` draws the name an `is-a` fact points at as a box, a convention of the drawing keyed on
-that relation's name. See [`../03-syntax-and-semantics/04-ontology.md`](../03-syntax-and-semantics/04-ontology.md).
+### Relation
+The [atom](#atom) under the first arrow of a fact: one object, however many facts point at it. Three things go by
+its name:
+1. the **relation**, that atom, `co-located`. A fact that has it as an argument, a property `(symmetric co-located)`
+   or a declaration, speaks of the relation as one object;
+2. its **extent**, every fact whose first arrow points at it, held or not. What a knowledge base or a state holds
+   of it is the **held extent**;
+3. **a fact of** the relation, one member of the extent: `(co-located Norwegian Red)`.
+
+See [`../03-syntax-and-semantics/02-relations.md`](../03-syntax-and-semantics/02-relations.md).
+
+### Declared relation
+The atom a declaration names: `co-located` in `(relation co-located Attribute Attribute :why "…")`. A declaration
+is itself a fact, of the relation `relation`: its second arrow points at the declared relation and its later arrows
+at the [labels](#label-signature). *Relation* and *declared relation* are two things an atom can be: a relation
+nothing declares is a relation all the same, and a declared relation of which there is no fact is under no first
+arrow. See [`../03-syntax-and-semantics/02-relations.md`](../03-syntax-and-semantics/02-relations.md).
 
 ### Label, signature
-The names a declaration lists after the relation's, one for each argument slot: `Nationality` and `House` in
+The atoms a declaration lists after the declared relation, one for each argument: `Nationality` and `House` in
 `(relation nation-loc Nationality House :why "…")`. Together they are the relation's **signature**. Their number is
-the number of arguments every form of the relation has, which the loader holds; a label itself is an ordinary name,
+the number of arguments every form of the relation has, which the loader holds; a label itself is an ordinary atom,
 no argument is checked against it, and a rule reads it through the stored declaration, `(relation ?R ?A ?B)`. The
-engine reads a signature only for what may be guessed: whether it is empty, how long it is, and which names it
+engine reads a signature only for what may be guessed: whether it is empty, how long it is, and which atoms it
 lists, about which the blind enumerator proposes nothing. See
 [`02-syntax.md` § What the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine).
 
-### Relation
-Three uses worth telling apart:
-1. A **relation declaration**, `(relation co-located Attribute Attribute :why "…")`: a node naming a relation, with its
-   signature. Relations are nodes, not edge labels.
-2. A **relation instance**, a **fact**: the statement that the relation holds of these arguments.
-3. Loosely, any node with two or more argument edges.
-See [`../03-syntax-and-semantics/02-relations.md`](../03-syntax-and-semantics/02-relations.md).
+### Type
+**Ein has no types** ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md),
+[Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). The
+word is a program's, for an atom it groups other atoms under, `Nationality`, `House`, `Color`: the atom its
+membership facts point at, `(is-a Norwegian Nationality)`, or a [label](#label-signature) of a declaration. Such an
+atom is a node like any other and takes part in facts as any atom does, and it means what the rules that read those
+facts make it mean. `ein render kb` draws the atom an `is-a` fact points at as a box, a convention of the drawing
+keyed on that relation's name, and `ein` prints the word in a few places, `--no-types` and the read-out's `types`
+row among them, for such an atom or for a label. See
+[`../03-syntax-and-semantics/04-ontology.md`](../03-syntax-and-semantics/04-ontology.md).
 
-### Fact
-An instance of a relation applied to arguments, the unit of statement in a KB: a hyperedge. Drawn as an octagon in
-the Levi-bipartite view, and as one labelled arrow for a binary fact in the compact view. An argument is a name or a
-fact ([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)). See
-[`../03-syntax-and-semantics/03-facts.md`](../03-syntax-and-semantics/03-facts.md).
+### Value
+Not a term of these pages. Where `ein` prints *value*, as in the refusal *where a value goes*, it means an
+[object](#object) in an argument's place. The word is used here only in its other senses: the value of a keyword,
+of a config field, of a variable.
 
 ### Rule
 A rewriting rule: a `:match`, what it reads, whose guards, `(neq ?a ?b)`, are premises in it; an `:assert`, what it
@@ -62,12 +88,12 @@ A hypothesis rule: the shape of a rule, and what it concludes is proposed as a h
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
 
 ### Activator, property fact
-A fact whose head is a rule's name; its arguments bind the rule's parameters. `(symmetric co-located)` activates the
+A fact whose relation is a rule's name; its arguments bind the rule's parameters. `(symmetric co-located)` activates the
 rule `symmetric` on the relation `co-located`. See [`02-syntax.md` § Rules](02-syntax.md#rules).
 
 ### `eq`, `neq`
-The relations of **equality** and **non-equality**: `(eq x x)` for every value and `(neq x y)` for every two different
-values, **computed, never stored**, so no fact, rule or commitment changes them
+The relations of **equality** and **non-equality**: `(eq x x)` for every object and `(neq x y)` for every two different
+objects, **computed, never stored**, so no fact, rule or commitment changes them
 ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)). In a goal
 or a premise each is a guard, which binds a variable nothing else binds, over the program's names where it must; a
 conclusion of either is checked, a false one `(false)`; `(not (eq x y))` is `(neq x y)`. See
@@ -81,8 +107,8 @@ program its answer does not depend on the order rules fire in. See
 [`03-absent-and-naf.md`](../../reasoning/02-kb-evolution/03-absent-and-naf.md).
 
 ### Stratification
-A rule set is stratified when no `(absent …)` reads a relation that depends, through the rules, on the guarded rule's
-own conclusion: no recursion through negation. Ein checks it and says so, as a diagnostic and not a refusal: a cycle
+A rule set is stratified when no `(absent …)` reads facts of a relation that depend, through the rules, on the guarded
+rule's own conclusion: no recursion through negation. Ein checks it and says so, as a diagnostic and not a refusal: a cycle
 through an `absent` is named by `ein solve`'s `strata` row and `ein saturate --dump`'s `;; Strata` line. On a rule set
 that is not stratified, a rule that concludes `p` where `q` is absent beside one that concludes `q` where `p` is
 absent, the engine reaches one fixpoint, by the order the
@@ -94,9 +120,13 @@ body at load. `forall` and `unknown` are the standard library's. See
 [`../03-syntax-and-semantics/11-macros.md`](../03-syntax-and-semantics/11-macros.md).
 
 ### Hyperedge, Levi-bipartite
-A hyperedge is an edge with any number of participants. DOT has none, so a fact is drawn **Levi-bipartite**, after
-Friedrich Wilhelm Levi: one octagon per fact and an edge to each argument, labelled by its position. It is the
-canonical drawing of every fact. See [`12-rendering.md` § Hyperedge encoding](12-rendering.md#hyperedge-encoding--levi-bipartite).
+A hyperedge is an edge with any number of participants, and a fact is one, over the objects under its arrows. The
+graph that says the same as a hypergraph is its **Levi graph**, after Friedrich Wilhelm Levi: a node for each
+participant, a node for each hyperedge, and an arrow from a hyperedge's node to each participant. The knowledge
+base is that graph with one change, that a fact may point at a fact. `ein`'s `--levi` drawing is of it: one octagon
+per fact and an edge to each argument, numbered from the first argument, with the relation's name written in the
+octagon and no node drawn for the relation. See
+[`12-rendering.md` § Hyperedge encoding](12-rendering.md#hyperedge-encoding--levi-bipartite).
 
 ### Provenance
 Where a fact came from: **given** (`:source`), **derived** (`:rule`, `:using`), or **background** (neither), and a
@@ -125,9 +155,11 @@ writes `∅`.
 A fact the generator proposes at root. Which ones exist is the **generation ladder**'s answer: the program's own
 `(hrule …)`, else the facts that would discharge what root owes and what a rule can bring a commitment to owe, else the
 blind enumerator. `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` decide which relations are eligible,
-so a fact of an excluded relation is no hypothesis at all. The blind enumerator proposes about its **objects**: the
-program's names, less a signature's labels, the language's own words, every relation and rule, and the two dunders
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)). See
+so a fact of an excluded relation is no hypothesis at all. The blind enumerator proposes about the **guessable
+atoms**: the program's names, less a signature's labels, the language's own words, every relation and rule, and the
+two dunders
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)); where
+`ein` prints *object* of the enumerator, it means one of them. See
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
 
 ### Universe, H
@@ -184,7 +216,7 @@ established; `ein solve -P` prints it
 model's **projection**, and the models with one projection form a **projection class**.
 
 ### Obligation
-A rule that asserts the verdict atom `(open ?R)` while a witness is missing
+A rule that asserts the verdict `(open ?R)` while a witness is missing
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). What a state
 **owes** is its undischarged instances, and a state owing none is **discharged**. Obligations set R's minimal line, as
 restrictions, rules that assert `(false)`, set its maximal line. See
@@ -257,7 +289,7 @@ $\lnot R(x,x)$ for every $x$. Used with strict orders and an explicit `neq`.
 ## Theory
 
 ### Homoiconic
-A language whose program text is itself a value of the language. Ein is homoiconic: rules, facts and traces share one
+A language whose program text is itself data of the language. Ein is homoiconic: rules, facts and traces share one
 S-expression grammar, so the engine reads its own traces
 ([Q3](../../../decisions/language/Q3-ein-is-an-s-expression-language.md)).
 
