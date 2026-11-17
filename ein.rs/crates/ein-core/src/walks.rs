@@ -22,8 +22,8 @@ use crate::terms::Terms;
 /// Which derivations a walk expands.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Justifications {
-    /// `Fact.provenance` — the pre-S1.21.7 single-derivation reading, and the
-    /// default at every call site.
+    /// `Fact.provenance` — the primary derivation alone, and the default at
+    /// every call site.
     Primary,
     /// The whole OR-node. The result is a strictly larger frontier: useful as
     /// a soundness envelope ("no explanation can name a fact outside this"),

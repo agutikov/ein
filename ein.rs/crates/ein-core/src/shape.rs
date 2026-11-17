@@ -78,10 +78,8 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
             params.join(" ")
         ));
     }
-    // One line per `(query …)` block, in source order. Identical to the
-    // pre-M1c single line for the 0- and 1-query files that are the whole
-    // corpus; a second block used to be discarded at load and so could not
-    // reach a digest at all.
+    // One line per `(query …)` block, in source order, so a second block
+    // reaches the digest as the first does.
     if program.queries.is_empty() {
         out.push("QUERY None".to_string());
     } else {

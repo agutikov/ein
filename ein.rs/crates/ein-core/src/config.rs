@@ -166,17 +166,17 @@ pub const FIELDS: &[(&str, FieldKind)] = &[
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SolverConfig {
-    /// The walk's one-step rule simulator, deleted with the walk's generator
-    /// pass. **Retired**: a program that sets it is refused at load, and no
-    /// code reads it. Kept at its default for the `.einb` layout.
+    /// A one-step pre-filter of candidates, which no route runs. **Retired**:
+    /// a program that sets it is refused at load, and no code reads it. Kept
+    /// at its default for the `.einb` layout.
     pub enable_pre_branch_lookahead: bool,
-    /// The walk's cache of a lookahead kill as a `(not h)` fact, deleted with
-    /// the lookahead. **Retired**, read by nothing, and kept as the field
-    /// above is.
+    /// A cache of the pre-filter's kills as `(not h)` facts written into
+    /// root, which no route writes. **Retired**, read by nothing, and kept as
+    /// the field above is.
     pub enable_lookahead_kill_cache: bool,
-    /// **Retired**, as are the two weights below, and read by nothing: the
-    /// walk's scoring of a candidate, which ordered its lattice, went with it.
-    /// Kept at its default for the `.einb` layout.
+    /// **Retired**, as are the two weights below, and read by nothing: a
+    /// scoring of candidates to order a search, where every route's order is
+    /// part of its definition. Kept at its default for the `.einb` layout.
     pub hypgen_scoring: String,
     pub hypgen_rel_weight: f64,
     pub hypgen_obj_weight: f64,

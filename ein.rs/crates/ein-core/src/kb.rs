@@ -479,7 +479,7 @@ impl EqClasses {
     }
 
     /// The class root, inserting `x` as its own root if the map has not seen
-    /// it. The vivifying half of what [`Self::find`] used to be, kept where it
+    /// it. The vivifying half kept apart from [`Self::find`], where it
     /// belongs: a *write* is the only operation entitled to grow the map.
     fn record(&mut self, x: Symbol) -> Symbol {
         if self.parent.get(x).is_none() {
