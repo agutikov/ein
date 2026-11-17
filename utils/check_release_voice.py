@@ -60,10 +60,9 @@ from doc_audit import RS_CHAR, RS_RAW, ein_comment_text  # noqa: E402
 
 #: What is not the project: the process (the plans, the scripts, the gate and
 #: CI, the agents' guide), what is external to both, and third-party source.
-#: `docs/history/` is the record the sweep deletes.
 NOT_PROJECT = (
     "plans/", "utils/", ".github/", "run_tests.sh", "AGENTS.md", "CLAUDE.md",
-    "c/", "nl2smt/", "docs/lib/", "docs/history/", "ein.rs/vendor/",
+    "c/", "nl2smt/", "docs/lib/", "ein.rs/vendor/",
 )
 #: The project's data read whole, beside its `.md` files.
 WHOLE = ("corpus/corpus.toml", "corpus/regressions.toml")

@@ -543,18 +543,21 @@ Not added, and why: a plan's `D<n>` (`D1`, `D2` are `std.math.rat`'s denominator
 names a plan's D row now); a `C<n>` case (a chair, a contract clause); a commit hash (below). **The baseline and
 the ratchet are deleted**: `utils/release_voice_baseline.txt`, `--bless`, the fell/rose report; any finding exits 1
 with the files and their counts, `--list` prints the lines. The script no longer reads itself (process, as
-`AGENTS.md` is), so its docstring carries no escape; `NOT_PROJECT` keeps `docs/history/` until C1's deletion lands,
-when the entry is dead and may go. `history_census.py` imports the same names (the kinds `milestone` … `date` kept)
+`AGENTS.md` is), so its docstring carries no escape; its `NOT_PROJECT` lost `docs/history/` once C1's deletion
+was merged. `history_census.py` imports the same names (the kinds `milestone` … `date` kept)
 and calls its crate column *crates' comments*; `run_tests.sh`' header and step comment and `per-commit.yml`'s say
 what the step holds now; `check_gate_steps.py` reads the same 16, 75, 79 steps.
 
-**For the coordinator**: `utils/README.md`'s row (C1's file) could read, in place of the ratchet's text:
-
-> | [`check_release_voice.py`](check_release_voice.py) | **the release voice**: no milestone, phase, stage or task id, no plan's finding, followup or review id (`E-33`, `F21`, `CD-H1`), no case of the wrong-answer register (`W62`, `W8/…`), no path into the process (`plans/`, `utils/`, `run_tests.sh`, `.github/`, `AGENTS.md`, `CLAUDE.md`) and no ISO date in the project's prose: every `.md` of the project, every comment of every crate (and `ein.l`, `ein.y`, the `.toml` files under `ein.rs/`), every `.ein` comment, and `corpus/corpus.toml` and `corpus/regressions.toml` whole. A decision id (`Q-M…`) passes, and so does a line marked `release-voice-ok: <reason>`. No baseline: any finding exits 1, and `--list [PATH …]` prints the lines | per-commit CI |
-
-and `AGENTS.md`'s *The release voice is a ratchet* rule, and its `--list … --bless` command line, lose the
-ratchet and the baseline the same way. Until one of them lands, `doc_audit.py --links --check --tracked` finds one
-link, `utils/README.md:118`'s to the deleted baseline.
+**After C1's merge** (`git merge master`, no conflict): the check reads 1 718 files of the merged tree and finds
+nothing. `utils/README.md` being on master, its `check_release_voice.py` row is rewritten here: the patterns and
+the scope above, a decision id and `release-voice-ok:` passing, no baseline. **Left for the coordinator**, in
+`AGENTS.md`: the rule *The release voice is a ratchet* (it names the deleted baseline and `--bless`) could read
+*The release voice has no baseline: `utils/check_release_voice.py` fails on any line of the project's prose (every
+`.md` of the project, every crate comment, every `.ein` comment, `corpus/corpus.toml` and `corpus/regressions.toml`)
+that carries a milestone, phase, stage or task id, a plan's finding, followup or review id, a case of the
+wrong-answer register, a path into the process, or a date. A decision id passes; a line that must keep one says
+`release-voice-ok: <reason>`.*, and the § Running the gate line `--list [PATH …]`'s comment *every line the
+release-voice check finds*, without *--bless re-banks its baseline*.
 
 **Q-M1f.314's readings this changes**: (1) every comment of every crate, plain, trailing and block, the dev-only
 crates and the grammar's sources too, not a shipped crate's doc comments; (4) `plans/` named alone fails, as
@@ -566,11 +569,12 @@ every `.md` of the project, and gains `corpus/regressions.toml`. Readings (2) an
 
 **Commits**, on the worktree's branch after `git merge master`: `b5a4787f` (the programs, the stdlib, the corpus
 and their pages, with the fuzz seeds' golden), `6e75f093` (the crates: comments, names, messages), `e1f00ddc` (the
-check widened, the baseline deleted), and this record.
+check widened, the baseline deleted), `3973b494` (this record), `c8138ce1` (C1 merged), and the `utils/README.md`
+row, `docs/history/` out of the check's exclusions and this record's last paragraphs.
 
 **Checks**: `check_release_voice.py` exits 0 over 1 718 files with no baseline, and 1 on a probe line
-(`W8/features-07` appended to `README.md`, then restored); `doc_audit.py --links --check --tracked` 1 and 0, the one
-link above; `cargo fmt --all --check`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`; under the gate
+(`W8/features-07` appended to `README.md`, then restored); `doc_audit.py --links --check --tracked` 0 and 0 on the
+merged tree, the row rewritten; `cargo fmt --all --check`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`; under the gate
 profile, `ein-ir` whole (`fuzz_properties` blessed, `grammar_pages`, `generated_parser`, `load_semantics`,
 `dump_goldens`, the lib's manifest test), `ein-cli`'s `region_render`, `models_grid`, `cli_semantics`,
 `open_reserved`, `guide_transcripts`, `goal_premises`, `einb_cli`, `import_facts`, `closed_stdout`,
@@ -587,5 +591,4 @@ shape moved by a comment); `check_gate_steps.py`; `history_census.py` runs. No `
 - **The `site_census` and `refutation_census` examples** print per-site census rows a process census reads
   (`utils/censuses/hole-census.md` cites `site_census --json`); they are instruments in a shipped crate's
   `examples/`.
-- `NOT_PROJECT` in `check_release_voice.py` and in `doc_audit.py` list `docs/history/`, dead once C1's deletion
-  lands.
+- `doc_audit.py`'s `NOT_PROJECT` still lists `docs/history/`, which no longer exists.
