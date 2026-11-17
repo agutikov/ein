@@ -7,7 +7,7 @@ A closed id is never reused.
 
 **Q-M1d.1 arrived with [P1d.10](README.md#p1d10--exhaustive-search)** on
 2026-08-21, where it was Q-M1a.21; the M1a entry stays as a redirect. Q-M1d.2
-to Q-M1d.5 come from [`ideas.md`](ideas.md), the note that is the milestone's
+to Q-M1d.5 come from [`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md), the note that is the milestone's
 other half, and they are the questions the note leaves open rather than the
 ones it answers. **Q-M1d.6 came from neither**: it was found by measuring, in
 M1a [S1a.9.0](../m1a_rust/README.md#s1a90--the-slow-corpus-re-priced), and it is
@@ -509,7 +509,7 @@ and a second guarantee needs a second word.
 [P1d.2](README.md#p1d2--obligations) may dissolve it rather than answer it. A
 state that knows what it still *owes* can tell "no model below depth k" from
 "no model": an unsatisfied obligation with a non-empty candidate set is a state
-that is **incomplete**, which is [`ideas.md`](ideas.md)'s middle outcome and a
+that is **incomplete**, which is [`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md)'s middle outcome and a
 third word for free. Ten corpus entries would then report that instead, and
 none of them would be lying.
 
@@ -570,7 +570,7 @@ guarantee is:
 > pay.**
 
 A state that is consistent, quiescent, and has an obligation the program stated
-still unwitnessed reports `Open — owes n (…)` — [`ideas.md`](ideas.md)'s middle
+still unwitnessed reports `Open — owes n (…)` — [`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md)'s middle
 outcome, *нарушений нет, но остаются обязательства*, and the distinction the
 other three words could not draw: **no model** against **not yet a model**.
 Twelve corpus entries moved, all under `tests/stdlib/`, all from `Solution`.

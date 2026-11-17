@@ -18,7 +18,7 @@ Two pieces of the repo that had never been put next to each other:
 - **M1a's ex-P1a.12** — `examples/zebra2-minus-15.ein`, the canonical zebra
   with one condition removed, exhaustively solvable in principle and
   uncompletable in practice.
-- **[`ideas.md`](ideas.md)** (ex-followup F14) — *saturation is not
+- **[`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md)** (ex-followup F14) — *saturation is not
   satisfiability*: the engine could say a state was **consistent** and could say
   it was **false**, and had no way to say a program **requires** something. So
   it could not distinguish *no model* from *not yet a model*.
@@ -452,7 +452,7 @@ had sat untracked since the 27th. It reproduces the recorded enterings and the
 or a 1 % machine difference — the log does not record its own command line or
 its `bench_env.sh` state, and that is its one defect as evidence.
 
-**And the two the milestone began with** — [`ideas.md`](ideas.md), the note that
+**And the two the milestone began with** — [`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md), the note that
 is authoritative on intent, and [`open_questions.md`](open_questions.md), seven
 `Q-M1d.<n>` of which **Q-M1d.1** is open on purpose: its vocabulary half is
 answered and its *stopping* half — may a search stop early on purpose, and what

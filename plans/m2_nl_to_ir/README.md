@@ -29,7 +29,7 @@ symbolic kernel, shipped and measured; and **EinAf**, the framework around it,
 where a neural component proposes a formalization and the kernel judges it,
 in a loop. This milestone is EinAf. The research plan
 ([`EinAf.md`](EinAf.md), the user's, kept verbatim at the milestone root the
-way [`m1d/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) is) states the question
+way M1d kept [the note it began with](../ideas/11-saturation-and-satisfiability.md)) states the question
 the loop exists to answer:
 
 > **Can structured feedback from a symbolic reasoner improve an LLM's ability

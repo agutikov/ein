@@ -100,7 +100,7 @@ constrained-reasoning research.
   [M1e's](docs/history/m1e_review_processing/README.md) § What this milestone
   may claim before citing it**, and M1d's P1d.10 § Eight measurements with no
   owner before re-opening any of them;
-  [`m1d_satisfiability/ideas.md`](docs/history/m1d_satisfiability/ideas.md) is
+  [`plans/ideas/11-saturation-and-satisfiability.md`](plans/ideas/11-saturation-and-satisfiability.md) is
   authoritative on intent, as `plans/ideas/*` is.
 - **`docs/lib/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category

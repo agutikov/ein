@@ -4,7 +4,7 @@
 
 **The evidence [M1e2](README.md) was planned from**, carried as written. A
 source document a milestone processes lives inside the milestone, which is the
-[`m1d/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) and M1e
+[`m1d/ideas.md`](../ideas/11-saturation-and-satisfiability.md) and M1e
 `review/` precedent. Two kinds of edit were made: scratch paths became
 [`probes/`](probes/), and a sentence about this directory appearing mid-survey
 was dropped. Every case was **re-run** on the release binary on the day.

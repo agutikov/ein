@@ -1,4 +1,7 @@
+# Saturation and satisfiability
 
+> The user's note that M1d was built on (ex-followup F14), verbatim: the question, then the reply it was
+> discussed in. Authoritative on intent, as every file here is.
 
 saturation in ein и satisfiability в общем смысле
 

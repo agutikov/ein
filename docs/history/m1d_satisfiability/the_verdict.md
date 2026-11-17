@@ -358,7 +358,7 @@ CLI behaviour claim lives.
 
 ## 4. The semantics (T1d.3.3.3) — what a reported model set is a set *of*
 
-[`ideas.md`](ideas.md) § *Когда fixed point является решением*:
+[`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md) § *Когда fixed point является решением*:
 
 > Но здесь возникает важный вопрос: обязательно ли назначать значение каждому
 > возможному факту?
@@ -372,7 +372,7 @@ CLI behaviour claim lives.
 > **A reported model is a saturated *state*, not an interpretation, and `k`
 > counts states.** What `solve` records at a solution node is a KB: a set of
 > believed positive facts, a set of believed negatives, and — for every other
-> atom — no belief at all. That is [`ideas.md`](ideas.md)'s own three-valued
+> atom — no belief at all. That is [`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md)'s own three-valued
 > `present` / `forbidden` / `open`, and `k` is the number of distinct such
 > states, deduped by `state_key`. It is **not** the number of two-valued
 > completions, and the engine does not claim it is.

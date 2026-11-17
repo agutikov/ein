@@ -43,7 +43,7 @@ anything — not because an author forgot, but because the language has no way
 to say it, which is what [S1d.2.3](../../ein/user/syntax-and-semantics/obligations.md#the-form-open-r)'s `(open ?R)` is for.
 
 The four static-witness rules are worth their own sentence, because they are
-[`ideas.md`](ideas.md)'s named anti-pattern alive in the tree: *"existence
+[`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md)'s named anti-pattern alive in the tree: *"existence
 requirements should be first-class obligations, not generators of arrows."*
 `identity`, `top` and the two `reflexive` halves are lower bounds implemented
 exactly as generators — and they are sound, because their witness is unique

@@ -66,7 +66,7 @@ a *k* this corpus does not have.
 
 ## 2. What was dropped before pricing
 
-[`ideas.md`](ideas.md)'s seventh form — *частичная модель с `open`-фактами,
+[`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md)'s seventh form — *частичная модель с `open`-фактами,
 если они независимы* — is not in the table because
 the census killed it: the 23 varying decision variables
 of `zebra2-minus-15` are **one** coupling component, so there are no
@@ -383,7 +383,7 @@ possible 32, instead of letting the shallow levels share.
 
 ## 8. (d) the disjunctive constraint store, deferred
 
-[`ideas.md`](ideas.md)'s own formulation of the compact answer, and the one
+[`ideas.md`](../../../plans/ideas/11-saturation-and-satisfiability.md)'s own formulation of the compact answer, and the one
 that is not a rendering:
 
 > **symbolic solution saturation** — fixed point над ограничениями,
