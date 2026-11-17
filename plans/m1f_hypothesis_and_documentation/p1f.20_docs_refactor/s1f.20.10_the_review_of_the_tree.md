@@ -259,3 +259,61 @@ links, the voice). The new check was also run in the runner's image on the worki
 x86-64-v3): 41 `dot` blocks, rules 1 and 2 hold. `utils/ci_container.sh` was not run: the stage's part E runs it,
 a workflow having changed.
 
+### Parts B, C and D: the lanes
+
+Seven lanes, each in a worktree of its own on a branch of its own, merged into master as each reported. Every
+worktree was created at the commit before part A and fast-forwarded to master by its lane before it started.
+
+**B1** (merge `6e545615`). `reasoning/README.md`, `01-static-ir/` and `03-rule-evolution/` are theory: 94
+displayed formulas and 21 `dot` graphs, no Ein source, command, path, test name or table of tests. The README
+says what a page states and has § Notation. The graphs the engine can draw are the DOT `ein render
+program|kb|rules|rule` and `ein solve --trace` write for a small program; schematics are drawn by hand. What the
+pages shed is `docs/ein/ein.rs/08-reasoning-in-code/`: a README, `01-static-ir.md` and `04-rule-evolution.md`,
+each with a code map, the test tables (87 names, each checked to exist) and the commands, the example programs as
+Ein source. *No types*: four kinds of node, a declaration's argument names are ordinary names. `03-transformations.md`
+was not only a plan: it defines what preserves the answer and argues three invariances.
+
+**B2a** (merge `8a82ad98`). `01-firing`, `02-saturation`, `03-absent-and-naf`, `08-monotonicity`, `09-cores` and
+`10-satisfiability`: every definition and claim a `$$` formula first (86 where there were none), 30 `dot` blocks
+beside the seven images of the monotonicity page, seven propositions and the theorem with their arguments, no
+algorithm. Headings other files anchor on are kept, with every § number of the monotonicity and satisfiability
+pages. What they shed is `08-reasoning-in-code/02-saturation-and-negation.md`. Two of the seven images had
+drifted from the binary and are re-drawn; `monotonicity_three_components` is refused at load and kept as drawn.
+One statement was corrected, not carried: on a stratified program the written order of the rules, and the
+agenda's first half, can decide root's fixpoint where two absences chain over relations no commitment changes
+(the finding is in [`findings.md`](findings.md)).
+
+**B2b** (merge `2ba3db8f`). `04-hypothesis-generation`, `05-hypothesis-space`, `06-solution-semantics` and
+`07-finding-r`: H as a definition by cases, the space as the lattice of commitments with every object over it a
+formula, R and its counts, the questions asked of R named mathematically (06's new § 5), and in 07 the reference,
+the licences as lemmas with their arguments, the propositions each question rests on and the agreement theorem;
+fifteen `dot` blocks; no procedure. What they shed is `08-reasoning-in-code/03-hypotheses-and-the-answer.md`:
+where each notion lives, the routes as procedures, the commands, `h-space.json` in full, the test tables.
+`ein-cli/tests/show_hyps.rs` and `h_space_view.rs` read the generated blocks from the new page. One anchor was
+renamed (06 § 2.5).
+
+**C1** (merge `a29a8c33`). Every page of `user/03-syntax-and-semantics/` on a core notion (01 to 10, 12, 13)
+carries *In Ein*, *As a graph*, *In words* and *In mathematics* of one example: the program runs, the graph is the
+DOT the named command wrote, every formula is TeX, and every rule of a page's example is drawn. 11 and 14 are
+special syntax: 11 shows a macro defined, called, expanded and answering as the written-out program does, then
+`forall` in all four; 14 lost its graph and its formula. *No types* is Q-M1f.372, and 01, 02, 04, 07, 09 and 10
+say *label* of a declaration's argument names. The user's rule was run: with no parameter it is refused (a
+variable in a relation's place is a parameter's); with `?R` a parameter and a second rule deriving its activator
+from `(relation ?R ?T1 ?T2)` it loads and fires, and is 01's example.
+
+**C2** (merge `1d23f9e6`). `user/04-reference/04-stdlib.md` is the folder `04-stdlib/`: an index and nineteen
+pages, a page a family of modules. A usage page says what a program imports and lists and what every symbol
+produces, by small programs each run with the binary and its output pasted, the failures among them; how a family
+works is apart. All 499 rules of the library are shown, each as its module writes it and as `ein render rules`
+draws it, in a region `utils/gen_stdlib_rule_pages.py` writes; its `--check`, run by `check_generated.py`, fails
+on a region that differs, on a rule no page shows and on one shown twice. Seven rules whose drawing has more than
+120 nodes are shown as Ein alone. Q-M1f.375 states the rule. One sentence of the old page was false and is gone.
+
+**D** (merge `e2bee982`). `docs/ein/ein.rs/` (but `08-reasoning-in-code/`) and `docs/ein/overview/` had no `dot`
+or `plantuml` block and have 54, each read off the code it draws: the C4 context, the crates' dependency edges
+from the manifests, a component graph each for `ein-ir`, `ein-infer` and `ein-render`, one `ein solve` as a
+sequence; `02-algorithms.md` as the page of the engine's algorithms, nine activity diagrams with pseudocode; in
+`03-design/`, the layered KB and a fork, the load path, the matcher's plan and a register's life, the saturation
+loop and a commitment's life as state machines, a fan-out batch, the `.einb` layout as records, the build; the
+`--events` stream of one run and its legal orders; the lattice dump. The three character-drawn diagrams are gone.
+Eight statements were corrected to the code. `overview/README.md` states no plan (L-53).
