@@ -182,9 +182,9 @@ A box is a term, and the first line under its name is what identifies a thing of
 *identity*. An arrow with a hollow head reads *is a*: an atom is an object, a fact is an object, a relation
 declaration is a fact. An arrow with an open head is a way one thing points at another, with how many stand at
 each end: a fact has one or more arrows, in order, each to one object; its first arrow is to one atom, which is
-its **relation**, and read backwards that arrow gives the atom the facts of the relation, any number of them;
-those of them a knowledge base holds are the relation's **extent** there. *Relation* and *declared relation* are names of ends of arrows, parts an atom plays, and not
-boxes. Every node of the graph drawn at the head of this page is an instance of exactly one of *Atom* and
+its **relation**, and read backwards that arrow gives the atom the facts of the relation, any number of them:
+the relation's **extent**. *Relation* and *declared relation* are names of ends of arrows, parts an atom plays,
+and not boxes. Every node of the graph drawn at the head of this page is an instance of exactly one of *Atom* and
 *Fact*: the eight boxes there are atoms, and the four octagons are facts.
 
 ### The relation, its extent, a fact of it
@@ -194,15 +194,20 @@ Three things go by a relation's name, and these pages keep them apart.
 | | what it is | in the graph |
 |---|---|---|
 | **the relation** $r$ | a single object | one atom: the node under the first arrow of each of its facts |
-| **the extent** of the relation in $K$ | its facts taken together | the set of the held facts whose first arrow points at that atom |
+| **the extent** of the relation | its facts taken together | the set of every fact whose first arrow points at that atom, whether a knowledge base holds it or not |
 | **a fact of** the relation | one of them | one node with outgoing arrows, its first arrow at that atom |
 
 $$
-\operatorname{ext}_K(r) = \{\, f \in K \;:\; \operatorname{rel}(f) = r \,\}
+\begin{aligned}
+\operatorname{ext}(r) &= \{\, f \in F \;:\; \operatorname{rel}(f) = r \,\} \\
+\operatorname{ext}_K(r) &= \operatorname{ext}(r) \cap K
+\end{aligned}
 $$
 
-A fact of $r$ that the knowledge base only points at is a fact of the relation and is not in its extent. Which
-of the three a statement is about is read off where the atom stands in it:
+The extent is every fact of the relation: those a knowledge base holds, those it only points at, and those no
+knowledge base holds yet. So it is a property of the relation alone, the same whatever is held. What a knowledge
+base $K$ holds of it is the **held extent** $\operatorname{ext}_K(r)$, which is the part a rule reads when it
+matches a fact of $r$. Which of the three a statement is about is read off where the atom stands in it:
 
 - a fact of $r$, with $r$ under its **first** arrow, is one member of the extent and says something of its own
   arguments;
@@ -213,19 +218,25 @@ of the three a statement is about is read off where the atom stands in it:
 That one fact can speak of a whole relation is what the atom being one node makes possible. Part of the graph
 of the three-house example:
 
-![The relation left-of, its extent of two facts, and two facts about it](diagrams/01-relation-extent.svg)
+![The relation left-of, three facts of its extent of which two are held, and two facts about it](diagrams/01-relation-extent.svg)
 
 $$
 \begin{aligned}
-\operatorname{ext}_K(\operatorname{left-of}) &= \{ f_3, f_4 \} \\
+f_3 &= \operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2}) \\
+f_4 &= \operatorname{left-of}(\mathsf{House\text{-}2}, \mathsf{House\text{-}3}) \\
+g &= \operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}3}) \\
+\lbrace f_3, f_4, g \rbrace &\subseteq \operatorname{ext}(\operatorname{left-of}) \\
+\operatorname{ext}_K(\operatorname{left-of}) &= \lbrace f_3, f_4 \rbrace \\
 p &= \operatorname{transitive}(\operatorname{left-of}) \\
 d_1 &= \operatorname{relation}(\operatorname{left-of}, \mathsf{House}, \mathsf{House})
 \end{aligned}
 $$
 
-The first arrows of $f_3$ and $f_4$ meet at the atom $\mathsf{left\text{-}of}$, and the dashed frame around the
-two is the extent. $p$ and the declaration $d_1$ point at the same atom with their second arrows: each is one
-fact about the relation, and neither is in its extent. The third and fourth arrows of $d_1$ point at one atom,
+The first arrows of $f_3$, $f_4$ and $g$ meet at the atom $\mathsf{left\text{-}of}$, and the dashed frame around
+the three is the part of the extent drawn: every other fact of $\operatorname{left-of}$ is in it too. $f_3$ and
+$f_4$, filled, are held, and are the held extent; $g$, empty, is a fact of the relation that the knowledge base
+does not hold. $p$ and the declaration $d_1$ point at the same atom with their second arrows: each is one fact
+about the relation, and neither is in its extent. The third and fourth arrows of $d_1$ point at one atom,
 since the declaration writes the label $\mathsf{House}$ twice.
 
 The graph below has the declaration of $\operatorname{lives-in}$, as its two facts $d_1$ and $d_2$, one fact of
