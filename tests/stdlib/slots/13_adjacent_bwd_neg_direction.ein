@@ -61,8 +61,8 @@
 ;;; stored negative as a premise is legitimate and is the distinction ein's
 ;;; three states exist for; reading its *absence* would not be.
 ;;;
-;;; Priority 500 for the same reason the probe there has it: something that
-;;; reads the world has to be the last thing to read it.
+;;; It needs no order: a `(not …)` premise is a fact, so the probe fires
+;;; whenever the exclusion is derived, before or after anything else.
 ;;;
 ;;; The verdict is `Open` — the seating is not determined and `co-loc` owes
 ;;; sixteen placements — and that is deliberate. What is being tested is one

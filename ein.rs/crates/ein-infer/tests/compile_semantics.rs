@@ -655,7 +655,7 @@ fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
 /// bool, and takes `true` or `false` and nothing else.
 /// Every other shape a `(config …)` is refused for is the grammar's — a
 /// quoted `"false"` (a string), an unknown flag, a value no bool, and a
-/// retired flag, with its *was retired at* sentence as a note — each a row of
+/// retired flag, with its *is retired* sentence as a note — each a row of
 /// `ein-ir`'s grammar table. The coercions the retired flags reached stay the
 /// container's
 /// (`ein-einb` round-trips every field).

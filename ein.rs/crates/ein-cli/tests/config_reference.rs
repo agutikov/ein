@@ -6,7 +6,7 @@
 //! [`docs/ein/ein.rs/api.md`](../../../../docs/ein/ein.rs/api.md) is the precedent that
 //! works, and this file is the same trade with a different generator.
 //!
-//! Six claims, one test each, and each is a claim the page makes in prose:
+//! Eight claims, one test each, and each is a claim the page makes in prose:
 //!
 //! 1. [`the_defaults_block_is_the_binarys_own_dump_config`] — the page's
 //!    generated block **is** `ein solve --dump-config` on a program with no
@@ -39,9 +39,6 @@
 //! 8. [`the_leftover_row_names_every_key_of_its_block`] — the `EIN_LEFTOVER`
 //!    row names every key of `--json-summary`'s `leftover` block, and the
 //!    block is what the row says, with the variable and without.
-//! 9. [`the_dev_crates_environment_is_in_the_harness_class`] — every `EIN_*`
-//!    name the two dev-only crates read has a row in the page's harness
-//!    class: the worker pool's `EIN_TEST_JOBS` among them.
 //!
 //! [`docs/ein/user/reference/config.md`]: ../../../../docs/ein/user/reference/config.md
 
@@ -359,8 +356,8 @@ fn the_cli_counts_come_from_the_golden() {
 // ── 4. The environment census ───────────────────────────────────────
 
 /// The crates that ship. `ein-corpus` and `ein-narration` are `publish = false`
-/// and reach no binary, so what they read is the *harness*'s environment and
-/// belongs in the page's second class, not its first.
+/// and reach no binary, so what they read is the test harness's environment,
+/// which the page does not list: it is about what `ein` reads.
 const SHIPPING: [&str; 6] = [
     "ein-core",
     "ein-ir",
@@ -391,14 +388,8 @@ fn rust_files(dir: &Path, out: &mut Vec<PathBuf>) {
 /// `EIN_STDLIB` appears in a doc comment three lines above the call that reads
 /// it, and `EIN_BLESS` appears in a `cargo test` invocation inside one.
 fn env_names_read_by_shipping_crates() -> Vec<String> {
-    env_names_read_by(&SHIPPING)
-}
-
-/// Every `EIN_*` name the `src/` of `crates` reads from the process
-/// environment, by the lookback [`env_names_read_by_shipping_crates`] states.
-fn env_names_read_by(crates: &[&str]) -> Vec<String> {
     let mut names: Vec<String> = Vec::new();
-    for crate_name in crates {
+    for crate_name in SHIPPING {
         let mut files = Vec::new();
         rust_files(
             &repo_root()
@@ -477,38 +468,6 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
     }
 }
 
-/// The two dev-only crates, whose environment is the harness's.
-const DEV_ONLY: [&str; 2] = ["ein-corpus", "ein-narration"];
-
-/// **What the dev-only crates read is in the page's harness class**: every
-/// `EIN_*` name `ein-corpus` or `ein-narration` reads from the process
-/// environment — `EIN_BLESS`, `EIN_NARRATION_STRICT`, and the worker pool's
-/// `EIN_TEST_JOBS` and `EIN_TEST_UNITS` — has a
-/// row under *Read by the test harness*. One direction only: that class also
-/// lists names a `tests/` target reads, which no `src/` scan sees.
-#[test]
-fn the_dev_crates_environment_is_in_the_harness_class() {
-    let text = page();
-    let read = env_names_read_by(&DEV_ONLY);
-    assert!(
-        read.len() >= 4,
-        "the scanner found only {read:?} in the dev-only crates — it stopped seeing the call sites"
-    );
-    let class_b = text
-        .split_once("### Read by the test harness")
-        .expect("the page has no `Read by the test harness` section")
-        .1
-        .split_once("\n### ")
-        .expect("that section has no successor")
-        .0;
-    for name in &read {
-        assert!(
-            class_b.contains(&format!("| `{name}` |")),
-            "{name} is read by a dev-only crate and has no row under `Read by the test harness`"
-        );
-    }
-}
-
 // ── 5. The sanity flag, and the retired ones ────────────────────────
 
 /// **`:lattice-sanity-check true` is `-y`, and adds its row and nothing
@@ -580,12 +539,12 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
 }
 
 /// The fifteen retired flags (`config.md` § 2.4) are load errors that say
-/// why, each with the tag its refusal prints, and none is offered among the
+/// why, each with the reason its refusal prints, and none is offered among the
 /// valid names.
 #[test]
 fn the_retired_flags_are_refused_with_why() {
     let dir = Scratch::new("ein-config-reference");
-    for (flag, stage, why) in RETIRED {
+    for (flag, why) in RETIRED {
         let f = write_fixture(
             &dir,
             &format!("retired-{flag}"),
@@ -598,9 +557,7 @@ fn the_retired_flags_are_refused_with_why() {
         let err = String::from_utf8_lossy(&out.stderr);
         assert_eq!(out.status.code(), Some(1), "{flag}: {err}");
         assert!(
-            err.contains(&format!(
-                "config flag :{flag} was retired at M1e2 {stage}: {why}"
-            )),
+            err.contains(&format!("config flag :{flag} is retired: {why}")),
             "{flag}: {err}"
         );
     }
@@ -670,7 +627,8 @@ fn require_why_decides_loading_only() {
         }
         assert!(
             !line.starts_with("  OPTION --require-why "),
-            "{command} still takes --require-why, retired at T1f.5.14.7"
+            "{command} still takes --require-why: a :why is required by default, and \
+             --no-require-why is the one option (Q-M1f.62)"
         );
     }
     let mut want: Vec<String> = LOADING

@@ -306,7 +306,7 @@ pub fn naf_warnings(
                      — the rule set may not be stratified, in which case the engine \
                      reports one model rather than the several that exist. Sound \
                      either way (the guard is evaluated on the closure/world \
-                     boundary, S1.21.8). See S1.7.4.",
+                     boundary).",
                     d.derived.join(", ")
                 ),
             });
@@ -319,7 +319,7 @@ pub fn naf_warnings(
                      program's hypothesis generator can still propose — so a state the \
                      search has not finished extending is refuted, and a commitment that \
                      would have discharged the guard is never reached (`dead` is not \
-                     upward-closed under `absent`; Q-M1e.9). Write the constraint over a \
+                     upward-closed under `absent`; Q-M1e2.5). Write the constraint over a \
                      STORED negative, as std.algebra's `total` does — demand \
                      `(not (R ?a ?b))` for every candidate rather than concluding from \
                      its absence — or, if this is a requirement and not a refutation, \

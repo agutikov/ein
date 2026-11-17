@@ -915,7 +915,7 @@ fn the_monotone_question_is_about_the_program() {
         )
     };
     let assumes = "    assumes         every node is a fork of root (root's fixpoint, its commitment \
-                   added, saturated); what a node is on this program is open: Q-M1e2.2, F21\n";
+                   added, saturated); what a node is on this program is not decided: Q-M1e2.2\n";
     let cases: Vec<(&str, String)> = vec![
         (
             THREE,
@@ -1402,11 +1402,8 @@ fn one_verdict_on_every_corpus_program() {
     assert!(
         unread.is_empty(),
         "the programs whose read-out errs, and so has no lattice block to compare: {unread:?}. \
-         None since M1f S1f.5.21, whose loader refuses a goal's relation variable (W64): until \
-         then `query-goal-free-head.ein` and `features/02_star_in_identifiers.ein`, whose \
-         `--monotone` answered where the read-out stopped on the goal, the compiler's line; and \
-         `assert-var-under-commitment` a third from M1f S1f.5.10's T1f.5.10.1 until \
-         T1f.5.10.2 refused it at load"
+         None should: the loader refuses at load what the compiler would refuse on the read-out, \
+         a goal's relation variable among them (Q-M1f.121)"
     );
     let (checked, flagged, refused) = (
         checked.into_inner(),

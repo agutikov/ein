@@ -317,7 +317,7 @@ fn drafts(
     let mut today = vec![row(
         "lattice",
         format!(
-            "not monotone: {n_sites} (the static check) — {}; assumes a monotone lattice for what a node is (P1e2.1b)",
+            "not monotone: {n_sites} (the static check) — {}; assumes a monotone lattice for what a node is",
             plural(holes.len(), "hole", "holes")
         ),
     )];

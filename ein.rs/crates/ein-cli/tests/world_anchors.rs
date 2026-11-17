@@ -106,7 +106,7 @@ fn the_anchor_list_is_the_greps_own_answer() {
         "the anchor list in examples/README.md is not what the grep says. \
          Re-bank it with `EIN_BLESS=1 cargo test -p ein-cli --test world_anchors`, \
          and read the diff first: a test gaining a zebra reference is a test that \
-         will fire the next time somebody edits one of those two puzzles (TE-L2)"
+         will fire the next time somebody edits one of those two puzzles"
     );
 }
 
@@ -124,7 +124,7 @@ fn both_puzzles_name_the_registry() {
         assert!(
             text.contains("examples/README.md"),
             "{rel} does not point at the world-anchor registry — a reviewer \
-             editing it has no list of what will fire (TE-L2)"
+             editing it has no list of what will fire"
         );
     }
 }

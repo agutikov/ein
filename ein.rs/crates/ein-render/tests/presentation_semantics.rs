@@ -197,8 +197,8 @@ fn an_equality_fact_draws_a_class_node_rather_than_an_arrow() {
 /// a rule library in which the generic rules are blank, and the rules that
 /// quantify over relations are the interesting ones. A bare `_`, as in
 /// `(_ ?a ?b)`, is refused at the parse in every position, and so is a
-/// variable as a whole conclusion, `:assert ?a`, so the rule whose picture
-/// is held concludes a fact.
+/// variable as a whole conclusion, `:assert ?a` (Q-M1f.351), so the rule
+/// whose picture is held concludes a fact.
 #[test]
 fn a_wildcard_or_variable_pattern_head_still_labels_its_edge() {
     let refused = parse(

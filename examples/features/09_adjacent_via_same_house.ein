@@ -31,11 +31,11 @@
 ;;; (it is puzzle-level, not stdlib) and must track it.
 
 (import std.algebra   :symbols (symmetric transitive includes))
-;; Argument typing, so the blind hypothesis generator stays inside the declared
-;; signatures. Without it `candidate_objects` offers `(colour-loc Fox T)` and
-;; `(colour-loc House-1 House-2)` — 99 candidates over this tiny ontology — and
-;; nothing refutes them. The fixture never reaches the search (root is ⊥), but a
-;; fixture whose hypothesis space is nonsense is a bad fixture either way.
+;; Argument typing, so that the type-wrong candidates die alone. The blind
+;; generator is untyped (Q-M1e.12): it offers `(colour-loc Fox House-1)` and
+;; `(colour-loc House-1 House-2)`, 82 candidates typed or not (`ein show hyps`),
+;; and without the typing nothing refutes them. The fixture never reaches the
+;; search (root is ⊥), but a bad hypothesis space is a bad fixture either way.
 ;;
 ;; The activators are declared **directly** rather than through
 ;; `(bijective …)`: this ontology has one Colour, one Pet and three Houses, so

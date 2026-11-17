@@ -258,7 +258,7 @@ fn a_whole_module_import_qualifies_every_name_and_the_qualified_head_still_expan
     assert_eq!(
         names(&flat_terms, &flat_kb.program().macros),
         ["forall", "std.macro.unknown"],
-        ":symbols names `forall` short and brings the module whole (M1f S1f.6.35)"
+        ":symbols names `forall` short and brings the module whole"
     );
 
     assert_eq!(

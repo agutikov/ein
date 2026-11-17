@@ -399,11 +399,11 @@ fn moved(got: &[String], path: &Path) -> String {
 /// states it where a person adding a run will meet it. No manifest run names
 /// `-T`. A budget that stops a description is an answer and exits 0:
 /// `examples/zebra2.ein` declares `solve --region-budget 1`, which exits 0
-/// with a `note:`. `-E` and `--max-enterings` are matched too, though
-/// retired: a run that names one is refused, exit 2, as a usage error.
+/// with a `note:`. The retired `-E` and `--max-enterings` are not matched: a
+/// run that names one is refused, exit 2, as a usage error, and is no budget.
 fn budgeted(run: &str) -> bool {
     run.split_whitespace()
-        .any(|t| matches!(t, "-E" | "--max-enterings" | "-T" | "--max-time"))
+        .any(|t| matches!(t, "-T" | "--max-time"))
 }
 
 /// **Nothing in the corpus crashes the binary.** The rule the golden cannot
@@ -551,9 +551,8 @@ fn the_slow_flag_still_describes_the_sweep() {
     }
     assert!(
         bad.is_empty(),
-        "{} entry(s) whose cost and whose flag disagree — re-take with \
-         `utils/bench_env.sh python3 utils/corpus_cost.py` and edit \
-         `corpus/corpus.toml`:\n{}",
+        "{} entry(s) whose cost and whose flag disagree — re-measure their \
+         runs and edit `corpus/corpus.toml`:\n{}",
         bad.len(),
         bad.join("\n")
     );

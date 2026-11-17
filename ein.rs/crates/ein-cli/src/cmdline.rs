@@ -173,7 +173,7 @@ fn no_require_why() -> Arg {
             "load a program in which a relation, rule, hrule or macro carries \
              no :why \"…\". By default such a program is refused, one line per \
              form. It decides whether a program loads, never what a loaded one \
-             answers (M1f T1f.5.14.7)",
+             answers",
         )
 }
 
@@ -233,7 +233,7 @@ fn show_command() -> Command {
 /// `ein render` — DOT only, no SVG.
 fn render_command() -> Command {
     Command::new("render")
-        .about("DOT for rules / constraints (S1.6.1)")
+        .about("DOT for rules / constraints")
         .subcommand_required(true)
         .arg_required_else_help(false)
         .subcommand(
@@ -361,7 +361,7 @@ fn render_command() -> Command {
             Command::new("lattice")
                 .about(
                     "the nodes a describing `ein solve` run visits, as a DAG: R \
-                     green, owing amber, dead red (M1e2)",
+                     green, owing amber, dead red",
                 )
                 .arg(Arg::new("file").required(true))
                 .arg(
@@ -938,7 +938,7 @@ fn solve_command() -> Command {
 /// is more than one run.
 fn test_command() -> Command {
     let cmd = Command::new("test")
-        .about("run the expectations the programs state about themselves (M1c)")
+        .about("run the expectations the programs state about themselves")
         .arg(
             Arg::new("path")
                 .required(true)
@@ -1050,7 +1050,7 @@ fn test_command() -> Command {
 /// ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
 fn oracle_command() -> Command {
     Command::new("oracle")
-        .about("the solution region by brute force: every subset of the root candidates saturated (M1e2)")
+        .about("the solution region by brute force: every subset of the root candidates saturated")
         .arg(Arg::new("file").required(true))
         .arg(no_require_why())
         // Refused with a sentence (`crate::oracle::REFUSED`), as a retired
@@ -1088,7 +1088,9 @@ fn oracle_command() -> Command {
             Arg::new("states")
                 .long("states")
                 .action(ArgAction::SetTrue)
-                .help("(--dump) also keep every node's state beyond root's, as text, in region.json"),
+                .help(
+                    "(--dump) also keep every node's state beyond root's, as text, in region.json",
+                ),
         )
         .arg(
             Arg::new("jobs")
@@ -1225,7 +1227,7 @@ pub fn command() -> Command {
     #[cfg(feature = "einb")]
     fn kb_command() -> Command {
         Command::new("kb")
-            .about("the .einb binary knowledge-base container (P1a.8)")
+            .about("the .einb binary knowledge-base container")
             .subcommand_required(true)
             .subcommand(
                 Command::new("save")

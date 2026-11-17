@@ -102,9 +102,9 @@ use crate::region::{Candidate, DEAD, Node, Nodes, OWING, Topology};
 use crate::strata;
 
 /// What the warning says is assumed, on every flagged program: the node is
-/// built by fork from root, and what it should be is open.
+/// built by fork from root, and what it should be is not decided (Q-M1e2.2).
 pub const ASSUMES: &str = "every node is a fork of root (root's fixpoint, its commitment added, \
-                           saturated); what a node is on this program is open: Q-M1e2.2, F21";
+                           saturated); what a node is on this program is not decided: Q-M1e2.2";
 
 /// What a site's rule concludes, as the warning names it.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]

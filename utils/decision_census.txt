@@ -618,6 +618,9 @@ Q-M1f.347 | decision | docs | given | no open question is cited by the project; 
 Q-M1f.348 | decision | docs | given | a generated file says it is generated and names no tool; the user's rulings on the boundary of 2026-11-17
 Q-M1f.349 | decision | docs | given | a page of the project states no measurement; the user's rulings on the boundary of 2026-11-17 (the censuses live with their tools)
 Q-M1f.350 | decision | corpus | given | a fixed wrong answer is a regression test; the user's ruling at S1f.20.2's review, items 6 and 12
+Q-M1f.351 | decision | language | given | a bare variable or name is no whole conclusion; the grammar's `Assert` (P1f.5's generated parser), which comments cited as `ein.y`'s; S1f.20.9 (L-46)
+Q-M1f.352 | decision | stdlib/math/int | given | an integer is two parts, a positive and a negative; the user's instruction for P1f.6 (its README), built by S1f.6.7; S1f.20.9 (L-46)
+Q-M1f.353 | decision | stdlib/math/rat | given | a rational is an integer over a natural number; the user's instruction for P1f.6 (its README), built by S1f.6.8; S1f.20.9 (L-46)
 Q-M1f.361 | decision | stdlib/math/decimal | given | a natural number is a numeral of digit names, in reading order; P1f.6's design.md
 Q-M1f.362 | decision | stdlib/math | given | no rule of the calculator joins two facts on a number; P1f.6's design.md
 Q-M1f.363 | decision | stdlib/math | given | a calculation is a request fact, answered by a result fact that repeats its operands; P1f.6's design.md

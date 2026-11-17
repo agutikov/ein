@@ -5,7 +5,7 @@ every keyword a `(config …)` does not take is, with a note that names why the 
 
 ```text
 <file>:1:9: unexpected `:print-alive`: a keyword this form does not take
-  note: config flag :print-alive was retired …: it was inert: no code path read it (Q-M1e.10)
+  note: config flag :print-alive is retired: it was inert: no code path read it (Q-M1e.10)
 ```
 
 `SolverConfig` keeps both fields at their defaults, `false` and `-1`, read by nothing, so that the `.einb`

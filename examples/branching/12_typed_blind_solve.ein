@@ -124,10 +124,10 @@
 
 ;; Opt color-of into elimination + the closed-world type checks.
 ;; `domain-elimination` is what positively *produces* a `color-of`
-;; fact, so its activator also keeps `color-of` OPEN (un-`closed`)
-;; for the blind enumerator — without it `emit_closed` would close
-;; `color-of` (no rule produces it) and there would be nothing to
-;; guess.
+;; fact, once a house has one colour left. Nothing closes `color-of`:
+;; only a `(__closed__ R)` fact closes a relation to the blind
+;; enumerator, and this program writes one for `is-a` alone, so the
+;; enumerator guesses `color-of`.
 (domain-elimination color-of House Color)
 (no-room-left       color-of House Color)
 (typecheck-arg-0    color-of House)
@@ -137,9 +137,9 @@
 ;; Declare it closed so the blind enumerator only ever proposes
 ;; `color-of` hypotheses (the guessed relation stays open). Without
 ;; this the enumerator would speculate `(is-a X Y)` pairs and the
-;; lattice would blow up — the normal solve path does not auto-close
-;; (that is a bench-only `emit_closed` convenience), so the fixture
-;; declares it. (`color-of` is intentionally NOT closed.)
+;; lattice would blow up: no relation is closed unless the program
+;; says so, so the fixture declares it. (`color-of` is intentionally
+;; NOT closed.)
 (__closed__ is-a)
 
 ;; Type + instance hierarchy (3 houses, 3 colours).

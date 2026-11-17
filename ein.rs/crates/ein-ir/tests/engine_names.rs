@@ -142,8 +142,8 @@ fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
 /// name is written, and none on the dunders' lines, not only the first `<`,
 /// at 5:11.
 #[test]
-fn t9s_probe_is_refused_at_its_three_writeback_names() {
-    let probe = ";; S1f.5.5 T9 probe for T8's leftover: the engine's writeback rule names and the
+fn a_probe_is_refused_at_its_three_writeback_names() {
+    let probe = ";; A probe: the engine's writeback rule names and the
 ;; kernel's dunders are names under the name rule. A program writes each.
 (relation p T :why \"{?1} is p\")
 (relation hit T :why \"{?1} is hit\")

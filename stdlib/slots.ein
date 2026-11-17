@@ -121,12 +121,12 @@
 ;;; caveat. The ATTRIBUTE side is never read under NAF, so nothing here prunes
 ;;; a branch the hypothesis search still needs.
 ;;;
-;;; ── priority bands ──────────────────────────────────────────────────────────
-;;;   100  setup fan-outs (the activators must exist before their consumers)
-;;;   200  positive propagation
-;;;   240  negative completion
-;;;   250  disjunctive pruning + violation checks
-;;;   400  elimination (reads the negatives the 240/250 bands produced)
+;;; ── the order rules fire in ─────────────────────────────────────────────────
+;;; No rule has a priority: the agenda fires first what leads to `(false)`, a
+;;; rule concluding `(false)`, a stored negation, or a fact whose negation can be
+;;; concluded, then the rest, FIFO within each half (Q-M1f.313). On a monotone
+;;; program the order decides no answer, and an elimination's `forall` is judged
+;;; at the boundary, on the closure's fixpoint, whatever fired before it.
 
 ;; Dependency self-imported (one copy per program): the eliminations quantify
 ;; with `forall` (std.macro).
@@ -318,7 +318,7 @@
 ;; the domain scan and the witness slot are projected out of the `absent`.
 ;;
 ;; Not in the saturation agenda (they derive nothing) — one pass over the
-;; quiescent KB after the fixpoint, `:priority` ordering the report.
+;; quiescent KB after the fixpoint, which they read whole.
 (rule slot-owed-room (?R ?isa ?sub ?super ?index)
   :match  (and (?isa ?a ?Ta)
                (?sub ?Ta ?super)

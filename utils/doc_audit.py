@@ -542,12 +542,7 @@ RANGE_BEFORE = re.compile(r"Q\d+`?\s*[–-]\s*`?$")
 #: golden: the stage that re-aims the engine's own ids (P1f.20's finding L-12)
 #: removes the row with the golden's re-bank. A row whose id its file no longer
 #: cites is a finding, so the list cannot outlive what it excuses.
-DECISION_IDS_ALLOWED = {
-    ("ein.rs/crates/ein-infer/src/naf_deps.rs", "Q-M1e.9"): (
-        "the refutation-under-absent warning's text, which the shape golden's `naf` op "
-        "digests (ein-render/tests/golden/corpus_shapes.md5); the decision is Q-M1e2.5's"
-    ),
-}
+DECISION_IDS_ALLOWED: dict[tuple[str, str], str] = {}
 
 #: Rust: a char literal (so that `'"'` opens no string), and a raw string's
 #: opening, `r"`, `r#"`, `br#"`.

@@ -317,7 +317,10 @@ fn the_canonical_encoding_keeps_its_landmarks() {
     ] {
         let s = shape_of(rel);
         let want: BTreeSet<String> = DECLARED.iter().map(|s| s.to_string()).collect();
-        assert_eq!(s.declared, want, "{rel} declares a different B1 ontology");
+        assert_eq!(
+            s.declared, want,
+            "{rel} declares a different set of relations"
+        );
         assert!(s.has_query, "{rel} has no query block to answer");
         assert!(
             s.rules_total > 20,
@@ -769,8 +772,9 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
 ///
 /// Each of the four shapes below is a parse error at the place, every command
 /// exit 1, with the file, line and column: a keyword pair in a conclusion, a
-/// bare `_`, a name or a variable as a whole conclusion, and a string as a
-/// value. None is read as a symbol, and none reaches a firing.
+/// bare `_`, a name or a variable as a whole conclusion or a conjunct
+/// (Q-M1f.351), and a string as a value. None is read as a symbol, and none
+/// reaches a firing.
 #[test]
 fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
@@ -778,6 +782,7 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
         (r#"(tag ?x b :source "x")"#, 48, "unexpected `:source`"),
         ("(tag ?x _)", 46, "unexpected `_`: _ (reserved)"),
         ("foo", 38, "unexpected `foo`: a name"),
+        ("?x", 38, "unexpected `?x`: a variable"),
         ("(and (tag ?x b) ?x)", 54, "unexpected `?x`: a variable"),
         (r#"(tag ?x "lbl")"#, 46, r#"unexpected `"lbl"`: a string"#),
     ];
@@ -2008,7 +2013,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
     ),
     (
         "examples/branching/04_two_levels.ein",
-        "hyp / hypskip — how H is built, narrated since M1e2 S1e2.1a.5",
+        "hyp / hypskip — how H is built",
     ),
     (
         "examples/branching/12_typed_blind_solve.ein",
@@ -2025,13 +2030,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
     ),
     (
         "examples/lattice/04_obligation_trigger_hole.ein",
-        "monotonicity — a site, an obligation's trigger. `naf-upward-closure.ein` \
-         gave it, and `warn`, until M1e2 S1e2.2.5: *forbid* refuses that \
-         program before the static check is narrated, and `warn` left the \
-         schema with `(config :warn-derived-naf true)`, the flag that gated it. \
-         The `alive-set-invariant` category had a row of its own, \
-         `alive-set-fresh-name.ein`, until S1e2.2.4 seeded the universe with a \
-         rule's constants",
+        "monotonicity — a site, an obligation's trigger",
     ),
 ];
 

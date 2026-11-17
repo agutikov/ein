@@ -865,7 +865,7 @@ fn print_totals(tot: &Totals, swept_selection: bool, wall: f64) {
     if swept_selection {
         println!("the older counts, each under its own selection:");
         println!(
-            "  S1e2.1a.1 census_for_inspection (corpus_files): {} compute a region or refuse; {} at n ≤ 16; {} flagged; {} with a hole",
+            "  census_for_inspection (corpus_files): {} compute a region or refuse; {} at n ≤ 16; {} flagged; {} with a hole",
             tot.c1015[0], tot.c1015[1], tot.c1015[2], tot.c1015[3]
         );
         println!(

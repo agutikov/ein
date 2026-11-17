@@ -8,3 +8,4 @@ Decisions about `std.math.int`: integers as a positive and a negative part.
 - [Q-M1f.179](Q-M1f.179-integer-division-names-its-convention.md) — Integer division names its convention
 - [Q-M1f.200](Q-M1f.200-an-integer-divisions-result-is-named-after.md) — An integer division's result is named after its convention
 - [Q-M1f.282](Q-M1f.282-an-integer-division-with-an-operand-at-fault.md) — An integer division with an operand at fault holds two flags
+- [Q-M1f.352](Q-M1f.352-an-integer-is-two-parts-a-positive.md) — An integer is two parts, a positive and a negative

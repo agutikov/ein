@@ -41,8 +41,8 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
     ("record-alternative-justifications", FieldKind::Bool),
 ];
 
-/// The retired flags, each with the tag the loader's error prints beside it
-/// and why it went (`docs/ein/user/reference/config.md` § 2.4), so a program
+/// The retired flags, each with why it went, which the loader's error prints
+/// beside it (`docs/ein/user/reference/config.md` § 2.4), so a program
 /// that sets one is refused with the reason rather than as an unknown flag:
 /// the walk's levers and order seeds, which no route reads;
 /// `enable-symmetric-mirror`, the one flag that changed R (Q-M1e2.30); and
@@ -50,94 +50,79 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
 /// container, which writes and reads every entry of [`FIELDS`] in order, so
 /// removing one is a change of its layout. No engine code reads any of them.
-pub const RETIRED: &[(&str, &str, &str)] = &[
+pub const RETIRED: &[(&str, &str)] = &[
     (
         "hypgen-scoring",
-        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "hypgen-rel-weight",
-        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "hypgen-obj-weight",
-        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "print-alive",
-        "S1e2.1a.5",
         "it was inert: no code path read it (Q-M1e.10)",
     ),
     (
         "candidate-order-seed",
-        "S1e2.1a.5",
         "it was inert: no code path read it (Q-M1e.10)",
     ),
     (
         "lattice-order",
-        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "lattice-order-seed",
-        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "enable-symmetric-mirror",
-        "S1e2.1a.6",
         "off, it changed the answer, and no config option may. The mirror is \
          what `(__symmetric__ R)` means, so it is always on: a relation that is \
-         not to be mirrored is not marked",
+         not to be mirrored is not marked (Q-M1e2.30)",
     ),
     (
         "enable-singleton-writeback",
-        "S1e2.1a.5",
         "it wrote into root, which no route does: a candidate dead alone leaves \
          the universe by L1",
     ),
     (
         "enable-forced-positive",
-        "S1e2.1a.5",
         "it wrote into root, which no route does: a candidate dead alone leaves \
          the universe by L1",
     ),
     (
         "enable-pre-branch-lookahead",
-        "S1e2.1c.5",
         "the walk's one-step pre-filter, which no route runs: every route \
          saturates each candidate's fork, and the filter's measured saving \
          was in the noise",
     ),
     (
         "enable-lookahead-kill-cache",
-        "S1e2.1c.5",
         "it wrote the walk's lookahead kills into root, which no route does: L1 \
          prunes a dead extension's supersets and writes nothing",
     ),
     (
         "enable-path-nogoods",
-        "S1e2.1c.5",
         "the walk's learned clauses: every route reads N, the minimal dead sets, \
          by construction",
     ),
     (
         "enable-fail-fast-fork",
-        "S1e2.1c.5",
         "a node is never stopped at its first contradiction: a dead node's \
          debts and core are its fixpoint's",
     ),
     (
         "warn-derived-naf",
-        "S1e2.2.5",
         "its refutation half is forbid's refusal: a refutation resting on an \
          (absent …) over a relation a commitment can still extend refuses the \
          program, whatever the config says; its stratification half was the \
          walk's advice, and every non-monotone site is the detector's warning \
-         on every surface that reports R",
+         on every surface that reports R (Q-M1e2.5)",
     ),
 ];
 
@@ -347,7 +332,7 @@ mod tests {
         for (name, _) in FIELDS {
             assert!(!name.contains('_'), "{name} should be kebab-case");
             let kept = FLAGS.iter().any(|(f, _)| f == name);
-            let retired = RETIRED.iter().any(|(f, _, _)| f == name);
+            let retired = RETIRED.iter().any(|(f, _)| f == name);
             assert!(
                 kept != retired,
                 "{name} is kept or retired, not both or neither"
