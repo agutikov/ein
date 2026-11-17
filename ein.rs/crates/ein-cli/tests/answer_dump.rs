@@ -1,5 +1,5 @@
-//! M1e2 S1e2.1.2 — **`ein solve --dump-answer DIR`, held to what it says**,
-//! since S1e2.1a.5's switch the region read-out's directory, `ein-answer/2`.
+//! **`ein solve --dump-answer DIR`, held to what it says**: the region
+//! read-out's directory, `ein-answer/2`.
 //!
 //! The flag writes the answer as files: the read-out, the summary, one
 //! loadable program per state the run reached, the owing frontier of an empty
@@ -11,8 +11,9 @@
 //!   byte, on every question;
 //! - every state file **loads**, holds exactly its state's candidates, and is
 //!   a **fixpoint** of its own program — saturating it derives no fact and no
-//!   `(false)`. A recorded state that is not a fixpoint is the class M1e's
-//!   `CO-M1` fixed, and this makes it observable per file;
+//!   `(false)`. A recorded state that is not a fixpoint is a wrong answer
+//!   (`examples/ein-bugs/alive-empty-phase1.ein`), and this makes it
+//!   observable per file;
 //! - `models/NN` is stdout's *state N of k*;
 //! - the flag **moves no answer**: stdout, stderr, the exit code, the summary
 //!   and the event stream are the same with it and without;
@@ -21,7 +22,7 @@
 //!
 //! **Per commit, every recorded run but those of the manifest's
 //! `heavy_dump` entries**, whose dumps write tens of thousands of state files;
-//! `EIN_CORPUS_SLOW=1`, the nightly's, every one, as `answer_round_trip`
+//! `EIN_CORPUS_SLOW=1` every one, as `answer_round_trip`
 //! reads them.
 //!
 //! ```text
@@ -138,10 +139,8 @@ fn strings(v: &J) -> Vec<String> {
 }
 
 /// Every state file the directory holds against its state in the summary.
-/// Until M1e2 S1e2.3.8 a file the fact printer could not write went to a list
-/// of its own (`printed_alike`: W16's pair, and W28's `classes-int-name`);
-/// the one printer writes every state, and `answer_round_trip.rs` holds each
-/// to its facts by value.
+/// The one printer writes every state (W16, W28's `classes-int-name`), and
+/// `answer_round_trip.rs` holds each to its facts by value.
 fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     let index = json(&dir.join("index.json"));
     let summary = json(&dir.join("answer.json"));
@@ -171,26 +170,15 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     n
 }
 
-/// **The witnesses whose state files do not load today** (M1f S1f.5.0,
-/// 2026-11-08): W30's two `neq` rows, a rule's concluded `neq` stored as a
-/// fact, which a state file writes as a fact line `(neq …)`, and W34's
-/// `:assert ()`, stored as a fact and written `()`; the parser refuses both
-/// lines. It is the row's own wrong answer, which the register holds, so each
-/// is named rather than checked, and each must still fail to load, every
-/// state file of its run and for that reason alone: S1f.5.7 (W30) and S1f.5.9
-/// (W34) take their files off the list in the commit that fixes them, with
-/// `answer_round_trip.rs`' copy. W30's two left the list at M1f S1f.5.7's
-/// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored; and
-/// W34's at M1f S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts
-/// nothing. Empty from then until M1f S1f.6.37's T1f.6.37.1 (2026-11-14), which
-/// named W94's two witnesses and `W95/hrule-and-in-and`: a conclusion that is
-/// an `and` inside an `and` stored one fact headed `and`, which a state file
-/// writes as a fact line `(and (p a) (q a))`, and the parser refuses. Since
-/// then each entry says **how many** of its run's state files do not load,
-/// where W30's and W34's were every one: `hrule-and-in-and`'s ∅ holds no such
-/// fact and loads. S1f.6.37's fix (T1f.6.37.3, the same day) took the three
-/// off the list: a conclusion is read flat, and no state holds a fact headed
-/// `and`. Empty since.
+/// **The witnesses whose state files do not load**: a state holding a fact
+/// the printer writes as a line the parser refuses. It is the row's own wrong
+/// answer, which the register holds, so each is named rather than checked,
+/// with **how many** of its run's state files do not load, and each must
+/// still fail to load, for that reason alone; the fixing commit takes it off
+/// the list, with `answer_round_trip.rs`' copy. Empty: a concluded `neq` is
+/// checked, never stored (W30); `:assert ()` asserts nothing (W34); and a
+/// conclusion is read flat, so no state holds a fact headed `and`, which a
+/// state file would write as a fact line `(and (p a) (q a))` (W94, W95).
 const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
 /// The programs the per-commit checks run on, with a question each: all of R
@@ -238,15 +226,9 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
 /// *Wrong* is allowed. A written state that its own rules would extend or
 /// refute is not, and is what this would report.
 ///
-/// With no exception from M1e2 S1e2.3.8 until M1f S1f.5.0 named W30's two
-/// `neq` witnesses and W34's ([`DO_NOT_LOAD`]), whose state files the wrong
-/// answer the register holds makes unloadable. Until S1e2.3.8 the state files the
-/// fact printer could not write were named rather than checked
-/// (`printed_alike`): W16's fixed pair (M1e2 S1e2.2.16, 2026-11-04), each
-/// holding `(noted 1 1)` and `(noted 1 "1")`, which the printer wrote as one
-/// line twice, and W28's `classes-int-name` (T1e2.3.8.2), whose name `"1"`
-/// was written as the int. A run whose recorded claim is refuted (W28's)
-/// exits 1 and writes its states as any answer does.
+/// With no exception but [`DO_NOT_LOAD`]'s, whose state files the wrong
+/// answer the register holds makes unloadable. A run whose recorded claim is
+/// refuted (W28's) exits 1 and writes its states as any answer does.
 #[test]
 fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let root = scratch("fixpoint");
@@ -254,9 +236,9 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let mut states = 0;
     let mut runs: Vec<(String, String, i32)> = Vec::new();
     for row in &register().case {
-        // A refused row (M1e2 S1e2.2.5) writes no state, nor one whose run
-        // ends in an error (S1e2.2.18), nor a command's that is not a solve
-        // (schema /16, M1f T1f.5.5.13): `wrong_answers.rs` holds all three.
+        // A refused row (*forbid*) writes no state, nor one whose run ends in
+        // an error, nor a command's that is not a solve: `wrong_answers.rs`
+        // holds all three.
         if row.status.starts_with("merged:")
             || row.now.refused.is_some()
             || row.now.error.is_some()
@@ -286,7 +268,7 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     if !slow_too() {
         runs.retain(|(f, _, _)| !heavy.contains(f));
     }
-    // One unit per run on the pool (M1f S1f.6.39), read back in order.
+    // One unit per run on the pool, read back in order.
     let indexed: Vec<(usize, &(String, String, i32))> = runs.iter().enumerate().collect();
     let checked = ein_corpus::pool::map(
         "answer_dump",
@@ -499,10 +481,9 @@ fn a_stopped_run_still_says_what_it_is() {
     );
 }
 
-/// **A container writes the directory its program writes** — M1f S1f.5.12
-/// (T1f.5.12.5), W43's fix: every state file starts with the program the
-/// container stores. Until then a `.einb` was refused here, exit 2, *a .einb
-/// container carries no program source*, and this test held that refusal.
+/// **A container writes the directory its program writes** (W43, Q-M1f.27):
+/// every state file starts with the program the container stores, and a
+/// `.einb` is not refused here.
 /// `einb_cli::the_answer_directory_of_a_container_is_its_sources` holds the
 /// directory file for file against the source's.
 #[test]
@@ -543,7 +524,7 @@ fn a_container_writes_the_directory_its_program_writes() {
 /// summary beside each number, so a counter without a row would be printed
 /// with no meaning — and a row for a counter no summary carries is a
 /// definition of nothing. A `root` field is a dotted row (`root.hypgen.raw`)
-/// down to the sparse blocks, whose keys are data (M1e2 S1e2.3.1).
+/// down to the sparse blocks, whose keys are data.
 #[test]
 fn every_summary_counter_is_defined_on_this_page() {
     let page = std::fs::read_to_string(repo_root().join("docs/ein/user/reference/answer-dump.md"))

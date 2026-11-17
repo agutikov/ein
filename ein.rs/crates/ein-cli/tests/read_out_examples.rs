@@ -1,10 +1,6 @@
-//! **The read-out's golden is the reference's examples page** — M1e2
-//! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
-//! re-pointed by M1f
-//! [S1f.5.16](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s
-//! T1f.5.16.2 at the live page beside the reference,
-//! [`read-out-examples.md`](../../../../docs/ein/user/reference/read-out-examples.md);
-//! M1e2's page under `plans/` is frozen, and nothing reads it.
+//! **The read-out's golden is the reference's examples page**,
+//! [`read-out-examples.md`](../../../../docs/ein/user/reference/read-out-examples.md),
+//! beside the reference.
 //!
 //! The page holds real runs: each block is captioned with the `ein solve` or
 //! `ein oracle` command that printed it, and is that command's stdout, then
@@ -17,12 +13,12 @@
 //! Skipped: a block whose program is not in the repository (the page's one
 //! scratch variant), a block that quotes only part of a run (`, the query
 //! block`), and — unless `EIN_CORPUS_SLOW=1` — zebra2 at `--region-budget
-//! 33554432`, 22 s at `-j 8` in a release build.
+//! 33554432`, the page's one slow run.
 //!
 //! What those skips and the prose leave, [`the_page_is_what_the_script_writes`]
 //! holds: it runs the script's `--check` with the binary under test, so the
-//! page is the script's output whole, the variant's block among it (M1f E-45:
-//! the script had stopped running, and no step said so).
+//! page is the script's output whole, the variant's block among it, and a
+//! script that stopped running would fail here.
 
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -139,7 +135,7 @@ fn every_block_is_what_ein_solve_prints() {
         })
         .filter(|b| slow || !b.args.iter().any(|a| a == "33554432"))
         .collect();
-    // Every block's run on the corpus sweeps' pool (M1f S1f.6.39), read back
+    // Every block's run on the corpus sweeps' pool, read back
     // in the page's order.
     let printed_all = ein_corpus::pool::map(
         "read_out_examples",
@@ -186,9 +182,9 @@ fn every_block_is_what_ein_solve_prints() {
     );
 }
 
-/// `utils/read_out_examples.py --check`, run with this binary so that it is in
-/// the gate, as `ein-ir/tests/digit_tables.rs` runs the table generator's (M1f
-/// E-45, the user's ruling of 2026-11-15). The test above compares the blocks
+/// `utils/read_out_examples.py --check`, run with this binary, as
+/// `ein-ir/tests/digit_tables.rs` runs the table generator's. The test above
+/// compares the blocks
 /// it can run again; this compares the page byte for byte with what the script
 /// writes, prose, the scratch variant's block and every block, its runs on
 /// [`ein_corpus::pool::jobs`] workers.

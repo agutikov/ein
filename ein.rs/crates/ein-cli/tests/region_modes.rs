@@ -1,19 +1,16 @@
-//! `ein solve`'s region modes and `ein oracle`, through the binary — M1e2
-//! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
-//! T1e2.1a.9.4.
+//! `ein solve`'s region modes and `ein oracle`, through the binary.
 //!
 //! What the modes *answer* is `ein-infer/tests/explore.rs`'s, held to the
 //! oracle there. What is held here is the surface:
 //! - the exit codes: every answer exits 0, `--single`'s four words included
-//!   (the user's ruling of 2026-10-16), and a stopped run says so on stderr;
-//! - the refusals: the nine options S1e2.1a.5's switch retired, each with
-//!   what replaced it;
+//!   (Q-M1e2.33), and a stopped run says so on stderr;
+//! - the refusals: the retired options, each with what replaced it;
 //! - `-j`;
 //! - the oracle's directory, which `ein render region` draws with no run
 //!   overlaid.
 //!
-//! Since T1e2.1a.5.2 the modes print the read-out
-//! `docs/ein/user/reference/read-out.md` defines (since M1f S1f.5.16), whose
+//! The modes print the read-out `docs/ein/user/reference/read-out.md`
+//! defines, whose
 //! golden is its `read-out-examples.md` (`read_out_examples.rs`); the rows
 //! here are read by label.
 
@@ -151,7 +148,7 @@ fn n_is_n_states_of_the_part_of_r_asked_about() {
         "{}",
         r.out
     );
-    // Since S1e2.1a.5's switch a bare `-n` asks for N states of all of R.
+    // A bare `-n` asks for N states of all of R.
     let w = ein(&["solve", THREE, "-n", "2"]);
     assert_eq!(w.code, 0);
     assert!(
@@ -164,9 +161,8 @@ fn n_is_n_states_of_the_part_of_r_asked_about() {
 
 #[test]
 fn the_retired_options_are_refused_with_what_replaced_them() {
-    // The nine the switch retired (`solve_interface.md` § 2.1) and the two
-    // levers S1e2.1c.5 retired (the user's ruling of 2026-11-03), and only
-    // those: every other option of `solve`'s is a mode's or a check.
+    // The retired options and levers, and only those: every other option of
+    // `solve`'s is a mode's or a check.
     for (args, name) in [
         (vec!["--maximal", "-e"], "--exhaustive"),
         (vec!["--single", "-m", "3"], "--max-set-size"),
@@ -259,20 +255,16 @@ fn the_oracles_directory_has_no_walk_and_draws_with_none() {
     assert!(!dir.join("walk.json").exists());
 }
 
-/// **`--diff-models` compares by value** — M1f S1f.5.5, T1f.5.5.6 (S-15), the
-/// user's ruling of 2026-11-07.
+/// **`--diff-models` compares by value.**
 ///
 /// The file keeps its line format, and the facts between two `model` lines are
 /// read by the generated parser and printed by the one printer, which prints
-/// the states' facts too, so the same fact in another spelling matches. The
-/// five rows of the stage's table, re-taken on `916d97ac` on the inventory's
-/// probe: until this task the second to fourth matched nothing (`0 matched … 1
-/// missing`), and the fifth, `(p a` with no `)`, was compared as written, with
-/// no error. Since, a fact the parser refuses is a usage error, exit 2, before
-/// the run, with every error recovery reaches. The probe's state held `(q "x
-/// y")` too, a string, which S1f.5.2 refuses as a value; the state here holds
-/// `(p a)` alone, which `closes p` compares. A fact that spans lines is the
-/// sixth case.
+/// the states' facts too, so the same fact in another spelling matches: five
+/// rows, the second to fourth another spelling of a fact the state holds,
+/// and the fifth, `(p a` with no `)`, a fact the parser refuses, which is a
+/// usage error, exit 2, before the run, with every error recovery reaches. A
+/// string is no value (Q-M1e2.23), so the state here holds `(p a)` alone,
+/// which `closes p` compares. A fact that spans lines is the sixth case.
 #[test]
 fn diff_models_reads_a_models_facts_as_ein() {
     let dir = scratch("diff-by-value");
@@ -331,7 +323,7 @@ fn the_oracle_refuses_past_its_limit() {
 }
 
 /// `--models key|grid`, `-p/-P/-f` and `--diff-models` over the listed states
-/// — T1e2.1a.5.2's sixth step, `read_out.md` § 8.3 and § 8.6. Each block
+/// (`read-out.md` § 8). Each block
 /// follows the read-out, which it leaves as it was, and names its set.
 #[test]
 fn the_listed_states_print_as_asked() {
@@ -396,7 +388,7 @@ fn the_listed_states_print_as_asked() {
             "+ spurious: state 3 of 3",
         ],
     );
-    // A file it cannot read stops the run before it starts, as the walk's does.
+    // A file it cannot read stops the run before it starts.
     let r = run(&["--maximal", "--diff-models", "/nonexistent/want.txt"]);
     assert_eq!(r.code, 2);
     assert!(
@@ -426,8 +418,8 @@ fn the_listed_states_print_as_asked() {
     );
 }
 
-/// `-H` and `--trace` under a region mode — T1e2.1a.5.2's seventh step,
-/// `read_out.md` § 8.4 and § 8.6.
+/// `-H` and `--trace` under a region mode (`read-out.md` § 8,
+/// `rendering.md`).
 #[test]
 fn the_universe_and_the_trace() {
     let zebra = "examples/branching/05_mini_zebra.ein";
@@ -481,8 +473,8 @@ fn the_universe_and_the_trace() {
     );
 }
 
-/// `--events FILE` under a region mode — T1e2.1a.5.2's seventh step,
-/// `read_out.md` § 8.6: `run` and `load`, root's own events, one `enter` per
+/// `--events FILE` under a region mode (`docs/ein/ein.rs/events.md` § Region
+/// runs): `run` and `load`, root's own events, one `enter` per
 /// node visited after that node's events, a `layer` per route-1 layer, and
 /// one `region` line last. The same stream at one job and at four, and the
 /// read-out it leaves as it was.
@@ -540,12 +532,11 @@ fn the_event_stream_is_the_runs_and_jobs_move_no_line() {
     assert_eq!(one[1..], streams[1][1..]);
 }
 
-/// The walk's other options, taken by the modes — T1e2.1a.5.3's first step.
-/// `-c` and `-t` add a block to stdout, `-v` and `--layer-progress` write the
-/// route's steps to stderr, and `-y` adds its `paths` row and nothing else,
-/// header included (C4): the spot check, unbounded, the user's ruling of
-/// 2026-11-03 (M1e2 S1e2.1c.5), which retired `-L` and `-K` — refused, as
-/// the switch's nine are, and held by `the_retired_options_are_refused_with_what_replaced_them`.
+/// The other options the modes take. `-c` and `-t` add a block to stdout,
+/// `-v` and `--layer-progress` write the route's steps to stderr, and `-y`
+/// adds its `paths` row and nothing else, header included (C4): the spot
+/// check, unbounded. `-L` and `-K` are refused, as the other retired options
+/// are, and held by `the_retired_options_are_refused_with_what_replaced_them`.
 #[test]
 fn the_modes_take_the_walks_other_options() {
     let zebra = "examples/branching/05_mini_zebra.ein";
@@ -703,10 +694,9 @@ fn the_trace_takes_its_three_shaping_flags() {
 }
 
 /// **A step names every conclusion of its firing**, in the order the rule
-/// writes them (M1f S1f.6.25, E-5 of P1f.6's `findings.md`). Until that stage
-/// the *Derives* line, and `--reorder`'s arrow, named the first alone: a
-/// second conclusion was stored, held by the state and read by later steps,
-/// and no step said where it came from. Each conclusion carries its own
+/// writes them (Q-M1f.214): the *Derives* line, and `--reorder`'s arrow,
+/// name every one, so a second conclusion, stored, held by the state and read
+/// by later steps, has a step that says where it came from. Each conclusion carries its own
 /// statement, its relation's `:why`; a rule of one conclusion prints the line
 /// it always did.
 #[test]
@@ -769,16 +759,12 @@ fn items(n: usize, all: bool) -> String {
     s
 }
 
-/// **A count past what a run reports is an answer** — M1f S1f.6.25, E-22 of
-/// P1f.6's `findings.md`, W92 (Q-M1f.218).
+/// **A count past what a run reports is an answer** (W92, Q-M1f.218).
 ///
-/// Until that stage the state route counted a state's commitments in `u128`
-/// and summed R's into `u64`, and where either overflowed a bare `ein solve`,
-/// `--count` and `--json-summary` printed *a state's commitments pass 2^128:
-/// the state route cannot count them* and exited 1, with no read-out, though
-/// every commitment was classified; from 2⁶³ the summary wrote the count as a
-/// negative number. The count is exact now, and a surface carries it up to
-/// 2⁶³ − 1, which reads *this many or more*.
+/// The count is exact, however large, and a surface carries it up to
+/// 2⁶³ − 1, which reads *this many or more*: never an exit 1 with no
+/// read-out where every commitment was classified, nor a negative number in
+/// the summary.
 #[test]
 fn a_count_past_the_cap_is_an_answer_on_every_surface() {
     const CAP: &str = "9 223 372 036 854 775 807";
@@ -871,8 +857,8 @@ fn a_count_past_the_cap_is_an_answer_on_every_surface() {
     );
 }
 
-/// `ein oracle`'s five options from `ein solve` — T1e2.1a.5.3's first step,
-/// `solve_interface.md` § 2.2.
+/// `ein oracle`'s five options from `ein solve`
+/// ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
 #[test]
 fn the_oracle_takes_the_read_outs_options() {
     let dir = scratch("oracle-options");
@@ -906,11 +892,10 @@ fn the_oracle_takes_the_read_outs_options() {
     assert!(t.err.contains("--max-time"), "{}", t.err);
 }
 
-/// **`ein solve FILE --monotone`**, the explicit check the user approved on
-/// 2026-11-03 (M1e2 S1e2.1b.5, `detector_proposal.md` § 2.2): a question
-/// about the program, answered by root's fixpoint and the static check. The
-/// blocks are the proposal's drafted ones, byte for byte (its monotone one on
-/// `lattice/02` rather than zebra, which this file does not anchor on); every
+/// **`ein solve FILE --monotone`**, the explicit check: a question about the
+/// program, answered by root's fixpoint and the static check
+/// (`read-out.md` § 4.1). The blocks are held byte for byte (the monotone one
+/// on `lattice/02` rather than zebra, which this file does not anchor on); every
 /// verdict exits 0; it is exclusive with the questions about R; and its
 /// summary says what was asked and describes no region.
 #[test]
@@ -940,10 +925,9 @@ fn the_monotone_question_is_about_the_program() {
                 tail("3 candidates")
             ),
         ),
-        // `ein-bugs/naf-upward-closure.ein` was this row until *forbid*
-        // refused it (M1e2 S1e2.2.5): `--monotone` takes the universe and runs
-        // the static check, and the refusal is read there. Its refusal is held
-        // below.
+        // Not `ein-bugs/naf-upward-closure.ein`, which *forbid* refuses
+        // (Q-M1e2.5): `--monotone` takes the universe and runs the static
+        // check, and the refusal is read there. Its refusal is held below.
         (
             "examples/lattice/08_absent_witness_hole.ein",
             format!(
@@ -1036,20 +1020,19 @@ fn the_monotone_question_is_about_the_program() {
     );
 }
 
-/// **`ein solve FILE --count`** — M1e2 T1e2.1c.4.6, the user's ruling of
-/// 2026-11-03: R's two counts and the rows that qualify them, describe's
-/// route, nothing listed. The block on `pets` is T1e2.1c.4.5's draft, the one
-/// the user approved, byte for byte. Every option that asks what `--count`
+/// **`ein solve FILE --count`** (Q-M1f.218): R's two counts and the rows
+/// that qualify them, describe's route, nothing listed. The block on `pets`
+/// is held byte for byte. Every option that asks what `--count`
 /// does not answer is a usage error naming the command that does; a claim the
 /// program states is not checked, and one row and a `note:` per claim say so;
 /// `--dump-answer` writes the read-out and the summary and no state, and
 /// clears what a describe's dump left; the levers, `-t`, `--events` and
 /// `--dump-lattice` are taken. What its counts are is held to describe's and
 /// the oracle's elsewhere (`read_out.rs`, `explore.rs`, `lever_invariance.rs`).
-/// Since M1e2 S1e2.2.10 the block carries `universe`'s `types` row: `pets.ein`'s
-/// blind enumerator binds `Pet`, a type, as an object. Its `route` row names
-/// L8 and its `work` row is twelve saturations short of the draft's: the
-/// twelve extensions a state of `pets` denies are no longer saturated.
+/// The block carries `universe`'s `types` row: `pets.ein`'s blind enumerator
+/// binds `Pet`, a type, as an object (Q-M1e.12). Its `route` row names L8,
+/// and its `work` row counts no saturation of the extensions a state of
+/// `pets` denies.
 #[test]
 fn the_count_question_is_describes_counts() {
     let pets = "examples/saturation/type-exclusivity/pets.ein";
@@ -1148,7 +1131,7 @@ fn the_count_question_is_describes_counts() {
     );
 
     // A flagged program keeps the warning, and its spot check is not run
-    // (`naf-upward-closure` until *forbid* refused it, M1e2 S1e2.2.5).
+    // (`naf-upward-closure` is refused by *forbid*, Q-M1e2.5).
     let flagged = ein(&[
         "solve",
         "examples/lattice/08_absent_witness_hole.ein",
@@ -1230,7 +1213,7 @@ fn static_rows(out: &str) -> Vec<&str> {
         .collect()
 }
 
-/// **One verdict** — M1e2 S1e2.1b.5's test (c) 5. On every corpus program,
+/// **One verdict.** On every corpus program,
 /// `ein solve FILE --monotone`'s verdict and sites are byte-equal to a
 /// read-out's `lattice` block (a describe stopped at once: `--region-limit
 /// 0 --region-budget 1`, which prints the block as every run does), to both
@@ -1279,9 +1262,9 @@ fn one_verdict_on_every_corpus_program() {
         std::sync::atomic::AtomicUsize::new(0),
         std::sync::atomic::AtomicUsize::new(0),
     );
-    // On the corpus sweeps' pool (M1f S1f.6.39; eight threads of its own until
-    // then, which listed its failures in the order they were found), a file a
-    // unit; each failure carries its file's index and the list is read in it.
+    // On the corpus sweeps' pool, a file a unit; each failure carries its
+    // file's index and the list is read in it, not in the order failures
+    // were found.
     let indexed: Vec<(usize, &String)> = files.iter().enumerate().collect();
     ein_corpus::pool::map(
         "region_modes::one_verdict",
@@ -1302,7 +1285,7 @@ fn one_verdict_on_every_corpus_program() {
                 ]);
                 if asked.code != 0 {
                     // A file that does not load: no verdict to compare.
-                    // A refused one (M1e2 S1e2.2.5) is refused alike by
+                    // A refused one (Q-M1e2.5) is refused alike by
                     // the read-out, with the same lines.
                     if asked.err.starts_with("rule '") {
                         let d = ein(&["solve", file, "--region-limit", "0"]);
@@ -1330,13 +1313,13 @@ fn one_verdict_on_every_corpus_program() {
                     b.to_str().unwrap(),
                 ]);
                 // A refuted claim exits 1 and prints its read-out
-                // whole (W28's witnesses, M1e2 S1e2.3.8), so it is read.
+                // whole (W28's witnesses), so it is read.
                 if described.code != 0 && !described.out.contains("\n  lattice ") {
                     // A read-out that errs prints none: a goal the
                     // compiler rejected ended the run where a state is
                     // answered from it (`read_out.rs`), and `--monotone`
-                    // answers no query; the loader refuses such a goal
-                    // since M1f S1f.5.21, so none does.
+                    // answers no query; the loader refuses such a goal,
+                    // so none does.
                     unread
                         .lock()
                         .expect("one writer at a time")
@@ -1430,9 +1413,9 @@ fn one_verdict_on_every_corpus_program() {
         flagged.into_inner(),
         refused.into_inner(),
     );
-    // 2026-11-04 (M1e2 S1e2.2.5): *forbid* refuses nine corpus programs, which
-    // were checked and flagged until then, and `features/05` and `/12` closed
-    // a relation and are monotone; 26 flagged before.
+    // *forbid* refuses some corpus programs (Q-M1e2.5), which are neither
+    // checked nor flagged, and `features/05` and `/12` close a relation and
+    // are monotone.
     assert!(
         checked > 190 && flagged >= 14 && refused >= 9,
         "{checked} checked, {flagged} flagged, {refused} refused"
@@ -1448,14 +1431,13 @@ fn one_verdict_on_every_corpus_program() {
 /// {∅}).
 const PAST: &str = "examples/ein-bugs/wrong-answers/past-limit-lines.ein";
 
-/// **Where ∅ is in R, every minimal question stops at root, and says only ∅** —
-/// M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16, *"b, use the ∅ rule
-/// in both"*: ∅ is below every commitment, so where it is in R the minimal
+/// **Where ∅ is in R, every minimal question stops at root, and says only ∅**
+/// (Q-M1f.23): ∅ is below every commitment, so where it is in R the minimal
 /// line is {∅}, decided after one saturation, on any program and at any
-/// limit. The three rows of the stage's table, through the binary, on the W27
-/// witness past the limit, where describe certifies {∅} and until S1f.5.6
-/// `--single` said *not decided*, `-n N` *as asked* or a lower bound, and
-/// `--minimal` *exhausted no*, each after 2^16 saturations but `-n 1`.
+/// limit. Three rows, through the binary, on the W27 witness past the limit,
+/// where describe certifies {∅}: `--single`, `-n N` and `--minimal` each
+/// decide it after one saturation, not *not decided*, *as asked* or
+/// *exhausted no* after 2^16.
 #[test]
 fn where_empty_is_in_r_every_minimal_question_stops_at_root() {
     let d = ein(&["solve", PAST]);
@@ -1509,13 +1491,10 @@ fn where_empty_is_in_r_every_minimal_question_stops_at_root() {
     }
 }
 
-/// **The minimal-line row says no clause beside ∅** — M1f S1f.5.6, the user's
-/// ruling of 2026-11-07 on S-17 and F1, *"a, drop the clause"*. Until then
-/// describe's row read `1 state — ∅, the trivial line: no obligation is
-/// stated` wherever no node the run met owed, whatever the program states:
-/// on the `tests/stdlib/` programs that state an obligation their root
-/// discharges, on the F1 probe and on its control alike, and on
-/// `past-limit-lines` at `--region-limit 1` but not at `2`. Where ∅ is in R
+/// **The minimal-line row says no clause beside ∅**: no `∅, the trivial
+/// line: no obligation is stated`, which would be false on the
+/// `tests/stdlib/` programs that state an obligation their root discharges,
+/// and would come and go with the limit on `past-limit-lines`. Where ∅ is in R
 /// the row reads `1 state — ∅` on every program and at every limit, the `∅`
 /// row above it saying why, and `region.minimal.trivial` reads *∅ is in R*.
 #[test]

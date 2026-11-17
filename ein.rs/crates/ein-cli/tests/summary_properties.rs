@@ -1,5 +1,4 @@
-//! T1a.10.1.3 — **the summary, banked as properties**, since M1e2
-//! S1e2.1a.5's switch over `ein-summary/2`.
+//! **The summary, banked as properties**, over `ein-summary/2`.
 //!
 //! `summary.json` carries what the run established about R, on every `solve`
 //! cell of the corpus. The obvious check — the numbers against a golden —
@@ -11,9 +10,7 @@
 //! consistently is a semantic change, and the oracle's test
 //! (`ein-infer/tests/explore.rs`) is what catches that.
 //!
-//! The walk's identities (enterings, clause accounting, `solution_nodes`) went
-//! with the walk's summary, `ein-summary/1`. The region's are
-//! `read_out.md` § 13's: k_c ≥ k_s, each line no larger than R, the
+//! The region's identities are these: k_c ≥ k_s, each line no larger than R, the
 //! components summing to k_c, an empty R exactly when k_s = 0 and of the kind
 //! root says, a query's classes partitioning the states it is over.
 //!
@@ -21,12 +18,11 @@
 //! [`the_summary_has_one_shape_on_every_arm`] holds every arm — each question,
 //! each kind of R, a partial run, the cube — to one shape at every depth.
 //!
-//! **The `root` block is held to its subject**, not only to itself, since M1e2
-//! S1e2.3.1 (the user's ruling (a) of 2026-11-03): on every cell `root.facts`
-//! is root's fixpoint and `root.hypgen.emitted` is H, both as the routes start
-//! from them ([`root_of`]), and `--monotone`'s block is the region run's. Until
-//! then the block ran a pass of its own and the identities below it held while
-//! it described a generator no route runs (surface S4).
+//! **The `root` block is held to its subject**, not only to itself: on every
+//! cell `root.facts` is root's fixpoint and `root.hypgen.emitted` is H, both
+//! as the routes start from them ([`root_of`]), and `--monotone`'s block is
+//! the region run's. A block that ran a pass of its own could keep the
+//! identities below while describing a generator no route runs.
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
@@ -38,13 +34,10 @@ use serde_json::Value as J;
 ///
 /// | counter | why it is zero |
 /// |---|---|
-/// | `root.saturator.naf_dropped` | structurally 0 since S1.21.8 moved NAF to the closure/world boundary: a guard is parked or admitted, never dropped, and reporting anything else means the boundary was rebuilt wrong |
+/// | `root.saturator.naf_dropped` | structurally 0: NAF is judged at the closure/world boundary, where a guard is parked or admitted, never dropped, and reporting anything else means the boundary was rebuilt wrong |
 const STRUCTURAL_ZEROS: [&str; 1] = ["root.saturator.naf_dropped"];
 
-/// The `config` block's key set, exactly: the two flags a program can set
-/// since M1e2 S1e2.2.5 retired `warn-derived-naf` (three after S1e2.1c.5
-/// retired the four `enable-*` levers, seven after S1e2.1a.6 retired
-/// `enable-symmetric-mirror`).
+/// The `config` block's key set, exactly: the two flags a program can set.
 const CONFIG_KEYS: [&str; 2] = ["lattice-sanity-check", "record-alternative-justifications"];
 
 /// The questions a corpus `solve` cell asks, and the budget each runs under:
@@ -298,7 +291,7 @@ fn the_description_is_coherent_on_every_corpus_cell() {
     ];
 
     let mut rooted = 0usize;
-    // One unit per program on the pool (M1f S1f.6.39), folded in order.
+    // One unit per program on the pool, folded in order.
     let files = corpus_files();
     let found = ein_corpus::pool::map(
         "summary_properties",
@@ -335,7 +328,7 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                     let listed = states.iter().filter(|x| x["listed"] == true).count() as i64;
                     let exhausted = r["exhausted"] == true;
 
-                    // ── what root owes (M1f S1f.6.26, E-19) ────────────────────
+                    // ── what root owes ──────────────────────────────────────────
                     // The instances are named where the count is stated, one a
                     // count: on a description, and `null` with it under a mode.
                     check(
@@ -397,7 +390,7 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                                 u(&s, "region.merged.states") == merged,
                             );
                             // A count is reported up to 2^63 − 1, `i64::MAX`, which
-                            // reads *or more* (M1f S1f.6.25, W92): the sums stop there.
+                            // reads *or more* (W92, Q-M1f.218): the sums stop there.
                             let commitments: i64 = states
                                 .iter()
                                 .filter_map(|x| x["commitments"].as_i64())
@@ -424,8 +417,8 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                             // Its listed states, and only those: past `--region-limit`
                             // on a flagged program a line mode lists the line members
                             // describe certifies and reports the other members met
-                            // unlisted, on no line (M1e2 S1e2.2.26, W27). Until then
-                            // this held every state on the line, which was the defect.
+                            // unlisted, on no line (W27, Q-M1e2.19), not every
+                            // state on the line.
                             check(
                                 "a line mode's listed states are on its line, and the others on none",
                                 states.iter().all(|x| {
@@ -481,7 +474,7 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                         "hypgen.raw == emitted + sum(filtered)",
                         u(&s, "root.hypgen.raw") == u(&s, "root.hypgen.emitted") + filtered,
                     );
-                    // ── the root block against what it describes (S1e2.3.1) ─────
+                    // ── the root block against what it describes ────────────────
                     check(
                         "root.hypgen.emitted == region.universe.candidates",
                         u(&s, "root.hypgen.emitted") == u(&s, "region.universe.candidates"),

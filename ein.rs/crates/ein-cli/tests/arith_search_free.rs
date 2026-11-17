@@ -1,33 +1,30 @@
-//! **Arithmetic is computed and never guessed** — the search-free test of
-//! M1f P1f.6, which
-//! [S1f.6.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md)
-//! writes and every later operation joins.
+//! **Arithmetic is computed and never guessed** — the calculator's
+//! search-free test, which every operation joins.
 //!
-//! The user's instruction of 2026-11-08: *"solving simple arithmetic will
-//! utilize only saturation with hardcoded … tables like it is done in
-//! electronics, so search will not be involved at all"*. In Ein's terms, on
-//! every arithmetic program:
+//! Arithmetic is saturation over hard-coded tables, as in electronics, and
+//! search is not involved at all (Q-M1f.365). In Ein's terms, on every
+//! arithmetic program:
 //!
 //! | claim | read off |
 //! |---|---|
 //! | H is empty: the universe has no candidate, and nothing is left outside it | `--json-summary`'s `region.universe` and `root.hypgen` |
 //! | k_s is 1 and R is {∅}: one state, root itself, alive and owing nothing | `region.k_s`, `k_c`, `root`, `states` |
 //! | one saturation, no fork | `work.saturations` |
-//! | monotone: **one `absent` read a base the program imports**, statically, over the base's `let`, which nothing derives, and none dynamically; two strata there, and none and one elsewhere (S1f.6.12; binary's since S1f.6.16) | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
+//! | monotone: **one `absent` read a base the program imports**, statically, over the base's `let`, which nothing derives, and none dynamically; two strata there, and none and one elsewhere (decimal's and binary's alike) | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
 //! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts of the solve's one state file, the saturation's dump, and the claims `ein test` holds |
 //!
 //! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the
-//! theories, `std.math.decimal-arith`, `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7),
-//! `std.math.rat` (S1f.6.8), `std.math.binary-arith` and `std.math.convert` (S1f.6.16),
-//! `std.math.gcd` (S1f.6.32), and their examples. A
+//! theories, `std.math.decimal-arith`, `std.math.num9`, `std.math.int`,
+//! `std.math.rat`, `std.math.binary-arith` and `std.math.convert`,
+//! `std.math.gcd`, and their examples. A
 //! program joins by being put there, and an operation by adding its result
 //! relation to [`RESULTS`]; nothing else here names a file.
 //!
-//! **A program that divides by zero** (S1f.6.6) is one kind whose R is not
+//! **A program that divides by zero** (Q-M1f.269) is one kind whose R is not
 //! {∅}: it claims [`DEAD`], and [`dead`] holds what it is held to instead,
 //! an empty R decided by root alone. A rational with a denominator of zero
-//! is such a division (S1f.6.8). **A malformed program is the other kind**
-//! (S1f.6.12): a request the theory cannot read, a `let` it cannot read, or
+//! is such a division. **A malformed program is the other kind**
+//! (Q-M1f.316): a request the theory cannot read, a `let` it cannot read, or
 //! a name no `let` states, each a flag and `(false)` from it, held as a
 //! division by zero is ([`FLAGS`]).
 //!
@@ -40,9 +37,9 @@ use std::process::Command;
 
 use ein_corpus::{Scratch, ein_files_under, repo_root};
 
-/// Where the arithmetic programs live: `std.math.decimal-arith`'s tests, `std.math.num9`'s
-/// (S1f.6.13), `std.math.int`'s (S1f.6.7), `std.math.rat`'s (S1f.6.8), `std.math.gcd`'s
-/// (S1f.6.32), and the examples of all.
+/// Where the arithmetic programs live: `std.math.decimal-arith`'s tests,
+/// `std.math.num9`'s, `std.math.int`'s, `std.math.rat`'s, `std.math.gcd`'s,
+/// and the examples of all.
 const ROOTS: [&str; 11] = [
     "tests/stdlib/math/decimal-arith",
     "tests/stdlib/math/decimal",
@@ -61,8 +58,8 @@ const ROOTS: [&str; 11] = [
 /// `std.math.num9`'s five, its overflow flag and its conversions' answers, and
 /// `std.math.int`'s six and `std.math.rat`'s seven; and `div-done`, the hand-over of
 /// `std.math.decimal-arith`'s tagged division, which is the answer a rule of a program's
-/// own reads where it calls the division itself (S1f.6.24's `41`). Since S1f.6.16
-/// `std.math.binary-arith`'s five and `std.math.convert`'s two; since S1f.6.32
+/// own reads where it calls the division itself (`decimal-arith/41`);
+/// `std.math.binary-arith`'s five and `std.math.convert`'s two; and
 /// `std.math.gcd`'s two, and `gcd-done`, its tagged call's hand-over, which a
 /// rule of a program's own reads as it reads `div-done`.
 const RESULTS: [&str; 41] = [
@@ -136,8 +133,8 @@ const BINARY_BASE: [&str; 2] = [
 ];
 
 /// What a division by zero can come from, by the start of its text: a dead
-/// program's core names exactly one. The four kinds of request, and, since
-/// S1f.6.24 flags a division at the call whoever made it, the fact a rule of
+/// program's core names exactly one. The four kinds of request, and, since a
+/// division is flagged at the call whoever made it (Q-M1f.163), the fact a rule of
 /// the program's own makes its tagged call from: `(share A B)`, of
 /// `tests/stdlib/math/decimal-arith/39_div_call_by_zero.ein` and `40`.
 const DIVIDES: [&str; 6] = [
@@ -156,8 +153,7 @@ const DIVIDES: [&str; 6] = [
 /// divisor's numerator, or both operands of a division of integers, and `nz`
 /// where that simplification drops no high zero; in binary, the `bin-let` of a
 /// named operand, the rows of `bin-fa`, where the divisor is put into normal
-/// form by an addition, and `bin-nz`, where a bit stands for an operand
-/// (S1f.6.16).
+/// form by an addition, and `bin-nz`, where a bit stands for an operand.
 const RESTS_ON: [&str; 8] = [
     "(let ",
     "(md ",
@@ -170,10 +166,9 @@ const RESTS_ON: [&str; 8] = [
 ];
 
 /// The requests and the `let` a malformed program's flag can name, by the
-/// start of their text (S1f.6.12): `std.math.decimal-arith`'s five requests,
-/// and since S1f.6.38 `std.math.int`'s and `std.math.rat`'s, whose undeclared
-/// name or digit as an operand is flagged on the request; since S1f.6.32
-/// `std.math.gcd`'s two.
+/// start of their text: `std.math.decimal-arith`'s five requests,
+/// `std.math.int`'s and `std.math.rat`'s, whose undeclared name or digit as
+/// an operand is flagged on the request, and `std.math.gcd`'s two.
 const READS: [&str; 16] = [
     "(add ",
     "(sub ",
@@ -195,8 +190,8 @@ const READS: [&str; 16] = [
 
 /// The ways an arithmetic program is dead, by the rule that concludes
 /// `(false)`: the start of its flag's text, and what the flag names. The last
-/// three are a representation's (S1f.6.38): the term at fault, which the core
-/// does not name, naming the fact it was written in instead. Since S1f.6.16 a
+/// three are a representation's (Q-M1f.210): the term at fault, which the core
+/// does not name, naming the fact it was written in instead. A
 /// rule may conclude `(false)` from one flag of two, decimal's or binary's,
 /// `std.math.positional`'s rules being activated once a base: the one whose
 /// flag root holds is read.
@@ -226,7 +221,7 @@ const MALFORMED_BY: [&str; 9] = [
 ];
 
 /// The rules that derive a representation's flag, by the start of their
-/// names (S1f.6.38): `std.math.decimal`'s numeral's, `std.math.int`'s and
+/// names (Q-M1f.210): `std.math.decimal`'s numeral's, `std.math.int`'s and
 /// `std.math.rat`'s own shapes'.
 const REPRESENTED_BY: [&str; 6] = [
     "numeral-",
@@ -238,7 +233,7 @@ const REPRESENTED_BY: [&str; 6] = [
 ];
 
 /// The rules that derive the flag, each with the start of the flag it
-/// derives. Since S1f.6.24 the first is the flag of a call, `std.math.decimal-arith`'s
+/// derives. The first is the flag of a call, `std.math.decimal-arith`'s
 /// `(div-call TAG X Y)` with a divisor that is zero, whoever asserted it; a
 /// public `(div X Y)` has that flag beside its own, and the modules' rules
 /// below flag their request before any call is made, so theirs is one flag.
@@ -278,7 +273,7 @@ struct Run {
 }
 
 /// A run, read in short names: a name of the calculator a program does not
-/// list prints by its full name since M1f S1f.6.35, `std.math.decimal-arith.strip`, and
+/// list prints by its full name, `std.math.decimal-arith.strip`, and
 /// this test reads every one as the module writes it.
 fn ein(args: &[&str]) -> Run {
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
@@ -347,11 +342,11 @@ fn balanced(text: &str) -> String {
 /// candidate, one saturation and no fork, and no state at all, since root's
 /// own fixpoint derives `(false)`. The core is the request and nothing
 /// else, `refuted by` names the rule that concludes `(false)` from the flag
-/// (the user's ruling of 2026-11-11: two steps), `ein saturate` shows the
+/// (two steps, Q-M1f.269), `ein saturate` shows the
 /// flag and `(false)` in root's state, each by its own rule, and `ein test`
 /// holds the one claim such a program can make.
 ///
-/// **A malformed program is held the same way** (S1f.6.12): `refuted by`
+/// **A malformed program is held the same way** (Q-M1f.316): `refuted by`
 /// names `malformed-is-false` or `undeclared-is-false`; the core names what
 /// the flag names, a request or a `let`, and beside it only `let`s and
 /// table rows; and the request the flag names is never answered.
@@ -393,7 +388,7 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
     // The core is the request, and what its divisor's zero rests on: nothing
     // where the divisor is written `z`; the `let` where it is a name; and the
     // rows of `md` that put a zero written with digits into normal form, since
-    // a table row is a premise like any other fact (S1f.6.2's measured cost).
+    // a table row is a premise like any other fact.
     let core: Vec<&str> = region["core"]
         .as_array()
         .expect("root's core")
@@ -487,7 +482,7 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
                 "{file}: the flag, by its own rule: {line}"
             );
         }
-        // Where the flag comes from (S1f.6.24). A public `(div X Y)` is
+        // Where the flag comes from (Q-M1f.211). A public `(div X Y)` is
         // flagged twice, the request and its call under `std.math.decimal-arith`'s tag; a
         // call a rule of the program's own made is flagged once, the call;
         // and a module that sees the zero before it calls flags its request
@@ -644,11 +639,10 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
         json["work"]["saturations"], 1,
         "{file}: one saturation, no fork"
     );
-    // One `absent` where the program holds `std.math.decimal-arith`'s rules, which since
-    // M1f S1f.6.35 is every program here: `std.math.num9` imports `std.math.decimal-arith`, and
-    // an import brings its module whole (until then a program of `std.math.num9`
-    // alone held none of its rules and read none). The undeclared name's,
-    // over `let` (S1f.6.12). It is read statically, a premise of one plan,
+    // One `absent` where the program holds `std.math.decimal-arith`'s rules,
+    // which is every program here: `std.math.num9` imports
+    // `std.math.decimal-arith`, and an import brings its module whole. The
+    // undeclared name's, over `let` (Q-M1f.317). It is read statically, a premise of one plan,
     // and never at a node: the theory closes `let` and no rule derives it, so
     // the static check calls the program monotone all the same.
     let mono = &json["monotonicity"];
@@ -719,10 +713,9 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
 fn every_arithmetic_program_is_search_free() {
     let programs = programs();
     let root = repo_root();
-    // On the corpus sweeps' pool (M1f S1f.6.39), a program a unit, each with
-    // a scratch of its own: the files are named by the program's stem, and
-    // two programs of one stem in two directories took turns at one name
-    // while the loop was serial.
+    // On the corpus sweeps' pool, a program a unit, each with a scratch of
+    // its own: the files are named by the program's stem, and two programs
+    // of one stem in two directories would otherwise write one name.
     ein_corpus::pool::map(
         "arith_search_free",
         &programs,
@@ -745,14 +738,12 @@ fn every_arithmetic_program_is_search_free() {
     );
 }
 
-/// `utils/gen_arith_examples.py --check`, run here so that it is in the
-/// gate (M1f S1f.6.15): `examples/arith/long_numbers.ein`,
+/// `utils/gen_arith_examples.py --check`, run here: `examples/arith/long_numbers.ein`,
 /// `many_calculations.ein` and `factorial.ein` are generated, operands drawn
 /// with a fixed seed and every claimed answer computed by Python's integers.
 /// The test above then holds each of them search-free, and `ein test` holds
-/// the claims to the engine's own answers. The per-commit tier installs a
-/// `python3`, as for `utils/gen_arith_tables.py --check`
-/// (`ein-ir/tests/digit_tables.rs`).
+/// the claims to the engine's own answers. It needs a `python3`, as
+/// `ein-ir/tests/digit_tables.rs` does for the digit tables.
 #[test]
 fn the_generated_examples_are_what_the_generator_writes() {
     let probe = Command::new("python3")

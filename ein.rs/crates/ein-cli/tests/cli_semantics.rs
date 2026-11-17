@@ -1,4 +1,4 @@
-//! T1a.10.2.2 — **the `ein` binary as a tool**: exit codes, flag effects, the
+//! **The `ein` binary as a tool**: exit codes, flag effects, the
 //! `--events` protocol, and the shape of the three canonical Zebra files.
 //!
 //! The common subject is *the surface a caller sees* rather than what the
@@ -71,8 +71,7 @@ fn ein(args: &[&str]) -> Run {
 /// The same, with process environment. A **child** process is the only way to
 /// set an `EIN_*` name in this file: cargo runs these tests as threads of one
 /// binary, and a `set_var` here would be read by whatever else is mid-solve.
-/// Its environment callers were the walk's, deleted at M1e2 S1e2.1c.5; the
-/// stdlib-resolution test below still sets `EIN_STDLIB` through it.
+/// The stdlib-resolution test below sets `EIN_STDLIB` through it.
 fn ein_env(env: &[(&str, &str)], args: &[&str]) -> Run {
     let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
     cmd.args(args).current_dir(repo_root());
@@ -157,8 +156,9 @@ const COND_15: &str = "(adjacent-via next-to nation-loc Norwegian color-loc Blue
 /// The clue the CONTRADICTIONS fixture injects.
 const INJECTED: &str = "(color-loc Green House-1)";
 
-/// The nine `(relation …)` signatures the B1 encoding declares: the five
-/// typed `*-loc` bijections, the two spatial relations, and the is-a pair.
+/// The nine `(relation …)` signatures `zebra2.ein`'s encoding declares: the
+/// attribute → house projections, five typed `*-loc` bijections, the two
+/// spatial relations, and the is-a pair.
 ///
 /// The registry also holds auto-vivified heads (`co-located`, `bijective`, …)
 /// with `declared = false`; those are incidental to how a puzzle is written,
@@ -263,23 +263,16 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
         "bad must not drop a condition"
     );
 
-    // The byte-level half — **required, not opportunistic**, since M1e
-    // S1e.3.3's neighbour
-    // [S1e.3.6](../../../../docs/history/m1e_review_processing/README.md#s1e36--tests-medium)
-    // T1, the review's `TE-M1`.
+    // The byte-level half — **required, not opportunistic**.
     //
-    // It used to `eprintln!` and pass when `python3` was absent or exited 127.
-    // That is a shape the repo has already been bitten by — `dot_wellformed`
-    // was converted for the same reason — and here it was worse than a lost
-    // assertion: the structural diff above compares rule
-    // *names*, so a drifted rule **body** in a generated variant is caught by
-    // nothing else. A local gate on a machine without `python3` reported a
-    // pass on exactly that, while `AGENTS.md` said flatly *`--check` is in the
-    // gate*.
+    // An `eprintln!` and a pass where `python3` is absent or exits 127 would
+    // be worse than a lost assertion (`dot_wellformed` refuses the same
+    // shape): the structural diff above compares rule *names*, so a drifted
+    // rule **body** in a generated variant is caught by nothing else.
     //
     // 127 stays distinguished from a real failure, because a missing
     // interpreter and a stale fixture are different things to be told — but
-    // both are now failures, and the message says which.
+    // both are failures, and the message says which.
     require_python3();
     let out = Command::new("python3")
         .arg("examples/gen_zebra2_variants.py")
@@ -354,8 +347,7 @@ fn the_written_send_is_the_by_column_send_with_one_line_reordered() {
 /// `gen_zebra2_variants.py --check` is what compares the bytes; without it the
 /// only thing standing between a hand-edited variant and the gate is a
 /// structural diff over rule *names*. So it is a missing gate rather than a
-/// missing convenience, which is `require_graphviz`'s own sentence and is the
-/// rule M1e S1e.3.6 T1 applied here.
+/// missing convenience, which is `require_graphviz`'s own sentence.
 fn require_python3() {
     let run = Command::new("python3")
         .arg("-c")
@@ -528,15 +520,10 @@ fn a_load_failure_is_one_diagnostic_line_and_a_non_zero_exit() {
 /// load error as every command does.
 ///
 /// The rule views render the *parsed forms*, as written; nothing they draw is
-/// the loaded `Kb`. Until M1f S1f.5.21 nothing built one either, and a file
-/// the loader refused still rendered whatever rules it declared, which this
-/// test held: on the load-negative fixture the diagnostic was about the missing
-/// rules and not about the cycle, *a `kb load error` here would mean the
-/// renderer had quietly acquired a dependency on the loader*. Since S1f.5.21 it
-/// has, on purpose (W65, Q-M1f.71): a view that drew a program every other
-/// command refused disagreed with them about whether it is one, so each view
-/// reads the program through the loader first and refuses it with the same
-/// line and exit.
+/// the loaded `Kb`. But each view reads the program through the loader first
+/// and refuses it with the same line and exit (W65, Q-M1f.71): a view that
+/// drew a program every other command refused would disagree with them about
+/// whether it is one.
 #[test]
 fn render_reports_a_load_error_as_every_command_does() {
     let r = ein(&["render", "rules", LOAD_NEGATIVE]);
@@ -566,9 +553,9 @@ fn render_reports_a_load_error_as_every_command_does() {
 
 /// **A parse error names the file it came from** — every subcommand.
 ///
-/// The regression is specific: `saturate` used to parse without passing
-/// `filename=`, so every location in its diagnostics read `<string>` and no
-/// editor could jump to one. The path on the command line is the only name the
+/// A command that parsed without passing the file's name would read
+/// `<string>` in every location of its diagnostics, and no editor could jump
+/// to one. The path on the command line is the only name the
 /// user gave, so it is the only name the diagnostic may use.
 #[test]
 fn a_parse_error_names_the_file_from_every_subcommand() {
@@ -606,8 +593,7 @@ fn listed(r: &Run) -> usize {
         .count()
 }
 
-/// **The question is the flags'**, and the four settings differ — M1e2
-/// S1e2.1a.5's switch.
+/// **The question is the flags'**, and the four settings differ.
 ///
 /// Bare `ein solve` describes all of R: seven states on this program,
 /// exhausted, as one `(region …)`. `-n 2` lists two of them and says the part
@@ -653,14 +639,10 @@ fn the_question_is_the_flags() {
 }
 
 /// **`-n/--solutions` takes a count of one or more, and refuses everything
-/// else** — M1e
-/// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
-/// Q-M1e.24.
+/// else** (Q-M1e.24).
 ///
-/// `-n 0` used to be accepted, and what it *did* was `-n 1`. Neither reading a
-/// user could mean was available — *record nothing* is not what it did, and
-/// *no limit* is leaving `-n` out, which describes all of R since M1e2
-/// S1e2.1a.5.
+/// `-n 0` has no reading a user could mean: *record nothing* is no question
+/// about R, and *no limit* is leaving `-n` out, which describes all of R.
 ///
 /// Two halves, and the second is the one that would rot quietly:
 ///
@@ -725,12 +707,11 @@ fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
 }
 
 /// **`-g/--progress-every` 0 means no node lines, and a negative is
-/// refused** — M1e2 S1e2.3.4, the user's ruling (b) of 2026-11-03 on
-/// [Q-M1e.17](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative).
+/// refused** (Q-M1e.17).
 ///
-/// The region modes clamped it with `.max(1)`, so `-v -g=0` and `-v -g=-3`
-/// logged every node, as `-g 1` does, with no word (P1e2.3's S5). Now `-g 0`
-/// is what `ein saturate --progress-every 0` is: the step lines and no node
+/// A clamp with `.max(1)` would log every node for `-v -g=0` and `-v -g=-3`,
+/// as `-g 1` does, with no word. `-g 0` is what `ein saturate
+/// --progress-every 0` is: the step lines and no node
 /// line. A negative is a usage error, exit 2, with a stderr `error:` that says
 /// why, in both spellings, since the option takes negative numbers as values.
 /// stdout never moves: the option is stderr's.
@@ -772,14 +753,13 @@ fn progress_every_is_zero_for_no_node_lines_and_refuses_a_negative() {
 }
 
 /// **`ein saturate --max-steps N` says where it stopped, in Ein's spelling,
-/// and exits 0** — M1e2 S1e2.3.7's N3, the user's ruling of 2026-11-03.
+/// and exits 0**.
 ///
-/// The line spelt the last firing as a Python repr, `Firing(rule='transitive',
-/// …, Fact(relation_name='co-located', …))`, sent the reader to a
-/// `Saturator._last_firing` no crate defines, and said *without reaching fixed
-/// point* on `colocation-chain.ein` at `--max-steps 1`, whose one firing is
-/// the whole saturation. The help said it *raises SaturatorStepLimitError*.
-/// A step limit leaves the KB where it stopped, which is what the flag asks
+/// The line spells the last firing as a program would write it, not as a
+/// Python repr (`Firing(rule='transitive', …, Fact(relation_name=…))`), names
+/// nothing no crate defines, and does not say *without reaching fixed point*
+/// on `colocation-chain.ein` at `--max-steps 1`, whose one firing is the
+/// whole saturation. A step limit leaves the KB where it stopped, which is what the flag asks
 /// for, so nothing goes to stderr and the exit code is 0 (`read-out.md` § 9).
 #[test]
 fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
@@ -857,20 +837,13 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
 }
 
 /// **A conclusion no fact can hold is refused at the parse, whether its rule
-/// fires or not** — M1e2 S1e2.2.18, restated at M1f S1f.5.5's swap by the
-/// grammar (G-14, Q-M1f.1 (b), and S1f.5.11's and S1f.5.2's rulings).
+/// fires or not**, by the grammar (Q-M1f.1, Q-M1e2.28, Q-M1e2.22,
+/// Q-M1e2.23).
 ///
-/// Until S1e2.2.18 the line was `TypeError: expected NestedPattern at :assert
-/// top-level, got Atom` or `TypeError: an unrecognised `:assert` slot has no
-/// value to store` under `ein saturate`: a Python class, a Python IR class's
-/// name, and no word of which rule or what it wrote. From then until the swap
-/// the four shapes below loaded, and the rule's first firing stopped the run
-/// with one line in Ein's spelling naming the rule and the slot. Since the
-/// swap each is a parse error at the place, every command exit 1, with the
-/// file, line and column: a keyword pair in a conclusion (S1f.5.11), a bare
-/// `_` (S1f.5.1), a name or a variable as a whole conclusion (G-14, the paper
-/// grammar), and a string as a value (S1f.5.2), which S1e2.2.18 had made the
-/// symbol it names.
+/// Each of the four shapes below is a parse error at the place, every command
+/// exit 1, with the file, line and column: a keyword pair in a conclusion, a
+/// bare `_`, a name or a variable as a whole conclusion, and a string as a
+/// value. None is read as a symbol, and none reaches a firing.
 #[test]
 fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
@@ -908,18 +881,12 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     }
 }
 
-/// **A wildcard written as a relation is refused** — M1e2 S1e2.2.20 (W20),
-/// and at the parse since M1f S1f.5.5's swap (S1f.5.1: a bare `_` is refused
-/// in every position, Q-M1e2.22).
+/// **A wildcard written as a relation is refused** (W20), at the parse: a
+/// bare `_` is refused in every position (Q-M1e2.22).
 ///
 /// One report, from every command that reads the program: `ein saturate`,
-/// `ein solve` and `ein oracle` exit 1 and `ein test` 2. Until S1e2.2.20 a
-/// wildcard head stopped compilation with `unbound relation head
-/// ?Wildcard() in a premise of `SForm(…)``, the Python IR's spelling; from
-/// then until the swap the loader refused it with one line naming the rule
-/// and the slot. A range in a rule was refused here too, from S1e2.2.20
-/// until M1f S1f.5.3 retired the token (Ein has no ranges, Q-M1e2.24); the
-/// test below holds what it is since.
+/// `ein solve` and `ein oracle` exit 1 and `ein test` 2. Ein has no ranges
+/// (Q-M1e2.24); the test below holds what one is.
 #[test]
 fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
     let scratch = ein_corpus::Scratch::new("ein-refused-at-load");
@@ -955,21 +922,15 @@ fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
     }
 }
 
-/// **A range is the name it spells** — M1f S1f.5.5's swap, on S1f.5.4's
-/// ruling (the name rule) and S1f.5.3's (Q-M1e2.24: Ein has no numbers and no
-/// ranges), with S1f.5.11's (closed keywords) in the same commit.
+/// **A range is the name it spells**, under the name rule (Q-M1e2.24: Ein has
+/// no numbers and no ranges; Q-M1e2.28, closed keywords).
 ///
 /// `1..5`, `1..3`, `1..*` and `2..*` are each one name, in a fact, a
 /// declaration's signature, a rule's `:match` and `:assert`: the program
 /// loads, and each reads, matches and prints as written. `:card 1..*` is
 /// refused at the parse, at `:card`, a keyword no form takes; and a
 /// `(config …)` flag takes `true` or `false`, so `1..5` there is a name in a
-/// place that takes none, refused at the parse with its repairs. Until M1f
-/// S1f.5.3 a range was a token (in a fact it stored the name `1..5`, as a
-/// keyword's value it was dropped, and in a rule the loader refused it, M1e2
-/// S1e2.2.20); from S1f.5.3 to the swap `1` was an `INT` and `..5` no token,
-/// so every command refused each of these programs at the `.`, which this
-/// test held as `a_range_is_no_token`.
+/// place that takes none, refused at the parse with its repairs.
 #[test]
 fn a_range_is_the_name_it_spells() {
     let scratch = ein_corpus::Scratch::new("ein-range-is-a-name");
@@ -1035,17 +996,14 @@ fn a_range_is_the_name_it_spells() {
     }
 }
 
-/// **A string is natural-language text, and no value** — M1f S1f.5.2, on the
-/// user's rulings of 2026-11-06 (Q-M1e2.23: *"I think we should allow use
-/// strings only for NL - :why, :source, and other places where NL text or NL
-/// text template with variables lives"*; *"(p "1") has to be refused"*) and
-/// G-6 (a variable in a fact is refused).
+/// **A string is natural-language text, and no value** (Q-M1e2.23), and a
+/// variable in a fact is refused.
 ///
 /// Every command that reads a program refuses a string written as a value,
 /// `(p "1")` first, with one line at the string, `FILE:L:C: unexpected `"1"`:
-/// a string`, and S1f.5.2's note under it; and a variable in a fact, `(r ?x)`,
-/// at the variable. Until S1f.5.5's swap `(p "1")` was the fact `(p 1)` (M1e2
-/// S1e2.2.16) and `(r ?x)` held the name `?x`, printed `"?x"`. The same shapes
+/// a string`, and a note under it; and a variable in a fact, `(r ?x)`, at
+/// the variable. Neither is read as a name: `(p "1")` is not the fact `(p 1)`,
+/// nor `(r ?x)` a fact holding the name `?x`. The same shapes
 /// in every other place a value goes are rows of the grammar's table
 /// (`ein-ir/tests/grammar_pages.rs`), and the three keywords' text loads and
 /// reaches every surface that carries it
@@ -1098,20 +1056,16 @@ fn a_string_is_natural_language_and_no_value() {
     }
 }
 
-/// **A bare `_` and `?_` name nothing, in every place** — M1f S1f.5.1's
-/// T1f.5.1.3, on the user's ruling of 2026-11-06 (Q-M1e2.22: *"simple `_`
-/// reserved and refused because of potential ambiguity, but remain valid in
-/// any place in atom and variable names"*), at the parse since S1f.5.5's swap.
+/// **A bare `_` and `?_` name nothing, in every place** (Q-M1e2.22), at the
+/// parse.
 ///
 /// Every command that reads a program refuses each token in each place of
-/// S1f.5.1's table: `ein saturate`, `solve`, `oracle`, `render program`,
+/// the table below: `ein saturate`, `solve`, `oracle`, `render program`,
 /// `render rules`, `render constraints`, `render kb` and `kb save` exit 1 and
 /// `ein test` 2, each with one line at the token, `FILE:L:C: unexpected `_`: _
-/// (reserved)`, and S1f.5.1's note under it. Until the swap `_` was dropped
-/// from a fact, a nested fact and an activator in silence (W-22, W29), matched
-/// any value in a rule's pattern (W20), was read in a goal, and was refused at
-/// load as a relation, a guard's argument or a premise; `?_` was refused at
-/// the lexer. A module that writes one is refused where it is imported, with
+/// (reserved)`, and a note under it: never dropped from a fact, a nested fact
+/// or an activator in silence (W29), nor matched as any value in a rule's
+/// pattern (W20). A module that writes one is refused where it is imported, with
 /// the module's line, by every command that resolves a file-relative import:
 /// `ein solve`, `oracle`, `test`, `render kb` and `kb save` (`ein saturate`
 /// resolves none, and `render program`, `rules` and `constraints` draw the
@@ -1125,7 +1079,7 @@ fn a_bare_underscore_names_nothing_in_every_place() {
     let scratch = ein_corpus::Scratch::new("ein-underscore-names-nothing");
     let pre = "(relation p T) (relation r T T) (relation h T) (relation hit T) (relation tag T T)\n\
                (rule q (?x) :match (p ?x) :assert (hit ?x))\n";
-    // The place, as S1f.5.1's table names it, and line 3 with `{}` for the token.
+    // The place, as the table names it, and line 3 with `{}` for the token.
     let places = [
         ("a fact's argument", "(r {} a)"),
         ("a nested fact's argument", "(r (f {} a) c)"),
@@ -1253,10 +1207,8 @@ fn a_bare_underscore_names_nothing_in_every_place() {
     }
 }
 
-/// **A run of digits is a name in every place a name goes** — M1f S1f.5.4's
-/// T1f.5.4.3, on the user's rulings of 2026-11-06 (*"digits are not numbers,
-/// digits are plain names … (p 1) and (p 01) are VERY DIFFERENT facts"*) and
-/// 2026-11-07 (F8: a label is a name like any other).
+/// **A run of digits is a name in every place a name goes** (Q-M1e2.24): a
+/// label is a name like any other, and `(p 1)` and `(p 01)` are two facts.
 ///
 /// One program writes a run of digits in each place: a fact's argument and
 /// its relation, a nested fact, a stored negation, a declaration's name and
@@ -1267,8 +1219,7 @@ fn a_bare_underscore_names_nothing_in_every_place() {
 /// `(p 1)` and not on `(p 01)`, the guard `(neq ?x 1)` lets `01` through and
 /// `(absent (n 7))` holds beside `(n 01)`. A claim that names `1` where the
 /// state holds `01` is refuted, and `ein test` exits 1; naming `01` it holds.
-/// Until the swap `(p 1) (p 01)` stored one fact, the int `1`; since
-/// T1f.5.4.3 there is no int kind to read a run of digits as. A token that is
+/// There is no int kind to read a run of digits as. A token that is
 /// no name, in the same places, is refused at the parse: the grammar's table
 /// (`ein-ir/tests/grammar_pages.rs`).
 #[test]
@@ -1337,27 +1288,21 @@ fn a_run_of_digits_is_a_name_in_every_place() {
     }
 }
 
-/// **A rule shape that reads nothing is refused** — M1e2 S1e2.2.24 (W24,
-/// Q-M1e2.18), and since M1f S1f.5.5's swap at the parse wherever the grammar
-/// states the place.
+/// **A rule shape that reads nothing is refused** (W24, Q-M1e2.18), at the
+/// parse wherever the grammar states the place.
 ///
-/// Each of W24's seven witnesses, from every command that loads it: `ein
-/// saturate`, `ein solve` and `ein oracle` exit 1 and `ein test` 2. Until
-/// S1e2.2.24 each loaded and read nothing, in silence: a guard on `_`, a form,
-/// a keyword pair or a variable no premise before it binds compared as a raw
-/// node or a null; a premise that is not a form was dropped; a pattern inside
-/// a pattern whose relation no parameter binds, or whose activator bound it to
-/// a nested fact, matched nothing. From then the loader refused each with a
-/// line in Ein's spelling. Since the swap three are the grammar's, each a
-/// parse error at the place with the file, line and column (`_` as a guard's
-/// argument and as a premise, S1f.5.1; `foo` as a premise, the paper
-/// grammar's; a keyword pair as a guard's argument, S1f.5.11), and two,
-/// which a context-free grammar does not see, keep the loader's line. A
+/// Each of W24's witnesses, from every command that loads it: `ein
+/// saturate`, `ein solve` and `ein oracle` exit 1 and `ein test` 2. None
+/// loads to read nothing in silence (a guard comparing a raw node or a null,
+/// a premise dropped, a pattern that matches nothing). Three are the
+/// grammar's, each a parse error at the place with the file, line and column
+/// (`_` as a guard's argument and as a premise; `foo` as a premise; a keyword
+/// pair as a guard's argument), and two, which a context-free grammar does
+/// not see, are the loader's line. A
 /// parameter a rule binds to a nested fact through a variable is the
 /// compiler's (`ein-infer/tests/compile_semantics.rs`).
 ///
-/// **Since M1f S1f.5.7 (T1f.5.7.3) two of the seven load**, on the user's
-/// ruling of 2026-11-07 on Q-M1e2.26: `form-in-guard`, a fact that holds no
+/// **Two of the seven load** (Q-M1e2.26): `form-in-guard`, a fact that holds no
 /// variable as a guard's argument, which is a value, and
 /// `guard-before-binder`, a guard written before the premise that binds its
 /// variable, which waits for it. A form that holds a variable stays refused
@@ -1433,7 +1378,7 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             }
         }
     }
-    // Since S1f.5.7 the two shapes its ruling answers load, on every command.
+    // The two shapes Q-M1e2.26 answers load, on every command.
     for name in ["form-in-guard", "guard-before-binder"] {
         let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
         for cmd in ["saturate", "solve", "oracle"] {
@@ -1482,7 +1427,7 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
     }
     // The `:assert` shapes the test above held at the firing, and the
     // top-level relation variable: a keyword pair inside a nested conclusion
-    // at the parse since the swap (S1f.5.11), the two relation variables no
+    // at the parse (Q-M1e2.28), the two relation variables no
     // parameter binds in Ein's spelling at load.
     let scratch = ein_corpus::Scratch::new("ein-reads-nothing");
     let file = scratch.path().join("kw.ein");
@@ -1538,20 +1483,15 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
 }
 
 /// **A conclusion's variable nothing binds is refused at load, by every
-/// command, with one line** — M1f S1f.5.10, on the user's ruling of 2026-11-07
-/// on P1f.5's F13 (*"yes, file F13 with the refusal"*).
+/// command, with one line** (Q-M1e2.37).
 ///
 /// W57's four witnesses and the regression fixture, each on every command that
 /// loads a program: exit 1 (`ein test`: 2), and the loader's line, one per
 /// variable, naming the rule, the variable and the two explicit spellings, in
-/// Ein's words. Until S1f.5.10 the first and the fixture stopped every command
-/// at root's firing, *unbound var ?y in :assert — bindings: {'x': 'a'}*; the
-/// second stopped `solve` and `oracle` while `saturate` and `solve --minimal`
-/// answered; and the third and the fourth answered on every command. What
-/// loads: a variable a typed premise, an `eq` guard or a parameter binds. And
-/// W58's witness, a parameter its activator binds to a nested fact, which
-/// stopped the run with the same line until S1f.5.18 seeded the parameter,
-/// answers on every command.
+/// Ein's words, never a firing that stops one command while another answers.
+/// What loads: a variable a typed premise, an `eq` guard or a parameter
+/// binds. And W58's witness, a parameter its activator binds to a nested
+/// fact, which the compiler seeds, answers on every command.
 #[test]
 fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     let line = |head: &str, name: &str, var: &str, place: &str| {
@@ -1642,9 +1582,9 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     for fact in ["(q h1 :rule typed)", "(q b :rule", "(q House :rule every)"] {
         assert!(r.out.contains(fact), "no {fact}:\n{}", r.out);
     }
-    // W58: the one path S1f.5.10 left, a parameter its activator binds to a
-    // nested fact, which the compiler did not seed (W33's cause) until
-    // S1f.5.18; every command answers since, root holding `(hit (f a))`.
+    // W58: a parameter its activator binds to a nested fact, which the
+    // compiler seeds (W33's cause otherwise); every command answers, root
+    // holding `(hit (f a))`.
     let w58 = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein";
     for args in [
         vec!["saturate", "--dump", w58],
@@ -1663,16 +1603,13 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
 }
 
 /// **A rule that could derive an activator binding a relation parameter to a
-/// fact is refused at load, by every command, with one line** — M1f S1f.5.18,
-/// on the user's ruling of 2026-11-08 on Q-M1f.1 (b).
+/// fact is refused at load, by every command, with one line** (Q-M1f.1).
 ///
 /// The two `g14` programs, as refusal fixtures under `examples/broken/load/`
 /// and as W59's witnesses, each on every command that loads a program: exit 1
 /// (`ein test`: 2) and the loader's line, naming the deriving rule, the
-/// activated rule and the parameter. Until S1f.5.18 the first stopped every
-/// command where `r`'s plan was compiled, with the compiler's *the relation
-/// head ?R of (?R b) … is bound to the fact (a b)*, and the second answered.
-/// What loads: the zebra2 fan-out and the stdlib's, which pass a relation's
+/// activated rule and the parameter, never the compiler's line where a plan
+/// was compiled. What loads: the zebra2 fan-out and the stdlib's, which pass a relation's
 /// name on through a rule's parameter and through a marker.
 #[test]
 fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load() {
@@ -1728,8 +1665,7 @@ fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load
 }
 
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
-/// else** — [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
-/// T1a.7.5.1.
+/// else** — [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract).
 ///
 /// What it asserts is the contract: the read-out at two jobs and at `auto` is
 /// the one-job read-out, byte for byte, and `-j` is one of the options the
@@ -1759,9 +1695,8 @@ fn jobs_takes_a_count_or_auto_and_nothing_else() {
 /// **The `work` row is the summary's `work` block**, and `-s` adds the wall
 /// clock under it.
 ///
-/// Two renderings of one count is exactly where a drift hides. Since M1e2
-/// S1e2.1a.5 the walk's counters went with it, and what a run reports about
-/// its own work is the read-out's `work` row — saturations, facts beyond
+/// Two renderings of one count is exactly where a drift hides. What a run
+/// reports about its own work is the read-out's `work` row — saturations, facts beyond
 /// root, route-1 layers — which `--json-summary` writes as `work`.
 #[test]
 fn the_work_row_is_the_summarys_work_block() {
@@ -1833,9 +1768,9 @@ fn the_trace_goes_to_a_file_and_the_answer_to_stdout() {
 /// One object per run, and `schema` first: a consumer that reads
 /// `ein-summary/2` knows what the rest means, and one that reads something
 /// else can refuse instead of guessing. `root.hypgen`'s first four keys are
-/// the invariant behind them — `raw == emitted + Σ filtered` — and since M1e2
-/// S1e2.2.8 `outside`, what the universe leaves out, is the fifth, and since
-/// S1e2.2.10 `types_as_objects`, a type the untyped rung binds, the sixth.
+/// the invariant behind them — `raw == emitted + Σ filtered` — `outside`,
+/// what the universe leaves out, is the fifth, and `types_as_objects`, a type
+/// the untyped rung binds, the sixth.
 #[test]
 fn the_json_summary_declares_its_schema_and_its_block_shape() {
     let scratch = Scratch::new("schema");
@@ -1876,15 +1811,11 @@ fn the_json_summary_declares_its_schema_and_its_block_shape() {
 }
 
 /// **A goal binding of digits is a JSON *string*** — at any width, and as
-/// written. Restated at M1f S1f.5.5's swap (Q-M1f.340).
+/// written (Q-M1f.340).
 ///
-/// Until the swap a goal binding was the *stored* argument, so an IR `INT` was
-/// an integer and writing it as `"8"` was a type error a consumer could not
-/// undo: S1a.6.6's fuzzer found it on a two-line program, and the wide literal
-/// was carried as an exact numeric literal rather than clamped to an `i64`.
-/// Since the swap a run of digits is a name (S1f.5.4's ruling), and every name
-/// is a JSON string, so that `(p 007)` and `(p 7)`, two names, stay two in the
-/// summary.
+/// A run of digits is a name (Q-M1e2.24), and every name is a JSON string, so
+/// that `(p 007)` and `(p 7)`, two names, stay two in the summary, and a wide
+/// run of digits is neither clamped to an `i64` nor written as a number.
 #[test]
 fn a_goal_binding_of_digits_is_a_json_string() {
     let scratch = Scratch::new("int-binding");
@@ -1898,7 +1829,7 @@ fn a_goal_binding_of_digits_is_a_json_string() {
     .ok();
     let text = read(&path);
     let j: J = serde_json::from_str(&text).expect("the summary is JSON");
-    // Since M1e2 S1e2.1a.5 a goal's rows are its query's projection classes'.
+    // A goal's rows are its query's projection classes'.
     let rows = j["queries"][0]["classes"][0]["rows"]
         .as_array()
         .expect("the goal bindings");
@@ -2019,7 +1950,7 @@ fn the_json_summary_is_order_free_and_reproducible() {
 /// **A stopped run still writes its summary**, and says why it stopped.
 ///
 /// The run that most needs a machine-readable record is the one that did not
-/// finish. Since M1e2 S1e2.1a.5 a budget stops a run with an answer — what it
+/// finish. A budget stops a run with an answer — what it
 /// established, and bounds — so it exits 0, writes one `note:` on stderr, and
 /// its summary says `exhausted false` and names the budget. A `-T` abort is
 /// the one stop that is not an answer: it exits 2 and writes no summary,
@@ -2071,8 +2002,7 @@ fn a_stopped_run_writes_its_summary_and_says_why() {
 /// is at event k" identifies one event rather than a range; and the last event
 /// is the `region` line, carrying what was asked, R as the run established
 /// it and the work — so a truncated log is detectable and a complete one needs
-/// no second artefact to interpret. It was the walk's `verdict` until M1e2
-/// S1e2.1a.5.
+/// no second artefact to interpret.
 #[test]
 fn the_event_stream_is_dense_and_ends_in_the_region() {
     let scratch = Scratch::new("dense");
@@ -2141,10 +2071,9 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// notice a kind that stopped being emitted by a file **not** listed here,
 /// which is why each entry names its reason.
 ///
-/// It had a third column, the environment a row needed, for the walk's tree;
-/// a kind reachable only under an environment variable was a kind no
-/// default-environment sweep can see, which is how `traversal` shipped at M1d
-/// S1d.10.6 and reached M1e undocumented (`SE-M3`).
+/// No row needs an environment variable: a kind reachable only under one is a
+/// kind no default-environment sweep can see, and so one that can ship
+/// undocumented.
 const EVENT_COVER: [(&str, &str); 6] = [
     (
         "examples/branching/01_saturate_only.ein",
@@ -2180,7 +2109,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
 ];
 
 /// Where the `--events` schema lives: the protocol is a product surface — a
-/// debugging tool, and M20's likely feed.
+/// debugging tool, and a front end's feed.
 const EVENTS_DOC: &str = "docs/ein/ein.rs/events.md";
 
 /// Every event kind the schema names, read out of the document itself.
@@ -2216,9 +2145,7 @@ fn schema_kinds() -> BTreeSet<String> {
     kinds
 }
 
-/// **Every kind the schema defines is emitted by some corpus fixture.** The
-/// walk's three, which no command emitted since M1e2 S1e2.1a.5 and this test
-/// held unreached, left the schema with the walk at S1e2.1c.5.
+/// **Every kind the schema defines is emitted by some corpus fixture.**
 ///
 /// A kind nothing reaches is a kind the engine can silently stop emitting
 /// while the tier that should catch it stays green — the same shape of problem
@@ -2249,10 +2176,8 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
         }
     }
     let schema = schema_kinds();
-    // The row count: the three payload tables have 17 kind cells (the walk's
-    // `verdict` left at M1e2 S1e2.1a.5 and `region` arrived at T1e2.1a.5.2;
-    // its `nogood`, `writeback` and `traversal` left at S1e2.1c.5, and `warn`
-    // with its flag at S1e2.2.5), so a removed kind has to be typed here too.
+    // The row count: the three payload tables have 17 kind cells, so a
+    // removed kind has to be typed here too.
     assert!(
         schema.len() >= 17,
         "EVENTS.md parsed to only {} kinds — the table shape moved: {schema:?}",
@@ -2395,7 +2320,7 @@ fn the_event_stream_does_not_depend_on_interning_order() {
         let buffer = Buffer::new();
         let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
         // `ein solve FILE --events`: a describe, whose stream narrates root and
-        // every node the route visits (the walk's stream until M1e2 S1e2.1c.5),
+        // every node the route visits,
         // each dead one with its core, as `--events` asks.
         let opts = ein_infer::explore::Options {
             cores: ein_infer::region::Cores {
@@ -2435,14 +2360,14 @@ fn the_event_stream_does_not_depend_on_interning_order() {
 /// these four tests exist for.
 const GRAMMAR: &str = "utils/vscode-ein/ein.tmLanguage.json";
 
-/// The closed declarator set — P1.7c, plus S1.5.9's `macro`, S1.8.A2's
-/// `import` and M1e2 S1e2.1a.4's `solve`. Source of truth:
+/// The closed declarator set, `macro`, `import` and `solve` among them.
+/// Source of truth:
 /// [`docs/ein/user/reference/reserved-names.md`](../../../../docs/ein/user/reference/reserved-names.md).
 const DECLARATORS: [&str; 9] = [
     "config", "hrule", "import", "macro", "query", "relation", "rule", "solve", "trace",
 ];
 
-/// The wrapper heads S1.7c.4 removed. They are ordinary fact heads now and
+/// The block-wrapper heads the language does not have. They are ordinary fact heads and
 /// must be highlighted by none of the three reserved scopes.
 const REMOVED_WRAPPERS: [&str; 4] = ["ontology", "facts", "reasoning", "rules"];
 
@@ -2572,7 +2497,7 @@ fn the_grammars_declarators_are_the_closed_set() {
 /// machine.
 ///
 /// **One name is highlighted that `STRUCTURAL` does not hold**: `open`, the
-/// verdict atom (M1d S1d.2.3). It is in `RESERVED` — no declarator may bind
+/// verdict atom. It is in `RESERVED` — no declarator may bind
 /// it — but deliberately not in `STRUCTURAL`, because a structural primitive
 /// is rule-*body* vocabulary the compiler, matcher or detector reads, and
 /// `open` is none of those: it appears only as an `:assert` conclusion and is
@@ -2614,11 +2539,10 @@ fn the_grammar_tracks_the_primitive_and_predicate_registries() {
 
 /// **The removed block wrappers are not keywords.**
 ///
-/// `ontology` / `facts` / `reasoning` / `rules` were block heads until
-/// S1.7c.4 and are ordinary relation names now — a file may declare
-/// `(relation facts …)` and mean it. Highlighting one as a keyword would tell
-/// the reader the language still has block structure, which is the specific
-/// regression this guards.
+/// `ontology` / `facts` / `reasoning` / `rules` are ordinary relation names,
+/// not block heads — a file may declare `(relation facts …)` and mean it.
+/// Highlighting one as a keyword would tell the reader the language has
+/// block structure, which is what this guards.
 #[test]
 fn the_removed_block_wrappers_are_not_highlighted_as_keywords() {
     let g = grammar();
@@ -2643,7 +2567,7 @@ fn the_removed_block_wrappers_are_not_highlighted_as_keywords() {
     assert!(declarators.contains("rule") && !declarators.contains("rules"));
 }
 
-// ── `--layer-progress` — M1d P1d.10 ────────────────────────────────
+// ── `--layer-progress` ───────────────────────────────────────────────
 
 /// The `--layer-progress` rows on stderr: `layer N: V visited — D dead, O
 /// owing, R in R · F facts`, each as its layer and its five counts.
@@ -2668,9 +2592,9 @@ fn layer_lines(err: &str) -> Vec<(u64, [u64; 5])> {
 /// **The layer rows' arithmetic closes**, and adds up to the `work` row.
 ///
 /// The flag exists so a reader can watch a run that takes minutes, and a
-/// progress line nobody can add up is a progress line nobody can trust. Since
-/// M1e2 S1e2.1a.5 a row is a route's layer — since S1e2.1c.2 the state
-/// route's on a monotone program: root's, then one per state size extended.
+/// progress line nobody can add up is a progress line nobody can trust. A row
+/// is a route's layer — the state route's on a monotone program: root's, then
+/// one per state size extended.
 /// Every node visited is dead, owing or in R, and the layers' visits and facts
 /// are the run's saturations and facts.
 #[test]
@@ -2741,10 +2665,10 @@ fn layer_progress_is_verbose_without_the_nodes() {
 // ── An empty count qualifies itself ────────────────────────────────
 
 /// **A run that stopped does not say R is empty**, and one that exhausted
-/// says which kind of empty it is — M1d T1d.10.5.2b's rule, read under R.
+/// says which kind of empty it is.
 ///
-/// `saturation/type-exclusivity/pets.ein` is the fixture because the walk
-/// called it *contradictory* at `-m 5` and it has 11 339 states. Stopped by
+/// `saturation/type-exclusivity/pets.ein` is the fixture because it has many
+/// states, and a run cut short of them could read as an empty R. Stopped by
 /// its budget before layer 1, a description has R's lower bounds and no
 /// `empty` row, and a dead-alone count only of what it visited. The control,
 /// `ein-bugs/zebra2-bad.ein`, is an exhausted empty R with a real one-fact
@@ -2795,7 +2719,7 @@ fn a_stopped_run_does_not_report_r_empty() {
     );
 }
 
-// ── M1e S1e.3.5 — EH-M2: the override proves itself ────────────────
+// ── the override proves itself ───────────────────────────────────────
 
 /// **The refusal reaches a user through the environment**, which is the half
 /// an in-process test cannot show.
@@ -2824,19 +2748,19 @@ fn a_stdlib_override_without_the_marker_is_refused_through_the_environment() {
     assert_eq!(ok.code, 0, "{}{}", ok.out, ok.err);
 }
 
-// ── The container sniff, in either feature set — M1e S1e.4.4, `EH-L2` ──
+// ── The container sniff, in either feature set ───────────────────────
 
 /// **A file that starts like a container but is not one is text in either
 /// build.**
 ///
-/// `common.rs` sniffed **five** bytes where `ein_einb::is_einb` requires
-/// **eight**, so `EINB\0xyz` was *"a `.einb` container and this build has no
-/// `einb` feature"* under `--no-default-features` and a UTF-8 or parse error
-/// under the default one — two shipped feature sets disagreeing on garbage
-/// input, on the surface a generated program or a pipeline hits first.
+/// A sniff of **five** bytes where `ein_einb::is_einb` requires **eight**
+/// would read `EINB\0xyz` as *"a `.einb` container and this build has no
+/// `einb` feature"* under `--no-default-features` and as a UTF-8 or parse
+/// error under the default one — two shipped feature sets disagreeing on
+/// garbage input, on the surface a generated program or a pipeline hits
+/// first.
 ///
-/// There is one predicate now (`ein_ir::read::looks_like_einb`, `ein-cli`'s
-/// `common` until M1f S1f.5.22) and one constant (`ein_ir::read::EINB_MAGIC`,
+/// There is one predicate (`ein_ir::read::looks_like_einb`) and one constant (`ein_ir::read::EINB_MAGIC`,
 /// compared against `ein_einb::header::MAGIC` by
 /// `einb_cli::the_two_magic_constants_agree`). This is the **behaviour** half,
 /// and it is deliberately not in `einb_cli.rs`, which is
@@ -2861,8 +2785,7 @@ fn a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build() 
             "`ein {sub}` called a five-byte prefix a container: {:?}",
             r.err
         );
-        // The parse error's first line, since M1f S1f.5.5's swap the token
-        // it found (`unexpected input` until then).
+        // The parse error's first line, which names the token it found.
         assert!(
             r.err.contains(&format!("{path}:1:1: unexpected `EINB")),
             "`ein {sub}` should have read it as text and failed to parse it: {:?}",
@@ -2871,8 +2794,7 @@ fn a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build() 
     }
 }
 
-/// **The summary escapes non-ASCII where the event stream does not** — M1e
-/// S1e.4.8, `MA-L3`.
+/// **The summary escapes non-ASCII where the event stream does not.**
 ///
 /// `--events` emits literal UTF-8, `--json-summary` emits `\uXXXX`. The
 /// difference is **accepted**, with the reason at `summary::write` — and this
@@ -2920,8 +2842,7 @@ fn the_summary_escapes_non_ascii_where_the_event_stream_does_not() {
 // ── A keyword is a whole word ──────────────────────────────────────
 
 /// **A name that starts with a keyword answers as its twin does, on every
-/// command** — M1e2 S1e2.2.22 (W22), on the user's ruling of 2026-11-05 on
-/// Q-M1e2.17.
+/// command** (W22, Q-M1e2.17).
 ///
 /// Each of W22's fourteen witnesses writes a name that starts with a reserved
 /// word (`neqw`, `orz`, `andz`, `notw`, `relationship`) in the place the
@@ -2931,8 +2852,8 @@ fn the_summary_escapes_non_ascii_where_the_event_stream_does_not() {
 /// stdout and the first line of its stderr, with the twin's path and name
 /// read back as the witness's, the read-out's column padding collapsed and
 /// `ein test`'s timing dropped, and `ein saturate --dump` from its dump on.
-/// Until the stage the parser split the name, `(neqw ?x)` into the guard
-/// `(neq w ?x)`, and every pair differed.
+/// A parser that split the name, `(neqw ?x)` into the guard `(neq w ?x)`,
+/// would make every pair differ.
 #[test]
 fn a_name_that_starts_with_a_keyword_answers_as_its_twin_does() {
     const WITNESSES: [(&str, &str); 14] = [
@@ -3049,19 +2970,18 @@ fn a_name_that_starts_with_a_keyword_answers_as_its_twin_does() {
     );
 }
 
-// ── A core search cut at its budget says so — M1e2 S1e2.2.23 (W23) ────────
+// ── A core search cut at its budget says so (W23) ────────────────────────
 
 /// **A core whose search was cut says so on every surface that prints it, and
-/// one whose search was not prints nothing new** — M1e2 S1e2.2.23, W23: the
-/// core search keeps its budget, `explain::ExplanationBudget`, and a core it
+/// one whose search was not prints nothing new** (W23): the core search
+/// keeps its budget, `explain::ExplanationBudget`, and a core it
 /// cut is qualified as cut, at the cap it stopped at.
 ///
 /// `core-search-cut.ein`'s `(A k)` has 256 environments, past the 64 per
 /// fact the search keeps, and its root core is ten facts where eight
 /// suffice; `core-search-cut-5.ein`, the same shape with five pairs, is under
-/// the budget. Until S1e2.2.23 every surface printed the ten facts with
-/// nothing to say the search was cut: `region.rs` kept the search's frontier
-/// and dropped `Explanation::exhausted`.
+/// the budget. Every surface that prints the ten facts says the search was
+/// cut: `region.rs` keeps `Explanation::exhausted` beside the frontier.
 #[test]
 fn a_cut_core_says_so_on_every_surface_and_an_uncut_one_does_not() {
     const ROW: &str = "  core search       cut at its budget of 64 environments per fact: a smaller core may exist\n";
@@ -3180,18 +3100,15 @@ fn a_cut_core_says_so_on_every_surface_and_an_uncut_one_does_not() {
     assert_eq!(checked.get(), 38, "the surfaces checked");
 }
 
-// ── Every member of N has its core, past the limit too — M1f S1f.5.12 ─────
+// ── Every member of N has its core, past the limit too ───────────────────
 
 /// **Every member of N a describing run prints has its core, past
-/// `--region-limit` too, and it is the core the walk takes eagerly** — M1f
-/// S1f.5.12, the user's ruling of 2026-11-08 on P-15, (c). `--dump-answer`
-/// and `--trace` ask for N's cores, so the run takes none during its walk and
-/// a core for each member of N after it, through the node function against
-/// the walk's snapshot. Until S1f.5.12 a run past the limit printed each
-/// member it met with a `null` core and rules beside `core_status:
-/// "not-kept"`, and `--trace` said *Core: not kept: the run stopped at
-/// `--region-limit`.* (M1e2 S1e2.3.9): `lattice/06_friends_tables.ein`, 68 of
-/// 68, and `past-limit-lines.ein`, 15 of 15.
+/// `--region-limit` too, and it is the core the walk takes eagerly**.
+/// `--dump-answer` and `--trace` ask for N's cores, so the run takes none
+/// during its walk and a core for each member of N after it, through the node
+/// function against the walk's snapshot: no member is printed with a `null`
+/// core and `core_status: "not-kept"`, on `lattice/06_friends_tables.ein`
+/// nor on `past-limit-lines.ein`.
 ///
 /// `past-limit-lines.ein` (W27's witness) is the control: past the default
 /// limit its run stops with the 15 members of N met, and with
@@ -3295,12 +3212,11 @@ fn every_member_of_n_has_its_core_past_the_limit_too() {
     assert_eq!(eager, 15, "past-limit-lines: N's members in nodes.json");
 }
 
-/// **A goal's empty row says whether the goal has a variable** — M1f S1f.5.7
-/// (S-18): *the goal holds: it has no variable* is printed only for a goal
+/// **A goal's empty row says whether the goal has a variable**: *the goal
+/// holds: it has no variable* is printed only for a goal
 /// with no variable, `(neq a b)`; a goal whose every variable is an `(absent
 /// …)`'s own binds none, and says so; and a goal whose guard has a free
-/// variable prints a row per value, where it printed *it has no variable*
-/// until S1f.5.7.
+/// variable prints a row per value, not *it has no variable*.
 #[test]
 fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
     let scratch = ein_corpus::Scratch::new("ein-goal-row");
@@ -3343,18 +3259,16 @@ fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
 }
 
 /// **An empty `:match` fires, and an empty conclusion asserts nothing, on every
-/// command** — M1f S1f.5.9, on the user's ruling of 2026-11-07 on P1f.5's F12
-/// (*"1 fire; 2 same; 3 reject (and) while it is the same as () and `and`
-/// should have arguments"*).
+/// command** (Q-M1e2.36).
 ///
 /// W31's four witnesses and W34's, each on every command that answers a
 /// program: `()` is the empty conjunction, which is true, so a rule whose
 /// `:match` is `()` fires once at root, or once per activator fact, with only
 /// its parameters bound, and an hrule's proposes its conclusion likewise; and
-/// `:assert ()` concludes nothing. Until S1f.5.9 `()` was a premise over the
-/// parser's synthetic `#empty`, which no fact holds, so each rule never fired
-/// and the hrule proposed nothing, in silence (W31), and `:assert ()` stored a
-/// fact under that head, whose name joined H (W34).
+/// `:assert ()` concludes nothing. `()` is no premise over the parser's
+/// synthetic `#empty`, which no fact holds and which would never fire the rule
+/// in silence (W31), and `:assert ()` stores no fact under that head, whose
+/// name would join H (W34).
 #[test]
 fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
     let w = |name: &str| format!("examples/ein-bugs/wrong-answers/{name}.ein");
@@ -3402,7 +3316,7 @@ fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
         }
     }
     // The dead root: the empty core, `r` its rule, on every text surface
-    // that prints a core (Q-M1f.48), where until S1f.5.9 none was empty.
+    // that prints a core (Q-M1f.48).
     let empty = format!(
         "{}, {}",
         ein_infer::explain::EMPTY_CORE,
@@ -3451,17 +3365,15 @@ fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
 }
 
 /// **A relation parameter that can hold `eq` and heads a form of another arity
-/// is refused at load, by every command, with one line** — M1f S1f.5.9's
-/// T1f.5.9.4, the shape S1f.5.18 found (Q-M1f.46), and a written fact of `eq`
-/// at another arity beside it (Q-M1f.47).
+/// is refused at load, by every command, with one line** (Q-M1f.46), and a
+/// written fact of `eq` at another arity beside it (Q-M1f.47).
 ///
 /// W60's four witnesses and W61's, each on every command that loads a program:
-/// exit 1 (`ein test`: 2), and the loader's line in Ein's words, where until
-/// S1f.5.9 the first stopped every command where the plan was compiled, with
-/// the compiler's arity line in the Python IR's spelling; the second and the
-/// third stopped `ein solve` while `ein saturate` answered; and the fourth and
-/// W61's stored a fact of `eq` at one argument. What loads: the same parameter
-/// heading a form of two arguments, `eq`'s guard (S1f.5.7), and a declared
+/// exit 1 (`ein test`: 2), and the loader's line in Ein's words, not a
+/// compiler's line where a plan is compiled, nor one command stopping where
+/// another answers, nor a stored fact of `eq` at one argument. What loads:
+/// the same parameter heading a form of two arguments, `eq`'s guard
+/// (Q-M1e2.26), and a declared
 /// relation of another arity, which matches nothing, as the pattern written
 /// directly does.
 #[test]
@@ -3545,10 +3457,9 @@ fn eq_at_another_arity_is_refused_at_load() {
     assert!(!r.out.contains(":rule one"), "{}", r.out);
 }
 
-/// What the Python IR's spelling and the compiler's history put on stderr until
-/// M1f S1f.5.21, none of which a command prints since (the close review's
-/// finding 1): the class, the IR's repr, a position as `Loc(…)`, a stage id and
-/// *the M1 compiler*.
+/// What no command prints on stderr: a Python IR's spelling and a compiler's
+/// history — the class, the IR's repr, a position as `Loc(…)`, a development
+/// stage's id and a milestone's compiler.
 const PYTHON_SPELLINGS: [&str; 7] = [
     "CompileError",
     "SForm(",
@@ -3594,24 +3505,19 @@ fn every_command(file: &str, einb: &str) -> Vec<(Vec<String>, i32)> {
 }
 
 /// **A refusal the compiler made reads the same on every command, in Ein's
-/// words, and is made at load** — M1f S1f.5.21, on the user's ruling on the
-/// close review's finding 1 (*"new stage in p1f.5"*): W62, W63, W64 and W65.
+/// words, and is made at load**: W62, W63, W64 and W65.
 ///
 /// Each witness on every command that reads a program, seventeen of them, the
 /// views and `kb save` among them: exit 1 (`ein test`: 2) and one first line,
 /// the loader's, behind `kb load error: `, with none of the Python IR's
-/// spelling on stderr. Until S1f.5.21 the compiler refused each where it
-/// compiled the plan, printed four ways (bare, behind
-/// `ein.inference.compile.CompileError:`, behind the file's name, and `solve`
-/// with the class where `oracle` printed it bare), while a command that never
-/// compiled the plan answered: a commitment's activator, an hrule, a goal, a
-/// rule no activator reached, and the four views and `kb save` always.
+/// spelling on stderr, not a refusal made where a plan is compiled, printed
+/// several ways, while a command that never compiles the plan answers (a
+/// commitment's activator, an hrule, a goal, a rule no activator reaches,
+/// the four views and `kb save`).
 ///
-/// The last compile refusal a program reached, `(eq ?x)` in a macro's body,
-/// is the loader's since M1f S1f.5.24 (W66, Q-M1f.80): one line on every
-/// command, its position the macro body's, the views and `kb save` refusing it
-/// too. Until then it was refused only where the rule was compiled, and the
-/// views and `kb save` accepted the program; every shape a macro's body
+/// `(eq ?x)` in a macro's body is the loader's refusal too (W66, Q-M1f.80):
+/// one line on every command, its position the macro body's, the views and
+/// `kb save` refusing it too; every shape a macro's body
 /// malforms is held on every command by `macro_bodies.rs`.
 #[test]
 fn a_compile_refusal_reads_the_same_on_every_command() {

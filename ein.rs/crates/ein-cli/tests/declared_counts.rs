@@ -1,14 +1,12 @@
 //! **A form headed by a declared relation has as many arguments as the
-//! declaration has types** — M1f S1f.6.23 (W89), on the user's ruling of
-//! 2026-11-12 on question 3 of P1f.6's `questions.md`, *"(a)"*; Q-M1f.201 to
-//! .204 defaulted.
+//! declaration has types** (W89, Q-M1f.315, Q-M1f.201 to .204).
 //!
-//! Until S1f.6.23 no form was held to its relation's declaration: `(likes
-//! Bob)` beside `(relation likes Person Drink)` was stored, a premise
-//! `(likes ?who)` matched nothing, a conclusion `(fan ?who ?what)` derived
-//! facts no premise of the declared count read, and the calculator's `(add (n
-//! z 5))` and a `std.math.num9` number of eight digits were answered by silence,
-//! exit 0. Since then the loader refuses each (`ein_ir::from_ir`'s
+//! A form not held to its relation's declaration would act in silence:
+//! `(likes Bob)` beside `(relation likes Person Drink)` stored, a premise
+//! `(likes ?who)` matching nothing, a conclusion `(fan ?who ?what)` deriving
+//! facts no premise of the declared count reads, and the calculator's `(add
+//! (n z 5))` and a `std.math.num9` number of eight digits answered by
+//! silence, exit 0. The loader refuses each (`ein_ir::from_ir`'s
 //! `refuse_wrong_counts`), one line a form, at the form, the same on every
 //! command.
 //!
@@ -430,7 +428,7 @@ fn the_registers_witnesses_are_refused_on_every_command() {
 
 /// An imported declaration is held as the program's own is: listed, under
 /// `:as`, where the relation has the qualified name, and from a file beside
-/// the program. A list names what the program writes since M1f S1f.6.35: an
+/// the program. A list names what the program writes: an
 /// `add` the program does not list is its own relation, which nothing
 /// declares.
 #[test]
@@ -526,7 +524,7 @@ fn what_is_not_a_declared_relations_form_loads() {
             "a-solve-list-of-relations",
             "(solve :hypothesis-relations (likes fan flag))\n",
         ),
-        // A macro no rule calls is not read (S1f.5.24's rule).
+        // A macro no rule calls is not read (Q-M1f.67).
         (
             "an-unused-macro",
             "(macro liked (?a) (likes ?a) :why \"{?a} is liked\")\n",

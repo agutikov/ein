@@ -1,11 +1,10 @@
-//! `./run_tests.sh --nightly` runs what the nightly runs — M1e2 S1e2.3.6.
+//! `./run_tests.sh --nightly` runs what the nightly runs.
 //!
-//! `gate_steps.rs`' sibling, for the other workflow. Until
-//! S1e2.3.6 nothing local ran `.github/workflows/nightly.yml`'s steps, and the
-//! nightly failed on every run from 2026-10-17 to 2026-11-03 while the
-//! per-commit gate here stayed green: it reports to GitHub and to nothing in
-//! this tree. `--nightly` is the local copy of its step list, and this file is
-//! what keeps the copy a copy.
+//! `gate_steps.rs`' sibling, for the other workflow. The nightly reports to
+//! GitHub and to nothing in this tree, so without a local copy of
+//! `.github/workflows/nightly.yml`'s steps it could fail on every run while
+//! the per-commit gate here stays green. `--nightly` is the local copy of its
+//! step list, and this file is what keeps the copy a copy.
 //!
 //! ## What is compared
 //!
@@ -24,11 +23,9 @@
 //! with no marker to forget. A `run: |` block is refused: a step is one line
 //! here, so the shell's copy of it is one statement.
 //!
-//! ## The dev host's list (M1f S1f.5.27)
+//! ## The dev host's list
 //!
-//! The user's ruling of 2026-11-10, *"reduce nightly job, remove long running
-//! tests, we will eventually run them on dev host, retain critical tests in
-//! CI"*: the nightly keeps the steps that guard an answer or a contract no
+//! The nightly keeps the steps that guard an answer or a contract no
 //! per-commit step guards, each at a budget that fits in 5 min on the runner,
 //! and `./run_tests.sh --dev-host` runs every one of them at full budget and
 //! the steps that left. Its banners are `dev_host_step "…"`, read
@@ -40,10 +37,9 @@
 //! taken out of all three copies lowers the list under its floor.
 //! [`the_fuzzer_runs_at_each_tiers_budget`] pins the two budgets, which the
 //! diff reads past, and [`every_slow_half_runs_on_a_tier`] fails on a test
-//! target that reads `EIN_CORPUS_SLOW` and that neither list runs with it, as
-//! three did until S1f.5.27.
+//! target that reads `EIN_CORPUS_SLOW` and that neither list runs with it.
 //!
-//! ## The shards (M1f S1f.6.39)
+//! ## The shards
 //!
 //! A nightly step over five
 //! minutes at the runner's four threads is split into parallel jobs, each a
@@ -85,9 +81,8 @@ const NOT_NIGHTLY_STEPS: &[(&str, &str)] = &[
     ),
 ];
 
-/// The dev host's steps that the nightly does not run, with why: each left the
-/// nightly at M1f S1f.5.27, or never ran in it, and is over 5 min on the
-/// runner or measures rather than checks. A step that leaves the
+/// The dev host's steps that the nightly does not run, with why: each is over
+/// 5 min on the runner or measures rather than checks. A step that leaves the
 /// nightly and stays in `--dev-host` is named here, or
 /// [`the_dev_host_runs_the_nightly_and_what_left_it`] fails.
 const DEV_HOST_ONLY: &[(&str, &str)] = &[
@@ -114,8 +109,8 @@ const DEV_HOST_ONLY: &[(&str, &str)] = &[
     ),
 ];
 
-/// The fuzzer's budget on the dev host: P1a.1's acceptance number, which the
-/// nightly ran until S1f.5.27 and runs at a budget that fits since.
+/// The fuzzer's budget on the dev host, a million cases; the nightly runs it
+/// at a budget that fits.
 const DEV_HOST_FUZZ_ITERS: u64 = 1_000_000;
 
 /// The per-commit tier's budget, `EIN_FUZZ_ITERS`' default in
@@ -252,10 +247,8 @@ fn the_nightly_runs_what_the_workflow_runs() {
         "`run_tests.sh --nightly` and nightly.yml no longer run the same steps \
          in the same order.\n  --nightly: {local:#?}\n  nightly.yml: {nightly:#?}"
     );
-    // Not vacuous: twelve at S1e2.3.6 (nine in `deep-corpus`, two fuzz
-    // seeds, one bench), fourteen at S1f.5.13, and twelve again at S1f.5.27,
-    // which moved four steps to the dev host and added two; a parse that
-    // matched nothing against nothing would pass the assertion above.
+    // Not vacuous: a parse that matched nothing against nothing would pass
+    // the assertion above.
     assert!(
         local.len() >= 12,
         "only {} steps parsed out of run_tests.sh — the parse, not the \
@@ -286,8 +279,7 @@ fn every_exception_is_a_step_the_workflow_has() {
 /// **The slow cells run at release speed, with `EIN_CORPUS_SLOW`.** The
 /// timing half of `corpus_cli::the_slow_flag_still_describes_the_sweep` exists
 /// only under that flag, and is calibrated on release codegen, which the
-/// gate profile is (`--release` until M1f S1f.6.39, which gave every test
-/// step the gate profile: release codegen with the debug checks); if both
+/// gate profile is (release codegen with the debug checks); if both
 /// copies lost the flag together, the diff above would pass and the band
 /// would stop being asserted anywhere.
 #[test]
@@ -301,12 +293,10 @@ fn the_slow_cells_run_under_the_gate_profile_with_the_flag() {
     );
 }
 
-/// **The round trip's slow half runs in the nightly** (M1f S1f.5.13, the
-/// user's ruling of 2026-11-08 on P-16). Per commit `answer_round_trip` leaves
-/// out the `slow` and `heavy_dump` entries, and only `EIN_CORPUS_SLOW` brings
-/// them back, so a step that lost the flag in both copies would round-trip
-/// them nowhere, as no tier did before the stage, and the diff above would
-/// pass.
+/// **The round trip's slow half runs in the nightly.** Per commit
+/// `answer_round_trip` leaves out the `slow` and `heavy_dump` entries, and
+/// only `EIN_CORPUS_SLOW` brings them back, so a step that lost the flag in
+/// both copies would round-trip them nowhere, and the diff above would pass.
 #[test]
 fn the_round_trips_slow_half_runs_with_the_flag() {
     let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
@@ -319,11 +309,11 @@ fn the_round_trips_slow_half_runs_with_the_flag() {
     );
 }
 
-/// **The tests' scratch is checked** (S1e2.3.6, after S1e2.3.5). In every
+/// **The tests' scratch is checked.** In every
 /// job that runs `check_test_scratch.py`, every `cargo test` runs under
 /// `TMPDIR="${GATE_TMP}"`, and the check comes after the last of them; and
 /// every job with a `cargo test` under that `TMPDIR` runs the check, so the
-/// slow cells and the shards (S1f.6.39), which no per-commit run reaches,
+/// slow cells and the shards, which no per-commit run reaches,
 /// leave nothing either.
 #[test]
 fn every_test_step_runs_under_the_checked_tmpdir() {
@@ -386,7 +376,7 @@ fn unsharded(step: &str) -> (String, Option<(usize, usize)>) {
     )
 }
 
-/// **Every sharded step runs every one of its shards** (M1f S1f.6.39): a
+/// **Every sharded step runs every one of its shards**: a
 /// step the nightly runs with `EIN_TEST_SHARD="k/n"` is run for
 /// each `k` from 1 to `n`, one `n`, once each, so every program its sweep
 /// deals is in a shard a job runs. The dev host's list is held to the
@@ -416,8 +406,8 @@ fn every_sharded_step_runs_every_shard() {
     }
 }
 
-/// **The dev host runs the nightly, and every step that left it** (M1f
-/// S1f.5.27). Every step of the nightly, matrix expanded, is a step of
+/// **The dev host runs the nightly, and every step that left it.** Every step
+/// of the nightly, matrix expanded, is a step of
 /// `--dev-host`, in the nightly's order and at the dev host's fuzz budget; the
 /// others are exactly [`DEV_HOST_ONLY`], in its order.
 #[test]
@@ -450,9 +440,7 @@ fn the_dev_host_runs_the_nightly_and_what_left_it() {
          DEV_HOST_ONLY names with why, in its order: a step that left the \
          nightly is named there, and a name with no step goes"
     );
-    // A floor, so a step taken out of all three copies is seen: seventeen at
-    // S1f.5.27, the nightly's fourteen of that day at their budgets and the
-    // three slow halves it placed.
+    // A floor, so a step taken out of all three copies is seen.
     assert!(
         dev.len() >= 17,
         "only {} steps parsed out of run_tests.sh's --dev-host: {dev:#?}",
@@ -460,10 +448,10 @@ fn the_dev_host_runs_the_nightly_and_what_left_it() {
     );
 }
 
-/// **Each tier sets the fuzzer's budget** (M1f S1f.5.27). The diff
+/// **Each tier sets the fuzzer's budget.** The diff
 /// above reads past the budget, so it is pinned here: every fuzz step of the
 /// nightly sets one above the per-commit default and below the dev host's, and
-/// every fuzz step of the dev host sets P1a.1's million. A budget dropped from
+/// every fuzz step of the dev host sets a million. A budget dropped from
 /// a step would run it at the per-commit tier's 2 000 with every list still
 /// agreeing.
 #[test]
@@ -502,8 +490,8 @@ fn the_fuzzer_runs_at_each_tiers_budget() {
 /// `TMPDIR="${GATE_TMP}"` and is followed by a check, nothing after the last
 /// one runs under it, and the steps that left the nightly or never ran in it
 /// are among the checked ones, so the slow halves only the dev host runs
-/// leave nothing either. Several checks since M1f S1f.6.39: one a job, as
-/// the nightly's jobs have, the shards' among them.
+/// leave nothing either. Several checks: one a job, as the nightly's jobs
+/// have, the shards' among them.
 #[test]
 fn every_dev_host_test_step_runs_under_the_checked_tmpdir() {
     let dev = shell_steps(&read("run_tests.sh"), "dev_host_step");
@@ -541,14 +529,12 @@ fn every_dev_host_test_step_runs_under_the_checked_tmpdir() {
     }
 }
 
-/// **A slow half run by name leaves nothing out in silence** (M1f
-/// S1f.6.39): a nightly step that names the test it runs, `-- NAME`, names a
+/// **A slow half run by name leaves nothing out in silence**: a nightly step
+/// that names the test it runs, `-- NAME`, names a
 /// test of its target, and either that test is the one place the target's
 /// code reads `EIN_CORPUS_SLOW` (`region`'s, `route_invariance`'s), or the
 /// dev host runs the whole target with the flag, a step [`DEV_HOST_ONLY`]
 /// names with why. So a second test that reads the flag runs on some tier.
-/// The second way had one instance, `route_invariance`'s 2²⁵ half, until no
-/// test ran past the default budget.
 #[test]
 fn a_slow_half_run_by_name_leaves_nothing_out() {
     let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
@@ -645,20 +631,18 @@ fn slow_readers() -> Vec<(String, String)> {
     out
 }
 
-/// **Every slow half runs on a tier** (M1f S1f.5.27). A test
-/// target that reads `EIN_CORPUS_SLOW` has a step in the nightly or on the dev
-/// host that runs it under `--profile gate` with the flag, or is named in
-/// [`NO_SLOW_TIER`] with a premise this test checks. Three targets' slow
-/// halves ran on no tier until S1f.5.27, `route_invariance`, `region` and
-/// `obligation_rung`, and only S1f.5.13's re-take noticed; a fourth would fail
+/// **Every slow half runs on a tier.** A test target that reads
+/// `EIN_CORPUS_SLOW` has a step in the nightly or on the dev host that runs it
+/// under `--profile gate` with the flag, or is named in [`NO_SLOW_TIER`] with
+/// a premise this test checks; a target whose slow half runs on no tier fails
 /// here.
 #[test]
 fn every_slow_half_runs_on_a_tier() {
     let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
     let dev = shell_steps(&read("run_tests.sh"), "dev_host_step");
     let readers = slow_readers();
-    // Not vacuous: eight at S1f.5.27 (`grep -rln '"EIN_CORPUS_SLOW"'
-    // ein.rs/crates/*/tests`, less the files that only name it in a comment).
+    // Not vacuous (`grep -rln '"EIN_CORPUS_SLOW"' ein.rs/crates/*/tests`,
+    // less the files that only name it in a comment).
     assert!(
         readers.len() >= 8,
         "only {} test targets read EIN_CORPUS_SLOW: {readers:#?}",
@@ -676,8 +660,8 @@ fn every_slow_half_runs_on_a_tier() {
             }
             continue;
         }
-        // The step may name the tests it runs, `-- NAME` (`region`'s, since
-        // S1f.6.39: its one test that reads the flag).
+        // The step may name the tests it runs, `-- NAME` (`region`'s: its one
+        // test that reads the flag).
         let tail = format!("cargo test -p {package} --profile gate --test {target}");
         let runs = |steps: &[String]| {
             steps.iter().any(|s| {

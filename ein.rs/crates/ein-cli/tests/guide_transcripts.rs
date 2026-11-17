@@ -1,16 +1,9 @@
-//! **A marked transcript is a real run** — M1e `CD-L2`.
+//! **A marked transcript is a real run.**
 //!
 //! [`docs/ein/user/guide/`](../../../../docs/ein/user/guide/) is the newcomer's first contact
-//! with the tool, and nothing ran its transcripts. Chapter 4's — the tutorial's
-//! final page, the payoff — differed from the binary in two places: it packed
-//! four sorted bindings two-per-line, and it dropped the 62-character rule the
-//! solve table prints under its title.
-//!
-//! It was not drift. `git show b4d5158` adds that text on 2026-06-17, and the
-//! engine shipping that day already printed one binding per line under a rule
-//! (`ein-render`'s `answer.rs` does the same today). **No engine in this repo's history has printed what the page
-//! printed** — which is why the fix is *take the bytes from a run*, and the
-//! pin is *keep taking them*.
+//! with the tool, and a transcript typed by hand can differ from what any
+//! engine prints — bindings packed two to a line, a rule under the title
+//! dropped. So the bytes are taken from a run, and kept taken.
 //!
 //! ## What is pinned, and what is not
 //!
@@ -35,11 +28,9 @@
 //! EIN_BLESS=1 cargo test -p ein-cli --test guide_transcripts
 //! ```
 //!
-//! Its blind spot is [`CD-M4`]'s: prose outside the marker is unguarded. The
-//! guide's `lisp` blocks are [`guide_programs.rs`](guide_programs.rs)'s since
-//! M1f S1f.5.26, which loads each and solves each whole program.
-//!
-//! [`CD-M4`]: ../../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium
+//! Its blind spot: prose outside the marker is unguarded. The guide's `lisp`
+//! blocks are [`guide_programs.rs`](guide_programs.rs)'s, which loads each
+//! and solves each whole program.
 
 use std::path::PathBuf;
 use std::process::Command;

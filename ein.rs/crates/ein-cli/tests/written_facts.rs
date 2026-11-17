@@ -1,9 +1,9 @@
-//! **What a file writes, stated at load** — M1f S1f.6.38, E1, the user's ruling
-//! of 2026-11-14 on Q-M1f.272 (`defined_behaviour.md` § 4.30).
+//! **What a file writes, stated at load** (Q-M1f.272;
+//! [`diagnostics.md` § 2.30](../../../../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)).
 //!
 //! The loader states every fact nested in a fact a file writes, and the ones a
 //! rule's or an hrule's conclusion holds where they hold no variable
-//! (Q-M1f.275 (a)), as `(written T)`, the kernel relation a representation
+//! (Q-M1f.275), as `(written T)`, the kernel relation a representation
 //! module reads to check its own terms where they are written. Each is derived
 //! by the loader's step `#written` from the fact it was read in, so a core that
 //! rests on one names the fact as written.
@@ -260,10 +260,9 @@ fn a_core_names_the_fact_as_written() {
 
 #[test]
 fn the_answer_is_as_it_was() {
-    // A program whose nested fact nothing reads answers as it did before
-    // S1f.6.38: 16 states over 4 candidates, no `written` fact among them
-    // (the release binary of `8340baf7` answers the same, 2026-11-14). No
-    // read-out names `written`.
+    // A program whose nested fact nothing reads answers as it would with no
+    // `written` facts: 16 states over 4 candidates, no `written` fact among
+    // them. No read-out names `written`.
     let nested = "(relation p Thing :why \"p {?1}\")\n(relation q Thing :why \"q {?1}\")\n\
                   (p (box a)) (q b)\n\
                   (rule r () :match (p ?x) :assert (q c) :why \"r\")\n\

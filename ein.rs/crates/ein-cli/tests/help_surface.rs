@@ -1,4 +1,4 @@
-//! The CLI's argument surface — S1a.5.4's acceptance.
+//! The CLI's argument surface.
 //!
 //! `--help` *layout* is not on the byte gate. What is checked is *structure*:
 //! every parser rendered as `{command → {option → short, metavar, arity,
@@ -21,73 +21,63 @@ use ein_corpus::{Scratch, golden, golden_path};
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
 ///
-/// `ein test`'s nine are M1c
-/// [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)'s
-/// (plus M1d S1d.4.1's `--json-report`), and `ein kb save --saturate` exists
-/// only under the `einb` feature, so each is counted apart from the rest.
+/// `ein test`'s options
+/// ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test))
+/// are a design of their own, and `ein kb save --saturate` exists only under
+/// the `einb` feature, so each is counted apart from the rest.
 ///
 /// `saturate` has 5 options rather than 3 because `--events` and
 /// `--events-level` are on it too.
 const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein\n", 0),
-    // Among them P1a.7's `--jobs`
+    // Among them `--jobs`
     // ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)),
-    // M1d S1d.3.3's `--models`, M1d P1d.10's `--layer-progress` and M1e2's
-    // `--dump-answer` (S1e2.1.2), `--dump-lattice` (S1e2.1.3),
-    // `--diff-models` (S1e2.1.4), and S1e2.1a.1's `--dump-region`,
-    // `--region-limit` and `--region-states`. And S1e2.1a.9's four region
-    // flags, `--minimal`, `--maximal`, `--single` and `--region-budget`
-    // ([`cli.md`](../../../../docs/ein/user/reference/cli.md)):
-    // At S1e2.1a.5's switch the walk's nine went (hidden, refused with what
-    // replaced each): `-e`, `-m`, `-E`, `-o`, `-z`, `-d`, `-D`,
-    // `--dump-region`, `--region-states`. S1e2.1b.5 added `--monotone`, the
-    // explicit check the user approved on 2026-11-03, and T1e2.1c.4.6
-    // `--count`, which the user ruled the same day. S1e2.1c.5 retired `-L`
-    // and `-K` the same day (hidden, refused with why). M1f T1f.5.14.6 added
-    // `--require-why`, as it did to the six other commands that load a program,
-    // and T1f.5.14.7 turned it into `--no-require-why`, the default flipped.
-    // M1f S1f.6.36 added `--no-search`, root alone, R not searched; and
-    // `--describe-route`, describe's two routes, one R.
+    // `--models`, `--layer-progress`, `--dump-answer`, `--dump-lattice`,
+    // `--diff-models`, `--region-limit`, the four region flags
+    // `--minimal`, `--maximal`, `--single` and `--region-budget`
+    // ([`cli.md`](../../../../docs/ein/user/reference/cli.md)), `--monotone`,
+    // `--count`, `--no-require-why`, as every command that loads a program
+    // takes it, `--no-search`, root alone, R not searched, and
+    // `--describe-route`, describe's two routes, one R. The retired options
+    // are hidden, refused with what replaced each: `-e`, `-m`, `-E`, `-o`,
+    // `-z`, `-d`, `-D`, `--dump-region`, `--region-states`, `-L` and `-K`.
     ("COMMAND ein solve\n", 36),
-    // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
-    // `--jobs`, `--stats`; and S1e2.1a.5's five from `solve`, `-T`,
-    // `--json-summary`, `--models`, `-p` and `-P`; and `--no-require-why`.
+    // `ein oracle`: `--region-limit`, `--dump`, `--states`, `--jobs`,
+    // `--stats`; the five from `solve`, `-T`, `--json-summary`, `--models`,
+    // `-p` and `-P`; and `--no-require-why`.
     ("COMMAND ein oracle\n", 11),
     ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
-    // The four views that draw a program as written take `--no-require-why`
-    // since M1f S1f.5.21, which has them read it through the loader first
-    // (Q-M1f.71).
+    // The four views that draw a program as written take `--no-require-why`,
+    // since they read it through the loader first (Q-M1f.71).
     ("COMMAND ein render rules\n", 2),
     ("COMMAND ein render rule\n", 3),
     ("COMMAND ein render constraints\n", 1),
     ("COMMAND ein render lattice\n", 3),
-    // M1e2 S1e2.1.3's two doors: `--levi` and `--rule-mode`; `--since`,
+    // The two doors: `--levi` and `--rule-mode`; `--since`,
     // `--colour-by`, `--no-types`, `--no-instances`, and `--no-require-why`.
     ("COMMAND ein render program\n", 3),
     ("COMMAND ein render kb\n", 5),
-    // M1e2 S1e2.1a.2's `--view` over a region dump; S1e2.1a.7's `--visited`
-    // and `--answer`, a region run's two dumps drawn on it.
+    // `--view` over a region dump; `--visited` and `--answer`, a region
+    // run's two dumps drawn on it.
     ("COMMAND ein render region\n", 3),
 ];
 
-/// M1c [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)'s
-/// parser. **Nine**: eight, and the number is the design, the two that decide
-/// whether a run can finish (`--region-budget`, `-T`; the walk's `-m` and `-E`
-/// retired with `solve`'s at M1e2 S1e2.1a.5), the two that decide how much of
-/// a passing run to print (`-v`, `-q`), the three file-only artefact ones the
-/// stage asked for by name (`--events`, `--events-level`, `--json-summary`),
-/// and M1d S1d.4.1's `--json-report`; and M1f T1f.5.14.7's `--no-require-why`
-/// (T1f.5.14.6's `--require-why` until the default flipped), which every
-/// command that loads a program takes. There is deliberately no `-n`, no line
-/// flag and no `--exhaustive`: a claim says what it is about, and `ein test`
-/// runs the mode that decides it, so a *missing* option is exactly the kind of
-/// thing this count exists to notice. **Ten** since M1f S1f.6.36's
-/// `--no-search`, which asks each file root alone: no question about R, and
-/// so no exception to the above.
+/// `ein test`'s parser
+/// ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
+/// **Ten**, and the number is the design: the two that decide whether a run
+/// can finish (`--region-budget`, `-T`; `-m` and `-E` are retired with
+/// `solve`'s), the two that decide how much of a passing run to print (`-v`,
+/// `-q`), the three file-only artefact ones (`--events`, `--events-level`,
+/// `--json-summary`), `--json-report`, `--no-require-why`, which every
+/// command that loads a program takes, and `--no-search`, which asks each
+/// file root alone: no question about R. There is deliberately no `-n`, no
+/// line flag and no `--exhaustive`: a claim says what it is about, and `ein
+/// test` runs the mode that decides it, so a *missing* option is exactly the
+/// kind of thing this count exists to notice.
 const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 10)];
 
-/// P1a.8's surface, registered only under the `einb` feature, and here for
+/// The container's surface, registered only under the `einb` feature, and here for
 /// the same reason the other parsers are — an extractor that stopped seeing a
 /// parser would otherwise pass.
 #[cfg(feature = "einb")]
@@ -126,9 +116,7 @@ fn the_extractor_finds_the_whole_surface() {
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 84 across fifteen since M1f S1f.6.36 (82
-/// from S1f.5.21, 78 from T1f.5.14.6; `solve`'s and `test`'s `--no-search`
-/// since), the count
+/// Every option of every parser — the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.
@@ -157,11 +145,9 @@ fn a_renamed_short_key_fails() {
     assert_ne!(shape, mutated, "the short key must be in the rendering");
 }
 
-/// **`ein render lattice`'s two views are what its help says** — the CD-L3
-/// guard (M1e S1e.4.6), re-pointed at M1e2 S1e2.1a.5. The walk's `--view full`
-/// fell back to the solution frontier, and the guard held the fallback's note
-/// to the help's reason. The re-pointed command draws a region run's visited
-/// nodes and has no fallback: `full` draws every node `--dump-lattice` lists,
+/// **`ein render lattice`'s two views are what its help says.** The command
+/// draws a region run's visited nodes and has no fallback: `full` draws every
+/// node `--dump-lattice` lists,
 /// and `solution` R's nodes, root and the nodes one fact above R that are not
 /// in it.
 #[test]
@@ -209,8 +195,7 @@ fn the_lattice_views_are_what_their_help_says() {
     );
 }
 
-/// **Every artefact `ein solve` can write, the review bundle drives** — M1e2
-/// S1e2.1.5.
+/// **Every artefact `ein solve` can write, the review bundle drives.**
 ///
 /// The bundle's promise is *every artefact the engine can write for a run*,
 /// rendered, so that a reviewer never meets one they were not shown. A new

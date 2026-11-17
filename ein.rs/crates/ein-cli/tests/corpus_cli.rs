@@ -1,12 +1,11 @@
-//! T1a.10.3.2 — **the corpus, through the CLI.**
+//! **The corpus, through the CLI.**
 //!
 //! Every entry of `corpus/corpus.toml`, under every declared run, as a
 //! *process*: a **sweep**, run to see that the cells run. How many is `wc -l`
 //! on this file's own golden, `golden/corpus_exits.txt`, which is one line
-//! per cell of the full selection —
-//! [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)
-//! re-priced the tail and sixteen runs turned out to be asking their fixtures
-//! nothing.
+//! per cell of the full selection
+//! ([design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus));
+//! a run is declared only where it asks its fixture something.
 //!
 //! ## Why a sweep is not nothing
 //!
@@ -38,14 +37,13 @@
 //! correct engine and do not have to be looked up.
 //!
 //! ```text
-//! cargo test -p ein-cli --test corpus_cli                    # every cell but the slow, ~3.5 s
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test corpus_cli  # all of them, ~24 s
+//! cargo test -p ein-cli --test corpus_cli                    # every cell but the slow
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test corpus_cli  # all of them
 //! EIN_BLESS=1       cargo test -p ein-cli --test corpus_cli  # re-bank (implies SLOW)
 //! ```
 //!
-//! The two wall clocks are 2026-08-22 readings; the cell counts are not
-//! written here at all, because the golden beside this file is the count and
-//! a second copy of it is the thing that drifts (M1e `DO-M1`).
+//! The cell counts are not written here at all, because the golden beside
+//! this file is the count and a second copy of it is the thing that drifts.
 //!
 //! ## The timeout is not decoration
 //!
@@ -54,16 +52,10 @@
 //! that makes some corpus program stop terminating is not a red gate but a
 //! **hung** one, with no output and no name — and this file is the only test
 //! in the workspace that runs unbounded search from a process it did not
-//! write the arguments for. The slowest cell on 2026-08-22 was
-//! `features/04_open.ein :: render lattice` at **10.2 s**, a blind
-//! enumerator over a domain the demo never bounds, which made that entry
-//! `slow` until M1e2 S1e2.1a.5's switch; what each cell costs since is
-//! `utils/corpus_cost.py`'s (`utils/censuses/corpus-cost.md`).
-//! It used to be `square-unique/cul-de-sac.ein :: render lattice` at
-//! **94 s** — 125 s for its sibling `corner-house` — and those two cells were
-//! 90 % of the whole sweep until S1a.9.0 asked what they were for. A cell at
-//! 125 s against a 300 s timeout is also a red gate waiting for a slower
-//! machine.
+//! write the arguments for. What each cell costs is the manifest's `cost_ms`
+//! beside its entry, and a run costing a large share of the timeout is a red
+//! gate waiting for a slower machine, so a run is declared only where it asks
+//! its fixture something.
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -111,11 +103,9 @@ impl Cell {
 
 /// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
 /// `ein_corpus::manifest::SLOW_MS` or more together. Which ones is
-/// `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`'s to say, per commit
-/// (M1e S1e.3.6), where there were seventeen at
-/// [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus),
-/// one of them `zebra2.ein` at 16 ms. Their cells run in the CI nightly's
-/// `deep-corpus` job and on the dev host, not per commit (`nightly_steps.rs`).
+/// `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`'s to say
+/// ([design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)).
+/// Their cells run only with the flag, not by default.
 ///
 /// `EIN_BLESS=1` implies it: a golden blessed from the default selection would
 /// silently *shrink* by the slow entries' lines, which is the one way a table
@@ -217,8 +207,8 @@ fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
         a.traces += 1;
         match std::fs::read_to_string(dir.join("trace.md")) {
             Err(_) => a.bad.push(format!("  {path} :: {run} — no trace.md")),
-            // No unfilled template reaches the trace (M1f S1f.5.14's
-            // T1f.5.14.5, `answer_round_trip.rs`' `no_placeholder_reaches_an_output`
+            // No unfilled template reaches the trace
+            // (`answer_round_trip.rs`' `no_placeholder_reaches_an_output`
             // over the answer): a step's `:why` and its derived fact's, filled.
             Ok(t) => {
                 for line in t.lines().filter(|l| l.contains("{?")) {
@@ -229,8 +219,7 @@ fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
             }
         }
     }
-    // The walk's `--dump-states` tree went at M1e2 S1e2.1a.5; the two
-    // directory artefacts since are a run's visited nodes and the cube.
+    // The two directory artefacts are a run's visited nodes and the cube.
     for (flag, file, schema) in [
         ("--dump-lattice", "lattice/nodes.json", "ein-lattice/2"),
         ("--dump {out}/region", "region/region.json", "ein-region/1"),
@@ -262,11 +251,9 @@ fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
 ///
 /// **Each cell's directory is removed as soon as it has been read**, and the
 /// root with it at the end. The root is named by the process id so that two
-/// sweeps never share one, and until 2026-11-03 nothing removed it: every run
-/// of the gate left 88–257 MB in the temp directory (the slow entries are the
-/// difference): 49 of them, 4.7 GB, had piled up in a 16 GB tmpfs that
-/// filled once. Since M1e2 S1e2.3.5 the root is a [`Scratch`], so a sweep
-/// that panics part way removes it too.
+/// sweeps never share one, and it is a [`Scratch`], so a sweep that panics
+/// part way removes it too: a sweep's cells write many megabytes, and roots
+/// left behind fill a tmpfs.
 fn sweep() -> Vec<Cell> {
     let repo = repo_root();
     let bin = env!("CARGO_BIN_EXE_ein");
@@ -283,7 +270,7 @@ fn sweep() -> Vec<Cell> {
     }
     cells.sort();
 
-    // On the pool (M1f S1f.6.39), in the cells' order. A cell's `took` is
+    // On the pool, in the cells' order. A cell's `took` is
     // its own wall clock with the other workers busy beside it, which the
     // timing claims below read with their 4× band.
     let indexed: Vec<(usize, (String, String))> = cells.into_iter().enumerate().collect();
@@ -402,21 +389,18 @@ fn moved(got: &[String], path: &Path) -> String {
     out.iter().take(25).cloned().collect::<Vec<_>>().join("\n")
 }
 
-/// Does this run ask for a budget that can cut it short?
+/// Does this run ask for a budget that aborts it?
 ///
-/// M1e S1e.3.6 T4, the review's `TE-M4`. Exit **2** means two things in this
-/// tool — *the CLI refused the argv* and *a budget abort* — and
-/// [`no_cell_crashes`] read it as the first, unconditionally. That was safe
-/// only by accident: no `runs` column named `-E` or `-T`, so the second could
-/// not arise. One budgeted cell would have failed the crash check with a
-/// message about an argv the CLI refuses, which is a wrong diagnosis of a
-/// working run.
-///
-/// So the coupling is read off the run rather than assumed away, and
-/// [`corpus/README.md`](../../../../corpus/README.md) § The run vocabulary
-/// states it where a person adding a run will meet it. `examples/zebra2.ein`
-/// declares `solve -E 1` for the other half of the rule: a relaxation nothing
-/// exercises is a hole rather than a decision.
+/// Exit **2** means two things in this tool — *the CLI refused the argv* and
+/// *a `-T` abort* — so [`no_cell_crashes`] reads the coupling off the run
+/// rather than reading every 2 as the first, which would misdiagnose a
+/// working run as an argv the CLI refuses;
+/// [`corpus/README.md`](../../../../corpus/README.md) § Manifest format
+/// states it where a person adding a run will meet it. No manifest run names
+/// `-T`. A budget that stops a description is an answer and exits 0:
+/// `examples/zebra2.ein` declares `solve --region-budget 1`, which exits 0
+/// with a `note:`. `-E` and `--max-enterings` are matched too, though
+/// retired: a run that names one is refused, exit 2, as a usage error.
 fn budgeted(run: &str) -> bool {
     run.split_whitespace()
         .any(|t| matches!(t, "-E" | "--max-enterings" | "-T" | "--max-time"))
@@ -471,16 +455,13 @@ fn no_cell_crashes() {
 /// *which side of the threshold an entry is on*, and that claim survives a
 /// machine four times slower than the one the numbers were taken on — where a
 /// tighter tolerance would only teach people that a red corpus test means "CI
-/// was busy". This sweep ran the **`dev`** binary (`opt-level = 1`) until M1f
-/// S1f.6.39 while `cost_ms` is measured on `release`, which was 1.09× over
-/// the whole sweep and more than that on some cells; since S1f.6.39 it runs
-/// the gate profile's, release codegen with the debug checks, on the pool. And the drift it exists to catch
-/// was **165×**: a flag set on 2026-08-17 and still there, unexamined, when
-/// [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)
-/// re-priced it. Nothing that big hides inside 4×.
+/// was busy". The sweep runs the gate profile's binary, release codegen with
+/// the debug checks, on the pool, where `cost_ms` is a release measurement.
+/// And the drift it exists to catch, a `slow` flag left on an entry that
+/// costs a small fraction of the threshold, is far larger than 4×.
 const COST_FACTOR: u32 = 4;
 
-/// **The `slow` flag still describes the sweep it has just run** — S1a.9.0.
+/// **The `slow` flag still describes the sweep it has just run.**
 ///
 /// `ein-corpus`'s `slow_matches_the_recorded_cost` holds the flag against the
 /// number recorded beside it, exactly and without running anything. It cannot
@@ -527,27 +508,22 @@ fn the_slow_flag_still_describes_the_sweep() {
         // deciding anything. Below that it is documentation: a 40 ms entry
         // reading 120 ms says the machine is busy, not that the corpus moved.
         //
-        // **Reported per commit, asserted only under `EIN_CORPUS_SLOW`** —
-        // M1e S1e.4.5, `TE-L1`. This is the tightest wall clock in the
-        // workspace: measured 2026-09-01, the three entries it judges come in
-        // at 2.45×, 3.02× and 2.96× of their recorded `cost_ms` against a 4×
-        // band, so a runner three times slower than idle reddens it — and a
-        // red corpus test reads as an engine regression, because everything
-        // else here is deterministic by construction. The two flag directions
-        // above keep their per-commit assertion: their headroom is the
-        // threshold itself (3.9× on the worst entry), and they are what
-        // notices an entry crossing it.
+        // **Reported by default, asserted only under `EIN_CORPUS_SLOW`.**
+        // This is the tightest wall clock in the workspace: the entries it
+        // judges come in near their recorded `cost_ms` against a 4× band, so
+        // a runner a few times slower than idle reddens it — and a red corpus
+        // test reads as an engine regression, because everything else here
+        // is deterministic by construction. The two flag directions above
+        // keep their default assertion: their headroom is the threshold
+        // itself, and they are what notices an entry crossing it.
         //
-        // Nightly runs this file with `EIN_CORPUS_SLOW=1` **and** release
-        // codegen (`.github/workflows/nightly.yml`; `--release` until M1f
-        // S1f.6.39, the gate profile since, release with the debug checks),
-        // which is what `cost_ms` was measured on — so gating it does not
-        // weaken the band, it moves it to where it is truer. Since S1f.6.39
-        // the cells run on the pool, each beside the others a worker runs,
-        // which the band's 4× is wide enough for (S1f.6.39's record). If that env line ever loses
-        // `EIN_CORPUS_SLOW`, this assertion stops existing; since M1e2
-        // S1e2.3.6 `nightly_steps::the_slow_cells_run_under_the_gate_profile_with_the_flag`
-        // is what says so.
+        // With `EIN_CORPUS_SLOW=1` the cells run on release codegen (the gate
+        // profile, release with the debug checks), which is what `cost_ms`
+        // was measured on — so gating it there does not weaken the band, it
+        // moves it to where it is truer. The cells run on the pool, each
+        // beside the others a worker runs, which the band's 4× is wide enough
+        // for. `nightly_steps::the_slow_cells_run_under_the_gate_profile_with_the_flag`
+        // holds that the flag is set where this runs.
         if let Some(c) = e.cost_ms.filter(|c| *c as u128 >= floor) {
             let (c, f) = (c as u128, COST_FACTOR as u128);
             if ms > c * f || ms * f < c {
@@ -606,8 +582,7 @@ fn every_positive_entry_answers_under_at_least_one_run() {
             *answered.entry(&c.path).or_insert(false) |= c.code == 0;
         }
     }
-    // Between M1f S1f.5.3 and S1f.5.5's swap two entries the parser refused
-    // were named in `ein_corpus::REFUSED_UNTIL_S1F_5_4`; the swap emptied it.
+    // No entry the parser refuses is excused.
     let dead: Vec<&str> = answered
         .iter()
         .filter(|(_, ok)| !**ok)
@@ -617,13 +592,9 @@ fn every_positive_entry_answers_under_at_least_one_run() {
         dead.is_empty(),
         "entries that never exited 0 under any run: {dead:?}"
     );
-    // **Derived from the manifest** — M1e S1e.3.6 T2, the review's `TE-M2`.
-    // It read `>= 60` against an inline comment claiming "65 in the default
-    // selection, 82 with the slow entries: 75 `positive` plus 7 `stdlib`, of
-    // which 17 are `slow`" — three numbers, all of them stale, against a
-    // manifest that now holds 83 `positive` and 63 `stdlib` with **2** slow.
-    // The floor was written to let the corpus grow and the corpus grew past
-    // it: a third of the selection could have stopped being swept in silence.
+    // **Derived from the manifest**, not a floor written in: a floor written
+    // to let the corpus grow is one the corpus grows past, and then a part of
+    // the selection can stop being swept in silence.
     //
     // The eligible set is not a number to keep in step; it is a query the
     // manifest answers. `select` is the same function the sweep itself uses,
@@ -661,14 +632,11 @@ fn every_refusal_carries_a_diagnostic() {
     );
 }
 
-/// **No cell prints the Python IR's spelling** — M1f S1f.5.21, the close
-/// review's finding 1.
-///
-/// Until then a refusal the compiler made quoted the IR's repr,
-/// `SForm(head=Atom(name='or'), …)`, cited a stage id and *the M1 compiler*,
-/// and `ein saturate` put `ein.inference.compile.CompileError:` in front of
-/// it; and the loader's macro lines placed a form `at Loc(file=…, line=…,
-/// col=…)`. Every cell of the corpus is held to none of them, on stderr;
+/// **No cell prints the Python IR's spelling**: no IR repr,
+/// `SForm(head=Atom(name='or'), …)`, no development stage's id, no
+/// `ein.inference.compile.CompileError:` in front of a refusal, and no form
+/// placed `at Loc(file=…, line=…, col=…)`. Every cell of the corpus is held
+/// to none of them, on stderr;
 /// `cli_semantics::a_compile_refusal_reads_the_same_on_every_command` holds the
 /// witnesses on every command, and `ein-infer`'s
 /// `compile_semantics::no_corpus_program_is_refused_in_the_python_spelling`

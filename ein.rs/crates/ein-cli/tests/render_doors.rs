@@ -1,10 +1,7 @@
-//! M1e2 S1e2.1.3 — **three renderers get a door**, and Q-M1e.20 is answered.
-//!
-//! [Q-M1e.20](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)
-//! counted renderers that were built, tested and reachable from no command:
-//! `ein_render::kb_dot`, the `LatticeDumper` tree, and — `utils/README.md`'s
-//! third — `ein_render::ir_dot`. Its open question was *who wants these*, and
-//! M1e2's answer is the reviewer of a wrong answer. So:
+//! **Every renderer has a door** (Q-M1e.20): a renderer built and tested is
+//! reachable from a command, for the reviewer of a wrong answer if for no
+//! one else. `ein_render::kb_dot`, `ein_render::ir_dot` and the visited
+//! nodes' lattice:
 //!
 //! ```text
 //! ein render program FILE [--levi] [--rule-mode …]          the program as written
@@ -13,8 +10,7 @@
 //! ein render lattice FILE [--view full]                      those nodes drawn
 //! ```
 //!
-//! The third door was the walk's `LatticeDumper` tree until M1e2 S1e2.1a.5's
-//! switch; it is a region run's visited nodes since (`ein-lattice/2`,
+//! The third door is a region run's visited nodes (`ein-lattice/2`,
 //! [`lattice-dump.md`](../../../../docs/ein/ein.rs/lattice-dump.md)), and
 //! `ein render lattice` draws them.
 //!
@@ -148,13 +144,12 @@ fn every_door_prints_dot_that_dot_draws() {
 }
 
 /// **A program the loader refuses is refused by every view**, with the line
-/// and the exit every other command gives it — M1f S1f.5.21 (W65, Q-M1f.71).
+/// and the exit every other command gives it (W65, Q-M1f.71).
 ///
-/// Until then this test held the opposite, *the program is drawn before it is
-/// loaded*, so a refused program still had a picture (M1e2 S1e2.1.3): which
-/// was a view answering a program every other command refused, the close
-/// review's finding 1. The four views that draw a program as written read it
-/// through the loader first since, and draw a program it accepts as before.
+/// A view that drew a program before loading it would give a refused program
+/// a picture, a view answering a program every other command refuses. The
+/// four views that draw a program as written read it through the loader
+/// first, and draw a program it accepts as written.
 #[test]
 fn every_view_refuses_what_the_loader_refuses() {
     let file = "examples/broken/load/derivation_cycle.ein";
@@ -186,9 +181,8 @@ fn every_view_refuses_what_the_loader_refuses() {
 
 /// **`--since` draws what a commitment added**, from the files `--dump-answer`
 /// wrote: a state against ∅'s, one `Terms` for both, so a fact ∅ also held is
-/// drawn plain and one it lacked is drawn at `penwidth=3`. Since M1e2
-/// S1e2.1a.5 ∅'s file is `models/01.ein` where ∅ is in R — the walk wrote a
-/// `root.ein` beside its models.
+/// drawn plain and one it lacked is drawn at `penwidth=3`. ∅'s file is
+/// `models/01.ein` where ∅ is in R.
 #[test]
 fn render_kb_since_root_emboldens_what_the_commitment_added() {
     let tmp = scratch("since");

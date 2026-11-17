@@ -1,20 +1,18 @@
-//! `ein render region DIR [--visited DIR] [--answer DIR]` — M1e2
-//! [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)
-//! and [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md).
+//! `ein render region DIR [--visited DIR] [--answer DIR]`
+//! ([`rendering.md`](../../../../docs/ein/user/reference/rendering.md)).
 //!
 //! The drawing of an `ein oracle --dump` directory with a region run on it,
 //! held from the outside: every view is DOT Graphviz accepts
 //! (`dot_wellformed.rs`'s standard), with and without a run, and `auto` picks
-//! the views S1e2.1a.2 measured.
+//! a view by the cube's size.
 //!
-//! Until M1e2 S1e2.1a.5 the run was the walk's (`walk.json`), and four tests
-//! here held the overlay to what the register's witnesses showed. S1e2.1a.7
-//! brought them back against a region run's dumps (`--dump-lattice`,
-//! `--dump-answer`): W1's maximal node that no reported state holds is
+//! Four tests hold the overlay, against a region run's dumps
+//! (`--dump-lattice`, `--dump-answer`), to what the register's witnesses
+//! show: W1's maximal node that no reported state holds is
 //! MISSING, W3's hole and an exclusion the cube refutes, W2's root that a
 //! region run never moves, and a state that counts as the node its
 //! saturation lands on. A correct engine misses nothing, so where a test
-//! needs a wrong answer it writes one — the walk's, from the register — into
+//! needs a wrong answer it writes one — the register's — into
 //! a copy of the run's dump, which is the input the comparison is for.
 
 use std::io::Write;
@@ -88,7 +86,7 @@ impl ein_infer::events::Watch for Collect {
 /// `file`'s cube in `cube` and its `--maximal` run's `answer/` and
 /// `lattice/` in `run`, written by the writers `ein oracle --dump` and `ein
 /// solve --maximal --dump-answer --dump-lattice` call, at library level and
-/// past *forbid*'s refusal (`forbid::studying`, M1e2 S1e2.2.5), which no CLI
+/// past *forbid*'s refusal (`forbid::studying`, Q-M1e2.5), which no CLI
 /// path lifts. W3's dead hole is the shape the refusal names, and its drawing
 /// is what the test below holds; `ein render region` reads the directories
 /// and refuses nothing.
@@ -281,9 +279,9 @@ fn graphviz_accepts(dot: &str) -> Result<(), String> {
 
 /// The programs every view is drawn for: a hole, an unsound lookahead, a
 /// forced positive, saturation moving nodes, an owing root, the n = 9 border
-/// view and the n = 8 lines view — and one directory over the limit. The
-/// third was `naf-nowb`'s dead hole until *forbid* refused it (M1e2
-/// S1e2.2.5); the W3 test draws that one from a library-level fixture.
+/// view and the n = 8 lines view — and one directory over the limit.
+/// `naf-nowb`'s dead hole is not among them, since *forbid* refuses it
+/// (Q-M1e2.5); the W3 test draws that one from a library-level fixture.
 const DRAWN: [(&str, &[&str]); 9] = [
     ("examples/branching/15_lookahead_two_step_on.ein", &[]),
     ("examples/lattice/04_obligation_trigger_hole.ein", &[]),
@@ -301,7 +299,7 @@ const DRAWN: [(&str, &[&str]); 9] = [
 
 /// **Every view is DOT Graphviz accepts**, with no run on the cube and with
 /// a bare `ein solve` on it; `table` is markdown with one section per layer
-/// and an anchor per node; and `auto` is the view the stage measured: the
+/// and an anchor per node; and `auto` is the view by the cube's size: the
 /// whole cube to n = 6, R and its border to 64 nodes, the lines past that.
 #[test]
 fn every_view_is_drawn_and_auto_picks_the_measured_one() {
@@ -447,13 +445,13 @@ fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
 
 /// **W3, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
 /// under its `absent` guard, and `{(p A), (q A)}` above it is alive. *Forbid*
-/// refuses the program since M1e2 S1e2.2.5, so its directories are written by
-/// [`studied`], a library-level fixture, and the drawing is held as it was. The
+/// refuses the program (Q-M1e2.5), so its directories are written by
+/// [`studied`], a library-level fixture, and the drawing is held so. The
 /// region run takes the cube (route 2), visits every node and reports the
 /// alive superset — the hole carries its repair edge, and nothing is missing
 /// or read otherwise than the cube. A run that pruned above the dead `{(p
-/// A)}`, as licence L1 would on a monotone program and as the walk's lookahead
-/// did here, is drawn with the exclusion named unsound and the alive node it
+/// A)}`, as licence L1 would on a monotone program, is drawn with the
+/// exclusion named unsound and the alive node it
 /// left unvisited.
 #[test]
 fn w3_the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
@@ -630,8 +628,8 @@ fn a_reported_state_counts_as_the_node_its_saturation_lands_on() {
 /// **The table's head names at most fifty nodes a list**, and how many
 /// there are. `syntax/equality.ein`'s R is its whole 2¹² cube, so `-n 1`
 /// leaves 4 095 nodes *not reached*; each row's status says so, and the head
-/// links the first fifty. It was 2⁶ and 63 until M1e2 S1e2.2.14 made
-/// `House-1`, written only inside `(color House-1)`, a candidate object. The gallery's `houses` (2²⁰, all R, stopped by the
+/// links the first fifty (`House-1`, written only inside `(color House-1)`,
+/// is a candidate object, Q-M1e2.9). The gallery's `houses` (2²⁰, all R, stopped by the
 /// budget) listed a million before the cap.
 #[test]
 fn the_head_names_at_most_fifty_nodes_a_list() {

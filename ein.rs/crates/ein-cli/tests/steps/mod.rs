@@ -6,7 +6,7 @@
 /// The steps of `run_tests.sh` that a `banner "…"` line announces, in order.
 ///
 /// `banner` is `step` for the per-commit gate, `nightly_step` for
-/// `--nightly` and `dev_host_step` for `--dev-host` (M1f S1f.5.27). A line is
+/// `--nightly` and `dev_host_step` for `--dev-host`. A line is
 /// a banner when it *starts* with `banner "`, so the
 /// one-line definition `nightly_step() { step "$@"; }` is not one: the parse
 /// is by line, and that line starts with `nightly_step()`.

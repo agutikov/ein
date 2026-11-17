@@ -1,8 +1,6 @@
-//! **`--no-search`: root alone, and R not searched** — M1f
-//! [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md),
-//! the user's words of 2026-11-14: *"flag that disables search doesn't change
-//! R, it disables discovering of R. R is not an output, it is complete result
-//! when we do full R search."*
+//! **`--no-search`: root alone, and R not searched.** The flag does not
+//! change R, it declines to discover it: R is the complete result of the
+//! full search, and no other output stands for it (Q-M1e2.30).
 //!
 //! The command's half; `lever_invariance.rs` holds, over the corpus, that what
 //! `--no-search` reports of root is what the full run reaches at root and that
@@ -268,8 +266,8 @@ fn test_decides_what_root_decides_and_a_claim_not_checked_exits_0() {
 /// **Under `(solve :no-search)` no commitment holds a fact**, so the
 /// loader's checks of what a commitment could bind read none: a rule that
 /// concludes `(not ?x)` with `?x` bound only by a declared relation the blind
-/// enumerator would guess is refused without the keyword (M1f S1f.7.4, W84:
-/// a commitment could give `?x` a name) and loads with it.
+/// enumerator would guess is refused without the keyword (W84, Q-M1f.127: a
+/// commitment could give `?x` a name) and loads with it.
 #[test]
 fn no_commitment_binds_a_name_under_the_keyword() {
     let scratch = Scratch::new("ein-no-search-commitments");

@@ -1,33 +1,18 @@
-//! M1e S1e.3.4 — **one count per answer**, on every surface that prints one.
+//! **One count per answer**, on every surface that prints one.
 //!
-//! [`AR-M2`] is that `Verdict` is constructed once, in `finalise`, and *read
-//! out* by three crates that each chose their own number. The review found two
-//! wrong choices; a third was found while fixing them, and it is the one worth
-//! keeping in front of a reader:
-//!
-//! ```text
-//! $ ein solve tests/stdlib/slots/03_fill.ein --stats      # owing, until M1f S1f.6.34
-//!   solutions (k)   0        ← the table: models, and an open state is not one
-//!   ...
-//! stats
-//!   solutions (k)    1       ← --stats: what the search recorded
-//! ```
-//!
-//! Same label, two numbers, one screen, on a shipped corpus entry. Neither
-//! number was wrong; the label was, and no test could see it because every
-//! test that read one of the two read only one.
+//! An answer read out by several crates, each choosing its own number, can
+//! print one label with two numbers on one screen — a count of models in the
+//! table and a count of recorded nodes under `--stats`, both called
+//! `solutions (k)` — and no test sees it if every test reads only one of the
+//! two.
 //!
 //! So the property here is not *the numbers are right* — the corpus goldens
 //! say that. It is **one label, one number, per invocation**, plus the number
-//! printed being the summary's own. Since M1e2 S1e2.1a.5 the numbers are R's:
-//! `states (k_s)` and `commitments (k_c)` under a description, each qualified
-//! when the run did not exhaust, and the verdict word under `--single` alone —
-//! which is the walk's `solutions (k)` / `solution_nodes` collision made
-//! impossible by construction, since a count of states and a count of
-//! recorded nodes are no longer both printed. The cells below are every
-//! empty kind, a partial run, and each word.
-//!
-//! [`AR-M2`]: `docs/history/m1e_review_processing/README.md#s1e34--architecture-medium`
+//! printed being the summary's own. The numbers are R's: `states (k_s)` and
+//! `commitments (k_c)` under a description, each qualified when the run did
+//! not exhaust, and the verdict word under `--single` alone, so a count of
+//! states and a count of recorded nodes are never both printed. The cells
+//! below are every empty kind, a partial run, and each word.
 
 use std::process::Command;
 
@@ -86,7 +71,7 @@ const CELLS: &[(&str, &[&str])] = &[
 
 /// **Each count is printed once and is the summary's**, with the qualifier
 /// exactly when the run did not exhaust — under describe and under `--count`
-/// (M1e2 T1e2.1c.4.6), whose two counts are describe's.
+/// (Q-M1f.218), whose two counts are describe's.
 #[test]
 fn each_count_is_printed_once_and_is_the_summarys() {
     for ((file, flags), count) in CELLS.iter().flat_map(|c| [(c, false), (c, true)]) {
@@ -158,10 +143,9 @@ fn the_word_is_printed_once_and_is_the_summarys() {
 
 /// **The mixed regime** — a root that owes beside one state that does not.
 ///
-/// `examples/features/13_mixed_solution_and_open.ein` is the fixture `CO-M2`
-/// asked for: the walk recorded two complete nodes, one discharged and one
-/// open, and the count beside the word had to be the models' and not the
-/// recorded nodes'. Under R the open node is ∅, which owes, so it is not a
+/// `examples/features/13_mixed_solution_and_open.ein` has two complete
+/// nodes, one discharged and one open, and the count beside the word is the
+/// models' and not the nodes'. Under R the open node is ∅, which owes, so it is not a
 /// state of R: R is one state, `∅ not in R` says why the other is not, and
 /// `--single` answers `Solution`.
 #[test]
@@ -171,8 +155,7 @@ fn an_owing_node_is_not_a_state() {
     assert_eq!(run.summary["region"]["root"], "owing");
     assert_eq!(run.summary["region"]["root_owes"], 1);
     assert_eq!(rows(&run, "∅"), vec!["not in R — root owes 1 instance"]);
-    // And what it owes is named under the row, the summary's own string
-    // (M1f S1f.6.26, E-19).
+    // And what it owes is named under the row, the summary's own string.
     assert_eq!(rows(&run, "owed"), vec!["likes owes Ann a Food."]);
     assert_eq!(
         run.summary["region"]["root_owed"],
@@ -186,13 +169,12 @@ fn an_owing_node_is_not_a_state() {
 }
 
 /// **An empty R of the owing kind** reports zero states, says which kind of
-/// empty it is, and lists what is owed — where the walk printed
-/// `solutions (k) 0` beside `open states 1` and a third count, `solution_nodes
-/// 1`, under `--stats`.
+/// empty it is, and lists what is owed — never `solutions (k) 0` beside
+/// `open states 1` and a third count under `--stats`.
 #[test]
 fn an_owing_empty_r_reports_zero_states_and_what_is_owed() {
-    // `tests/stdlib/slots/03_fill.ein` until M1f S1f.6.34, whose
-    // `:no-hypothesis` named the relation it owed, refused at load since.
+    // Not `tests/stdlib/slots/03_fill.ein`: a `:no-hypothesis` that names a
+    // relation an obligation owes is refused at load (Q-M1f.245).
     let run = solve(&["tests/region/04_owing.ein"]);
     assert_eq!(run.summary["region"]["k_s"], 0);
     assert_eq!(run.summary["region"]["empty"], "owing");
@@ -205,12 +187,11 @@ fn an_owing_empty_r_reports_zero_states_and_what_is_owed() {
     assert!(rows(&run, "open states").is_empty() && rows(&run, "solution_nodes").is_empty());
 }
 
-/// **The read-out names what root owes, beside the states that pay it** —
-/// M1f S1f.6.26 (E-19), the user's reply 30 (a) of 2026-11-12. Where root is
-/// alive, owes and R is not empty, the `∅` row counted the instances and no
-/// row named one: they were `--events`' `owe` lines alone, where an empty R's
-/// `owing` rows print each through its rule's `:why`. The `owed` rows under
-/// `∅` name them, on every surface that repeats the read-out's rows.
+/// **The read-out names what root owes, beside the states that pay it.**
+/// Where root is alive, owes and R is not empty, the `∅` row counts the
+/// instances and the `owed` rows under it name them, each through its rule's
+/// `:why` as an empty R's `owing` rows do, on every surface that repeats the
+/// read-out's rows, not on `--events`' `owe` lines alone.
 ///
 /// The program: 120 things each owe a mark, and one supposition marks them
 /// all, so R is one state and root owes 120 instances.
@@ -390,13 +371,12 @@ fn the_read_out_names_what_root_owes() {
     }
 }
 
-/// **A query over an empty R says which empty** — M1f S1f.6.26, the row half
-/// of E-18. Each query's `over` row read *R is empty: no state to answer from*
-/// whether root was dead or alive and owing, so nothing a query printed told a
-/// contradiction from a debt. It says which, as root says it, under describe,
-/// `--single` and `-n` alike, the three that print the row.
+/// **A query over an empty R says which empty.** Each query's `over` row
+/// tells a contradiction from a debt, as root says it, under describe,
+/// `--single` and `-n` alike, the three that print the row: not *R is empty:
+/// no state to answer from* whether root was dead or alive and owing.
 ///
-/// **No claim moves** (Q-M1f.219, defaulted to no change): `as :expect` is
+/// **No claim moves** (Q-M1f.219): `as :expect` is
 /// `(false)` under both wordings, and a query's `:expect (false)` holds on an
 /// R that is empty by owing as it did, exit 0, on
 /// `examples/binary_logic/unsatisfiable.ein`, whose root owes three instances
@@ -449,8 +429,8 @@ fn a_query_over_an_empty_r_says_which_empty() {
 }
 
 /// **`--count` prints describe's rows and reads no state**, on every corpus
-/// program and register witness — M1e2 T1e2.1c.4.6, the user's ruling of
-/// 2026-11-03 that a count is describe's question with the listing left out.
+/// program and register witness: a count is describe's question with the
+/// listing left out (Q-M1f.218).
 ///
 /// In-process, at the corpus sweep's small budget and cube limit (2¹⁴ facts,
 /// 2¹⁰ nodes, the golden's sweep's, `corpus_ops`'), so that partial runs of every kind are
@@ -622,21 +602,18 @@ fn count_prints_describes_rows_and_reads_no_state() {
     eprintln!(
         "{compared} programs compared, {partial} partial at 2^14, {claims} claims not checked"
     );
-    // 206 programs, 21 of them partial at 2^14, and 81 claims, on 2026-11-03;
-    // 199, 20 and 79 on 2026-11-04, when *forbid* (M1e2 S1e2.2.5) refused nine
-    // corpus programs, which `--count` refuses as describe does.
+    // A floor, so that a sweep that compared few programs cannot pass; the
+    // programs *forbid* refuses (Q-M1e2.5) `--count` refuses as describe does.
     assert!(
         compared >= 190 && partial >= 15 && claims >= 70,
         "{compared} compared, {partial} partial, {claims} claims"
     );
 }
 
-/// **A core holding a nested fact prints it as an s-expression** — M1e2
-/// S1e2.3.4's pin of P1e2.3's S8, on the user's ruling (a) of 2026-11-03.
-/// `nested-core.ein`'s core is the given `(not (p A))` and `(q A)`; the walk
-/// printed the first as `(not Fact(relation_name='p', args=('A',)))`, a
-/// struct repr, and nothing checked the spelling once the region read-out
-/// replaced it. The line is the read-out's, and the summary's `region.core`
+/// **A core holding a nested fact prints it as an s-expression.**
+/// `nested-core.ein`'s core is the given `(not (p A))` and `(q A)`, the first
+/// never a struct repr, `(not Fact(relation_name='p', args=('A',)))`. The
+/// line is the read-out's, and the summary's `region.core`
 /// carries the same two strings.
 #[test]
 fn a_nested_fact_in_a_core_prints_as_an_s_expression() {
@@ -661,13 +638,12 @@ fn a_nested_fact_in_a_core_prints_as_an_s_expression() {
     );
 }
 
-/// **`ein oracle` names no option it refuses** — M1e2 S1e2.3.7's N4, the
-/// user's ruling of 2026-11-03.
+/// **`ein oracle` names no option it refuses.**
 ///
-/// Past 100 lines its read-out said `--dump-answer DIR writes …`, and `ein
-/// oracle` has no `--dump-answer`: it refuses the flag, exit 2. Each such line
-/// names `ein solve FILE --dump-answer DIR` instead, as the forms S1e2.3.3
-/// cut on `ein oracle` already did, and `as :expect`'s *it is in
+/// `ein oracle` has no `--dump-answer`: it refuses the flag, exit 2. So each
+/// line past 100 that names where the rest is names `ein solve FILE
+/// --dump-answer DIR`, as the forms cut on `ein oracle` do, and `as
+/// :expect`'s *it is in
 /// DIR/answer.txt* says which command writes that DIR. The command it names
 /// exits 0 and writes the whole of what the lines left out, over the oracle's
 /// R. `ein solve`'s own lines still name the flag alone, and `ein oracle`
@@ -751,8 +727,8 @@ fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
 }
 
 /// **What the universe leaves out is one sentence, on every surface that
-/// reports R** — M1e2 S1e2.2.8 (W6), the user's ruling of 2026-11-03 on
-/// Q-M1e2.3, (a) *scoped, and the read-out says so*. R is over H, and the
+/// reports R** (W6, Q-M1e2.3): R is scoped, and the read-out says so. R is
+/// over H, and the
 /// read-out names each relation the program can conclude or ask about, does
 /// not scope out itself, and of which the rung that built H proposes no fact
 /// (`ein_infer::scope`). Every question prints the same `outside` row under
@@ -871,15 +847,14 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
 }
 
 /// **A type the untyped rung binds as an object is one sentence, on every
-/// surface that reports R** — M1e2 S1e2.2.10 (C1), the user's ruling of
-/// 2026-11-03 on Q-M1e.12, (a) *the fixture, with the warning*. Where the
+/// surface that reports R** (Q-M1e.12). Where the
 /// blind enumerator built H, a candidate that names an object on the right of
 /// an `is-a` is a type bound as an object, and the read-out names those
 /// objects (`ein_infer::types_as_objects`). Every question prints the same
 /// `types` row under `universe`, `ein oracle` and its dump say it, `ein test`
 /// says it beside a claim, and the summary carries it in
 /// `root.hypgen.types_as_objects`, on `--monotone` too. `pets.ein` binds
-/// `Pet`; `branching/06`, retyped by the same stage, prints no row and an
+/// `Pet`; `branching/06`, whose candidates are typed, prints no row and an
 /// empty object, and so does `tests/region/01_states.ein`, whose `Item` is
 /// on the right of an `is-a` but whose candidates its hrules type.
 #[test]

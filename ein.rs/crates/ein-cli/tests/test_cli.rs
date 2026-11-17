@@ -1,9 +1,9 @@
-//! `ein test` — M1c
-//! [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)
-//! T1c.1.3.5, **the tests for the tester**.
+//! `ein test`
+//! ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)),
+//! **the tests for the tester**.
 //!
 //! A test runner that reports success on a broken expectation is the worst
-//! possible outcome this phase has available to it, so every fixture below
+//! possible outcome a runner has, so every fixture below
 //! that must *fail* is checked for failing — with the right exit code and the
 //! right message — and not merely run. The
 //! [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)
@@ -13,7 +13,7 @@
 //! `expect_semantics`, a region claim in `claim_round_trip` and `tests/region/`;
 //! what is here is everything only a process can see — the exit code, the file
 //! selection, the summary line, the one run a file gets in the mode its
-//! claims need (M1e2 S1e2.1a.5), and the ways a run can decide nothing.
+//! claims need (Q-M1f.221), and the ways a run can decide nothing.
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -34,8 +34,8 @@ struct Run {
 }
 
 impl Run {
-    /// The last line of stdout is always the summary — the thing the stage
-    /// calls "a summary line", and what a gate reads when it reads anything.
+    /// The last line of stdout is always the summary — "a summary line", and
+    /// what a gate reads when it reads anything.
     fn summary(&self) -> &str {
         self.out.trim_end().lines().last().unwrap_or("")
     }
@@ -87,8 +87,8 @@ impl Drop for Dir {
 const FACTS: &str =
     "(relation p Thing Place :why \"p holds of {?1} and {?2}\")\n(p A H1)\n(p B H2)\n";
 /// A region claim that holds — R is one state, both facts — and one that does
-/// not. One `(solve …)` per file since M1e2 S1e2.1a.4, and since S1e2.1a.5 a
-/// claim about the state is the region claim's.
+/// not. One `(solve …)` per file, and a claim about the state is the region
+/// claim's.
 const TRUE_CLAIM: &str = "(solve :no-hypothesis (p) :expect (region (model (p A H1) (p B H2))))\n\
                           (query :goal (p A ?h))\n";
 const FALSE_CLAIM: &str = "(solve :no-hypothesis (p) :expect (region (model (p A H1) (p B H3))))\n\
@@ -109,7 +109,7 @@ fn fails() -> String {
 
 // ── The corpus fixtures that state their own answer, which must hold ──
 
-/// One per shape since M1e2 S1e2.1a.5: `10_expect` claims R is one state,
+/// One per shape: `10_expect` claims R is one state,
 /// `11_expect_ambiguity` that its maximal line has two projection classes
 /// (`:over maximal`), and `12_expect_false` that every node is dead. Each
 /// `ein test` run is the mode its claim needs and no flag.
@@ -149,9 +149,8 @@ fn a_false_claim_exits_one_and_names_the_fact() {
     assert!(r.summary().contains("0 held, 1 FAILED"), "{}", r.summary());
 }
 
-/// The case relation-closure exists for, and the derivation line M1c
-/// T1c.1.3.3 added under it: a surplus fact, and the rule that put it there.
-/// Since M1e2 S1e2.1a.5 it is the region claim's, which kept the line.
+/// The case relation-closure exists for, and the derivation line under it: a
+/// surplus fact, and the rule that put it there. It is the region claim's.
 #[test]
 fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
     let d = Dir::new("surplus");
@@ -178,10 +177,10 @@ fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
 }
 
 /// A query claim that lists one class where the query has two says how many
-/// it lists, and which class it did not list. Since M1f S1f.6.27 the claim
-/// is asked `--maximal --single`, which stops at the line's second state:
+/// it lists, and which class it did not list. The claim is asked
+/// `--maximal --single` (Q-M1f.221), which stops at the line's second state:
 /// that state's class refutes the claim, and the lines say that the run did
-/// not exhaust the line. Until then the description said *the query has 2*.
+/// not exhaust the line.
 #[test]
 fn a_class_mismatch_names_the_class_it_did_not_list() {
     let r = ein(&["test", "examples/features/11_expect_ambiguity.ein"]);
@@ -233,13 +232,11 @@ fn a_class_mismatch_names_the_class_it_did_not_list() {
 /// finish is not coverage" — the entry whose lattice view blindly enumerates
 /// an unbounded domain and which the sweep marks `slow` for it. It carries no
 /// `:expect`, so `ein test` must never solve it, and the whole directory has
-/// to come back in the time the eight fixtures take. (Three until M1e S1e.3.1
-/// added `13_mixed_solution_and_open.ein`, whose claim is `CO-M2`'s witness,
-/// four until M1f S1f.5.2's T1f.5.2.2 added `14_unicode_text.ein` and
-/// `15_unicode_escapes.ein`, the two examples of natural-language text, and
-/// six until M1f S1f.5.7's T1f.5.7.2 added `16_eq_neq_goal.ein`, nine claims
-/// about `eq` and `neq` in a goal, and seven until its T1f.5.7.3 added
-/// `17_eq_neq_premise.ein`, four about them in a premise.)
+/// to come back in the time the eight fixtures take (among them
+/// `13_mixed_solution_and_open.ein`, `14_unicode_text.ein` and
+/// `15_unicode_escapes.ein`, the two examples of natural-language text,
+/// `16_eq_neq_goal.ein`, nine claims about `eq` and `neq` in a goal, and
+/// `17_eq_neq_premise.ein`, four about them in a premise).
 #[test]
 fn a_query_with_no_expectation_is_never_solved() {
     let started = std::time::Instant::now();
@@ -256,16 +253,12 @@ fn a_query_with_no_expectation_is_never_solved() {
         "{}",
         r.summary()
     );
-    // **The margin, measured** — M1e S1e.4.5, `TE-L1`. The comment here used
-    // to price it against `04_open`'s ~10 s in the *sweep*, which is a
-    // different operation: what this runs is `ein test examples/features`,
-    // and it is **15 ms** on this box (2026-09-01, three runs, dev binary).
-    // So the ceiling is ~1 300× rather than the two orders of magnitude
-    // claimed, and this assertion cannot fail on machine load — it fires only
+    // **The margin.** What this runs is `ein test examples/features`, not the
+    // corpus sweep's run of `04_open`, and it takes a small fraction of the
+    // ceiling, so this assertion cannot fail on machine load — it fires only
     // if something entered a search it was not asked to, which is the
-    // behaviour it exists for. It is the one wall-clock assertion in the
-    // workspace whose margin makes gating pointless; the tight one is
-    // `corpus_cli`'s recorded-cost band, which is behind `EIN_CORPUS_SLOW`.
+    // behaviour it exists for. The tight wall-clock band is `corpus_cli`'s
+    // recorded cost, which is behind `EIN_CORPUS_SLOW`.
     assert!(
         took < std::time::Duration::from_secs(20),
         "the directory took {took:?} against ~15 ms — something entered a \
@@ -365,9 +358,8 @@ fn quiet_keeps_the_failures_and_drops_the_passes() {
 }
 
 /// `-v` says what held, with what the run found: R's size and route for a
-/// region claim, the set and its classes for a query's. Both counts of the
-/// walk's header (`k` and `recorded`, M1e S1e.3.4) went with it at M1e2
-/// S1e2.1a.5, and the owing fixture that parted them now claims R empty.
+/// region claim, the set and its classes for a query's. The owing fixture
+/// claims R empty.
 #[test]
 fn verbose_reports_what_the_run_found() {
     let r = ein(&["test", "examples/features/11_expect_ambiguity.ein", "-v"]);
@@ -379,8 +371,8 @@ fn verbose_reports_what_the_run_found() {
         r.out
     );
 
-    // `tests/stdlib/slots/03_fill.ein` until M1f S1f.6.34 refused the
-    // `:no-hypothesis` that kept its obligations from proposing.
+    // Not `tests/stdlib/slots/03_fill.ein`: a `:no-hypothesis` that kept its
+    // obligations from proposing is refused (Q-M1f.245).
     let open = ein(&["test", "tests/region/04_owing.ein", "-v"]);
     assert_eq!(open.code, 0, "{}{}", open.out, open.err);
     assert!(
@@ -427,9 +419,8 @@ fn an_error_dominates_a_failure_in_the_exit_code() {
 }
 
 /// A `-T` abort is neither a pass nor a failure — nothing was established
-/// either way — so it is an ERROR and takes 2. The walk's `-E` retired at M1e2
-/// S1e2.1a.5; a budget now answers in part (below), and only the wall clock
-/// aborts.
+/// either way — so it is an ERROR and takes 2. A budget answers in part
+/// (below), and only the wall clock aborts.
 #[test]
 fn a_deadline_abort_is_an_error_and_never_a_pass() {
     // The 2¹⁶ region of `lattice/07`, claimed whole: no deadline of 0 s
@@ -457,8 +448,8 @@ fn a_deadline_abort_is_an_error_and_never_a_pass() {
     assert!(e.err.contains("-E/--max-enterings is retired"), "{}", e.err);
 }
 
-/// **A selection that checked nothing is not green.** M1c's acceptance says a
-/// missing tool is reported and never skipped past; the same rule applies to a
+/// **A selection that checked nothing is not green.** A missing tool is
+/// reported and never skipped past; the same rule applies to a
 /// corpus with no tests in it, which is how a coverage gate silently passes.
 #[test]
 fn a_selection_with_no_expectations_is_reported_not_passed() {
@@ -487,11 +478,11 @@ fn a_path_that_does_not_exist_is_refused() {
 
 // ── The mode a claim needs, and nothing more ───────────────────────
 
-/// `ein test` runs the mode a file's claims need (`solve_interface.md`
-/// § 2.3): `11`'s claim is about the maximal line, so it runs `--maximal`.
+/// `ein test` runs the mode a file's claims need (Q-M1f.221): `11`'s claim
+/// is about the maximal line, so it runs `--maximal`.
 /// `ein solve` checks the same claim against what it was asked: the
 /// description holds it, and `--minimal` cannot decide it, which is a `note:`
-/// and exit 0 under `solve` — the user's ruling of 2026-10-16 — where `ein
+/// and exit 0 under `solve` (Q-M1e2.33) — where `ein
 /// test`, whose whole job is checking, says NOT CHECKED and exits 1.
 #[test]
 fn test_runs_the_mode_a_claim_needs() {
@@ -591,8 +582,8 @@ fn the_artefact_flags_work_over_one_run() {
 }
 
 /// One path cannot hold two runs, so each is refused over a selection of
-/// more than one file — before anything is written. A file is **one** run
-/// since M1e2 S1e2.1a.5, whatever it claims, so a file with several claims
+/// more than one file — before anything is written. A file is **one** run,
+/// whatever it claims, so a file with several claims
 /// takes the flag.
 #[test]
 fn an_artefact_flag_over_more_than_one_run_is_refused() {
@@ -742,10 +733,7 @@ fn every_file_of_the_selection_has_a_row() {
 ///
 /// `10_expect.ein`'s header comment documents the `(or …)` form on line 12 and
 /// its `:expect` is a `(model …)`; a grep for `:expect (or` finds it and is
-/// wrong. That mistake was made — it is what M1d S1d.4.1's first-hour
-/// reconnaissance reported, and correcting it took the corpus's count of
-/// set-closure claims from two to **one**
-/// (the census).
+/// wrong, counting a set-closure claim the corpus does not have.
 #[test]
 fn the_shape_comes_from_the_program_and_not_from_the_text() {
     let d = Dir::new("report-shape");
@@ -761,7 +749,7 @@ fn the_shape_comes_from_the_program_and_not_from_the_text() {
             .unwrap_or("null")
             .to_string()
     };
-    // Since M1e2 S1e2.1a.5 `10` and `12` state their claims as region claims,
+    // `10` and `12` state their claims as region claims,
     // whose row is the file's first; `11`'s is its query's.
     assert_eq!(
         shape("10_expect.ein"),
@@ -841,8 +829,8 @@ fn the_report_changes_nothing_but_writes_a_file() {
 
 /// It is the report of a *run*, not of a query, so it takes any selection —
 /// which is the difference from `--json-summary`, refused over more than one
-/// run three tests above. One invocation over the three corpus roots is the
-/// whole of M1d S1d.4.1's first two tables.
+/// run three tests above. One invocation over the three corpus roots is a
+/// census of the corpus's claims.
 #[test]
 fn the_report_takes_a_selection_of_many_runs() {
     let d = Dir::new("report-many");
@@ -920,10 +908,9 @@ fn a_files_rows_are_indexed_from_its_own_base() {
 ///
 /// The direction is the whole point: every number comes from the row, under
 /// the row's names, so a header that printed one of them under the other's
-/// label fails here. That is exactly what `SE-M1` was — `k = {}` carried
-/// `stats.solution_nodes`, which parts from `Verdict::k` on every `Open`
-/// entry, so the human-facing and the machine-facing surfaces of one run
-/// disagreed by name on twelve of the corpus's programs.
+/// label fails here: a `k = {}` carrying a count of recorded nodes, which
+/// parts from the models' count on every `Open` entry, would make the
+/// human-facing and the machine-facing surfaces of one run disagree by name.
 fn header_for(row: &serde_json::Value) -> String {
     let verb = match row["outcome"].as_str().expect("an outcome") {
         "held" => "holds",
@@ -931,7 +918,7 @@ fn header_for(row: &serde_json::Value) -> String {
         "not-checked" => "NOT CHECKED",
         other => panic!("a row carrying a run came out {other}: {row}"),
     };
-    // A `(solve … :expect …)` claim's row (M1e2 S1e2.1a.4): its run is R, by
+    // A `(solve … :expect …)` claim's row: its run is R, by
     // the route that described it, and its header says so.
     if row["place"] == "solve" {
         let e = &row["expect"];
@@ -970,7 +957,7 @@ fn header_for(row: &serde_json::Value) -> String {
     };
     let classes = a["classes"].as_u64().expect("classes");
     // The question the claim was read off, and the one asked first where it
-    // left the claim undecided (M1f S1f.6.27).
+    // left the claim undecided (Q-M1f.221).
     let route = row["route"]
         .as_str()
         .expect("an answered claim has a route");
@@ -998,22 +985,17 @@ fn headers(out: &str) -> Vec<String> {
         .collect()
 }
 
-/// **The verbose header and the report row are one run, said twice** — M1e
-/// S1e.3.2, `SE-M1`.
+/// **The verbose header and the report row are one run, said twice.**
 ///
-/// The finding was one label and [S1e.3.4] fixed it; this is the half that
-/// makes the *class* closed rather than the instance. `ein test` publishes
-/// what a run found through two surfaces — a line a human reads and a row a
-/// census parses — and nothing compared them, which is how the header came to
-/// print the search's count under the verdict's name and stay that way from
-/// S1c.1.3 to M1e.
+/// This makes the *class* closed rather than an instance. `ein test`
+/// publishes what a run found through two surfaces — a line a human reads and
+/// a row a census parses — and with nothing to compare them a header could
+/// print one count under another's name and stay that way.
 ///
 /// The whole corpus in one invocation, because it costs 0.04 s and because the
 /// interesting cells are the ones a hand-picked cover would not have thought
 /// to include: **13 of the 68 checked queries have `k != solution_nodes`**,
 /// and every one of them is a program that states an obligation.
-///
-/// [S1e.3.4]: ../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium
 #[test]
 fn the_verbose_header_and_the_report_row_agree_field_for_field() {
     let d = Dir::new("cross-surface");
@@ -1083,10 +1065,10 @@ fn the_verbose_header_and_the_report_row_agree_field_for_field() {
         .iter()
         .filter(|x| x["expect"]["owing"].as_u64().unwrap_or(0) > 0)
         .count();
-    // Ten or more until M1f S1f.6.34, whose check refuses a list that names a
-    // relation an obligation owes, and that list was how most of them owed:
-    // the corpus's owing claims are four since (`tests/region/04_owing.ein`,
-    // `05_empty.ein`, and two register witnesses).
+    // A list that names a relation an obligation owes is refused
+    // (Q-M1f.245), so the corpus's owing claims are four
+    // (`tests/region/04_owing.ein`, `05_empty.ein`, and two register
+    // witnesses).
     assert!(owing >= 4, "only {owing} owing claims in the selection");
 }
 
@@ -1130,7 +1112,7 @@ fn the_two_surfaces_agree_on_a_failure_and_on_an_unchecked_claim() {
     );
 }
 
-// ── What H leaves out, on both surfaces — M1e2 S1e2.3.10 ───────────
+// ── What H leaves out, on both surfaces ────────────────────────────
 
 /// Each claim header of a `-v` run with the lines printed under it: two
 /// leading spaces for the header, four for its lines.
@@ -1203,18 +1185,16 @@ fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
 }
 
 /// **The report's row carries what H leaves out, wherever `ein test`
-/// prints it beside a claim** — M1e2 S1e2.3.10, P1e2.3's N8.
+/// prints it beside a claim**.
 ///
 /// Beside each claim it prints, `ein test` says what the universe leaves
-/// out (`outside the universe: …`, M1e2 S1e2.2.8) and what the untyped rung
-/// bound as an object (`a type as an object: …`, S1e2.2.10). Until
-/// S1e2.3.10 the report's rows carried neither: `tests/region/07_cube.ein`
-/// printed `outside the universe: is-a …` and its row's `region` was `{route,
-/// monotone, k_s, k_c, ms, status, stale_nodes, paths_differ}`. Since
-/// `ein-test-report/4` every row carries `outside` and `types_as_objects`,
-/// the summary's `root.hypgen` fields under its names and in its shapes,
-/// `null` where no run checked the row's claim. The corpus prints the first
-/// beside one claim and the second beside none (2026-11-06), so the second
+/// out (`outside the universe: …`, Q-M1e2.3) and what the untyped rung
+/// bound as an object (`a type as an object: …`, Q-M1e.12). Every row
+/// carries `outside` and `types_as_objects`, the summary's `root.hypgen`
+/// fields under its names and in its shapes, `null` where no run checked the
+/// row's claim: `tests/region/07_cube.ein` prints `outside the universe:
+/// is-a …`, and its row carries it. The second is printed beside no corpus
+/// claim (`ein test -v tests examples` shows which), so the second
 /// is held here on `branching/02`'s program with two claims added: a solve
 /// claim and a query's, each false, whose lines print without `-v` too.
 #[test]
@@ -1257,7 +1237,7 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
             })
             .unwrap_or_else(|| panic!("no {place} row {query} for {path}"))
     };
-    // `tests/region/07`: the inventory's S-4 witness.
+    // `tests/region/07`: the witness.
     let cube = row("07_cube.ein", "solve", 0);
     assert_eq!(
         cube["outside"],
@@ -1299,7 +1279,7 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
 }
 
 /// **The same over the corpus**: every claim `ein test -v` prints, its scope
-/// lines against its row, both directions (M1e2 S1e2.3.10).
+/// lines against its row, both directions.
 #[test]
 fn every_corpus_claims_scope_lines_are_its_rows() {
     let d = Dir::new("report-scope-corpus");
@@ -1317,7 +1297,7 @@ fn every_corpus_claims_scope_lines_are_its_rows() {
         serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
     let bad = scope_disagreements(&r.out, &doc);
     assert!(bad.is_empty(), "{}", bad.join("\n"));
-    // Not vacuous: `tests/region/07` prints the one (2026-11-06).
+    // Not vacuous: `tests/region/07` prints the one.
     assert!(
         doc["rows"]
             .as_array()
@@ -1328,7 +1308,7 @@ fn every_corpus_claims_scope_lines_are_its_rows() {
     );
 }
 
-// ── The question a claim is asked — M1f S1f.6.27 ───────────────────
+// ── The question a claim is asked (Q-M1f.221) ─────────────────────
 
 /// `tests/region/08_query_classes.ein`'s program, less its query: three
 /// candidates and R of seven states, ∅ among them, of which three hold
@@ -1351,7 +1331,7 @@ fn claim_rows(doc: &serde_json::Value) -> Vec<&serde_json::Value> {
 }
 
 /// **A claim is asked the least question that decides it, and the surfaces
-/// say which** (T1f.6.27.3): `--single` for a claim of one class, `-n k+1`
+/// say which**: `--single` for a claim of one class, `-n k+1`
 /// for one of k, the line's flag before it for a claim over a line, and
 /// describe for a solve claim. `-v` names the question before what the run
 /// found, and `ein-test-report/5`'s row carries it as `route`.
@@ -1411,12 +1391,13 @@ fn a_claim_is_asked_the_least_question_and_the_surfaces_say_which() {
     }
 }
 
-/// **The stage's point, on a corpus program**: a claim the least question
+/// **The least question, on a corpus program**: a claim the least question
 /// decides is held where describing R stops at the budget. I + BB = ILL at
 /// a budget of 1 200 facts: `--single` shows the one state and no other
 /// within it, and describe by the state route, which visits every alive
-/// partial assignment, does not finish, so until S1f.6.27 the claim was NOT
-/// CHECKED, exit 1. Describe's default, the tree and the classes, finishes.
+/// partial assignment, does not finish, so describing alone would leave the
+/// claim NOT CHECKED, exit 1. Describe's default, the tree and the classes,
+/// finishes.
 #[test]
 fn a_claim_on_a_search_is_held_where_describing_r_stops() {
     let file = "examples/beyond_arith/cryptarithm.ein";
@@ -1554,8 +1535,7 @@ fn a_state_found_refutes_a_claim_that_does_not_list_its_class() {
 }
 
 /// **A claim still not checked says what was asked first, and why that did
-/// not decide** (T1f.6.27.4): the describing run's line as it was, and one
-/// under it. Exit 1, as before.
+/// not decide**: the describing run's line, and one under it. Exit 1.
 #[test]
 fn a_claim_still_not_checked_says_what_was_asked_first() {
     // The question stopped at the budget, and so did the description.
@@ -1602,8 +1582,8 @@ fn a_claim_still_not_checked_says_what_was_asked_first() {
 
 /// **`(solve … :expect (false))` is refuted at root**: it says every node is
 /// dead, so an alive root refutes it whether or not the description
-/// exhausts. Exhausted, the line says what R holds, as before; stopped at
-/// the budget it was NOT CHECKED until S1f.6.27 and is FAILED, at root.
+/// exhausts. Exhausted, the line says what R holds; stopped at the budget,
+/// it is FAILED, at root, not NOT CHECKED.
 #[test]
 fn the_regions_false_is_refuted_at_an_alive_root() {
     let d = Dir::new("false-at-root");
@@ -1641,10 +1621,9 @@ fn the_regions_false_is_refuted_at_an_alive_root() {
 }
 
 /// **The pages name the schema the binary writes.** `--json-report`'s
-/// version is said on two kernel pages and in the option's help; until M1f
-/// S1f.6.27 nothing held them to the report, and `defined_behaviour.md` said
-/// `/2` while the binary wrote `/4`. Any other version one of them names is
-/// one it says came before.
+/// version is said on two reference pages, `cli.md` and `config.md`, and in
+/// the option's help, and this holds each to the report: each names the
+/// binary's version and none a later one.
 #[test]
 fn the_pages_name_the_reports_schema() {
     let d = Dir::new("report-schema");
@@ -1672,7 +1651,7 @@ fn the_pages_name_the_reports_schema() {
     assert!(help.out.contains(&schema), "--help: {}", help.out);
 }
 
-/// **A run that prints no N takes none** (T1f.6.27.5, E-31). `N` is searched
+/// **A run that prints no N takes none** (Q-M1e2.31). `N` is searched
 /// for after the walk, and on a search whose alive nodes are partial
 /// assignments that search is most of a description's time. `ein test` and
 /// `ein solve --count` print neither `N` nor its count, so they ask the

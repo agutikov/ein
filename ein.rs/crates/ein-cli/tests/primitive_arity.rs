@@ -1,37 +1,21 @@
-//! **Every kernel meta-primitive, at every arity** — M1e
-//! [S1e.1.6](../../../../docs/history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10)
-//! T1e.1.6.2, the review's `Q9`.
+//! **Every kernel meta-primitive, at every arity.**
 //!
-//! The review found one process panic from a well-formed program —
-//! `(eq ?x)` — and had no dedicated pass over the surface it came from. This
-//! is that pass, and it found the rule that predicts the whole class:
+//! A primitive whose arity nothing pins reaches the engine at any arity, and
+//! the class is predicted by one rule:
 //!
-//! > **The grammar shape-pins four of the seven kernel meta-primitives and
-//! > leaves three unpinned.** `NotForm`, `NeqForm`, `AndForm` and `OrForm` are
+//! > **The grammar shape-pins the kernel meta-primitives.** `NotForm`,
+//! > `NeqForm`, `AndForm` and `OrForm`, `eq`, `absent` and `false` are
 //! > productions with a fixed or bounded arity
-//! > ([`grammar.md` §2](../../../../docs/ein/user/reference/grammar.md#2-phrase-grammar));
-//! > `eq`, `absent` and `false` are ordinary `GenericList`s, and the only
-//! > thing between them and the engine was a runtime `assert!`.
+//! > ([`grammar.md` §2](../../../../docs/ein/user/reference/grammar.md#2-phrase-grammar)).
 //!
-//! Every cell that panicked or silently misbehaved was one of the unpinned
-//! three; every cell of the pinned four was a positioned parse error. That is
-//! not a coincidence to be re-derived — it is what these tests hold.
-//!
-//! **It pinned today's behaviour, including the wrong parts — and then
-//! S1e.2.1 came through it.** Seven of the twenty-one cells were defects: two
-//! panics (`(eq)`, `(eq ?x)` — [`CO-H1`] itself) and **five silent** ones,
-//! where `(absent)` retired its rule without a word and `(absent a b …)` /
-//! `(eq a b c …)` dropped every argument past the ones they read, firing a
-//! guard weaker than the one written. All seven are now a `CompileError` with
-//! a `file:line:col`, and this file is where that is asserted cell by cell:
-//! the seven rows below say `Refused` where they said `Panic`, `Fires` and
-//! `Silent`, and the fourteen that were already right are unmoved. **Since M1f
-//! S1f.5.5's swap the grammar pins `eq` and `absent` too**, and the seven are
-//! parse errors, positioned. The four shapes have `.expected` fixtures under
-//! [`examples/broken/`](../../../../examples/broken/), where they moved from
-//! `examples/broken/compile/` at the swap.
-//!
-//! [`CO-H1`]: ../../../../docs/history/m1e_review_processing/README.md
+//! A primitive left to a runtime `assert!` would panic on `(eq)` or `(eq ?x)`,
+//! and one that read only its first arguments would retire `(absent)`'s rule
+//! without a word and drop every argument of `(absent a b …)` or
+//! `(eq a b c …)` past the ones it reads, firing a guard weaker than the one
+//! written. Each of those cells is a parse error, positioned, and this file
+//! asserts it cell by cell, beside the cells that fire or stay silent as a
+//! reader expects. The shapes have `.expected` fixtures under
+//! [`examples/broken/`](../../../../examples/broken/).
 //!
 //! It is a subprocess sweep rather than an in-process one because two of the
 //! outcomes are **process** outcomes: an exit code of 101 and a panic message
@@ -44,7 +28,7 @@ use std::process::Command;
 #[derive(Debug, PartialEq, Eq)]
 enum Cell {
     /// A positioned `file:line:col: unexpected …` — the grammar refused it
-    /// (`unexpected input` until M1f S1f.5.5's swap).
+    /// at the token it found.
     ParseError,
     /// A load or compile diagnostic, exit 1 — refused later, but refused.
     Refused,
@@ -167,45 +151,38 @@ fn the_shape_pinned_primitives_refuse_a_wrong_arity() {
     }
 }
 
-/// **The three the grammar did not pin are checked, and since M1f S1f.5.5's
-/// swap the grammar pins `eq` and `absent` too.**
+/// **`eq` and `absent` are pinned by the grammar.**
 ///
-/// Read the table as the sweep produced it — *want* is what a reader of the
-/// program expects, *2026-08-29* is what it did when the sweep ran, *S1e.2.1*
-/// what M1e's fix made it, and *now* is what this test asserts:
+/// *A reader expects* is what a reader of the program expects, and *now* what
+/// this test asserts; *unpinned* is what a primitive left to the engine
+/// would do:
 ///
-/// | guard | a reader expects | 2026-08-29 | S1e.2.1 | now |
-/// |---|---|---|---|---|
-/// | `(eq)` · `(eq ?x)` | a diagnostic | **panic**, exit 101 — `CO-H1` | refused | a parse error |
-/// | `(eq ?x A)`, `A` bound to `?x` | fires | fires | fires | fires |
-/// | `(eq ?x A B)` with `A ≠ B` | a diagnostic, or silence | **fires** — everything past the second argument dropped | refused | a parse error |
-/// | `(absent)` | a diagnostic — `(absent ?x)` gets one | **silent**: the rule can never fire, and nothing says so | refused | a parse error |
-/// | `(absent (q ?x))`, `q` empty | fires | fires | fires | fires |
-/// | `(absent (q ?x) (p ?x))` with `p` non-empty | a diagnostic, or silence | **fires** — everything past the first argument dropped | refused | a parse error |
-/// | `(false …)` in a `:match` | silence | silence, at every arity | silence | silence |
+/// | guard | a reader expects | unpinned | now |
+/// |---|---|---|---|
+/// | `(eq)` · `(eq ?x)` | a diagnostic | **panic**, exit 101 | a parse error |
+/// | `(eq ?x A)`, `A` bound to `?x` | fires | fires | fires |
+/// | `(eq ?x A B)` with `A ≠ B` | a diagnostic, or silence | **fires** — everything past the second argument dropped | a parse error |
+/// | `(absent)` | a diagnostic — `(absent ?x)` gets one | **silent**: the rule can never fire, and nothing says so | a parse error |
+/// | `(absent (q ?x))`, `q` empty | fires | fires | fires |
+/// | `(absent (q ?x) (p ?x))` with `p` non-empty | a diagnostic, or silence | **fires** — everything past the first argument dropped | a parse error |
 ///
 /// The paper grammar states each primitive's shape (`eq` takes two terms,
-/// `absent` one premise), so the compiler's refusals S1e.2.1 added are reached
-/// by no program since the swap; T1f.5.5.5 retires them.
+/// `absent` one premise), so no program reaches a compiler refusal of these
+/// shapes.
 ///
-/// The two `(eq)` rows were the review's finding. The two dropped-argument
-/// rows were this sweep's, and they were the worse pair: a panic is loud, and
-/// a guard that quietly evaluates a weaker condition than the one written is a
-/// wrong answer with a success exit code.
+/// The dropped-argument rows are the worse pair: a panic is loud, and a guard
+/// that quietly evaluates a weaker condition than the one written is a wrong
+/// answer with a success exit code.
 ///
-/// **`false` is untouched, and deliberately.** It is the third unpinned
-/// primitive and the sweep found no cell of it wrong: silence in a `:match` is
-/// what a reader expects at every arity, so there was nothing for S1e.2.1 to
-/// refuse. Q-M1e.18's candidate (1) — pin all three in the grammar — would
-/// have moved it into `RESERVED` and changed what lexes as a `SYMBOL`, which
-/// is the one thing on that menu that could break a program that works today.
+/// `false` takes no argument and the grammar shapes it too (Q-M1e.18): a
+/// premise is `(false)`, and `(false …)` with an argument is a parse error.
+/// This sweep does not take it.
 #[test]
 fn the_unpinned_primitives_are_refused_at_a_wrong_arity() {
     let s = Scratch::new("unpinned");
     let cases: [(&str, Cell); 11] = [
-        // CO-H1: below its arity, a runtime `assert!` was the only check and
-        // it took the process down. A `CompileError` from S1e.2.1, and a
-        // parse error since S1f.5.5's swap.
+        // Below its arity: a parse error, where a runtime `assert!` would
+        // take the process down.
         ("(eq)", Cell::ParseError),
         ("(eq ?x)", Cell::ParseError),
         // The control: at its own arity the guard works, in both directions.
@@ -236,17 +213,14 @@ fn the_unpinned_primitives_are_refused_at_a_wrong_arity() {
     }
 }
 
-/// **A refused cell says where.** M1e S1e.2.1, and the second-order defect
-/// `CO-H1` closed: `corpus_cli::every_refusal_carries_a_diagnostic` is a rule
+/// **A refused cell says where.** `corpus_cli::every_refusal_carries_a_diagnostic` is a rule
 /// the repo enforces on refusals, and a panic is a refusal that carries a
 /// stack trace instead.
 ///
-/// The four shapes have `.expected` fixtures under `examples/broken/` (under
-/// `examples/broken/compile/` until M1f S1f.5.5's swap), which is where the
-/// message is pinned byte for byte. What is pinned *here* is the part a
-/// fixture cannot see: that the diagnostic reaches **stderr** of a real
-/// process with a non-zero exit, and that it says where. Until the swap it was
-/// the compiler's `CompileError` with a `line=` and a `col=`; since, each is a
+/// The four shapes have `.expected` fixtures under `examples/broken/`, which
+/// is where the message is pinned byte for byte. What is pinned *here* is
+/// the part a fixture cannot see: that the diagnostic reaches **stderr** of a
+/// real process with a non-zero exit, and that it says where: each is a
 /// parse error, `file:line:col: unexpected …`, at the token where the shape
 /// stops being the primitive's.
 #[test]

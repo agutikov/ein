@@ -1,12 +1,9 @@
 //! `./run_tests.sh` runs what CI runs — as a **test**, not as a convention.
 //!
-//! M1e `AR-M1`'s fourth pair, and the one that has already cost something:
 //! `run_tests.sh` and `.github/workflows/per-commit.yml` are two hand-written
-//! copies of one list, and M1c S1c.1.5 found them apart after **three red
-//! commits** — clippy and the two Python greps ran only in CI, so the local
-//! script reported a pass over findings it could not see. Both files carry
-//! that story in their own headers, and *"keep the two lists the same"* was
-//! the whole of the mechanism keeping them the same.
+//! copies of one list, and two copies drift: a check that runs only in CI
+//! lets the local script report a pass over findings it cannot see. *"Keep
+//! the two lists the same"* is no mechanism; this test is.
 //!
 //! ## What is compared, and what is not
 //!
@@ -27,7 +24,7 @@
 //! not recognise **fails**, because the failure this file exists to prevent is
 //! CI gaining a step the gate does not have.
 //!
-//! **Its sibling is `nightly_steps.rs`** (M1e2 S1e2.3.6), which holds
+//! **Its sibling is `nightly_steps.rs`**, which holds
 //! `run_tests.sh --nightly` to `nightly.yml` the same way, with the shell parse
 //! and the normalisation shared from `steps/mod.rs`. The nightly's banners are
 //! `nightly_step "…"`, which this file's parse does not read.
@@ -38,22 +35,18 @@
 //! differs only in the environment it runs under is not, beyond the one `env:`
 //! block the workflow uses.
 //!
-//! `--tests-only` **is** in scope since M1e S1e.3.6 T8, which asked for it:
+//! `--tests-only` **is** in scope:
 //! [`what_tests_only_skips_is_what_the_script_guards`] reads the set out of the
 //! script rather than restating it, so the flag's own list cannot drift from
-//! the two above. Since M1e S1e.4.5
-//! ([TE-L3](../../../../docs/history/m1e_review_processing/README.md#s1e45--tests-low))
-//! it holds the script's **header** to that set as well — the count and the
-//! bench smoke — because the header is the copy that drifts, and it drifted
-//! while this test watched: T1e.3.8.4 corrected the paragraph at
-//! `run_tests.sh:91` when the link check joined the gate and left the usage
-//! line at `:5` saying *five*, so one header said five and the other six about
-//! the same guard.
+//! the two above. It holds the script's **header** to that set as well — the
+//! count and the bench smoke — because the header is the copy that drifts:
+//! its usage line and its paragraph can each say a different count of the
+//! same guard.
 
 use ein_corpus::repo_root;
 
-// The shell parse and the normalisation, shared with `nightly_steps.rs`
-// (M1e2 S1e2.3.6), so the two diffs read `run_tests.sh` the same way.
+// The shell parse and the normalisation, shared with `nightly_steps.rs`,
+// so the two diffs read `run_tests.sh` the same way.
 #[allow(dead_code)]
 mod steps;
 use steps::{env_prefix, normalise, shell_steps};
@@ -123,8 +116,8 @@ fn the_gate_runs_what_ci_runs() {
         "run_tests.sh and per-commit.yml no longer run the same steps in the \
          same order.\n  gate: {gate:#?}\n  ci:   {ci:#?}"
     );
-    // Not vacuous: seven steps at S1e.3.4, and a parse that silently matched
-    // nothing against nothing would pass the assertion above.
+    // Not vacuous: a parse that silently matched nothing against nothing
+    // would pass the assertion above.
     assert!(
         gate.len() >= 7,
         "only {} steps parsed out of run_tests.sh — the parse, not the gate, \
@@ -136,7 +129,7 @@ fn the_gate_runs_what_ci_runs() {
 /// Every `run:` in the workflow is a gate step or a named exception.
 ///
 /// The direction that matters. A step added to CI and not to the gate is the
-/// failure of M1c S1c.1.5; if it is unmarked *and* unlisted here, this fails
+/// failure this file exists for; if it is unmarked *and* unlisted here, this fails
 /// and the author has to say which it is.
 #[test]
 fn every_ci_command_is_a_gate_step_or_says_why_not() {
@@ -166,18 +159,18 @@ fn every_ci_command_is_a_gate_step_or_says_why_not() {
     );
 }
 
-/// **What `--tests-only` skips is what the script guards** — M1e S1e.3.6 T8.
+/// **What `--tests-only` skips is what the script guards.**
 ///
-/// `TE-M8` is about two *lists* — the gate's and CI's — and `TE-L3` is the
-/// same divergence one flag down: `--tests-only` sets `CHECKS=0`, and every
+/// The two *lists* — the gate's and CI's — can diverge, and so can one flag
+/// down: `--tests-only` sets `CHECKS=0`, and every
 /// step inside an `if [[ "${CHECKS}" == 1 ]]` block is skipped with it. The
 /// script's header says the flag skips "the static checks"; the **bench
 /// smoke** is inside such a block too.
 ///
 /// Read from the script rather than restated, for this file's own reason: a
 /// second copy of a list is the thing that drifts. What is asserted is the
-/// *set*, so a step that gains or loses the guard fails here — including, when
-/// `TE-L3` lands, the header line that has to be corrected with it.
+/// *set*, so a step that gains or loses the guard fails here, and so does a
+/// header line left behind.
 #[test]
 fn what_tests_only_skips_is_what_the_script_guards() {
     let text = std::fs::read_to_string(repo_root().join("run_tests.sh")).expect("run_tests.sh");

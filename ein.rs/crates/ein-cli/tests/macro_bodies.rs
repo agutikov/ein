@@ -1,19 +1,16 @@
-//! **No path executes a malformed primitive a macro's expansion writes** —
-//! M1f S1f.5.24, on the user's ruling of 2026-11-10 on Q-M1f.67: *"do we allow
-//! invalid macro if it is not instantiated - the answer is yes, we allow, error
-//! will raise later during either compilation of instantiation or even later,
-//! the ultimate goal in this case is not allow execution of (eq <arg>)"*.
+//! **No path executes a malformed primitive a macro's expansion writes**
+//! (Q-M1f.67): a macro that is never instantiated is allowed whatever its
+//! body, and what a call writes is refused before anything executes it.
 //!
-//! A macro's body is a template the grammar never reads expanded, so until
-//! S1f.5.24 what a call wrote was met where it was used, or not at all (W66 to
-//! W69): `eq` or `absent` at another arity was refused by the compiler only
-//! where it compiled the plan, so a rule only a commitment activates, an hrule,
-//! an obligation and a rule no activator reaches loaded and some or every
-//! command answered; a `not` of no fact and a connective where a value goes
-//! were matched; `(eq k)`, `(false k)`, an `(or …)`, `(not k)` and a
-//! conjunction as a value were concluded, by a firing or by the hypothesis
-//! layer; and a conclusion that is no form stopped only the firing that met it.
-//! Since then the loader holds a rule's clauses, after expansion, to the shapes
+//! A macro's body is a template the grammar never reads expanded, so what a
+//! call writes could otherwise be met only where it is used, or not at all
+//! (W66 to W69): `eq` or `absent` at another arity refused only where a plan
+//! is compiled, while a rule only a commitment activates, an hrule, an
+//! obligation and a rule no activator reaches load; a `not` of no fact and a
+//! connective where a value goes matched; `(eq k)`, `(false k)`, an
+//! `(or …)`, `(not k)` and a conjunction as a value concluded; and a
+//! conclusion that is no form stopping only the firing that meets it. So
+//! the loader holds a rule's clauses, after expansion, to the shapes
 //! the grammar gives a written rule (`ein_ir::from_ir`'s
 //! `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81), so each is refused at
 //! instantiation, before any command compiles, fires, proposes or owes it.
@@ -379,7 +376,7 @@ fn every_malformed_primitive_is_refused_before_any_path_runs_it() {
 }
 
 /// The register's sixteen witnesses (W66 to W69) and the load-negative fixture
-/// S1f.5.21 left at compile, each read from its file, as `wrong_answers.rs`
+/// of the same shape, each read from its file, as `wrong_answers.rs`
 /// reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
@@ -498,8 +495,8 @@ fn the_registers_witnesses_are_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// **A macro no rule calls loads, whatever its body** — the user's ruling on
-/// Q-M1f.67: every malformed body above, declared and called by no rule, beside
+/// **A macro no rule calls loads, whatever its body** (Q-M1f.67): every
+/// malformed body above, declared and called by no rule, beside
 /// a rule that loads, is answered by every command, exit 0, the claim held.
 #[test]
 fn an_unused_malformed_macro_loads() {

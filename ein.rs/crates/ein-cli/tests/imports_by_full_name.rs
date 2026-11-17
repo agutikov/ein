@@ -1,15 +1,13 @@
-//! **Imports by full name, through the binary** — M1f S1f.6.35's acceptance
-//! (the stage file's § Acceptance), on the user's model (h) and its ruling of
-//! 2026-11-14, *"in all cases we import everything, the difference only in
-//! names"*.
+//! **Imports by full name, through the binary** (Q-M1f.247): every import
+//! brings everything, and the forms differ only in names.
 //!
 //! | claim | test |
 //! |---|---|
 //! | a program that lists `add`, `sum-of` and `n` and no entry rule computes | [`the_calculator_by_the_names_a_program_writes`] |
 //! | a program's own `done`, `b` or rule `add-column` beside the calculator loads and is unaffected | [`a_programs_own_names_beside_the_calculator`] |
 //! | `:as` makes no copy: the calculator listed and aliased holds one set of tables | [`an_alias_makes_no_copy`] |
-//! | nothing is left behind: E-20's witness answers, and no command prints a `note:` | [`nothing_is_left_behind`] |
-//! | a refusal of (h) is one `kb load error:` line at the command's load-error exit | [`a_refusal_is_one_line`] |
+//! | nothing is left behind: a selection's witness answers, and no command prints a `note:` | [`nothing_is_left_behind`] |
+//! | a refusal of the import rules is one `kb load error:` line at the command's load-error exit | [`a_refusal_is_one_line`] |
 //!
 //! The resolver's own cases are `ein-ir`'s `imports_full_names.rs`; that every
 //! corpus program answers alike under every import form is
@@ -63,8 +61,8 @@ fn the_calculator_by_the_names_a_program_writes() {
     assert_eq!(t.code, 0, "{}{}", t.stdout, t.stderr);
     assert!(t.stdout.contains("1 held"), "{}", t.stdout);
     // The circuit's own steps print by their full names, the program's by
-    // its short ones; a shared rule's is `std.math.positional`'s since
-    // S1f.6.16, whichever base activated it.
+    // its short ones; a shared rule's is `std.math.positional`'s, whichever
+    // base activated it.
     let r = ein_in(s.path(), &["solve", "p.ein", "--trace", "trace.md"]);
     assert_eq!(r.code, 0, "{}", r.stderr);
     let trace = std::fs::read_to_string(s.path().join("trace.md")).expect("a trace");

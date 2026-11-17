@@ -1,28 +1,21 @@
-//! M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium)
-//! — **what the artefact flags do when the file cannot be written.** Five at
-//! that stage; M1e2 S1e2.1.2 and S1e2.1.3 added `--dump-answer` and
-//! `--dump-lattice`, which take `--dump-states`' arm.
+//! **What the artefact flags do when the file cannot be written**
+//! ([`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure),
+//! Q-M1e.22).
 //!
-//! `EH-M1` is one sentence: a failed `--events` open, a failed
-//! `--json-summary` write and a failed `--trace` write each print a line and
-//! the run exits as if the artefact existed. The stage's job was to *rule* on
-//! that rather than call it arguably fine, and the ruling is
-//! [`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure):
-//! the additive four leave the exit code alone, `--dump-states` does not, and
-//! every one of them says the same sentence.
+//! A failed `--events` open, a failed `--json-summary` write and a failed
+//! `--trace` write each print a line and the run exits as if the artefact
+//! existed: the additive flags leave the exit code alone; a directory flag
+//! that cannot make its directory before the run exits 1; and every one of
+//! them says the same sentence. Two things more:
 //!
-//! Probing it turned up two things the finding did not name, and both are
-//! fixed here rather than documented:
-//!
-//! - **four flags, four diagnostics.** Three printed a bare OS error — *Is a
+//! - **one diagnostic, for every flag.** Not a bare OS error — *Is a
 //!   directory (os error 21)*, on a run that may carry three artefact flags —
-//!   one named the path but not the flag, and one carried its failure in the
-//!   exit code alone. If stderr is the whole of what a consumer gets, it has
-//!   to say which artefact was lost and where it was going.
-//! - **an empty path was accepted by all five**, and `--dump-states ""`
-//!   *succeeded*: `create_dir_all("")` is `Ok`, so four files landed in the
-//!   caller's current directory. It is a usage error now, refused by the
-//!   value parser at exit 2.
+//!   nor the path without the flag, nor a failure carried in the exit code
+//!   alone. If stderr is the whole of what a consumer gets, it has to say
+//!   which artefact was lost and where it was going.
+//! - **an empty path is a usage error**, refused by the value parser at exit
+//!   2: `create_dir_all("")` is `Ok`, so a directory flag given `""` would
+//!   write its files into the caller's current directory.
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -99,15 +92,13 @@ impl Drop for ReadOnly {
 
 const FILE: &str = "examples/features/10_expect.ein";
 
-/// Every artefact flag, and which subcommand carries it. `--dump-states`, the
-/// first directory, retired with the walk at M1e2 S1e2.1a.5; `ein oracle`'s
-/// two arrived with it.
+/// Every artefact flag, and which subcommand carries it.
 const ARTEFACTS: [(&str, &str); 9] = [
     ("solve", "events"),
     ("solve", "json-summary"),
     ("solve", "trace"),
-    // M1e2 S1e2.1.2 and .3 — directories made before the run, so the
-    // directory arm of the exit-code rule below.
+    // Directories made before the run, so the directory arm of the
+    // exit-code rule below.
     ("solve", "dump-answer"),
     ("solve", "dump-lattice"),
     ("oracle", "dump"),
@@ -204,9 +195,9 @@ fn an_empty_artefact_path_is_refused() {
         );
         assert!(r.out.is_empty(), "{cmd} --{flag} ran anyway:\n{}", r.out);
     }
-    // The one that used to succeed was `--dump-states ""`, retired with the
-    // walk; a directory flag is still the case to watch, so nothing is
-    // written into the working directory by an empty one.
+    // A directory flag is the case to watch, since `create_dir_all("")`
+    // succeeds: nothing is written into the working directory by an empty
+    // one.
     let before: Vec<String> = std::fs::read_dir(repo_root())
         .expect("readdir")
         .flatten()

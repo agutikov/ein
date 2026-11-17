@@ -1,15 +1,12 @@
-//! `ein oracle FILE --dump DIR` — M1e2
-//! [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)'s
-//! door, which was `ein solve --dump-region` until S1e2.1a.5's switch moved it
-//! to the oracle's own command.
+//! `ein oracle FILE --dump DIR`
+//! ([`region-dump.md`](../../../../docs/ein/user/reference/region-dump.md)).
 //!
 //! Held from the outside: the dump moves nothing the oracle prints; it agrees
 //! node for node with the second route, `utils/region.py`, which classifies
 //! each subset with one `ein saturate` process; its limit refuses, exit 2,
 //! and warns when raised; and the `non_monotone` stub's line and block appear
-//! exactly where the static check finds a site. The walk's half of the
-//! directory, `walk.json`, went with the walk; drawing a region run on the
-//! cube is S1e2.1a.7's.
+//! exactly where the static check finds a site. Drawing a region run on the
+//! cube is `region_render.rs`'.
 
 use std::collections::BTreeSet;
 use std::io::{BufRead, BufReader};
@@ -57,7 +54,7 @@ fn dump(file: &str, flags: &[&str], dir: &Path) -> Run {
     ein(&args, &[])
 }
 
-/// The one of [`SEVEN`] *forbid* refuses (M1e2 S1e2.2.5).
+/// The one of [`SEVEN`] *forbid* refuses (Q-M1e2.5).
 const REFUSED: &str = "examples/ein-bugs/naf-upward-closure.ein";
 
 /// The seven programs of Q-M1e2.7's tables.
@@ -79,8 +76,8 @@ fn the_flag_moves_no_answer() {
     for (i, file) in [
         "examples/branching/15_lookahead_two_step_on.ein",
         "examples/ein-bugs/wrong-answers/owed-seats.ein",
-        // A flagged program with a hole: `naf-upward-closure` until *forbid*
-        // refused it (M1e2 S1e2.2.5).
+        // A flagged program with a hole, not `naf-upward-closure`, which
+        // *forbid* refuses (Q-M1e2.5).
         HOLE,
     ]
     .iter()
@@ -140,26 +137,24 @@ fn require_python3() {
 
 /// A program where saturation **moves** a node inside the cube — a
 /// commitment derives candidates it did not commit to — so the closure check
-/// below is not vacuous: none of the seven does (S1e2.1a.2).
+/// below is not vacuous: none of the seven does.
 const MOVES: &str = "examples/saturation/transitive/taxonomy.ein";
 
 /// A program whose dead nodes die by a **pair**, `X` beside `(not X)`, which
-/// derives no `(false)` fact: 126 of its 128 nodes. `region.py` read only
-/// `false` until M1e2 S1e2.1b.2, and called such nodes alive; the finding
-/// was `corpus/fuzz_findings/d3-unsat-core.ein`'s 12 of 32, until *forbid*
-/// refused that program (M1e2 S1e2.2.5, F2's *via*).
+/// derives no `(false)` fact: 126 of its 128 nodes. A route that read only
+/// `false` would call such nodes alive.
 const PAIR: &str = "examples/branching/09_hrule.ein";
 
 /// A hole, since the seven's one, `naf-upward-closure`'s, is a refusal
-/// (M1e2 S1e2.2.5): an obligation's trigger, owing.
+/// (Q-M1e2.5): an obligation's trigger, owing.
 const HOLE: &str = "examples/lattice/04_obligation_trigger_hole.ein";
 
 /// **Two routes agree.** The library oracle and `utils/region.py` on the
 /// seven programs, [`MOVES`], [`PAIR`] and [`HOLE`], node for node: the status
-/// of every subset, every alive node's closure (S1e2.1a.2), the two lines, the
-/// holes, the components' sizes, the maximal sub-cubes, `N`, and the N side of
-/// the duality. One of the seven, `naf-upward-closure`, is refused since M1e2
-/// S1e2.2.5, and the oracle says so.
+/// of every subset, every alive node's closure, the two lines, the holes, the
+/// components' sizes, the maximal sub-cubes, `N`, and the N side of the
+/// duality. One of the seven, `naf-upward-closure`, is refused (Q-M1e2.5),
+/// and the oracle says so.
 #[test]
 fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
     require_python3();
@@ -336,13 +331,13 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
     );
 }
 
-/// **Any region can be written as a program** (S1e2.1a.8): `utils/region_synth.py
+/// **Any region can be written as a program**: `utils/region_synth.py
 /// --random` draws 300 targets over at most six candidates — half of them with
 /// implications, so saturation moves nodes — writes each as a program, and
 /// holds this binary's oracle to it node for node, with the static check
 /// calling it monotone exactly when the target is. The one target it does not
 /// draw, a dead root under a non-empty R, it refuses by name: every node is
-/// built from root's fixpoint; what a node should be is F21's D2, open.
+/// built from root's fixpoint (Q-M1e2.2).
 #[test]
 fn a_random_region_written_as_a_program_comes_back() {
     require_python3();
@@ -363,9 +358,8 @@ fn a_random_region_written_as_a_program_comes_back() {
 }
 
 /// **Over the limit is a refusal**: exit 2, one stderr line naming the
-/// option, and a directory whose `region.json` says why there is no region.
-/// Under `ein solve`, where the cube was an artefact beside the walk, it was a
-/// note; the oracle's whole answer is the cube.
+/// option, and a directory whose `region.json` says why there is no region:
+/// the oracle's whole answer is the cube.
 #[test]
 fn over_the_limit_the_oracle_refuses_and_says_why() {
     let root = scratch("limit");
@@ -497,8 +491,7 @@ fn region_states_keeps_every_nodes_state() {
     assert!(region["region"]["nodes"][0].get("state").is_none());
 }
 
-/// **The warning** (M1e2 S1e2.1b.5, the wording the user approved on
-/// 2026-11-03), which replaced S1e2.1a.1's stub: on a program with a site the
+/// **The warning** (`read-out.md` § 5.1): on a program with a site the
 /// read-out's `lattice` block says what is assumed, each site and what it
 /// puts at stake, whether it bit — the status and the state apart — and the
 /// parent paths checked, and the summary's block carries the same; on a
@@ -507,8 +500,8 @@ fn region_states_keeps_every_nodes_state() {
 #[test]
 fn the_warning_says_what_is_assumed_where_there_is_a_site() {
     let root = scratch("warning");
-    // `naf-upward-closure` (exercised) and `stale-naf-fork` (conservative)
-    // were the first two until *forbid* refused them (M1e2 S1e2.2.5).
+    // Not `naf-upward-closure` (exercised) nor `stale-naf-fork`
+    // (conservative), which *forbid* refuses (Q-M1e2.5).
     let cases = [
         (
             "examples/lattice/08_absent_witness_hole.ein",
@@ -622,10 +615,9 @@ fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
     }
 }
 
-/// **Every field of the `monotonicity` block is defined on the page** (M1f
-/// S1f.5.28's item 1: the page named the block's keys and not seven of its
-/// fields, `reads.dynamic_*` and `paths.dead_parents` among them, and no
-/// test held it). Both directions: every field a run writes, over runs that
+/// **Every field of the `monotonicity` block is defined on the page**,
+/// `reads.dynamic_*` and `paths.dead_parents` among them. Both directions:
+/// every field a run writes, over runs that
 /// reach each of the five statuses (exercised, conservative, past the limit,
 /// not read, root dead), `paths.unprinted`, `-y`'s spot check on a monotone
 /// program, `--monotone` and `ein oracle --dump`'s `region.json`, is a row of

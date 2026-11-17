@@ -1,27 +1,26 @@
-//! M1d S1d.3.3 — **how `ein solve` reports a model *set***: the guarantee
-//! rule, and the determining key that is the set's compact form, read since
-//! M1e2 S1e2.1a.5's switch over the states a run lists.
+//! **How `ein solve` reports a model *set***: the guarantee rule, and the
+//! determining key that is the set's compact form, read over the states a run
+//! lists.
 //!
 //! [What a count of models claims](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)
 //! answers *print or describe* with **both**, and the two halves are tested
 //! here because they are one surface. The rule first, since the key inherits
 //! it.
 //!
-//! ## The rule (T1d.3.3.2)
+//! ## The rule
 //!
 //! | the run | what a report of the set may claim |
 //! |---|---|
 //! | exhausted | *these are the states* — of R, or of the line asked |
 //! | not exhausted | *these are states **found*** — the set may hold more |
 //!
-//! The walk's `Ambiguity` printed a bare *5* for
-//! `examples/saturation/type-exclusivity/colors.ein`, whose maximal line has
-//! **9** states — the proof the rule needed. The region read-out carries the
+//! A bare *5* for `examples/saturation/type-exclusivity/colors.ein`, whose
+//! maximal line has **9** states, would break the rule. The region read-out carries the
 //! qualifier on every count: a describe's `k_s` says *a lower bound* and
 //! where it is complete up to, and a mode's line says *as asked — may hold
 //! more*.
 //!
-//! ## The key (T1d.3.3.4)
+//! ## The key
 //!
 //! `--models key` is **additional output, never a second answer**: it adds a
 //! projection of the listed states to stdout and reaches nothing recorded. The
@@ -64,7 +63,7 @@ const COLORS: &str = "examples/saturation/type-exclusivity/colors.ein";
 
 /// **exhausted-says-these-are-the-states.** Row one of the rule, on a real
 /// multi-state entry: `colors.ein`'s R is 169 states, exhausted, and its
-/// maximal line nine — the walk's nine models, asked by `--maximal`.
+/// maximal line nine, asked by `--maximal`.
 #[test]
 fn an_exhausted_run_reports_the_states() {
     let all = ein(&["solve", COLORS]);
@@ -114,7 +113,7 @@ fn an_unexhausted_run_reports_states_found() {
     );
 }
 
-/// **the-key-is-a-projection-not-a-second-answer.** T1d.3.3.4's constraint,
+/// **the-key-is-a-projection-not-a-second-answer.** The key's constraint,
 /// as a diff.
 ///
 /// `--models key` may add its block to stdout and nothing else. So: the same
@@ -215,20 +214,20 @@ fn the_key_table_names_its_size_its_alternatives_and_one_row_per_state() {
 /// answer rather than an error.
 ///
 /// A minimum determining set is a minimum hitting set, which is NP-hard, and
-/// `branching/06_lookahead_on.ein` as it was until M1e2 S1e2.2.10 shows it:
-/// with `(relation co-located T T)`, 42 varying slots over its maximal line's
+/// `branching/06_lookahead_on.ein` with its relation untyped shows it: with
+/// `(relation co-located T T)`, 42 varying slots over its maximal line's
 /// 22 states, minimum key **8**, and `C(42, 8) = 118 030 185` candidate keys —
 /// so the count that answers *"why these"* cannot be taken and the form
 /// declines rather than printing an arbitrary basis. The states are listed
 /// above it either way, so the exit code is 0 and nothing is withheld.
 ///
-/// Since M1e2 S1e2.3.3 (the user's ruling (a) of 2026-11-03) the form on
-/// stdout is drawn from the states stdout showed, 9 of the 22, and their key
+/// The form on stdout is drawn from the states stdout showed (Q-M1e2.34), 9
+/// of the 22, and their key
 /// declines too, at `C(38, 7)`; the 22 states' key, and its decline, is
 /// `--dump-answer`'s `forms/key.txt`.
 ///
-/// Since S1e2.2.10 the fixture declares `(relation co-located Color House)`
-/// (Q-M1e.12 (a)), its maximal line is one state, and no corpus entry reaches
+/// The fixture declares `(relation co-located Color House)` (Q-M1e.12), its
+/// maximal line is one state, and no corpus entry reaches
 /// the budget; so the program this test runs is the fixture with its old
 /// signature put back, written into the scratch: the untyped program, byte for
 /// byte the rules and facts it was.

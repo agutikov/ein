@@ -1,6 +1,6 @@
-//! M1e2 S1e2.3.3 — **the forms after the read-out share its 100 lines.**
+//! **The forms after the read-out share its 100 lines** (Q-M1e2.34).
 //!
-//! The user's ruling (a) of 2026-11-03: the six forms (`--models key|grid`,
+//! The six forms (`--models key|grid`,
 //! `-p`, `-P`, `-f`, `--diff-models`, `-H`) are listings, and share stdout's
 //! 100 lines with the read-out's. Each is drawn from the states stdout
 //! showed, prints its items while what the read-out left lasts, at least
@@ -8,8 +8,9 @@
 //! one file per form (`DIR/forms/<form>.txt`, named in `index.json`), and
 //! `answer.txt` stays the read-out uncut.
 //!
-//! `pets.ein` is the witness: R is 11 339 states, the read-out lists 38 of
-//! them, and before the stage `--models grid` printed 34 143 lines.
+//! `pets.ein` is the witness: R is thousands of states, of which the
+//! read-out lists a few dozen, and `--models grid` drawn from all of them
+//! would print tens of thousands of lines.
 
 use std::path::Path;
 use std::process::Command;
@@ -100,7 +101,8 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
         // The read-out spent the 100 lines: one item, the form's head, and
         // the line that says where the rest is. 20 lines is the key's head
         // (six), H's (four), a state of `-p` (nine) with room to spare,
-        // against 34 143 for `--models grid` before the stage.
+        // against tens of thousands for `--models grid` drawn from every
+        // state.
         assert!(
             lines.len() <= 20,
             "{flags:?} printed {} lines after the read-out:\n{}",
@@ -283,21 +285,20 @@ fn the_oracle_points_at_solve_and_a_second_dump_leaves_no_stale_form() {
         .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
     assert_eq!(left, ["grid.txt"], "a stale form survived");
-    // `--count` lists no state and refuses every form (M1e2 T1e2.1c.4.6),
+    // `--count` lists no state and refuses every form (Q-M1f.218),
     // and its directory names no form.
     assert_eq!(ein(&["solve", THREE, "--count", "-p"]).code, 2);
     assert_eq!(dump(THREE, &["--count"], &d).code, 0);
     assert!(!d.join("forms").exists(), "--count's dump kept forms/");
 }
 
-/// **The fact dumps' headers say what they print** — M1e2 S1e2.3.7's N1 and
-/// N2, the user's ruling of 2026-11-03, in `factdump.rs`.
+/// **The fact dumps' headers say what they print**, in `factdump.rs`.
 ///
-/// `-f`'s header named `:hrules ['co-located', 'is-a']`, in a Python list's
-/// spelling, on `branching/02`, which declares no `:hrules`; it names the
-/// candidates' relations as Ein spells names. `-p`'s and `-P`'s
-/// called a state's facts *derived*, and on `lattice/02` state 2's one fact
-/// is its commitment. They are the facts beyond the program as loaded, and
+/// `-f`'s header names the candidates' relations as Ein spells names, not
+/// `:hrules ['co-located', 'is-a']` in a Python list's spelling, on
+/// `branching/02`, which declares no `:hrules`. `-p`'s and `-P`'s do not
+/// call a state's facts *derived*: on `lattice/02` state 2's one fact is its
+/// commitment. They are the facts beyond the program as loaded, and
 /// not *beyond root*: on `branching/02` ∅'s block lists root's derivations,
 /// and ∅ has no fact beyond root. So no header says *derived*, `:hrules` or
 /// *beyond root*, and each names the set it prints.
@@ -314,7 +315,7 @@ fn the_fact_dumps_headers_say_what_they_print() {
             .unwrap_or_else(|| panic!("no `── {state} ──`:\n{}", r.out));
         r.out[at..].lines().nth(1).unwrap_or_default().to_string()
     };
-    // A program that declares no `:hrules`, as N1's witness,
+    // A program that declares no `:hrules`, as the witness,
     // `zebra2-obligations.ein`, does not: naming a zebra puzzle here would
     // make this file one of `world_anchors.rs`' list.
     let f = ein(&["solve", BRANCHING_02, "-f"]);

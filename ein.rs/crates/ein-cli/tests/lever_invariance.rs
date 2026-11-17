@@ -1,11 +1,9 @@
-//! **C4 under every lever** — M1e2
-//! [S1e2.1a.6](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
-//! T1e2.1a.6.2, the config principle as a test.
+//! **C4 under every lever**, the config principle as a test.
 //!
 //! [`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract)'s
 //! C4: *no lever changes what is printed, cost counters aside — that includes
-//! which states `-n` prints*. The user's ruling of 2026-10-15 says the same of
-//! every configuration knob: *config may only affect search speed*. What a
+//! which states `-n` prints*. Q-M1e2.30 says the same of every configuration
+//! knob: no option, lever or flag changes R. What a
 //! mode answers is held to the oracle at default levers by
 //! `ein-infer/tests/explore.rs`; this file holds each mode's answer under a
 //! lever to its answer at the default, which closes the square.
@@ -21,13 +19,9 @@
 //!   the default: the exit code, stdout, stderr and the `--json-summary`. The
 //!   summary's `config` object echoes the lever, so it is left out of the
 //!   comparison and checked to carry it: a lever that stopped reaching the run
-//!   cannot pass as one that changes nothing. No environment lever is left:
-//!   `EIN_TRAVERSAL=tree` went with the walk at M1e2 S1e2.1c.5, and
-//!   `EIN_OBLIGATION_CHOICE=off|fail-first`, swept here until then, was retired
-//!   at S1e2.3.1 once the summary's `root` block, its last reader, stopped
-//!   running the walk's generator. The one CLI lever left, `-y`, is the read-out's
-//!   (the detector's spot check, unbounded, on every program — the user's
-//!   ruling of 2026-11-03, which retired `-L` and `-K`): it adds its `paths`
+//!   cannot pass as one that changes nothing. No environment variable is a
+//!   lever. The one CLI lever, `-y`, is the read-out's (the detector's spot
+//!   check, unbounded, on every program): it adds its `paths`
 //!   row and the summary's `monotonicity.paths`, which a `-y` cell leaves out
 //!   on both sides ([`without_spot`]), and moves nothing else.
 //! - **[`no_config_flag_moves_a_line_of_any_mode`]**, in-process. Every flag
@@ -43,21 +37,19 @@
 //!   which [`the_librarys_question_does_the_binarys_work`] holds on the cell
 //!   that once ran for most of an hour.
 //!
-//! **One exemption** (M1e2 S1e2.2.11, the user's ruling of 2026-11-04 on
-//! Q-M1e2.11 (ii)): `:record-alternative-justifications false` makes the proof
-//! a tree, and may change which core a dead node's refutation names, the
-//! read-out's `unsat core` and `source` rows and the summary's `region.core`,
-//! and since M1e2 S1e2.2.23 whether its search was cut, the `core search` row
-//! and `region.core_status`; and since M1e2 S1e2.3.10, where the core moved,
-//! the rule its derivation ends in, the `refuted by` row and
+//! **One exemption** (Q-M1e2.11, Q-M1e2.30): `:record-alternative-justifications
+//! false` makes the proof a tree, and may change which core a dead node's
+//! refutation names, the read-out's `unsat core` and `source` rows and the
+//! summary's `region.core`; whether its search was cut, the `core search` row
+//! and `region.core_status`; and, where the core moved, the rule its
+//! derivation ends in, the `refuted by` row and
 //! `region.refuted_by`; and nothing else ([`CORE_FLAG`], [`without_core`]).
 //! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
 //!
-//! **And one register row** (M1f S1f.5.15): W36's witness prints another
-//! `refuted by` under that flag
-//! beside the same core, which the exemption does not cover. It is a wrong
-//! answer, `open` and owned by F22, and its program is compared less that row
-//! until F22 fixes it ([`REFUTED_BY_OPEN`]);
+//! **And one register row**: W36's witness prints another `refuted by` under
+//! that flag beside the same core, which the exemption does not cover. It is
+//! a wrong answer, an `open` row, and its program is compared less that row
+//! until the row is fixed ([`REFUTED_BY_OPEN`]);
 //! [`w36_is_exempt_from_refuted_by_until_f22`] holds the row open and the
 //! difference there.
 //!
@@ -69,14 +61,13 @@
 //! `--region-budget`, so the answer the lever is compared under is the whole
 //! of R and not a part a budget chose. The corpus's `slow` entries are the
 //! programs it does not (a bare describe runs to the budget, which is why they
-//! are slow since S1e2.1a.5's switch); `EIN_CORPUS_SLOW=1` adds their declared
+//! are slow); `EIN_CORPUS_SLOW=1` adds their declared
 //! cells to the first test, where a cut answer must still be the same cut
 //! answer under every lever (C3 and C4 together), and the nightly runs it so.
 //!
-//! **What this cannot find**, said once here and on the stage's page: a
-//! wrong answer on a program neither the oracle nor route 1 reaches, and a
-//! wrong answer the saturator causes, because the oracle saturates with the
-//! same code (`solution_semantics.md` § 6.6). A lever that moves nothing
+//! **What this cannot find**: a wrong answer on a program neither the oracle
+//! nor route 1 reaches, and a wrong answer the saturator causes, because the
+//! oracle saturates with the same code. A lever that moves nothing
 //! printed on a program R is not known for is outside both tests.
 //!
 //! ```text
@@ -98,7 +89,7 @@ use serde_json::Value as J;
 /// The sixteen questions of `ein solve`'s two axes, as flags: which part of R
 /// (all, the minimal line, the maximal line) × what is asked of it (describe,
 /// `-n 1`, `-n 2`, `-n k_s+1`, `--single`), and `--count`, over all of R
-/// only (M1e2 T1e2.1c.4.6). `-n k_s+1` asks for more states than R holds, so
+/// only (Q-M1f.218). `-n k_s+1` asks for more states than R holds, so
 /// it is the run that lists all of them; where that is `-n 2` already, it is
 /// asked once, and there are thirteen.
 fn questions(k_s: u64) -> Vec<(Vec<String>, Mode)> {
@@ -130,8 +121,8 @@ fn questions(k_s: u64) -> Vec<(Vec<String>, Mode)> {
     out
 }
 
-/// Run `work` over `items` on the corpus sweeps' pool, `ein_corpus::pool`
-/// (M1f S1f.6.39; its own eight threads until then); the results in `items`'
+/// Run `work` over `items` on the corpus sweeps' pool, `ein_corpus::pool`;
+/// the results in `items`'
 /// order. `name` names an item as `(program, output)` for the pool's
 /// instrument.
 fn par_map<T: Sync, R: Send>(
@@ -182,12 +173,11 @@ fn scrub(summary: &mut J) -> J {
 
 /// What each CLI lever writes into the resolved config, which the summary's
 /// `config` object echoes: the evidence that the lever reached the run.
-/// `-L` and `-K` were here until M1e2 S1e2.1c.5 retired them (the user's
-/// ruling of 2026-11-03); a register row's `settings` that names one records
-/// the walk, and is not swept.
+/// `-L` and `-K` are retired; a register row's `settings` that names one is
+/// not swept.
 const SHADOWS: [(&str, &str, bool); 1] = [("-y", "lattice-sanity-check", true)];
 
-/// `-y`'s own output, which is the one thing it may add (M1e2 S1e2.1c.5): the
+/// `-y`'s own output, which is the one thing it may add: the
 /// spot check's `paths` row, under the `lattice` row, and the summary's
 /// `monotonicity.paths`. Both are left out of a `-y` comparison, on both sides
 /// — on a flagged program the bounded check prints the same row by default.
@@ -213,8 +203,7 @@ fn summary_without_spot(summary: &str) -> String {
 /// CLI lever each register row's `settings` names (`lever: -L, …`).
 ///
 /// `slow_too`: the slow entries' cells too, the nightly's, which the one test
-/// that reads `EIN_CORPUS_SLOW` passes (M1f S1f.6.39: the nightly runs that
-/// test by name, its other tests being the per-commit tier's).
+/// that reads `EIN_CORPUS_SLOW` passes.
 fn declared(slow_too: bool) -> BTreeMap<String, BTreeSet<String>> {
     let mut out: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     for e in corpus().entry {
@@ -398,13 +387,11 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
         "{} files ({known} with R known), {declared_cells} declared cells",
         files.len()
     );
-    // The selection did not collapse: eight corpus entries declare a lever,
-    // `-y`, since M1e2 S1e2.1c.5 retired `-L` and `-K` (twelve declared one
-    // before), and six of them, every one outside the slow tier, have a known
-    // R (2026-11-03): 93 declared cells — sixteen questions each, thirteen
-    // where k_s = 1. The 186 environment cells beside them, the two
-    // `EIN_OBLIGATION_CHOICE` settings over the same six files, went when
-    // M1e2 S1e2.3.1 retired the variable.
+    // The selection did not collapse: the corpus entries that declare a
+    // lever declare `-y`, and at least six of them, every one outside the
+    // slow tier, have a known R, at least 93 declared cells — sixteen
+    // questions each, thirteen where k_s = 1. The floor is the assertion
+    // below; the line above prints the counts.
     if !slow_too {
         assert!(cut.is_empty(), "R is not known for {cut:?}");
         assert!(
@@ -417,9 +404,8 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
 // ── 2. Every `(config …)` flag, in-process ────────────────────────────
 
 /// Every corpus program and register witness, less the slow tier (whose R a
-/// bare describe does not reach). A debug build left out W7's two witnesses,
-/// which it aborted on, until M1e2 S1e2.2.7 fixed W7, and W16's order pair
-/// until M1e2 S1e2.2.16 fixed W16.
+/// bare describe does not reach), W7's two witnesses and W16's order pair
+/// among them, in a debug build too.
 fn programs() -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = corpus()
         .entry
@@ -519,19 +505,18 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
     )
 }
 
-/// The one flag the core is exempt under (M1e2 S1e2.2.11, Q-M1e2.11 (ii)):
+/// The one flag the core is exempt under (Q-M1e2.11):
 /// off, a re-derivation is dropped rather than recorded, the explanation
 /// search is offered each fact's first derivation alone, and the core it
 /// names can be another. The classic zebra puzzle's own `(config …)` sets
-/// it off for speed (0.95 s against 188 s, the same 458 cores, 2026-11-04;
-/// `config.md` § 2.2); `alt-cap-core.ein` is where it changes a core.
+/// it off for speed (`config.md` § 2.2); `alt-cap-core.ein` is where it
+/// changes a core.
 const CORE_FLAG: &str = "record-alternative-justifications";
 
 /// The programs on which [`CORE_FLAG`] moves `refuted by` beside a core that
-/// did not move, each under a register row `open` and owned by F22:
-/// `W36/alt-flag-refuted-by` (M1f S1f.5.15), on its witness and,
-/// since S1f.5.15 took every `:priority` out, on `features/12`, the program
-/// the witness was written from, which no typed order hides any more; and
+/// did not move, each under an `open` register row:
+/// `W36/alt-flag-refuted-by`, on its witness and on `features/12`, the
+/// program the witness was written from, which no typed order hides; and
 /// `W36/alt-flag-two-derivations`, the witness no rule order hides. Each is
 /// compared less the `refuted by` row and `region.refuted_by` under that flag,
 /// and nothing else; an entry leaves with its row's fix.
@@ -551,7 +536,7 @@ const REFUTED_BY_OPEN: [(&str, &str); 3] = [
 ];
 
 /// The rows that name a dead node's core: the read-out's `unsat core` and
-/// `source`, and since M1e2 S1e2.2.23 its `core search` row, which says the
+/// `source`, and its `core search` row, which says the
 /// core's search was cut: off, each fact's first derivation is all the search
 /// is offered, so the search can be cut where it was not, or not where it was
 /// (`core-search-cut.ein`'s `(A k)` has one environment off and 256 on).
@@ -561,8 +546,8 @@ fn is_core_row(line: &str) -> bool {
         || line.starts_with("  core search ")
 }
 
-/// The row that names the rules a dead node's core's derivation ends in
-/// (M1e2 S1e2.3.10): it follows the core, so it may move where the core does.
+/// The row that names the rules a dead node's core's derivation ends in: it
+/// follows the core, so it may move where the core does.
 fn is_refuted_row(line: &str) -> bool {
     line.starts_with("  refuted by ")
 }
@@ -680,12 +665,10 @@ fn reach(path: &Path) -> Reach {
 /// **No `(config …)` flag moves a line of any mode**, on any program whose R
 /// is known.
 ///
-/// It found one when it was written: `enable-symmetric-mirror` off took the
-/// mirror's three facts out of root's fixpoint on
-/// `examples/features/06_symmetric_native.ein`, on every question, so R
-/// moved. T1e2.1a.6.3 retired the flag on the user's ruling of 2026-11-01 and
-/// filed the case as the register's W13, fixed in the same commit. A program
-/// that sets it is a load error now, so it is not among [`FLAGS`].
+/// `enable-symmetric-mirror` off would take the mirror's three facts out of
+/// root's fixpoint on `examples/features/06_symmetric_native.ein`, on every
+/// question, so R would move (W13): the flag is retired, a program that sets
+/// it is a load error, and it is not among [`FLAGS`].
 #[test]
 fn no_config_flag_moves_a_line_of_any_mode() {
     let files = programs();
@@ -765,7 +748,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
     }
     let (mut cells, mut bad, mut exempt) = (0usize, Vec::new(), BTreeSet::new());
     // `--count` at the default budget prints describe's rows, but `asked` and
-    // the warning's `paths` (M1e2 T1e2.1c.4.6): one tool, one count, on every
+    // the warning's `paths` (Q-M1f.218): one tool, one count, on every
     // program whose R is known. `read_out.rs` holds the same at a small
     // budget on every program, partial ones among them.
     for (&i, out) in &defaults {
@@ -815,7 +798,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
                 if want != got {
                     exempt.insert(rel.clone());
                 }
-                // W36's program: `refuted by` too, until F22.
+                // W36's program: `refuted by` too, while its row is open.
                 let moved = core_moved(want, got) || REFUTED_BY_OPEN.iter().any(|(_, w)| *w == rel);
                 (without_core(want, moved), without_core(got, moved))
             } else {
@@ -844,7 +827,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         bad.len(),
         bad.join("\n\n")
     );
-    // 180 on 2026-11-01, of 255 files: 12 partial, 63 with no read-out.
+    // A floor, so that a sweep that compared few programs cannot pass.
     assert!(known.len() >= 180, "{} programs compared", known.len());
 }
 
@@ -948,10 +931,10 @@ fn the_librarys_question_does_the_binarys_work() {
     );
 }
 
-/// **W36 is exempt from `refuted by` until F22 fixes it** (M1f S1f.5.15).
+/// **W36 is exempt from `refuted by` while its row is open.**
 ///
-/// Each [`REFUTED_BY_OPEN`] entry names a register row that is `open` and
-/// owned by F22, and a program that is its witness or that its note names;
+/// Each [`REFUTED_BY_OPEN`] entry names a register row that is `open`, and a
+/// program that is its witness or that its note names;
 /// and on that program
 /// [`CORE_FLAG`] still moves the `refuted by` row beside a core that did not
 /// move, on some question, and nothing else. The day it stops, the row is
@@ -1005,8 +988,7 @@ fn w36_is_exempt_from_refuted_by_until_f22() {
     }
 }
 
-/// **The core exemption is one flag and the core rows** (M1e2 S1e2.2.11, the
-/// user's ruling of 2026-11-04 on Q-M1e2.11 (ii)).
+/// **The core exemption is one flag and the core rows** (Q-M1e2.11).
 ///
 /// [`no_config_flag_moves_a_line_of_any_mode`] compares
 /// [`CORE_FLAG`]'s cells less the core. This holds the exemption to what the
@@ -1086,7 +1068,7 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
                 ),
                 "{at}: the summary's core, alternatives on and off"
             );
-            // The rule each core's derivation ends in (M1e2 S1e2.3.10):
+            // The rule each core's derivation ends in:
             // `wide` from `(w1 X) (w2 X)`, `narrow` from the chain.
             let refuted = |t: &str| -> Vec<String> {
                 t.lines()
@@ -1165,10 +1147,8 @@ fn outcomes(s: &J) -> Vec<J> {
 }
 
 /// **`--no-search` reports root as the full run reaches it, and states no
-/// R** — M1f
-/// [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md),
-/// the user's words of 2026-11-14, *"flag that disables search doesn't change
-/// R, it disables discovering of R"*. The flag is no lever that a complete
+/// R** (Q-M1e2.30, Q-M1f.258): it does not change R, it declines to discover
+/// it. The flag is no lever that a complete
 /// search could answer another R under: it declines to search. So on every
 /// program [`programs`] holds, against a bare `ein solve`:
 ///
@@ -1216,9 +1196,8 @@ fn no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r() {
         ));
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
-    // A floor, so that a sweep that compared nothing cannot pass: 517 of the
-    // 856 tracked programs wrote a summary on 2026-11-14 (S1f.6.36's T1),
-    // the slow tier among them.
+    // A floor, so that a sweep that compared nothing cannot pass: most
+    // tracked programs write a summary, the slow tier among them.
     assert!(compared >= 400, "only {compared} programs compared");
 }
 

@@ -1,17 +1,13 @@
-//! **`open` is written only as a rule's verdict** — M1f S1f.5.23, on the
-//! user's ruling of 2026-11-10 on the close review's finding 3 and on
-//! Q-M1f.66 (*"Refuse it"*): `open` is the verdict a rule's `:assert` states,
-//! `(open)` or `(open ?R)`, and is written nowhere else.
+//! **`open` is written only as a rule's verdict** (Q-M1f.66): `open` is the
+//! verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written
+//! nowhere else.
 //!
-//! Until S1f.5.23 `open` was a word a position gives a meaning to, a name
-//! wherever a name goes (`ein.y`'s `Name`, `FactHead` and `ArgHead`), and the
-//! loader refused it only in a rule's `:match`, inside a conclusion and beside
-//! one (`validate_open`). So `(p (open x))` loaded (finding 3), and so did
-//! `open` as a fact's relation, a stored negation's, a goal's or a claim's, an
-//! activator binding a relation parameter to it, and `open` as a value
-//! anywhere, which made it a name of the program the blind enumerator proposes
-//! facts about (W70, W71); and a macro's body stated the verdict for a rule
-//! (W72). Since then `open` is one of the words that are never a name
+//! As a name wherever a name goes, `open` would load in `(p (open x))`, as a
+//! fact's relation, a stored negation's, a goal's or a claim's, as an
+//! activator binding a relation parameter to it, and as a value anywhere,
+//! which would make it a name of the program the blind enumerator proposes
+//! facts about (W70, W71); and a macro's body could state the verdict for a
+//! rule (W72). So `open` is one of the words that are never a name
 //! (`ein_ir::grammar::RESERVED_WORDS`), and `ein.y`'s `Assert` is the one
 //! production that takes it, so every other place is refused at the parse, at
 //! the `open`, with a note saying where it is written.
@@ -22,8 +18,8 @@
 //! container. Each refuses with one first line at the `open`, the same on
 //! every command, the note under it, and writes no container. The verdict
 //! where a rule's or an hrule's `:assert` states it loads and every command
-//! answers it; and a container that stores a program writing `open` as a name,
-//! as one written before S1f.5.23 could, is refused where it is read.
+//! answers it; and a container that stores a program writing `open` as a
+//! name is refused where it is read.
 
 #![cfg(feature = "einb")]
 
@@ -69,8 +65,7 @@ fn rule(m: &str, a: &str) -> String {
 }
 
 /// `(place, the program after HEAD)`: every place a program can write `open`
-/// but a rule's whole `:assert`. The census of T1f.5.23.2, each place's
-/// program as the census wrote it.
+/// but a rule's whole `:assert`, each place's program.
 fn places() -> Vec<(&'static str, String)> {
     vec![
         // ── as a relation's name ──
@@ -449,10 +444,10 @@ fn the_verdict_loads_where_a_rule_concludes_it() {
 }
 
 /// **A container whose stored program writes `open` as a name is refused
-/// where it is read**, as one `ein kb save` wrote before M1f S1f.5.23 could
-/// be: the stored program is read back through the parser (Q-M1f.15), which
+/// where it is read**: the stored program is read back through the parser
+/// (Q-M1f.15), which
 /// refuses it at the `open`. Written through `ein_einb::save`, the stored
-/// program a tree the parser no longer builds, `(p open)`.
+/// program a tree the parser does not build, `(p open)`.
 #[test]
 fn a_container_that_stores_open_as_a_name_is_refused() {
     let scratch = Scratch::new("ein-open-container");

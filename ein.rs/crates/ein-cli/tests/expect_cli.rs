@@ -1,16 +1,16 @@
-//! `:expect` through the CLI — M1c
-//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims).
+//! `:expect` through the CLI
+//! ([claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
 //!
 //! The comparison itself is `ein-infer`'s `expect_semantics` (a query's
 //! classes) and `claim_round_trip` (the region claim); what is here is the part
 //! a program can only observe from outside: **the exit code**, and the promise
 //! that a claim under plain `solve` is checked, or noted as not checked, and
-//! never ignored. Since M1e2 S1e2.1a.5 a query's `:expect` lists its
+//! never ignored. A query's `:expect` lists its
 //! projection classes, and a claim about the whole state is the solve form's,
 //! `(solve … :expect (region …))`.
 //!
 //! A checker that reports success on a broken expectation is the worst outcome
-//! this phase has available to it, so the fixtures that must *fail* are checked
+//! a checker has, so the fixtures that must *fail* are checked
 //! for failing — with the right code and the right message — and not merely
 //! run. The [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)
 //! precedent: the fuzzer's own three controls each failed once first.
@@ -49,8 +49,8 @@ fn ein(args: &[&str]) -> Run {
 }
 
 /// A scratch `.ein` the test owns, in a directory of its own that goes with
-/// it ([`Scratch`]), beside whatever else the test writes. Its `Drop` used to
-/// remove the file and leave the directory (M1e2 S1e2.3.5).
+/// it ([`Scratch`]), beside whatever else the test writes: its `Drop`
+/// removes the directory, not only the file.
 struct Fixture {
     dir: Scratch,
     path: PathBuf,
@@ -139,9 +139,8 @@ fn a_true_expectation_exits_zero() {
 /// The four refusals of a malformed `(query …)`, each with its message
 /// checked in beside it. This asserts the CLI reaches them at all — the
 /// messages themselves are the `load-negative` and `parse-negative` corpus
-/// groups'. Since M1f S1f.5.5's swap two are the grammar's (an unknown
-/// keyword, S1f.5.11; a variable in a claim's fact, S1f.5.2's G-6), refused at
-/// the parse and moved to `examples/broken/`, their `.expected`
+/// groups'. Two are the grammar's (an unknown keyword, Q-M1e2.28; a variable
+/// in a claim's fact), refused at the parse, under `examples/broken/`, their `.expected`
 /// the parse report with the file written `{FILE}`; the other two stay the
 /// loader's.
 #[test]
@@ -167,16 +166,14 @@ fn the_load_negatives_are_refused_with_their_banked_message() {
     }
 }
 
-/// **`NOT CHECKED` is a note under `solve` and a failure under `ein test`**
-/// — M1e2 S1e2.1a.5's split, on the corpus's own fixture.
+/// **`NOT CHECKED` is a note under `solve` and a failure under `ein test`**,
+/// on the corpus's own fixture.
 ///
 /// `examples/features/11_expect_ambiguity.ein` claims the maximal line's two
 /// classes. Asked for one state, `ein solve -n 1` did not decide that: it
 /// answers what it was asked, says on stderr — one line, naming the file —
 /// that the claim went unchecked, and exits 0, because an answer is not an
 /// error. `ein test` runs the question the claim is about, and it holds.
-/// Before the switch plain `solve` stopped at `-n 1` by default and exited 1
-/// here (M1d S1d.4.3).
 #[test]
 fn not_checked_is_a_note_under_solve_and_decided_by_test() {
     let file = "examples/features/11_expect_ambiguity.ein";
@@ -217,7 +214,7 @@ fn not_checked_is_a_note_under_solve_and_decided_by_test() {
 // ── Several queries in one file ────────────────────────────────────
 
 /// Both queries run, and the second's failure is what sets the exit code —
-/// the discard this stage removed would have made this file exit 0.
+/// a loader that kept only the last block would make this file exit 0.
 #[test]
 fn every_query_runs_and_any_failure_sets_the_code() {
     let f = Fixture::new(
@@ -239,10 +236,8 @@ fn every_query_runs_and_any_failure_sets_the_code() {
     assert!(r.err.contains("query 2 of 2 :expect FAILED"), "{}", r.err);
 }
 
-/// **A file with several queries is one run, so one path holds it** — since
-/// M1e2 S1e2.1a.5. The walk solved once per query and refused an artefact flag
-/// over two of them, because one path could not hold two runs; a region run
-/// computes R once and reads each query off it, so the summary's `queries`
+/// **A file with several queries is one run, so one path holds it.** A
+/// region run computes R once and reads each query off it, so the summary's `queries`
 /// carries both and the event stream is the one run's.
 #[test]
 fn an_artefact_flag_over_several_queries_writes_the_one_run() {

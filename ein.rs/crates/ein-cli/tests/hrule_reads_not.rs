@@ -1,13 +1,11 @@
-//! **An hrule that reads `not` gets one answer from both builds** — M1f
-//! S1f.7.2 (W85, Q-M1f.129).
+//! **An hrule that reads `not` gets one answer from both builds** (W85,
+//! Q-M1f.129).
 //!
-//! Until S1f.7.2 `Hrules::candidates` held a `debug_assert!` that no hrule's
-//! `:match` read `not`, *which the walk's kill cache wrote mid-enumeration*,
-//! so a build with debug assertions stopped, exit 101, on a program a release
-//! build answered, and answered as `ein oracle` does. No command enumerated
-//! with the kill cache on since M1e2 S1e2.3.1, and the cache is gone, so the
-//! assertion guarded a write that no path makes; where an hrule reads `not`,
-//! every hrule is matched before any candidate is emitted.
+//! `Hrules::candidates` holds no `debug_assert!` that no hrule's `:match`
+//! reads `not`: nothing writes a `not` mid-enumeration, so such an assertion
+//! would guard a write no path makes and stop a debug build, exit 101, on a
+//! program a release build answers as `ein oracle` does. Where an hrule
+//! reads `not`, every hrule is matched before any candidate is emitted.
 //!
 //! `cargo test` builds with debug assertions, so this file is the debug
 //! build's run of the three shapes: a stored negation read under `(absent
@@ -97,8 +95,7 @@ fn an_hrule_that_reads_not_is_answered_as_the_oracle_answers() {
             }
         }
     }
-    // The fuzzer's finding of 2026-08-21, the program the assertion was first
-    // met on: its hrule matches nothing, and the run answers.
+    // The fuzzer's finding: its hrule matches nothing, and the run answers.
     let fuzz = ein(&["solve", "corpus/fuzz_findings/hrule-reads-not.ein"]);
     if fuzz.code != 0 {
         bad.push(format!(

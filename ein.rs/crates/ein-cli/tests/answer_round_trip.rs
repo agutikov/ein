@@ -1,39 +1,35 @@
-//! M1e2 S1e2.3.8 — **every state `--dump-answer` writes reloads to its own
-//! facts, by value**, on every corpus program.
+//! **Every state `--dump-answer` writes reloads to its own facts, by value**,
+//! on every corpus program.
 //!
 //! [`answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md) says
-//! each state file loads, and since S1e2.3.8 says what it loads to: the
-//! state's facts, each a value the one printer (`ein_core::text`) wrote as text
-//! the loader reads back to the same value, and each **as given**, since a
-//! fact's provenance is a comment the loader skips (the inventory's S-5).
+//! each state file loads, and what it loads to: the state's facts, each a
+//! value the one printer (`ein_core::text`) wrote as text the loader reads
+//! back to the same value, and each **as given**, since a fact's provenance
+//! is a comment the loader skips.
 //!
 //! The comparison is by value, never by text: a fact on each side is its
 //! `repr`, which tells a name from an int and a nested fact from either, and
 //! the state on the left is the run's own, read again through the node
 //! function every route uses (`region::Nodes`), not anything the dump wrote.
-//! Until S1e2.3.8 the printer wrote a name as its raw text, so `(holds "x
-//! y")` reloaded as the two-argument `(holds x y)`, the int `1` and the name
-//! `"1"` as one fact, and a name `#|` opened a block comment;
-//! `answer_dump.rs` named the two state files it could not hold
-//! (`printed_alike`), and that list is gone.
+//! A printer that wrote a name as its raw text would reload `(holds "x y")`
+//! as the two-argument `(holds x y)`, and a name `#|` would open a block
+//! comment.
 //!
-//! **The loader's `(written T)` facts are held apart** (M1f S1f.6.38): a
+//! **The loader's `(written T)` facts are held apart** (Q-M1f.272): a
 //! state file writes none of them, and the loader states one for each fact
 //! nested in a fact the file holds, so the reloaded state holds every one the
 //! state held, and one more for each fact nested only in a fact the run
-//! derived, which the file writes as a given. The rest is held fact for fact
-//! as before; `written` is held as a superset.
+//! derived, which the file writes as a given. The rest is held fact for fact;
+//! `written` is held as a superset.
 //!
-//! **And every member of N is written with its core** (M1e2 S1e2.3.9,
-//! P1e2.3's N6; M1f S1f.5.12): the same run's `nogoods.json` gives each
-//! member of N it met a core, its search's status beside it (`within-budget`,
-//! `cut-…`) and its rules, past `--region-limit` too. An empty list would read
-//! as *refuted by nothing*, and until S1e2.3.9 it was what a run past the
-//! limit wrote; from S1e2.3.9 until S1f.5.12 such a run wrote no core, no
-//! rules and `core_status: "not-kept"`: `lattice/06_friends_tables`, 68 of
-//! 68, and every program past the limit the per-commit tier dumps.
+//! **And every member of N is written with its core**: the same run's
+//! `nogoods.json` gives each member of N it met a core, its search's status
+//! beside it (`within-budget`, `cut-…`) and its rules, past `--region-limit`
+//! too, never an empty list, which would read as *refuted by nothing*, nor
+//! `core_status: "not-kept"` (`lattice/06_friends_tables` and every program
+//! past the limit the per-commit tier dumps).
 //!
-//! **And each is the core the walk takes eagerly** (M1f S1f.5.12, P-15 (c)):
+//! **And each is the core the walk takes eagerly**:
 //! `--dump-answer` asks for N's cores, so the run takes none during its walk
 //! and each member's after it, against the walk's snapshot. On every program
 //! the run describes within the limit, each member a second run with
@@ -41,30 +37,26 @@
 //! goes, has the same core, status and rules in `nodes.json` as in
 //! `nogoods.json` (`eager_cores`).
 //!
-//! **And a node that is not dead has no core** (M1f S1f.5.8, the user's
-//! ruling of 2026-11-07 on D-14): every JSON surface that writes a node's
+//! **And a node that is not dead has no core** (Q-M1e2.27): every JSON
+//! surface that writes a node's
 //! core writes a dead node's as a list, `[]` the empty set, and every other
 //! node's as `null`, its rules beside it the same way: the summary's root and
 //! minimal holes, `nogoods.json`, `ein oracle --dump`'s `region.json`,
 //! `--dump-lattice`'s `nodes.json` and `--events`' `enter` lines and `region`
-//! event (`no_core_unless_dead`). Until S1f.5.8 an owing hole, and every node that
-//! is not dead in the last three, was written `[]`.
+//! event (`no_core_unless_dead`), an owing hole among them.
 //!
-//! **And no unfilled template reaches it** (M1f S1f.5.14's T1f.5.14.5): no
+//! **And no unfilled template reaches it**: no
 //! line of `answer.txt` or of a state file's facts carries `{?`
 //! ([`no_placeholder_reaches_an_output`]).
 //!
-//! **Two tiers** (M1f S1f.5.13, the user's ruling of 2026-11-08 on P-16:
-//! *"move to slow tier"*). Per commit the test dumps every entry that is
-//! neither `slow` nor `heavy_dump`, the manifest's flag for a dump of at
-//! least `ein_corpus::manifest::HEAVY_DUMP_FILES` state files, and fails on
-//! one that writes that many unflagged. Under `EIN_CORPUS_SLOW=1`, which the
-//! nightly's `deep-corpus` job sets, it dumps every entry, and fails as well
-//! on a flagged one that writes fewer. Five entries were flagged on
-//! 2026-11-09, `square-unique`'s three, `features/04_open` and
-//! `features/01_not_and_absent`, each writing 64 514 to 65 214 state files;
-//! until then the first four ran per commit, and most of the test's time
-//! (`ein_corpus`'s `the_heavy_dump_set_is_exactly_these_five`).
+//! **Two tiers.** By default the test dumps every entry that is neither
+//! `slow` nor `heavy_dump`, the manifest's flag for a dump of at least
+//! `ein_corpus::manifest::HEAVY_DUMP_FILES` state files, and fails on one
+//! that writes that many unflagged. Under `EIN_CORPUS_SLOW=1` it dumps every
+//! entry, and fails as well on a flagged one that writes fewer. Five entries
+//! are flagged, `square-unique`'s three, `features/04_open` and
+//! `features/01_not_and_absent` (`ein_corpus`'s
+//! `the_heavy_dump_set_is_exactly_these_five`).
 //! `past-limit-lines` keeps a run past `--region-limit` in the per-commit
 //! tier, three state files and 15 members of N.
 //!
@@ -92,7 +84,7 @@ fn include_slow() -> bool {
 }
 
 /// A KB's facts by value, each its `repr`, a name and an int apart: those
-/// that are not the loader's `(written T)`, and those that are (M1f S1f.6.38).
+/// that are not the loader's `(written T)`, and those that are.
 fn by_value(kb: &Kb, terms: &Terms) -> (BTreeSet<String>, BTreeSet<String>) {
     let written = terms.kernel.written;
     let (mut facts, mut stated) = (BTreeSet::new(), BTreeSet::new());
@@ -125,64 +117,44 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, BTreeSet<String>, usize), 
     Ok((facts, stated, not_given))
 }
 
-/// **The state files that do not load today**, each the witness of an open
-/// register row (M1f S1f.5.0, 2026-11-08): W30, a rule's concluded `neq`
-/// stored as a fact, which a state file writes as a fact line `(neq …)`, and
-/// W34, `:assert ()` stored as a fact, written `()`; the parser refuses both
-/// lines. Not a printer's defect but the row's own wrong answer, so each is
-/// named rather than checked, and each must still fail: a state file here
-/// that loads is its row fixed, and S1f.5.7 (W30) and S1f.5.9 (W34) each take
-/// their files off the list in the commit that fixes them, with
-/// `answer_dump.rs`'s copy. W30's two left the list at M1f S1f.5.7's
-/// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored; and
-/// W34's at M1f S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts
-/// nothing, so no state holds the fact. Empty from then until M1f S1f.6.37's
-/// T1f.6.37.1 (2026-11-14), which named W94's two witnesses and
-/// `W95/hrule-and-in-and`, each a state holding a fact headed `and`, which a
-/// state file writes as a fact line the parser refuses. Each entry says how
-/// many of its state files do not load: `hrule-and-in-and`'s ∅ loads, and is
-/// checked as any other. S1f.6.37's fix (T1f.6.37.3, the same day) took the
-/// three off the list, with `answer_dump.rs`' copy: a conclusion is read flat,
-/// and no state holds a fact headed `and`. Empty since.
+/// **The state files that do not load**, each the witness of an open
+/// register row: a state the printer writes as a line the parser refuses.
+/// Not a printer's defect but the row's own wrong answer, so each is named
+/// rather than checked, with how many of its state files do not load, and
+/// each must still fail: a state file here that loads is its row fixed, and
+/// the fixing commit takes it off the list, with `answer_dump.rs`'s copy.
+/// Empty: a concluded `neq` is checked, never stored (W30); `:assert ()`
+/// asserts nothing (W34); and a conclusion is read flat, so no state holds a
+/// fact headed `and` (W94, W95).
 const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
 /// **The state files that reload a fact with a provenance today**, each the
-/// witness of an open register row (M1f S1f.7.9, 2026-11-11): W87, a fact the
+/// witness of an open register row: W87, a fact the
 /// program writes with a `:rule`, `(paid Ann :rule zzz)`. A state file writes
 /// the program as loaded, so that fact with its written `:rule`, and the loader
 /// stores what is written: the reloaded state holds one fact that is not a
 /// given, beside the same fact written as a given under *the state*. It is the
-/// row's own wrong answer, [F24](../../../../plans/followups/f24_written_provenance.md)'s,
-/// so the file is named rather than checked, and it must still reload so: the
+/// row's own wrong answer, so the file is named rather than checked, and it
+/// must still reload so: the
 /// commit that fixes W87 takes it off the list.
 const WRITTEN_PROVENANCE: [&str; 1] =
     ["examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"];
 
-/// **The witnesses whose state file printed an unfilled template reference**,
-/// each the witness of an open register row (M1f S1f.6.23, 2026-11-12): W89,
-/// a fact written with fewer arguments than its relation declares, `(likes
-/// Bob)` beside `(relation likes Person Drink :why "{?1} likes {?2}")`, which
-/// was stored, and whose English was the relation's `:why` with a place
-/// nothing filled, *Bob likes {?2}*. It was the row's own wrong answer, so
-/// each file was named rather than checked, and had still to print one.
-/// `arity-request.ein` and `arity-top-level-fact.ein` left the list at
-/// S1f.6.23's T1f.6.23.3 (2026-11-12): the loader refuses a form of another
-/// count than declared, so no state holds such a fact. Empty since.
+/// **The witnesses whose state file prints an unfilled template reference**,
+/// each the witness of an open register row, named rather than checked.
+/// Empty: a fact written with fewer arguments than its relation declares,
+/// `(likes Bob)` beside `(relation likes Person Drink :why "{?1} likes
+/// {?2}")`, whose English would be *Bob likes {?2}*, is refused at load
+/// (W89), so no state holds such a fact.
 const UNFILLED_TEMPLATE: [&str; 0] = [];
 
-/// **The witness whose state file re-wrote less than the program as
-/// loaded**, the witness of a register row open for one commit (M1f S1f.6.25, 2026-11-13):
-/// W91, a library's entry rule with an empty `:match`, imported by its name
-/// alone. The tree-shake the file is written through drops the rule, which no
-/// live name reaches and no live premise activates, and the relation only it
-/// names, so the reloaded file lacked the declarations' facts. It was the
-/// row's own wrong answer, so the file was named rather than checked, and had
-/// still to lose them. `dump-selection.ein` left the list at S1f.6.25's
-/// T1f.6.25.3 (2026-11-13): a name a selection lists is live, so the file is
-/// the program as loaded, and the sweep below holds it as it holds every
-/// corpus program: the witness without `std.math.decimal-arith`'s workaround fact, a
-/// library whose entry is a rule with an empty `:match`, imported by
-/// selection. Empty since.
+/// **The witnesses whose state file re-writes less than the program as
+/// loaded**, each the witness of an open register row, named rather than
+/// checked. Empty: an import brings its module whole, so the file is the
+/// program as loaded (W91: a library's entry rule with an empty `:match`,
+/// imported by its name, is written with the relation only it names), and
+/// the sweep below holds `dump-selection.ein` as it holds every corpus
+/// program.
 const SELECTION_DROPPED: [&str; 0] = [];
 
 /// The difference, a few facts each way.
@@ -328,15 +300,13 @@ fn check(
     Some(files.len())
 }
 
-/// **No unfilled template reaches an output** — M1f S1f.5.14's T1f.5.14.5,
-/// the second of the stage's two checks: no line of `answer.txt` (the
+/// **No unfilled template reaches an output**: no line of `answer.txt` (the
 /// read-out, a class's `:goal-text` filled) or of a state file (each fact's
 /// English, its rule's `:why` and its relation's filled) carries `{?`, which
 /// [`ein_core::render_why`] leaves where a reference names nothing it binds.
 /// A state file re-writes the program above its facts, `:why` templates and
-/// all, so only the lines after its `── the state` marker are read. It came
-/// back clean on the corpus as it stood when it was written, which is a
-/// result too: `ein-ir/tests/template_wellformedness.rs` holds the cause, the
+/// all, so only the lines after its `── the state` marker are read.
+/// `ein-ir/tests/template_wellformedness.rs` holds the cause, the
 /// template, and this holds the effect wherever a template is filled.
 fn no_placeholder_reaches_an_output(file: &str, path: &Path, bad: &mut Vec<String>) {
     let Ok(text) = std::fs::read_to_string(path) else {
@@ -356,11 +326,11 @@ fn no_placeholder_reaches_an_output(file: &str, path: &Path, bad: &mut Vec<Strin
 }
 
 /// `nogoods.json`'s members, each with a core, its search's status and its
-/// rules, past `--region-limit` too: never `not-kept` (M1f S1f.5.12), and
-/// never an empty core (M1e2 S1e2.3.9) but on ∅, a dead root's, whose
+/// rules, past `--region-limit` too: never `not-kept`, and
+/// never an empty core but on ∅, a dead root's, whose
 /// refutation rests on no fact. A member that is not ∅ has a core naming its
 /// commitment's facts, so `[]`, the empty set, is root's alone
-/// (`empty-match-false.ein`'s, since M1f S1f.5.9 made `:match ()` fire). Each
+/// (`empty-match-false.ein`'s, whose `:match ()` fires, Q-M1e2.36). Each
 /// failure goes to `bad`.
 fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
     let read = |name: &str| -> Option<serde_json::Value> {
@@ -392,15 +362,14 @@ fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
     }
 }
 
-/// N's cores against the eager ones (M1f S1f.5.12): where the run in `dir`
+/// N's cores against the eager ones: where the run in `dir`
 /// described R within `--region-limit`, `ein solve FILE --dump-lattice`, whose
 /// walk takes every dead node's core as it visits it, and for each member of
 /// `nogoods.json` that run visited, its core, status and rules in `nodes.json`
 /// equal `nogoods.json`'s. A member the route reads off others and does not
 /// visit (the state route's `N`, by duality) is not compared. How many were
 /// compared. Every node of that `nodes.json` is held to its deadness too, a
-/// dead one's core a list and every other's `null` ([`no_core_unless_dead`],
-/// M1f S1f.5.8).
+/// dead one's core a list and every other's `null` ([`no_core_unless_dead`]).
 fn eager_cores(file: &str, dir: &Path, bad: &mut Vec<String>, held: &mut Held) -> usize {
     let read = |path: &Path| -> Option<serde_json::Value> {
         serde_json::from_str(&std::fs::read_to_string(path).ok()?).ok()
@@ -527,8 +496,8 @@ fn summary_cores(held: &mut Held, bad: &mut Vec<String>, at: &str, summary: &ser
     }
 }
 
-/// **A node that is not dead has no core** (M1f S1f.5.8, the user's ruling
-/// of 2026-11-07 on D-14, Q-M1e2.27): a core is one object, the set of facts
+/// **A node that is not dead has no core** (Q-M1e2.27): a core is one
+/// object, the set of facts
 /// a dead node's contradiction rests on, so a dead node's `core` and
 /// `refuted_by` are lists, `[]` the empty set, and a node that is not dead,
 /// whose core does not exist, has `null`. Held on every JSON surface that
@@ -538,9 +507,8 @@ fn summary_cores(held: &mut Held, bad: &mut Vec<String>, at: &str, summary: &ser
 /// `nodes.json` and `--events`' `enter` lines and `region` event, the last
 /// four where the oracle answers at `--region-limit 10`, which bounds what
 /// they cost, the `enter` lines node for node against `nodes.json`; [`eager_cores`] holds the
-/// `nodes.json` of every other program it dumps. Until S1f.5.8 a node that is
-/// not dead was written `[]`, which reads as *the empty set of facts
-/// suffices*.
+/// `nodes.json` of every other program it dumps. A node that is not dead
+/// written `[]` would read as *the empty set of facts suffices*.
 fn no_core_unless_dead(file: &str, dir: &Path, bad: &mut Vec<String>) -> Held {
     let mut held = Held::default();
     let read = |path: &Path| -> Option<serde_json::Value> {
@@ -638,9 +606,9 @@ fn no_core_unless_dead(file: &str, dir: &Path, bad: &mut Vec<String>) -> Held {
     held
 }
 
-/// The shards [`shard`] splits the corpus into, one test each. Per commit no
-/// program dominates them since S1f.5.13 (`type-exclusivity/pets` writes the
-/// most, 11 339 state files); under `EIN_CORPUS_SLOW=1` they put the five
+/// The shards [`shard`] splits the corpus into, one test each. By default no
+/// program dominates them (`type-exclusivity/pets` writes the most); under
+/// `EIN_CORPUS_SLOW=1` they put the five
 /// `heavy_dump` entries and the zebra family's beside the rest, not after
 /// them.
 const SHARDS: usize = 8;
@@ -691,7 +659,7 @@ fn shard(k: usize) {
     // The nightly's shard of them (`EIN_TEST_SHARD`), before the eight
     // tests split it.
     let selected = ein_corpus::shard::keep(selected, |e| e.path.clone());
-    // The shard's entries on the corpus sweeps' pool (M1f S1f.6.39), which
+    // The shard's entries on the corpus sweeps' pool, which
     // the eight shards share, each entry with its own tallies, folded back in
     // the entries' order.
     let mine: Vec<(usize, &ein_corpus::Entry)> = selected
@@ -803,13 +771,9 @@ fn every_state_file_reloads_to_its_own_facts_by_value_7() {
 /// The witnesses: programs in the final grammar whose names exercise the
 /// printer, written here, and `syntax/arg-kinds`.
 ///
-/// Restated at S1f.5.5's swap (T1f.5.5.4). Until then they were the probe the
-/// inventory of 2026-11-05 re-took S-5 on and W16's pair, whose states held the
-/// int `1` and the name `"1"` in one position and which `answer_dump.rs` named
-/// as the files the printer could not write, and `arg-kinds`. Each writes a
-/// string as a value, which S1f.5.2's ruling refuses at the parse, and since
-/// S1f.5.4's name rule there is no int: a run of digits is a name. What the
-/// printer must now get right is the name rule's characters, so the
+/// A string is no value (Q-M1e2.23) and there is no int: a run of digits is
+/// a name (Q-M1e2.24). What the printer must get right is the name rule's
+/// characters, so the
 /// witnesses write `7` beside `07`, `-7` and `1..5`, every decorator, and the
 /// brackets, as fact arguments, candidates, nested facts and derived facts.
 #[test]
