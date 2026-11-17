@@ -10,7 +10,7 @@
     "name sets below are the single source of truth's mirror — keep them in",
     "sync with docs/ein/user/reference/reserved-names.md (declarators)",
     "and ein_core::STRUCTURAL / ein_infer::predicates::names() (rule-body",
-    "primitives + computed predicates). ein-cli/tests/cli_semantics.rs",
+    "primitives + computed predicates). utils/check_tool_mirrors.py",
     "re-derives each list from this file and fails on drift. Since M1f S1f.5.5's",
     "swap (2026-11-09) names follow the name rule (S1f.5.4): a name or a variable",
     "is a run of ASCII name characters, digits among them, so there is no number",

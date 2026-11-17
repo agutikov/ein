@@ -209,7 +209,7 @@ pub enum GuardArgKind {
     Reg(Reg),
     /// A name, the symbol it names, as the loader holds it in a fact; or a
     /// fact that holds no variable, the nested fact it spells
-    /// (`W24/form-in-guard`). A string is refused in a guard at the parse.
+    /// (`form-in-guard`). A string is refused in a guard at the parse.
     Const(Value),
     // There is no third kind: a form that holds no variable is a `Const`,
     // one that holds a variable is refused (Q-M1f.30), and a keyword pair is

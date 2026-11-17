@@ -1,6 +1,6 @@
 ;;; A macro's call under a written `(not …)` is stored as the negation of a fact nothing holds, so
 ;;; the state it contradicts is alive —
-;;; **W86**, register row `W86/macro-call-negated-fact`.
+;;; **W86**, regression `macro-call-negated-fact`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

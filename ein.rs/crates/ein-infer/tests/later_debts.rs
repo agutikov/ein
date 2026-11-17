@@ -7,7 +7,7 @@
 //! node, and that node then owes what root, which never held the activator,
 //! proposed nothing for. The rung reads those activators off the rules and
 //! root's plans, scans each one's plan at root, and repeats until nothing is
-//! added. This file holds that reading on the register's witness and its
+//! added. This file holds that reading on the regression's witness and its
 //! control and on seven programs written for it, each the witness with one
 //! thing changed:
 //!
@@ -45,7 +45,7 @@ const HEAD: &str = "\
 (relation drinks Person Drink :why \"{?1} drinks {?2}\")
 ";
 
-/// The register's witness, `W26/oblig-derived-activator`: `arm` concludes the
+/// The regression's witness, `oblig-derived-activator`: `arm` concludes the
 /// second obligation's activator from any `likes` fact.
 const WITNESS: &str = "\
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)

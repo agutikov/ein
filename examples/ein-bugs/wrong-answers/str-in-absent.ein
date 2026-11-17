@@ -1,5 +1,5 @@
-;;; An `(absent …)` over a string always holds — **W18**, register row
-;;; `W18/str-in-absent` (`corpus/wrong_answers.toml`), the case's mechanism
+;;; An `(absent …)` over a string always holds — **W18**, regression
+;;; `str-in-absent` (`corpus/regressions.toml`), the case's mechanism
 ;;; under `absent`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

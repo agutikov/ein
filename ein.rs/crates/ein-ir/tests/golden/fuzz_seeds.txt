@@ -16,7 +16,7 @@
   and 1 more repair
 === "(config :enable-pre-branch-lookahead true)"
   refused <string>:1:9: unexpected `:enable-pre-branch-lookahead`: a keyword this form does not take
-  note: config flag :enable-pre-branch-lookahead was retired at M1e2 S1e2.1c.5: the walk's one-step pre-filter, which no route runs: every route saturates each candidate's fork, and the filter's measured saving was in the noise
+  note: config flag :enable-pre-branch-lookahead is retired: the walk's one-step pre-filter, which no route runs: every route saturates each candidate's fork, and the filter's measured saving was in the noise
   repair: Insert `:lattice-sanity-check`, Delete `:enable-pre-branch-lookahead`
   repair: Insert `:record-alternative-justifications`, Delete `:enable-pre-branch-lookahead`
   repair: Delete `:enable-pre-branch-lookahead`, Delete `true`
@@ -41,7 +41,7 @@
   repair: Insert `config`
   repair: Insert `solve`
   and 1 more repair
-=== ";;; `activator-text-key.ein` with its two activator lines swapped, and\n;;; nothing else. Register row `W16/string-then-int`; the note is\n;;; `activator-text-key.md`. Refused at the parse as its twin is: a\n;;; string is no value.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds \"1\")\n\n(note edge \"1\")\n(note edge 1)\n"
+=== ";;; `activator-text-key.ein` with its two activator lines swapped, and\n;;; nothing else. Regression `string-then-int`; the note is\n;;; `activator-text-key.md`. Refused at the parse as its twin is: a\n;;; string is no value.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds \"1\")\n\n(note edge \"1\")\n(note edge 1)\n"
   refused <string>:14:19: unexpected `"1"`: a string
   note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
   repair: Delete `"1"`
@@ -50,7 +50,7 @@
   note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
   repair: Delete `"1"`
   repair: Insert `:source`
-=== ";;; An activator `1` and one `\"1\"`, whose text is one: a string is\n;;; natural-language text and never a value (Q-M1e2.23), so the program is\n;;; refused at the parse. Register row `W16/int-and-string`\n;;; (`corpus/wrong_answers.toml`); the note is `activator-text-key.md`.\n;;;\n;;; A compile plan is keyed by the activator's values, never by their text.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds \"1\")\n\n(note edge 1)\n(note edge \"1\")\n"
+=== ";;; An activator `1` and one `\"1\"`, whose text is one: a string is\n;;; natural-language text and never a value (Q-M1e2.23), so the program is\n;;; refused at the parse. Regression `int-and-string`\n;;; (`corpus/regressions.toml`); the note is `activator-text-key.md`.\n;;;\n;;; A compile plan is keyed by the activator's values, never by their text.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds \"1\")\n\n(note edge 1)\n(note edge \"1\")\n"
   refused <string>:16:19: unexpected `"1"`: a string
   note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
   repair: Delete `"1"`
@@ -59,9 +59,9 @@
   note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
   repair: Delete `"1"`
   repair: Insert `:source`
-=== ";;; `binding-key-layout.ein` with its two activator lines swapped, and nothing\n;;; else: the twin, which derives the same two `noted` facts.\n;;; Register row `W7/binding-key-layout`, as a twin; the note is\n;;; `binding-key-layout.md`.\n(relation edge  Node Node :why \"there is an edge from {?1} to {?2}\")\n(relation holds Node      :why \"{?1} holds\")\n(relation noted Node Node :why \"{?1} is noted with {?2}\")\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f) :why \"{?R} runs from {?a} to some node and {?f} holds, so {?a} is noted with {?f}\")\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge (src Y))\n(note edge 1)\n\n;; A run of digits is a name (Q-M1e2.24), so `1`, `2` and `3` are candidate\n;; objects; the search is scoped as the fixtures in `examples/ein-bugs/` are.\n;; H is `(holds 2)` and `(holds Y)`, R four states.\n(solve :no-hypothesis (edge noted))\n"
+=== ";;; `binding-key-layout.ein` with its two activator lines swapped, and nothing\n;;; else: the twin, which derives the same two `noted` facts.\n;;; Regression `binding-key-both/binding-key-layout`, as a twin; the note is\n;;; `binding-key-layout.md`.\n(relation edge  Node Node :why \"there is an edge from {?1} to {?2}\")\n(relation holds Node      :why \"{?1} holds\")\n(relation noted Node Node :why \"{?1} is noted with {?2}\")\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f) :why \"{?R} runs from {?a} to some node and {?f} holds, so {?a} is noted with {?f}\")\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge (src Y))\n(note edge 1)\n\n;; A run of digits is a name (Q-M1e2.24), so `1`, `2` and `3` are candidate\n;; objects; the search is scoped as the fixtures in `examples/ein-bugs/` are.\n;; H is `(holds 2)` and `(holds Y)`, R four states.\n(solve :no-hypothesis (edge noted))\n"
   ok 11 form(s)
-=== ";;; Two activators of one rule, a name of digits and a nested fact in one\n;;; position: each argument binds its parameter (Q-M1f.43), and a rule\n;;; application's identity is its activator's every argument (Q-M1e.16).\n;;; Register row `W7/binding-key-layout` (`corpus/wrong_answers.toml`); the\n;;; note is `binding-key-layout.md`. Root: `(noted 1 1)` and `(noted 2 1)`.\n(relation edge  Node Node :why \"there is an edge from {?1} to {?2}\")\n(relation holds Node      :why \"{?1} holds\")\n(relation noted Node Node :why \"{?1} is noted with {?2}\")\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f) :why \"{?R} runs from {?a} to some node and {?f} holds, so {?a} is noted with {?f}\")\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge 1)\n(note edge (src Y))\n\n;; A run of digits is a name (Q-M1e2.24), so `1`, `2` and `3` are candidate\n;; objects; the search is scoped as the fixtures in `examples/ein-bugs/` are.\n;; H is `(holds 2)` and `(holds Y)`, R four states.\n(solve :no-hypothesis (edge noted))\n"
+=== ";;; Two activators of one rule, a name of digits and a nested fact in one\n;;; position: each argument binds its parameter (Q-M1f.43), and a rule\n;;; application's identity is its activator's every argument (Q-M1e.16).\n;;; Regression `binding-key-both/binding-key-layout` (`corpus/regressions.toml`); the\n;;; note is `binding-key-layout.md`. Root: `(noted 1 1)` and `(noted 2 1)`.\n(relation edge  Node Node :why \"there is an edge from {?1} to {?2}\")\n(relation holds Node      :why \"{?1} holds\")\n(relation noted Node Node :why \"{?1} is noted with {?2}\")\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f) :why \"{?R} runs from {?a} to some node and {?f} holds, so {?a} is noted with {?f}\")\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge 1)\n(note edge (src Y))\n\n;; A run of digits is a name (Q-M1e2.24), so `1`, `2` and `3` are candidate\n;; objects; the search is scoped as the fixtures in `examples/ein-bugs/` are.\n;; H is `(holds 2)` and `(holds Y)`, R four states.\n(solve :no-hypothesis (edge noted))\n"
   ok 11 form(s)
 === "(relation ok      T :why \"{?1} is ok\")\n(relation blessed T :why \"{?1} is blessed\")\n(relation cand    T :why \"{?1} is a candidate\")\n(rule promote ()\n  :match  (and (ok ?x) (blessed ?x))\n  :assert (cand ?x) :why \"{?x} is ok and blessed, so {?x} is a candidate\")\n(ok      B)\n(blessed A)\n(query\n  :goal (cand ?x))\n"
   ok 7 form(s)
@@ -117,7 +117,7 @@
   repair: Insert `true`, Delete `maybe`
 === ";; A retired `(config …)` flag: `:lattice-order`, an order lever. The grammar\n;; knows every flag Ein no longer has, and refuses one at the parse with a\n;; note that says why, rather than as an unknown flag or as a flag that does\n;; nothing.\n\n(config :lattice-order lex)\n(relation p T)\n(p A)\n"
   refused <string>:6:9: unexpected `:lattice-order`: a keyword this form does not take
-  note: config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  note: config flag :lattice-order is retired: an order lever, and every route's order is part of its definition
   repair: Delete `:lattice-order`, Delete `lex`
 === ";; An unknown `(config …)` key is a typo, not a silent default. The\n;; message enumerates every legal flag, so this fixture pins the\n;; SolverConfig field set as a byte-comparable surface.\n\n(relation r T T)\n(config :nope true)\n"
   refused <string>:6:9: unexpected `:nope`: a keyword this form does not take
@@ -209,7 +209,7 @@
   repair: Delete `open`
 === ";; LOAD NEGATIVE — a lattice keyword left on (query …).\n;;\n;; Solving and asking are two forms: the keywords that choose the\n;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the\n;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries\n;; ask about one region, so a query may not choose its own. The loader says where\n;; the keyword went instead of calling it unknown.\n;;\n;; Expected (load error): see query_lattice_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :no-hypothesis (p))\n"
   refused <string>:13:23: unexpected `:no-hypothesis`
-  note: :no-hypothesis chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  note: :no-hypothesis chooses the lattice and belongs on (solve …) — one program, one lattice
   repair: Insert `:goal`, Delete `:no-hypothesis`
 === ";; LOAD NEGATIVE — a region claim at the top level.\n;;\n;; `region`, `merged` and `owing` mean something only inside\n;; `(solve … :expect …)`. A printed region pasted at the top of a file would\n;; otherwise load as a fact of a new relation called `region`, check nothing\n;; and say nothing, as a mistyped `:expct` would (`expect_unknown_keyword.ein`).\n\n(relation p T)\n(p A)\n(solve)\n(region (model (p A)))\n"
   refused <string>:11:2: unexpected `region`

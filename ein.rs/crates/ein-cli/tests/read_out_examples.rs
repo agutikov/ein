@@ -5,7 +5,7 @@
 //! The page holds real runs: each block is captioned with the `ein solve` or
 //! `ein oracle` command that printed it, and is that command's stdout, then
 //! its stderr lines as `stderr: …`, then `exit N`.
-//! `utils/read_out_examples.py` writes the page from the binary. This test
+//! The page is generated from the binary. This test
 //! runs every caption again and compares the block byte for byte, so the page
 //! cannot drift from what the binary prints. A caption with
 //! `--dump-answer DIR` is compared with the `answer.txt` it writes.
@@ -15,13 +15,12 @@
 //! block`), and — unless `EIN_CORPUS_SLOW=1` — zebra2 at `--region-budget
 //! 33554432`, the page's one slow run.
 //!
-//! What those skips and the prose leave, [`the_page_is_what_the_script_writes`]
-//! holds: it runs the script's `--check` with the binary under test, so the
-//! page is the script's output whole, the variant's block among it, and a
-//! script that stopped running would fail here.
+//! What those skips and the prose leave, the gate holds: the page is its
+//! generator's output whole, the variant's block among it, written with the
+//! binary the tests ran.
 
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Command;
 
 use ein_corpus::{Scratch, repo_root};
 
@@ -77,7 +76,7 @@ fn blocks(page: &str) -> Vec<Block> {
 }
 
 /// The block a run prints: stdout, the stderr lines, the exit code — the
-/// composition `utils/read_out_examples.py` writes.
+/// composition the page's generator writes.
 fn printed(command: &str, args: &[String]) -> String {
     let mut run: Vec<String> = Vec::new();
     // A `--dump-answer` goes to a fresh `answer/` in a scratch directory that
@@ -172,52 +171,12 @@ fn every_block_is_what_ein_solve_prints() {
     }
     assert!(
         failures.is_empty(),
-        "{}\n\nre-write the page with `python3 utils/read_out_examples.py`",
+        "{}\n\nthe page is generated: write it again from the binary",
         failures.join("\n")
     );
     assert!(checked >= 30, "{checked} blocks checked");
     assert!(
         blocks(&page).iter().any(|b| b.command == "oracle"),
         "no `ein oracle` block"
-    );
-}
-
-/// `utils/read_out_examples.py --check`, run with this binary, as
-/// `ein-ir/tests/digit_tables.rs` runs the table generator's. The test above
-/// compares the blocks
-/// it can run again; this compares the page byte for byte with what the script
-/// writes, prose, the scratch variant's block and every block, its runs on
-/// [`ein_corpus::pool::jobs`] workers.
-#[test]
-fn the_page_is_what_the_script_writes() {
-    let probe = Command::new("python3")
-        .args(["-c", "pass"])
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status();
-    assert!(
-        matches!(probe, Ok(s) if s.success()),
-        "`python3` does not run ({probe:?}): {PAGE} is generated and \
-         `utils/read_out_examples.py --check` is the only check of its prose and \
-         of the block no test can run again — a missing gate, not a missing convenience"
-    );
-    let out = Command::new("python3")
-        .args([
-            "utils/read_out_examples.py",
-            "--check",
-            "--bin",
-            env!("CARGO_BIN_EXE_ein"),
-            "--jobs",
-            &ein_corpus::pool::jobs().to_string(),
-        ])
-        .current_dir(repo_root())
-        .output()
-        .expect("python3 ran a moment ago");
-    assert!(
-        out.status.success(),
-        "{PAGE} is not what the script writes — re-write it with \
-         `python3 utils/read_out_examples.py`\n{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr),
     );
 }

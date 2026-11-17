@@ -1,5 +1,5 @@
-;;; W14 seen from inside the lattice — **W14**, register row
-;;; `W14/oblig-fresh-name-two` (`corpus/wrong_answers.toml`).
+;;; W14 seen from inside the lattice — **W14**, regression
+;;; `oblig-fresh-name-two` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -29,7 +29,7 @@
 ;;; one alive node beyond root, `{(likes Bob Soup)}`, owed Ann's debt,
 ;;; `(region (owing (model (likes Bob Soup))))`. The rung declines and the
 ;;; blind enumerator builds H, twelve candidates, and R is the twelve states
-;;; the `:expect` below states. The register row `W14/oblig-fresh-name-two`
+;;; the `:expect` below states. The regression `oblig-fresh-name-two`
 ;;; is fixed.
 ;;;
 ;;;

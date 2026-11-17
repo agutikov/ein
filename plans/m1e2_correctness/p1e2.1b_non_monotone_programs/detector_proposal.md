@@ -728,7 +728,7 @@ against the 1 s line.
 | `ein-summary/2` | the `monotonicity` block gains fields | additive; no golden holds a flagged summary whole |
 | the event | the `monotonicity` event gains optional fields | no version bump; not in `corpus_shapes.md5` |
 | `region.md`, the `ein render region` label, the review bundle | reworded | no golden |
-| [`wrong_answers.toml`](../../../corpus/wrong_answers.toml) | 3 qualifiers, 2 `open_because` (§ 4.3) | 5 strings, data only |
+| [`wrong_answers.toml`](../../wrong_answers/register.toml) | 3 qualifiers, 2 `open_because` (§ 4.3) | 5 strings, data only |
 | the docs | [`events.md`](../../../docs/ein/ein.rs/events.md)'s `monotonicity` entry; [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s stub paragraph and its `assumes_monotone` row; [`read_out.md` § 6.3](../p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent); [`syntax.md` § Solve](../../../docs/ein/user/reference/syntax.md#solve)'s *"under assumes a monotone lattice"*; `docs/kernel/inference/monotonicity.md` at `50739fdb` § 5 and § 8; [`config.md`](../../../docs/ein/user/reference/config.md)'s *"a node of a non-monotone lattice"*; the fixture headers and code comments naming P1e2.1b as the node's owner | the stage's list |
 
 **The spot check, if it ships**, adds one row inside the same 150 lines and no

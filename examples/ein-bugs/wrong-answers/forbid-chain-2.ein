@@ -1,6 +1,6 @@
 ;;; *forbid* misses a refutation whose activator chain first appears at a node,
-;;; two links past D — **W17**, register row `W17/forbid-chain-2`
-;;; (`corpus/wrong_answers.toml`).
+;;; two links past D — **W17**, regression `forbid-chain-2`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

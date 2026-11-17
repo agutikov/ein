@@ -66,7 +66,7 @@
 ;; relations it asks about: a relation written as a variable, as in
 ;; `(?R Rex Animal)`, is a rule's parameter, which its activator binds, and a
 ;; query has none, so the loader refuses such a goal on every command
-;; (register case W64).
+;; (W64).
 ;;
 ;;
 ;;

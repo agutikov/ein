@@ -1,5 +1,5 @@
 ;;; An imported module that exists and is a directory is reported as missing —
-;;; **W74**, register rows `W74/directory-*`.
+;;; **W74**, regressions `directory-*`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

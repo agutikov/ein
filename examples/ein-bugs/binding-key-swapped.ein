@@ -1,6 +1,6 @@
 ;;; `binding-key-both.ein` with its two activator lines exchanged, and
-;;; nothing else — **W7**'s twin, register row `W7/binding-key-layout`
-;;; (`corpus/wrong_answers.toml`), Q-M1e.16.
+;;; nothing else — **W7**'s twin, regression `binding-key-both/binding-key-layout`
+;;; (`corpus/regressions.toml`), Q-M1e.16.
 ;;; `corpus/fuzz_findings/binding-key-layout-swapped.ein` is the same
 ;;; program, a frontend-fuzzer seed.
 ;;;

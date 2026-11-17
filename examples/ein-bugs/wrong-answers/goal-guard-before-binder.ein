@@ -1,6 +1,6 @@
 ;;; A goal's guard written before the premise that binds its variable is judged
-;;; on a null — **W55**, register row `W55/goal-guard-before-binder`
-;;; (`corpus/wrong_answers.toml`) (Q-M1e2.26: a conjunction means the same in
+;;; on a null — **W55**, regression `goal-guard-before-binder`
+;;; (`corpus/regressions.toml`) (Q-M1e2.26: a conjunction means the same in
 ;;; any order of its conjuncts).
 ;;;
 ;;;

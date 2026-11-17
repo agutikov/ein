@@ -215,7 +215,7 @@
 <text xml:space="preserve" text-anchor="start" x="20" y="-197.75" font-family="Helvetica,sans-Serif" font-size="10.00">minimal hole {#0 #6}: its absent guard (absent (h D))</text>
 <polygon fill="none" stroke="black" points="16,-157.25 16,-190.75 708.5,-190.75 708.5,-157.25 16,-157.25"/>
 <text xml:space="preserve" text-anchor="start" x="20" y="-177" font-family="Helvetica,sans-Serif" font-size="10.00">not monotone — sites: dead&#45;3 · absent · h (the state, and dead with it); dead&#45;7 · absent · h (the state, and</text>
-<text xml:space="preserve" text-anchor="start" x="20" y="-164.25" font-family="Helvetica,sans-Serif" font-size="10.00">dead with it); nodes by fork from root, what a node is here is open (F21)</text>
+<text xml:space="preserve" text-anchor="start" x="20" y="-164.25" font-family="Helvetica,sans-Serif" font-size="10.00">dead with it); nodes by fork from root, what a node is here is not decided (Q&#45;M1e2.2)</text>
 <polygon fill="none" stroke="black" points="16,-136.5 16,-157.25 708.5,-157.25 708.5,-136.5 16,-136.5"/>
 <text xml:space="preserve" text-anchor="start" x="20" y="-143.5" font-family="Helvetica,sans-Serif" font-size="10.00">#0 (h A)</text>
 <polygon fill="none" stroke="black" points="16,-115.75 16,-136.5 708.5,-136.5 708.5,-115.75 16,-115.75"/>

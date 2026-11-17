@@ -9,7 +9,7 @@
 //!   flagged program the first can fail, which is why a flagged program gets
 //!   nothing: a program written for it is the control.
 //! - **With and without.** Every question of `ein solve` on every corpus
-//!   program and register witness that searches is asked twice, the denials
+//!   program and regression witness that searches is asked twice, the denials
 //!   read and from deaths alone (`known_dead::from_deaths_alone`, a switch on
 //!   the calling thread that no lever reaches): one answer.
 //! - **The fixture.** `tests/region/10_denied_extensions.ein`, a bijection
@@ -94,7 +94,7 @@ fn rel_of(path: &Path) -> String {
 /// store what they exclude.
 const INSTANCES: [&str; 2] = ["examples/zebra.ein", "examples/zebra2.ein"];
 
-/// Every corpus file and register witness, once; the `slow` entries that are
+/// Every corpus file and regression witness, once; the `slow` entries that are
 /// not [`INSTANCES`] where `slow_too` only.
 fn files(slow_too: bool) -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -104,10 +104,8 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -419,7 +417,7 @@ fn held(path: &Path, answers: Vec<Result<Answer, String>>) -> Tally {
 }
 
 /// **Every question answers alike with the denials read and from deaths
-/// alone**, on every corpus program and register witness that searches: the
+/// alone**, on every corpus program and regression witness that searches: the
 /// module's definition of *one answer*, cell by cell.
 #[test]
 fn every_question_answers_alike_with_the_denials_and_from_deaths_alone() {
@@ -539,10 +537,8 @@ fn every_question_answers_alike_with_the_denials_and_from_deaths_alone() {
 #[test]
 fn what_an_alive_node_denies_is_dead_above_it_on_every_monotone_cube() {
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

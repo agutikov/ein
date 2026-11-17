@@ -95,8 +95,8 @@ impl Source {
                 "$EIN_STDLIB names {at}, which has no {MARKER} — a directory is \
                  the stdlib only if it carries the marker, which is the same \
                  test the checkout walk applies (unset $EIN_STDLIB to use the \
-                 checkout or the embedded copy, or run \
-                 `utils/stdlib_manifest.py --write` in that tree)"
+                 checkout or the embedded copy, or name a directory that holds \
+                 the stdlib and its {MARKER})"
             ));
         }
         None

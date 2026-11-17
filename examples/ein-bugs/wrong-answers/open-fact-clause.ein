@@ -1,5 +1,5 @@
 ;;; `open` written as a fact's `:rule` clause loads, as a rule's name —
-;;; **W71**, register row `W71/fact-clause`.
+;;; **W71**, regression `fact-clause`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -1302,7 +1302,7 @@ impl<'a> Compiler<'a> {
     /// A variable is its register, bound where the guard is judged or bound by
     /// it ([`Seq`]); a name is the symbol it names, as in `slot`; and a fact
     /// that holds no variable is the nested fact it spells, a value as it is in
-    /// `(p (f a))` (`W24/form-in-guard`). The loader interns every such fact a
+    /// `(p (f a))` (`form-in-guard`). The loader interns every such fact a
     /// guard writes
     /// (`from_ir::intern_program_names`), so this finds it under a lent table
     /// too.

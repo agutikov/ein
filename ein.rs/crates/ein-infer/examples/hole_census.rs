@@ -33,7 +33,7 @@
 //! ```
 //!
 //! With no `FILE` it sweeps `site_census`'s selection, `corpus_files()` plus
-//! the register's witnesses, and keeps the programs the static check flags.
+//! the regressions' witnesses, and keeps the programs the static check flags.
 //! It writes nothing, and no route reads it.
 
 #[allow(dead_code)]
@@ -317,7 +317,7 @@ fn drafts(
     let mut today = vec![row(
         "lattice",
         format!(
-            "not monotone: {n_sites} (the static check) — {}; assumes a monotone lattice for what a node is (P1e2.1b)",
+            "not monotone: {n_sites} (the static check) — {}; assumes a monotone lattice for what a node is",
             plural(holes.len(), "hole", "holes")
         ),
     )];

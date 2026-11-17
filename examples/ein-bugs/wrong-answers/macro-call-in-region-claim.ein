@@ -1,6 +1,6 @@
 ;;; A macro's call inside a fact a `(solve … :expect (region …))` claim lists loads, and the claim
 ;;; can never hold —
-;;; **W86**, register row `W86/macro-call-in-region-claim`.
+;;; **W86**, regression `macro-call-in-region-claim`.
 ;;;
 ;;; ── What this program is ────────────────────────────────────────────────────
 ;;;

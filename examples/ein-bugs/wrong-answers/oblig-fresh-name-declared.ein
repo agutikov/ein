@@ -1,5 +1,5 @@
 ;;; The **control** for [`oblig-fresh-name.ein`](oblig-fresh-name.ein) — that
-;;; file plus one fact, `(food Z)` — case W14 of the register.
+;;; file plus one fact, `(food Z)` — case W14.
 ;;;
 ;;; With `(food Z)` at root the obligations rung's `(food ?b)` scan would find
 ;;; Z, H `(likes Ann Soup)` and `(likes Ann Z)`, and R one state,

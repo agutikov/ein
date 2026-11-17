@@ -1,5 +1,5 @@
 ;;; A premise-less derivation is never recorded as an alternative — **W25**,
-;;; register row `W25/guard-only-second` (`corpus/wrong_answers.toml`), open.
+;;; register row `W25/guard-only-second` (`plans/wrong_answers/register.toml`), open.
 ;;; Its control is `guard-only-first.ein`: the same program with `early` reading
 ;;; `(pp ?x)`, which a rule derives from `(p ?x)`, so that `w` arrives first
 ;;; (its header).

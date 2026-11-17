@@ -1,5 +1,5 @@
-;;; `(absent ())` loads, and holds — **W35**, register row
-;;; `W35/absent-empty` (`corpus/wrong_answers.toml`).
+;;; `(absent ())` loads, and holds — **W35**, regression
+;;; `absent-empty` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

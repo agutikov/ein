@@ -1,6 +1,6 @@
 ;;; The program a `--dump-answer` state file re-writes dropped a rule that only
-;;; a selection names — **W91**, register row `W91/dump-selection`
-;;; (`corpus/wrong_answers.toml`).
+;;; a selection names — **W91**, regression `dump-selection`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

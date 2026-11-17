@@ -1,5 +1,5 @@
 ;;; The eight `y` facts alone derive `(false)` — the control of **W23**,
-;;; register row `W23/core-search-cut` (`corpus/wrong_answers.toml`).
+;;; regression `core-search-cut` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

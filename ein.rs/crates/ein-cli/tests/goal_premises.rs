@@ -295,8 +295,8 @@ fn a_goals_relation_is_refused_at_its_pattern() {
     );
 }
 
-/// The register's witnesses whose right answer is a refusal (W77, W78, W79),
-/// each read from its file, as `wrong_answers.rs` reads one command's run.
+/// The regressions' witnesses of a goal's premises whose right answer is a
+/// refusal, each read from its file, as `regressions.rs` reads one command's run.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-goal-premise-witnesses");

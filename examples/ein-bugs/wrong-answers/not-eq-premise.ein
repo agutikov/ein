@@ -1,5 +1,5 @@
 ;;; A premise `(not (eq …))` matches stored negations, not `neq` —
-;;; **W51**, register row `W51/not-eq-premise` (`corpus/wrong_answers.toml`)
+;;; **W51**, regression `not-eq-premise` (`corpus/regressions.toml`)
 ;;; (Q-M1e2.26).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

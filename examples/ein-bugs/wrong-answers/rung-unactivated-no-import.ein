@@ -1,5 +1,5 @@
-;;; The control of `rung-unactivated.ein` — **W97**, register row
-;;; `W97/unactivated`'s control (`corpus/wrong_answers.toml`).
+;;; The control of `rung-unactivated.ein` — **W97**, regression
+;;; `rung-unactivated`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the import deleted, which it never used: no
 ;;; obligation rule is loaded, so the blind enumerator builds H, eleven

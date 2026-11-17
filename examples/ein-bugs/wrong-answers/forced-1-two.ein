@@ -1,5 +1,5 @@
 ;;; Two candidates, each refuted in ONE firing — the control for
-;;; `forced-2-two.ein` (**W1**, register row `W1/forced-2-two`).
+;;; `forced-2-two.ein` (**W1**, regression `forced-2-two`).
 ;;;
 ;;; The two files have the same objects, the same candidates and the same
 ;;; logical content: every `(q ?x)` is refuted. They differ only in how many

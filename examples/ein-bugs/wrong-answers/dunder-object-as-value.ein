@@ -1,6 +1,6 @@
 ;;; A kernel dunder a program writes as a value, among the blind enumerator's
-;;; objects — **W96**, register row `W96/as-value`
-;;; (`corpus/wrong_answers.toml`).
+;;; objects — **W96**, regression `as-value`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

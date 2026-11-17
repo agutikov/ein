@@ -733,7 +733,7 @@ milestone cites them across the boundary, as M1f does.
   (P1e2.5 until 2026-11-08) plans.
 - [F23](../followups/f23_diagnostics_in_eins_words.md): the diagnostics and
   spellings this milestone found and did not fix.
-- [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml): the
+- [`corpus/wrong_answers.toml`](../wrong_answers/register.toml): the
   register — every case's witnesses, wrong runs and right answers as data,
   held by `ein-cli/tests/wrong_answers.rs`.
 - [M1e](../../docs/history/m1e_review_processing/README.md): where most of these were found

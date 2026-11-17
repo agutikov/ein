@@ -598,12 +598,14 @@ def rel_path(p: Path) -> str:
 
 
 def corpus_selection(bin: str) -> list[Path]:
-    """Every corpus entry and register witness the static check flags, and
+    """Every corpus entry, regression witness and open wrong answer's witness
+    the static check flags, and
     every program under examples/lattice/synth/. A flagged program past the
     limit gets its guards and no cell: there is no oracle to hold it to."""
     files = {REPO / e["path"] for e in tomllib.loads((REPO / "corpus/corpus.toml").read_text())["entry"]}
-    reg = tomllib.loads((REPO / "corpus/wrong_answers.toml").read_text())
-    for case in reg.get("case", []):
+    cases = [c for f in ("corpus/regressions.toml", "plans/wrong_answers/register.toml")
+             for c in tomllib.loads((REPO / f).read_text()).get("case", [])]
+    for case in cases:
         for k, v in case.items():
             rows = v if isinstance(v, list) else [v]
             for r in rows:

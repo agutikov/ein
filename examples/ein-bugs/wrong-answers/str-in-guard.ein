@@ -1,5 +1,5 @@
 ;;; A string written in a guard never equals a value — **W18**, register
-;;; row `W18/str-in-guard` (`corpus/wrong_answers.toml`), the case's
+;;; regression `str-in-guard` (`corpus/regressions.toml`), the case's
 ;;; mechanism in a guard.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

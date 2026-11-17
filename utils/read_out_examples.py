@@ -17,8 +17,8 @@ is printed by one of its blocks; re-write it with
 
 One block is not one whole run: X4's scratch variant, whose query block is
 quoted. The test skips that block and reads no prose, so `--check` is what holds
-the rest of the page to this script; `read_out_examples.rs` runs it with the
-binary it tests, which is how it is in the gate (M1f E-45).
+the rest of the page to this script; `utils/check_generated.py` runs it with the
+binary the gate tested, which is how it is in the gate (M1f E-45).
 """
 import argparse
 import atexit

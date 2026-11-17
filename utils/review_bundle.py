@@ -8,7 +8,9 @@
     utils/review_bundle.py run FILE [SOLVE FLAGS…] --out DIR [--env NAME=V]…
 
 **The bundle** (S1e2.1.6), default `build/review/`: an index, and one page per
-row of `corpus/wrong_answers.toml` — the row's `[case.now]` region run beside
+open wrong answer, a row of `plans/wrong_answers/register.toml` (the fixed ones
+are the project's regressions, `corpus/regressions.toml`, which carry no
+record to review) — the row's `[case.now]` region run beside
 the walk's wrong answer, control and twins (the register's record of them:
 the walk has no CLI path since S1e2.1a.5's switch) and the right answer, the
 models diffed, § The region — R by the oracle with this run drawn on it,
@@ -22,12 +24,13 @@ all of R). `--corpus` builds one for every corpus entry with a declared
 `--smoke` builds one small case, and one program whose solve is refused, into
 a temporary directory and link-checks it: the per-commit gate's step, using
 the `ein` `cargo test --profile gate` built (`target/gate/ein`; the debug
-one, `target/debug/ein`, until M1f S1f.6.39 gave the gate its profile). Since M1f S1f.5.19 it also builds two
-cases whose run is not a solve, and since M1f S1f.5.25 one whose stdout is
-closed (the register's schema /21), and first reads every register row with
-no run through the index and the case pages' register-only parts. What it
-checks, in order: the register pass; the five builds, each a case that
-builds and every DOT drawn (below); every SVG non-empty; and every link and
+one, `target/debug/ein`, until M1f S1f.6.39 gave the gate its profile). Its
+cases are open rows, a solve's and a command's that is not a solve (since the
+register split, S1f.20.9; the container and closed-stdout shapes it built
+before were fixed rows, and no open row has them), and first it reads every
+register row with no run through the index and the case pages'
+register-only parts. What it checks, in order: the register pass; the three
+builds, each a case that builds and every DOT drawn (below); every SVG non-empty; and every link and
 image reference resolving (`doc_audit.py --links --check`). `--keep DIR`
 builds into DIR, new or empty, and leaves it, so a red smoke's DOTs can be
 drawn again elsewhere (S1f.5.29).
@@ -47,7 +50,7 @@ refused (`There is no layout engine support for "fdp"`).
 `saturate`, a `render` view, `kb save`) gets a page of its own (S1f.5.19,
 `review/command.py`): the command as run, its exit, stdout and stderr in full,
 against the register's `wrong`, `now` and `right` as
-`ein-cli/tests/wrong_answers.rs` reads them, and every artefact it writes,
+`the runner, ein-cli/tests/held/` reads them, and every artefact it writes,
 linked and drawn. A `container` row runs on the witness saved as a `.einb`.
 A case that fails to build makes the command exit 1, as a refused DOT does.
 `--regions` (S1e2.1a.8) surveys every corpus program's region and writes a
@@ -204,16 +207,17 @@ def cmd_smoke(args: list[str]) -> int:
     dangles, which is how the region gallery's `features/02` page did
     (M1e2 S1e2.1.7).
 
-    Since M1f S1f.5.19 (Q-M1f.53) two cases whose run is not a solve too —
-    `W40/kb-save`, a container and the container its run writes, and
-    `W41/saturate-import`, whose `wrong` is a refusal — and, first, every row
-    of the register read with no run (`register_pass`): the index's cells and
-    each case page's register-only parts. The whole bundle, the nightly's, had
-    been the only reader of a row shape, and stopped on W41's from `fc53818f`
-    to S1f.5.19 behind a green gate. Since M1f S1f.5.25 a third, `W75/solve`,
-    a solve's run with its stdout closed (schema /21), which the bundle runs
-    with its reader closed before the run (`util.run_closed`), as
-    `wrong_answers.rs` does.
+    The cases are open rows of `plans/wrong_answers/register.toml` since the
+    register split (S1f.20.9): `W39/or-one-key`, a solve's, and
+    `W87/written-rule-no-such-rule`, a command's run that is not a solve
+    (`saturate --dump`, Q-M1f.53) — and, first, every row of the register read
+    with no run (`register_pass`): the index's cells and each case page's
+    register-only parts. The whole bundle, the nightly's, had been the only
+    reader of a row shape, and stopped on W41's from `fc53818f` to S1f.5.19
+    behind a green gate. Until the split the smoke also built `W40/kb-save`
+    (a container) and `W75/solve` (a run with its stdout closed, run with its
+    reader closed before the run, `util.run_closed`); both are regressions
+    now, and no open row has either shape.
 
     Every DOT it keeps has its drawing: a graph Graphviz refused fails it,
     each printed with what Graphviz said (`cmd_bundle`, M1f S1f.5.29). The
@@ -238,8 +242,8 @@ def cmd_smoke(args: list[str]) -> int:
         return 1
 
     def build(out: Path) -> int:
-        code = cmd_bundle(["--bin", bin, "--out", str(out), "W2/forced-2", "W40/kb-save", "W41/saturate-import",
-                           "W75/solve", "examples/ein-bugs/query-goal-free-head.ein"])
+        code = cmd_bundle(["--bin", bin, "--out", str(out), "W39/or-one-key", "W87/written-rule-no-such-rule",
+                           "examples/ein-bugs/query-goal-free-head.ein"])
         if code:
             return code
         svgs = list(out.rglob("*.svg"))

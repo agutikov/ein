@@ -1,5 +1,5 @@
 ;;; A name written **only inside a nested fact** never became a candidate —
-;;; **W15**, register row `W15/negative-only` (`corpus/wrong_answers.toml`).
+;;; **W15**, regression `negative-only` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -27,7 +27,7 @@
 ;;; The blind enumerator's objects are every name of the program
 ;;; (`invariant::program_names`), a nested fact's arguments among them, and
 ;;; this file answers its control's R, which the `:expect` below states. The
-;;; register row `W15/negative-only` is fixed.
+;;; regression `negative-only` is fixed.
 ;;;
 ;;;
 

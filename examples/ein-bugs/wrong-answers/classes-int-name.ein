@@ -1,6 +1,6 @@
 ;;; A query's projection classes merged the int `1` and the name `"1"` —
-;;; **W28**, register row `W28/classes-int-name`
-;;; (`corpus/wrong_answers.toml`).
+;;; **W28**, regression `classes-int-name`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `open` written as a derived activator's argument loads, bound to a relation
-;;; parameter — **W71**, register row `W71/derived-activator`.
+;;; parameter — **W71**, regression `open-derived-activator/derived-activator`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

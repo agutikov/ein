@@ -50,8 +50,8 @@
 ;;; Snail and Old_Gold in House-3) every one-candidate extension of
 ;;; which dies. The rules do not refute it, because totality is
 ;;; stated here as a restriction on explicit exclusions, not as an
-;;; obligation. `ein solve --maximal` reports both. Register row
-;;; W1/zebra2-hints.
+;;; obligation. `ein solve --maximal` reports both. Regression
+;;; zebra2-hints.
 ;;;
 ;;;
 ;;;

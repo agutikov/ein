@@ -10,12 +10,10 @@
 //! | `ein solve` | the stop policy, the diagnostic flags, `--json-summary` |
 //! | the event stream | `--events`, whose spec is [`events.md`](../../../../docs/ein/ein.rs/events.md) |
 //! | the Zebra files | that `zebra2.ein` and its two variants stay one encoding |
-//! | the editor grammar | its three closed name sets |
 //!
-//! Everything here runs the built binary (`CARGO_BIN_EXE_ein`) except four
-//! claims that have no command line — `Events::off()`, root saturation, the
-//! id-order perturbation and the grammar itself — and those say so where they
-//! sit.
+//! Everything here runs the built binary (`CARGO_BIN_EXE_ein`) except three
+//! claims that have no command line — `Events::off()`, root saturation and the
+//! id-order perturbation — and those say so where they sit.
 //!
 //! **Nothing here re-asserts byte layout.** `ein-render`'s `corpus_shapes.md5`
 //! owns the exact form of every line the CLI prints; a whitespace change must
@@ -27,7 +25,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Command;
 
 use ein_core::{Kb, ProvKind, Symbol, Terms};
 use ein_corpus::repo_root;
@@ -231,10 +229,9 @@ fn shape_of(rel: &str) -> Shape {
 /// Asserted as a *relative* diff on purpose: an absolute golden of all three
 /// files would have to be re-blessed whenever the canonical encoding gains a
 /// rule, and the thing worth knowing is not what the fixtures contain but that
-/// the three of them are one puzzle. The generator's own `--check` is stronger
-/// still — it compares whole bytes, so it catches a drifted rule *body* where
-/// the structural diff below compares only rule names — and it is run here
-/// too, through `python3`, because it lives under `examples/`.
+/// the three of them are one puzzle. The variants are generated, and the gate
+/// holds them to their generator byte for byte, which catches a drifted rule
+/// *body* where the structural diff below compares only rule names.
 #[test]
 fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
     let z = shape_of("examples/zebra2.ein");
@@ -262,36 +259,13 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
         z.given.difference(&b.given).next().is_none(),
         "bad must not drop a condition"
     );
-
-    // The byte-level half — **required, not opportunistic**.
-    //
-    // An `eprintln!` and a pass where `python3` is absent or exits 127 would
-    // be worse than a lost assertion (`dot_wellformed` refuses the same
-    // shape): the structural diff above compares rule *names*, so a drifted
-    // rule **body** in a generated variant is caught by nothing else.
-    //
-    // 127 stays distinguished from a real failure, because a missing
-    // interpreter and a stale fixture are different things to be told — but
-    // both are failures, and the message says which.
-    require_python3();
-    let out = Command::new("python3")
-        .arg("examples/gen_zebra2_variants.py")
-        .arg("--check")
-        .current_dir(repo_root())
-        .output()
-        .expect("python3 ran a moment ago");
-    assert!(
-        out.status.success(),
-        "the on-disk variants are stale — run `python3 examples/gen_zebra2_variants.py`\n{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr),
-    );
 }
 
 /// **`send_more_money_written.ein` is `send_more_money.ein` with one line
-/// reordered**, and the generator's `--check` is what says so: the two are
-/// compared byte for byte through `examples/gen_send_written.py`, as the
-/// zebra2 variants are above. The pair is the witness that a search's work
+/// reordered**: outside the header's comments the two differ in one line of
+/// code, which holds the same eight facts. The file is generated, and the
+/// gate holds it to its generator byte for byte, as it does the zebra2
+/// variants above. The pair is the witness that a search's work
 /// does not read the order a program's facts are written in, so a hand edit
 /// to either that the other does not follow would make that comparison one
 /// between two different programs.
@@ -302,7 +276,7 @@ fn the_written_send_is_the_by_column_send_with_one_line_reordered() {
     };
     let by_column = read("examples/beyond_arith/send_more_money.ein");
     let written = read("examples/beyond_arith/send_more_money_written.ein");
-    // The structural half, which needs no interpreter: outside the header's
+    // Outside the header's
     // comments the two differ in exactly one line, and that line holds the
     // same eight facts.
     let code = |s: &str| -> Vec<String> {
@@ -325,53 +299,6 @@ fn the_written_send_is_the_by_column_send_with_one_line_reordered() {
         facts(differing[0].1),
         "the differing line does not hold the same facts"
     );
-    require_python3();
-    let out = Command::new("python3")
-        .arg("examples/gen_send_written.py")
-        .arg("--check")
-        .current_dir(repo_root())
-        .output()
-        .expect("python3 ran a moment ago");
-    assert!(
-        out.status.success(),
-        "the on-disk variant is stale — run `python3 examples/gen_send_written.py`\n{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr),
-    );
-}
-
-/// The one external tool the workspace still needs besides Graphviz, required
-/// the way `dot_wellformed::require_graphviz` requires that one.
-///
-/// Four `examples/` files are **generated** from `zebra2.ein` and
-/// `gen_zebra2_variants.py --check` is what compares the bytes; without it the
-/// only thing standing between a hand-edited variant and the gate is a
-/// structural diff over rule *names*. So it is a missing gate rather than a
-/// missing convenience, which is `require_graphviz`'s own sentence.
-fn require_python3() {
-    let run = Command::new("python3")
-        .arg("-c")
-        .arg("pass")
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status();
-    match run {
-        Ok(s) if s.success() => {}
-        Ok(s) => panic!(
-            "`python3 -c pass` exited {:?}: the interpreter on PATH cannot run \
-             a script, so `examples/gen_zebra2_variants.py --check` cannot \
-             either. Four examples/ files are generated and this is the only \
-             check that compares their bytes — a missing gate, not a missing \
-             convenience.",
-            s.code()
-        ),
-        Err(e) => panic!(
-            "`python3` does not run ({e}): four examples/ files are generated \
-             from zebra2.ein and `gen_zebra2_variants.py --check` is the only \
-             check that compares their bytes. Install a python3 — a missing \
-             gate, not a missing convenience."
-        ),
-    }
 }
 
 /// The landmarks of the canonical encoding: nine declared relations, a query
@@ -390,7 +317,10 @@ fn the_canonical_encoding_keeps_its_landmarks() {
     ] {
         let s = shape_of(rel);
         let want: BTreeSet<String> = DECLARED.iter().map(|s| s.to_string()).collect();
-        assert_eq!(s.declared, want, "{rel} declares a different B1 ontology");
+        assert_eq!(
+            s.declared, want,
+            "{rel} declares a different set of relations"
+        );
         assert!(s.has_query, "{rel} has no query block to answer");
         assert!(
             s.rules_total > 20,
@@ -842,8 +772,9 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
 ///
 /// Each of the four shapes below is a parse error at the place, every command
 /// exit 1, with the file, line and column: a keyword pair in a conclusion, a
-/// bare `_`, a name or a variable as a whole conclusion, and a string as a
-/// value. None is read as a symbol, and none reaches a firing.
+/// bare `_`, a name or a variable as a whole conclusion or a conjunct
+/// (Q-M1f.351), and a string as a value. None is read as a symbol, and none
+/// reaches a firing.
 #[test]
 fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
@@ -851,6 +782,7 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
         (r#"(tag ?x b :source "x")"#, 48, "unexpected `:source`"),
         ("(tag ?x _)", 46, "unexpected `_`: _ (reserved)"),
         ("foo", 38, "unexpected `foo`: a name"),
+        ("?x", 38, "unexpected `?x`: a variable"),
         ("(and (tag ?x b) ?x)", 54, "unexpected `?x`: a variable"),
         (r#"(tag ?x "lbl")"#, 46, r#"unexpected `"lbl"`: a string"#),
     ];
@@ -2081,7 +2013,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
     ),
     (
         "examples/branching/04_two_levels.ein",
-        "hyp / hypskip — how H is built, narrated since M1e2 S1e2.1a.5",
+        "hyp / hypskip — how H is built",
     ),
     (
         "examples/branching/12_typed_blind_solve.ein",
@@ -2098,13 +2030,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
     ),
     (
         "examples/lattice/04_obligation_trigger_hole.ein",
-        "monotonicity — a site, an obligation's trigger. `naf-upward-closure.ein` \
-         gave it, and `warn`, until M1e2 S1e2.2.5: *forbid* refuses that \
-         program before the static check is narrated, and `warn` left the \
-         schema with `(config :warn-derived-naf true)`, the flag that gated it. \
-         The `alive-set-invariant` category had a row of its own, \
-         `alive-set-fresh-name.ein`, until S1e2.2.4 seeded the universe with a \
-         rule's constants",
+        "monotonicity — a site, an obligation's trigger",
     ),
 ];
 
@@ -2351,220 +2277,6 @@ fn the_event_stream_does_not_depend_on_interning_order() {
             "{rel}: the stream moved when the id space was renumbered"
         );
     }
-}
-
-// ── The editor grammar ──────────────────────────────────────────────
-
-/// The TextMate grammar mirrors three *closed* reserved-name sets in head
-/// position. A stray copy that drifts from the registry is the failure mode
-/// these four tests exist for.
-const GRAMMAR: &str = "utils/vscode-ein/ein.tmLanguage.json";
-
-/// The closed declarator set, `macro`, `import` and `solve` among them.
-/// Source of truth:
-/// [`docs/ein/user/reference/reserved-names.md`](../../../../docs/ein/user/reference/reserved-names.md).
-const DECLARATORS: [&str; 9] = [
-    "config", "hrule", "import", "macro", "query", "relation", "rule", "solve", "trace",
-];
-
-/// The block-wrapper heads the language does not have. They are ordinary fact heads and
-/// must be highlighted by none of the three reserved scopes.
-const REMOVED_WRAPPERS: [&str; 4] = ["ontology", "facts", "reasoning", "rules"];
-
-/// The names a pattern highlights under `scope`, over the whole grammar.
-///
-/// A head keyword reaches the grammar as a lowercase alternation in capture
-/// group 2 of a `begin` / `match` regex — `(\()\s*(relation)\b…` for one name,
-/// `(query|config|trace|import)` for a set. Group 1 is the literal paren and
-/// group 3 is the declared *name*, and neither can be mistaken for the
-/// alternation: both start with a character that is not `[a-z]`.
-fn names_for_scope(node: &J, scope: &str, found: &mut BTreeSet<String>) {
-    match node {
-        J::Object(map) => {
-            let caps = map.get("beginCaptures").or_else(|| map.get("captures"));
-            let is_head = caps
-                .and_then(|c| c.get("2"))
-                .and_then(|c| c.get("name"))
-                .and_then(J::as_str)
-                == Some(scope);
-            if is_head {
-                let regex = map
-                    .get("begin")
-                    .or_else(|| map.get("match"))
-                    .and_then(J::as_str)
-                    .unwrap_or("");
-                found.extend(lowercase_alternations(regex));
-            }
-            for v in map.values() {
-                names_for_scope(v, scope, found);
-            }
-        }
-        J::Array(items) => {
-            for v in items {
-                names_for_scope(v, scope, found);
-            }
-        }
-        _ => {}
-    }
-}
-
-/// Every `(a|b|c)` group of lowercase words in a regex —
-/// `\(([a-z][a-z*-]*(?:\|[a-z][a-z*-]*)*)\)`, hand-scanned because
-/// `ein-cli` has no regex dependency and one alternation form does not justify
-/// acquiring one.
-fn lowercase_alternations(regex: &str) -> Vec<String> {
-    let bytes: Vec<char> = regex.chars().collect();
-    let mut out = Vec::new();
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] != '(' {
-            i += 1;
-            continue;
-        }
-        let start = i + 1;
-        let Some(len) = bytes[start..].iter().position(|&c| c == ')') else {
-            break;
-        };
-        let body: String = bytes[start..start + len].iter().collect();
-        let words: Vec<&str> = body.split('|').collect();
-        let wordlike = |w: &&str| {
-            !w.is_empty()
-                && w.starts_with(|c: char| c.is_ascii_lowercase())
-                && w.chars()
-                    .all(|c| c.is_ascii_lowercase() || c == '*' || c == '-')
-        };
-        if words.iter().all(wordlike) {
-            out.extend(words.iter().map(|w| w.to_string()));
-        }
-        i = start + len + 1;
-    }
-    out
-}
-
-fn grammar() -> J {
-    serde_json::from_str(&read(&corpus(GRAMMAR).to_string_lossy())).expect("the grammar is JSON")
-}
-
-/// **The checked-in grammar is the *ein* grammar.** It parses, it claims
-/// `source.ein`, and it claims the `ein` file type.
-///
-/// The cheapest of the four and the one that fails first: a grammar that does
-/// not parse is not applied by the editor at all, and there is no error
-/// anywhere — the file simply stops colouring, which nobody reports as a bug.
-#[test]
-fn the_textmate_grammar_is_the_ein_grammar() {
-    let g = grammar();
-    assert_eq!(g["scopeName"], "source.ein");
-    assert!(
-        g["fileTypes"]
-            .as_array()
-            .expect("fileTypes")
-            .iter()
-            .any(|t| t == "ein"),
-        "the grammar does not claim .ein files"
-    );
-    assert!(g["patterns"].is_array(), "the grammar has no patterns");
-}
-
-/// **The highlighted declarators are exactly the closed set.**
-///
-/// Closed is the operative word: the eight are the only heads the *loader*
-/// treats as declarations, so a ninth in the grammar promises a syntax that
-/// does not exist and a missing one leaves a real declarator looking like an
-/// ordinary fact. `reserved-names.md` is the source of truth and the list
-/// here mirrors it.
-#[test]
-fn the_grammars_declarators_are_the_closed_set() {
-    let mut found = BTreeSet::new();
-    names_for_scope(&grammar(), "keyword.control.declarator.ein", &mut found);
-    assert_eq!(
-        found,
-        DECLARATORS
-            .iter()
-            .map(|s| s.to_string())
-            .collect::<BTreeSet<String>>(),
-        "the grammar's declarator set drifted"
-    );
-}
-
-/// **The grammar tracks the primitive and predicate registries.**
-///
-/// Both lists live in the engine — `ein_core::STRUCTURAL` and
-/// `ein_infer::predicates::names()` — and the grammar is a *copy* of them,
-/// which is the whole reason this test exists. Adding a predicate to the
-/// engine without adding it to the grammar has no symptom a developer would
-/// notice: the new name just fails to colour, in an editor, on someone else's
-/// machine.
-///
-/// **One name is highlighted that `STRUCTURAL` does not hold**: `open`, the
-/// verdict atom. It is in `RESERVED` — no declarator may bind
-/// it — but deliberately not in `STRUCTURAL`, because a structural primitive
-/// is rule-*body* vocabulary the compiler, matcher or detector reads, and
-/// `open` is none of those: it appears only as an `:assert` conclusion and is
-/// never stored. An editor still has to colour it like `(false)`, its dual,
-/// so the grammar's set is `STRUCTURAL ∪ {open}` and the assertion says so by
-/// construction rather than by listing — a tenth primitive added to the
-/// engine still fails this test.
-#[test]
-fn the_grammar_tracks_the_primitive_and_predicate_registries() {
-    let g = grammar();
-    let mut primitives = BTreeSet::new();
-    names_for_scope(&g, "keyword.control.primitive.ein", &mut primitives);
-    let expected: BTreeSet<String> = ein_core::STRUCTURAL
-        .iter()
-        .map(|s| s.to_string())
-        .chain(std::iter::once("open".to_string()))
-        .collect();
-    assert!(
-        ein_core::RESERVED.contains(&"open") && !ein_core::STRUCTURAL.contains(&"open"),
-        "`open` is reserved but not a rule-body primitive — if that changed, \
-         this test's exception is the thing to revisit"
-    );
-    assert_eq!(
-        primitives, expected,
-        "the grammar's primitives are not ein_core::STRUCTURAL + the verdict atom"
-    );
-
-    let mut predicates = BTreeSet::new();
-    names_for_scope(&g, "keyword.operator.predicate.ein", &mut predicates);
-    assert_eq!(
-        predicates,
-        ein_infer::predicates::names()
-            .iter()
-            .map(|s| s.to_string())
-            .collect::<BTreeSet<String>>(),
-        "the grammar's predicates are not predicates::names()"
-    );
-}
-
-/// **The removed block wrappers are not keywords.**
-///
-/// `ontology` / `facts` / `reasoning` / `rules` are ordinary relation names,
-/// not block heads — a file may declare `(relation facts …)` and mean it.
-/// Highlighting one as a keyword would tell the reader the language has
-/// block structure, which is what this guards.
-#[test]
-fn the_removed_block_wrappers_are_not_highlighted_as_keywords() {
-    let g = grammar();
-    for scope in [
-        "keyword.control.declarator.ein",
-        "keyword.control.primitive.ein",
-        "keyword.operator.predicate.ein",
-    ] {
-        let mut found = BTreeSet::new();
-        names_for_scope(&g, scope, &mut found);
-        for wrapper in REMOVED_WRAPPERS {
-            assert!(
-                !found.contains(wrapper),
-                "{wrapper:?} is still highlighted as {scope}"
-            );
-        }
-    }
-    // Non-vacuity: `rule` is a declarator and `rules` is not, so the check is
-    // about whole names rather than about prefixes.
-    let mut declarators = BTreeSet::new();
-    names_for_scope(&g, "keyword.control.declarator.ein", &mut declarators);
-    assert!(declarators.contains("rule") && !declarators.contains("rules"));
 }
 
 // ── `--layer-progress` ───────────────────────────────────────────────

@@ -1,5 +1,5 @@
 ;;; Under `(absent …)` the dead pattern `(says (and (paid ?g)))` holds, and the rule fires —
-;;; **W83**, register row `W83/pattern-argument-and-under-absent`.
+;;; **W83**, regression `pattern-argument-and-under-absent`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

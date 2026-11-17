@@ -1,6 +1,6 @@
 ;;; A region claim that lists a fact of a relation only a rule's `:assert` derives
 ;;; is refused —
-;;; **W78**, register row `W78/solve-claim-derived-relation`.
+;;; **W78**, regression `solve-claim-derived-relation`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

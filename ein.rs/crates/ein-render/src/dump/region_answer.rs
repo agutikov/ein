@@ -713,7 +713,7 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
          ;;; Below: the program as loaded, imports inlined, and then every fact of\n\
          ;;; the state ({} facts; the program's own relation declarations are not\n\
          ;;; repeated). It loads, and saturating it derives nothing new: the state is\n\
-         ;;; a fixpoint of the program — read_out.md § 8.2.{stated}\n\n\
+         ;;; a fixpoint of the program (answer-dump.md, every state file loads).{stated}\n\n\
          {}\n\
          ;; ── the state ──────────────────────────────────────────────────────────\n\n\
          {}",

@@ -1,5 +1,6 @@
 # Mutants of `stdlib/` that `ein test tests/` does not kill.
-# Written by `utils/stdlib_mutants.py --bless`; read by `--check`.
+# Banked by the mutation sweep, which fails on a new survivor and on a
+# banked one that is killed: the set is what the suite does not notice.
 #
 # A set rather than a score: a new line is a rule whose tests stopped
 # noticing a defect in it, and a removed line is a fixture that started.

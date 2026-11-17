@@ -21,7 +21,7 @@
 //! `enable_fail_fast_fork` on — a different stopping point for a fork that
 //! dies. A permuted id space moves none of them: a resumed fork's delta is in
 //! the order its facts were written, not in `FactId` order, which is the order
-//! names were interned in (`W11/fork-delta-order`). What is
+//! names were interned in (`fork-delta-order`). What is
 //! *not* relaxed in any direction is the **answer** and the **search**: the
 //! verdict, the model, the unsat core, every counter. So the rule is a
 //! statement about what a derivation *is*, which is why it is a normalisation

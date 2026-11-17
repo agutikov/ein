@@ -339,7 +339,7 @@ impl Refusal {
         format!(
             "rule '{rule}'{act}: concludes {concl} from {from} — so it calls a state that has not yet decided {rel} a \
              contradiction, and a commitment would lift it (dead is not upward-closed under \
-             absent; forbidden since M1e2 S1e2.2.5). Write what it means: {close}; state a \
+             absent; Q-M1e2.5). Write what it means: {close}; state a \
              requirement as a decision or an obligation, a yes/no attribute that must be \
              decided (functional + total-owed) or (open ?R) with hrules that propose it; or \
              conclude from a stored negative, (not …), as std.algebra's total does"

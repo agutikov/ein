@@ -12,7 +12,7 @@ The findings this phase's stages make about the engine or the language, outside 
 the calculator's [`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) records).
 Each row is shown to the user with the stage that found it and is fixed by a stage of this phase, ruled as it
 stands, or given an owner before the phase closes. A **wrong answer** among them is a row of
-[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml) before anything fixes it.
+[`corpus/wrong_answers.toml`](../../wrong_answers/register.toml) before anything fixes it.
 
 **A finding is not a requirement.** A row here says what a program met. Whether the engine should change for
 it is asked through [P1g.6](../p1g.6_engine_requirements/README.md), whose

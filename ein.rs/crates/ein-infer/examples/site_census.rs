@@ -24,7 +24,7 @@
 //! cargo run --release -p ein-infer --example site_census -- [--json] [--jobs J] [FILE…]
 //! ```
 //!
-//! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses,
+//! With no `FILE` it sweeps `corpus_files()` plus the regressions' witnesses,
 //! `refutation_census`'s selection. A `FILE` is read from the working
 //! directory, else from the repository root. `--json` prints one line per file, every
 //! file of the selection, so each of the older counts can be re-derived from
@@ -865,7 +865,7 @@ fn print_totals(tot: &Totals, swept_selection: bool, wall: f64) {
     if swept_selection {
         println!("the older counts, each under its own selection:");
         println!(
-            "  S1e2.1a.1 census_for_inspection (corpus_files): {} compute a region or refuse; {} at n ≤ 16; {} flagged; {} with a hole",
+            "  census_for_inspection (corpus_files): {} compute a region or refuse; {} at n ≤ 16; {} flagged; {} with a hole",
             tot.c1015[0], tot.c1015[1], tot.c1015[2], tot.c1015[3]
         );
         println!(

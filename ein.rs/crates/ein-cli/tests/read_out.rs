@@ -429,7 +429,7 @@ fn a_query_over_an_empty_r_says_which_empty() {
 }
 
 /// **`--count` prints describe's rows and reads no state**, on every corpus
-/// program and register witness: a count is describe's question with the
+/// program and regression witness: a count is describe's question with the
 /// listing left out (Q-M1f.218).
 ///
 /// In-process, at the corpus sweep's small budget and cube limit (2¹⁴ facts,
@@ -455,10 +455,8 @@ fn count_prints_describes_rows_and_reads_no_state() {
     use ein_infer::read_out::Listing;
 
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

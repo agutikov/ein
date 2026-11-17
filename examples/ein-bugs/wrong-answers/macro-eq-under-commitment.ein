@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `eq` with one argument, called in a rule only a
 ;;; commitment activates: some commands answer and the others stop —
-;;; **W66**, register row `W66/macro-eq-under-commitment`.
+;;; **W66**, regression `macro-eq-under-commitment`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

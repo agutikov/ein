@@ -40,7 +40,7 @@
 // no token at all, in either state), or a character that is not ASCII, where
 // no rule starts in either state. Every rule but those three is tried in
 // INITIAL alone, and the tokens, kind and span, are the ones the same rules give
-// tried in one state (`generated_parser::the_lexer_gives_the_tokens_t4s_did`).
+// tried in one state (`generated_parser::the_lexer_gives_the_tokens_its_plain_form_does`).
 %x AFTER_WORD
 %%
 <INITIAL,AFTER_WORD>\( <INITIAL>"("
@@ -138,7 +138,7 @@ _ <AFTER_WORD>"UNDERSCORE"
 // one position, where three rules, one for whitespace, `;[^\n]*` and
 // `#\|([^|]|\|+[^|#])*\|+#`, would make it one per piece. No named rule
 // matches where any of the three does, so the tokens are the ones the three
-// give (`generated_parser::the_lexer_gives_the_tokens_t4s_did`). A comment
+// give (`generated_parser::the_lexer_gives_the_tokens_its_plain_form_does`). A comment
 // holds any character, Unicode's among them (Q-M1f.65); whitespace is
 // ASCII's, so a no-break space, U+3000 or U+2028 is no separator: a reader
 // could not tell one from a space or a line break (W73).

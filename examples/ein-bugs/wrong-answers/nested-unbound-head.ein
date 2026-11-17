@@ -1,6 +1,6 @@
 ;;; A pattern inside a pattern whose relation no parameter binds matches
-;;; nothing, in silence — **W24**, register row
-;;; `W24/nested-unbound-head` (`corpus/wrong_answers.toml`).
+;;; nothing, in silence — **W24**, regression
+;;; `nested-unbound-head` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

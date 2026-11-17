@@ -25,8 +25,8 @@
 ;;;
 ;;;   states (k_s)     12, every node but the four that hold {a, b}
 ;;;   maximal line     {a, c, d} and {b, c, d}: two maximal states,
-;;;                    which `ein solve --maximal` lists. Register row
-;;;                    W1/lattice-01-L; the region is Q-M1e2.7.
+;;;                    which `ein solve --maximal` lists. Regression
+;;;                    lattice-01-L; the region is Q-M1e2.7.
 ;;;   components       1; sub-cubes 2, each of dimension 3: the cube
 ;;;                    below {a, c, d} and the cube below {b, c, d}
 ;;;   N                1 minimal dead set, {(proposed a), (proposed b)}

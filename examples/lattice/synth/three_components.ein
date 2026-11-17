@@ -6,7 +6,7 @@
 ;;; `dead-3` and `dead-7` conclude (false) from an (absent (h …)) over h, which the
 ;;; hrule proposes: the shape *forbid* rules out (Q-M1e2.5), so every
 ;;; question about a commitment exits 1 naming them, and this file is the
-;;; register's W3/three-components witness. Regenerated, it would differ: the
+;;; regression three-components witness. Regenerated, it would differ: the
 ;;; synthesizer writes a dead node with a non-dead superset as owing, so
 ;;; it writes the same region with its dead holes owing, and the target
 ;;; below describes this file as written.

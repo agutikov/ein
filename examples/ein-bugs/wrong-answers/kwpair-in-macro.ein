@@ -1,5 +1,5 @@
 ;;; A keyword pair in a macro call is dropped by the expander, in silence —
-;;; **W32**, register row `W32/kwpair-in-macro` (`corpus/wrong_answers.toml`);
+;;; **W32**, regression `kwpair-in-macro` (`corpus/regressions.toml`);
 ;;; each form takes a closed list of keywords (Q-M1e2.28).
 ;;;
 ;;;

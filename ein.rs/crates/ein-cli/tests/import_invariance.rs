@@ -401,7 +401,7 @@ fn hypotheses(path: &Path) -> (String, Vec<String>) {
 /// `symmetric` written in its place, no obligation rule is loaded. Both are
 /// on the blind enumerator's rung, with one H and one R. And the same of a
 /// module imported for a name the program never writes, against the program
-/// with the import deleted. These are the register's `W97` witnesses and
+/// with the import deleted. These are the `W97` regressions' witnesses and
 /// their controls, which until the rung was read off an activated obligation
 /// took the second rung and answered `{∅}`.
 #[test]

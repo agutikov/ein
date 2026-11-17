@@ -139,7 +139,7 @@ table of the five counts.* In checkable terms:
   count's definition on the page.
 - **The repo's discipline:** every `.ein` file that is tracked has a corpus entry, a `:why` on every relation
   and rule, and an `:expect` where it states a claim; a wrong answer of the engine is a row of
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), filed `open` before its fix; every other
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), filed `open` before its fix; every other
   finding is a row of this phase's `findings.md`, shown.
 
 ## Risks, each with what checks it

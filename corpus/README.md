@@ -9,9 +9,9 @@ invocations each one is exercised under.
   [`tests/README.md`](../tests/README.md) says why a stdlib conformance
   program is not an example.
 - **`fuzz_findings/`** — minimised inputs a fuzzer found something on.
-- **`wrong_answers.toml`** — the register of known wrong answers: one row per
-  witness, with the engine's answer today and the right one, as data. Its
-  header is the format.
+- **`regressions.toml`** — the regressions: one row per program and run that
+  was once answered wrong, with the engine's answer today and the right one,
+  as data, each held to the right one. Its header is the format.
 
 ## Who reads it
 
@@ -21,12 +21,12 @@ Everything is `cargo test`.
 |---|---|
 | [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, holds each cell's exit code to a banked golden, and times them: it is what holds `cost_ms` and `slow` to the wall clock |
 | [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants, the `slow` and `heavy_dump` sets pinned among them |
-| [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **every core names its cause**: every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the register's witnesses, and reads `slow` to leave the zebra family to the slow half |
+| [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **every core names its cause**: every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the regressions' witnesses, and reads `slow` to leave the zebra family to the slow half |
 | [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip**: every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file reloaded to its state by value; reads `slow` and `heavy_dump` to leave those entries to the slow half, and holds `heavy_dump` to the state files it counts |
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | digests every observable surface of a corpus *file* against `golden/corpus_shapes.md5`, a superset of what the runs reach, and runs it again under a permuted id space |
 | [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to the golden's digest of its `--jobs 1` rendering and computed again only where it differs; `EIN_JOBS_SWEEP` names the job counts |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
-| [`ein-cli/tests/wrong_answers.rs`](../ein.rs/crates/ein-cli/tests/wrong_answers.rs) | **the wrong-answer register**, [`wrong_answers.toml`](wrong_answers.toml): one row per witness of every known wrong answer, holding each to the answer it gives today — the wrong one while `open`, the right one once `fixed`. Every witness is a manifest entry or a file under `fuzz_findings/`, which `ein-corpus`'s `register` module checks without a run |
+| [`ein-cli/tests/regressions.rs`](../ein.rs/crates/ein-cli/tests/regressions.rs) | **the regressions**, [`regressions.toml`](regressions.toml): one row per program and run once answered wrong, each run through the binary and held to the right answer it records, and each witness's region recomputed with the library. Every witness is a manifest entry or a file under `fuzz_findings/`, and every row's recorded answer is its right one, which `ein-corpus`'s `regressions` module checks without a run |
 
 `corpus_cores`, `id_order_invariance` and `jobs_invariance` walk the *files* (`ein_corpus::corpus_files`) rather than the
 manifest's rows, because their subject is a surface rather than an invocation.
@@ -288,7 +288,7 @@ the summary, against the same question at the default, and every flag a
 `(config …)` can set on every program whose R is known. The cells of
 `zebra2.ein` and `zebra2-obligations.ein` are `slow`, and run under
 `EIN_CORPUS_SLOW=1`. A lever that changes an
-answer is a register row, never a weaker mode.
+answer is a regression, never a weaker mode.
 
 ## Growth rule
 

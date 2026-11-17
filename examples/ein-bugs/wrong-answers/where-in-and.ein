@@ -1,6 +1,6 @@
 ;;; A `:where` pair beside a `:match`'s conjuncts is dropped, so the rule
-;;; fires without its guard — **W32**, register row `W32/where-in-and`
-;;; (`corpus/wrong_answers.toml`).
+;;; fires without its guard — **W32**, regression `where-in-and`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

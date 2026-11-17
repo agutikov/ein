@@ -1012,7 +1012,7 @@ fn strs(v: &Json) -> Vec<&str> {
 
 /// What is assumed, one row: the node, and who decides what it should be.
 const ASSUMES: &str = "every node is a fork of root (root's fixpoint, its commitment added, \
-                       saturated); what a node is on this program is open: Q-M1e2.2, F21";
+                       saturated); what a node is on this program is not decided: Q-M1e2.2";
 
 /// The static half of the warning: one row per site with the property at
 /// stake, then the cycles and the order findings.
@@ -1393,7 +1393,7 @@ fn print_block(r: &Json) {
         println!("{l}");
     }
     if !mono && r["cube"]["holes"].as_u64().unwrap_or(0) > 0 {
-        println!("    [today's minimal hole rows, unchanged: F21's D4]");
+        println!("    [today's minimal hole rows, unchanged]");
     }
     println!("  ── drafted: `ein solve FILE --monotone`, after the header");
     for l in monotone_block(r) {

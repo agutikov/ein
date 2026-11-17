@@ -883,7 +883,7 @@ solve · examples/lattice/04_obligation_trigger_hole.ein
   N                 0 minimal dead sets
   E                 1 minimal discharging set
   lattice           not monotone: 1 site (the static check) — 1 hole
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
     status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
     state           no stale fact in the cube's 4 nodes
@@ -940,7 +940,7 @@ solve · examples/lattice/06_friends_tables.ein
   sub-cubes         not known
   N                 ≥ 68 minimal dead sets — those met in layer order
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
     state           no stale fact in the 65 299 nodes the run computed
@@ -1066,7 +1066,7 @@ solve · --count examples/lattice/06_friends_tables.ein
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   ∅                 in R — root is alive and owes nothing
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
     state           no stale fact in the 65 299 nodes the run computed
@@ -1092,7 +1092,7 @@ solve · --minimal examples/lattice/06_friends_tables.ein
   minimal line      1 state — all of them
   exhausted         yes — this is all of the minimal line
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
     state           no stale fact in the 1 node the run computed
@@ -1124,7 +1124,7 @@ solve · --maximal examples/lattice/06_friends_tables.ein
   maximal line      not known — without a licence it needs the whole cube
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
     state           no stale fact in the 65 299 nodes the run computed
@@ -1888,7 +1888,7 @@ solve · examples/features/07_unstratifiable.ein
   N                 0 minimal dead sets
   E                 1 minimal discharging set
   lattice           not monotone: 2 sites (the static check) — no hole in this cube
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
     site            derive-q: absent reads p at absent depth 1, concludes a positive fact — at stake: the state
     cycle           even through an absent — derive-p: q →¬ p · derive-q: p →¬ q — several states with no stale fact can exist
@@ -1922,7 +1922,7 @@ solve · --monotone examples/features/07_unstratifiable.ein
 ──────────────────────────────────────────────────────────────
   asked             is the program monotone? — the static check, on root's fixpoint
   monotone          no — 2 sites
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
     site            derive-q: absent reads p at absent depth 1, concludes a positive fact — at stake: the state
     cycle           even through an absent — derive-p: q →¬ p · derive-q: p →¬ q — several states with no stale fact can exist
@@ -1961,7 +1961,7 @@ solve · examples/features/01_not_and_absent.ein
   sub-cubes         not known
   N                 ≥ 0 minimal dead sets — those met in layer order
   lattice           not monotone: 2 sites (the static check) — holes not known: the cube was not enumerated
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            unknown-feeling: its activator relation is one a commitment can change; a plan root compiled of it concludes a positive fact — at stake: the state, through a plan a node compiles
     site            unknown-feeling [activator Person]: absent reads likes at absent depth 1, concludes a positive fact — at stake: the state
     status          not known — the cube is 2^35 nodes, past --region-limit 16
@@ -2186,7 +2186,7 @@ oracle · examples/lattice/04_obligation_trigger_hole.ein
   N                 0 minimal dead sets
   E                 1 minimal discharging set
   lattice           not monotone: 1 site (the static check) — 1 hole
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
     status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
     state           no stale fact in the cube's 4 nodes
@@ -2411,7 +2411,7 @@ solve · --no-search examples/features/07_unstratifiable.ein
   ∅                 in R — root is alive and owes nothing
   R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
   lattice           not monotone: 2 sites (the static check) — holes not known: the cube was not enumerated
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
     site            derive-q: absent reads p at absent depth 1, concludes a positive fact — at stake: the state
     cycle           even through an absent — derive-p: q →¬ p · derive-q: p →¬ q — several states with no stale fact can exist
@@ -2456,7 +2456,7 @@ solve · examples/ein-bugs/wrong-answers/oblig-derived-activator.ein
   N                 0 minimal dead sets
   E                 1 minimal discharging set
   lattice           not monotone: 1 site (the static check) — no hole in this cube
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            total-owed: its activator relation is one a commitment can change; a plan root compiled of it concludes a positive fact — at stake: the status: owes, through a plan a node compiles
     status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
     state           no stale fact in the cube's 4 nodes

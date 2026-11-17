@@ -35,8 +35,8 @@
 ;;; at load (*forbid*, Q-M1e2.5). Every question about a commitment (`ein
 ;;; solve` in every mode, `ein test`, `ein oracle`, `ein render lattice`)
 ;;; exits 1 with one line naming `bad`, `(false)`, `q`, and the forms that
-;;; say what was meant; `ein saturate` still saturates. Register row
-;;; W3/naf-upward-closure.
+;;; say what was meant; `ein saturate` still saturates. Regression
+;;; naf-upward-closure.
 ;;;
 ;;; Loaded anyway, its R would be three states, `∅`, `{(q A)}` and
 ;;; `{(p A), (q A)}`, with the dead hole `{(p A)}`: what *respect* would

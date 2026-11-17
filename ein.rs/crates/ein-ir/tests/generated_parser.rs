@@ -7,7 +7,7 @@
 //! | a macro carries its `:why` (Q-M1f.59) | [`a_macro_carries_its_why`] |
 //! | no name the loader makes up is a name a program can write (Q-M1f.339) | [`no_name_the_loader_makes_up_is_a_name`] |
 //! | a program at the nesting limit parses and goes through the dumper, macro expansion and the loader on a test thread; one past it is refused with a line | [`the_nesting_limit`] |
-//! | `ein.l`'s one skip rule and its start condition give the parser the tokens its plain form does | [`the_lexer_gives_the_tokens_t4s_did`] |
+//! | `ein.l`'s one skip rule and its start condition give the parser the tokens its plain form does | [`the_lexer_gives_the_tokens_its_plain_form_does`] |
 //! | a string's escapes are the decided ones, and a `\u{…}` reads exactly the Unicode scalar values (Q-M1e2.23, W38) | [`a_strings_escapes_are_the_rulings`] |
 //!
 //! The fuzzer's half of the same-report claim is in `fuzz_properties.rs`.
@@ -507,7 +507,7 @@ type LexerDef = lrlex::LRNonStreamingLexerDef<lrlex::DefaultLexerTypes<u32>>;
 /// the three it stands for, and the start condition `AFTER_WORD` taken out,
 /// its declaration, the states a rule is tried in and the state a rule
 /// enters.
-fn as_t4_wrote_it(shipped: &str) -> String {
+fn plain_form(shipped: &str) -> String {
     let (mut out, mut entered, mut tried) = (Vec::new(), 0, 0);
     for line in shipped.lines() {
         if line == "%x AFTER_WORD" {
@@ -565,15 +565,15 @@ fn tokens(def: &LexerDef, text: &str) -> Vec<(String, usize, usize)> {
 /// `AFTER_WORD` tries only `(`, `)` and that rule, the only three that can
 /// match there. The tokens the parser receives must be the plain form's.
 /// Each input is lexed by `ein.l` as it ships and by its plain form
-/// ([`as_t4_wrote_it`]), both read at run time through `lrlex` (`build.rs`
+/// ([`plain_form`]), both read at run time through `lrlex` (`build.rs`
 /// compiles the same text with the same flags), and the two streams are
 /// compared, kind and span, lexing errors included: every `.ein` under
-/// `examples/`, `stdlib/`, `tests/`, `corpus/` and `plans/` (the fuzzer's
-/// seed files among them), 500 seeded mutants of the corpus, edge cases
+/// `examples/`, `stdlib/`, `tests/` and `corpus/` (the fuzzer's seed files
+/// among them), 500 seeded mutants of the corpus, edge cases
 /// around the rules and the separators, and 20 000 seeded strings over the
 /// characters they read.
 #[test]
-fn the_lexer_gives_the_tokens_t4s_did() {
+fn the_lexer_gives_the_tokens_its_plain_form_does() {
     use lrlex::LexerDef as _;
     let shipped = include_str!("../src/ein.l");
     assert_eq!(
@@ -582,14 +582,14 @@ fn the_lexer_gives_the_tokens_t4s_did() {
         "ein.l's skip rule is not the one this test holds"
     );
     let now = LexerDef::from_str(shipped).expect("ein.l");
-    let t4 = LexerDef::from_str(&as_t4_wrote_it(shipped)).expect("ein.l as T4 wrote it");
-    assert_eq!(t4.iter_rules().count(), now.iter_rules().count() + 2);
+    let plain = LexerDef::from_str(&plain_form(shipped)).expect("ein.l's plain form");
+    assert_eq!(plain.iter_rules().count(), now.iter_rules().count() + 2);
     assert_eq!(now.iter_start_states().count(), 2);
-    assert_eq!(t4.iter_start_states().count(), 1);
+    assert_eq!(plain.iter_start_states().count(), 1);
 
     let mut inputs: Vec<(String, String)> = Vec::new();
     let root = repo_root();
-    for dir in ["examples", "stdlib", "tests", "corpus", "plans"] {
+    for dir in ["examples", "stdlib", "tests", "corpus"] {
         for p in ein_corpus::ein_files_under(&root.join(dir)) {
             let text = std::fs::read_to_string(&p).expect("readable");
             inputs.push((relative(&p), text));
@@ -783,13 +783,13 @@ fn the_lexer_gives_the_tokens_t4s_did() {
 
     let (mut moved, mut lexemes, mut errors) = (Vec::new(), 0, 0);
     for (name, text) in &inputs {
-        let (a, b) = (tokens(&now, text), tokens(&t4, text));
+        let (a, b) = (tokens(&now, text), tokens(&plain, text));
         lexemes += a.len();
         errors += a.iter().filter(|t| t.0 == "a lexing error").count();
         if a != b {
             let at = a.iter().zip(&b).take_while(|(p, q)| p == q).count();
             moved.push(format!(
-                "{name}: token {at}: {:?} now, {:?} as T4 wrote it",
+                "{name}: token {at}: {:?} now, {:?} in the plain form",
                 a.get(at),
                 b.get(at)
             ));
@@ -797,7 +797,7 @@ fn the_lexer_gives_the_tokens_t4s_did() {
     }
     assert!(
         moved.is_empty(),
-        "{} of {} inputs lex otherwise than under T4's ein.l:\n{}",
+        "{} of {} inputs lex otherwise than under ein.l's plain form:\n{}",
         moved.len(),
         inputs.len(),
         moved.join("\n")

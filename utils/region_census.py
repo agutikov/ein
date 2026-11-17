@@ -59,7 +59,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 MANIFEST = REPO / "corpus" / "corpus.toml"
-REGISTER = REPO / "corpus" / "wrong_answers.toml"
+# The regressions and the open wrong answers, whose witnesses join the census.
+REGISTERS = (REPO / "corpus" / "regressions.toml", REPO / "plans" / "wrong_answers" / "register.toml")
 EIN = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "ein"))
 
 # The CLI levers `corpus.toml` runs both ways, `-L`, `-K` and `-y`, are
@@ -103,7 +104,7 @@ def selection(key: str | None, every: bool) -> list[dict]:
             out[e["path"]] = {"path": e["path"], "source": "corpus",
                               "group": e.get("group", ""),
                               "vehicle": []}
-    reg = tomllib.loads(REGISTER.read_text(encoding="utf-8"))
+    cases = [c for f in REGISTERS for c in tomllib.loads(f.read_text(encoding="utf-8"))["case"]]
 
     def witnesses(node):
         if isinstance(node, dict):
@@ -116,7 +117,7 @@ def selection(key: str | None, every: bool) -> list[dict]:
             for v in node:
                 yield from witnesses(v)
 
-    for w in witnesses(reg["case"]):
+    for w in witnesses(cases):
         if w in out:
             out[w]["source"] = "corpus+register"
         else:

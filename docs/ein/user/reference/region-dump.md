@@ -193,7 +193,7 @@ every row is a field some run writes; the test suite holds the table to the bina
 | `sites[].concludes` | what the rule concludes, the check's reading: `(false)`, `(not …)`, `a positive fact`, `(open …)`, or that root compiled no plan of it |
 | `sites[].at_stake` | what the site puts at stake: the state, the state and death, or what the status owes, directly or through a node's plan |
 | `assumes.node` | on a flagged program, how a node is built, `fork from root`; `assumes` is `null` on a monotone one |
-| `assumes.open` | on a flagged program, the sentence that says the answer rests on that reading of a node |
+| `assumes.open` | on a flagged program, `Q-M1e2.2`, the decision that says the answer rests on that reading of a node |
 | `cycles[].relations` | each cycle through an `absent` over `D`, a strongly connected part of the rules' dependency graph with a negative edge in it: its relations, sorted |
 | `cycles[].negative` | its negative edges, sorted, `rule: a →¬ b` |
 | `cycles[].odd` | whether some cycle in it has an odd number of negative edges: a state with no stale fact need not exist; where none has, there can be several |

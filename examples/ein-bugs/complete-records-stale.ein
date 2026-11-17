@@ -1,5 +1,5 @@
 ;;; A search that wrote into the fork it was asked about recorded a state its
-;;; own rules refute — register row W9/complete-records-stale-K.
+;;; own rules refute — regression complete-records-stale-K.
 ;;;
 ;; That search's completeness check ran its full filter pipeline on the fork,
 ;; and its lookahead kill cache wrote `(not h)` into the very KB it then

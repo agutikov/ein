@@ -69,13 +69,13 @@ pub(crate) const RETIRED: [(&str, &str); 11] = [
     ),
     (
         "no-lookahead",
-        "-L/--no-lookahead is retired (M1e2 S1e2.1c.5): no route runs the \
+        "-L/--no-lookahead is retired: no route runs the \
          walk's one-step lookahead, and every route saturates each candidate's \
          fork, so the lever changed nothing",
     ),
     (
         "no-kill-cache",
-        "-K/--no-kill-cache is retired (M1e2 S1e2.1c.5): no route writes a kill \
+        "-K/--no-kill-cache is retired: no route writes a kill \
          into root, and L1 prunes a dead extension's supersets by construction, \
          so the lever changed nothing",
     ),

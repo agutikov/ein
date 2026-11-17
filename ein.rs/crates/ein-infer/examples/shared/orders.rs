@@ -481,10 +481,8 @@ pub fn run(args: Vec<String>) {
     }
     if files.is_empty() {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

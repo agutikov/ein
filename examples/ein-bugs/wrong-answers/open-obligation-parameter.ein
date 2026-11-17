@@ -1,5 +1,5 @@
 ;;; `open` bound to an obligation's relation parameter loads, and every state
-;;; owes it — **W70**, register row `W70/obligation-parameter`.
+;;; owes it — **W70**, regression `obligation-parameter`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
-;;; The control of `rung-symmetric-import.ein` — **W97**, register row
-;;; `W97/symmetric-import`'s control (`corpus/wrong_answers.toml`).
+;;; The control of `rung-symmetric-import.ein` — **W97**, regression
+;;; `symmetric-import`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the import deleted and the one rule it used,
 ;;; `std.algebra`'s `symmetric`, written in its place, word for word. No

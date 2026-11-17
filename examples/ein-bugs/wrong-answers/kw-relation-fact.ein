@@ -1,5 +1,5 @@
 ;;; A top-level fact splits a name that starts with `relation` — **W22**,
-;;; register row `W22/kw-relation-fact` (`corpus/wrong_answers.toml`): a
+;;; regression `kw-relation-fact` (`corpus/regressions.toml`): a
 ;;; reserved word is a keyword only as a whole token (Q-M1e2.17).
 ;;;
 ;;;

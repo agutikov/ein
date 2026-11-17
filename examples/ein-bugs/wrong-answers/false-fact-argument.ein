@@ -1,5 +1,5 @@
 ;;; A written `(false Bob)` is stored, kills root, and names `Bob` — **W81**,
-;;; register row `W81/false-fact-argument`.
+;;; regression `false-fact-argument`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

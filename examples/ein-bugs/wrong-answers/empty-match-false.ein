@@ -1,5 +1,5 @@
-;;; A rule whose `:match` is `()` never fired — **W31**, register row
-;;; `W31/empty-match-false` (`corpus/wrong_answers.toml`).
+;;; A rule whose `:match` is `()` never fired — **W31**, regression
+;;; `empty-match-false` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -23,7 +23,7 @@
 ;;; `:match ()` is the empty conjunction, so `r` fires once at root and
 ;;; concludes `(false)`: root is dead and R is empty, root's core `[]`,
 ;;; printed `∅` (Q-M1f.48), and `refuted by` `r`, the answer above by hand.
-;;; The register's `now` is that answer; the section above is the record of
+;;; The regression's `now` is that answer; the section above is the record of
 ;;; the one it replaced.
 ;;;
 ;;;

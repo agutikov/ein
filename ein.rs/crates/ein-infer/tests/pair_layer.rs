@@ -12,7 +12,7 @@
 //! 2. **the candidates dead alone are the read-out's `dead alone`**,
 //!    `Described::dead_alone_set`.
 //!
-//! On every corpus file and register witness the loader accepts, *forbid*
+//! On every corpus file and regression witness the loader accepts, *forbid*
 //! does not refuse and whose describe exhausts at the default
 //! `--region-budget`, the layer read at the same budget. A program the static
 //! check flags is among them where its cube is within `--region-limit`: there
@@ -63,7 +63,7 @@ const INSTANCES: [&str; 3] = [
     "examples/lattice/02_genuine_3set_death.ein",
 ];
 
-/// Every corpus file and register witness, once; the `slow` entries that are
+/// Every corpus file and regression witness, once; the `slow` entries that are
 /// not [`INSTANCES`] where `slow_too` only.
 fn files(slow_too: bool) -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -73,10 +73,8 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

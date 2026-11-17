@@ -78,7 +78,7 @@
 //!   alternatives (`ein-infer/tests/unheld.rs`); and
 //!   `ein-infer/tests/explore.rs` holds every mode to the oracle.
 //! - **With and without**: every question on every corpus program and
-//!   register witness with an instance L9 licenses answers the same with it
+//!   regression witness with an instance L9 licenses answers the same with it
 //!   and without it (`ein-infer/tests/unheld.rs`).
 //!
 //! ### What it does not license

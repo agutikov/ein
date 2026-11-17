@@ -85,7 +85,7 @@ Three mechanisms exist, and the stage tries each on the first four rows before p
 ## The standing rules
 
 A wrong answer of the engine met by a probe is a row of
-[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), filed `open` before its fix; note that a
+[`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), filed `open` before its fix; note that a
 false *written* fact answered as written is the program's and not the engine's. Findings go to this phase's
 [`findings.md`](findings.md); questions to [`open_questions.md`](../open_questions.md) under the next free
 id. Real computed examples come first.

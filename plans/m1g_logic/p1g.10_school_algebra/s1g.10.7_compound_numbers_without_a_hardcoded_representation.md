@@ -103,6 +103,6 @@ non-number, the smallest it can find in the phase, to see whether the list is ri
 ## The standing rules
 
 A wrong answer of the engine met by a probe is a row of
-[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), filed `open` before its fix. Findings go
+[`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), filed `open` before its fix. Findings go
 to this phase's [`findings.md`](findings.md); questions to [`open_questions.md`](../open_questions.md) under
 the next free id. A design change shows real computed examples first, which is the whole of this stage.

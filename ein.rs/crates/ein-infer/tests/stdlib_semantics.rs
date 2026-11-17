@@ -639,8 +639,8 @@ fn second_saturation_writes(src: &str) -> usize {
     s.kb.n_facts() - n
 }
 
-/// **A mark a rule derives is the mark** (`corpus/wrong_answers.toml`'s
-/// `W98/derived-at-root`). The saturator seeds its mirror at its first step,
+/// **A mark a rule derives is the mark** (`corpus/regressions.toml`'s
+/// `derived-at-root`). The saturator seeds its mirror at its first step,
 /// and a rule derives `(__symmetric__ R)` after it: with an empty `:match`,
 /// or once a fact of R it reads is stored. Either way the saturation that
 /// derives the mark closes R as the written mark does, and it is a fixpoint:
@@ -708,8 +708,8 @@ fn cube(rel: &str) -> (Vec<String>, std::collections::BTreeSet<Vec<String>>) {
 }
 
 /// **One symmetry stated two ways is one symmetry, at root and at a node**
-/// (`corpus/wrong_answers.toml`'s W98). The mark a rule derives at root
-/// answers what the mark written as a fact answers; the mark a commitment
+/// (`corpus/regressions.toml`'s `derived-at-root`). The mark a rule derives at
+/// root answers what the mark written as a fact answers; the mark a commitment
 /// brings a rule to derive, in a node's saturation, which resumes root's,
 /// answers what the same closure written as the program's own rule answers.
 /// Each pair has one H and one R, by the cube.

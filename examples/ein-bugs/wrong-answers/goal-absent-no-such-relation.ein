@@ -1,6 +1,6 @@
 ;;; A query's `:goal` whose `(absent …)` is over a relation the program names
-;;; nowhere else loads, and holds of everything — **W78**, register row
-;;; `W78/goal-absent-no-such-relation`.
+;;; nowhere else loads, and holds of everything — **W78**, regression
+;;; `goal-absent-no-such-relation`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

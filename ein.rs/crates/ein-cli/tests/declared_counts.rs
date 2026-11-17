@@ -374,8 +374,8 @@ fn each_form_has_a_line_of_its_own() {
     assert_eq!(r.err.lines().next().unwrap_or(""), want);
 }
 
-/// The register's seven witnesses (W89), each read from its file, as
-/// `wrong_answers.rs` reads one command's run of each.
+/// The regressions' seven witnesses of a declared count, each read from its
+/// file, as `regressions.rs` reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-declared-count-witnesses");

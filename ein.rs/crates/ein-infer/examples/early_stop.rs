@@ -13,7 +13,7 @@
 //!     [--out DIR] [--jobs J] [--alive-orders] [--cores] [FILE…]
 //! ```
 //!
-//! Every corpus file and register witness that loads and **searches** (the
+//! Every corpus file and regression witness that loads and **searches** (the
 //! determinism sweeps' one definition), or the `FILE`s given. For each, each
 //! of the six questions `ein solve` asks, describe, `--count`, `--single`,
 //! `-n 1`, `--minimal` and `--maximal`, is asked once at the default budget
@@ -1052,10 +1052,8 @@ fn main() {
     }
     if files.is_empty() {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

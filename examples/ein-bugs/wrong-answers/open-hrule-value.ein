@@ -1,5 +1,5 @@
 ;;; `open` written as an hrule's conclusion argument loads, and the hrule
-;;; proposes a fact about it — **W71**, register row `W71/hrule-value`.
+;;; proposes a fact about it — **W71**, regression `hrule-value`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

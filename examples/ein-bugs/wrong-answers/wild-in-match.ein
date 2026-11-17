@@ -1,5 +1,5 @@
 ;;; A wildcard `_` in a rule's `:match` matches nothing — **W20**,
-;;; register row `W20/wild-in-match` (`corpus/wrong_answers.toml`); a bare
+;;; regression `wild-in-match` (`corpus/regressions.toml`); a bare
 ;;; `_` is reserved and refused (Q-M1e2.22).
 ;;;
 ;;;

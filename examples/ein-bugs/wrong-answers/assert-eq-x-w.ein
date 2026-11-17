@@ -1,5 +1,5 @@
 ;;; A rule's false `eq` conclusion is stored as a fact — **W30**, register
-;;; row `W30/assert-eq-x-w` (`corpus/wrong_answers.toml`).
+;;; regression `assert-eq-x-w` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

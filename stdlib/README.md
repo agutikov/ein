@@ -879,8 +879,8 @@ no `not`, no guard, one stratum.
 
 **The file is generated**, as `std.math.digits` is: nine columns of variables
 twenty times over are not for typing or for reviewing by eye. The generator
-writes the same theory at any width, which is how `num9_theory.rs` holds it
-exhaustively at width 2; no other width is shipped. 47 rules and 22 relations
+writes the same theory at any width, and its width-2 theory, a generated test
+fixture, is how `num9_theory.rs` holds it exhaustively; no other width is shipped. 47 rules and 22 relations
 (`grep -c '^(rule ' stdlib/math/num9.ein`, `grep -c '^(relation '`). **A wide
 rule is wide in registers too:** a rule binds its variables to a file of 256
 (`ein_infer::MAX_REGS`); every other rule of the corpus is held to an eighth

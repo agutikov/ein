@@ -1,5 +1,5 @@
-;;; A rule whose `:match` is `()` never fired — **W31**, register row
-;;; `W31/empty-match-fact` (`corpus/wrong_answers.toml`).
+;;; A rule whose `:match` is `()` never fired — **W31**, regression
+;;; `empty-match-fact` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -23,7 +23,7 @@
 ;;; `:match ()` is the empty conjunction, so `r` fires once at root: root
 ;;; holds `(q b :rule r)` beside `(q a)`, H is `(p a)` and `(p b)`, and R
 ;;; their cube, its minimal line root's state, the answer above by hand. The
-;;; register's `now` is that answer; the section above is the record of the
+;;; regression's `now` is that answer; the section above is the record of the
 ;;; one it replaced.
 ;;;
 ;;;

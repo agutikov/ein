@@ -19,7 +19,7 @@
 ;;; changes nothing else: one line of `(is-a … Letter)` facts, reordered.
 ;;; The two are one puzzle with one answer, and `--single` does the same
 ;;; work on both: the search reads the columns off the program, not the
-;;; order. Regenerate with examples/gen_send_written.py.
+;;; order. Generated from it, not edited by hand.
 ;;;
 ;;; I + BB = ILL beside it, `cryptarithm.ein`, is the same rules on 30
 ;;; candidates; `docs/ein/user/guide/word-problems.md` § Cryptarithms

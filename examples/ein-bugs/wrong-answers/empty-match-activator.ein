@@ -1,5 +1,5 @@
 ;;; A rule with a parameter whose `:match` is `()` never fired — **W31**,
-;;; register row `W31/empty-match-activator` (`corpus/wrong_answers.toml`).
+;;; regression `empty-match-activator` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -23,7 +23,7 @@
 ;;;
 ;;; `:match ()` is the empty conjunction, so `r` fires once on its activator:
 ;;; root holds `(hit a :rule r)`, H is `(p a)`, and R two states, the answer
-;;; above by hand. The register's `now` is that answer; the section above is
+;;; above by hand. The regression's `now` is that answer; the section above is
 ;;; the record of the one it replaced.
 ;;;
 ;;;

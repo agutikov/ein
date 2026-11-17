@@ -1,30 +1,24 @@
-//! Every register row's `[case.region]` is its witness's R.
+//! **A row's region, through the library**: shared by `regressions.rs`,
+//! which holds the project's file, and the example `held_answers`, which holds
+//! a file given on its command line.
 //!
-//! `corpus/wrong_answers.toml` states each witness's region, so that a row
-//! flips against a right answer that is already checked. This test
-//! recomputes it with [`explore`], the code `ein solve` runs (route 1 on a
-//! monotone program, the cube on a flagged one), and holds every field to it:
-//! the route, the static verdict, k_s, k_c, the kind of an empty R, and both
-//! lines as commitments. A row whose `now` is a refusal states no region, and
-//! the library refuses its witness too.
+//! Every row of a file of the `ein_corpus::regressions` format states its
+//! witness's region, so that a row is compared against a right answer that is
+//! already checked. [`check`] recomputes it with [`explore`], the code `ein
+//! solve` runs (route 1 on a monotone program, the cube on a flagged one), and
+//! holds every field to it: the route, the static verdict, k_s, k_c, the kind
+//! of an empty R, and both lines as commitments. A row whose `now` is a
+//! refusal states no region, and the library refuses its witness too.
 //!
-//! ```text
-//! cargo test -p ein-infer --test register_region
-//! EIN_BLESS=1 cargo test -p ein-infer --test register_region   # re-bank the blocks
-//! ```
-//!
-//! **A region can be a stopped description** (schema /10): a row whose
-//! witness is past the oracle's limit (`W8`'s rows on
-//! `square-unique/corner-house.ein`) states the lower bounds the description
-//! reached, the minimal line members it certified, no maximal line, and why
-//! it stopped, and this test holds those.
-//!
-//! Both builds hold every row.
+//! **A region can be a stopped description**: a row whose witness is past
+//! the oracle's limit states the lower bounds the description reached, the
+//! minimal line members it certified, no maximal line, and why it stopped,
+//! and [`check`] holds those.
 
 use std::path::Path;
 
 use ein_core::{Kb, Terms};
-use ein_corpus::register::{REGISTER, Region};
+use ein_corpus::regressions::{Region, Regressions};
 use ein_corpus::repo_root;
 use ein_infer::explore::{self, Answer, Ask, Mode, Route, Stopped, Verdict, Which};
 use ein_ir::{Ast, load, parse};
@@ -44,8 +38,7 @@ fn loaded(path: &Path) -> (Kb, Terms, Ast) {
 /// first line on stderr, or `None` where it loads: a refusal at load, which
 /// the binary prints as `kb load error: …`, or one at the parse,
 /// `<witness>:<line>:<col>: unexpected …` (every witness of a shape the
-/// grammar refuses: `W29`'s, `W32`'s and `W35`'s, and the `W16`, `W18`, `W20`
-/// and `W28` rows that state the refusal). The library cannot get past either.
+/// grammar refuses). The library cannot get past either.
 fn refusal(witness: &str) -> Option<String> {
     let path = repo_root().join(witness);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{witness}: {e}"));
@@ -57,7 +50,7 @@ fn refusal(witness: &str) -> Option<String> {
     };
     // The binary is run from the repository's root on the witness's relative
     // path, so a path its line names, an imported module's, is relative to
-    // the root too (`W74`).
+    // the root too.
     let root = format!("{}/", repo_root().display());
     load(&mut ast, &mut terms, &forms, path.parent())
         .err()
@@ -75,7 +68,7 @@ fn try_ask(path: &Path, mode: Mode) -> Result<Answer, ein_infer::SolveError> {
     explore::run(&mut kb, &mut terms, &ast, &opts)
 }
 
-/// The region as the library computes it, in the register's spelling.
+/// The region as the library computes it, in a row's spelling.
 fn computed(path: &Path) -> Result<Region, String> {
     let a = ask(
         path,
@@ -142,8 +135,7 @@ fn route_word(r: Route) -> String {
     .to_string()
 }
 
-/// A description that stopped before R was exhausted (schema /10: `W8`'s rows
-/// past the oracle's limit): the lower bounds it reached,
+/// A description that stopped before R was exhausted: the lower bounds it reached,
 /// the minimal line members it certified, and no maximal line, which needs
 /// the whole cube.
 fn stopped(a: &Answer) -> Result<Region, String> {
@@ -257,7 +249,7 @@ fn line_toml(name: &str, line: &[Vec<String>]) -> String {
     }
 }
 
-/// The block as the register spells it. It holds no blank line, which is how
+/// The block as a row spells it. It holds no blank line, which is how
 /// [`bless`] finds its end.
 fn block(g: &Region) -> String {
     let mut out = vec![
@@ -291,13 +283,13 @@ fn header_at(row: &str, header: &str) -> Option<usize> {
     None
 }
 
-/// Put `block` into row `id` of the register's text: in place of its
+/// Put `block` into row `id` of a file's text: in place of its
 /// `[case.region]` table, or before its `[case.right]` table, each found by
 /// its header line ([`header_at`]).
-fn bless(text: &str, id: &str, block: &str) -> String {
+pub fn bless(text: &str, id: &str, block: &str) -> String {
     let at = text
         .find(&format!("id       = {}", quote(id)))
-        .unwrap_or_else(|| panic!("{id}: not in the register"));
+        .unwrap_or_else(|| panic!("{id}: not in the file"));
     let end = [text[at..].find("\n[[case]]"), text[at..].find("\n# ══")]
         .into_iter()
         .flatten()
@@ -318,71 +310,33 @@ fn bless(text: &str, id: &str, block: &str) -> String {
     format!("{}{new_row}{}", &text[..at], &text[end..])
 }
 
-/// **The bless writes a region block before the row's `[case.right]`
-/// table**, never into a string that names the table: a note ending
-/// *`[case.right].derived` carries the count* stays whole, the block lands on
-/// the line before the table's header, and the row still parses. A row that
-/// states a `[case.region]` table has it replaced, a note that names it left
-/// as it was.
-#[test]
-fn the_bless_writes_before_the_right_table_and_not_into_a_note() {
-    let block = "[case.region]\nroute    = \"state route\"\nk_s      = 1";
-    let row = |region: &str| {
-        format!(
-            "[[case]]\nid       = \"X/one\"\nnote     = \"`[case.region]` and `[case.right]`.derived \
-             carry the counts\"\n\n[case.wrong]\nk = 2\n\n{region}[case.right]\nk = 1\n\n[[case]]\n\
-             id       = \"X/two\"\n\n[case.right]\nk = 3\n"
-        )
-    };
-    let note = "note     = \"`[case.region]` and `[case.right]`.derived carry the counts\"\n";
-    for region in ["", "[case.region]\nroute    = \"cube\"\nk_s      = 9\n\n"] {
-        let text = row(region);
-        let got = bless(&text, "X/one", block);
-        assert!(got.contains(note), "the note moved:\n{got}");
-        assert!(
-            got.contains(&format!("{block}\n\n[case.right]\nk = 1\n")),
-            "the block is not before the table:\n{got}"
-        );
-        assert_eq!(got.matches("[case.region]\n").count(), 1, "{got}");
-        assert!(!got.contains("\"cube\""), "the old block stayed:\n{got}");
-        // The next row is untouched, and the whole still parses as TOML.
-        assert!(got.ends_with("[[case]]\nid       = \"X/two\"\n\n[case.right]\nk = 3\n"));
-        let parsed = toml::from_str::<toml::Table>(&got);
-        assert!(parsed.is_ok(), "{parsed:?}\n{got}");
-    }
-}
-
-#[test]
-fn every_row_states_its_witness_s_region() {
-    let reg = ein_corpus::register();
-    let blessing = std::env::var("EIN_BLESS").as_deref() == Ok("1");
-    let path = repo_root().join(REGISTER);
-    let mut text = std::fs::read_to_string(&path).expect("the register reads");
+/// Recompute every row's region of the file at `path` with the library and
+/// hold the row's `[case.region]` to it: how many rows were checked, and a
+/// message for each row that differs. With `bless`, a row that differs has
+/// its block rewritten in the file instead.
+pub fn check(path: &Path, bless_it: bool) -> (usize, Vec<String>) {
+    let file = Regressions::load(path).unwrap_or_else(|e| panic!("{e}"));
+    let mut text = std::fs::read_to_string(path).expect("the file reads");
     let mut bad = Vec::new();
     let mut checked = 0usize;
-    for row in &reg.case {
-        if row.status.starts_with("merged:") {
-            continue;
-        }
+    for row in &file.case {
         // A refused row states no region, and the library refuses its witness
         // as the binary does: at load, the binary's line the loader's, at the
-        // parse, the parser's, or by *forbid*.
-        // A command's refusal or error (schema /16) is the
-        // command's own: the library answers the witness, and the row states
-        // its region, as an answering row does. So is a solve's usage
-        // refusal, exit 2 (schema /19, `W43`): the binary refuses
-        // what the run was asked to write, and the library answers. But a
-        // command's refusal where the right answer is one is the loader's
-        // (schema /20, `W62` to `W65`): the row states no region, and
+        // parse, the parser's, or by *forbid*. A command's refusal or error is
+        // the command's own: the library answers the witness, and the row
+        // states its region, as an answering row does. So is a solve's usage
+        // refusal, exit 2: the binary refuses what the run was asked to
+        // write, and the library answers. But a command's refusal where the
+        // right answer is one is the loader's: the row states no region, and
         // the library refuses the witness as the command does.
         if let Some(want) = row.now.refused.as_ref().filter(|_| {
             (!row.now.is_command() || (row.right.refused && row.region.is_none()))
                 && row.now.exit != Some(2)
         }) {
             if let Some(e) = refusal(&row.witness) {
-                // `{FILE}` is the path the run was handed, as `wrong_answers.rs`
-                // reads it (schema /16): a line that places its form, a
-                // macro's expansion's too (`W66` to `W69`).
+                // `{FILE}` is the path the run was handed, as `super::hold`
+                // reads it: a line that places its form, a macro's
+                // expansion's too.
                 let want = want.replace("{FILE}", &row.witness);
                 if want != e {
                     bad.push(format!(
@@ -409,12 +363,11 @@ fn every_row_states_its_witness_s_region() {
             checked += 1;
             continue;
         }
-        // A row whose run ends in an error (`W18`) states no region either:
+        // A row whose run ends in an error states no region either:
         // the program loads, and the library stops where the binary does, at
         // a firing, with a saturation error, or, where a rule the run compiles
-        // before it saturates does not compile, with a compile error
-        // (`W22/kw-or-in-obligation`: an obligation's guard read as a nested
-        // `(or …)`).
+        // before it saturates does not compile, with a compile error (an
+        // obligation's guard read as a nested `(or …)`).
         if row.now.error.is_some() && !row.now.is_command() {
             let describe = Mode {
                 which: Which::All,
@@ -447,7 +400,7 @@ fn every_row_states_its_witness_s_region() {
         if diffs.is_empty() {
             continue;
         }
-        if blessing {
+        if bless_it {
             text = bless(&text, &row.id, &block(&got));
         } else {
             bad.push(format!(
@@ -459,15 +412,8 @@ fn every_row_states_its_witness_s_region() {
             ));
         }
     }
-    if blessing {
-        std::fs::write(&path, text).expect("the register writes");
+    if bless_it {
+        std::fs::write(path, text).expect("the file writes");
     }
-    assert!(checked > 0, "the register has no rows to check");
-    assert!(
-        bad.is_empty(),
-        "{} of {checked} rows state a region the library does not compute \
-         (re-bank with EIN_BLESS=1 cargo test -p ein-infer --test register_region):\n\n{}",
-        bad.len(),
-        bad.join("\n\n")
-    );
+    (checked, bad)
 }

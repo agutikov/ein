@@ -1,6 +1,6 @@
 ;;; A rule whose `:match` writes 257 distinct variables, which no activator
-;;; activates: every command answers — **W63**, register row `W63/wide-match-never-compiled`
-;;; (`corpus/wrong_answers.toml`).
+;;; activates: every command answers — **W63**, regression `wide-match-never-compiled`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

@@ -12,7 +12,7 @@
 //!
 //! - **[`every_declared_lever_cell_moves_no_line_of_any_mode`]**, through the
 //!   binary. Every `levers` cell `corpus/corpus.toml` declares, and every CLI
-//!   lever a `corpus/wrong_answers.toml` row's `settings` names, run under each
+//!   lever a `corpus/regressions.toml` row's `settings` names, run under each
 //!   of `ein solve`'s sixteen questions (three parts of R × describe, `-n 1`,
 //!   `-n 2`, `-n k_s+1`, `--single`, and `--count` over all of R) and
 //!   compared with the same question at
@@ -27,7 +27,7 @@
 //! - **[`no_config_flag_moves_a_line_of_any_mode`]**, in-process. Every flag
 //!   a `(config …)` can set, flipped from the program's own resolved value in
 //!   an appended block (the loader keeps the last block whole), on every
-//!   corpus program and register witness whose R is known, under the same
+//!   corpus program and regression witness whose R is known, under the same
 //!   sixteen questions: the read-out the binary prints, rendered uncut, with
 //!   its stderr lines and exit code, and the summary. This is the route a flag
 //!   takes into the saturator, which every mode's every node runs. Each
@@ -46,12 +46,12 @@
 //! `region.refuted_by`; and nothing else ([`CORE_FLAG`], [`without_core`]).
 //! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
 //!
-//! **And one register row**: W36's witness prints another `refuted by` under
-//! that flag beside the same core, which the exemption does not cover. It is
-//! a wrong answer, an `open` row, and its program is compared less that row
-//! until the row is fixed ([`REFUTED_BY_OPEN`]);
-//! [`w36_is_exempt_from_refuted_by_until_f22`] holds the row open and the
-//! difference there.
+//! **And one known gap**: on `features/12` that flag moves `refuted by`
+//! beside the same core, which the exemption does not cover. It is a wrong
+//! answer, and the program is compared less that row until it is fixed
+//! ([`REFUTED_BY_MOVES`]);
+//! [`the_refuted_by_gap_still_has_its_program`] holds the difference
+//! there.
 //!
 //! **Byte for byte, cost counters included**, because no route reads a lever
 //! today. The day one does, its `work` row and block may move, and this file
@@ -81,7 +81,7 @@ use std::process::Command;
 
 use ein_core::SolverConfig;
 use ein_core::config::{FLAGS, FieldKind, rendered_fields};
-use ein_corpus::{Scratch, corpus, register, repo_root};
+use ein_corpus::{Scratch, corpus, regressions, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load, parse};
 use serde_json::Value as J;
@@ -173,7 +173,7 @@ fn scrub(summary: &mut J) -> J {
 
 /// What each CLI lever writes into the resolved config, which the summary's
 /// `config` object echoes: the evidence that the lever reached the run.
-/// `-L` and `-K` are retired; a register row's `settings` that names one is
+/// `-L` and `-K` are retired; a regression's `settings` that names one is
 /// not swept.
 const SHADOWS: [(&str, &str, bool); 1] = [("-y", "lattice-sanity-check", true)];
 
@@ -200,7 +200,7 @@ fn summary_without_spot(summary: &str) -> String {
 }
 
 /// Every declared lever cell, by file: the corpus's `levers` columns, and the
-/// CLI lever each register row's `settings` names (`lever: -L, …`).
+/// CLI lever each regression's `settings` names (`lever: -L, …`).
 ///
 /// `slow_too`: the slow entries' cells too, the nightly's, which the one test
 /// that reads `EIN_CORPUS_SLOW` passes.
@@ -217,7 +217,7 @@ fn declared(slow_too: bool) -> BTreeMap<String, BTreeSet<String>> {
         .filter(|e| e.slow)
         .map(|e| e.path)
         .collect();
-    for row in register().case {
+    for row in regressions().case {
         let Some(rest) = row.settings.strip_prefix("lever: -") else {
             continue;
         };
@@ -378,7 +378,7 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
     assert!(
         bad.is_empty(),
         "{} of {declared_cells} lever cells printed something the default does not (C4). A \
-         lever that changes an answer is a wrong answer and a register row, \
+         lever that changes an answer is a wrong answer, \
          never a weaker mode:\n\n{}",
         bad.len(),
         bad.join("\n\n")
@@ -403,7 +403,7 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
 
 // ── 2. Every `(config …)` flag, in-process ────────────────────────────
 
-/// Every corpus program and register witness, less the slow tier (whose R a
+/// Every corpus program and regression witness, less the slow tier (whose R a
 /// bare describe does not reach), W7's two witnesses and W16's order pair
 /// among them, in a debug build too.
 fn programs() -> Vec<PathBuf> {
@@ -414,10 +414,8 @@ fn programs() -> Vec<PathBuf> {
         .map(|e| repo_root().join(e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -513,27 +511,12 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
 /// changes a core.
 const CORE_FLAG: &str = "record-alternative-justifications";
 
-/// The programs on which [`CORE_FLAG`] moves `refuted by` beside a core that
-/// did not move, each under an `open` register row:
-/// `W36/alt-flag-refuted-by`, on its witness and on `features/12`, the
-/// program the witness was written from, which no typed order hides; and
-/// `W36/alt-flag-two-derivations`, the witness no rule order hides. Each is
-/// compared less the `refuted by` row and `region.refuted_by` under that flag,
-/// and nothing else; an entry leaves with its row's fix.
-const REFUTED_BY_OPEN: [(&str, &str); 3] = [
-    (
-        "W36/alt-flag-refuted-by",
-        "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein",
-    ),
-    (
-        "W36/alt-flag-refuted-by",
-        "examples/features/12_expect_false.ein",
-    ),
-    (
-        "W36/alt-flag-two-derivations",
-        "examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein",
-    ),
-];
+/// The corpus programs on which [`CORE_FLAG`] moves `refuted by` beside a
+/// core that did not move: a known wrong answer, since the exemption covers
+/// `refuted by` only where the core moved. Each is compared less the `refuted
+/// by` row and `region.refuted_by` under that flag, and nothing else; an
+/// entry leaves with the fix.
+const REFUTED_BY_MOVES: [&str; 1] = ["examples/features/12_expect_false.ein"];
 
 /// The rows that name a dead node's core: the read-out's `unsat core` and
 /// `source`, and its `core search` row, which says the
@@ -798,8 +781,8 @@ fn no_config_flag_moves_a_line_of_any_mode() {
                 if want != got {
                     exempt.insert(rel.clone());
                 }
-                // W36's program: `refuted by` too, while its row is open.
-                let moved = core_moved(want, got) || REFUTED_BY_OPEN.iter().any(|(_, w)| *w == rel);
+                // `refuted by` too, on a program where it moves alone.
+                let moved = core_moved(want, got) || REFUTED_BY_MOVES.contains(&rel.as_str());
                 (without_core(want, moved), without_core(got, moved))
             } else {
                 (want.clone(), got.clone())
@@ -823,7 +806,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         bad.is_empty(),
         "{} of {cells} (program, flag, question) cells printed something the \
          default does not. No config option may change the answer \
-         (config.md § 2.5) — this is a register row:\n\n{}",
+         (config.md § 2.5) — this is a wrong answer:\n\n{}",
         bad.len(),
         bad.join("\n\n")
     );
@@ -931,32 +914,14 @@ fn the_librarys_question_does_the_binarys_work() {
     );
 }
 
-/// **W36 is exempt from `refuted by` while its row is open.**
+/// **The `refuted by` gap still has its program.**
 ///
-/// Each [`REFUTED_BY_OPEN`] entry names a register row that is `open`, and a
-/// program that is its witness or that its note names;
-/// and on that program
-/// [`CORE_FLAG`] still moves the `refuted by` row beside a core that did not
-/// move, on some question, and nothing else. The day it stops, the row is
-/// fixed and the entry goes with it.
+/// On each [`REFUTED_BY_MOVES`] program, [`CORE_FLAG`] still moves the
+/// `refuted by` row beside a core that did not move, on some question, and
+/// nothing else. The day it stops, the gap is closed there and the entry goes.
 #[test]
-fn w36_is_exempt_from_refuted_by_until_f22() {
-    let reg = register();
-    for (id, witness) in REFUTED_BY_OPEN {
-        let row = reg
-            .case
-            .iter()
-            .find(|r| r.id == id)
-            .unwrap_or_else(|| panic!("{id}: not a register row"));
-        assert_eq!(
-            (row.status.as_str(), row.owner.as_str()),
-            ("open", "F22"),
-            "{id}: the exemption is an open row of F22's"
-        );
-        assert!(
-            row.witness == witness || row.note.as_deref().is_some_and(|n| n.contains(witness)),
-            "{id}: {witness} is neither its witness nor named in its note"
-        );
+fn the_refuted_by_gap_still_has_its_program() {
+    for witness in REFUTED_BY_MOVES {
         let path = repo_root().join(witness);
         let Reach::Known(k) = reach(&path) else {
             panic!("{witness}: R is not known");
@@ -982,8 +947,8 @@ fn w36_is_exempt_from_refuted_by_until_f22() {
         }
         assert!(
             moved >= 1,
-            "{witness}: :{CORE_FLAG} no longer moves `refuted by` — {id} is fixed: flip \
-             the row and take its entry out of REFUTED_BY_OPEN"
+            "{witness}: :{CORE_FLAG} no longer moves `refuted by` — the gap is closed \
+             here: take its entry out of REFUTED_BY_MOVES"
         );
     }
 }
@@ -1301,7 +1266,7 @@ const R_KEYS: [&str; 14] = [
 /// **`--describe-route` moves no part of R**: describe and `--count` take
 /// the tree and the classes by default and the state route when asked, and
 /// the option chooses a route and never R. On every corpus program and
-/// register witness (the `slow` entries apart, whose state route the budget
+/// regression witness (the `slow` entries apart, whose state route the budget
 /// stops), describe and `--count` under `--describe-route tree` and `states`
 /// through the binary: where both runs exhausted R, every key of the
 /// summary's `region` block that is R's ([`R_KEYS`]) is the same, `nogoods`

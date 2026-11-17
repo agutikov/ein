@@ -109,7 +109,7 @@ class RunResult:
     k: int | None = None
     exhausted: bool | None = None
     # The run in `[case.now]`'s fields: line, exhausted, k, empty, relations,
-    # models — what `ein-cli/tests/wrong_answers.rs` holds a row to.
+    # models — what `the runner, ein-cli/tests/held/` holds a row to.
     now: dict | None = None
     # `lattice_pages`' steps: each a title, its page and its commitments —
     # what a `layer N` or `entering …` pointer resolves against.
@@ -146,7 +146,7 @@ def solve_flags(run_name: str) -> list[str]:
 # ── the answer, in the register's terms ───────────────────────────────────────
 
 def relations(stdout: str) -> list[str]:
-    """The relations `-H` lists, sorted — `wrong_answers.rs`'s `relations`."""
+    """The relations `-H` lists, sorted — the runner's `relations`."""
     out, on = [], False
     for line in stdout.splitlines():
         if line.startswith("H — the universe"):
@@ -170,7 +170,7 @@ def listed_states(s: dict | None) -> list[dict]:
 
 
 def now_of(s: dict | None, stdout: str) -> dict | None:
-    """The summary in `[case.now]`'s fields — `wrong_answers.rs`'s `now_of`."""
+    """The summary in `[case.now]`'s fields — the runner's `now_of`."""
     if not s:
         return None
     region = s.get("region") or {}

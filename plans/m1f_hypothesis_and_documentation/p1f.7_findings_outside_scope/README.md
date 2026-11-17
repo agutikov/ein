@@ -97,7 +97,7 @@ Every stage follows the method of P1f.5's re-opened stages, S1f.5.21 to S1f.5.24
    macro's body or argument) and every command that reads a program, the four `render` views, `kb save` and a
    saved `.einb` included.
 2. **T2, the rows.** One witness per way the engine answers wrongly, under `examples/ein-bugs/wrong-answers/`,
-   each with a corpus entry. Each is filed `open` in [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml)
+   each with a corpus entry. Each is filed `open` in [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml)
    and held to the unchanged engine. Every golden the fix will move is named before it is re-blessed.
 3. **T3, the fix**, then the rows flipped to `fixed`, and a test that holds the class on every command and fails
    with the fix taken out.

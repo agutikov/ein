@@ -1,114 +1,73 @@
-//! **The wrong-answer register, as a test.**
+//! **A row's run, through the binary.**
 //!
-//! `corpus/wrong_answers.toml` holds one row per witness of every known wrong
-//! answer: what the engine says and what it should say. This file runs what a
-//! row records and holds the engine to it, so that the register is a test from
-//! the day it exists.
+//! A file of the `ein_corpus::regressions` format records, for each row, what
+//! `ein <run>` answers on its witness, `[case.now]`. [`hold`] runs it,
+//! through the binary as a process, and compares what it answers with what
+//! the row records, field for field with the `--json-summary` it writes
+//! (`ein-summary/2`). So a row whose run changes answer is news either way: a
+//! row answered right breaking, or one answered wrong changing, which is a
+//! fix nobody intended or a new wrong answer.
 //!
-//! **What is run is each row's `[case.now]`**: the region run that asks the
-//! row's question (`solve --maximal` for a model-set row), compared field for
-//! field with the `--json-summary` it writes (`ein-summary/2`). A row's
-//! `wrong`, `control` and `twin` blocks record what was answered when the row
-//! was filed, and nothing runs them. What
-//! a row's status means is data, held without a run by `ein-corpus`'s
-//! `the_register_is_well_formed`:
+//! - **A refusal** exits 1, its stderr's first line is the recorded one, and
+//!   it writes no summary; so does a run that ends in an error before it
+//!   answered. A solve's usage refusal exits 2.
+//! - **N's cores**: a dead node's core is not in the summary, whose
+//!   `region.core` is root's, so the run also writes `--dump-answer`, and its
+//!   `nogoods.json` is read.
+//! - **A core's status**: the summary's `region.core_status`, and where
+//!   `right` states it with a `qualifier`, the read-out's `core search` row.
+//! - **A stale count**: the summary's `monotonicity.state`. `N` can be
+//!   compared on the sets a row lists alone (`nogoods_listed`).
+//! - **The members a line mode met and does not list**: the summary's states
+//!   with `listed = false`.
+//! - **A claim's outcome and a query's classes**: the summary's
+//!   `claim.outcome`, and each query's class count and `expect.outcome`. A
+//!   row whose recorded claim is `failed` expects the run's exit 1.
+//! - **What root's `refuted by` names**: the summary's `region.refuted_by`, in
+//!   the order the read-out prints it.
+//! - **What a query's `:goal-text` prints**: the read-out's `“…”` sentences,
+//!   read off stdout, since the summary carries the rows and not the
+//!   sentences.
+//! - **A command's run that is not a solve** writes no summary: its answer is
+//!   a refusal, an error or that it answered, exit 0 with nothing on stderr.
+//!   A `container` row saves the witness with `ein kb save` first and runs on
+//!   the `.einb`; one that answered prints what the same run prints on the
+//!   witness itself, every number a line times masked and the lines that say
+//!   what the run read aside. `{FILE}` in a recorded line is the path the
+//!   run was handed, and `{out}` the run's scratch directory.
+//! - **A line the run prints**: the first line that begins, past its indent,
+//!   with a label, on stdout, in `--dump-answer`'s `answer.txt` or in a state
+//!   file it writes.
+//! - **A run with its stdout closed**: a pipe whose reader was dropped before
+//!   the run was spawned, so every write the run makes meets no reader,
+//!   whatever the timing. Its answer is how it ended: by a signal, `SIGPIPE`,
+//!   with nothing on stderr, or by a panic, exit 101, whose message is the
+//!   line after `thread 'main' (…) panicked at …:`.
 //!
-//! - a **fixed** row's `now` answers its `right`, every field `right` states;
-//! - an **open** row says why its `now` is still not `right` — what R shares
-//!   with the case, or the reading the case waits on.
+//! A row's `[case.region]` is [`regions`]'s, through the library.
 //!
-//! **A `now` can be a refusal** (*forbid*, Q-M1e2.5): the run exits
-//! 1, its stderr's first line is the recorded one, and it writes no summary.
-//!
-//! **A `now` can record `N`'s cores** (W19):
-//! a dead node's core is not in the summary, whose `region.core` is root's,
-//! so the run also writes `--dump-answer`, and its `nogoods.json` is read.
-//!
-//! **A `now` can record the status beside root's core** (W23): the summary's
-//! `region.core_status`, and where `right`
-//! states it with a `qualifier`, the read-out's `core search` row.
-//!
-//! **A `now` can record how many members of R hold a stale fact** (W8's rows
-//! past the oracle's limit): the
-//! summary's `monotonicity.state`. It can also compare `N` on the sets it
-//! lists alone (`nogoods_listed`, `W10/second-preparation`'s `zebra2.ein`,
-//! whose `N` is 366 sets).
-//!
-//! **A `now` can record the members it met and does not list** (W27's rows):
-//! the summary's states with `listed =
-//! false`, what a line mode past `--region-limit` leaves to `--dump-answer`.
-//!
-//! **A `now` can record a claim's outcome and a query's classes** (W28's
-//! rows): the summary's `claim.outcome`, and
-//! each query's class count and `expect.outcome`. A row whose recorded claim
-//! is `failed` expects the run's exit 1, as a refuted claim exits.
-//!
-//! **A `now` beside a refusal can record what the refusal replaces** (W29's
-//! and W32's rows): the core and the claims
-//! today's answer reports, read from the summary as above, where `right`
-//! states none of them.
-//!
-//! **A `now` can record what root's `refuted by` names** (W36): the
-//! summary's `region.refuted_by`, in the order the
-//! read-out prints it.
-//!
-//! **A `now` can record what a query's `:goal-text` prints** (W37): the
-//! read-out's `“…”` sentences, one per row of a
-//! projection class, in the order printed. The summary carries the rows and
-//! not the sentences, so they are read off stdout, as `-H`'s relations are.
-//!
-//! **A `now` can be a command's run that is not a solve** (W40, W41): it
-//! writes no summary, and its answer
-//! is a refusal, an error or that it answered, exit 0 with nothing on stderr.
-//! A `container` row saves the witness with `ein kb save` first and runs on
-//! the `.einb`; one that answered prints what the same run prints on the
-//! witness itself, every number a line times masked and the lines that say
-//! what the run read aside. `{FILE}` in a recorded line is the path the run
-//! was handed.
-//!
-//! **A `now` can record a line the run prints** (W42): the first line that
-//! begins, past its indent, with a label, on stdout or in `--dump-answer`'s
-//! `answer.txt`, which the run then writes. A label as long as its column
-//! could glue to its value, so the line, and not a field of the summary, is
-//! the answer.
-//!
-//! **A solve's refusal can exit 2** (W43): a
-//! usage refusal of what the run was asked to write, `exit = 2` beside
-//! `refused`; and `{out}` in a recorded line is the run's scratch directory,
-//! as `run`'s `{out}` is.
-//!
-//! **A `now` can run with its stdout closed** (W75): the run's stdout is a
-//! pipe whose reader was dropped before the
-//! run was spawned, so every write the run makes meets no reader, whatever
-//! the timing. Its answer is how it ended: by a signal, `SIGPIPE`, with
-//! nothing on stderr, or by a panic, exit 101, whose message is the line
-//! after `thread 'main' (…) panicked at …:`.
-//!
-//! So this file's one job is that `now` is what the binary answers. A row
-//! whose run changes answer is news either way: a fixed row breaking, or an
-//! open one changing, which is a fix nobody intended or a new wrong answer.
-//!
-//! **Through the binary, as a process**, as `corpus_cli.rs` is: a row is a
-//! claim about what `ein <run>` answers.
-//!
-//! ```text
-//! cargo test -p ein-cli --test wrong_answers
-//! ```
+//! `tests/regressions.rs` holds the project's file by both, the binary the one
+//! Cargo built; the example `held_answers` holds a file given on its command
+//! line, with the binary given beside it.
+
+#![allow(dead_code)]
+
+pub mod regions;
 
 use std::path::Path;
 use std::process::{Command, ExitStatus, Stdio};
 
-use ein_corpus::register::{Nogood, Now, Printed, QueryAnswer, Row, Stale, sorted_nogoods};
-use ein_corpus::{Scratch, plan, register, repo_root};
+use ein_corpus::regressions::{Nogood, Now, Printed, QueryAnswer, Row, Stale, sorted_nogoods};
+use ein_corpus::{plan, repo_root};
 use serde_json::Value as J;
 
 /// What one run left behind: its exit code, stdout, stderr, and the summary.
 struct Got {
     /// The path the run was handed: the witness, or the container saved from
-    /// it (schema /16).
+    /// it.
     file: String,
     code: i32,
-    /// The signal that ended the run, where one did (schema /21).
+    /// The signal that ended the run, where one did.
     signal: Option<i32>,
     stdout: String,
     stderr: String,
@@ -116,13 +75,12 @@ struct Got {
     /// `--dump-answer`'s `nogoods.json`, where the row records `N`'s cores.
     nogoods: Option<J>,
     /// `--dump-answer`'s directory, where the row records a line of its
-    /// `answer.txt` (schema /17, W42) or of a state file it writes (schema
-    /// /22, W91).
+    /// `answer.txt` or of a state file it writes.
     answer: std::path::PathBuf,
 }
 
-fn run(row: &Row, dir: &Path) -> Got {
-    // A container row (schema /16) reads the witness saved as a `.einb`.
+fn run(ein: &Path, row: &Row, dir: &Path) -> Got {
+    // A container row reads the witness saved as a `.einb`.
     let file = if row.now.container {
         let stem = Path::new(&row.witness)
             .file_stem()
@@ -130,7 +88,7 @@ fn run(row: &Row, dir: &Path) -> Got {
             .to_string_lossy()
             .into_owned();
         let einb = dir.join(format!("{stem}.einb"));
-        let saved = Command::new(env!("CARGO_BIN_EXE_ein"))
+        let saved = Command::new(ein)
             .args(["kb", "save", &row.witness])
             .arg(&einb)
             .current_dir(repo_root())
@@ -149,12 +107,12 @@ fn run(row: &Row, dir: &Path) -> Got {
     };
     let mut argv = plan::argv(&row.now.run, &file, dir);
     // `-H` lists H, whose relations are what a state's `(model …)` names; a
-    // command's run (schema /16) lists no state.
+    // command's run lists no state.
     if !row.now.is_command() {
         argv.push("-H".to_string());
     }
-    // A dead node's core is the answer directory's (W19), and so is
-    // `answer.txt` (W42).
+    // A dead node's core is the answer directory's, and so is
+    // `answer.txt`.
     let answer = dir.join("answer");
     let reads_answer = row.now.printed.iter().flatten().any(|p| p.file != "stdout");
     if row.now.nogoods.is_some() || reads_answer {
@@ -181,9 +139,9 @@ fn run(row: &Row, dir: &Path) -> Got {
         argv.push("--describe-route".to_string());
         argv.push("states".to_string());
     }
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
+    let mut cmd = Command::new(ein);
     cmd.args(&argv).current_dir(repo_root());
-    // A closed stdout (schema /21): a pipe whose reader is dropped before the
+    // A closed stdout: a pipe whose reader is dropped before the
     // run is spawned, so every write the run makes is one after its reader
     // has gone, whatever the timing.
     if row.now.stdout_closed() {
@@ -226,7 +184,7 @@ fn signal_of(_: ExitStatus) -> Option<i32> {
     None
 }
 
-/// A panic's message (schema /21): the line of stderr after `thread 'main'
+/// A panic's message: the line of stderr after `thread 'main'
 /// (…) panicked at …:`, whose thread id and source position are the
 /// toolchain's.
 fn panic_message(stderr: &str) -> Option<&str> {
@@ -235,7 +193,7 @@ fn panic_message(stderr: &str) -> Option<&str> {
     lines.next()
 }
 
-/// How a run whose stdout is closed ended (W75):
+/// How a run whose stdout is closed ended:
 /// by the signal `now` records, with nothing on stderr, or by the panic it
 /// records, exit 101.
 fn closed(row: &Row, got: &Got) -> Vec<String> {
@@ -273,7 +231,7 @@ fn closed(row: &Row, got: &Got) -> Vec<String> {
     d
 }
 
-/// A command's stdout as two runs of it are compared (schema /16): the lines
+/// A command's stdout as two runs of it are compared: the lines
 /// that say what the run read (`input:`, its size, `parse:`, `kb load:`,
 /// `open:`) aside, every number a line times (`… ms`) masked, and runs of
 /// spaces one, since a masked number's width is the format's.
@@ -310,9 +268,9 @@ fn comparable(stdout: &str) -> String {
     out.join("\n")
 }
 
-/// What a command's `now` answers when it answered (schema /16): exit 0, an
+/// What a command's `now` answers when it answered: exit 0, an
 /// empty stderr, and with `container` the same run's stdout on the witness.
-fn answered(row: &Row, dir: &Path, got: &Got) -> Vec<String> {
+fn answered(ein: &Path, row: &Row, dir: &Path, got: &Got) -> Vec<String> {
     let mut d = Vec::new();
     if got.code != 0 {
         d.push(format!(
@@ -331,7 +289,7 @@ fn answered(row: &Row, dir: &Path, got: &Got) -> Vec<String> {
     if row.now.container {
         let there = dir.join("witness");
         std::fs::create_dir_all(&there).expect("scratch dir");
-        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        let out = Command::new(ein)
             .args(plan::argv(&row.now.run, &row.witness, &there))
             .current_dir(repo_root())
             .output()
@@ -355,7 +313,7 @@ fn answered(row: &Row, dir: &Path, got: &Got) -> Vec<String> {
     d
 }
 
-/// `nogoods.json`'s sets and cores, sorted as the register compares them.
+/// `nogoods.json`'s sets and cores, sorted as a row compares them.
 fn nogoods_of(j: &J) -> Vec<Nogood> {
     let strs = |x: &J| -> Vec<String> {
         x.as_array()
@@ -410,7 +368,7 @@ fn relations(stdout: &str) -> Vec<String> {
 }
 
 /// The sentences the read-out prints for a query's `:goal-text`, in order —
-/// its `“…”` lines (W37), which nothing else on the
+/// its `“…”` lines, which nothing else on the
 /// read-out writes.
 fn goal_text(stdout: &str) -> Vec<String> {
     stdout
@@ -425,7 +383,7 @@ fn goal_text(stdout: &str) -> Vec<String> {
 }
 
 /// The first line of `text` that begins, past its indent, with `label`, its
-/// trailing spaces aside (W42); empty where none does.
+/// trailing spaces aside; empty where none does.
 fn printed_line(text: &str, label: &str) -> String {
     text.lines()
         .find(|l| l.trim_start().starts_with(label))
@@ -473,7 +431,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         .filter_map(|o| o["relation"].as_str().map(str::to_string))
         .collect();
     outside.sort();
-    // The core, where the row records one (W10).
+    // The core, where the row records one.
     let core = row.now.core.as_ref().map(|_| {
         let mut c: Vec<String> = region["core"]
             .as_array()
@@ -486,7 +444,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         c.sort();
         c
     });
-    // The core's status, where the row records one (W23):
+    // The core's status, where the row records one:
     // `none` where the summary states none.
     let core_status = row.now.core_status.as_ref().map(|_| {
         region
@@ -495,7 +453,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             .unwrap_or("none")
             .to_string()
     });
-    // N's cores, where the row records them (W19); on the sets the row lists
+    // N's cores, where the row records them; on the sets the row lists
     // alone where it says so, each of which the run must report.
     let nogoods = match (&row.now.nogoods, &got.nogoods) {
         (None, _) => None,
@@ -513,7 +471,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         (Some(_), Some(j)) => Some(nogoods_of(j)),
         (Some(_), None) => return Err("no nogoods.json was written".to_string()),
     };
-    // Stale members of R, where the row records them (W8): the summary's
+    // Stale members of R, where the row records them: the summary's
     // `monotonicity.state`, its `stale` entries of
     // class `R` and its `nodes`.
     let stale = row.now.stale.as_ref().map(|_| {
@@ -525,7 +483,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             nodes: st["nodes"].as_u64().unwrap_or(0),
         }
     });
-    // The members met and not listed, where the row records them (W27): the
+    // The members met and not listed, where the row records them: the
     // summary's states with `listed = false`.
     let others = row.now.others.map(|_| {
         region["states"].as_array().map_or(0, |v| {
@@ -533,10 +491,10 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         })
     });
     // The solve form's claim and each query's classes and claim, where the
-    // row records them (W28).
+    // row records them.
     let outcome = |e: &J| e["outcome"].as_str().unwrap_or("none").to_string();
     let claim = row.now.claim.as_ref().map(|_| outcome(&s["claim"]));
-    // What root's `refuted by` names, where the row records it (W36): in the
+    // What root's `refuted by` names, where the row records it: in the
     // order printed, empty where none is stated.
     let refuted_by = row.now.refuted_by.as_ref().map(|_| {
         region["refuted_by"]
@@ -548,11 +506,11 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             })
             .unwrap_or_default()
     });
-    // What a query's `:goal-text` prints, where the row records it (W37):
+    // What a query's `:goal-text` prints, where the row records it:
     // off stdout, in the order printed.
     let goal_text = row.now.goal_text.as_ref().map(|_| goal_text(&got.stdout));
-    // The lines printed, where the row records them (W42): each found by its
-    // label, on stdout, in `answer.txt`, or in a state file (W91), where an
+    // The lines printed, where the row records them: each found by its
+    // label, on stdout, in `answer.txt`, or in a state file, where an
     // empty line says none begins with it.
     let printed = match &row.now.printed {
         None => None,
@@ -704,40 +662,41 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
     out
 }
 
-#[test]
-fn every_row_answers_what_the_register_records() {
-    let reg = register();
-    let scratch = Scratch::new("ein-wrong-answers");
+/// What holding a file's rows came to: how many runs, and every row whose
+/// run answered other than its `[case.now]` records, one message each.
+pub struct Outcome {
+    pub runs: usize,
+    pub bad: Vec<String>,
+}
+
+/// Run every row's `[case.now]` through the binary `ein`, from the
+/// repository's root, each in a directory of its own under `scratch`, and
+/// compare what it answers with what the row records.
+pub fn hold(ein: &Path, rows: &[Row], scratch: &Path) -> Outcome {
     let mut bad = Vec::new();
     let mut runs = 0usize;
-
-    for row in &reg.case {
-        if row.status.starts_with("merged:") {
-            continue;
-        }
+    for row in rows {
         let dir = scratch.join(plan::slug(&row.id));
         std::fs::create_dir_all(&dir).expect("scratch dir");
-        let got = run(row, &dir);
+        let got = run(ein, row, &dir);
         runs += 1;
         let first = got
             .stderr
             .lines()
             .find(|l| !l.is_empty())
             .unwrap_or("<empty>");
-        // A refusal (*forbid*, Q-M1e2.5) is exit 1 and its first line, and no
-        // summary; so is a run that ended in an error before it answered
-        // (W18).
+        // A refusal is exit 1 and its first line, and no summary; so is a run
+        // that ended in an error before it answered.
         let ended = match (&row.now.refused, &row.now.error) {
             (Some(want), _) => Some(("refused", "a refusal", want)),
             (None, Some(want)) => Some(("error", "an error", want)),
             (None, None) => None,
         };
         let diffs = if row.now.stdout_closed() {
-            // A run whose stdout is closed (schema /21, W75).
             closed(row, &got)
         } else if let Some((field, what, want)) = ended {
-            // `{FILE}` is the path the run was handed (schema /16), and
-            // `{out}` the run's scratch directory (schema /19).
+            // `{FILE}` is the path the run was handed, and `{out}` the run's
+            // scratch directory.
             let want = &want
                 .replace("{FILE}", &got.file)
                 .replace("{out}", &dir.display().to_string());
@@ -754,10 +713,9 @@ fn every_row_answers_what_the_register_records() {
             }
             d
         } else if row.now.is_command() {
-            // A command's run that answered (schema /16, W40, W41).
-            answered(row, &dir, &got)
+            answered(ein, row, &dir, &got)
         } else if got.code != i32::from(row.now.refutes()) {
-            // A refuted claim exits 1 (schema /12, W28); every other answer 0.
+            // A refuted claim exits 1; every other answer 0.
             vec![format!(
                 "exit: recorded {}, got {} — stderr: {first}",
                 i32::from(row.now.refutes()),
@@ -768,19 +726,17 @@ fn every_row_answers_what_the_register_records() {
                 Ok(now) => {
                     let mut d = differences(&row.now, &now);
                     // A right that names what the universe leaves out states
-                    // the sentence too (W6): the `outside` row, wherever
-                    // `now` records that `outside` — an open row whose
-                    // read-out names nothing (`W22/kw-neq-in-goal`) is open
-                    // on that field.
+                    // the sentence too: the `outside` row, wherever `now`
+                    // records that `outside`.
                     if row.right.outside.as_ref() == Some(&row.now.outside)
                         && let Some(q) = &row.right.qualifier
                         && !got.stdout.contains(&format!("    outside         {q}\n"))
                     {
                         d.push(format!("the read-out does not print {q:?}"));
                     }
-                    // A right that states a core's status states the read-out's
-                    // `core search` row too (W23), wherever
-                    // `now` records that status.
+                    // A right that states a core's status states the
+                    // read-out's `core search` row too, wherever `now` records
+                    // that status.
                     if row.right.core_status.is_some()
                         && row.right.core_status == row.now.core_status
                         && let Some(q) = &row.right.qualifier
@@ -796,13 +752,11 @@ fn every_row_answers_what_the_register_records() {
         if diffs.is_empty() {
             continue;
         }
-        let why = match row.status.as_str() {
-            "fixed" => "a FIXED row no longer answers what it records, which is its right answer",
-            "open" => {
-                "an OPEN row changed answer — a fix nobody intended, or a new wrong answer; \
-                 either way the row moves in the same commit"
-            }
-            _ => "the answer the review ruled right has changed",
+        let why = if row.now.against(&row.right).is_empty() {
+            "a row whose recorded answer is the right one no longer gives it"
+        } else {
+            "a row whose recorded answer is wrong changed answer — a fix nobody intended, or a \
+             new wrong answer; either way the row moves in the same commit"
         };
         bad.push(format!(
             "{} ein {} {} — {why}:\n    {}",
@@ -812,11 +766,5 @@ fn every_row_answers_what_the_register_records() {
             diffs.join("\n    ")
         ));
     }
-    assert!(runs > 0, "the register recorded no runs");
-    assert!(
-        bad.is_empty(),
-        "{} of {runs} register runs disagree with corpus/wrong_answers.toml:\n\n{}",
-        bad.len(),
-        bad.join("\n\n")
-    );
+    Outcome { runs, bad }
 }

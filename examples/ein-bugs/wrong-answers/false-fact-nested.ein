@@ -1,5 +1,5 @@
-;;; A value `(false Bob)` inside a fact is stored — **W81**, register row
-;;; `W81/false-fact-nested`.
+;;; A value `(false Bob)` inside a fact is stored — **W81**, regression
+;;; `false-fact-nested`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

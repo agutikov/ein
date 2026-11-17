@@ -9,7 +9,7 @@
 //! :expect …)` and for claims over more than one part. What that question
 //! leaves undecided is asked the describing one, and [`read_out::stands`]
 //! says which of the two reports stands. Held here, on every corpus file and
-//! register witness whose cube the oracle enumerates, for every `(query …)`
+//! regression witness whose cube the oracle enumerates, for every `(query …)`
 //! the program asks, over each of the three parts of `R`:
 //!
 //! - **the oracle's word.** The query's classes over the part are read off
@@ -57,12 +57,10 @@ fn loaded(src: &str, dir: Option<&Path>) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-fn corpus_and_register() -> Vec<PathBuf> {
+fn corpus_and_regressions() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -589,7 +587,7 @@ fn sweep(path: &Path) -> Swept {
 
 #[test]
 fn every_claim_is_decided_as_the_oracle_decides_it() {
-    let files = corpus_and_register();
+    let files = corpus_and_regressions();
     // On the corpus sweeps' pool, a program a unit, read back in order.
     let found = ein_corpus::pool::map(
         "claim_routes",
@@ -845,14 +843,14 @@ fn the_least_question_is_read_off_the_claims_shapes() {
 /// question, whose default route on a program where the tree branches does
 /// not compute an empty R's owing frontier; where that leaves the claim not
 /// checked, it asks the describing question again by the state route. On
-/// every corpus file and register witness whose cube the oracle enumerates
+/// every corpus file and regression witness whose cube the oracle enumerates
 /// and that states a region claim: the default's word, where it decides, is
 /// the oracle's; where it does not, the program's R is empty and its frontier
 /// not computed, and the state route's word is the oracle's. At least one
 /// program needs the state route.
 #[test]
 fn a_region_claim_the_tree_leaves_is_decided_by_the_state_route() {
-    let files = corpus_and_register();
+    let files = corpus_and_regressions();
     let describe = Mode {
         which: Which::All,
         ask: Ask::Describe,

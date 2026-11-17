@@ -1,6 +1,6 @@
 ;;; A derived activator: a rule derives an activator that binds a relation
 ;;; parameter to a fact, and the loader refuses the program for it. The
-;;; witness of register row `W59/derived-activator`; its twin, where no run
+;;; witness of regression `derived-activator/derived-activator`; its twin, where no run
 ;;; derives the activator, is `derived_activator_never.ein`.
 ;;;
 ;;; `r`'s parameter `?R` names a relation, `(box (?R b))`, and `mk` derives

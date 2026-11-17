@@ -1,5 +1,5 @@
 ;;; Which core a dead node reports moved with interner ids — **W11**,
-;;; register row `W11/fork-delta-order` (`corpus/wrong_answers.toml`).
+;;; regression `fork-delta-order` (`corpus/regressions.toml`).
 ;;; `corpus/fuzz_findings/fork-delta-order.ein` is the same program, the
 ;;; finding's record.
 ;;;
@@ -44,7 +44,7 @@
 ;;; Over every derivation (an uncapped store) the core is (g G01) (h H01)
 ;;; (on A) (on B): every core is four facts, so the size the glossary promises
 ;;; holds, and which of the equal-size ones a full list leaves is the store's
-;;; bounded retention (W10/alt-cap-shared's class, an open row), not this
+;;; bounded retention (`alt-cap-shared.ein`'s class, a known gap), not this
 ;;; row's. This row asks only that it not move with the ids.
 ;;;
 ;;; The g and h facts are written in descending order so that the order they

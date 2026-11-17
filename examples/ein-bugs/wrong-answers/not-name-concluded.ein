@@ -1,5 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)` —
-;;; **W84**, register row `W84/not-name-concluded`.
+;;; **W84**, regression `not-name-concluded`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

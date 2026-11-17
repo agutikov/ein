@@ -494,7 +494,7 @@
 ;; The canonical zebra2.ein closes the conditions with (15); this variant
 ;; drops it, leaving the puzzle under-determined — a GAPS case for solve().
 ;; Everything else (schema, rules, ontology, conditions 1-14) is identical;
-;; regenerate with examples/gen_zebra2_variants.py.
+;; generated from zebra2.ein, not edited by hand.
 
 (solve
   ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per

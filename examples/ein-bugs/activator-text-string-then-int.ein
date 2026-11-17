@@ -1,5 +1,5 @@
-;;; W16's twin — register row `W16/string-then-int`
-;;; (`corpus/wrong_answers.toml`).
+;;; W16's twin — regression `string-then-int`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;; `activator-text-int-and-string.ein` with its two activator lines

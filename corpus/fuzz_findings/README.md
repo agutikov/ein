@@ -12,7 +12,7 @@ Every file here of 2 KB or less is also one of the frontend fuzzer's seeds (all 
 **Empty is the steady state.** A find is either fixed, and promoted to a corpus fixture under `examples/` in the same
 commit, or accepted as defined behaviour. What stays here is each find's text, which keys the seeds golden, and its
 note, the dedup signature a later find is compared against. A row of
-[`corpus/wrong_answers.toml`](../wrong_answers.toml) may point here when its witness violates a property the corpus
+[`corpus/regressions.toml`](../regressions.toml) may point here when its witness violates a property the corpus
 sweeps assert.
 
 | file | property | what it is now |
@@ -26,9 +26,9 @@ sweeps assert.
 | [`activator-text-key.ein`](activator-text-key.md) and `-swapped` | `no-crash` | **written by hand**: two activators whose text is one, `1` and `"1"`. A compile plan is keyed by the activator's values; a string is no value, so both files are refused at the parse, and their fixtures, [`examples/ein-bugs/activator-text-int-and-string.ein`](../../examples/ein-bugs/activator-text-int-and-string.ein) and `activator-text-string-then-int.ein`, are the refusal's witnesses |
 | [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | a keyword pair *below* the top level of an undeclared form. Refused at the parse, a keyword pair inside a term being no value; its fixture is [`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein) |
 
-The id-order half of a register row that points here is held by
+The id-order half of a regression that points here is held by
 `id_order_invariance::the_register_s_id_order_rows_answer_what_they_record`, and the plain half, with every other
-row, by `ein-cli/tests/wrong_answers.rs`.
+row, by `ein-cli/tests/regressions.rs`.
 
 ```sh
 ein solve corpus/fuzz_findings/d3-unsat-core.ein   # exits 1 with forbid's refusal

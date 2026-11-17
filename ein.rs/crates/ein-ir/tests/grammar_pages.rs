@@ -272,7 +272,7 @@ const DELETED: &[(&str, &str, &str)] = &[
     (
         "query-lattice-keyword",
         "from_ir.rs",
-        "(query …): :hrules chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice",
+        "(query …): :hrules chooses the lattice and belongs on (solve …) — one program, one lattice",
     ),
     (
         "query-keyword",
@@ -324,7 +324,7 @@ const DELETED: &[(&str, &str, &str)] = &[
     (
         "config-retired",
         "from_ir.rs",
-        "(config …): config flag :k was retired at M1e2 …: … (a note on the parse error since the swap)",
+        "(config …): config flag :k was retired …: … (a note on the parse error now)",
     ),
     (
         "config-unknown",

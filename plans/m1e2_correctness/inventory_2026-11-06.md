@@ -14,7 +14,7 @@
 
 ## 0. Summary
 
-**The register.** [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml) is at schema `ein-wrong-answers/12` and holds 114 rows: **103 fixed, 10 open and 1 not-wrong**. Every open row is reviewed `deferred` to its owner: four to F21, five to F22 and one to M1f's S1f.10.6. These are the ten rows [the milestone's acceptance](README.md#acceptance-for-the-milestone) names. Both register tests pass on the snapshot tree, so every row answers what it records:
+**The register.** [`corpus/wrong_answers.toml`](../wrong_answers/register.toml) is at schema `ein-wrong-answers/12` and holds 114 rows: **103 fixed, 10 open and 1 not-wrong**. Every open row is reviewed `deferred` to its owner: four to F21, five to F22 and one to M1f's S1f.10.6. These are the ten rows [the milestone's acceptance](README.md#acceptance-for-the-milestone) names. Both register tests pass on the snapshot tree, so every row answers what it records:
 - `cargo test --release -p ein-cli --test wrong_answers`, 13.2 s;
 - `cargo test --release -p ein-infer --test register_region`, 3.3 s.
 
@@ -190,7 +190,7 @@ The ten open rows are exactly the acceptance's list.
 ## A. Known incorrect results
 
 **Sources swept.**
-- Every row of [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml). That covers W22–W28 and the ten deferred rows.
+- Every row of [`corpus/wrong_answers.toml`](../wrong_answers/register.toml). That covers W22–W28 and the ten deferred rows.
 - The `§ Notes` section, and every *parked*, *finding* and *default* paragraph, of the stage files of S1e2.2.21 to S1e2.2.26 and S1e2.3.8 to S1e2.3.10.
 - Q-M1e2.16 to Q-M1e2.21 in [`open_questions.md`](open_questions.md).
 - [F21](../followups/f21_non_monotone_programs_decided.md), [F22](../followups/f22_exact_core_past_the_cap.md) and [F23](../followups/f23_diagnostics_in_eins_words.md).

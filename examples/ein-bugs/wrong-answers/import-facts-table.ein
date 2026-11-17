@@ -1,6 +1,6 @@
 ;;; A table imported flat arrives empty, so the rule that looks it up never
-;;; fires — **W88**, register row `W88/import-facts-table`
-;;; (`corpus/wrong_answers.toml`); the calculator's case.
+;;; fires — **W88**, regression `import-facts-table`
+;;; (`corpus/regressions.toml`); the calculator's case.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

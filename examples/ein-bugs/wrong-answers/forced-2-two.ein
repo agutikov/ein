@@ -1,6 +1,6 @@
 ;;; Two candidates, each refuted in TWO firings — **W1** at layer 0, at
-;;; **default flags**. Register row `W1/forced-2-two`
-;;; (`corpus/wrong_answers.toml`).
+;;; **default flags**. Regression `forced-2-two`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;

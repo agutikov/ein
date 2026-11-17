@@ -1,6 +1,6 @@
 ;;; A refutation over a relation of the program's own read closed-world
 ;;; because a module imported for it loads an obligation rule — **W97**,
-;;; register row `W97/connex-import` (`corpus/wrong_answers.toml`).
+;;; regression `connex-import` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

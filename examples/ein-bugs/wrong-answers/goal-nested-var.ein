@@ -1,5 +1,5 @@
 ;;; A query's class prints a pattern inside a pattern as written — **W54**,
-;;; register row `W54/goal-nested-var` (`corpus/wrong_answers.toml`): found
+;;; regression `goal-nested-var` (`corpus/regressions.toml`): found
 ;;; where `(not (eq ?x ?y))` in a goal printed its class.
 ;;;
 ;;;

@@ -117,44 +117,42 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, BTreeSet<String>, usize), 
     Ok((facts, stated, not_given))
 }
 
-/// **The state files that do not load**, each the witness of an open
-/// register row: a state the printer writes as a line the parser refuses.
-/// Not a printer's defect but the row's own wrong answer, so each is named
+/// **The state files that do not load**, each a known wrong answer of its
+/// program's: a state the printer writes as a line the parser refuses. Not a
+/// printer's defect but the program's own wrong answer, so each is named
 /// rather than checked, with how many of its state files do not load, and
-/// each must still fail: a state file here that loads is its row fixed, and
-/// the fixing commit takes it off the list, with `answer_dump.rs`'s copy.
-/// Empty: a concluded `neq` is checked, never stored (W30); `:assert ()`
-/// asserts nothing (W34); and a conclusion is read flat, so no state holds a
-/// fact headed `and` (W94, W95).
+/// each must still fail: a state file here that loads is the wrong answer
+/// fixed, and the fixing commit takes it off the list, with `answer_dump.rs`'s
+/// copy. Empty: a concluded `neq` is checked, never stored; `:assert ()`
+/// asserts nothing; and a conclusion is read flat, so no state holds a fact
+/// headed `and`.
 const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
-/// **The state files that reload a fact with a provenance today**, each the
-/// witness of an open register row: W87, a fact the
-/// program writes with a `:rule`, `(paid Ann :rule zzz)`. A state file writes
-/// the program as loaded, so that fact with its written `:rule`, and the loader
-/// stores what is written: the reloaded state holds one fact that is not a
-/// given, beside the same fact written as a given under *the state*. It is the
-/// row's own wrong answer, so the file is named rather than checked, and it
-/// must still reload so: the
-/// commit that fixes W87 takes it off the list.
-const WRITTEN_PROVENANCE: [&str; 1] =
-    ["examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"];
+/// **The state files that reload a fact with a provenance today**, each a
+/// known wrong answer of its program's, named rather than checked: it must
+/// still reload so, and the commit that fixes it takes it off the list.
+/// Empty: no corpus program writes a fact with a `:rule` or a `:using`. Where
+/// one does, a state file writes the program as loaded, so that fact with its
+/// written `:rule`, and the loader stores what is written: the reloaded state
+/// holds one fact that is not a given, beside the same fact written as a
+/// given under *the state*, which is a known gap (the loader stores a written
+/// fact's `:rule` and `:using` unchecked).
+const WRITTEN_PROVENANCE: [&str; 0] = [];
 
 /// **The witnesses whose state file prints an unfilled template reference**,
-/// each the witness of an open register row, named rather than checked.
-/// Empty: a fact written with fewer arguments than its relation declares,
-/// `(likes Bob)` beside `(relation likes Person Drink :why "{?1} likes
-/// {?2}")`, whose English would be *Bob likes {?2}*, is refused at load
-/// (W89), so no state holds such a fact.
+/// each a known wrong answer, named rather than checked. Empty: a fact written
+/// with fewer arguments than its relation declares, `(likes Bob)` beside
+/// `(relation likes Person Drink :why "{?1} likes {?2}")`, whose English
+/// would be *Bob likes {?2}*, is refused at load, so no state holds such a
+/// fact.
 const UNFILLED_TEMPLATE: [&str; 0] = [];
 
 /// **The witnesses whose state file re-writes less than the program as
-/// loaded**, each the witness of an open register row, named rather than
-/// checked. Empty: an import brings its module whole, so the file is the
-/// program as loaded (W91: a library's entry rule with an empty `:match`,
-/// imported by its name, is written with the relation only it names), and
-/// the sweep below holds `dump-selection.ein` as it holds every corpus
-/// program.
+/// loaded**, each a known wrong answer, named rather than checked. Empty: an
+/// import brings its module whole, so the file is the program as loaded (a
+/// library's entry rule with an empty `:match`, imported by its name, is
+/// written with the relation only it names), and the sweep below holds
+/// `dump-selection.ein` as it holds every corpus program.
 const SELECTION_DROPPED: [&str; 0] = [];
 
 /// The difference, a few facts each way.
@@ -186,7 +184,7 @@ fn check(
         .current_dir(repo_root())
         .output()
         .expect("the `ein` binary runs");
-    // A refuted claim exits 1 and writes its answer whole (W28's witnesses);
+    // A refuted claim exits 1 and writes its answer whole;
     // a program the binary does not answer writes no index.
     if !out.status.success() && !dir.join("index.json").exists() {
         return None;
@@ -231,7 +229,7 @@ fn check(
         (true, false) => {}
         (true, true) => bad.push(format!(
             "{file}: no output prints an unfilled template reference, and UNFILLED_TEMPLATE \
-             names it: its row (W89) is fixed, so drop it from the list in the same commit"
+             names it: it is fixed, so drop it from the list in the same commit"
         )),
     }
     members_of_n(file, dir, bad);
@@ -270,7 +268,7 @@ fn check(
                 if got == want && dropped {
                     bad.push(format!(
                         "{file}: {path} reloads to its state, and SELECTION_DROPPED names it: \
-                         its row (W91) is fixed, so drop it from the list in the same commit"
+                         it is fixed, so drop it from the list in the same commit"
                     ));
                 }
                 let written = WRITTEN_PROVENANCE.contains(&file);
@@ -282,7 +280,7 @@ fn check(
                 if not_given == 0 && written {
                     bad.push(format!(
                         "{file}: {path}: every fact reloads as given, and WRITTEN_PROVENANCE \
-                         names it: its row (W87) is fixed, so drop it from the list in the same \
+                         names it: it is fixed, so drop it from the list in the same \
                          commit"
                     ));
                 }
@@ -294,7 +292,7 @@ fn check(
     {
         bad.push(format!(
             "{file}: DO_NOT_LOAD says {n} of its state files do not load, and {unloaded} do not: \
-             its row (W94 or W95) is fixed, so drop it from the list in the same commit"
+             it is fixed, so drop it from the list in the same commit"
         ));
     }
     Some(files.len())

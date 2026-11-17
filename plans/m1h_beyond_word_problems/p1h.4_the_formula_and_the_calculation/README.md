@@ -180,7 +180,7 @@ Where the phase changes the engine or a surface (S1h.4.6), the repo's rules, whi
 - **A view is taken only where it is asked for;** a run without the option is byte-identical.
 - **Every golden a stage moves is counted with a command and named before it is blessed.**
 - **A wrong answer met on the way** is a row of
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), filed `open` in a commit of its own
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), filed `open` in a commit of its own
   before its fix.
 - **The gate, then the nightly,** on each code commit.
 

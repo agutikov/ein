@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `(not ?a)`, called with a conjunction under an
 ;;; `absent`: the stored negation of no fact is matched, and the rule fires —
-;;; **W67**, register row `W67/macro-not-conjunction`.
+;;; **W67**, regression `macro-not-conjunction`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

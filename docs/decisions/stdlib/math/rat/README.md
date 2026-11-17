@@ -8,3 +8,4 @@ Decisions about `std.math.rat`: rational numbers, an integer over a natural numb
 - [Q-M1f.183](Q-M1f.183-a-rational-is-reduced-only-on-request.md) — A rational is reduced only on request
 - [Q-M1f.302](Q-M1f.302-an-unreduced-answer-has-its-numerator-in-normal.md) — An unreduced answer has its numerator in normal form and no high zero in its denominator
 - [Q-M1f.303](Q-M1f.303-lowest-terms-hands-the-numerator-to-the-greatest.md) — Lowest terms hands the numerator to the greatest common divisor first
+- [Q-M1f.353](Q-M1f.353-a-rational-is-an-integer-over-a-natural-number.md) — A rational is an integer over a natural number

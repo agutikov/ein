@@ -1,6 +1,6 @@
 ;;; A rule whose `:assert` writes a declared relation with another count of
 ;;; arguments loads, and derives facts no premise of the declared count reads —
-;;; **W89**, register row `W89/in-assert` (`corpus/wrong_answers.toml`).
+;;; **W89**, regression `in-assert` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

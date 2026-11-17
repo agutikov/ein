@@ -1,5 +1,5 @@
-;;; A goal's `(absent (false ?g))` holds of everything — **W81**, register row
-;;; `W81/false-goal-argument`.
+;;; A goal's `(absent (false ?g))` holds of everything — **W81**, regression
+;;; `false-goal-argument`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

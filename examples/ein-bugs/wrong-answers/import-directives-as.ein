@@ -1,6 +1,6 @@
 ;;; A qualified import brings the module's query, lattice and configuration —
-;;; **W90**, register row `W90/import-directives-as`
-;;; (`corpus/wrong_answers.toml`); no import brings them (Q-M1f.215).
+;;; **W90**, regression `import-directives-as`
+;;; (`corpus/regressions.toml`); no import brings them (Q-M1f.215).
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

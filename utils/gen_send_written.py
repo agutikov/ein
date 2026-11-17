@@ -12,10 +12,12 @@ whatever a search does on one and not on the other it read off the order of
 eight facts: ``ein-infer/tests/order.rs`` holds ``--single`` to the same
 work on both.
 
-Usage:  python3 examples/gen_send_written.py [--check]
+Usage:  python3 utils/gen_send_written.py [--check]
         --check  exit non-zero if the on-disk variant is stale (the gate's
-                 guard, run by ``ein-cli/tests/cli_semantics.rs``), without
-                 rewriting it.
+                 guard, run by utils/check_generated.py), without rewriting it.
+
+The variant says it is generated and names no tool: which script writes it is
+recorded here and in utils/README.md.
 """
 from __future__ import annotations
 
@@ -23,7 +25,8 @@ import argparse
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
+REPO = Path(__file__).resolve().parent.parent
+HERE = REPO / "examples"
 SEND = HERE / "beyond_arith" / "send_more_money.ein"
 WRITTEN = HERE / "beyond_arith" / "send_more_money_written.ein"
 
@@ -47,7 +50,7 @@ WRITTEN_MARK = (
     ";;; changes nothing else: one line of `(is-a … Letter)` facts, reordered.\n"
     ";;; The two are one puzzle with one answer, and `--single` does the same\n"
     ";;; work on both: the search reads the columns off the program, not the\n"
-    ";;; order. Regenerate with examples/gen_send_written.py.\n"
+    ";;; order. Generated from it, not edited by hand.\n"
     ";;;\n"
 )
 
@@ -86,10 +89,10 @@ def main(argv: list[str] | None = None) -> int:
         if on_disk == text:
             continue
         if args.check:
-            stale.append(path.relative_to(HERE.parent))
+            stale.append(path.relative_to(REPO))
         else:
             path.write_text(text, encoding="utf-8")
-            print(f"wrote {path.relative_to(HERE.parent)}")
+            print(f"wrote {path.relative_to(REPO)}")
     if stale:
         print("stale SEND variant (re-run gen_send_written.py): "
               + ", ".join(str(p) for p in stale))

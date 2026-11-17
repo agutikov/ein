@@ -1,5 +1,5 @@
 ;;; A name written **only in a rule's `:match`** never became a candidate —
-;;; **W15**, register row `W15/match-only` (`corpus/wrong_answers.toml`).
+;;; **W15**, regression `match-only` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -31,7 +31,7 @@
 ;;; The blind enumerator's objects are
 ;;; every name of the program (`invariant::program_names`), `Z` among them,
 ;;; and this file answers its control's R, which the `:expect` below states.
-;;; The register row `W15/match-only` is fixed.
+;;; The regression `match-only` is fixed.
 ;;;
 ;;;
 

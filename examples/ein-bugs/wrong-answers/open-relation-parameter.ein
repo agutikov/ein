@@ -1,5 +1,5 @@
 ;;; `open` bound to a relation parameter, beside a fact of `open`, loads and is
-;;; read as a relation — **W70**, register row `W70/relation-parameter`.
+;;; read as a relation — **W70**, regression `relation-parameter`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

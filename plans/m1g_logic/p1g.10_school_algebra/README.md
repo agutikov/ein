@@ -292,7 +292,7 @@ program is reproduced as a sketch in the stage that re-takes it. The geometry's 
   rest to M1g's other phases by name. It is one report over both phases, written by
   [S1g.11.4](../p1g.11_school_geometry/s1g.11.4_computation_and_the_diagram_gap.md), and the line is held there.
 - **The repo's discipline:** a wrong answer found in the engine is a row of
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml) before it is fixed; every other engine
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml) before it is fixed; every other engine
   finding is a row of [`findings.md`](findings.md) with a ruling, a fix or an owner at the phase's close (the
   user's ruling of 2026-11-11: a phase keeps what it finds, and nothing goes to F25); every claim on a page
   carries its command, its date or the test that pins it; what ships passes the gates it joins (a corpus entry

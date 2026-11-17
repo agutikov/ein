@@ -150,7 +150,7 @@ the user before the check landed, each being a program of a test and not of a us
 ## T2 record (2026-11-12): the rows filed open
 
 **W89, seven rows, each `open`,** owned by this stage, in
-[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), each witness under
+[`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), each witness under
 `examples/ein-bugs/wrong-answers/` with a corpus entry: the six the task names and a rule's `:assert`, which
 stores facts of the wrong count where a `:match` only matches nothing.
 

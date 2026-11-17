@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `eq` with one argument, called as an hrule's
 ;;; conclusion: the hypothesis layer proposes `(eq k)`, and a state holds it —
-;;; **W68**, register row `W68/macro-eq-candidate`.
+;;; **W68**, regression `macro-eq-candidate`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

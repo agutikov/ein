@@ -9,8 +9,8 @@ application's identity interns its activator's every argument, as the compile ca
 derive the same two `noted` facts, `(noted 1 1)` and `(noted 2 1)`, in a release build and a debug one: the nested
 fact's `?f` is `(src Y)`, which nothing `holds`.
 
-The two files are the witnesses of register row `W7/binding-key-layout`
-([`corpus/wrong_answers.toml`](../wrong_answers.toml)) and frontend-fuzzer seeds. The fixtures are
+The two files are the witnesses of regression `binding-key-both/binding-key-layout`
+([`corpus/regressions.toml`](../regressions.toml)) and frontend-fuzzer seeds. The fixtures are
 [`examples/ein-bugs/binding-key-both.ein`](../../examples/ein-bugs/binding-key-both.ein) and
 [`binding-key-swapped.ein`](../../examples/ein-bugs/binding-key-swapped.ein), with the single-activator controls
 beside them, and `ein-infer/tests/rule_semantics.rs`'s

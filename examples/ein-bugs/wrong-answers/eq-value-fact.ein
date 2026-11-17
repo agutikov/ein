@@ -1,5 +1,5 @@
 ;;; A value `(eq Ann Bob)` inside a fact is stored —
-;;; **W82**, register row `W82/eq-value-fact`.
+;;; **W82**, regression `eq-value-fact`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

@@ -1000,7 +1000,7 @@ fn legend(
     }
     if !doc.monotone {
         notes.push(format!(
-            "not monotone — sites: {}; nodes by fork from root, what a node is here is open (F21)",
+            "not monotone — sites: {}; nodes by fork from root, what a node is here is not decided (Q-M1e2.2)",
             doc.sites.join("; ")
         ));
     }

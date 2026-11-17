@@ -493,7 +493,7 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 
 /// Intern every fact an `eq` or `neq` guard compares, `(f a)` in `(neq ?x (f
 /// a))`, for the same reason [`intern_program_names`] interns names: the
-/// compiler reads it as a value (`W24/form-in-guard`), and must not intern it
+/// compiler reads it as a value (`form-in-guard`), and must not intern it
 /// for the first time during
 /// a search. A form that holds a variable is refused (Q-M1f.30), and holds
 /// none of these.
@@ -4928,8 +4928,7 @@ fn validate_open(
     assert!(
         forms.len() == usize::from(whole) && (!whole || ast.form_args(assert_node).len() <= 1),
         "{head} '{name}': an (open …) stands where the grammar writes none — ein.y's Assert is \
-         the one production that takes open, a rule's whole :assert, (open) or (open ?R) \
-         (M1f S1f.5.23)"
+         the one production that takes open, a rule's whole :assert, (open) or (open ?R)"
     );
     if !whole {
         return false;
@@ -6497,7 +6496,7 @@ mod tests {
     /// down — scanning **absence** where those scan a stored `(not …)`, and
     /// saying *unfinished* where they say *dead*.
     #[test]
-    fn the_stdlib_duals_resolve_before_the_stage_that_ships_them() {
+    fn the_stdlib_obligations_shapes_resolve_their_projection() {
         let src = "(relation is-a T T :why \"{?1} is a {?2}\")\n\
              (rule total-owed (?R ?isa)\n  \
                :match (and (relation ?R ?A ?B) (?isa ?a ?A)\n              \

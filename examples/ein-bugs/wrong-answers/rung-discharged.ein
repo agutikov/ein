@@ -1,5 +1,5 @@
 ;;; The twin of `rung-unactivated.ein` that is not wrong — **W97**, register
-;;; row `W97/unactivated`'s twin (`corpus/wrong_answers.toml`).
+;;; regression `rung-unactivated`'s twin (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the obligation stated: `(total-owed at is-a)`
 ;;; activates `std.algebra`'s `total-owed` over `at`, and Red, the one

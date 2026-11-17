@@ -1,5 +1,5 @@
 ;;; `exhausted = true` over a relation the rung never hypothesises — **W6**.
-;;; Register row `W6/uncovered` (`corpus/wrong_answers.toml`).
+;;; Regression `uncovered` (`corpus/regressions.toml`).
 ;;;
 ;;; Below this header the program is the witness of
 ;;; `docs/ein/reasoning/kb-evolution/satisfiability.md` § 5: a relation

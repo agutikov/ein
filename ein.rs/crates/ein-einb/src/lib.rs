@@ -176,8 +176,8 @@ impl std::fmt::Display for EinbError {
             }
             EinbError::Int => write!(
                 f,
-                ".einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of \
-                 digits is a name): save it again from its .ein"
+                ".einb holds an integer, which Ein does not have (a run of digits is a \
+                 name, Q-M1e2.24): save it again from its .ein"
             ),
         }
     }
@@ -518,7 +518,7 @@ pub fn meta_of(bytes: &[u8]) -> Result<Meta> {
 /// What each section costs, without opening the file.
 ///
 /// The size ceiling is a number about a whole file
-/// (`tests/roundtrip.rs`' `a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond`),
+/// (`tests/roundtrip.rs`' `a_saturated_zebra2_is_under_80_kb_and_opens_cold_under_6_ms_or_20_with_assertions`),
 /// and a whole-file number tells nobody which section grew. This is what a test — or
 /// anyone holding a `.einb` that got big — reads instead.
 pub fn section_sizes(bytes: &[u8]) -> Result<Vec<(Kind, u64)>> {

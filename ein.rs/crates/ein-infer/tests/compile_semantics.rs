@@ -604,7 +604,7 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
 ///
 /// Were it skipped, the parameter would be a free variable of the plan, so
 /// `(act (f a))` would fire `(p ?y)` on every `p` and conclude `(hit a)` and
-/// `(hit b)` beside `(hit (f a))` (`W33/activator-nested-value`), and a
+/// `(hit b)` beside `(hit (f a))` (`activator-nested-value`), and a
 /// conclusion that alone read the parameter would have no value (`W58`). The
 /// test beside it holds the relation half, which stays refused.
 #[test]
@@ -655,7 +655,7 @@ fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
 /// bool, and takes `true` or `false` and nothing else.
 /// Every other shape a `(config …)` is refused for is the grammar's — a
 /// quoted `"false"` (a string), an unknown flag, a value no bool, and a
-/// retired flag, with its *was retired at* sentence as a note — each a row of
+/// retired flag, with its *is retired* sentence as a note — each a row of
 /// `ein-ir`'s grammar table. The coercions the retired flags reached stay the
 /// container's
 /// (`ein-einb` round-trips every field).

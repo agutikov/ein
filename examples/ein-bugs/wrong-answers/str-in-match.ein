@@ -1,5 +1,5 @@
 ;;; A string written in a rule's `:match` never matches — **W18**,
-;;; register row `W18/str-in-match` (`corpus/wrong_answers.toml`).
+;;; regression `str-in-match` (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;;

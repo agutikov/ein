@@ -230,7 +230,7 @@ fn a_saturated_kb_round_trips_with_its_derivations() {
 /// generated parser is most of it; keeping the parsed tree in the container
 /// would be a format bump.
 #[test]
-fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
+fn a_saturated_zebra2_is_under_80_kb_and_opens_cold_under_6_ms_or_20_with_assertions() {
     let path = repo_root().join("examples/zebra2.ein");
     let (mut ast, mut terms, mut kb, forms) = load(&path).expect("zebra2 loads");
     ein_infer::saturate_events(&ast, &mut terms, &mut kb).expect("saturate");
@@ -252,8 +252,7 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
     // the file, and the line below prints each section's bytes.
     assert!(
         bytes.len() < 80 * 1024,
-        "a saturated zebra2 is {} bytes, over the 80 KB design/10 §6's 64 KB \
-         became at M1f S1f.6.35",
+        "a saturated zebra2 is {} bytes, over 80 KB",
         bytes.len()
     );
 

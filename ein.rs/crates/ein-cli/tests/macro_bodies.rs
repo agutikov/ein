@@ -375,9 +375,9 @@ fn every_malformed_primitive_is_refused_before_any_path_runs_it() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The register's sixteen witnesses (W66 to W69) and the load-negative fixture
-/// of the same shape, each read from its file, as `wrong_answers.rs`
-/// reads one command's run of each.
+/// The regressions' sixteen witnesses of a malformed macro body and the
+/// load-negative fixture of the same shape, each read from its file, as
+/// `regressions.rs` reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-macro-witnesses");

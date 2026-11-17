@@ -1,5 +1,5 @@
 ;;; A value `(absent (paid Bob))` inside a fact is stored —
-;;; **W80**, register row `W80/absent-fact-nested`.
+;;; **W80**, regression `absent-fact-nested`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

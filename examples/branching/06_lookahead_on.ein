@@ -1,8 +1,8 @@
 ;;; Branching demo 6 — one of a pair with `07_lookahead_off.ein`.
 ;;;
 ;;; 06_lookahead_on.ein and 07_lookahead_off.ein are the same program, byte
-;;; for byte outside their comments, and the witnesses of register rows
-;;; C1/branching-06 and W1/branching-07: no flag tells them apart, since no
+;;; for byte outside their comments, and the witnesses of regressions
+;;; branching-06 and branching-07: no flag tells them apart, since no
 ;;; flag changes R (docs/ein/user/reference/config.md § 2.5).
 ;;;
 ;;; The puzzle: five colours, five houses, four colours anchored.

@@ -1,4 +1,4 @@
-;;; A control for **W17** (`corpus/wrong_answers.toml`): `forbid-chain-1.ein`
+;;; A control for **W17** (`corpus/regressions.toml`): `forbid-chain-1.ein`
 ;;; with no `absent`, which loads.
 ;;;
 ;;; `mk` derives `(q a)` from `(p a)` whatever `a`'s `p2`; the chain `q`, `r2`
@@ -14,8 +14,8 @@
 ;;;
 ;;; ── W19 ────────────────────────────────────────────────────────────────
 ;;;
-;;; This is also the witness of **W19**, register row
-;;; `W19/forbid-chain-no-absent`: a dead node's core leaves out the activator
+;;; This is also the witness of **W19**, regression
+;;; `forbid-chain-no-absent`: a dead node's core leaves out the activator
 ;;; its refutation rests on. N is {(p a)}, and its core is `(seed a)` alone, by
 ;;; `r2` (`ein solve FILE --dump-answer DIR`'s `nogoods.json` at `ff023413`,
 ;;; re-taken at `a41eb76e`, release and debug): a fact root holds, and root is

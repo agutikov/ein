@@ -749,7 +749,8 @@ the bit as its carry in.
 
 ### `std.math.int` — integers
 
-An integer is `(int P N)`, two natural numbers of `std.math.decimal-arith`, whose value is P less N: −7 is
+An integer is `(int P N)`, two natural numbers of `std.math.decimal-arith`, whose value is P less N
+([Q-M1f.352](../../../decisions/stdlib/math/int/Q-M1f.352-an-integer-is-two-parts-a-positive.md)): −7 is
 `(int z (n z 7))`, zero `(int z z)`, and `(int (n z 5) (n z 3))` is 2. The **normal form** has one part `z` and the
 other in normal form, and every integer has exactly one; an operand is read by value, and every answer is in normal
 form, so a rule tells a negative answer by its shape, `(int z (n ?p ?a))`, with no negation written. Every name is
@@ -814,7 +815,8 @@ request ([Q-M1f.177](../../../decisions/stdlib/math/Q-M1f.177-a-module-over-the-
 
 ### `std.math.rat` — rational numbers
 
-A rational is `(rat Z D)`: Z an integer of `std.math.int`, D a natural number that is not zero. 1/2 is
+A rational is `(rat Z D)`: Z an integer of `std.math.int`, D a natural number that is not zero
+([Q-M1f.353](../../../decisions/stdlib/math/rat/Q-M1f.353-a-rational-is-an-integer-over-a-natural-number.md)). 1/2 is
 `(rat (int (n z 1) z) (n z 2))`, −3/4 is `(rat (int z (n z 3)) (n z 4))`. Every name is `rat-`
 ([Q-M1f.180](../../../decisions/stdlib/math/rat/Q-M1f.180-the-names-of-std-math-rat-carry-the-prefix-rat.md)).
 

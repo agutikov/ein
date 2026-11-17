@@ -1,6 +1,6 @@
 ;;; `owed-seats.ein` with **Ann renamed Zed**, and nothing else — the twin that
 ;;; makes **W5** an order dependence rather than only a wrong count.
-;;; Register row `W5/owed-seats`, as a twin.
+;;; Regression `owed-seats`, as a twin.
 ;;;
 ;;; The walk's lattice answered k = 3 here too, but its third model was
 ;;; `{(seats Bob C1), (seats Bob C2), (seats Zed C1)}` — mapped back, Bob on

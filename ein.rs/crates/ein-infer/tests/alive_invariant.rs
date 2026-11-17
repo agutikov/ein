@@ -1062,10 +1062,10 @@ fn every_name_of_the_program_is_a_candidate_object() {
     );
 }
 
-/// **The breaches open register rows hold**, each named rather than failed
-/// and held both ways, as the row's own wrong answer. Empty: `W34`'s, a
-/// synthetic name an `:assert ()` would store, is fixed — `:assert ()`
-/// asserts nothing, and no run reaches a name the program does not have.
+/// **The breaches known wrong answers hold**, each named rather than failed
+/// and held both ways, as the program's own wrong answer. Empty: a synthetic
+/// name an `:assert ()` would store is not stored — `:assert ()` asserts
+/// nothing, and no run reaches a name the program does not have.
 const KNOWN_R1: [(&str, &str); 0] = [];
 
 /// **R1 and R2 — no run reaches a name the program does not have.**
@@ -1075,7 +1075,7 @@ const KNOWN_R1: [(&str, &str); 0] = [];
 /// a rule's constant can introduce a name — and a rule's constant is a name of
 /// the program. Measured over every state a bounded describe meets on the
 /// corpus, the scan finds **nothing**, against either baseline, but for the
-/// breaches open register rows hold ([`KNOWN_R1`], none). Baselines that
+/// breaches known wrong answers hold ([`KNOWN_R1`], none). Baselines that
 /// left the rules' constants out would find `Ann` and `G` under R1, `Ann`
 /// under R2.
 #[test]
@@ -1177,7 +1177,7 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
         r1, known,
         "R1 — a run derived a name that is neither a loaded fact's nor a rule's \
          constant: a value no rule's text predicts, which the seed cannot hold \
-         (KNOWN_R1 names the breaches open register rows hold)"
+         (KNOWN_R1 names the breaches known wrong answers hold)"
     );
     assert_eq!(
         r2,

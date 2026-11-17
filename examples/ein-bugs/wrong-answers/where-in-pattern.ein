@@ -1,6 +1,6 @@
 ;;; A `:where` pair inside a pattern is dropped, so the rule fires without
-;;; its guard — **W32**, register row `W32/where-in-pattern`
-;;; (`corpus/wrong_answers.toml`).
+;;; its guard — **W32**, regression `where-in-pattern`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

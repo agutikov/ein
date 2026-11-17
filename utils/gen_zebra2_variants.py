@@ -22,9 +22,12 @@ silently drifts a variant: just re-run this script.
   examples/zebra2-minus-15-obligations.ein — both at once: the under-determined
                                    regime with no hypothesis rule.
 
-Usage:  python3 examples/gen_zebra2_variants.py [--check]
-        --check  exit non-zero if the on-disk variants are stale (a test's guard),
-                 without rewriting them.
+Usage:  python3 utils/gen_zebra2_variants.py [--check]
+        --check  exit non-zero if the on-disk variants are stale (the gate's
+                 guard, run by utils/check_generated.py), without rewriting them.
+
+The variants say they are generated and name no tool: which script writes
+them is recorded here and in utils/README.md.
 """
 from __future__ import annotations
 
@@ -32,7 +35,8 @@ import argparse
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
+REPO = Path(__file__).resolve().parent.parent
+HERE = REPO / "examples"
 ZEBRA2 = HERE / "zebra2.ein"
 MINUS_15 = HERE / "zebra2-minus-15.ein"
 BAD = HERE / "ein-bugs" / "zebra2-bad.ein"
@@ -51,15 +55,15 @@ MINUS_15_MARK = (
     ";; The canonical zebra2.ein closes the conditions with (15); this variant\n"
     ";; drops it, leaving the puzzle under-determined — a GAPS case for solve().\n"
     ";; Everything else (schema, rules, ontology, conditions 1-14) is identical;\n"
-    ";; regenerate with examples/gen_zebra2_variants.py.\n"
+    ";; generated from zebra2.ein, not edited by hand.\n"
 )
 
 BAD_INJECT = (
     ";; ──── INJECTED CONTRADICTION: zebra2-bad fixture (generated) ──────\n"
     ";; condition (6) forces Green ≠ House-1 (no house is right-of House-1);\n"
     ";; this injected positive contradicts it — a CONTRADICTIONS case for\n"
-    ";; solve(). Otherwise identical to zebra2; regenerate with\n"
-    ";; examples/gen_zebra2_variants.py.\n"
+    ";; solve(). Otherwise identical to zebra2, from which it is\n"
+    ";; generated, not edited by hand.\n"
     '(color-loc Green House-1 :source "injected contradiction")\n'
 )
 
@@ -109,8 +113,8 @@ OBLIGATIONS_MARK = (
     ";; already said it, and now the engine hears it.\n"
     ";;\n"
     ";; This file solving is the fixture for it: no hrule is needed where the\n"
-    ";; theory (rules + ontology) already says what to guess. Regenerate with\n"
-    ";; gen_zebra2_variants.py.\n"
+    ";; theory (rules + ontology) already says what to guess. Generated from\n"
+    ";; zebra2.ein, not edited by hand.\n"
 )
 
 OBLIGATIONS_KW_MARK = (
@@ -168,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for path, want in targets:
         path.write_text(want, encoding="utf-8")
-        print(f"wrote {path.relative_to(HERE.parent)}")
+        print(f"wrote {path.relative_to(REPO)}")
     return 0
 
 

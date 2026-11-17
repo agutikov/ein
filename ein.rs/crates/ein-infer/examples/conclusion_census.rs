@@ -10,7 +10,7 @@
 //! ([`ein_ir::Ast::conjuncts`]).
 //!
 //! ```sh
-//! cargo run --release -p ein-infer --example conclusion_census            # corpus_files() and the register's witnesses
+//! cargo run --release -p ein-infer --example conclusion_census            # corpus_files() and the regressions' witnesses
 //! cargo run --release -p ein-infer --example conclusion_census -- FILE…
 //! cargo run --release -p ein-infer --example conclusion_census -- --unloaded   # + each file that does not load
 //! ```

@@ -12,16 +12,15 @@
 //! |---|---|
 //! | every row agrees with Rust's integers, **none missing and none twice** | [`every_row_agrees_with_the_integers`] |
 //! | the module is a library of facts: seven declarations, a `(__closed__ R)` fact for each, the rows, and nothing else | [`the_module_is_seven_closed_tables_and_nothing_else`] |
-//! | the file is what the generator writes — the generator's own `--check`, run here | [`the_file_is_what_the_generator_writes`] |
 //! | **`std.math.bits`**: every row agrees with Rust's integers at base two, none missing and none twice, and the module is four closed tables and nothing else | [`every_bit_row_agrees_with_the_integers`], [`the_bits_are_four_closed_tables_and_nothing_else`] |
 //! | a flat import brings a listed table's rows, and the closing facts when `__closed__` is listed, from the **embedded** copy too | [`a_flat_import_brings_a_table_from_the_embedded_copy`] |
 //!
-//! The rows are computed twice, in Python by the generator and in Rust here,
-//! and compared as sorted lists, so a missing row, an extra one and a
-//! duplicate each fail with the first row that differs.
+//! The rows are computed twice, by the generator and in Rust here, and
+//! compared as sorted lists, so a missing row, an extra one and a duplicate
+//! each fail with the first row that differs. That each file is what its
+//! generator writes the gate holds, not this file.
 
 use std::collections::BTreeMap;
-use std::process::{Command, Stdio};
 
 use ein_corpus::repo_root;
 use ein_ir::imports::Resolver;
@@ -315,37 +314,6 @@ fn the_module_is_seven_closed_tables_and_nothing_else() {
         heads, want,
         "a library of facts: no rule, macro, import, query or solve form, \
          and no fact of an eighth relation"
-    );
-}
-
-/// The tables' generator's `--check` (`utils/gen_arith_tables.py`, which
-/// this test spawns), for both of its files, `std.math.digits` and
-/// `std.math.bits`; a `python3` that does not run fails the test rather than
-/// skipping it.
-#[test]
-fn the_file_is_what_the_generator_writes() {
-    let probe = Command::new("python3")
-        .args(["-c", "pass"])
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status();
-    assert!(
-        matches!(probe, Ok(s) if s.success()),
-        "`python3` does not run ({probe:?}): `stdlib/math/digits.ein` is generated and \
-         `utils/gen_arith_tables.py --check` is the only check that compares its \
-         bytes with the script's — a missing gate, not a missing convenience"
-    );
-    let out = Command::new("python3")
-        .args(["utils/gen_arith_tables.py", "--check"])
-        .current_dir(repo_root())
-        .output()
-        .expect("python3 ran a moment ago");
-    assert!(
-        out.status.success(),
-        "stdlib/math/digits.ein or bits.ein is stale — run `python3 utils/gen_arith_tables.py` and \
-         `python3 utils/stdlib_manifest.py --write`\n{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr),
     );
 }
 

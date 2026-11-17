@@ -1,5 +1,5 @@
 ;;; A keyword pair inside a pattern is dropped in silence — **W32**, register
-;;; row `W32/kwpair-in-pattern` (`corpus/wrong_answers.toml`); each form takes a
+;;; regression `kwpair-in-pattern` (`corpus/regressions.toml`); each form takes a
 ;;; closed list of keywords (Q-M1e2.28).
 ;;;
 ;;;

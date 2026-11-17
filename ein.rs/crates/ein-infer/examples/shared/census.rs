@@ -35,7 +35,7 @@ pub fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// The selection: `corpus_files()` plus the register's witnesses, sorted and
+/// The selection: `corpus_files()` plus the regressions' witnesses, sorted and
 /// distinct.
 pub fn selection() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
@@ -45,13 +45,11 @@ pub fn selection() -> Vec<PathBuf> {
     files
 }
 
-/// Every file a register row names as a witness, sorted and distinct.
+/// Every file a regression names as a witness, sorted and distinct.
 pub fn register_witnesses() -> Vec<PathBuf> {
     let mut files = Vec::new();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

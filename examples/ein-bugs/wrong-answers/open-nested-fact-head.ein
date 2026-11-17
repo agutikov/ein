@@ -1,5 +1,5 @@
 ;;; `open` written as a nested fact's relation loads, as a relation —
-;;; **W70**, register row `W70/nested-fact-head`.
+;;; **W70**, regression `nested-fact-head`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

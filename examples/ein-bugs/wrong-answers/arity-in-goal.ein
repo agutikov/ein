@@ -1,6 +1,6 @@
 ;;; A query whose `:goal` writes a declared relation with another count of
 ;;; arguments loads, and has no row in any state —
-;;; **W89**, register row `W89/in-goal` (`corpus/wrong_answers.toml`).
+;;; **W89**, regression `arity-in-goal` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

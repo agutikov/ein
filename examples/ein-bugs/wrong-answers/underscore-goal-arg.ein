@@ -1,5 +1,5 @@
 ;;; A bare `_` in a query's goal is accepted, and answered — **W29**,
-;;; register row `W29/goal-arg` (`corpus/wrong_answers.toml`), under
+;;; regression `goal-arg` (`corpus/regressions.toml`), under
 ;;; Q-M1e2.22.
 ;;;
 ;;;

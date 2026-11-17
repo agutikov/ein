@@ -1,5 +1,5 @@
-;;; The control of `symmetric-derived-node.ein` — **W98**, register row
-;;; `W98/derived-at-node`'s control (`corpus/wrong_answers.toml`).
+;;; The control of `symmetric-derived-node.ein` — **W98**, regression
+;;; `derived-at-node`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with `near` closed under the swap by a rule of its own,
 ;;; `close-mirror`, once anything is close: the closure `std.algebra`'s

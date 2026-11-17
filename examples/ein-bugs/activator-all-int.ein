@@ -1,6 +1,6 @@
 ;;; An activator whose every argument is not a symbol read as no activator
-;;; to *forbid* — **W16**'s second shape, register row
-;;; `W16/activator-all-int` (`corpus/wrong_answers.toml`). Its argument `1`
+;;; to *forbid* — **W16**'s second shape, regression
+;;; `activator-all-int` (`corpus/regressions.toml`). Its argument `1`
 ;;; was an int then; Ein has no numbers, and `1` is a name (Q-M1e2.24).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

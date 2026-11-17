@@ -1,6 +1,6 @@
 ;;; A refusal, and a core that moved with interner ids — **W11** and **W1**,
-;;; register rows `W11/d3-unsat-core` and `W1/d3-unsat-core`
-;;; (`corpus/wrong_answers.toml`). `corpus/fuzz_findings/d3-unsat-core.ein`
+;;; regressions `d3-unsat-core-id-order` and `d3-unsat-core/d3-unsat-core`
+;;; (`corpus/regressions.toml`). `corpus/fuzz_findings/d3-unsat-core.ein`
 ;;; is the same program, a frontend-fuzzer seed.
 ;;;
 ;;; ── What this program was ──────────────────────────────────────────────

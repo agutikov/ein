@@ -21,13 +21,12 @@ use ein_infer::claim::{self, Options};
 use ein_infer::expect::Outcome;
 use ein_ir::{Ast, load, parse};
 
-/// **The programs whose printed region does not read back**, each the
-/// witness of an open register row whose wrong answer is a region no claim
-/// can write. Not a printer's defect but the row's own wrong answer, so it is
-/// named rather than checked, and it must still fail: a printed region here
-/// that reads back is the row fixed, and the commit that fixes it takes it
-/// off the list, with `answer_round_trip.rs`'s `DO_NOT_LOAD`. Empty: the
-/// rows that were here (`W34`, `W53`, `W95`) are fixed.
+/// **The programs whose printed region does not read back**, each a known
+/// wrong answer that is a region no claim can write. Not a printer's defect
+/// but the program's own wrong answer, so it is named rather than checked,
+/// and it must still fail: a printed region here that reads back is the wrong
+/// answer fixed, and the commit that fixes it takes it off the list, with
+/// `answer_round_trip.rs`'s `DO_NOT_LOAD`. Empty.
 const DO_NOT_READ_BACK: [&str; 0] = [];
 
 fn loaded(src: &str, dir: Option<&Path>) -> Option<(Kb, Terms, Ast)> {

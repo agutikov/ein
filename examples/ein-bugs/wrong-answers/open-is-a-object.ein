@@ -1,5 +1,5 @@
 ;;; `open` written as an object's name loads, as an object — **W71**,
-;;; register row `W71/is-a-object`.
+;;; regression `is-a-object`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

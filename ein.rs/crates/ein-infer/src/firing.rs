@@ -70,7 +70,7 @@ pub struct Firing {
 /// **No conclusion reads a register its match left unbound**, so there is no
 /// variant for one: the loader refuses a conclusion variable no premise or
 /// parameter binds (`W57`), and the compiler seeds every parameter from its
-/// activator, a nested fact too (`W33`, `W58/parameter-nested-assert`). What
+/// activator, a nested fact too (`W33`, `parameter-nested-assert`). What
 /// holds it is `resolve`'s assertion, and `ein-ir`'s
 /// `fuzz_properties::no_firing_meets_an_unbound_variable`.
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -241,7 +241,7 @@ fn not_a_fact(
              a variable or a fact",
             terms.sym(rel)
         ),
-        // A whole conclusion that is no fact, `?y` or a name: only a macro's
+        // A whole conclusion that is no fact, `?y` or a name (Q-M1f.351): only a macro's
         // body writes one (`(macro id (?x) ?x)` called as a conclusion). A
         // line here would stop only the firing that met it, so a rule only a
         // commitment activates would load and some commands would answer it,

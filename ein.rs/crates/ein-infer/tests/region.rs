@@ -467,7 +467,7 @@ fn violated(r: &Region) -> bool {
 /// match its pattern. Its claim is the theorem at that grain: **on no cube the
 /// oracle enumerates is its verdict monotone while the cube observes a
 /// violation** (a hole, a dead node with an alive superset, a discharged node
-/// with an owing superset). Checked on every corpus file and register witness
+/// with an owing superset). Checked on every corpus file and regression witness
 /// within the limit, and on [`FACT_GRAIN_PROGRAMS`]. No route reads the
 /// prototype; the shipped check reads at relation grain
 /// ([monotonicity.md § 3.3](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#33-the-grain)).
@@ -518,7 +518,7 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
             // The shipped check reads at relation grain, which flags a superset
             // of fact grain's programs, so every cube it calls monotone is read
             // here too: **a Monotone verdict implies no cube violation**, on
-            // every corpus file and register witness within the limit
+            // every corpus file and regression witness within the limit
             // (`ein-cli/tests/region_dump.rs` holds it on random programs).
             if !flagged && violated(&r) {
                 failures.push(format!(
@@ -538,7 +538,7 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
         }
         (failures, cubes)
     };
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "region::fact_grain",
         &paths,
@@ -781,7 +781,7 @@ fn a_monotone_verdict_makes_saturation_a_closure_operator() {
     let (mut cubes, mut moving) = (0usize, 0usize);
     // One unit per program on the corpus sweeps' pool, each with its own
     // tallies, folded back in the programs' order.
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "region::closure_operator",
         &paths,
@@ -1240,7 +1240,7 @@ fn an_untainted_death_is_dead_in_every_superset() {
             }
         }
     };
-    for path in corpus_and_register() {
+    for path in corpus_and_regressions() {
         let rel = path
             .strip_prefix(repo_root())
             .unwrap_or(&path)
@@ -1308,13 +1308,11 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once, in either build.
-fn corpus_and_register() -> Vec<PathBuf> {
+/// Every corpus file and every regression witness, once, in either build.
+fn corpus_and_regressions() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -1504,7 +1502,7 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
     };
     // One unit per program on the corpus sweeps' pool, each with its own
     // tallies, folded back in the programs' order.
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "region::route_1_is_the_oracle",
         &paths,
@@ -1829,7 +1827,7 @@ fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> 
 }
 
 /// **The state route equals the oracle.** On every
-/// corpus file and register witness whose cube the oracle enumerates and whose
+/// corpus file and regression witness whose cube the oracle enumerates and whose
 /// static verdict is monotone, the route meets exactly the alive states, each
 /// with the cube's status, extends every one, and reads off them the oracle's
 /// `R`: `k_s`, `k_c`, each state's commitments (L3) and minimal generators,
@@ -1847,7 +1845,7 @@ fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
     };
     // One unit per program on the corpus sweeps' pool, each with its own
     // tallies, folded back in the programs' order.
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "region::the_state_route_is_the_oracle",
         &paths,
@@ -2037,7 +2035,7 @@ fn l5_is_the_oracle_on_every_monotone_program_it_reaches() {
     };
     // One unit per program on the corpus sweeps' pool, each with its own
     // tallies, folded back in the programs' order.
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "region::l5_is_the_oracle",
         &paths,

@@ -1,6 +1,6 @@
 ;;; A query's `:goal` whose `(absent …)` writes a pattern inside a pattern with
 ;;; a variable as its relation loads, and holds in every state — **W79**,
-;;; register row `W79/goal-absent-nested-relation-variable`.
+;;; regression `goal-absent-nested-relation-variable`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

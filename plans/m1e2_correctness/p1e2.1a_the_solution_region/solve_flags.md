@@ -30,7 +30,7 @@ Four things follow. Each is decided here before the parser changes:
 1. the **names** of the four flags, and how they compose;
 2. **today's 38 `ein solve` options**, one by one: kept, re-read or retired;
 3. **where today's walk goes**. It is the search under review, and
-   [the register](../../../corpus/wrong_answers.toml) reproduces 46 answers
+   [the register](../../wrong_answers/register.toml) reproduces 46 answers
    with it, all of them `solve` runs;
 4. **when the default switches**, which decides how many times the goldens
    move.

@@ -1,6 +1,6 @@
 ;;; A template cannot name a variable whose name holds a character other than
-;;; a letter, a digit, `_` or `-` — **W37**, register row
-;;; `W37/template-var-star` (`corpus/wrong_answers.toml`).
+;;; a letter, a digit, `_` or `-` — **W37**, regression
+;;; `template-var-star` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

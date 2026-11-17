@@ -149,7 +149,7 @@ of a text is therefore fixed by the rules, and `ein.l` leans on that:
 `ein.l` declares one exclusive start condition, `AFTER_WORD`, entered after every token but a paren. In it only
 `(`, `)` and the skip rule are tried: after a word, any other match would have made the word longer. lrlex runs the
 expression of every rule the state allows at every position, so after a word the state spares every other rule's
-search, and it moves no token (`the_lexer_gives_the_tokens_t4s_did` holds the tokens of every corpus file and of seeded mutants to those of the
+search, and it moves no token (`the_lexer_gives_the_tokens_its_plain_form_does` holds the tokens of every corpus file and of seeded mutants to those of the
 same rules without the state and the skip rule).
 
 The lexer definition is built once per process (a `OnceLock`) and cloned once per thread (the thread-local

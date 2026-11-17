@@ -28,7 +28,7 @@
 //! `region::Cores`), past `--region-limit` too. So the test reads the
 //! oracle's cube, every dead node, where the
 //! oracle enumerates it, and describe's N as the run gives it, every member
-//! with its core, past the limit too. Every corpus file and register witness
+//! with its core, past the limit too. Every corpus file and regression witness
 //! the loader accepts and *forbid* does not refuse; the slow entries under
 //! `EIN_CORPUS_SLOW=1`.
 //!
@@ -82,7 +82,7 @@ fn slow_too() -> bool {
     std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
 
-/// Every corpus file and register witness, once, but the slow entries unless
+/// Every corpus file and regression witness, once, but the slow entries unless
 /// `EIN_CORPUS_SLOW=1`.
 fn files() -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -92,10 +92,8 @@ fn files() -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -271,7 +269,7 @@ fn check(path: &Path) -> Option<Checked> {
 
 /// **Every core a run reports for a dead node on an alive root names its
 /// commitment, and with root derives the contradiction** — over the corpus
-/// and the register's witnesses, a file per thread.
+/// and the regressions' witnesses, a file per thread.
 #[test]
 fn every_core_names_its_commitment_and_derives_its_contradiction() {
     let files = files();
@@ -922,7 +920,7 @@ fn statuses(files: &[PathBuf]) -> Vec<Option<Statuses>> {
 }
 
 /// **No core is printed unqualified from a cut search** (`W23`), over the
-/// corpus and the register's witnesses.
+/// corpus and the regressions' witnesses.
 ///
 /// Every core a surface prints, with the status printed beside it
 /// ([`stated`]): the cube's dead nodes, root's among them, `ein oracle

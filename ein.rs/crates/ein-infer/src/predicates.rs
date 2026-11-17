@@ -124,7 +124,7 @@ mod tests {
     fn every_registered_predicate_declares_its_arity() {
         for name in names() {
             let p = get(name).expect("names() is the registry");
-            assert_eq!(p.arity(), 2, "{name}: M1's two predicates are binary");
+            assert_eq!(p.arity(), 2, "{name}: the two predicates are binary");
         }
     }
 

@@ -471,8 +471,8 @@ fn notes(
         }
         Some(k) if LATTICE_KEYWORDS.contains(&k) && top_form(lexer, at) == Some("query") => {
             out.push(format!(
-                "{k} chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one \
-                 program, one lattice"
+                "{k} chooses the lattice and belongs on (solve …) — one program, one \
+                 lattice"
             ));
         }
         Some(")") => out.extend(empty_connective(lexer, at)),
@@ -505,10 +505,8 @@ fn notes(
             out.push(FALSE_NOTE.to_string())
         }
         _ if found.starts_with(':') && top_form(lexer, at) == Some("config") => {
-            if let Some((flag, stage, why)) = RETIRED.iter().find(|(f, _, _)| *f == &found[1..]) {
-                out.push(format!(
-                    "config flag :{flag} was retired at M1e2 {stage}: {why}"
-                ));
+            if let Some((flag, why)) = RETIRED.iter().find(|(f, _)| *f == &found[1..]) {
+                out.push(format!("config flag :{flag} is retired: {why}"));
             }
         }
         _ => {}

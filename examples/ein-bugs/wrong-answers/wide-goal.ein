@@ -1,6 +1,6 @@
 ;;; A query whose `:goal` writes 257 distinct variables: `ein saturate` and
-;;; the views answer, and every solve question stops — **W63**, register row `W63/wide-goal`
-;;; (`corpus/wrong_answers.toml`).
+;;; the views answer, and every solve question stops — **W63**, regression `wide-goal`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

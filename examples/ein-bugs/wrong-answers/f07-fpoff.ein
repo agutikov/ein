@@ -1,5 +1,5 @@
-;;; A twin of `examples/features/07_unstratifiable.ein` under **W8**,
-;;; contested. Register row `W8/features-07`, as a twin.
+;;; A twin of `examples/features/07_unstratifiable.ein`, a flagged program
+;;; whose answer the engine claims nothing of.
 ;;;
 ;;; Below this header the program is `features/07`'s and nothing else: Ein has
 ;;; no flag that turns a forced-positive cascade off, and that file's header is

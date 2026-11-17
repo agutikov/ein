@@ -1,18 +1,18 @@
 ;;; A conclusion whose relation is a parameter its activator binds to `eq` is
-;;; stored as a fact — **W52**, register row `W52/relvar-eq-assert`
-;;; (`corpus/wrong_answers.toml`), under Q-M1e2.26.
+;;; stored as a fact — **W52**, regression `relvar-eq-assert`
+;;; (`corpus/regressions.toml`), under Q-M1e2.26.
 ;;;
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; One fact `(p a)` and a rule concluding `(?R ?x w)` from `(p ?x)`,
-;;; activated by `(r eq)`: `W30/assert-eq-x-w`'s conclusion, its relation
+;;; activated by `(r eq)`: `assert-eq-x-w`'s conclusion, its relation
 ;;; written as a parameter.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; Under `(r eq)` the conclusion is `(eq ?x w)`, checked as `W30/assert-eq-x-w`'s
+;;; Under `(r eq)` the conclusion is `(eq ?x w)`, checked as `assert-eq-x-w`'s
 ;;; is (Q-M1e2.26): at root `r` concludes `(eq a w)`, which is false, so root is a
 ;;; contradiction: its core is `(p a)` and `refuted by` names `r`. R is empty.
 ;;;

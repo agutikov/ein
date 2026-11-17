@@ -10,8 +10,8 @@ some have twice or three times as many. Nobody should type nine columns of
 variables twenty times, and nobody should review them by eye, so the module is
 written by this script, as `std.math.digits` is.
 
-    python3 utils/gen_num9.py                      # write stdlib/math/num9.ein
-    python3 utils/gen_num9.py --check              # exit 1 if the file differs
+    python3 utils/gen_num9.py                      # write stdlib/math/num9.ein and the width-2 fixture
+    python3 utils/gen_num9.py --check              # exit 1 if either file differs
     python3 utils/gen_num9.py --stdout             # print it
     python3 utils/gen_num9.py --width 2 --stdout   # the same theory at another width
 
@@ -19,9 +19,12 @@ After a write, `python3 utils/stdlib_manifest.py --write` re-takes the
 manifest: the module is part of the stdlib and is embedded in the binary.
 
 **One width ships: nine.** `--width W`, 2 to 9, writes the same theory over
-`(numW d… d)` with every name's 9 replaced by W, to stdout only; it is how
-`ein-infer/tests/num9_theory.rs` holds the theory exhaustively, at a width
-small enough to exhaust, and it is not a shipped module. The width stops at
+`(numW d… d)` with every name's 9 replaced by W, to stdout, and is not a
+shipped module. Width 2 is also written to a test fixture,
+`ein.rs/crates/ein-infer/tests/golden/num2_theory.ein`, which
+`ein-infer/tests/num9_theory.rs` holds exhaustively, at a width small enough
+to exhaust: so the theory every width shares is held to the integers, and
+`--check` holds the fixture to this script as it holds the shipped file. The width stops at
 nine because the steps of a product and a quotient are counted by the digit
 names through `std.math.digits`' `adj`.
 
@@ -32,9 +35,9 @@ number: a change here that widens a rule fails there, on purpose (Q-M1f.173).
 
 Two things hold the file besides `--check`:
 
-- `ein-infer/tests/num9_theory.rs` runs this script's `--check` inside
-  `cargo test`, which is how the check is in the gate, and holds every answer
-  to Rust's integers: every pair of operands at width 2, a sample at width 9.
+- the gate runs this script's `--check` (`utils/check_generated.py`), and
+  `ein-infer/tests/num9_theory.rs` holds every answer to Rust's integers:
+  every pair of operands at width 2 (the fixture), a sample at width 9.
 - `tests/stdlib/math/num9/` has a program for every rule.
 
 No dependency beyond the standard library.
@@ -48,6 +51,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / "stdlib" / "math" / "num9.ein"
 SHIPPED = 9
+# The theory at width 2, which a crate test holds on every pair of operands.
+FIXTURE = REPO / "ein.rs" / "crates" / "ein-infer" / "tests" / "golden" / "num2_theory.ein"
+FIXTURE_WIDTH = 2
 
 
 class Theory:
@@ -517,13 +523,16 @@ def main() -> int:
             return 2
         sys.stdout.write(text)
         return 0
+    files = [(OUT, text), (FIXTURE, render(FIXTURE_WIDTH))]
     if args.check:
-        if not OUT.exists() or OUT.read_text() != text:
-            print(f"{OUT}: differs from `python3 utils/gen_num9.py`", file=sys.stderr)
-            return 1
-        return 0
-    OUT.write_text(text)
-    print(f"wrote {OUT}")
+        stale = [p for p, want in files if not p.exists() or p.read_text() != want]
+        for p in stale:
+            print(f"{p}: differs from `python3 utils/gen_num9.py`", file=sys.stderr)
+        return 1 if stale else 0
+    for p, want in files:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(want)
+        print(f"wrote {p}")
     return 0
 
 

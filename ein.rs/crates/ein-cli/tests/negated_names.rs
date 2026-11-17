@@ -319,8 +319,8 @@ fn a_conclusion_negating_a_name_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The register's seven witnesses (W84), each read from its file, as
-/// `wrong_answers.rs` reads one command's run of each.
+/// The regressions' seven witnesses of a negated name, each read from its
+/// file, as `regressions.rs` reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-negated-names-witnesses");
@@ -436,7 +436,7 @@ fn states(out: &str) -> Option<usize> {
 /// a parameter whose activator a rule derives through a variable, `(marks
 /// ?R)` then `(deny ?R)`.
 ///
-/// None is a corpus program, so none is a register row: a state file writes
+/// None is a corpus program, so none is a regression: a state file writes
 /// the derived activator as a fact, the loader then reads the parameter's
 /// relation through it and refuses the file, and `answer_round_trip.rs` holds
 /// every corpus program's state files to reload.

@@ -1,5 +1,5 @@
 ;;; A wildcard `_` in an hrule's `:match` proposes nothing — **W20**,
-;;; register row `W20/wild-in-hrule` (`corpus/wrong_answers.toml`), the
+;;; regression `wild-in-hrule` (`corpus/regressions.toml`), the
 ;;; case's mechanism in an hrule.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

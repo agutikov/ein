@@ -10,9 +10,9 @@
 ;;; The matcher sees only the expanded form; no new opcode is
 ;;; added to the kernel.
 ;;;
-;;; Safety: the bound `?b` must appear in the guard `G`. The
-;;; compiler rejects otherwise (no enumerable domain). The bound
-;;; var is local — it doesn't escape into the rule's :assert.
+;;; The bound `?b` belongs in the guard `G`, which enumerates its
+;;; domain: nothing refuses a `?b` written in `B` alone, and there,
+;;; under the inner `absent`, it reads *some*, not *every*. It is local.
 ;;;
 ;;; This demo: a small tournament. A player is `undefeated` iff
 ;;; they beat every OTHER player. Below, Alice beats both Bob

@@ -1,6 +1,6 @@
 ;;; A relation parameter its activator binds to `eq` heads a premise of one
 ;;; argument, and the run stopped where the plan is compiled — **W60**,
-;;; register row `W60/eq-arity-premise` (`corpus/wrong_answers.toml`).
+;;; regression `eq-arity-premise` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -29,7 +29,7 @@
 ;;;
 ;;; The loader refuses the program: every command that loads it exits 1 with
 ;;; one line, naming `r`, `?R`, the form and `(r eq)` (`ein test`: 2), in
-;;; either build. The register's `now` is that refusal; the section above is
+;;; either build. The regression's `now` is that refusal; the section above is
 ;;; the record of the answer it replaced.
 ;;;
 ;;;

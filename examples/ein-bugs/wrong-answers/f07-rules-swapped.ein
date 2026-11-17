@@ -1,6 +1,6 @@
-;;; `features/07` with its two rules in the other order — **W8**, register row
-;;; `W8/f07-rules-swapped` (`corpus/wrong_answers.toml`). Which answer is right
-;;; is not decided.
+;;; `features/07` with its two rules in the other order: a flagged program
+;;; whose answer moves with its rule order, and the engine claims nothing of
+;;; a flagged program's answer.
 ;;;
 ;;;
 ;;;

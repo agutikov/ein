@@ -1,5 +1,5 @@
 ;;; A keyword pair in a query's goal is dropped, and the claim holds — **W32**,
-;;; register row `W32/kwpair-in-goal` (`corpus/wrong_answers.toml`); each form
+;;; regression `kwpair-in-goal` (`corpus/regressions.toml`); each form
 ;;; takes a closed list of keywords (Q-M1e2.28).
 ;;;
 ;;;

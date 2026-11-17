@@ -1,7 +1,7 @@
 ;;; `naf-upward-closure.ein` under the singleton writeback's lever — **W3**'s
 ;;; lever row, where `dead` not being upward-closed under `absent` turned into a
-;;; certified `Contradiction`. Register row `W3/naf-nowb-L`
-;;; (`corpus/wrong_answers.toml`).
+;;; certified `Contradiction`. Regression `naf-nowb-L`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; Below this header the program is `../naf-upward-closure.ein`'s, its `:why`
 ;;; texts aside. The lever, `:enable-singleton-writeback false` on a
@@ -23,7 +23,7 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────────
 ;;;
-;;; The walk's two runs, which the register's row records:
+;;; The walk's two runs, which the regression records:
 ;;;
 ;;;   default  Solution k = 1, `{(q A)}` — the same wrong model as
 ;;;            `../naf-upward-closure.ein`'s: the kill cache wrote `(not (p A))`

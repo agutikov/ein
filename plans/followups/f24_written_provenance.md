@@ -41,7 +41,7 @@ load on its own; a stage that touches a fact's clauses in `ein.y`; F22's start.
 
 **Rows.** S1f.7.9 filed the witnesses above in `corpus/wrong_answers.toml` on 2026-11-11 (T1f.7.9.2), case W87,
 each `open`, owned by this followup and reviewed `deferred`, each a program under `examples/ein-bugs/wrong-answers/`
-with a corpus entry, held to today's engine by `ein-cli/tests/wrong_answers.rs`:
+with a corpus entry, held to today's engine by `utils/wrong_answers.py` (the witnesses now under `plans/wrong_answers/witnesses/`):
 
 | row | witness | today (`[case.now]`) | `right`, and under which reading |
 |---|---|---|---|

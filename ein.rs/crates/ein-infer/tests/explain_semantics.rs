@@ -380,7 +380,7 @@ fn a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core() {
 }
 
 /// **A saving between two facts, behind a full list, is still refused** —
-/// `W10/alt-cap-shared`, the limit Q-M1e2.11 states.
+/// `alt-cap-shared.ein`, the limit Q-M1e2.11 states.
 ///
 /// `(x K)` has 33 one-given derivations and a 34th over `(a K)` `(b K)`, and
 /// `(false)` needs `(z K)` too, whose only derivation is over the same two.
@@ -388,7 +388,7 @@ fn a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core() {
 /// 34th is `(x K)`'s per-fact worst, so its full list refuses it and the
 /// smallest-closure arrival kept beside it is an `x-chain`: the core is three
 /// facts. No bounded per-fact retention keeps it. Pinned as the promise's
-/// one known gap: the day this reports two, the row flips.
+/// one known gap: the day this reports two, the gap is closed.
 #[test]
 fn a_saving_between_two_facts_behind_a_full_list_is_still_refused() {
     let mut f = load_path("examples/ein-bugs/wrong-answers/alt-cap-shared.ein");
@@ -398,7 +398,7 @@ fn a_saving_between_two_facts_behind_a_full_list_is_still_refused() {
     assert_eq!(
         f.names(&e.frontier),
         ["a", "b", "c"].map(String::from).into_iter().collect(),
-        "(a K) (b K) and one (c Cnn): W10/alt-cap-shared's wrong core"
+        "(a K) (b K) and one (c Cnn): the known gap's three-fact core"
     );
     let x = f.fact("x", &["K"]);
     assert_eq!(f.kb.alternatives(x).len(), 32, "(x K)'s list is full");

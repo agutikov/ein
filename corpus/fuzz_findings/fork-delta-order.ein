@@ -1,4 +1,4 @@
-;;; Register row `W11/fork-delta-order`: which core a dead node reports must
+;;; Regression `fork-delta-order`: which core a dead node reports must
 ;;; not move with interner ids. Written by hand, for the mechanism by which
 ;;; one could: a resumed fork's delta in an order the interner chose. No
 ;;; corpus core moves, and this is the shape that would make one.
@@ -30,7 +30,7 @@
 ;;; Over every derivation (an uncapped store) the core is (g G01) (h H01)
 ;;; (on A) (on B): every core is four facts, so the size the glossary promises
 ;;; holds, and which of the equal-size ones a full list leaves is the store's
-;;; bounded retention (W10/alt-cap-shared's class), not this row's. This row
+;;; bounded retention (`alt-cap-shared.ein`'s class), not this row's. This row
 ;;; asks only that it not move with the ids.
 ;;;
 ;;; The g and h facts are written in descending order so that the order they

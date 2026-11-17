@@ -1,7 +1,7 @@
 ;;; Two activators of one rule, a name of digits and a nested fact in one
 ;;; position: each argument binds its parameter (Q-M1f.43), and a rule
 ;;; application's identity is its activator's every argument (Q-M1e.16).
-;;; Register row `W7/binding-key-layout` (`corpus/wrong_answers.toml`); the
+;;; Regression `binding-key-both/binding-key-layout` (`corpus/regressions.toml`); the
 ;;; note is `binding-key-layout.md`. Root: `(noted 1 1)` and `(noted 2 1)`.
 (relation edge  Node Node :why "there is an edge from {?1} to {?2}")
 (relation holds Node      :why "{?1} holds")

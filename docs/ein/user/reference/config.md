@@ -341,9 +341,8 @@ program that embeds Ein sets the same option through the library ([`docs/ein/ein
 
 ## 4. The environment
 
-Two `EIN_*` names are read by the shipped binary, and neither reaches a `(config …)` flag. The test suite reads
-others, which change nothing `ein` does. That is the whole list: a variable this section does not name changes
-nothing.
+Two `EIN_*` names are read by the shipped binary, and neither reaches a `(config …)` flag. That is the whole list:
+a variable this section does not name changes nothing `ein` does.
 
 ### Read by the shipped binary
 
@@ -352,31 +351,11 @@ nothing.
 | `EIN_STDLIB` | a directory | overrides where `std.*` modules are found, ahead of the checkout and the copy built into the binary. The directory **must carry `MANIFEST.sha256`**, the file that identifies a standard library, and the refusal names the variable at the first `std.*` import ([`install.md`](../install.md)). `ein --version` reports a directory it cannot prove as `unreadable` rather than refusing |
 | `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block: what the blind enumerator would still propose at each **listed state**, outside H. The block has three keys on every summary: `taken`, whether the variable was `1`; `states`, the count at each listed state, in `region.states`' listed order; and `states_by_relation`, that count split by relation, one object per listed state from a relation's name to its count. Both lists are empty when `taken` is false. It is computed with no configuration, as H is, on a copy of each state, so nothing else in the summary moves |
 
-### Read by the test harness
-
-Read by the test suite of a source checkout, never by the binary: setting one has no effect on any `ein` command.
-
-| name | what it does |
-|---|---|
-| `EIN_BLESS` | `=1` rewrites a golden instead of comparing it, this page's generated block among them |
-| `EIN_CORPUS_SLOW` | `=1` adds the corpus entries marked slow, the heavy answer dumps, and the slow half of every test that has one |
-| `EIN_CORPUS_TIMEOUT` | the per-run wall budget of the corpus sweep through the binary, in seconds, default 300 |
-| `EIN_ID_SEEDS` | how many permutations of the interned ids the id-order sweep runs, default 1 |
-| `EIN_ID_FILES` | points that sweep at a directory instead of the corpus |
-| `EIN_ID_REPORT` | prints that sweep's per-file report |
-| `EIN_JOBS_SWEEP` | the job counts the job-count sweep compares, e.g. `2,4,8,16` |
-| `EIN_TEST_JOBS` | the corpus sweeps' worker count, default 16, never more than the machine's threads. **No verdict depends on it**: the results are read back in the units' order, and a failure reads the same at any count |
-| `EIN_TEST_SHARD` | `k/n`, `1 ≤ k ≤ n`: run shard `k` of `n` — a sharded sweep keeps the programs dealt to shard `k`, every program in exactly one, and a test that is one computation runs in one shard; unset, the whole run. A value that is no shard is a panic |
-| `EIN_TEST_UNITS` | a file each pooled sweep appends one line per unit to: the sweep, the program, the output, milliseconds, and with one worker the unit's peak resident memory |
-| `EIN_FUZZ_ITERS` | the parser fuzzer's budget, default 2 000 |
-| `EIN_FUZZ_SEED` | moves that fuzzer's stream |
-| `EIN_NARRATION_STRICT` | `=1` runs the id-order, job-count and corpus-shape comparisons with no narration cut: a node's derivation is compared byte for byte, not only what it concludes |
-
 ### No other name
 
-No other `EIN_*` variable is read: not by the binary, and not by the test suite. In particular none reaches a
-`(config …)` flag, there is no variable that names a configuration file, and nothing chooses a route, an order or a
-traversal from the environment.
+No other `EIN_*` variable is read by the binary. In particular none reaches a `(config …)` flag, there is no
+variable that names a configuration file, and nothing chooses a route, an order or a traversal from the
+environment.
 
 ---
 
@@ -407,7 +386,7 @@ what ships:
 | the defaults block, § 2.1 | the block is not what `ein solve --dump-config` prints: a new flag, a renamed one, a changed default |
 | the flag table, § 2.2 | its flags are not the solver's, in its order, or a row's type or default is not the block's |
 | the option counts, § 3.1 | a parser's count or the total is not the checked-in help's |
-| the environment, § 4 | the binary reads an `EIN_*` name with no row under *Read by the shipped binary*, that class lists one nothing reads, or a name the test harness's own libraries read has no row under *Read by the test harness* |
+| the environment, § 4 | the binary reads an `EIN_*` name with no row under *Read by the shipped binary*, or that class lists one nothing reads |
 | the `EIN_LEFTOVER` row | it does not name every key of the `leftover` block, or the block is not what the row says, with the variable and without |
 | `-y` and the sanity flag, § 3.2 | `:lattice-sanity-check true` moves `solve -p`'s exit code, stdout or stderr past its own `paths` row, or prints no unbounded row |
 | the retired flags, § 2.4 | a program setting one loads, or is refused without saying why |

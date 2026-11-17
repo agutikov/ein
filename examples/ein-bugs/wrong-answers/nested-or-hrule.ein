@@ -1,6 +1,6 @@
 ;;; A disjunction nested inside a conjunction, in an hrule: `ein saturate`
-;;; answers and every solve question stops — **W62**, register row
-;;; `W62/nested-or-hrule`.
+;;; answers and every solve question stops — **W62**, regression
+;;; `nested-or-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -737,35 +737,3 @@ fn every_arithmetic_program_is_search_free() {
         },
     );
 }
-
-/// `utils/gen_arith_examples.py --check`, run here: `examples/arith/long_numbers.ein`,
-/// `many_calculations.ein` and `factorial.ein` are generated, operands drawn
-/// with a fixed seed and every claimed answer computed by Python's integers.
-/// The test above then holds each of them search-free, and `ein test` holds
-/// the claims to the engine's own answers. It needs a `python3`, as
-/// `ein-ir/tests/digit_tables.rs` does for the digit tables.
-#[test]
-fn the_generated_examples_are_what_the_generator_writes() {
-    let probe = Command::new("python3")
-        .args(["-c", "pass"])
-        .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
-        .status();
-    assert!(
-        matches!(probe, Ok(s) if s.success()),
-        "`python3` does not run ({probe:?}): three programs of `examples/arith/` are generated \
-         and `utils/gen_arith_examples.py --check` is the only check that compares their \
-         bytes with the script's — a missing gate, not a missing convenience"
-    );
-    let out = Command::new("python3")
-        .args(["utils/gen_arith_examples.py", "--check"])
-        .current_dir(repo_root())
-        .output()
-        .expect("python3 ran a moment ago");
-    assert!(
-        out.status.success(),
-        "a generated example is stale — run `python3 utils/gen_arith_examples.py`\n{}{}",
-        String::from_utf8_lossy(&out.stdout),
-        String::from_utf8_lossy(&out.stderr),
-    );
-}

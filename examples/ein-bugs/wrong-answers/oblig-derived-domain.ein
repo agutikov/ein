@@ -1,6 +1,6 @@
 ;;; The obligations rung never proposed a domain value a commitment derives,
-;;; **with no rule constant at all** — **W14**, register row
-;;; `W14/oblig-derived-domain` (`corpus/wrong_answers.toml`).
+;;; **with no rule constant at all** — **W14**, regression
+;;; `oblig-derived-domain` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -24,8 +24,8 @@
 ;;; At `338b5892` (`ein solve FILE`), H was 1 candidate, dead alone, and R was
 ;;; empty, every alive node owing. The rung declines on a guard that scans a
 ;;; relation in D (`food`; Q-M1e2.10), and this file answers its control's R,
-;;; which the `:expect` below states. The register row
-;;; `W14/oblig-derived-domain` is fixed.
+;;; which the `:expect` below states. The regression
+;;; `oblig-derived-domain` is fixed.
 ;;;
 ;;;
 ;;;

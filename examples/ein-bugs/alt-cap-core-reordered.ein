@@ -1,6 +1,6 @@
 ;;; **The same program with `wide` firing first — and a smaller unsat core.**
 ;;;
-;;; The second half of a pair, register row `W10/alt-cap-core`. Below the
+;;; The second half of a pair, regression `alt-cap-core`. Below the
 ;;; header this file is [`alt-cap-core.ein`](alt-cap-core.ein) byte for byte
 ;;; except for the written place of `mk-w3`, first here and after `mk-q`
 ;;; there (its header's § The written order); the `diff` below shows those

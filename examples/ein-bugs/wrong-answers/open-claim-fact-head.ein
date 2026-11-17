@@ -1,5 +1,5 @@
 ;;; `open` written as a nested fact's relation in a query's claim loads, as a
-;;; relation — **W70**, register row `W70/claim-fact-head`.
+;;; relation — **W70**, regression `claim-fact-head`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

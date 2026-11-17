@@ -9,7 +9,7 @@
 //! (`explore`'s § *Describe's route*), so no option can make the two meet on
 //! one program. This file makes them meet, through
 //! [`explore::describe_by`], and holds two things on every monotone corpus
-//! program and register witness where **both** describe all of `R` at the
+//! program and regression witness where **both** describe all of `R` at the
 //! default budget:
 //!
 //! - **one read-out**: what `ein solve` prints, uncut, with its stderr lines
@@ -26,7 +26,7 @@
 //! cut: the state route finished in no more saturations and facts than route
 //! 1 spent before it stopped, so no more than route 1 would have spent to
 //! finish. The test names each such program on stderr with its counts:
-//! the zebra family and the register's `count-past-2-64.ein` and
+//! the zebra family and the regressions' `count-past-2-64.ein` and
 //! `count-past-2-128.ein` among them (`EIN_CORPUS_SLOW=1 cargo test -p
 //! ein-cli --profile gate --test route_invariance -- --nocapture` lists
 //! them). Where neither route finishes nothing is read, and the test names
@@ -48,7 +48,7 @@
 
 use std::path::{Path, PathBuf};
 
-use ein_corpus::{register, repo_root};
+use ein_corpus::{regressions, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Route, Which};
 use ein_ir::{Ast, load, parse};
 use serde_json::Value as J;
@@ -126,7 +126,7 @@ fn printed(path: &Path, route: Route, budget: u64) -> Option<Printed> {
     })
 }
 
-/// Every corpus file and register witness, once, but the manifest's `slow`
+/// Every corpus file and regression witness, once, but the manifest's `slow`
 /// entries unless `slow`; this run's shard of them, W7's two witnesses and
 /// W16's order pair among them in a debug build too.
 fn programs(slow_too: bool) -> Vec<PathBuf> {
@@ -138,10 +138,8 @@ fn programs(slow_too: bool) -> Vec<PathBuf> {
         .map(|e| root.join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in register().case {
-        for (_, a) in row.answers() {
-            files.push(root.join(row.witness_of(a)));
-        }
+    for row in regressions().case {
+        files.push(root.join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -171,7 +169,7 @@ fn first_difference(a: &str, b: &str) -> String {
 fn the_state_route_and_route_1_print_one_read_out() {
     let budget = ein_infer::downset::DEFAULT_BUDGET;
     // Read here, in the one test, so the nightly's step that names it runs
-    // all of the target's slow half (`nightly_steps.rs`).
+    // all of the target's slow half.
     let slow = std::env::var_os("EIN_CORPUS_SLOW").is_some();
     let Compared {
         bad,

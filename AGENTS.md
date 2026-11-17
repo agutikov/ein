@@ -113,7 +113,7 @@ constrained-reasoning research.
   fixture) plus focused per-feature fixtures.
   [`examples/README.md`](examples/README.md) is a **catalog** — one line
   per file / sub-dir. **Four of the zebra files are generated**, by
-  `examples/gen_zebra2_variants.py` from `zebra2.ein`, and `--check` is in the
+  `utils/gen_zebra2_variants.py` from `zebra2.ein`, and `--check` is in the
   gate: `zebra2-minus-15` (clue dropped), `ein-bugs/zebra2-bad` (clue added),
   and [`zebra2-obligations.ein`](examples/zebra2-obligations.ein) and its
   `-minus-15` twin, which are `zebra2` with the `(hrule guess …)` and the
@@ -201,10 +201,11 @@ constrained-reasoning research.
   `tests/mutation_survivors.txt`.
 - **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
   the runs it is exercised under) plus `fuzz_findings/`, and
-  `wrong_answers.toml`, the register of every known wrong answer. The
-  register has one row per witness, with today's answer and the right one as
-  data, and `ein-cli/tests/wrong_answers.rs` holds an `open` row to its wrong
-  answer and a `fixed` one to its right one. A file under `examples/`,
+  `regressions.toml`, one row per program and run once answered wrong, with
+  today's answer and the right one as data, which `ein-cli/tests/regressions.rs`
+  holds to the right one (the format is `ein_corpus::regressions`; a known
+  wrong answer still open is process, [`plans/wrong_answers/`](plans/wrong_answers/README.md)).
+  A file under `examples/`,
   `stdlib/` or `tests/` with no entry fails a completeness check. What runs it
   is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the table of
   readers; the `--events` protocol is
@@ -306,9 +307,12 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
   P1f.6's [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)
   (E-n) did.
 - **The wrong-answer register** is
-  [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml); its counts are
-  `grep '^status' corpus/wrong_answers.toml | sort | uniq -c`. Every open row
-  is owned by a followup ([F21](plans/followups/f21_non_monotone_programs_decided.md),
+  [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
+  open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);
+  its count is `grep -c '^\[\[case\]\]' plans/wrong_answers/register.toml`,
+  and the fixed ones are the project's regressions (`corpus/regressions.toml`).
+  `python3 utils/wrong_answers.py`, a gate step, holds every row to what the
+  binary answers today. Every open row is owned by a followup ([F21](plans/followups/f21_non_monotone_programs_decided.md),
   [F22](plans/followups/f22_exact_core_past_the_cap.md),
   [F24](plans/followups/f24_written_provenance.md)).
 - **After M1f**: [M1g](plans/m1g_logic/README.md), logic in Ein (school
@@ -439,19 +443,24 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `grammar.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
   `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
   (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
-  (`utils/gen_num9.py`); `stdlib/bool/gates.ein`'s rows and the programs
+  and its width-2 twin, the fixture `ein-infer/tests/golden/num2_theory.ein`
+  (`utils/gen_num9.py`); the detector's two hundred random programs,
+  `ein-infer/tests/golden/random_programs.txt` (`utils/gen_random_programs.py`);
+  `stdlib/bool/gates.ein`'s rows and the programs
   under `tests/stdlib/bool/gates/` and `props/` (`utils/gen_gates.py`, then
   `utils/stdlib_manifest.py --write`);
   three `examples/arith/` programs (`utils/gen_arith_examples.py`); the four
-  zebra2 variants (`examples/gen_zebra2_variants.py`);
+  zebra2 variants (`utils/gen_zebra2_variants.py`);
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
-  with its letters declared in another order (`examples/gen_send_written.py`);
+  with its letters declared in another order (`utils/gen_send_written.py`);
   `read-out-examples.md` (`utils/read_out_examples.py`); `config.md`'s
   defaults block and `docs/ein/ein.rs/api.md`'s `rust` block;
   `ein-core/src/printable.rs` (`utils/gen_unicode_printable.py`, with
   `ein-core/tests/golden/repr_escapes.txt` re-blessed). All of those have a
-  `--check` or a test in the gate. None names its generator; this list and
-  `utils/README.md` are where the script is written down.
+  `--check` or a test in the gate; `utils/check_generated.py` runs every
+  generator's `--check`, and no crate test runs a generator. None names its
+  generator; this list and `utils/README.md` are where the script is written
+  down.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
 - A change to what `ein solve` prints changes `read-out.md` in the same
@@ -477,10 +486,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   stays in `plans/`; a generated project file says it is generated and names
   no tool; a measurement lives beside the script that takes it. P1f.20 brings
   the tree there (the user's rulings of 2026-11-17).
-- **A wrong answer** is filed as an `open` row of the register, with a
-  witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, in a
-  commit of its own; the fix flips the row, and any `:expect` that stated the
-  wrong answer, in the fixing commit.
+- **A wrong answer** is filed and fixed by
+  [`plans/wrong_answers/README.md`](plans/wrong_answers/README.md)'s rules: a
+  row of the register with its witness, in a commit of its own; the fix moves
+  the row into `corpus/regressions.toml` and the witness into the corpus, with
+  any `:expect` that stated the wrong answer, in the fixing commit.
 - **A stdlib rule needs a program under `tests/stdlib/` that activates it**,
   or `stdlib_coverage.rs` fails. A rule or relation added to
   a module of the calculator goes into its closing rule's two lists
@@ -552,7 +562,7 @@ cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R 
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
 ein show hyps FILE                                           # H as Ein facts, one candidate per line, uncut, nothing else on stdout: root's saturation and the generator, no search
 ein render h-space FILE [--view …] [--dump DIR] [--supports]   # the structure of H: a read-out, a graph as DOT, or h-space.json; `ein solve` computes none of it
-python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
+python3 utils/review_bundle.py                               # M1e2: build/review/, one page per open wrong answer
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)
 python3 utils/read_out_examples.py                           # M1f S1f.5.16: the read-out reference's examples page, written from the binary
@@ -566,36 +576,69 @@ The read-out's vocabulary is
 every row `ein solve` prints and what it counts, and its golden page, written
 by the binary, is
 [`read-out-examples.md`](docs/ein/user/reference/read-out-examples.md), both
-held to the printer by `ein-cli/tests/read_out_reference.rs`. **The `EIN_*`
-names in the block above are the ones an agent needs, not the set**:
+held to the printer by `ein-cli/tests/read_out_reference.rs`.
 [`docs/ein/user/reference/config.md`](docs/ein/user/reference/config.md) is the census
-of every `EIN_*` name, `(config …)` field and CLI option, with a *does it
-change the answer* column on every flag row, pinned by
-`ein-cli/tests/config_reference.rs`. The walk — `-e`, `-m`,
+of every `(config …)` field, CLI option and `EIN_*` name the binary reads, with a
+*does it change the answer* column on every flag row, pinned by
+`ein-cli/tests/config_reference.rs`. **The test harness's `EIN_*` names are the
+process's**, and this table is their census: the test suite reads them, the binary
+none, and setting one has no effect on any `ein` command. `grep -rhoE
+'env::var(_os)?\(\s*"EIN_[A-Z0-9_]+' ein.rs/crates | grep -oE 'EIN_[A-Z0-9_]+' | sort -u`
+re-takes the set, the binary's two among it.
+
+| name | what it does |
+|---|---|
+| `EIN_BLESS` | `=1` rewrites a golden instead of comparing it, `config.md`'s generated block among them |
+| `EIN_CORPUS_SLOW` | `=1` adds the corpus entries marked slow, the heavy answer dumps, and the slow half of every test that has one |
+| `EIN_CORPUS_TIMEOUT` | the per-run wall budget of the corpus sweep through the binary, in seconds, default 300 |
+| `EIN_ID_SEEDS` | how many permutations of the interned ids the id-order sweep runs, default 1 |
+| `EIN_ID_FILES` | points that sweep at a directory instead of the corpus |
+| `EIN_ID_REPORT` | prints that sweep's per-file report |
+| `EIN_JOBS_SWEEP` | the job counts the job-count sweep compares, e.g. `2,4,8,16` |
+| `EIN_TEST_JOBS` | the corpus sweeps' worker count, default 16, never more than the machine's threads. **No verdict depends on it**: the results are read back in the units' order, and a failure reads the same at any count |
+| `EIN_TEST_SHARD` | `k/n`, `1 ≤ k ≤ n`: run shard `k` of `n` — a sharded sweep keeps the programs dealt to shard `k`, every program in exactly one, and a test that is one computation runs in one shard; unset, the whole run. A value that is no shard is a panic |
+| `EIN_TEST_UNITS` | a file each pooled sweep appends one line per unit to: the sweep, the program, the output, milliseconds, and with one worker the unit's peak resident memory |
+| `EIN_FUZZ_ITERS` | the parser fuzzer's budget, default 2 000 |
+| `EIN_FUZZ_SEED` | moves that fuzzer's stream |
+| `EIN_NARRATION_STRICT` | `=1` runs the id-order, job-count and corpus-shape comparisons with no narration cut: a node's derivation is compared byte for byte, not only what it concludes |
+| `EIN_ROUND_TRIP_LIST` | prints each program's state files beside it in `answer_round_trip` |
+| `EIN_REGION_PRINT` | turns on `ein-infer/tests/region.rs`' `print_for_inspection`, which prints and asserts nothing |
+| `EIN_REGION_CENSUS` | turns on `region.rs`' `census_for_inspection`, a measurement and not a claim |
+| `EIN_ROUTE1_TIMES` | prints each program's route-1 time in `region.rs`' route-1 sweep |
+
+The walk — `-e`, `-m`,
 `EIN_TRAVERSAL`, `EIN_OBLIGATION_CHOICE`, the lattice's verdict wording — was
 deleted at M1e2 S1e2.1c.5; a page that describes it is a record.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order:
-seven static checks (`--tests-only` skips them and the bench smoke), then
-`cargo test --profile gate --workspace`, then the bench smoke test. The tests run with
+nine static checks (`--tests-only` skips them and the bench smoke), then
+`cargo test --profile gate --workspace`, then the process's checks that need
+the binary it built, then the bench smoke test. The tests run with
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,
 naming the file that writes it. **`cargo test --profile gate --workspace`
-alone is not the gate**: it checks none of the seven. A local gate that is a subset of the
-remote one is a local gate that lies — keep the two lists the same;
-`ein-cli/tests/gate_steps.rs` diffs them.
+alone is not the gate**: it checks none of the nine, and none of what the
+process holds itself to. **The tests read only the project**: what ties a
+process file to the project is a `utils/` check and a gate step, never a crate
+test — `check_gate_steps.py` (the step lists), `check_tool_mirrors.py` (the
+editor grammar, `nl_census.py` and the review driver against the engine's
+lists), `check_generated.py` (every generator's `--check`) and
+`check_region_routes.py` (the oracle against `region.py` and
+`region_synth.py`). A local gate that is a subset of the remote one is a local
+gate that lies — keep the two lists the same; `utils/check_gate_steps.py`
+diffs them.
 
 **`./run_tests.sh --nightly` runs the nightly** instead of the gate: every
 step of `.github/workflows/nightly.yml`, its jobs one after another
 (`deep-corpus`, `deep-corpus-shards` and `mutants` once per shard, the fuzzer
 once per seed, the bench smoke), so the nightly can be run before a push;
-`ein-cli/tests/nightly_steps.rs` diffs its list against the workflow's.
+`utils/check_gate_steps.py` diffs its list against the workflow's.
 **A nightly step over 5 min on the runner runs in shards** (M1f S1f.6.39,
 [Q-M1f.293](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f293--the-nightlys-steps-against-five-minutes)):
 a matrix job a shard, `EIN_TEST_SHARD=k/n`, `ein_corpus::shard` dealing every
 program to exactly one shard and `utils/stdlib_mutants.py --shard` every
 `n`-th mutant; each shard is measured on four P-core threads with
-`EIN_TEST_JOBS=4`, the runner's count, on AC, and `nightly_steps.rs` holds a
+`EIN_TEST_JOBS=4`, the runner's count, on AC, and `check_gate_steps.py` holds a
 sharded step to every one of its shards. **The nightly holds only what guards an answer or a
 contract no per-commit step guards**, each step within 5 min on the runner
 (the user's ruling of 2026-11-10;
@@ -603,8 +646,8 @@ contract no per-commit step guards**, each step within 5 min on the runner
 **`./run_tests.sh --dev-host` is the tier nothing schedules**, which the user
 runs here or in the runner's image (`utils/ci_container.sh --dev-host`):
 every nightly step at full budget and the steps that left or never ran in
-CI. A step that leaves the nightly is named in `nightly_steps.rs`'s
-`DEV_HOST_ONLY` with why, or `cargo test` fails.
+CI. A step that leaves the nightly is named in `check_gate_steps.py`'s
+`DEV_HOST_ONLY` with why, or the gate fails.
 
 A reference that cannot be a link is still fine as `` `code` ``, and that is
 the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`

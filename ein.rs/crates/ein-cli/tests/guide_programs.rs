@@ -332,7 +332,7 @@ fn every_program_block_in_the_guide_runs() {
     assert!(
         report.findings.is_empty(),
         "{} guide block(s) that today's engine refuses or does not answer. Fix \
-         the page, never the engine (S1f.5.26):\n\n{}",
+         the page, never the engine:\n\n{}",
         report.findings.len(),
         report.findings.join("\n\n")
     );

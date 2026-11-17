@@ -34,8 +34,8 @@
 ;;;
 ;;;   states (k_s)     7: ∅, the three singletons and the three pairs;
 ;;;                    nothing is owed, so every alive node is in R
-;;;   maximal line     the three pairs: k = 3. Register row
-;;;                    W1/lattice-02-L; the region is Q-M1e2.7.
+;;;   maximal line     the three pairs: k = 3. Regression
+;;;                    lattice-02-L; the region is Q-M1e2.7.
 ;;;   minimal line     ∅, root itself
 ;;;   components       1; sub-cubes 3, each of dimension 2, one below
 ;;;                    each pair

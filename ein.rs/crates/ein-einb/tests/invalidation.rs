@@ -295,8 +295,8 @@ fn a_file_that_holds_an_integer_is_refused() {
     match ein_einb::open_bytes(&file, &mut terms, &OpenOptions::default()) {
         Err(e @ EinbError::Int) => assert_eq!(
             e.to_string(),
-            ".einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of \
-             digits is a name): save it again from its .ein"
+            ".einb holds an integer, which Ein does not have (a run of digits is a \
+             name, Q-M1e2.24): save it again from its .ein"
         ),
         Err(e) => panic!("a value tagged 0b01: refused for another reason: {e}"),
         Ok(_) => panic!("a value tagged 0b01: opened"),

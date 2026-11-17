@@ -1,5 +1,5 @@
 ;;; An obligation a node is told about that root was not — **W26**,
-;;; register row `W26/oblig-derived-activator` (`corpus/wrong_answers.toml`;
+;;; regression `oblig-derived-activator` (`corpus/regressions.toml`;
 ;;; Q-M1e.11). Its control is `oblig-derived-activator-declared.ein`, which
 ;;; states the activator.
 ;;;

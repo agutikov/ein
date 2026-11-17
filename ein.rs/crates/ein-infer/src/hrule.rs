@@ -181,9 +181,9 @@ impl Hrules {
                     // `NotAFact` — a malformed template yields no candidate.
                     // No template is a whole conclusion that is no fact: the
                     // loader refuses one a macro's expansion writes
-                    // (`W69/macro-bare-conclusion-hrule`). No template reads
+                    // (`macro-bare-conclusion-hrule`). No template reads
                     // a variable nothing binds: the loader refuses one no
-                    // premise or parameter binds (`W57/hrule-assert-var`).
+                    // premise or parameter binds (`hrule-assert-var`).
                     // Either would propose nothing, in silence. An
                     // `Overflow` is not that,
                     // but it is unreachable here for the same reason it is

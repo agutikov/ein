@@ -5,8 +5,9 @@
 
 It is the **second route** the library
 oracle (`ein oracle --dump`, `ein_infer::region`) is checked against:
-`ein-cli/tests/region_dump.rs` runs both on Q-M1e2.7's seven programs and
-compares them node for node. `--json` is the form that test reads.
+`utils/check_region_routes.py`, a step of the gate, runs both on Q-M1e2.7's
+seven programs and three more and compares them node for node. `--json` is
+the form it reads.
 
 The lattice over n candidate facts is the n-cube: a node is an n-bit mask, an
 edge adds or removes one fact, and layer k is the masks with k bits set. Every

@@ -38,7 +38,7 @@ the referrer and its line:
 
 A bare path starts at a top-level directory of the repository
 (`docs/ein/README.md`), or at a crate's directory, which the repo writes
-short for `ein.rs/crates/<crate>/` (`ein-cli/tests/gate_steps.rs`), and names
+short for `ein.rs/crates/<crate>/` (`ein-cli/tests/corpus_cli.rs`), and names
 a file with an extension or a directory with a trailing `/`: `tests/stdlib/
 typing/03` is a prefix, not a path, and `ein-corpus/2` a schema. A path with
 `*`, `<` or `{` in it is a pattern and is not read; a missing one git would
@@ -542,12 +542,7 @@ RANGE_BEFORE = re.compile(r"Q\d+`?\s*[–-]\s*`?$")
 #: golden: the stage that re-aims the engine's own ids (P1f.20's finding L-12)
 #: removes the row with the golden's re-bank. A row whose id its file no longer
 #: cites is a finding, so the list cannot outlive what it excuses.
-DECISION_IDS_ALLOWED = {
-    ("ein.rs/crates/ein-infer/src/naf_deps.rs", "Q-M1e.9"): (
-        "the refutation-under-absent warning's text, which the shape golden's `naf` op "
-        "digests (ein-render/tests/golden/corpus_shapes.md5); the decision is Q-M1e2.5's"
-    ),
-}
+DECISION_IDS_ALLOWED: dict[tuple[str, str], str] = {}
 
 #: Rust: a char literal (so that `'"'` opens no string), and a raw string's
 #: opening, `r"`, `r#"`, `br#"`.
@@ -779,7 +774,7 @@ def main() -> int:
     if args.only:
         pages = [p for p in pages if args.only in str(p)]
     # The decision half reads the project's files, which `-k` may narrow to
-    # some the link half does not read (`corpus/wrong_answers.toml`).
+    # some the link half does not read (`corpus/regressions.toml`).
     cited: list[Path] = []
     if args.links and args.tracked:
         cited = project_referrers()

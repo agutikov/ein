@@ -1,5 +1,5 @@
 ;;; A range in a rule's `:match` matches nothing, in silence — **W20**,
-;;; register row `W20/range-in-match` (`corpus/wrong_answers.toml`); Ein has
+;;; regression `range-in-match` (`corpus/regressions.toml`); Ein has
 ;;; no ranges (Q-M1e2.24).
 ;;;
 ;;;

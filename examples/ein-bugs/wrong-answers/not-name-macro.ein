@@ -1,5 +1,5 @@
 ;;; A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)` —
-;;; **W84**, register row `W84/not-name-macro`.
+;;; **W84**, regression `not-name-macro`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

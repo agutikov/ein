@@ -2,11 +2,11 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # seven static checks, the tests, their scratch check, the review-bundle smoke, the bench smoke
+#     ./run_tests.sh                 # nine static checks, the tests, their scratch check, the generated files' and the region routes' checks, the review-bundle smoke, the bench smoke
 #     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1: every corpus program) and 8 id seeds
 #     ./run_tests.sh --nightly       # instead of the gate: every step of .github/workflows/nightly.yml, in order
 #     ./run_tests.sh --dev-host      # instead of the gate: the nightly's steps at full budget, and the steps CI no longer runs
-#     ./run_tests.sh --tests-only    # cargo test, its scratch check and the review-bundle smoke — no static checks, no bench smoke
+#     ./run_tests.sh --tests-only    # cargo test, its scratch check, the generated files', the region routes' and the review-bundle smoke — no static checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **The gate needs Graphviz on `PATH`**: `ein-render/tests/dot_wellformed.rs`
@@ -53,11 +53,12 @@
 # findings it could not see. A local gate that is a subset of the remote one
 # is a local gate that lies.
 #
-# **Since M1e S1e.3.4 a test says so** — `ein-cli/tests/gate_steps.rs`, which
-# reads both files and diffs the commands. What it takes to be a step here is
+# **A check says so** — `utils/check_gate_steps.py`, a static step of this
+# gate, which reads both files and diffs the commands (a crate test did until
+# the project stopped reading the process). What it takes to be a step here is
 # a `step "…"` banner: the command it announces is the next statement, so
 # adding a step to this script is adding it to the list. On the workflow side
-# it is a `# gate-step` marker, and an unmarked `run:` the test does not
+# it is a `# gate-step` marker, and an unmarked `run:` the check does not
 # recognise fails it — the drift that matters is CI gaining a step this script
 # does not have.
 #
@@ -73,6 +74,11 @@
 #                                 `corpus.toml` too
 #   check_release_voice.py        its own docstring's examples, the first time
 #                                 it ran; the rest of the tree is its baseline
+#   check_gate_steps.py           this script's three step lists against the
+#                                 two workflows
+#   check_tool_mirrors.py         the editor grammar, the natural-language
+#                                 census and the review driver against the
+#                                 lists of the engine they copy
 #   cargo fmt --all --check       three files were unformatted the first time
 #                                 it ran, all three from M1c's `:expect` work
 #   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four
@@ -85,10 +91,10 @@
 #                                 in the workflow too
 #
 # They cost about a second each warm, they run before the tests because their
-# failures are the cheapest ones to read, and `--tests-only` turns all seven off
+# failures are the cheapest ones to read, and `--tests-only` turns all nine off
 # — and the bench smoke below with them, which is what
-# `gate_steps::what_tests_only_skips_is_what_the_script_guards` reads out of
-# this script rather than out of this sentence. Nothing turns them off
+# `utils/check_gate_steps.py` reads out of this script rather than out of this
+# sentence. Nothing turns them off
 # silently — a missing `rustfmt`, `clippy` or `python3` is exit 127 here, the
 # same as a missing `cargo` or `dot`.
 #
@@ -100,8 +106,8 @@
 # run before a push. Nothing local ran those steps before, and the nightly failed on every
 # run from 2026-10-17 to 2026-11-03 while this gate stayed green. It takes no
 # other argument and runs none of the gate's steps. A step is the statement
-# after a `nightly_step "…"` banner, and `ein-cli/tests/nightly_steps.rs`
-# diffs that list against the workflow's, as `gate_steps.rs` does the gate's.
+# after a `nightly_step "…"` banner, and `utils/check_gate_steps.py` diffs
+# that list against the workflow's, as it does the gate's.
 # Its test steps run under their own `build/gate-tmp-<pid>`, checked as the
 # gate's is. **What the nightly holds is a rule** (M1f S1f.5.27, the user's
 # ruling of 2026-11-10, Q-M1f.102): a step that guards an answer or a contract
@@ -126,10 +132,10 @@
 # (`utils/ci_container.sh --dev-host`). It takes no other argument, runs from
 # the repo root, and its test steps run under a checked
 # `build/gate-tmp-<pid>`, as `--nightly`'s do. A step is the statement after
-# a `dev_host_step "…"` banner, and `nightly_steps.rs` holds the list to the
-# nightly's: every nightly step is in it, in order, at the dev host's
-# budget, and every other step is one its `DEV_HOST_ONLY` names with why, so
-# a step that leaves the nightly and is not named there fails a test.
+# a `dev_host_step "…"` banner, and `utils/check_gate_steps.py` holds the
+# list to the nightly's: every nightly step is in it, in order, at the dev
+# host's budget, and every other step is one its `DEV_HOST_ONLY` names with
+# why, so a step that leaves the nightly and is not named there fails it.
 # One thing differs from a fresh checkout: the bundle step writes
 # `build/review/` over what an earlier run left there, case by case, and the
 # link check after it reads the whole directory, so a gallery that
@@ -214,8 +220,8 @@ step() {
 
 # `--nightly` (the header's paragraph): nightly.yml's steps and nothing else,
 # then exit. `nightly_step` is defined on one line on purpose:
-# `gate_steps.rs` reads every line that *starts* `step "` as one of the gate's
-# banners, and a body line `step "$@"` would be one.
+# `utils/check_gate_steps.py` reads every line that *starts* `step "` as one
+# of the gate's banners, and a body line `step "$@"` would be one.
 nightly_step() { step "$@"; }
 
 if [[ "${NIGHTLY}" == 1 ]]; then
@@ -769,6 +775,16 @@ if [[ "${CHECKS}" == 1 ]]; then
     step "utils/check_release_voice.py"
     python3 "${SCRIPT_DIR}/utils/check_release_voice.py"
 
+    # The gate's, the nightly's and the dev host's step lists against the two
+    # workflows, and what `--tests-only` skips against this guard.
+    step "utils/check_gate_steps.py"
+    python3 "${SCRIPT_DIR}/utils/check_gate_steps.py"
+
+    # The process tools that copy a list of the engine's (the editor grammar,
+    # the natural-language census, the review driver) against the engine.
+    step "utils/check_tool_mirrors.py"
+    python3 "${SCRIPT_DIR}/utils/check_tool_mirrors.py"
+
     step "cargo fmt --all --check"
     if ! cargo fmt --manifest-path "${MANIFEST}" --all --check; then
         echo >&2
@@ -818,6 +834,27 @@ TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" --profile gate --w
 # exit 1 if there is anything. Reached only after a green `cargo test`.
 step "utils/check_test_scratch.py"
 python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+# Every generated project file is what its generator writes, the read-out
+# examples page among them, written from the binary the tests just ran. Not a
+# static check: it runs the binary, and `--tests-only` keeps it, as the tests
+# that ran these checks did.
+step "utils/check_generated.py"
+python3 "${SCRIPT_DIR}/utils/check_generated.py" --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+# The oracle's region against the per-subset route on ten programs, and 300
+# random regions written as programs and read back, with the binary the tests
+# ran.
+step "utils/check_region_routes.py"
+python3 "${SCRIPT_DIR}/utils/check_region_routes.py" --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+# The open wrong answers, `plans/wrong_answers/register.toml`: the register's
+# own keys, then the project's runner on the file (`ein-cli`'s example
+# `held_answers --open`), each row's run through the binary and its region
+# through the library, so a row whose answer changes fails here. Not behind
+# the `--tests-only` guard: it runs the engine.
+step "utils/wrong_answers.py"
+python3 "${SCRIPT_DIR}/utils/wrong_answers.py"
 
 # M1e2 S1e2.1.6 — the review bundle for one small register case, built into a
 # temporary directory with the gate profile's `ein` the step above just tested

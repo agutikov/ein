@@ -1,5 +1,5 @@
 ;;; A fact's nested argument splits a name that starts with `neq` — **W22**,
-;;; register row `W22/kw-neq-in-fact` (`corpus/wrong_answers.toml`): a reserved
+;;; regression `kw-neq-in-fact` (`corpus/regressions.toml`): a reserved
 ;;; word is a keyword only as a whole token (Q-M1e2.17).
 ;;;
 ;;;

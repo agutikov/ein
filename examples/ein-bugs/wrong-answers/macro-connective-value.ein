@@ -1,6 +1,6 @@
 ;;; A macro whose body writes a conjunction as an argument, called as a
 ;;; conclusion: the rule fires and stores `(q (and (p k)))` —
-;;; **W68**, register row `W68/macro-connective-value`.
+;;; **W68**, regression `macro-connective-value`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

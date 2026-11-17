@@ -1,6 +1,6 @@
 ;;; The same `(not (and …))` in an obligation: the obligation pass matches it,
 ;;; and the state owes —
-;;; **W67**, register row `W67/macro-not-conjunction-obligation`.
+;;; **W67**, regression `macro-not-conjunction-obligation`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

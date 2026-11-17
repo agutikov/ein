@@ -1,5 +1,5 @@
 ;;; `open` written in a `(solve …)` form's relation list loads, as a relation —
-;;; **W71**, register row `W71/solve-list`.
+;;; **W71**, regression `solve-list`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

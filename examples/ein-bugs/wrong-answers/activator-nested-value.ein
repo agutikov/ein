@@ -1,6 +1,6 @@
 ;;; An activator that binds a value parameter to a nested fact leaves the
-;;; parameter unbound — **W33**, register row `W33/activator-nested-value`
-;;; (`corpus/wrong_answers.toml`).
+;;; parameter unbound — **W33**, regression `activator-nested-value`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

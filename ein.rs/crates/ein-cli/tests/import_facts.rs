@@ -7,7 +7,7 @@
 //!
 //! What an import brings, form for form, is `ein-ir`'s
 //! `imports_semantics.rs`. This file holds the other half of the acceptance,
-//! *on every command that loads a program*: each register witness, given a
+//! *on every command that loads a program*: each regression witness, given a
 //! claim, answers on every command what its **twin** answers, the same
 //! program with the module written in place of the import, under the names
 //! the program prints, and its saved container answers what the file does.
@@ -98,7 +98,7 @@ fn comparable(text: &str, path: &str) -> String {
     out.join("\n")
 }
 
-/// A register witness of W88: its file, its module, the names its import
+/// A regression witness of W88: its file, its module, the names its import
 /// lists, the claim its goal's rows make.
 struct Witness {
     file: &'static str,

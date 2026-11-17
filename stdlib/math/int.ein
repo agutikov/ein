@@ -33,7 +33,7 @@
 ;;; An integer is `(int P N)`: two natural numbers of `std.math.decimal-arith`, and its
 ;;; value is P less N: a number of two parts, a positive and a negative, which
 ;;; can be simplified until one of them is zero, and no rule looks at a sign
-;;; (Q-M1f.176).
+;;; (Q-M1f.352, Q-M1f.176).
 ;;;
 ;;;     7        (int (n z 7) z)
 ;;;     -7       (int z (n z 7))

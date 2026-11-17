@@ -77,9 +77,9 @@
 ;; ── negative-completion (d=0) ─────────────────────────────────────────────────
 ;; A functional R: a positive (R a b) excludes every other b′ of b's type — the
 ;; dual shape of std.algebra's `functional` CHECK, asserting the (not …) facts the
-;; human trace walks. Priority 240: after propagation (200), before the violation
-;; checks (250) and elimination (400), so the derived negatives reach the
-;; eliminations' `forall` premises in the same pass.
+;; human trace walks. A stored negation is in the agenda's first half
+;; (Q-M1f.313); either way the negatives are in the closure before the
+;; eliminations' `forall` premises, judged at the boundary, read them.
 (rule functional-negative (?R ?isa)
   :match  (and (?R ?a ?b)
                (relation ?R ?A ?B)
@@ -125,8 +125,8 @@
 
 ;; ── arg typecheck against the transitive hierarchy ────────────────────────────
 ;; A fact whose arg-0 / arg-1 is not an `?isa`-member of the declared domain /
-;; range is ⊥. Priority 220 so the NAF evaluates after the puzzle's transitive
-;; closure (priority 200) has saturated the `?isa` (= is-a*) relation.
+;; range is ⊥. The `absent` is judged at the boundary, on the closure's fixpoint,
+;; so the puzzle's transitive `?isa` (= is-a*) relation is whole before it.
 (rule typecheck-arg-0 (?R ?isa ?Dom)
   :match  (and (?R ?a ?b) (absent (?isa ?a ?Dom)))
   :assert (false)

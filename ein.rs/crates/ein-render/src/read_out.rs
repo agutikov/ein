@@ -1114,7 +1114,7 @@ pub fn state_text(st: &State) -> String {
 /// paths.
 pub fn warning_line(m: &Monotonicity, w: Option<&Warning>, root_dead: bool) -> String {
     let mut s = format!(
-        "not monotone: {} · every node a fork of root{}; what a node is here is open (F21)",
+        "not monotone: {} · every node a fork of root{}; what a node is here is not decided (Q-M1e2.2)",
         plural(m.sites.len() as u64, "site", "sites"),
         if root_dead {
             ", so a dead root kills every node (L0)"

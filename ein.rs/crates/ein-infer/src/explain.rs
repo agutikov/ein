@@ -36,7 +36,7 @@
 //!   derivation a target needs can be its own fact's worst, and no list of
 //!   fixed length keeps every such one:
 //!   `examples/ein-bugs/wrong-answers/alt-cap-shared.ein` reports 3 facts
-//!   where every derivation gives 2 (`W10/alt-cap-shared`): no search
+//!   where every derivation gives 2, a known gap: no search
 //!   re-derives what a full list refused. [`Explanation::exhausted`] does
 //!   not see it.
 //! - **`:record-alternative-justifications false` records no alternative**,
@@ -365,7 +365,7 @@ pub struct Explanation {
     /// smallest-closure arrival kept beside it, and this flag does not see
     /// it: where a saving between two facts sits behind a full list,
     /// `exhausted = true` beside a core larger than the smallest over every
-    /// derivation (`W10/alt-cap-shared`; see the module note).
+    /// derivation (`alt-cap-shared.ein`; see the module note).
     pub exhausted: bool,
     /// Which caps the search stopped at; `exhausted == !cut.any()`.
     pub cut: Cut,

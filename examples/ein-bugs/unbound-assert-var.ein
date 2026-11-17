@@ -31,7 +31,7 @@
 ;;; (`ein saturate`'s; `ein solve` printed the message alone). The engine
 ;;; called it an *invariant violation*, the matcher being supposed to
 ;;; guarantee no unbound var reaches a template, and the loader never checked
-;;; it. The register's `W57/assert-var-stops` is the same stop without the
+;;; it. The regression `assert-var-stops` is the same stop without the
 ;;; disjunction, and its three siblings the ways the engine answered instead.
 
 (r0 o2 o1)

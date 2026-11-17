@@ -1,7 +1,7 @@
 //! Describe's two routes measured against each other: `price_list
 //! --describe-routes`.
 //!
-//! For every corpus program and register witness that searches, whose static
+//! For every corpus program and regression witness that searches, whose static
 //! check calls it monotone and whose root is alive, describe and `--count`
 //! are each asked twice at the default budget, as `ein solve` asks them:
 //! with `--describe-route tree`, the default, which takes the tree and the
@@ -327,10 +327,8 @@ pub fn run(args: Vec<String>) {
     }
     if files.is_empty() {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

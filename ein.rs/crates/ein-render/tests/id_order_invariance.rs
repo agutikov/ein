@@ -669,7 +669,7 @@ enum Moved {
 /// the cut decides — and the cut is `ein-narration`'s, applied here between two
 /// runs that differ only in their id space. See the module note.
 ///
-/// One function because two tests ask it: the sweep, and the register's
+/// One function because two tests ask it: the sweep, and the regressions'
 /// id-order rows, which must count as moved exactly what the sweep would
 /// report.
 fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
@@ -738,27 +738,24 @@ const SEARCHES: [(&str, bool); 5] = [
     ("examples/broken/bare_top_level_atom.ein", false),
 ];
 
-/// **The register's id-order rows**, whose wrong answer was visible only
-/// under a permuted interner (W11).
+/// **The regressions' id-order rows**, whose wrong answer was visible only
+/// under a permuted interner.
 ///
-/// `corpus/wrong_answers.toml` is otherwise held by
-/// `ein-cli/tests/wrong_answers.rs`, through the binary; a permutation is not
-/// something the binary can be asked for, so a row carrying `wrong.id_order`
-/// has its second half here, where the permutation is. The op the row names
-/// is the record of what moved, and what is run is the row's `[case.now]`
-/// question at the same seed: its read-out, and every core the run reports
-/// (`corpus_ops::core_ops`), the core of a member of `N` being one the
-/// read-out does not print. A **fixed** row's must not
-/// move by the cut the sweep applies, and an **open** one's must still. The
-/// witnesses are under `corpus/fuzz_findings/` while a row is open, for the
-/// reason this file is: as corpus entries they would fail the sweep above.
+/// `corpus/regressions.toml` is otherwise held by
+/// `ein-cli/tests/regressions.rs`, through the binary; a permutation is not
+/// something the binary can be asked for, so a row carrying `id_order` has its
+/// second half here, where the permutation is. What is run is the row's
+/// `[case.now]` question at the row's seed: its read-out, and every core the
+/// run reports (`corpus_ops::core_ops`), the core of a member of `N` being one
+/// the read-out does not print. It must not move by the cut the sweep
+/// applies.
 #[test]
-fn the_register_s_id_order_rows_answer_what_they_record() {
+fn the_regressions_id_order_rows_do_not_move() {
     let ops = ops();
     let mut checked = 0usize;
     let mut bad = Vec::new();
-    for row in ein_corpus::register().case {
-        let Some(id) = &row.wrong.id_order else {
+    for row in ein_corpus::regressions().case {
+        let Some(id) = &row.id_order else {
             continue;
         };
         let mode = match row.now.line.as_str() {
@@ -766,7 +763,6 @@ fn the_register_s_id_order_rows_answer_what_they_record() {
             line => line,
         };
         let path = repo_root().join(&row.witness);
-        let mut moved = None;
         for name in [format!("read-out[{mode}]"), format!("cores[{mode}]")] {
             let op = *ops
                 .iter()
@@ -778,25 +774,22 @@ fn the_register_s_id_order_rows_answer_what_they_record() {
             let mut terms = permuted(&base_terms, id.seed);
             let got = run(&mut terms, &path, op)
                 .unwrap_or_else(|| panic!("{}: [{op}] refused the permuted run", row.id));
-            if moved.is_none() && matches!(moved_by_the_cut(op, &base, &got), Moved::Answer(..)) {
-                moved = Some((op, first_difference(&base, &got)));
+            if matches!(moved_by_the_cut(op, &base, &got), Moved::Answer(..)) {
+                bad.push(format!(
+                    "{}: [{op}] seed {} moves:\n{}",
+                    row.id,
+                    id.seed,
+                    first_difference(&base, &got)
+                ));
+                break;
             }
         }
         checked += 1;
-        match (row.status.as_str(), moved) {
-            ("open" | "not-wrong", None) => bad.push(format!(
-                "{}: [read-out[{mode}]] and [cores[{mode}]] seed {} no longer move — an OPEN \
-                 case changed answer; the row moves in the same commit",
-                row.id, id.seed
-            )),
-            ("fixed", Some((op, diff))) => bad.push(format!(
-                "{}: [{op}] seed {} is FIXED and moves:\n{diff}",
-                row.id, id.seed
-            )),
-            _ => {}
-        }
     }
-    assert!(checked > 0, "the register has no id-order rows to check");
+    assert!(
+        checked > 0,
+        "the regressions have no id-order rows to check"
+    );
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
