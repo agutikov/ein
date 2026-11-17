@@ -127,6 +127,49 @@ the readings below are the stage's, and a default among them is marked.
     premises (what the answer rests on, and what holds each) is split, the premise and its argument to
     `reasoning/`, what enforces it to `ein.rs/`. The user's to reverse.
 
+## The second notes: `reasoning/01-static-ir/` (2026-11-17)
+
+After the lanes merged and the user accepted the review, the user read `reasoning/01-static-ir/` and wrote,
+verbatim (the close of M1f, started on the acceptance, is paused on the user's word until this is done):
+
+> review docs/ein/reasoning/01-static-ir
+>
+> the very first diagram in docs/ein/reasoning/01-static-ir/01-names-and-atoms.md is already not correct
+>
+> maybe we don't need to split names,atoms,relations,facts,values into multiple files?
+>
+> docs/ein/reasoning/01-static-ir/03-values-and-order.md already tell about rules, but rules introduced in
+> docs/ein/reasoning/01-static-ir/04-rules-as-statements.md
+>
+> docs/ein/reasoning/01-static-ir/03-values-and-order.md already talks about candidates, but hypothesis are
+> introdyced in docs/ein/reasoning/02-kb-evolution
+>
+> we probably need only 2 files in docs/ein/reasoning/01-static-ir
+>
+> first describes knowledge base of facts of relations
+> starting from Levi-bipartite hypergraph representation
+> and then given already some graph, name what is where: named objects, relations, facts
+> then their properties - identity, order, and other
+>
+> second is about the graph rewriting rules
+> same facts structures in :match and :assert but with variable names
+> pattern matching
+> first - we do graph rewriting and then how it is declared
+>
+> we don't talk here about rules firings
+> e.g. "state only grows" belongs to docs/ein/reasoning/02-kb-evolution
+
+**How they are read.** `01-static-ir/` becomes two pages: the knowledge base, and the rewriting rules. The first
+starts from the graph, the Levi-bipartite hypergraph, and only then names what is where in it (named objects,
+relations, facts) and gives their properties (identity, order, the rest). The second starts from rewriting a graph
+(the same fact structures with variables, matching a pattern) and only then says how a rule is declared. Nothing in
+the part speaks of a firing, of how a state grows, or of a candidate: that is `02-kb-evolution/`'s, and what the
+four pages said of it moves there. No page uses a notion before the page that introduces it. **The first diagram**:
+it is the engine's `--levi` drawing, which labels a fact's node with its relation and draws no node for the
+relation, so `left-of` stands on two nodes and is one name; in the canonical Levi form every name is one node, a
+relation among them, and a fact's node has an edge to its relation beside the numbered edges to its arguments
+(the stage's reading, from the form the knowledge base was first documented in; the user's to correct).
+
 ## Parts
 
 - **A. The names and the check** (one lane, first, on master): the decisions; `utils/check_doc_blocks.py`, a gate
