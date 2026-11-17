@@ -60,4 +60,4 @@ one with an answer: where Ein postpones something, the decision says what it doe
 | [`stdlib/math/num9/`](stdlib/math/num9/README.md) | `std.math.num9` |
 | [`stdlib/bool/`](stdlib/bool/README.md) | `std.bool.*`: the sixteen functions, their properties, circuits |
 | [`corpus/`](corpus/README.md) | the corpus and its tests: the manifest, fixtures, examples, the test harnesses, regression tests |
-| [`docs/`](docs/README.md) | the documentation: what a page may state and cite, and how a claim is warranted |
+| [`docs/`](docs/README.md) | the documentation: what a page may state and cite, how a claim is warranted, how the pages are named and what each is written in |
