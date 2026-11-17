@@ -14,37 +14,52 @@ each side of the line.
 A program is a finite sequence of forms, and each form is of one of two kinds, decided by its first word:
 
 $$
-\text{Form} = \text{Decl} \;\sqcup\; F, \qquad \text{a form headed by } w \text{ is a declaration} \iff w \in W_{\!d}
+\begin{aligned}
+\text{Form} &= \text{Decl} \;\sqcup\; F \\
+\text{a form headed by } w \text{ is a declaration} &\iff w \in W_{\!d}
+\end{aligned}
 $$
 
 where $W_{\!d} \subset W$ is the closed set of words that head a declaration: of a relation, a rule, a hypothesis
 rule, a macro, an import, and of a program's questions
 ([the reserved names](../../user/04-reference/03-reserved-names.md) lists them). **Every other form is a fact.**
+The two kinds are told apart as forms, by the first word: what reading makes of a relation's declaration is
+again facts, of the relation $\mathsf{relation}$ (§ 2).
 Each kind of form takes a closed list of clauses, a fact takes only the clauses that say where it came from
 ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)), and a clause is
 only ever a form's own, never part of an object
 ([Q-M1f.14](../../../decisions/engine/Q-M1f.14-a-keyword-pair-is-only-ever-a-forms-clause.md)).
 
-So there is no schema sub-language to describe Ein with. A form that tried to give a fact named slots would be a
-fact with a clause a fact does not take, which is no form. To describe Ein in Ein there are exactly **the
-declarations** and **facts over relations a program names**, and they are enough for three of the four levels.
+So there is no schema sub-language to describe Ein with. A form that tried to give a fact named argument places
+would be a fact with a clause a fact does not take, which is no form. To describe Ein in Ein there are exactly
+**the declarations** and **facts of the relations a program names**, and they are enough for three of the four
+levels.
 
 ## 2. The four levels, stated in Ein
 
-### The things named: the kinds are names in a membership relation
+### The things named: the kinds are atoms, and membership is facts
 
-Ein has no form that declares an atom. A thing a program names is any atom that fills an argument place, and *this is one of
-those* is a fact of a membership relation the program declares like any other
-([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). Ein's own kinds are then
-four names under a common top, as every node of the knowledge base is an object of one graph:
+Ein has no form that declares an atom. A thing a program names is any atom under an argument arrow, and *this is
+one of those* is a fact of a membership relation the program declares like any other
+([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). A program can so name
+Ein's own kinds: four atoms under a common top, each a member by a fact of that relation:
 
 $$
-\operatorname{is-a}(\mathsf{Object}, \mathsf{T}), \qquad \operatorname{is-a}(\mathsf{Relation}, \mathsf{Object}), \qquad \operatorname{is-a}(\mathsf{Fact}, \mathsf{Object}), \qquad \operatorname{is-a}(\mathsf{Rule}, \mathsf{Object})
+\begin{aligned}
+&\operatorname{is-a}(\mathsf{Object}, \mathsf{T}) \\
+&\operatorname{is-a}(\mathsf{Relation}, \mathsf{Object}) \\
+&\operatorname{is-a}(\mathsf{Fact}, \mathsf{Object}) \\
+&\operatorname{is-a}(\mathsf{Rule}, \mathsf{Object})
+\end{aligned}
 $$
+
+The four are the program's atoms, and mean what its rules make of them. $\mathsf{Object}$ is the program's top
+kind, with $\mathsf{Rule}$ under it; on these pages an object is a node of the graph, and a rule is none (§ 4).
 
 ### The homoiconic line
 
-The membership relation is a declared relation and not a reserved word, so a program may say that it is one:
+The membership relation is a declared relation and no reserved atom, so a program may state a fact about it,
+that it is a relation:
 
 $$
 \operatorname{is-a}(\operatorname{is-a}, \mathsf{Relation})
@@ -54,37 +69,44 @@ Let $\operatorname{is-a}^{*}$ be a second relation, and let the program state tw
 rule of the standard library's relation algebra (§ 3):
 $\operatorname{includes}(\operatorname{is-a}, \operatorname{is-a}^{*})$ and
 $\operatorname{transitive}(\operatorname{is-a}^{*})$. Then the membership relation is, by the program's own
-rules, a member of $\mathsf{Object}$:
+rules, a member of $\mathsf{Object}$. With $m_1$ and $m_2$ two of the membership facts written, the derivation
+is three firings:
 
 $$
-\dfrac{
-  \dfrac{\operatorname{is-a}(\operatorname{is-a}, \mathsf{Relation})}{\operatorname{is-a}^{*}(\operatorname{is-a}, \mathsf{Relation})}\ \text{includes}
-  \qquad
-  \dfrac{\operatorname{is-a}(\mathsf{Relation}, \mathsf{Object})}{\operatorname{is-a}^{*}(\mathsf{Relation}, \mathsf{Object})}\ \text{includes}
-}{
-  \operatorname{is-a}^{*}(\operatorname{is-a}, \mathsf{Object})
-}\ \text{transitive}
+\begin{aligned}
+m_1 &= \operatorname{is-a}(\operatorname{is-a}, \mathsf{Relation}) \\
+m_2 &= \operatorname{is-a}(\mathsf{Relation}, \mathsf{Object}) \\
+e_1 &= \operatorname{is-a}^{*}(\operatorname{is-a}, \mathsf{Relation}) && \text{by includes, from } m_1 \\
+e_2 &= \operatorname{is-a}^{*}(\mathsf{Relation}, \mathsf{Object}) && \text{by includes, from } m_2 \\
+e_3 &= \operatorname{is-a}^{*}(\operatorname{is-a}, \mathsf{Object}) && \text{by transitive, from } e_1, e_2
+\end{aligned}
 $$
 
 That is the fixed point of Ein's model, *an instance is an instance of instance*, reached with two membership
-facts, two property facts and two rules, and it is inference about Ein performed by Ein. The saturated state, with the two
-declarations' facts kept:
+facts, two property facts and two rules, and it is inference about Ein performed by Ein. The saturated state,
+with the two declarations' facts kept:
 
 ![The saturated state in which instance is an instance of instance](diagrams/01-instance-of-instance.svg)
 
-The node of the membership relation appears three ways in one drawing: as the first argument of the fact its
-declaration is held as (the octagon's arrow numbered 1), as the label of the dashed arrows with an empty head,
-and as an oval with such an arrow of its own to $\mathsf{Relation}$. The pink arrows are the derived facts; the
-one from the membership relation to $\mathsf{Object}$ is the conclusion of the derivation above.
+The drawing is with labelled arrows
+([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)), and the membership
+relation appears in it three ways: as the first argument of the fact its declaration is (the octagon's arrow
+numbered 1), as the label of the dashed arrows with an empty head, which are its facts, and as an oval, the
+atom, with such an arrow of its own to $\mathsf{Relation}$. The pink arrows are the derived facts; the one from
+the membership relation to $\mathsf{Object}$ is $e_3$, the conclusion of the derivation above.
 
 ### Facts, relations, properties and rules
 
-| level | what it is | as a formula |
+The levels above the things named are those of
+[the rules](../01-static-ir/02-rewriting-rules.md#the-four-levels-a-knowledge-base-describes-itself-in), each
+with one thing of the three-house example at it:
+
+| level | what is there | as a formula |
 |---|---|---|
-| a fact | a relation applied to objects | $\operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2})$ |
-| a relation | a name and its labels | $\operatorname{decl}(\operatorname{left-of};\ \mathsf{House}, \mathsf{House})$ |
-| a relation's property | a fact whose argument is the relation's name | $\operatorname{transitive}(\operatorname{left-of})$ |
-| a rule | parameters, a pattern and a conclusion | $\operatorname{transitive}[r]:\ r(a, b) \land r(b, c) \land a \ne c \implies r(a, c)$ |
+| a fact | an object with arrows: at its relation, then at its arguments | $\operatorname{left-of}(\mathsf{House\text{-}1}, \mathsf{House\text{-}2})$ |
+| a relation | an atom; its declaration is a fact that carries its labels | $\operatorname{decl}(\operatorname{left-of};\ \mathsf{House}, \mathsf{House})$ |
+| a relation's property | a fact whose argument is the relation | $\operatorname{transitive}(\operatorname{left-of})$ |
+| a rule | parameters, a pattern and a conclusion, under a name | $\operatorname{transitive}[r]:\ r(a, b) \land r(b, c) \land a \ne c \implies r(a, c)$ |
 
 How each is spelt is the user's pages on [facts](../../user/03-syntax-and-semantics/03-facts.md),
 [relations](../../user/03-syntax-and-semantics/02-relations.md),
@@ -93,25 +115,33 @@ How each is spelt is the user's pages on [facts](../../user/03-syntax-and-semant
 
 ### A declaration is a fact a rule can read
 
-Reading a program holds each declaration as facts of the relation $\operatorname{relation}$
-([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where)):
-
-$$
-\operatorname{decl}(r;\ T_1, \dots, T_n) \;\longmapsto\; \{\ \operatorname{relation}(r, T_1, \dots, T_n),\ \ \operatorname{relation}(r)\ \}
-$$
-
-A pattern matches a fact only of its own count of arguments, so
+A relation's declaration is a fact of the relation $\mathsf{relation}$,
+$\operatorname{decl}(r;\ T_1, \dots, T_n)$, and beside it the knowledge base holds the fact that says $r$ is
+declared whatever its count ([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where)). So
+where a program declares $r$ with the labels $T_1, \dots, T_n$:
 
 $$
 \begin{aligned}
-x\theta \text{ is declared with the two labels } y\theta,\ z\theta \ &\implies\ K \models \operatorname{relation}(x, y, z)\theta \\
-x\theta \text{ is declared, with any count} \ &\implies\ K \models \operatorname{relation}(x)\theta
+\operatorname{relation}(r, T_1, \dots, T_n) &\in K_0 \\
+\operatorname{relation}(r) &\in K_0
 \end{aligned}
 $$
 
-A pattern over $\operatorname{relation}$ is an ordinary premise, so **a relation is data the rules read**. Each
-line is an implication one way only: a rule may conclude a fact $\operatorname{relation}(\mathsf{a})$, which is a
-fact like any other and declares nothing. The relations of a program are fixed when it is read.
+A pattern matches a fact only of its own count of arguments. So where $r$ is declared with the two labels
+$T_1$ and $T_2$, and $\theta$ sends $x$, $y$ and $z$ to $r$, $T_1$ and $T_2$,
+
+$$
+\begin{aligned}
+K &\models \operatorname{relation}(x, y, z)\theta \\
+K &\models \operatorname{relation}(x)\theta
+\end{aligned}
+$$
+
+and the second holds where $r$ is declared with any count of labels. A pattern over $\mathsf{relation}$ is an
+ordinary premise, so **a relation is data the rules read**. Each line follows from a declaration, and neither
+implies one: a rule may conclude a fact $\operatorname{relation}(\mathsf{a})$, which a pattern reads as it
+reads any fact of $\mathsf{relation}$ and which declares nothing. The declared relations of a program are fixed
+when it is read.
 
 ## 3. What already describes itself
 
@@ -121,16 +151,21 @@ with $m^{*}$ the program's membership closure as a parameter:
 
 $$
 \begin{aligned}
-&\operatorname{converse}(r_1, r_2) \;\land\; \operatorname{relation}(r_1, D_1, E_1) \;\land\; \operatorname{relation}(r_2, D_2, E_2) \;\land\; E_1 \ne D_2 \\
-&\quad \land\; \operatorname{absent}(m^{*}(E_1, D_2)) \;\land\; \operatorname{absent}(m^{*}(D_2, E_1)) \;\implies\; \bot
+&\operatorname{converse}(r_1, r_2) \\
+&\land\ \operatorname{relation}(r_1, D_1, E_1) \land \operatorname{relation}(r_2, D_2, E_2) \\
+&\land\ E_1 \ne D_2 \\
+&\land\ \operatorname{absent}(m^{*}(E_1, D_2)) \land \operatorname{absent}(m^{*}(D_2, E_1)) \\
+&\implies\ \bot
 \end{aligned}
 $$
 
 and its rule of domain elimination reads a declaration's labels to know which atoms to range over
 ([the rules](../01-static-ir/02-rewriting-rules.md#structural)). The theory itself reads of a
-declaration only how many labels it has; it never reads a name as a type
-([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md)). What a program calls its
-type system is this: membership is a relation, and what a type check concludes, a rule concludes.
+declaration only how many labels it has; it never reads a label as a type, and Ein has none
+([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md),
+[Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). What a
+program calls its type system is this: membership is facts of a relation it declares, and what a type check
+concludes, a rule concludes.
 
 **The property algebra is Ein in Ein.** No property of a relation is a primitive. Each is a fact written beside
 a declaration, and its meaning is an ordinary rule the fact applies
@@ -155,19 +190,22 @@ them in:
 | $\operatorname{injective}(r)$ | $(a, c), (b, c) \in \operatorname{ext}_K(r) \land a \ne b \implies \bot \in K$ |
 
 Union, intersection, composition, converse and inclusion are one rule each over the one notion of a match, and
-the cardinality properties are rules that conclude $\bot$. The one kernel counterpart is the marker that closes a
-relation under the swap of its arguments, as the rule of symmetry does, without the rule
+the cardinality properties are rules that conclude $\bot$. The one kernel counterpart is the marker that closes the
+held extent of a relation under the swap of its arguments, as the rule of symmetry does, without the rule
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-reserved-atoms)).
 
-**The quantifiers are Ein in Ein.** The bounded universal and the undecided fact are not forms of the pattern
+**The quantifiers are Ein in Ein.** The bounded universal and the open fact
+([the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match)) are not forms of the pattern
 language. Each is a macro, a named pattern with parameters that is replaced by its body where it is written:
 
 $$
-\operatorname{forall}(x;\ \gamma,\ \beta) \;\longmapsto\; \operatorname{absent}\big(\gamma \land \operatorname{absent}(\beta)\big), \qquad\qquad
-\operatorname{unknown}(\alpha) \;\longmapsto\; \operatorname{absent}(\alpha) \land \operatorname{absent}(\lnot\alpha)
+\begin{aligned}
+\operatorname{forall}(x;\ G,\ B) &\mapsto \operatorname{absent}\big(G \land \operatorname{absent}(B)\big) \\
+\operatorname{unknown}(t) &\mapsto \operatorname{absent}(t) \land \operatorname{absent}(\lnot t)
+\end{aligned}
 $$
 
-The first is the classical equivalence $\forall x.\,(\gamma \rightarrow \beta) \equiv \lnot\exists x.\,(\gamma \land \lnot\beta)$
+The first is the classical equivalence $\forall x.\,(G \rightarrow B) \equiv \lnot\exists x.\,(G \land \lnot B)$
 with both negations read as absence. How a macro is written is
 [the user's page on macros](../../user/03-syntax-and-semantics/11-macros.md).
 
@@ -176,7 +214,11 @@ with both negations read as absence. How a macro is written is
 **Atoms, facts and relations reify; rules do not.** A pattern has a premise for each of the first three,
 
 $$
-r(a, b) \quad \text{a fact}, \qquad \operatorname{relation}(r, x, y) \quad \text{a declaration}, \qquad \operatorname{symmetric}(r) \quad \text{a property}
+\begin{aligned}
+&r(a, b) && \text{a fact} \\
+&\operatorname{relation}(r, x, y) && \text{a declaration} \\
+&\operatorname{symmetric}(r) && \text{a property}
+\end{aligned}
 $$
 
 and none for a rule. Three statements make the line exact. For every program $P$ and every state $K$ any
@@ -184,9 +226,9 @@ computation over it reaches:
 
 $$
 \begin{aligned}
-&\rho \notin K \quad \text{for every rule } \rho \in P && \text{a state holds facts, and a rule is no fact;} \\
-&K \models \varphi\theta \ \text{ depends on } K \text{ alone} && \text{no part of a pattern is satisfied by a member of } P; \\
-&\psi\theta \subseteq F && \text{a conclusion is facts, and a declaration is a form of the text.}
+&\forall \rho \in P.\ \ \rho \notin K && \text{a state holds facts, and a rule is no fact} \\
+&K \models \varphi\theta \text{ depends on } K \text{ alone} && \text{no rule satisfies part of a pattern} \\
+&\psi\theta \subseteq F && \text{a conclusion is facts, and a declaring form is of the text}
 \end{aligned}
 $$
 
@@ -206,8 +248,9 @@ four levels form a stack in which each level is read only by the levels above it
 The solid arrows are what a level reads or writes of the levels below it; the two dotted red arrows are the ones
 that are missing.
 
-The relation $\operatorname{relation}$ describes itself only in part. It is a reserved word that no declaration
-binds, so its own labels are nothing a program can declare; the facts $\operatorname{relation}(r)$ of § 2 are
+The relation $\mathsf{relation}$ describes itself only in part. It is a reserved atom whose name no declaration
+takes ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-reserved-atoms)), so its own labels are
+nothing a program can declare; the facts $\operatorname{relation}(r)$ of § 2 are
 its whole description in Ein.
 
 What lies past this line, rules that match or generate rules, is a change to the language and not a property of

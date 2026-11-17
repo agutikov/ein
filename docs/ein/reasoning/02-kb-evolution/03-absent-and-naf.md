@@ -19,9 +19,11 @@ How a program writes an absence, and the universal and the *unknown* test built 
 Saturation is split along negation ([saturation](02-saturation.md)):
 
 $$
-K_0' = \operatorname{pos}(K), \qquad
-K_{i+1}' = \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr), \qquad
-\operatorname{sat}(K) = K_m'
+\begin{aligned}
+K_0' &= \operatorname{pos}(K) \\
+K_{i+1}' &= \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr) \\
+\operatorname{sat}(K) &= K_m'
+\end{aligned}
 $$
 
 - **the closure** $\operatorname{pos}$ fires the purely positive part of every rule to quiescence and consults
@@ -49,36 +51,40 @@ in another.
 
 ## The definition
 
-**Boundary epistemic negation as failure.** For a candidate considered in a world at a **positive quiescence**
-$K = \operatorname{pos}(K)$, with bindings $\theta$:
-
-$$
-K \models \operatorname{absent}(G)\,\theta
-\;\iff\; \lnot \exists\, \theta' \supseteq \theta.\;\; K \models G\theta'
-\;\iff\; K \not\models \exists \bar x.\; G\theta
-$$
-
-where $\bar x$ are the variables of $G$ that $\theta$ leaves unbound. In words: no extension of the bindings
-makes the pattern match facts $K$ holds.
-
-**$\theta$ is the bindings as far as the premises written before the guard bind them.** Where a guard is written
-decides which question it asks:
+**Boundary epistemic negation as failure.** The condition $\operatorname{absent}(G)$ and what it holds under are
+those of [the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match). What this page fixes is
+the knowledge base it is read in: for a candidate considered in a world, a **positive quiescence**
+$K = \operatorname{pos}(K)$ of it, with the candidate's substitution $\theta$:
 
 $$
 \begin{aligned}
-\operatorname{absent}(p(x)) \land q(x) \quad &\text{asks} \quad \lnot \exists x.\; p(x) && \text{there is no } p \text{ at all} \\
-q(x) \land \operatorname{absent}(p(x)) \quad &\text{asks} \quad \lnot\, p(x\theta) && \text{there is no } p \text{ for this } x
+K \models \operatorname{absent}(G)\theta &\iff \lnot \exists \theta' \supseteq \theta.\ K \models G\theta' \\
+&\iff K \not\models \exists \bar x.\; G\theta
+\end{aligned}
+$$
+
+where $\bar x$ are the variables of $G$ that $\theta$ leaves free. In words: no extension of the substitution
+makes the pattern hold in $K$.
+
+**$\theta$ is the substitution as far as the parts written before the guard bind it**
+([the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match)). Where a guard is written decides
+which question it asks:
+
+$$
+\begin{aligned}
+\operatorname{absent}(p(x)) \land q(x) \ \ &\text{asks} \ \ \lnot \exists x.\; p(x) && \text{there is no fact of } p \text{ at all} \\
+q(x) \land \operatorname{absent}(p(x)) \ \ &\text{asks} \ \ \lnot\, p(x\theta) && \text{there is no fact of } p \text{ for this } x
 \end{aligned}
 $$
 
 Setting the guard aside until the boundary asks exactly the question it would have asked in place.
 
-**As a graph.** A rule with an absence is drawn with the absent pattern in a dashed cluster: the match is the
-solid part, found in the graph, and the cluster is a part that must not be found. The rule below gives a seated
-guest the soup unless the guest is allergic,
+**As a graph.** A rule with an absence is drawn with the absent pattern in a dashed cluster: the premises are
+the solid part, found in the graph, and the cluster is a part that must not be found. The rule below gives a
+seated guest the soup unless the guest is allergic,
 
 $$
-\operatorname{seats}(g, c) \;\land\; \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr) \;\implies\; \operatorname{meal}(g, \mathsf{Soup})
+\operatorname{seats}(g, c) \;\land\; \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr) \implies \operatorname{meal}(g, \mathsf{Soup})
 $$
 
 ![The rule soup-unless-allergic: its absence a dashed cluster](diagrams/03-rule-soup-unless-allergic.svg)
@@ -89,9 +95,10 @@ A fact of one argument is a loop on its argument; the dashed arrow is the fact t
 ![The saturated world: two guests seated, one allergic, the other given the soup](diagrams/03-soup-saturated.svg)
 
 $$
-K \models \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr)\lbrace g \mapsto \mathsf{Ann} \rbrace,
-\qquad
-K \not\models \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr)\lbrace g \mapsto \mathsf{Bob} \rbrace
+\begin{aligned}
+K &\models \operatorname{absent}(\operatorname{allergic}(g))\lbrace g \mapsto \mathsf{Ann} \rbrace \\
+K &\not\models \operatorname{absent}(\operatorname{allergic}(g))\lbrace g \mapsto \mathsf{Bob} \rbrace
+\end{aligned}
 $$
 
 Three consequences of the definition:
@@ -101,19 +108,24 @@ Three consequences of the definition:
   membership and derivability coincide. They do not coincide on what a later round of the boundary admits: a fact
   admitted through one guard is not in the world an earlier guard was judged in.
 - **A variable inside the guard is existential.** The guard is $\lnot\exists$ over the variables of its pattern
-  that nothing bound before it. A conjunction inside a guard is one existential, and the universal is this
-  existential negated twice:
+  that nothing bound before it. A conjunction inside a guard is one existential, and the universal
+  ([the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match)) is this existential negated
+  twice:
 
 $$
-\operatorname{absent}\bigl(g(x, y) \land h(y)\bigr) \;\equiv\; \lnot \exists y.\; g(x, y) \land h(y),
-\qquad
-\forall b.\; \bigl( G \to B \bigr) \;\equiv\; \operatorname{absent}\bigl( G \land \operatorname{absent}(B) \bigr)
+\begin{aligned}
+\operatorname{absent}\bigl(g(x, y) \land h(y)\bigr) \;&\equiv\; \lnot \exists y.\; g(x, y) \land h(y) \\
+\forall b.\; ( G \to B ) \;&\equiv\; \operatorname{absent}\bigl( G \land \operatorname{absent}(B) \bigr)
+\end{aligned}
 $$
 
 - **One question, one world.** A guard is asked of the world it is judged in and its answer is acted on at once,
   so it has no interval in which to go stale.
 
-A fact $f$ is **unknown** in $K$ when neither it nor its stored negation is held, which is two guards:
+A fact $f$ is open in $K$ when neither it nor its stored negation is held
+([the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither)), and the form
+that tests it, $\operatorname{unknown}$ ([the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match)),
+is two guards:
 
 $$
 \operatorname{unknown}(f) \;\equiv\; \operatorname{absent}(f) \;\land\; \operatorname{absent}(\lnot f)
@@ -148,13 +160,16 @@ solid arrows. The red dashed world is the one a batch admission would make.
 $K \subseteq K'$:
 
 $$
-G \text{ holds no absence:} \qquad K \not\models \operatorname{absent}(G)\theta \;\implies\; K' \not\models \operatorname{absent}(G)\theta
+\begin{aligned}
+K \not\models \operatorname{absent}(G)\theta &\implies K' \not\models \operatorname{absent}(G)\theta && \text{where } G \text{ holds no absence}
+\end{aligned}
 $$
 
 Such a guard is anti-monotone in the world: once its pattern matches it matches for ever, so a candidate it
 rejects can never pass and is dropped. A guard **with a nested absence**, a universal's, can turn from failing
 to passing as the world grows: adding a $B$ makes the inner absence fail and the outer one pass. Its candidate
-stays parked and is judged again at a later quiescence, where a relation the guard reads has grown.
+stays parked and is judged again at a later quiescence, where the held extent of a relation the guard reads
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) has grown.
 
 ## What follows
 
@@ -166,12 +181,13 @@ Each of these holds wherever it applies; this page is the shared reason.
   ([finding R](07-finding-r.md)).
 - **A derivation records the absences it rested on.** A firing admitted at the boundary records each question
   that had to fail, one pattern per guard with a position the question left free recorded as free, beside the
-  positive premises it read:
+  positive premises it read ([cores](09-cores.md#a-derivation-record) defines the record):
 
 $$
-\delta = \bigl( \rho,\ a,\ \theta,\ \operatorname{prem}(\delta),\ \operatorname{all}(\delta),\ \operatorname{abs}(\delta) \bigr),
-\qquad
-\operatorname{dep}(f) = \operatorname{prem}(\delta) \cup \operatorname{all}(\delta) \cup \operatorname{abs}(\delta)
+\begin{aligned}
+\delta &= (\rho, a, \theta, \operatorname{prem}(\delta), \operatorname{all}(\delta), \operatorname{abs}(\delta)) \\
+\operatorname{dep}(f) &= \operatorname{prem}(\delta) \cup \operatorname{all}(\delta) \cup \operatorname{abs}(\delta)
+\end{aligned}
 $$
 
   Negative dependence is so visible: what a fact depends on is its positive premises and those absences
@@ -181,9 +197,10 @@ $$
   a larger one is alive: under the rule $p(x) \land \operatorname{absent}(q(x)) \implies \bot$,
 
 $$
-\lnot\operatorname{dead}\bigl(\operatorname{sat}(\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace)\bigr)
-\qquad\text{and}\qquad
-\operatorname{dead}\bigl(\operatorname{sat}(\lbrace p(\mathsf{A}) \rbrace)\bigr)
+\begin{aligned}
+&\lnot\operatorname{dead}\bigl(\operatorname{sat}(\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace)\bigr) \\
+&\operatorname{dead}\bigl(\operatorname{sat}(\lbrace p(\mathsf{A}) \rbrace)\bigr)
+\end{aligned}
 $$
 
   A smallest explanation of a contradiction is therefore found among the derivations a world recorded, never by
@@ -191,14 +208,15 @@ $$
 - **An absence is world-relative.** The same ground question can answer one way in root and another in a node,
 
 $$
-\mathrm{root} \models \operatorname{absent}(G)\theta
-\qquad\text{and}\qquad
-\operatorname{st}(C) \not\models \operatorname{absent}(G)\theta ,
+\begin{aligned}
+\mathrm{root} &\models \operatorname{absent}(G)\theta \\
+\operatorname{st}(C) &\not\models \operatorname{absent}(G)\theta
+\end{aligned}
 $$
 
   so a guard's answer is never carried across worlds nor stored as a fact; a candidate a node inherits parked
   from root is judged again in the node's own world before it can be admitted. A fact root admitted through a
-  guard is, though, part of root's fixpoint, and every node holds it, $\operatorname{root} \subseteq
+  guard is, though, part of root's fixpoint, and every node holds it, $\mathrm{root} \subseteq
   \operatorname{st}(C)$; where a commitment can fill the absence that fact rested on, the node holds it beside
   the fact that denies its premise. That is the case in which a node's state depends on the path to it, and a
   program that can reach it is not monotone ([monotonicity](08-monotonicity.md),
@@ -220,22 +238,23 @@ $$
   stratification; it is read and answered, and the cycle is reported as a diagnostic
   ([stratification](#stratification)).
 
-**What the order of admission can decide.** Call a guard **settled by the closure** when no relation it reads
-is, or can be reached from, a relation that a rule carrying a guard concludes, in the graph of
-[§ Stratification](#stratification): every fact it could read is derived by positive candidates alone.
+**What the order of admission can decide.** Call a guard **settled by the closure** when no relation whose facts
+it reads is, or can be reached from, a relation of which a rule carrying a guard concludes a fact, in the graph
+of [§ Stratification](#stratification): every fact it could read is derived by positive candidates alone.
 
 **Proposition.** If every guard of $P$ is settled by the closure, $\operatorname{sat}(K)$ does not depend on the
 order rules are written in or admitted in.
 
-*Argument.* Let $Q$ be the relations the guards read. An admitted candidate adds facts of relations from which
-no relation of $Q$ can be reached, and the closure that follows adds only what is reachable from them; so every
-quiescence holds the same facts of $Q$, $K_i' \cap Q = K_0' \cap Q$, and a guard passes at one quiescence exactly
-when it passes at every other. Each guarded rule then acts as a positive rule under a fixed side condition, and
+*Argument.* Let $Q$ be the relations whose facts the guards read. An admitted candidate adds facts of relations
+from which no relation of $Q$ can be reached, and the closure that follows adds only what is reachable from
+them; so every quiescence holds the same facts of each relation of $Q$,
+$\operatorname{ext}_{K_i'}(q) = \operatorname{ext}_{K_0'}(q)$ for every $q \in Q$, and a guard passes at one
+quiescence exactly when it passes at every other. Each guarded rule then acts as a positive rule under a fixed side condition, and
 the fixpoint of positive rules does not depend on the order ([saturation](02-saturation.md)). $\square$
 
-The producer of a relation a guard reads has then always finished before the guard is judged, whatever the
-order. Where a guard reads a relation that another guarded rule concludes, the two candidates wait at the same
-boundary and the agenda's order
+The rules that derive the facts a guard reads have then always finished before the guard is judged, whatever
+the order. Where a guard reads facts of a relation of which another guarded rule concludes a fact, the two
+candidates wait at the same boundary and the agenda's order
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)) says which is
 judged first. That order is not the order of the program's strata:
 
@@ -247,69 +266,85 @@ judged first. That order is not the order of the program's strata:
 
 ## A refutation resting on an absent
 
-A rule that concludes $\bot$ or a stored negation may not rest on an $\operatorname{absent}(G)$ over a relation a
-commitment can still extend: directly, through a fact a rule derived under such an absence, or through the
-activator its rule was applied with. Write $D^{+}$ for the relations a commitment can extend (below) and
-$\operatorname{abs}^{\ast}(\rho)$ for the absences $\rho$'s conclusion can depend on in those three ways:
+A rule that concludes $\bot$ or a stored negation may not rest on an $\operatorname{absent}(G)$ that reads the
+held extent of a relation a commitment can still extend: directly, through a fact a rule derived under such an
+absence, or through the activator its rule was applied with. Write $D^{+}$ for the relations whose held extent
+a commitment can extend (below) and $\operatorname{abs}^{\ast}(\rho)$ for the absences $\rho$'s conclusion can
+depend on in those three ways:
 
 $$
-\bigl( \bot \in \psi_\rho \;\lor\; \exists f.\; \lnot f \in \psi_\rho \bigr) \;\land\;
-\exists\, \operatorname{absent}(G) \in \operatorname{abs}^{\ast}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset
-\;\;\implies\;\; P \text{ is refused}
+\begin{aligned}
+& \bigl( \bot \in \psi_\rho \;\lor\; \exists f.\; \lnot f \in \psi_\rho \bigr) \\
+\land\ & \exists\, \operatorname{absent}(G) \in \operatorname{abs}^{\ast}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset \\
+\implies\ & P \text{ is refused}
+\end{aligned}
 $$
 
 A program that writes one is refused when it is read, with one line for each refusing rule
 ([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md); the user's
 [diagnostics](../../user/04-reference/07-diagnostics.md) has the refusal as it is printed).
 
-The reason is what such a rule says. Over an extendable relation it judges a state that has not yet decided $G$
-as if $G$ were false: it says *contradiction* where the truth is *not yet*, an obligation written as a
+The reason is what such a rule says. Over the held extent of such a relation it judges a state that has not yet
+decided $G$ as if $G$ were false: it says *contradiction* where the truth is *not yet*, an obligation written as a
 refutation. And *dead* stops being closed upward. Under $p(x) \land \operatorname{absent}(q(x)) \implies \bot$,
 with $p(\mathsf{A})$ and $q(\mathsf{A})$ candidates:
 
 ![A lattice of two candidates in which dead is not closed upward](diagrams/03-dead-not-upward-closed.svg)
 
 $$
-\operatorname{dead}\bigl(\lbrace p(\mathsf{A}) \rbrace\bigr), \qquad
-\lbrace p(\mathsf{A}) \rbrace \subseteq \lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace, \qquad
-\lnot\operatorname{dead}\bigl(\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace\bigr)
+\begin{aligned}
+&\operatorname{dead}\bigl(\lbrace p(\mathsf{A}) \rbrace\bigr) \\
+&\lbrace p(\mathsf{A}) \rbrace \subseteq \lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace \\
+&\lnot\operatorname{dead}\bigl(\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace\bigr)
+\end{aligned}
 $$
 
 Each node is a commitment, an arrow adds one candidate, green is alive and red dead. A search that took a
 superset of a dead set for dead would lose the bottom state, a member of $R$. The refusal names the forms that
 say what was meant:
 
-1. close the relation, if no commitment is meant to extend it;
+1. close the held extent of the relation to hypotheses, if no commitment is meant to add a fact of it;
 2. make the attribute one the search must decide, and refute the decided *no*, a stored negation;
 3. state the requirement as an obligation ([satisfiability](10-satisfiability.md));
-4. conclude from a stored negative, as the standard library's totality does.
+4. conclude from a stored negation, as the standard library's totality does.
 
-**Extendable.** $D^{+}$ is the set of relations a commitment can change, followed through every rule with
-parameters whose activator relation it holds, since an application a node makes that root never had can conclude
-relations a commitment changes:
+**Extendable.** A relation is **extendable** when it is in $D^{+}$, the set of the relations whose held extent
+a commitment can change, followed through every rule with parameters whose activator's relation it holds, since
+an application a node makes that root never had can conclude facts of relations whose held extent a commitment
+changes:
 
 $$
-D^{+} \;=\; \mu X.\;\; \operatorname{rels}(H) \;\cup\; \lbrace\, \operatorname{rels}(\psi_\rho) : \rho \text{ reads a relation of } X \,\rbrace
-\;\cup\; \lbrace\, \operatorname{rels}(\psi_\rho[\cdot]) : \text{the name of } \rho \text{ is in } X \,\rbrace
+\begin{aligned}
+D^{+} \;=\; \mu X.\ \ & \operatorname{rels}(H) \\
+\cup\ & \lbrace\, \operatorname{rels}(\psi_\rho) : \rho \text{ reads a fact of a relation of } X \,\rbrace \\
+\cup\ & \lbrace\, \operatorname{rels}(\psi_\rho[\cdot]) : \text{the name of } \rho \text{ is in } X \,\rbrace
+\end{aligned}
 $$
 
-with $\mu$ the least fixpoint, $D^{+} = D^{+}(\operatorname{rels}(H))$ in the notation of
-[hypothesis generation](04-hypothesis-generation.md#43-when-it-declines): the relations of the candidates, what a rule that reads one of them concludes,
-and what any application of a rule can conclude once its activator's relation is among them. Over a relation no commitment can extend, the same shape is closed-world
-reasoning and is accepted.
+with $\mu$ the least fixpoint: the relations of the candidates, those
+of what a rule that reads a fact of one of them concludes, and those of what any application of a rule can
+conclude once its activator's relation is among them. With another set $X_0$ of relations as the seed, in the
+place of $\operatorname{rels}(H)$, the same fixpoint is written $D^{+}(X_0)$, so
+$D^{+} = D^{+}(\operatorname{rels}(H))$. Over the held extent of a relation that is not
+extendable, the same shape is closed-world reasoning and is accepted.
 
-This is not the stratification hazard and the two do not overlap. A guard over a relation a rule derives can
-change its answer during saturation, and judging it at the fixpoint makes that sound. A guard over an extendable
-relation is discharged by a commitment, in a world the guard was never asked in.
+This is not the stratification hazard and the two do not overlap. A guard over the facts of a relation that a
+rule derives can change its answer during saturation, and judging it at the fixpoint makes that sound. A guard
+over the held extent of an extendable relation is discharged by a commitment, in a world the guard was never
+asked in.
 
 ## Stratification
 
-The relations a program's rules read and write form a directed graph: an edge $q \to r$ for each rule that reads
-$q$ and concludes $r$, **negative**, written $q \xrightarrow{\lnot} r$, where the read is under an absence. A
-**stratification** is a map $\sigma$ from relations to natural numbers with
+The relations whose facts a program's rules read and conclude form a directed graph: an edge $q \to r$ for each
+rule that reads a fact of $q$ and concludes a fact of $r$, **negative**, written $q \xrightarrow{\lnot} r$,
+where the read is under an absence. A **stratification** is a map $\sigma$ from relations to natural numbers
+with
 
 $$
-q \to r \implies \sigma(q) \leq \sigma(r), \qquad q \xrightarrow{\lnot} r \implies \sigma(q) < \sigma(r),
+\begin{aligned}
+q \to r &\implies \sigma(q) \leq \sigma(r) \\
+q \xrightarrow{\lnot} r &\implies \sigma(q) < \sigma(r)
+\end{aligned}
 $$
 
 and one exists exactly when no cycle runs through a negative edge. The parity of the negative edges on such a
@@ -333,4 +368,4 @@ Each program is its rules; every fact named as given is in $K$.
 | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$; $\ t(x) \land \operatorname{absent}(p(x)) \implies q(x)$ | $t(\mathsf{one})$ | exactly one of $p(\mathsf{one})$, $q(\mathsf{one})$ | two stable models; the boundary admits one candidate a round and the other's guard then fails |
 | $s(x) \land \operatorname{absent}\bigl(g(x, y) \land h(y)\bigr) \implies \operatorname{ok}(x)$ | $s(\mathsf{A})$, $s(\mathsf{B})$, $g(\mathsf{A}, \mathsf{C})$, $h(\mathsf{C})$ | $\operatorname{ok}(\mathsf{B})$ only | a guard over a conjunction is $\lnot\exists$ over its unbound variables |
 | $\bigl( t_1 \land \operatorname{absent}(r_1) \bigr) \lor \bigl( t_2 \land \operatorname{absent}(r_2) \bigr) \implies u$; $\ w \implies r_2$ | $t_2$, $w$ | $r_2$, and no $u$ | each disjunct's guards are judged with that disjunct, at the boundary |
-| $a(x) \land o(y) \land \operatorname{absent}\bigl(n(x, y)\bigr) \implies m(x, y)$, with $n$ derived from another relation and closed by symmetry | an $a$ and an $o$ that are neighbours only through the derived, mirrored $n$ | no $m$ | a guard sees the closed extent of what it reads, however many firings built it |
+| $a(x) \land o(y) \land \operatorname{absent}\bigl(n(x, y)\bigr) \implies m(x, y)$, with the facts of $n$ derived from those of another relation and mirrored by a rule of symmetry | an $a$ and an $o$ that are neighbours only through a derived, mirrored fact of $n$ | no fact of $m$ | a guard sees the held extent of what it reads as the closure completed it, however many firings built it |

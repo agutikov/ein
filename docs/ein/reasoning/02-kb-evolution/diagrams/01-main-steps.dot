@@ -2,7 +2,7 @@ digraph main_steps {
   rankdir=TB;
   node [fontname="Inter", shape=box, style=rounded];
   program [label="a program"];
-  K0 [label="K₀\nrelations, rules, hypothesis rules, facts,\neach fact with its derivation record"];
+  K0 [label="K₀, and the rules\nthe facts the program writes and its declarations, which are facts,\neach fact with its derivation record"];
   root [label="root = sat(K₀)\nclosure to quiescence, then the boundary, repeated"];
   dead0 [label="root is dead:\nR = ∅, root's core explains it", shape=box, style="rounded,dashed"];
   H [label="H, the candidate set\nread off root's fixpoint"];

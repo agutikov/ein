@@ -4,12 +4,12 @@ digraph ladder {
   edge [fontname="Helvetica", fontsize=9, arrowsize=0.7];
   nu [shape=diamond, label="ν(P)\nnothing to guess?"];
   hr [shape=diamond, label="Hr(P) ≠ ∅\na hypothesis rule declared?"];
-  act [shape=diamond, label="Act(P) ≠ ∅\nan obligation activated at root?"];
-  decl [shape=diamond, label="decl(P)\nthe rung declines?"];
+  act [shape=diamond, label="ActOb(P) ≠ ∅\nan obligation activated at root?"];
+  decl [shape=diamond, label="declines(P)\nthe rung declines?"];
   e [shape=box, style="rounded,filled", fillcolor="#f0f0f0", label="H = ∅"];
   hhr [shape=box, style="rounded,filled", fillcolor="#fde0ef", label="H = H_hr\nwhat the hypothesis rules propose at root (§ 3)"];
   hob [shape=box, style="rounded,filled", fillcolor="#e5f5e0", label="H = H_ob\nwhat would pay a debt (§ 4)"];
-  hbl [shape=box, style="rounded,filled", fillcolor="#deebf7", label="H = H_bl\nevery slot of every open relation, every guessable atom (§ 5)"];
+  hbl [shape=box, style="rounded,filled", fillcolor="#deebf7", label="H = H_bl\nevery argument place of every eligible relation, every guessable atom (§ 5)"];
   nu -> e [label="yes"];
   nu -> hr [label="no"];
   hr -> hhr [label="yes"];

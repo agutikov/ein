@@ -4,8 +4,10 @@ The answer to a program is a **region** $R$ of its hypothesis lattice: the commi
 and discharged ([Q-M1e2.7](../../../decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)).
 
 $$
-R \;=\; \lbrace\, C \subseteq H \;:\; \operatorname{alive}(\operatorname{st}(C)) \,\land\, \operatorname{discharged}(\operatorname{st}(C)) \,\rbrace,
-\qquad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+\begin{aligned}
+R &= \lbrace\, C \subseteq H \;:\; \operatorname{alive}(\operatorname{st}(C)) \land \operatorname{discharged}(\operatorname{st}(C)) \,\rbrace \\
+\operatorname{st}(C) &= \operatorname{sat}(\mathrm{root} \cup C)
+\end{aligned}
 $$
 
 This page defines every symbol of that line, each in terms of the ones before it, then the shape of $R$, what a
@@ -26,7 +28,7 @@ the region of that construction; nothing more is claimed of the program's soluti
 | symbol | what it is | where |
 |---|---|---|
 | $K_0$ | the knowledge base as loaded, before any saturation | § 1.1 |
-| $\operatorname{names}(P)$, $\operatorname{guessable}(P)$ | the names of the program $P$; the guessable atoms among them | § 1.2 |
+| $\operatorname{names}(P)$, $\operatorname{guessable}(P)$ | the names of the program $P$; the guessable atoms | § 1.2 |
 | $\operatorname{sat}$, $\mathrm{root}$ | saturation; root's fixpoint $\operatorname{sat}(K_0)$ | § 1.3 |
 | $H$, $n$ | the candidate set, and $n = \lvert H \rvert$ | § 1.4 |
 | $C$, $\operatorname{st}(C)$, $S$ | a commitment $C \subseteq H$; its state; a state | § 1.5 |
@@ -65,48 +67,23 @@ problem in a context**: the same problem in another context has another region.
 
 ### 1.2 Names
 
-A **name** is a constant the program writes
-([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)):
+The **names of the program**, $\operatorname{names}(P)$, are those of
+[the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names): the names of $K_0$ and of the rules
+of $P$ ([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). A
+rule's names are those of its pattern and of its conclusion alike, whether the rule derives, proposes or owes.
+**An atom written only in a query is not among them**: $R$ is the program's, and a query asks about it, so adding a
+query never changes $R$. A rewriting brings in no name
+([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)), so no state names what root and
+the program do not, which is the alive-set invariant of
+[saturation](02-saturation.md#the-alive-set-invariant), and the lattice of § 1.5 is finite.
 
-$$
-\operatorname{names}(P) \;=\; \lbrace\, c \;:\; c \text{ is a constant in an argument position of a fact of } K_0 \text{, at any depth} \,\rbrace
-\;\cup\; \lbrace\, c \;:\; c \text{ is a constant of a rule of } P \,\rbrace
-$$
-
-A rule's constants are those of its premise and of its conclusion alike, whether the rule derives, proposes or owes.
-**A constant written only in a query is not a name**: $R$ is the program's, and a query asks about it, so adding a
-query never changes $R$. No rule brings in a name of its own and nothing makes a name while a state is saturated
-([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)):
-
-$$
-\forall C \subseteq H:\quad \operatorname{names}(\operatorname{st}(C)) \;\subseteq\; \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root})
-$$
-
-so the lattice of § 1.5 is finite.
-
-**A guessable atom** is narrower than a name. The guessable atoms are what the blind enumerator of
-[hypothesis generation](04-hypothesis-generation.md) fills a relation's slots with, and four kinds of name are left
-out, each by name and none by a type system
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)):
-
-$$
-\operatorname{guessable}(P) \;=\; \big( \operatorname{names}(P) \cup \operatorname{names}(\mathrm{root}) \big) \;\setminus\; \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
-$$
-
-- $\operatorname{names}(\mathrm{root})$ counts a fact's head beside its top-level arguments;
-- $\operatorname{labels}(P)$ is the labels, the names a relation's declaration writes for its argument places
-  ([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where));
-- $\operatorname{Kw}$ is the seven words of the rule language, *not*, *false*, *and*, *or*, *absent*, *equal* and
-  *unequal*, whether or not a program writes one as an argument;
-- $\operatorname{Res}$ is the two reserved relations of the kernel, *closed* and *symmetric*
-  ([reserved names](../../user/04-reference/03-reserved-names.md) has their spelling): never guessable, neither where
-  a rule derives the fact one heads nor where a program writes one in an argument position, which stays legal and
-  keeps it a name of the program. So a closure or a symmetry stated by a fact and the same one derived by a rule give
-  one $H$ and one $R$;
-- $\operatorname{RelNames}(P)$ is every name the program declares as a relation, writes as the head of a fact, or
-  names a rule by. The head of a fact that only a rule concludes is none of these, so **a relation only a rule
-  concludes is guessable**, and a candidate can name it. The candidate stays, and the answer names it (§ 1.4);
-  declaring the relation takes its name out.
+**The guessable atoms**, $\operatorname{guessable}(P)$, are what the blind enumerator fills the argument places of
+a fact with. [Hypothesis generation § 5](04-hypothesis-generation.md#5-the-blind-enumerator) defines them: the
+names of the program and the relations of root's facts, less four kinds of atom, each left out by its name. Ein has
+no types, and none decides this
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)). One
+consequence is used below: a relation whose facts only a rule concludes is a guessable atom, so a candidate can
+have it as an argument, and the answer names that candidate (§ 1.4).
 
 ### 1.3 Root
 
@@ -114,7 +91,8 @@ $$
 \mathrm{root} \;=\; \operatorname{sat}(K_0)
 $$
 
-**Root** is the program's facts saturated to quiescence by its rules, with nothing hypothesised
+Root ([firing a rule](01-firing.md#two-layers)) is the program's facts saturated to quiescence by its rules, with
+nothing hypothesised
 ([Saturation](02-saturation.md) defines $\operatorname{sat}$). It is a node like any other, the node $\emptyset$ of
 § 1.5. **Nothing a computation of $R$ does is written into root**: every answer is the one the definition gives
 ([Q-M1e2.32](../../../decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)), and the definition
@@ -124,11 +102,15 @@ candidate is a constraint on the commitments it considers, never a fact of root
 
 ### 1.4 Candidate and universe
 
-A **candidate** (a hypothesis) is a ground fact proposed at root, and the **universe** $H$ is the set of them:
+A candidate, or **hypothesis**, is a fact proposed at root, and the candidate set $H$, the **universe**, is the set
+of them ([firing a rule](01-firing.md#two-layers) names both, and this section states them exactly):
 
 $$
-H \;=\; \operatorname{gen}(P, \mathrm{root}), \qquad n = \lvert H \rvert, \qquad
-\forall h \in H:\; h \notin \mathrm{root} \,\land\, \lnot h \notin \mathrm{root}
+\begin{aligned}
+&H = \operatorname{gen}(P, \mathrm{root}) \\
+&n = \lvert H \rvert \\
+&\forall h \in H.\ \ h \notin \mathrm{root} \,\land\, \lnot h \notin \mathrm{root}
+\end{aligned}
 $$
 
 $\operatorname{gen}$ is the **generation ladder** of [Hypothesis generation](04-hypothesis-generation.md), a function
@@ -162,7 +144,8 @@ Three things decide $H$:
 
 **$H$ must contain every fact a model needs.** If it does not, either the program is wrong, a name it never writes,
 or the generator is, a candidate it never proposes. $H$ is defined by the ladder, not declaratively: it is not every
-fact of every relation a commitment may extend.
+fact of every relation whose
+[held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) a commitment may extend.
 
 **On the obligations rung, $H$ holds what a debt root does not owe would propose**
 ([Q-M1e.11](../../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). $H$ is taken
@@ -178,51 +161,69 @@ answer is the whole cube's.
 
 **What the universe leaves out, the answer names**
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). $R$ is over $H$ as
-the ladder scopes it, so a certificate that $R$ is exhausted certifies all of $R$ over $H$ and nothing beyond it. Let
-$\operatorname{rels}(X)$ be the relations of the facts in $X$. A relation $r$ is **outside the universe** when
+the ladder scopes it, so a certificate that $R$ is exhausted certifies all of $R$ over $H$ and nothing beyond it. With
+$\operatorname{rels}(X)$ the relations of the facts of $X$ ([saturation](02-saturation.md)), a relation $r$ is
+**outside the universe** when
 
 $$
-r \notin \operatorname{rels}(H) \;\land\; \big( \text{a rule concludes } r \;\lor\; \text{a query's goal reads } r \big) \;\land\; \text{the program does not scope } r \text{ out}
+\begin{aligned}
+& r \notin \operatorname{rels}(H) \\
+\land\ & \big( \text{a rule concludes a fact of } r \;\lor\; \text{a query's goal reads facts of } r \big) \\
+\land\ & \text{the program does not scope } r \text{ out}
+\end{aligned}
 $$
 
-and of such a relation $R$ holds only what the program states and saturation derives. It is said at relation grain:
-the facts of a covered relation that the rung does not propose are not named.
+and the held extent of such a relation, in every state of $R$, is only what the program states and saturation
+derives. It is said at relation grain: the facts of a covered relation that the rung does not propose are not named.
 
 **What the universe guesses about, the answer names too**
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-a-type-it.md)). The blind
-enumerator is untyped: every guessable atom fills every slot. Where a program states
-$\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and declares a relation $\operatorname{co-located}$ of two slots
-with the same label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state of $R$ may
-hold it. $R$ is right for the program as written, and a declaration that writes $\mathsf{Color}$ as a label keeps it out
-of $H$. Where the blind enumerator built $H$ and a candidate names the second argument of a membership fact of root,
-every answer names that name. It decides nothing: $H$, $R$ and every count are the same without the sentence.
+enumerator holds no argument to its label: every guessable atom fills every argument place. Where a program states
+$\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and declares a relation $\operatorname{co-located}$ of two
+arguments with the same label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state
+of $R$ may hold it. $R$ is right for the program as written, and a declaration that writes $\mathsf{Color}$ as a
+label keeps it out of $H$. Where the blind enumerator built $H$ and a candidate has as an argument the second
+argument of a membership fact of root, every answer names that atom. It decides nothing: $H$, $R$ and every count
+are the same without the sentence.
 
-**A relation's name that is guessed about is named as well** (§ 1.2). Where a rule derives
-$\operatorname{liquid}(\mathsf{Tea})$, nothing declares $\operatorname{liquid}$, and a declared one-slot relation
-$\operatorname{tasty}$ is open, $\operatorname{tasty}(\mathsf{liquid})$ is a candidate and a state of $R$ may hold it.
-The candidate stays, and declaring the relation takes its name out of $H$. It decides nothing either.
+**A relation that is guessed about is named as well** (§ 1.2). Where a rule derives
+$\operatorname{liquid}(\mathsf{Tea})$, nothing declares $\operatorname{liquid}$, and the blind enumerator fills a
+declared relation $\operatorname{tasty}$ of one argument, $\operatorname{tasty}(\mathsf{liquid})$ is a candidate and
+a state of $R$ may hold it. The candidate stays, and declaring $\operatorname{liquid}$ takes the atom out of the
+guessable atoms. It decides nothing either.
 
 ### 1.5 Commitment, node, state
 
-A **commitment** $C$ is a subset of $H$. Seen as a point of the lattice it is a **node**, and the lattice is the
+A commitment $C$ is a subset of $H$ ([firing a rule](01-firing.md#two-layers)). Seen as a point of the lattice it
+is a **node**, and the lattice is the
 Boolean lattice of all of them:
 
 $$
-\mathcal{L} \;=\; (2^{H}, \subseteq), \qquad \lvert \mathcal{L} \rvert = 2^{n}, \qquad
-L_k = \lbrace\, C \subseteq H : \lvert C \rvert = k \,\rbrace, \quad \lvert L_k \rvert = \binom{n}{k}
+\begin{aligned}
+\mathcal{L} &= (2^{H}, \subseteq) \\
+\lvert \mathcal{L} \rvert &= 2^{n} \\
+L_k &= \lbrace\, C \subseteq H : \lvert C \rvert = k \,\rbrace \\
+\lvert L_k \rvert &= \binom{n}{k}
+\end{aligned}
 $$
 
 It is the **$n$-cube**: a node is an $n$-bit word, an edge joins $C$ and $C \cup \lbrace h \rbrace$ for $h \notin C$,
 and layer $L_k$ holds the commitments of $k$ candidates. A node $C$ has an **up-set** and a **down-set**:
 
 $$
-\uparrow C = \lbrace\, C' \subseteq H : C \subseteq C' \,\rbrace, \qquad \downarrow C = \lbrace\, C' : C' \subseteq C \,\rbrace
+\begin{aligned}
+\uparrow C &= \lbrace\, C' \subseteq H : C \subseteq C' \,\rbrace \\
+\downarrow C &= \lbrace\, C' : C' \subseteq C \,\rbrace
+\end{aligned}
 $$
 
 **The node function** gives each node its **state**:
 
 $$
-\operatorname{st} : 2^{H} \to \text{states}, \qquad \operatorname{st}(C) \;=\; \operatorname{sat}(\mathrm{root} \cup C)
+\begin{aligned}
+\operatorname{st} &: 2^{H} \to \text{states} \\
+\operatorname{st}(C) &= \operatorname{sat}(\mathrm{root} \cup C)
+\end{aligned}
 $$
 
 root's fixpoint, with the facts of $C$ added and the saturation resumed to quiescence. The definition never stops at
@@ -234,24 +235,30 @@ construction, and on a program that reads an absence it need not give the fork's
 monotone:
 
 $$
-\operatorname{sat}(\operatorname{sat}(K_0) \cup C) \;\neq\; \operatorname{sat}(K_0 \cup C) \quad \text{is possible}
+\begin{aligned}
+\operatorname{sat}(\operatorname{sat}(K_0) \cup C) &\neq \operatorname{sat}(K_0 \cup C) && \text{is possible}
+\end{aligned}
 $$
 
 Inside a node built from scratch the saturation derives root's facts again, and a rule that reads the absence of one
 of them can fire before that fact is derived again, leaving a fact the fork does not hold
 ([Monotone and non-monotone programs](08-monotonicity.md) has the case). The state defined here is the fork's.
 
-**The status of a state** $S$ is four predicates. Write $\bot$ for the contradiction a rule concludes and $\lnot f$
-for the stored negation of a fact $f$. An obligation rule $o$, activated by $a$, has a trigger $T_o$ and a witness
-$W_o$ ([obligations](../../user/03-syntax-and-semantics/08-obligations.md)), and is **owed** at the bindings $\theta$
-of its trigger where no witness exists:
+**The status of a state** $S$ is four predicates. Two are those of any set of facts,
+$\operatorname{dead}(S)$ and $\operatorname{alive}(S)$: $S$ holds a contradiction, or holds none
+([the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither)). The other two
+read the obligations. An obligation $o$ under an activator $a$ has a trigger $T_o$ and a witness $W_o$, and a
+state $S$ **owes** the instance $(o, a, \theta)$, written $\operatorname{owes}(o, a, \theta, S)$, where the trigger
+holds in $S$ under $\theta$ and no witness does
+([hypothesis generation § 4.1](04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it) defines
+the four; the user's [obligations](../../user/03-syntax-and-semantics/08-obligations.md) page has the spelling).
+
+The instances a state owes, their number, and the state that owes none:
 
 $$
 \begin{aligned}
-\operatorname{dead}(S) &\iff \bot \in S \;\lor\; \exists f.\; f \in S \land \lnot f \in S \\
-\operatorname{alive}(S) &\iff \lnot \operatorname{dead}(S) \\
-\operatorname{owes}(o, a, \theta, S) &\iff S \models T_o(a, \theta) \;\land\; \lnot \exists \bar{y}.\; S \models W_o(a, \theta, \bar{y}) \\
-\operatorname{Owed}(S) &= \lbrace\, (o, a, \theta) : \operatorname{owes}(o, a, \theta, S) \,\rbrace, \qquad \operatorname{owes}(S) = \lvert \operatorname{Owed}(S) \rvert \\
+\operatorname{Owed}(S) &= \lbrace\, (o, a, \theta) : \operatorname{owes}(o, a, \theta, S) \,\rbrace \\
+\operatorname{owes}(S) &= \lvert \operatorname{Owed}(S) \rvert \\
 \operatorname{discharged}(S) &\iff \operatorname{owes}(S) = 0
 \end{aligned}
 $$
@@ -261,18 +268,23 @@ to commitments through the node function: $\operatorname{dead}(C)$ means $\opera
 and so on. The three sets a status cuts the lattice into are
 
 $$
-\operatorname{Dead} = \lbrace C : \operatorname{dead}(C) \rbrace, \qquad
-\operatorname{Owing} = \lbrace C : \operatorname{alive}(C) \land \operatorname{owes}(C) > 0 \rbrace, \qquad
-R = 2^{H} \setminus (\operatorname{Dead} \cup \operatorname{Owing})
+\begin{aligned}
+\operatorname{Dead} &= \lbrace C : \operatorname{dead}(C) \rbrace \\
+\operatorname{Owing} &= \lbrace C : \operatorname{alive}(C) \land \operatorname{owes}(C) > 0 \rbrace \\
+R &= 2^{H} \setminus (\operatorname{Dead} \cup \operatorname{Owing})
+\end{aligned}
 $$
 
 **The three sets, drawn.** One guest, $\mathsf{Ann}$, owes a drink: an obligation says she drinks something, and a
-restriction says a vegan drinks no milk. The candidates are
+restriction, a rule that concludes $\bot$ (§ 4), says a vegan drinks no milk. The candidates are
 
 $$
-t = \operatorname{drinks}(\mathsf{Ann}, \mathsf{Tea}), \qquad
-m = \operatorname{drinks}(\mathsf{Ann}, \mathsf{Milk}), \qquad
-v = \operatorname{vegan}(\mathsf{Ann}), \qquad H = \lbrace t, m, v \rbrace
+\begin{aligned}
+t &= \operatorname{drinks}(\mathsf{Ann}, \mathsf{Tea}) \\
+m &= \operatorname{drinks}(\mathsf{Ann}, \mathsf{Milk}) \\
+v &= \operatorname{vegan}(\mathsf{Ann}) \\
+H &= \lbrace t, m, v \rbrace
+\end{aligned}
 $$
 
 and the eight nodes of $(2^{H}, \subseteq)$ are drawn below as the engine draws a region, with $\emptyset$ at the top
@@ -286,9 +298,12 @@ candidate, and its colour says what the addition does: blue pays the last debt, 
 orange still owes, grey goes from dead to dead. Read off the picture:
 
 $$
-\operatorname{Owing} = \lbrace \emptyset, \lbrace v \rbrace \rbrace, \qquad
-\operatorname{Dead} = \lbrace \lbrace m, v \rbrace, \lbrace t, m, v \rbrace \rbrace = \uparrow \lbrace m, v \rbrace, \qquad
-R = \lbrace \lbrace t \rbrace, \lbrace m \rbrace, \lbrace t, m \rbrace, \lbrace t, v \rbrace \rbrace
+\begin{aligned}
+\operatorname{Owing} &= \lbrace \emptyset, \lbrace v \rbrace \rbrace \\
+\operatorname{Dead} &= \lbrace \lbrace m, v \rbrace, \lbrace t, m, v \rbrace \rbrace \\
+&= \uparrow \lbrace m, v \rbrace \\
+R &= \lbrace \lbrace t \rbrace, \lbrace m \rbrace, \lbrace t, m \rbrace, \lbrace t, v \rbrace \rbrace
+\end{aligned}
 $$
 
 The owing nodes are a down-set near $\emptyset$, the dead nodes an up-set far from it, and $R$ is the band between
@@ -297,7 +312,10 @@ them. § 2.4 says when that picture is the general one.
 **Closure.** The closure of a commitment is the set of candidates its state holds:
 
 $$
-\operatorname{cl}(C) \;=\; \operatorname{st}(C) \cap H, \qquad C \subseteq \operatorname{cl}(C)
+\begin{aligned}
+\operatorname{cl}(C) &= \operatorname{st}(C) \cap H \\
+C &\subseteq \operatorname{cl}(C)
+\end{aligned}
 $$
 
 A node with $\operatorname{cl}(C) \neq C$ is **transient**: saturation moves it to $\operatorname{cl}(C)$. A node with
@@ -316,14 +334,20 @@ imply $K = K'$, so a comparison of digests could count two states as one, and th
 The commitments that reach one state are a **state class**:
 
 $$
-C \sim C' \iff \operatorname{st}(C) = \operatorname{st}(C'), \qquad [C] = \lbrace\, C' \subseteq H : C' \sim C \,\rbrace
+\begin{aligned}
+C \sim C' &\iff \operatorname{st}(C) = \operatorname{st}(C') \\
+[C] &= \lbrace\, C' \subseteq H : C' \sim C \,\rbrace
+\end{aligned}
 $$
 
 On a monotone program $\operatorname{cl}$ is a closure operator on the cube,
 
 $$
-C \subseteq \operatorname{cl}(C), \qquad \operatorname{cl}(\operatorname{cl}(C)) = \operatorname{cl}(C), \qquad
-C \subseteq C' \implies \operatorname{cl}(C) \subseteq \operatorname{cl}(C')
+\begin{aligned}
+&C \subseteq \operatorname{cl}(C) \\
+&\operatorname{cl}(\operatorname{cl}(C)) = \operatorname{cl}(C) \\
+&C \subseteq C' \implies \operatorname{cl}(C) \subseteq \operatorname{cl}(C')
+\end{aligned}
 $$
 
 and $\operatorname{st}(C) = \operatorname{st}(\operatorname{cl}(C))$, so a class has
@@ -354,9 +378,10 @@ and one minimal generator $\lbrace v \rbrace$: four commitments, three states.
 ### 1.6 Monotone
 
 A program is **monotone** when growth of a commitment can neither take a conclusion away nor add a debt: no rule
-that derives reads, under an odd number of absences, a relation a commitment can change, and no obligation's trigger
-reads one. How that is decided for a program, and what a program that fails the test is, is
-[Monotone and non-monotone programs](08-monotonicity.md). On a monotone program, for all $C \subseteq C' \subseteq H$:
+that derives reads, under an odd number of absences, facts of a relation whose held extent a commitment can change,
+and no obligation's trigger reads facts of one. How that is decided for a program, and what a program that fails
+the test is, is [Monotone and non-monotone programs](08-monotonicity.md). On a monotone program, for all
+$C \subseteq C' \subseteq H$:
 
 $$
 \begin{aligned}
@@ -375,21 +400,22 @@ $$
 every knowledge base. The lattice of commitments is the domain, and is never itself monotone or not. What a monotone
 program guarantees is two properties of the functions on its nodes, which a non-monotone program can lose separately:
 the **state** is monotone in $C$, which, where saturation is cumulative, is the same as being independent of the path
-that built the node; and the **status** is monotone, *dead* and *discharged* both upward-closed. A read of an absence
-over a relation a commitment can change can break the first; an obligation's trigger breaks the second with no
-absence at all.
+that built the node; and the **status** is monotone, *dead* and *discharged* both upward-closed. An absence read
+over a held extent that a commitment can change can break the first; an obligation's trigger breaks the second with
+no absence at all.
 
 The test is a sufficient condition, stated at **relation grain**: a read is of something a commitment can change
-when its relation is one, whatever its pattern. A program it does not prove monotone may still have node functions
-with both properties: the test is *conservative*, and the full lattice is what shows whether a program it flags has
-a dead node with an alive superset or a discharged node with an owing one.
+when its relation is one whose held extent a commitment can change, whatever its pattern. A program it does not
+prove monotone may still have node functions with both properties: the test is *conservative*, and the full
+lattice is what shows whether a program it flags has a dead node with an alive superset or a discharged node with an
+owing one.
 
 ---
 
 ## 2. The answer: the region R
 
 $$
-R \;=\; \lbrace\, C \subseteq H \;:\; \operatorname{alive}(\operatorname{st}(C)) \,\land\, \operatorname{discharged}(\operatorname{st}(C)) \,\rbrace
+R = \lbrace\, C \subseteq H \;:\; \operatorname{alive}(\operatorname{st}(C)) \land \operatorname{discharged}(\operatorname{st}(C)) \,\rbrace
 $$
 
 A **solution** is a node of $R$.
@@ -400,7 +426,9 @@ On a monotone program that set is exact. **On a non-monotone program it is not**
 answer there: not soundness, correctness or completeness. A node's state can depend on the path it is built by,
 
 $$
-\operatorname{sat}(\mathrm{root} \cup C_1 \cup C_2) \;\neq\; \operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup C_2) \quad \text{is possible}
+\begin{aligned}
+\operatorname{sat}(\mathrm{root} \cup C_1 \cup C_2) &\neq \operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup C_2) && \text{is possible}
+\end{aligned}
 $$
 
 and on the order rules fire in
@@ -412,7 +440,10 @@ A non-monotone program can have almost any subset of the cube as its region. The
 under a dead root: a fork only adds, so
 
 $$
-\operatorname{dead}(\emptyset) \implies \forall C \subseteq H.\; \operatorname{dead}(C), \qquad \text{and then } R = \emptyset
+\begin{aligned}
+\operatorname{dead}(\emptyset) &\implies \forall C \subseteq H.\; \operatorname{dead}(C) \\
+\operatorname{dead}(\emptyset) &\implies R = \emptyset
+\end{aligned}
 $$
 
 There are $2^{2^{n}}$ subsets of the cube, so nothing shorter than the set describes every region; the shortest exact
@@ -443,8 +474,11 @@ is solved by saying nothing more.
 $R$ is counted twice:
 
 $$
-k_c \;=\; \lvert R \rvert, \qquad
-k_s \;=\; \lvert R / {\sim} \rvert \;=\; \lvert \lbrace\, \operatorname{st}(C) : C \in R \,\rbrace \rvert, \qquad k_s \le k_c
+\begin{aligned}
+k_c &= \lvert R \rvert \\
+k_s &= \lvert R / {\sim} \rvert \;=\; \lvert \lbrace\, \operatorname{st}(C) : C \in R \,\rbrace \rvert \\
+k_s &\le k_c
+\end{aligned}
 $$
 
 | | counts | |
@@ -471,8 +505,10 @@ and reported up to a fixed bound past which it reads *this many or more*
 **The two lines** are the minimal and the maximal elements of $R$:
 
 $$
-\min R = \lbrace\, C \in R : \nexists C' \in R.\; C' \subsetneq C \,\rbrace, \qquad
-\max R = \lbrace\, C \in R : \nexists C' \in R.\; C \subsetneq C' \,\rbrace
+\begin{aligned}
+\min R &= \lbrace\, C \in R : \nexists C' \in R.\; C' \subsetneq C \,\rbrace \\
+\max R &= \lbrace\, C \in R : \nexists C' \in R.\; C \subsetneq C' \,\rbrace
+\end{aligned}
 $$
 
 With restrictions only the minimal line is $\lbrace \emptyset \rbrace$; with obligations only, on a monotone program,
@@ -488,9 +524,18 @@ in need of enumeration.
 | $N$ | the minimal dead sets, the minimal nogoods: $N = \min \operatorname{Dead}$ |
 | $E$ | the minimal discharging sets, dead or not: $E = \min \lbrace C : \operatorname{discharged}(C) \rbrace$ |
 
-In the drawing of § 1.5: $\min R = \lbrace \lbrace t \rbrace, \lbrace m \rbrace \rbrace$,
-$\max R = \lbrace \lbrace t, m \rbrace, \lbrace t, v \rbrace \rbrace$, $N = \lbrace \lbrace m, v \rbrace \rbrace$,
-$E = \lbrace \lbrace t \rbrace, \lbrace m \rbrace \rbrace$; $R$ is one component, the union of the three sub-cubes
+In the drawing of § 1.5:
+
+$$
+\begin{aligned}
+\min R &= \lbrace \lbrace t \rbrace, \lbrace m \rbrace \rbrace \\
+\max R &= \lbrace \lbrace t, m \rbrace, \lbrace t, v \rbrace \rbrace \\
+N &= \lbrace \lbrace m, v \rbrace \rbrace \\
+E &= \lbrace \lbrace t \rbrace, \lbrace m \rbrace \rbrace
+\end{aligned}
+$$
+
+and $R$ is one component, the union of the three sub-cubes
 $[\lbrace t \rbrace, \lbrace t, m \rbrace]$, $[\lbrace m \rbrace, \lbrace t, m \rbrace]$ and
 $[\lbrace t \rbrace, \lbrace t, v \rbrace]$, each of dimension 1.
 
@@ -498,9 +543,11 @@ $[\lbrace t \rbrace, \lbrace t, v \rbrace]$, each of dimension 1.
 and $R$ is what lies in the second and outside the first:
 
 $$
-\operatorname{Dead} = \bigcup_{D \in N} \uparrow D, \qquad
-\lbrace C : \operatorname{discharged}(C) \rbrace = \bigcup_{e \in E} \uparrow e, \qquad
-R = \bigcup_{e \in E} \uparrow e \;\setminus\; \bigcup_{D \in N} \uparrow D
+\begin{aligned}
+\operatorname{Dead} &= \bigcup_{D \in N} \uparrow D \\
+\lbrace C : \operatorname{discharged}(C) \rbrace &= \bigcup_{e \in E} \uparrow e \\
+R &= \bigcup_{e \in E} \uparrow e \;\setminus\; \bigcup_{D \in N} \uparrow D
+\end{aligned}
 $$
 
 ![R as a band between the owing commitments and the dead ones, from the empty commitment to H](diagrams/06-band.svg)
@@ -516,8 +563,8 @@ the minimal sets that meet every member:
 $$
 \begin{aligned}
 \min R &= \lbrace\, e \in E : \operatorname{alive}(e) \,\rbrace \\
-\max R &= \lbrace\, b \in \max \operatorname{Alive} : \operatorname{discharged}(b) \,\rbrace,
-  \qquad \max \operatorname{Alive} = \max \lbrace\, C : \nexists D \in N.\; D \subseteq C \,\rbrace \\
+\max R &= \lbrace\, b \in \max \operatorname{Alive} : \operatorname{discharged}(b) \,\rbrace \\
+\max \operatorname{Alive} &= \max \lbrace\, C : \nexists D \in N.\; D \subseteq C \,\rbrace \\
 N &= \operatorname{MinTr} \lbrace\, H \setminus b : b \in \max \operatorname{Alive} \,\rbrace
 \end{aligned}
 $$
@@ -538,8 +585,10 @@ whose debts grow with the commitment can have nothing dead, so that the dual's m
 **Locally.** On a convex $R$ the two lines are decided one edge at a time:
 
 $$
-C \in \max R \iff C \in R \,\land\, \forall h \notin C.\; C \cup \lbrace h \rbrace \notin R, \qquad
-C \in \min R \iff C \in R \,\land\, \forall h \in C.\; C \setminus \lbrace h \rbrace \notin R
+\begin{aligned}
+C \in \max R &\iff C \in R \,\land\, \forall h \notin C.\; C \cup \lbrace h \rbrace \notin R \\
+C \in \min R &\iff C \in R \,\land\, \forall h \in C.\; C \setminus \lbrace h \rbrace \notin R
+\end{aligned}
 $$
 
 since a member above $C$ would put a one-candidate extension of $C$ between two members. On a monotone program the
@@ -560,9 +609,13 @@ concludes $\bot$ when all three hold; no obligation.
 | $\lbrace a, b, c \rbrace$ | **no** | 0 | no |
 
 $$
-k_c = k_s = 7, \qquad \min R = \lbrace \emptyset \rbrace, \qquad
-\max R = \lbrace \lbrace a, b \rbrace, \lbrace a, c \rbrace, \lbrace b, c \rbrace \rbrace, \qquad
-N = \lbrace \lbrace a, b, c \rbrace \rbrace, \qquad E = \lbrace \emptyset \rbrace
+\begin{aligned}
+k_c &= k_s = 7 \\
+\min R &= \lbrace \emptyset \rbrace \\
+\max R &= \lbrace \lbrace a, b \rbrace, \lbrace a, c \rbrace, \lbrace b, c \rbrace \rbrace \\
+N &= \lbrace \lbrace a, b, c \rbrace \rbrace \\
+E &= \lbrace \emptyset \rbrace
+\end{aligned}
 $$
 
 No rule derives a candidate, so every class is a point. The minimal line is the trivial line of a program with
@@ -588,7 +641,9 @@ A **model** is the positive part of a solution's state, less the positive part o
 $X$ that are not stored negations:
 
 $$
-\operatorname{model}(C) \;=\; \operatorname{st}(C)^{+} \setminus K_0^{+}, \qquad C \in R
+\begin{aligned}
+\operatorname{model}(C) &= \operatorname{st}(C)^{+} \setminus K_0^{+} && \text{for } C \in R
+\end{aligned}
 $$
 
 $K_0$ is the program as loaded, *before the first saturation*: the problem's statements, the declarations of
@@ -606,8 +661,10 @@ holds; the model is the part of a solution that answers the puzzle.
 with the same rows are one **projection class**:
 
 $$
-\pi_g(C) \;=\; \lbrace\, \theta : \operatorname{st}(C) \models g(\theta) \,\rbrace, \qquad
-C \sim_g C' \iff \pi_g(C) = \pi_g(C')
+\begin{aligned}
+\pi_g(C) &= \lbrace\, \theta : \operatorname{st}(C) \models g(\theta) \,\rbrace \\
+C \sim_g C' &\iff \pi_g(C) = \pi_g(C')
+\end{aligned}
 $$
 
 Models that differ only in facts the goal does not name give one row set, so a query answers with the classes of
@@ -619,11 +676,15 @@ so a query over $R$ has to say *undetermined in these solutions*.
 
 ## 4. Restrictions and obligations: the two lines
 
-A **restriction** is a rule that concludes $\bot$. It kills nodes, and sets the **maximal line**: $R$'s border on
+A **restriction** is a rule that concludes $\bot$, the kind
+[the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion) call a constraint. It kills nodes, and sets the
+**maximal line**: $R$'s border on
 the side of $H$ is where restrictions bite.
 
-An **obligation** is a rule whose verdict is that a relation's facts are incomplete, concluded while a witness is
-missing ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). What a
+An obligation
+([hypothesis generation § 4.1](04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it)) has the
+verdict that the held extent of a relation is incomplete, and it owes while a witness is missing
+([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). What a
 state **owes** is its unwitnessed instances, $\operatorname{Owed}(S)$ of § 1.5, and a state that owes none is
 **discharged**. It sets the **minimal line**: $R$'s border on the side of $\emptyset$ is where the debts are paid.
 

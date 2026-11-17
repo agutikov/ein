@@ -18,32 +18,21 @@ The symbols are those of [firing a rule](01-firing.md); $S$ is a state, $\mathca
 
 ## 1. Two bounds, each a sentence about one state
 
-**A restriction** is a rule that concludes $\bot$. A state that derives it is **dead**:
-
-$$
-\operatorname{dead}(S) \iff \bot \in S \;\lor\; \exists f.\; f \in S \land \lnot f \in S
-$$
-
-Since a fork only adds facts, a dead state stays dead under any addition on a program the static check calls
+**A restriction** is a rule that concludes $\bot$
+([solution semantics § 4](06-solution-semantics.md#4-restrictions-and-obligations-the-two-lines)). A state that
+derives $\bot$ is **dead**, as any set of facts that holds a contradiction is
+([the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither)). Since a fork only
+adds facts, a dead state stays dead under any addition on a program the static check calls
 monotone ([monotonicity](08-monotonicity.md)). Restrictions bound $R$ from above: they set its **maximal line**.
 
-**An obligation** is a rule $o$ whose whole conclusion is the verdict $\operatorname{open}(r)$, and whose match
-holds while a witness is missing
-([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). Its match
-is a **trigger** $T_o$, the positive part that says who owes, and the absence of a **witness** $W_o$. A state at
-which it matches **owes** that instance; a state that owes nothing is **discharged**:
-
-$$
-\operatorname{owes}(o, a, \theta, S) \iff S \models T_o(a, \theta) \;\land\; \lnot \exists \bar y.\; S \models W_o(a, \theta, \bar y)
-$$
-
-$$
-\operatorname{Owed}(S) = \lbrace\, (o, a, \theta) : \operatorname{owes}(o, a, \theta, S) \,\rbrace,
-\qquad
-\operatorname{owes}(S) = \lvert \operatorname{Owed}(S) \rvert,
-\qquad
-\operatorname{discharged}(S) \iff \operatorname{owes}(S) = 0
-$$
+**An obligation** $o$ has as its whole conclusion the verdict $\operatorname{open}(r)$, and its pattern holds while
+a witness is missing: it is a **trigger** $T_o$, the positive part that says who owes, and the absence of a
+**witness** $W_o$
+([hypothesis generation § 4.1](04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it);
+[Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). A state at
+which it holds **owes** that instance, $\operatorname{owes}(o, a, \theta, S)$; the instances a state owes are
+$\operatorname{Owed}(S)$, and a state that owes none is **discharged**
+([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)).
 
 Obligations bound $R$ from below: they set its **minimal line**. The verdict is written nowhere else
 ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md); the user's
@@ -52,8 +41,10 @@ Obligations bound $R$ from below: they set its **minimal line**. The verdict is 
 One of each, over the same relation: *a guest with no seat owes one*, and *no guest has two seats*.
 
 $$
-\operatorname{is-a}(g, \mathsf{Guest}) \land \operatorname{absent}\bigl(\operatorname{seats}(g, c)\bigr) \implies \operatorname{open}(\operatorname{seats}),
-\qquad
+\operatorname{is-a}(g, \mathsf{Guest}) \land \operatorname{absent}\bigl(\operatorname{seats}(g, c)\bigr) \implies \operatorname{open}(\operatorname{seats})
+$$
+
+$$
 \operatorname{seats}(g, c) \land \operatorname{seats}(g, d) \land c \neq d \implies \bot
 $$
 
@@ -98,9 +89,10 @@ grounds.
 **(a) A guard that is an absence over models: refuted by what a guard reads.** An absence asks whether this
 state holds facts matching a pattern, $S \models \operatorname{absent}(G)\theta$, and every guard, present or
 future, is evaluated against the facts of the state the rule fires in. *Another model exists* is a fact of no
-state and cannot be one: another model is another state. Incompleteness of $r$ *in this state*, which
-$\operatorname{open}(r)$ states, is decided by this state. Closure of the **set of states** is a property of no
-state at all, only of the lattice of them.
+state and cannot be one: another model is another state. That the
+[held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) of $r$ is incomplete
+*in this state*, which $\operatorname{open}(r)$ states, is decided by this state. Closure of the **set of
+states** is a property of no state at all, only of the lattice of them.
 
 **(b) A rule reading the search's own state: refuted on grounds, not on feasibility.** A reasoner could expose
 how many states it has found, or whether it has finished, as facts. A rule that read one would make **what is
@@ -124,7 +116,7 @@ Every system of this family puts the count of models at the meta level:
 
 | system | what looks like a count in the program | what it quantifies over |
 |---|---|---|
-| answer set programming | aggregates over atoms, cardinality bounds on a choice, a minimisation statement | atoms **within** one answer set; optimisation ranks answer sets from outside the program's logic |
+| answer set programming | aggregates over atomic formulas, cardinality bounds on a choice, a minimisation statement | atomic formulas **within** one answer set; optimisation ranks answer sets from outside the program's logic |
 | Alloy | a scope on a run | a bound on the universe the analyser searches, given as a command, not a sentence of the model; a cardinality counts tuples **inside** one instance |
 | SMT solving | the blocking-clause loop | a procedure **outside** the formula, which never mentions how many models it has |
 | model counting, plain and projected | the count itself | an operation **on** a program |
@@ -157,23 +149,28 @@ A claim is the meta level's sentence. A question's claim lists the classes of th
 the question asks about; a claim about the region lists the states of $R$ (the user's
 [query page](../../user/03-syntax-and-semantics/12-query.md) and
 [solutions page](../../user/03-syntax-and-semantics/13-solutions-and-models.md) have the spelling). A claim is
-an answer, never a pattern: its facts are ground, and **naming a relation closes it**. Write $S|_r$ for the
-facts of relation $r$ in $S$. A claim about the region is a set $\Gamma$ of listed models $\gamma$, and it holds
-of a set of states $\mathcal{S}$ when the two correspond one to one and agree on every relation the claim
-names; a question's claim is a set $\Gamma_g$ of sets of rows, and it holds when those are exactly the row sets
-of the goal $g$ over the states:
+an answer, never a pattern: what it lists are facts, with no variable, and **a claim that names a relation lists
+every fact of it that a state holds**. The facts of a relation $r$ that a state $S$ holds are its held extent
+there, $\operatorname{ext}_S(r)$, and those a listed model $\gamma$ lists are $\operatorname{ext}_\gamma(r)$. A
+claim about the region is a set $\Gamma$ of listed models $\gamma$, and it holds of a set of states $\mathcal{S}$
+when the two correspond one to one and agree on the held extent of every relation the claim names; a question's
+claim is a set $\Gamma_g$ of sets of rows, and it holds when those are exactly the row sets of the goal $g$ over
+the states:
 
 $$
-\operatorname{holds}(\Gamma, \mathcal{S}) \iff \exists \text{ a bijection } \beta : \Gamma \to \mathcal{S}.\;\;
-\forall \gamma \in \Gamma.\; \forall r \in \operatorname{rels}(\Gamma).\;\; \beta(\gamma)|_r = \gamma|_r
+\begin{aligned}
+\operatorname{holds}(\Gamma, \mathcal{S}) \iff\ & \exists \text{ a bijection } \beta : \Gamma \to \mathcal{S}. \\
+& \forall \gamma \in \Gamma.\; \forall r \in \operatorname{rels}(\Gamma). \\
+& \operatorname{ext}_{\beta(\gamma)}(r) = \operatorname{ext}_{\gamma}(r)
+\end{aligned}
 $$
 
 $$
-\operatorname{holds}(\Gamma_g, \mathcal{S}) \iff \Gamma_g = \lbrace\, \operatorname{rows}_g(S) : S \in \mathcal{S} \,\rbrace
+\operatorname{holds}(\Gamma_g, \mathcal{S}) \iff \Gamma_g = \lbrace \operatorname{rows}_g(S) : S \in \mathcal{S} \rbrace
 $$
 
-So every relation a claim names is listed at its complete extent in every state, and a relation it never names
-is unconstrained
+So of every relation a claim names the whole held extent is listed, in every state, and of a relation it never
+names nothing is required
 ([Q-M1c.2](../../../decisions/language/Q-M1c.2-an-expectation-is-ground-and-naming-a-relation.md)). A claim lists
 all of what it is about: there is no form for *at least these*.
 
@@ -184,11 +181,12 @@ $$
 \begin{cases}
 \textbf{held} & \text{the states were all computed, and } \operatorname{holds}(\Gamma, \mathcal{S}) \\
 \textbf{failed} & \text{a computed state refutes it: } \lnot\operatorname{holds}(\Gamma, \mathcal{S}) \\
-\textbf{not checked} & \text{neither was decided: another question was asked of } R \text{, or a budget stopped the search first}
+\textbf{not checked} & \text{neither was decided}
 \end{cases}
 $$
 
-A false claim is a result, not a refusal of the program. A claim not checked is never read as held: it counts
+Neither is decided where another question was asked of $R$, or where a budget stopped the search first. A false
+claim is a result, not a refusal of the program. A claim not checked is never read as held: it counts
 against the run as a failed one does, so that a claim too costly to check is not mistaken for one that holds;
 where root alone is asked, and so nothing is asked of $R$, it counts for nothing
 ([Q-M1f.257](../../../decisions/cli/Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md)).
@@ -204,7 +202,7 @@ $\operatorname{alt}(I)$ of [finding R](07-finding-r.md#4-a-monotone-program-thre
 those $S$ denies:
 
 $$
-\operatorname{alt}(I, S) \;=\; \lbrace\, r(a, b) \;:\; b \in \operatorname{ext}(B) \,\rbrace \;\setminus\; \lbrace\, h : \lnot h \in S \,\rbrace
+\operatorname{alt}(I, S) = \lbrace\, r(a, b) \;:\; b \text{ a member of } B \,\rbrace \setminus \lbrace\, h \;:\; \lnot h \in S \,\rbrace
 $$
 
 **Proposition (jointly exhaustive).** Let $C$ owe $I$, and write ${\uparrow} C = \lbrace C' : C \subseteq C'
@@ -212,11 +210,11 @@ $$
 above $C$ holds one of the alternatives, and is a state of $R$ above one of the branches:
 
 $$
-\mathcal{S}\bigl( R \cap {\uparrow} C \bigr) \;=\; \bigcup_{h \,\in\, \operatorname{alt}(I, \operatorname{st}(C))} \mathcal{S}\bigl( R \cap {\uparrow}( C \cup \lbrace h \rbrace ) \bigr)
+\mathcal{S}\bigl( R \cap {\uparrow} C \bigr) = \bigcup_{h \in \operatorname{alt}(I, \operatorname{st}(C))} \mathcal{S}\bigl(R \cap {\uparrow}(C \cup \lbrace h \rbrace)\bigr)
 $$
 
 *Argument.* Let $C' \in R$ with $C \subseteq C'$. $C'$ is discharged, so it pays $I$: $\operatorname{st}(C')$
-holds a witness $h = r(a, b)$, $b \in \operatorname{ext}(B)$. $C'$ is alive, so $h$ is not refuted there, and
+holds a witness $h = r(a, b)$, $b$ a member of $B$. $C'$ is alive, so $h$ is not refuted there, and
 under the two conditions below $h$ is a candidate and an alternative,
 $h \in \operatorname{alt}(I, \operatorname{st}(C))$. Adding to a commitment a candidate its state already holds
 changes nothing, $\operatorname{st}(C' \cup \lbrace h \rbrace) = \operatorname{st}(C')$, so
@@ -248,14 +246,16 @@ is a duplicate, not a gap, and $R$ is a set, so it holds the state once.
 so no branch is longer than the number of instances root owes:
 
 $$
-h \in \operatorname{alt}(I, \operatorname{st}(C)) \;\implies\; \operatorname{Owed}(C \cup \lbrace h \rbrace) \subsetneq \operatorname{Owed}(C),
-\qquad
-\text{depth} \;\leq\; \operatorname{owes}(\emptyset)
+\begin{aligned}
+h \in \operatorname{alt}(I, \operatorname{st}(C)) \implies\ & \operatorname{Owed}(C \cup \lbrace h \rbrace) \\
+\subsetneq\ & \operatorname{Owed}(C) \\
+\text{depth} \leq\ & \operatorname{owes}(\emptyset)
+\end{aligned}
 $$
 
-*Argument.* An instance's trigger reads only relations no commitment changes, so a state above root owes only
-instances root owes. Discharged is upward-closed, so each child pays the instance it branched on and every
-instance its parent had paid. $\square$
+*Argument.* An instance's trigger reads only facts of relations whose held extent no commitment changes, so a
+state above root owes only instances root owes. Discharged is upward-closed, so each child pays the instance it
+branched on and every instance its parent had paid. $\square$
 
 ## 5. A state of R is a model of the program as H scopes it
 
@@ -265,23 +265,21 @@ nothing beyond it
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)).
 
 A state of $R$ is a model of the **program**, and not only of the program as $H$ scopes it, when every relation
-$r$ a hypothesis could be about, with $\operatorname{rels}(H) \not\ni r$, is either
+$r$ that a hypothesis could be a fact of, with $r \notin \operatorname{rels}(H)$, is either
 
-$$
-\textbf{closed:}\;\; \text{no rule concludes } r \text{ positively}
-\qquad\text{or}\qquad
-\textbf{decided:}\;\; \text{saturation fixes every fact of } r \text{ from what the commitment settles}
-$$
+- **closed to derivation**: no rule concludes a fact of $r$; or
+- **decided**: saturation fixes every fact of $r$ from what the commitment settles.
 
-A closed relation is one no hypothesis about could be confirmed.
+Of a relation closed to derivation no hypothesised fact could be confirmed.
 
 **A program for which neither holds.** Its obligations owe a seating from both ends, and $H$ holds the
-seating candidates alone. A second relation, who knows whom, is owed by nobody and is not closed, since a rule
-concludes it, and nothing decides whether anyone knows anyone: $R$'s states mention no such fact, and the same
-program with one acquaintance added has further consistent states. $R$ is right over $H$, and the certificate is
-true of $H$. **What it leaves out, every answer names**: wherever $H$ holds no fact of a relation the program
-can conclude or ask about, and the program does not scope that relation out itself, the answer names the
-relation and says that $R$ holds of it only what the program states and saturation derives. That sentence is
+seating candidates alone. Of a second relation, who knows whom, no obligation owes a fact; it is not closed to
+derivation, since a rule concludes a fact of it; and nothing decides whether anyone knows anyone: $R$'s states
+mention no such fact, and the same program with one acquaintance added has further consistent states. $R$ is
+right over $H$, and the certificate is true of $H$. **What it leaves out, every answer names**: wherever $H$
+holds no fact of a relation that the program can conclude a fact of or ask about, and the program does not scope
+that relation out itself, the answer names the relation and says that $R$ holds of it only what the program
+states and saturation derives. That sentence is
 the certificate's scope, stated beside the certificate.
 
 How much a listed state leaves open can be asked as well: the facts the blind enumerator of
@@ -319,7 +317,7 @@ the program stores $\lnot r(a, b)$ beside every excluded value, it mirrors the p
 with the table of the combinations that occur, one row per state:
 
 $$
-\operatorname{key}(\mathcal{S}) \;\in\; \operatorname*{arg\,min}_{Y \subseteq X} \;\lbrace\, \lvert Y \rvert \;:\; \forall S \neq S' \in \mathcal{S}.\;\; \exists x \in Y.\;\; x(S) \neq x(S') \,\rbrace
+\operatorname{key}(\mathcal{S}) \in \operatorname*{arg\,min}_{Y \subseteq X} \lbrace\, \lvert Y \rvert \;:\; \forall S \neq S' \in \mathcal{S}.\;\; \exists x \in Y.\;\; x(S) \neq x(S') \,\rbrace
 $$
 
 ![States as nodes, and on each edge the variables two states differ in](diagrams/10-key.svg)
@@ -340,8 +338,10 @@ to where it says
 [Q-M1d.1](../../../decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md)):
 
 $$
-\text{classified everything asked} \implies \text{the listing} = \mathcal{S}, \qquad
-\text{stopped by a budget} \implies \text{the listing} \subseteq \mathcal{S}
+\begin{aligned}
+\text{classified everything asked} &\implies \text{the listing} = \mathcal{S} \\
+\text{stopped by a budget} &\implies \text{the listing} \subseteq \mathcal{S}
+\end{aligned}
 $$
 
 An unqualified count would claim a completeness that was not established: on a set of states that is not the

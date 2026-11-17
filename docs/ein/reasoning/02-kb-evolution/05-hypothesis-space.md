@@ -3,7 +3,11 @@
 A program's **hypothesis space** is the lattice of its commitments with the function that gives each its state,
 
 $$
-\big( 2^{H}, \subseteq \big), \qquad \operatorname{st} : 2^{H} \to \text{states}, \quad \operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+\begin{aligned}
+&\big( 2^{H}, \subseteq \big) \\
+&\operatorname{st} : 2^{H} \to \text{states} \\
+&\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)
+\end{aligned}
 $$
 
 together with the **structure** of the candidate set $H$: what $H$ looks like from inside. This page defines the
@@ -58,33 +62,41 @@ $$
 The excluded pairs are the minimal dead sets of two candidates:
 
 $$
-X \;=\; \lbrace\, \lbrace a, b \rbrace : a \perp b \,\rbrace \;=\; \lbrace\, D \in N : \lvert D \rvert = 2 \,\rbrace
+\begin{aligned}
+X &= \lbrace\, \lbrace a, b \rbrace : a \perp b \,\rbrace \\
+  &= \lbrace\, D \in N : \lvert D \rvert = 2 \,\rbrace
+\end{aligned}
 $$
 
 **A candidate's mark** is what root says of it alone: *at root*, *dead alone*, or *alive alone*. A candidate alive
 alone is **open**, and $H^{\mathrm{o}} = \lbrace a \in H : \operatorname{alive}(\lbrace a \rbrace) \rbrace$.
 
-On a monotone program two lemmas decide a pair without its node. *Dead is upward-closed*: a pair with a member dead
+On a monotone program ([solution semantics § 1.6](06-solution-semantics.md#16-monotone)) two lemmas decide a pair
+without its node. *Dead is upward-closed*: a pair with a member dead
 alone is dead, and is **not** an exclusion, since its dead member says all there is to say. *A commitment's state is
 its closure's*: a pair one of whose members implies the other is that member's node.
 
 $$
-\operatorname{deadalone}(a) \implies \operatorname{dead}(\lbrace a, b \rbrace), \qquad
-a \rightarrow b \implies \operatorname{st}(\lbrace a, b \rbrace) = \operatorname{st}(\lbrace a \rbrace)
+\begin{aligned}
+\operatorname{deadalone}(a) &\implies \operatorname{dead}(\lbrace a, b \rbrace) \\
+a \rightarrow b &\implies \operatorname{st}(\lbrace a, b \rbrace) = \operatorname{st}(\lbrace a \rbrace)
+\end{aligned}
 $$
 
 Under a dead root every candidate is dead alone and no pair says anything.
 
-**The running example.** One guest; she is owed a chair, of two, and a drink, of two; each relation is functional;
-and a stated fact says nobody at the first chair drinks milk
+**The running example.** One guest; she is owed a chair, of two, and a drink, of two; each of the two relations is
+stated functional; and a stated fact says nobody at the first chair drinks milk
 ([Hypothesis generation § 4.1](04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it) draws its
 root). Its four candidates are
 
 $$
-c_1 = \operatorname{seats}(\mathsf{Ann}, \mathsf{C1}), \quad
-c_2 = \operatorname{seats}(\mathsf{Ann}, \mathsf{C2}), \quad
-t = \operatorname{drinks}(\mathsf{Ann}, \mathsf{Tea}), \quad
-m = \operatorname{drinks}(\mathsf{Ann}, \mathsf{Milk})
+\begin{aligned}
+c_1 &= \operatorname{seats}(\mathsf{Ann}, \mathsf{C1}) \\
+c_2 &= \operatorname{seats}(\mathsf{Ann}, \mathsf{C2}) \\
+t &= \operatorname{drinks}(\mathsf{Ann}, \mathsf{Tea}) \\
+m &= \operatorname{drinks}(\mathsf{Ann}, \mathsf{Milk})
+\end{aligned}
 $$
 
 and its pair layer is $X = \lbrace \lbrace c_1, c_2 \rbrace, \lbrace t, m \rbrace, \lbrace c_1, m \rbrace \rbrace$,
@@ -103,9 +115,11 @@ apart by reading the same universe a second time in **the small KB**: the progra
 out, every rule, declaration and import kept.
 
 $$
-K_0^{\circ} \;=\; K_0 \setminus \operatorname{Puz}(P), \qquad
-\mathrm{root}^{\circ} = \operatorname{sat}(K_0^{\circ}), \qquad
-\operatorname{st}^{\circ}(C) = \operatorname{sat}(\mathrm{root}^{\circ} \cup C), \quad C \subseteq H
+\begin{aligned}
+K_0^{\circ} &= K_0 \setminus \operatorname{Puz}(P) \\
+\mathrm{root}^{\circ} &= \operatorname{sat}(K_0^{\circ}) \\
+\operatorname{st}^{\circ}(C) &= \operatorname{sat}(\mathrm{root}^{\circ} \cup C) && \text{for } C \subseteq H
+\end{aligned}
 $$
 
 The commitments are over the same $H$, root's: the small KB's own candidate set would be another program's. Every
@@ -113,8 +127,10 @@ part of the pair layer has its twin there, written with the same mark: $\operato
 $\perp^{\circ}$, $X^{\circ}$.
 
 $$
-\operatorname{theory}(\lbrace a, b \rbrace) \iff \operatorname{dead}^{\circ}(\lbrace a, b \rbrace), \qquad
-\operatorname{puzzle}(\lbrace a, b \rbrace) \iff \lbrace a, b \rbrace \in X \,\land\, \operatorname{alive}^{\circ}(\lbrace a, b \rbrace)
+\begin{aligned}
+\operatorname{theory}(\lbrace a, b \rbrace) &\iff \operatorname{dead}^{\circ}(\lbrace a, b \rbrace) \\
+\operatorname{puzzle}(\lbrace a, b \rbrace) &\iff \lbrace a, b \rbrace \in X \,\land\, \operatorname{alive}^{\circ}(\lbrace a, b \rbrace)
+\end{aligned}
 $$
 
 A pair dead in the small KB is **of the theory**; a pair root excludes that is alive there is **of the puzzle**.
@@ -125,27 +141,41 @@ member dead alone at root.
 
 **Which statements are the puzzle's** nothing declares; $\operatorname{Puz}(P)$ is read off the candidates. Let
 $T \subseteq K_0$ be the facts the program states, $\operatorname{rels}(H)$ the candidates' relations,
-$\operatorname{names}(H)$ the names the candidates hold as arguments, and $\operatorname{Rd}$ the relations the rung that built $H$
-reads at root. For $f \in T$, with $\operatorname{names}(f)$ the names $f$ holds as arguments:
+$\operatorname{names}(H)$ and $\operatorname{names}(f)$ the names of the candidates and of a fact $f$, the atoms under
+their argument arrows ([the knowledge base](../01-static-ir/01-knowledge-base.md#nesting)), and $\operatorname{Rd}$
+the relations whose facts the rung that built $H$ reads at root. For $f \in T$:
 
 $$
-f \in \operatorname{Puz}(P) \iff \operatorname{rel}(f) \in \operatorname{rels}(H) \;\;\lor\;\;
-\begin{cases}
-\operatorname{names}(f) \cap \operatorname{names}(H) \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd} & \text{where hypothesis rules or obligations built } H \\
-\lvert \operatorname{names}(f) \cap \operatorname{names}(H) \rvert \ge 2 \;\lor\; \big( \operatorname{names}(f) \cap \operatorname{names}(H) \neq \emptyset \,\land\, \operatorname{names}(f) \cap \operatorname{rels}(H) \neq \emptyset \big) & \text{where the blind enumerator built } H
-\end{cases}
+\begin{aligned}
+f \in \operatorname{Puz}(P) &\iff \operatorname{given}(f) \,\lor\, \operatorname{clue}(f) \\
+\operatorname{given}(f) &\iff \operatorname{rel}(f) \in \operatorname{rels}(H)
+\end{aligned}
 $$
 
-The first disjunct is a given: a fact of a relation a candidate is of, stated or denied. The second is a clue about
-the candidates' names: on the program's own rungs, any other fact that names one of them; under the blind
-enumerator, only a fact that names two of them, or one of them with a candidates' relation.
+A **given** is a fact of a relation a candidate is of, stated or denied. A **clue** is about the candidates'
+names, and what counts as one depends on the rung that built $H$. Where hypothesis rules or obligations built it, a
+clue is any other fact that names one of them:
 
-A fact that names none of them is kept: a declaration that names a relation and none of those names speaks of the relation
-whole. A fact of a relation the rung reads says what the universe is made of, and is kept. What loading records of a
-stated fact goes with the fact. The rule reads no relation by what it is called. It is held by what must be true of
-any right one:
+$$
+\operatorname{clue}(f) \iff \operatorname{names}(f) \cap \operatorname{names}(H) \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd}
+$$
 
-- a declared bijection's rows and columns are exactly the theory's pairs;
+Where the blind enumerator built it, a clue is only a fact that names two of them, or one of them with a
+candidates' relation:
+
+$$
+\begin{aligned}
+\operatorname{clue}(f) \iff\ & \lvert \operatorname{names}(f) \cap \operatorname{names}(H) \rvert \ge 2 \\
+\lor\ & \big( \operatorname{names}(f) \cap \operatorname{names}(H) \neq \emptyset \,\land\, \operatorname{names}(f) \cap \operatorname{rels}(H) \neq \emptyset \big)
+\end{aligned}
+$$
+
+A fact that names none of them is kept: a declaration that names a relation and none of those names speaks of the
+relation whole. A fact of a relation whose facts the rung reads says what the universe is made of, and is kept. What
+loading records of a stated fact goes with the fact. The rule singles out no relation by its name. It is held by
+what must be true of any right one:
+
+- the rows and columns of a relation stated a bijection are exactly the theory's pairs;
 - two programs one clue apart have one theory;
 - one puzzle in two encodings has one theory;
 - the small KB derives no more than the program: $\mathrm{root}^{\circ} \subseteq \mathrm{root}$, and
@@ -165,15 +195,21 @@ it is the puzzle's by. A support is an explanation, as a [core](09-cores.md) is:
 of the graph whose vertices are all the candidates of $H$ and whose edges are $X^{\circ}$.
 
 $$
-\mathcal{G} \;=\; \lbrace\, g \subseteq H \;:\; \lvert g \rvert \ge 2,\;\; \forall a \neq b \in g.\; \lbrace a, b \rbrace \in X^{\circ},\;\; g \text{ maximal} \,\rbrace,
-\qquad
-\forall g \in \mathcal{G}.\; \forall C \in R.\;\; \lvert \operatorname{cl}(C) \cap g \rvert \le 1
+\begin{aligned}
+\mathcal{G} = \lbrace\, g \subseteq H \;:\;\ & \lvert g \rvert \ge 2 \\
+\land\ & \forall a \neq b \in g.\ \lbrace a, b \rbrace \in X^{\circ} \\
+\land\ & g \text{ maximal} \,\rbrace
+\end{aligned}
 $$
 
-A state holds **at most one** member of a group.
+A state holds **at most one** member of a group:
 
-- **The cover.** Groups overlap: a candidate of a bijection is in a row and in a column. So the groups are a cover of
-  the candidates they hold, $\bigcup \mathcal{G}$, and no partition.
+$$
+\forall g \in \mathcal{G}.\ \forall C \in R.\ \ \lvert \operatorname{cl}(C) \cap g \rvert \le 1
+$$
+
+- **The cover.** Groups overlap: a candidate that is a fact of a relation stated a bijection is in a row and in a
+  column. So the groups are a cover of the candidates they hold, $\bigcup \mathcal{G}$, and no partition.
 - **In no group.** A candidate in no pair of $X^{\circ}$ is in no group, and no group says anything of it. A
   candidate the theory itself kills alone is among them.
 - **An open member** of a group is a member alive alone at root, $g \cap H^{\mathrm{o}}$. A candidate dead alone at
@@ -186,8 +222,8 @@ What *at most one* rests on: a group's pairs are dead in the small KB, and dead 
 no more than the program, and so, on a monotone program, at every node above. The pairs of the theory whose node is
 alive at root are the measure of that premise, and there are none where the small KB's rule fits the program.
 
-Two people and two chairs, each person owed a chair and each chair a person, the relation a bijection: the engine
-draws the cover with a group a box and a candidate an oval joined to each group it is in.
+Two people and two chairs, each person owed a chair and each chair a person, the relation stated a bijection: the
+engine draws the cover with a group a box and a candidate an oval joined to each group it is in.
 
 ![The cover: four groups as boxes and the four candidates, each joined to its groups](diagrams/05-cover.svg)
 
@@ -224,14 +260,15 @@ $(H, X^{\circ})$, with $\mathcal{G}_Y$ the groups inside it, such that
 $$
 \begin{aligned}
 & \forall a \in Y.\;\; \lvert \lbrace g \in \mathcal{G}_Y : a \in g \rbrace \rvert = 2 \\
-& \mathcal{G}_Y = \mathcal{F}_1 \uplus \mathcal{F}_2, \qquad \forall g \neq g' \in \mathcal{F}_i.\;\; g \cap g' = \emptyset \\
+& \mathcal{G}_Y = \mathcal{F}_1 \uplus \mathcal{F}_2 \ \text{ with } \ \forall g \neq g' \in \mathcal{F}_i.\;\; g \cap g' = \emptyset \\
 & \forall g \neq g' \in \mathcal{G}_Y.\;\; \lvert g \cap g' \rvert \le 1
 \end{aligned}
 $$
 
 every candidate in exactly two groups, the groups in two families no two groups of one of which share a member, and
-two groups sharing at most one member. A member is one cell, between its row and its column. One relation's
-candidates may be several grids, and a component that is no grid says which of the three conditions fails.
+two groups sharing at most one member. A member is one cell, between its row and its column. The candidates that
+are facts of one relation may be several grids, and a component that is no grid says which of the three conditions
+fails.
 
 **A bijection** is a grid with $\lvert \mathcal{F}_1 \rvert = \lvert \mathcal{F}_2 \rvert$ and every group owed, as
 in the drawing above: two rows, two columns, four owed groups. **Nothing is concluded from a count**: where one
@@ -245,7 +282,7 @@ what is missing, not what would fill it.
 A group says which candidates answer one question. The coupling says which questions bear on each other.
 
 $$
-Q \;=\; \mathcal{G} \;\cup\; \lbrace\, \lbrace a \rbrace : a \in H \setminus \textstyle\bigcup \mathcal{G} \,\rbrace
+Q = \mathcal{G} \,\cup\, \lbrace\, \lbrace a \rbrace : a \in H \setminus \textstyle\bigcup \mathcal{G} \,\rbrace
 $$
 
 - **A question** is a group, *which of these, if any*, or a candidate in no group, *this one, or not*.
@@ -262,8 +299,10 @@ $$
 excludes, of which one implies the other, or that interact:
 
 $$
-\operatorname{Ties} \;=\; \lbrace\, \lbrace a, b \rbrace \subseteq H^{\mathrm{o}} \;:\; \nexists q \in Q.\; \lbrace a, b \rbrace \subseteq q,\;\;
-a \perp b \,\lor\, a \rightarrow b \,\lor\, b \rightarrow a \,\lor\, a \bowtie b \,\rbrace
+\begin{aligned}
+\operatorname{Ties} = \lbrace\, \lbrace a, b \rbrace \subseteq H^{\mathrm{o}} \;:\;\ & \nexists q \in Q.\ \lbrace a, b \rbrace \subseteq q \\
+\land\ & \big( a \perp b \lor a \rightarrow b \lor b \rightarrow a \lor a \bowtie b \big) \,\rbrace
+\end{aligned}
 $$
 
 And **the whole node**, root with every open candidate committed, with every rule application of its saturation:
@@ -297,8 +336,10 @@ With the components over every edge $H^{\mathrm{o}} = Y_1 \uplus \dots \uplus Y_
 commitments inside $Y_i$:
 
 $$
-R \;=\; \lbrace\, C_1 \cup \dots \cup C_p \;:\; C_i \in R_i \,\rbrace, \qquad
-k_c = \prod_{i=1}^{p} \lvert R_i \rvert
+\begin{aligned}
+R &= \lbrace\, C_1 \cup \dots \cup C_p \;:\; C_i \in R_i \,\rbrace \\
+k_c &= \prod_{i=1}^{p} \lvert R_i \rvert
+\end{aligned}
 $$
 
 Wherever all of $R$ is known, every member of $N$ lies inside one edge of a conflict or a derivation, and $R$ is the
@@ -314,9 +355,12 @@ much it covers: here one tie, $\lbrace c_1, m \rbrace$, and the one conflict of 
 The grey question is in no edge. The components are the chair with the drink, and the hat, and
 
 $$
-R_1 = \lbrace \lbrace c_1, t \rbrace, \lbrace c_2, t \rbrace, \lbrace c_2, m \rbrace \rbrace, \qquad
-R_2 = \lbrace \lbrace h_1 \rbrace, \lbrace h_2 \rbrace \rbrace, \qquad
-R = \lbrace\, C_1 \cup C_2 : C_1 \in R_1,\, C_2 \in R_2 \,\rbrace, \qquad k_c = 3 \cdot 2 = 6
+\begin{aligned}
+R_1 &= \lbrace \lbrace c_1, t \rbrace, \lbrace c_2, t \rbrace, \lbrace c_2, m \rbrace \rbrace \\
+R_2 &= \lbrace \lbrace h_1 \rbrace, \lbrace h_2 \rbrace \rbrace \\
+R &= \lbrace\, C_1 \cup C_2 : C_1 \in R_1,\, C_2 \in R_2 \,\rbrace \\
+k_c &= 3 \cdot 2 = 6
+\end{aligned}
 $$
 
 with $h_1$ and $h_2$ the two hats' candidates.
@@ -337,7 +381,11 @@ neither, and is a statement about **one node**:
   The edges one application back are kept beside, as above.
 
 $$
-Q' \;=\; \lbrace\, \operatorname{alt}(I) : I \in \operatorname{Owed}(\mathrm{root}),\; I \text{ licensed} \,\rbrace \;\cup\; \lbrace\, \lbrace a \rbrace : a \text{ in no such } \operatorname{alt}(I) \,\rbrace, \qquad W' = \operatorname{st}(H)
+\begin{aligned}
+Q' =\ & \lbrace\, \operatorname{alt}(I) : I \in \operatorname{Owed}(\mathrm{root}), \; I \text{ licensed} \,\rbrace \\
+\cup\ & \lbrace\, \lbrace a \rbrace : a \text{ in no such } \operatorname{alt}(I) \,\rbrace \\
+W' =\ & \operatorname{st}(H)
+\end{aligned}
 $$
 
 **What it does not see:**
@@ -368,8 +416,10 @@ order the choice. The choice decides how much is computed and never the answer
 node above it, and a closure read at root is a subset of every closure above it,
 
 $$
-\operatorname{dead}(\lbrace a, b \rbrace) \implies \forall C \supseteq \lbrace a, b \rbrace.\; \operatorname{dead}(C), \qquad
-a \rightarrow b \implies \forall C \ni a.\; b \in \operatorname{cl}(C)
+\begin{aligned}
+\operatorname{dead}(\lbrace a, b \rbrace) &\implies \forall C \supseteq \lbrace a, b \rbrace.\; \operatorname{dead}(C) \\
+a \rightarrow b &\implies \forall C \ni a.\; b \in \operatorname{cl}(C)
+\end{aligned}
 $$
 
 so what the pair layer says of root's nodes holds of the lattice.
@@ -384,8 +434,9 @@ two and another for the blind enumerator.
 
 **$H$ does not grow, of debts**: on a monotone program a node owes no instance root does not
 ([Finding R § 4](07-finding-r.md#4-a-monotone-program-three-properties-and-the-licences)). Of a hypothesis rule's
-proposals nothing guarantees it: one whose premise reads a relation a commitment can change would propose more at a
-node than at root. The structure is of $H$ as root builds it either way.
+proposals nothing guarantees it: one whose pattern reads facts of a relation whose
+[held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) a commitment can change
+would propose more at a node than at root. The structure is of $H$ as root builds it either way.
 
 **The programs the small KB's rule does not fit.** It reads the puzzle off the candidates, and four kinds of program
 defeat that reading. On each the structure is still a set of true statements; what it does not do is separate the
@@ -395,7 +446,7 @@ theory from the puzzle the way a reader would.
 |---|---|
 | **a clue written as a rule** | $K_0^{\circ}$ keeps every rule, so what such a rule says is the theory's. The rules that name one of the candidates' names are the ones to suspect |
 | **a clue that names none of the candidates' names** | kept, as a declaration is: a gate between two wires no candidate holds |
-| **the blind enumerator's universe** | $H$ holds facts of every open relation over every guessable atom, so a label and a relation's name are among $\operatorname{names}(H)$, and the statements that say what an atom is go with the clues. A cover there can be all of candidates nobody would propose, every member of every group dead alone at root: its groups are true and say nothing of the search |
+| **the blind enumerator's universe** | $H$ holds facts of every eligible relation ([Hypothesis generation § 5](04-hypothesis-generation.md#5-the-blind-enumerator)) over every guessable atom, so a label and a relation's name are among $\operatorname{names}(H)$, and the statements that say what an atom is go with the clues. A cover there can be all of candidates nobody would propose, every member of every group dead alone at root: its groups are true and say nothing of the search |
 | **a table a module states over the candidates' names** | dropped with the clues. Nothing in a loaded fact says which text stated it |
 
 And one more can show in the structure itself: a program not proved monotone whose small KB is. The small KB's layer
@@ -406,7 +457,10 @@ A smaller program derives no more, unless a rule reads the absence of a statemen
 small KB and alive at root, and what the small KB's fixpoint holds that root's does not,
 
 $$
-\lbrace\, C : \operatorname{dead}^{\circ}(C) \land \operatorname{alive}(C) \,\rbrace, \qquad \mathrm{root}^{\circ} \setminus \mathrm{root}
+\begin{aligned}
+& \lbrace\, C : \operatorname{dead}^{\circ}(C) \land \operatorname{alive}(C) \,\rbrace \\
+& \mathrm{root}^{\circ} \setminus \mathrm{root}
+\end{aligned}
 $$
 
 are both empty where the rule fits a program and name the program where it does not.

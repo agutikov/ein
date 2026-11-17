@@ -16,32 +16,39 @@ $$
 T_P(K) \;=\; K \;\cup \bigcup_{(\rho, a, \theta) \,\in\, \operatorname{en}(K)} \psi_\rho[a]\,\theta
 $$
 
-$T_P$ is **inflationary**, $K \subseteq T_P(K)$: firing adds the literals a conclusion states, stored negations
-among them, and never removes one. Within one world the set of facts only grows, and nothing is retracted.
+$T_P$ is **inflationary**, $K \subseteq T_P(K)$: firing adds the facts of a conclusion's instance, stored
+negations among them, and never removes one. Within one world the set of facts only grows, and nothing is
+retracted.
 
 **Where no rule reads an absence, $T_P$ is monotone**, since a match that holds in $K$ holds in every larger
 knowledge base:
 
 $$
-K \subseteq K' \implies \operatorname{en}(K) \subseteq \operatorname{en}(K') \implies T_P(K) \subseteq T_P(K')
+\begin{aligned}
+K \subseteq K' &\implies \operatorname{en}(K) \subseteq \operatorname{en}(K') \\
+&\implies T_P(K) \subseteq T_P(K')
+\end{aligned}
 $$
 
 and $\operatorname{sat}(K)$ is the least knowledge base containing $K$ that no firing changes, the limit of the
 chain
 
 $$
-K \;\subseteq\; T_P(K) \;\subseteq\; T_P^2(K) \;\subseteq\; \cdots,
-\qquad
-\operatorname{sat}(K) \;=\; \bigcup_{n \geq 0} T_P^{\,n}(K)
-\;=\; \min \lbrace\, K' \supseteq K \;:\; T_P(K') = K' \,\rbrace
+\begin{aligned}
+K \;&\subseteq\; T_P(K) \;\subseteq\; T_P^2(K) \;\subseteq\; \cdots \\
+\operatorname{sat}(K) \;&=\; \bigcup_{n \geq 0} T_P^{\,n}(K) \\
+&=\; \min \lbrace\, K' \supseteq K \;:\; T_P(K') = K' \,\rbrace
+\end{aligned}
 $$
 
 Three properties of that fixpoint are used on every later page:
 
 $$
-K \subseteq \operatorname{sat}(K), \qquad
-\operatorname{sat}(\operatorname{sat}(K)) = \operatorname{sat}(K), \qquad
-K \subseteq K' \implies \operatorname{sat}(K) \subseteq \operatorname{sat}(K')
+\begin{aligned}
+K &\subseteq \operatorname{sat}(K) && \text{extensive} \\
+\operatorname{sat}(\operatorname{sat}(K)) &= \operatorname{sat}(K) && \text{idempotent} \\
+K \subseteq K' &\implies \operatorname{sat}(K) \subseteq \operatorname{sat}(K') && \text{monotone}
+\end{aligned}
 $$
 
 It is extensive, idempotent and monotone: a **closure operator**.
@@ -71,22 +78,29 @@ A thin box is a fact, a heavy box a fact a firing added, a coloured box a firing
 $K$; each column further right is one more application of $T_P$:
 
 $$
-K \;\subset\; T_P(K) = K \cup \lbrace \operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2}) \rbrace
-\;\subset\; T_P^2(K) = T_P(K) \cup \lbrace \bot \rbrace = \operatorname{sat}(K)
+\begin{aligned}
+K \;&\subset\; T_P(K) \;\subset\; T_P^2(K) \\
+T_P(K) &= K \cup \lbrace \operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2}) \rbrace \\
+T_P^2(K) &= T_P(K) \cup \lbrace \bot \rbrace \\
+&= \operatorname{sat}(K)
+\end{aligned}
 $$
 
 ## Two phases: the closure and the boundary
 
 Saturation alternates two phases, and that shape is the contract.
 
-**Candidates.** Write a rule's match in disjunctive form, each disjunct a positive part and its guards:
+**Candidates.** A rule's pattern is a disjunction of conjunctions
+([the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match)). Write each disjunct as a positive
+part and its **guards**, the absences that stand in it:
 
 $$
 \varphi \;=\; \bigvee_{d} \Bigl( \varphi_d^{+} \;\land\; \bigwedge_{j} \operatorname{absent}(G_{d,j}) \Bigr)
 $$
 
-where $\varphi_d^{+}$ holds facts, stored negations and comparisons, and no absence. A **candidate** is
-$\kappa = (\rho, a, \theta, d)$ with $K \models \varphi_d^{+}\theta$. It is **positive** when its disjunct has no guard,
+where $\varphi_d^{+}$ holds the disjunct's premises, stored negations among them, and its equalities and
+inequalities, and no absence. A **candidate** is $\kappa = (\rho, a, \theta, d)$ with
+$K \models \varphi_d^{+}\theta$. It is **positive** when its disjunct has no guard,
 and **parked** otherwise. A parked candidate **passes** in $K$ when every guard of its disjunct holds there:
 
 $$
@@ -96,9 +110,10 @@ $$
 **The closure** consults no negation. It is the least fixpoint of the positive candidates alone:
 
 $$
-T_P^{+}(K) \;=\; K \;\cup \bigcup_{\kappa \text{ positive in } K} \psi_\kappa\,\theta,
-\qquad
-\operatorname{pos}(K) \;=\; \bigcup_{n \geq 0} \bigl(T_P^{+}\bigr)^{n}(K)
+\begin{aligned}
+T_P^{+}(K) \;&=\; K \;\cup \bigcup_{\kappa \text{ positive in } K} \psi_\kappa\,\theta \\
+\operatorname{pos}(K) \;&=\; \bigcup_{n \geq 0} \bigl(T_P^{+}\bigr)^{n}(K)
+\end{aligned}
 $$
 
 $K$ is **quiescent** when $\operatorname{pos}(K) = K$.
@@ -108,15 +123,20 @@ $K$ is **quiescent** when $\operatorname{pos}(K) = K$.
 Saturation is the sequence
 
 $$
-K_0' = \operatorname{pos}(K), \qquad
-K_{i+1}' = \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr), \qquad
-\kappa_i = \min_{\lhd} \,\lbrace\, \kappa \text{ parked} : \operatorname{passes}(\kappa, K_i') \,\rbrace \setminus \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace
+\begin{aligned}
+K_0' &= \operatorname{pos}(K) \\
+K_{i+1}' &= \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr) \\
+\kappa_i &= \min_{\lhd} \,\lbrace\, \kappa \text{ parked} : \operatorname{passes}(\kappa, K_i') \,\rbrace \setminus \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace
+\end{aligned}
 $$
 
 and its **fixpoint** is the first quiescence at which the boundary admits nothing:
 
 $$
-\operatorname{sat}(K) = K_m', \qquad m = \min \lbrace\, i : \text{no parked } \kappa \notin \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace \text{ passes in } K_i' \,\rbrace
+\begin{aligned}
+\operatorname{sat}(K) &= K_m' \\
+m &= \min \lbrace\, i \;:\; \text{no parked } \kappa \notin \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace \text{ passes in } K_i' \,\rbrace
+\end{aligned}
 $$
 
 ![Two phases: closures, and the rounds of the boundary between them](diagrams/02-two-phases.svg)
@@ -132,8 +152,10 @@ $\lbrace t, p, q \rbrace$, in which neither guard holds, a model of $P$ under no
 the other again in the knowledge base the first made reaches $\lbrace t, p \rbrace$ or $\lbrace t, q \rbrace$:
 
 $$
-\lbrace t \rbrace \;\xrightarrow{\ \kappa_0 = p\ }\; \lbrace t, p \rbrace,
-\qquad \lbrace t, p \rbrace \not\models \operatorname{absent}(p)
+\begin{aligned}
+\lbrace t \rbrace \;&\xrightarrow{\ \kappa_0 = p\ }\; \lbrace t, p \rbrace \\
+\lbrace t, p \rbrace &\not\models \operatorname{absent}(p)
+\end{aligned}
 $$
 
 **A parked candidate's fate.** A guard with no absence nested in it, once failed, fails in every larger
@@ -149,20 +171,26 @@ Every saturation, root's, each node's and that of any reading of a fixpoint, der
 **Leads to $\bot$.** A candidate leads to a contradiction when its rule's conclusion can make one:
 
 $$
-\operatorname{lead}(\kappa, K) \iff \bot \in \psi_\rho \;\lor\; \exists f.\; \lnot f \in \psi_\rho \;\lor\;
-\exists\, r(\bar t) \in \psi_\rho.\; \bigl( \text{some rule of } P \text{ concludes } \lnot r(\cdot) \;\lor\; \exists \bar v.\; \lnot r(\bar v) \in K \bigr)
+\begin{aligned}
+\operatorname{lead}(\kappa, K) \iff\ & \bot \in \psi_\rho \\
+\lor\ & \exists f.\; \lnot f \in \psi_\rho \\
+\lor\ & \exists r(\bar t) \in \psi_\rho.\ \bigl( \text{some rule of } P \text{ concludes } \lnot r(\cdot) \\
+& \phantom{\exists r(\bar t) \in \psi_\rho.\ \bigl(} \lor\; \exists \bar v.\; \lnot r(\bar v) \in K \bigr)
+\end{aligned}
 $$
 
 **Arrival.** $\operatorname{arr}(\kappa) \in \mathbb{N}$ is the candidate's place in the sequence in which
 candidates become enabled; candidates that become enabled together are taken in the written order of their rules.
 
 $$
-\kappa \lhd \kappa' \iff
-\bigl( \lnot\operatorname{lead}(\kappa, K),\ \operatorname{arr}(\kappa) \bigr) <_{\text{lex}}
-\bigl( \lnot\operatorname{lead}(\kappa', K),\ \operatorname{arr}(\kappa') \bigr)
+\begin{aligned}
+\kappa \lhd \kappa' \iff\ & \bigl( \lnot\operatorname{lead}(\kappa, K),\ \operatorname{arr}(\kappa) \bigr) \\
+\lt\ & \bigl( \lnot\operatorname{lead}(\kappa', K),\ \operatorname{arr}(\kappa') \bigr)
+\end{aligned}
 $$
 
-with *false* before *true*: first what leads to $\bot$, then the rest, and within each half first in, first out.
+the two pairs compared by their first key and then by their second, with *false* before *true*: first what leads
+to $\bot$, then the rest, and within each half first in, first out.
 The $j$-th firing of a saturation is the $\lhd$-least candidate enabled after the first $j - 1$; the boundary
 takes its parked candidates in the same order; a saturation that continues another keeps it
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
@@ -193,9 +221,9 @@ $$
 r(a, b) \;\land\; \operatorname{holds}(f) \;\implies\; \operatorname{noted}(a, f)
 $$
 
-![The rule note: its match above its conclusion](diagrams/02-rule-note.svg)
+![The rule note: its pattern above its conclusion](diagrams/02-rule-note.svg)
 
-The upper panel is the match and the lower the conclusion; a diamond is a variable, and the arrow labelled by
+The upper panel is the pattern and the lower the conclusion; a diamond is a variable, and the arrow labelled by
 the variable in a relation's place stands for a fact of whichever relation the activator names. The program
 states four facts and two activators:
 
@@ -210,7 +238,7 @@ $$
 \end{aligned}
 $$
 
-The first activator binds $f$ to the name $\mathsf{1}$, which holds, and derives
+The first activator binds $f$ to the atom $\mathsf{1}$, which holds, and derives
 $\operatorname{noted}(\mathsf{1}, \mathsf{1})$ and $\operatorname{noted}(\mathsf{2}, \mathsf{1})$, one for each
 edge. The second binds $f$ to the fact $\operatorname{src}(\mathsf{Y})$, of which nothing says that it holds, so
 it derives nothing, and it removes nothing the first derives. In either order of the two activators the fixpoint
@@ -266,8 +294,10 @@ is a third construction and is not claimed equal to these where rules read absen
 be the knowledge bases a saturation passes through. Then
 
 $$
-\operatorname{dead}(K_j'') \implies \forall j' \geq j.\; \operatorname{dead}(K_{j'}'')
-\implies \operatorname{dead}(\operatorname{sat}(K))
+\begin{aligned}
+\operatorname{dead}(K_j'') &\implies \forall j' \geq j.\; \operatorname{dead}(K_{j'}'') \\
+&\implies \operatorname{dead}(\operatorname{sat}(K))
+\end{aligned}
 $$
 
 since a world never loses a fact. Whether a node is dead is therefore decided at the first $j$ at which a
@@ -284,20 +314,22 @@ while a saturation runs, and a node is judged as its rules leave it
 ([Q19](../../../decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)). So what a solver by
 hand concludes without guessing, saturation has to conclude too, and that includes the negatives.
 
-**Negative completion.** A stored negation can be derived from positive evidence and a declared property, with
-no search behind it. For a relation $r$ from a domain $X$ to a range $Y$, each a set of names under one label:
+**Negative completion.** A stored negation can be derived from positive evidence and a property stated of a
+relation, with no search behind it. For a relation $r$ whose facts lead from a domain $X$ to a range $Y$, each
+the set of the atoms under one label:
 
 $$
 \begin{aligned}
-\textbf{functional:}\quad & r(a, b) \;\land\; b' \in Y \setminus \lbrace b \rbrace \;\implies\; \lnot r(a, b') \\
-\textbf{injective:}\quad & r(a, b) \;\land\; a' \in X \setminus \lbrace a \rbrace \;\implies\; \lnot r(a', b) \\
-\textbf{domain elimination:}\quad & \bigl( \forall b' \in Y \setminus \lbrace b \rbrace.\;\; \lnot r(a, b') \bigr) \;\implies\; r(a, b) \\
-\textbf{range elimination:}\quad & \bigl( \forall a' \in X \setminus \lbrace a \rbrace.\;\; \lnot r(a', b) \bigr) \;\implies\; r(a, b)
+r(a, b) \;\land\; b' \in Y \setminus \lbrace b \rbrace &\implies \lnot r(a, b') && \text{functional} \\
+r(a, b) \;\land\; a' \in X \setminus \lbrace a \rbrace &\implies \lnot r(a', b) && \text{injective} \\
+(\forall b' \in Y \setminus \lbrace b \rbrace.\ \lnot r(a, b')) &\implies r(a, b) && \text{domain elimination} \\
+(\forall a' \in X \setminus \lbrace a \rbrace.\ \lnot r(a', b)) &\implies r(a, b) && \text{range elimination}
 \end{aligned}
 $$
 
-and a negative carries across a declared equivalence $e$: $\lnot r(a, b) \land e(b, b') \implies \lnot r(a, b')$.
-The standard library states these as rules over a relation's declared properties
+and a stored negation carries across a relation $e$ stated an equivalence:
+$\lnot r(a, b) \land e(b, b') \implies \lnot r(a, b')$. The standard library states these as rules over the
+properties stated of a relation, each property a fact about it
 ([properties and operators](../../user/03-syntax-and-semantics/07-properties-and-operators.md)), so a puzzle
 writes one property per constraint and saturation fans it out.
 
@@ -309,20 +341,22 @@ puzzle this closes at depth zero every step of the human walkthrough: each *ther
 and the ontology with $C = \emptyset$.
 
 **The same inference over one generic relation.** A puzzle may instead link every attribute through one
-equivalence relation $e$, which is a bijection only between each pair of labels. The same inference is stated for
-that encoding, from a property scoped by a family of labels, rule for rule: placement through an index,
-exclusivity within a label, the negative across a link, elimination for a value and for a slot, the
-unique-neighbour spatial rules. Two things are worth knowing about it. Elimination for a value and fill for a
-slot are both needed and are not each other's mirror: the conclusions are the same edge, but they read different
-negatives and fire at different times. And a symmetric relation needs its negative mirrored,
-$\lnot e(a, b) \implies \lnot e(b, a)$: a negative derived in one argument order reaches no rule that reads the
-other. Both encodings of the Zebra puzzle reach the same model by the same walkthrough.
+relation $e$ stated an equivalence, whose facts are a bijection only between each pair of labels. The same
+inference is stated for that encoding, from a property scoped by a family of labels, rule for rule: placement
+through an index, a label whose atoms are the places; exclusivity within a label; the negative across a link;
+the one place left for an atom, and the one atom of a label left for a place; the unique-neighbour spatial
+rules. Two things are worth knowing about it. The two eliminations, of the places for an atom and of the atoms
+for a place, are both needed and are not each other's mirror: the conclusions are the same edge, but they read
+different stored negations and fire at different times. And a relation stated symmetric needs its stored
+negations mirrored, $\lnot e(a, b) \implies \lnot e(b, a)$: a negation derived in one argument order reaches no
+rule that reads the other. Both encodings of the Zebra puzzle reach the same model by the same walkthrough.
 
 **The closed-world reads are on what saturation determines.** Both encodings read under an absence only the
 position structure, the neighbour, pruning and endpoint guards, which the clues fix before any hypothesis; they
 never read under one an attribute the search decides. That is the bet a closed-world read makes, and it is
-exactly the line the language draws: a refutation may not rest on an absence over a relation a commitment can
-still extend ([absence](03-absent-and-naf.md)).
+exactly the line the language draws: a refutation may not rest on an absence over the held extent of a relation
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) that a
+commitment can still extend ([absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent)).
 
 ## The alive-set invariant
 
@@ -331,16 +365,15 @@ is sound only if nothing a node derives names what root's fixpoint and the progr
 appeared inside a node would be an atom no candidate is about, in a part of the lattice $H$ was not built for,
 and a model naming it would be missing from $R$.
 
-$\operatorname{names}(X)$ is the names under an argument place of a fact of $X$ at any depth, a nested fact's
-arguments included ([the knowledge base](../01-static-ir/01-knowledge-base.md#nesting)); write
-$\operatorname{rels}(X)$ for the relations of the facts of $X$. $\operatorname{names}(P)$ is every constant of
-the program's facts and of its rules, match and conclusion alike
-([the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names),
-[Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). The
-invariant, *no rule asserts a name the program lacks*, is
+$\operatorname{names}(X)$, the names of a set $X$ of facts, is that of
+[the knowledge base](../01-static-ir/01-knowledge-base.md#nesting), and $\operatorname{names}(P)$, the names of
+the program, that of [the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names)
+([Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). Write
+$\operatorname{rels}(X)$ for the relations of the facts of $X$, a set of atoms. The invariant, *no rule asserts
+a name the program lacks*, is
 
 $$
-\forall C \subseteq H.\quad \operatorname{names}\bigl(\operatorname{st}(C)\bigr) \;\subseteq\; \operatorname{names}(\mathrm{root}) \cup \operatorname{names}(P)
+\forall C \subseteq H.\ \ \operatorname{names}\bigl(\operatorname{st}(C)\bigr) \subseteq \operatorname{names}(\mathrm{root}) \cup \operatorname{names}(P)
 $$
 
 and it has three clauses:
@@ -348,40 +381,39 @@ and it has three clauses:
 1. **No new atoms.** $\operatorname{names}(\operatorname{fire}(K, \xi)) \subseteq \operatorname{names}(K) \cup
    \operatorname{names}(P)$: a rewriting brings in no name
    ([the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names)). A variable carries only an
-   object a match already found, or a name of the program, and nothing else but a constant can bring a name in,
-   and every constant is the program's
+   object a match already found, or an atom of the program, and nothing else but an atom a rule writes can bring
+   a name in, and every such atom is the program's
    ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)). By induction along a
    saturation, $\operatorname{names}(\operatorname{sat}(K)) \subseteq \operatorname{names}(K) \cup
-   \operatorname{names}(P)$. A constant only a query writes is not a name of the program: adding a query never
+   \operatorname{names}(P)$. An atom only a query writes is not a name of the program: adding a query never
    changes $R$.
 2. **No new relations.** $\operatorname{rels}(\operatorname{st}(C)) \subseteq \operatorname{rels}(P)$, the
-   relations fixed when the program is read: the declared ones, the heads of the program's facts, and every
-   constant head a rule can conclude. Nothing adds a relation while a saturation runs, and nothing adds a rule
-   or a declaration: a conclusion is literals, so along every saturation $P$ and $\operatorname{names}(P)$ are
-   constant and a knowledge base grows by facts alone.
+   relations fixed when the program is read: the declared ones, the relations of the program's facts, and every
+   atom under the first arrow of a fact pattern a rule can conclude. No fact of any other relation is added
+   while a saturation runs, and nothing adds a rule or a declaration: a conclusion is literals, so along every
+   saturation $P$ and $\operatorname{names}(P)$ are constant and a knowledge base grows by facts alone.
 3. **Hypotheses connect names.** $h \in H \implies \operatorname{names}(h) \subseteq \operatorname{names}(P)$: a
-   candidate's arguments are names of the program or facts built of them. A parameter written in a relation's
-   place and bound to an object that names no relation, a nested fact, is refused where it is written or where a
-   rule could derive it.
+   candidate's arguments are atoms of the program or facts built of them. A parameter written in a relation's
+   place and bound to a fact, an object that is no relation, is refused where it is written or where a rule
+   could derive it.
 
 Three readings of the invariant, each stronger than the one before:
 
 | | claim |
 |---|---|
 | **static** | $\operatorname{names}(P) \setminus X \subseteq \operatorname{guessable}(P)$: every name of the program, less the excluded kinds $X$ below, is an atom candidates are proposed about when nothing narrower is stated |
-| **at the fixpoint** | $\operatorname{names}(\operatorname{sat}(K_0)) \subseteq \operatorname{names}(K_0) \cup \operatorname{names}(P)$: nothing a saturation derives names what the program as read, its facts and its rules' constants, did not |
-| **in the search** | $\forall C \subseteq H.\; \operatorname{names}(\operatorname{st}(C)) \subseteq \operatorname{names}(\mathrm{root}) \cup \operatorname{names}(P)$: nothing a node reaches names what root's fixpoint and the rules' constants did not |
+| **at the fixpoint** | $\operatorname{names}(\operatorname{sat}(K_0)) \subseteq \operatorname{names}(K_0) \cup \operatorname{names}(P)$: nothing a saturation derives names what the program as read, its facts and the atoms its rules write, did not |
+| **in the search** | $\forall C \subseteq H.\; \operatorname{names}(\operatorname{st}(C)) \subseteq \operatorname{names}(\mathrm{root}) \cup \operatorname{names}(P)$: nothing a node reaches names what root's fixpoint and the atoms the rules write did not |
 
-The third is the one $R$'s soundness rests on, and the first is what makes it hold for a rule's constant: a
-constant a rule writes, and that would be reached only inside a commitment, is guessable from root on. The static
+The third is the one $R$'s soundness rests on, and the first is what makes it hold for an atom a rule writes:
+such an atom, which would be reached only inside a commitment, is guessable from root on. The static
 reading answers for every saturation the program could have, not only for the one that happened. Together they
 make the lattice finite: $H$ is a finite set of facts over $\operatorname{names}(P)$, and
 $\lvert 2^H \rvert = 2^{\lvert H \rvert}$.
 
-**The guessable atoms are not the list of names.** Four kinds of name, the set $X$, are not guessable, each left out by
-name: the labels a relation's declaration writes for its argument places; the reserved words of the pattern
-language, negation, contradiction, conjunction, disjunction, absence, equality and inequality; every name the
-program calls a relation or a rule; and the two reserved markers that close a relation and make one symmetric,
-which a program may write as an argument and which stay names of the program
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md);
-[reserved names](../../user/04-reference/03-reserved-names.md) lists them as written).
+**The guessable atoms are not the list of names.** Four kinds of name, the set $X$, are not guessable, each left
+out by its name: the labels of the declarations, the reserved words of the pattern language, the names of
+relations and rules, and the two reserved markers.
+[Hypothesis generation § 5](04-hypothesis-generation.md#5-the-blind-enumerator) defines
+$\operatorname{guessable}(P)$ and says what each of the four is
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)).

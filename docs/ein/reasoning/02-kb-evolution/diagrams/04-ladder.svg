@@ -2,100 +2,100 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: ladder Pages: 1 -->
-<svg width="710pt" height="477pt"
- viewBox="0.00 0.00 710.00 477.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="745pt" height="477pt"
+ viewBox="0.00 0.00 745.00 477.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 473)">
 <title>ladder</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-473 705.88,-473 705.88,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-473 740.88,-473 740.88,4 -4,4"/>
 <!-- nu -->
 <g id="node1" class="node">
 <title>nu</title>
-<polygon fill="none" stroke="black" points="523.88,-469 421.62,-435.5 523.88,-402 626.12,-435.5 523.88,-469"/>
-<text xml:space="preserve" text-anchor="middle" x="523.88" y="-438.75" font-family="Helvetica,sans-Serif" font-size="10.00">ν(P)</text>
-<text xml:space="preserve" text-anchor="middle" x="523.88" y="-426" font-family="Helvetica,sans-Serif" font-size="10.00">nothing to guess?</text>
+<polygon fill="none" stroke="black" points="558.88,-469 456.62,-435.5 558.88,-402 661.12,-435.5 558.88,-469"/>
+<text xml:space="preserve" text-anchor="middle" x="558.88" y="-438.75" font-family="Helvetica,sans-Serif" font-size="10.00">ν(P)</text>
+<text xml:space="preserve" text-anchor="middle" x="558.88" y="-426" font-family="Helvetica,sans-Serif" font-size="10.00">nothing to guess?</text>
 </g>
 <!-- hr -->
 <g id="node2" class="node">
 <title>hr</title>
-<polygon fill="none" stroke="black" points="418.88,-360.75 268.62,-327.25 418.87,-293.75 569.12,-327.25 418.88,-360.75"/>
-<text xml:space="preserve" text-anchor="middle" x="418.88" y="-330.5" font-family="Helvetica,sans-Serif" font-size="10.00">Hr(P) ≠ ∅</text>
-<text xml:space="preserve" text-anchor="middle" x="418.88" y="-317.75" font-family="Helvetica,sans-Serif" font-size="10.00">a hypothesis rule declared?</text>
+<polygon fill="none" stroke="black" points="453.88,-360.75 303.62,-327.25 453.87,-293.75 604.12,-327.25 453.88,-360.75"/>
+<text xml:space="preserve" text-anchor="middle" x="453.88" y="-330.5" font-family="Helvetica,sans-Serif" font-size="10.00">Hr(P) ≠ ∅</text>
+<text xml:space="preserve" text-anchor="middle" x="453.88" y="-317.75" font-family="Helvetica,sans-Serif" font-size="10.00">a hypothesis rule declared?</text>
 </g>
 <!-- nu&#45;&gt;hr -->
 <g id="edge2" class="edge">
 <title>nu&#45;&gt;hr</title>
-<path fill="none" stroke="black" d="M499.26,-409.59C485.02,-395.19 466.94,-376.88 451.53,-361.29"/>
-<polygon fill="black" stroke="black" points="453.27,-359.57 446.61,-356.32 449.79,-363.02 453.27,-359.57"/>
-<text xml:space="preserve" text-anchor="middle" x="480.15" y="-378.45" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
+<path fill="none" stroke="black" d="M534.26,-409.59C520.02,-395.19 501.94,-376.88 486.53,-361.29"/>
+<polygon fill="black" stroke="black" points="488.27,-359.57 481.61,-356.32 484.79,-363.02 488.27,-359.57"/>
+<text xml:space="preserve" text-anchor="middle" x="515.15" y="-378.45" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
 </g>
 <!-- e -->
 <g id="node5" class="node">
 <title>e</title>
-<path fill="#f0f0f0" stroke="black" d="M642.88,-345.25C642.88,-345.25 612.88,-345.25 612.88,-345.25 606.88,-345.25 600.88,-339.25 600.88,-333.25 600.88,-333.25 600.88,-321.25 600.88,-321.25 600.88,-315.25 606.88,-309.25 612.88,-309.25 612.88,-309.25 642.88,-309.25 642.88,-309.25 648.88,-309.25 654.88,-315.25 654.88,-321.25 654.88,-321.25 654.88,-333.25 654.88,-333.25 654.88,-339.25 648.88,-345.25 642.88,-345.25"/>
-<text xml:space="preserve" text-anchor="middle" x="627.88" y="-324.12" font-family="Helvetica,sans-Serif" font-size="10.00">H = ∅</text>
+<path fill="#f0f0f0" stroke="black" d="M677.88,-345.25C677.88,-345.25 647.88,-345.25 647.88,-345.25 641.88,-345.25 635.88,-339.25 635.88,-333.25 635.88,-333.25 635.88,-321.25 635.88,-321.25 635.88,-315.25 641.88,-309.25 647.88,-309.25 647.88,-309.25 677.88,-309.25 677.88,-309.25 683.88,-309.25 689.88,-315.25 689.88,-321.25 689.88,-321.25 689.88,-333.25 689.88,-333.25 689.88,-339.25 683.88,-345.25 677.88,-345.25"/>
+<text xml:space="preserve" text-anchor="middle" x="662.88" y="-324.12" font-family="Helvetica,sans-Serif" font-size="10.00">H = ∅</text>
 </g>
 <!-- nu&#45;&gt;e -->
 <g id="edge1" class="edge">
 <title>nu&#45;&gt;e</title>
-<path fill="none" stroke="black" d="M548.26,-409.59C565.37,-392.11 588.1,-368.89 604.89,-351.73"/>
-<polygon fill="black" stroke="black" points="606.58,-353.5 609.73,-346.79 603.08,-350.08 606.58,-353.5"/>
-<text xml:space="preserve" text-anchor="middle" x="586.49" y="-378.45" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
+<path fill="none" stroke="black" d="M583.26,-409.59C600.37,-392.11 623.1,-368.89 639.89,-351.73"/>
+<polygon fill="black" stroke="black" points="641.58,-353.5 644.73,-346.79 638.08,-350.08 641.58,-353.5"/>
+<text xml:space="preserve" text-anchor="middle" x="621.49" y="-378.45" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
 </g>
 <!-- act -->
 <g id="node3" class="node">
 <title>act</title>
-<polygon fill="none" stroke="black" points="256.88,-252.5 87.88,-219 256.87,-185.5 425.88,-219 256.88,-252.5"/>
-<text xml:space="preserve" text-anchor="middle" x="256.88" y="-222.25" font-family="Helvetica,sans-Serif" font-size="10.00">Act(P) ≠ ∅</text>
-<text xml:space="preserve" text-anchor="middle" x="256.88" y="-209.5" font-family="Helvetica,sans-Serif" font-size="10.00">an obligation activated at root?</text>
+<polygon fill="none" stroke="black" points="291.88,-252.5 122.88,-219 291.87,-185.5 460.88,-219 291.88,-252.5"/>
+<text xml:space="preserve" text-anchor="middle" x="291.88" y="-222.25" font-family="Helvetica,sans-Serif" font-size="10.00">ActOb(P) ≠ ∅</text>
+<text xml:space="preserve" text-anchor="middle" x="291.88" y="-209.5" font-family="Helvetica,sans-Serif" font-size="10.00">an obligation activated at root?</text>
 </g>
 <!-- hr&#45;&gt;act -->
 <g id="edge4" class="edge">
 <title>hr&#45;&gt;act</title>
-<path fill="none" stroke="black" d="M381.71,-301.87C358.06,-286.36 327.27,-266.17 302.19,-249.72"/>
-<polygon fill="black" stroke="black" points="303.74,-247.81 296.54,-246.02 301.05,-251.9 303.74,-247.81"/>
-<text xml:space="preserve" text-anchor="middle" x="348.36" y="-270.2" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
+<path fill="none" stroke="black" d="M416.71,-301.87C393.06,-286.36 362.27,-266.17 337.19,-249.72"/>
+<polygon fill="black" stroke="black" points="338.74,-247.81 331.54,-246.02 336.05,-251.9 338.74,-247.81"/>
+<text xml:space="preserve" text-anchor="middle" x="383.36" y="-270.2" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
 </g>
 <!-- hhr -->
 <g id="node6" class="node">
 <title>hhr</title>
-<path fill="#fde0ef" stroke="black" d="M689.88,-237C689.88,-237 469.88,-237 469.88,-237 463.88,-237 457.88,-231 457.88,-225 457.88,-225 457.88,-213 457.88,-213 457.88,-207 463.88,-201 469.88,-201 469.88,-201 689.88,-201 689.88,-201 695.88,-201 701.88,-207 701.88,-213 701.88,-213 701.88,-225 701.88,-225 701.88,-231 695.88,-237 689.88,-237"/>
-<text xml:space="preserve" text-anchor="middle" x="579.88" y="-222.25" font-family="Helvetica,sans-Serif" font-size="10.00">H = H_hr</text>
-<text xml:space="preserve" text-anchor="middle" x="579.88" y="-209.5" font-family="Helvetica,sans-Serif" font-size="10.00">what the hypothesis rules propose at root (§ 3)</text>
+<path fill="#fde0ef" stroke="black" d="M724.88,-237C724.88,-237 504.88,-237 504.88,-237 498.88,-237 492.88,-231 492.88,-225 492.88,-225 492.88,-213 492.88,-213 492.88,-207 498.88,-201 504.88,-201 504.88,-201 724.88,-201 724.88,-201 730.88,-201 736.88,-207 736.88,-213 736.88,-213 736.88,-225 736.88,-225 736.88,-231 730.88,-237 724.88,-237"/>
+<text xml:space="preserve" text-anchor="middle" x="614.88" y="-222.25" font-family="Helvetica,sans-Serif" font-size="10.00">H = H_hr</text>
+<text xml:space="preserve" text-anchor="middle" x="614.88" y="-209.5" font-family="Helvetica,sans-Serif" font-size="10.00">what the hypothesis rules propose at root (§ 3)</text>
 </g>
 <!-- hr&#45;&gt;hhr -->
 <g id="edge3" class="edge">
 <title>hr&#45;&gt;hhr</title>
-<path fill="none" stroke="black" d="M456.22,-301.61C483.67,-283.49 520.64,-259.09 546.99,-241.7"/>
-<polygon fill="black" stroke="black" points="548.03,-243.95 552.52,-238.05 545.33,-239.86 548.03,-243.95"/>
-<text xml:space="preserve" text-anchor="middle" x="511.7" y="-270.2" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
+<path fill="none" stroke="black" d="M491.22,-301.61C518.67,-283.49 555.64,-259.09 581.99,-241.7"/>
+<polygon fill="black" stroke="black" points="583.03,-243.95 587.52,-238.05 580.33,-239.86 583.03,-243.95"/>
+<text xml:space="preserve" text-anchor="middle" x="546.7" y="-270.2" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
 </g>
 <!-- decl -->
 <g id="node4" class="node">
 <title>decl</title>
-<polygon fill="none" stroke="black" points="172.88,-144.25 67.63,-110.75 172.87,-77.25 278.12,-110.75 172.88,-144.25"/>
-<text xml:space="preserve" text-anchor="middle" x="172.88" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">decl(P)</text>
-<text xml:space="preserve" text-anchor="middle" x="172.88" y="-101.25" font-family="Helvetica,sans-Serif" font-size="10.00">the rung declines?</text>
+<polygon fill="none" stroke="black" points="207.88,-144.25 102.63,-110.75 207.87,-77.25 313.12,-110.75 207.88,-144.25"/>
+<text xml:space="preserve" text-anchor="middle" x="207.88" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">declines(P)</text>
+<text xml:space="preserve" text-anchor="middle" x="207.88" y="-101.25" font-family="Helvetica,sans-Serif" font-size="10.00">the rung declines?</text>
 </g>
 <!-- act&#45;&gt;decl -->
 <g id="edge5" class="edge">
 <title>act&#45;&gt;decl</title>
-<path fill="none" stroke="black" d="M234.36,-189.53C223.41,-175.67 210.18,-158.93 198.8,-144.54"/>
-<polygon fill="black" stroke="black" points="200.92,-143.27 194.66,-139.3 197.07,-146.31 200.92,-143.27"/>
-<text xml:space="preserve" text-anchor="middle" x="224.89" y="-161.95" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
+<path fill="none" stroke="black" d="M269.36,-189.53C258.41,-175.67 245.18,-158.93 233.8,-144.54"/>
+<polygon fill="black" stroke="black" points="235.92,-143.27 229.66,-139.3 232.07,-146.31 235.92,-143.27"/>
+<text xml:space="preserve" text-anchor="middle" x="259.89" y="-161.95" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
 </g>
 <!-- hbl -->
 <g id="node8" class="node">
 <title>hbl</title>
-<path fill="#deebf7" stroke="black" d="M487.5,-36C487.5,-36 196.25,-36 196.25,-36 190.25,-36 184.25,-30 184.25,-24 184.25,-24 184.25,-12 184.25,-12 184.25,-6 190.25,0 196.25,0 196.25,0 487.5,0 487.5,0 493.5,0 499.5,-6 499.5,-12 499.5,-12 499.5,-24 499.5,-24 499.5,-30 493.5,-36 487.5,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="341.88" y="-21.25" font-family="Helvetica,sans-Serif" font-size="10.00">H = H_bl</text>
-<text xml:space="preserve" text-anchor="middle" x="341.88" y="-8.5" font-family="Helvetica,sans-Serif" font-size="10.00">every slot of every open relation, every guessable atom (§ 5)</text>
+<path fill="#deebf7" stroke="black" d="M557.75,-36C557.75,-36 196,-36 196,-36 190,-36 184,-30 184,-24 184,-24 184,-12 184,-12 184,-6 190,0 196,0 196,0 557.75,0 557.75,0 563.75,0 569.75,-6 569.75,-12 569.75,-12 569.75,-24 569.75,-24 569.75,-30 563.75,-36 557.75,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="376.88" y="-21.25" font-family="Helvetica,sans-Serif" font-size="10.00">H = H_bl</text>
+<text xml:space="preserve" text-anchor="middle" x="376.88" y="-8.5" font-family="Helvetica,sans-Serif" font-size="10.00">every argument place of every eligible relation, every guessable atom (§ 5)</text>
 </g>
 <!-- act&#45;&gt;hbl -->
 <g id="edge6" class="edge">
 <title>act&#45;&gt;hbl</title>
-<path fill="none" stroke="black" d="M272.68,-188.18C279.51,-174.88 287.4,-158.93 293.88,-144.25 308.97,-110.03 324.02,-69.45 333.14,-43.95"/>
-<polygon fill="black" stroke="black" points="335.34,-45.08 335.37,-37.66 330.72,-43.44 335.34,-45.08"/>
-<text xml:space="preserve" text-anchor="middle" x="326.12" y="-107.83" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
+<path fill="none" stroke="black" d="M307.68,-188.18C314.51,-174.88 322.4,-158.93 328.88,-144.25 343.97,-110.03 359.02,-69.45 368.14,-43.95"/>
+<polygon fill="black" stroke="black" points="370.34,-45.08 370.37,-37.66 365.72,-43.44 370.34,-45.08"/>
+<text xml:space="preserve" text-anchor="middle" x="361.12" y="-107.83" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
 </g>
 <!-- hob -->
 <g id="node7" class="node">
@@ -107,17 +107,17 @@
 <!-- decl&#45;&gt;hob -->
 <g id="edge8" class="edge">
 <title>decl&#45;&gt;hob</title>
-<path fill="none" stroke="black" d="M146.63,-85.19C132.32,-71.81 114.72,-55.34 100.65,-42.18"/>
-<polygon fill="black" stroke="black" points="102.35,-40.41 95.57,-37.42 99,-43.99 102.35,-40.41"/>
-<text xml:space="preserve" text-anchor="middle" x="127.09" y="-53.7" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
+<path fill="none" stroke="black" d="M175.25,-87.32C154.76,-73.23 128.45,-55.14 108.05,-41.12"/>
+<polygon fill="black" stroke="black" points="109.5,-39.14 102.34,-37.2 106.72,-43.18 109.5,-39.14"/>
+<text xml:space="preserve" text-anchor="middle" x="143.54" y="-53.7" font-family="Helvetica,sans-Serif" font-size="9.00">no</text>
 </g>
 <!-- decl&#45;&gt;hbl -->
 <g id="edge7" class="edge">
 <title>decl&#45;&gt;hbl</title>
-<path fill="none" stroke="black" d="M211.22,-89.16C238.29,-74.63 274.46,-55.2 301.88,-40.48"/>
-<polygon fill="black" stroke="black" points="303.02,-42.64 308.03,-37.17 300.71,-38.33 303.02,-42.64"/>
-<text xml:space="preserve" text-anchor="middle" x="284.98" y="-53.7" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
+<path fill="none" stroke="black" d="M246.22,-89.16C273.29,-74.63 309.46,-55.2 336.88,-40.48"/>
+<polygon fill="black" stroke="black" points="338.02,-42.64 343.03,-37.17 335.71,-38.33 338.02,-42.64"/>
+<text xml:space="preserve" text-anchor="middle" x="319.98" y="-53.7" font-family="Helvetica,sans-Serif" font-size="9.00">yes</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 953f61388d1af54f3ab7d912e0dfbdac8570c023d337331769276af96f12eca4 -->
+<!-- source sha256: 2f0a6b972006c6d8f1efc7d0b224c11a378668dc3c296b19589053851a6ba48d -->

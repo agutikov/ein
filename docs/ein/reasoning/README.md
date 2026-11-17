@@ -36,7 +36,9 @@ and, where no rule is in view, $a, b, c$ over atoms or over candidates, as the p
 **Words.** An **object** is a node of the graph a knowledge base is, and the word means nothing else on these
 pages. An **atom** is a labelled node with no outgoing arrow, and its label is its **name**; a **fact** is a
 node with outgoing arrows. Of a relation three things are kept apart: **the relation**, one atom; its
-**extent**, its held facts taken together; and **a fact of** it.
+**extent**, every fact whose first arrow points at that atom, held or not; and **a fact of** it. The extent is
+the same whatever is held. What a knowledge base holds of it is the **held extent**, and that is what grows,
+what a rule reads, what a commitment adds to, and what is empty or complete.
 
 | symbol | what it is | where it is defined |
 |---|---|---|
@@ -63,7 +65,7 @@ node with outgoing arrows. Of a relation three things are kept apart: **the rela
 | $a$, $\operatorname{Act}_K(\rho)$, $\rho[a]$ | an activator of $\rho$, a fact of $K$ whose relation is the rule's name; the set of them; the rule applied under $a$, with pattern $\varphi[a]$ and conclusion $\psi[a]$ | [the rules](01-static-ir/02-rewriting-rules.md#a-rule-declared) |
 | $P$ | the program, and its rule set | [the knowledge base](01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program), [the rules](01-static-ir/02-rewriting-rules.md#the-program-and-its-names) |
 | $\operatorname{names}(P)$ | the names of the program: those of $K_0$ and of its rules, a finite subset of $\Sigma^{+}$ | [the rules](01-static-ir/02-rewriting-rules.md#the-program-and-its-names) |
-| $\operatorname{labels}(P)$, $\operatorname{guessable}(P)$ | the labels the program's declarations write; the guessable atoms, the names less the labels, the reserved words and the names of relations and rules | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where), [solution semantics](02-kb-evolution/06-solution-semantics.md) |
+| $\operatorname{labels}(P)$, $\operatorname{guessable}(P)$ | the labels the program's declarations write; the guessable atoms, the names and the relations of root's facts less the labels, the reserved words and the names of relations and rules | [the knowledge base](01-static-ir/01-knowledge-base.md#what-is-where), [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md#5-the-blind-enumerator) |
 | $S$ | a state: the set of facts a saturation ends in, root's or a node's | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
 | $J$, $J_K(f)$ | the provenance: the derivations recorded for the fact $f$ in $K$, the primary one first | [cores](02-kb-evolution/09-cores.md#a-derivation-record) |
 | $\delta$; $\operatorname{prem}(\delta)$, $\operatorname{all}(\delta)$, $\operatorname{abs}(\delta)$; $\operatorname{rests}(\delta)$ | a derivation; the premises it matched, the facts a universal premise ranged over, the absences that had to hold; the facts it rests on | [cores](02-kb-evolution/09-cores.md#a-derivation-record) |
@@ -73,13 +75,14 @@ node with outgoing arrows. Of a relation three things are kept apart: **the rela
 | $\operatorname{sat}$, $\operatorname{pos}$ | saturation, a knowledge base taken to its fixpoint under $P$; the closure under the firings that read no absence | [saturation](02-kb-evolution/02-saturation.md) |
 | $\kappa$, $\lhd$ | a candidate of a saturation, a firing with the disjunct it matched; the agenda's order of the candidates | [saturation](02-kb-evolution/02-saturation.md) |
 | $\operatorname{rels}(X)$ | the relations of the facts of $X$ | [saturation](02-kb-evolution/02-saturation.md) |
-| $D$, $D^{+}(X)$ | the relations a commitment can change; the same closure from the relations $X$, followed through a rule's activator as well | [monotonicity](02-kb-evolution/08-monotonicity.md), [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md) |
-| $\mathrm{root}$ | the program's own facts, saturated: $\mathrm{root} = \operatorname{sat}(K_0)$ | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
-| $H$, $n = \lvert H \rvert$, $\operatorname{gen}(P, \mathrm{root})$ | the candidate set, its size, and the ladder that builds it | [solution semantics](02-kb-evolution/06-solution-semantics.md), [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md) |
-| $C \subseteq H$ | a commitment, a node of the lattice $(2^{H}, \subseteq)$; $\uparrow C$ and $\downarrow C$ are the commitments above and below it | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
-| $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$ | the state of the node $C$ | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
+| $D$, $D^{+}(X)$ | the relations whose held extent a commitment can change; the same closure from the relations $X$, followed through a rule's activator as well, $D^{+}$ where $X$ is the candidates' relations | [monotonicity](02-kb-evolution/08-monotonicity.md), [absence](02-kb-evolution/03-absent-and-naf.md#a-refutation-resting-on-an-absent) |
+| $\mathrm{root}$ | the program's own facts, saturated: $\mathrm{root} = \operatorname{sat}(K_0)$ | [firing a rule](02-kb-evolution/01-firing.md#two-layers), [solution semantics](02-kb-evolution/06-solution-semantics.md) |
+| $H$, $n = \lvert H \rvert$, $\operatorname{gen}(P, \mathrm{root})$ | the candidate set, its size, and the ladder that builds it | [firing a rule](02-kb-evolution/01-firing.md#two-layers), [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md), [solution semantics](02-kb-evolution/06-solution-semantics.md) |
+| $C \subseteq H$ | a commitment, a node of the lattice $(2^{H}, \subseteq)$; $\uparrow C$ and $\downarrow C$ are the commitments above and below it | [firing a rule](02-kb-evolution/01-firing.md#two-layers), [solution semantics](02-kb-evolution/06-solution-semantics.md) |
+| $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$ | the state of the node $C$ | [firing a rule](02-kb-evolution/01-firing.md#two-layers), [solution semantics](02-kb-evolution/06-solution-semantics.md) |
 | $\operatorname{cl}(C)$, $C \sim C'$, $[C]$ | the closure of $C$, the candidates its state holds; two commitments of one state; the class of $C$ | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
-| $\operatorname{owes}(o, a, \theta, S)$, $\operatorname{Owed}(S)$, $\operatorname{owes}(S)$, $\operatorname{discharged}(S)$ | the state $S$ owes the instance $(o, a, \theta)$ of the obligation $o$, whose trigger $T_o$ holds with no witness $W_o$; the instances owed; their number; none is owed | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
+| $\operatorname{owes}(o, a, \theta, S)$ | the state $S$ owes the instance $(o, a, \theta)$ of the obligation $o$, whose trigger $T_o$ holds with no witness $W_o$ | [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it) |
+| $\operatorname{Owed}(S)$, $\operatorname{owes}(S)$, $\operatorname{discharged}(S)$ | the instances a state owes; their number; none is owed | [solution semantics](02-kb-evolution/06-solution-semantics.md#15-commitment-node-state) |
 | $\operatorname{pay}(I)$, $\operatorname{alt}(I)$ | the facts that would pay the owed instance $I$; those of them that are candidates, its alternatives | [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md), [finding R](02-kb-evolution/07-finding-r.md) |
 | $R$, $k_c$, $k_s$ | the region, the commitments whose state is alive and discharged; its size in commitments, and in states | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
 | $\operatorname{Dead}$, $\operatorname{Alive}$, $\operatorname{Owing}$ | the sets of commitments that are dead, alive, alive and owing | [solution semantics](02-kb-evolution/06-solution-semantics.md) |
@@ -100,11 +103,11 @@ node with outgoing arrows. Of a relation three things are kept apart: **the rela
 | [firing a rule](02-kb-evolution/01-firing.md) | $\iota$, $w$, $\operatorname{Obs}$ a numbering of the objects, a count of workers, what a reader observes of a run; $K(t)$ a knowledge base after $t$ additions |
 | [saturation](02-kb-evolution/02-saturation.md) | $\Xi$, $Q$ the firings root made and the candidates it parked; $\operatorname{lead}$, $\operatorname{arr}$, $\operatorname{passes}$; $X$ the kinds of name that are not guessable |
 | [absence](02-kb-evolution/03-absent-and-naf.md) | $G$ the pattern under an absence; $\operatorname{abs}^{\ast}(\rho)$ the absences a rule's conclusion can depend on; $\operatorname{dep}(f)$ |
-| [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md) | $\nu(P)$, $\operatorname{Hr}(P)$, $\operatorname{ActOb}(P)$, $\operatorname{declines}(P)$ the four tests of the ladder; $\operatorname{listed}(h)$ the activators a program lists for a hypothesis rule; $\Pi$ and $H$ with a rung's subscript, its proposals and its candidates; $\operatorname{unsettled}$; $T_o$, $\Delta_o$, $w_o$, $W_o$ the parts of an obligation; $I$ an instance; $L^{+}$, $L^{-}$ the two lists; $\operatorname{Closed}$, $\operatorname{inscope}$, $\operatorname{Elig}$, $\operatorname{Uncov}$, $\operatorname{Prop}$, $\operatorname{Ow}$, $\operatorname{stuck}$; $\operatorname{Kw}$, $\operatorname{Res}$, $\operatorname{RelNames}$ |
-| [the hypothesis space](02-kb-evolution/05-hypothesis-space.md) | $a \rightarrow b$, $a \leftrightarrow b$, $a \perp b$, $a \bowtie b$ the pair relations; $X$, $X^{\circ}$ the excluding pairs; $H^{\mathrm{o}}$ the open candidates; $K_0^{\circ}$, $\mathrm{root}^{\circ}$ the theory's share; $\mathcal{G}$, $g$ the groups; $Y$ a grid; $Q$, $W$ the questions and the whole node; $\operatorname{Puz}$, $\operatorname{Ties}$ |
+| [hypothesis generation](02-kb-evolution/04-hypothesis-generation.md) | $\nu(P)$, $\operatorname{Hr}(P)$, $\operatorname{ActOb}(P)$, $\operatorname{declines}(P)$ the four tests of the ladder; $\operatorname{listed}(h)$ the activators a program lists for a hypothesis rule; $\Pi$ and $H$ with a rung's subscript, its proposals and its candidates; $\operatorname{unsettled}$; $T_o$, $\Delta_o$, $w_o$, $W_o$ the parts of an obligation; $I$ an instance; $L^{+}$, $L^{-}$ the two lists; $\operatorname{Closed}$, $\operatorname{inscope}$, $\operatorname{Elig}$, $\operatorname{Uncov}$, $\operatorname{Prop}$, $\operatorname{Ow}$, $\operatorname{stuck}$; $\operatorname{Kw}$, $\operatorname{Res}$, $\operatorname{RelNames}$ the kinds of atom that are not guessable; $\operatorname{reads}$, $\operatorname{concludes}$, $\operatorname{d}_1$ to $\operatorname{d}_4$ |
+| [the hypothesis space](02-kb-evolution/05-hypothesis-space.md) | $a \rightarrow b$, $a \leftrightarrow b$, $a \perp b$, $a \bowtie b$ the pair relations; $X$, $X^{\circ}$ the excluding pairs; $H^{\mathrm{o}}$ the open candidates; $K_0^{\circ}$, $\mathrm{root}^{\circ}$ the theory's share; $\mathcal{G}$, $g$ the groups; $Y$ a grid; $Q$, $W$ the questions and the whole node; $\operatorname{Puz}$, $\operatorname{given}$, $\operatorname{clue}$, $\operatorname{Ties}$ |
 | [solution semantics](02-kb-evolution/06-solution-semantics.md) | $\Theta$, $\Omega$, $\Phi$ the context and the problem; $\mathcal{L}$, $L_k$ the lattice and its layers; $[a, b]$ a sub-cube; $\operatorname{verdict}(R)$ |
 | [finding R](02-kb-evolution/07-finding-r.md) | $\mathcal{O}$ the oracle's table; $\mathcal{K}$ the sets known dead; $\mathcal{C}$ the alive closed sets; $s$, $T$ closed sets; $M(T)$; $\mathcal{W}$; $\Lambda$; $\operatorname{Leaves}(C)$; L0 to L8 the licences |
-| [monotonicity](02-kb-evolution/08-monotonicity.md) | $\operatorname{site}$, $\operatorname{depth}$, $\operatorname{stale}$, $\operatorname{watch}$; $\mathit{Sh}$ the closure over shapes |
+| [monotonicity](02-kb-evolution/08-monotonicity.md) | $\operatorname{site}$, $\operatorname{depth}$, $\operatorname{stale}$; $\mathit{Sh}$ the closure over shapes |
 | [cores](02-kb-evolution/09-cores.md) | $\mathcal{T}(K)$ the terminals; $Z$ a set of them; $\operatorname{der}_K(Z)$, $\operatorname{contr}(K)$, $\operatorname{by}(f)$; $\operatorname{origin}$, $\operatorname{front}$ |
 | [satisfiability](02-kb-evolution/10-satisfiability.md) | $\Gamma$ a claim; $\operatorname{holds}(\Gamma, \mathcal{S})$; $\operatorname{alt}(I, S)$ the alternatives a state has not denied; $\operatorname{key}$, $\operatorname{rows}_g$ |
 | [rules as data](03-rule-evolution/01-rules-as-data.md) | $W_{\!d}$ the declaring words |
@@ -137,16 +140,19 @@ Three parts, in the order a program lives through them.
 
 ### The knowledge base as it grows — [`02-kb-evolution/`](02-kb-evolution/)
 
-1. [Firing a rule](02-kb-evolution/01-firing.md): what Ein solves, a firing and its identity, a fork, and the
-   operations every implementation performs.
+1. [Firing a rule](02-kb-evolution/01-firing.md): a firing and its identity; the two layers, with root, a
+   candidate, a commitment, a node and its state, and a fork; what Ein answers; and the operations every
+   implementation performs.
 2. [Saturation](02-kb-evolution/02-saturation.md): the fixpoint, the agenda's order and what the order of the
    written facts cannot decide, and the alive-set invariant.
-3. [Negation as failure](02-kb-evolution/03-absent-and-naf.md): what an absence reads, and in which world.
-4. [Hypothesis generation](02-kb-evolution/04-hypothesis-generation.md): the ladder that builds the candidate set $H$.
+3. [Negation as failure](02-kb-evolution/03-absent-and-naf.md): what an absence reads, and in which world; the
+   refusal of a refutation that rests on one.
+4. [Hypothesis generation](02-kb-evolution/04-hypothesis-generation.md): the ladder that builds the candidate set
+   $H$; hypothesis rules, obligations and what would pay one, the blind enumerator and the guessable atoms.
 5. [The hypothesis space and its structure](02-kb-evolution/05-hypothesis-space.md): $H$, and what the theory says of
    its candidates before any search.
-6. [Solution semantics: the region R](02-kb-evolution/06-solution-semantics.md): the answer, defined, with the
-   identity of a state and the order of the candidates.
+6. [Solution semantics: the region R](02-kb-evolution/06-solution-semantics.md): the answer, defined, with what
+   a state owes, the identity of a state and the order of the candidates.
 7. [Finding R: the oracle and the routes](02-kb-evolution/07-finding-r.md): every way $R$ is computed, and why they
    agree.
 8. [Monotone and non-monotone programs](02-kb-evolution/08-monotonicity.md): when the routes' licences hold, and what

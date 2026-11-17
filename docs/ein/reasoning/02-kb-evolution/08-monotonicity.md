@@ -24,8 +24,10 @@ node a non-monotone program should have is not decided, and nothing below decide
 ## 1. R is its node set
 
 $$
-R \;=\; \lbrace\, C \subseteq H \;:\; \lnot\operatorname{dead}(C) \;\land\; \operatorname{discharged}(C) \,\rbrace,
-\qquad n = \lvert H \rvert
+\begin{aligned}
+R &= \lbrace\, C \subseteq H \;:\; \lnot\operatorname{dead}(C) \land \operatorname{discharged}(C) \,\rbrace \\
+n &= \lvert H \rvert
+\end{aligned}
 $$
 
 In general nothing shorter than the set describes $R$:
@@ -34,8 +36,10 @@ In general nothing shorter than the set describes $R$:
   $\emptyset$. Every node is a fork of root, so a dead root makes every node dead,
 
 $$
-\operatorname{dead}(\emptyset) \implies \forall C \subseteq H.\; \operatorname{dead}(C),
-\qquad\text{hence}\qquad R = \emptyset .
+\begin{aligned}
+\operatorname{dead}(\emptyset) &\implies \forall C \subseteq H.\; \operatorname{dead}(C) \\
+&\implies R = \emptyset
+\end{aligned}
 $$
 
   For any other target a program can be written whose region it is, its holes written as owing nodes.
@@ -43,7 +47,10 @@ $$
   shortest exact form of one region is the union of its maximal sub-cubes,
 
 $$
-[a, b] = \lbrace\, C : a \subseteq C \subseteq b \,\rbrace, \qquad R = \bigcup \lbrace\, [a, b] \subseteq R \ \text{maximal} \,\rbrace .
+\begin{aligned}
+{[a, b]} &= \lbrace\, C : a \subseteq C \subseteq b \,\rbrace \\
+R &= \bigcup \lbrace\, [a, b] \subseteq R \ \text{maximal} \,\rbrace
+\end{aligned}
 $$
 
   It is small when $R$ is regular, and it reaches $2^{n-1}$ isolated points on parity,
@@ -65,36 +72,39 @@ So *monotone* is asked of an arrow, and of three of them:
 
 | property | of | holds when | broken by | what it decides |
 |---|---|---|---|---|
-| **state monotone** ($\iff$ path-independent, given cumulativity, § 8.2) | $\operatorname{st} : L \to$ knowledge bases | $C \subseteq C' \implies \operatorname{st}(C) \subseteq \operatorname{st}(C')$ | an absence at odd depth over a relation a commitment can change; the FIFO gap (§ 8.3) | which knowledge base a node holds, and whether a node built from a parent's fixpoint is the node built from root |
+| **state monotone** ($\iff$ path-independent, given cumulativity, § 8.2) | $\operatorname{st} : L \to$ knowledge bases | $C \subseteq C' \implies \operatorname{st}(C) \subseteq \operatorname{st}(C')$ | an absence at odd depth over the [held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) of a relation that a commitment can change; the FIFO gap (§ 8.3) | which knowledge base a node holds, and whether a node built from a parent's fixpoint is the node built from root |
 | **status monotone** | $(\operatorname{dead}, \operatorname{owes})$ on states | $\operatorname{dead}$ and $\operatorname{discharged}$ are both upward-closed: $C \subseteq C'$ carries each from $C$ to $C'$ | $\operatorname{dead}$: as the state. $\operatorname{owes}$: an obligation's trigger, or an activator that applies an obligation | whether $R$ has holes, and so whether two lines describe it |
 | **monotone program** | the consequence operator $T_P$, on every knowledge base | $K \subseteq K' \implies T_P(K) \subseteq T_P(K')$ | any site (§ 3) | the static check's verdict, and the licences a computation of $R$ may take |
 
 A **monotone program** in the logic-programming sense has a consequence operator monotone on every knowledge
 base. Then saturation is a closure operator ([saturation](02-saturation.md)), both arrows are monotone, and $R$
 has no hole. The static check (§ 3) approximates this third property: a site says the operator is not monotone
-over the relations a commitment can change. The node functions can still be monotone on the program's own
-lattice, and those programs are the check's conservative flags (§ 4).
+over the relations whose held extent a commitment can change. The node functions can still be monotone on the
+program's own lattice, and those programs are the check's conservative flags (§ 4).
 
 ## 3. The static check
 
 ### 3.1 What it reads
 
-The check is read off the program's rules as root applies them, before any node is built. Let
-$\operatorname{rels}(H)$ be the relations of the candidates, what a commitment can add, and $D$ the relations a
-commitment can **change**, the least set with
+The check is read off the program's rules as root applies them, before any node is built. A **read** of a rule
+is a fact pattern in its match, a premise or a part of an absence, and it reads the facts of its relation that a
+state holds, the relation's held extent there. Let $\operatorname{rels}(H)$ be the relations of the candidates,
+those of which a commitment can add a fact, and $D$ the relations whose held extent a commitment can **change**,
+the least set with
 
 $$
-D \;=\; \operatorname{rels}(H) \;\cup\; \lbrace\, r \in \operatorname{rels}(\psi_\rho) \;:\; \rho \text{ a saturation rule that reads a relation of } D \,\rbrace
+D = \operatorname{rels}(H) \cup \lbrace\, r \in \operatorname{rels}(\psi_\rho) \;:\; \rho \text{ a saturation rule with a read of a relation of } D \,\rbrace
 $$
 
-A stored negation $\lnot r(\dots)$ is of its own pseudo-relation $\lnot r$, since what a commitment proposes is
-$r$, and $\lnot r$ changes only where a rule derives it. $D$ lies inside $D^{+}$ of [absence](03-absent-and-naf.md),
-which also follows a rule with parameters through its activator's relation.
+A stored negation $\lnot r(\dots)$ is counted under a pseudo-relation of its own, $\lnot r$, and not under $r$:
+what a commitment proposes is a fact of $r$, and the stored negations of the facts of $r$ change only where a
+rule derives one. $D$ lies inside $D^{+}$ of [absence](03-absent-and-naf.md), which also follows a rule with
+parameters through its activators' relation.
 
-Write $\operatorname{depth}$ for the number of absences a read stands inside. Every relation $q$ a rule reads,
-at every depth, is then one of three:
+Write $\operatorname{depth}$ for the number of absences a read stands inside. Every read of a rule, of a
+relation $q$ at some depth, is then one of three:
 
-| class | condition | growth of the relation can… |
+| class | condition | growth of the held extent of $q$ can… |
 |---|---|---|
 | **static** | $q \notin D$ | nothing: it is complete at root and the same at every node |
 | **dynamic, monotone polarity** | $q \in D$, monotone polarity | only add a conclusion, or only pay a debt |
@@ -107,19 +117,20 @@ is a *debt*, the rule being the negation of its witness, and a read at even dept
 commitment that grows it can only pay.
 
 $$
-\operatorname{site}(\rho, q) \iff q \in D \;\land\;
+\begin{aligned}
+\operatorname{site}(\rho, q) &\iff q \in D \;\land\;
 \begin{cases}
 \operatorname{depth}(q) \text{ odd} & \rho \text{ a saturation rule} \\
 \operatorname{depth}(q) \text{ even} & \rho \text{ an obligation}
-\end{cases}
-\qquad\text{or}\qquad
-\operatorname{site}(\rho) \iff \text{the activator relation of } \rho \text{ is in } D
+\end{cases} \\
+\operatorname{site}(\rho) &\iff \rho \text{ has parameters, and } \operatorname{name}(\rho) \in D
+\end{aligned}
 $$
 
-A **site** is a dynamic read at non-monotone polarity, or a rule with parameters whose **activator** relation is
-in $D$: a commitment can then make a node apply the rule in a way root never did, which a check of root's
-applications cannot see. A program with no site is **monotone** by the check; one with a site is **flagged**.
-The check costs root's saturation and builds no node.
+A **site** is a dynamic read at non-monotone polarity, or a rule with parameters whose name is a relation in
+$D$, the relation its **activators** are facts of: a commitment can then make a node apply the rule in a way root
+never did, which a check of root's applications cannot see. A program with no site is **monotone** by the check;
+one with a site is **flagged**. The check costs root's saturation and builds no node.
 
 The rule that gives a seated guest the soup unless the guest is allergic ([absence](03-absent-and-naf.md)), with
 seatings and allergies as candidates, has one site:
@@ -135,13 +146,16 @@ read under one absence. The red arrow starts inside $D$, so growing the commitme
 root:
 
 $$
-C \subseteq C' \;\implies\; \operatorname{st}(C) \subseteq \operatorname{st}(C')
-\;\land\; \bigl( \operatorname{dead}(C) \implies \operatorname{dead}(C') \bigr)
-\;\land\; \bigl( \operatorname{discharged}(C) \implies \operatorname{discharged}(C') \bigr)
+\begin{aligned}
+C \subseteq C' \;\implies\;\ & \operatorname{st}(C) \subseteq \operatorname{st}(C') \\
+\land\ & \bigl( \operatorname{dead}(C) \implies \operatorname{dead}(C') \bigr) \\
+\land\ & \bigl( \operatorname{discharged}(C) \implies \operatorname{discharged}(C') \bigr)
+\end{aligned}
 $$
 
-*Argument.* Every relation in $D$ is derived only through positive reads of $D$ and reads of static relations,
-which have the same extension at every node; so each node's fixpoint contains its subsets' fixpoints, and
+*Argument.* Every fact of a relation in $D$ is derived only through positive reads of relations of $D$ and reads
+of static relations, whose held extent is the same at every node; so each node's fixpoint contains its subsets'
+fixpoints, and
 $\operatorname{dead}$ is upward-closed, $\bot$ and a stored negation being facts. Every obligation's set of
 triggered instances is fixed while its witnesses only grow, so $\operatorname{discharged}$ is upward-closed.
 $\square$
@@ -163,7 +177,7 @@ add. It builds an over-approximation of every fact some node holds beyond root, 
 facts with some arguments replaced by a wildcard $\ast$:
 
 $$
-\mathit{Sh} \;=\; \mu X.\;\; H \;\cup\; \lbrace\, \psi_\rho\eta \;:\; \text{a read of } \rho \text{ at even depth unifies with a shape of } X \text{ under } \eta \,\rbrace
+\mathit{Sh} = \mu X.\;\; H \cup \lbrace\, \psi_\rho\eta \;:\; \text{a read of } \rho \text{ at even depth unifies with a shape of } X \text{ under } \eta \,\rbrace
 $$
 
 where a read at depth $0$ passes its bindings to the conclusion and every other variable becomes $\ast$. Only
@@ -175,16 +189,19 @@ the program stays flagged.
 Fact grain is sufficient too. It would unflag a program whose dynamic reads no commitment can ever match: a
 read that asks for membership under a label, $\operatorname{is-a}(a, \mathsf{House})$, where every candidate is a
 membership between atoms. Ein's check does not read at it: the check, the refusal of § 10 and the obligations
-rung read one $D$ at relation grain, so a program with a read of a relation in $D$ is flagged whatever the read's
-pattern.
+rung read one $D$ at relation grain, so a program with a read whose relation is in $D$ is flagged whatever the
+read's pattern.
 
 ### 3.4 The verdict is relative to root
 
-A read of a relation outside $D$ is static because root's fixpoint completes it and a fork never derives it
-again. So *monotone* says that the operator is monotone on root's fixpoint extended by commitments,
+A read whose relation is outside $D$ is static because root's fixpoint completes the relation's held extent and a
+fork never derives a fact of it again. So *monotone* says that the operator is monotone on root's fixpoint
+extended by commitments,
 
 $$
-K \mapsto \operatorname{sat}(\mathrm{root} \cup K), \qquad K \subseteq H,
+\begin{aligned}
+& K \mapsto \operatorname{sat}(\mathrm{root} \cup K) && \text{for } K \subseteq H
+\end{aligned}
 $$
 
 which is what the theorem and every computation of $R$ need, and not on every knowledge base. What root itself
@@ -196,18 +213,24 @@ FIFO gap (§ 8.3) can still reach a static read. Take the two rules of § 8.3 wi
 candidate:
 
 $$
-\rho_2:\; a \land b \land \operatorname{absent}(q) \implies p, \qquad
-\rho_1:\; a \land \operatorname{absent}(z) \implies q, \qquad K_0 \ni a, \quad H = \lbrace b \rbrace
+\begin{aligned}
+\rho_2 &:\; a \land b \land \operatorname{absent}(q) \implies p \\
+\rho_1 &:\; a \land \operatorname{absent}(z) \implies q \\
+a &\in K_0 \\
+H &= \lbrace b \rbrace
+\end{aligned}
 $$
 
-$q$ is derived from a given fact under an absence over a relation nothing derives, so $q \notin D$ and the
+$q$ is derived from a given fact under an absence over a relation of which nothing derives a fact, so
+$q \notin D$ and the
 program has no site. Built by fork, $\lbrace b \rbrace$ inherits root's $q$ and holds no $p$; built from scratch,
 $\rho_2$ is admitted before $q$ exists and $\lbrace b \rbrace$ holds a stale $p$:
 
 $$
-\operatorname{sat}(\operatorname{sat}(K_0) \cup \lbrace b \rbrace) \not\ni p,
-\qquad
-\operatorname{sat}(K_0 \cup \lbrace b \rbrace) \ni p
+\begin{aligned}
+p &\notin \operatorname{sat}(\operatorname{sat}(K_0) \cup \lbrace b \rbrace) \\
+p &\in \operatorname{sat}(K_0 \cup \lbrace b \rbrace)
+\end{aligned}
 $$
 
 Every node is built by fork, so the verdict is sound for every answer given, and this program is the reason the
@@ -215,24 +238,23 @@ scope is stated.
 
 ### 3.5 What is not a site
 
-- an absence over a static relation: a guard over positions no commitment changes, the spatial reads of the
-  Zebra puzzle;
+- an absence over the held extent of a static relation: a guard over positions no commitment changes, the
+  spatial reads of the Zebra puzzle;
 - an obligation's witness: the absence inside *every guest owes a seat* is at odd depth of an obligation, and
   growing the seats can only pay;
-- a read of a stored negation of a hypothesised relation, $\lnot r \in D$ only where a rule derives it.
+- a read of a stored negation of a fact of a candidates' relation $r$: $\lnot r \in D$ only where a rule derives
+  such a negation.
 
 ## 4. What the cube shows
 
 Where the cube is small enough to enumerate, every node of it can be classified, and three counts say what a
 site did:
 
-$$
-\begin{aligned}
-\textbf{holes:}\quad & \lbrace\, C \notin R \;:\; \exists A, B \in R.\;\; A \subset C \subset B \,\rbrace \\
-\textbf{dead with an alive superset:}\quad & \lbrace\, C \;:\; \operatorname{dead}(C) \;\land\; \exists C' \supset C.\; \lnot\operatorname{dead}(C') \,\rbrace \\
-\textbf{discharged with an owing superset:}\quad & \lbrace\, C \;:\; \operatorname{discharged}(C) \;\land\; \exists C' \supset C.\; \lnot\operatorname{discharged}(C') \,\rbrace
-\end{aligned}
-$$
+| count | the nodes counted |
+|---|---|
+| **holes** | $\lbrace\, C \notin R \;:\; \exists A, B \in R.\;\; A \subset C \subset B \,\rbrace$ |
+| **dead with an alive superset** | $\lbrace\, C \;:\; \operatorname{dead}(C) \;\land\; \exists C' \supset C.\; \lnot\operatorname{dead}(C') \,\rbrace$ |
+| **discharged with an owing superset** | $\lbrace\, C \;:\; \operatorname{discharged}(C) \;\land\; \exists C' \supset C.\; \lnot\operatorname{discharged}(C') \,\rbrace$ |
 
 A flagged program whose cube shows one is **exercised**, and one whose cube shows none is **conservative**. Both
 are words about the **status**, which is what the cube reads. A conservative program can still have a broken
@@ -256,8 +278,10 @@ $N$ is the set of minimal dead sets and $E$ the set of minimal discharging sets
 ([solution semantics](06-solution-semantics.md)):
 
 $$
-N = \min_{\subseteq} \lbrace\, C : \operatorname{dead}(C) \,\rbrace, \qquad
-E = \min_{\subseteq} \lbrace\, C : \operatorname{discharged}(C) \,\rbrace
+\begin{aligned}
+N &= \min_{\subseteq} \lbrace\, C : \operatorname{dead}(C) \,\rbrace \\
+E &= \min_{\subseteq} \lbrace\, C : \operatorname{discharged}(C) \,\rbrace
+\end{aligned}
 $$
 
 **A conditional obligation makes holes as a matter of course.** *A group that sits owes its members' seats*, the
@@ -283,9 +307,9 @@ line, a heavy green one its maximal line, a purple one a hole.
 | | monotone | non-monotone |
 |---|---|---|
 | **what it means** | adding a commitment never takes a conclusion away and never adds a debt | some commitment does one or the other |
-| **what causes it** | nothing: no site (§ 3) | a **site**, from one of three sources: an absence at odd depth in a saturation rule over a relation a commitment can change; an obligation's **trigger** over one; a rule whose **activator** relation a commitment can change (§ 9: c4, c5, c6, each a program's only site, each with the hole its cause makes) |
+| **what causes it** | nothing: no site (§ 3) | a **site**, from one of three sources: an absence at odd depth in a saturation rule over the held extent of a relation of $D$; an obligation's **trigger** over one; a rule whose **activators** are facts of a relation of $D$ (§ 9: c4, c5, c6, each a program's only site, each with the hole its cause makes) |
 | **how it looks** | a **band**. Dead is an up-set, drawn at the bottom; owing is a down-set among the alive nodes, near the empty commitment; $R$ lies between, and components separate where dead and owing meet | **islands**: a node outside $R$ between two members, joined to $R$ above it by a repair edge; a dead node with an alive superset; a discharged node with an owing superset |
-| **dead** | upward-closed | not, where a refutation rests on an absence over a relation a commitment can extend, directly, through a fact derived under it, or through a rule a node applies. Each such rule is refused when the program is read (§ 10), and a death that rests on no such absence is dead in every superset |
+| **dead** | upward-closed | not, where a refutation rests on an absence over a relation whose held extent a commitment can extend, directly, through a fact derived under it, or through a rule a node applies. Each such rule is refused when the program is read (§ 10), and a death that rests on no such absence is dead in every superset |
 | **discharged** | upward-closed | not, where a trigger grows (c5), an absence takes a witness away (c4), or a commitment applies an obligation (c6) |
 | **$R$'s shape** | convex | any subset of the cube (§ 1) |
 | **the lines, decided** | locally: a node of $R$ is maximal iff every edge up leaves $R$, minimal iff every edge down does | globally only. Across a hole the one-fact test calls a node a line node that is not one: on $R = \lbrace \emptyset, \lbrace A, B \rbrace \rbrace$, *$A$ and $B$ together or not at all*, the one-fact test calls $\emptyset$ maximal and $\lbrace A, B \rbrace$ minimal, and neither is |
@@ -329,7 +353,7 @@ reads the alive states and their extensions; on a flagged one it classifies ever
 | the soup and the allergy | an absence (c4) | an owing hole: being allergic takes away the soup that paid the guest's meal |
 | the seated guest dines | a trigger (c5) | an owing hole: seating the guest makes her a diner, and a diner owes a meal |
 | the kitchen opens | an activator (c6) | the same cube as the trigger's, by another mechanism: opening the kitchen declares that every guest owes a meal. The picture cannot tell the causes apart; the static check can |
-| three components | absences that refute (c2) | three components, two of them with dead holes, each revived by a repair edge. Its refutations rest on an absence over a relation a commitment extends, so the program is refused when it is read (§ 10): the drawing is the cube with that refusal set aside, the shape the refusal exists to rule out |
+| three components | absences that refute (c2) | three components, two of them with dead holes, each revived by a repair edge. Its refutations rest on an absence over a relation whose held extent a commitment extends, so the program is refused when it is read (§ 10): the drawing is the cube with that refusal set aside, the shape the refusal exists to rule out |
 
 ![an absence takes a witness away: an owing hole](diagrams/08-region-08-absent-witness-hole.svg)
 
@@ -347,7 +371,7 @@ A node's state can be built along a path, each step taking the last fixpoint, ad
 saturating. The general question is whether
 
 $$
-\operatorname{sat}(K_0 \cup C_1 \cup C_2) \;=\; \operatorname{sat}\bigl(\operatorname{sat}(K_0 \cup C_1) \cup C_2\bigr)
+\operatorname{sat}(K_0 \cup C_1 \cup C_2) = \operatorname{sat}\bigl(\operatorname{sat}(K_0 \cup C_1) \cup C_2\bigr)
 $$
 
 | construction | form |
@@ -373,13 +397,11 @@ node is built from root.
 
 Three properties of the construction, for commitments $C \subseteq C'$ and knowledge bases $X \subseteq Y$:
 
-$$
-\begin{aligned}
-\textbf{path-independent:}\quad & \text{every path to } C \text{ gives one set of facts, } \operatorname{st}(C) \\
-\textbf{monotone:}\quad & C \subseteq C' \implies \operatorname{st}(C) \subseteq \operatorname{st}(C') \\
-\textbf{cumulative:}\quad & X \subseteq Y \subseteq \operatorname{sat}(X) \implies \operatorname{sat}(Y) = \operatorname{sat}(X)
-\end{aligned}
-$$
+| property | what it says |
+|---|---|
+| **path-independent** | every path to $C$ gives one set of facts, $\operatorname{st}(C)$ |
+| **monotone** | $C \subseteq C' \implies \operatorname{st}(C) \subseteq \operatorname{st}(C')$ |
+| **cumulative** | $X \subseteq Y \subseteq \operatorname{sat}(X) \implies \operatorname{sat}(Y) = \operatorname{sat}(X)$ |
 
 **Proposition ($\Rightarrow$ holds always).** Path-independent implies monotone.
 
@@ -419,8 +441,11 @@ cumulativity.
 Take two rules, the reader written before the producer, with $a$ and $b$ the candidates:
 
 $$
-\rho_2:\; a \land b \land \operatorname{absent}(q) \implies p, \qquad
-\rho_1:\; a \land \operatorname{absent}(z) \implies q, \qquad H = \lbrace a, b \rbrace
+\begin{aligned}
+\rho_2 &:\; a \land b \land \operatorname{absent}(q) \implies p \\
+\rho_1 &:\; a \land \operatorname{absent}(z) \implies q \\
+H &= \lbrace a, b \rbrace
+\end{aligned}
 $$
 
 The program is stratified, $\sigma(z) < \sigma(q) < \sigma(p)$, and its perfect model at $\lbrace a, b \rbrace$
@@ -435,9 +460,10 @@ $\lbrace a, b \rbrace$ gives $\lbrace a, b, q \rbrace$. The state function is mo
 path-dependent:
 
 $$
-\lbrace a, b, q \rbrace \subseteq \operatorname{sat}(\lbrace a, b \rbrace),
-\qquad
-\operatorname{sat}(\lbrace a, b, q \rbrace) \neq \operatorname{sat}(\lbrace a, b \rbrace)
+\begin{aligned}
+\lbrace a, b, q \rbrace &\subseteq \operatorname{sat}(\lbrace a, b \rbrace) \\
+\operatorname{sat}(\lbrace a, b, q \rbrace) &\neq \operatorname{sat}(\lbrace a, b \rbrace)
+\end{aligned}
 $$
 
 which is cumulativity failing. Every node is in $R$, so the status never shows it, and the cube calls the
@@ -454,7 +480,8 @@ positively only grows. An activator only adds applications as facts grow, and an
 What is left is an absence at odd depth in a saturation rule, an absence site. $\square$
 
 **An activator can hide the absence.** A rule with parameters that a node applies can read an absence over the
-relation its parameter names, $\operatorname{absent}(R(x))$ with $R$ a parameter; the program's only site is then
+held extent of the relation its parameter names, $\operatorname{absent}(R(x))$ with $R$ a parameter; the program's
+only site is then
 the activator, and a check of root's applications does not see the absence. And an activator can hide the
 absence from a refutation's derivation as well: where a rule derives an activator
 $\operatorname{watch}(r)$ under $\operatorname{absent}(q(x))$, and the rule it applies refutes
@@ -469,10 +496,11 @@ follows each rule's activator, and is not read off a derivation's premises alone
 - **$\operatorname{owes}$** does not. An instance is owed when its trigger holds and no witness does,
 
 $$
-\operatorname{owes}(o, a, \theta, S) \iff S \models T_o(a, \theta) \;\land\; \lnot \exists \bar y.\; S \models W_o(a, \theta, \bar y),
+\operatorname{owes}(o, a, \theta, S) \iff S \models T_o(a, \theta) \;\land\; \lnot \exists \bar y.\; S \models W_o(a, \theta, \bar y)
 $$
 
-  so a trigger $T_o$ over $D$, or an activator $a$ a commitment can derive, adds a debt over a monotone,
+  so a trigger $T_o$ with a read of a relation of $D$, or an activator $a$ a commitment can derive, adds a debt
+  over a monotone,
   path-independent state. The seated guest who dines (a trigger) and the kitchen that opens (an activator) have
   no absence site, so by § 8.4 one state per node by every construction, and each has an owing hole. **A hole
   needs no path dependence.** Holes are a question about the status, not about the state.
@@ -483,7 +511,9 @@ $$
   $s \mapsto \operatorname{sat}(s \cup \lbrace h \rbrace)$. It has
 
 $$
-\sum_{k=0}^{n} \frac{n!}{(n-k)!} \;=\; \lfloor e \cdot n! \rfloor \quad (n \geq 1)
+\begin{aligned}
+\sum_{k=0}^{n} \frac{n!}{(n-k)!} &= \lfloor e \cdot n! \rfloor && \text{for } n \geq 1
+\end{aligned}
 $$
 
   nodes against the cube's $2^n$.
@@ -518,7 +548,7 @@ consequence, and § 8 says which causes produce it.
 | c6 | an activator that applies an obligation | opening the kitchen states that every guest owes a meal | **the status alone**: owes | an activator site | no |
 | c7 | an activator that applies a refutation, hiding its absence | a rule with a parameter $R$ whose application at a node concludes $\bot$ from $\operatorname{absent}(R(x))$ | **the state, and dead** | an activator site only: root applied the rule to nothing | yes |
 | c8 | an even cycle through an absence | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$ and $t(x) \land \operatorname{absent}(p(x)) \implies q(x)$, in either written order | **the state**, and stability: the written order of the two rules moves which fixpoint root reaches, and with it the candidate set | two absence sites, and a cycle | no |
-| c9 | an odd cycle through an absence | a rule derives $r(v, v)$ under $\operatorname{absent}(\lnot r(\dots))$, and another derives $\lnot r(v, v)$ from $r$ | **the state**: a parent path keeps a fact derived under an absence the commitment falsifies | an absence site, and a cycle | yes, through the fact its refutation reads |
+| c9 | an odd cycle through an absence | a rule derives $r(v, v)$ under $\operatorname{absent}(\lnot r(\dots))$, and another derives $\lnot r(v, v)$ from a fact of $r$ | **the state**: a parent path keeps a fact derived under an absence the commitment falsifies | an absence site, and a cycle | yes, through the fact its refutation reads |
 | c10 | the FIFO gap | the two rules of § 8.3 | **the state**: cumulativity, on a stratified program | an absence site on the reader | no |
 | c11 | an activator derived under an absence | a rule deriving $\operatorname{watch}(r)$ under $\operatorname{absent}(q(x))$, whose applied rule refutes reading no absence (§ 8.4) | **the state, and dead**: the absence is in the activator's derivation, which no premise records | an absence site on the deriving rule and an activator site | yes |
 | c12 | a FIFO race over a static read | the two rules of § 3.4, $a$ given | **the state built from scratch**, under a *monotone* verdict; a fork never meets it | nothing: no site | no |
@@ -530,14 +560,16 @@ c10 and c12 break the state where the cube can say *conservative*, so what is re
 ## 10. *Forbid*: what is refused at load
 
 A rule that concludes $\bot$ or a stored negation may not rest on an $\operatorname{absent}(G)$ over a relation
-a commitment can still extend: directly, through a fact a rule derives resting on such an absence, or through its
-activator ([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md);
+whose held extent a commitment can still extend: directly, through a fact a rule derives resting on such an
+absence, or through its activator
+([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md);
 [absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent) states it as a formula, and the user's
-[diagnostics](../../user/04-reference/07-diagnostics.md) § 2.7 has the refusal as printed). *Extendable* is
-$D^{+}$: $D$ followed through every rule with parameters whose activator relation it holds, each such rule read
-from its pattern, so that a chain of activators that first appears at a node is covered too. Over such a relation
-the shape judges a state that has not yet decided $G$ as if $G$ were false: it says *contradiction* where the
-truth is *not yet*, and $\operatorname{dead}$ stops being upward-closed.
+[diagnostics](../../user/04-reference/07-diagnostics.md) § 2.7 has the refusal as printed). The relations that are
+*extendable* in this sense are $D^{+}$: $D$ followed through every rule with parameters whose activators are facts
+of a relation it holds, each such rule read from its pattern, so that a chain of activators that first appears at
+a node is covered too. Over the held extent of such a relation the shape judges a state that has not yet decided
+$G$ as if $G$ were false: it says *contradiction* where the truth is *not yet*, and $\operatorname{dead}$ stops
+being upward-closed.
 
 Of the causes of § 9 it refuses c2, c3, c7, c9 and c11, every one that puts $\operatorname{dead}$ at stake. It
 does not refuse:
@@ -546,7 +578,8 @@ does not refuse:
 - obligation **triggers and activators**, which refute nothing (c5, c6);
 - the **FIFO gap** (c10, c12).
 
-Over a relation no commitment can extend, the same shape is closed-world reasoning, and is accepted.
+Over a relation whose held extent no commitment can extend, the same shape is closed-world reasoning, and is
+accepted.
 
 ## 11. The detector
 
@@ -562,12 +595,12 @@ Read off root's applications, before any node:
   and $\operatorname{dead}$ with it when it concludes $\bot$; a trigger the status, $\operatorname{owes}$; an
   activator either, through the rule a node applies;
 - **each cycle through an absence** over $D$, with its parity: a negative cycle of the rule dependency graph
-  ([analysis of rules](../03-rule-evolution/02-analysis-of-rules.md)), restricted to the relations a commitment
-  can change. An even cycle can have several states with no stale fact, two stable models; an odd one need not
+  ([analysis of rules](../03-rule-evolution/02-analysis-of-rules.md)), restricted to the relations of $D$. An
+  even cycle can have several states with no stale fact, two stable models; an odd one need not
   have any;
-- **each order finding**: a rule with an absence that reads, under an absence, a relation in $D$ that another
-  rule with an absence concludes. The written order then decides which of the two the boundary admits first
-  (§ 8.3).
+- **each order finding**: a rule with an absence that has, under an absence, a read of a relation in $D$ of which
+  another rule with an absence concludes a fact. The written order then decides which of the two the boundary
+  admits first (§ 8.3).
 
 ### 11.2 The dynamic half
 
@@ -581,7 +614,11 @@ state apart**, because the cube reads only the status:
 - **the state**: a **stale fact** of a node is a fact whose guard the node's own fixpoint falsifies,
 
 $$
-\operatorname{stale}(f, C) \iff f \in \operatorname{st}(C) \;\land\; \operatorname{absent}(G)\theta \in \operatorname{abs}(\delta_f) \;\land\; \operatorname{st}(C) \not\models \operatorname{absent}(G)\theta ,
+\begin{aligned}
+\operatorname{stale}(f, C) \iff\ & f \in \operatorname{st}(C) \\
+\land\ & \operatorname{absent}(G)\theta \in \operatorname{abs}(\delta_f) \\
+\land\ & \operatorname{st}(C) \not\models \operatorname{absent}(G)\theta
+\end{aligned}
 $$
 
   read on every node computed, dead nodes included, since a stale fact can sit in a dead node no answer lists;
@@ -589,7 +626,7 @@ $$
   state,
 
 $$
-\exists h \in C.\;\; \operatorname{sat}\bigl(\operatorname{st}(C \setminus \lbrace h \rbrace) \cup \lbrace h \rbrace\bigr) \neq \operatorname{st}(C) .
+\exists h \in C.\;\; \operatorname{st}(C) \neq \operatorname{sat}\bigl(\operatorname{st}(C \setminus \lbrace h \rbrace) \cup \lbrace h \rbrace\bigr)
 $$
 
   Its reach is one step: a node can be dead along a two-step chain through an alive parent that one-step parents
@@ -601,10 +638,11 @@ $$
 on every split $\operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup (C \setminus C_1))$ from
 a fixpoint that holds root's.
 
-*Argument.* No site means no read of a relation in $D$ under an odd number of absences. So there is no negative
-edge over $D$, and no cycle; no rule with an absence reads under an absence a relation in $D$ another concludes,
-and no order finding; every relation in $D$ grows with the commitment, so no guard is falsified, and no fact is
-stale; and every static read is settled at root, where every fork inherits its result, so no path differs.
+*Argument.* No site means no read whose relation is in $D$ under an odd number of absences. So there is no
+negative edge over $D$, and no cycle; no rule with an absence has under an absence a read of a relation in $D$ of
+which another concludes a fact, and no order finding; the held extent of every relation in $D$ grows with the
+commitment, so no guard is falsified, and no fact is stale; and every static read is settled at root, where every
+fork inherits its result, so no path differs.
 $\square$
 
 It does not hold from scratch (§ 3.4). No node is built from scratch, so the claim is sound for what is
@@ -617,7 +655,7 @@ something that fails when it stops being true
 ### 12.1 Three words
 
 - **stable**: the answer is a function of the program alone. It does not depend on any option of a run, on how
-  names were numbered, on rule order or on how many workers shared the work
+  objects were numbered, on rule order or on how many workers shared the work
   ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)).
 - **proved**: the answer comes with a certificate that a second, simpler check accepts.
 - **effective**: the cost grows with the size of the answer's description, not with $2^n$, wherever the case

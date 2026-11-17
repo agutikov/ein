@@ -106,23 +106,23 @@ The page: [analysis of rules](../../reasoning/03-rule-evolution/02-analysis-of-r
 
 | notion | code |
 |---|---|
-| the dependency graph, over the compiled plans of root | `ein_infer::strata::edges`: an edge per relation a plan reads and writes, negative at an odd `absent` depth, and a positive one from a rule's activator relation; the reads and writes of a plan are `ein-infer/src/monotone.rs`' `reads_of` and `writes_of` |
+| the dependency graph, over the compiled plans of root | `ein_infer::strata::edges`: an edge from each relation a plan reads facts of to each it concludes facts of, negative at an odd `absent` depth, and a positive one from the relation of a rule's activators; the reads and writes of a plan are `ein-infer/src/monotone.rs`' `reads_of` and `writes_of` |
 | the strata, and each rule's stratum | `ein_infer::strata::graph` and `rule_strata` |
 | a negative cycle and its parity | `ein_infer::strata::components`, `Cycle`, and `Cycle::stratum_text`, the diagnostic's wording |
 | the diagnostic on a run | the field `negative_cycles` of `ein_infer::monotone::Monotonicity`; the read-out's rows in `ein-render/src/read_out.rs`; the dump's line in `ein-cli/src/saturate.rs` |
-| the monotonicity check's cycles: the same graph restricted to the relations a commitment can change | `ein-infer/src/detector.rs`, reading `strata::edges` |
+| the monotonicity check's cycles: the same graph restricted to the relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can change | `ein-infer/src/detector.rs`, reading `strata::edges` |
 | the order of the agenda, which no stratum sets | `ein_infer::saturator::AGENDA` ([`03-design/06-saturation.md`](../03-design/06-saturation.md)) |
 
-The graph is over the **compile cache**, not the source: a relation-polymorphic rule has no relation in its head
-until an activator binds its parameter, so its edges exist only per plan, and the graph is asked of a run that
-has saturated root.
+The graph is over the **compile cache**, not the source: the conclusion of a relation-polymorphic rule names no
+relation until an activator binds its parameter, so its edges exist only per plan, and the graph is asked of a
+run that has saturated root.
 
 ### What holds it
 
 | claim | test |
 |---|---|
-| a read under an `absent` puts what the rule writes one stratum higher; a rule that reads under an `absent` the relation it writes is an odd negative cycle; each rule's stratum is the highest of what it writes | `ein-infer/tests/strata.rs`: `an_absent_read_is_a_stratum_and_a_self_read_is_a_negative_cycle` |
-| `examples/features/07_unstratifiable.ein` has a negative cycle, and `examples/features/01_not_and_absent.ein`, an `absent` over a relation no rule derives, has none | `ein-infer/tests/strata.rs`: `the_unstratifiable_fixture_has_a_negative_cycle_and_its_sibling_none` |
+| a read under an `absent` puts what the rule concludes one stratum higher; a rule that reads under an `absent` facts of the relation it concludes a fact of is an odd negative cycle; each rule's stratum is the highest of what it concludes | `ein-infer/tests/strata.rs`: `an_absent_read_is_a_stratum_and_a_self_read_is_a_negative_cycle` |
+| `examples/features/07_unstratifiable.ein` has a negative cycle, and `examples/features/01_not_and_absent.ein`, an `absent` over the held extent of a relation no rule concludes a fact of, has none | `ein-infer/tests/strata.rs`: `the_unstratifiable_fixture_has_a_negative_cycle_and_its_sibling_none` |
 | `ein solve` names each negative cycle and its parity as a possibility, still answers and exits 0; a cycle that never fires is reported in the same words; a stratified program prints no `strata` row | `ein-cli/tests/strata_diagnostic.rs`: `solve_names_each_negative_cycle_and_still_answers` |
 | `ein saturate --dump` says whether a stratification exists | `ein-cli/tests/strata_diagnostic.rs`: `saturate_dump_says_whether_a_stratification_exists` |
 | the engine answers a program with an odd cycle, with a fixpoint supported at the boundary | `ein-infer/tests/naf_semantics.rs`: `an_unstratifiable_loop_converges_to_a_supported_model` |
@@ -179,8 +179,9 @@ ein solve examples/features/07_unstratifiable.ein
 ```
 
 A cycle that never fires is reported in the same words.
-[`examples/syntax/rule-guards.ein`](../../../../examples/syntax/rule-guards.ein) writes no fact, so its rule `g`,
-which reads `s` under an `absent` and writes `s`, never fires, and its one fixpoint is root's empty one:
+[`examples/syntax/rule-guards.ein`](../../../../examples/syntax/rule-guards.ein) writes no fact, so its rule
+`g`, which reads facts of `s` under an `absent` and concludes a fact of `s`, never fires, and its one fixpoint
+is root's empty one:
 
 ```sh
 ein solve examples/syntax/rule-guards.ein
