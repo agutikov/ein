@@ -1,0 +1,12 @@
+(import std.math.int :symbols (int int-div-euclid int-quot-euclid-of int-div-trunc int-quot-trunc-of
+                               int-div-floor int-quot-floor-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-div-euclid (int z (n z 7)) (int (n z 2) z))          ; −7 ÷ 2, three ways
+(int-div-trunc  (int z (n z 7)) (int (n z 2) z))
+(int-div-floor  (int z (n z 7)) (int (n z 2) z))
+
+(query :goal (int-quot-euclid-of ?x ?y ?q ?r))
+(query :goal (int-quot-trunc-of ?x ?y ?q ?r))
+(query :goal (int-quot-floor-of ?x ?y ?q ?r))

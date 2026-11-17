@@ -1,0 +1,9 @@
+(import std.bool.inputs :symbols (is-a in require))
+(import std.bool.circuit :symbols (gate val))
+(import std.bool.gates :symbols (Xor))
+
+(gate g1 Xor a a out)
+(is-a a Input)
+(require out 1)
+
+(query :goal (in a ?a))

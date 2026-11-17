@@ -93,6 +93,20 @@ the function changes and the field does not.
   additive `ein-cli` flag, `--feedback FILE.json`, beside `--json-summary` —
   and, at most, *kinds* on errors that already exist.
 
+## The page this phase writes into
+
+**To settle at this phase's re-plan** (handed over at the close of M1f's documentation phase, P1f.20, 2026-11-17:
+its finding L-48). This README and [S2.1.1](s2.1.1_census.md) and [S2.1.2](s2.1.2_feedback_object.md) mean to write the six
+outcomes and the six invariants into `defined_behaviour.md`, and cite its § 1 and § 4 for the message strings. That
+page is gone: M1f rebuilt the documentation as `docs/ein/`, and its parts are
+[`07-diagnostics.md`](../../../docs/ein/user/04-reference/07-diagnostics.md) (the refusals and their exit codes),
+[`05-cli.md`](../../../docs/ein/user/04-reference/05-cli.md) (the commands) and, for the order of objects and of
+facts, [the knowledge base](../../../docs/ein/reasoning/01-static-ir/01-knowledge-base.md). Which page the outcomes
+and the invariants join, under the rules the tree now has (a page of `reasoning/` names no test; what holds a claim
+is `ein.rs/`'s: [Q-M1f.370](../../../docs/decisions/docs/Q-M1f.370-each-perspective-of-the-documentation-is-written.md)), is decided when this phase is re-planned; until then every `defined_behaviour.md` here reads as
+*the page of `docs/ein/` that states it*. `grep -rn 'defined_behaviour' plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`
+lists the places.
+
 ## Risks
 
 - **Over-specifying the vocabulary before the ladder says what matters.**

@@ -1,0 +1,18 @@
+(import std.algebra :symbols (irreflexive antisymmetric asymmetric injective empty))
+
+(relation taller  Person Person :why "{?1} is taller than {?2}")
+(relation manages Person Person :why "{?1} manages {?2}")
+(relation badge   Person Badge  :why "{?1} carries {?2}")
+(relation banned  Person Thing  :why "{?1} is banned from {?2}")
+
+(irreflexive taller)
+(asymmetric  manages)
+(injective   badge)
+(empty       banned)
+
+(taller Ann Bob) (taller Bob Cid)
+(manages Ann Bob)
+(badge Ann B1) (badge Bob B2)
+
+(solve :no-search)
+(query :goal (taller ?x ?y))

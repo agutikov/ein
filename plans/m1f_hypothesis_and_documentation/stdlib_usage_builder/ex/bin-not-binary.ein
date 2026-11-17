@@ -1,0 +1,5 @@
+(import std.math.binary-arith :symbols (bin-add))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 (b2 z 1) 2) (b2 z 1))

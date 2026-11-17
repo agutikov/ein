@@ -1,0 +1,12 @@
+(import std.math.decimal-arith :symbols (let mul product-of add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let price (n (n z 1) 2))          ; 12
+(let qty   (n z 3))                ; 3
+
+(mul price qty)
+(add price (n (n z 0) 8))          ; 12 + 08: a high zero is read by value
+
+(query :goal (product-of price qty ?p))
+(query :goal (sum-of price ?y ?s))

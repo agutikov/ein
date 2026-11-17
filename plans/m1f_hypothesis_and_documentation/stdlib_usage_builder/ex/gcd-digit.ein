@@ -1,0 +1,5 @@
+(import std.math.gcd :symbols (gcd))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd 6 (n z 4))

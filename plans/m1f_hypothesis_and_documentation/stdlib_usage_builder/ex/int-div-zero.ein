@@ -1,0 +1,5 @@
+(import std.math.int :symbols (int int-div-floor))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-div-floor (int (n z 7) z) (int (n z 3) (n z 3)))     ; 7 ÷ (3 less 3)

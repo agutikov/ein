@@ -566,7 +566,8 @@ reading D2 lists:
 | W-5 | the FIFO gap: `lattice/10_fifo_gap`'s node `{a, b}` holds a stale `p`, where the stratified reading gives `{a, b, q}` | D2 (stratum order) | `W8/fifo-gap`, witness `examples/lattice/10_fifo_gap.ein`; primary `right` admission in stratum order |
 | W-6 | members of R past the oracle's limit hold a fact whose `absent` guard their own fixpoint falsifies: `features/01`, 24 754 of 64 655 nodes (`ein solve FILE --json-summary`, `monotonicity.state`, 2026-11-05), `features/04_open`, `square-unique/*` | D2, D7 | `W8/corner-house`, the cheapest of the five (`examples/saturation/square-unique/corner-house.ein`, 5 595 of 65 389, 1.4 s); primary `right` (C), no member of R holding a stale fact |
 
-With `W8/features-07`, this page owns four rows.
+With `W8/features-07`, this page owns four rows. (Five since 2026-11-17: `W8/fifo-gap-root`,
+[below](#handed-over-by-m1f-2026-11-17-the-fifo-gap-at-root).)
 
 **Five labels.** None moves an answer. Each is a label the detector or the
 static check prints or reads, and each is decided with the reading it labels.
@@ -782,6 +783,72 @@ commitment extends, reads `D` from H's own relations and so does see it. `scope:
 | id | what | witness, and the command | found by | today | state |
 |---|---|---|---|---|---|
 | K-41 | **The whole node does not read a native mirror's derivation of a fact committed in it, so the coupling can leave a member of N in no edge.** The saturator's `__symmetric__` mirror returns a firing only where it writes a new fact; where the mirror is there already it records an alternative justification, which the store refuses for a fact whose primary is a commitment (`Kb::accepts_justification`) and which `:record-alternative-justifications false` does not ask for. The whole node commits every candidate, so of two candidates that mirror each other neither is read as derived from the other, and a death that reads one through the other's mirror is read as reading it committed. The probe: `(__symmetric__ knows)`, hrules proposing `(knows Ann Bob)` and `(knows Bob Ann)` (from `(pair Ann Bob)`, `(pair Bob Ann)`), `(likes Cid)` and `(sings Cid)`, and one rule concluding `(false)` from `(knows Bob Ann)`, `(likes Cid)` and `(sings Cid)`. The oracle's N is `{(knows Ann Bob), (likes Cid), (sings Cid)}` and the same with `(knows Bob Ann)`; the structure's coupling has two edges, `{(knows Ann Bob), (knows Bob Ann)}` (a tie, *implies*) and `{(knows Bob Ann), (likes Cid), (sings Cid)}`, so no edge holds a question of each member of the first. That is the claim `ein-infer/tests/coupling.rs` holds wherever a describe exhausts on the corpus, *every member of N lies inside one edge*; of the corpus programs that search, one writes `__symmetric__`, `ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein`, and nothing in it dies | the program above, kept as `build/s18/probes/p5_native_mirror.ein`; `ein render h-space FILE --dump DIR`, then `jq '.coupling.edges[].questions' DIR/h-space.json`; `ein oracle FILE --dump DIR2`, N in `DIR2/region.md` | S1f.10.18, 2026-11-16, T1's item *the kernel's mirror* | not a wrong answer: the coupling orders the tree and moves no answer. A claim of the structure that holds on the corpus and not in general, and a premise of S1f.10.18's narrowed claim (no `__symmetric__` relation) | open, no owner. The next way is the whole node reading a mirror's redundant application as a firing (`Nodes::with_fixpoint_supported_within`), and the probe banked with a corpus entry |
+
+## Handed over by M1f, 2026-11-17: the FIFO gap at root
+
+M1f's documentation phase, P1f.20, found it writing the saturation pages (its finding L-61, the kb-evolution
+lane; reproduced on the gate binary), proposed a register row and left the row the user's call. It is filed at
+that phase's close, under the standing rule that a wrong answer is a row: **`W8/fifo-gap-root`**, open, this
+page's. With it this page owns five rows of W8. The phase's folder is deleted
+(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor`); what it found and
+left is [the milestone's findings page](../m1f_hypothesis_and_documentation/findings.md).
+
+**What is false.** Rule order decides root's fixpoint on a program the static check calls monotone, and nothing
+says so. Two rules that each wait on an `absent`, the reader written before the producer, with both their positive
+premises given: the boundary admits the one written first, so `r2` derives `(p one)` under `(absent (q one))`
+before `r1` derives `(q one)`, and root holds a fact its own fixpoint's guard refutes. Written in the other order,
+or with `r1` also concluding a stored negation (which the agenda fires first,
+[Q-M1f.313](../../docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)), root holds no
+`p`. All three print *lattice monotone (the static check)*, with no warning: the check is of what a commitment can
+change, and takes root as given
+([`08-monotonicity.md` § 3.4](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md)).
+
+It is the FIFO gap of `W8/fifo-gap` (`examples/lattice/10_fifo_gap.ein`, where `a` and `b` are candidates and the
+program is flagged) and of [`11_fifo_gap_static.ein`](../../examples/lattice/11_fifo_gap_static.ein) (`a` given, `b`
+a candidate, a monotone verdict, and no answer wrong because every node is a fork of root), **moved one step
+down**: with `a` and `b` both given the race is root's own, and every answer is built on root.
+
+| program, under [`plans/wrong_answers/witnesses/`](../wrong_answers/witnesses/) | what differs | `ein solve`: the query `(p ?x)` | root holds (`ein saturate --dump`) |
+|---|---|---|---|
+| [`fifo-gap-root.ein`](../wrong_answers/witnesses/fifo-gap-root.ein), the witness | `r2` (reads `q` under an absent) written before `r1` (derives `q`) | `?x = one` | `(p one :rule r2)` and `(q one :rule r1)` |
+| [`fifo-gap-root-r1-first.ein`](../wrong_answers/witnesses/fifo-gap-root-r1-first.ein) | `r1` written first, nothing else | *the goal has no row* | `(q one :rule r1)` |
+| [`fifo-gap-root-negation.ein`](../wrong_answers/witnesses/fifo-gap-root-negation.ein) | the witness's order; `r1` concludes `(and (q ?x) (not (w ?x)))`, `w` read by nothing | *the goal has no row* | `(q one :rule r1)` and `(not (w one) :rule r1)` |
+
+Each states `(solve :no-search)`, so nothing is a candidate and R is {∅}; each prints
+*lattice monotone (the static check) — R is convex: no hole*. `python3 utils/wrong_answers.py` holds the row's run.
+
+**The row's `right`** is the answer under **D2's stratum-order admission**, the reading `W8/fifo-gap`'s row takes:
+the program is stratified (`r1`'s stratum before `r2`'s; nothing derives `z`), so its perfect model is
+`(a one) (b one) (q one)` and the query has no row. It is the one reading of D2's under which the three programs,
+which differ in nothing a stratified program's meaning depends on, have one answer. The alternatives the row
+records: (A) or (B) in FIFO order, today's answer (at root the two are one node); (C) over (A), under which root
+holds a stale fact and is no solution, so R is empty on the witness and {∅} on its twins; (D), which does not
+refuse it, there being no cycle. The row is not reviewed, and its reading rules nothing
+([Q-M1f.134](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled)).
+
+**What it adds to D2**, beyond `W8/fifo-gap`:
+
+- **A monotone verdict does not make the answer a function of the program.** The engine claims nothing of a
+  flagged program; this one is not flagged. The detector's order findings (`monotonicity.order`) are a flagged
+  program's alone, and the summary's `monotonicity.state` is empty here.
+- **Stratum-order admission is the only one of D2's readings that settles it**: (A) and (B) coincide at root and
+  both keep the race, and (C) moves the dependence on rule order from a fact to R's emptiness.
+- **The agenda's first half already reorders the admission** where a rule concludes a stored negation, so today's
+  order is neither the written one nor the strata's.
+
+**The user's calls**, none taken:
+
+1. Whether the row's reading stands, with D2's sub-question on stratum order.
+2. Whether the static check should report an order finding at root: a program in which a rule's `absent` reads
+   what another rule waiting on an `absent` derives is not *order-free at the boundary*
+   ([`03-transformations.md`](../../docs/ein/reasoning/03-rule-evolution/03-transformations.md)), and that is
+   readable off the rules.
+3. Three statements still say more than holds, and were not edited: the *Why* of Q-M1f.313's decision file (*on a
+   monotone program the fixpoint does not depend on the order*); the header of
+   `ein-infer/tests/naf_semantics.rs` (*priority stops deciding what is derivable*); the first line of
+   `ein-infer/tests/agenda.rs` (*on every monotone program*: it is a sweep of the corpus's). The pages were scoped
+   at the review: the order decides no answer only where no rule's `absent` reads what another rule waiting on an
+   `absent` derives (`AGENTS.md` § The language says it so).
 
 ## Why it is parked
 

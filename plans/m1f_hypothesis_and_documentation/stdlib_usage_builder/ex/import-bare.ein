@@ -1,0 +1,8 @@
+(import std.math.decimal-arith)
+(import std.math.decimal)
+(import std.math.arith)
+
+(std.math.decimal-arith.add (std.math.decimal.n std.math.arith.z 2)
+                            (std.math.decimal.n std.math.arith.z 3))
+
+(query :goal (std.math.decimal-arith.sum-of ?x ?y ?s))

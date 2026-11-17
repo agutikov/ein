@@ -1,0 +1,12 @@
+(import std.math.rat :symbols (rat-arith rat rat-add rat-sum-of rat-simplify rat-simple-of rat-cmp rat-cmp-of))
+(import std.math.int :symbols (int))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 2)))   ; 1/2 + 1/2
+(rat-simplify (rat (int (n z 4) z) (n z 4)))                            ; 4/4 in lowest terms
+(rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int (n z 2) z) (n z 4)))   ; 1/2 against 2/4
+
+(query :goal (rat-sum-of ?x ?y ?s))
+(query :goal (rat-simple-of ?x ?s))
+(query :goal (rat-cmp-of ?x ?y ?o))

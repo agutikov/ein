@@ -1,0 +1,8 @@
+(import std.bool.props :symbols (commutative identity-of absorbing-of dual-of complete-alone column))
+(import std.bool.gates :symbols (Xor And Or))
+
+(query :goal (identity-of And ?e))
+(query :goal (absorbing-of And ?e))
+(query :goal (dual-of And ?g))
+(query :goal (complete-alone ?f))
+(query :goal (column Xor ?a ?b ?c ?d))

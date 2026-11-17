@@ -1,0 +1,9 @@
+(import std.algebra)
+
+(relation next-to T T :why "{?1} is next to {?2}")
+
+(symmetric next-to)
+(next-to a b)
+
+(solve :no-search)
+(query :goal (next-to ?x ?y))

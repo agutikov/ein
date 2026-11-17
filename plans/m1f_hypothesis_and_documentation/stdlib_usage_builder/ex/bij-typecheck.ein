@@ -1,0 +1,15 @@
+(import std.bijection)
+
+(relation is-a  T T          :why "{?1} is a {?2}")
+(relation wears Agent Colour :why "{?1} wears {?2}")
+
+(is-a Ann Agent)
+(is-a Red Colour)
+
+(bijective wears)
+(bijection-hierarchy is-a)
+(typecheck-hierarchy is-a)
+
+(wears Zed Red)
+
+(solve :no-search)

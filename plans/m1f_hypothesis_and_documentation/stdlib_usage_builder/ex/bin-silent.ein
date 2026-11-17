@@ -1,0 +1,7 @@
+(import std.math.binary-arith :symbols (bin-add bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 7 1) (b2 z 1))
+
+(query :goal (bin-sum-of ?x ?y ?s))

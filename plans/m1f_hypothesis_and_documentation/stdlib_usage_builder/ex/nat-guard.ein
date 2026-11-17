@@ -1,0 +1,28 @@
+(import std.math.decimal-arith :symbols (cmp cmp-of div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation share        Number Number :why "{?1} is shared among {?2}")
+(relation cannot-share Number        :why "{?1} cannot be shared among nobody")
+
+(share (n z 7) z)
+(share (n z 7) (n z 2))
+
+(rule ask-whether-zero ()
+  :match  (share ?x ?y)
+  :assert (cmp ?y z)
+  :why    "is {?y} zero?")
+
+(rule divide-when-positive ()
+  :match  (and (share ?x ?y) (cmp-of ?y z gt))
+  :assert (div ?x ?y)
+  :why    "{?y} is more than zero, so {?x} can be divided by it")
+
+(rule refuse-when-zero ()
+  :match  (and (share ?x ?y) (cmp-of ?y z eq))
+  :assert (cannot-share ?x)
+  :why    "{?y} is zero")
+
+(solve :no-search)
+(query :goal (quot-of ?x ?y ?q ?r))
+(query :goal (cannot-share ?x))

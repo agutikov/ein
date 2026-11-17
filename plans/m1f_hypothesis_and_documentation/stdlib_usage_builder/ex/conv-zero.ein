@@ -1,0 +1,11 @@
+(import std.math.convert :symbols (to-bin to-dec bin-of dec-of))
+(import std.math.decimal :symbols (n))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(to-bin z)
+(to-bin (n (n z 0) 2))                                    ; 02
+(to-dec (b2 (b2 z 0) 0))                                  ; 00
+
+(query :goal (bin-of ?x ?b))
+(query :goal (dec-of ?b ?x))

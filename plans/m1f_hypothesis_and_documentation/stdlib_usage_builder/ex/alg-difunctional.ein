@@ -1,0 +1,10 @@
+(import std.algebra :symbols (difunctional))
+
+(relation plays Person Game :why "{?1} plays {?2}")
+
+(difunctional plays)
+
+(plays Ann Chess) (plays Bob Chess) (plays Bob Go)
+
+(solve :no-search)
+(query :goal (plays Ann ?g))

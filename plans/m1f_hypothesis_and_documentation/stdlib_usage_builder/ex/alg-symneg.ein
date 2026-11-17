@@ -1,0 +1,9 @@
+(import std.algebra :symbols (symmetric))
+
+(relation sits-with Guest Guest :why "{?1} sits with {?2}")
+
+(symmetric sits-with)
+(sits-with A B)
+(not (sits-with A C))
+
+(solve :no-search)

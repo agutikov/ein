@@ -1,0 +1,8 @@
+(import std.algebra :symbols (symmetric converse))
+
+(relation next-to House House :why "{?1} is next to {?2}")
+
+(symmetric next-to)
+
+(solve :no-search)
+(query :goal (converse ?r ?s))

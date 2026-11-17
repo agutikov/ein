@@ -1,0 +1,19 @@
+(import std.algebra   :symbols (functional total))
+(import std.bijection :symbols (functional-negative domain-elimination))
+
+(relation is-a     T T        :why "{?1} is a {?2}")
+(relation lives-in Person Town :why "{?1} lives in {?2}")
+
+(is-a Ann Person) (is-a Bob Person) (is-a Cid Person)
+(is-a Oslo Town)  (is-a Rome Town)
+
+(functional lives-in)                 ; a person lives in one town
+(total      lives-in)                 ; and in some town
+(functional-negative lives-in is-a)
+(domain-elimination  lives-in is-a)
+
+(lives-in Ann Oslo)
+(not (lives-in Bob Oslo))
+
+(solve :no-search)
+(query :goal (lives-in ?who ?where))

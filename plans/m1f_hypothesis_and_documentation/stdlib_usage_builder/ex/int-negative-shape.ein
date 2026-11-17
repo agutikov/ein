@@ -1,0 +1,22 @@
+(import std.math.int :symbols (int int-sub int-diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation overdrawn Account :why "{?1} is overdrawn")
+(relation balance Account Number Number :why "{?1} had {?2} and spent {?3}")
+
+(balance Ann (int (n (n z 3) 0) z) (int (n (n z 4) 5) z))
+(balance Bob (int (n (n z 3) 0) z) (int (n (n z 1) 0) z))
+
+(rule ask-what-is-left ()
+  :match  (balance ?who ?had ?spent)
+  :assert (int-sub ?had ?spent)
+  :why    "what {?who} has left: {?had} less {?spent}")
+
+(rule below-zero ()
+  :match  (and (balance ?who ?had ?spent) (int-diff-of ?had ?spent (int z (n ?p ?a))))
+  :assert (overdrawn ?who)
+  :why    "{?who} has less than nothing left")
+
+(solve :no-search)
+(query :goal (overdrawn ?who))

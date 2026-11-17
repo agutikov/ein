@@ -1,0 +1,24 @@
+(import std.algebra :symbols (converse compose includes identity))
+
+(relation is-a        T T           :why "{?1} is a {?2}")
+(relation parent      Person Person :why "{?1} is a parent of {?2}")
+(relation child       Person Person :why "{?1} is a child of {?2}")
+(relation grandparent Person Person :why "{?1} is a grandparent of {?2}")
+(relation ancestor    Person Person :why "{?1} is an ancestor of {?2}")
+(relation same        Person Person :why "{?1} is {?2}")
+
+(is-a Ann Person) (is-a Bob Person) (is-a Cid Person)
+
+(converse parent child)                  ; child = parent, turned round
+(compose  parent parent grandparent)     ; a parent of a parent
+(includes parent ancestor)               ; every parent is an ancestor
+(compose  ancestor ancestor ancestor)    ; and an ancestor of an ancestor is one
+(identity same is-a Person)              ; every person is the same as themselves
+
+(parent Ann Bob) (parent Bob Cid)
+
+(solve :no-search)
+(query :goal (child ?x ?y))
+(query :goal (grandparent ?x ?y))
+(query :goal (ancestor ?x ?y))
+(query :goal (same ?x ?y))

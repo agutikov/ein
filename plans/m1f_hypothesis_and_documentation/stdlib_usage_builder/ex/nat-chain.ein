@@ -1,0 +1,20 @@
+(import std.math.decimal-arith :symbols (mul product-of add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation total-is Number :why "the bill comes to {?1}")
+
+(mul (n (n z 1) 2) (n z 3))        ; 12 × 3
+
+(rule add-the-fee ()
+  :match  (product-of (n (n z 1) 2) (n z 3) ?p)
+  :assert (add ?p (n z 5))
+  :why    "the goods cost {?p}; the fee of 5 is added")
+
+(rule the-total ()
+  :match  (and (product-of (n (n z 1) 2) (n z 3) ?p) (sum-of ?p (n z 5) ?t))
+  :assert (total-is ?t)
+  :why    "{?p} and the fee make {?t}")
+
+(solve :no-search)
+(query :goal (total-is ?t))

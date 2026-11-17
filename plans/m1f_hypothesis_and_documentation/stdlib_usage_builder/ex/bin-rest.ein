@@ -1,0 +1,13 @@
+(import std.math.binary-arith :symbols (bin-sub bin-diff-of bin-cmp bin-cmp-of bin-div bin-quot-of bin-let))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-let mask (b2 (b2 (b2 z 1) 1) 0))                     ; 110
+(bin-sub mask (b2 (b2 z 1) 1))                            ; 110 − 11
+(bin-sub (b2 (b2 z 1) 1) mask)                            ; 11 − 110
+(bin-cmp mask (b2 (b2 (b2 (b2 z 0) 1) 1) 0))              ; 110 against 0110
+(bin-div mask (b2 (b2 (b2 z 1) 0) 0))                     ; 110 ÷ 100
+
+(query :goal (bin-diff-of ?x ?y ?d ?r))
+(query :goal (bin-cmp-of ?x ?y ?o))
+(query :goal (bin-quot-of ?x ?y ?q ?r))

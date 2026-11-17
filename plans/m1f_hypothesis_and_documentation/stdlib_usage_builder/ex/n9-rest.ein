@@ -1,0 +1,12 @@
+(import std.math.num9 :symbols (num9 sub9 diff9-of cmp9 cmp9-of mul9 product9-of div9 quot9-of))
+
+(sub9 (num9 0 0 0 0 0 0 1 0 0) (num9 0 0 0 0 0 0 0 0 1))    ; 100 − 1
+(sub9 (num9 0 0 0 0 0 0 0 0 1) (num9 0 0 0 0 0 0 1 0 0))    ; 1 − 100
+(cmp9 (num9 0 0 0 0 0 0 1 0 0) (num9 0 0 0 0 0 0 0 9 9))    ; 100 against 99
+(mul9 (num9 0 0 0 0 0 0 0 1 2) (num9 0 0 0 0 0 0 0 1 2))    ; 12 × 12
+(div9 (num9 0 0 0 0 0 0 1 0 0) (num9 0 0 0 0 0 0 0 0 7))    ; 100 ÷ 7
+
+(query :goal (diff9-of ?x ?y ?d ?r))
+(query :goal (cmp9-of ?x ?y ?o))
+(query :goal (product9-of ?x ?y ?p))
+(query :goal (quot9-of ?x ?y ?q ?r))
