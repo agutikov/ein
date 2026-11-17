@@ -1,7 +1,7 @@
 ;;; Syntax probe — relation-decls.
 ;;;
 ;;; `(relation …)` at every arity, inside an ordinary fact head.
-;;; Since S1.7c.4 `ontology` is not a block: these are nested *values*.
+;;; `ontology` is not a block: these are nested *values*.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is

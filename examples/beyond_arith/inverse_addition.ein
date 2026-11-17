@@ -12,8 +12,8 @@
 ;;; walk says so with a fact, `(no-addend …)`, since it reaches the end of
 ;;; the sum with digits of the operand still unread.
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.digits :symbols (fa nz __closed__))
 
 (relation unadd Number Number :why "asked: which x makes x + {?1} = {?2}?")

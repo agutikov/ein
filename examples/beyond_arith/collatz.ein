@@ -3,8 +3,8 @@
 ;;; reaches 1 is an open problem, so the request carries a bound on the
 ;;; steps: saturation must end, and a rule set that might not is given a
 ;;; bound it can count to. Saturation alone.
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is div-call div-done add-walk mul-call done))
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))

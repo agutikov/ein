@@ -1,54 +1,54 @@
-;;; P1.5b lattice fixture — Apriori subset pruning.
+;;; Lattice fixture — a dead pair, and every superset of it dead with it.
 ;;;
-;;; Demonstrates: a layer-3 candidate {h1, h2, X} is filtered at
-;;; generation because its 2-subset {h1, h2} dies at layer 2. The
-;;; Apriori prefix-join in `apriori.rs` drops the (h1, h2)
-;;; pair from a_prev when it dies; the (k+1)-join therefore never
-;;; emits a 3-superset containing both — the pruning is structural,
-;;; happening BEFORE the expensive try_commitment_set fork+saturate.
-;;; filter_candidate's matches_any_nogood subset check is a
-;;; redundant belt-and-braces guard against any 3-set whose dead
-;;; 2-subset slips back into the pool (shouldn't happen under M1).
+;;; Demonstrates: once {a, b} is dead, every commitment that holds both is
+;;; dead too — dead is upward-closed — so the cube's {a, b, c}, {a, b, d}
+;;; and {a, b, c, d} are classified without a saturation of their own: a
+;;; route that knows the minimal dead set {a, b} reads their class off it.
+;;; Subsumption by a dead set is what makes the pruning combinatorial: one
+;;; refuted pair removes every superset, which no per-set forking can
+;;; match.
 ;;;
 ;;; Four hypothesis candidates: (proposed a), (proposed b),
 ;;; (proposed c), (proposed d). A single (incompat a b) fact in
 ;;; root + the incompat-block rule says "if both a and b are
-;;; proposed, false". So:
+;;; proposed, false". So, the cube layer by layer:
 ;;;
+;;;   Layer 0 — root, ∅, alive.
 ;;;   Layer 1 — 4 alive singletons.
 ;;;   Layer 2 — 6 pairs; {a,b} dies (incompat-block fires);
 ;;;             5 alive pairs.
-;;;   Layer 3 — Apriori prefix-join over the 5 alive pairs
-;;;             generates only 2 candidates ({a,c,d} and
-;;;             {b,c,d}). The would-be {a,b,c} and {a,b,d}
-;;;             are NEVER produced — the (a,b) prefix is gone
-;;;             from a_prev.
+;;;   Layer 3 — {a,c,d} and {b,c,d} alive; {a,b,c} and {a,b,d}
+;;;             hold the dead pair, and are dead.
+;;;   Layer 4 — {a,b,c,d}, dead the same way.
 ;;;
-;;; Expected verdict + counts under contradictions_solve with
-;;; max_set_size=3:
+;;; What `ein solve` reports:
 ;;;
-;;;   verdict          NOT Contradiction. This line said "Contradiction (mode
-;;;                    contract)", P1.5b's reading. {a, b} dies and every
-;;;                    other pair is alive, so the answer is a region of 12
-;;;                    nodes whose maximal line is {a, c, d} and {b, c, d}:
-;;;                    two maximal states, which `ein solve --maximal`
-;;;                    reports and the walk's `-L` run did not. Register row
-;;;                    W1/lattice-01-L, confirmed at the revisit (M1e2
-;;;                    S1e2.1.7) 2026-11-03; the region is Q-M1e2.7
-;;;                    (plans/m1e2_correctness/).
-;;;   enterings_total  12  (4 + 6 + 2)
-;;;   dead_commitments 1   (the {a,b} death; the 3-set deaths
-;;;                         we'd see WITHOUT the pruning never
-;;;                         materialise)
-;;;   nogoods_emitted  1   ({(proposed a), (proposed b)})
+;;;   states (k_s)     12, every node but the four that hold {a, b}
+;;;   maximal line     {a, c, d} and {b, c, d}: two maximal states,
+;;;                    which `ein solve --maximal` lists. Register row
+;;;                    W1/lattice-01-L; the region is Q-M1e2.7.
+;;;   components       1; sub-cubes 2, each of dimension 3: the cube
+;;;                    below {a, c, d} and the cube below {b, c, d}
+;;;   N                1 minimal dead set, {(proposed a), (proposed b)}
+;;;   work             13 saturations: root, then 4, 6 and 2; the three
+;;;                    dead supersets of {a, b} take none
 ;;;
-;;; This is the F1 / F3 path from idea-08's "subset elimination"
-;;; observation: nogood subsumption + Apriori prefix-join =
-;;; combinatorial pruning that no per-set forking can match.
 ;;;
-;;; Composes with [diagrams/lattice_4hyps_dedup.svg] (Diagram 4
-;;; in lattice_diagrams.md) — the same shape rendered as a
-;;; node-coloured lattice.
+;;; R's states, as `ein solve` lists them: ∅; {a}, {b}, {c}, {d};
+;;; {a,c}, {a,d}, {b,c}, {b,d}, {c,d}; and the two maximal ones.
+;;;
+;;; `ein render lattice` draws the same shape as a node-coloured lattice.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

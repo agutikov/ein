@@ -10,18 +10,18 @@
 ;;; To binary: 0, 1, 2, 10, 255. To decimal: 0, 1, 10, 1010, 11111111, 100000000, 1111101000.
 ;;;
 ;;; The two directions do not cost the same. A halving is a whole decimal
-;;; division, where a doubling is one addition: 255 to binary is 826 firings
-;;; and back is 76 (the plan page). The numbers here are short for that
-;;; reason and one more: every corpus program is solved and its state written
-;;; as text, and a circuit's state as text grows with its steps (E-24 of the
-;;; phase's `findings.md`). The page has the conversions of 123078 and of
-;;; 2^40 + 1.
+;;; division, where a doubling is one addition, so a number goes to binary
+;;; at many times the firings it comes back at (`ein saturate` prints a
+;;; program's firings). The numbers here are short for that reason and one
+;;; more: every corpus program is solved and its state written as text, and
+;;; a circuit's state as text grows with its steps (Q-M1f.187 sizes the
+;;; programs beyond arithmetic for the same reason).
 ;;;
 ;;; Every claim was computed in Python and is checked by `ein test`.
 ;;;
-;;; M1f P1f.6 (S1f.6.16): `docs/ein/user/reference/stdlib.md` has
-;;; the prototype this program was banked from, its counts and its costs; the
-;;; module is the stdlib's `std.math.convert` since the stage's build.
+;;; `docs/ein/user/reference/stdlib.md` § `std.math.convert` has the
+;;; module this program requests, over the arithmetic of both bases
+;;; (§ Binary).
 (import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))
 (import std.math.decimal :symbols (n))
 (import std.math.binary :symbols (b2))

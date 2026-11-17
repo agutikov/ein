@@ -15,12 +15,12 @@
 ;;;
 ;;; This derives what is equal and stops. A simplifier that rewrites,
 ;;; removing g4 and re-pointing what read s, needs retraction or a new
-;;; circuit as its output, which is M1g's normal forms' subject.
+;;; circuit as its output, which this program does not attempt.
 ;;;
 ;;; Search-free: one saturation. The claims were computed in Python from the
 ;;; functions' columns.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md` § 6.
+;;; `docs/ein/user/reference/stdlib.md` § `std.bool.props`.
 (import std.bool.props :symbols (identity-of absorbing-of commutative))
 (import std.bool.gates :symbols (And Or Xor Andn))
 

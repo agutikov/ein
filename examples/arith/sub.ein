@@ -1,6 +1,6 @@
 ;;; A difference both ways round, and a comparison, computed by saturation
 ;;; alone: 123078 - 4567 = 118511, and 4567 is short of 123078 by 118511.
-;;; M1f P1f.6 (S1f.6.4).
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

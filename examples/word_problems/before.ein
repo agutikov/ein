@@ -1,7 +1,7 @@
 ;;; Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before?
 ;;;
-;;; A WITNESS, banked with today's answer and no fix (M1f S1f.6.28, on the
-;;; user's question of 2026-11-12). THE RIGHT ANSWER IS 7, 5 + 2. The theory
+;;; A WITNESS, kept with the theory's answer, which is not the right one.
+;;; THE RIGHT ANSWER IS 7, 5 + 2. The theory
 ;;; does not give it: the giving is from t0 to t1, the amount is stated at t1,
 ;;; and the question asks the amount at t0. The word rules read *gave* in one
 ;;; direction of time, *what the giver has after is what they had before less
@@ -9,12 +9,12 @@
 ;;; so no request reaches the calculator, the question has no row, and `gaps`
 ;;; names its quantity as not stated. The theory reads a word as an
 ;;; instruction, and not as a relation between three quantities.
-;;; Who owns it: M1h's P1h.1, temporal and causal theories, whose opening
-;;; question is the two ways to answer it, a second set of rules for each word
-;;; reverted in time, or the event stated once as a relation with whichever
-;;; quantity is unknown asked for; the second meets M1g's P1g.9, one equation
-;;; and three methods. When either lands, the claims below move to 7 in that
-;;; commit.
+;;; Two ways would answer it, and neither is built: a second set of rules for
+;;; each word reverted in time, or the event stated once as a relation with
+;;; whichever quantity is unknown asked for, which is the theory of an
+;;; equation. The claims below state the theory's answer as it is, so a
+;;; theory that answers 7 moves them to 7 in the commit that builds it.
+;;;
 (import words :symbols (words gave has asked amount value))
 (import gaps :symbols (gaps not-stated unanswered))
 (import std.math.decimal-arith)

@@ -1,5 +1,5 @@
-;;; `owed-seats` with both upper bounds — M1e2 S1e2.1a.1, the sixth program of
-;;; Q-M1e2.7's tables.
+;;; `owed-seats` with both upper bounds — the sixth of the seven programs
+;;; whose regions `ein-infer/tests/region.rs` pins (Q-M1e2.7).
 ;;;
 ;;; `examples/ein-bugs/wrong-answers/owed-seats.ein` states only the lower
 ;;; bounds (`total-owed`, `surjective-owed`), so its region is every set that

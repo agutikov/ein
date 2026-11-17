@@ -1,6 +1,6 @@
 ;;; Syntax probe — wrappers.
 ;;;
-;;; The three S1.7c.4 wrapper heads as what they are now: ordinary fact
+;;; Three heads that read as wrappers, as what they are: ordinary fact
 ;;; heads with nested facts as arguments.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
@@ -9,10 +9,10 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 ;;;
-;;; A nested fact takes no keyword (Q-M1e2.28, S1f.5.11's default), so the
-;;; inner facts carry none. Until M1f S1f.5.5's T1f.5.5.10 (2026-11-08) they
-;;; carried `:source "(1)"` and `:rule sym :using (x)`, which the loader
-;;; dropped, so no stored fact moved when they went.
+;;; A nested fact takes no keyword (Q-M1e2.28), so the inner facts carry
+;;; none: a `:source`, or a `:rule` with its `:using`, on a nested fact is
+;;; refused at the parse, and only a fact written at the top level carries
+;;; its provenance.
 
 (ontology (relation r T T) (is-a a T))
 (facts (r a b))

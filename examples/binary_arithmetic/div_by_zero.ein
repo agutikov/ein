@@ -7,14 +7,14 @@
 ;;; under `refuted by`, and exits 0: an empty R is an answer. Root's state
 ;;; holds a second flag, the request's tagged call, (division-by-zero
 ;;; (bin-div-call …)): a division by zero is flagged at the call, whoever made
-;;; it, as in decimal (M1f S1f.6.24). The flag and its rule are arithmetic's
-;;; own, whatever the base (the user's ruling of 2026-11-14).
+;;; it, as in decimal (Q-M1f.163). The flag and its rule are arithmetic's
+;;; own, whatever the base (Q-M1f.269).
 ;;;
 ;;; The sum beside it is a good request. It loses its answer with the rest of
 ;;; the program, so the only claim such a program can make is this one.
 ;;;
-;;; M1f P1f.6 (S1f.6.16): `docs/ein/user/reference/stdlib.md` has
-;;; the prototype this program was banked from, its counts and its costs.
+;;; `docs/ein/user/reference/stdlib.md` § Binary has the modules this
+;;; program imports.
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-div))
 (import std.math.binary :symbols (b2))
 (import std.math.arith :symbols (z))

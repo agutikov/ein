@@ -1,5 +1,5 @@
 ;;; A sum, computed by saturation alone: 123078 + 4567 = 127645.
-;;; M1f P1f.6 (S1f.6.3); the addition program of the phase's `design.md`.
+;;; The calculator's introduction: the programs beside it start from it.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -8,12 +8,12 @@
 ;;; itself; and `std.math.positional`, the rules both bases share, each
 ;;; activated once a base by the base's closing rule. No relation else.
 ;;;
-;;; This is why the plan page recommended a theory of its own: the same shape
+;;; This is why binary is a theory of its own: the same shape
 ;;; and names over binary tables could not be imported beside decimal, and the
 ;;; conversions of `std.math.convert` need both bases at once.
 ;;;
-;;; M1f P1f.6 (S1f.6.16): `docs/ein/user/reference/stdlib.md` has
-;;; the prototype this program was banked from, its counts and its costs.
+;;; `docs/ein/user/reference/stdlib.md` § Binary has the modules this
+;;; program imports.
 (import std.math.decimal-arith :symbols (decimal-arith add sum-of))
 (import std.math.decimal :symbols (n))
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))

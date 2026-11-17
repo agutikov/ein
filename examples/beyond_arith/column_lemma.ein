@@ -20,8 +20,8 @@
 ;;; any length is right follows by an induction on its columns, which is an
 ;;; argument made outside Ein: Ein has checked its only case analysis.
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
-;;; the probe this program was banked from, its cost and what it shows.
+;;; `docs/ein/user/guide/word-problems.md` § Beyond word problems reads
+;;; this program, and what it shows.
 (import std.math.digits :symbols (fa __closed__))
 
 (relation digit Digit :why "{?1} is a digit")

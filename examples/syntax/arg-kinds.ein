@@ -1,18 +1,18 @@
 ;;; Syntax probe — arg-kinds.
 ;;;
 ;;; Every argument kind a fact can carry: a name, digits (a name, so `7` and
-;;; `07` are two), `1..5` and `1..*` (names: the range token went at M1f
-;;; S1f.5.3, and S1f.5.4's name rule reads each as the name it spells), a name
+;;; `07` are two), `1..5` and `1..*` (names: Ein has no range token, and
+;;; the name rule reads each as the name it spells), a name
 ;;; with connectors and decorators, a nested fact, and a stored negation as a
-;;; value. The string, the bare `_` and the variable it carried until M1f
-;;; S1f.5.5's swap are refused at the parse (S1f.5.2 and S1f.5.1), and
-;;; rewritten out.
+;;; value. A string, the bare `_` and `?_` are refused at the parse
+;;; (Q-M1e2.22 for the `_`), and the fixture holds none of them.
 ;;;
-;;; Its `(solve …)` holds `r` out of the hypotheses (the user's ruling of
-;;; 2026-11-08 on S1f.5.5's review stop, item 1, *"Scope the solve"*): the
-;;; fixture's point is the node kinds as written, and unscoped its universe's
-;;; commitments pass the state route's 2^128 limit, which stays parked
-;;; (S1f.5.4's § Notes). R is {∅}.
+;;; Its `(solve …)` holds `r` out of the hypotheses: the fixture's point is
+;;; the node kinds as written, and unscoped its universe's commitments would
+;;; pass the state route's 2^128 limit. R is {∅}: `ein solve` reports no
+;;; candidate, so R is decided by root alone, and root is alive and owes
+;;; nothing (the read-out's rows `universe — no candidate` and `∅ in R —
+;;; root is alive and owes nothing`).
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is

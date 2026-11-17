@@ -1,16 +1,16 @@
-;;; P1.5b lattice fixture — genuine 3-element death.
+;;; Lattice fixture — genuine 3-element death.
 ;;;
 ;;; Demonstrates: a 3-element commitment {h1, h2, h3} dies but no
-;;; 2-subset of it is in D_2. Apriori prefix-join produces the
-;;; candidate (every 2-subset is alive, so all three pairs are
-;;; in a_prev and share enough prefix to combine); matches_any_nogood
-;;; lets it through (no shorter clause subsumes it);
-;;; try_commitment_set forks and saturates;
-;;; ContradictionDetector hits.
+;;; 2-subset of it does. Every pair is alive, so no dead subset rules the
+;;; triple out: it has to be saturated, and its fixpoint holds (false).
 ;;;
-;;; This is the "genuine combinatorial-core" case Q1.5b.2.d flags
-;;; as unavoidable: no amount of subset elimination can avoid the
-;;; size-3 fork.
+;;; This is the genuine combinatorial core: no amount of subset
+;;; elimination can avoid the size-3 fork, and the pair layer of the
+;;; hypothesis space does not see the conflict either
+;;; (docs/ein/reasoning/kb-evolution/hypothesis-space.md). Every node of
+;;; the cube is saturated: the dead triple is the one node no smaller
+;;; dead set accounts for, and the route reaches it last, at the
+;;; cube's top.
 ;;;
 ;;; Three hypothesis candidates from three distinct relations:
 ;;;
@@ -28,28 +28,28 @@
 ;;; Committing any 2-subset leaves one relation empty in the
 ;;; fork → rule doesn't fire → fork stays alive.
 ;;; Committing the full 3-subset hits all three → rule fires →
-;;; (false) → ContradictionDetector hits → dead-post.
+;;; (false) → the node is dead.
 ;;;
-;;; Expected verdict + counts under contradictions_solve with
-;;; max_set_size=3:
+;;; What `ein solve` reports:
 ;;;
-;;;   verdict          NOT Contradiction. This line said "Contradiction (mode
-;;;                    contract)", P1.5b's reading. Every pair is alive and
-;;;                    nothing is owed, so the answer is a region of 7 nodes
-;;;                    whose maximal line is the three pairs: k = 3, which the
-;;;                    default run reports and the `-L` run does not. Register
-;;;                    row W1/lattice-02-L, confirmed by the user 2026-10-15;
-;;;                    the region is Q-M1e2.7 (plans/m1e2_correctness/).
-;;;   enterings_total  7   (3 singletons + 3 pairs + 1 triple)
-;;;   dead_commitments 1   (the {h1, h2, h3} death only —
-;;;                         no 2-subset dies)
-;;;   nogoods_emitted  1   (the size-3 clause; learned_clause
-;;;                         equals the 3-set itself)
-;;;   layers_explored  3
+;;;   states (k_s)     7: ∅, the three singletons and the three pairs;
+;;;                    nothing is owed, so every alive node is in R
+;;;   maximal line     the three pairs: k = 3. Register row
+;;;                    W1/lattice-02-L; the region is Q-M1e2.7.
+;;;   minimal line     ∅, root itself
+;;;   components       1; sub-cubes 3, each of dimension 2, one below
+;;;                    each pair
+;;;   N                1 minimal dead set, the triple itself
+;;;   work             8 saturations: root, the three singletons, the
+;;;                    three pairs and the triple
 ;;;
-;;; Composes with [diagrams/lattice_3hyps_genuine.svg] (analogue
-;;; Diagram 3 in lattice_diagrams.md) — the lattice node-coloured
-;;; rendering of the same shape.
+;;; docs/ein/reasoning/kb-evolution/solution-semantics.md § 2.5 works this
+;;; region through, with its drawing, and `ein render lattice` draws the
+;;; cube as a node-coloured lattice.
+;;;
+;;;
+;;;
+;;;
 
 (rule three-conflict ()
   :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))

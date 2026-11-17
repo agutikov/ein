@@ -24,13 +24,13 @@
 ;;;
 ;;; The claims were not read from the classes: Python computed which sets are
 ;;; complete by closing the two projections under composition with the
-;;; set's members, by brute force. The plan page has the same check on all
-;;; 65 535 sets, which agrees on every one; it is not here because it is a
-;;; Python enumeration, not an Ein program.
+;;; set's members, by brute force. The same check on all 65 535 sets is a
+;;; Python enumeration, not an Ein program, and is not here.
+;;;
 ;;;
 ;;; Search-free: every relation is closed, one saturation.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md` § 2.
+;;; `docs/ein/user/reference/stdlib.md` § `std.bool.props`.
 (import std.bool.props :symbols (escapes-zero escapes-one escapes-monotone escapes-affine
                                  escapes-self-dual preserves-zero preserves-one monotone affine
                                  self-dual))

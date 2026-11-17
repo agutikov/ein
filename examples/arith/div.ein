@@ -1,6 +1,6 @@
 ;;; Long division, computed by saturation alone: 127645 divided by 25 is
 ;;; 5105, remainder 20; and a chain, (123 x 456) divided by 25.
-;;; M1f P1f.6 (S1f.6.6).
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

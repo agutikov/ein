@@ -1,7 +1,7 @@
 ;;; A hole made by an activator, the third of the three causes of a
 ;;; non-monotone program (docs/ein/reasoning/kb-evolution/monotonicity.md).
-;;; Until this file the corpus had no exercised activator site (M1e2
-;;; S1e2.1b.1's site census).
+;;; It is the corpus's witness of an activator site that the cube
+;;; exercises: the hole below.
 ;;;
 ;;; `(total-owed meal is-a)` is an activator: the fact that compiles the
 ;;; stdlib rule for `meal`. Here no fact states it. A rule derives it once the
@@ -19,7 +19,7 @@
 ;;; an `activator` site (the activator relation `total-owed` is one a
 ;;; commitment can change), and it is the program's only one.
 ;;;
-;;; What R means on it is open, F21's; this file's question is the cube.
+;;; Its nodes are forks of root (Q-M1e2.2); this file's question is the cube.
 
 (import std.algebra :symbols (total-owed))
 

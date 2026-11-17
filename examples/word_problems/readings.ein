@@ -1,6 +1,6 @@
 ;;; `readings` — a word with two readings, as hypotheses, and a reading always
-;;; owed (M1f P1f.6: S1f.6.20, and S1f.6.28 on the user's reply 31 of
-;;; 2026-11-12, *"reading always chosen, it can't be not chosen"*). The theory
+;;; owed (Q-M1f.332: a reading is always chosen, never left unchosen). The
+;;; theory
 ;;; holds the readings of *need* as facts; which one a problem means is a fact
 ;;; the search commits to, `(reads-as need R)`, proposed by the hrule
 ;;; `read-need` for every question of how many containers are needed, and each

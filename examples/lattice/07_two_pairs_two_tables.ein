@@ -16,10 +16,10 @@
 ;;; each, one friend per seat, friends together. Monotone; no rule derives a
 ;;; seat, so k_s = k_c.
 ;;;
-;;; Measured 2026-10-16 (`ein solve -e … --dump-region DIR`, n = 16): |R| = 8 of
-;;; 65 536, 8 components of one point, no holes, duality holds; `ein solve -e`
-;;; answers k = 8. The 2 projection classes were counted from region.json by
-;;; hand — no surface computes them yet (S1e2.1a.4).
+;;; With the cube enumerated (`ein oracle FILE`, n = 16): |R| = 8 of 65 536,
+;;; 8 components of one point, no holes, 64 minimal dead sets and 256 minimal
+;;; discharging sets. This file's query, over the seats, sees 8 projection
+;;; classes, one a state, on `ein solve`'s `over` row.
 
 (import std.algebra :symbols (functional injective total-owed))
 

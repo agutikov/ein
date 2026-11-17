@@ -7,11 +7,11 @@
 ;;; that is what the renderer keys on: an arity-2 `=` draws a `doublecircle`
 ;;; equality-class node with an edge to each side, never an arrow between them.
 ;;;
-;;; It has **no engine semantics in M1**. The loader ingests it as an ordinary
+;;; It has **no engine semantics**. The loader ingests it as an ordinary
 ;;; fact and auto-vivifies `=` as an open-world relation; nothing in `ein-infer`
 ;;; reads it, and the `EqClasses` union-find the store carries is never driven
-;;; by one — the seam is deliberate, for a future e-graph promotion
-;;; ([02_store.md § 8](../../docs/kernel/ir/02-data-model/02_store.md), F4 Q30).
+;;; by one: nothing writes it and no matcher reads it, so names are never
+;;; merged (docs/ein/ein.rs/design/data-model.md § 10, Q1).
 ;;; The *computed* equality is `eq` / `neq`, which are predicates inside a
 ;;; `:match` and a different thing entirely. `(= ?a ?b)` in a `:match` is an
 ;;; ordinary relation pattern over that same vivified `=` relation, so it
