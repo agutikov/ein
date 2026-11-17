@@ -30,6 +30,34 @@ checked-in copy. A module `std.x` is `x.ein` and `std.math.x` is `math/x.ein`: a
 3. **The embedded copy**, compiled into `ein-ir` by `include_dir!` (`Source::Embedded`), which is what makes `ein` one
    self-contained binary.
 
+```plantuml
+@startuml
+start
+:an import names std.x.y;
+if ($EIN_STDLIB is set?) then (yes)
+  if (the directory holds MANIFEST.sha256?) then (yes)
+    :Source::Override(dir);
+  else (no)
+    :refused: the message says the directory\nis not the stdlib (Source::problem);
+    stop
+  endif
+else (no)
+  :walk up from the executable's directory;
+  if (an ancestor has stdlib/ with MANIFEST.sha256?) then (yes)
+    :Source::Checkout(that stdlib/);
+  else (no)
+    :Source::Embedded:\nthe copy include_dir! compiled into ein-ir;
+  endif
+endif
+if (the source holds x/y.ein?) then (yes)
+  :the module's text;
+else (no)
+  :module not found at <path>,\nthe path this source would hold it at;
+endif
+stop
+@enduml
+```
+
 A module none of them holds is reported as *module not found at `<path>`*, naming the path the source would hold it
 at (`Source::module_path`), so no fallback is hidden. `ein --version` prints which source answered and its directory
 ([`10-toolchain-and-layout.md`](10-toolchain-and-layout.md)). Import resolution is the consumer of this
@@ -39,6 +67,23 @@ at (`Source::module_path`), so no fallback is hidden. `ein --version` prints whi
 
 Three copies of the stdlib can disagree: the checkout, the embedded bytes of a built binary, and the manifest. Each
 pair is checked:
+
+```dot
+digraph drift {
+  layout=circo;
+  node [shape=box, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9, dir=both];
+
+  manifest [label="stdlib/MANIFEST.sha256\none line a module"];
+  checkout [label="the checkout\nstdlib/**/*.ein"];
+  embedded [label="the embedded copy\nin a built ein"];
+  einb     [label="a .einb container\nmade under some stdlib"];
+
+  embedded -> manifest [label="the_embedded_copy_matches_the_manifest\nthe_embedded_copy_has_no_extra_modules"];
+  checkout -> manifest [label="the_checkout_has_no_module_\nthe_manifest_does_not_list"];
+  einb -> manifest     [label="META records the manifest's digest:\nanother digest is a cache miss"];
+}
+```
 
 - **the embedded copy against the manifest**: `stdlib.rs`'s tests `the_embedded_copy_matches_the_manifest` and
   `the_embedded_copy_has_no_extra_modules`. `include_dir!` copies the tree at build time, so a binary built before an
