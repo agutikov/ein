@@ -1,0 +1,13 @@
+digraph two_layers {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  K0 [label="K₀\nthe program's facts"];
+  root [label="root = sat(K₀)"];
+  C1 [label="st(C₁) = sat(root ∪ C₁)"];
+  C2 [label="st(C₂) = sat(root ∪ C₂)"];
+  C3 [label="st(C₃) = sat(root ∪ C₃)"];
+  K0 -> root [label="saturate"];
+  root -> C1 [label="add C₁, saturate", style=dashed];
+  root -> C2 [label="add C₂, saturate", style=dashed];
+  root -> C3 [label="add C₃, saturate", style=dashed];
+}

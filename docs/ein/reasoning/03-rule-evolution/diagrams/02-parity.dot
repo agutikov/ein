@@ -1,0 +1,14 @@
+digraph parity {
+  rankdir=LR;
+  node [shape=rectangle];
+  edge [style=dashed, color="#d62728", fontcolor="#d62728", arrowhead=odot];
+  subgraph cluster_even { label="even: two negative edges on the cycle"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    pe [label="p"]; qe [label="q"];
+    qe -> pe [label="first rule"];
+    pe -> qe [label="second rule"];
+  }
+  subgraph cluster_odd { label="odd: one negative edge on the cycle"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    qo [label="q"];
+    qo -> qo [label="the rule"];
+  }
+}

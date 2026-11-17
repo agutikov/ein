@@ -1,0 +1,11 @@
+digraph boundary {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  w0 [label="{ t }\nquiescent: both guards pass"];
+  wp [label="{ t, p }\nfixpoint: absent(p) fails", penwidth=2];
+  wq [label="{ t, q }\nfixpoint: absent(q) fails", penwidth=2];
+  wpq [label="{ t, p, q }\nneither guard holds", style="rounded,dashed", color="#d62728", fontcolor="#d62728"];
+  w0 -> wp [label="admit p"];
+  w0 -> wq [label="admit q"];
+  w0 -> wpq [label="admit both: never", style=dashed, color="#d62728", fontcolor="#d62728"];
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="258pt" height="320pt"
+ viewBox="0.00 0.00 258.00 320.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 316.42)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-316.42 254.31,-316.42 254.31,4 -4,4"/>
+<!-- House -->
+<g id="node1" class="node">
+<title>House</title>
+<polygon fill="none" stroke="black" points="152.13,-312.42 93.38,-312.42 93.38,-276.42 152.13,-276.42 152.13,-312.42"/>
+<text xml:space="preserve" text-anchor="middle" x="122.76" y="-290.87" font-family="Inter" font-size="14.00">House</text>
+</g>
+<!-- Person -->
+<g id="node2" class="node">
+<title>Person</title>
+<polygon fill="none" stroke="black" points="70.01,-129.59 7.51,-129.59 7.51,-93.59 70.01,-93.59 70.01,-129.59"/>
+<text xml:space="preserve" text-anchor="middle" x="38.76" y="-108.04" font-family="Inter" font-size="14.00">Person</text>
+</g>
+<!-- House&#45;1 -->
+<g id="node3" class="node">
+<title>House&#45;1</title>
+<ellipse fill="none" stroke="black" cx="138.76" cy="-111.59" rx="50.56" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="138.76" y="-108.04" font-family="Inter" font-size="14.00">House&#45;1</text>
+</g>
+<!-- House&#45;1&#45;&gt;House -->
+<g id="edge2" class="edge">
+<title>House&#45;1&#45;&gt;House</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M130.82,-131.04C125.15,-145.29 118.01,-165.64 115.01,-184.28 110.62,-211.5 113.69,-242.93 117.18,-265.05"/>
+<polygon fill="none" stroke="black" points="113.72,-265.55 118.86,-274.81 120.61,-264.36 113.72,-265.55"/>
+<text xml:space="preserve" text-anchor="middle" x="127.38" y="-199.05" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- House&#45;2 -->
+<g id="node4" class="node">
+<title>House&#45;2</title>
+<ellipse fill="none" stroke="black" cx="199.76" cy="-203.73" rx="50.56" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="199.76" y="-200.18" font-family="Inter" font-size="14.00">House&#45;2</text>
+</g>
+<!-- House&#45;1&#45;&gt;House&#45;2 -->
+<g id="edge5" class="edge">
+<title>House&#45;1&#45;&gt;House&#45;2</title>
+<path fill="none" stroke="#d62728" d="M151.1,-130.83C159.7,-143.53 171.32,-160.71 181.06,-175.09"/>
+<polygon fill="#d62728" stroke="#d62728" points="178.08,-176.94 186.58,-183.26 183.88,-173.02 178.08,-176.94"/>
+<text xml:space="preserve" text-anchor="middle" x="199.84" y="-152.98" font-family="Times,serif" font-size="14.00" fill="#d62728">next&#45;to</text>
+</g>
+<!-- House&#45;2&#45;&gt;House -->
+<g id="edge3" class="edge">
+<title>House&#45;2&#45;&gt;House</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M184.17,-222.68C172.97,-235.59 157.68,-253.19 145.17,-267.61"/>
+<polygon fill="none" stroke="black" points="142.7,-265.12 138.78,-274.96 147.98,-269.7 142.7,-265.12"/>
+<text xml:space="preserve" text-anchor="middle" x="178.24" y="-245.12" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Norwegian -->
+<g id="node5" class="node">
+<title>Norwegian</title>
+<ellipse fill="none" stroke="black" cx="62.76" cy="-19.45" rx="62.76" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="62.76" y="-15.9" font-family="Inter" font-size="14.00">Norwegian</text>
+</g>
+<!-- Norwegian&#45;&gt;Person -->
+<g id="edge1" class="edge">
+<title>Norwegian&#45;&gt;Person</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M57.78,-39.12C54.48,-51.53 50.08,-68.06 46.34,-82.1"/>
+<polygon fill="none" stroke="black" points="42.98,-81.13 43.79,-91.69 49.74,-82.93 42.98,-81.13"/>
+<text xml:space="preserve" text-anchor="middle" x="65.28" y="-60.84" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+</g>
+<!-- Norwegian&#45;&gt;House&#45;1 -->
+<g id="edge4" class="edge">
+<title>Norwegian&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="#9467bd" d="M78.14,-38.69C89.13,-51.72 104.09,-69.47 116.4,-84.07"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="113.56,-86.13 122.68,-91.52 118.91,-81.62 113.56,-86.13"/>
+<text xml:space="preserve" text-anchor="middle" x="133.06" y="-60.84" font-family="Times,serif" font-size="14.00" fill="#9467bd">lives&#45;in</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: b65dad9cc48ca4b7716ae51b15d21efecff279f3970643ae8a9b77944e81d677 -->

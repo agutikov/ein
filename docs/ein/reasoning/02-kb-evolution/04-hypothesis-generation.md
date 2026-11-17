@@ -66,29 +66,7 @@ H_{\mathrm{bl}} & \text{otherwise}
 \end{cases}
 $$
 
-```dot
-digraph ladder {
-  graph [rankdir=TB, nodesep=0.45, ranksep=0.4, fontname="Helvetica", fontsize=10];
-  node [fontname="Helvetica", fontsize=10];
-  edge [fontname="Helvetica", fontsize=9, arrowsize=0.7];
-  nu [shape=diamond, label="ν(P)\nnothing to guess?"];
-  hr [shape=diamond, label="Hr(P) ≠ ∅\na hypothesis rule declared?"];
-  act [shape=diamond, label="Act(P) ≠ ∅\nan obligation activated at root?"];
-  decl [shape=diamond, label="decl(P)\nthe rung declines?"];
-  e [shape=box, style="rounded,filled", fillcolor="#f0f0f0", label="H = ∅"];
-  hhr [shape=box, style="rounded,filled", fillcolor="#fde0ef", label="H = H_hr\nwhat the hypothesis rules propose at root (§ 3)"];
-  hob [shape=box, style="rounded,filled", fillcolor="#e5f5e0", label="H = H_ob\nwhat would pay a debt (§ 4)"];
-  hbl [shape=box, style="rounded,filled", fillcolor="#deebf7", label="H = H_bl\nevery slot of every open relation, every guessable atom (§ 5)"];
-  nu -> e [label="yes"];
-  nu -> hr [label="no"];
-  hr -> hhr [label="yes"];
-  hr -> act [label="no"];
-  act -> decl [label="yes"];
-  act -> hbl [label="no"];
-  decl -> hbl [label="yes"];
-  decl -> hob [label="no"];
-}
-```
+![The ladder: the conditions that decide which set H is](diagrams/04-ladder.svg)
 
 A diamond is a condition on the program and on root's fixpoint, a box the set $H$ is. The diagram is the definition
 by cases and no more: no arrow is a step taken on a state other than root.
@@ -146,25 +124,7 @@ hypothesis rule whose premise reads a stored negation reads root's
 A hypothesis rule is drawn as any rule is, its premise beside its conclusion. This one says *guess, for each guest
 and each drink, that the guest drinks it*:
 
-```dot
-digraph rule_guess_drink_lhs_rhs {
-  rankdir=TB;
-  label="guess-drink"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?g_L" [label="?g", shape=diamond];
-    "Guest_L" [label="Guest", shape=rectangle];
-    "?d_L" [label="?d", shape=diamond];
-    "Drink_L" [label="Drink", shape=rectangle];
-    "?g_L" -> "Guest_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "?d_L" -> "Drink_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?g_R" [label="?g", shape=diamond];
-    "?d_R" [label="?d", shape=diamond];
-    "?g_R" -> "?d_R" [label="drinks", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  }
-}
-```
+![The hrule guess-drink: what it matches and the fact each match proposes, dashed](diagrams/04-rule-guess-drink.svg)
 
 A diamond is a variable, a rectangle a name, a solid arrow a fact the premise must find, and the dashed arrow the
 fact the rule proposes. A root that holds one guest and two drinks gives
@@ -211,34 +171,7 @@ holds, that is, while no witness is there.
 The obligation *every member of the first label has an image in the second* is drawn by the engine with its absence
 as a dashed cluster:
 
-```dot
-digraph rule_total_owed_lhs_rhs {
-  rankdir=TB;
-  label="total-owed"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?R_L" [label="?R", shape=diamond];
-    "?A_L" [label="?A", shape=diamond];
-    "?B_L" [label="?B", shape=diamond];
-    "?a_L" [label="?a", shape=diamond];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?A_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?B_L" [label="3", color="#bcbd22"];
-    "?a_L" -> "?A_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?b_L" [label="?b", shape=diamond];
-      "?b_L" -> "?B_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?R_R" [label="?R", shape=diamond];
-    "h2_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_open_R" -> "?R_R" [label="1", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule total-owed: the obligation's trigger, and its witness as a dashed cluster](diagrams/04-rule-total-owed.svg)
 
 Outside the dashed cluster is the trigger: the relation $r$ is declared with the labels $A$ and $B$, and $x$ is a
 member of $A$. Inside it is the witness: the arrow of the relation is the witness step, and the membership of $y$ in
@@ -268,33 +201,7 @@ activator, and declines the rung where it does (§ 4.3).
 functional, and a stated fact says nobody at the first chair drinks milk. Root's facts are the solid and the dashed
 arrows below, in the vocabulary the engine draws a knowledge base in, and the dotted arrows are the four payments:
 
-```dot
-digraph root_and_payments {
-  rankdir=LR;
-  graph [nodesep=0.35, ranksep=1.1];
-  node [fontname="Helvetica", fontsize=10];
-  edge [fontname="Helvetica", fontsize=9];
-  "Guest" [shape=box, label="Guest"];
-  "Chair" [shape=box, label="Chair"];
-  "Drink" [shape=box, label="Drink"];
-  "Ann" [shape=oval, label="Ann"];
-  "C1" [shape=oval, label="C1"];
-  "C2" [shape=oval, label="C2"];
-  "Milk" [shape=oval, label="Milk"];
-  "Tea" [shape=oval, label="Tea"];
-  { rank=same; "C2"; "C1"; "Milk"; "Tea" }
-  "Guest" -> "Ann" [style=dashed, arrowtail=empty, dir=back, label="is-a"];
-  "C1" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
-  "C2" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
-  "Tea" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-  "Milk" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-  "C1" -> "Milk" [label="never-with", color="#17becf", fontcolor="#17becf", style=solid, constraint=false];
-  "Ann" -> "C2" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
-  "Ann" -> "C1" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
-  "Ann" -> "Milk" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
-  "Ann" -> "Tea" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
-}
-```
+![A root's facts, and the four payments of what it owes as dotted arrows](diagrams/04-root-and-payments.svg)
 
 A box is a label, an oval an atom that is no label, a dashed arrow with an open head a membership, a solid arrow a stated fact. Root
 owes two instances, $I_{\mathrm{s}}$, *the guest has a chair*, and $I_{\mathrm{d}}$, *the guest has a drink*, and
@@ -509,19 +416,7 @@ $$
 
 For $k$ guessable atoms, $p$ eligible relations of one slot and $q$ of two, $\lvert \Pi_{\mathrm{bl}} \rvert = p\,k + q\,k\,(k - 1)$.
 
-```dot
-digraph blind {
-  graph [rankdir=LR, nodesep=0.3, ranksep=0.9, fontname="Helvetica", fontsize=10, label="guessable(P) = {Ann, Bob, C1}, one relation r of two slots: every ordered pair of distinct atoms", labelloc=t];
-  node [fontname="Helvetica", fontsize=10, shape=oval];
-  edge [fontname="Helvetica", fontsize=9, style=dotted, color="#e377c2", fontcolor="#e377c2", arrowsize=0.6];
-  Ann -> Bob [label="r ?"];
-  Bob -> Ann [label="r ?"];
-  Ann -> C1 [label="r ?"];
-  C1 -> Ann [label="r ?"];
-  Bob -> C1 [label="r ?"];
-  C1 -> Bob [label="r ?"];
-}
-```
+![The blind enumerator's six candidates over three guessable atoms](diagrams/04-blind-enumerator.svg)
 
 Three guessable atoms and one relation of two slots give the six dotted arrows: both directions between every two,
 whatever the labels the relation's declaration writes.

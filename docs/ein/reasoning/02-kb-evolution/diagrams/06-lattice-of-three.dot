@@ -1,0 +1,36 @@
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 3 · |R| = 4 of 8 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
+  L1 [shape=plaintext, fontsize=9, label="L1 · 3"];
+  L2 [shape=plaintext, fontsize=9, label="L2 · 3"];
+  L3 [shape=plaintext, fontsize=9, label="L3 · 1"];
+  L0 -> L1 [style=invis];
+  L1 -> L2 [style=invis];
+  L2 -> L3 [style=invis];
+  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
+  m1 [label="(drinks Ann Milk)\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m2 [label="(drinks Ann Tea)\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
+  m4 [label="(vegan Ann)\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
+  m3 [label="(drinks Ann Milk)\n(drinks Ann Tea)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m5 [label="(drinks Ann Milk)\n(vegan Ann)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  m6 [label="(drinks Ann Tea)\n(vegan Ann)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
+  m7 [label="(drinks Ann Milk)\n(drinks Ann Tea)\n(vegan Ann)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  { rank=same; L0; m0 }
+  { rank=same; L1; m1; m2; m4 }
+  { rank=same; L2; m3; m5; m6 }
+  { rank=same; L3; m7 }
+  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
+  m0 -> m2 [color="#2171b5", style=solid, penwidth=2];
+  m0 -> m4 [color="#fdae6b", style=solid, penwidth=1.2];
+  m1 -> m3 [color="#238b45", style=solid, penwidth=2];
+  m1 -> m5 [color="#cb181d", style=solid, penwidth=1.2];
+  m2 -> m3 [color="#238b45", style=solid, penwidth=2];
+  m2 -> m6 [color="#238b45", style=solid, penwidth=2];
+  m4 -> m5 [color="#cb181d", style=dashed, penwidth=1.2];
+  m4 -> m6 [color="#2171b5", style=solid, penwidth=2];
+  m3 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
+  m5 -> m7 [color="#bdbdbd", style=solid, penwidth=0.6];
+  m6 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
+}

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: licences Pages: 1 -->
+<svg width="598pt" height="275pt"
+ viewBox="0.00 0.00 598.00 275.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 270.88)">
+<title>licences</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-270.88 594,-270.88 594,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_l1</title>
+<polygon fill="none" stroke="#cb181d" points="8,-8 8,-258.88 268,-258.88 268,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="138" y="-245.38" font-family="Helvetica,sans-Serif" font-size="10.00">L1: {c1, c2} evaluated, dead; its up&#45;set concluded</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_l4</title>
+<polygon fill="none" stroke="#006d2c" points="276,-13.69 276,-258.88 582,-258.88 582,-13.69 276,-13.69"/>
+<text xml:space="preserve" text-anchor="middle" x="429" y="-245.38" font-family="Helvetica,sans-Serif" font-size="10.00">L4: {c2, t} in R, both extensions dead; maximal concluded</text>
+</g>
+<!-- d -->
+<g id="node1" class="node">
+<title>d</title>
+<ellipse fill="#fcbba1" stroke="black" stroke-width="2" cx="135" cy="-206.44" rx="67" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="135" y="-209.69" font-family="Helvetica,sans-Serif" font-size="10.00">{c1, c2}</text>
+<text xml:space="preserve" text-anchor="middle" x="135" y="-196.94" font-family="Helvetica,sans-Serif" font-size="10.00">evaluated: dead</text>
+</g>
+<!-- d1 -->
+<g id="node2" class="node">
+<title>d1</title>
+<ellipse fill="#fcbba1" stroke="black" stroke-dasharray="5,2" cx="69" cy="-123.06" rx="48.97" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="69" y="-126.31" font-family="Helvetica,sans-Serif" font-size="10.00">{c1, c2, t}</text>
+<text xml:space="preserve" text-anchor="middle" x="69" y="-113.56" font-family="Helvetica,sans-Serif" font-size="10.00">dead by L1</text>
+</g>
+<!-- d&#45;&gt;d1 -->
+<g id="edge1" class="edge">
+<title>d&#45;&gt;d1</title>
+<path fill="none" stroke="#bdbdbd" d="M116.62,-182.77C108.63,-172.93 99.22,-161.33 90.88,-151.05"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="92.74,-150 87.33,-146.67 89.48,-152.65 92.74,-150"/>
+</g>
+<!-- d2 -->
+<g id="node3" class="node">
+<title>d2</title>
+<ellipse fill="#fcbba1" stroke="black" stroke-dasharray="5,2" cx="191" cy="-123.06" rx="51.09" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="191" y="-126.31" font-family="Helvetica,sans-Serif" font-size="10.00">{c1, c2, m}</text>
+<text xml:space="preserve" text-anchor="middle" x="191" y="-113.56" font-family="Helvetica,sans-Serif" font-size="10.00">dead by L1</text>
+</g>
+<!-- d&#45;&gt;d2 -->
+<g id="edge2" class="edge">
+<title>d&#45;&gt;d2</title>
+<path fill="none" stroke="#bdbdbd" d="M150.6,-182.77C157.14,-173.27 164.81,-162.12 171.7,-152.11"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="173.34,-153.43 175.01,-147.3 169.88,-151.05 173.34,-153.43"/>
+</g>
+<!-- d3 -->
+<g id="node4" class="node">
+<title>d3</title>
+<ellipse fill="#fcbba1" stroke="black" stroke-dasharray="5,2" cx="132" cy="-39.69" rx="57.98" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="132" y="-42.94" font-family="Helvetica,sans-Serif" font-size="10.00">{c1, c2, t, m}</text>
+<text xml:space="preserve" text-anchor="middle" x="132" y="-30.19" font-family="Helvetica,sans-Serif" font-size="10.00">dead by L1</text>
+</g>
+<!-- d1&#45;&gt;d3 -->
+<g id="edge3" class="edge">
+<title>d1&#45;&gt;d3</title>
+<path fill="none" stroke="#bdbdbd" d="M85.55,-100.68C93.18,-90.83 102.33,-79.01 110.49,-68.48"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="111.96,-70 113.97,-63.97 108.64,-67.43 111.96,-70"/>
+</g>
+<!-- d2&#45;&gt;d3 -->
+<g id="edge4" class="edge">
+<title>d2&#45;&gt;d3</title>
+<path fill="none" stroke="#bdbdbd" d="M175.19,-100.26C168.17,-90.58 159.82,-79.06 152.34,-68.75"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="154.17,-67.69 148.95,-64.06 150.77,-70.15 154.17,-67.69"/>
+</g>
+<!-- s -->
+<g id="node5" class="node">
+<title>s</title>
+<ellipse fill="#a1d99b" stroke="black" stroke-width="2" cx="429" cy="-206.44" rx="63.29" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="429" y="-209.69" font-family="Helvetica,sans-Serif" font-size="10.00">{c2, t}</text>
+<text xml:space="preserve" text-anchor="middle" x="429" y="-196.94" font-family="Helvetica,sans-Serif" font-size="10.00">evaluated: in R</text>
+</g>
+<!-- s1 -->
+<g id="node6" class="node">
+<title>s1</title>
+<ellipse fill="#fcbba1" stroke="black" stroke-width="2" cx="351" cy="-123.06" rx="67" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="351" y="-126.31" font-family="Helvetica,sans-Serif" font-size="10.00">{c1, c2, t}</text>
+<text xml:space="preserve" text-anchor="middle" x="351" y="-113.56" font-family="Helvetica,sans-Serif" font-size="10.00">evaluated: dead</text>
+</g>
+<!-- s&#45;&gt;s1 -->
+<g id="edge5" class="edge">
+<title>s&#45;&gt;s1</title>
+<path fill="none" stroke="#bdbdbd" d="M407.69,-183.2C398.31,-173.43 387.21,-161.84 377.33,-151.53"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="379,-150.24 373.34,-147.37 375.97,-153.15 379,-150.24"/>
+</g>
+<!-- s2 -->
+<g id="node7" class="node">
+<title>s2</title>
+<ellipse fill="#fcbba1" stroke="black" stroke-width="2" cx="507" cy="-123.06" rx="67" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="507" y="-126.31" font-family="Helvetica,sans-Serif" font-size="10.00">{c2, t, m}</text>
+<text xml:space="preserve" text-anchor="middle" x="507" y="-113.56" font-family="Helvetica,sans-Serif" font-size="10.00">evaluated: dead</text>
+</g>
+<!-- s&#45;&gt;s2 -->
+<g id="edge6" class="edge">
+<title>s&#45;&gt;s2</title>
+<path fill="none" stroke="#bdbdbd" d="M450.31,-183.2C459.69,-173.43 470.79,-161.84 480.67,-151.53"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="482.03,-153.15 484.66,-147.37 479,-150.24 482.03,-153.15"/>
+</g>
+<!-- s3 -->
+<g id="node8" class="node">
+<title>s3</title>
+<polygon fill="#f7f7f7" stroke="black" stroke-dasharray="5,2" points="512,-57.69 346,-57.69 346,-21.69 512,-21.69 512,-57.69"/>
+<text xml:space="preserve" text-anchor="middle" x="429" y="-42.94" font-family="Helvetica,sans-Serif" font-size="10.00">every proper superset</text>
+<text xml:space="preserve" text-anchor="middle" x="429" y="-30.19" font-family="Helvetica,sans-Serif" font-size="10.00">dead by L1: {c2, t} is maximal</text>
+</g>
+<!-- s1&#45;&gt;s3 -->
+<g id="edge7" class="edge">
+<title>s1&#45;&gt;s3</title>
+<path fill="none" stroke="#bdbdbd" d="M372.31,-99.83C383.17,-88.5 396.34,-74.76 407.25,-63.38"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="408.73,-64.87 411.36,-59.09 405.7,-61.97 408.73,-64.87"/>
+</g>
+<!-- s2&#45;&gt;s3 -->
+<g id="edge8" class="edge">
+<title>s2&#45;&gt;s3</title>
+<path fill="none" stroke="#bdbdbd" d="M485.69,-99.83C474.83,-88.5 461.66,-74.76 450.75,-63.38"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="452.3,-61.97 446.64,-59.09 449.27,-64.87 452.3,-61.97"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 235569fd41a9ff1ee9c21fc7a25ffe4d5aa20208053064e185cdc8eba9cf5d70 -->

@@ -1,0 +1,21 @@
+digraph licences {
+  graph [rankdir=TB, nodesep=0.3, ranksep=0.5, fontname="Helvetica", fontsize=10, newrank=true];
+  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
+  edge [arrowsize=0.6, color="#bdbdbd"];
+  subgraph cluster_l1 {
+    label="L1: {c1, c2} evaluated, dead; its up-set concluded"; fontsize=10; color="#cb181d";
+    d [label="{c1, c2}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
+    d1 [label="{c1, c2, t}\ndead by L1", fillcolor="#fcbba1", style="filled,dashed"];
+    d2 [label="{c1, c2, m}\ndead by L1", fillcolor="#fcbba1", style="filled,dashed"];
+    d3 [label="{c1, c2, t, m}\ndead by L1", fillcolor="#fcbba1", style="filled,dashed"];
+    d -> d1; d -> d2; d1 -> d3; d2 -> d3;
+  }
+  subgraph cluster_l4 {
+    label="L4: {c2, t} in R, both extensions dead; maximal concluded"; fontsize=10; color="#006d2c";
+    s [label="{c2, t}\nevaluated: in R", fillcolor="#a1d99b", penwidth=2];
+    s1 [label="{c1, c2, t}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
+    s2 [label="{c2, t, m}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
+    s3 [label="every proper superset\ndead by L1: {c2, t} is maximal", shape=box, fillcolor="#f7f7f7", style="filled,dashed"];
+    s -> s1; s -> s2; s1 -> s3; s2 -> s3;
+  }
+}

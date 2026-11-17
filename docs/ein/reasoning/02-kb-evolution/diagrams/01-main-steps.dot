@@ -1,0 +1,17 @@
+digraph main_steps {
+  rankdir=TB;
+  node [fontname="Inter", shape=box, style=rounded];
+  program [label="a program"];
+  K0 [label="K₀\nrelations, rules, hypothesis rules, facts,\neach fact with its derivation record"];
+  root [label="root = sat(K₀)\nclosure to quiescence, then the boundary, repeated"];
+  dead0 [label="root is dead:\nR = ∅, root's core explains it", shape=box, style="rounded,dashed"];
+  H [label="H, the candidate set\nread off root's fixpoint"];
+  st [label="for a commitment C ⊆ H:\nst(C) = sat(root ∪ C)\ndead(C), owes(C)"];
+  R [label="R = { C ⊆ H : st(C) alive and owing nothing }\nevery question is read off R", penwidth=2];
+  program -> K0 [label="read: macros expanded,\nimports resolved"];
+  K0 -> root [label="each rule applied once per activator"];
+  root -> dead0 [label="⊥ ∈ root", style=dashed];
+  root -> H [label="alive"];
+  H -> st;
+  st -> R;
+}

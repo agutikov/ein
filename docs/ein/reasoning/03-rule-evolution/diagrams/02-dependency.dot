@@ -1,0 +1,9 @@
+digraph dependency {
+  rankdir=LR;
+  node [shape=rectangle];
+  subgraph cluster_0 { label="stratum 0"; style="dashed,rounded"; color="#888888"; fontcolor="#888888"; p; s; q; }
+  subgraph cluster_1 { label="stratum 1"; style="dashed,rounded"; color="#888888"; fontcolor="#888888"; r; }
+  p -> s [label="one"];
+  s -> r [label="g"];
+  q -> r [label="g, under an absence", style=dashed, color="#d62728", fontcolor="#d62728", arrowhead=odot];
+}

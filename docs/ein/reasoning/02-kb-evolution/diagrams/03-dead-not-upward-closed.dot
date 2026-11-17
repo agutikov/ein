@@ -1,0 +1,12 @@
+digraph dead_not_upward_closed {
+  rankdir=TB;
+  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
+  e [label="∅\nalive", fillcolor="#a1d99b"];
+  p [label="{ p(A) }\ndead", fillcolor="#fcbba1"];
+  q [label="{ q(A) }\nalive", fillcolor="#a1d99b"];
+  pq [label="{ p(A), q(A) }\nalive", fillcolor="#a1d99b"];
+  e -> p [color="#cb181d"];
+  e -> q [color="#238b45"];
+  p -> pq [color="#ae017e", style=bold, label="revives"];
+  q -> pq [color="#238b45"];
+}

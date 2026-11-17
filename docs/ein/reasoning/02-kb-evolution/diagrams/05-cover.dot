@@ -1,0 +1,24 @@
+graph cover {
+  graph [label="the cover. 4 groups (4 owed, double border), 1 grids, 0 candidates in no group not drawn", labelloc=t, fontsize=11, rankdir=LR];
+  node [fontsize=9];
+  subgraph cluster_c0 {
+    label="component 0: grid 0: a bijection: every group owed";
+    fontsize=10;
+    g0 [shape=box, label="g0 (seats Ann *)\n2 open of 2\nowed by total-owed", peripheries=2];
+    g1 [shape=box, label="g1 (seats * C1)\n2 open of 2\nowed by surjective-owed", peripheries=2];
+    g2 [shape=box, label="g2 (seats * C2)\n2 open of 2\nowed by surjective-owed", peripheries=2];
+    g3 [shape=box, label="g3 (seats Bob *)\n2 open of 2\nowed by total-owed", peripheries=2];
+    n0 [label="(seats Ann C1)"];
+    g0 -- n0;
+    n0 -- g1;
+    n1 [label="(seats Ann C2)"];
+    g0 -- n1;
+    n1 -- g2;
+    n2 [label="(seats Bob C1)"];
+    n2 -- g1;
+    g3 -- n2;
+    n3 [label="(seats Bob C2)"];
+    n3 -- g2;
+    g3 -- n3;
+  }
+}

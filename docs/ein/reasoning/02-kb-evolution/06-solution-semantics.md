@@ -278,44 +278,7 @@ $$
 and the eight nodes of $(2^{H}, \subseteq)$ are drawn below as the engine draws a region, with $\emptyset$ at the top
 and one candidate added along each edge downward, so a node's supersets are below it.
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 3 · |R| = 4 of 8 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
-  L1 [shape=plaintext, fontsize=9, label="L1 · 3"];
-  L2 [shape=plaintext, fontsize=9, label="L2 · 3"];
-  L3 [shape=plaintext, fontsize=9, label="L3 · 1"];
-  L0 -> L1 [style=invis];
-  L1 -> L2 [style=invis];
-  L2 -> L3 [style=invis];
-  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m1 [label="(drinks Ann Milk)\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
-  m2 [label="(drinks Ann Tea)\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
-  m4 [label="(vegan Ann)\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m3 [label="(drinks Ann Milk)\n(drinks Ann Tea)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  m5 [label="(drinks Ann Milk)\n(vegan Ann)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m6 [label="(drinks Ann Tea)\n(vegan Ann)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  m7 [label="(drinks Ann Milk)\n(drinks Ann Tea)\n(vegan Ann)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  { rank=same; L0; m0 }
-  { rank=same; L1; m1; m2; m4 }
-  { rank=same; L2; m3; m5; m6 }
-  { rank=same; L3; m7 }
-  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
-  m0 -> m2 [color="#2171b5", style=solid, penwidth=2];
-  m0 -> m4 [color="#fdae6b", style=solid, penwidth=1.2];
-  m1 -> m3 [color="#238b45", style=solid, penwidth=2];
-  m1 -> m5 [color="#cb181d", style=solid, penwidth=1.2];
-  m2 -> m3 [color="#238b45", style=solid, penwidth=2];
-  m2 -> m6 [color="#238b45", style=solid, penwidth=2];
-  m4 -> m5 [color="#cb181d", style=dashed, penwidth=1.2];
-  m4 -> m6 [color="#2171b5", style=solid, penwidth=2];
-  m3 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
-  m5 -> m7 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m6 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
-}
-```
+![The eight commitments over three candidates, drawn as a region](diagrams/06-lattice-of-three.svg)
 
 A node is a commitment, labelled with its candidates. Its fill is its status: amber is owing, red is dead, green is
 in $R$. A double border marks a minimal element of $R$ and a heavy green one a maximal element. An edge adds one
@@ -381,30 +344,7 @@ $s = \operatorname{cl}(g) \subseteq \operatorname{cl}(C) \subseteq \operatorname
 A second small universe shows a class of two nodes. A rule says a vegan is picky, and the candidates are
 $v = \operatorname{vegan}(\mathsf{Ann})$ and $p = \operatorname{picky}(\mathsf{Ann})$:
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 2 · |R| = 4 of 4 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
-  L1 [shape=plaintext, fontsize=9, label="L1 · 2"];
-  L2 [shape=plaintext, fontsize=9, label="L2 · 1"];
-  L0 -> L1 [style=invis];
-  L1 -> L2 [style=invis];
-  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
-  m1 [label="(picky Ann)\nR", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#525252", penwidth=1];
-  m2 [label="(vegan Ann)\nR\n⇒ +1 by saturation", shape=ellipse, style="filled,dashed", fillcolor="#a1d99b99", color="#525252", penwidth=1];
-  m3 [label="(picky Ann)\n(vegan Ann)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  { rank=same; L0; m0 }
-  { rank=same; L1; m1; m2 }
-  { rank=same; L2; m3 }
-  m0 -> m1 [color="#238b45", style=solid, penwidth=2];
-  m0 -> m2 [color="#238b45", style=solid, penwidth=2];
-  m1 -> m3 [color="#238b45", style=solid, penwidth=2];
-  m2 -> m3 [color="#969696", style=dotted, arrowhead=none, penwidth=0.8];
-  m2 -> m3 [color="#08519c", penwidth=2.2, arrowhead=vee, constraint=false, label="sat", fontsize=8, fontcolor="#08519c"];
-}
-```
+![The four commitments of the vegan who is picky, one of them transient](diagrams/06-class-of-two.svg)
 
 The dashed node $\lbrace v \rbrace$ is transient: $\operatorname{cl}(\lbrace v \rbrace) = \lbrace v, p \rbrace$, the
 arrow labelled *sat*, and the dotted edge beside it adds a fact saturation has already derived. So
@@ -563,26 +503,7 @@ $$
 R = \bigcup_{e \in E} \uparrow e \;\setminus\; \bigcup_{D \in N} \uparrow D
 $$
 
-```dot
-digraph band {
-  graph [rankdir=TB, nodesep=0.5, ranksep=0.45, fontname="Helvetica", fontsize=10];
-  node [fontname="Helvetica", fontsize=10, shape=box, style="filled,rounded"];
-  edge [arrowsize=0.6, fontname="Helvetica", fontsize=9];
-  bottom [label="∅", shape=ellipse, fillcolor="#fee391"];
-  owing [label="Owing\nalive, a debt unpaid\na down-set of the alive nodes", fillcolor="#fee391"];
-  minl [label="min R\nthe alive members of E", fillcolor="#a1d99b", peripheries=2];
-  r [label="R\nalive and discharged", fillcolor="#a1d99b"];
-  maxl [label="max R\nthe discharged maximal sets holding no member of N", fillcolor="#a1d99b", penwidth=3, color="#006d2c"];
-  dead [label="Dead = ↑N\nan up-set", fillcolor="#fcbba1"];
-  top [label="H", shape=ellipse, fillcolor="#fcbba1"];
-  bottom -> owing [label="add candidates"];
-  owing -> minl [label="the last debt is paid", color="#2171b5", fontcolor="#2171b5"];
-  minl -> r [color="#238b45"];
-  r -> maxl [color="#238b45"];
-  maxl -> dead [label="one more candidate kills", color="#cb181d", fontcolor="#cb181d"];
-  dead -> top [color="#bdbdbd"];
-}
-```
+![R as a band between the owing commitments and the dead ones, from the empty commitment to H](diagrams/06-band.svg)
 
 The schematic reads from $\emptyset$ at the top to $H$ at the bottom, as the region drawings do. Obligations cut $R$
 off from $\emptyset$, restrictions cut it off from $H$, and where a program states only one of the two the other

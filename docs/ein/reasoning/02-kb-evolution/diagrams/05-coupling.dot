@@ -1,0 +1,8 @@
+graph coupling {
+  label="the questions' hypergraph, the whole node's edges. 3 questions, 1 edges (0 a debt's alone, dashed)";
+  node [shape=box, fontsize=10];
+  q0 [label="q0 (drinks Ann *)\n2 open of 2"];
+  q1 [label="q1 (seats Ann *)\n2 open of 2"];
+  q2 [label="q2 (wears Ann *)\n2 open of 2", color=gray, fontcolor=gray];
+  q0 -- q1 [label="2", fontsize=8];
+}

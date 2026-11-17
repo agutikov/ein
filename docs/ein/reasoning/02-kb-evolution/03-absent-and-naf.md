@@ -81,54 +81,12 @@ $$
 \operatorname{seats}(g, c) \;\land\; \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr) \;\implies\; \operatorname{meal}(g, \mathsf{Soup})
 $$
 
-```dot
-digraph rule_soup_unless_allergic_lhs_rhs {
-  rankdir=TB;
-  label="soup-unless-allergic"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?g_L" [label="?g", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?g_L" -> "?c_L" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "h1_allergic_L" [shape=octagon, label="allergic", color="#2ca02c", fontcolor="#2ca02c"];
-      "h1_allergic_L" -> "?g_L" [label="1", color="#2ca02c"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "?g_R" [label="?g", shape=diamond];
-    "Soup_R" [label="Soup", shape=rectangle];
-    "?g_R" -> "Soup_R" [label="meal", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-  }
-}
-```
+![The rule soup-unless-allergic: its absence a dashed cluster](diagrams/03-rule-soup-unless-allergic.svg)
 
 and in the saturated world below, where two guests are seated and one is allergic, it has fired for one of them.
 A fact of one argument is a loop on its argument; the dashed arrow is the fact the rule derived.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  node [fontname="Inter"];
-  "Chair" [shape=box, label="Chair"];
-  "Food" [shape=box, label="Food"];
-  "Guest" [shape=box, label="Guest"];
-  "Ann" [shape=oval, label="Ann"];
-  "Bob" [shape=oval, label="Bob"];
-  "C1" [shape=oval, label="C1"];
-  "C2" [shape=oval, label="C2"];
-  "Soup" [shape=oval, label="Soup"];
-  "Ann" -> "Guest" [style=dashed, arrowhead=empty, label="is-a"];
-  "Bob" -> "Guest" [style=dashed, arrowhead=empty, label="is-a"];
-  "C1" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
-  "C2" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
-  "Soup" -> "Food" [style=dashed, arrowhead=empty, label="is-a"];
-  "Ann" -> "C1" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
-  "Bob" -> "C2" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
-  "Bob" -> "Bob" [label="allergic", color="#2ca02c", fontcolor="#2ca02c", style=solid];
-  "Ann" -> "Soup" [label="meal by soup-unless-allergic", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
-}
-```
+![The saturated world: two guests seated, one allergic, the other given the soup](diagrams/03-soup-saturated.svg)
 
 $$
 K \models \operatorname{absent}\bigl(\operatorname{allergic}(g)\bigr)\lbrace g \mapsto \mathsf{Ann} \rbrace,
@@ -181,19 +139,7 @@ There is **one** point at which a guard is evaluated, and it is the boundary.
   because none of them passes; a world whose closure has quiesced while a parked candidate would pass is not at
   its fixpoint.
 
-```dot
-digraph boundary {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  w0 [label="{ t }\nquiescent: both guards pass"];
-  wp [label="{ t, p }\nfixpoint: absent(p) fails", penwidth=2];
-  wq [label="{ t, q }\nfixpoint: absent(q) fails", penwidth=2];
-  wpq [label="{ t, p, q }\nneither guard holds", style="rounded,dashed", color="#d62728", fontcolor="#d62728"];
-  w0 -> wp [label="admit p"];
-  w0 -> wq [label="admit q"];
-  w0 -> wpq [label="admit both: never", style=dashed, color="#d62728", fontcolor="#d62728"];
-}
-```
+![The boundary admits one candidate a round: two fixpoints, and the world holding both never reached](diagrams/03-boundary.svg)
 
 A solid box is a world a saturation can reach, a heavy one a fixpoint; the agenda's order takes one of the two
 solid arrows. The red dashed world is the one a batch admission would make.
@@ -321,20 +267,7 @@ as if $G$ were false: it says *contradiction* where the truth is *not yet*, an o
 refutation. And *dead* stops being closed upward. Under $p(x) \land \operatorname{absent}(q(x)) \implies \bot$,
 with $p(\mathsf{A})$ and $q(\mathsf{A})$ candidates:
 
-```dot
-digraph dead_not_upward_closed {
-  rankdir=TB;
-  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
-  e [label="∅\nalive", fillcolor="#a1d99b"];
-  p [label="{ p(A) }\ndead", fillcolor="#fcbba1"];
-  q [label="{ q(A) }\nalive", fillcolor="#a1d99b"];
-  pq [label="{ p(A), q(A) }\nalive", fillcolor="#a1d99b"];
-  e -> p [color="#cb181d"];
-  e -> q [color="#238b45"];
-  p -> pq [color="#ae017e", style=bold, label="revives"];
-  q -> pq [color="#238b45"];
-}
-```
+![A lattice of two candidates in which dead is not closed upward](diagrams/03-dead-not-upward-closed.svg)
 
 $$
 \operatorname{dead}\bigl(\lbrace p(\mathsf{A}) \rbrace\bigr), \qquad
@@ -382,29 +315,7 @@ $$
 and one exists exactly when no cycle runs through a negative edge. The parity of the negative edges on such a
 cycle says what it may mean: an even cycle may have several supported fixpoints, an odd one may have none.
 
-```dot
-digraph strata {
-  rankdir=LR;
-  node [fontname="Inter", shape=ellipse];
-  subgraph cluster_strat { label="stratified: σ(z) < σ(q) < σ(p)";
-    z1 [label="z"]; q1 [label="q"]; p1 [label="p"]; a1 [label="a"];
-    z1 -> q1 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
-    a1 -> q1;
-    q1 -> p1 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
-    a1 -> p1;
-  }
-  subgraph cluster_even { label="an even cycle: two supported fixpoints";
-    p2 [label="p"]; q2 [label="q"];
-    p2 -> q2 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
-    q2 -> p2 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-  subgraph cluster_odd { label="an odd cycle: may have no stable fixpoint";
-    p3 [label="p"]; q3 [label="q"];
-    q3 -> p3 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
-    p3 -> q3;
-  }
-}
-```
+![A dependency graph of relations with reads under an absence, and its strata](diagrams/03-strata.svg)
 
 A node is a relation, a black arrow a positive read, a red dashed arrow a read under an absence. Such a cycle is
 reported as a diagnostic, never as a refusal, and only ever as what the graph licenses, since a cycle whose

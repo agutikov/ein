@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: core_in_derivation Pages: 1 -->
+<svg width="817pt" height="265pt"
+ viewBox="0.00 0.00 817.00 265.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 261)">
+<title>core_in_derivation</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-261 812.5,-261 812.5,4 -4,4"/>
+<!-- f_ba78d8e6bc -->
+<g id="node1" class="node">
+<title>f_ba78d8e6bc</title>
+<path fill="#fcbba1" stroke="black" d="M199.25,-129C199.25,-129 16,-129 16,-129 10,-129 4,-123 4,-117 4,-117 4,-105 4,-105 4,-99 10,-93 16,-93 16,-93 199.25,-93 199.25,-93 205.25,-93 211.25,-99 211.25,-105 211.25,-105 211.25,-117 211.25,-117 211.25,-123 205.25,-129 199.25,-129"/>
+<path fill="none" stroke="black" d="M203.25,-133C203.25,-133 12,-133 12,-133 6,-133 0,-127 0,-121 0,-121 0,-101 0,-101 0,-95 6,-89 12,-89 12,-89 203.25,-89 203.25,-89 209.25,-89 215.25,-95 215.25,-101 215.25,-101 215.25,-121 215.25,-121 215.25,-127 209.25,-133 203.25,-133"/>
+<text xml:space="preserve" text-anchor="middle" x="107.62" y="-107.45" font-family="Inter" font-size="14.00">lives&#45;in(Norwegian, House&#45;1)</text>
+</g>
+<!-- fire0_neighbour -->
+<g id="node8" class="node">
+<title>fire0_neighbour</title>
+<path fill="none" stroke="#e377c2" stroke-width="2" d="M325,-98C325,-98 263.25,-98 263.25,-98 257.25,-98 251.25,-92 251.25,-86 251.25,-86 251.25,-74 251.25,-74 251.25,-68 257.25,-62 263.25,-62 263.25,-62 325,-62 325,-62 331,-62 337,-68 337,-74 337,-74 337,-86 337,-86 337,-92 331,-98 325,-98"/>
+<text xml:space="preserve" text-anchor="middle" x="294.12" y="-76.45" font-family="Inter" font-size="14.00" fill="#e377c2">neighbour</text>
+</g>
+<!-- f_ba78d8e6bc&#45;&gt;fire0_neighbour -->
+<g id="edge1" class="edge">
+<title>f_ba78d8e6bc&#45;&gt;fire0_neighbour</title>
+<path fill="none" stroke="#e377c2" d="M215.68,-93.01C223.92,-91.63 231.99,-90.27 239.63,-88.99"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="240.08,-92.46 249.36,-87.35 238.92,-85.56 240.08,-92.46"/>
+</g>
+<!-- f_203bb25e0e -->
+<g id="node2" class="node">
+<title>f_203bb25e0e</title>
+<path fill="#fcbba1" stroke="black" d="M191,-67C191,-67 24.25,-67 24.25,-67 18.25,-67 12.25,-61 12.25,-55 12.25,-55 12.25,-43 12.25,-43 12.25,-37 18.25,-31 24.25,-31 24.25,-31 191,-31 191,-31 197,-31 203,-37 203,-43 203,-43 203,-55 203,-55 203,-61 197,-67 191,-67"/>
+<path fill="none" stroke="black" d="M195,-71C195,-71 20.25,-71 20.25,-71 14.25,-71 8.25,-65 8.25,-59 8.25,-59 8.25,-39 8.25,-39 8.25,-33 14.25,-27 20.25,-27 20.25,-27 195,-27 195,-27 201,-27 207,-33 207,-39 207,-39 207,-59 207,-59 207,-65 201,-71 195,-71"/>
+<text xml:space="preserve" text-anchor="middle" x="107.62" y="-45.45" font-family="Inter" font-size="14.00">next&#45;to(House&#45;1, House&#45;2)</text>
+</g>
+<!-- f_203bb25e0e&#45;&gt;fire0_neighbour -->
+<g id="edge2" class="edge">
+<title>f_203bb25e0e&#45;&gt;fire0_neighbour</title>
+<path fill="none" stroke="#e377c2" d="M207.36,-65.59C218.56,-67.47 229.64,-69.33 239.92,-71.06"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="239.22,-74.49 249.67,-72.7 240.38,-67.59 239.22,-74.49"/>
+</g>
+<!-- f_e42df9f04f -->
+<g id="node3" class="node">
+<title>f_e42df9f04f</title>
+<path fill="#fcbba1" stroke="black" d="M538.62,-40C538.62,-40 398.88,-40 398.88,-40 392.88,-40 386.88,-34 386.88,-28 386.88,-28 386.88,-16 386.88,-16 386.88,-10 392.88,-4 398.88,-4 398.88,-4 538.62,-4 538.62,-4 544.62,-4 550.62,-10 550.62,-16 550.62,-16 550.62,-28 550.62,-28 550.62,-34 544.62,-40 538.62,-40"/>
+<path fill="none" stroke="black" d="M542.62,-44C542.62,-44 394.88,-44 394.88,-44 388.88,-44 382.88,-38 382.88,-32 382.88,-32 382.88,-12 382.88,-12 382.88,-6 388.88,0 394.88,0 394.88,0 542.62,0 542.62,0 548.62,0 554.62,-6 554.62,-12 554.62,-12 554.62,-32 554.62,-32 554.62,-38 548.62,-44 542.62,-44"/>
+<text xml:space="preserve" text-anchor="middle" x="468.75" y="-18.45" font-family="Inter" font-size="14.00">owns(Norwegian, Fox)</text>
+</g>
+<!-- fire0_fox&#45;keeps&#45;away -->
+<g id="node9" class="node">
+<title>fire0_fox&#45;keeps&#45;away</title>
+<path fill="none" stroke="#17becf" stroke-width="2" d="M706.5,-69C706.5,-69 612.5,-69 612.5,-69 606.5,-69 600.5,-63 600.5,-57 600.5,-57 600.5,-45 600.5,-45 600.5,-39 606.5,-33 612.5,-33 612.5,-33 706.5,-33 706.5,-33 712.5,-33 718.5,-39 718.5,-45 718.5,-45 718.5,-57 718.5,-57 718.5,-63 712.5,-69 706.5,-69"/>
+<text xml:space="preserve" text-anchor="middle" x="659.5" y="-47.45" font-family="Inter" font-size="14.00" fill="#17becf">fox&#45;keeps&#45;away</text>
+</g>
+<!-- f_e42df9f04f&#45;&gt;fire0_fox&#45;keeps&#45;away -->
+<g id="edge4" class="edge">
+<title>f_e42df9f04f&#45;&gt;fire0_fox&#45;keeps&#45;away</title>
+<path fill="none" stroke="#17becf" d="M555.01,-35.1C566.32,-36.84 577.81,-38.6 588.82,-40.29"/>
+<polygon fill="#17becf" stroke="#17becf" points="588.17,-43.74 598.59,-41.8 589.24,-36.82 588.17,-43.74"/>
+</g>
+<!-- g1 -->
+<g id="node4" class="node">
+<title>g1</title>
+<path fill="none" stroke="black" d="M182.75,-191C182.75,-191 32.5,-191 32.5,-191 26.5,-191 20.5,-185 20.5,-179 20.5,-179 20.5,-167 20.5,-167 20.5,-161 26.5,-155 32.5,-155 32.5,-155 182.75,-155 182.75,-155 188.75,-155 194.75,-161 194.75,-167 194.75,-167 194.75,-179 194.75,-179 194.75,-185 188.75,-191 182.75,-191"/>
+<path fill="none" stroke="black" d="M186.75,-195C186.75,-195 28.5,-195 28.5,-195 22.5,-195 16.5,-189 16.5,-183 16.5,-183 16.5,-163 16.5,-163 16.5,-157 22.5,-151 28.5,-151 28.5,-151 186.75,-151 186.75,-151 192.75,-151 198.75,-157 198.75,-163 198.75,-163 198.75,-183 198.75,-183 198.75,-189 192.75,-195 186.75,-195"/>
+<text xml:space="preserve" text-anchor="middle" x="107.62" y="-169.45" font-family="Inter" font-size="14.00">is&#45;a(Norwegian, Person)</text>
+</g>
+<!-- g2 -->
+<g id="node5" class="node">
+<title>g2</title>
+<path fill="none" stroke="black" d="M145.62,-253C145.62,-253 69.62,-253 69.62,-253 63.62,-253 57.62,-247 57.62,-241 57.62,-241 57.62,-229 57.62,-229 57.62,-223 63.62,-217 69.62,-217 69.62,-217 145.62,-217 145.62,-217 151.62,-217 157.62,-223 157.62,-229 157.62,-229 157.62,-241 157.62,-241 157.62,-247 151.62,-253 145.62,-253"/>
+<path fill="none" stroke="black" d="M149.62,-257C149.62,-257 65.62,-257 65.62,-257 59.62,-257 53.62,-251 53.62,-245 53.62,-245 53.62,-225 53.62,-225 53.62,-219 59.62,-213 65.62,-213 65.62,-213 149.62,-213 149.62,-213 155.62,-213 161.62,-219 161.62,-225 161.62,-225 161.62,-245 161.62,-245 161.62,-251 155.62,-257 149.62,-257"/>
+<text xml:space="preserve" text-anchor="middle" x="107.62" y="-231.45" font-family="Inter" font-size="14.00">is&#45;a(Fox, Pet)</text>
+</g>
+<!-- f_cb1915def2 -->
+<g id="node6" class="node">
+<title>f_cb1915def2</title>
+<path fill="none" stroke="black" stroke-width="2" d="M552.5,-98C552.5,-98 385,-98 385,-98 379,-98 373,-92 373,-86 373,-86 373,-74 373,-74 373,-68 379,-62 385,-62 385,-62 552.5,-62 552.5,-62 558.5,-62 564.5,-68 564.5,-74 564.5,-74 564.5,-86 564.5,-86 564.5,-92 558.5,-98 552.5,-98"/>
+<text xml:space="preserve" text-anchor="middle" x="468.75" y="-76.45" font-family="Inter" font-size="14.00">near(Norwegian, House&#45;2)</text>
+</g>
+<!-- f_cb1915def2&#45;&gt;fire0_fox&#45;keeps&#45;away -->
+<g id="edge5" class="edge">
+<title>f_cb1915def2&#45;&gt;fire0_fox&#45;keeps&#45;away</title>
+<path fill="none" stroke="#17becf" d="M565.23,-65.33C573.22,-64.1 581.19,-62.88 588.93,-61.69"/>
+<polygon fill="#17becf" stroke="#17becf" points="589.22,-65.19 598.57,-60.21 588.16,-58.27 589.22,-65.19"/>
+</g>
+<!-- f_a1f94f5b63 -->
+<g id="node7" class="node">
+<title>f_a1f94f5b63</title>
+<path fill="none" stroke="black" stroke-width="2" d="M796.5,-69C796.5,-69 766.5,-69 766.5,-69 760.5,-69 754.5,-63 754.5,-57 754.5,-57 754.5,-45 754.5,-45 754.5,-39 760.5,-33 766.5,-33 766.5,-33 796.5,-33 796.5,-33 802.5,-33 808.5,-39 808.5,-45 808.5,-45 808.5,-57 808.5,-57 808.5,-63 802.5,-69 796.5,-69"/>
+<text xml:space="preserve" text-anchor="middle" x="781.5" y="-47.45" font-family="Inter" font-size="14.00">false</text>
+</g>
+<!-- fire0_neighbour&#45;&gt;f_cb1915def2 -->
+<g id="edge3" class="edge">
+<title>fire0_neighbour&#45;&gt;f_cb1915def2</title>
+<path fill="none" stroke="#e377c2" stroke-width="2" d="M337.35,-80C344.7,-80 352.62,-80 360.81,-80"/>
+<polygon fill="#e377c2" stroke="#e377c2" stroke-width="2" points="359.08,-83.5 369.08,-80 359.08,-76.5 359.08,-83.5"/>
+</g>
+<!-- fire0_fox&#45;keeps&#45;away&#45;&gt;f_a1f94f5b63 -->
+<g id="edge6" class="edge">
+<title>fire0_fox&#45;keeps&#45;away&#45;&gt;f_a1f94f5b63</title>
+<path fill="none" stroke="#17becf" stroke-width="2" d="M718.74,-51C726.74,-51 734.77,-51 742.28,-51"/>
+<polygon fill="#17becf" stroke="#17becf" stroke-width="2" points="740.54,-54.5 750.54,-51 740.54,-47.5 740.54,-54.5"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 59d03a02348a8f6eb09fe9fa996f20096a68b4047fe0f2cef3dc4170d6be6a90 -->

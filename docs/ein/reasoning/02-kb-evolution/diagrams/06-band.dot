@@ -1,0 +1,18 @@
+digraph band {
+  graph [rankdir=TB, nodesep=0.5, ranksep=0.45, fontname="Helvetica", fontsize=10];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="filled,rounded"];
+  edge [arrowsize=0.6, fontname="Helvetica", fontsize=9];
+  bottom [label="∅", shape=ellipse, fillcolor="#fee391"];
+  owing [label="Owing\nalive, a debt unpaid\na down-set of the alive nodes", fillcolor="#fee391"];
+  minl [label="min R\nthe alive members of E", fillcolor="#a1d99b", peripheries=2];
+  r [label="R\nalive and discharged", fillcolor="#a1d99b"];
+  maxl [label="max R\nthe discharged maximal sets holding no member of N", fillcolor="#a1d99b", penwidth=3, color="#006d2c"];
+  dead [label="Dead = ↑N\nan up-set", fillcolor="#fcbba1"];
+  top [label="H", shape=ellipse, fillcolor="#fcbba1"];
+  bottom -> owing [label="add candidates"];
+  owing -> minl [label="the last debt is paid", color="#2171b5", fontcolor="#2171b5"];
+  minl -> r [color="#238b45"];
+  r -> maxl [color="#238b45"];
+  maxl -> dead [label="one more candidate kills", color="#cb181d", fontcolor="#cb181d"];
+  dead -> top [color="#bdbdbd"];
+}

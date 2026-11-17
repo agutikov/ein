@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: main_steps Pages: 1 -->
+<svg width="495pt" height="569pt"
+ viewBox="0.00 0.00 495.00 569.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 565)">
+<title>main_steps</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-565 491.25,-565 491.25,4 -4,4"/>
+<!-- program -->
+<g id="node1" class="node">
+<title>program</title>
+<path fill="none" stroke="black" d="M208.75,-561C208.75,-561 150,-561 150,-561 144,-561 138,-555 138,-549 138,-549 138,-537 138,-537 138,-531 144,-525 150,-525 150,-525 208.75,-525 208.75,-525 214.75,-525 220.75,-531 220.75,-537 220.75,-537 220.75,-549 220.75,-549 220.75,-555 214.75,-561 208.75,-561"/>
+<text xml:space="preserve" text-anchor="middle" x="179.38" y="-539.45" font-family="Inter" font-size="14.00">a program</text>
+</g>
+<!-- K0 -->
+<g id="node2" class="node">
+<title>K0</title>
+<path fill="none" stroke="black" d="M304.75,-454.5C304.75,-454.5 54,-454.5 54,-454.5 48,-454.5 42,-448.5 42,-442.5 42,-442.5 42,-400 42,-400 42,-394 48,-388 54,-388 54,-388 304.75,-388 304.75,-388 310.75,-388 316.75,-394 316.75,-400 316.75,-400 316.75,-442.5 316.75,-442.5 316.75,-448.5 310.75,-454.5 304.75,-454.5"/>
+<text xml:space="preserve" text-anchor="middle" x="179.38" y="-437.2" font-family="Inter" font-size="14.00">K₀</text>
+<text xml:space="preserve" text-anchor="middle" x="179.38" y="-417.7" font-family="Inter" font-size="14.00">relations, rules, hypothesis rules, facts,</text>
+<text xml:space="preserve" text-anchor="middle" x="179.38" y="-398.2" font-family="Inter" font-size="14.00">each fact with its derivation record</text>
+</g>
+<!-- program&#45;&gt;K0 -->
+<g id="edge1" class="edge">
+<title>program&#45;&gt;K0</title>
+<path fill="none" stroke="black" d="M179.38,-524.59C179.38,-509.22 179.38,-486.18 179.38,-465.84"/>
+<polygon fill="black" stroke="black" points="182.88,-466.09 179.38,-456.09 175.88,-466.09 182.88,-466.09"/>
+<text xml:space="preserve" text-anchor="middle" x="264.88" y="-493.7" font-family="Times,serif" font-size="14.00">read: macros expanded,</text>
+<text xml:space="preserve" text-anchor="middle" x="264.88" y="-476.45" font-family="Times,serif" font-size="14.00">imports resolved</text>
+</g>
+<!-- root -->
+<g id="node3" class="node">
+<title>root</title>
+<path fill="none" stroke="black" d="M346.75,-334.75C346.75,-334.75 12,-334.75 12,-334.75 6,-334.75 0,-328.75 0,-322.75 0,-322.75 0,-299.75 0,-299.75 0,-293.75 6,-287.75 12,-287.75 12,-287.75 346.75,-287.75 346.75,-287.75 352.75,-287.75 358.75,-293.75 358.75,-299.75 358.75,-299.75 358.75,-322.75 358.75,-322.75 358.75,-328.75 352.75,-334.75 346.75,-334.75"/>
+<text xml:space="preserve" text-anchor="middle" x="179.38" y="-317.45" font-family="Inter" font-size="14.00">root = sat(K₀)</text>
+<text xml:space="preserve" text-anchor="middle" x="179.38" y="-297.95" font-family="Inter" font-size="14.00">closure to quiescence, then the boundary, repeated</text>
+</g>
+<!-- K0&#45;&gt;root -->
+<g id="edge2" class="edge">
+<title>K0&#45;&gt;root</title>
+<path fill="none" stroke="black" d="M179.38,-387.55C179.38,-374.62 179.38,-359.75 179.38,-346.66"/>
+<polygon fill="black" stroke="black" points="182.88,-346.76 179.38,-336.76 175.88,-346.76 182.88,-346.76"/>
+<text xml:space="preserve" text-anchor="middle" x="308" y="-356.7" font-family="Times,serif" font-size="14.00">each rule applied once per activator</text>
+</g>
+<!-- dead0 -->
+<g id="node4" class="node">
+<title>dead0</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M225.25,-234.5C225.25,-234.5 49.5,-234.5 49.5,-234.5 43.5,-234.5 37.5,-228.5 37.5,-222.5 37.5,-222.5 37.5,-199.5 37.5,-199.5 37.5,-193.5 43.5,-187.5 49.5,-187.5 49.5,-187.5 225.25,-187.5 225.25,-187.5 231.25,-187.5 237.25,-193.5 237.25,-199.5 237.25,-199.5 237.25,-222.5 237.25,-222.5 237.25,-228.5 231.25,-234.5 225.25,-234.5"/>
+<text xml:space="preserve" text-anchor="middle" x="137.38" y="-217.2" font-family="Inter" font-size="14.00">root is dead:</text>
+<text xml:space="preserve" text-anchor="middle" x="137.38" y="-197.7" font-family="Inter" font-size="14.00">R = ∅, root&#39;s core explains it</text>
+</g>
+<!-- root&#45;&gt;dead0 -->
+<g id="edge3" class="edge">
+<title>root&#45;&gt;dead0</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M169.63,-287.46C164.23,-274.81 157.41,-258.86 151.43,-244.88"/>
+<polygon fill="black" stroke="black" points="154.81,-243.87 147.66,-236.06 148.37,-246.63 154.81,-243.87"/>
+<text xml:space="preserve" text-anchor="middle" x="192.01" y="-256.45" font-family="Times,serif" font-size="14.00">⊥ ∈ root</text>
+</g>
+<!-- H -->
+<g id="node5" class="node">
+<title>H</title>
+<path fill="none" stroke="black" d="M405.12,-234.5C405.12,-234.5 267.62,-234.5 267.62,-234.5 261.62,-234.5 255.62,-228.5 255.62,-222.5 255.62,-222.5 255.62,-199.5 255.62,-199.5 255.62,-193.5 261.62,-187.5 267.62,-187.5 267.62,-187.5 405.12,-187.5 405.12,-187.5 411.12,-187.5 417.12,-193.5 417.12,-199.5 417.12,-199.5 417.12,-222.5 417.12,-222.5 417.12,-228.5 411.12,-234.5 405.12,-234.5"/>
+<text xml:space="preserve" text-anchor="middle" x="336.38" y="-217.2" font-family="Inter" font-size="14.00">H, the candidate set</text>
+<text xml:space="preserve" text-anchor="middle" x="336.38" y="-197.7" font-family="Inter" font-size="14.00">read off root&#39;s fixpoint</text>
+</g>
+<!-- root&#45;&gt;H -->
+<g id="edge4" class="edge">
+<title>root&#45;&gt;H</title>
+<path fill="none" stroke="black" d="M215.79,-287.46C238,-273.56 266.6,-255.67 290.37,-240.79"/>
+<polygon fill="black" stroke="black" points="291.98,-243.91 298.6,-235.64 288.27,-237.97 291.98,-243.91"/>
+<text xml:space="preserve" text-anchor="middle" x="284.15" y="-256.45" font-family="Times,serif" font-size="14.00">alive</text>
+</g>
+<!-- st -->
+<g id="node6" class="node">
+<title>st</title>
+<path fill="none" stroke="black" d="M414.88,-150.5C414.88,-150.5 257.88,-150.5 257.88,-150.5 251.88,-150.5 245.88,-144.5 245.88,-138.5 245.88,-138.5 245.88,-96 245.88,-96 245.88,-90 251.88,-84 257.88,-84 257.88,-84 414.88,-84 414.88,-84 420.88,-84 426.88,-90 426.88,-96 426.88,-96 426.88,-138.5 426.88,-138.5 426.88,-144.5 420.88,-150.5 414.88,-150.5"/>
+<text xml:space="preserve" text-anchor="middle" x="336.38" y="-133.2" font-family="Inter" font-size="14.00">for a commitment C ⊆ H:</text>
+<text xml:space="preserve" text-anchor="middle" x="336.38" y="-113.7" font-family="Inter" font-size="14.00">st(C) = sat(root ∪ C)</text>
+<text xml:space="preserve" text-anchor="middle" x="336.38" y="-94.2" font-family="Inter" font-size="14.00">dead(C), owes(C)</text>
+</g>
+<!-- H&#45;&gt;st -->
+<g id="edge5" class="edge">
+<title>H&#45;&gt;st</title>
+<path fill="none" stroke="black" d="M336.38,-187.32C336.38,-179.65 336.38,-170.8 336.38,-162.05"/>
+<polygon fill="black" stroke="black" points="339.88,-162.22 336.38,-152.22 332.88,-162.22 339.88,-162.22"/>
+</g>
+<!-- R -->
+<g id="node7" class="node">
+<title>R</title>
+<path fill="none" stroke="black" stroke-width="2" d="M475.25,-47C475.25,-47 197.5,-47 197.5,-47 191.5,-47 185.5,-41 185.5,-35 185.5,-35 185.5,-12 185.5,-12 185.5,-6 191.5,0 197.5,0 197.5,0 475.25,0 475.25,0 481.25,0 487.25,-6 487.25,-12 487.25,-12 487.25,-35 487.25,-35 487.25,-41 481.25,-47 475.25,-47"/>
+<text xml:space="preserve" text-anchor="middle" x="336.38" y="-29.7" font-family="Inter" font-size="14.00">R = { C ⊆ H : st(C) alive and owing nothing }</text>
+<text xml:space="preserve" text-anchor="middle" x="336.38" y="-10.2" font-family="Inter" font-size="14.00">every question is read off R</text>
+</g>
+<!-- st&#45;&gt;R -->
+<g id="edge6" class="edge">
+<title>st&#45;&gt;R</title>
+<path fill="none" stroke="black" d="M336.38,-83.64C336.38,-75.68 336.38,-67.14 336.38,-59.09"/>
+<polygon fill="black" stroke="black" points="339.88,-59.29 336.38,-49.29 332.88,-59.29 339.88,-59.29"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: f5761690322c3aa3d447abe04481d5fc714f992545ea264ce21c27a7effc685b -->

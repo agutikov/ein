@@ -1,0 +1,12 @@
+digraph cyclic {
+  rankdir=LR;
+  node [fontname="Inter"];
+  ab [label="r(a, b)\ngiven", shape=box, style=rounded, peripheries=2];
+  ba [label="r(b, a)", shape=box, style=rounded];
+  s1 [label="symmetric\nprimary", shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
+  s2 [label="symmetric\nalternative", shape=box, style="rounded,bold,dashed", color="#17becf", fontcolor="#17becf"];
+  ab -> s1 [color="#e377c2"];
+  s1 -> ba [color="#e377c2", style=bold];
+  ba -> s2 [color="#17becf"];
+  s2 -> ab [color="#17becf", style="bold,dashed"];
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: arrows Pages: 1 -->
+<svg width="583pt" height="66pt"
+ viewBox="0.00 0.00 583.00 66.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 62)">
+<title>arrows</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-62 579.25,-62 579.25,4 -4,4"/>
+<!-- L -->
+<g id="node1" class="node">
+<title>L</title>
+<path fill="none" stroke="black" d="M121.75,-47C121.75,-47 12,-47 12,-47 6,-47 0,-41 0,-35 0,-35 0,-12 0,-12 0,-6 6,0 12,0 12,0 121.75,0 121.75,0 127.75,0 133.75,-6 133.75,-12 133.75,-12 133.75,-35 133.75,-35 133.75,-41 127.75,-47 121.75,-47"/>
+<text xml:space="preserve" text-anchor="middle" x="66.88" y="-29.7" font-family="Inter" font-size="14.00">L = (2^H, ⊆)</text>
+<text xml:space="preserve" text-anchor="middle" x="66.88" y="-10.2" font-family="Inter" font-size="14.00">the commitments</text>
+</g>
+<!-- KB -->
+<g id="node2" class="node">
+<title>KB</title>
+<path fill="none" stroke="black" d="M351.5,-41.5C351.5,-41.5 245.5,-41.5 245.5,-41.5 239.5,-41.5 233.5,-35.5 233.5,-29.5 233.5,-29.5 233.5,-17.5 233.5,-17.5 233.5,-11.5 239.5,-5.5 245.5,-5.5 245.5,-5.5 351.5,-5.5 351.5,-5.5 357.5,-5.5 363.5,-11.5 363.5,-17.5 363.5,-17.5 363.5,-29.5 363.5,-29.5 363.5,-35.5 357.5,-41.5 351.5,-41.5"/>
+<text xml:space="preserve" text-anchor="middle" x="298.5" y="-19.95" font-family="Inter" font-size="14.00">knowledge bases</text>
+</g>
+<!-- L&#45;&gt;KB -->
+<g id="edge1" class="edge">
+<title>L&#45;&gt;KB</title>
+<path fill="none" stroke="black" d="M133.98,-23.5C161.35,-23.5 193.25,-23.5 221.56,-23.5"/>
+<polygon fill="black" stroke="black" points="221.53,-27 231.53,-23.5 221.53,-20 221.53,-27"/>
+<text xml:space="preserve" text-anchor="middle" x="183.62" y="-44.7" font-family="Times,serif" font-size="14.00">st</text>
+<text xml:space="preserve" text-anchor="middle" x="183.62" y="-27.45" font-family="Times,serif" font-size="14.00">the state</text>
+</g>
+<!-- B -->
+<g id="node3" class="node">
+<title>B</title>
+<path fill="none" stroke="black" d="M563.25,-41.5C563.25,-41.5 531.5,-41.5 531.5,-41.5 525.5,-41.5 519.5,-35.5 519.5,-29.5 519.5,-29.5 519.5,-17.5 519.5,-17.5 519.5,-11.5 525.5,-5.5 531.5,-5.5 531.5,-5.5 563.25,-5.5 563.25,-5.5 569.25,-5.5 575.25,-11.5 575.25,-17.5 575.25,-17.5 575.25,-29.5 575.25,-29.5 575.25,-35.5 569.25,-41.5 563.25,-41.5"/>
+<text xml:space="preserve" text-anchor="middle" x="547.38" y="-19.95" font-family="Inter" font-size="14.00">{0, 1}²</text>
+</g>
+<!-- KB&#45;&gt;B -->
+<g id="edge2" class="edge">
+<title>KB&#45;&gt;B</title>
+<path fill="none" stroke="black" d="M363.72,-23.5C409.32,-23.5 469.06,-23.5 507.59,-23.5"/>
+<polygon fill="black" stroke="black" points="507.55,-27 517.55,-23.5 507.55,-20 507.55,-27"/>
+<text xml:space="preserve" text-anchor="middle" x="441.5" y="-44.7" font-family="Times,serif" font-size="14.00">(dead, owes &gt; 0)</text>
+<text xml:space="preserve" text-anchor="middle" x="441.5" y="-27.45" font-family="Times,serif" font-size="14.00">the status</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 7b42f716f3230d2cb8cffd9c23b373857c4b1e137772016e760ffa6cce8613eb -->

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: boundary Pages: 1 -->
+<svg width="539pt" height="185pt"
+ viewBox="0.00 0.00 539.00 185.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 181)">
+<title>boundary</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-181 534.75,-181 534.75,4 -4,4"/>
+<!-- w0 -->
+<g id="node1" class="node">
+<title>w0</title>
+<path fill="none" stroke="black" d="M189.25,-112C189.25,-112 12,-112 12,-112 6,-112 0,-106 0,-100 0,-100 0,-77 0,-77 0,-71 6,-65 12,-65 12,-65 189.25,-65 189.25,-65 195.25,-65 201.25,-71 201.25,-77 201.25,-77 201.25,-100 201.25,-100 201.25,-106 195.25,-112 189.25,-112"/>
+<text xml:space="preserve" text-anchor="middle" x="100.62" y="-94.7" font-family="Inter" font-size="14.00">{ t }</text>
+<text xml:space="preserve" text-anchor="middle" x="100.62" y="-75.2" font-family="Inter" font-size="14.00">quiescent: both guards pass</text>
+</g>
+<!-- wp -->
+<g id="node2" class="node">
+<title>wp</title>
+<path fill="none" stroke="black" stroke-width="2" d="M518.75,-177C518.75,-177 376.75,-177 376.75,-177 370.75,-177 364.75,-171 364.75,-165 364.75,-165 364.75,-142 364.75,-142 364.75,-136 370.75,-130 376.75,-130 376.75,-130 518.75,-130 518.75,-130 524.75,-130 530.75,-136 530.75,-142 530.75,-142 530.75,-165 530.75,-165 530.75,-171 524.75,-177 518.75,-177"/>
+<text xml:space="preserve" text-anchor="middle" x="447.75" y="-159.7" font-family="Inter" font-size="14.00">{ t, p }</text>
+<text xml:space="preserve" text-anchor="middle" x="447.75" y="-140.2" font-family="Inter" font-size="14.00">fixpoint: absent(p) fails</text>
+</g>
+<!-- w0&#45;&gt;wp -->
+<g id="edge1" class="edge">
+<title>w0&#45;&gt;wp</title>
+<path fill="none" stroke="black" d="M201.45,-107.3C249.18,-116.29 306.01,-126.99 352.94,-135.83"/>
+<polygon fill="black" stroke="black" points="352.06,-139.23 362.54,-137.64 353.36,-132.35 352.06,-139.23"/>
+<text xml:space="preserve" text-anchor="middle" x="283" y="-138.24" font-family="Times,serif" font-size="14.00">admit p</text>
+</g>
+<!-- wq -->
+<g id="node3" class="node">
+<title>wq</title>
+<path fill="none" stroke="black" stroke-width="2" d="M518.75,-112C518.75,-112 376.75,-112 376.75,-112 370.75,-112 364.75,-106 364.75,-100 364.75,-100 364.75,-77 364.75,-77 364.75,-71 370.75,-65 376.75,-65 376.75,-65 518.75,-65 518.75,-65 524.75,-65 530.75,-71 530.75,-77 530.75,-77 530.75,-100 530.75,-100 530.75,-106 524.75,-112 518.75,-112"/>
+<text xml:space="preserve" text-anchor="middle" x="447.75" y="-94.7" font-family="Inter" font-size="14.00">{ t, q }</text>
+<text xml:space="preserve" text-anchor="middle" x="447.75" y="-75.2" font-family="Inter" font-size="14.00">fixpoint: absent(q) fails</text>
+</g>
+<!-- w0&#45;&gt;wq -->
+<g id="edge2" class="edge">
+<title>w0&#45;&gt;wq</title>
+<path fill="none" stroke="black" d="M201.45,-88.5C249.08,-88.5 305.77,-88.5 352.64,-88.5"/>
+<polygon fill="black" stroke="black" points="352.51,-92 362.51,-88.5 352.51,-85 352.51,-92"/>
+<text xml:space="preserve" text-anchor="middle" x="283" y="-92.45" font-family="Times,serif" font-size="14.00">admit q</text>
+</g>
+<!-- wpq -->
+<g id="node4" class="node">
+<title>wpq</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M509.38,-47C509.38,-47 386.12,-47 386.12,-47 380.12,-47 374.12,-41 374.12,-35 374.12,-35 374.12,-12 374.12,-12 374.12,-6 380.12,0 386.12,0 386.12,0 509.38,0 509.38,0 515.38,0 521.38,-6 521.38,-12 521.38,-12 521.38,-35 521.38,-35 521.38,-41 515.38,-47 509.38,-47"/>
+<text xml:space="preserve" text-anchor="middle" x="447.75" y="-29.7" font-family="Inter" font-size="14.00" fill="#d62728">{ t, p, q }</text>
+<text xml:space="preserve" text-anchor="middle" x="447.75" y="-10.2" font-family="Inter" font-size="14.00" fill="#d62728">neither guard holds</text>
+</g>
+<!-- w0&#45;&gt;wpq -->
+<g id="edge3" class="edge">
+<title>w0&#45;&gt;wpq</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M201.45,-69.7C252.52,-60.08 313.99,-48.5 362.62,-39.35"/>
+<polygon fill="#d62728" stroke="#d62728" points="363.07,-42.82 372.25,-37.53 361.78,-35.94 363.07,-42.82"/>
+<text xml:space="preserve" text-anchor="middle" x="283" y="-69.57" font-family="Times,serif" font-size="14.00" fill="#d62728">admit both: never</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 6978071dc285d5f00fc753ee0494974b06f6d2ffdef2909a1d0c5c0626090077 -->

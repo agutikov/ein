@@ -120,7 +120,8 @@ two arguments is one arrow from the first argument to the second, labelled with 
 one argument is a loop; a fact of any other count is a node of its own with one arrow to each argument, numbered
 by argument; a dashed arrow is a fact that was derived, or, in a rule, the fact a conclusion adds. That form is a
 drawing convention, and [the knowledge base](01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows) says what it stands for and what it
-loses.
+loses. Every drawing is an image, and its source is the file of the same name in the `diagrams/` folder beside
+its page ([Q-M1f.368](../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)).
 
 ## Reading order
 

@@ -1,0 +1,21 @@
+digraph region {
+  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 2 · |R| = 2 of 4 · monotone"];
+  node [fontsize=10, fontname="Helvetica"];
+  edge [arrowsize=0.6];
+  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
+  L1 [shape=plaintext, fontsize=9, label="L1 · 2"];
+  L2 [shape=plaintext, fontsize=9, label="L2 · 1"];
+  L0 -> L1 [style=invis];
+  L1 -> L2 [style=invis];
+  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
+  m1 [label="(seats Ann C1)\nR · min · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3, peripheries=2];
+  m2 [label="(seats Ann C2)\nR · min · max", shape=ellipse, style="filled", fillcolor="#9ecae1", color="#006d2c", penwidth=3, peripheries=2];
+  m3 [label="(seats Ann C1)\n(seats Ann C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
+  { rank=same; L0; m0 }
+  { rank=same; L1; m1; m2 }
+  { rank=same; L2; m3 }
+  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
+  m0 -> m2 [color="#2171b5", style=solid, penwidth=2];
+  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
+  m2 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
+}

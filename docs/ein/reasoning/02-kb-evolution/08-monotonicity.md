@@ -53,17 +53,7 @@ Each shorter description is licensed by a property of the program, and § 5 orde
 
 ## 2. The state, the status and the program
 
-```dot
-digraph arrows {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  L [label="L = (2^H, ⊆)\nthe commitments"];
-  KB [label="knowledge bases"];
-  B [label="{0, 1}²"];
-  L -> KB [label="st\nthe state"];
-  KB -> B [label="(dead, owes > 0)\nthe status"];
-}
-```
+![The state and the status: commitments to knowledge bases to a pair of bits](diagrams/08-state-and-status.svg)
 
 - **The lattice** $L = (2^H, \subseteq)$, the commitments over the candidate set $H$, is the domain: a Boolean
   lattice, neither monotone nor not.
@@ -134,22 +124,7 @@ The check costs root's saturation and builds no node.
 The rule that gives a seated guest the soup unless the guest is allergic ([absence](03-absent-and-naf.md)), with
 seatings and allergies as candidates, has one site:
 
-```dot
-digraph reads {
-  rankdir=LR;
-  node [fontname="Inter", shape=ellipse];
-  subgraph cluster_D { label="D: a commitment can change these"; style=dashed;
-    seats [label="seats\ncandidate"];
-    allergic [label="allergic\ncandidate"];
-    meal [label="meal"];
-  }
-  isa [label="is-a\nstatic"];
-  seats -> meal [label="depth 0"];
-  allergic -> meal [label="depth 1: a site", color="#d62728", fontcolor="#d62728", style=dashed];
-  isa -> seats [label="proposes", style=dotted];
-  isa -> allergic [label="proposes", style=dotted];
-}
-```
+![What the check reads of the rule soup-unless-allergic: its one site](diagrams/08-reads.svg)
 
 A node is a relation; a black arrow is a read at even depth into what the rule concludes, a red dashed arrow a
 read under one absence. The red arrow starts inside $D$, so growing the commitment can take a meal away.
@@ -297,53 +272,9 @@ empty commitment owes, both seatings together are dead, and $R$ is the two point
 seated guest dines, and a diner owes a meal*: seating the guest adds a debt the empty commitment did not have,
 and the node that only seats is a hole, with the fact that repairs it on the edge above.
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 2 · |R| = 2 of 4 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
-  L1 [shape=plaintext, fontsize=9, label="L1 · 2"];
-  L2 [shape=plaintext, fontsize=9, label="L2 · 1"];
-  L0 -> L1 [style=invis];
-  L1 -> L2 [style=invis];
-  m0 [label="∅\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m1 [label="(seats Ann C1)\nR · min · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3, peripheries=2];
-  m2 [label="(seats Ann C2)\nR · min · max", shape=ellipse, style="filled", fillcolor="#9ecae1", color="#006d2c", penwidth=3, peripheries=2];
-  m3 [label="(seats Ann C1)\n(seats Ann C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  { rank=same; L0; m0 }
-  { rank=same; L1; m1; m2 }
-  { rank=same; L2; m3 }
-  m0 -> m1 [color="#2171b5", style=solid, penwidth=2];
-  m0 -> m2 [color="#2171b5", style=solid, penwidth=2];
-  m1 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
-  m2 -> m3 [color="#cb181d", style=solid, penwidth=1.2];
-}
-```
+![A monotone cube of two candidates: a guest owes a seat and has at most one](diagrams/08-cube-monotone.svg)
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 2 · |R| = 3 of 4 · NOT monotone (1 site): status exercised · no stale fact"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
-  L1 [shape=plaintext, fontsize=9, label="L1 · 2"];
-  L2 [shape=plaintext, fontsize=9, label="L2 · 1"];
-  L0 -> L1 [style=invis];
-  L1 -> L2 [style=invis];
-  m0 [label="∅\nR · min", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=1.5, peripheries=2];
-  m1 [label="(meal Ann Soup)\nR", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#525252", penwidth=1];
-  m2 [label="(seats Ann C1)\nowing 1 · hole", shape=ellipse, style="filled", fillcolor="#fee391", color="#6a3d9a", penwidth=2.5];
-  m3 [label="(meal Ann Soup)\n(seats Ann C1)\nR · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3];
-  { rank=same; L0; m0 }
-  { rank=same; L1; m1; m2 }
-  { rank=same; L2; m3 }
-  m0 -> m1 [color="#238b45", style=solid, penwidth=2];
-  m0 -> m2 [color="#fd8d3c", style=dashed, penwidth=1.2];
-  m1 -> m3 [color="#238b45", style=solid, penwidth=2];
-  m2 -> m3 [color="#2171b5", style=solid, penwidth=2, label="+(meal Ann Soup)", fontcolor="#6a3d9a", fontsize=9];
-}
-```
+![A cube of two candidates that is not monotone: seating the guest adds a debt](diagrams/08-cube-not-monotone.svg)
 
 A node is a commitment, the empty one on top and each layer one candidate larger; an edge adds one candidate.
 Green and blue fill is $R$, one colour a component; amber is owing, red is dead. A double border is $R$'s minimal
@@ -425,25 +356,7 @@ $$
 | **fork from root** | $\operatorname{sat}(\operatorname{sat}(K_0) \cup C)$, the case $C_1 = \emptyset$ |
 | **a parent path** | $\operatorname{sat}\bigl(\operatorname{sat}(\operatorname{sat}(K_0) \cup C \setminus \lbrace h \rbrace) \cup \lbrace h \rbrace\bigr)$, and longer chains |
 
-```dot
-digraph constructions {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  K0 [label="K₀"];
-  K0C [label="K₀ ∪ C"];
-  root [label="root = sat(K₀)"];
-  par [label="st(C ∖ {h})"];
-  scratch [label="sat(K₀ ∪ C)\nscratch"];
-  fork [label="sat(root ∪ C)\nfork: the state st(C)", penwidth=2];
-  path [label="sat(st(C ∖ {h}) ∪ {h})\na parent path"];
-  K0 -> K0C [label="add C"];
-  K0C -> scratch [label="saturate"];
-  K0 -> root [label="saturate"];
-  root -> fork [label="add C, saturate"];
-  root -> par [label="add C ∖ {h}, saturate"];
-  par -> path [label="add h, saturate"];
-}
-```
+![Three constructions of a node: from scratch, forked from root, and by a parent path](diagrams/08-constructions.svg)
 
 On a monotone program the three boxes on the right hold one set of facts. Every node is built from root with all
 of $C$ at once, so $C_1 = \emptyset$ is the only case a computation of $R$ meets, and the definition of
@@ -513,19 +426,7 @@ $$
 The program is stratified, $\sigma(z) < \sigma(q) < \sigma(p)$, and its perfect model at $\lbrace a, b \rbrace$
 is $\lbrace a, b, q \rbrace$.
 
-```dot
-digraph fifo_gap {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  e [label="∅\nstate { }"];
-  a [label="{ a }\nstate { a, q }"];
-  ab1 [label="{ a, b } built at once\nstate { a, b, p, q }\np is stale", color="#d62728", fontcolor="#d62728"];
-  ab2 [label="{ a, b } by way of { a }\nstate { a, b, q }"];
-  e -> a [label="add a:\nρ₁ admitted"];
-  e -> ab1 [label="add a, b: ρ₂ and ρ₁ wait together,\nρ₂ is admitted first"];
-  a -> ab2 [label="add b:\nρ₂'s guard fails, q is held"];
-}
-```
+![The FIFO gap: the pair built at once holds a stale fact the path by way of one candidate does not](diagrams/08-fifo-gap.svg)
 
 Built at once, $\rho_2$'s and $\rho_1$'s candidates wait at the same boundary and $\rho_2$ is admitted first, so
 $\lbrace a, b \rbrace$ gives $\lbrace a, b, p, q \rbrace$ with $p$ **stale**: $q$ falsifies the guard it was
@@ -598,20 +499,7 @@ $$
 - **On a path-dependent program** only the state is a sound identity. The graph is not a lattice, since one $C$
   reaches several states, and it can be larger than the cube.
 
-```dot
-digraph memo {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded, fontsize=10];
-  subgraph cluster_tree { label="the path tree, n = 2: 5 nodes";
-    t0 [label="( )"]; ta [label="(a)"]; tb [label="(b)"]; tab [label="(a, b)"]; tba [label="(b, a)"];
-    t0 -> ta; t0 -> tb; ta -> tab; tb -> tba;
-  }
-  subgraph cluster_cube { label="by commitment: the cube, 4 nodes";
-    c0 [label="∅"]; ca [label="{a}"]; cb [label="{b}"]; cab [label="{a, b}"];
-    c0 -> ca; c0 -> cb; ca -> cab; cb -> cab;
-  }
-}
-```
+![The path tree of two candidates, five nodes, beside the cube, four](diagrams/08-path-tree-and-cube.svg)
 
 The two paths $(a, b)$ and $(b, a)$ are one node of the cube exactly when they reach one state.
 

@@ -1,0 +1,17 @@
+digraph rule_guess_drink_lhs_rhs {
+  rankdir=TB;
+  label="guess-drink"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?g_L" [label="?g", shape=diamond];
+    "Guest_L" [label="Guest", shape=rectangle];
+    "?d_L" [label="?d", shape=diamond];
+    "Drink_L" [label="Drink", shape=rectangle];
+    "?g_L" -> "Guest_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "?d_L" -> "Drink_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?g_R" [label="?g", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "?g_R" -> "?d_R" [label="drinks", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  }
+}

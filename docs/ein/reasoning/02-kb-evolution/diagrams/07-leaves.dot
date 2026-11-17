@@ -1,0 +1,18 @@
+digraph leaves {
+  graph [rankdir=TB, nodesep=0.35, ranksep=0.55, fontname="Helvetica", fontsize=10];
+  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.6];
+  e [label="∅\nowes I_s, I_d", fillcolor="#fee391"];
+  c1 [label="{c1}\nowes I_d", fillcolor="#fee391"];
+  c2 [label="{c2}\nowes I_d", fillcolor="#fee391"];
+  c1t [label="{c1, t}\nleaf", fillcolor="#a1d99b", peripheries=2];
+  c1m [label="{c1, m}\ndead", fillcolor="#fcbba1"];
+  c2t [label="{c2, t}\nleaf", fillcolor="#a1d99b", peripheries=2];
+  c2m [label="{c2, m}\nleaf", fillcolor="#a1d99b", peripheries=2];
+  e -> c1 [label="A(I_s) ∋ c1"];
+  e -> c2 [label="A(I_s) ∋ c2"];
+  c1 -> c1t [label="A(I_d) ∋ t"];
+  c1 -> c1m [label="A(I_d) ∋ m"];
+  c2 -> c2t [label="A(I_d) ∋ t"];
+  c2 -> c2m [label="A(I_d) ∋ m"];
+}

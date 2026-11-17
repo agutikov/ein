@@ -1,0 +1,15 @@
+digraph negative_completion {
+  rankdir=LR;
+  node [fontname="Inter"];
+  subgraph cluster_before { label="one positive fact, r functional";
+    a0 [label="a", shape=oval]; b0 [label="b", shape=oval]; c0 [label="b′", shape=oval]; d0 [label="b″", shape=oval];
+    a0 -> b0 [label="r"];
+    a0 -> c0 [style=invis]; a0 -> d0 [style=invis];
+  }
+  subgraph cluster_after { label="what saturation adds";
+    a1 [label="a", shape=oval]; b1 [label="b", shape=oval]; c1 [label="b′", shape=oval]; d1 [label="b″", shape=oval];
+    a1 -> b1 [label="r"];
+    a1 -> c1 [label="¬ r", color="#d62728", fontcolor="#d62728", style=dashed];
+    a1 -> d1 [label="¬ r", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+}

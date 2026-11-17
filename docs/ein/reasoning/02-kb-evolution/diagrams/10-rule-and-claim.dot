@@ -1,0 +1,13 @@
+digraph levels {
+  rankdir=TB;
+  node [fontname="Inter", shape=box, style=rounded];
+  subgraph cluster_R { label="the set of states of R"; style=dashed;
+    S1 [label="S₁"]; S2 [label="S₂"]; S3 [label="S₃"];
+  }
+  rule [label="a rule\nreads and concludes facts of one state", shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
+  claim [label="a claim\na sentence about the whole set", shape=box, style="rounded,bold", color="#17becf", fontcolor="#17becf"];
+  rule -> S2 [color="#e377c2", label="S₂ ⊨ M"];
+  claim -> S1 [color="#17becf"];
+  claim -> S2 [color="#17becf"];
+  claim -> S3 [color="#17becf"];
+}

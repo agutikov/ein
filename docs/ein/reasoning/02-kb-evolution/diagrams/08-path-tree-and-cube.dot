@@ -1,0 +1,12 @@
+digraph memo {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded, fontsize=10];
+  subgraph cluster_tree { label="the path tree, n = 2: 5 nodes";
+    t0 [label="( )"]; ta [label="(a)"]; tb [label="(b)"]; tab [label="(a, b)"]; tba [label="(b, a)"];
+    t0 -> ta; t0 -> tb; ta -> tab; tb -> tba;
+  }
+  subgraph cluster_cube { label="by commitment: the cube, 4 nodes";
+    c0 [label="∅"]; ca [label="{a}"]; cb [label="{b}"]; cab [label="{a, b}"];
+    c0 -> ca; c0 -> cb; ca -> cab; cb -> cab;
+  }
+}

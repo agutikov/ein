@@ -23,31 +23,7 @@ are those of [Solution semantics § 1.5](06-solution-semantics.md#15-commitment-
 commitment through $\operatorname{st}$. $H$ is listed in the order of its candidates as written, so no part below
 depends on how an implementation numbers them.
 
-```dot
-digraph parts {
-  graph [rankdir=LR, nodesep=0.3, ranksep=0.5, fontname="Helvetica", fontsize=10];
-  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#f7f7f7"];
-  edge [fontname="Helvetica", fontsize=9, arrowsize=0.6];
-  h [label="H\nthe candidates"];
-  pl [label="root's pair layer\nnodes of one and two candidates"];
-  sk [label="the small KB's pair layer\nthe same nodes, the puzzle's statements taken out"];
-  th [label="the theory's share\nand the puzzle's"];
-  cov [label="the cover\ngroups: at most one"];
-  owed [label="what root owes\nand each instance's alternatives"];
-  eo [label="owed groups, grids\nexactly one"];
-  q [label="the questions"];
-  wn [label="the whole node\nevery open candidate committed"];
-  cp [label="the coupling\nedges, ties, debts"];
-  comp [label="the components\nR is a product over them"];
-  h -> pl; h -> sk;
-  pl -> th; sk -> th;
-  sk -> cov;
-  cov -> eo; owed -> eo;
-  cov -> q;
-  q -> cp; pl -> cp; wn -> cp; owed -> cp;
-  cp -> comp;
-}
-```
+![The parts of the hypothesis space and what each is defined from](diagrams/05-parts.svg)
 
 An arrow reads *is defined from*. The sections below follow the picture from left to right.
 
@@ -115,19 +91,7 @@ and its pair layer is $X = \lbrace \lbrace c_1, c_2 \rbrace, \lbrace t, m \rbrac
 with no implication, no interaction and no candidate dead alone. The engine draws $X$ as a graph, a candidate a box
 and an excluded pair a line:
 
-```dot
-graph exclusion {
-  graph [label="the exclusion graph. 2 pairs the theory excludes alone (solid; dotted where a member is dead alone at root), 1 the puzzle's (dashed)", labelloc=t, fontsize=11, overlap=scale];
-  node [shape=box, fontsize=9, margin="0.06,0.03", height=0.25];
-  n0 [label="(drinks Ann Milk)", style=filled, fillcolor="#ddf4ff"];
-  n1 [label="(drinks Ann Tea)", style=filled, fillcolor="#ddf4ff"];
-  n2 [label="(seats Ann C1)", style=filled, fillcolor="#fff8c5"];
-  n3 [label="(seats Ann C2)", style=filled, fillcolor="#fff8c5"];
-  n0 -- n1 [color="#0969da", penwidth=1.3];
-  n2 -- n3 [color="#0969da", penwidth=1.3];
-  n0 -- n2 [color="#cf222e", style=dashed, fontcolor="#cf222e", fontsize=8];
-}
-```
+![The exclusion graph of the running example: a candidate a box, an excluded pair a line](diagrams/05-exclusion-graph.svg)
 
 The two strokes are the next section's: a solid line is a pair the theory excludes alone, the dashed line the pair
 the puzzle's one statement excludes. A box's fill is its component of the solid lines.
@@ -225,32 +189,7 @@ alive at root are the measure of that premise, and there are none where the smal
 Two people and two chairs, each person owed a chair and each chair a person, the relation a bijection: the engine
 draws the cover with a group a box and a candidate an oval joined to each group it is in.
 
-```dot
-graph cover {
-  graph [label="the cover. 4 groups (4 owed, double border), 1 grids, 0 candidates in no group not drawn", labelloc=t, fontsize=11, rankdir=LR];
-  node [fontsize=9];
-  subgraph cluster_c0 {
-    label="component 0: grid 0: a bijection: every group owed";
-    fontsize=10;
-    g0 [shape=box, label="g0 (seats Ann *)\n2 open of 2\nowed by total-owed", peripheries=2];
-    g1 [shape=box, label="g1 (seats * C1)\n2 open of 2\nowed by surjective-owed", peripheries=2];
-    g2 [shape=box, label="g2 (seats * C2)\n2 open of 2\nowed by surjective-owed", peripheries=2];
-    g3 [shape=box, label="g3 (seats Bob *)\n2 open of 2\nowed by total-owed", peripheries=2];
-    n0 [label="(seats Ann C1)"];
-    g0 -- n0;
-    n0 -- g1;
-    n1 [label="(seats Ann C2)"];
-    g0 -- n1;
-    n1 -- g2;
-    n2 [label="(seats Bob C1)"];
-    n2 -- g1;
-    g3 -- n2;
-    n3 [label="(seats Bob C2)"];
-    n3 -- g2;
-    g3 -- n3;
-  }
-}
-```
+![The cover: four groups as boxes and the four candidates, each joined to its groups](diagrams/05-cover.svg)
 
 Each of the four candidates stands between its row, a person's chairs, and its column, a chair's people. A group's
 name is the pattern its members share; a double border is the next section's.
@@ -368,16 +307,7 @@ product over the first set.
 The running example with a third question, which of two hats the guest wears, owed and functional like the other
 two and named by no other statement, has three questions and one edge:
 
-```dot
-graph coupling {
-  label="the questions' hypergraph, the whole node's edges. 3 questions, 1 edges (0 a debt's alone, dashed)";
-  node [shape=box, fontsize=10];
-  q0 [label="q0 (drinks Ann *)\n2 open of 2"];
-  q1 [label="q1 (seats Ann *)\n2 open of 2"];
-  q2 [label="q2 (wears Ann *)\n2 open of 2", color=gray, fontcolor=gray];
-  q0 -- q1 [label="2", fontsize=8];
-}
-```
+![The coupling: three questions and one edge](diagrams/05-coupling.svg)
 
 A box is a question, named by the pattern of its members, and a line an edge of two questions, labelled with how
 much it covers: here one tie, $\lbrace c_1, m \rbrace$, and the one conflict of the whole node that rests on it.

@@ -1,0 +1,12 @@
+digraph resume {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  K0 [label="K₀"];
+  root [label="root = sat(K₀)\nfired F, parked Q"];
+  rc [label="root ∪ C"];
+  st [label="st(C)", penwidth=2];
+  K0 -> root [label="saturate"];
+  root -> rc [label="add C"];
+  rc -> st [label="continue from (F, Q)"];
+  rc -> st [label="saturate afresh", style=dashed];
+}

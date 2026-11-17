@@ -1,0 +1,21 @@
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  "Chair" [shape=box, label="Chair"];
+  "Food" [shape=box, label="Food"];
+  "Guest" [shape=box, label="Guest"];
+  "Ann" [shape=oval, label="Ann"];
+  "Bob" [shape=oval, label="Bob"];
+  "C1" [shape=oval, label="C1"];
+  "C2" [shape=oval, label="C2"];
+  "Soup" [shape=oval, label="Soup"];
+  "Ann" -> "Guest" [style=dashed, arrowhead=empty, label="is-a"];
+  "Bob" -> "Guest" [style=dashed, arrowhead=empty, label="is-a"];
+  "C1" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
+  "C2" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
+  "Soup" -> "Food" [style=dashed, arrowhead=empty, label="is-a"];
+  "Ann" -> "C1" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "Bob" -> "C2" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "Bob" -> "Bob" [label="allergic", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  "Ann" -> "Soup" [label="meal by soup-unless-allergic", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+}

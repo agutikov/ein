@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: key Pages: 1 -->
+<svg width="626pt" height="98pt"
+ viewBox="0.00 0.00 626.00 98.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 94)">
+<title>key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-94 622,-94 622,4 -4,4"/>
+<!-- S1 -->
+<g id="node1" class="node">
+<title>S1</title>
+<path fill="none" stroke="black" d="M112.75,-47C112.75,-47 12,-47 12,-47 6,-47 0,-41 0,-35 0,-35 0,-12 0,-12 0,-6 6,0 12,0 12,0 112.75,0 112.75,0 118.75,0 124.75,-6 124.75,-12 124.75,-12 124.75,-35 124.75,-35 124.75,-41 118.75,-47 112.75,-47"/>
+<text xml:space="preserve" text-anchor="middle" x="62.38" y="-29.7" font-family="Inter" font-size="14.00">S₁</text>
+<text xml:space="preserve" text-anchor="middle" x="62.38" y="-10.2" font-family="Inter" font-size="14.00">x = 1, y = 1, z = 1</text>
+</g>
+<!-- S2 -->
+<g id="node2" class="node">
+<title>S2</title>
+<path fill="none" stroke="black" d="M359,-90C359,-90 258.25,-90 258.25,-90 252.25,-90 246.25,-84 246.25,-78 246.25,-78 246.25,-55 246.25,-55 246.25,-49 252.25,-43 258.25,-43 258.25,-43 359,-43 359,-43 365,-43 371,-49 371,-55 371,-55 371,-78 371,-78 371,-84 365,-90 359,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="308.62" y="-72.7" font-family="Inter" font-size="14.00">S₂</text>
+<text xml:space="preserve" text-anchor="middle" x="308.62" y="-53.2" font-family="Inter" font-size="14.00">x = 2, y = 1, z = 2</text>
+</g>
+<!-- S1&#45;&gt;S2 -->
+<g id="edge1" class="edge">
+<title>S1&#45;&gt;S2</title>
+<path fill="none" stroke="black" d="M125.01,-34.35C162.04,-40.87 208.99,-49.13 246.01,-55.65"/>
+<text xml:space="preserve" text-anchor="middle" x="185.5" y="-55.31" font-family="Times,serif" font-size="14.00">differ in x, z</text>
+</g>
+<!-- S3 -->
+<g id="node3" class="node">
+<title>S3</title>
+<path fill="none" stroke="black" d="M606,-47C606,-47 505.25,-47 505.25,-47 499.25,-47 493.25,-41 493.25,-35 493.25,-35 493.25,-12 493.25,-12 493.25,-6 499.25,0 505.25,0 505.25,0 606,0 606,0 612,0 618,-6 618,-12 618,-12 618,-35 618,-35 618,-41 612,-47 606,-47"/>
+<text xml:space="preserve" text-anchor="middle" x="555.62" y="-29.7" font-family="Inter" font-size="14.00">S₃</text>
+<text xml:space="preserve" text-anchor="middle" x="555.62" y="-10.2" font-family="Inter" font-size="14.00">x = 3, y = 2, z = 2</text>
+</g>
+<!-- S1&#45;&gt;S3 -->
+<g id="edge3" class="edge">
+<title>S1&#45;&gt;S3</title>
+<path fill="none" stroke="black" d="M125.16,-20.86C160.59,-19.48 205.91,-17.94 246.25,-17.25 301.69,-16.3 315.56,-16.31 371,-17.25 411.66,-17.94 457.37,-19.49 493.01,-20.88"/>
+<text xml:space="preserve" text-anchor="middle" x="308.62" y="-21.2" font-family="Times,serif" font-size="14.00">differ in x, y, z</text>
+</g>
+<!-- S2&#45;&gt;S3 -->
+<g id="edge2" class="edge">
+<title>S2&#45;&gt;S3</title>
+<path fill="none" stroke="black" d="M371.45,-55.65C408.59,-49.13 455.68,-40.87 492.82,-34.35"/>
+<text xml:space="preserve" text-anchor="middle" x="432.12" y="-55.31" font-family="Times,serif" font-size="14.00">differ in x, y</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: b9931ce2af80d53341141ccd0b088b621c6aca247948b6ce7cb64a726d348256 -->

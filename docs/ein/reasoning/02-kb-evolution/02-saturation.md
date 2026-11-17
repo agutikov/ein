@@ -65,25 +65,7 @@ is a node, a firing is a node, an arrow leads from each premise into the firing 
 adds. Two firings below take three stated facts to a contradiction; the first adds
 $\operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2})$ and the second reads it.
 
-```dot
-digraph derivation {
-  rankdir=LR;
-  node [fontname="Inter"];
-  "f_ba78d8e6bc" [label="lives-in(Norwegian, House-1)", shape=box, style=rounded];
-  "f_203bb25e0e" [label="next-to(House-1, House-2)", shape=box, style=rounded];
-  "f_e42df9f04f" [label="owns(Norwegian, Fox)", shape=box, style=rounded];
-  "f_cb1915def2" [label="near(Norwegian, House-2)", shape=box, style=rounded, penwidth=2];
-  "f_a1f94f5b63" [label="false", shape=box, style=rounded, penwidth=2];
-  "fire0_neighbour" [shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2", label="neighbour"];
-  "fire0_fox-keeps-away" [shape=box, style="rounded,bold", color="#17becf", fontcolor="#17becf", label="fox-keeps-away"];
-  "f_ba78d8e6bc" -> "fire0_neighbour" [color="#e377c2"];
-  "f_203bb25e0e" -> "fire0_neighbour" [color="#e377c2"];
-  "fire0_neighbour" -> "f_cb1915def2" [color="#e377c2", style=bold];
-  "f_e42df9f04f" -> "fire0_fox-keeps-away" [color="#17becf"];
-  "f_cb1915def2" -> "fire0_fox-keeps-away" [color="#17becf"];
-  "fire0_fox-keeps-away" -> "f_a1f94f5b63" [color="#17becf", style=bold];
-}
-```
+![A derivation as a graph: two firings take three stated facts to a contradiction](diagrams/02-derivation.svg)
 
 A thin box is a fact, a heavy box a fact a firing added, a coloured box a firing. The facts with no arrow in are
 $K$; each column further right is one more application of $T_P$:
@@ -137,19 +119,7 @@ $$
 \operatorname{sat}(K) = K_m', \qquad m = \min \lbrace\, i : \text{no parked } \kappa \notin \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace \text{ passes in } K_i' \,\rbrace
 $$
 
-```dot
-digraph two_phases {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  K [label="K"];
-  q0 [label="K′₀ = pos(K)\nquiescent"];
-  q1 [label="K′₁ = pos(K′₀ ∪ Aκ₀)\nquiescent"];
-  qm [label="K′ₘ = sat(K)\nquiescent, nothing passes", penwidth=2];
-  K -> q0 [label="closure:\nevery positive candidate"];
-  q0 -> q1 [label="boundary admits κ₀,\nthen closure", style=dashed];
-  q1 -> qm [label="… one admission a round …", style=dashed];
-}
-```
+![Two phases: closures, and the rounds of the boundary between them](diagrams/02-two-phases.svg)
 
 A solid arrow is the closure, a least fixpoint in which no absence is read. A dashed arrow is one round of the
 boundary: one candidate admitted, against exactly the knowledge base its guards were judged in, and the closure
@@ -223,25 +193,7 @@ $$
 r(a, b) \;\land\; \operatorname{holds}(f) \;\implies\; \operatorname{noted}(a, f)
 $$
 
-```dot
-digraph rule_note_lhs_rhs {
-  rankdir=TB;
-  label="note"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?a_L" [label="?a", shape=diamond];
-    "?b_L" [label="?b", shape=diamond];
-    "?f_L" [label="?f", shape=diamond];
-    "?a_L" -> "?b_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_holds_L" [shape=octagon, label="holds", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_holds_L" -> "?f_L" [label="1", color="#bcbd22"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?a_R" [label="?a", shape=diamond];
-    "?f_R" [label="?f", shape=diamond];
-    "?a_R" -> "?f_R" [label="noted", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  }
-}
-```
+![The rule note: its match above its conclusion](diagrams/02-rule-note.svg)
 
 The upper panel is the match and the lower the conclusion; a diamond is a variable, and the arrow labelled by
 the variable in a relation's place stands for a fact of whichever relation the activator names. The program
@@ -264,19 +216,7 @@ edge. The second binds $f$ to the fact $\operatorname{src}(\mathsf{Y})$, of whic
 it derives nothing, and it removes nothing the first derives. In either order of the two activators the fixpoint
 is the same:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "1" -> "2" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
-  "2" -> "3" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
-  "1" -> "1" [label="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "3" -> "3" [label="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_45dd2ba665 [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_45dd2ba665 -> "(src Y)" [label="#1", color="#d62728", style=dashed];
-  "1" -> "1" [label="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  "2" -> "1" [label="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
-}
-```
+![The fixpoint of the rule note, the same in either order of its two activators](diagrams/02-note-fixpoint.svg)
 
 The two dashed arrows labelled with the rule are the two conclusions. The octagon is the fact that reading the
 program states of the nested fact the second activator writes
@@ -314,20 +254,7 @@ whose match lies in $\mathrm{root}$ and is parked is in $Q$, and the continued s
 the node's own world. One whose match reads a fact of $C$ or a fact derived from one is new to both, and both
 find it, since the continued saturation starts from the facts the node has and root lacked. $\square$
 
-```dot
-digraph resume {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  K0 [label="K₀"];
-  root [label="root = sat(K₀)\nfired F, parked Q"];
-  rc [label="root ∪ C"];
-  st [label="st(C)", penwidth=2];
-  K0 -> root [label="saturate"];
-  root -> rc [label="add C"];
-  rc -> st [label="continue from (F, Q)"];
-  rc -> st [label="saturate afresh", style=dashed];
-}
-```
+![A node resumes root's saturation: two ways to one state](diagrams/02-resume.svg)
 
 The two arrows into $\operatorname{st}(C)$ end on one set of facts, so every answer and every count is the same
 by either. What may differ is how many firings are counted, and which derivation of a fact derived several ways
@@ -374,23 +301,7 @@ The standard library states these as rules over a relation's declared properties
 ([properties and operators](../../user/03-syntax-and-semantics/07-properties-and-operators.md)), so a puzzle
 writes one property per constraint and saturation fans it out.
 
-```dot
-digraph negative_completion {
-  rankdir=LR;
-  node [fontname="Inter"];
-  subgraph cluster_before { label="one positive fact, r functional";
-    a0 [label="a", shape=oval]; b0 [label="b", shape=oval]; c0 [label="b′", shape=oval]; d0 [label="b″", shape=oval];
-    a0 -> b0 [label="r"];
-    a0 -> c0 [style=invis]; a0 -> d0 [style=invis];
-  }
-  subgraph cluster_after { label="what saturation adds";
-    a1 [label="a", shape=oval]; b1 [label="b", shape=oval]; c1 [label="b′", shape=oval]; d1 [label="b″", shape=oval];
-    a1 -> b1 [label="r"];
-    a1 -> c1 [label="¬ r", color="#d62728", fontcolor="#d62728", style=dashed];
-    a1 -> d1 [label="¬ r", color="#d62728", fontcolor="#d62728", style=dashed];
-  }
-}
-```
+![Negative completion: the stored negations saturation derives from one fact](diagrams/02-negative-completion.svg)
 
 A solid arrow is a fact, a red dashed arrow a stored negation saturation derived. Elimination is the same
 picture read backwards: when every arrow out of $a$ but one is red, the last one is drawn solid. On the Zebra

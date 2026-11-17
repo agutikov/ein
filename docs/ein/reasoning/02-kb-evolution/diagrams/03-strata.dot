@@ -1,0 +1,21 @@
+digraph strata {
+  rankdir=LR;
+  node [fontname="Inter", shape=ellipse];
+  subgraph cluster_strat { label="stratified: σ(z) < σ(q) < σ(p)";
+    z1 [label="z"]; q1 [label="q"]; p1 [label="p"]; a1 [label="a"];
+    z1 -> q1 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    a1 -> q1;
+    q1 -> p1 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    a1 -> p1;
+  }
+  subgraph cluster_even { label="an even cycle: two supported fixpoints";
+    p2 [label="p"]; q2 [label="q"];
+    p2 -> q2 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    q2 -> p2 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+  }
+  subgraph cluster_odd { label="an odd cycle: may have no stable fixpoint";
+    p3 [label="p"]; q3 [label="q"];
+    q3 -> p3 [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+    p3 -> q3;
+  }
+}

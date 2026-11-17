@@ -176,45 +176,13 @@ $$
 \operatorname{lives-in}(p, h) \;\land\; \operatorname{next-to}(h, g) \;\implies\; \operatorname{near}(p, g)
 $$
 
-```dot
-digraph rule_neighbour_lhs_rhs {
-  rankdir=TB;
-  label="neighbour"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?p_L" [label="?p", shape=diamond];
-    "?h_L" [label="?h", shape=diamond];
-    "?g_L" [label="?g", shape=diamond];
-    "?p_L" -> "?h_L" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
-    "?h_L" -> "?g_L" [label="next-to", color="#d62728", fontcolor="#d62728"];
-  }
-  subgraph cluster_rhs { label="assert";
-    "?p_R" [label="?p", shape=diamond];
-    "?g_R" [label="?g", shape=diamond];
-    "?p_R" -> "?g_R" [label="near", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  }
-}
-```
+![The rule neighbour: its match above its conclusion](diagrams/01-rule-neighbour.svg)
 
 A match $\theta$ is a map from the diamonds of the match to nodes of the knowledge base that carries each
 pattern arrow onto an arrow of the same label. Here is a knowledge base before the firing, $K$: boxes are labels,
 ovals the names under them, a dashed arrow with an empty head is membership.
 
-```dot
-digraph kb {
-  rankdir=BT;
-  node [fontname="Inter"];
-  "House" [shape=box, label="House"];
-  "Person" [shape=box, label="Person"];
-  "House-1" [shape=oval, label="House-1"];
-  "House-2" [shape=oval, label="House-2"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-  "Norwegian" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "House-1" [label="lives-in", color="#9467bd", fontcolor="#9467bd", style=solid];
-  "House-1" -> "House-2" [label="next-to", color="#d62728", fontcolor="#d62728", style=solid];
-}
-```
+![A knowledge base before the firing](diagrams/01-before-firing.svg)
 
 The match holds under exactly one substitution,
 
@@ -225,23 +193,7 @@ $$
 and the firing glues the conclusion onto the nodes $\theta$ found. After it, $\operatorname{fire}(K, \xi)$ holds
 one arrow more, dashed because it is derived, and every arrow it held before:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  node [fontname="Inter"];
-  "House" [shape=box, label="House"];
-  "Person" [shape=box, label="Person"];
-  "House-1" [shape=oval, label="House-1"];
-  "House-2" [shape=oval, label="House-2"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-  "Norwegian" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "House-1" [label="lives-in", color="#9467bd", fontcolor="#9467bd", style=solid];
-  "House-1" -> "House-2" [label="next-to", color="#d62728", fontcolor="#d62728", style=solid];
-  "Norwegian" -> "House-2" [label="near by neighbour", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-}
-```
+![The knowledge base after the firing: one arrow more, dashed](diagrams/01-after-firing.svg)
 
 $$
 \operatorname{fire}(K, \xi) = K \cup \lbrace\, \operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2}) \,\rbrace
@@ -291,46 +243,14 @@ every node is read independently of every other
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). The records of how
 a fork's facts came to be held are the fork's too ([cores](09-cores.md#a-derivation-record)).
 
-```dot
-digraph two_layers {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  K0 [label="K₀\nthe program's facts"];
-  root [label="root = sat(K₀)"];
-  C1 [label="st(C₁) = sat(root ∪ C₁)"];
-  C2 [label="st(C₂) = sat(root ∪ C₂)"];
-  C3 [label="st(C₃) = sat(root ∪ C₃)"];
-  K0 -> root [label="saturate"];
-  root -> C1 [label="add C₁, saturate", style=dashed];
-  root -> C2 [label="add C₂, saturate", style=dashed];
-  root -> C3 [label="add C₃, saturate", style=dashed];
-}
-```
+![Two layers: one saturation to root, and commitments forked from root and saturated on their own](diagrams/01-two-layers.svg)
 
 A solid arrow is the deductive layer, one saturation. A dashed arrow is a commitment: a copy of root with a set
 of candidates added, saturated on its own. No arrow leads back, and none joins two nodes.
 
 ## The main steps
 
-```dot
-digraph main_steps {
-  rankdir=TB;
-  node [fontname="Inter", shape=box, style=rounded];
-  program [label="a program"];
-  K0 [label="K₀\nrelations, rules, hypothesis rules, facts,\neach fact with its derivation record"];
-  root [label="root = sat(K₀)\nclosure to quiescence, then the boundary, repeated"];
-  dead0 [label="root is dead:\nR = ∅, root's core explains it", shape=box, style="rounded,dashed"];
-  H [label="H, the candidate set\nread off root's fixpoint"];
-  st [label="for a commitment C ⊆ H:\nst(C) = sat(root ∪ C)\ndead(C), owes(C)"];
-  R [label="R = { C ⊆ H : st(C) alive and owing nothing }\nevery question is read off R", penwidth=2];
-  program -> K0 [label="read: macros expanded,\nimports resolved"];
-  K0 -> root [label="each rule applied once per activator"];
-  root -> dead0 [label="⊥ ∈ root", style=dashed];
-  root -> H [label="alive"];
-  H -> st;
-  st -> R;
-}
-```
+![The main steps from a program to its answer](diagrams/01-main-steps.svg)
 
 Every step but the last is a function of the program alone:
 

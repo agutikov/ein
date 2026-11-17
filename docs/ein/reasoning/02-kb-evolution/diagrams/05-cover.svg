@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: cover Pages: 1 -->
+<svg width="524pt" height="281pt"
+ viewBox="0.00 0.00 524.00 281.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 276.5)">
+<title>cover</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-276.5 520.25,-276.5 520.25,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="258.12" y="-258.05" font-family="Times,serif" font-size="11.00">the cover. 4 groups (4 owed, double border), 1 grids, 0 candidates in no group not drawn</text>
+<g id="clust1" class="cluster">
+<title>cluster_c0</title>
+<polygon fill="none" stroke="black" points="38.65,-8 38.65,-243 477.6,-243 477.6,-8 38.65,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="258.12" y="-229.5" font-family="Times,serif" font-size="10.00">component 0: grid 0: a bijection: every group owed</text>
+</g>
+<!-- g0 -->
+<g id="node1" class="node">
+<title>g0</title>
+<polygon fill="none" stroke="black" points="155.9,-93.88 50.65,-93.88 50.65,-52.12 155.9,-52.12 155.9,-93.88"/>
+<polygon fill="none" stroke="black" points="159.9,-97.88 46.65,-97.88 46.65,-48.12 159.9,-48.12 159.9,-97.88"/>
+<text xml:space="preserve" text-anchor="middle" x="103.27" y="-81.33" font-family="Times,serif" font-size="9.00">g0 (seats Ann *)</text>
+<text xml:space="preserve" text-anchor="middle" x="103.27" y="-70.08" font-family="Times,serif" font-size="9.00">2 open of 2</text>
+<text xml:space="preserve" text-anchor="middle" x="103.27" y="-58.83" font-family="Times,serif" font-size="9.00">owed by total&#45;owed</text>
+</g>
+<!-- n0 -->
+<g id="node5" class="node">
+<title>n0</title>
+<ellipse fill="none" stroke="black" cx="245.75" cy="-34" rx="49.85" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="245.75" y="-31.07" font-family="Times,serif" font-size="9.00">(seats Ann C1)</text>
+</g>
+<!-- g0&#45;&#45;n0 -->
+<g id="edge1" class="edge">
+<title>g0&#45;&#45;n0</title>
+<path fill="none" stroke="black" d="M160.2,-57.47C175.35,-53.27 191.42,-48.8 205.45,-44.91"/>
+</g>
+<!-- n1 -->
+<g id="node6" class="node">
+<title>n1</title>
+<ellipse fill="none" stroke="black" cx="245.75" cy="-88" rx="49.85" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="245.75" y="-85.08" font-family="Times,serif" font-size="9.00">(seats Ann C2)</text>
+</g>
+<!-- g0&#45;&#45;n1 -->
+<g id="edge3" class="edge">
+<title>g0&#45;&#45;n1</title>
+<path fill="none" stroke="black" d="M160.2,-78.97C172.59,-80.3 185.61,-81.68 197.61,-82.97"/>
+</g>
+<!-- g1 -->
+<g id="node2" class="node">
+<title>g1</title>
+<polygon fill="none" stroke="black" points="465.6,-101.88 335.6,-101.88 335.6,-60.12 465.6,-60.12 465.6,-101.88"/>
+<polygon fill="none" stroke="black" points="469.6,-105.88 331.6,-105.88 331.6,-56.12 469.6,-56.12 469.6,-105.88"/>
+<text xml:space="preserve" text-anchor="middle" x="400.6" y="-89.33" font-family="Times,serif" font-size="9.00">g1 (seats * C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="400.6" y="-78.08" font-family="Times,serif" font-size="9.00">2 open of 2</text>
+<text xml:space="preserve" text-anchor="middle" x="400.6" y="-66.83" font-family="Times,serif" font-size="9.00">owed by surjective&#45;owed</text>
+</g>
+<!-- g2 -->
+<g id="node3" class="node">
+<title>g2</title>
+<polygon fill="none" stroke="black" points="465.6,-189.88 335.6,-189.88 335.6,-148.12 465.6,-148.12 465.6,-189.88"/>
+<polygon fill="none" stroke="black" points="469.6,-193.88 331.6,-193.88 331.6,-144.12 469.6,-144.12 469.6,-193.88"/>
+<text xml:space="preserve" text-anchor="middle" x="400.6" y="-177.32" font-family="Times,serif" font-size="9.00">g2 (seats * C2)</text>
+<text xml:space="preserve" text-anchor="middle" x="400.6" y="-166.07" font-family="Times,serif" font-size="9.00">2 open of 2</text>
+<text xml:space="preserve" text-anchor="middle" x="400.6" y="-154.82" font-family="Times,serif" font-size="9.00">owed by surjective&#45;owed</text>
+</g>
+<!-- g3 -->
+<g id="node4" class="node">
+<title>g3</title>
+<polygon fill="none" stroke="black" points="155.9,-177.88 50.65,-177.88 50.65,-136.12 155.9,-136.12 155.9,-177.88"/>
+<polygon fill="none" stroke="black" points="159.9,-181.88 46.65,-181.88 46.65,-132.12 159.9,-132.12 159.9,-181.88"/>
+<text xml:space="preserve" text-anchor="middle" x="103.27" y="-165.32" font-family="Times,serif" font-size="9.00">g3 (seats Bob *)</text>
+<text xml:space="preserve" text-anchor="middle" x="103.27" y="-154.07" font-family="Times,serif" font-size="9.00">2 open of 2</text>
+<text xml:space="preserve" text-anchor="middle" x="103.27" y="-142.82" font-family="Times,serif" font-size="9.00">owed by total&#45;owed</text>
+</g>
+<!-- n2 -->
+<g id="node7" class="node">
+<title>n2</title>
+<ellipse fill="none" stroke="black" cx="245.75" cy="-142" rx="49.41" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="245.75" y="-139.07" font-family="Times,serif" font-size="9.00">(seats Bob C1)</text>
+</g>
+<!-- g3&#45;&#45;n2 -->
+<g id="edge6" class="edge">
+<title>g3&#45;&#45;n2</title>
+<path fill="none" stroke="black" d="M160.2,-151.03C172.75,-149.69 185.93,-148.28 198.06,-146.99"/>
+</g>
+<!-- n3 -->
+<g id="node8" class="node">
+<title>n3</title>
+<ellipse fill="none" stroke="black" cx="245.75" cy="-196" rx="49.41" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="245.75" y="-193.07" font-family="Times,serif" font-size="9.00">(seats Bob C2)</text>
+</g>
+<!-- g3&#45;&#45;n3 -->
+<g id="edge8" class="edge">
+<title>g3&#45;&#45;n3</title>
+<path fill="none" stroke="black" d="M160.2,-172.53C175.5,-176.77 191.75,-181.29 205.87,-185.21"/>
+</g>
+<!-- n0&#45;&#45;g1 -->
+<g id="edge2" class="edge">
+<title>n0&#45;&#45;g1</title>
+<path fill="none" stroke="black" d="M284.53,-45.62C298.68,-49.97 315.22,-55.05 331.28,-59.99"/>
+</g>
+<!-- n1&#45;&#45;g2 -->
+<g id="edge4" class="edge">
+<title>n1&#45;&#45;g2</title>
+<path fill="none" stroke="black" d="M274.79,-102.86C296.33,-114.27 326.59,-130.31 351.93,-143.74"/>
+</g>
+<!-- n2&#45;&#45;g1 -->
+<g id="edge5" class="edge">
+<title>n2&#45;&#45;g1</title>
+<path fill="none" stroke="black" d="M279.92,-128.76C296.42,-122.18 316.94,-113.99 336.31,-106.26"/>
+</g>
+<!-- n3&#45;&#45;g2 -->
+<g id="edge7" class="edge">
+<title>n3&#45;&#45;g2</title>
+<path fill="none" stroke="black" d="M290.96,-188.19C303.57,-185.96 317.61,-183.48 331.3,-181.07"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 30bfc56419c0015607c82f7d5d62fbf4cea18bd8d2bb1b1cb8a18f5063bc6a76 -->

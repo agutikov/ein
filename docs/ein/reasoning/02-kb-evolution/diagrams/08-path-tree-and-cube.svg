@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: memo Pages: 1 -->
+<svg width="274pt" height="294pt"
+ viewBox="0.00 0.00 274.00 294.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 290)">
+<title>memo</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-290 270,-290 270,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_tree</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-139 258,-139 258,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="133" y="-121.7" font-family="Times,serif" font-size="14.00">the path tree, n = 2: 5 nodes</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_cube</title>
+<polygon fill="none" stroke="black" points="2.12,-147 2.12,-278 264.88,-278 264.88,-147 2.12,-147"/>
+<text xml:space="preserve" text-anchor="middle" x="133.5" y="-260.7" font-family="Times,serif" font-size="14.00">by commitment: the cube, 4 nodes</text>
+</g>
+<!-- t0 -->
+<g id="node1" class="node">
+<title>t0</title>
+<path fill="none" stroke="black" d="M58,-79C58,-79 28,-79 28,-79 22,-79 16,-73 16,-67 16,-67 16,-55 16,-55 16,-49 22,-43 28,-43 28,-43 58,-43 58,-43 64,-43 70,-49 70,-55 70,-55 70,-67 70,-67 70,-73 64,-79 58,-79"/>
+<text xml:space="preserve" text-anchor="middle" x="43" y="-58.62" font-family="Inter" font-size="10.00">( )</text>
+</g>
+<!-- ta -->
+<g id="node2" class="node">
+<title>ta</title>
+<path fill="none" stroke="black" d="M148,-52C148,-52 118,-52 118,-52 112,-52 106,-46 106,-40 106,-40 106,-28 106,-28 106,-22 112,-16 118,-16 118,-16 148,-16 148,-16 154,-16 160,-22 160,-28 160,-28 160,-40 160,-40 160,-46 154,-52 148,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="133" y="-31.62" font-family="Inter" font-size="10.00">(a)</text>
+</g>
+<!-- t0&#45;&gt;ta -->
+<g id="edge1" class="edge">
+<title>t0&#45;&gt;ta</title>
+<path fill="none" stroke="black" d="M70.4,-52.9C78.06,-50.55 86.57,-47.94 94.76,-45.43"/>
+<polygon fill="black" stroke="black" points="95.64,-48.82 104.17,-42.54 93.58,-42.13 95.64,-48.82"/>
+</g>
+<!-- tb -->
+<g id="node3" class="node">
+<title>tb</title>
+<path fill="none" stroke="black" d="M148,-106C148,-106 118,-106 118,-106 112,-106 106,-100 106,-94 106,-94 106,-82 106,-82 106,-76 112,-70 118,-70 118,-70 148,-70 148,-70 154,-70 160,-76 160,-82 160,-82 160,-94 160,-94 160,-100 154,-106 148,-106"/>
+<text xml:space="preserve" text-anchor="middle" x="133" y="-85.62" font-family="Inter" font-size="10.00">(b)</text>
+</g>
+<!-- t0&#45;&gt;tb -->
+<g id="edge2" class="edge">
+<title>t0&#45;&gt;tb</title>
+<path fill="none" stroke="black" d="M70.4,-69.1C78.06,-71.45 86.57,-74.06 94.76,-76.57"/>
+<polygon fill="black" stroke="black" points="93.58,-79.87 104.17,-79.46 95.64,-73.18 93.58,-79.87"/>
+</g>
+<!-- tab -->
+<g id="node4" class="node">
+<title>tab</title>
+<path fill="none" stroke="black" d="M238,-52C238,-52 208,-52 208,-52 202,-52 196,-46 196,-40 196,-40 196,-28 196,-28 196,-22 202,-16 208,-16 208,-16 238,-16 238,-16 244,-16 250,-22 250,-28 250,-28 250,-40 250,-40 250,-46 244,-52 238,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="223" y="-31.62" font-family="Inter" font-size="10.00">(a, b)</text>
+</g>
+<!-- ta&#45;&gt;tab -->
+<g id="edge3" class="edge">
+<title>ta&#45;&gt;tab</title>
+<path fill="none" stroke="black" d="M160.4,-34C167.89,-34 176.18,-34 184.2,-34"/>
+<polygon fill="black" stroke="black" points="184.1,-37.5 194.1,-34 184.1,-30.5 184.1,-37.5"/>
+</g>
+<!-- tba -->
+<g id="node5" class="node">
+<title>tba</title>
+<path fill="none" stroke="black" d="M238,-106C238,-106 208,-106 208,-106 202,-106 196,-100 196,-94 196,-94 196,-82 196,-82 196,-76 202,-70 208,-70 208,-70 238,-70 238,-70 244,-70 250,-76 250,-82 250,-82 250,-94 250,-94 250,-100 244,-106 238,-106"/>
+<text xml:space="preserve" text-anchor="middle" x="223" y="-85.62" font-family="Inter" font-size="10.00">(b, a)</text>
+</g>
+<!-- tb&#45;&gt;tba -->
+<g id="edge4" class="edge">
+<title>tb&#45;&gt;tba</title>
+<path fill="none" stroke="black" d="M160.4,-88C167.89,-88 176.18,-88 184.2,-88"/>
+<polygon fill="black" stroke="black" points="184.1,-91.5 194.1,-88 184.1,-84.5 184.1,-91.5"/>
+</g>
+<!-- c0 -->
+<g id="node6" class="node">
+<title>c0</title>
+<path fill="none" stroke="black" d="M58,-218C58,-218 28,-218 28,-218 22,-218 16,-212 16,-206 16,-206 16,-194 16,-194 16,-188 22,-182 28,-182 28,-182 58,-182 58,-182 64,-182 70,-188 70,-194 70,-194 70,-206 70,-206 70,-212 64,-218 58,-218"/>
+<text xml:space="preserve" text-anchor="middle" x="43" y="-196.88" font-family="Inter" font-size="10.00">∅</text>
+</g>
+<!-- ca -->
+<g id="node7" class="node">
+<title>ca</title>
+<path fill="none" stroke="black" d="M148,-191C148,-191 118,-191 118,-191 112,-191 106,-185 106,-179 106,-179 106,-167 106,-167 106,-161 112,-155 118,-155 118,-155 148,-155 148,-155 154,-155 160,-161 160,-167 160,-167 160,-179 160,-179 160,-185 154,-191 148,-191"/>
+<text xml:space="preserve" text-anchor="middle" x="133" y="-170.62" font-family="Inter" font-size="10.00">{a}</text>
+</g>
+<!-- c0&#45;&gt;ca -->
+<g id="edge5" class="edge">
+<title>c0&#45;&gt;ca</title>
+<path fill="none" stroke="black" d="M70.4,-191.9C78.06,-189.55 86.57,-186.94 94.76,-184.43"/>
+<polygon fill="black" stroke="black" points="95.64,-187.82 104.17,-181.54 93.58,-181.13 95.64,-187.82"/>
+</g>
+<!-- cb -->
+<g id="node8" class="node">
+<title>cb</title>
+<path fill="none" stroke="black" d="M148,-245C148,-245 118,-245 118,-245 112,-245 106,-239 106,-233 106,-233 106,-221 106,-221 106,-215 112,-209 118,-209 118,-209 148,-209 148,-209 154,-209 160,-215 160,-221 160,-221 160,-233 160,-233 160,-239 154,-245 148,-245"/>
+<text xml:space="preserve" text-anchor="middle" x="133" y="-224.62" font-family="Inter" font-size="10.00">{b}</text>
+</g>
+<!-- c0&#45;&gt;cb -->
+<g id="edge6" class="edge">
+<title>c0&#45;&gt;cb</title>
+<path fill="none" stroke="black" d="M70.4,-208.1C78.06,-210.45 86.57,-213.06 94.76,-215.57"/>
+<polygon fill="black" stroke="black" points="93.58,-218.87 104.17,-218.46 95.64,-212.18 93.58,-218.87"/>
+</g>
+<!-- cab -->
+<g id="node9" class="node">
+<title>cab</title>
+<path fill="none" stroke="black" d="M238,-218C238,-218 208,-218 208,-218 202,-218 196,-212 196,-206 196,-206 196,-194 196,-194 196,-188 202,-182 208,-182 208,-182 238,-182 238,-182 244,-182 250,-188 250,-194 250,-194 250,-206 250,-206 250,-212 244,-218 238,-218"/>
+<text xml:space="preserve" text-anchor="middle" x="223" y="-197.62" font-family="Inter" font-size="10.00">{a, b}</text>
+</g>
+<!-- ca&#45;&gt;cab -->
+<g id="edge7" class="edge">
+<title>ca&#45;&gt;cab</title>
+<path fill="none" stroke="black" d="M160.4,-181.1C168.06,-183.45 176.57,-186.06 184.76,-188.57"/>
+<polygon fill="black" stroke="black" points="183.58,-191.87 194.17,-191.46 185.64,-185.18 183.58,-191.87"/>
+</g>
+<!-- cb&#45;&gt;cab -->
+<g id="edge8" class="edge">
+<title>cb&#45;&gt;cab</title>
+<path fill="none" stroke="black" d="M160.4,-218.9C168.06,-216.55 176.57,-213.94 184.76,-211.43"/>
+<polygon fill="black" stroke="black" points="185.64,-214.82 194.17,-208.54 183.58,-208.13 185.64,-214.82"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: e76ebc4c8140466c071cb889d1dd89a0bfbef0ceb75fcc97789af1ebf6d9a6d0 -->

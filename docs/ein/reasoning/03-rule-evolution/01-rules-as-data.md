@@ -70,42 +70,7 @@ That is the fixed point of Ein's model, *an instance is an instance of instance*
 facts, two property facts and two rules, and it is inference about Ein performed by Ein. The saturated state, with the two
 declarations' facts kept:
 
-```dot
-digraph kb {
-  rankdir=BT;
-  "Object" [shape=box, label="Object"];
-  "Relation" [shape=box, label="Relation"];
-  "T" [shape=box, label="T"];
-  "Fact" [shape=oval, label="Fact"];
-  "Rule" [shape=oval, label="Rule"];
-  "is-a" [shape=oval, label="is-a"];
-  f_1f1a2cc2f3 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "is-a" [label="#1", color="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "T" [label="#2", color="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "T" [label="#3", color="#bcbd22", style=solid];
-  "is-a" -> "is-a" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_f0640dee2c [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_f0640dee2c -> "is-a*" [label="#1", color="#bcbd22", style=solid];
-  f_f0640dee2c -> "T" [label="#2", color="#bcbd22", style=solid];
-  f_f0640dee2c -> "T" [label="#3", color="#bcbd22", style=solid];
-  "is-a*" -> "is-a*" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Object" -> "T" [style=dashed, arrowhead=empty, label="is-a"];
-  "Relation" -> "Object" [style=dashed, arrowhead=empty, label="is-a"];
-  "Fact" -> "Object" [style=dashed, arrowhead=empty, label="is-a"];
-  "Rule" -> "Object" [style=dashed, arrowhead=empty, label="is-a"];
-  "is-a" -> "Relation" [style=dashed, arrowhead=empty, label="is-a"];
-  "Object" -> "T" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "Relation" -> "Object" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "Fact" -> "Object" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "Rule" -> "Object" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "is-a" -> "Relation" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "Relation" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "Fact" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "Rule" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "is-a" -> "Object" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
-  "is-a" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
-}
-```
+![The saturated state in which instance is an instance of instance](diagrams/01-instance-of-instance.svg)
 
 The node of the membership relation appears three ways in one drawing: as the first argument of the fact its
 declaration is held as (the octagon's arrow numbered 1), as the label of the dashed arrows with an empty head,
@@ -171,7 +136,7 @@ type system is this: membership is a relation, and what a type check concludes, 
 a declaration, and its meaning is an ordinary rule the fact applies
 ([Q27](../../../decisions/language/Q27-a-relations-properties-are-facts-beside.md),
 [Q16](../../../decisions/stdlib/Q16-general-rule-families-are-stdlib-modules.md)). With
-$\operatorname{ext}_K(r)$ the extent of a relation of two arguments
+$\operatorname{ext}_K(r)$ the held extent of a relation of two arguments
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)), each fact
 $r(u, v)$ of it written as the pair $(u, v)$, the rules of
 the standard library's relation algebra make these true of every saturated state $K$ of a program that brings
@@ -236,22 +201,7 @@ Saturation and search change a program's facts and never its rules, and no rule 
 does not have ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)). That is why the
 four levels form a stack in which each level is read only by the levels above it: two arrows do not exist.
 
-```dot
-digraph the_line {
-  rankdir=LR;
-  node [shape=box, style=rounded];
-  L3 [label="L3 rules"];
-  L2 [label="L2 relations\ndeclarations and property facts"];
-  L1 [label="L1 facts"];
-  L0 [label="L0 the things named\natoms"];
-  L3 -> L1 [label="match, conclude"];
-  L3 -> L2 [label="reads a declaration's facts,\nconcludes a property fact"];
-  L2 -> L1 [label="fix the count of"];
-  L1 -> L0 [label="name, in an argument place"];
-  L3 -> L3 [label="a rule reads a rule:\nno such pattern", style=dotted, color="#d62728", fontcolor="#d62728"];
-  L3 -> L2 [label="a rule writes a declaration:\nno such conclusion", style=dotted, color="#d62728", fontcolor="#d62728"];
-}
-```
+![The four levels as a stack, and the two arrows that do not exist](diagrams/01-the-line.svg)
 
 The solid arrows are what a level reads or writes of the levels below it; the two dotted red arrows are the ones
 that are missing.

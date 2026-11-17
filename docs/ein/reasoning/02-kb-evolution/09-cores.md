@@ -116,23 +116,7 @@ $$
 - The **terminals** $\mathcal{T}(K)$ are the givens and the commitments. Every walk over the graph grounds out
   on them.
 
-```dot
-digraph proof_graph {
-  rankdir=LR;
-  node [fontname="Inter"];
-  A [label="A\ngiven", shape=box, style=rounded, peripheries=2];
-  B [label="B\ngiven", shape=box, style=rounded, peripheries=2];
-  C [label="C\ngiven", shape=box, style=rounded, peripheries=2];
-  d1 [label="δ₁: rule ρ₁\nprimary", shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
-  d2 [label="δ₂: rule ρ₂\nalternative", shape=box, style="rounded,bold,dashed", color="#17becf", fontcolor="#17becf"];
-  F [label="F", shape=box, style=rounded, penwidth=2];
-  A -> d1 [color="#e377c2"];
-  B -> d1 [color="#e377c2"];
-  C -> d2 [color="#17becf"];
-  d1 -> F [color="#e377c2", style=bold];
-  d2 -> F [color="#17becf", style="bold,dashed"];
-}
-```
+![A proof graph: facts, derivations and terminals](diagrams/09-proof-graph.svg)
 
 A plain box is a fact, double-bordered where it is a terminal; a coloured box is a derivation, dashed where it
 is an alternative. The arrows into a derivation are an AND, the arrows into a fact an OR. Following the primary
@@ -150,20 +134,7 @@ and $Z$ is a **frontier** of a set of facts $G$ when $G \subseteq \operatorname{
 The graph is legitimately **cyclic**: once alternatives are recorded, symmetric and transitive closure make
 $r(a, b)$ and $r(b, a)$ justify each other in any ordinary puzzle.
 
-```dot
-digraph cyclic {
-  rankdir=LR;
-  node [fontname="Inter"];
-  ab [label="r(a, b)\ngiven", shape=box, style=rounded, peripheries=2];
-  ba [label="r(b, a)", shape=box, style=rounded];
-  s1 [label="symmetric\nprimary", shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
-  s2 [label="symmetric\nalternative", shape=box, style="rounded,bold,dashed", color="#17becf", fontcolor="#17becf"];
-  ab -> s1 [color="#e377c2"];
-  s1 -> ba [color="#e377c2", style=bold];
-  ba -> s2 [color="#17becf"];
-  s2 -> ab [color="#17becf", style="bold,dashed"];
-}
-```
+![A cyclic proof graph: two facts that justify each other](diagrams/09-cyclic.svg)
 
 $\operatorname{der}_K$ is a least fixpoint, built up from the terminals, so a cycle adds nothing to it: a fact
 is never its own reason, and $r(b, a)$ rests on the given $r(a, b)$ and on nothing else. What a program's text
@@ -218,27 +189,7 @@ $$
 
 A contradiction's facts are explained together, a pair's two sides $\lbrace f, \lnot f \rbrace$ as one AND-node.
 
-```dot
-digraph core_in_derivation {
-  rankdir=LR;
-  node [fontname="Inter"];
-  "f_ba78d8e6bc" [label="lives-in(Norwegian, House-1)", shape=box, style="rounded,filled", fillcolor="#fcbba1", peripheries=2];
-  "f_203bb25e0e" [label="next-to(House-1, House-2)", shape=box, style="rounded,filled", fillcolor="#fcbba1", peripheries=2];
-  "f_e42df9f04f" [label="owns(Norwegian, Fox)", shape=box, style="rounded,filled", fillcolor="#fcbba1", peripheries=2];
-  "g1" [label="is-a(Norwegian, Person)", shape=box, style=rounded, peripheries=2];
-  "g2" [label="is-a(Fox, Pet)", shape=box, style=rounded, peripheries=2];
-  "f_cb1915def2" [label="near(Norwegian, House-2)", shape=box, style=rounded, penwidth=2];
-  "f_a1f94f5b63" [label="false", shape=box, style=rounded, penwidth=2];
-  "fire0_neighbour" [shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2", label="neighbour"];
-  "fire0_fox-keeps-away" [shape=box, style="rounded,bold", color="#17becf", fontcolor="#17becf", label="fox-keeps-away"];
-  "f_ba78d8e6bc" -> "fire0_neighbour" [color="#e377c2"];
-  "f_203bb25e0e" -> "fire0_neighbour" [color="#e377c2"];
-  "fire0_neighbour" -> "f_cb1915def2" [color="#e377c2", style=bold];
-  "f_e42df9f04f" -> "fire0_fox-keeps-away" [color="#17becf"];
-  "f_cb1915def2" -> "fire0_fox-keeps-away" [color="#17becf"];
-  "fire0_fox-keeps-away" -> "f_a1f94f5b63" [color="#17becf", style=bold];
-}
-```
+![The derivation of the saturation page with the core's terminals filled](diagrams/09-core-in-derivation.svg)
 
 The derivation of [saturation](02-saturation.md), with its terminals marked. The core is the three filled
 terminals; the two givens no derivation of $\bot$ reads are outside it, and the derived fact between them is no
@@ -330,24 +281,7 @@ $$
 
 with $N$ the minimal dead sets.
 
-```dot
-digraph upset {
-  rankdir=TB;
-  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
-  e [label="∅", fillcolor="#a1d99b"];
-  a [label="{a}", fillcolor="#a1d99b"];
-  b [label="{b}", fillcolor="#a1d99b"];
-  c [label="{c}", fillcolor="#a1d99b"];
-  ab [label="{a, b}\ndead · in N", fillcolor="#fcbba1", penwidth=2.5];
-  ac [label="{a, c}", fillcolor="#a1d99b"];
-  bc [label="{b, c}", fillcolor="#a1d99b"];
-  abc [label="{a, b, c}\ndead: above {a, b}", fillcolor="#fcbba1", style="filled,dashed"];
-  e -> a; e -> b; e -> c;
-  a -> ab; a -> ac; b -> ab; b -> bc; c -> ac; c -> bc;
-  ab -> abc [color="#cb181d", penwidth=2];
-  ac -> abc; bc -> abc;
-}
-```
+![The lattice of three candidates: a minimal dead set and the dead set above it](diagrams/09-upset.svg)
 
 The heavy node is a minimal dead set, with core $\lbrace a, b \rbrace$; the dashed node above it is dead with no
 saturation of its own. A computation of $R$ may use that as a licence and conclude *dead* for a node it never

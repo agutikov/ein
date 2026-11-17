@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: band Pages: 1 -->
+<svg width="287pt" height="507pt"
+ viewBox="0.00 0.00 287.00 507.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 503)">
+<title>band</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-503 283.25,-503 283.25,4 -4,4"/>
+<!-- bottom -->
+<g id="node1" class="node">
+<title>bottom</title>
+<ellipse fill="#fee391" stroke="black" cx="139.62" cy="-481" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-477.88" font-family="Helvetica,sans-Serif" font-size="10.00">∅</text>
+</g>
+<!-- owing -->
+<g id="node2" class="node">
+<title>owing</title>
+<path fill="#fee391" stroke="black" d="M208,-419.75C208,-419.75 71.25,-419.75 71.25,-419.75 65.25,-419.75 59.25,-413.75 59.25,-407.75 59.25,-407.75 59.25,-385.5 59.25,-385.5 59.25,-379.5 65.25,-373.5 71.25,-373.5 71.25,-373.5 208,-373.5 208,-373.5 214,-373.5 220,-379.5 220,-385.5 220,-385.5 220,-407.75 220,-407.75 220,-413.75 214,-419.75 208,-419.75"/>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-406.25" font-family="Helvetica,sans-Serif" font-size="10.00">Owing</text>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-393.5" font-family="Helvetica,sans-Serif" font-size="10.00">alive, a debt unpaid</text>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-380.75" font-family="Helvetica,sans-Serif" font-size="10.00">a down&#45;set of the alive nodes</text>
+</g>
+<!-- bottom&#45;&gt;owing -->
+<g id="edge1" class="edge">
+<title>bottom&#45;&gt;owing</title>
+<path fill="none" stroke="black" d="M139.62,-462.53C139.62,-452.38 139.62,-439.31 139.62,-427.57"/>
+<polygon fill="black" stroke="black" points="141.73,-427.6 139.63,-421.6 137.53,-427.6 141.73,-427.6"/>
+<text xml:space="preserve" text-anchor="middle" x="174.5" y="-438.45" font-family="Helvetica,sans-Serif" font-size="9.00">add candidates</text>
+</g>
+<!-- minl -->
+<g id="node3" class="node">
+<title>minl</title>
+<path fill="#a1d99b" stroke="black" d="M192.62,-326.25C192.62,-326.25 86.62,-326.25 86.62,-326.25 80.63,-326.25 74.62,-320.25 74.62,-314.25 74.62,-314.25 74.62,-302.25 74.62,-302.25 74.62,-296.25 80.62,-290.25 86.62,-290.25 86.62,-290.25 192.62,-290.25 192.62,-290.25 198.62,-290.25 204.62,-296.25 204.62,-302.25 204.62,-302.25 204.62,-314.25 204.62,-314.25 204.62,-320.25 198.62,-326.25 192.62,-326.25"/>
+<path fill="none" stroke="black" d="M196.62,-330.25C196.62,-330.25 82.62,-330.25 82.62,-330.25 76.62,-330.25 70.62,-324.25 70.62,-318.25 70.62,-318.25 70.62,-298.25 70.62,-298.25 70.62,-292.25 76.62,-286.25 82.62,-286.25 82.62,-286.25 196.62,-286.25 196.62,-286.25 202.62,-286.25 208.62,-292.25 208.62,-298.25 208.62,-298.25 208.62,-318.25 208.62,-318.25 208.62,-324.25 202.62,-330.25 196.62,-330.25"/>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-311.5" font-family="Helvetica,sans-Serif" font-size="10.00">min R</text>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-298.75" font-family="Helvetica,sans-Serif" font-size="10.00">the alive members of E</text>
+</g>
+<!-- owing&#45;&gt;minl -->
+<g id="edge2" class="edge">
+<title>owing&#45;&gt;minl</title>
+<path fill="none" stroke="#2171b5" d="M139.62,-373.38C139.62,-362.56 139.62,-349.42 139.62,-337.85"/>
+<polygon fill="#2171b5" stroke="#2171b5" points="141.73,-338.04 139.63,-332.04 137.53,-338.04 141.73,-338.04"/>
+<text xml:space="preserve" text-anchor="middle" x="184.62" y="-348.95" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#2171b5">the last debt is paid</text>
+</g>
+<!-- r -->
+<g id="node4" class="node">
+<title>r</title>
+<path fill="#a1d99b" stroke="black" d="M186.25,-253.25C186.25,-253.25 93,-253.25 93,-253.25 87,-253.25 81,-247.25 81,-241.25 81,-241.25 81,-229.25 81,-229.25 81,-223.25 87,-217.25 93,-217.25 93,-217.25 186.25,-217.25 186.25,-217.25 192.25,-217.25 198.25,-223.25 198.25,-229.25 198.25,-229.25 198.25,-241.25 198.25,-241.25 198.25,-247.25 192.25,-253.25 186.25,-253.25"/>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-238.5" font-family="Helvetica,sans-Serif" font-size="10.00">R</text>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-225.75" font-family="Helvetica,sans-Serif" font-size="10.00">alive and discharged</text>
+</g>
+<!-- minl&#45;&gt;r -->
+<g id="edge3" class="edge">
+<title>minl&#45;&gt;r</title>
+<path fill="none" stroke="#238b45" d="M139.62,-285.95C139.62,-278.07 139.62,-269.07 139.62,-260.91"/>
+<polygon fill="#238b45" stroke="#238b45" points="141.73,-261.23 139.63,-255.23 137.53,-261.23 141.73,-261.23"/>
+</g>
+<!-- maxl -->
+<g id="node5" class="node">
+<title>maxl</title>
+<path fill="#a1d99b" stroke="#006d2c" stroke-width="3" d="M267.25,-184.25C267.25,-184.25 12,-184.25 12,-184.25 6,-184.25 0,-178.25 0,-172.25 0,-172.25 0,-160.25 0,-160.25 0,-154.25 6,-148.25 12,-148.25 12,-148.25 267.25,-148.25 267.25,-148.25 273.25,-148.25 279.25,-154.25 279.25,-160.25 279.25,-160.25 279.25,-172.25 279.25,-172.25 279.25,-178.25 273.25,-184.25 267.25,-184.25"/>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-169.5" font-family="Helvetica,sans-Serif" font-size="10.00">max R</text>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-156.75" font-family="Helvetica,sans-Serif" font-size="10.00">the discharged maximal sets holding no member of N</text>
+</g>
+<!-- r&#45;&gt;maxl -->
+<g id="edge4" class="edge">
+<title>r&#45;&gt;maxl</title>
+<path fill="none" stroke="#238b45" d="M139.62,-217C139.62,-209.63 139.62,-200.89 139.62,-192.8"/>
+<polygon fill="#238b45" stroke="#238b45" points="141.73,-193.13 139.63,-187.13 137.53,-193.13 141.73,-193.13"/>
+</g>
+<!-- dead -->
+<g id="node6" class="node">
+<title>dead</title>
+<path fill="#fcbba1" stroke="black" d="M163.38,-105C163.38,-105 115.88,-105 115.88,-105 109.88,-105 103.88,-99 103.88,-93 103.88,-93 103.88,-81 103.88,-81 103.88,-75 109.88,-69 115.88,-69 115.88,-69 163.38,-69 163.38,-69 169.38,-69 175.38,-75 175.38,-81 175.38,-81 175.38,-93 175.38,-93 175.38,-99 169.38,-105 163.38,-105"/>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-90.25" font-family="Helvetica,sans-Serif" font-size="10.00">Dead = ↑N</text>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">an up&#45;set</text>
+</g>
+<!-- maxl&#45;&gt;dead -->
+<g id="edge5" class="edge">
+<title>maxl&#45;&gt;dead</title>
+<path fill="none" stroke="#cb181d" d="M139.62,-146.94C139.62,-136.72 139.62,-123.84 139.62,-112.73"/>
+<polygon fill="#cb181d" stroke="#cb181d" points="141.73,-112.89 139.63,-106.89 137.53,-112.89 141.73,-112.89"/>
+<text xml:space="preserve" text-anchor="middle" x="194.75" y="-123.7" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#cb181d">one more candidate kills</text>
+</g>
+<!-- top -->
+<g id="node7" class="node">
+<title>top</title>
+<ellipse fill="#fcbba1" stroke="black" cx="139.62" cy="-18" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="139.62" y="-14.88" font-family="Helvetica,sans-Serif" font-size="10.00">H</text>
+</g>
+<!-- dead&#45;&gt;top -->
+<g id="edge6" class="edge">
+<title>dead&#45;&gt;top</title>
+<path fill="none" stroke="#bdbdbd" d="M139.62,-68.75C139.62,-61.15 139.62,-52.08 139.62,-43.77"/>
+<polygon fill="#bdbdbd" stroke="#bdbdbd" points="141.73,-43.94 139.63,-37.94 137.53,-43.94 141.73,-43.94"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 8d381a9614eff76c14a7628327ca335b69da81402343d03cd87b2f3d80326ae9 -->

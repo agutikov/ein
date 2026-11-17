@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: resume Pages: 1 -->
+<svg width="663pt" height="63pt"
+ viewBox="0.00 0.00 663.00 63.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 58.75)">
+<title>resume</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-58.75 658.5,-58.75 658.5,4 -4,4"/>
+<!-- K0 -->
+<g id="node1" class="node">
+<title>K0</title>
+<path fill="none" stroke="black" d="M42,-49.25C42,-49.25 12,-49.25 12,-49.25 6,-49.25 0,-43.25 0,-37.25 0,-37.25 0,-25.25 0,-25.25 0,-19.25 6,-13.25 12,-13.25 12,-13.25 42,-13.25 42,-13.25 48,-13.25 54,-19.25 54,-25.25 54,-25.25 54,-37.25 54,-37.25 54,-43.25 48,-49.25 42,-49.25"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-27.7" font-family="Inter" font-size="14.00">K₀</text>
+</g>
+<!-- root -->
+<g id="node2" class="node">
+<title>root</title>
+<path fill="none" stroke="black" d="M262.75,-54.75C262.75,-54.75 162,-54.75 162,-54.75 156,-54.75 150,-48.75 150,-42.75 150,-42.75 150,-19.75 150,-19.75 150,-13.75 156,-7.75 162,-7.75 162,-7.75 262.75,-7.75 262.75,-7.75 268.75,-7.75 274.75,-13.75 274.75,-19.75 274.75,-19.75 274.75,-42.75 274.75,-42.75 274.75,-48.75 268.75,-54.75 262.75,-54.75"/>
+<text xml:space="preserve" text-anchor="middle" x="212.38" y="-37.45" font-family="Inter" font-size="14.00">root = sat(K₀)</text>
+<text xml:space="preserve" text-anchor="middle" x="212.38" y="-17.95" font-family="Inter" font-size="14.00">fired F, parked Q</text>
+</g>
+<!-- K0&#45;&gt;root -->
+<g id="edge1" class="edge">
+<title>K0&#45;&gt;root</title>
+<path fill="none" stroke="black" d="M54.27,-31.25C76.23,-31.25 108.62,-31.25 138.3,-31.25"/>
+<polygon fill="black" stroke="black" points="138,-34.75 148,-31.25 138,-27.75 138,-34.75"/>
+<text xml:space="preserve" text-anchor="middle" x="102" y="-35.2" font-family="Times,serif" font-size="14.00">saturate</text>
+</g>
+<!-- rc -->
+<g id="node3" class="node">
+<title>rc</title>
+<path fill="none" stroke="black" d="M410,-49.25C410,-49.25 364,-49.25 364,-49.25 358,-49.25 352,-43.25 352,-37.25 352,-37.25 352,-25.25 352,-25.25 352,-19.25 358,-13.25 364,-13.25 364,-13.25 410,-13.25 410,-13.25 416,-13.25 422,-19.25 422,-25.25 422,-25.25 422,-37.25 422,-37.25 422,-43.25 416,-49.25 410,-49.25"/>
+<text xml:space="preserve" text-anchor="middle" x="387" y="-27.7" font-family="Inter" font-size="14.00">root ∪ C</text>
+</g>
+<!-- root&#45;&gt;rc -->
+<g id="edge2" class="edge">
+<title>root&#45;&gt;rc</title>
+<path fill="none" stroke="black" d="M275.21,-31.25C296.72,-31.25 320.44,-31.25 340.4,-31.25"/>
+<polygon fill="black" stroke="black" points="340.16,-34.75 350.16,-31.25 340.16,-27.75 340.16,-34.75"/>
+<text xml:space="preserve" text-anchor="middle" x="313.38" y="-35.2" font-family="Times,serif" font-size="14.00">add C</text>
+</g>
+<!-- st -->
+<g id="node4" class="node">
+<title>st</title>
+<path fill="none" stroke="black" stroke-width="2" d="M642.5,-49.25C642.5,-49.25 612.5,-49.25 612.5,-49.25 606.5,-49.25 600.5,-43.25 600.5,-37.25 600.5,-37.25 600.5,-25.25 600.5,-25.25 600.5,-19.25 606.5,-13.25 612.5,-13.25 612.5,-13.25 642.5,-13.25 642.5,-13.25 648.5,-13.25 654.5,-19.25 654.5,-25.25 654.5,-25.25 654.5,-37.25 654.5,-37.25 654.5,-43.25 648.5,-49.25 642.5,-49.25"/>
+<text xml:space="preserve" text-anchor="middle" x="627.5" y="-27.7" font-family="Inter" font-size="14.00">st(C)</text>
+</g>
+<!-- rc&#45;&gt;st -->
+<g id="edge3" class="edge">
+<title>rc&#45;&gt;st</title>
+<path fill="none" stroke="black" d="M422.43,-31.25C466.48,-31.25 542.55,-31.25 588.33,-31.25"/>
+<polygon fill="black" stroke="black" points="588.32,-34.75 598.32,-31.25 588.32,-27.75 588.32,-34.75"/>
+<text xml:space="preserve" text-anchor="middle" x="511.25" y="-35.2" font-family="Times,serif" font-size="14.00">continue from (F, Q)</text>
+</g>
+<!-- rc&#45;&gt;st -->
+<g id="edge4" class="edge">
+<title>rc&#45;&gt;st</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M422.39,-15.04C428.15,-12.95 434.16,-11.14 440,-10 502.15,2.21 520.76,4.13 582.5,-10 584.67,-10.49 586.86,-11.11 589.04,-11.82"/>
+<polygon fill="black" stroke="black" points="587.74,-15.07 598.33,-15.44 590.28,-8.55 587.74,-15.07"/>
+<text xml:space="preserve" text-anchor="middle" x="511.25" y="-13.95" font-family="Times,serif" font-size="14.00">saturate afresh</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 56f8ab6a1f597e9299f2e363223ddede3cabf8ee0643c78d3c2e48e129482519 -->

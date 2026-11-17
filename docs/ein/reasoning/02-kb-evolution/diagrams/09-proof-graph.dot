@@ -1,0 +1,15 @@
+digraph proof_graph {
+  rankdir=LR;
+  node [fontname="Inter"];
+  A [label="A\ngiven", shape=box, style=rounded, peripheries=2];
+  B [label="B\ngiven", shape=box, style=rounded, peripheries=2];
+  C [label="C\ngiven", shape=box, style=rounded, peripheries=2];
+  d1 [label="δ₁: rule ρ₁\nprimary", shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
+  d2 [label="δ₂: rule ρ₂\nalternative", shape=box, style="rounded,bold,dashed", color="#17becf", fontcolor="#17becf"];
+  F [label="F", shape=box, style=rounded, penwidth=2];
+  A -> d1 [color="#e377c2"];
+  B -> d1 [color="#e377c2"];
+  C -> d2 [color="#17becf"];
+  d1 -> F [color="#e377c2", style=bold];
+  d2 -> F [color="#17becf", style="bold,dashed"];
+}

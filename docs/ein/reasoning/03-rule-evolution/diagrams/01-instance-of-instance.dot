@@ -1,0 +1,34 @@
+digraph kb {
+  rankdir=BT;
+  "Object" [shape=box, label="Object"];
+  "Relation" [shape=box, label="Relation"];
+  "T" [shape=box, label="T"];
+  "Fact" [shape=oval, label="Fact"];
+  "Rule" [shape=oval, label="Rule"];
+  "is-a" [shape=oval, label="is-a"];
+  f_1f1a2cc2f3 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "is-a" [label="#1", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#2", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [label="#3", color="#bcbd22", style=solid];
+  "is-a" -> "is-a" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_f0640dee2c [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_f0640dee2c -> "is-a*" [label="#1", color="#bcbd22", style=solid];
+  f_f0640dee2c -> "T" [label="#2", color="#bcbd22", style=solid];
+  f_f0640dee2c -> "T" [label="#3", color="#bcbd22", style=solid];
+  "is-a*" -> "is-a*" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Object" -> "T" [style=dashed, arrowhead=empty, label="is-a"];
+  "Relation" -> "Object" [style=dashed, arrowhead=empty, label="is-a"];
+  "Fact" -> "Object" [style=dashed, arrowhead=empty, label="is-a"];
+  "Rule" -> "Object" [style=dashed, arrowhead=empty, label="is-a"];
+  "is-a" -> "Relation" [style=dashed, arrowhead=empty, label="is-a"];
+  "Object" -> "T" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "Relation" -> "Object" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "Fact" -> "Object" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "Rule" -> "Object" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "is-a" -> "Relation" [label="is-a* by includes", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "Relation" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "Fact" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "Rule" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "is-a" -> "Object" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
+  "is-a" -> "T" [label="is-a* by transitive", color="#e377c2", fontcolor="#e377c2", style=dashed];
+}

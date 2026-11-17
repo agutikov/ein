@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: root_and_payments Pages: 1 -->
+<svg width="541pt" height="246pt"
+ viewBox="0.00 0.00 541.00 246.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 242)">
+<title>root_and_payments</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-242 537.25,-242 537.25,4 -4,4"/>
+<!-- Guest -->
+<g id="node1" class="node">
+<title>Guest</title>
+<polygon fill="none" stroke="black" points="54,-152 0,-152 0,-116 54,-116 54,-152"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-130.88" font-family="Helvetica,sans-Serif" font-size="10.00">Guest</text>
+</g>
+<!-- Ann -->
+<g id="node4" class="node">
+<title>Ann</title>
+<ellipse fill="none" stroke="black" cx="176" cy="-134" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="176" y="-130.88" font-family="Helvetica,sans-Serif" font-size="10.00">Ann</text>
+</g>
+<!-- Guest&#45;&gt;Ann -->
+<g id="edge1" class="edge">
+<title>Guest&#45;&gt;Ann</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M65.64,-134C91.73,-134 125.82,-134 148.95,-134"/>
+<polygon fill="none" stroke="black" points="65.79,-130.5 55.79,-134 65.79,-137.5 65.79,-130.5"/>
+<text xml:space="preserve" text-anchor="middle" x="101.5" y="-136.7" font-family="Helvetica,sans-Serif" font-size="9.00">is&#45;a</text>
+</g>
+<!-- Chair -->
+<g id="node2" class="node">
+<title>Chair</title>
+<polygon fill="none" stroke="black" points="533.25,-207 479.25,-207 479.25,-171 533.25,-171 533.25,-207"/>
+<text xml:space="preserve" text-anchor="middle" x="506.25" y="-185.88" font-family="Helvetica,sans-Serif" font-size="10.00">Chair</text>
+</g>
+<!-- Drink -->
+<g id="node3" class="node">
+<title>Drink</title>
+<polygon fill="none" stroke="black" points="533.25,-64 479.25,-64 479.25,-28 533.25,-28 533.25,-64"/>
+<text xml:space="preserve" text-anchor="middle" x="506.25" y="-42.88" font-family="Helvetica,sans-Serif" font-size="10.00">Drink</text>
+</g>
+<!-- C1 -->
+<g id="node5" class="node">
+<title>C1</title>
+<ellipse fill="none" stroke="black" cx="357.25" cy="-220" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="357.25" y="-216.88" font-family="Helvetica,sans-Serif" font-size="10.00">C1</text>
+</g>
+<!-- Ann&#45;&gt;C1 -->
+<g id="edge8" class="edge">
+<title>Ann&#45;&gt;C1</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M198.04,-144.69C210.97,-151.22 227.89,-159.69 243,-167 270.2,-180.16 301.31,-194.68 324.03,-205.19"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="322.54,-208.36 333.09,-209.37 325.47,-202 322.54,-208.36"/>
+<text xml:space="preserve" text-anchor="middle" x="266.62" y="-191.82" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">seats ?</text>
+</g>
+<!-- C2 -->
+<g id="node6" class="node">
+<title>C2</title>
+<ellipse fill="none" stroke="black" cx="357.25" cy="-159" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="357.25" y="-155.88" font-family="Helvetica,sans-Serif" font-size="10.00">C2</text>
+</g>
+<!-- Ann&#45;&gt;C2 -->
+<g id="edge7" class="edge">
+<title>Ann&#45;&gt;C2</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M202.68,-137.58C233.21,-141.84 284.39,-148.98 319.2,-153.83"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="318.44,-157.26 328.83,-155.18 319.4,-150.33 318.44,-157.26"/>
+<text xml:space="preserve" text-anchor="middle" x="266.62" y="-152.17" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">seats ?</text>
+</g>
+<!-- Milk -->
+<g id="node7" class="node">
+<title>Milk</title>
+<ellipse fill="none" stroke="black" cx="357.25" cy="-79" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="357.25" y="-75.88" font-family="Helvetica,sans-Serif" font-size="10.00">Milk</text>
+</g>
+<!-- Ann&#45;&gt;Milk -->
+<g id="edge9" class="edge">
+<title>Ann&#45;&gt;Milk</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M198.28,-123.31C211.02,-117.23 227.65,-109.84 243,-104.75 268.1,-96.42 297.2,-89.87 319.62,-85.46"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="320.02,-88.94 329.19,-83.63 318.71,-82.07 320.02,-88.94"/>
+<text xml:space="preserve" text-anchor="middle" x="266.62" y="-107.45" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">drinks ?</text>
+</g>
+<!-- Tea -->
+<g id="node8" class="node">
+<title>Tea</title>
+<ellipse fill="none" stroke="black" cx="357.25" cy="-18" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="357.25" y="-14.88" font-family="Helvetica,sans-Serif" font-size="10.00">Tea</text>
+</g>
+<!-- Ann&#45;&gt;Tea -->
+<g id="edge10" class="edge">
+<title>Ann&#45;&gt;Tea</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M191.5,-118.88C204.27,-106.1 223.78,-87.84 243,-74.75 268.42,-57.43 299.86,-42.1 323.16,-31.75"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="324.41,-35.03 332.18,-27.83 321.61,-28.61 324.41,-35.03"/>
+<text xml:space="preserve" text-anchor="middle" x="266.62" y="-77.45" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">drinks ?</text>
+</g>
+<!-- C1&#45;&gt;Chair -->
+<g id="edge2" class="edge">
+<title>C1&#45;&gt;Chair</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M383.52,-214.67C406.69,-209.79 441.3,-202.49 467.71,-196.92"/>
+<polygon fill="none" stroke="black" points="468.28,-200.37 477.34,-194.89 466.84,-193.52 468.28,-200.37"/>
+<text xml:space="preserve" text-anchor="middle" x="431.75" y="-208.13" font-family="Helvetica,sans-Serif" font-size="9.00">is&#45;a</text>
+</g>
+<!-- C1&#45;&gt;Milk -->
+<g id="edge6" class="edge">
+<title>C1&#45;&gt;Milk</title>
+<path fill="none" stroke="#17becf" d="M333.84,-210.66C297.34,-194.66 233.44,-160.08 258.1,-122.38 271.68,-101.62 297.61,-90.74 319.55,-85.06"/>
+<polygon fill="#17becf" stroke="#17becf" points="320.13,-88.52 329.1,-82.88 318.57,-81.7 320.13,-88.52"/>
+<text xml:space="preserve" text-anchor="middle" x="266.62" y="-125.08" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#17becf">never&#45;with</text>
+</g>
+<!-- C2&#45;&gt;Chair -->
+<g id="edge3" class="edge">
+<title>C2&#45;&gt;Chair</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M383.88,-162.86C399.86,-165.39 420.82,-168.92 439.25,-172.75 448.61,-174.69 458.66,-177.04 468.03,-179.33"/>
+<polygon fill="none" stroke="black" points="467,-182.68 477.55,-181.71 468.69,-175.89 467,-182.68"/>
+<text xml:space="preserve" text-anchor="middle" x="431.75" y="-175.45" font-family="Helvetica,sans-Serif" font-size="9.00">is&#45;a</text>
+</g>
+<!-- Milk&#45;&gt;Drink -->
+<g id="edge5" class="edge">
+<title>Milk&#45;&gt;Drink</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M383.19,-73.4C406.38,-68.2 441.24,-60.37 467.78,-54.41"/>
+<polygon fill="none" stroke="black" points="468.48,-57.84 477.47,-52.24 466.95,-51.01 468.48,-57.84"/>
+<text xml:space="preserve" text-anchor="middle" x="431.75" y="-66.19" font-family="Helvetica,sans-Serif" font-size="9.00">is&#45;a</text>
+</g>
+<!-- Tea&#45;&gt;Drink -->
+<g id="edge4" class="edge">
+<title>Tea&#45;&gt;Drink</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M384.33,-19.64C400.29,-20.94 421.07,-23.15 439.25,-26.75 448.66,-28.61 458.66,-31.2 467.96,-33.88"/>
+<polygon fill="none" stroke="black" points="466.83,-37.2 477.41,-36.71 468.83,-30.49 466.83,-37.2"/>
+<text xml:space="preserve" text-anchor="middle" x="431.75" y="-29.45" font-family="Helvetica,sans-Serif" font-size="9.00">is&#45;a</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 38bbf9ce3afe3a00e24c96c6360a9021b35e863b59bd7203a93f077dab673181 -->

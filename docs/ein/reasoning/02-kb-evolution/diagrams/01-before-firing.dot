@@ -1,0 +1,14 @@
+digraph kb {
+  rankdir=BT;
+  node [fontname="Inter"];
+  "House" [shape=box, label="House"];
+  "Person" [shape=box, label="Person"];
+  "House-1" [shape=oval, label="House-1"];
+  "House-2" [shape=oval, label="House-2"];
+  "Norwegian" [shape=oval, label="Norwegian"];
+  "Norwegian" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "Norwegian" -> "House-1" [label="lives-in", color="#9467bd", fontcolor="#9467bd", style=solid];
+  "House-1" -> "House-2" [label="next-to", color="#d62728", fontcolor="#d62728", style=solid];
+}

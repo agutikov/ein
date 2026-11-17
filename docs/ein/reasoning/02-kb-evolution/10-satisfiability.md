@@ -57,45 +57,9 @@ $$
 \operatorname{seats}(g, c) \land \operatorname{seats}(g, d) \land c \neq d \implies \bot
 $$
 
-```dot
-digraph rule_guest_owes_seat_lhs_rhs {
-  rankdir=TB;
-  label="guest-owes-seat"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?g_L" [label="?g", shape=diamond];
-    "Guest_L" [label="Guest", shape=rectangle];
-    "?g_L" -> "Guest_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    subgraph cluster_absent_L_0 {
-      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?c_L" [label="?c", shape=diamond];
-      "?g_L" -> "?c_L" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e"];
-    }
-  }
-  subgraph cluster_rhs { label="assert";
-    "seats_R" [label="seats", shape=rectangle];
-    "h1_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_open_R" -> "seats_R" [label="1", color="#2ca02c", style=dashed];
-  }
-}
-```
+![The rule guest-owes-seat: the obligation's trigger solid, its witness a dashed cluster](diagrams/10-rule-guest-owes-seat.svg)
 
-```dot
-digraph rule_one_seat_lhs_rhs {
-  rankdir=TB;
-  label="one-seat"; labelloc=t;
-  subgraph cluster_lhs { label="match";
-    "?g_L" [label="?g", shape=diamond];
-    "?c_L" [label="?c", shape=diamond];
-    "?d_L" [label="?d", shape=diamond];
-    "?g_L" -> "?c_L" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?g_L" -> "?d_L" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?c_L" -> "?d_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-  }
-  subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
-  }
-}
-```
+![The rule one-seat: two seats of one guest, and (false)](diagrams/10-rule-one-seat.svg)
 
 In the first the trigger is the solid arrow and the witness the dashed cluster: the rule matches while the
 cluster finds nothing. With one guest and two chairs their region is the first cube of
@@ -120,21 +84,7 @@ The same disjunction means two things in two places:
 | a rule's match | $S \models A \lor B$: this state satisfies $A$ or $B$ | the facts of **one** state $S$ |
 | a claim | $\mathcal{S}(R) = \lbrace A, B \rbrace$: the answer's states, or classes, are exactly those listed | the set of **states** |
 
-```dot
-digraph levels {
-  rankdir=TB;
-  node [fontname="Inter", shape=box, style=rounded];
-  subgraph cluster_R { label="the set of states of R"; style=dashed;
-    S1 [label="S₁"]; S2 [label="S₂"]; S3 [label="S₃"];
-  }
-  rule [label="a rule\nreads and concludes facts of one state", shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
-  claim [label="a claim\na sentence about the whole set", shape=box, style="rounded,bold", color="#17becf", fontcolor="#17becf"];
-  rule -> S2 [color="#e377c2", label="S₂ ⊨ M"];
-  claim -> S1 [color="#17becf"];
-  claim -> S2 [color="#17becf"];
-  claim -> S3 [color="#17becf"];
-}
-```
+![A rule reads one state of R; a claim is a sentence about the whole set](diagrams/10-rule-and-claim.svg)
 
 A claim may say the second. May a program's rules: *there is exactly one answer*, *at most $k$*, *the same
 answers as that other program*? **No**
@@ -273,21 +223,7 @@ changes nothing, $\operatorname{st}(C' \cup \lbrace h \rbrace) = \operatorname{s
 $C' \cup \lbrace h \rbrace$ is a member of $R$ above $C \cup \lbrace h \rbrace$ with the state of $C'$. No death,
 no depth and no ordering enters the argument. $\square$
 
-```dot
-digraph branch {
-  rankdir=TB;
-  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
-  C [label="C\nowes I: a needs an r-arrow into B", fillcolor="#fee391"];
-  h1 [label="C ∪ { r(a, b₁) }\npays I", fillcolor="#a1d99b"];
-  h2 [label="C ∪ { r(a, b₂) }\npays I", fillcolor="#a1d99b"];
-  h3 [label="C ∪ { r(a, b₃) }\npays I", fillcolor="#a1d99b"];
-  other [label="C ∪ { any other candidate }\nstill owes I: never in R\nuntil an alternative is added", fillcolor="#fee391", style="filled,dashed"];
-  C -> h1 [color="#2171b5", penwidth=2];
-  C -> h2 [color="#2171b5", penwidth=2];
-  C -> h3 [color="#2171b5", penwidth=2];
-  C -> other [color="#fdae6b", style=dashed];
-}
-```
+![An obligation's branch: three alternatives above a commitment](diagrams/10-branch.svg)
 
 The three solid arrows are the branch; every state of $R$ above $C$ is reached above one of their heads. The dashed
 arrow is what the branch does not take, and loses nothing by: a node above $C$ that holds no alternative still
@@ -386,18 +322,7 @@ $$
 \operatorname{key}(\mathcal{S}) \;\in\; \operatorname*{arg\,min}_{Y \subseteq X} \;\lbrace\, \lvert Y \rvert \;:\; \forall S \neq S' \in \mathcal{S}.\;\; \exists x \in Y.\;\; x(S) \neq x(S') \,\rbrace
 $$
 
-```dot
-digraph key {
-  rankdir=LR;
-  node [fontname="Inter", shape=box, style=rounded];
-  S1 [label="S₁\nx = 1, y = 1, z = 1"];
-  S2 [label="S₂\nx = 2, y = 1, z = 2"];
-  S3 [label="S₃\nx = 3, y = 2, z = 2"];
-  S1 -> S2 [dir=none, label="differ in x, z"];
-  S2 -> S3 [dir=none, label="differ in x, y"];
-  S1 -> S3 [dir=none, label="differ in x, y, z"];
-}
-```
+![States as nodes, and on each edge the variables two states differ in](diagrams/10-key.svg)
 
 A node is a state and an edge a pair of states, labelled with the variables the two differ in. A key is a set
 of variables that meets every edge's label: here $\lbrace x \rbrace$ is the smallest, and $\lbrace y, z \rbrace$

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: blind Pages: 1 -->
+<svg width="488pt" height="110pt"
+ viewBox="0.00 0.00 488.00 110.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 105.87)">
+<title>blind</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-105.87 484.25,-105.87 484.25,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="240.12" y="-88.37" font-family="Helvetica,sans-Serif" font-size="10.00">guessable(P) = {Ann, Bob, C1}, one relation r of two slots: every ordered pair of distinct atoms</text>
+<!-- Ann -->
+<g id="node1" class="node">
+<title>Ann</title>
+<ellipse fill="none" stroke="black" cx="108.88" cy="-18.12" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="108.88" y="-15" font-family="Helvetica,sans-Serif" font-size="10.00">Ann</text>
+</g>
+<!-- Bob -->
+<g id="node2" class="node">
+<title>Bob</title>
+<ellipse fill="none" stroke="black" cx="240.12" cy="-63.12" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="240.12" y="-60" font-family="Helvetica,sans-Serif" font-size="10.00">Bob</text>
+</g>
+<!-- Ann&#45;&gt;Bob -->
+<g id="edge1" class="edge">
+<title>Ann&#45;&gt;Bob</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M129.09,-30.55C140.29,-37.27 154.92,-45.19 168.88,-50.12 180.69,-54.3 194.12,-57.21 206.05,-59.19"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="205.51,-61.23 211.76,-60.08 206.16,-57.08 205.51,-61.23"/>
+<text xml:space="preserve" text-anchor="middle" x="174.5" y="-56.29" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
+</g>
+<!-- C1 -->
+<g id="node3" class="node">
+<title>C1</title>
+<ellipse fill="none" stroke="black" cx="371.38" cy="-18.12" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="371.38" y="-15" font-family="Helvetica,sans-Serif" font-size="10.00">C1</text>
+</g>
+<!-- Ann&#45;&gt;C1 -->
+<g id="edge3" class="edge">
+<title>Ann&#45;&gt;C1</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M136.29,-18.12C183.87,-18.12 283.94,-18.12 336.5,-18.12"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="336.38,-20.22 342.38,-18.12 336.38,-16.02 336.38,-20.22"/>
+<text xml:space="preserve" text-anchor="middle" x="240.12" y="-20.82" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
+</g>
+<!-- Bob&#45;&gt;Ann -->
+<g id="edge2" class="edge">
+<title>Bob&#45;&gt;Ann</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M217.6,-52.56C206.57,-47.4 192.81,-41.35 180.12,-36.87 167.9,-32.55 154.18,-28.68 142.13,-25.59"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="142.67,-23.56 136.34,-24.14 141.65,-27.64 142.67,-23.56"/>
+<text xml:space="preserve" text-anchor="middle" x="174.5" y="-39.57" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
+</g>
+<!-- Bob&#45;&gt;C1 -->
+<g id="edge5" class="edge">
+<title>Bob&#45;&gt;C1</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M266.99,-60.31C280.49,-58.36 297.11,-55.17 311.38,-50.12 322.82,-46.07 334.72,-40.02 344.81,-34.26"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="345.73,-36.16 349.85,-31.31 343.61,-32.53 345.73,-36.16"/>
+<text xml:space="preserve" text-anchor="middle" x="305.75" y="-56.29" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
+</g>
+<!-- C1&#45;&gt;Ann -->
+<g id="edge4" class="edge">
+<title>C1&#45;&gt;Ann</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M345.05,-13C324.22,-9.07 293.9,-3.97 267.12,-1.87 243.2,0 237.05,0 213.12,-1.87 189.28,-3.74 162.62,-7.99 142.36,-11.68"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="142.21,-9.57 136.69,-12.73 142.97,-13.7 142.21,-9.57"/>
+<text xml:space="preserve" text-anchor="middle" x="240.12" y="-4.57" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
+</g>
+<!-- C1&#45;&gt;Bob -->
+<g id="edge6" class="edge">
+<title>C1&#45;&gt;Bob</title>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M345.38,-23.78C331.83,-27.09 314.88,-31.66 300.12,-36.87 289.92,-40.48 279.02,-45.1 269.4,-49.46"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="268.59,-47.51 264.02,-51.93 270.35,-51.33 268.59,-47.51"/>
+<text xml:space="preserve" text-anchor="middle" x="305.75" y="-39.57" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: a2a3fd9b2bc1e2374675ea9b911fee7e163467491a7516f552a837a66dc0826c -->

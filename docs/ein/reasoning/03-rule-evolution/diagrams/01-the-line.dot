@@ -1,0 +1,14 @@
+digraph the_line {
+  rankdir=LR;
+  node [shape=box, style=rounded];
+  L3 [label="L3 rules"];
+  L2 [label="L2 relations\ndeclarations and property facts"];
+  L1 [label="L1 facts"];
+  L0 [label="L0 the things named\natoms"];
+  L3 -> L1 [label="match, conclude"];
+  L3 -> L2 [label="reads a declaration's facts,\nconcludes a property fact"];
+  L2 -> L1 [label="fix the count of"];
+  L1 -> L0 [label="name, in an argument place"];
+  L3 -> L3 [label="a rule reads a rule:\nno such pattern", style=dotted, color="#d62728", fontcolor="#d62728"];
+  L3 -> L2 [label="a rule writes a declaration:\nno such conclusion", style=dotted, color="#d62728", fontcolor="#d62728"];
+}

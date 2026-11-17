@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: two_layers Pages: 1 -->
+<svg width="654pt" height="152pt"
+ viewBox="0.00 0.00 654.00 152.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 148)">
+<title>two_layers</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-148 649.75,-148 649.75,4 -4,4"/>
+<!-- K0 -->
+<g id="node1" class="node">
+<title>K0</title>
+<path fill="none" stroke="black" d="M130,-95.5C130,-95.5 12,-95.5 12,-95.5 6,-95.5 0,-89.5 0,-83.5 0,-83.5 0,-60.5 0,-60.5 0,-54.5 6,-48.5 12,-48.5 12,-48.5 130,-48.5 130,-48.5 136,-48.5 142,-54.5 142,-60.5 142,-60.5 142,-83.5 142,-83.5 142,-89.5 136,-95.5 130,-95.5"/>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-78.2" font-family="Inter" font-size="14.00">K₀</text>
+<text xml:space="preserve" text-anchor="middle" x="71" y="-58.7" font-family="Inter" font-size="14.00">the program&#39;s facts</text>
+</g>
+<!-- root -->
+<g id="node2" class="node">
+<title>root</title>
+<path fill="none" stroke="black" d="M327.5,-90C327.5,-90 250,-90 250,-90 244,-90 238,-84 238,-78 238,-78 238,-66 238,-66 238,-60 244,-54 250,-54 250,-54 327.5,-54 327.5,-54 333.5,-54 339.5,-60 339.5,-66 339.5,-66 339.5,-78 339.5,-78 339.5,-84 333.5,-90 327.5,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="288.75" y="-68.45" font-family="Inter" font-size="14.00">root = sat(K₀)</text>
+</g>
+<!-- K0&#45;&gt;root -->
+<g id="edge1" class="edge">
+<title>K0&#45;&gt;root</title>
+<path fill="none" stroke="black" d="M142.35,-72C169.45,-72 200.16,-72 226.35,-72"/>
+<polygon fill="black" stroke="black" points="226.14,-75.5 236.14,-72 226.14,-68.5 226.14,-75.5"/>
+<text xml:space="preserve" text-anchor="middle" x="190" y="-75.95" font-family="Times,serif" font-size="14.00">saturate</text>
+</g>
+<!-- C1 -->
+<g id="node3" class="node">
+<title>C1</title>
+<path fill="none" stroke="black" d="M633.75,-144C633.75,-144 503,-144 503,-144 497,-144 491,-138 491,-132 491,-132 491,-120 491,-120 491,-114 497,-108 503,-108 503,-108 633.75,-108 633.75,-108 639.75,-108 645.75,-114 645.75,-120 645.75,-120 645.75,-132 645.75,-132 645.75,-138 639.75,-144 633.75,-144"/>
+<text xml:space="preserve" text-anchor="middle" x="568.38" y="-122.45" font-family="Inter" font-size="14.00">st(C₁) = sat(root ∪ C₁)</text>
+</g>
+<!-- root&#45;&gt;C1 -->
+<g id="edge2" class="edge">
+<title>root&#45;&gt;C1</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M339.85,-88.41C345.76,-90.09 351.74,-91.66 357.5,-93 397.23,-102.23 441.8,-109.64 479.61,-115.09"/>
+<polygon fill="black" stroke="black" points="478.71,-118.49 489.1,-116.43 479.69,-111.56 478.71,-118.49"/>
+<text xml:space="preserve" text-anchor="middle" x="415.25" y="-117.8" font-family="Times,serif" font-size="14.00">add C₁, saturate</text>
+</g>
+<!-- C2 -->
+<g id="node4" class="node">
+<title>C2</title>
+<path fill="none" stroke="black" d="M633.75,-90C633.75,-90 503,-90 503,-90 497,-90 491,-84 491,-78 491,-78 491,-66 491,-66 491,-60 497,-54 503,-54 503,-54 633.75,-54 633.75,-54 639.75,-54 645.75,-60 645.75,-66 645.75,-66 645.75,-78 645.75,-78 645.75,-84 639.75,-90 633.75,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="568.38" y="-68.45" font-family="Inter" font-size="14.00">st(C₂) = sat(root ∪ C₂)</text>
+</g>
+<!-- root&#45;&gt;C2 -->
+<g id="edge3" class="edge">
+<title>root&#45;&gt;C2</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M339.7,-72C378.42,-72 433.04,-72 479.08,-72"/>
+<polygon fill="black" stroke="black" points="479.07,-75.5 489.07,-72 479.07,-68.5 479.07,-75.5"/>
+<text xml:space="preserve" text-anchor="middle" x="415.25" y="-75.95" font-family="Times,serif" font-size="14.00">add C₂, saturate</text>
+</g>
+<!-- C3 -->
+<g id="node5" class="node">
+<title>C3</title>
+<path fill="none" stroke="black" d="M633.75,-36C633.75,-36 503,-36 503,-36 497,-36 491,-30 491,-24 491,-24 491,-12 491,-12 491,-6 497,0 503,0 503,0 633.75,0 633.75,0 639.75,0 645.75,-6 645.75,-12 645.75,-12 645.75,-24 645.75,-24 645.75,-30 639.75,-36 633.75,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="568.38" y="-14.45" font-family="Inter" font-size="14.00">st(C₃) = sat(root ∪ C₃)</text>
+</g>
+<!-- root&#45;&gt;C3 -->
+<g id="edge4" class="edge">
+<title>root&#45;&gt;C3</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M339.84,-55.38C345.75,-53.68 351.74,-52.1 357.5,-50.75 397.21,-41.48 441.78,-34.11 479.59,-28.72"/>
+<polygon fill="black" stroke="black" points="479.67,-32.25 489.08,-27.39 478.7,-25.31 479.67,-32.25"/>
+<text xml:space="preserve" text-anchor="middle" x="415.25" y="-54.7" font-family="Times,serif" font-size="14.00">add C₃, saturate</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 8136e246fb7c697465ba2b32bb3b2594a041264705c68d687eb89591bfdafeec -->

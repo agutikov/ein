@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: region Pages: 1 -->
+<svg width="474pt" height="299pt"
+ viewBox="0.00 0.00 474.00 299.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 294.66)">
+<title>region</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-294.66 470,-294.66 470,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="233" y="-275.26" font-family="Times,serif" font-size="12.00">n = 2 · |R| = 3 of 4 · NOT monotone (1 site): status exercised · no stale fact</text>
+<!-- L0 -->
+<g id="node1" class="node">
+<title>L0</title>
+<text xml:space="preserve" text-anchor="middle" x="84.65" y="-237.8" font-family="Helvetica,sans-Serif" font-size="9.00">L0 · 1</text>
+</g>
+<!-- L1 -->
+<g id="node2" class="node">
+<title>L1</title>
+<text xml:space="preserve" text-anchor="middle" x="84.65" y="-141.42" font-family="Helvetica,sans-Serif" font-size="9.00">L1 · 2</text>
+</g>
+<!-- L0&#45;&gt;L1 -->
+<!-- L2 -->
+<g id="node3" class="node">
+<title>L2</title>
+<text xml:space="preserve" text-anchor="middle" x="84.65" y="-29.78" font-family="Helvetica,sans-Serif" font-size="9.00">L2 · 1</text>
+</g>
+<!-- L1&#45;&gt;L2 -->
+<!-- m0 -->
+<g id="node4" class="node">
+<title>m0</title>
+<ellipse fill="#a1d99b" stroke="#006d2c" stroke-width="1.5" cx="272.65" cy="-240.72" rx="35.71" ry="23.69"/>
+<ellipse fill="none" stroke="#006d2c" stroke-width="1.5" cx="272.65" cy="-240.72" rx="39.71" ry="27.69"/>
+<text xml:space="preserve" text-anchor="middle" x="272.65" y="-243.97" font-family="Helvetica,sans-Serif" font-size="10.00">∅</text>
+<text xml:space="preserve" text-anchor="middle" x="272.65" y="-231.22" font-family="Helvetica,sans-Serif" font-size="10.00">R · min</text>
+</g>
+<!-- m1 -->
+<g id="node5" class="node">
+<title>m1</title>
+<ellipse fill="#a1d99b" stroke="#525252" cx="198.65" cy="-144.35" rx="68.59" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="198.65" y="-147.6" font-family="Helvetica,sans-Serif" font-size="10.00">(meal Ann Soup)</text>
+<text xml:space="preserve" text-anchor="middle" x="198.65" y="-134.85" font-family="Helvetica,sans-Serif" font-size="10.00">R</text>
+</g>
+<!-- m0&#45;&gt;m1 -->
+<g id="edge3" class="edge">
+<title>m0&#45;&gt;m1</title>
+<path fill="none" stroke="#238b45" stroke-width="2" d="M253.98,-215.91C244.06,-203.26 231.79,-187.61 221.33,-174.27"/>
+<polygon fill="#238b45" stroke="#238b45" stroke-width="2" points="223.27,-173.34 217.92,-169.91 219.97,-175.93 223.27,-173.34"/>
+</g>
+<!-- m2 -->
+<g id="node6" class="node">
+<title>m2</title>
+<ellipse fill="#fee391" stroke="#6a3d9a" stroke-width="2.5" cx="346.65" cy="-144.35" rx="61.7" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="346.65" y="-147.6" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="346.65" y="-134.85" font-family="Helvetica,sans-Serif" font-size="10.00">owing 1 · hole</text>
+</g>
+<!-- m0&#45;&gt;m2 -->
+<g id="edge4" class="edge">
+<title>m0&#45;&gt;m2</title>
+<path fill="none" stroke="#fd8d3c" stroke-width="1.2" stroke-dasharray="5,2" d="M291.33,-215.91C301.28,-203.22 313.59,-187.51 324.08,-174.14"/>
+<polygon fill="#fd8d3c" stroke="#fd8d3c" stroke-width="1.2" points="325.58,-175.62 327.63,-169.61 322.28,-173.03 325.58,-175.62"/>
+</g>
+<!-- m3 -->
+<g id="node7" class="node">
+<title>m3</title>
+<ellipse fill="#a1d99b" stroke="#006d2c" stroke-width="3" cx="272.65" cy="-32.7" rx="68.59" ry="32.7"/>
+<text xml:space="preserve" text-anchor="middle" x="272.65" y="-42.33" font-family="Helvetica,sans-Serif" font-size="10.00">(meal Ann Soup)</text>
+<text xml:space="preserve" text-anchor="middle" x="272.65" y="-29.58" font-family="Helvetica,sans-Serif" font-size="10.00">(seats Ann C1)</text>
+<text xml:space="preserve" text-anchor="middle" x="272.65" y="-16.83" font-family="Helvetica,sans-Serif" font-size="10.00">R · max</text>
+</g>
+<!-- m1&#45;&gt;m3 -->
+<g id="edge5" class="edge">
+<title>m1&#45;&gt;m3</title>
+<path fill="none" stroke="#238b45" stroke-width="2" d="M213.81,-120.89C223.19,-106.98 235.5,-88.75 246.44,-72.55"/>
+<polygon fill="#238b45" stroke="#238b45" stroke-width="2" points="248.04,-73.93 249.65,-67.78 244.56,-71.58 248.04,-73.93"/>
+</g>
+<!-- m2&#45;&gt;m3 -->
+<g id="edge6" class="edge">
+<title>m2&#45;&gt;m3</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M331.14,-120.36C321.73,-106.42 309.49,-88.28 298.63,-72.2"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="300.55,-71.28 295.45,-67.48 297.07,-73.63 300.55,-71.28"/>
+<text xml:space="preserve" text-anchor="middle" x="358.66" y="-90.11" font-family="Times,serif" font-size="9.00" fill="#6a3d9a">+(meal Ann Soup)</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 734e43d5ac9032e2d3d71a592fbf9b3921f01fc7bafaf56d8d8ef424478bc493 -->

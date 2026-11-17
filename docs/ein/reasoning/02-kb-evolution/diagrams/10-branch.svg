@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: branch Pages: 1 -->
+<svg width="648pt" height="157pt"
+ viewBox="0.00 0.00 648.00 157.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 152.78)">
+<title>branch</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-152.78 644.06,-152.78 644.06,4 -4,4"/>
+<!-- C -->
+<g id="node1" class="node">
+<title>C</title>
+<ellipse fill="#fee391" stroke="black" cx="272.7" cy="-125.1" rx="124.8" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="272.7" y="-128.35" font-family="Helvetica,sans-Serif" font-size="10.00">C</text>
+<text xml:space="preserve" text-anchor="middle" x="272.7" y="-115.6" font-family="Helvetica,sans-Serif" font-size="10.00">owes I: a needs an r&#45;arrow into B</text>
+</g>
+<!-- h1 -->
+<g id="node2" class="node">
+<title>h1</title>
+<ellipse fill="#a1d99b" stroke="black" cx="61.7" cy="-32.7" rx="61.7" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="61.7" y="-35.95" font-family="Helvetica,sans-Serif" font-size="10.00">C ∪ { r(a, b₁) }</text>
+<text xml:space="preserve" text-anchor="middle" x="61.7" y="-23.2" font-family="Helvetica,sans-Serif" font-size="10.00">pays I</text>
+</g>
+<!-- C&#45;&gt;h1 -->
+<g id="edge1" class="edge">
+<title>C&#45;&gt;h1</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M221.3,-103.15C194.5,-92.12 161.24,-78.24 131.7,-65.41 125.35,-62.65 118.7,-59.71 112.13,-56.77"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="113.79,-53.68 103.24,-52.77 110.92,-60.06 113.79,-53.68"/>
+</g>
+<!-- h2 -->
+<g id="node3" class="node">
+<title>h2</title>
+<ellipse fill="#a1d99b" stroke="black" cx="202.7" cy="-32.7" rx="61.7" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="202.7" y="-35.95" font-family="Helvetica,sans-Serif" font-size="10.00">C ∪ { r(a, b₂) }</text>
+<text xml:space="preserve" text-anchor="middle" x="202.7" y="-23.2" font-family="Helvetica,sans-Serif" font-size="10.00">pays I</text>
+</g>
+<!-- C&#45;&gt;h2 -->
+<g id="edge2" class="edge">
+<title>C&#45;&gt;h2</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M255.03,-101.29C246.78,-90.63 236.82,-77.76 227.8,-66.12"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="230.61,-64.04 221.72,-58.27 225.08,-68.32 230.61,-64.04"/>
+</g>
+<!-- h3 -->
+<g id="node4" class="node">
+<title>h3</title>
+<ellipse fill="#a1d99b" stroke="black" cx="343.7" cy="-32.7" rx="61.7" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="343.7" y="-35.95" font-family="Helvetica,sans-Serif" font-size="10.00">C ∪ { r(a, b₃) }</text>
+<text xml:space="preserve" text-anchor="middle" x="343.7" y="-23.2" font-family="Helvetica,sans-Serif" font-size="10.00">pays I</text>
+</g>
+<!-- C&#45;&gt;h3 -->
+<g id="edge3" class="edge">
+<title>C&#45;&gt;h3</title>
+<path fill="none" stroke="#2171b5" stroke-width="2" d="M290.61,-101.29C298.98,-90.63 309.09,-77.76 318.23,-66.12"/>
+<polygon fill="#2171b5" stroke="#2171b5" stroke-width="2" points="320.98,-68.29 324.41,-58.26 315.48,-63.96 320.98,-68.29"/>
+</g>
+<!-- other -->
+<g id="node5" class="node">
+<title>other</title>
+<ellipse fill="#fee391" stroke="black" stroke-dasharray="5,2" cx="531.7" cy="-32.7" rx="108.36" ry="32.7"/>
+<text xml:space="preserve" text-anchor="middle" x="531.7" y="-42.33" font-family="Helvetica,sans-Serif" font-size="10.00">C ∪ { any other candidate }</text>
+<text xml:space="preserve" text-anchor="middle" x="531.7" y="-29.58" font-family="Helvetica,sans-Serif" font-size="10.00">still owes I: never in R</text>
+<text xml:space="preserve" text-anchor="middle" x="531.7" y="-16.83" font-family="Helvetica,sans-Serif" font-size="10.00">until an alternative is added</text>
+</g>
+<!-- C&#45;&gt;other -->
+<g id="edge4" class="edge">
+<title>C&#45;&gt;other</title>
+<path fill="none" stroke="#fdae6b" stroke-dasharray="5,2" d="M330.82,-103.81C366.26,-91.44 412.08,-75.45 451.01,-61.86"/>
+<polygon fill="#fdae6b" stroke="#fdae6b" points="452.08,-65.2 460.36,-58.6 449.77,-58.59 452.08,-65.2"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 3a1a117eea5eb6b7ad894729f6b787b8f53c4c6cf005dad92da0319ad0d55427 -->

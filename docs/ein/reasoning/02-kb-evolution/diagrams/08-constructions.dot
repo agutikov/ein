@@ -1,0 +1,17 @@
+digraph constructions {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  K0 [label="K₀"];
+  K0C [label="K₀ ∪ C"];
+  root [label="root = sat(K₀)"];
+  par [label="st(C ∖ {h})"];
+  scratch [label="sat(K₀ ∪ C)\nscratch"];
+  fork [label="sat(root ∪ C)\nfork: the state st(C)", penwidth=2];
+  path [label="sat(st(C ∖ {h}) ∪ {h})\na parent path"];
+  K0 -> K0C [label="add C"];
+  K0C -> scratch [label="saturate"];
+  K0 -> root [label="saturate"];
+  root -> fork [label="add C, saturate"];
+  root -> par [label="add C ∖ {h}, saturate"];
+  par -> path [label="add h, saturate"];
+}

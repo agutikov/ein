@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: leaves Pages: 1 -->
+<svg width="405pt" height="261pt"
+ viewBox="0.00 0.00 405.00 261.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256.63)">
+<title>leaves</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-256.63 400.54,-256.63 400.54,4 -4,4"/>
+<!-- e -->
+<g id="node1" class="node">
+<title>e</title>
+<ellipse fill="#fee391" stroke="black" cx="193.65" cy="-228.94" rx="55.33" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="193.65" y="-232.19" font-family="Helvetica,sans-Serif" font-size="10.00">∅</text>
+<text xml:space="preserve" text-anchor="middle" x="193.65" y="-219.44" font-family="Helvetica,sans-Serif" font-size="10.00">owes I_s, I_d</text>
+</g>
+<!-- c1 -->
+<g id="node2" class="node">
+<title>c1</title>
+<ellipse fill="#fee391" stroke="black" cx="139.65" cy="-130.31" rx="41.54" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="139.65" y="-133.56" font-family="Helvetica,sans-Serif" font-size="10.00">{c1}</text>
+<text xml:space="preserve" text-anchor="middle" x="139.65" y="-120.81" font-family="Helvetica,sans-Serif" font-size="10.00">owes I_d</text>
+</g>
+<!-- e&#45;&gt;c1 -->
+<g id="edge1" class="edge">
+<title>e&#45;&gt;c1</title>
+<path fill="none" stroke="black" d="M174.06,-206.33C168.84,-199.86 163.51,-192.54 159.4,-185.25 155.11,-177.65 151.45,-168.95 148.48,-160.78"/>
+<polygon fill="black" stroke="black" points="150.6,-160.49 146.65,-155.51 146.64,-161.87 150.6,-160.49"/>
+<text xml:space="preserve" text-anchor="middle" x="184.52" y="-176.7" font-family="Helvetica,sans-Serif" font-size="9.00">A(I_s) ∋ c1</text>
+</g>
+<!-- c2 -->
+<g id="node3" class="node">
+<title>c2</title>
+<ellipse fill="#fee391" stroke="black" cx="247.65" cy="-130.31" rx="41.54" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="247.65" y="-133.56" font-family="Helvetica,sans-Serif" font-size="10.00">{c2}</text>
+<text xml:space="preserve" text-anchor="middle" x="247.65" y="-120.81" font-family="Helvetica,sans-Serif" font-size="10.00">owes I_d</text>
+</g>
+<!-- e&#45;&gt;c2 -->
+<g id="edge2" class="edge">
+<title>e&#45;&gt;c2</title>
+<path fill="none" stroke="black" d="M206.17,-205.53C213.79,-191.9 223.59,-174.36 231.76,-159.75"/>
+<polygon fill="black" stroke="black" points="233.55,-160.85 234.64,-154.59 229.88,-158.8 233.55,-160.85"/>
+<text xml:space="preserve" text-anchor="middle" x="247.39" y="-176.7" font-family="Helvetica,sans-Serif" font-size="9.00">A(I_s) ∋ c2</text>
+</g>
+<!-- c1t -->
+<g id="node4" class="node">
+<title>c1t</title>
+<ellipse fill="#a1d99b" stroke="black" cx="38.65" cy="-27.69" rx="34.65" ry="23.69"/>
+<ellipse fill="none" stroke="black" cx="38.65" cy="-27.69" rx="38.65" ry="27.69"/>
+<text xml:space="preserve" text-anchor="middle" x="38.65" y="-30.94" font-family="Helvetica,sans-Serif" font-size="10.00">{c1, t}</text>
+<text xml:space="preserve" text-anchor="middle" x="38.65" y="-18.19" font-family="Helvetica,sans-Serif" font-size="10.00">leaf</text>
+</g>
+<!-- c1&#45;&gt;c1t -->
+<g id="edge3" class="edge">
+<title>c1&#45;&gt;c1t</title>
+<path fill="none" stroke="black" d="M116.55,-110.35C108.11,-103.15 98.62,-94.73 90.4,-86.63 81.08,-77.45 71.4,-66.91 62.96,-57.36"/>
+<polygon fill="black" stroke="black" points="64.68,-56.14 59.15,-53.01 61.52,-58.9 64.68,-56.14"/>
+<text xml:space="preserve" text-anchor="middle" x="112.52" y="-78.08" font-family="Helvetica,sans-Serif" font-size="9.00">A(I_d) ∋ t</text>
+</g>
+<!-- c1m -->
+<g id="node5" class="node">
+<title>c1m</title>
+<ellipse fill="#fcbba1" stroke="black" cx="141.65" cy="-27.69" rx="38.89" ry="23.69"/>
+<text xml:space="preserve" text-anchor="middle" x="141.65" y="-30.94" font-family="Helvetica,sans-Serif" font-size="10.00">{c1, m}</text>
+<text xml:space="preserve" text-anchor="middle" x="141.65" y="-18.19" font-family="Helvetica,sans-Serif" font-size="10.00">dead</text>
+</g>
+<!-- c1&#45;&gt;c1m -->
+<g id="edge4" class="edge">
+<title>c1&#45;&gt;c1m</title>
+<path fill="none" stroke="black" d="M140.11,-106.23C140.39,-92.17 140.75,-74.04 141.05,-58.86"/>
+<polygon fill="black" stroke="black" points="143.14,-59.22 141.16,-53.18 138.94,-59.14 143.14,-59.22"/>
+<text xml:space="preserve" text-anchor="middle" x="165.46" y="-78.08" font-family="Helvetica,sans-Serif" font-size="9.00">A(I_d) ∋ m</text>
+</g>
+<!-- c2t -->
+<g id="node6" class="node">
+<title>c2t</title>
+<ellipse fill="#a1d99b" stroke="black" cx="246.65" cy="-27.69" rx="34.65" ry="23.69"/>
+<ellipse fill="none" stroke="black" cx="246.65" cy="-27.69" rx="38.65" ry="27.69"/>
+<text xml:space="preserve" text-anchor="middle" x="246.65" y="-30.94" font-family="Helvetica,sans-Serif" font-size="10.00">{c2, t}</text>
+<text xml:space="preserve" text-anchor="middle" x="246.65" y="-18.19" font-family="Helvetica,sans-Serif" font-size="10.00">leaf</text>
+</g>
+<!-- c2&#45;&gt;c2t -->
+<g id="edge5" class="edge">
+<title>c2&#45;&gt;c2t</title>
+<path fill="none" stroke="black" d="M247.42,-106.23C247.29,-93.38 247.13,-77.15 246.99,-62.85"/>
+<polygon fill="black" stroke="black" points="249.09,-63.08 246.93,-57.1 244.89,-63.12 249.09,-63.08"/>
+<text xml:space="preserve" text-anchor="middle" x="269.33" y="-78.08" font-family="Helvetica,sans-Serif" font-size="9.00">A(I_d) ∋ t</text>
+</g>
+<!-- c2m -->
+<g id="node7" class="node">
+<title>c2m</title>
+<ellipse fill="#a1d99b" stroke="black" cx="353.65" cy="-27.69" rx="38.89" ry="23.69"/>
+<ellipse fill="none" stroke="black" cx="353.65" cy="-27.69" rx="42.89" ry="27.69"/>
+<text xml:space="preserve" text-anchor="middle" x="353.65" y="-30.94" font-family="Helvetica,sans-Serif" font-size="10.00">{c2, m}</text>
+<text xml:space="preserve" text-anchor="middle" x="353.65" y="-18.19" font-family="Helvetica,sans-Serif" font-size="10.00">leaf</text>
+</g>
+<!-- c2&#45;&gt;c2m -->
+<g id="edge6" class="edge">
+<title>c2&#45;&gt;c2m</title>
+<path fill="none" stroke="black" d="M270.95,-110.21C279.51,-103 289.17,-94.6 297.65,-86.63 307.54,-77.33 317.98,-66.76 327.13,-57.21"/>
+<polygon fill="black" stroke="black" points="328.4,-58.91 331.02,-53.12 325.36,-56.02 328.4,-58.91"/>
+<text xml:space="preserve" text-anchor="middle" x="333.49" y="-78.08" font-family="Helvetica,sans-Serif" font-size="9.00">A(I_d) ∋ m</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: ad4dfcf8750de00b7a14f350ff323ebc904405b974dac25cb858656e253d62f4 -->

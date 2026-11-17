@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: levels Pages: 1 -->
+<svg width="520pt" height="184pt"
+ viewBox="0.00 0.00 520.00 184.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 179.5)">
+<title>levels</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-179.5 515.62,-179.5 515.62,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_R</title>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="256,-8 256,-85.25 470,-85.25 470,-8 256,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="363" y="-67.95" font-family="Times,serif" font-size="14.00">the set of states of R</text>
+</g>
+<!-- S1 -->
+<g id="node1" class="node">
+<title>S1</title>
+<path fill="none" stroke="black" d="M450,-52C450,-52 420,-52 420,-52 414,-52 408,-46 408,-40 408,-40 408,-28 408,-28 408,-22 414,-16 420,-16 420,-16 450,-16 450,-16 456,-16 462,-22 462,-28 462,-28 462,-40 462,-40 462,-46 456,-52 450,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="435" y="-30.45" font-family="Inter" font-size="14.00">S₁</text>
+</g>
+<!-- S2 -->
+<g id="node2" class="node">
+<title>S2</title>
+<path fill="none" stroke="black" d="M306,-52C306,-52 276,-52 276,-52 270,-52 264,-46 264,-40 264,-40 264,-28 264,-28 264,-22 270,-16 276,-16 276,-16 306,-16 306,-16 312,-16 318,-22 318,-28 318,-28 318,-40 318,-40 318,-46 312,-52 306,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="291" y="-30.45" font-family="Inter" font-size="14.00">S₂</text>
+</g>
+<!-- S3 -->
+<g id="node3" class="node">
+<title>S3</title>
+<path fill="none" stroke="black" d="M378,-52C378,-52 348,-52 348,-52 342,-52 336,-46 336,-40 336,-40 336,-28 336,-28 336,-22 342,-16 348,-16 348,-16 378,-16 378,-16 384,-16 390,-22 390,-28 390,-28 390,-40 390,-40 390,-46 384,-52 378,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="363" y="-30.45" font-family="Inter" font-size="14.00">S₃</text>
+</g>
+<!-- rule -->
+<g id="node4" class="node">
+<title>rule</title>
+<path fill="none" stroke="#e377c2" stroke-width="2" d="M256,-175.5C256,-175.5 12,-175.5 12,-175.5 6,-175.5 0,-169.5 0,-163.5 0,-163.5 0,-140.5 0,-140.5 0,-134.5 6,-128.5 12,-128.5 12,-128.5 256,-128.5 256,-128.5 262,-128.5 268,-134.5 268,-140.5 268,-140.5 268,-163.5 268,-163.5 268,-169.5 262,-175.5 256,-175.5"/>
+<text xml:space="preserve" text-anchor="middle" x="134" y="-158.2" font-family="Inter" font-size="14.00" fill="#e377c2">a rule</text>
+<text xml:space="preserve" text-anchor="middle" x="134" y="-138.7" font-family="Inter" font-size="14.00" fill="#e377c2">reads and concludes facts of one state</text>
+</g>
+<!-- rule&#45;&gt;S2 -->
+<g id="edge1" class="edge">
+<title>rule&#45;&gt;S2</title>
+<path fill="none" stroke="#e377c2" d="M165.02,-128.08C192.04,-108.12 231.08,-79.27 258.52,-59"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="260.52,-61.87 266.49,-53.11 256.36,-56.24 260.52,-61.87"/>
+<text xml:space="preserve" text-anchor="middle" x="232.92" y="-97.2" font-family="Times,serif" font-size="14.00">S₂ ⊨ M</text>
+</g>
+<!-- claim -->
+<g id="node5" class="node">
+<title>claim</title>
+<path fill="none" stroke="#17becf" stroke-width="2" d="M499.62,-175.5C499.62,-175.5 298.38,-175.5 298.38,-175.5 292.38,-175.5 286.38,-169.5 286.38,-163.5 286.38,-163.5 286.38,-140.5 286.38,-140.5 286.38,-134.5 292.38,-128.5 298.38,-128.5 298.38,-128.5 499.62,-128.5 499.62,-128.5 505.62,-128.5 511.62,-134.5 511.62,-140.5 511.62,-140.5 511.62,-163.5 511.62,-163.5 511.62,-169.5 505.62,-175.5 499.62,-175.5"/>
+<text xml:space="preserve" text-anchor="middle" x="399" y="-158.2" font-family="Inter" font-size="14.00" fill="#17becf">a claim</text>
+<text xml:space="preserve" text-anchor="middle" x="399" y="-138.7" font-family="Inter" font-size="14.00" fill="#17becf">a sentence about the whole set</text>
+</g>
+<!-- claim&#45;&gt;S1 -->
+<g id="edge2" class="edge">
+<title>claim&#45;&gt;S1</title>
+<path fill="none" stroke="#17becf" d="M406.11,-128.08C411.9,-109.43 420.1,-83.01 426.28,-63.09"/>
+<polygon fill="#17becf" stroke="#17becf" points="429.59,-64.25 429.21,-53.66 422.9,-62.17 429.59,-64.25"/>
+</g>
+<!-- claim&#45;&gt;S2 -->
+<g id="edge3" class="edge">
+<title>claim&#45;&gt;S2</title>
+<path fill="none" stroke="#17becf" d="M371.4,-128.21C357.43,-116.09 340.6,-100.56 327,-85.25 320.59,-78.03 314.23,-69.67 308.69,-61.88"/>
+<polygon fill="#17becf" stroke="#17becf" points="311.58,-59.91 303.02,-53.67 305.82,-63.88 311.58,-59.91"/>
+</g>
+<!-- claim&#45;&gt;S3 -->
+<g id="edge4" class="edge">
+<title>claim&#45;&gt;S3</title>
+<path fill="none" stroke="#17becf" d="M391.89,-128.08C386.1,-109.43 377.9,-83.01 371.72,-63.09"/>
+<polygon fill="#17becf" stroke="#17becf" points="375.1,-62.17 368.79,-53.66 368.41,-64.25 375.1,-62.17"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 1f98cdb61b6e056e00073d56d5a3468f0962cdc869bf4de12e3dd3be27695412 -->

@@ -1,0 +1,25 @@
+digraph root_and_payments {
+  rankdir=LR;
+  graph [nodesep=0.35, ranksep=1.1];
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  "Guest" [shape=box, label="Guest"];
+  "Chair" [shape=box, label="Chair"];
+  "Drink" [shape=box, label="Drink"];
+  "Ann" [shape=oval, label="Ann"];
+  "C1" [shape=oval, label="C1"];
+  "C2" [shape=oval, label="C2"];
+  "Milk" [shape=oval, label="Milk"];
+  "Tea" [shape=oval, label="Tea"];
+  { rank=same; "C2"; "C1"; "Milk"; "Tea" }
+  "Guest" -> "Ann" [style=dashed, arrowtail=empty, dir=back, label="is-a"];
+  "C1" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
+  "C2" -> "Chair" [style=dashed, arrowhead=empty, label="is-a"];
+  "Tea" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
+  "Milk" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
+  "C1" -> "Milk" [label="never-with", color="#17becf", fontcolor="#17becf", style=solid, constraint=false];
+  "Ann" -> "C2" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
+  "Ann" -> "C1" [label="seats ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
+  "Ann" -> "Milk" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
+  "Ann" -> "Tea" [label="drinks ?", color="#e377c2", fontcolor="#e377c2", style=dotted];
+}

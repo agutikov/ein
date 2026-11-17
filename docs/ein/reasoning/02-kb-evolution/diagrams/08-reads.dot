@@ -1,0 +1,14 @@
+digraph reads {
+  rankdir=LR;
+  node [fontname="Inter", shape=ellipse];
+  subgraph cluster_D { label="D: a commitment can change these"; style=dashed;
+    seats [label="seats\ncandidate"];
+    allergic [label="allergic\ncandidate"];
+    meal [label="meal"];
+  }
+  isa [label="is-a\nstatic"];
+  seats -> meal [label="depth 0"];
+  allergic -> meal [label="depth 1: a site", color="#d62728", fontcolor="#d62728", style=dashed];
+  isa -> seats [label="proposes", style=dotted];
+  isa -> allergic [label="proposes", style=dotted];
+}

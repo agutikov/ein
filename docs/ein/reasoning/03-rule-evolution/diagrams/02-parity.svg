@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: parity Pages: 1 -->
+<svg width="475pt" height="262pt"
+ viewBox="0.00 0.00 475.00 262.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 258)">
+<title>parity</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-258 471.25,-258 471.25,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_even</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M90.38,-8C90.38,-8 455.25,-8 455.25,-8 461.25,-8 467.25,-14 467.25,-20 467.25,-20 467.25,-113 467.25,-113 467.25,-119 461.25,-125 455.25,-125 455.25,-125 90.38,-125 90.38,-125 84.38,-125 78.38,-119 78.38,-113 78.38,-113 78.38,-20 78.38,-20 78.38,-14 84.38,-8 90.38,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="272.81" y="-107.7" font-family="Times,serif" font-size="14.00" fill="#888888">even: two negative edges on the cycle</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_odd</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M12,-133C12,-133 259.75,-133 259.75,-133 265.75,-133 271.75,-139 271.75,-145 271.75,-145 271.75,-234 271.75,-234 271.75,-240 265.75,-246 259.75,-246 259.75,-246 12,-246 12,-246 6,-246 0,-240 0,-234 0,-234 0,-145 0,-145 0,-139 6,-133 12,-133"/>
+<text xml:space="preserve" text-anchor="middle" x="135.88" y="-228.7" font-family="Times,serif" font-size="14.00" fill="#888888">odd: one negative edge on the cycle</text>
+</g>
+<!-- pe -->
+<g id="node1" class="node">
+<title>pe</title>
+<polygon fill="none" stroke="black" points="162.38,-72 108.38,-72 108.38,-36 162.38,-36 162.38,-72"/>
+<text xml:space="preserve" text-anchor="middle" x="135.38" y="-49.33" font-family="Times,serif" font-size="14.00">p</text>
+</g>
+<!-- qe -->
+<g id="node2" class="node">
+<title>qe</title>
+<polygon fill="none" stroke="black" points="436.25,-72 382.25,-72 382.25,-36 436.25,-36 436.25,-72"/>
+<text xml:space="preserve" text-anchor="middle" x="409.25" y="-49.33" font-family="Times,serif" font-size="14.00">q</text>
+</g>
+<!-- pe&#45;&gt;qe -->
+<g id="edge2" class="edge">
+<title>pe&#45;&gt;qe</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M162.7,-46.22C205.5,-34.75 292.6,-16.35 364.25,-32.75 367.41,-33.47 370.61,-34.46 373.77,-35.6"/>
+<ellipse fill="none" stroke="#d62728" cx="377.8" cy="-37.25" rx="4" ry="4"/>
+<text xml:space="preserve" text-anchor="middle" x="323" y="-36.7" font-family="Times,serif" font-size="14.00" fill="#d62728">second rule</text>
+</g>
+<!-- qe&#45;&gt;pe -->
+<g id="edge1" class="edge">
+<title>qe&#45;&gt;pe</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M381.86,-54C332.51,-54 226.28,-54 171.16,-54"/>
+<ellipse fill="none" stroke="#d62728" cx="166.94" cy="-54" rx="4" ry="4"/>
+<text xml:space="preserve" text-anchor="middle" x="323" y="-57.95" font-family="Times,serif" font-size="14.00" fill="#d62728">first rule</text>
+</g>
+<!-- qo -->
+<g id="node3" class="node">
+<title>qo</title>
+<polygon fill="none" stroke="black" points="162.38,-177 108.38,-177 108.38,-141 162.38,-141 162.38,-177"/>
+<text xml:space="preserve" text-anchor="middle" x="135.38" y="-154.32" font-family="Times,serif" font-size="14.00">q</text>
+</g>
+<!-- qo&#45;&gt;qo -->
+<g id="edge3" class="edge">
+<title>qo&#45;&gt;qo</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M107.93,-170.43C91.78,-182.06 100.93,-195 135.38,-195 163.63,-195 174.87,-186.29 169.08,-176.74"/>
+<ellipse fill="none" stroke="#d62728" cx="165.99" cy="-173.62" rx="4" ry="4"/>
+<text xml:space="preserve" text-anchor="middle" x="135.38" y="-198.95" font-family="Times,serif" font-size="14.00" fill="#d62728">the rule</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 91173cf90da0c9dea0006074f9f0fe1baf6c4bf412a00bddbc0c5003684969a4 -->

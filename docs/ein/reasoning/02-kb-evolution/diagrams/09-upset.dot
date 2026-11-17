@@ -1,0 +1,16 @@
+digraph upset {
+  rankdir=TB;
+  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
+  e [label="∅", fillcolor="#a1d99b"];
+  a [label="{a}", fillcolor="#a1d99b"];
+  b [label="{b}", fillcolor="#a1d99b"];
+  c [label="{c}", fillcolor="#a1d99b"];
+  ab [label="{a, b}\ndead · in N", fillcolor="#fcbba1", penwidth=2.5];
+  ac [label="{a, c}", fillcolor="#a1d99b"];
+  bc [label="{b, c}", fillcolor="#a1d99b"];
+  abc [label="{a, b, c}\ndead: above {a, b}", fillcolor="#fcbba1", style="filled,dashed"];
+  e -> a; e -> b; e -> c;
+  a -> ab; a -> ac; b -> ab; b -> bc; c -> ac; c -> bc;
+  ab -> abc [color="#cb181d", penwidth=2];
+  ac -> abc; bc -> abc;
+}

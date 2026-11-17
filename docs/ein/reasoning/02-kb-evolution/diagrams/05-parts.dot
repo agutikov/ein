@@ -1,0 +1,23 @@
+digraph parts {
+  graph [rankdir=LR, nodesep=0.3, ranksep=0.5, fontname="Helvetica", fontsize=10];
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#f7f7f7"];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.6];
+  h [label="H\nthe candidates"];
+  pl [label="root's pair layer\nnodes of one and two candidates"];
+  sk [label="the small KB's pair layer\nthe same nodes, the puzzle's statements taken out"];
+  th [label="the theory's share\nand the puzzle's"];
+  cov [label="the cover\ngroups: at most one"];
+  owed [label="what root owes\nand each instance's alternatives"];
+  eo [label="owed groups, grids\nexactly one"];
+  q [label="the questions"];
+  wn [label="the whole node\nevery open candidate committed"];
+  cp [label="the coupling\nedges, ties, debts"];
+  comp [label="the components\nR is a product over them"];
+  h -> pl; h -> sk;
+  pl -> th; sk -> th;
+  sk -> cov;
+  cov -> eo; owed -> eo;
+  cov -> q;
+  q -> cp; pl -> cp; wn -> cp; owed -> cp;
+  cp -> comp;
+}

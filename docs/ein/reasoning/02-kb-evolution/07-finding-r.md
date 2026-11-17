@@ -89,75 +89,7 @@ The running example of [the hypothesis space](05-hypothesis-space.md): one guest
 drink, $t$ or $m$, each relation functional, and nobody at the first chair drinks milk. Its table has sixteen rows,
 drawn by the engine as the lattice, $\emptyset$ at the top:
 
-```dot
-digraph region {
-  graph [rankdir=TB, labelloc=t, fontsize=12, nodesep=0.25, ranksep=0.6, newrank=true, label="n = 4 · |R| = 3 of 16 · monotone"];
-  node [fontsize=10, fontname="Helvetica"];
-  edge [arrowsize=0.6];
-  L0 [shape=plaintext, fontsize=9, label="L0 · 1"];
-  L1 [shape=plaintext, fontsize=9, label="L1 · 4"];
-  L2 [shape=plaintext, fontsize=9, label="L2 · 6"];
-  L3 [shape=plaintext, fontsize=9, label="L3 · 4"];
-  L4 [shape=plaintext, fontsize=9, label="L4 · 1"];
-  L0 -> L1 [style=invis];
-  L1 -> L2 [style=invis];
-  L2 -> L3 [style=invis];
-  L3 -> L4 [style=invis];
-  m0 [label="∅\nowing 2", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m1 [label="(drinks Ann Milk)\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m2 [label="(drinks Ann Tea)\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m4 [label="(seats Ann C1)\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m8 [label="(seats Ann C2)\nowing 1", shape=ellipse, style="filled", fillcolor="#fee391", color="#525252", penwidth=1];
-  m3 [label="(drinks Ann Milk)\n(drinks Ann Tea)\ndead+owing 1", shape=ellipse, style="filled", fillcolor="#fcbba1:#fee391", color="#525252", penwidth=1];
-  m5 [label="(drinks Ann Milk)\n(seats Ann C1)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m6 [label="(drinks Ann Tea)\n(seats Ann C1)\nR · min · max", shape=ellipse, style="filled", fillcolor="#a1d99b", color="#006d2c", penwidth=3, peripheries=2];
-  m9 [label="(drinks Ann Milk)\n(seats Ann C2)\nR · min · max", shape=ellipse, style="filled", fillcolor="#9ecae1", color="#006d2c", penwidth=3, peripheries=2];
-  m10 [label="(drinks Ann Tea)\n(seats Ann C2)\nR · min · max", shape=ellipse, style="filled", fillcolor="#bcbddc", color="#006d2c", penwidth=3, peripheries=2];
-  m12 [label="(seats Ann C1)\n(seats Ann C2)\ndead+owing 1", shape=ellipse, style="filled", fillcolor="#fcbba1:#fee391", color="#525252", penwidth=1];
-  m7 [label="(drinks Ann Milk)\n(drinks Ann Tea)\n(seats Ann C1)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m11 [label="(drinks Ann Milk)\n(drinks Ann Tea)\n(seats Ann C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m13 [label="(drinks Ann Milk)\n(seats Ann C1)\n(seats Ann C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m14 [label="(drinks Ann Tea)\n(seats Ann C1)\n(seats Ann C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  m15 [label="(drinks Ann Milk)\n(drinks Ann Tea)\n(seats Ann C1)\n(seats Ann C2)\ndead", shape=ellipse, style="filled", fillcolor="#fcbba1", color="#525252", penwidth=1];
-  { rank=same; L0; m0 }
-  { rank=same; L1; m1; m2; m4; m8 }
-  { rank=same; L2; m3; m5; m6; m9; m10; m12 }
-  { rank=same; L3; m7; m11; m13; m14 }
-  { rank=same; L4; m15 }
-  m0 -> m1 [color="#fdae6b", style=solid, penwidth=1.2];
-  m0 -> m2 [color="#fdae6b", style=solid, penwidth=1.2];
-  m0 -> m4 [color="#fdae6b", style=solid, penwidth=1.2];
-  m0 -> m8 [color="#fdae6b", style=solid, penwidth=1.2];
-  m1 -> m3 [color="#cb181d", style=dashed, penwidth=1.2];
-  m1 -> m5 [color="#cb181d", style=dashed, penwidth=1.2];
-  m1 -> m9 [color="#2171b5", style=solid, penwidth=2];
-  m2 -> m3 [color="#cb181d", style=dashed, penwidth=1.2];
-  m2 -> m6 [color="#2171b5", style=solid, penwidth=2];
-  m2 -> m10 [color="#2171b5", style=solid, penwidth=2];
-  m4 -> m5 [color="#cb181d", style=dashed, penwidth=1.2];
-  m4 -> m6 [color="#2171b5", style=solid, penwidth=2];
-  m4 -> m12 [color="#cb181d", style=dashed, penwidth=1.2];
-  m8 -> m9 [color="#2171b5", style=solid, penwidth=2];
-  m8 -> m10 [color="#2171b5", style=solid, penwidth=2];
-  m8 -> m12 [color="#cb181d", style=dashed, penwidth=1.2];
-  m3 -> m7 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m3 -> m11 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m5 -> m7 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m5 -> m13 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m6 -> m7 [color="#cb181d", style=solid, penwidth=1.2];
-  m6 -> m14 [color="#cb181d", style=solid, penwidth=1.2];
-  m9 -> m11 [color="#cb181d", style=solid, penwidth=1.2];
-  m9 -> m13 [color="#cb181d", style=solid, penwidth=1.2];
-  m10 -> m11 [color="#cb181d", style=solid, penwidth=1.2];
-  m10 -> m14 [color="#cb181d", style=solid, penwidth=1.2];
-  m12 -> m13 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m12 -> m14 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m7 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m11 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m13 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-  m14 -> m15 [color="#bdbdbd", style=solid, penwidth=0.6];
-}
-```
+![The sixteen commitments of the running example as the lattice](diagrams/07-cube.svg)
 
 Amber is owing, red dead, a red and amber node dead and owing at once, and a filled node with a double heavy border
 a member of $R$, each a component of its own and so each a colour of its own
@@ -313,29 +245,7 @@ are read off the program's shape and need no enumeration
 
 **The licences on the lattice.** Two of them, on the table of § 2:
 
-```dot
-digraph licences {
-  graph [rankdir=TB, nodesep=0.3, ranksep=0.5, fontname="Helvetica", fontsize=10, newrank=true];
-  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
-  edge [arrowsize=0.6, color="#bdbdbd"];
-  subgraph cluster_l1 {
-    label="L1: {c1, c2} evaluated, dead; its up-set concluded"; fontsize=10; color="#cb181d";
-    d [label="{c1, c2}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
-    d1 [label="{c1, c2, t}\ndead by L1", fillcolor="#fcbba1", style="filled,dashed"];
-    d2 [label="{c1, c2, m}\ndead by L1", fillcolor="#fcbba1", style="filled,dashed"];
-    d3 [label="{c1, c2, t, m}\ndead by L1", fillcolor="#fcbba1", style="filled,dashed"];
-    d -> d1; d -> d2; d1 -> d3; d2 -> d3;
-  }
-  subgraph cluster_l4 {
-    label="L4: {c2, t} in R, both extensions dead; maximal concluded"; fontsize=10; color="#006d2c";
-    s [label="{c2, t}\nevaluated: in R", fillcolor="#a1d99b", penwidth=2];
-    s1 [label="{c1, c2, t}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
-    s2 [label="{c2, t, m}\nevaluated: dead", fillcolor="#fcbba1", penwidth=2];
-    s3 [label="every proper superset\ndead by L1: {c2, t} is maximal", shape=box, fillcolor="#f7f7f7", style="filled,dashed"];
-    s -> s1; s -> s2; s1 -> s3; s2 -> s3;
-  }
-}
-```
+![Two licences on the lattice: nodes evaluated, and nodes concluded with no evaluation](diagrams/07-licences.svg)
 
 A heavy outline is a node whose state was evaluated, a dashed outline a conclusion no evaluation was needed for.
 
@@ -497,26 +407,7 @@ the coupling of [the hypothesis space](05-hypothesis-space.md#the-coupling-a-rou
 For the table of § 2, with $I_{\mathrm{s}}$ the chair owed and $I_{\mathrm{d}}$ the drink, choosing $I_{\mathrm{s}}$
 first:
 
-```dot
-digraph leaves {
-  graph [rankdir=TB, nodesep=0.35, ranksep=0.55, fontname="Helvetica", fontsize=10];
-  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
-  edge [fontname="Helvetica", fontsize=9, arrowsize=0.6];
-  e [label="∅\nowes I_s, I_d", fillcolor="#fee391"];
-  c1 [label="{c1}\nowes I_d", fillcolor="#fee391"];
-  c2 [label="{c2}\nowes I_d", fillcolor="#fee391"];
-  c1t [label="{c1, t}\nleaf", fillcolor="#a1d99b", peripheries=2];
-  c1m [label="{c1, m}\ndead", fillcolor="#fcbba1"];
-  c2t [label="{c2, t}\nleaf", fillcolor="#a1d99b", peripheries=2];
-  c2m [label="{c2, m}\nleaf", fillcolor="#a1d99b", peripheries=2];
-  e -> c1 [label="A(I_s) ∋ c1"];
-  e -> c2 [label="A(I_s) ∋ c2"];
-  c1 -> c1t [label="A(I_d) ∋ t"];
-  c1 -> c1m [label="A(I_d) ∋ m"];
-  c2 -> c2t [label="A(I_d) ∋ t"];
-  c2 -> c2m [label="A(I_d) ∋ m"];
-}
-```
+![The obligation tree of the running example, the chair chosen first](diagrams/07-leaves.svg)
 
 An arrow adds one alternative of the instance its tail owes. Seven nodes are evaluated, and
 $\operatorname{Leaves}(\emptyset)$ is the three members of $R$. The nine other rows of the table are not needed to

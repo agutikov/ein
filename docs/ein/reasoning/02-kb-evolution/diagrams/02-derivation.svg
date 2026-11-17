@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: derivation Pages: 1 -->
+<svg width="809pt" height="125pt"
+ viewBox="0.00 0.00 809.00 125.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 121)">
+<title>derivation</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-121 804.5,-121 804.5,4 -4,4"/>
+<!-- f_ba78d8e6bc -->
+<g id="node1" class="node">
+<title>f_ba78d8e6bc</title>
+<path fill="none" stroke="black" d="M195.25,-117C195.25,-117 12,-117 12,-117 6,-117 0,-111 0,-105 0,-105 0,-93 0,-93 0,-87 6,-81 12,-81 12,-81 195.25,-81 195.25,-81 201.25,-81 207.25,-87 207.25,-93 207.25,-93 207.25,-105 207.25,-105 207.25,-111 201.25,-117 195.25,-117"/>
+<text xml:space="preserve" text-anchor="middle" x="103.62" y="-95.45" font-family="Inter" font-size="14.00">lives&#45;in(Norwegian, House&#45;1)</text>
+</g>
+<!-- fire0_neighbour -->
+<g id="node6" class="node">
+<title>fire0_neighbour</title>
+<path fill="none" stroke="#e377c2" stroke-width="2" d="M317,-90C317,-90 255.25,-90 255.25,-90 249.25,-90 243.25,-84 243.25,-78 243.25,-78 243.25,-66 243.25,-66 243.25,-60 249.25,-54 255.25,-54 255.25,-54 317,-54 317,-54 323,-54 329,-60 329,-66 329,-66 329,-78 329,-78 329,-84 323,-90 317,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="286.12" y="-68.45" font-family="Inter" font-size="14.00" fill="#e377c2">neighbour</text>
+</g>
+<!-- f_ba78d8e6bc&#45;&gt;fire0_neighbour -->
+<g id="edge1" class="edge">
+<title>f_ba78d8e6bc&#45;&gt;fire0_neighbour</title>
+<path fill="none" stroke="#e377c2" d="M207.53,-83.61C215.84,-82.36 224,-81.14 231.72,-79.99"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="232.21,-83.45 241.58,-78.51 231.17,-76.53 232.21,-83.45"/>
+</g>
+<!-- f_203bb25e0e -->
+<g id="node2" class="node">
+<title>f_203bb25e0e</title>
+<path fill="none" stroke="black" d="M187,-63C187,-63 20.25,-63 20.25,-63 14.25,-63 8.25,-57 8.25,-51 8.25,-51 8.25,-39 8.25,-39 8.25,-33 14.25,-27 20.25,-27 20.25,-27 187,-27 187,-27 193,-27 199,-33 199,-39 199,-39 199,-51 199,-51 199,-57 193,-63 187,-63"/>
+<text xml:space="preserve" text-anchor="middle" x="103.62" y="-41.45" font-family="Inter" font-size="14.00">next&#45;to(House&#45;1, House&#45;2)</text>
+</g>
+<!-- f_203bb25e0e&#45;&gt;fire0_neighbour -->
+<g id="edge2" class="edge">
+<title>f_203bb25e0e&#45;&gt;fire0_neighbour</title>
+<path fill="none" stroke="#e377c2" d="M199.37,-59.17C210.5,-60.84 221.54,-62.49 231.81,-64.02"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="231.13,-67.46 241.54,-65.48 232.17,-60.54 231.13,-67.46"/>
+</g>
+<!-- f_e42df9f04f -->
+<g id="node3" class="node">
+<title>f_e42df9f04f</title>
+<path fill="none" stroke="black" d="M530.62,-36C530.62,-36 390.88,-36 390.88,-36 384.88,-36 378.88,-30 378.88,-24 378.88,-24 378.88,-12 378.88,-12 378.88,-6 384.88,0 390.88,0 390.88,0 530.62,0 530.62,0 536.62,0 542.62,-6 542.62,-12 542.62,-12 542.62,-24 542.62,-24 542.62,-30 536.62,-36 530.62,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="460.75" y="-14.45" font-family="Inter" font-size="14.00">owns(Norwegian, Fox)</text>
+</g>
+<!-- fire0_fox&#45;keeps&#45;away -->
+<g id="node7" class="node">
+<title>fire0_fox&#45;keeps&#45;away</title>
+<path fill="none" stroke="#17becf" stroke-width="2" d="M698.5,-63C698.5,-63 604.5,-63 604.5,-63 598.5,-63 592.5,-57 592.5,-51 592.5,-51 592.5,-39 592.5,-39 592.5,-33 598.5,-27 604.5,-27 604.5,-27 698.5,-27 698.5,-27 704.5,-27 710.5,-33 710.5,-39 710.5,-39 710.5,-51 710.5,-51 710.5,-57 704.5,-63 698.5,-63"/>
+<text xml:space="preserve" text-anchor="middle" x="651.5" y="-41.45" font-family="Inter" font-size="14.00" fill="#17becf">fox&#45;keeps&#45;away</text>
+</g>
+<!-- f_e42df9f04f&#45;&gt;fire0_fox&#45;keeps&#45;away -->
+<g id="edge4" class="edge">
+<title>f_e42df9f04f&#45;&gt;fire0_fox&#45;keeps&#45;away</title>
+<path fill="none" stroke="#17becf" d="M542.89,-29.61C555.59,-31.42 568.62,-33.29 581.02,-35.06"/>
+<polygon fill="#17becf" stroke="#17becf" points="580.32,-38.5 590.72,-36.45 581.31,-31.57 580.32,-38.5"/>
+</g>
+<!-- f_cb1915def2 -->
+<g id="node4" class="node">
+<title>f_cb1915def2</title>
+<path fill="none" stroke="black" stroke-width="2" d="M544.5,-90C544.5,-90 377,-90 377,-90 371,-90 365,-84 365,-78 365,-78 365,-66 365,-66 365,-60 371,-54 377,-54 377,-54 544.5,-54 544.5,-54 550.5,-54 556.5,-60 556.5,-66 556.5,-66 556.5,-78 556.5,-78 556.5,-84 550.5,-90 544.5,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="460.75" y="-68.45" font-family="Inter" font-size="14.00">near(Norwegian, House&#45;2)</text>
+</g>
+<!-- f_cb1915def2&#45;&gt;fire0_fox&#45;keeps&#45;away -->
+<g id="edge5" class="edge">
+<title>f_cb1915def2&#45;&gt;fire0_fox&#45;keeps&#45;away</title>
+<path fill="none" stroke="#17becf" d="M557.23,-58.34C565.22,-57.2 573.19,-56.06 580.93,-54.95"/>
+<polygon fill="#17becf" stroke="#17becf" points="581.17,-58.45 590.57,-53.57 580.17,-51.52 581.17,-58.45"/>
+</g>
+<!-- f_a1f94f5b63 -->
+<g id="node5" class="node">
+<title>f_a1f94f5b63</title>
+<path fill="none" stroke="black" stroke-width="2" d="M788.5,-63C788.5,-63 758.5,-63 758.5,-63 752.5,-63 746.5,-57 746.5,-51 746.5,-51 746.5,-39 746.5,-39 746.5,-33 752.5,-27 758.5,-27 758.5,-27 788.5,-27 788.5,-27 794.5,-27 800.5,-33 800.5,-39 800.5,-39 800.5,-51 800.5,-51 800.5,-57 794.5,-63 788.5,-63"/>
+<text xml:space="preserve" text-anchor="middle" x="773.5" y="-41.45" font-family="Inter" font-size="14.00">false</text>
+</g>
+<!-- fire0_neighbour&#45;&gt;f_cb1915def2 -->
+<g id="edge3" class="edge">
+<title>fire0_neighbour&#45;&gt;f_cb1915def2</title>
+<path fill="none" stroke="#e377c2" stroke-width="2" d="M329.35,-72C336.7,-72 344.62,-72 352.81,-72"/>
+<polygon fill="#e377c2" stroke="#e377c2" stroke-width="2" points="351.08,-75.5 361.08,-72 351.08,-68.5 351.08,-75.5"/>
+</g>
+<!-- fire0_fox&#45;keeps&#45;away&#45;&gt;f_a1f94f5b63 -->
+<g id="edge6" class="edge">
+<title>fire0_fox&#45;keeps&#45;away&#45;&gt;f_a1f94f5b63</title>
+<path fill="none" stroke="#17becf" stroke-width="2" d="M710.74,-45C718.74,-45 726.77,-45 734.28,-45"/>
+<polygon fill="#17becf" stroke="#17becf" stroke-width="2" points="732.54,-48.5 742.54,-45 732.54,-41.5 732.54,-48.5"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 405bab4c5bc99bd44e49f2b572fd6bbc98233c099b848485b6c12e3b68267148 -->

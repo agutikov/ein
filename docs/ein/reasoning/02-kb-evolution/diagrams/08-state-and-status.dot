@@ -1,0 +1,9 @@
+digraph arrows {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  L [label="L = (2^H, ⊆)\nthe commitments"];
+  KB [label="knowledge bases"];
+  B [label="{0, 1}²"];
+  L -> KB [label="st\nthe state"];
+  KB -> B [label="(dead, owes > 0)\nthe status"];
+}

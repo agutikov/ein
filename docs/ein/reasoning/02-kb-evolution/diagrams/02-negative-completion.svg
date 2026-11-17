@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: negative_completion Pages: 1 -->
+<svg width="233pt" height="420pt"
+ viewBox="0.00 0.00 233.00 420.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 416)">
+<title>negative_completion</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-416 229.25,-416 229.25,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_before</title>
+<polygon fill="none" stroke="black" points="0,-8 0,-202 225.25,-202 225.25,-8 0,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="112.62" y="-184.7" font-family="Times,serif" font-size="14.00">one positive fact, r functional</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_after</title>
+<polygon fill="none" stroke="black" points="20.5,-210 20.5,-404 203.75,-404 203.75,-210 20.5,-210"/>
+<text xml:space="preserve" text-anchor="middle" x="112.12" y="-386.7" font-family="Times,serif" font-size="14.00">what saturation adds</text>
+</g>
+<!-- a0 -->
+<g id="node1" class="node">
+<title>a0</title>
+<ellipse fill="none" stroke="black" cx="55.5" cy="-92" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="55.5" y="-88.45" font-family="Inter" font-size="14.00">a</text>
+</g>
+<!-- b0 -->
+<g id="node2" class="node">
+<title>b0</title>
+<ellipse fill="none" stroke="black" cx="168.75" cy="-35" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="168.75" y="-31.45" font-family="Inter" font-size="14.00">b</text>
+</g>
+<!-- a0&#45;&gt;b0 -->
+<g id="edge1" class="edge">
+<title>a0&#45;&gt;b0</title>
+<path fill="none" stroke="black" d="M78.21,-80.87C94.68,-72.44 117.55,-60.72 136.05,-51.24"/>
+<polygon fill="black" stroke="black" points="137.44,-54.46 144.74,-46.79 134.25,-48.23 137.44,-54.46"/>
+<text xml:space="preserve" text-anchor="middle" x="112.12" y="-72.56" font-family="Times,serif" font-size="14.00">r</text>
+</g>
+<!-- c0 -->
+<g id="node3" class="node">
+<title>c0</title>
+<ellipse fill="none" stroke="black" cx="168.75" cy="-92" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="168.75" y="-88.45" font-family="Inter" font-size="14.00">b′</text>
+</g>
+<!-- a0&#45;&gt;c0 -->
+<!-- d0 -->
+<g id="node4" class="node">
+<title>d0</title>
+<ellipse fill="none" stroke="black" cx="168.75" cy="-149" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="168.75" y="-145.45" font-family="Inter" font-size="14.00">b″</text>
+</g>
+<!-- a0&#45;&gt;d0 -->
+<!-- a1 -->
+<g id="node5" class="node">
+<title>a1</title>
+<ellipse fill="none" stroke="black" cx="55.5" cy="-294" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="55.5" y="-290.45" font-family="Inter" font-size="14.00">a</text>
+</g>
+<!-- b1 -->
+<g id="node6" class="node">
+<title>b1</title>
+<ellipse fill="none" stroke="black" cx="168.75" cy="-237" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="168.75" y="-233.45" font-family="Inter" font-size="14.00">b</text>
+</g>
+<!-- a1&#45;&gt;b1 -->
+<g id="edge4" class="edge">
+<title>a1&#45;&gt;b1</title>
+<path fill="none" stroke="black" d="M78.21,-282.87C94.68,-274.44 117.55,-262.72 136.05,-253.24"/>
+<polygon fill="black" stroke="black" points="137.44,-256.46 144.74,-248.79 134.25,-250.23 137.44,-256.46"/>
+<text xml:space="preserve" text-anchor="middle" x="112.12" y="-274.56" font-family="Times,serif" font-size="14.00">r</text>
+</g>
+<!-- c1 -->
+<g id="node7" class="node">
+<title>c1</title>
+<ellipse fill="none" stroke="black" cx="168.75" cy="-294" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="168.75" y="-290.45" font-family="Inter" font-size="14.00">b′</text>
+</g>
+<!-- a1&#45;&gt;c1 -->
+<g id="edge5" class="edge">
+<title>a1&#45;&gt;c1</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M82.86,-294C97,-294 114.65,-294 130.19,-294"/>
+<polygon fill="#d62728" stroke="#d62728" points="130.06,-297.5 140.06,-294 130.06,-290.5 130.06,-297.5"/>
+<text xml:space="preserve" text-anchor="middle" x="112.12" y="-297.95" font-family="Times,serif" font-size="14.00" fill="#d62728">¬ r</text>
+</g>
+<!-- d1 -->
+<g id="node8" class="node">
+<title>d1</title>
+<ellipse fill="none" stroke="black" cx="168.75" cy="-351" rx="27" ry="19.45"/>
+<text xml:space="preserve" text-anchor="middle" x="168.75" y="-347.45" font-family="Inter" font-size="14.00">b″</text>
+</g>
+<!-- a1&#45;&gt;d1 -->
+<g id="edge6" class="edge">
+<title>a1&#45;&gt;d1</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M78.21,-305.13C94.68,-313.56 117.55,-325.28 136.05,-334.76"/>
+<polygon fill="#d62728" stroke="#d62728" points="134.25,-337.77 144.74,-339.21 137.44,-331.54 134.25,-337.77"/>
+<text xml:space="preserve" text-anchor="middle" x="112.12" y="-331.56" font-family="Times,serif" font-size="14.00" fill="#d62728">¬ r</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 85f6ca5d17b937845a9f285d7a706f41c7b2103e2238dd466334f49a92964599 -->

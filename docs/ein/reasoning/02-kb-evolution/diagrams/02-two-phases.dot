@@ -1,0 +1,11 @@
+digraph two_phases {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  K [label="K"];
+  q0 [label="K′₀ = pos(K)\nquiescent"];
+  q1 [label="K′₁ = pos(K′₀ ∪ Aκ₀)\nquiescent"];
+  qm [label="K′ₘ = sat(K)\nquiescent, nothing passes", penwidth=2];
+  K -> q0 [label="closure:\nevery positive candidate"];
+  q0 -> q1 [label="boundary admits κ₀,\nthen closure", style=dashed];
+  q1 -> qm [label="… one admission a round …", style=dashed];
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: coupling Pages: 1 -->
+<svg width="731pt" height="151pt"
+ viewBox="0.00 0.00 731.00 151.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 147)">
+<title>coupling</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-147 727.25,-147 727.25,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="361.62" y="-7.95" font-family="Times,serif" font-size="14.00">the questions&#39; hypergraph, the whole node&#39;s edges. 3 questions, 1 edges (0 a debt&#39;s alone, dashed)</text>
+<!-- q0 -->
+<g id="node1" class="node">
+<title>q0</title>
+<polygon fill="none" stroke="black" points="353.56,-143 249.81,-143 249.81,-107 353.56,-107 353.56,-143"/>
+<text xml:space="preserve" text-anchor="middle" x="301.69" y="-128.25" font-family="Times,serif" font-size="10.00">q0 (drinks Ann *)</text>
+<text xml:space="preserve" text-anchor="middle" x="301.69" y="-115.5" font-family="Times,serif" font-size="10.00">2 open of 2</text>
+</g>
+<!-- q1 -->
+<g id="node2" class="node">
+<title>q1</title>
+<polygon fill="none" stroke="black" points="350.56,-61.25 252.81,-61.25 252.81,-25.25 350.56,-25.25 350.56,-61.25"/>
+<text xml:space="preserve" text-anchor="middle" x="301.69" y="-46.5" font-family="Times,serif" font-size="10.00">q1 (seats Ann *)</text>
+<text xml:space="preserve" text-anchor="middle" x="301.69" y="-33.75" font-family="Times,serif" font-size="10.00">2 open of 2</text>
+</g>
+<!-- q0&#45;&#45;q1 -->
+<g id="edge1" class="edge">
+<title>q0&#45;&#45;q1</title>
+<path fill="none" stroke="black" d="M301.69,-106.7C301.69,-93.32 301.69,-74.89 301.69,-61.52"/>
+<text xml:space="preserve" text-anchor="middle" x="304.31" y="-81.4" font-family="Times,serif" font-size="8.00">2</text>
+</g>
+<!-- q2 -->
+<g id="node3" class="node">
+<title>q2</title>
+<polygon fill="none" stroke="gray" points="473.44,-143 371.94,-143 371.94,-107 473.44,-107 473.44,-143"/>
+<text xml:space="preserve" text-anchor="middle" x="422.69" y="-128.25" font-family="Times,serif" font-size="10.00" fill="gray">q2 (wears Ann *)</text>
+<text xml:space="preserve" text-anchor="middle" x="422.69" y="-115.5" font-family="Times,serif" font-size="10.00" fill="gray">2 open of 2</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: d5058463c81c406532405f12233f0977d8a9bb366d4361f29a77bee1b2c2da14 -->

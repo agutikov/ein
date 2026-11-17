@@ -1,0 +1,11 @@
+digraph kb {
+  rankdir=BT;
+  "1" -> "2" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "2" -> "3" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "1" -> "1" [label="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "3" -> "3" [label="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_45dd2ba665 [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
+  f_45dd2ba665 -> "(src Y)" [label="#1", color="#d62728", style=dashed];
+  "1" -> "1" [label="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  "2" -> "1" [label="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
+}

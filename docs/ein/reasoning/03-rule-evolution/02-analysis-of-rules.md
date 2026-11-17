@@ -54,17 +54,7 @@ $$
 \operatorname{g}:\ \ \operatorname{s}(x) \land \operatorname{absent}(\operatorname{q}(x)) \implies \operatorname{r}(x)
 $$
 
-```dot
-digraph dependency {
-  rankdir=LR;
-  node [shape=rectangle];
-  subgraph cluster_0 { label="stratum 0"; style="dashed,rounded"; color="#888888"; fontcolor="#888888"; p; s; q; }
-  subgraph cluster_1 { label="stratum 1"; style="dashed,rounded"; color="#888888"; fontcolor="#888888"; r; }
-  p -> s [label="one"];
-  s -> r [label="g"];
-  q -> r [label="g, under an absence", style=dashed, color="#d62728", fontcolor="#d62728", arrowhead=odot];
-}
-```
+![The dependency graph of two rules, one edge under an absence](diagrams/02-dependency.svg)
 
 A rectangle is a relation, an arrow an edge labelled by the rule it comes from; the dashed red arrow with a
 round head is the negative edge. The graph has three edges: $(\operatorname{p}, \operatorname{s}, +)$ from the
@@ -142,22 +132,7 @@ $$
 \operatorname{p}(x) \land \operatorname{absent}(\operatorname{q}(x)) \implies \operatorname{q}(x)
 $$
 
-```dot
-digraph parity {
-  rankdir=LR;
-  node [shape=rectangle];
-  edge [style=dashed, color="#d62728", fontcolor="#d62728", arrowhead=odot];
-  subgraph cluster_even { label="even: two negative edges on the cycle"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-    pe [label="p"]; qe [label="q"];
-    qe -> pe [label="first rule"];
-    pe -> qe [label="second rule"];
-  }
-  subgraph cluster_odd { label="odd: one negative edge on the cycle"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-    qo [label="q"];
-    qo -> qo [label="the rule"];
-  }
-}
-```
+![Two negative cycles: an even one of two rules and an odd one of one](diagrams/02-parity.svg)
 
 In the even one, the state with $\operatorname{p}$ and without $\operatorname{q}$ is a fixpoint, and so is the
 state with $\operatorname{q}$ and without $\operatorname{p}$. In the odd one, the rule concludes the very fact

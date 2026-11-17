@@ -32,23 +32,7 @@ applied by reading, none while a state is saturated or a region searched.
 
 Reading composes four maps, the first three on the text and the fourth on the rules and a state:
 
-```dot
-digraph reading {
-  rankdir=LR;
-  node [shape=box, style=rounded];
-  text [label="the text\nand its imports' texts"];
-  res  [label="resolved\nevery module once,\nevery name its full name"];
-  exp  [label="expanded\nno macro call left"];
-  flat [label="flat\neach conclusion a set of literals"];
-  inst [label="instances\none per rule and activator"];
-  S    [label="the state S", shape=ellipse];
-  text -> res  [label="resolve"];
-  res  -> exp  [label="expand"];
-  exp  -> flat [label="flatten"];
-  flat -> inst [label="instantiate"];
-  S    -> inst [label="its activators", style=dashed];
-}
-```
+![The four maps reading composes on a rule set](diagrams/03-reading.svg)
 
 A box is the rule set at a stage and an arrow a map; the dashed arrow says that the last map reads the state, and
 so is applied again as the state grows.

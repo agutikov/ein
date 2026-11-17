@@ -1,0 +1,13 @@
+digraph branch {
+  rankdir=TB;
+  node [fontname="Helvetica", fontsize=10, shape=ellipse, style=filled];
+  C [label="C\nowes I: a needs an r-arrow into B", fillcolor="#fee391"];
+  h1 [label="C ∪ { r(a, b₁) }\npays I", fillcolor="#a1d99b"];
+  h2 [label="C ∪ { r(a, b₂) }\npays I", fillcolor="#a1d99b"];
+  h3 [label="C ∪ { r(a, b₃) }\npays I", fillcolor="#a1d99b"];
+  other [label="C ∪ { any other candidate }\nstill owes I: never in R\nuntil an alternative is added", fillcolor="#fee391", style="filled,dashed"];
+  C -> h1 [color="#2171b5", penwidth=2];
+  C -> h2 [color="#2171b5", penwidth=2];
+  C -> h3 [color="#2171b5", penwidth=2];
+  C -> other [color="#fdae6b", style=dashed];
+}

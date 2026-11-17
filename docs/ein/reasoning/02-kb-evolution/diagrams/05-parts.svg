@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: parts Pages: 1 -->
+<svg width="1132pt" height="261pt"
+ viewBox="0.00 0.00 1132.00 261.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256.69)">
+<title>parts</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-256.69 1128.25,-256.69 1128.25,4 -4,4"/>
+<!-- h -->
+<g id="node1" class="node">
+<title>h</title>
+<path fill="#f7f7f7" stroke="black" d="M76,-201C76,-201 12,-201 12,-201 6,-201 0,-195 0,-189 0,-189 0,-177 0,-177 0,-171 6,-165 12,-165 12,-165 76,-165 76,-165 82,-165 88,-171 88,-177 88,-177 88,-189 88,-189 88,-195 82,-201 76,-201"/>
+<text xml:space="preserve" text-anchor="middle" x="44" y="-186.25" font-family="Helvetica,sans-Serif" font-size="10.00">H</text>
+<text xml:space="preserve" text-anchor="middle" x="44" y="-173.5" font-family="Helvetica,sans-Serif" font-size="10.00">the candidates</text>
+</g>
+<!-- pl -->
+<g id="node2" class="node">
+<title>pl</title>
+<path fill="#f7f7f7" stroke="black" d="M333.5,-230C333.5,-230 180.25,-230 180.25,-230 174.25,-230 168.25,-224 168.25,-218 168.25,-218 168.25,-206 168.25,-206 168.25,-200 174.25,-194 180.25,-194 180.25,-194 333.5,-194 333.5,-194 339.5,-194 345.5,-200 345.5,-206 345.5,-206 345.5,-218 345.5,-218 345.5,-224 339.5,-230 333.5,-230"/>
+<text xml:space="preserve" text-anchor="middle" x="256.88" y="-215.25" font-family="Helvetica,sans-Serif" font-size="10.00">root&#39;s pair layer</text>
+<text xml:space="preserve" text-anchor="middle" x="256.88" y="-202.5" font-family="Helvetica,sans-Serif" font-size="10.00">nodes of one and two candidates</text>
+</g>
+<!-- h&#45;&gt;pl -->
+<g id="edge1" class="edge">
+<title>h&#45;&gt;pl</title>
+<path fill="none" stroke="black" d="M88.44,-188.97C109.49,-191.87 135.65,-195.47 160.99,-198.95"/>
+<polygon fill="black" stroke="black" points="160.38,-200.99 166.61,-199.72 160.95,-196.83 160.38,-200.99"/>
+</g>
+<!-- sk -->
+<g id="node3" class="node">
+<title>sk</title>
+<path fill="#f7f7f7" stroke="black" d="M377.75,-172C377.75,-172 136,-172 136,-172 130,-172 124,-166 124,-160 124,-160 124,-148 124,-148 124,-142 130,-136 136,-136 136,-136 377.75,-136 377.75,-136 383.75,-136 389.75,-142 389.75,-148 389.75,-148 389.75,-160 389.75,-160 389.75,-166 383.75,-172 377.75,-172"/>
+<text xml:space="preserve" text-anchor="middle" x="256.88" y="-157.25" font-family="Helvetica,sans-Serif" font-size="10.00">the small KB&#39;s pair layer</text>
+<text xml:space="preserve" text-anchor="middle" x="256.88" y="-144.5" font-family="Helvetica,sans-Serif" font-size="10.00">the same nodes, the puzzle&#39;s statements taken out</text>
+</g>
+<!-- h&#45;&gt;sk -->
+<g id="edge2" class="edge">
+<title>h&#45;&gt;sk</title>
+<path fill="none" stroke="black" d="M88.44,-177.03C97.07,-175.84 106.57,-174.53 116.51,-173.17"/>
+<polygon fill="black" stroke="black" points="116.67,-175.26 122.33,-172.37 116.1,-171.1 116.67,-175.26"/>
+</g>
+<!-- th -->
+<g id="node4" class="node">
+<title>th</title>
+<path fill="#f7f7f7" stroke="black" d="M553.12,-204C553.12,-204 472.62,-204 472.62,-204 466.62,-204 460.62,-198 460.62,-192 460.62,-192 460.62,-180 460.62,-180 460.62,-174 466.62,-168 472.62,-168 472.62,-168 553.12,-168 553.12,-168 559.12,-168 565.12,-174 565.12,-180 565.12,-180 565.12,-192 565.12,-192 565.12,-198 559.12,-204 553.12,-204"/>
+<text xml:space="preserve" text-anchor="middle" x="512.88" y="-189.25" font-family="Helvetica,sans-Serif" font-size="10.00">the theory&#39;s share</text>
+<text xml:space="preserve" text-anchor="middle" x="512.88" y="-176.5" font-family="Helvetica,sans-Serif" font-size="10.00">and the puzzle&#39;s</text>
+</g>
+<!-- pl&#45;&gt;th -->
+<g id="edge3" class="edge">
+<title>pl&#45;&gt;th</title>
+<path fill="none" stroke="black" d="M346,-202.98C381.28,-199.37 421,-195.3 452.72,-192.06"/>
+<polygon fill="black" stroke="black" points="452.93,-194.14 458.68,-191.44 452.5,-189.97 452.93,-194.14"/>
+</g>
+<!-- cp -->
+<g id="node10" class="node">
+<title>cp</title>
+<path fill="#f7f7f7" stroke="black" d="M940.25,-143C940.25,-143 862,-143 862,-143 856,-143 850,-137 850,-131 850,-131 850,-119 850,-119 850,-113 856,-107 862,-107 862,-107 940.25,-107 940.25,-107 946.25,-107 952.25,-113 952.25,-119 952.25,-119 952.25,-131 952.25,-131 952.25,-137 946.25,-143 940.25,-143"/>
+<text xml:space="preserve" text-anchor="middle" x="901.12" y="-128.25" font-family="Helvetica,sans-Serif" font-size="10.00">the coupling</text>
+<text xml:space="preserve" text-anchor="middle" x="901.12" y="-115.5" font-family="Helvetica,sans-Serif" font-size="10.00">edges, ties, debts</text>
+</g>
+<!-- pl&#45;&gt;cp -->
+<g id="edge10" class="edge">
+<title>pl&#45;&gt;cp</title>
+<path fill="none" stroke="black" d="M339.58,-230.44C451.6,-251.62 656.85,-275.53 814,-209 843.11,-196.68 867.9,-169.57 883.31,-149.46"/>
+<polygon fill="black" stroke="black" points="884.97,-150.74 886.88,-144.68 881.6,-148.23 884.97,-150.74"/>
+</g>
+<!-- sk&#45;&gt;th -->
+<g id="edge4" class="edge">
+<title>sk&#45;&gt;th</title>
+<path fill="none" stroke="black" d="M390.08,-170.66C412.11,-173.43 433.93,-176.18 452.88,-178.57"/>
+<polygon fill="black" stroke="black" points="452.56,-180.64 458.77,-179.31 453.08,-176.48 452.56,-180.64"/>
+</g>
+<!-- cov -->
+<g id="node5" class="node">
+<title>cov</title>
+<path fill="#f7f7f7" stroke="black" d="M557.62,-146C557.62,-146 468.12,-146 468.12,-146 462.12,-146 456.12,-140 456.12,-134 456.12,-134 456.12,-122 456.12,-122 456.12,-116 462.12,-110 468.12,-110 468.12,-110 557.62,-110 557.62,-110 563.62,-110 569.62,-116 569.62,-122 569.62,-122 569.62,-134 569.62,-134 569.62,-140 563.62,-146 557.62,-146"/>
+<text xml:space="preserve" text-anchor="middle" x="512.88" y="-131.25" font-family="Helvetica,sans-Serif" font-size="10.00">the cover</text>
+<text xml:space="preserve" text-anchor="middle" x="512.88" y="-118.5" font-family="Helvetica,sans-Serif" font-size="10.00">groups: at most one</text>
+</g>
+<!-- sk&#45;&gt;cov -->
+<g id="edge5" class="edge">
+<title>sk&#45;&gt;cov</title>
+<path fill="none" stroke="black" d="M390.08,-140.47C410.51,-138.38 430.77,-136.3 448.72,-134.46"/>
+<polygon fill="black" stroke="black" points="448.48,-136.6 454.23,-133.9 448.05,-132.42 448.48,-136.6"/>
+</g>
+<!-- eo -->
+<g id="node7" class="node">
+<title>eo</title>
+<path fill="#f7f7f7" stroke="black" d="M767.12,-140C767.12,-140 682.88,-140 682.88,-140 676.88,-140 670.88,-134 670.88,-128 670.88,-128 670.88,-116 670.88,-116 670.88,-110 676.88,-104 682.88,-104 682.88,-104 767.12,-104 767.12,-104 773.12,-104 779.12,-110 779.12,-116 779.12,-116 779.12,-128 779.12,-128 779.12,-134 773.12,-140 767.12,-140"/>
+<text xml:space="preserve" text-anchor="middle" x="725" y="-125.25" font-family="Helvetica,sans-Serif" font-size="10.00">owed groups, grids</text>
+<text xml:space="preserve" text-anchor="middle" x="725" y="-112.5" font-family="Helvetica,sans-Serif" font-size="10.00">exactly one</text>
+</g>
+<!-- cov&#45;&gt;eo -->
+<g id="edge6" class="edge">
+<title>cov&#45;&gt;eo</title>
+<path fill="none" stroke="black" d="M569.91,-126.4C598.71,-125.58 633.85,-124.57 663.3,-123.73"/>
+<polygon fill="black" stroke="black" points="663.21,-125.84 669.14,-123.57 663.09,-121.64 663.21,-125.84"/>
+</g>
+<!-- q -->
+<g id="node8" class="node">
+<title>q</title>
+<path fill="#f7f7f7" stroke="black" d="M754,-198C754,-198 696,-198 696,-198 690,-198 684,-192 684,-186 684,-186 684,-174 684,-174 684,-168 690,-162 696,-162 696,-162 754,-162 754,-162 760,-162 766,-168 766,-174 766,-174 766,-186 766,-186 766,-192 760,-198 754,-198"/>
+<text xml:space="preserve" text-anchor="middle" x="725" y="-176.88" font-family="Helvetica,sans-Serif" font-size="10.00">the questions</text>
+</g>
+<!-- cov&#45;&gt;q -->
+<g id="edge8" class="edge">
+<title>cov&#45;&gt;q</title>
+<path fill="none" stroke="black" d="M569.91,-141.87C603.25,-150.12 645.09,-160.47 676.75,-168.31"/>
+<polygon fill="black" stroke="black" points="675.95,-170.27 682.28,-169.68 676.96,-166.2 675.95,-170.27"/>
+</g>
+<!-- owed -->
+<g id="node6" class="node">
+<title>owed</title>
+<path fill="#f7f7f7" stroke="black" d="M588,-88C588,-88 437.75,-88 437.75,-88 431.75,-88 425.75,-82 425.75,-76 425.75,-76 425.75,-64 425.75,-64 425.75,-58 431.75,-52 437.75,-52 437.75,-52 588,-52 588,-52 594,-52 600,-58 600,-64 600,-64 600,-76 600,-76 600,-82 594,-88 588,-88"/>
+<text xml:space="preserve" text-anchor="middle" x="512.88" y="-73.25" font-family="Helvetica,sans-Serif" font-size="10.00">what root owes</text>
+<text xml:space="preserve" text-anchor="middle" x="512.88" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">and each instance&#39;s alternatives</text>
+</g>
+<!-- owed&#45;&gt;eo -->
+<g id="edge7" class="edge">
+<title>owed&#45;&gt;eo</title>
+<path fill="none" stroke="black" d="M588.55,-88.48C613.14,-94.56 640.15,-101.25 663.55,-107.04"/>
+<polygon fill="black" stroke="black" points="662.89,-109.04 669.21,-108.44 663.89,-104.96 662.89,-109.04"/>
+</g>
+<!-- owed&#45;&gt;cp -->
+<g id="edge12" class="edge">
+<title>owed&#45;&gt;cp</title>
+<path fill="none" stroke="black" d="M600.18,-70.26C660.67,-71.98 743.05,-77.42 814,-93 826.24,-95.69 839.08,-99.74 851,-104.07"/>
+<polygon fill="black" stroke="black" points="850.13,-105.98 856.48,-106.11 851.59,-102.05 850.13,-105.98"/>
+</g>
+<!-- q&#45;&gt;cp -->
+<g id="edge9" class="edge">
+<title>q&#45;&gt;cp</title>
+<path fill="none" stroke="black" d="M766.39,-167.24C789.07,-160.08 817.75,-151.02 842.73,-143.13"/>
+<polygon fill="black" stroke="black" points="843.14,-145.2 848.23,-141.39 841.88,-141.2 843.14,-145.2"/>
+</g>
+<!-- wn -->
+<g id="node9" class="node">
+<title>wn</title>
+<path fill="#f7f7f7" stroke="black" d="M802,-36C802,-36 648,-36 648,-36 642,-36 636,-30 636,-24 636,-24 636,-12 636,-12 636,-6 642,0 648,0 648,0 802,0 802,0 808,0 814,-6 814,-12 814,-12 814,-24 814,-24 814,-30 808,-36 802,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="725" y="-21.25" font-family="Helvetica,sans-Serif" font-size="10.00">the whole node</text>
+<text xml:space="preserve" text-anchor="middle" x="725" y="-8.5" font-family="Helvetica,sans-Serif" font-size="10.00">every open candidate committed</text>
+</g>
+<!-- wn&#45;&gt;cp -->
+<g id="edge11" class="edge">
+<title>wn&#45;&gt;cp</title>
+<path fill="none" stroke="black" d="M780.34,-36.47C791.79,-41.22 803.55,-46.77 814,-53 836.86,-66.62 859.84,-86.2 876.31,-101.5"/>
+<polygon fill="black" stroke="black" points="874.72,-102.89 880.53,-105.48 877.6,-99.84 874.72,-102.89"/>
+</g>
+<!-- comp -->
+<g id="node11" class="node">
+<title>comp</title>
+<path fill="#f7f7f7" stroke="black" d="M1112.25,-143C1112.25,-143 1000.25,-143 1000.25,-143 994.25,-143 988.25,-137 988.25,-131 988.25,-131 988.25,-119 988.25,-119 988.25,-113 994.25,-107 1000.25,-107 1000.25,-107 1112.25,-107 1112.25,-107 1118.25,-107 1124.25,-113 1124.25,-119 1124.25,-119 1124.25,-131 1124.25,-131 1124.25,-137 1118.25,-143 1112.25,-143"/>
+<text xml:space="preserve" text-anchor="middle" x="1056.25" y="-128.25" font-family="Helvetica,sans-Serif" font-size="10.00">the components</text>
+<text xml:space="preserve" text-anchor="middle" x="1056.25" y="-115.5" font-family="Helvetica,sans-Serif" font-size="10.00">R is a product over them</text>
+</g>
+<!-- cp&#45;&gt;comp -->
+<g id="edge13" class="edge">
+<title>cp&#45;&gt;comp</title>
+<path fill="none" stroke="black" d="M952.69,-125C961.56,-125 970.95,-125 980.31,-125"/>
+<polygon fill="black" stroke="black" points="980.29,-127.1 986.29,-125 980.29,-122.9 980.29,-127.1"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 060bc6771426d4a988581739f954e247f91a79aa634c2839a32f2e452cad73a7 -->

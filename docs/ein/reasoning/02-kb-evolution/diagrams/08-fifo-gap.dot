@@ -1,0 +1,11 @@
+digraph fifo_gap {
+  rankdir=LR;
+  node [fontname="Inter", shape=box, style=rounded];
+  e [label="∅\nstate { }"];
+  a [label="{ a }\nstate { a, q }"];
+  ab1 [label="{ a, b } built at once\nstate { a, b, p, q }\np is stale", color="#d62728", fontcolor="#d62728"];
+  ab2 [label="{ a, b } by way of { a }\nstate { a, b, q }"];
+  e -> a [label="add a:\nρ₁ admitted"];
+  e -> ab1 [label="add a, b: ρ₂ and ρ₁ wait together,\nρ₂ is admitted first"];
+  a -> ab2 [label="add b:\nρ₂'s guard fails, q is held"];
+}

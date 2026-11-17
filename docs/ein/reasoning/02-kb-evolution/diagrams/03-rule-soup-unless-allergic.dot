@@ -1,0 +1,19 @@
+digraph rule_soup_unless_allergic_lhs_rhs {
+  rankdir=TB;
+  label="soup-unless-allergic"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?g_L" [label="?g", shape=diamond];
+    "?c_L" [label="?c", shape=diamond];
+    "?g_L" -> "?c_L" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "h1_allergic_L" [shape=octagon, label="allergic", color="#2ca02c", fontcolor="#2ca02c"];
+      "h1_allergic_L" -> "?g_L" [label="1", color="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?g_R" [label="?g", shape=diamond];
+    "Soup_R" [label="Soup", shape=rectangle];
+    "?g_R" -> "Soup_R" [label="meal", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+  }
+}
