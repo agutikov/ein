@@ -57,8 +57,10 @@ In words:
 - an edge from each vertex the pattern reads to each vertex the conclusion writes, **negative** where the read
   stands under an odd number of absences and positive otherwise; a read under a universal premise stands under
   two, and is positive again;
-- a premise that reads the stored negation of whatever fact a variable stands for reads every vertex $\lnot r$
-  of the graph;
+- a literal $\lnot x$ of a conclusion, the negation of whatever fact a variable stands for, writes every vertex
+  $\lnot r$ of the graph, since which fact it is only a match says. No premise is of that kind: a stored negation
+  in a pattern is the negation of a fact pattern, whose relation is an atom of the instance
+  ([the rules](../01-static-ir/02-rewriting-rules.md#packing-and-unpacking));
 - a positive edge from the rule's own name, the relation whose facts apply it, to each vertex it writes;
 - an equality or an inequality is computed and never stored, and adds no edge.
 

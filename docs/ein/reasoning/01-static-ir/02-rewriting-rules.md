@@ -2,8 +2,9 @@
 
 A rule rewrites the graph a knowledge base is ([the knowledge base](01-knowledge-base.md)). This page does the
 rewriting first: a pattern, which is the same graph with variables in it; a match of a pattern in a knowledge
-base; the conditions a match can be held to; a conclusion; and the knowledge base that rewriting at a match
-gives. Then it says how a rule is declared, what a declaration must meet, and the kinds of rule. Everything
+base; the conditions a match can be held to; a conclusion; the knowledge base that rewriting at a match
+gives; and how a rewriting moves a fact into a context and out of one. Then it says how a rule is declared, what
+a declaration must meet, and the kinds of rule. Everything
 here is about one knowledge base as it stands. When a rule is applied, in what order, and what a knowledge base
 becomes under all its rules is [the part after this one](../02-kb-evolution/01-firing.md).
 
@@ -74,7 +75,7 @@ definition:
   another arrow to any object, an atom or a fact;
 - a fact pattern that is no premise is sent to a fact that need not be held: the pattern
   $\operatorname{says}(x, \operatorname{owns}(x, y))$ matches into the nested fact, which is how a pattern reads
-  what a fact is about;
+  what a fact is about, a fact in a context ([packing and unpacking](#packing-and-unpacking));
 - $m$ **need not be injective**: two variables may be sent to one object.
 
 The pattern above has exactly one match in the knowledge base of three facts drawn beside it:
@@ -297,7 +298,10 @@ $G(K \cup \psi\theta)$ is its pushout **among the graphs in which one list of ar
 conclusion's facts are glued on along the match, and a fact of the conclusion that $K$ already has is the node
 $K$ has, not a second one. In graphs that may hold two nodes with one list of arrows the pushout would add a
 copy; the second condition of [the graph](01-knowledge-base.md#the-graph) is what makes the gluing a union of
-sets of facts. Both horizontal arrows are inclusions. The conditions are read on the same square:
+sets of facts. Both horizontal arrows are inclusions. The graphs of the square are read with their held sets,
+the premises being the held set of a pattern: $L \to L^{+}$ may add nodes, and it may add none and only hold a
+node that $L$ has under an arrow ([an unpacking](#packing-and-unpacking)). The conditions are read on the same
+square:
 
 - **an equality or an inequality is an application condition on the match**: it restricts which matches count,
   and adds nothing to $L$;
@@ -308,6 +312,180 @@ The pattern and the conclusion above drawn as one graph with labelled arrows, $L
 dashed:
 
 ![The rule pet-follows-owner as one graph, the conclusion dashed](diagrams/02-pet-follows-owner-overlay.svg)
+
+## Packing and unpacking
+
+A fact is in the global context, in the context of a fact, or in both
+([the knowledge base](01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)). This section says
+what a rule reads of a fact in each, and how a rewriting moves a fact from one to another. It needs nothing the
+sections above do not have.
+
+**A premise reads the global context.** A match sends a premise to a held fact, and a fact pattern under an
+argument arrow of a premise to the fact that stands there, held or not. So a pattern reads a fact $g$ in one of
+two places, which do not overlap:
+
+$$
+\begin{aligned}
+K \models g\,\theta &\iff g\theta \in K && \text{a premise: } g\theta \text{ is in the global context} \\
+K \models c(u, g)\,\theta &\iff c(u, g)\theta \in K && \text{under an arrow of a premise: } g\theta \text{ is in the context of a held fact of } c
+\end{aligned}
+$$
+
+and the second says nothing of whether $g\theta \in K$. **Every rule is matched in the global context**: there
+is no rule of a context, and no rule whose premise a fact satisfies by standing under an arrow.
+
+**A rule for a context is the same rule, wrapped.** A rule that is to read and to conclude what a context holds
+writes each of its fact patterns under an arrow of a fact pattern of the context's relation. The first rule of
+the three-house example, and the same rule for what somebody says:
+
+$$
+\begin{aligned}
+\operatorname{owns}(p, x) \;\land\; \operatorname{lives-in}(p, h) \;&\implies\; \operatorname{pet-at}(x, h) \\
+\operatorname{says}(w, \operatorname{owns}(p, x)) \;\land\; \operatorname{says}(w, \operatorname{lives-in}(p, h)) \;&\implies\; \operatorname{says}(w, \operatorname{pet-at}(x, h))
+\end{aligned}
+$$
+
+The first has a match where the two facts are held, and holds its conclusion. The second has a match where one
+witness says both, and holds that the witness says the conclusion; the fact
+$\operatorname{pet-at}(x, h)\theta$ is then in a context and is not held. Neither rule has a match at the facts
+the other reads. The context's relation may be a parameter, as any relation may, so that one rule serves every
+context that names it. With parameters $C$ and $R$:
+
+$$
+C(w, R(x, y)) \;\land\; C(w, \lnot R(x, y)) \;\implies\; C(w, \bot)
+$$
+
+*whoever says a fact and its negation says what is impossible*, applied once for each activator. What the text
+of such a rule fixes is the count of arrows, of the context's fact and of the fact in it; the two relations are
+whatever an activator names.
+
+**Falsity in a context is a fact about the context.** The conclusion $C(w, \bot)$ above is a fact of the
+relation $C$ that points at $\bot$. It does not hold $\bot$, so the result of the rewriting is alive
+([a context gives a fact no truth](01-knowledge-base.md#a-context-gives-a-fact-no-truth)). It is read as any
+fact is, by a premise that writes the context, $\operatorname{says}(w, \bot)$, and under a universal premise:
+
+$$
+\operatorname{forall}\big(w;\ \ \operatorname{witness}(w),\ \ \operatorname{says}(w, \bot)\big) \;\implies\; \bot
+$$
+
+is dead exactly where every witness says what is impossible. So the global $\bot$ is reached from a context's
+by a rule that says so, and in no other way. A check cannot be wrapped: an equality is no fact, so none stands
+under an arrow.
+
+**Packing.** A rule **packs** when a literal of its conclusion is a fact pattern $c$ with a fact pattern $u$
+under one of its argument arrows. The result holds $c\theta$, which points at $u\theta$:
+
+$$
+\begin{aligned}
+c\theta &\in K \cup \psi\theta \\
+u\theta \in K \cup \psi\theta &\iff u\theta \in K \ \lor\ u\theta \in \psi\theta
+\end{aligned}
+$$
+
+so packing holds the fact that points, and **never the fact pointed at**: $u\theta$ is held after exactly where
+it was held before, or where the conclusion states it too. Where $u$ is a premise of the rule, $u\theta$ was
+held, stays held, and gains a context. Where $u$ is built from the variables and is no premise, $u\theta$ is in
+a context and not held. The rule *what is so, Alice thinks*, over the example of
+[the knowledge base](01-knowledge-base.md#the-global-context-and-the-context-of-a-fact), where $\mathsf{=}$ is
+the name of an ordinary relation:
+
+$$
+\begin{aligned}
+\operatorname{out}(q) &= (\mathsf{=},\ a,\ b) && \text{the premise} \\
+\operatorname{out}(c) &= (\mathsf{think},\ \mathsf{Alice},\ q) && \text{the conclusion}
+\end{aligned}
+$$
+
+The conclusion points at the premise's own node with its third arrow: in a pattern graph one list of arrows is
+one node, as in a knowledge base. Its one match in $K = \lbrace e \rbrace$:
+
+![A rule whose conclusion c points at its premise q, and its match into the knowledge base that holds e](diagrams/02-pack-match.svg)
+
+$$
+\begin{aligned}
+\theta &= \lbrace\, a \mapsto \mathsf{5},\ b \mapsto s \,\rbrace \\
+q\theta &= e \\
+c\theta &= t \\
+K \cup \psi\theta &= \lbrace e, t \rbrace
+\end{aligned}
+$$
+
+![After the packing: t added and held, pointing at e, which is held as before and is now in a frame named think ctx](diagrams/02-pack-after.svg)
+
+The dashed octagon and its dashed arrows are what the rewriting added: one node, $t$. The fact $e$ was held and
+in no context, and is now held and in a context.
+
+**Unpacking.** A rule **unpacks** when a literal of its conclusion is a fact pattern $u$ that stands under an
+argument arrow of one of its premises. The pattern graph already has the node $u$, as a fact pattern that is no
+premise, and a match sends it to a fact $u\theta$ of the graph that need not be held. The conclusion holds it:
+
+$$
+\begin{aligned}
+u\theta &\in O_K && \text{the graph of } K \text{ has the node before the rewriting} \\
+K \cup \psi\theta &= K \cup \lbrace u\theta \rbrace \\
+O_{K \cup \psi\theta} &= O_K && \text{no node and no arrow is added}
+\end{aligned}
+$$
+
+**So an unpacking changes nothing in the graph but which nodes are held.** The rule *what Alice thinks is so*:
+
+$$
+\begin{aligned}
+\operatorname{out}(u) &= (\mathsf{=},\ a,\ b) && \text{the conclusion} \\
+\operatorname{out}(q) &= (\mathsf{think},\ \mathsf{Alice},\ u) && \text{the premise}
+\end{aligned}
+$$
+
+Its one match in $K = \lbrace t \rbrace$:
+
+![A rule whose premise q points at its conclusion u, and its match into the knowledge base that holds t](diagrams/02-unpack-match.svg)
+
+$$
+\begin{aligned}
+\theta &= \lbrace\, a \mapsto \mathsf{5},\ b \mapsto s \,\rbrace \\
+q\theta &= t \\
+u\theta &= e \\
+K \cup \psi\theta &= \lbrace t, e \rbrace
+\end{aligned}
+$$
+
+![After the unpacking: the same nodes and arrows, with e now held, in its frame named think ctx](diagrams/02-unpack-after.svg)
+
+The graph after is the graph before. The octagon $e$ is filled, with a dashed outline for what the rewriting
+did, and its arrows are solid: they were there. The fact $e$ was in a context and not held, and is now held and
+in a context.
+
+**Proposition (a fact changes case only by a rule that says so).** Let $K'$ be the result of rewriting $K$ by a
+rule at a match, and $g$ a fact of the graph of $K$. Then
+
+$$
+\begin{aligned}
+g \in K &\implies g \in K' && \text{a held fact stays held} \\
+g \in K' \setminus K &\implies g \in \psi\theta && \text{a fact becomes held only as an instance of a literal of the conclusion} \\
+\operatorname{ctx}_{K'}(g) \setminus \operatorname{ctx}_K(g) &\subseteq \psi\theta && \text{and gains a context only by a fact the conclusion adds}
+\end{aligned}
+$$
+
+*Argument.* $K' = K \cup \psi\theta$, a union of sets of facts, and a context is taken among held facts.
+$\square$
+
+So a fact goes from *in a context* to *held and in a context* exactly when a rule concludes it, from *held* to
+*held and in a context* exactly when a rule concludes a fact that points at it, and never out of *held*.
+
+**What a rule can spell.** A premise is a fact pattern, and a literal of a conclusion is a fact pattern, the
+negation of a variable, or a check. So:
+
+| a rule that would | is written | by |
+|---|---|---|
+| hold a fact found in a context | $\operatorname{says}(w, \operatorname{owns}(p, x)) \implies \operatorname{owns}(p, x)$ | spelling the fact's relation and its count |
+| the same for any relation of one count | $\operatorname{says}(w, R(p, x)) \implies R(p, x)$, with $R$ a parameter | one application for each activator that names a relation |
+| deny a fact found in a context, whatever it is | $\operatorname{says}(w, z) \implies \lnot z$ | the literal $\lnot z$ |
+| hold a fact found in a context, whatever it is | not a rule | a variable is no literal |
+| ask whether the fact a variable stands for is held, denied or absent | not a rule | a variable is no premise; the fact's shape is spelt, $\operatorname{says}(w, \operatorname{owns}(p, x)) \land \operatorname{owns}(p, x)$ |
+
+A relation's place takes its atom from an activator and never from a fact under an arrow, so no rule reads off
+*the relation of whatever fact this is*: what a rule must know of a fact it moves is its count
+([Q-M1f.393](../../../decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)).
 
 ## A rule, declared
 

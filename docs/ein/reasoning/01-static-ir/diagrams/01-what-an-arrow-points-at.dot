@@ -1,20 +1,17 @@
 digraph what_an_arrow_points_at {
-  rankdir=TB; nodesep=0.4; ranksep=0.6;
+  rankdir=TB; nodesep=0.4; ranksep=0.6; forcelabels=true;
   node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
   edge [fontname="Helvetica", fontsize=10];
-  { rank=min; "transitive"; "not"; "says"; }
-  "left-of";
-  { rank=max; "House-1"; "House-2"; "Norwegian"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
-  f3 [xlabel="f3"]; p [xlabel="p"]; n [xlabel="n"]; s [xlabel="s"];
-  g [xlabel="g", style=solid];
-  { rank=same; p; n; s; }
-  { rank=same; f3; g; }
-  p -> "transitive" [label="1"];
+  "transitive"; "not"; "says"; "left-of";
+  p [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="p"]; n [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="n"]; s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="s"]; f3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="f3"];
+  subgraph cluster_ctx_not_says { label="not, says ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    g [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="g"];
+  }
+  "transitive" -> p [label="1", dir=back];
   p -> "left-of" [label="2"];
-  n -> "not" [label="1"];
+  "not" -> n [label="1", dir=back];
   n -> g [label="2"];
-  s -> "says" [label="1"];
+  "says" -> s [label="1", dir=back];
   s -> "Norwegian" [label="2"];
   s -> g [label="3"];
   f3 -> "left-of" [label="1"];

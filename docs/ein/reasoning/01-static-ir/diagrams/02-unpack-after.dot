@@ -1,0 +1,22 @@
+digraph unpack_after {
+  rankdir=TB; nodesep=0.45; ranksep=0.6; forcelabels=true;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  "think"; "="; "+";
+  t [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="t"];
+  subgraph cluster_ctx_think { label="think ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style="filled,dashed", fillcolor="#d9d9d9", xlabel="e"];
+  }
+  subgraph cluster_ctx_eq { label="= ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="s"];
+  }
+  "think" -> t [label="1", dir=back];
+  t -> "Alice" [label="2"];
+  t -> e [label="3"];
+  "=" -> e [label="1", dir=back];
+  e -> "5" [label="2"];
+  e -> s [label="3"];
+  "+" -> s [label="1", dir=back];
+  s -> "2" [label="2"];
+  s -> "2" [label="3"];
+}

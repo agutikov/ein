@@ -38,7 +38,9 @@ pages. An **atom** is a labelled node with no outgoing arrow, and its label is i
 node with outgoing arrows. Of a relation three things are kept apart: **the relation**, one atom; its
 **extent**, every fact whose first arrow points at that atom, held or not; and **a fact of** it. The extent is
 the same whatever is held. What a knowledge base holds of it is the **held extent**, and that is what grows,
-what a rule reads, what a commitment adds to, and what is empty or complete.
+what a rule reads, what a commitment adds to, and what is empty or complete. A fact that is held is in the
+**global context**; a fact that a held fact points at, at any depth, is in that fact's **context**; a fact may be
+in either or in both, and it is one node.
 
 | symbol | what it is | where it is defined |
 |---|---|---|
@@ -53,6 +55,7 @@ what a rule reads, what a commitment adds to, and what is empty or complete.
 | $\bot$ | the fact of falsity, of the relation $\mathsf{false}$ and no argument | [the knowledge base](01-static-ir/01-knowledge-base.md#a-fact-about-a-relation-a-fact-about-a-fact-a-negation-falsity) |
 | $K$, $K_0$ | a knowledge base: a finite set of facts, the ones its graph holds; the one a program's text is read into | [the knowledge base](01-static-ir/01-knowledge-base.md#the-graph), [its program](01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program) |
 | $\operatorname{sub}(f)$ | the facts nested in $f$, at any depth | [the knowledge base](01-static-ir/01-knowledge-base.md#nesting) |
+| $\operatorname{ctx}_K(g)$ | the context of the fact $g$ in $K$: the held facts from which a path of argument arrows leads to $g$. $K$ itself is the global context | [the knowledge base](01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact) |
 | $\operatorname{names}(X)$ | the atoms under an argument arrow of a fact of $X$, at any depth | [the knowledge base](01-static-ir/01-knowledge-base.md#nesting) |
 | $\preceq$, $\prec$ | the total order of the objects | [the knowledge base](01-static-ir/01-knowledge-base.md#order) |
 | $\operatorname{text}(v)$ | the text of an object, which reads back as it | [the knowledge base](01-static-ir/01-knowledge-base.md#the-text-of-an-object) |
@@ -98,7 +101,7 @@ what a rule reads, what a commitment adds to, and what is empty or complete.
 
 | page | its own symbols |
 |---|---|
-| [the knowledge base](01-static-ir/01-knowledge-base.md) | $G$, $O_K$ the graph of a knowledge base and its objects; $\nu$ the reading of written tuples; $W$, $W_{\!c}$ the reserved words; $T$, $D$ the facts the text writes and those its declarations are; $\alpha_{\text{file}}$ a file's short names; $q$, $\lt_{q}$ the quoted form of an object and its order; $\operatorname{status}_K$ |
+| [the knowledge base](01-static-ir/01-knowledge-base.md) | $G$, $O_K$ the graph of a knowledge base and its objects; $\nu$ the reading of written tuples; $W$, $W_{\!c}$ the reserved words; $T$, $D$ the facts the text writes and those its declarations are; $\alpha_{\text{file}}$ a file's short names; $q$, $\lt_{q}$ the quoted form of an object and its order; $\operatorname{status}_K$; $N_K$ the facts whose stored negation $K$ holds; $s$, $e$, $t$ the three facts of the example of a context |
 | [the rules](01-static-ir/02-rewriting-rules.md) | $X$ the variables; $t$ a term; $m$ a match as a homomorphism; $\gamma$ a part of a pattern; $N$ the atoms a pattern is matched over; $\ell$ a literal; $L$, $I$, $L^{+}$ the span of a rewrite; $G$, $B$ the domain and the body of a universal |
 | [firing a rule](02-kb-evolution/01-firing.md) | $\iota$, $w$, $\operatorname{Obs}$ a numbering of the objects, a count of workers, what a reader observes of a run; $K(t)$ a knowledge base after $t$ additions |
 | [saturation](02-kb-evolution/02-saturation.md) | $\Xi$, $Q$ the firings root made and the candidates it parked; $\operatorname{lead}$, $\operatorname{arr}$, $\operatorname{passes}$; $X$ the kinds of name that are not guessable |

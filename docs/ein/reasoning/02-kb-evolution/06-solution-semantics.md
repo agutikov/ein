@@ -226,7 +226,11 @@ $$
 \end{aligned}
 $$
 
-root's fixpoint, with the facts of $C$ added and the saturation resumed to quiescence. The definition never stops at
+root's fixpoint, with the facts of $C$ added and the saturation resumed to quiescence. A state is a set of held
+facts, its global context: a fact that a fact of the state points at is in the state's graph and is a member of
+the state only where it is held too
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)). The
+definition never stops at
 a first contradiction; what a computation of $R$ may stop at, and why stopping changes no answer, is
 [Finding R § 1](07-finding-r.md#1-a-node).
 

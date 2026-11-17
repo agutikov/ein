@@ -1,8 +1,9 @@
 # The knowledge base: facts of relations
 
 A knowledge base is a graph. This page shows the graph first, then names what is where in it: objects, atoms
-and their names, facts, relations, declarations. Then it gives their properties: identity, order, the text of an
-object, the count of a relation's arguments, nesting, and what a set of facts says of one fact. Nothing here
+and their names, facts, relations, declarations, and the two contexts a fact may be in. Then it gives their
+properties: identity, order, the text of an object, the count of a relation's arguments, nesting, what a set of
+facts says of one fact, and what a context does not say of it. Nothing here
 changes a knowledge base: a rule, which rewrites one, is [the next page](02-rewriting-rules.md), and how a
 knowledge base grows is the part after it.
 
@@ -53,9 +54,11 @@ the four facts it writes with a source sentence is this graph:
 
 **How the graph is drawn**, here and wherever these pages draw it. A box is a node with no outgoing arrow, and
 the word in it is its label. An octagon is a node with outgoing arrows; it has no label, and the letter beside
-it, $f_1$, is only what the text calls it. A filled octagon is held, an empty one is only pointed at. An arrow
-carries its place in the list: $1$ on a first arrow, $2$ on a second. The picture has eight boxes and four
-octagons, and every octagon is held:
+it, $f_1$, is only what the text calls it. A filled octagon is held, an empty one is only pointed at. An octagon
+that an argument arrow of a fact points at stands inside a dashed frame, named for the relation of the facts that
+point at it ([below](#the-global-context-and-the-context-of-a-fact)). An arrow carries its place in the list: $1$
+on a first arrow, $2$ on a second. The picture has eight boxes and four octagons; every octagon is held, and none
+is in a frame, since no fact here points at a fact:
 
 $$
 \begin{aligned}
@@ -275,7 +278,7 @@ and it is stated [where it is used](../02-kb-evolution/04-hypothesis-generation.
 
 What a fact is about is what its arrows point at, and each of these is a fact like any other.
 
-![A fact about a relation, a fact about a fact, and a stored negation](diagrams/01-what-an-arrow-points-at.svg)
+![A fact about a relation, a fact about a fact, and a stored negation; the fact two of them point at is empty, in a frame named not, says ctx](diagrams/01-what-an-arrow-points-at.svg)
 
 $$
 \begin{aligned}
@@ -292,7 +295,8 @@ $$
   relation of $f_3$ is the argument of $p$.
 - **A fact about a fact.** The third arrow of $s$ points at the fact $g$: *the Norwegian says that the second
   house is left of the first*. The knowledge base holds $s$ and does not hold $g$, which is the empty octagon, a
-  node the graph has because held facts point at it. Saying it does not make it held.
+  node the graph has because held facts point at it. Saying it does not make it held. The frame around $g$ is
+  named for the two relations whose facts point at it.
 - **A stored negation.** $n$ is a fact of the relation $\mathsf{not}$, and its one argument is the fact $g$. It is
   written $\lnot g$ and says that $g$ does not hold.
 - **Falsity.** $\bot$ is the fact of the relation $\mathsf{false}$ with its first arrow alone,
@@ -311,6 +315,82 @@ So $\lnot a$ of an atom $a$ is no fact, and $\lnot\lnot g$ is no fact; $\lnot\bo
 argument ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md),
 [Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)). What reads the two
 relations is [below](#a-fact-its-negation-both-or-neither).
+
+### The global context, and the context of a fact
+
+A fact of the graph stands to a knowledge base in two ways, and neither decides the other.
+
+**It is held.** The set $K$ is the **global context**, and a fact $g$ is *in the global context* when $g \in K$.
+
+**It is in a context.** A fact under an argument arrow of another is what that fact is about. The **context** of
+a fact $g$ in $K$ is the held facts from which a path of argument arrows leads to $g$:
+
+$$
+\operatorname{ctx}_K(g) \;=\; \lbrace\, f \in K \;:\; \text{a path of one or more argument arrows leads from } f \text{ to } g \,\rbrace
+$$
+
+and $g$ is *in a context* when $\operatorname{ctx}_K(g) \neq \emptyset$: in the context of each of those facts,
+a **local** context beside the global one. A fact of the context **speaks about** $g$. In the drawing above
+$\operatorname{ctx}_K(g) = \lbrace n, s \rbrace$: $s$ says that the Norwegian says it, and $n$ that it does not
+hold. Every fact of the graph is held or lies on a path from a held fact, so each is in exactly one of three
+cases:
+
+| | in the global context, $g \in K$ | in a context, $\operatorname{ctx}_K(g) \neq \emptyset$ | drawn |
+|---|---|---|---|
+| **held, in no context** | yes | no | filled, in no frame |
+| **in a context, not held** | no | yes | empty, in a frame |
+| **held, and in a context** | yes | yes | filled, in a frame |
+
+The three cases of one fact, in three knowledge bases over four objects. $\mathsf{=}$, $\mathsf{+}$,
+$\mathsf{5}$ and $\mathsf{2}$ are names like any other: these pages have no numbers
+([identity](#identity)), and no equality is a fact, so $\mathsf{=}$ is the name of an ordinary relation.
+
+$$
+\begin{aligned}
+\operatorname{out}(s) &= (\mathsf{+},\ \mathsf{2},\ \mathsf{2}) \\
+\operatorname{out}(e) &= (\mathsf{=},\ \mathsf{5},\ s) \\
+\operatorname{out}(t) &= (\mathsf{think},\ \mathsf{Alice},\ e)
+\end{aligned}
+$$
+
+$K = \lbrace e \rbrace$. The fact $e$ is held and in no context, and $s$ is in the context of $e$:
+
+![The fact e filled and in no frame; the fact s under its third arrow, empty, in a frame named = ctx](diagrams/01-context-held.svg)
+
+$K = \lbrace t \rbrace$. *Alice thinks that five is two plus two.* The fact $e$ is in the context of $t$ and is
+not held:
+
+![The fact t filled; e under its third arrow, empty, in a frame named think ctx; s under e, empty, in a frame named = ctx](diagrams/01-context-only.svg)
+
+$K = \lbrace t, e \rbrace$. The fact $e$ is held, and in the context of $t$:
+
+![The facts t and e filled, e in a frame named think ctx; s empty, in a frame named = ctx](diagrams/01-context-both.svg)
+
+The three graphs differ in one node, $t$, and in which octagons are filled. $e$ is the same node in all three,
+with the same arrows: writing a fact by itself and under an arrow of another writes one fact. And $s$ is in a
+context and not held in all three, since nothing states that two and two are added:
+
+$$
+\begin{aligned}
+\operatorname{ctx}_{\lbrace e \rbrace}(s) &= \lbrace e \rbrace \\
+\operatorname{ctx}_{\lbrace t \rbrace}(s) &= \lbrace t \rbrace \\
+\operatorname{ctx}_{\lbrace t, e \rbrace}(s) &= \lbrace t, e \rbrace
+\end{aligned}
+$$
+
+In the second, $s$ is in the context of $t$ through $e$, a fact that is not held: a path may pass through any
+fact of the graph, and only its first node is held.
+
+**How the two are drawn.** The two properties have one mark each. An octagon is **filled** exactly when the fact
+is in the global context. It stands **inside a dashed frame** exactly when an argument arrow of a fact points at
+it, which is when it is in a context. A frame carries the name of the relation of the facts that point at what is
+in it, and the word *ctx*: the facts that a fact of $\mathsf{think}$ points at are in the frame *think ctx*. A
+fact that facts of two relations point at is in one frame that names both, as $g$ above is in *not, says ctx*,
+since a node is drawn once. Frames stand side by side and never one inside another: $s$ is in *= ctx* beside
+*think ctx*, and that it is also in the context of $t$ is read off the path from $t$. Which fact speaks about a
+framed fact is read off the arrows that enter the frame. An atom is in no frame.
+
+What a context does and does not say of the fact in it is [below](#a-context-gives-a-fact-no-truth).
 
 ### The reserved atoms
 
@@ -383,6 +463,8 @@ $$
   ([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md)); what reads these
   facts is a rule that checks a representation where its terms are written
   ([Q-M1f.272](../../../decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)).
+  $\operatorname{written}(t)$ is a held fact that points at $t$, so it is one of the contexts of $t$: the one
+  reading a program makes. It says that the text wrote $t$ under an arrow, and nothing of whether $t$ is held.
 
 A program also declares rules. A rule is no fact of $K_0$; its declaration adds to $K_0$ only facts of
 $\mathsf{written}$, which are stated with the rules
@@ -602,7 +684,18 @@ $$
 $$
 
 The second equation is the one exception to the arrows: a stored negation and the fact it denies are read as
-one, so a negation nests what the fact it denies nests, and not that fact itself. For a set $X$ of facts,
+one, so a negation nests what the fact it denies nests, and not that fact itself. The
+[context](#the-global-context-and-the-context-of-a-fact) of a fact makes no such exception and follows every
+argument arrow, the negation's too:
+
+$$
+\begin{aligned}
+f &\notin \operatorname{sub}(\lnot f) \\
+\lnot f \in K &\implies \lnot f \in \operatorname{ctx}_K(f)
+\end{aligned}
+$$
+
+For a set $X$ of facts,
 $\operatorname{sub}(X)$ is the union over its members, and the **names of** $X$ are the atoms under an argument
 arrow of a fact of $X$, at any depth:
 
@@ -647,3 +740,81 @@ $$
 A set of facts that holds a contradiction is **dead**, and one that holds none is **alive**. Both are properties
 of the set: a set that includes a dead set is dead. This is all the two reserved relations mean, and it is what
 the reasoning reads them for.
+
+### A context gives a fact no truth
+
+The definitions of this page read the global context and nothing else: a status and a contradiction are stated
+by membership in $K$, and none follows an argument arrow.
+
+**Proposition (holding is not carried by an arrow).** For a fact $f \in K$ and a fact $g$ under an argument
+arrow of $f$, nothing follows about $g \in K$; and for $g \in K$, nothing follows about any fact that points at
+$g$. In particular, for a relation $c$ other than $\mathsf{not}$, an object $a$, and a fact $g$ with
+$g \notin K$:
+
+$$
+\begin{aligned}
+c(a, g) \in K \ \land\ \lnot g \notin K &\implies \operatorname{status}_K(g) = \text{open} \\
+c(a, \bot) \in K &\ \not\Longrightarrow\ \operatorname{dead}(K) \\
+c(a, g) \in K \ \land\ c(a, \lnot g) \in K &\ \not\Longrightarrow\ \operatorname{dead}(K) \\
+c(a, g) \in K \ \land\ \lnot g \in K &\ \not\Longrightarrow\ \operatorname{dead}(K)
+\end{aligned}
+$$
+
+*Argument.* Each right-hand side is defined by membership in $K$ of a fact that the left-hand side does not put
+in $K$. $\square$
+
+*Alice thinks that five is two plus two* is a fact about Alice and about $e$. It says what Alice thinks, and
+nothing of whether five is two plus two. The knowledge base below holds $t$ and the stored negation of $e$, and is
+alive: one held fact says that Alice thinks $e$, another that $e$ does not hold, and no fact is held together
+with its negation.
+
+![The fact t and the stored negation n, both filled, both pointing at e, which is empty, in a frame named not, think ctx](diagrams/01-context-negation.svg)
+
+$$
+\begin{aligned}
+n &= \lnot e \\
+K &= \lbrace t, n \rbrace \\
+\operatorname{ctx}_K(e) &= \lbrace t, n \rbrace \\
+\operatorname{status}_K(e) &= \text{negated}
+\end{aligned}
+$$
+
+**One context is read: that of $\mathsf{not}$.** A stored negation is a held fact that points at the fact it
+denies, so it is a context of that fact like any other, and it is the only one the definitions above read:
+$\lnot g \in K$ makes $g$ negated, and makes $K$ dead where $g$ is in the global context too. The facts of every
+other relation are opaque to those definitions. What $\mathsf{think}$ means, whether what a reliable witness
+says is to be held, is what the rules of a program make of it
+([packing and unpacking](02-rewriting-rules.md#packing-and-unpacking)), and with no such rule it means nothing.
+
+**The context of $\mathsf{not}$ is no mirror of the global one.** Write $N_K = \lbrace g : \lnot g \in K \rbrace$
+for the facts it holds. It grows as $K$ grows, by what a text states and what rules conclude, and it is not the
+complement of $K$: the four statuses are the four ways a fact can be in the two,
+
+| $\operatorname{status}_K(g)$ | $g \in K$ | $g \in N_K$ |
+|---|---|---|
+| asserted | yes | no |
+| negated | no | yes |
+| open | no | no |
+| contradicted | yes | yes |
+
+A mirror would leave no fact open. So a fact that is denied is no more held than one that somebody says: it is
+in a context, and a pattern finds it there and not in the global one.
+
+**The same holds of every fact that is read where it is held.** A declaration is a held fact of
+$\mathsf{relation}$, and the facts that apply a rule are held facts of its name
+([the rules](02-rewriting-rules.md#a-rule-declared)). Under an argument arrow each is a fact about which
+something is said: it declares nothing and applies nothing.
+
+**What is the same in the three cases, and what differs.** For a fact $g$ of the graph of $K$:
+
+| of the fact $g$ | the same, held or not | differs with $g \in K$ |
+|---|---|---|
+| its **identity** | one node, $\operatorname{out}(g)$ | |
+| its **text**, its **quoted form**, its place in the **order** $\prec$ | functions of the object alone | |
+| its membership of the **extent** | $g \in \operatorname{ext}(\operatorname{rel}(g))$ | $g \in \operatorname{ext}_K(\operatorname{rel}(g))$, the held extent, only where held |
+| the **names** under its arrows | in $\operatorname{names}(K)$, which reads every depth | |
+| its **status** | | asserted or contradicted where held, negated or open where not |
+| making $K$ **dead**, with $\lnot g$ or as $\bot$ | | only where held |
+
+What a rule reads of a fact in each case, and how a rule moves a fact from one to another, is
+[the next page](02-rewriting-rules.md#packing-and-unpacking).

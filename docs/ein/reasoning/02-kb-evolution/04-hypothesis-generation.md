@@ -120,8 +120,10 @@ $\varphi_h(a, \theta)$ and $\psi_h(a, \theta)$ for $\varphi_h[a]\theta$ and $\ps
 one fact is no hypothesis rule
 ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). It is **active** under the
 activators $\operatorname{listed}(h)$: the empty one where $h$ has no parameter, and otherwise each activator the
-program lists for it. At root it proposes, for each activator $a$ and each match $\theta$ of its pattern, the one
-fact its conclusion makes:
+program lists for it. A conclusion may point at a fact, and then so does the candidate; a commitment that holds
+such a candidate holds it and nothing it points at
+([the knowledge base](../01-static-ir/01-knowledge-base.md#a-context-gives-a-fact-no-truth)). At root it
+proposes, for each activator $a$ and each match $\theta$ of its pattern, the one fact its conclusion makes:
 
 $$
 \begin{aligned}
@@ -426,6 +428,11 @@ $$
 \operatorname{guessable}(P) = \big( \operatorname{names}(P) \cup \operatorname{rels}(\mathrm{root}) \big) \setminus \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
 $$
 
+- $\operatorname{names}(P)$ reads every depth, so an atom under an arrow of a fact that is only in a context
+  ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)) is a
+  name of the program and may be guessable. A fact is never one: every guessable object is an atom, so no
+  candidate the enumerator proposes points at a fact. And a fact that root only points at has no place of its
+  own for that: it is a candidate exactly where any fact of its relation over the guessable atoms is;
 - $\operatorname{rels}(\mathrm{root})$ is the relations of the facts root holds
   ([saturation](02-saturation.md#the-alive-set-invariant)). An atom is no name of the program by standing under a
   first arrow, so the relations are counted beside the names; the atoms under the argument arrows of root's facts

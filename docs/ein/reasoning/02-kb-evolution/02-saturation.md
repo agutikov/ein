@@ -59,6 +59,21 @@ a larger $K'$, so a larger input can block a firing a smaller one admits, $\oper
 and by [absence](03-absent-and-naf.md): the least fixpoint above is taken on the positive part of the program,
 and a boundary decides the rest. The first two properties hold of every program.
 
+**A fact is held because it was given or concluded, and never because of its context.** The fixpoint is $K$
+closed under rewriting, and a rewriting holds exactly the instances of a conclusion's literals. So for every fact
+$g$,
+
+$$
+g \in \operatorname{sat}(K) \iff g \in K \ \lor\ g \in \psi_\rho[a]\,\theta \ \text{ for a firing } \xi = (\rho, a, \theta) \text{ along the saturation of } K
+$$
+
+and no clause of the right-hand side reads the context of $g$
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)). A fact
+that stands under an arrow of a held fact is held at the fixpoint only where some rule concluded it, by spelling
+it ([packing and unpacking](../01-static-ir/02-rewriting-rules.md#packing-and-unpacking)). The facts of
+$\mathsf{written}$ are no exception: reading a program states them, no rule does, so they are the same in every
+knowledge base a saturation reaches, and each is a context of the fact it points at and holds nothing.
+
 **Termination is assumed, not given.** A rule may build a fact out of a fact, so nesting can grow without bound
 and the chain above need not become stationary. Everything stated about an answer is about programs whose
 saturation reaches a fixpoint:

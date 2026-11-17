@@ -82,3 +82,5 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.380](Q-M1f.380-an-objects-identity-is-its-name-or-its-tuple.md) — An object's identity is its name or its tuple, and the graph is the representation
 - [Q-M1f.381](Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md) — A relation is the atom under a fact's first arrow, and its extent is every fact of it
 - [Q-M1f.382](Q-M1f.382-a-labelled-arrow-draws-a-fact-of-two-arguments.md) — A labelled arrow draws a fact of two arguments and is never the representation
+- [Q-M1f.393](Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md) — A rule unpacks a fact by its count
+- [Q-M1f.394](Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md) — A fact is in the global context, in a fact's context, or in both
